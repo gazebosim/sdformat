@@ -21,6 +21,7 @@
 #include <memory>
 
 #include <ignition/math/Pose3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/InterfaceModel.hh"
@@ -40,53 +41,177 @@ inline namespace SDF_VERSION_NAMESPACE
 #endif
 /// \brief Contains the necessary information about an included model file
 /// for custom model parsers to be able to find the file and parse it.
-struct SDFORMAT_VISIBLE NestedInclude
+class SDFORMAT_VISIBLE NestedInclude
 {
+  /// \brief Constructor
+  public: NestedInclude();
+  // Defaulted copy, move constructors and destructors are needed to avoid
+  // deprecation warnings on memeber variables when simply instantiating this
+  // class.
+  // TODO(anyone) Remove the constructor and destructor once the deprecated
+  // members are removed.
+  SDF_SUPPRESS_DEPRECATED_BEGIN
+  public: NestedInclude(const NestedInclude&) = default;
+  public: NestedInclude(NestedInclude&&) = default;
+  public: NestedInclude& operator=(const NestedInclude&) = default;
+  public: NestedInclude& operator=(NestedInclude&&) = default;
+  public: ~NestedInclude() = default;
+  SDF_SUPPRESS_DEPRECATED_END
+
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
   /// not end with a file extension (it will not end with an extension if it
   /// refers to a model package).
-  std::string uri;
+  /// \return URI of the included model
+  public: const std::string &Uri() const;
+
+  /// \brief Set the URI of the included model
+  /// \param[in] _uri URI of the included model
+  public: void SetUri(const std::string &_uri);
 
   /// \brief Provides the *resolved* absolute file path from the URI.
   /// It is recommended to use this in `CustomModelParser` when checking
   /// predicates on filenames -- however, the predicates should generally only
   /// check the file extension.
-  std::string resolvedFileName;
+  /// \return The resolved absolute file path from the URI.
+  public: const std::string &ResolvedFileName() const;
+
+  /// \brief Set the resolved absolute file path.
+  /// \param[in] _resolvedFileName The resolved absolute file path
+  public: void SetResolvedFileName(const std::string &_resolvedFileName);
 
   /// \brief Name of the parent entity in absolute hierarchy.
   /// Example: if the interface model's name is
   /// `top_model::middle_model::my_new_model`, the absoluteParentName would be
   /// `top_model::middle_model`. If the parent entity is the world, this would
   /// be an empty string.
-  std::string absoluteParentName;
+  /// \return Absolute name of parent entity
+  public: const std::string &AbsoluteParentName() const;
+
+  /// \brief Set the absolute name of parent entity
+  /// \param[in] _absoluteparentname Absolute name of parent entity
+  public: void SetAbsoluteParentName(const std::string &_absoluteparentname);
 
   /// \brief Name relative to immediate parent as specified in
   /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
   /// name of the model must be determined by the custom model parser from the
   /// included model file.
   /// Example: `my_new_model`
-  std::optional<std::string> localModelName;
+  /// \return The local name. nullopt if `//include/name` is not set
+  public: const std::optional<std::string> &LocalModelName() const;
+
+  /// \brief Set the name relative to immediate parent as specified in
+  /// `//include/name`
+  /// \param[in] _localModelName The local name
+  public: void SetLocalModelName(const std::string &_localModelName);
 
   /// \brief Whether the model is static as defined by `//include/static`. This
   /// is nullopt if `//include/static` is not set.
-  std::optional<bool> isStatic;
+  /// \return Whether the model is static. nullopt if `//include/static` is not
+  /// set.
+  public: const std::optional<bool> &IsStatic() const;
 
-  /// \brief The raw pose as specified in //include/pose. This is nullopt if
+  /// \brief Set whether the model is static.
+  /// \param[in] _isStatic True if the model is static.
+  public: void SetIsStatic(bool _isStatic);
+
+  /// \brief The raw pose as specified in `//include/pose`. This is nullopt if
   /// `//include/pose` is not set.
-  std::optional<ignition::math::Pose3d> includeRawPose;
+  /// \return The raw pose.  nullopt if `//include/pose` is not set.
+  public: const std::optional<ignition::math::Pose3d> &IncludeRawPose() const;
+
+  /// \brief Set the raw pose as specified in `//include/pose`.
+  /// \param[in] _includeRawPose The raw pose
+  public: void SetIncludeRawPose(const ignition::math::Pose3d &_includeRawPose);
 
   /// \brief The relative-to frame of the pose as specified in
   /// `//include/pose/@relative_to`. This is nullopt if
   /// `//include/pose/@relative_to` is not set.
-  std::optional<std::string> includePoseRelativeTo;
+  /// \return The relative-to frame of the pose. nullopt if
+  /// `//include/pose/@relative_to` is not set.
+  public: const std::optional<std::string> &IncludePoseRelativeTo() const;
+
+  /// \brief Set the relative-to frame of the pose.
+  /// \param[in] _includePoseRelativeTo The relative-to frame.
+  public: void SetIncludePoseRelativeTo(
+              const std::string &_includePoseRelativeTo);
 
   /// \brief The placement frame as specified in `//include/placement_frame`.
   /// This is nullopt if `//include/placement_frame` is is not set.
-  std::optional<std::string> placementFrame;
+  /// \return The placement frame. nullopt if `//include/placement_frame` is is
+  /// not set.
+  public: const std::optional<std::string> &PlacementFrame() const;
+
+  /// \brief Set the placement frame.
+  /// \param[in] _placementFrame The placement frame.
+  public: void SetPlacementFrame(const std::string &_placementFrame);
 
   /// This is the `//include` element. This can be used to pass custom elements
   /// and attributes to the custom model parser.
-  sdf::ElementPtr includeElement;
+  /// \return The `//include` element
+  public: sdf::ElementPtr IncludeElement() const;
+
+  /// Set the `//include` element.
+  /// \param[in] _includeElement The include element
+  public: void SetIncludeElement(sdf::ElementPtr _includeElement);
+
+  /// \brief Provides the URI as specified in `//include/uri`. This may or may
+  /// not end with a file extension (it will not end with an extension if it
+  /// refers to a model package).
+  /// \deprecated Use NestedInclude::Uri() instead
+  public: std::string uri SDF_DEPRECATED(12);
+
+  /// \brief Provides the *resolved* absolute file path from the URI.
+  /// It is recommended to use this in `CustomModelParser` when checking
+  /// predicates on filenames -- however, the predicates should generally only
+  /// check the file extension.
+  /// \deprecated Use NestedInclude::ResolvedFileName() instead
+  public: std::string resolvedFileName SDF_DEPRECATED(12);
+
+  /// \brief Name of the parent entity in absolute hierarchy.
+  /// Example: if the interface model's name is
+  /// `top_model::middle_model::my_new_model`, the absoluteParentName would be
+  /// `top_model::middle_model`. If the parent entity is the world, this would
+  /// be an empty string.
+  /// \deprecated Use NestedInclude::AbsoluteParentName() instead
+  public: std::string absoluteParentName SDF_DEPRECATED(12);
+
+  /// \brief Name relative to immediate parent as specified in
+  /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
+  /// name of the model must be determined by the custom model parser from the
+  /// included model file.
+  /// Example: `my_new_model`
+  /// \deprecated Use NestedInclude::LocalModelName() instead
+  public: std::optional<std::string> localModelName SDF_DEPRECATED(12);
+
+  /// \brief Whether the model is static as defined by `//include/static`. This
+  /// is nullopt if `//include/static` is not set.
+  /// \deprecated Use NestedInclude::IsStatic() instead
+  public: std::optional<bool> isStatic SDF_DEPRECATED(12);
+
+  /// \brief The raw pose as specified in //include/pose. This is nullopt if
+  /// `//include/pose` is not set.
+  /// \deprecated Use NestedInclude::IncludeRawPose() instead
+  public: std::optional<ignition::math::Pose3d> includeRawPose
+              SDF_DEPRECATED(12);
+
+  /// \brief The relative-to frame of the pose as specified in
+  /// `//include/pose/@relative_to`. This is nullopt if
+  /// `//include/pose/@relative_to` is not set.
+  /// \deprecated Use NestedInclude::IncludePoseRelativeTo() instead
+  public: std::optional<std::string> includePoseRelativeTo SDF_DEPRECATED(12);
+
+  /// \brief The placement frame as specified in `//include/placement_frame`.
+  /// This is nullopt if `//include/placement_frame` is is not set.
+  /// \deprecated Use NestedInclude::PlacementFrame() instead
+  public: std::optional<std::string> placementFrame SDF_DEPRECATED(12);
+
+  /// This is the `//include` element. This can be used to pass custom elements
+  /// and attributes to the custom model parser.
+  /// \deprecated Use NestedInclude::IncludeElement() instead
+  public: sdf::ElementPtr includeElement SDF_DEPRECATED(12);
+
+  /// \brief Private data pointer.
+  IGN_UTILS_IMPL_PTR(dataPtr)
 };
 #ifdef _MSC_VER
 #pragma warning(pop)

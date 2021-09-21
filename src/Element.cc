@@ -152,7 +152,8 @@ void Element::AddValue(const std::string &_type,
   this->dataPtr->value =
       std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
                               _required, _minValue, _maxValue, _description);
-  this->dataPtr->value->SetParentElement(shared_from_this());
+  SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+      "Cannot set parent Element of value to itself.");
 }
 
 /////////////////////////////////////////////////
@@ -164,7 +165,8 @@ ParamPtr Element::CreateParam(const std::string &_key,
 {
   ParamPtr param = std::make_shared<Param>(
       _key, _type, _defaultValue, _required, _description);
-  param->SetParentElement(shared_from_this());
+  SDF_ASSERT(param->SetParentElement(shared_from_this()),
+      "Cannot set parent Element of created Param to itself.");
   return param;
 }
 
@@ -199,7 +201,9 @@ ElementPtr Element::Clone() const
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     auto clonedAttribute = (*aiter)->Clone();
-    clonedAttribute->SetParentElement(clone);
+    SDF_ASSERT(clonedAttribute->SetParentElement(clone),
+        "Cannot set parent Element of cloned attribute Param to cloned "
+        "Element.");
     clone->dataPtr->attributes.push_back(clonedAttribute);
   }
 
@@ -220,7 +224,8 @@ ElementPtr Element::Clone() const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
-    clone->dataPtr->value->SetParentElement(clone);
+    SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
+        "Cannot set parent Element of cloned value Param to cloned Element.");
   }
 
   if (this->dataPtr->includeElement)
@@ -254,7 +259,8 @@ void Element::Copy(const ElementPtr _elem)
     }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-    param->SetParentElement(shared_from_this());
+    SDF_ASSERT(param->SetParentElement(shared_from_this()),
+        "Cannot set parent Element of copied attribute Param to itself.");
   }
 
   if (_elem->GetValue())
@@ -267,7 +273,8 @@ void Element::Copy(const ElementPtr _elem)
     {
       *(this->dataPtr->value) = *(_elem->GetValue());
     }
-    this->dataPtr->value->SetParentElement(shared_from_this());
+    SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+        "Cannot set parent Element of copied value Param to itself.");
   }
 
   this->dataPtr->elementDescriptions.clear();

@@ -46,7 +46,7 @@ namespace sdf
   class Model;
   class ParserConfig;
   class Physics;
-  struct NestedInclude;
+  class NestedInclude;
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
