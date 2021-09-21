@@ -1530,6 +1530,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     if (!_sdf->GetValue()->SetFromString(_xml->GetText()))
       return false;
   }
+  else if (_sdf->GetValue())
+  {
+    if (!_sdf->GetValue()->Reparse())
+      return false;
+  }
 
   if (_sdf->GetCopyChildren())
   {
@@ -1665,27 +1670,24 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           {
             sdf::ElementPtr poseElem = topLevelElem->GetElement("pose");
 
-            const char *relativeTo = poseElemXml->Attribute("relative_to");
-            if (relativeTo)
+            auto setAttribute =
+                [&poseElem, &poseElemXml](const std::string &_attribName)
             {
-              poseElem->GetAttribute("relative_to")->SetFromString(relativeTo);
-            }
-            else
-            {
-              poseElem->GetAttribute("relative_to")->Reset();
-            }
+              const char *attrib = poseElemXml->Attribute(_attribName.c_str());
+              auto attribParam = poseElem->GetAttribute(_attribName);
+              if (attrib && attribParam)
+              {
+                attribParam->SetFromString(attrib);
+              }
+              else if (attribParam)
+              {
+                attribParam->Reset();
+              }
+            };
 
-            const char *degrees = poseElemXml->Attribute("degrees");
-            {
-              if (degrees)
-              {
-                poseElem->GetAttribute("degrees")->SetFromString(degrees);
-              }
-              else
-              {
-                poseElem->GetAttribute("degrees")->Reset();
-              }
-            }
+            setAttribute("relative_to");
+            setAttribute("degrees");
+            setAttribute("rotation_format");
 
             if (poseElemXml->GetText())
             {

@@ -204,7 +204,9 @@ namespace sdf
     /// \brief Set the parent Element of this Param.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
     /// provided to remove the current parent Element.
-    public: void SetParentElement(ElementPtr _parentElement);
+    /// \return True if the parent Element was set and the value was reparsed
+    /// successfully.
+    public: bool SetParentElement(ElementPtr _parentElement);
 
     /// \brief Reset the parameter to the default value.
     public: void Reset();
@@ -371,7 +373,10 @@ namespace sdf
     public: bool ignoreParentAttributes;
 
     /// \brief This parameter's value that was provided as a string
-    public: std::optional<std::string> strValue;
+    public: std::string strValue;
+
+    /// \brief This parameter's default value that was provided as a string
+    public: std::string defaultStrValue;
 
     /// \brief This parameter's default value
     public: ParamVariant defaultValue;
