@@ -60,6 +60,7 @@ set (sources
   Pbr.cc
   Physics.cc
   Plane.cc
+  PrintConfig.cc
   Root.cc
   Scene.cc
   SDF.cc

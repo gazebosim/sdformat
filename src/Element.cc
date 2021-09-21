@@ -502,6 +502,7 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
 void Element::PrintValuesImpl(const std::string &_prefix,
                               bool _includeDefaultElements,
                               bool _includeDefaultAttributes,
+                              const PrintConfig &_config,
                               std::ostringstream &_out) const
 {
   if (this->GetExplicitlySetInFile() || _includeDefaultElements)
@@ -521,7 +522,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
           _includeDefaultAttributes)
       {
         _out << " " << (*aiter)->GetKey() << "='"
-             << (*aiter)->GetAsString() << "'";
+             << (*aiter)->GetAsString(_config) << "'";
       }
     }
 
@@ -537,6 +538,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
           (*eiter)->ToString(_prefix + "  ",
                              _includeDefaultElements,
                              _includeDefaultAttributes,
+                             _config,
                              _out);
         }
       }
@@ -546,7 +548,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
     {
       if (this->dataPtr->value)
       {
-        _out << ">" << this->dataPtr->value->GetAsString()
+        _out << ">" << this->dataPtr->value->GetAsString(_config)
              << "</" << this->dataPtr->name << ">\n";
       }
       else
@@ -558,43 +560,48 @@ void Element::PrintValuesImpl(const std::string &_prefix,
 }
 
 /////////////////////////////////////////////////
-void Element::PrintValues(std::string _prefix) const
+void Element::PrintValues(std::string _prefix, const PrintConfig &_config) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, true, false, ss);
+  PrintValuesImpl(_prefix, true, false, _config, ss);
   std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
 void Element::PrintValues(const std::string &_prefix,
                           bool _includeDefaultElements,
-                          bool _includeDefaultAttributes) const
+                          bool _includeDefaultAttributes,
+                          const PrintConfig &_config) const
 {
   std::ostringstream ss;
   PrintValuesImpl(_prefix,
                   _includeDefaultElements,
                   _includeDefaultAttributes,
+                  _config,
                   ss);
   std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
-std::string Element::ToString(const std::string &_prefix) const
+std::string Element::ToString(const std::string &_prefix,
+                              const PrintConfig &_config) const
 {
   std::ostringstream out;
-  this->ToString(_prefix, true, false, out);
+  this->ToString(_prefix, true, false, _config, out);
   return out.str();
 }
 
 /////////////////////////////////////////////////
 std::string Element::ToString(const std::string &_prefix,
                               bool _includeDefaultElements,
-                              bool _includeDefaultAttributes) const
+                              bool _includeDefaultAttributes,
+                              const PrintConfig &_config) const
 {
   std::ostringstream out;
   this->ToString(_prefix,
                  _includeDefaultElements,
                  _includeDefaultAttributes,
+                 _config,
                  out);
   return out.str();
 }
@@ -603,11 +610,13 @@ std::string Element::ToString(const std::string &_prefix,
 void Element::ToString(const std::string &_prefix,
                        bool _includeDefaultElements,
                        bool _includeDefaultAttributes,
+                       const PrintConfig &_config,
                        std::ostringstream &_out) const
 {
   PrintValuesImpl(_prefix,
                   _includeDefaultElements,
                   _includeDefaultAttributes,
+                  _config,
                   _out);
 }
 

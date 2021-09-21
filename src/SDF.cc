@@ -194,9 +194,9 @@ void SDF::PrintDescription()
 }
 
 /////////////////////////////////////////////////
-void SDF::PrintValues()
+void SDF::PrintValues(const PrintConfig &_config)
 {
-  this->Root()->PrintValues("");
+  this->Root()->PrintValues("", _config);
 }
 
 /////////////////////////////////////////////////
@@ -328,7 +328,7 @@ void SDF::Write(const std::string &_filename)
 }
 
 /////////////////////////////////////////////////
-std::string SDF::ToString() const
+std::string SDF::ToString(const PrintConfig &_config) const
 {
   std::ostringstream stream;
 
@@ -338,7 +338,7 @@ std::string SDF::ToString() const
     stream << "<sdf version='" << SDF::Version() << "'>\n";
   }
 
-  stream << this->Root()->ToString("");
+  stream << this->Root()->ToString("", _config);
 
   if (this->Root()->GetName() != "sdf")
   {

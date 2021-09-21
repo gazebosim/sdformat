@@ -300,16 +300,18 @@ void Param::Update()
 }
 
 //////////////////////////////////////////////////
-std::string Param::GetAsString() const
+std::string Param::GetAsString(const PrintConfig &_config) const
 {
+  (void)_config;
   StringStreamClassicLocale ss;
   ss << this->dataPtr->strValue;
   return ss.str();
 }
 
 //////////////////////////////////////////////////
-std::string Param::GetDefaultAsString() const
+std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
+  (void)_config;
   StringStreamClassicLocale ss;
 
   ss << ParamStreamer{ this->dataPtr->defaultValue };
@@ -317,10 +319,12 @@ std::string Param::GetDefaultAsString() const
 }
 
 //////////////////////////////////////////////////
-std::optional<std::string> Param::GetMinValueAsString() const
+std::optional<std::string> Param::GetMinValueAsString(
+    const PrintConfig &_config) const
 {
   if (this->dataPtr->minValue.has_value())
   {
+    (void)_config;
     StringStreamClassicLocale ss;
 
     ss << ParamStreamer{ *this->dataPtr->minValue };
@@ -330,10 +334,12 @@ std::optional<std::string> Param::GetMinValueAsString() const
 }
 
 //////////////////////////////////////////////////
-std::optional<std::string> Param::GetMaxValueAsString() const
+std::optional<std::string> Param::GetMaxValueAsString(
+    const PrintConfig &_config) const
 {
   if (this->dataPtr->maxValue.has_value())
   {
+    (void)_config;
     StringStreamClassicLocale ss;
 
     ss << ParamStreamer{ *this->dataPtr->maxValue };
