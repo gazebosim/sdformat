@@ -4,7 +4,85 @@
 
 ## libsdformat 11.X
 
-### libsdformat 11.X.X (202X-XX-XX)
+### libsdformat 11.3.0 (2021-09-10)
+
+1. Fix world-complete.sdf and add particle_scatter_ratio to v1.8
+    * [Pull request #695](https://github.com/ignitionrobotics/sdformat/pull/695)
+
+1. Parse URDF continuous joint effort/velocity limits
+    * [Pull request #684](https://github.com/ignitionrobotics/sdformat/pull/684)
+
+1. Add `enable_orientation` SDF element to imu
+    * [Pull request #651](https://github.com/ignitionrobotics/sdformat/pull/651)
+
+1. Add a codecheck make target
+    * [Pull request #682](https://github.com/ignitionrobotics/sdformat/pull/682)
+
+1. Refactor sdf::readXml
+    * [Pull request #681](https://github.com/ignitionrobotics/sdformat/pull/681)
+
+1. Upgrade cpplint and fix new errors
+    * [Pull request #680](https://github.com/ignitionrobotics/sdformat/pull/680)
+
+1. Infrastructure and documentation
+    * [Pull request #679](https://github.com/ignitionrobotics/sdformat/pull/679)
+    * [Pull request #678](https://github.com/ignitionrobotics/sdformat/pull/678)
+    * [Pull request #676](https://github.com/ignitionrobotics/sdformat/pull/676)
+    * [Pull request #673](https://github.com/ignitionrobotics/sdformat/pull/673)
+    * [Pull request #630](https://github.com/ignitionrobotics/sdformat/pull/630)
+
+1. Added comment reminder to update functions
+    * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
+
+1. BUG: add missing plugin element to include
+    * [Pull request #668](https://github.com/ignitionrobotics/sdformat/pull/668)
+    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
+
+1. Adds `enable_metrics` flag to Sensor.
+    * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
+
+1. BUG: make time type string [s ns]
+    * [Pull request #662](https://github.com/ignitionrobotics/sdformat/pull/662)
+
+1. Add GPS sensor to sdf9
+    * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
+
+1. Spec change booleans from 0/1 to false/true
+    * [Pull request #663](https://github.com/ignitionrobotics/sdformat/pull/663)
+
+1. Support parsing elements that are not part of the schema
+    * [Pull request #638](https://github.com/ignitionrobotics/sdformat/pull/638)
+
+1. Add lightmap to 1.7 spec and PBR material DOM
+    * [Pull request #429](https://github.com/ignitionrobotics/sdformat/pull/429)
+
+1. Fix urdf link extension tags
+    * [Pull request #628](https://github.com/ignitionrobotics/sdformat/pull/628)
+
+1. Fix unreported invalid model when reference frame is unavailable
+    * [Pull request #636](https://github.com/ignitionrobotics/sdformat/pull/636)
+
+1. Updated material spec
+    * [Pull request #644](https://github.com/ignitionrobotics/sdformat/pull/644)
+
+1. BUG: add missing sdf files to CMakeLists
+    * [Pull request #631](https://github.com/ignitionrobotics/sdformat/pull/631)
+
+1. Update build system to allow overriding CXX flags and using clang on Linux
+    * [Pull request #621](https://github.com/ignitionrobotics/sdformat/pull/621)
+
+1. Error: move << operator from .hh to .cc file
+    * [Pull request #623](https://github.com/ignitionrobotics/sdformat/pull/623)
+    * [Pull request #625](https://github.com/ignitionrobotics/sdformat/pull/625)
+
+1. Add Element::FindElement as an alternative to Element::GetElement
+    * [Pull request #620](https://github.com/ignitionrobotics/sdformat/pull/620)
+
+1. Parameter passing prototype
+    * [Pull request #413](https://github.com/ignitionrobotics/sdformat/pull/413)
+
+1. Port particle scatter ratio param to sdf 1.6
+    * [Pull request #595](https://github.com/ignitionrobotics/sdformat/pull/595)
 
 ### libsdformat 11.2.2 (2021-07-01)
 
