@@ -300,8 +300,9 @@ void Param::Update()
 }
 
 //////////////////////////////////////////////////
-std::string Param::GetAsString() const
+std::string Param::GetAsString(const PrintConfig &_config) const
 {
+  (void)_config;
   StringStreamClassicLocale ss;
   ss << this->dataPtr->strValue;
   return ss.str();

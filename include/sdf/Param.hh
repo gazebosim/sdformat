@@ -36,6 +36,7 @@
 #include <ignition/math.hh>
 
 #include "sdf/Console.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
@@ -165,8 +166,10 @@ namespace sdf
     public: virtual ~Param();
 
     /// \brief Get the value as a string.
+    /// \param[in] _config Configuration for conversion to string.
     /// \return String containing the value of the parameter.
-    public: std::string GetAsString() const;
+    public: std::string GetAsString(
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the default value as a string.
     /// \return String containing the default value of the parameter.

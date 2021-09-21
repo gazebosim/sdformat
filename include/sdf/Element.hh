@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "sdf/Param.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/Types.hh"
@@ -152,15 +153,19 @@ namespace sdf
 
     /// \brief Output Element's values to stdout.
     /// \param[in] _prefix String value to prefix to the output.
-    public: void PrintValues(std::string _prefix) const;
+    /// \param[in] _config Configuration for printing the values.
+    public: void PrintValues(std::string _prefix,
+                             const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Output Element's values to stdout.
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _includeDefaultElements flag to print default elements.
     /// \param[in] _includeDefaultAttributes flag to print default attributes.
+    /// \param[in] _config Configuration for printing the values.
     public: void PrintValues(const std::string &_prefix,
                              bool _includeDefaultElements,
-                             bool _includeDefaultAttributes) const;
+                             bool _includeDefaultAttributes,
+                             const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Helper function for SDF::PrintDoc
     ///
@@ -181,8 +186,11 @@ namespace sdf
 
     /// \brief Convert the element values to a string representation.
     /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _config Configuration for printing the values.
     /// \return The string representation.
-    public: std::string ToString(const std::string &_prefix) const;
+    public: std::string ToString(
+        const std::string &_prefix,
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Convert the element values to a string representation.
     /// Current behavior of ToString(const std::string &_prefix) can be
@@ -191,10 +199,13 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for printing the values.
     /// \return The string representation.
-    public: std::string ToString(const std::string &_prefix,
-                                 bool _includeDefaultElements,
-                                 bool _includeDefaultAttributes) const;
+    public: std::string ToString(
+        const std::string &_prefix,
+        bool _includeDefaultElements,
+        bool _includeDefaultAttributes,
+        const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Add an attribute value.
     /// \param[in] _key Key value.
@@ -525,20 +536,24 @@ namespace sdf
     /// \param[in] _prefix arbitrary prefix to put on the string.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for converting to string.
     /// \param[out] _out the std::ostreamstream to write output to.
     private: void ToString(const std::string &_prefix,
                            bool _includeDefaultElements,
                            bool _includeDefaultAttributes,
+                           const PrintConfig &_config,
                            std::ostringstream &_out) const;
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for printing values.
     /// \param[out] _out the std::ostreamstream to write output to.
     private: void PrintValuesImpl(const std::string &_prefix,
                                   bool _includeDefaultElements,
                                   bool _includeDefaultAttributes,
+                                  const PrintConfig &_config,
                                   std::ostringstream &_out) const;
 
     /// \brief Create a new Param object and return it.
