@@ -20,34 +20,34 @@
             </x>
             <y>
               <noise type="gaussian">
-                <mean>0</mean>
-                <stddev>0.1</stddev>
+                <mean>1</mean>
+                <stddev>1.1</stddev>
               </noise>
             </y>
             <z>
               <noise type="gaussian">
-                <mean>0</mean>
-                <stddev>0.1</stddev>
+                <mean>2</mean>
+                <stddev>2.1</stddev>
               </noise>
             </z>
           </force>
           <torque>
             <x>
               <noise type="gaussian">
-                <mean>0</mean>
-                <stddev>0.1</stddev>
+                <mean>3</mean>
+                <stddev>3.1</stddev>
               </noise>
             </x>
             <y>
               <noise type="gaussian">
-                <mean>0</mean>
-                <stddev>0.1</stddev>
+                <mean>4</mean>
+                <stddev>4.1</stddev>
               </noise>
             </y>
             <z>
               <noise type="gaussian">
-                <mean>0</mean>
-                <stddev>0.1</stddev>
+                <mean>5</mean>
+                <stddev>5.1</stddev>
               </noise>
             </z>
           </torque>
