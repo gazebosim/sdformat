@@ -143,6 +143,10 @@ namespace sdf
 
     /// \brief The provided version has been deprecated or it is pre-versioning
     VERSION_DEPRECATED,
+
+    /// \brief Merge include is unspported for the type of entity being
+    /// included.
+    MERGE_INCLUDE_UNSUPPORTED,
   };
 
   class SDFORMAT_VISIBLE Error
@@ -188,9 +192,18 @@ namespace sdf
     /// nullopt otherwise.
     public: std::optional<std::string> FilePath() const;
 
+    /// \brief Sets the file path that is associated with this error.
+    /// \param[in] _filePath The file path that is related to this error. (e.g.
+    /// /tmp/test_file.sdf)
+    public: void SetFilePath(const std::string &_filePath);
+
     /// \brief Get the line number associated with this error.
     /// \return Returns the line number. nullopt otherwise.
     public: std::optional<int> LineNumber() const;
+
+    /// \brief Sets the line number that is associated with this error.
+    /// \param[in] _lineNumber The line number that is related to this error.
+    public: void SetLineNumber(int _lineNumber);
 
     /// \brief Get the XPath-like trace that is associated with this error.
     /// \return Returns the XPath-like trace that this error is related to,

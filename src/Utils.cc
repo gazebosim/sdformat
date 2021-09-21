@@ -218,39 +218,41 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
        includeElem = includeElem->GetNextElement("include"))
   {
     sdf::NestedInclude include;
-    include.uri = includeElem->Get<std::string>("uri");
+    include.SetUri(includeElem->Get<std::string>("uri"));
     auto absoluteParentName = computeAbsoluteName(_sdf, allErrors);
 
     if (absoluteParentName.has_value())
     {
-      include.absoluteParentName = *absoluteParentName;
+      include.SetAbsoluteParentName(*absoluteParentName);
     }
 
     if (includeElem->HasElement("name"))
     {
-      include.localModelName = includeElem->Get<std::string>("name");
+      include.SetLocalModelName(includeElem->Get<std::string>("name"));
     }
     if (includeElem->HasElement("static"))
     {
-      include.isStatic = includeElem->Get<bool>("static");
+      include.SetIsStatic(includeElem->Get<bool>("static"));
     }
-    include.resolvedFileName = sdf::findFile(include.uri, true, true, _config);
+    include.SetResolvedFileName(
+        sdf::findFile(include.Uri(), true, true, _config));
 
-    include.includeElement = includeElem;
+    include.SetIncludeElement(includeElem);
     if (includeElem->HasElement("pose"))
     {
       auto poseElem = includeElem->GetElement("pose");
-      include.includeRawPose = poseElem->Get<ignition::math::Pose3d>();
+      include.SetIncludeRawPose(poseElem->Get<ignition::math::Pose3d>());
       if (poseElem->HasAttribute("relative_to"))
       {
-        include.includePoseRelativeTo =
-            poseElem->Get<std::string>("relative_to");
+        include.SetIncludePoseRelativeTo(
+            poseElem->Get<std::string>("relative_to"));
       }
     }
 
     if (includeElem->HasElement("placement_frame"))
     {
-      include.placementFrame = includeElem->Get<std::string>("placement_frame");
+      include.SetPlacementFrame(
+          includeElem->Get<std::string>("placement_frame"));
     }
 
     // Iterate through custom model parsers in reverse per the SDFormat proposal
@@ -273,7 +275,7 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
         if (model->Name() == "")
         {
           allErrors.emplace_back(sdf::ErrorCode::ATTRIBUTE_INVALID,
-              "Missing name of custom model with URI [" + include.uri + "]");
+              "Missing name of custom model with URI [" + include.Uri() + "]");
         }
         else
         {
