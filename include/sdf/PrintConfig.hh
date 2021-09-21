@@ -30,7 +30,7 @@ inline namespace SDF_VERSION_NAMESPACE
 /// This class contains configuration options for printing elements.
 class SDFORMAT_VISIBLE PrintConfig
 {
-  /// \brief Default constructor. All options are set to false by default.
+  /// \brief Default constructor.
   public: PrintConfig();
 
   /// \brief Private data pointer.
