@@ -278,7 +278,7 @@ TEST(Pose1_9, BadModelPoses)
     std::ostringstream stream;
     stream
         << "<sdf version='1.9'>"
-        << "  <model name='quat_xyzw_with_degrees_true'>"
+        << "  <model name='quat_xyzw_with_empty_value'>"
         << "    <pose rotation_format='quat_xyzw'></pose>"
         << "    <link name='link'/>"
         << "  </model>"
@@ -290,7 +290,7 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    // Setting //pose[@rotation_format='quat_xyzw'] will should fail here as
+    // Setting //pose[@rotation_format='quat_xyzw'] should fail here as
     // the defined default value from sdf/1.9/pose.sdf is '0 0 0 0 0 0'
     // which is only a 6-tuple.
     EXPECT_PRED2(contains, buffer.str(),

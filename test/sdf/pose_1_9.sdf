@@ -80,7 +80,7 @@
     </model>
 
     <model name="model_euler_rpy_degrees_false">
-      <pose rotation_format="euler_rpy">1 2 3   0.4 0.5 0.6</pose>
+      <pose rotation_format="euler_rpy" degrees="false">1 2 3   0.4 0.5 0.6</pose>
       <link name="link"/>
     </model>
 
