@@ -26,7 +26,7 @@
       to a //link, //model, or //world frame, while //pose/@relative_to defines
       how the frame's pose is represented numerically. As a result, following
       the chain of @attached_to attributes must always lead to a //link,
-      //model, //world, or //joint (implicitly attached_to its child //link). 
+      //model, //world, or //joint (implicitly attached_to its child //link).
     </description>
   </attribute>
 
