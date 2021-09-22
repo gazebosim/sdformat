@@ -17,31 +17,133 @@ but with improved human-readability..
 An error is now emitted instead of a warning for a file containing more than
 one root level model, actor or light.
 
+### Additions
+
+1. **New SDFormat specification version 1.9**
+    + Details about the 1.8 to 1.9 transition are explained below in this same
+      document
+
+1. **sdf/Camera.hh** The following new functions were added for segmentation cameras
+    + void SetHasSegmentationType(bool)
+    + bool HasSegmentationType() const
+    + const std::string &SegmentationType() const
+    + void SetSegmentationType(const std::string &)
+    + void SetHasBoundingBoxType(bool)
+    + bool HasBoundingBoxType() const
+    + const std::string &BoundingBoxType() const
+    + void SetBoundingBoxType(const std::string &)
+
+1. **sdf/Elementh.hh**
+    + const Param_V &GetAttributes() const
+
+1. **sdf/Error.hh**
+    + void SetFilePath(const std::string &)
+    + void SetLineNumber(int)
+
+1. **sdf/ForceTorque.hh**
+    + const Noise &ForceXNoise() const
+    + void SetForceXNoise(const Noise &)
+    + const Noise &ForceYNoise() const
+    + void SetForceYNoise(const Noise &)
+    + const Noise &ForceZNoise() const
+    + void SetForceZNoise(const Noise &)
+    + const Noise &TorqueXNoise() const
+    + void SetTorqueXNoise(const Noise &)
+    + const Noise &TorqueYNoise() const
+    + void SetTorqueYNoise(const Noise &)
+    + const Noise &TorqueZNoise() const
+    + void SetTorqueZNoise(const Noise &)
+
+1. **sdf/InterfaceElements.hh** `sdf::NestedInclude` has the following new methods
+    + const std::string &Uri() const
+    + void SetUri(const std::string &)
+    + const std::string &ResolvedFileName() const
+    + void SetResolvedFileName(const std::string &)
+    + const std::string &AbsoluteParentName() const
+    + void SetAbsoluteParentName(const std::string &)
+    + const std::optional<std::string> &LocalModelName() const
+    + void SetLocalModelName(const std::string &)
+    + const std::optional<bool> &IsStatic() const
+    + void SetIsStatic(bool)
+    + const std::optional<ignition::math::Pose3d> &IncludeRawPose() const
+    + void SetIncludeRawPose(const ignition::math::Pose3d &includeRawPose)
+    + const std::optional<std::string> &IncludePoseRelativeTo() const
+    + void SetIncludePoseRelativeTo(const std::string &)
+    + const std::optional<std::string> &PlacementFrame() const
+    + void SetPlacementFrame(const std::string &)
+    + sdf::ElementPtr IncludeElement() const
+    + void SetIncludeElement(sdf::ElementPtr)
+
+1. **sdf/Param.hh**:
+    + ElementPtr GetParentElement() const;
+    + bool SetParentElement(ElementPtr);
+    + bool Reparse();
+    + bool IgnoresParentElementAttribute() const;
+
+1. **sdf/World.hh**:
+    + const ignition::math::SphericalCoordinates * SphericalCoordinates() const;
+    + void SetSphericalCoordinates(const ignition::math::SphericalCoordinates &);
+
+### Modifications
+
+1. **sdf/Element.hh**: The following methods now have an additional parameter of 
+   type `PrintConfig` with a default value
+    + void PrintValues(std::string, const PrintConfig &\_config = PrintConfig()) const
+    + void PrintValues(const std::string, bool, bool, const PrintConfig &\_config = PrintConfig()) const
+    + std::string ToString(const std::string &, const PrintConfig &\_config = PrintConfig()) const
+    + std::string ToString(const std::string &, bool, bool ,const PrintConfig &\_config = PrintConfig()) const
+
+1. **sdf/Param.hh**: The following methods now have an additional parameter of 
+   type `PrintConfig` with a default value
+    + std::string GetAsString(const PrintConfig &\_config = PrintConfig()) const
+    + std::string GetDefaultAsString(const PrintConfig &\_config = PrintConfig()) const
+    + std::optional<std::string> GetMinValueAsString(const PrintConfig &\_config = PrintConfig()) const
+    + std::optional<std::string> GetMaxValueAsString(const PrintConfig &\_config = PrintConfig()) const
+
+    The following now has an additional bool parameter
+    + bool SetFromString(const std::string &, bool \_ignoreParentAttributes);
+
+1. **sdf/SDFImpl.hh**: The following methods now have an additional parameter of 
+   type `PrintConfig` with a default value
+    + void PrintValues(const PrintConfig &\_config = PrintConfig())
+    + std::string ToString(const PrintConfig &\_config = PrintConfig()) const
+
+1. The string literals used to indicate non-file sources have been changed to 
+   `<data-string>` and `<urdf-string>` for SDFormat and URDF source 
+   respectively. Users are encouraged to use the constants `kSdfStringSource` 
+   and `kUrdfStringSource` instead of hard-coding the string literals.
+
 ### Removals
 
 The following deprecated methods and classes have been removed.
 
 1. **sdf/Element.hh**
-    + void SetInclude(const std::string);
-    + std::string GetInclude() const;
+    + void SetInclude(const std::string)
+    + std::string GetInclude() const
 
 1. **sdf/Types.hh**
     + sdf::Color class
 
 1. **sdf/JointAxis.hh**
-    + double InitialPosition() const;
+    + double InitialPosition() const
     + void SetInitialPosition(const double)
 
 1. **sdf/Root.hh**:
-    + const sdf::Model \*ModelByIndex();
-    + uint64_t ModelCount();
-    + bool ModelNameExists(const std::string &\_name) const;
-    + const sdf::Light \*LightByIndex();
-    + uint64_t LightCount();
-    + bool LightNameExists(const std::string &\_name) const;
-    + const sdf::Actor \*ActorByIndex();
-    + uint64_t ActorCount();
-    + bool ActorNameExists(const std::string &\_name) const;
+    + const sdf::Model \*ModelByIndex()
+    + uint64_t ModelCount()
+    + bool ModelNameExists(const std::string &\_name) const
+    + const sdf::Light \*LightByIndex()
+    + uint64_t LightCount()
+    + bool LightNameExists(const std::string &\_name) const
+    + const sdf::Actor \*ActorByIndex()
+    + uint64_t ActorCount()
+    + bool ActorNameExists(const std::string &\_name) const
+
+### Deprecations
+
+1. **sdf/InterfaceElements.hh**: The struct `NestedInclude` has been converted 
+   to a class. Accessing data members directly is deprecated. Instead use the 
+   corresponding member functions.
 
 ## libsdformat 11.1.0 to 11.2.0
 
@@ -371,10 +473,38 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat specification 1.8 to 1.9
 
-###Removals
+### Additions
+
+1. **camera.sdf**: New elements to configure segmentation and boundingbox cameras
+    + `//sensor/camera/segmentation_type` 
+    + `//sensor/camera/box_type`
+    + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+
+1. **forcetorque.sdf**: New elements to specify the noise characteristics of the force-torque sensor
+    + `//sensor/force_torque/force`
+    + `//sensor/force_torque/torque` 
+    + [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+
+1. **model.sdf**: `//model/include/@merge` for merging included nested models into the containing model
+    + [Pull request #659](https://github.com/ignitionrobotics/sdformat/pull/659)
+
+1. **pose.sdf**: New attributes to support specifying angles in degrees and specifying rotations in quaternions
+    + `//pose/@rotation_format`
+    + `//pose/@degrees`
+    + [Pull request #690](https://github.com/ignitionrobotics/sdformat/pull/690)
+    + [Pull request #589](https://github.com/ignitionrobotics/sdformat/pull/589)
+
+1. **sensor.sdf**: New sensor types `boundingbox_camera`, `segmentation_camera`, and `custom`.
+    + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+
+### Removals
 
 1. **joint.sdf**
     + Deprecated elements `//joint/axis/initial_position` and `//joint/axis2/initial_position` have been removed
+    * [Pull request #622](https://github.com/ignitionrobotics/sdformat/pull/622)
+
+1. **spherical_coordinates**: Unsupported options `NED` and `NWU` have been removed from `//spherical_coordinates/world_frame_orientation`
+    * [Pull request #685](https://github.com/ignitionrobotics/sdformat/pull/685)
 
 ## SDFormat specification 1.7 to 1.8
 
