@@ -2,6 +2,66 @@
 
 ### libsdformat 12.0.0 (202X-XX-XX)
 
+1. Add API changes for PrintConfig 
+    * [Pull request #708](https://github.com/ignitionrobotics/sdformat/pull/708)
+
+1. Add Force Torque Noise functions + Unit tests 
+    * [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+
+1. Support quaternions representation for poses 
+    * [Pull request #690](https://github.com/ignitionrobotics/sdformat/pull/690)
+
+1. Support merge-include of nested models 
+    * [Pull request #659](https://github.com/ignitionrobotics/sdformat/pull/659)
+
+1. Fix documentation on Euler angle convention in pose.sdf 
+    * [Pull request #698](https://github.com/ignitionrobotics/sdformat/pull/698)
+    * [Pull request #702](https://github.com/ignitionrobotics/sdformat/pull/702)
+
+1. Clarify documentation on //pose/@relative_to in the spec 
+    * [Pull request #666](https://github.com/ignitionrobotics/sdformat/pull/666)
+
+1. 🌐 Parse spherical coordinates 
+    * [Pull request #685](https://github.com/ignitionrobotics/sdformat/pull/685)
+
+1. Fix bug when using degrees in //include/pose
+    * [Pull request #697](https://github.com/ignitionrobotics/sdformat/pull/697)
+
+1. Support rotation in degrees (#589) 
+    * [Pull request #589](https://github.com/ignitionrobotics/sdformat/pull/589)
+
+1. Add segmentation and bounding box sensor types 
+    * [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+
+1. Add support for custom sensors 
+    * [Pull request #652](https://github.com/ignitionrobotics/sdformat/pull/652)
+
+1. Remove deprecated functions and classes 
+    * [Pull request #622](https://github.com/ignitionrobotics/sdformat/pull/622)
+
+1. Emit an error instead of a warning when a file has multiple root level 
+    * [Pull request #619](https://github.com/ignitionrobotics/sdformat/pull/619)
+
+1. Copy spec 1.8 to 1.9 
+    * [Pull request #568](https://github.com/ignitionrobotics/sdformat/pull/568)
+
+1. Use encapsulated string constants for non-file sources 
+    * [Pull request #551](https://github.com/ignitionrobotics/sdformat/pull/551)
+
+1. Forward ports
+    * [Pull request #559](https://github.com/ignitionrobotics/sdformat/pull/559)
+    * [Pull request #576](https://github.com/ignitionrobotics/sdformat/pull/576)
+    * [Pull request #594](https://github.com/ignitionrobotics/sdformat/pull/594)
+    * [Pull request #613](https://github.com/ignitionrobotics/sdformat/pull/613)
+    * [Pull request #627](https://github.com/ignitionrobotics/sdformat/pull/627)
+    * [Pull request #660](https://github.com/ignitionrobotics/sdformat/pull/660)
+    * [Pull request #693](https://github.com/ignitionrobotics/sdformat/pull/693)
+    * [Pull request #706](https://github.com/ignitionrobotics/sdformat/pull/706)
+
+1. Infrastructure
+    * [Pull request #532](https://github.com/ignitionrobotics/sdformat/pull/532)
+    * [Pull request #564](https://github.com/ignitionrobotics/sdformat/pull/564)
+
 ## libsdformat 11.X
 
 ### libsdformat 11.3.0 (2021-09-10)
