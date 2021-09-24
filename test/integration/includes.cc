@@ -417,6 +417,18 @@ TEST(IncludesTest, MergeInclude)
   ASSERT_NE(nullptr, model->CanonicalLink());
   EXPECT_EQ(model->LinkByIndex(0), model->CanonicalLink());
 
+  std::string prefixedFrameName;
+  {
+    sdf::Root includedModel;
+    errors = includedModel.Load(
+      sdf::testing::TestFile("integration", "model",
+                             "merge_robot", "model.sdf"));
+    EXPECT_TRUE(errors.empty()) << errors;
+    ASSERT_NE(nullptr, includedModel.Model());
+    prefixedFrameName = "_merged__"
+        + includedModel.Model()->Name() + "__model__";
+  }
+
   auto resolvePose = [](const sdf::SemanticPose &_semPose)
   {
     Pose3d result;
@@ -439,6 +451,7 @@ TEST(IncludesTest, MergeInclude)
     // Link "chassis"
     auto testFrame = model->LinkByName("chassis");
     ASSERT_NE(nullptr, testFrame);
+    EXPECT_EQ(prefixedFrameName, testFrame->PoseRelativeTo());
     const Pose3d testPose = resolvePose(testFrame->SemanticPose());
     // X_MC - Pose of chassis link(C) in the original model (M) as specified in
     // the SDF file.
@@ -450,6 +463,7 @@ TEST(IncludesTest, MergeInclude)
     // Link "top"
     auto testFrame = model->LinkByName("top");
     ASSERT_NE(nullptr, testFrame);
+    EXPECT_EQ(prefixedFrameName, testFrame->PoseRelativeTo());
     const Pose3d testPose = resolvePose(testFrame->SemanticPose());
     // From SDFormat file
     // X_MT - Pose of top link(T) in the original model (M) as specified in
@@ -462,6 +476,7 @@ TEST(IncludesTest, MergeInclude)
     // The pose of right_wheel_joint is specified relative to __model__.
     auto testFrame = model->JointByName("right_wheel_joint");
     ASSERT_NE(nullptr, testFrame);
+    EXPECT_EQ(prefixedFrameName, testFrame->PoseRelativeTo());
     // Resolve the pose relative to it's child frame (right_wheel)
     const Pose3d testPose = resolvePose(testFrame->SemanticPose());
     // From SDFormat file
@@ -475,6 +490,7 @@ TEST(IncludesTest, MergeInclude)
     // The pose of sensor_frame is specified relative to __model__.
     auto testFrame = model->FrameByName("sensor_frame");
     ASSERT_NE(nullptr, testFrame);
+    EXPECT_EQ(prefixedFrameName, testFrame->PoseRelativeTo());
     // Resolve the pose relative to it's child frame (right_wheel)
     const Pose3d testPose = resolvePose(testFrame->SemanticPose());
     // From SDFormat file
