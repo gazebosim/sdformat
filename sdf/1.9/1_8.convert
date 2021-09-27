@@ -1,12 +1,2 @@
 <convert name="sdf">
-
-<!-- Remove //axis/initial_position and //axis2/initial_position -->
-  <convert descendant_name="joint">
-    <convert name="axis">
-      <remove element="initial_position"/>
-    </convert>
-    <convert name="axis2">
-      <remove element="initial_position"/>
-    </convert>
-  </convert>
 </convert> <!-- End SDF -->
