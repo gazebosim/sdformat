@@ -802,6 +802,35 @@ TEST(Parser, MissingRequiredElement)
   EXPECT_EQ(errors[0].LineNumber().value(), 7);
 }
 
+TEST(Parser, ElementRemovedAfterDeprecation)
+{
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <sdf version="1.9">
+      <model name="test_model">
+        <link name="link_0"/>
+        <link name="link_1"/>
+        <joint name="joint" type="revolute">
+          <parent>link_0</parent>
+          <child>link_1</child>
+          <axis>
+            <initial_position>0.1</initial_position> <!-- Removed in 1.9 -->
+          </axis>
+        </joint>
+      </model>
+    </sdf>)";
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF();
+  sdf::ParserConfig config;
+  config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::readString(testString, config, sdf, errors);
+
+  ASSERT_NE(errors.size(), 0u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
+  ASSERT_TRUE(errors[0].LineNumber().has_value());
+  EXPECT_EQ(errors[0].LineNumber().value(), 10);
+}
+
 /////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)

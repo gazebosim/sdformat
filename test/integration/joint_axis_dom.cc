@@ -108,10 +108,6 @@ TEST(DOMJointAxis, Complete)
 
   EXPECT_DOUBLE_EQ(10.6, axis->SpringStiffness());
   EXPECT_DOUBLE_EQ(0.0, axis2->SpringStiffness());
-
-  // Ensure that //axis/initial_position is removed during conversion
-  EXPECT_FALSE(axis->Element()->HasElement("initial_position"));
-  EXPECT_FALSE(axis2->Element()->HasElement("initial_position"));
 }
 
 //////////////////////////////////////////////////
