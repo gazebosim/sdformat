@@ -56,6 +56,22 @@ sudo apt install libsdformat<#>-dev libsdformat<#>
 Be sure to replace `<#>` with a number value, such as 2 or 3, depending on
 which version you need, or leave it empty for version 1.
 
+### macOS
+
+On macOS, add OSRF packages:
+  ```sh
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  brew tap osrf/simulation
+  ```
+
+Install sdformat:
+  ```sh
+  brew install sdformat<#>
+  ```
+
+Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+which version you need.
+
 ### Windows
 
 Install [Conda package management system](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html).
@@ -120,6 +136,44 @@ To uninstall the software installed with the previous steps:
 cd build
 make uninstall
 ```
+
+## macOS
+
+### Prerequisites
+
+Clone the repository
+```sh
+git clone https://github.com/ignitionrobotics/sdformat -b sdf<#>
+```
+Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+which version you need.
+
+Install dependencies
+```sh
+brew install --only-dependencies sdformat<#>
+```
+
+### Build from Source
+
+1. Configure and build
+  ```sh
+  cd sdformat
+  mkdir build
+  cd build
+  cmake .. # Consider specifying -DCMAKE_INSTALL_PREFIX=...
+  make
+  ```
+
+2. Optionally, install and uninstall
+  ```sh
+  sudo make install
+  ```
+
+  To uninstall the software installed with the previous steps:
+  ```sh
+  cd build/
+  sudo make uninstall
+  ```
 
 ## Windows
 
