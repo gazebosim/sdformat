@@ -102,8 +102,8 @@ namespace sdf
     /// \param[in] _elem The element from which data may be removed.
     /// \param[in] _removeElem The metadata about what to remove.
     /// \param[in] _removeOnlyEmpty If true, only remove an attribute
-    /// containing an empty string or elements that contain no value nor
-    /// child elements (though possibly attributes).
+    /// containing an empty string or elements that contain neither value nor
+    /// child elements nor attributes.
     private: static void Remove(tinyxml2::XMLElement *_elem,
                                 tinyxml2::XMLElement *_removeElem,
                                 bool _removeOnlyEmpty = false);

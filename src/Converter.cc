@@ -675,8 +675,8 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
     while (childElem)
     {
       auto nextSibling = childElem->NextSiblingElement(elementName);
-      if (!_removeOnlyEmpty ||
-          (childElem->NoChildren() && !childElem->GetText()))
+      if (!_removeOnlyEmpty || (!childElem->FirstAttribute() &&
+          childElem->NoChildren() && !childElem->GetText()))
       {
         _elem->DeleteChild(childElem);
       }

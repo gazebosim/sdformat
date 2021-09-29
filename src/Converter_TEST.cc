@@ -50,6 +50,7 @@ std::string getRepeatedXmlString()
          << "  <elemB attrB='B'>"
          << "    <elemC attrC='C' attrEmpty=''>"
          << "      <elemD></elemD>"
+         << "      <elemD attrD='D'></elemD>"
          << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
@@ -668,8 +669,17 @@ TEST(Converter, RemoveEmptyElement)
   EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
   convertedElem = convertedElem->FirstChildElement("elemC");
   ASSERT_NE(nullptr, convertedElem);
+
   auto elemD = convertedElem->FirstChildElement("elemD");
-  ASSERT_NE(elemD, nullptr);
+  ASSERT_NE(nullptr, elemD);
+
+  // first <elemD/> should have an attribute but no value
+  EXPECT_EQ(nullptr, elemD->GetText());
+  ASSERT_NE(nullptr, elemD->Attribute("attrD"));
+  EXPECT_EQ("D", std::string(elemD->Attribute("attrD")));
+
+  // subsequent <elemD/> should have value "D"
+  elemD = elemD->NextSiblingElement("elemD");
   while (elemD)
   {
     std::string elemValue = elemD->GetText();
@@ -724,8 +734,18 @@ TEST(Converter, RemoveEmptyDescendantElement)
   EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
   convertedElem = convertedElem->FirstChildElement("elemC");
   ASSERT_NE(nullptr, convertedElem);
+
+
   auto elemD = convertedElem->FirstChildElement("elemD");
-  ASSERT_NE(elemD, nullptr);
+  ASSERT_NE(nullptr, elemD);
+
+  // first <elemD/> should have an attribute but no value
+  EXPECT_EQ(nullptr, elemD->GetText());
+  ASSERT_NE(nullptr, elemD->Attribute("attrD"));
+  EXPECT_EQ("D", std::string(elemD->Attribute("attrD")));
+
+  // subsequent <elemD/> should have value "D"
+  elemD = elemD->NextSiblingElement("elemD");
   while (elemD)
   {
     std::string elemValue = elemD->GetText();
