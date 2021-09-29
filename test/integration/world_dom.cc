@@ -26,6 +26,7 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMWorld, NoName)
@@ -308,4 +309,52 @@ TEST(DOMWorld, NestedFrames)
   EXPECT_NE(
       nullptr,
       world->FrameByName("top_level_model::nested_model::nested_model_frame"));
+}
+
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  {
+    buffer.str("");
+    const std::string testFile =
+      sdf::testing::TestFile("sdf", "world_sibling_same_names.sdf");
+
+    // Load the SDF file
+    sdf::Root root;
+    auto errors = root.Load(testFile);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    // Check warning message
+    EXPECT_NE(std::string::npos,
+        buffer.str().find("Non-unique name[spot] detected 2 times in XML "
+          "children of world with name[default]"));
+  }
+
+  // Check that there's an exception for "plugin" elements
+  {
+    buffer.str("");
+    const std::string testFile =
+      sdf::testing::TestFile("sdf", "world_duplicate_plugins.sdf");
+
+    // Load the SDF file
+    sdf::Root root;
+    auto errors = root.Load(testFile);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  }
 }
