@@ -559,6 +559,7 @@ TEST(Converter, RemoveElement)
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
   EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -607,6 +608,7 @@ TEST(Converter, RemoveDescendantElement)
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   tinyxml2::XMLElement *convertedElem = xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
 
   EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
@@ -658,6 +660,7 @@ TEST(Converter, RemoveEmptyElement)
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
   EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -712,6 +715,7 @@ TEST(Converter, RemoveEmptyDescendantElement)
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   tinyxml2::XMLElement *convertedElem = xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
 
   EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
