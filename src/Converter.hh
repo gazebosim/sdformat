@@ -98,11 +98,15 @@ namespace sdf
     private: static void Add(tinyxml2::XMLElement *_elem,
                              tinyxml2::XMLElement *_addElem);
 
-    /// \brief Remove an element.
-    /// \param[in] _elem The element that has the _removeElem child.
-    /// \param[in] _removeElem The element to remove.
+    /// \brief Remove an attribute or elements.
+    /// \param[in] _elem The element from which data may be removed.
+    /// \param[in] _removeElem The metadata about what to remove.
+    /// \param[in] _removeOnlyEmpty If true, only remove an attribute
+    /// containing an empty string or elements that contain neither value nor
+    /// child elements nor attributes.
     private: static void Remove(tinyxml2::XMLElement *_elem,
-                                tinyxml2::XMLElement *_removeElem);
+                                tinyxml2::XMLElement *_removeElem,
+                                bool _removeOnlyEmpty = false);
 
     /// \brief Unflatten an element (conversion from SDFormat <= 1.7 to 1.8)
     /// \param[in] _elem The element to unflatten
