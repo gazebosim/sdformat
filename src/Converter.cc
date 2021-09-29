@@ -645,7 +645,7 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 /////////////////////////////////////////////////
 void Converter::Remove(tinyxml2::XMLElement *_elem,
                        tinyxml2::XMLElement *_removeElem,
-                       bool _removeEmpty)
+                       bool _removeOnlyEmpty)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_removeElem != NULL, "remove element is NULL");
@@ -663,7 +663,7 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
   if (attributeName)
   {
     const char * attributeValue = _elem->Attribute(attributeName);
-    if (!_removeEmpty || (attributeValue && strlen(attributeValue) == 0))
+    if (!_removeOnlyEmpty || (attributeValue && strlen(attributeValue) == 0))
     {
       _elem->DeleteAttribute(attributeName);
     }
@@ -675,7 +675,8 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
     while (childElem)
     {
       auto nextSibling = childElem->NextSiblingElement(elementName);
-      if (!_removeEmpty || (childElem->NoChildren() && !childElem->GetText()))
+      if (!_removeOnlyEmpty ||
+          (childElem->NoChildren() && !childElem->GetText()))
       {
         _elem->DeleteChild(childElem);
       }
