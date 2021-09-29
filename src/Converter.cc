@@ -259,6 +259,10 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     {
       Remove(_elem, childElem);
     }
+    else if (name == "remove_empty")
+    {
+      Remove(_elem, childElem, true);
+    }
     else if (name == "unflatten")
     {
       Unflatten(_elem);
@@ -640,10 +644,11 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 
 /////////////////////////////////////////////////
 void Converter::Remove(tinyxml2::XMLElement *_elem,
-                       tinyxml2::XMLElement *_removeElem)
+                       tinyxml2::XMLElement *_removeElem,
+                       bool _removeEmpty)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
+  SDF_ASSERT(_removeElem != NULL, "remove element is NULL");
 
   const char *attributeName = _removeElem->Attribute("attribute");
   const char *elementName = _removeElem->Attribute("element");
@@ -657,7 +662,11 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
 
   if (attributeName)
   {
-    _elem->DeleteAttribute(attributeName);
+    const char * attributeValue = _elem->Attribute(attributeName);
+    if (!_removeEmpty || (attributeValue && attributeValue[0] == '\0'))
+    {
+      _elem->DeleteAttribute(attributeName);
+    }
   }
   else
   {
@@ -665,8 +674,12 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
 
     while (childElem)
     {
-      _elem->DeleteChild(childElem);
-      childElem = _elem->FirstChildElement(elementName);
+      auto nextSibling = childElem->NextSiblingElement(elementName);
+      if (!_removeEmpty || (childElem->NoChildren() && !childElem->GetText()))
+      {
+        _elem->DeleteChild(childElem);
+      }
+      childElem = nextSibling;
     }
   }
 }

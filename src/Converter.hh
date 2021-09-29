@@ -100,9 +100,11 @@ namespace sdf
 
     /// \brief Remove an element.
     /// \param[in] _elem The element that has the _removeElem child.
-    /// \param[in] _removeElem The element to remove.
+    /// \param[in] _removeElem The metadata about what to remove.
+    /// \param[in] _removeEmpty If true, only remove empty nodes.
     private: static void Remove(tinyxml2::XMLElement *_elem,
-                                tinyxml2::XMLElement *_removeElem);
+                                tinyxml2::XMLElement *_removeElem,
+                                bool _removeEmpty = false);
 
     /// \brief Unflatten an element (conversion from SDFormat <= 1.7 to 1.8)
     /// \param[in] _elem The element to unflatten
