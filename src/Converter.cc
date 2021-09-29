@@ -663,7 +663,7 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
   if (attributeName)
   {
     const char * attributeValue = _elem->Attribute(attributeName);
-    if (!_removeEmpty || (attributeValue && attributeValue[0] == '\0'))
+    if (!_removeEmpty || (attributeValue && strlen(attributeValue) == 0))
     {
       _elem->DeleteAttribute(attributeName);
     }
@@ -707,12 +707,12 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   const char *fromNameStr = fromConvertElem->Attribute("name");
   const char *toNameStr = toConvertElem->Attribute("name");
 
-  if (!fromNameStr || fromNameStr[0] == '\0')
+  if (!fromNameStr || strlen(fromNameStr) == 0)
   {
     sdferr << "Map: <from> element requires a non-empty name attribute.\n";
     return;
   }
-  if (!toNameStr || toNameStr[0] == '\0')
+  if (!toNameStr || strlen(toNameStr) == 0)
   {
     sdferr << "Map: <to> element requires a non-empty name attribute.\n";
     return;
