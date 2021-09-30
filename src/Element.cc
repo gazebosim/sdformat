@@ -764,7 +764,15 @@ std::set<std::string> Element::GetElementTypeNames() const
 /////////////////////////////////////////////////
 bool Element::HasUniqueChildNames(const std::string &_type) const
 {
-  auto namedElementsCount = this->CountNamedElements(_type);
+  return this->HasUniqueChildNames(_type, {});
+}
+
+/////////////////////////////////////////////////
+bool Element::HasUniqueChildNames(
+    const std::string &_type,
+    const std::vector<std::string> &_ignoreElements) const
+{
+  auto namedElementsCount = this->CountNamedElements(_type, _ignoreElements);
   for (auto &iter : namedElementsCount)
   {
     if (iter.second > 1)
@@ -776,8 +784,16 @@ bool Element::HasUniqueChildNames(const std::string &_type) const
 }
 
 /////////////////////////////////////////////////
-std::map<std::string, std::size_t>
-Element::CountNamedElements(const std::string &_type) const
+std::map<std::string, std::size_t> Element::CountNamedElements(
+    const std::string &_type) const
+{
+  return this->CountNamedElements(_type, {});
+}
+
+/////////////////////////////////////////////////
+std::map<std::string, std::size_t> Element::CountNamedElements(
+    const std::string &_type,
+    const std::vector<std::string> &_ignoreElements) const
 {
   std::map<std::string, std::size_t> result;
 
@@ -793,7 +809,9 @@ Element::CountNamedElements(const std::string &_type) const
 
   while (elem)
   {
-    if (elem->HasAttribute("name"))
+    auto ignoreIt = std::find(_ignoreElements.begin(), _ignoreElements.end(),
+                              elem->GetName());
+    if (elem->HasAttribute("name") && ignoreIt == _ignoreElements.end())
     {
       // Get("name") returns attribute value if it exists before checking
       // for the value of a child element <name>, so it's safe to use
@@ -1100,4 +1118,11 @@ std::any Element::GetAny(const std::string &_key) const
     }
   }
   return result;
+}
+
+//////////////////////////////////////////////////
+std::vector<std::string> Element::NameUniquenessExceptions()
+{
+  // We make exception for "plugin" when checking for name uniqueness.
+  return {"plugin"};
 }

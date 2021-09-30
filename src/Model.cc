@@ -28,6 +28,7 @@
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
 #include "Utils.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -207,10 +208,15 @@ Errors Model::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the model pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  if (!_sdf->HasUniqueChildNames())
+  for (const auto &[name, size] :
+       _sdf->CountNamedElements("", Element::NameUniquenessExceptions()))
   {
-    sdfwarn << "Non-unique names detected in XML children of model with name["
-            << this->Name() << "].\n";
+    if (size > 1)
+    {
+      sdfwarn << "Non-unique name[" << name << "] detected " << size
+              << " times in XML children of model with name[" << this->Name()
+              << "].\n";
+    }
   }
 
   // Set of implicit and explicit frame names in this model for tracking

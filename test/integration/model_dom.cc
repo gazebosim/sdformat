@@ -29,6 +29,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMModel, NotAModel)
@@ -374,3 +375,51 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_EQ("deep::deeper::deepest::deepest_link", body);
 }
 
+/////////////////////////////////////////////////
+TEST(DOMModel, LoadModelWithDuplicateChildNames)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  {
+    buffer.str("");
+    const std::string testFile =
+      sdf::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
+
+    // Load the SDF file
+    sdf::Root root;
+    auto errors = root.Load(testFile);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    // Check warning message
+    EXPECT_NE(
+        std::string::npos,
+        buffer.str().find("Non-unique name[attachment] detected 2 times in XML "
+                          "children of model with name[link_joint_same_name]"))
+        << buffer.str();
+  }
+
+  // Check that there's an exception for "plugin" elements
+  {
+    buffer.str("");
+    const std::string testFile =
+      sdf::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
+
+    // Load the SDF file
+    sdf::Root root;
+    auto errors = root.Load(testFile);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  }
+}
