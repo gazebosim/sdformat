@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="world_duplicate_plugins">
+    <model name="test_model">
+      <link name="link1">
+        <sensor name="test_sensor" type="imu">
+          <plugin name="sensor_dup_name" filename="test/file/name"/>
+          <plugin name="sensor_dup_name" filename="test/file/name"/>
+        </sensor>
+      </link>
+    </model>
+
+    <plugin name="dup_name" filename="test/file/name"/>
+    <plugin name="dup_name" filename="test/file/name"/>
+  </world>
+</sdf>

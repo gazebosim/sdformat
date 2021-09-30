@@ -2310,7 +2310,8 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   if (!shouldValidateElement(_elem))
     return true;
 
-  bool result = _elem->HasUniqueChildNames();
+  bool result =
+      _elem->HasUniqueChildNames("", Element::NameUniquenessExceptions());
   if (!result)
   {
     std::cerr << "Error: Non-unique names detected in "
