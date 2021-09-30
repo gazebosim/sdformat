@@ -562,7 +562,7 @@ namespace sdf
 
     /// \brief List of elements to which exceptions are made when checking for
     /// name uniqueness.
-    /// \return List of element types that are allowed to name collisions.
+    /// \return List of element types that are allowed to have name collisions.
     public: static std::vector<std::string> NameUniquenessExceptions();
 
     /// \brief Generate a string (XML) representation of this object.
