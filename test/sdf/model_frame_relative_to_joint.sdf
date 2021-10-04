@@ -3,6 +3,9 @@
   <model name="model_frame_relative_to_joint">
     <link name="P">
       <pose>1 0 0 0 0 0</pose>
+      <inertial>
+        <pose relative_to="">0 0 0 0 0 0</pose>
+      </inertial>
       <collision name="P1">
         <pose>0 0 10 0 0 0</pose>
         <geometry>

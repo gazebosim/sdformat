@@ -48,7 +48,9 @@ std::string getRepeatedXmlString()
   std::stringstream stream;
   stream << "<elemA attrA='A'>"
          << "  <elemB attrB='B'>"
-         << "    <elemC attrC='C'>"
+         << "    <elemC attrC='C' attrEmpty=''>"
+         << "      <elemD></elemD>"
+         << "      <elemD attrD='D'></elemD>"
          << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
          << "      <elemD>D</elemD>"
@@ -558,6 +560,7 @@ TEST(Converter, RemoveElement)
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
   EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -606,6 +609,7 @@ TEST(Converter, RemoveDescendantElement)
   sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
 
   tinyxml2::XMLElement *convertedElem = xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
 
   EXPECT_STREQ(convertedElem->Name(), "elemA");
   convertedElem = convertedElem->FirstChildElement();
@@ -618,6 +622,139 @@ TEST(Converter, RemoveDescendantElement)
   ASSERT_TRUE(convertedElem == nullptr);
 }
 
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing empty elements only
+TEST(Converter, RemoveEmptyElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getRepeatedXmlString();
+
+  // Verify the xml
+  tinyxml2::XMLDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemA");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemB");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemC");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemD");
+
+  // Test removing empty elements
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <remove_empty element='elemD'/>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  tinyxml2::XMLDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
+  EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_NE(nullptr, convertedElem);
+
+  auto elemD = convertedElem->FirstChildElement("elemD");
+  ASSERT_NE(nullptr, elemD);
+
+  // first <elemD/> should have an attribute but no value
+  EXPECT_EQ(nullptr, elemD->GetText());
+  ASSERT_NE(nullptr, elemD->Attribute("attrD"));
+  EXPECT_EQ("D", std::string(elemD->Attribute("attrD")));
+
+  // subsequent <elemD/> should have value "D"
+  elemD = elemD->NextSiblingElement("elemD");
+  while (elemD)
+  {
+    std::string elemValue = elemD->GetText();
+    EXPECT_EQ(elemValue, "D");
+    elemD = elemD->NextSiblingElement("elemD");
+  }
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working with descendant_name
+/// Test removing empty elements only
+TEST(Converter, RemoveEmptyDescendantElement)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getRepeatedXmlString();
+
+  // Verify the xml
+  tinyxml2::XMLDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemA");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemB");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemC");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemD");
+
+  // Test removing empty elements
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert descendant_name='elemC'>"
+                << "    <remove_empty element='elemD'/>"
+                << "  </convert>"
+                << "</convert>";
+  tinyxml2::XMLDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  tinyxml2::XMLElement *convertedElem = xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
+  EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_NE(nullptr, convertedElem);
+
+
+  auto elemD = convertedElem->FirstChildElement("elemD");
+  ASSERT_NE(nullptr, elemD);
+
+  // first <elemD/> should have an attribute but no value
+  EXPECT_EQ(nullptr, elemD->GetText());
+  ASSERT_NE(nullptr, elemD->Attribute("attrD"));
+  EXPECT_EQ("D", std::string(elemD->Attribute("attrD")));
+
+  // subsequent <elemD/> should have value "D"
+  elemD = elemD->NextSiblingElement("elemD");
+  while (elemD)
+  {
+    std::string elemValue = elemD->GetText();
+    EXPECT_EQ(elemValue, "D");
+    elemD = elemD->NextSiblingElement("elemD");
+  }
+}
+
+////////////////////////////////////////////////////
 TEST(Converter, RemoveDescendantNestedElement)
 {
   // Set up an xml string for testing
@@ -673,6 +810,7 @@ TEST(Converter, RemoveDescendantNestedElement)
 
   EXPECT_STREQ(xmlDocOut.CStr(), expectedXmlDocOut.CStr());
 }
+
 ////////////////////////////////////////////////////
 /// Ensure that Converter ignores descendants of <plugin> or namespaced elements
 TEST(Converter, DescendantIgnorePluginOrNamespacedElements)
@@ -805,7 +943,7 @@ TEST(Converter, RemoveAttr)
   ASSERT_NE(nullptr, childElem);
   EXPECT_STREQ(childElem->Name(), "elemD");
 
-  // Test adding element
+  // Test removing attrC attributes
   // Set up a convert file
   std::stringstream convertStream;
   convertStream << "<convert name='elemA'>"
@@ -828,6 +966,59 @@ TEST(Converter, RemoveAttr)
   convertedElem = convertedElem->FirstChildElement("elemC");
   ASSERT_NE(nullptr, convertedElem);
   EXPECT_TRUE(convertedElem->Attribute("attrC") == nullptr);
+  convertedElem = convertedElem->FirstChildElement("elemD");
+  ASSERT_NE(nullptr, convertedElem);
+}
+
+////////////////////////////////////////////////////
+/// Ensure that Converter::Remove function is working
+/// Test removing empty attributes only
+TEST(Converter, RemoveEmptyAttr)
+{
+  // Set up an xml string for testing
+  std::string xmlString = getRepeatedXmlString();
+
+  // Verify the xml
+  tinyxml2::XMLDocument xmlDoc;
+  xmlDoc.Parse(xmlString.c_str());
+  tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemA");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemB");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemC");
+  childElem = childElem->FirstChildElement();
+  ASSERT_NE(nullptr, childElem);
+  EXPECT_STREQ(childElem->Name(), "elemD");
+
+  // Test adding element
+  // Set up a convert file
+  std::stringstream convertStream;
+  convertStream << "<convert name='elemA'>"
+                << "  <convert name='elemB'>"
+                << "    <convert name='elemC'>"
+                << "      <remove_empty attribute='attrC'/>"
+                << "      <remove_empty attribute='attrEmpty'/>"
+                << "    </convert>"
+                << "  </convert>"
+                << "</convert>";
+  tinyxml2::XMLDocument convertXmlDoc;
+  convertXmlDoc.Parse(convertStream.str().c_str());
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
+  EXPECT_STREQ(convertedElem->Name(), "elemA");
+  convertedElem = convertedElem->FirstChildElement();
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_STREQ(convertedElem->Name(), "elemB");
+  EXPECT_NE(nullptr, convertedElem->FirstChildElement("elemC"));
+  convertedElem = convertedElem->FirstChildElement("elemC");
+  ASSERT_NE(nullptr, convertedElem);
+  EXPECT_NE(nullptr, convertedElem->Attribute("attrC"));
+  EXPECT_EQ(nullptr, convertedElem->Attribute("attrEmpty"));
   convertedElem = convertedElem->FirstChildElement("elemD");
   ASSERT_NE(nullptr, convertedElem);
 }
