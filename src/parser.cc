@@ -2244,12 +2244,24 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
-  bool result = true;
-
-  auto checkModelJointParentChildNames = [](
-      const sdf::Model *_model) -> bool
+  Errors errors;
+  checkJointParentChildLinkNames(_root, errors);
+  if (!errors.empty())
   {
-    bool modelResult = true;
+    std::cerr << "Error when attempting to resolve child link name:"
+              << std::endl
+              << errors;
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+void checkJointParentChildLinkNames(const sdf::Root *_root, Errors &_errors)
+{
+  auto checkModelJointParentChildNames = [](
+      const sdf::Model *_model, Errors &_errors) -> void
+  {
     for (uint64_t j = 0; j < _model->JointCount(); ++j)
     {
       auto joint = _model->JointByIndex(j);
@@ -2259,23 +2271,18 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
           !_model->JointNameExists(parentName) &&
           !_model->FrameNameExists(parentName))
       {
-        std::cerr << "Error: parent frame with name[" << parentName
-                  << "] specified by joint with name[" << joint->Name()
-                  << "] not found in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
+        _errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+          "parent frame with name[" + parentName +
+          "] specified by joint with name[" + joint->Name() +
+          "] not found in model with name[" + _model->Name() + "]."});
       }
 
       const std::string &childName = joint->ChildLinkName();
       if (childName == "world")
       {
-        std::cerr << "Error: invalid child name[world"
-                  << "] specified by joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
+        _errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "invalid child name[world] specified by joint with name[" +
+          joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
       if (!_model->LinkNameExists(childName) &&
@@ -2283,75 +2290,54 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
           !_model->FrameNameExists(childName) &&
           !_model->ModelNameExists(childName))
       {
-        std::cerr << "Error: child frame with name[" << childName
-                  << "] specified by joint with name[" << joint->Name()
-                  << "] not found in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
+        _errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "child frame with name[" + childName +
+          "] specified by joint with name[" + joint->Name() +
+          "] not found in model with name[" + _model->Name() + "]."});
       }
 
       if (childName == joint->Name())
       {
-        std::cerr << "Error: joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "] must not specify its own name as the child frame."
-                  << std::endl;
-        modelResult = false;
+        _errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "joint with name[" + joint->Name() +
+          "] in model with name[" + _model->Name() +
+          "] must not specify its own name as the child frame."});
       }
 
       if (parentName == joint->Name())
       {
-        std::cerr << "Error: joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "] must not specify its own name as the parent frame."
-                  << std::endl;
-        modelResult = false;
+        _errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+          "joint with name[" + joint->Name() +
+          "] in model with name[" + _model->Name() +
+          "] must not specify its own name as the parent frame."});
       }
 
       // Check that parent and child frames resolve to different links
       std::string resolvedChildName;
       std::string resolvedParentName;
-      auto errors = joint->ResolveChildLink(resolvedChildName);
-      if (!errors.empty())
-      {
-        std::cerr << "Error when attempting to resolve child link name:"
-                  << std::endl;
-        for (auto error : errors)
-        {
-          std::cerr << error.Message() << std::endl;
-        }
-        modelResult = false;
-      }
-      errors = joint->ResolveParentLink(resolvedParentName);
-      if (!errors.empty())
-      {
-        std::cerr << "Error when attempting to resolve parent link name:"
-                  << std::endl;
-        for (auto error : errors)
-        {
-          std::cerr << error.Message() << std::endl;
-        }
-        modelResult = false;
-      }
+
+      auto resolveErrors = joint->ResolveChildLink(resolvedChildName);
+      _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
+
+      resolveErrors = joint->ResolveParentLink(resolvedParentName);
+      _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
+
       if (resolvedChildName == resolvedParentName)
       {
-        std::cerr << "Error: joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "] specified parent frame [" << parentName
-                  << "] and child frame [" << childName
-                  << "] that both resolve to [" << resolvedChildName
-                  << "], but they should resolve to different values."
-                  << std::endl;
-        modelResult = false;
+        _errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
+          "joint with name[" + joint->Name() +
+          "] in model with name[" + _model->Name() +
+          "] specified parent frame [" + parentName +
+          "] and child frame [" + childName +
+          "] that both resolve to [" + resolvedChildName +
+          "], but they should resolve to different values."});
       }
     }
-    return modelResult;
   };
 
   if (_root->Model())
   {
-    result = checkModelJointParentChildNames(_root->Model()) && result;
+    checkModelJointParentChildNames(_root->Model(), _errors);
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -2360,11 +2346,9 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
     for (uint64_t m = 0; m < world->ModelCount(); ++m)
     {
       auto model = world->ModelByIndex(m);
-      result = checkModelJointParentChildNames(model) && result;
+      checkModelJointParentChildNames(model, _errors);
     }
   }
-
-  return result;
 }
 
 //////////////////////////////////////////////////
