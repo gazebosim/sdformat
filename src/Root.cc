@@ -325,6 +325,10 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
     }
   }
 
+  // Check that Joint parent and child names resolve to valid and
+  // different frames.
+  checkJointParentChildLinkNames(this, errors);
+
   return errors;
 }
 
