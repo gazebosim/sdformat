@@ -257,7 +257,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Joint with name[joint] must "
-                          "specify different link names for parent and child, "
+                          "specify different frame names for parent and child, "
                           "while [link] was specified for both."),
               std::string::npos) << output;
   }
