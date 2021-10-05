@@ -121,8 +121,6 @@ namespace sdf
     /// \brief Destructor
     public: ~SDF();
     public: void PrintDescription();
-    public: void PrintValues();
-    public: void PrintValues(const std::string &_option);
     public: void PrintDoc();
     public: void Write(const std::string &_filename);
 

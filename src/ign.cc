@@ -24,6 +24,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
 #include "sdf/parser.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/system_util.hh"
 
 #include "FrameSemantics.hh"
@@ -154,7 +155,6 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
   }
 
   sdf->PrintValues();
-
   return 0;
 }
 
@@ -183,7 +183,18 @@ extern "C" SDFORMAT_VISIBLE int cmdPrintWithOption(
     return -1;
   }
 
-  sdf->PrintValues(std::string(_option));
+  const std::string optionStr(_option);
+  sdf::SDF_VERSION_NAMESPACE::PrintConfig config;
+  if (optionStr == "in_degrees")
+  {
+    config.SetRotationInDegrees(true);
+  }
+  else if (optionStr == "snap_to_degrees")
+  {
+    config.SetRotationSnapToDegrees(true);
+  }
+
+  sdf->PrintValues(config);
   return 0;
 }
 

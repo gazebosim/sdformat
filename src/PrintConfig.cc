@@ -17,10 +17,8 @@
 
 #include "sdf/PrintConfig.hh"
 
-namespace sdf
-{
-inline namespace SDF_VERSION_NAMESPACE
-{
+using namespace sdf;
+
 /////////////////////////////////////////////////
 class PrintConfig::Implementation
 {
@@ -57,8 +55,4 @@ void PrintConfig::SetRotationSnapToDegrees(bool _value)
 bool PrintConfig::GetRotationSnapToDegrees() const
 {
   return this->dataPtr->rotationSnapToDegrees;
-}
-
-/////////////////////////////////////////////////
-}
 }
