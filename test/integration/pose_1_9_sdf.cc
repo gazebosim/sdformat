@@ -156,6 +156,16 @@ TEST(Pose1_9, PoseExpressionFormats)
     EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0),
               link->Inertial().Pose());
   }
+
+  model = world->ModelByIndex(18);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_empty_quat_xyz", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(19);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_empty_quat_xyz_degrees_false", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
 }
 
 //////////////////////////////////////////////////
@@ -271,31 +281,6 @@ TEST(Pose1_9, BadModelPoses)
 
     EXPECT_PRED2(contains, buffer.str(),
         "//pose[@degrees='true'] does not apply when parsing quaternions");
-  }
-
-  {
-    buffer.str("");
-    std::ostringstream stream;
-    stream
-        << "<sdf version='1.9'>"
-        << "  <model name='quat_xyzw_with_empty_value'>"
-        << "    <pose rotation_format='quat_xyzw'></pose>"
-        << "    <link name='link'/>"
-        << "  </model>"
-        << "</sdf>";
-
-    sdf::SDFPtr sdfParsed(new sdf::SDF());
-    sdf::init(sdfParsed);
-    sdf::Errors errors;
-    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
-    EXPECT_FALSE(errors.empty());
-
-    // Setting //pose[@rotation_format='quat_xyzw'] should fail here as
-    // the defined default value from sdf/1.9/pose.sdf is '0 0 0 0 0 0'
-    // which is only a 6-tuple.
-    EXPECT_PRED2(contains, buffer.str(),
-        "//pose[@rotation_format='quat_xyzw'] must have 7 values, "
-        "but 6 were found instead in '0 0 0 0 0 0'");
   }
 }
 
