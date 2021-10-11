@@ -461,7 +461,12 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   const std::size_t defaultDesiredSize = 6u;
   std::size_t desiredSize = defaultDesiredSize;
 
-  std::string defaultValueStr = "0 0 0 0 0 0";
+  const std::string defaultEulerRPYValueStr = "0 0 0 0 0 0";
+  const std::string defaultQuatXYZWValueStr = "0 0 0 0 0 0 1";
+  std::string defaultValueStr = defaultEulerRPYValueStr;
+
+  // This is the default string defined in the pose description.
+  const std::string emptyValueStrDefault = defaultEulerRPYValueStr;
 
   for (const auto &p : _attributes)
   {
@@ -487,7 +492,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       else if (rotationFormat == "quat_xyzw")
       {
         desiredSize = 7u;
-        defaultValueStr = "0 0 0 0 0 0 1";
+        defaultValueStr = defaultQuatXYZWValueStr;
       }
       else
       {
@@ -506,7 +511,15 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     return false;
   }
 
-  std::string input = _input.empty() ? defaultValueStr : _input;
+  // _input can either be empty (when the default value is an empty string), or
+  // the default value specified in the pose description file. We will need to
+  // change the default values depending on the @rotation_format attribute.
+  std::string input = _input;
+  if (_input.empty() || _input == emptyValueStrDefault)
+  {
+    input = defaultValueStr;
+  }
+
   StringStreamClassicLocale ss(input);
   std::string token;
   std::array<double, 7> values;
