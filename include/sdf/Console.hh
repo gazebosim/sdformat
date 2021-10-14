@@ -92,6 +92,16 @@ namespace sdf
                           const std::string &_file,
                           unsigned int _line, int _color);
 
+      /// \brief Set the stream object.
+      /// \param[in] _stream Pointer to an output stream. This can be
+      /// useful for redirecting the output, for example, to a std::stringstream
+      /// for testing.
+      public: void SetStream(std::ostream *_stream);
+
+      /// \brief Get the current stream object.
+      /// \return Pointer to current stream object.
+      public: std::ostream *GetStream();
+
       /// \brief The ostream to log to; can be NULL/nullptr.
       private: std::ostream *stream;
     };
@@ -127,6 +137,18 @@ namespace sdf
     public: ConsoleStream &Log(const std::string &lbl,
                                const std::string &file,
                                unsigned int line);
+
+    /// \brief Get the current message stream object. This can be
+    /// useful for redirecting the output, for example, to a std::stringstream
+    /// for testing.
+    /// \return Mutable reference to current message stream object.
+    public: ConsoleStream &GetMsgStream();
+
+    /// \brief Get the current log stream object. This can be
+    /// useful for redirecting the output, for example, to a std::stringstream
+    /// for testing.
+    /// \return Mutable reference to current log stream object.
+    public: ConsoleStream &GetLogStream();
 
     /// \internal
     /// \brief Pointer to private data.
