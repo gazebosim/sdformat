@@ -661,6 +661,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
   tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
+    sdfdbg << "No <sdf> element in file[" << _source << "]\n";
     return false;
   }
 
@@ -675,7 +676,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     _sdf->SetFilePath(_source);
   }
 
-  if (sdfNode && sdfNode->Attribute("version"))
+  if (sdfNode->Attribute("version"))
   {
     if (_sdf->OriginalVersion().empty())
     {
@@ -737,15 +738,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
   }
   else
   {
-    if (!sdfNode)
-    {
-      sdfdbg << "No <sdf> element in file[" << _source << "]\n";
-    }
-    else if (!sdfNode->Attribute("version"))
-    {
-      sdfdbg << "SDF <sdf> element has no version in file["
-             << _source << "]\n";
-    }
+    sdfdbg << "SDF <sdf> element has no version in file["
+           << _source << "]\n";
     return false;
   }
 
@@ -767,6 +761,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
   tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
+    sdfdbg << "SDF has no <sdf> element\n";
     return false;
   }
 
@@ -775,7 +770,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     _sdf->SetFilePath(_source);
   }
 
-  if (sdfNode && sdfNode->Attribute("version"))
+  if (sdfNode->Attribute("version"))
   {
     if (_sdf->OriginalVersion().empty())
     {
@@ -838,14 +833,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
   }
   else
   {
-    if (!sdfNode)
-    {
-      sdfdbg << "SDF has no <sdf> element\n";
-    }
-    else if (!sdfNode->Attribute("version"))
-    {
-      sdfdbg << "<sdf> element has no version\n";
-    }
+    sdfdbg << "<sdf> element has no version\n";
     return false;
   }
 
