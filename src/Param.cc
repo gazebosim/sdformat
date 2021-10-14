@@ -60,6 +60,10 @@ namespace sdf
 }
 
 //////////////////////////////////////////////////
+std::string GetPoseAsString(const PrintConfig& _config,
+    const ignition::math::Pose3d &_value);
+
+//////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
              const std::string &_description)
@@ -302,10 +306,24 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString(const PrintConfig &_config) const
 {
-  (void)_config;
-  StringStreamClassicLocale ss;
-  ss << this->dataPtr->strValue;
-  return ss.str();
+  std::string outputStr;
+  if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
+      this->dataPtr->typeName == "pose" ||
+      this->dataPtr->typeName == "Pose")
+  {
+    if (!_config.GetRotationInDegrees() && !_config.GetRotationSnapToDegrees())
+      return this->dataPtr->strValue;
+
+    ignition::math::Pose3d val;
+    SDF_ASSERT(this->Get<ignition::math::Pose3d>(val), "Invalid pose value");
+    return GetPoseAsString(_config, val);
+  }
+  else
+  {
+    outputStr = this->dataPtr->strValue;
+  }
+
+  return outputStr;
 }
 
 //////////////////////////////////////////////////
@@ -942,4 +960,57 @@ bool Param::ValidateValue() const
         }
         return true;
       }, this->dataPtr->value);
+}
+
+//////////////////////////////////////////////////
+/// \brief Helper function for GetAsString for pose.
+/// \param[in] _config Printing configuration for the output string.
+/// \param[in] _value The pose value of the param.
+std::string GetPoseAsString(const PrintConfig& _config,
+    const ignition::math::Pose3d &_value)
+{
+  StringStreamClassicLocale ss;
+  if (_config.GetRotationInDegrees())
+  {
+    ss << _value.Pos() << " ";
+    ss << IGN_RTOD(_value.Roll()) << " "
+       << IGN_RTOD(_value.Pitch()) << " "
+       << IGN_RTOD(_value.Yaw());
+  }
+  else if (_config.GetRotationSnapToDegrees())
+  {
+    // Returns a snapped value if it is within epsilon distance of multiples
+    // of interval, otherwise the orginal value is returned.
+    auto snapToInterval =
+        [](double _val, double _interval, double _epsilon)
+    {
+      int quotient = _val / _interval;
+      double remainder = _val - (quotient * _interval);
+
+      if (abs(remainder) < _epsilon)
+      {
+        return _interval * quotient;
+      }
+      else
+      {
+        return _val;
+      }
+    };
+
+    // Handle singularities
+    double pitch = snapToInterval(IGN_RTOD(_value.Pitch()), 5, 0.01);
+    if (abs(abs(pitch) - 90) < 1e-9)
+      pitch = IGN_RTOD(_value.Pitch());
+
+    ss << _value.Pos() << " ";
+    ss << snapToInterval(IGN_RTOD(_value.Roll()), 5, 0.01) << " "
+       << pitch << " "
+       << snapToInterval(IGN_RTOD(_value.Yaw()), 5, 0.01);
+  }
+  else
+  {
+    ss << _value.Pos() << " " << _value.Rot().Euler();
+  }
+
+  return ss.str();
 }

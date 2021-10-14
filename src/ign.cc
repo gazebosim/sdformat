@@ -18,6 +18,7 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <string.h>
 
 #include "sdf/sdf_config.h"
