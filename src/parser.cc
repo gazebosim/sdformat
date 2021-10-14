@@ -1149,7 +1149,7 @@ static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 /// \param[out] _errors Captures errors found during parsing.
 /// \return True if the file name is successfully resolved, false on error.
 static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
-    const sdf::ParserConfig &_config, const std::string _includeXmlPath,
+    const sdf::ParserConfig &_config, const std::string &_includeXmlPath,
     const std::string &_errorSourcePath, std::string &_fileName,
     Errors &_errors)
 {

@@ -258,7 +258,7 @@ std::pair<const Link *, std::string>
 /// be modified.
 static Errors resolveModelPoseWithPlacementFrame(
     const ignition::math::Pose3d &_rawPose,
-    const std::string _placementFrame,
+    const std::string &_placementFrame,
     const sdf::ScopedGraph<PoseRelativeToGraph> &_graph,
     ignition::math::Pose3d &_resolvedPose)
 {
