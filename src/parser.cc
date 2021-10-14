@@ -2245,7 +2245,7 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
   Errors errors;
-  checkJointParentChildLinkNames(_root, errors);
+  checkJointParentChildNames(_root, errors);
   if (!errors.empty())
   {
     std::cerr << "Error when attempting to resolve child link name:"
@@ -2257,7 +2257,7 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
 }
 
 //////////////////////////////////////////////////
-void checkJointParentChildLinkNames(const sdf::Root *_root, Errors &_errors)
+void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
 {
   auto checkModelJointParentChildNames = [](
       const sdf::Model *_model, Errors &errors) -> void
