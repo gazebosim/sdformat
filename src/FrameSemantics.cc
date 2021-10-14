@@ -44,7 +44,6 @@ inline namespace SDF_VERSION_NAMESPACE {
 // Helpful functions when debugging in gdb
 void printGraph(const ScopedGraph<PoseRelativeToGraph> &_graph)
 {
-  std::stringstream ss;
   std::cout << _graph.Graph() << std::endl;
 }
 void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
