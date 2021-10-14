@@ -581,7 +581,7 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
   auto sdf = InitSDF();
   sdf->Root()->AddElementDescription(sdfTest->Root());
 
-  auto wrapInSdf = [](std::string _xml) -> std::string
+  auto wrapInSdf = [](const std::string &_xml) -> std::string
   {
     std::stringstream ss;
     ss << "<sdf version=\"" << SDF_PROTOCOL_VERSION << "\"><test>" << _xml
