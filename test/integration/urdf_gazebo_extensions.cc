@@ -27,8 +27,7 @@
 TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 {
   const std::string urdfTestFile =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                              "urdf_gazebo_extensions.urdf");
+      sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);

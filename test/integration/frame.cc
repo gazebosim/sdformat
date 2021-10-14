@@ -301,8 +301,7 @@ TEST(Frame, StateFrame)
 TEST(Frame, IncludeRelativeTo)
 {
   const std::string MODEL_PATH =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model", "box");
+    sdf::testing::TestFile("integration", "model", "box");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;
@@ -348,8 +347,7 @@ TEST(Frame, IncludeRelativeTo)
 TEST(Frame, IncludeRelativeToEmptyPose)
 {
   const std::string MODEL_PATH =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model", "box");
+    sdf::testing::TestFile("integration", "model", "box");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;
@@ -415,8 +413,7 @@ TEST(Frame, IncludeRelativeToEmptyPose)
 TEST(DOMFrame, LoadModelFramesAttachedTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_frame_attached_to.sdf");
+    sdf::testing::TestFile("sdf", "model_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -475,7 +472,7 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
 TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "model_frame_invalid_attached_to.sdf");
 
   // Load the SDF file
@@ -577,7 +574,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
 TEST(DOMFrame, LoadModelFramesAttachedToJoint)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "model_frame_attached_to_joint.sdf");
 
   // Load the SDF file
@@ -642,7 +639,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
 TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "model_frame_attached_to_nested_model.sdf");
 
   // Load the SDF file
@@ -691,7 +688,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToNestedModel)
 TEST(DOMFrame, LoadWorldFramesAttachedTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "world_frame_attached_to.sdf");
 
   // Load the SDF file
@@ -758,7 +755,7 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
 TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "world_frame_invalid_attached_to.sdf");
 
   // Load the SDF file
@@ -862,7 +859,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
 TEST(DOMFrame, LoadModelFramesRelativeTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "model_frame_relative_to.sdf");
 
   // Load the SDF file
@@ -995,7 +992,7 @@ TEST(DOMFrame, LoadModelFramesRelativeTo)
 TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "model_invalid_frame_relative_to.sdf");
 
   // Load the SDF file
@@ -1023,7 +1020,7 @@ TEST(DOMFrame, LoadModelFramesInvalidRelativeTo)
 TEST(DOMFrame, LoadModelFramesRelativeToJoint)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "model_frame_relative_to_joint.sdf");
 
   // Load the SDF file
@@ -1157,7 +1154,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
 TEST(DOMFrame, LoadWorldFramesRelativeTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "world_frame_relative_to.sdf");
 
   // Load the SDF file
@@ -1223,7 +1220,7 @@ TEST(DOMFrame, LoadWorldFramesRelativeTo)
 TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+    sdf::testing::TestFile("sdf",
         "world_frame_invalid_relative_to.sdf");
 
   // Load the SDF file
@@ -1249,8 +1246,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidRelativeTo)
 TEST(DOMFrame, WorldIncludeModel)
 {
   const std::string MODEL_PATH =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model", "box");
+    sdf::testing::TestFile("integration", "model", "box");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;

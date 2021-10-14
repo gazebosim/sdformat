@@ -34,14 +34,13 @@
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
+
 #include "test_config.h"
 
 //////////////////////////////////////////////////
 TEST(DOMGeometry, Shapes)
 {
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "shapes.sdf");
+  const auto testFile = sdf::testing::TestFile("sdf", "shapes.sdf");
 
   // Load the SDF file
   sdf::Root root;

@@ -1887,13 +1887,11 @@ TEST(Converter, MuchNewerVersion)
 
 static std::string ConvertDoc_15_16()
 {
-  return sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.6",
-                                 "1_5.convert");
+  return sdf::testing::SourceFile("sdf", "1.6", "1_5.convert");
 }
 static std::string ConvertDoc_16_17()
 {
-  return sdf::filesystem::append(PROJECT_SOURCE_PATH, "sdf", "1.7",
-                                 "1_6.convert");
+  return sdf::testing::SourceFile("sdf", "1.7", "1_6.convert");
 }
 
 /////////////////////////////////////////////////

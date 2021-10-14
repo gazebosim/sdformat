@@ -26,8 +26,8 @@
 /////////////////////////////////////////////////
 TEST(SDFParser, ForceTorqueSensorTest)
 {
-  const std::string sdfTestFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "force_torque_sensor.urdf");
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "force_torque_sensor.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);

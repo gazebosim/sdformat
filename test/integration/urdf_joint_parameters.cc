@@ -26,8 +26,8 @@
 /////////////////////////////////////////////////
 TEST(SDFParser, JointAxisParameters)
 {
-  const std::string sdfTestFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "urdf_joint_parameters.urdf");
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "urdf_joint_parameters.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);

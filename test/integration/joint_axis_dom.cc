@@ -33,8 +33,7 @@
 TEST(DOMJointAxis, Complete)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "joint_complete.sdf");
+    sdf::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -114,8 +113,7 @@ TEST(DOMJointAxis, Complete)
 TEST(DOMJointAxis, XyzExpressedIn)
 {
   const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "model_joint_axis_expressed_in.sdf");
+    sdf::testing::TestFile("sdf", "model_joint_axis_expressed_in.sdf");
 
   // Load the SDF file
   sdf::Root root;
