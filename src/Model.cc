@@ -397,9 +397,18 @@ Errors Model::Load(ElementPtr _sdf)
     errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
                                 setPoseRelativeToGraphErrors.end());
   }
+  // Pass graph pointer to joint and check parent names
   for (auto &joint : this->dataPtr->joints)
   {
     joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+    const std::string &parentLinkName = joint.ParentLinkName();
+    if (parentLinkName != "world" && !this->LinkByName(parentLinkName))
+    {
+      errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+          "parent link with name[" + parentLinkName +
+          "] specified by joint with name[" + joint.Name() +
+          "] not found in model with name[" + this->Name() + "]."});
+    }
   }
   for (auto &frame : this->dataPtr->frames)
   {
