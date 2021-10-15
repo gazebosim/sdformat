@@ -243,7 +243,11 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
     // Load the SDF file
     sdf::Root root;
     auto errors = root.Load(testFile);
-    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_TRUE(errors.empty());
+    for (const auto &err : errors)
+    {
+      std::cout << err << std::endl;
+    }
 
     // Check warning message
     EXPECT_NE(std::string::npos,
@@ -260,7 +264,11 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
     // Load the SDF file
     sdf::Root root;
     auto errors = root.Load(testFile);
-    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_TRUE(errors.empty());
+    for (const auto &err : errors)
+    {
+      std::cout << err << std::endl;
+    }
     EXPECT_TRUE(buffer.str().empty()) << buffer.str();
   }
 }
