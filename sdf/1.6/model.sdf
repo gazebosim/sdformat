@@ -9,10 +9,9 @@
   <element name="static" type="bool" default="false" required="0">
     <description>
       If set to true, the model is immovable; i.e., a dynamics engine will not
-      update its position. This will also overwrite this model's `@canonical_link`
-      and instead attach the model's implicit frame to the world's implicit frame.
-      This holds even if this model is nested (or included) by another model
-      instead of being a direct child of `//world`.
+      update its position. The model's implicit frame will be attached to the
+      world's implicit frame. This holds even if this model is nested (or
+      included) by another model.
     </description>
   </element>
 
