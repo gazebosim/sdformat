@@ -944,7 +944,7 @@ static bool contains(const std::string &_a, const std::string &_b)
 }
 
 /////////////////////////////////////////////////
-TEST(print, PoseRotationPrintingOptions)
+TEST(print, PoseRotationPrintingOptionsInRadians)
 {
   std::string path =
     std::string(PROJECT_SOURCE_PATH) + "/test/sdf/rotations_in_radians.sdf";
@@ -960,14 +960,47 @@ TEST(print, PoseRotationPrintingOptions)
       IgnCommand() + " sdf -p in_degrees " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
-               "<pose degrees='1'>1 2 3 30.0001 45.0001 60.0001</pose>");
+               "<pose degrees='1' rotation_format='euler_rpy'>"
+               "1 2 3 30.0001 45.0001 60.0001</pose>");
 
   // Printing with snap_to_degrees
   output = custom_exec_str(
       IgnCommand() + " sdf -p snap_to_degrees " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
-               "<pose degrees='1'>1 2 3 30 45 60</pose>");
+               "<pose degrees='1' rotation_format='euler_rpy'>"
+               "1 2 3 30 45 60</pose>");
+}
+
+/////////////////////////////////////////////////
+TEST(print, PoseRotationPrintingOptionsInQuaternions)
+{
+  std::string path =
+    std::string(PROJECT_SOURCE_PATH) + "/test/sdf/rotations_in_quaternions.sdf";
+
+  // Default printing
+  std::string output = custom_exec_str(
+      IgnCommand() + " sdf -p" + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose rotation_format='quat_xyzw'>"
+               "1 2 3 0.0222595 0.439681 0.360424 0.822363</pose>");
+
+  // Printing with in_degrees
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p in_degrees " + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='1' rotation_format='euler_rpy'>"
+               "1 2 3 30.0001 45.0001 60.0001</pose>");
+
+  // Printing with snap_to_degrees
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p snap_to_degrees " + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='1' rotation_format='euler_rpy'>"
+               "1 2 3 30 45 60</pose>");
 }
 
 /////////////////////////////////////////////////

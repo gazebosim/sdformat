@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+<model name="parent_model">
+  <link name="link1">
+    <pose rotation_format='quat_xyzw'>
+      1 2 3   0.0222595 0.439681 0.360424 0.822363
+    </pose>
+  </link>
+</model>
+</sdf>

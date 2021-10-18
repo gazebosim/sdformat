@@ -559,6 +559,9 @@ void Element::PrintAttributes(bool _includeDefaultAttributes,
     {
       attributeExceptions.insert("degrees");
       _out << " " << "degrees='1'";
+
+      attributeExceptions.insert("rotation_format");
+      _out << " " << "rotation_format='euler_rpy'";
     }
   }
 
