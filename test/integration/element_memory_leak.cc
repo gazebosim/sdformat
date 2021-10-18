@@ -72,7 +72,7 @@ const std::string sdfString(
 int getMemoryUsage()
 {
   static const std::string getMemInfoPath =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "tools", "get_mem_info.py");
+      sdf::testing::SourceFile("tools", "get_mem_info.py");
   static const std::string pythonMeminfo("python3 " + getMemInfoPath);
 
   return std::stoi(custom_exec(pythonMeminfo));

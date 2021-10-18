@@ -31,8 +31,7 @@ void ParserStringConverter(const std::string &_version);
 /// Test conversion using the parser sdf file converter interface.
 TEST(ConverterIntegration, ParserFileConverter)
 {
-  std::string filename = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
-                                                 "integration", "audio.sdf");
+  const auto filename = sdf::testing::TestFile("integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
@@ -73,8 +72,8 @@ TEST(ConverterIntegration, ParserFileConverter)
 /// Convert to a previous SDF version
 TEST(ConverterIntegration, convertFileToNotLatestVersion)
 {
-  std::string filename = sdf::filesystem::append(PROJECT_SOURCE_PATH, "test",
-                                                 "integration", "audio.sdf");
+  const auto filename = sdf::testing::TestFile(
+      "integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);

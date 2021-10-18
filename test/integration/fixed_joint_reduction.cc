@@ -24,14 +24,10 @@
 
 #include "test_config.h"
 
-const char SDF_TEST_FILE[] =
-    "fixed_joint_reduction.urdf";
-const char SDF_TEST_FILE_COLLISION[] =
-    "fixed_joint_reduction_collision.urdf";
-const char SDF_TEST_FILE_SIMPLE[] =
-    "fixed_joint_reduction_simple.urdf";
-const char SDF_TEST_FILE_VISUAL[] =
-    "fixed_joint_reduction_visual.urdf";
+const char SDF_TEST_FILE[] = "fixed_joint_reduction.urdf";
+const char SDF_TEST_FILE_COLLISION[] = "fixed_joint_reduction_collision.urdf";
+const char SDF_TEST_FILE_SIMPLE[] = "fixed_joint_reduction_simple.urdf";
+const char SDF_TEST_FILE_VISUAL[] = "fixed_joint_reduction_visual.urdf";
 const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION[] =
     "fixed_joint_reduction_collision_visual_extension.urdf";
 const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_SDF[] =
@@ -43,8 +39,7 @@ const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF[] =
 
 static std::string GetFullTestFilePath(const char *_input)
 {
-  return sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                                 _input);
+  return sdf::testing::TestFile("integration", _input);
 }
 
 const double gc_tolerance = 1e-6;

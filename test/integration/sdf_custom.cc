@@ -26,8 +26,8 @@
 /////////////////////////////////////////////////
 TEST(SDFParser, CustomElements)
 {
-  const std::string sdfTestFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "custom_elems_attrs.sdf");
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "custom_elems_attrs.sdf");
 
   sdf::Root root;
   EXPECT_TRUE(root.Load(sdfTestFile).empty());

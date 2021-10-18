@@ -45,12 +45,11 @@ bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
 /////////////////////////////////////////////////
 TEST(SDFParser, DisableFixedJointReductionTest)
 {
-  const std::string sdfFixedJntFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "fixed_joint_reduction.urdf");
+  const std::string sdfFixedJntFile =
+      sdf::testing::TestFile("integration", "fixed_joint_reduction.urdf");
 
-  const std::string sdfFixedJntNoLumpingFile =
-      sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                              "fixed_joint_reduction_disabled.urdf");
+  const std::string sdfFixedJntNoLumpingFile = sdf::testing::TestFile(
+      "integration", "fixed_joint_reduction_disabled.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);

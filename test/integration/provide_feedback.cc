@@ -26,8 +26,8 @@
 /////////////////////////////////////////////////
 TEST(SDFParser, ProvideFeedbackTest)
 {
-  const std::string sdfTestFile = sdf::filesystem::append(
-      PROJECT_SOURCE_PATH, "test", "integration", "provide_feedback.urdf");
+  const std::string sdfTestFile =
+      sdf::testing::TestFile("integration", "provide_feedback.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
