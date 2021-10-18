@@ -997,7 +997,7 @@ std::string GetPoseAsString(const PrintConfig& _config,
       }
     };
 
-    // Handle singularities
+    // Handle singularities at pitch 90 or -90 degrees.
     double pitch = snapToInterval(IGN_RTOD(_value.Pitch()), 5, 0.01);
     if (abs(abs(pitch) - 90) < 1e-9)
       pitch = IGN_RTOD(_value.Pitch());

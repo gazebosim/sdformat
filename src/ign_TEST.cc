@@ -946,8 +946,8 @@ static bool contains(const std::string &_a, const std::string &_b)
 /////////////////////////////////////////////////
 TEST(print, PoseRotationPrintingOptions)
 {
-  std::string path = PROJECT_SOURCE_PATH;
-  path += "/test/sdf/rotations_in_radians.sdf";
+  std::string path =
+    std::string(PROJECT_SOURCE_PATH) + "/test/sdf/rotations_in_radians.sdf";
 
   // Default printing
   std::string output = custom_exec_str(
@@ -957,14 +957,14 @@ TEST(print, PoseRotationPrintingOptions)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p in_degrees" + path + SdfVersion());
+      IgnCommand() + " sdf -p in_degrees " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
-               "<pose degrees='1'>1 2 3 30.0001 45.0001 60.00011</pose>");
+               "<pose degrees='1'>1 2 3 30.0001 45.0001 60.0001</pose>");
 
   // Printing with snap_to_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p snap_to_degrees" + path + SdfVersion());
+      IgnCommand() + " sdf -p snap_to_degrees " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1'>1 2 3 30 45 60</pose>");

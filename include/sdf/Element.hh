@@ -582,10 +582,18 @@ namespace sdf
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for printing values.
-    /// \param[out] _out the std::ostreamstream to write output to.
+    /// \param[out] _out the std::ostringstream to write output to.
     private: void PrintValuesImpl(const std::string &_prefix,
                                   bool _includeDefaultElements,
                                   bool _includeDefaultAttributes,
+                                  const PrintConfig &_config,
+                                  std::ostringstream &_out) const;
+
+    /// \brief Generate the string (XML) for the attributes.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for printing attributes.
+    /// \param[out] _out the std::ostringstream to write output to.
+    private: void PrintAttributes(bool _includeDefaultAttributes,
                                   const PrintConfig &_config,
                                   std::ostringstream &_out) const;
 
