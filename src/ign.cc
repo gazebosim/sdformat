@@ -133,7 +133,8 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
+extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
+    int in_degrees, int snap_to_degrees)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -155,7 +156,13 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
     return -1;
   }
 
-  sdf->PrintValues();
+  sdf::SDF_VERSION_NAMESPACE::PrintConfig config;
+  if (in_degrees != 0)
+    config.SetRotationInDegrees(true);
+  if (snap_to_degrees > 0)
+    config.SetRotationSnapToDegrees(static_cast<unsigned int>(snap_to_degrees));
+
+  sdf->PrintValues(config);
   return 0;
 }
 

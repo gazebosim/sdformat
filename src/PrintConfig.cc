@@ -16,6 +16,7 @@
 */
 
 #include "sdf/PrintConfig.hh"
+#include "sdf/Assert.hh"
 
 using namespace sdf;
 
@@ -24,7 +25,7 @@ class PrintConfig::Implementation
 {
   public: bool rotationInDegrees = false;
 
-  public: bool rotationSnapToDegrees = false;
+  public: std::optional<unsigned int> rotationSnapToDegrees = std::nullopt;
 };
 
 /////////////////////////////////////////////////
@@ -46,13 +47,16 @@ bool PrintConfig::GetRotationInDegrees() const
 }
 
 /////////////////////////////////////////////////
-void PrintConfig::SetRotationSnapToDegrees(bool _value)
+void PrintConfig::SetRotationSnapToDegrees(unsigned int _value)
 {
+  SDF_ASSERT((_value > 0 && _value <= 360),
+      "interval value to snap to must be larger than 0, "
+      "and less than or equal to 360");
   this->dataPtr->rotationSnapToDegrees = _value;
 }
 
 /////////////////////////////////////////////////
-bool PrintConfig::GetRotationSnapToDegrees() const
+std::optional<unsigned int> PrintConfig::GetRotationSnapToDegrees() const
 {
   return this->dataPtr->rotationSnapToDegrees;
 }

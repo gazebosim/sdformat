@@ -17,6 +17,7 @@
 #ifndef SDF_PRINTCONFIG_HH_
 #define SDF_PRINTCONFIG_HH_
 
+#include <optional>
 #include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/sdf_config.h"
@@ -44,16 +45,17 @@ class SDFORMAT_VISIBLE PrintConfig
   public: bool GetRotationInDegrees() const;
 
   /// \brief Sets the option for printing pose rotation in degrees as well as
-  /// snapping the rotation to commonly used angles of 45 degrees along axes
-  /// with a tolerance of 0.01 degrees, with the exception of singularities,
-  /// if set to true, otherwise they will be printed as radians by default.
-  public: void SetRotationSnapToDegrees(bool _value);
+  /// snapping the rotation to the desired interval, with a tolerance of
+  /// 0.01 degrees.
+  /// \param[in] Degrees interval to snap to. This value must be larger than 0
+  /// but less than or equal to 360, otherwise an exception will be thrown.
+  public: void SetRotationSnapToDegrees(unsigned int _interval);
 
-  /// \brief Gets the current option of whether pose rotations are printed in
-  /// degrees as well as snapping them to commonly used angles.
-  /// \return True if pose rotations are to be printed in degrees, as well as
-  /// snapping to commonly used angles, false otherwise.
-  public: bool GetRotationSnapToDegrees() const;
+  /// \brief Gets the current degree value that pose rotations will snap to when
+  /// printed.
+  /// \return The assigned degrees interval value to snap to. If it has not been
+  /// assigned, a nullopt will be returned.
+  public: std::optional<unsigned int> GetRotationSnapToDegrees() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

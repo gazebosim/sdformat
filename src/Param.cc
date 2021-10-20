@@ -977,7 +977,7 @@ std::string GetPoseAsString(const PrintConfig& _config,
        << IGN_RTOD(_value.Pitch()) << " "
        << IGN_RTOD(_value.Yaw());
   }
-  else if (_config.GetRotationSnapToDegrees())
+  else if (_config.GetRotationSnapToDegrees().has_value())
   {
     // Returns a snapped value if it is within epsilon distance of multiples
     // of interval, otherwise the orginal value is returned.
@@ -997,15 +997,12 @@ std::string GetPoseAsString(const PrintConfig& _config,
       }
     };
 
-    // Handle singularities at pitch 90 or -90 degrees.
-    double pitch = snapToInterval(IGN_RTOD(_value.Pitch()), 5, 0.01);
-    if (abs(abs(pitch) - 90) < 1e-9)
-      pitch = IGN_RTOD(_value.Pitch());
-
+    const double snapToDegrees =
+        static_cast<double>(_config.GetRotationSnapToDegrees().value());
     ss << _value.Pos() << " ";
-    ss << snapToInterval(IGN_RTOD(_value.Roll()), 5, 0.01) << " "
-       << pitch << " "
-       << snapToInterval(IGN_RTOD(_value.Yaw()), 5, 0.01);
+    ss << snapToInterval(IGN_RTOD(_value.Roll()), snapToDegrees, 0.01) << " "
+       << snapToInterval(IGN_RTOD(_value.Pitch()), snapToDegrees, 0.01) << " "
+       << snapToInterval(IGN_RTOD(_value.Yaw()), snapToDegrees, 0.01);
   }
   else
   {

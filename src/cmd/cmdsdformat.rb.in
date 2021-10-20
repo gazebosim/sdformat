@@ -31,7 +31,7 @@ require 'optparse'
 LIBRARY_NAME = '@library_location@'
 LIBRARY_VERSION = '@SDF_VERSION_FULL@'
 COMMON_OPTIONS =
-               "  -h [ --help ]                    Print this help message.\n"\
+               "  -h [ --help -]                    Print this help message.\n"\
                "  --force-version <VERSION>        Use a specific library version.\n"\
                '  --versions                       Show the available versions.'
 COMMANDS = {  'sdf' =>
@@ -42,7 +42,9 @@ COMMANDS = {  'sdf' =>
                        "  -d [ --describe ] [SPEC VERSION]                   Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -g [ --graph ] <pose, frame> arg                   Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                                     use only and the output may change without any promise of stability)\n" +
-                       "  -p [ --print ] <in_degrees, snap_to_degrees> arg   Print converted arg. Option for rotation angles to be in degrees for readability, or to snap to commonly used angles in degrees.\n" +
+                       "  -p [ --print ] arg                                 Print converted arg.\n" +
+                       "  --degrees                                          Only used in --print, where pose rotation angles are printed in degrees.\n" +
+                       "  --snap-to-degrees arg                              Only used in --print, to snap pose rotation angles to this specified interval in degrees.\n" +
                        COMMON_OPTIONS
             }
 
@@ -56,6 +58,8 @@ class Cmd
   #
   def parse(args)
     options = {}
+    options['degrees'] = 0
+    options['snap_to_degrees'] = 0
 
     usage = COMMANDS[args[0]]
 
@@ -78,6 +82,13 @@ class Cmd
       opts.on('-p arg', '--print arg', String,
               'Print converted arg') do |arg|
         options['print'] = arg
+      end
+      opts.on('--degrees', 'Printed pose rotations are will be in degrees') do |degrees|
+        options['degrees'] = 1
+      end
+      opts.on('--snap-to-degrees arg', Integer,
+              'Printed rotations are snapped to specified degree intervals') do |arg|
+        options['snap_to_degrees'] = arg
       end
       opts.on('-g arg', '--graph type', String,
               'Print PoseRelativeTo or FrameAttachedTo graph') do |graph_type|
@@ -160,15 +171,10 @@ class Cmd
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
-          if ARGV.length == 1
-            Importer.extern 'int cmdPrint(const char *)'
-            exit(Importer.cmdPrint(File.expand_path(options['print'])))
-          elsif ARGV.length == 2
-            Importer.extern 'int cmdPrintWithOption(const char *, const char *)'
-            exit(Importer.cmdPrintWithOption(options['print'], File.expand_path(ARGV[1])))
-          else
-            puts 'Print error: must have 1 or 2 arguments after -p, --print.'
-          end
+          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees)'
+          exit(Importer.cmdPrint(File.expand_path(options['print']),
+                                 options['degrees'],
+                                 options['snap_to_degrees']))
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))

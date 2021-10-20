@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include "sdf/Assert.hh"
 #include "sdf/PrintConfig.hh"
 
 /////////////////////////////////////////////////
@@ -44,11 +45,12 @@ TEST(PrintConfig, RotationInDegrees)
 TEST(PrintConfig, RotationSnapToDegrees)
 {
   sdf::PrintConfig config;
-  EXPECT_FALSE(config.GetRotationSnapToDegrees());
+  EXPECT_FALSE(config.GetRotationSnapToDegrees().has_value());
 
-  config.SetRotationSnapToDegrees(true);
-  EXPECT_TRUE(config.GetRotationSnapToDegrees());
+  config.SetRotationSnapToDegrees(5);
+  ASSERT_TRUE(config.GetRotationSnapToDegrees().has_value());
+  EXPECT_EQ(5u, config.GetRotationSnapToDegrees().value());
 
-  config.SetRotationSnapToDegrees(false);
-  EXPECT_FALSE(config.GetRotationSnapToDegrees());
+  EXPECT_THROW(config.SetRotationSnapToDegrees(0), sdf::Exception);
+  EXPECT_THROW(config.SetRotationSnapToDegrees(361), sdf::Exception);
 }
