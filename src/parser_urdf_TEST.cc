@@ -21,6 +21,7 @@
 
 #include "sdf/sdf.hh"
 #include "parser_urdf.hh"
+#include "./parser_usd.hh"
 
 /////////////////////////////////////////////////
 std::string getMinimalUrdfTxt()
@@ -932,6 +933,25 @@ TEST(URDFParser, ParseWhitespace)
 /// Main
 int main(int argc, char **argv)
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  // ::testing::InitGoogleTest(&argc, argv);
+
+  // Check for a second argument, which should be the sdf file to parse
+  if (argc != 2)
+  {
+    std::cerr << "Usage: simple <sdf_file>\n";
+    return -1;
+  }
+
+  // Read an SDF file, and store the result in sdf.
+  auto sdf = sdf::readFile(argv[1]);
+
+  if (sdf)
+  {
+    sdf->Write("salida.sdf");
+    return 0;
+  }
+
+  return -1;
+
+  // return RUN_ALL_TESTS();
 }
