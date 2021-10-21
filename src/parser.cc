@@ -45,6 +45,7 @@
 #include "Utils.hh"
 #include "parser_private.hh"
 #include "parser_urdf.hh"
+#include "parser_usd.hh"
 
 namespace sdf
 {
@@ -489,6 +490,25 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   {
     sdferr << "File [" << filename << "] doesn't exist.\n";
     return false;
+  }
+
+  if (USD2SDF::IsUSD(filename))
+  {
+    USD2SDF usd2g;
+    auto doc = makeSdfDoc();
+    usd2g.read(filename, &doc);
+    sdferr << "here! it's a USD!\n";
+    if (sdf::readDoc(&doc, _sdf, "usd file", _convert, _config, _errors))
+    {
+      sdfdbg << "parse from usd file [" << _filename << "].\n";
+      return true;
+    }
+    else
+    {
+      sdferr << "parse as old deprecated model file failed.\n";
+      return false;
+    }
+    return true;
   }
 
   auto error_code = xmlDoc.LoadFile(filename.c_str());
