@@ -884,8 +884,8 @@ TEST(Param, PoseWithDefaultValue)
   EXPECT_TRUE(errors.empty()) << errors;
 
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), poseElem->Get<Pose>());
-  const std::string expectedString = 
-      R"(<pose rotation_format='quat_xyzw'>1 0 0 0 0 0 1</pose>)";
+  const std::string expectedString =
+      "<pose rotation_format='quat_xyzw'>1 0 0 0 0 0 1</pose>\n";
   EXPECT_STREQ(expectedString.c_str(), poseElem->ToString("").c_str());
 }
 

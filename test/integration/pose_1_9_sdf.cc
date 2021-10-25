@@ -159,12 +159,12 @@ TEST(Pose1_9, PoseExpressionFormats)
 
   model = world->ModelByIndex(18);
   ASSERT_NE(nullptr, model);
-  EXPECT_EQ("model_empty_quat_xyz", model->Name());
+  EXPECT_EQ("model_empty_quat_xyzw", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 
   model = world->ModelByIndex(19);
   ASSERT_NE(nullptr, model);
-  EXPECT_EQ("model_empty_quat_xyz_degrees_false", model->Name());
+  EXPECT_EQ("model_empty_quat_xyzw_degrees_false", model->Name());
   EXPECT_EQ(Pose::Zero, model->RawPose());
 }
 
@@ -174,12 +174,10 @@ TEST(Pose1_9, PoseStringOutput)
   std::ostringstream stream;
   stream
       << "<sdf version='1.9'>"
-      << "  <model name='parent'>"
-      << "    <include>"
-      << "      <uri>box</uri>"
-      << "      <pose rotation_format='quat_xyzw'/>"
-      << "    </include>"
-      << "  </model>"
+      << "<model name='parent'>"
+      << "  <pose rotation_format='quat_xyzw'/>"
+      << "  <link name='link'/>"
+      << "</model>"
       << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
@@ -195,13 +193,10 @@ TEST(Pose1_9, PoseStringOutput)
   auto model = root.Model();
   ASSERT_NE(nullptr, model);
 
-  auto boxModel = model->ModelByName("box");
-  ASSERT_NE(nullptr, boxModel);
+  auto elem = model->Element();
+  ASSERT_NE(nullptr, elem);
 
-  auto boxElem = boxModel->Element();
-  ASSERT_NE(nullptr, boxElem);
-
-  auto poseElem = boxElem->GetElement("pose");
+  auto poseElem = elem->GetElement("pose");
   ASSERT_NE(nullptr, poseElem);
 
   auto poseParam = poseElem->GetValue();

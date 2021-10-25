@@ -118,12 +118,12 @@
       </link>
     </model>
 
-    <model name="model_empty_quat_xyz">
+    <model name="model_empty_quat_xyzw">
       <pose rotation_format="quat_xyzw"/>
       <link name="link"/>
     </model>
 
-    <model name="model_empty_quat_xyz_degrees_false">
+    <model name="model_empty_quat_xyzw_degrees_false">
       <pose rotation_format="quat_xyzw" degrees="false"/>
       <link name="link"/>
     </model>
