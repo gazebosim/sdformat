@@ -334,10 +334,14 @@ std::string Param::GetAsString(const PrintConfig &_config) const
 std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
   (void)_config;
-  StringStreamClassicLocale ss;
+  std::string defaultStr;
 
-  ss << ParamStreamer{ this->dataPtr->defaultValue };
-  return ss.str();
+  SDF_ASSERT(this->dataPtr->StringFromValueImpl(_config,
+                                                this->dataPtr->typeName,
+                                                &this->dataPtr->defaultValue,
+                                                defaultStr),
+             "Unable to get string from default value");
+  return defaultStr;
 }
 
 //////////////////////////////////////////////////
@@ -346,11 +350,17 @@ std::optional<std::string> Param::GetMinValueAsString(
 {
   if (this->dataPtr->minValue.has_value())
   {
-    (void)_config;
-    StringStreamClassicLocale ss;
+    std::string valueStr;
+    if (!this->dataPtr->StringFromValueImpl(_config,
+                                            this->dataPtr->typeName,
+                                            &this->dataPtr->minValue.value(),
+                                            valueStr))
+    {
+      sdferr << "Unable to get min value as string.\n";
+      return std::nullopt;
+    }
 
-    ss << ParamStreamer{ *this->dataPtr->minValue };
-    return ss.str();
+    return valueStr;
   }
   return std::nullopt;
 }
@@ -361,11 +371,17 @@ std::optional<std::string> Param::GetMaxValueAsString(
 {
   if (this->dataPtr->maxValue.has_value())
   {
-    (void)_config;
-    StringStreamClassicLocale ss;
+    std::string valueStr;
+    if (!this->dataPtr->StringFromValueImpl(_config,
+                                            this->dataPtr->typeName,
+                                            &this->dataPtr->maxValue.value(),
+                                            valueStr))
+    {
+      sdferr << "Unable to get max value as string.\n";
+      return std::nullopt;
+    }
 
-    ss << ParamStreamer{ *this->dataPtr->maxValue };
-    return ss.str();
+    return valueStr;
   }
   return std::nullopt;
 }

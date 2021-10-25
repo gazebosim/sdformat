@@ -332,7 +332,7 @@
 
         </link>
         <link name='caster'>
-          <pose relative_to='right_wheel'>0 0 0 0 -0 0</pose>
+          <pose relative_to='right_wheel'>0 0 0 0 0 0</pose>
           <!-- modified with above -->
           <!-- <pose relative_to='__model__'>-0.957138 -0 -0.125 0 -0 0</pose> -->
           <inertial>
