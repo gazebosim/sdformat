@@ -791,92 +791,112 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 }
 
 /////////////////////////////////////////////////
+bool PoseStringFromValue(const PrintConfig &_config,
+                         const Param_V &_parentAttributes,
+                         ParamPrivate::ParamVariant *_value,
+                         std::string &_valueStr)
+{
+  (void)_config;
+  StringStreamClassicLocale ss;
+
+  ignition::math::Pose3d *pose =
+      std::get_if<ignition::math::Pose3d>(_value);
+  if (!pose)
+  {
+    sdferr << "Unable to get pose value from variant.\n";
+    return false;
+  }
+
+  auto sanitizeZero = [](double _number)
+  {
+    StringStreamClassicLocale stream;
+    if (std::fpclassify(_number) == FP_ZERO)
+    {
+      stream << 0;
+    }
+    else
+    {
+      stream << _number;
+    }
+    return stream.str();
+  };
+
+  const bool defaultInDegrees = false;
+  bool inDegrees = defaultInDegrees;
+
+  const std::string defaultRotationFormat = "euler_rpy";
+  std::string rotationFormat = defaultRotationFormat;
+
+  for (const auto &p : _parentAttributes)
+  {
+    const std::string key = p->GetKey();
+
+    if (key == "degrees")
+    {
+      if (!p->Get<bool>(inDegrees))
+      {
+        sdferr << "Unable to get //pose[@degrees] attribute as bool.\n";
+        return false;
+      }
+    }
+    else if (key == "rotation_format")
+    {
+      rotationFormat = p->GetAsString();
+    }
+  }
+
+  if (rotationFormat == "quat_xyzw" && inDegrees)
+  {
+    sdferr << "Invalid pose with //pose[@degrees='true'] and "
+           << "//pose[@rotation_format='quat_xyzw'].\n";
+    return false;
+  }
+  else if (rotationFormat == "quat_xyzw")
+  {
+    ss << pose->Pos() << " "
+       << sanitizeZero(pose->Rot().X()) << " "
+       << sanitizeZero(pose->Rot().Y()) << " "
+       << sanitizeZero(pose->Rot().Z()) << " "
+       << sanitizeZero(pose->Rot().W());
+    _valueStr = ss.str();
+    return true;
+  }
+  else if (rotationFormat == "euler_rpy" && inDegrees)
+  {
+    ss << pose->Pos() << " "
+       << sanitizeZero(IGN_RTOD(pose->Rot().Roll())) << " "
+       << sanitizeZero(IGN_RTOD(pose->Rot().Pitch())) << " "
+       << sanitizeZero(IGN_RTOD(pose->Rot().Yaw()));
+    _valueStr = ss.str();
+    return true;
+  }
+
+  ss << pose->Pos() << " "
+     << sanitizeZero(pose->Rot().Roll()) << " "
+     << sanitizeZero(pose->Rot().Pitch()) << " "
+     << sanitizeZero(pose->Rot().Yaw());
+  _valueStr = ss.str();
+  return true;
+}
+
+/////////////////////////////////////////////////
 bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
                                        const std::string &_typeName,
                                        ParamVariant *_value,
                                        std::string &_valueStr) const
 {
-  (void)_config;
   StringStreamClassicLocale ss;
   if (_typeName == "ignition::math::Pose3d" ||
       _typeName == "pose" ||
       _typeName == "Pose")
   {
-    ignition::math::Pose3d *pose =
-        std::get_if<ignition::math::Pose3d>(_value);
-    if (!pose)
+    const ElementPtr p = this->parentElement.lock();
+    if (!this->ignoreParentAttributes && p)
     {
-      sdferr << "Unable to get pose value from variant.\n";
-      return false;
+      return PoseStringFromValue(
+          _config, p->GetAttributes(), _value, _valueStr);
     }
-
-    auto sanitizeZero = [](double _number)
-    {
-      StringStreamClassicLocale stream;
-      if (std::fpclassify(_number) == FP_ZERO)
-      {
-        stream << 0;
-      }
-      else
-      {
-        stream << _number;
-      }
-      return stream.str();
-    };
-
-    if (const ElementPtr parent = this->parentElement.lock())
-    {
-      const bool defaultInDegrees = false;
-      bool inDegrees = defaultInDegrees;
-      if (const ParamPtr attrib = parent->GetAttribute("degrees"))
-      {
-        if (!attrib->Get<bool>(inDegrees))
-        {
-          sdferr << "Unable to get //pose[@degrees] attribute as bool.\n";
-          return false;
-        }
-      }
-
-      const std::string defaultRotationFormat = "euler_rpy";
-      std::string rotationFormat = defaultRotationFormat;
-      if (const ParamPtr attrib = parent->GetAttribute("rotation_format"))
-      {
-        rotationFormat = attrib->GetAsString();
-      }
-
-      if (rotationFormat == "quat_xyzw" && inDegrees)
-      {
-        sdferr << "Invalid pose with //pose[@degrees='true'] and "
-               << "//pose[@rotation_format='quat_xyzw'].\n";
-        return false;
-      }
-      else if (rotationFormat == "euler_rpy" && inDegrees)
-      {
-        ss << pose->Pos() << " "
-           << sanitizeZero(IGN_RTOD(pose->Rot().Roll())) << " "
-           << sanitizeZero(IGN_RTOD(pose->Rot().Pitch())) << " "
-           << sanitizeZero(IGN_RTOD(pose->Rot().Yaw()));
-        _valueStr = ss.str();
-        return true;
-      }
-      else if (rotationFormat == "quat_xyzw")
-      {
-        ss << pose->Pos() << " "
-           << sanitizeZero(pose->Rot().X()) << " "
-           << sanitizeZero(pose->Rot().Y()) << " "
-           << sanitizeZero(pose->Rot().Z()) << " "
-           << sanitizeZero(pose->Rot().W());
-        _valueStr = ss.str();
-        return true;
-      }
-    }
-
-    ss << pose->Pos() << " "
-       << sanitizeZero(pose->Rot().Roll()) << " "
-       << sanitizeZero(pose->Rot().Pitch()) << " "
-       << sanitizeZero(pose->Rot().Yaw());
-    _valueStr = ss.str();
-    return true;
+    return PoseStringFromValue(_config, {}, _value, _valueStr);
   }
   else
   {
