@@ -28,6 +28,7 @@
 #include "sdf/Exception.hh"
 #include "sdf/Element.hh"
 #include "sdf/Param.hh"
+#include "sdf/parser.hh"
 
 bool check_double(const std::string &num)
 {
@@ -861,6 +862,31 @@ TEST(Param, ChangeParentElementFail)
 
   auto parent = valParam->GetParentElement();
   EXPECT_EQ(parent, poseElem);
+}
+
+/////////////////////////////////////////////////
+TEST(Param, PoseWithDefaultValue)
+{
+  using Pose = ignition::math::Pose3d;
+
+  auto poseElem = std::make_shared<sdf::Element>();
+  poseElem->SetName("pose");
+  poseElem->AddValue("pose", "1 0 0 0 0 0", false);
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+
+  const std::string testString = R"(
+  <sdf version="1.9">
+    <pose rotation_format="quat_xyzw"/>
+  </sdf>)";
+
+  sdf::Errors errors;
+  EXPECT_TRUE(sdf::readString(testString, poseElem, errors));
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), poseElem->Get<Pose>());
+  const std::string expectedString = 
+      R"(<pose rotation_format='quat_xyzw'>1 0 0 0 0 0 1</pose>)";
+  EXPECT_STREQ(expectedString.c_str(), poseElem->ToString("").c_str());
 }
 
 /////////////////////////////////////////////////

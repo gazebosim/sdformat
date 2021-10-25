@@ -169,6 +169,49 @@ TEST(Pose1_9, PoseExpressionFormats)
 }
 
 //////////////////////////////////////////////////
+TEST(Pose1_9, PoseStringOutput)
+{
+  std::ostringstream stream;
+  stream
+      << "<sdf version='1.9'>"
+      << "  <model name='parent'>"
+      << "    <include>"
+      << "      <uri>box</uri>"
+      << "      <pose rotation_format='quat_xyzw'/>"
+      << "    </include>"
+      << "  </model>"
+      << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  sdf::Root root;
+  errors = root.Load(sdfParsed);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  auto boxModel = model->ModelByName("box");
+  ASSERT_NE(nullptr, boxModel);
+
+  auto boxElem = boxModel->Element();
+  ASSERT_NE(nullptr, boxElem);
+
+  auto poseElem = boxElem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+
+  auto poseParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseParam);
+
+  const std::string strOutput = poseParam->GetAsString();
+  EXPECT_EQ("0 0 0 0 0 0 1", strOutput);
+}
+
+//////////////////////////////////////////////////
 static bool contains(const std::string &_a, const std::string &_b)
 {
   return _a.find(_b) != std::string::npos;
