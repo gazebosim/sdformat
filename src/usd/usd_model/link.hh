@@ -120,7 +120,7 @@ public:
   void clear()
   {
     origin.clear();
-    mass = 0;
+    mass = 0.01;
     ixx = ixy = ixz = iyy = iyz = izz = 0;
   };
 };
@@ -201,6 +201,9 @@ public:
 
   void setParent(const LinkSharedPtr &parent)
   { parent_link_ = parent; }
+
+  Pose pose;
+  Vector3 scale;
 
   void clear()
   {

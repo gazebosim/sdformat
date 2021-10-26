@@ -27,7 +27,7 @@ namespace usd
   {
     sdferr << "UsdPhysicsScene" << "\n";
     auto variant_physics_scene = pxr::UsdPhysicsScene(_prim);
-    pxr::GfVec3d gravity;
+    pxr::GfVec3f gravity;
     float magnitude;
     variant_physics_scene.GetGravityDirectionAttr().Get(&gravity);
     sdferr << "gravity " << gravity << "\n";

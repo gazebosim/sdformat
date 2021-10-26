@@ -20,38 +20,175 @@
 #include "pxr/usd/usdPhysics/scene.h"
 #include "pxr/usd/usdPhysics/joint.h"
 #include "pxr/usd/usdPhysics/fixedJoint.h"
+#include "pxr/usd/usdPhysics/prismaticJoint.h"
+#include "pxr/usd/usdPhysics/revoluteJoint.h"
 
 #include "sdf/Console.hh"
 
 
 namespace usd
 {
-  JointSharedPtr ParseJoints(const pxr::UsdPrim &_prim)
+  JointSharedPtr ParseJoints(const pxr::UsdPrim &_prim, const std::string &_path,
+    const double _metersPerUnit)
   {
+    std::cerr << "************ ADDED JOINT ************" << '\n';
     JointSharedPtr joint = nullptr;
+    joint.reset(new Joint);
+
+    joint->clear();
+    pxr::SdfPathVector body0, body1;
+
+    auto variant_physics_joint = pxr::UsdPhysicsJoint(_prim);
+
+    if (variant_physics_joint.GetBody0Rel())
+      variant_physics_joint.GetBody0Rel().GetTargets(&body0);
+    if (variant_physics_joint.GetBody1Rel())
+      variant_physics_joint.GetBody1Rel().GetTargets(&body1);
+
+    if (body0.size() > 0 )
+    {
+      std::cerr << "body0[0].GetString() " << body0[0].GetString() << '\n';
+      joint->child_link_name = body0[0].GetString();
+    }
+
+    if (body1.size() > 0 )
+    {
+      std::cerr << "body0[1].GetString() " << body1[0].GetString() << '\n';
+      joint->parent_link_name = body1[0].GetString();
+    }
+    else
+    {
+      joint->parent_link_name = "world";
+    }
+
+    joint->name = joint_name + "_joint";
+
+
     if (_prim.IsA<pxr::UsdPhysicsFixedJoint>())
     {
       auto variant_physics_fixed_joint = pxr::UsdPhysicsFixedJoint(_prim);
 
       sdferr << "UsdPhysicsFixedJoint" << "\n";
-      joint.reset(new Joint);
-
-      joint->clear();
 
       std::string joint_name = _prim.GetName().GetText();
-      joint->name = joint_name;
 
       joint->parent_to_joint_origin_transform.clear();
       joint->type = Joint::FIXED;
 
-      pxr::SdfPathVector body0, body1;
-      variant_physics_fixed_joint.GetBody0Rel().GetTargets(&body0);
-      variant_physics_fixed_joint.GetBody1Rel().GetTargets(&body1);
-      joint->parent_link_name = "/World/" + body0[0].GetName();
-      joint->child_link_name = "/World/" + body1[0].GetName();
       return joint;
     }
+    else if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
+    {
+      auto variant_physics_prismatic_joint = pxr::UsdPhysicsPrismaticJoint(_prim);
+      sdferr << "UsdPhysicsPrismaticJoint" << "\n";
 
+      std::string joint_name = _prim.GetName().GetText();
+      joint->type = Joint::PRISMATIC;
+
+      pxr::TfToken axis;
+      variant_physics_prismatic_joint.GetAxisAttr().Get(&axis);
+      if (axis == pxr::UsdGeomTokens->x)
+      {
+        joint->axis = usd::Vector3(1, 0, 0);
+      }
+      if (axis == pxr::UsdGeomTokens->y)
+      {
+        joint->axis = usd::Vector3(0, 1, 0);
+      }
+      if (axis == pxr::UsdGeomTokens->z)
+      {
+        joint->axis = usd::Vector3(0, 0, 1);
+      }
+
+      pxr::GfVec3f localPose0, localPose1;
+      pxr::GfQuatf localRot0, localRot1;
+
+      variant_physics_prismatic_joint.GetLocalPos0Attr().Get(&localPose0);
+      variant_physics_prismatic_joint.GetLocalPos1Attr().Get(&localPose1);
+      variant_physics_prismatic_joint.GetLocalRot0Attr().Get(&localRot0);
+      variant_physics_prismatic_joint.GetLocalRot1Attr().Get(&localRot1);
+
+      auto trans = (localPose0 + localPose1) * _metersPerUnit;
+      joint->parent_to_joint_origin_transform.position = Vector3(trans[0], trans[1], trans[2]);
+      joint->parent_to_joint_origin_transform.rotation =
+        Rotation(localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
+                 localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
+                 localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2],
+                 localRot0.GetReal() + localRot1.GetReal());
+
+      float lowerLimit;
+      float upperLimit;
+      _prim.GetAttribute(pxr::TfToken("physics:lowerLimit")).Get(&lowerLimit);
+      _prim.GetAttribute(pxr::TfToken("physics:upperLimit")).Get(&upperLimit);
+
+      joint->limits.reset(new JointLimits());
+      joint->limits->lower = lowerLimit * _metersPerUnit;
+      joint->limits->upper = upperLimit * _metersPerUnit;
+
+      return joint;
+    }
+    else if (_prim.IsA<pxr::UsdPhysicsRevoluteJoint>())
+    {
+      auto variant_physics_revolute_joint = pxr::UsdPhysicsRevoluteJoint(_prim);
+      sdferr << "UsdPhysicsRevoluteJoint" << "\n";
+
+      std::string joint_name = _prim.GetName().GetText();
+      joint->type = Joint::REVOLUTE;
+
+      pxr::TfToken axis;
+      variant_physics_revolute_joint.GetAxisAttr().Get(&axis);
+      if (axis == pxr::UsdGeomTokens->x)
+      {
+        joint->axis = usd::Vector3(1, 0, 0);
+      }
+      if (axis == pxr::UsdGeomTokens->y)
+      {
+        joint->axis = usd::Vector3(0, 1, 0);
+      }
+      if (axis == pxr::UsdGeomTokens->z)
+      {
+        joint->axis = usd::Vector3(0, 0, 1);
+      }
+
+      pxr::GfVec3f localPose0, localPose1;
+      pxr::GfQuatf localRot0, localRot1;
+
+      variant_physics_revolute_joint.GetLocalPos0Attr().Get(&localPose0);
+      variant_physics_revolute_joint.GetLocalPos1Attr().Get(&localPose1);
+      variant_physics_revolute_joint.GetLocalRot0Attr().Get(&localRot0);
+      variant_physics_revolute_joint.GetLocalRot1Attr().Get(&localRot1);
+
+      auto trans = (localPose0 + localPose1) * _metersPerUnit;
+      joint->parent_to_joint_origin_transform.position = Vector3(trans[0], trans[1], trans[2]);
+      joint->parent_to_joint_origin_transform.rotation =
+        Rotation(localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
+                 localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
+                 localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2],
+                 localRot0.GetReal() + localRot1.GetReal());
+
+      float lowerLimit;
+      float upperLimit;
+      float stiffness;
+      float damping;
+      float jointFriction;
+      _prim.GetAttribute(pxr::TfToken("physics:lowerLimit")).Get(&lowerLimit);
+      _prim.GetAttribute(pxr::TfToken("physics:upperLimit")).Get(&upperLimit);
+      _prim.GetAttribute(pxr::TfToken("drive:angular:physics:stiffness")).Get(&stiffness);
+      _prim.GetAttribute(pxr::TfToken("drive:angular:physics:damping")).Get(&damping);
+      _prim.GetAttribute(pxr::TfToken("physxJoint:jointFriction")).Get(&jointFriction);
+
+      joint->limits.reset(new JointLimits());
+      joint->limits->lower = lowerLimit * 3.1416 / 180.0;
+      joint->limits->upper = upperLimit * 3.1416 / 180.0;
+      joint->limits->effort = stiffness;
+
+      joint->dynamics.reset(new JointDynamics());
+
+      joint->dynamics->damping = damping;
+      joint->dynamics->friction = jointFriction;
+
+      return joint;
+    }
     //limtis
 
     // Get safety

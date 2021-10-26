@@ -242,6 +242,7 @@ target_link_libraries(${sdf_target}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
     ${PYTHON_LIBRARY}
     ${PXR_LIBRARIES}
   PRIVATE
