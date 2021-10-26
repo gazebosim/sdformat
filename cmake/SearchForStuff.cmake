@@ -120,6 +120,18 @@ else()
 endif()
 
 ########################################
+# Find ignition common
+# Set a variable for generating ProjectConfig.cmake
+find_package(ignition-common4 4.0 QUIET)
+if (NOT ignition-common4_FOUND)
+  message(STATUS "Looking for ignition-common4-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition math (libignition-common4-dev)")
+else()
+  set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+  message(STATUS "Looking for ignition-common${IGN_COMMON_VER}-config.cmake - found")
+endif()
+
+########################################
 # Find ignition utils
 # Set a variable for generating ProjectConfig.cmake
 find_package(ignition-utils1 QUIET)

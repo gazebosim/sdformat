@@ -44,6 +44,8 @@
 
 #include <fstream>
 
+#include <ignition/common/Util.hh>
+
 namespace usd {
 
 ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
@@ -70,13 +72,48 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
   auto range = pxr::UsdPrimRange::Stage(referencee);
 
+  double metersPerUnit;
+  referencee->GetMetadata<double>(pxr::TfToken("metersPerUnit"), &metersPerUnit);
+  std::cerr << "/* metersPerUnit */" << metersPerUnit << '\n';
+  std::string rootPath;
+  std::string nameLink;
+
+  // insert <link name="world"/>
+  LinkSharedPtr worldLink = nullptr;
+  worldLink.reset(new Link);
+  worldLink->clear();
+  worldLink->name = "world";
+  model->links_.insert(make_pair(worldLink->name, worldLink));
 
   // Get all Link elements
   for (auto const &prim : range ) {
+
+    std::string primName = pxr::TfStringify(prim.GetPath());
+
     sdferr << "------------------------------------------------------\n";
-    sdferr << pxr::TfStringify(prim.GetPath()) << "\n";
-    sdferr << pxr::TfEnum(prim.GetPrim().GetSpecifier()) << "\n";
-    sdferr << prim.GetName().GetText() << "\n";
+    sdferr << "pathName " << primName << "\n";
+    // sdferr << prim.GetName().GetText() << "\n";
+
+    size_t pos = std::string::npos;
+    if ((pos  = primName.find("/World") )!= std::string::npos)
+    {
+      primName.erase(pos, std::string("/World").length());
+    }
+
+    std::vector<std::string> tokens = ignition::common::split(primName, "/");
+    if (tokens.size() == 0)
+      continue;
+
+    if (tokens.size() == 1)
+    {
+      rootPath = prim.GetName().GetText();
+    }
+    std::cerr << "rootPath " << rootPath << " " << tokens.size() << '\n';
+
+    if (tokens.size() > 1)
+    {
+      nameLink = "/" + tokens[0] + "/" + tokens[1];
+    }
 
     if (prim.IsA<pxr::UsdPhysicsScene>())
     {
@@ -87,7 +124,7 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     {
       sdferr << "UsdPhysicsJoint" << "\n";
 
-      JointSharedPtr joint = usd::ParseJoints(prim);
+      JointSharedPtr joint = usd::ParseJoints(prim, rootPath, metersPerUnit);
       if (joint != nullptr)
       {
         model->joints_.insert(make_pair(joint->name, joint));
@@ -95,6 +132,9 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
       continue;
     }
+
+    if (tokens.size() == 1)
+      continue;
 
     if (prim.IsA<pxr::UsdLuxLight>())
     {
@@ -106,16 +146,26 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       continue;
     }
 
-    if (!prim.IsA<pxr::UsdGeomGprim>())
-    {
-      sdferr << "Not a geometry" << "\n";
-      continue;
-    }
+    // if (!prim.IsA<pxr::UsdGeomGprim>())
+    // {
+    //   sdferr << "Not a geometry" << "\n";
+    //   continue;
+    // }
 
-    LinkSharedPtr link = usd::ParseLinks(prim);
-    if (link)
+    LinkSharedPtr link = nullptr;
+    auto it = model->links_.find(nameLink);
+    if (it != model->links_.end())
     {
-      model->links_.insert(make_pair(link->name, link));
+      link = usd::ParseLinks(prim, it->second, metersPerUnit);
+    }
+    else
+    {
+      link = usd::ParseLinks(prim, link, metersPerUnit);
+
+      if (link)
+      {
+          model->links_.insert(make_pair(nameLink, link));
+      }
     }
 
     if (model->links_.empty()){

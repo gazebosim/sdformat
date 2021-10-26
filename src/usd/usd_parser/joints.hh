@@ -24,7 +24,8 @@
 
 namespace usd
 {
-  JointSharedPtr ParseJoints(const pxr::UsdPrim &_prim);
+  JointSharedPtr ParseJoints(const pxr::UsdPrim &_prim, const std::string &_path,
+                             const double _metersPerUnit);
 }
 
 #endif

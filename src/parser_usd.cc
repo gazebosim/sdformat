@@ -820,7 +820,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     //   skip/return with the exception of root link being world,
     //   because there's no lumping there
     // std::cerr << "FixedJointShouldBeReduced(_link->parent_joint) " << FixedJointShouldBeReduced(_link->parent_joint) << '\n';
-    if (_link->getParent() && _link->getParent()->name != "/World/world"
+    if (_link->getParent() && _link->getParent()->name != "world"
         && FixedJointShouldBeReduced(_link->parent_joint)
         && g_reduceFixedJoints)
     {
@@ -846,7 +846,7 @@ inline namespace SDF_VERSION_NAMESPACE {
           joint, CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
       auto pose = joint->FirstChildElement("pose");
       std::string relativeToAttr = _link->getParent()->name;
-      if ("/World/world" == relativeToAttr )
+      if ("world" == relativeToAttr )
       {
         relativeToAttr = "__model__";
       }
@@ -961,8 +961,10 @@ inline namespace SDF_VERSION_NAMESPACE {
     // this transform does not exist for the root link
     if (_link->parent_joint)
     {
-      tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
-      pose->SetAttribute("relative_to", _link->parent_joint->name.c_str());
+      // tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
+      AddTransform(_root, CopyPose(_link->pose));
+      tinyxml2::XMLElement * pose = _root->FirstChildElement("pose");
+      // pose->SetAttribute("relative_to", _link->name.c_str());
       elem->LinkEndChild(pose);
     }
     else
@@ -1002,8 +1004,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 
     // must have an <inertial> block and cannot have zero mass.
     //  allow det(I) == zero, in the case of point mass geoms.
-    // @todo:  keyword "/World/world" should be a constant defined somewhere else
-    if (_link->name != "/World/world" &&
+    // @todo:  keyword "world" should be a constant defined somewhere else
+    if (_link->name != "world" &&
         ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
     {
       if (!_link->child_links.empty())
@@ -1036,7 +1038,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     }
 
     // create <body:...> block for non fixed joint attached bodies
-    if ((_link->getParent() && _link->getParent()->name == "/World/world") ||
+    if ((_link->getParent() && _link->getParent()->name == "world") ||
         !g_reduceFixedJoints ||
         (!_link->parent_joint ||
          !FixedJointShouldBeReduced(_link->parent_joint)))
@@ -1073,6 +1075,9 @@ inline namespace SDF_VERSION_NAMESPACE {
       sdferr << "Unable to call parseURDF on robot model\n";
       return;
     }
+    tinyxml2::XMLElement *world = _sdfXmlOut->NewElement("world");
+    world->SetAttribute("name", robotModel->getName().c_str());
+
     // create root element and define needed namespaces
     tinyxml2::XMLElement *robot = _sdfXmlOut->NewElement("model");
 
@@ -1093,7 +1098,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 
     std::cerr << "rootLink->name " << rootLink->name << '\n';
 
-    if (rootLink->name == "/World/world")
+    if (rootLink->name == "world")
     {
       // convert all children link
       for (std::vector<usd::LinkSharedPtr>::const_iterator
@@ -1113,9 +1118,11 @@ inline namespace SDF_VERSION_NAMESPACE {
 
     sdf = _sdfXmlOut->NewElement("sdf");
     sdf->SetAttribute("version", "1.7");
-    sdf->LinkEndChild(robot);
+    sdf->LinkEndChild(world);
+    world->LinkEndChild(robot);
 
     _sdfXmlOut->LinkEndChild(sdf);
+    _sdfXmlOut->SaveFile("salida.xml");
   }
 }
 }
