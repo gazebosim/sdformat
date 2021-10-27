@@ -124,7 +124,7 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     {
       sdferr << "UsdPhysicsJoint" << "\n";
 
-      JointSharedPtr joint = usd::ParseJoints(prim, rootPath, metersPerUnit);
+      JointSharedPtr joint = usd::ParseJoints(prim, primName, metersPerUnit);
       if (joint != nullptr)
       {
         model->joints_.insert(make_pair(joint->name, joint));
@@ -173,6 +173,18 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       return model;
     }
   }
+
+  // for (auto link: model->links_)
+  // {
+  //   std::cerr << "link name " << link.second->name << '\n';
+  // }
+  //
+  // for (auto joint: model->joints_)
+  // {
+  //   std::cerr << "joints name " << joint.second->name << '\n';
+  //   std::cerr << "\t parent " << joint.second->parent_link_name << '\n';
+  //   std::cerr << "\t child " << joint.second->child_link_name << '\n';
+  // }
 
   // every link has children links and joints, but no parents, so we create a
   // local convenience data structure for keeping child->parent relations

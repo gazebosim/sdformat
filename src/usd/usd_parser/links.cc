@@ -209,15 +209,23 @@ namespace usd
         if (op == "xformOp:scale")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:scale")).Get(&scale);
+          link->scale = Vector3(scale[0], scale[1], scale[2]);
         }
 
         if (op == "xformOp:translate")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:translate")).Get(&translate);
+          link->pose.position.x = translate[0] * _metersPerUnit;
+          link->pose.position.y = translate[1] * _metersPerUnit;
+          link->pose.position.z = translate[2] * _metersPerUnit;
         }
         if (op == "xformOp:orient")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:orient")).Get(&rotation_quad);
+          link->pose.rotation.x = rotation_quad.GetImaginary()[0];
+          link->pose.rotation.y = rotation_quad.GetImaginary()[1];
+          link->pose.rotation.z = rotation_quad.GetImaginary()[2];
+          link->pose.rotation.w = rotation_quad.GetReal();
         }
 
         if (op == "xformOp:transform")
@@ -248,7 +256,8 @@ namespace usd
       material->color.r = color[0][2];
       material->color.g = color[0][1];
       material->color.b = color[0][0];
-      material->color.a = 1 - displayOpacity[0];
+      if (displayOpacity.size() > 0)
+        material->color.a = 1 - displayOpacity[0];
 
       std::cerr << "color " << color << '\n';
       std::cerr << "displayOpacity " << displayOpacity << '\n';
@@ -362,10 +371,17 @@ namespace usd
         if (op == "xformOp:translate")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:translate")).Get(&translate);
+          col->origin.position.x = translate[0] * _metersPerUnit;
+          col->origin.position.y = translate[1] * _metersPerUnit;
+          col->origin.position.z = translate[2] * _metersPerUnit;
         }
         if (op == "xformOp:orient")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:orient")).Get(&rotation_quad);
+          col->origin.rotation.x = rotation_quad.GetImaginary()[0];
+          col->origin.rotation.y = rotation_quad.GetImaginary()[1];
+          col->origin.rotation.z = rotation_quad.GetImaginary()[2];
+          col->origin.rotation.w = rotation_quad.GetReal();
         }
 
         if (op == "xformOp:transform")

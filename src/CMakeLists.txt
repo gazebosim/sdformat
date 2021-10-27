@@ -107,56 +107,56 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/usd)
 
 if (BUILD_SDF_TEST)
   set (gtest_sources
-    # Actor_TEST.cc
-    # AirPressure_TEST.cc
-    # Altimeter_TEST.cc
-    # Atmosphere_TEST.cc
-    # Box_TEST.cc
-    # Camera_TEST.cc
-    # Capsule_TEST.cc
-    # Collision_TEST.cc
-    # Console_TEST.cc
-    # Cylinder_TEST.cc
-    # Element_TEST.cc
-    # Ellipsoid_TEST.cc
-    # Error_TEST.cc
-    # Exception_TEST.cc
-    # Frame_TEST.cc
-    # Filesystem_TEST.cc
-    # ForceTorque_TEST.cc
-    # Geometry_TEST.cc
-    # Gui_TEST.cc
-    # Heightmap_TEST.cc
-    # Imu_TEST.cc
-    # Joint_TEST.cc
-    # JointAxis_TEST.cc
-    # Lidar_TEST.cc
-    # Light_TEST.cc
-    # Link_TEST.cc
-    # Magnetometer_TEST.cc
-    # Material_TEST.cc
-    # Mesh_TEST.cc
-    # Model_TEST.cc
-    # NavSat_TEST.cc
-    # Noise_TEST.cc
-    # Param_TEST.cc
-    # parser_TEST.cc
-    # ParserConfig_TEST.cc
-    # ParticleEmitter_TEST.cc
-    # Pbr_TEST.cc
-    # Physics_TEST.cc
-    # Plane_TEST.cc
-    # Root_TEST.cc
-    # Scene_TEST.cc
-    # SemanticPose_TEST.cc
-    # SDF_TEST.cc
-    # Sensor_TEST.cc
-    # Sky_TEST.cc
-    # Sphere_TEST.cc
-    # Surface_TEST.cc
-    # Types_TEST.cc
-    # Visual_TEST.cc
-    # World_TEST.cc
+    Actor_TEST.cc
+    AirPressure_TEST.cc
+    Altimeter_TEST.cc
+    Atmosphere_TEST.cc
+    Box_TEST.cc
+    Camera_TEST.cc
+    Capsule_TEST.cc
+    Collision_TEST.cc
+    Console_TEST.cc
+    Cylinder_TEST.cc
+    Element_TEST.cc
+    Ellipsoid_TEST.cc
+    Error_TEST.cc
+    Exception_TEST.cc
+    Frame_TEST.cc
+    Filesystem_TEST.cc
+    ForceTorque_TEST.cc
+    Geometry_TEST.cc
+    Gui_TEST.cc
+    Heightmap_TEST.cc
+    Imu_TEST.cc
+    Joint_TEST.cc
+    JointAxis_TEST.cc
+    Lidar_TEST.cc
+    Light_TEST.cc
+    Link_TEST.cc
+    Magnetometer_TEST.cc
+    Material_TEST.cc
+    Mesh_TEST.cc
+    Model_TEST.cc
+    NavSat_TEST.cc
+    Noise_TEST.cc
+    Param_TEST.cc
+    parser_TEST.cc
+    ParserConfig_TEST.cc
+    ParticleEmitter_TEST.cc
+    Pbr_TEST.cc
+    Physics_TEST.cc
+    Plane_TEST.cc
+    Root_TEST.cc
+    Scene_TEST.cc
+    SemanticPose_TEST.cc
+    SDF_TEST.cc
+    Sensor_TEST.cc
+    Sky_TEST.cc
+    Sphere_TEST.cc
+    Surface_TEST.cc
+    Types_TEST.cc
+    Visual_TEST.cc
+    World_TEST.cc
   )
 
   # Build this test file only if Ignition Tools is installed.

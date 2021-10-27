@@ -42,3 +42,21 @@ file(GENERATE
 
 # Install the ruby command line library in an unversioned location.
 install(FILES ${cmd_script_generated} DESTINATION lib/ruby/ignition)
+
+add_executable(sdfconverter
+  sdfconverter.cpp
+)
+
+target_link_libraries(sdfconverter
+  PUBLIC
+    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
+    ${sdf_target}
+)
+
+install(
+  TARGETS
+  ${gui_executable}
+  DESTINATION
+  ${BIN_INSTALL_DIR}
+)

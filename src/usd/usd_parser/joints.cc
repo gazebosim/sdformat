@@ -61,8 +61,7 @@ namespace usd
       joint->parent_link_name = "world";
     }
 
-    joint->name = joint_name + "_joint";
-
+    joint->name = _path + "_joint";
 
     if (_prim.IsA<pxr::UsdPhysicsFixedJoint>())
     {
