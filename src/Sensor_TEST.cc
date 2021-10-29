@@ -150,6 +150,14 @@ TEST(DOMSensor, MoveAssignment)
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
+
+  sdf::Magnetometer *magMutable = sensor2.MagnetometerSensor();
+  EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(),
+                   sensor2.MagnetometerSensor()->XNoise().Mean());
+  noise.SetMean(2.0);
+  magMutable->SetXNoise(noise);
+  EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(), 2.0);
+  EXPECT_DOUBLE_EQ(sensor2.MagnetometerSensor()->XNoise().Mean(), 2.0);
 }
 
 /////////////////////////////////////////////////
