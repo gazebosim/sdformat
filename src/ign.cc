@@ -134,7 +134,7 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
-    int in_degrees, int snap_to_degrees)
+    int inDegrees, int snapToDegrees)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -156,51 +156,11 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
     return -1;
   }
 
-  sdf::SDF_VERSION_NAMESPACE::PrintConfig config;
-  if (in_degrees != 0)
+  sdf::PrintConfig config;
+  if (inDegrees!= 0)
     config.SetRotationInDegrees(true);
-  if (snap_to_degrees > 0)
-    config.SetRotationSnapToDegrees(static_cast<unsigned int>(snap_to_degrees));
-
-  sdf->PrintValues(config);
-  return 0;
-}
-
-//////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
-extern "C" SDFORMAT_VISIBLE int cmdPrintWithOption(
-    const char *_option, const char *_path)
-{
-  if (!sdf::filesystem::exists(_path))
-  {
-    std::cerr << "Error: File [" << _path << "] does not exist.\n";
-    return -1;
-  }
-
-  sdf::SDFPtr sdf(new sdf::SDF());
-
-  if (!sdf::init(sdf))
-  {
-    std::cerr << "Error: SDF schema initialization failed.\n";
-    return -1;
-  }
-
-  if (!sdf::readFile(_path, sdf))
-  {
-    std::cerr << "Error: SDF parsing the xml failed.\n";
-    return -1;
-  }
-
-  const std::string optionStr(_option);
-  sdf::SDF_VERSION_NAMESPACE::PrintConfig config;
-  if (optionStr == "in_degrees")
-  {
-    config.SetRotationInDegrees(true);
-  }
-  else if (optionStr == "snap_to_degrees")
-  {
-    config.SetRotationSnapToDegrees(true);
-  }
+  if (snapToDegrees > 0)
+    config.SetRotationSnapToDegrees(static_cast<unsigned int>(snapToDegrees));
 
   sdf->PrintValues(config);
   return 0;
