@@ -150,14 +150,6 @@ TEST(DOMSensor, MoveAssignment)
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
-
-  sdf::Magnetometer *magMutable = sensor2.MagnetometerSensor();
-  EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(),
-                   sensor2.MagnetometerSensor()->XNoise().Mean());
-  noise.SetMean(2.0);
-  magMutable->SetXNoise(noise);
-  EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(), 2.0);
-  EXPECT_DOUBLE_EQ(sensor2.MagnetometerSensor()->XNoise().Mean(), 2.0);
 }
 
 /////////////////////////////////////////////////
@@ -343,4 +335,160 @@ TEST(DOMSensor, EnableMetrics)
   EXPECT_EQ(true, sensor.EnableMetrics());
   sensor.SetEnableMetrics(false);
   EXPECT_EQ(false, sensor.EnableMetrics());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, MutableSensors)
+{
+  // Altimeter
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::ALTIMETER);
+
+    sdf::Altimeter alt;
+    sensor.SetAltimeterSensor(alt);
+
+    sdf::Altimeter *altMutable = sensor.AltimeterSensor();
+    EXPECT_DOUBLE_EQ(altMutable->VerticalPositionNoise().Mean(),
+        sensor.AltimeterSensor()->VerticalPositionNoise().Mean());
+
+    sdf::Noise noise;
+    noise.SetMean(2.0);
+    altMutable->SetVerticalPositionNoise(noise);
+    EXPECT_DOUBLE_EQ(altMutable->VerticalPositionNoise().Mean(), 2.0);
+    EXPECT_DOUBLE_EQ(
+        sensor.AltimeterSensor()->VerticalPositionNoise().Mean(), 2.0);
+  }
+
+  // Air pressure
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::AIR_PRESSURE);
+
+    sdf::AirPressure air;
+    sensor.SetAirPressureSensor(air);
+
+    sdf::AirPressure *airMutable = sensor.AirPressureSensor();
+    EXPECT_DOUBLE_EQ(airMutable->ReferenceAltitude(),
+        sensor.AirPressureSensor()->ReferenceAltitude());
+
+    airMutable->SetReferenceAltitude(2.0);
+    EXPECT_DOUBLE_EQ(airMutable->ReferenceAltitude(), 2.0);
+    EXPECT_DOUBLE_EQ(sensor.AirPressureSensor()->ReferenceAltitude(), 2.0);
+  }
+
+  // Camera
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::CAMERA);
+
+    sdf::Camera cam;
+    sensor.SetCameraSensor(cam);
+
+    sdf::Camera *camMutable = sensor.CameraSensor();
+    EXPECT_DOUBLE_EQ(camMutable->NearClip(), sensor.CameraSensor()->NearClip());
+
+    camMutable->SetNearClip(2.0);
+    EXPECT_DOUBLE_EQ(camMutable->NearClip(), 2.0);
+    EXPECT_DOUBLE_EQ(sensor.CameraSensor()->NearClip(), 2.0);
+  }
+
+  // Force torque
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::FORCE_TORQUE);
+
+    sdf::ForceTorque ftq;
+    sensor.SetForceTorqueSensor(ftq);
+
+    sdf::ForceTorque *ftqMutable = sensor.ForceTorqueSensor();
+    EXPECT_DOUBLE_EQ(ftqMutable->ForceXNoise().Mean(),
+        sensor.ForceTorqueSensor()->ForceXNoise().Mean());
+
+    sdf::Noise noise;
+    noise.SetMean(2.0);
+    ftqMutable->SetForceXNoise(noise);
+    EXPECT_DOUBLE_EQ(ftqMutable->ForceXNoise().Mean(), 2.0);
+    EXPECT_DOUBLE_EQ(
+        sensor.ForceTorqueSensor()->ForceXNoise().Mean(), 2.0);
+  }
+
+  // IMU
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::FORCE_TORQUE);
+
+    sdf::Imu imu;
+    sensor.SetImuSensor(imu);
+
+    sdf::Imu *imuMutable = sensor.ImuSensor();
+    EXPECT_DOUBLE_EQ(imuMutable->LinearAccelerationXNoise().Mean(),
+        sensor.ImuSensor()->LinearAccelerationXNoise().Mean());
+
+    sdf::Noise noise;
+    noise.SetMean(2.0);
+    imuMutable->SetLinearAccelerationXNoise(noise);
+    EXPECT_DOUBLE_EQ(imuMutable->LinearAccelerationXNoise().Mean(), 2.0);
+    EXPECT_DOUBLE_EQ(
+        sensor.ImuSensor()->LinearAccelerationXNoise().Mean(), 2.0);
+  }
+
+  // Lidar
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::LIDAR);
+
+    sdf::Lidar ldr;
+    sensor.SetLidarSensor(ldr);
+
+    sdf::Lidar *ldrMutable = sensor.LidarSensor();
+    EXPECT_DOUBLE_EQ(ldrMutable->LidarNoise().Mean(),
+        sensor.LidarSensor()->LidarNoise().Mean());
+
+    sdf::Noise noise;
+    noise.SetMean(2.0);
+    ldrMutable->SetLidarNoise(noise);
+    EXPECT_DOUBLE_EQ(ldrMutable->LidarNoise().Mean(), 2.0);
+    EXPECT_DOUBLE_EQ(
+        sensor.LidarSensor()->LidarNoise().Mean(), 2.0);
+  }
+
+  // Magnetometer
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::MAGNETOMETER);
+
+    sdf::Magnetometer mag;
+    sensor.SetMagnetometerSensor(mag);
+
+    sdf::Magnetometer *magMutable = sensor.MagnetometerSensor();
+    EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(),
+        sensor.MagnetometerSensor()->XNoise().Mean());
+
+    sdf::Noise noise;
+    noise.SetMean(2.0);
+    magMutable->SetXNoise(noise);
+    EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(), 2.0);
+    EXPECT_DOUBLE_EQ(sensor.MagnetometerSensor()->XNoise().Mean(), 2.0);
+  }
+
+  // NavSat
+  {
+    sdf::Sensor sensor;
+    sensor.SetType(sdf::SensorType::NAVSAT);
+
+    sdf::NavSat nav;
+    sensor.SetNavSatSensor(nav);
+
+    sdf::NavSat *navMutable = sensor.NavSatSensor();
+    EXPECT_DOUBLE_EQ(navMutable->HorizontalPositionNoise().Mean(),
+        sensor.NavSatSensor()->HorizontalPositionNoise().Mean());
+
+    sdf::Noise noise;
+    noise.SetMean(2.0);
+    navMutable->SetHorizontalPositionNoise(noise);
+    EXPECT_DOUBLE_EQ(navMutable->HorizontalPositionNoise().Mean(), 2.0);
+    EXPECT_DOUBLE_EQ(
+        sensor.NavSatSensor()->HorizontalPositionNoise().Mean(), 2.0);
+  }
 }
