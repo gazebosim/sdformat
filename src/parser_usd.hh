@@ -91,7 +91,7 @@ namespace sdf
      /// reduced fixed joints:  check if a fixed joint should be lumped
      ///   checking both the joint type and if disabledFixedJointLumping
      ///   option is set
-     bool FixedJointShouldBeReduced(usd::JointSharedPtr _jnt);
+     bool FixedJointShouldBeReduced(std::shared_ptr<sdf::Joint> _jnt);
 
      void CreateCollision(tinyxml2::XMLElement* _elem,
                           usd::LinkConstSharedPtr _link,

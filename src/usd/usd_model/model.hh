@@ -23,6 +23,9 @@
 #include <usd_model/link.hh>
 #include <usd_model/types.hh>
 
+#include <sdf/Joint.hh>
+#include <sdf/JointAxis.hh>
+
 namespace usd {
 
 class ModelInterface
@@ -39,9 +42,9 @@ public:
     return ptr;
   };
 
-  JointConstSharedPtr getJoint(const std::string& name) const
+  std::shared_ptr<sdf::Joint> getJoint(const std::string& name) const
   {
-    JointConstSharedPtr ptr;
+    std::shared_ptr<sdf::Joint> ptr;
     if (this->joints_.find(name) == this->joints_.end())
       ptr.reset();
     else
@@ -93,14 +96,15 @@ public:
   void initTree(std::map<std::string, std::string> &parent_link_tree)
   {
     // loop through all joints, for every link, assign children links and children joints
-    for (std::map<std::string, JointSharedPtr>::iterator joint = this->joints_.begin();joint != this->joints_.end(); joint++)
+    for (std::map<std::string, std::shared_ptr<sdf::Joint>>::iterator joint = this->joints_.begin();
+         joint != this->joints_.end(); joint++)
     {
-      std::string parent_link_name = joint->second->parent_link_name;
-      std::string child_link_name = joint->second->child_link_name;
+      std::string parent_link_name = joint->second->ParentLinkName();
+      std::string child_link_name = joint->second->ChildLinkName();
 
       if (parent_link_name.empty() || child_link_name.empty())
       {
-        throw ParseError("Joint [" + joint->second->name + "] is missing a parent and/or child link specification.");
+        throw ParseError("Joint [" + joint->second->Name() + "] is missing a parent and/or child link specification.");
       }
       else
       {
@@ -172,7 +176,7 @@ public:
   /// \brief complete list of Links
   std::map<std::string, LinkSharedPtr> links_;
   /// \brief complete list of Joints
-  std::map<std::string, JointSharedPtr> joints_;
+  std::map<std::string, std::shared_ptr<sdf::Joint>> joints_;
   /// \brief complete list of Materials
   std::map<std::string, std::shared_ptr<sdf::Material>> materials_;
 

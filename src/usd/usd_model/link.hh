@@ -27,10 +27,9 @@
 #include "ignition/math/Pose3.hh"
 #include "ignition/math/Vector3.hh"
 
-#include "joint.hh"
-
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Joint.hh"
 #include "sdf/Visual.hh"
 
 #include "types.hh"
@@ -62,9 +61,9 @@ public:
   /// Parent Joint element
   ///   explicitly stating "parent" because we want directional-ness for tree structure
   ///   every link can have one parent
-  JointSharedPtr parent_joint;
+  std::shared_ptr<sdf::Joint> parent_joint;
 
-  std::vector<JointSharedPtr> child_joints;
+  std::vector<std::shared_ptr<sdf::Joint>> child_joints;
   std::vector<LinkSharedPtr> child_links;
 
   LinkSharedPtr getParent() const
@@ -80,8 +79,6 @@ public:
   {
     this->name.clear();
     this->collision.reset();
-    this->parent_joint.reset();
-    this->child_joints.clear();
     this->child_links.clear();
     this->collision_array.clear();
     this->visual_array.clear();

@@ -24,6 +24,7 @@
 #include "sdf/Cylinder.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/Joint.hh"
 
 using namespace sdf;
 
@@ -407,15 +408,15 @@ inline namespace SDF_VERSION_NAMESPACE {
 
 
   ////////////////////////////////////////////////////////////////////////////////
-  bool USD2SDF::FixedJointShouldBeReduced(usd::JointSharedPtr _jnt)
+  bool USD2SDF::FixedJointShouldBeReduced(std::shared_ptr<sdf::Joint> _jnt)
   {
       // A joint should be lumped only if its type is fixed and
       // the disabledFixedJointLumping or preserveFixedJoint
       // joint options are not set
-      return (_jnt->type == usd::Joint::FIXED &&
-                (g_fixedJointsTransformedInRevoluteJoints.find(_jnt->name) ==
+      return (_jnt->Type() == sdf::JointType::FIXED &&
+                (g_fixedJointsTransformedInRevoluteJoints.find(_jnt->Name()) ==
                    g_fixedJointsTransformedInRevoluteJoints.end()) &&
-                (g_fixedJointsTransformedInFixedJoints.find(_jnt->name) ==
+                (g_fixedJointsTransformedInFixedJoints.find(_jnt->Name()) ==
                    g_fixedJointsTransformedInFixedJoints.end()));
   }
 
@@ -762,24 +763,24 @@ inline namespace SDF_VERSION_NAMESPACE {
     std::cerr << "_link->parent_joint != nullptr " << (_link->parent_joint == nullptr) << '\n';
     if (_link->parent_joint != nullptr)
     {
-      switch (_link->parent_joint->type)
+      switch (_link->parent_joint->Type())
       {
-        case usd::Joint::CONTINUOUS:
-        case usd::Joint::REVOLUTE:
+        case sdf::JointType::CONTINUOUS:
+        case sdf::JointType::REVOLUTE:
           jtype = "revolute";
           break;
-        case usd::Joint::PRISMATIC:
+        case sdf::JointType::PRISMATIC:
           jtype = "prismatic";
           break;
-        case usd::Joint::FLOATING:
-        case usd::Joint::PLANAR:
+        // case sdf::JointType::FLOATING:
+        // case sdf::JointType::PLANAR:
           break;
-        case usd::Joint::FIXED:
+        case sdf::JointType::FIXED:
           jtype = "fixed";
           break;
         default:
           sdferr << "Unknown joint type: ["
-                  << static_cast<int>(_link->parent_joint->type)
+                  << static_cast<int>(_link->parent_joint->Type())
                   << "] in link [" << _link->name << "]\n";
           break;
       }
@@ -793,7 +794,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     if (jtype == "fixed")
     {
       fixedJointConvertedToRevoluteJoint =
-        (g_fixedJointsTransformedInRevoluteJoints.find(_link->parent_joint->name)
+        (g_fixedJointsTransformedInRevoluteJoints.find(_link->parent_joint->Name())
          != g_fixedJointsTransformedInRevoluteJoints.end());
     }
 
@@ -821,10 +822,10 @@ inline namespace SDF_VERSION_NAMESPACE {
       {
         joint->SetAttribute("type", jtype.c_str());
       }
-      joint->SetAttribute("name", _link->parent_joint->name.c_str());
+      joint->SetAttribute("name", _link->parent_joint->Name().c_str());
       // Add joint pose relative to parent link
       AddTransform(
-          joint, _link->parent_joint->parent_to_joint_origin_transform);
+          joint, _link->parent_joint->RawPose());
       auto pose = joint->FirstChildElement("pose");
       std::string relativeToAttr = _link->getParent()->name;
       if ("world" == relativeToAttr )
@@ -849,53 +850,64 @@ inline namespace SDF_VERSION_NAMESPACE {
       else if (jtype != "fixed")
       {
         double jointAxisXyzArray[3] =
-        { _link->parent_joint->axis.X(),
-          _link->parent_joint->axis.Y(),
-          _link->parent_joint->axis.Z()};
+        { _link->parent_joint->Axis()->Xyz().X(),
+          _link->parent_joint->Axis()->Xyz().Y(),
+          _link->parent_joint->Axis()->Xyz().Z()};
         AddKeyValue(jointAxis, "xyz",
                     Values2str(3, jointAxisXyzArray));
-        if (_link->parent_joint->dynamics)
-        {
-          AddKeyValue(jointAxisDynamics, "damping",
-                      Values2str(1, &_link->parent_joint->dynamics->damping));
-          AddKeyValue(jointAxisDynamics, "friction",
-                      Values2str(1, &_link->parent_joint->dynamics->friction));
-        }
+        // if (_link->parent_joint->dynamics)
+        // {
+        double damping = _link->parent_joint->Axis()->Damping();
+        double friction = _link->parent_joint->Axis()->Friction();
+        AddKeyValue(jointAxisDynamics, "damping",
+                    Values2str(1, &damping));
+        AddKeyValue(jointAxisDynamics, "friction",
+                    Values2str(1, &friction));
+        // }
 
-        if (g_enforceLimits && _link->parent_joint->limits)
+        if (g_enforceLimits)
         {
           if (jtype == "slider")
           {
+            double lower = _link->parent_joint->Axis()->Lower();
+            double upper = _link->parent_joint->Axis()->Upper();
             AddKeyValue(jointAxisLimit, "lower",
-                        Values2str(1, &_link->parent_joint->limits->lower));
+                        Values2str(1, &lower));
             AddKeyValue(jointAxisLimit, "upper",
-                        Values2str(1, &_link->parent_joint->limits->upper));
+                        Values2str(1, &upper));
           }
-          else if (_link->parent_joint->type != usd::Joint::CONTINUOUS)
+          else if (_link->parent_joint->Type() != sdf::JointType::CONTINUOUS)
           {
-            double *lowstop  = &_link->parent_joint->limits->lower;
-            double *highstop = &_link->parent_joint->limits->upper;
+            double lowstop  = _link->parent_joint->Axis()->Lower();
+            double highstop = _link->parent_joint->Axis()->Upper();
             // enforce ode bounds, this will need to be fixed
-            if (*lowstop > *highstop)
+            if (lowstop > highstop)
             {
               sdferr << "usd2sdf: revolute joint ["
-                      << _link->parent_joint->name
-                      << "] with limits: lowStop[" << *lowstop
-                      << "] > highStop[" << *highstop
+                      << _link->parent_joint->Name()
+                      << "] with limits: lowStop[" << lowstop
+                      << "] > highStop[" << highstop
                       << "], switching the two.\n";
-              double tmp = *lowstop;
-              *lowstop = *highstop;
-              *highstop = tmp;
+              double tmp = lowstop;
+              lowstop = highstop;
+              highstop = tmp;
+              // TODO(ahcorde): const
+              // _link->parent_joint->Axis()->SetLower(lowstop);
+              // _link->parent_joint->Axis()->SetUpper(highstop);
             }
+            double lower = _link->parent_joint->Axis()->Lower();
+            double upper = _link->parent_joint->Axis()->Upper();
             AddKeyValue(jointAxisLimit, "lower",
-                        Values2str(1, &_link->parent_joint->limits->lower));
+                        Values2str(1, &lower));
             AddKeyValue(jointAxisLimit, "upper",
-                        Values2str(1, &_link->parent_joint->limits->upper));
+                        Values2str(1, &upper));
           }
+          double effort = _link->parent_joint->Axis()->Effort();
+          double velocity = _link->parent_joint->Axis()->MaxVelocity();
           AddKeyValue(jointAxisLimit, "effort",
-                      Values2str(1, &_link->parent_joint->limits->effort));
+                      Values2str(1, &effort));
           AddKeyValue(jointAxisLimit, "velocity",
-                      Values2str(1, &_link->parent_joint->limits->velocity));
+                      Values2str(1, &velocity));
         }
       }
 
@@ -916,7 +928,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       }
 
       // copy sdf extensions data
-      InsertSDFExtensionJoint(joint, _link->parent_joint->name);
+      InsertSDFExtensionJoint(joint, _link->parent_joint->Name());
 
       // add joint to document
       _root->LinkEndChild(joint);
@@ -1009,7 +1021,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       {
         sdferr << "usd2sdf: link[" << _link->name
                << "] has no inertia, "
-               << "parent joint [" << _link->parent_joint->name
+               << "parent joint [" << _link->parent_joint->Name()
                << "] ignored.\n";
       }
 

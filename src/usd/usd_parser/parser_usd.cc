@@ -81,13 +81,6 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   std::string rootPath;
   std::string nameLink;
 
-  // // insert <link name="world"/>
-  // LinkSharedPtr worldLink = nullptr;
-  // worldLink.reset(new Link);
-  // worldLink->clear();
-  // worldLink->name = "world";
-  // model->links_.insert(make_pair(worldLink->name, worldLink));
-
   // Get all Link elements
   for (auto const &prim : range ) {
 
@@ -137,10 +130,10 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     {
       sdferr << "UsdPhysicsJoint" << "\n";
 
-      JointSharedPtr joint = usd::ParseJoints(prim, primName, metersPerUnit);
+      std::shared_ptr<sdf::Joint> joint = usd::ParseJoints(prim, primName, metersPerUnit);
       if (joint != nullptr)
       {
-        model->joints_.insert(make_pair(joint->name, joint));
+        model->joints_.insert(make_pair(joint->Name(), joint));
       }
 
       continue;
@@ -200,6 +193,19 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   //   std::cerr << "\t parent " << joint.second->parent_link_name << '\n';
   //   std::cerr << "\t child " << joint.second->child_link_name << '\n';
   // }
+
+  for (auto & joint : model->joints_)
+  {
+    if (joint.second->ParentLinkName() == "world")
+    {
+      // insert <link name="world"/>
+      LinkSharedPtr worldLink = nullptr;
+      worldLink.reset(new Link);
+      worldLink->clear();
+      worldLink->name = "world";
+      model->links_.insert(make_pair(worldLink->name, worldLink));
+    }
+  }
 
   // every link has children links and joints, but no parents, so we create a
   // local convenience data structure for keeping child->parent relations

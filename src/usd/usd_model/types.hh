@@ -25,32 +25,11 @@
 
 namespace usd
 {
-
-inline
-void split_string(std::vector<std::string> &result,
-                  const std::string &input,
-                  const std::string &isAnyOf)
-{
-  std::string::size_type start = 0;
-  std::string::size_type end = input.find_first_of(isAnyOf, start);
-  while (end != std::string::npos)
-  {
-    result.push_back(input.substr(start, end-start));
-    start = end + 1;
-    end = input.find_first_of(isAnyOf, start);
-  }
-  if (start < input.length())
-  {
-    result.push_back(input.substr(start));
-  }
-}
-
 class ParseError: public std::runtime_error
 {
 public:
   ParseError(const std::string &error_msg) : std::runtime_error(error_msg) {};
 };
-
 }
 
 #define USD_TYPEDEF_CLASS_POINTER(Class) \
@@ -59,20 +38,12 @@ typedef std::shared_ptr<Class> Class##SharedPtr; \
 typedef std::shared_ptr<const Class> Class##ConstSharedPtr; \
 typedef std::weak_ptr<Class> Class##WeakPtr
 
-
 namespace usd{
-
   // shared pointer used in joint.h
   typedef std::shared_ptr<double> DoubleSharedPtr;
 
   class ModelInterface;
 
-  USD_TYPEDEF_CLASS_POINTER(Joint);
-  USD_TYPEDEF_CLASS_POINTER(JointCalibration);
-  USD_TYPEDEF_CLASS_POINTER(JointDynamics);
-  USD_TYPEDEF_CLASS_POINTER(JointLimits);
-  USD_TYPEDEF_CLASS_POINTER(JointMimic);
-  USD_TYPEDEF_CLASS_POINTER(JointSafety);
   USD_TYPEDEF_CLASS_POINTER(Link);
   // typedef shared pointers
   typedef std::shared_ptr<ModelInterface> ModelInterfaceSharedPtr;
@@ -95,8 +66,6 @@ namespace usd{
   {
     return std::static_pointer_cast<T>(r);
   }
-
-
 }
 
 #endif
