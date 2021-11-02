@@ -20,6 +20,11 @@
 #include "XmlUtils.hh"
 #include "SDFExtension.hh"
 
+#include "sdf/Box.hh"
+#include "sdf/Cylinder.hh"
+#include "sdf/Mesh.hh"
+#include "sdf/Sphere.hh"
+
 using namespace sdf;
 
 namespace sdf {
@@ -77,16 +82,16 @@ inline namespace SDF_VERSION_NAMESPACE {
 
   /////////////////////////////////////////////////
   /// \brief convert Vector3 to string
-  /// \param[in] _vector a usd::Vector3
+  /// \param[in] _vector a ignition::math::Vector3d
   /// \return a string
-  std::string USD2SDF::Vector32Str(const usd::Vector3 _vector)
+  std::string USD2SDF::Vector32Str(const ignition::math::Vector3d _vector)
   {
     std::stringstream ss;
-    ss << _vector.x;
+    ss << _vector.X();
     ss << " ";
-    ss << _vector.y;
+    ss << _vector.Y();
     ss << " ";
-    ss << _vector.z;
+    ss << _vector.Z();
     return ss.str();
   }
 
@@ -157,7 +162,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 
   ////////////////////////////////////////////////////////////////////////////////
   void USD2SDF::CreateGeometry(tinyxml2::XMLElement* _elem,
-                      usd::GeometrySharedPtr _geometry)
+                      const Geometry * _geometry)
   {
     sdferr << "CreateGeometry\n";
 
@@ -167,94 +172,93 @@ inline namespace SDF_VERSION_NAMESPACE {
     std::string type;
     tinyxml2::XMLElement *geometryType = nullptr;
 
-    switch (_geometry->type)
+    switch (_geometry->Type())
     {
-      case usd::Geometry::BOX:
+      case sdf::GeometryType::BOX:
         type = "box";
         {
-          usd::BoxConstSharedPtr box =
-            usd::dynamic_pointer_cast<usd::Box>(_geometry);
+          const sdf::Box * box = _geometry->BoxShape();
           int sizeCount = 3;
           double sizeVals[3];
-          sizeVals[0] = box->dim.x;
-          sizeVals[1] = box->dim.y;
-          sizeVals[2] = box->dim.z;
+          sizeVals[0] = box->Size().X();
+          sizeVals[1] = box->Size().Y();
+          sizeVals[2] = box->Size().Z();
           geometryType = doc->NewElement(type.c_str());
           AddKeyValue(geometryType, "size", Values2str(sizeCount, sizeVals));
         }
         break;
-      case usd::Geometry::CYLINDER:
+      case sdf::GeometryType::CYLINDER:
         type = "cylinder";
         {
-          usd::CylinderConstSharedPtr cylinder =
-            usd::dynamic_pointer_cast<usd::Cylinder>(_geometry);
+          const sdf::Cylinder * cylinder = _geometry->CylinderShape();
           geometryType = doc->NewElement(type.c_str());
-          AddKeyValue(geometryType, "length", Values2str(1, &cylinder->length));
-          AddKeyValue(geometryType, "radius", Values2str(1, &cylinder->radius));
+          double length = cylinder->Length();
+          double radius = cylinder->Radius();
+          AddKeyValue(geometryType, "length", Values2str(1, &length));
+          AddKeyValue(geometryType, "radius", Values2str(1, &radius));
         }
         break;
-      case usd::Geometry::SPHERE:
+      case sdf::GeometryType::SPHERE:
         type = "sphere";
         {
-          usd::SphereConstSharedPtr sphere =
-            usd::dynamic_pointer_cast<usd::Sphere>(_geometry);
+          const sdf::Sphere * sphere = _geometry->SphereShape();
           geometryType = doc->NewElement(type.c_str());
-          AddKeyValue(geometryType, "radius", Values2str(1, &sphere->radius));
+          double radius = sphere->Radius();
+          AddKeyValue(geometryType, "radius", Values2str(1, &radius));
         }
         break;
-      // case usd::Geometry::MESH:
-      //   type = "mesh";
-      //   {
-      //     usd::MeshConstSharedPtr mesh =
-      //       usd::dynamic_pointer_cast<usd::Mesh>(_geometry);
-      //     geometryType = doc->NewElement(type.c_str());
-      //     AddKeyValue(geometryType, "scale", Vector32Str(mesh->scale));
-      //     // do something more to meshes
-      //     {
-      //       // set mesh file
-      //       if (mesh->filename.empty())
-      //       {
-      //         sdferr << "usd2sdf: mesh geometry with no filename given.\n";
-      //       }
-      //
-      //       // give some warning if file does not exist.
-      //       // disabled while switching to uri
-      //       // @todo: re-enable check
-      //       // std::ifstream fin;
-      //       // fin.open(mesh->filename.c_str(), std::ios::in);
-      //       // fin.close();
-      //       // if (fin.fail())
-      //       //   sdferr << "filename referred by mesh ["
-      //       //          << mesh->filename << "] does not appear to exist.\n";
-      //
-      //       // Convert package:// to model://,
-      //       // in ROS, this will work if
-      //       // the model package is in ROS_PACKAGE_PATH and has a manifest.xml
-      //       // as a typical ros package does.
-      //       std::string modelFilename = mesh->filename;
-      //       std::string packagePrefix("package://");
-      //       std::string modelPrefix("model://");
-      //       size_t pos1 = modelFilename.find(packagePrefix, 0);
-      //       if (pos1 != std::string::npos)
-      //       {
-      //         size_t repLen = packagePrefix.size();
-      //         modelFilename.replace(pos1, repLen, modelPrefix);
-      //         // sdferr << "ros style uri [package://] is"
-      //         //   << "automatically converted: [" << modelFilename
-      //         //   << "], make sure your ros package is in GAZEBO_MODEL_PATH"
-      //         //   << " and switch your manifest to conform to sdf's"
-      //         //   << " model database format.  See ["
-      //         //   << "http://sdfsim.org/wiki/Model_database#Model_Manifest_XML"
-      //         //   << "] for more info.\n";
-      //       }
-      //
-      //       // add mesh filename
-      //       AddKeyValue(geometryType, "uri", modelFilename);
-      //     }
-      //   }
-        // break;
+      case sdf::GeometryType::MESH:
+        type = "mesh";
+        {
+          const sdf::Mesh * mesh = _geometry->MeshShape();
+          geometryType = doc->NewElement(type.c_str());
+          AddKeyValue(geometryType, "scale", Vector32Str(mesh->Scale()));
+          // do something more to meshes
+          {
+            // set mesh file
+            if (mesh->FilePath().empty())
+            {
+              sdferr << "usd2sdf: mesh geometry with no filename given.\n";
+            }
+
+            // give some warning if file does not exist.
+            // disabled while switching to uri
+            // @todo: re-enable check
+            // std::ifstream fin;
+            // fin.open(mesh->filename.c_str(), std::ios::in);
+            // fin.close();
+            // if (fin.fail())
+            //   sdferr << "filename referred by mesh ["
+            //          << mesh->filename << "] does not appear to exist.\n";
+
+            // Convert package:// to model://,
+            // in ROS, this will work if
+            // the model package is in ROS_PACKAGE_PATH and has a manifest.xml
+            // as a typical ros package does.
+            std::string modelFilename = mesh->FilePath();
+            std::string packagePrefix("package://");
+            std::string modelPrefix("model://");
+            size_t pos1 = modelFilename.find(packagePrefix, 0);
+            if (pos1 != std::string::npos)
+            {
+              size_t repLen = packagePrefix.size();
+              modelFilename.replace(pos1, repLen, modelPrefix);
+              // sdferr << "ros style uri [package://] is"
+              //   << "automatically converted: [" << modelFilename
+              //   << "], make sure your ros package is in GAZEBO_MODEL_PATH"
+              //   << " and switch your manifest to conform to sdf's"
+              //   << " model database format.  See ["
+              //   << "http://sdfsim.org/wiki/Model_database#Model_Manifest_XML"
+              //   << "] for more info.\n";
+            }
+
+            // add mesh filename
+            AddKeyValue(geometryType, "uri", modelFilename);
+          }
+        }
+        break;
       default:
-        sdferr << "Unknown body type: [" << static_cast<int>(_geometry->type)
+        sdferr << "Unknown body type: [" << static_cast<int>(_geometry->Type())
                 << "] skipped in geometry\n";
         break;
     }
@@ -269,7 +273,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 
   ////////////////////////////////////////////////////////////////////////////////
   void USD2SDF::CreateVisual(tinyxml2::XMLElement *_elem, usd::LinkConstSharedPtr _link,
-      usd::VisualSharedPtr _visual, const std::string &_oldLinkName)
+      std::shared_ptr<sdf::Visual> _visual, const std::string &_oldLinkName)
   {
     sdferr << "CreateVisual\n";
 
@@ -291,27 +295,30 @@ inline namespace SDF_VERSION_NAMESPACE {
 
     // add the visualisation transfrom
     double pose[6];
-    pose[0] = _visual->origin.position.x;
-    pose[1] = _visual->origin.position.y;
-    pose[2] = _visual->origin.position.z;
-    _visual->origin.rotation.getRPY(pose[3], pose[4], pose[5]);
+    pose[0] = _visual->RawPose().Pos().X();
+    pose[1] = _visual->RawPose().Pos().Y();
+    pose[2] = _visual->RawPose().Pos().Z();
+    pose[3] = _visual->RawPose().Rot().Roll();
+    pose[4] = _visual->RawPose().Rot().Pitch();
+    pose[5] = _visual->RawPose().Rot().Yaw();
+
     AddKeyValue(sdfVisual, "pose", Values2str(6, pose));
 
     // insert geometry
-    if (!_visual || !_visual->geometry)
+    if (!_visual || !_visual->Geom())
     {
       sdferr << "usd2sdf: visual of link [" << _link->name
              << "] has no <geometry>.\n";
     }
     else
     {
-      CreateGeometry(sdfVisual, _visual->geometry);
+      CreateGeometry(sdfVisual, _visual->Geom());
     }
 
     // set additional data from extensions
     // InsertSDFExtensionVisual(sdfVisual, _link->name);
 
-    if (_visual->material)
+    if (_visual->Material())
     {
       // Refer to this comment in github to understand the ambient and diffuse
       // https://github.com/osrf/sdformat/pull/526#discussion_r623937715
@@ -330,28 +337,19 @@ inline namespace SDF_VERSION_NAMESPACE {
         if (materialTag->FirstChildElement("diffuse") == nullptr)
         {
           double color_diffuse[4];
-          color_diffuse[0] =
-            ignition::math::clamp(_visual->material->color.r / 0.8, 0.0, 1.0);
-          color_diffuse[1] =
-            ignition::math::clamp(_visual->material->color.g / 0.8, 0.0, 1.0);
-          color_diffuse[2] =
-            ignition::math::clamp(_visual->material->color.b / 0.8, 0.0, 1.0);
-          color_diffuse[3] = _visual->material->color.a;
+          color_diffuse[0] = _visual->Material()->Diffuse().R();
+          color_diffuse[1] = _visual->Material()->Diffuse().G();
+          color_diffuse[2] = _visual->Material()->Diffuse().B();
+          color_diffuse[3] = _visual->Material()->Diffuse().A();
           AddKeyValue(materialTag, "diffuse", Values2str(4, color_diffuse));
         }
         if (materialTag->FirstChildElement("ambient") == nullptr)
         {
           double color_ambient[4];
-          color_ambient[0] =
-            ignition::math::clamp(
-              0.5 * _visual->material->color.r / 0.4, 0.0, 1.0);
-          color_ambient[1] =
-            ignition::math::clamp(
-              0.5 * _visual->material->color.g / 0.4, 0.0, 1.0);
-          color_ambient[2] =
-            ignition::math::clamp(
-              0.5 * _visual->material->color.b / 0.4, 0.0, 1.0);
-          color_ambient[3] = _visual->material->color.a;
+          color_ambient[0] = _visual->Material()->Ambient().R();
+          color_ambient[1] = _visual->Material()->Ambient().G();
+          color_ambient[2] = _visual->Material()->Ambient().B();
+          color_ambient[3] = _visual->Material()->Ambient().A();
           AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
         }
       }
@@ -373,17 +371,17 @@ inline namespace SDF_VERSION_NAMESPACE {
     // Note, well as additional visual from
     //   lumped meshes (fixed joint reduction)
     unsigned int visualCount = 0;
-    for (std::vector<usd::VisualSharedPtr>::const_iterator
+    for (std::vector<std::shared_ptr<sdf::Visual>>::const_iterator
         visual = _link->visual_array.begin();
         visual != _link->visual_array.end();
         ++visual)
     {
       sdferr << "creating visual for link [" << _link->name
-             << "] visual [" << (*visual)->name << "]\n";
+             << "] visual [" << (*visual)->Name() << "]\n";
 
       // visual sdf has a name if it was lumped/reduced
       // otherwise, use the link name
-      std::string visualName = (*visual)->name;
+      std::string visualName = (*visual)->Name();
       if (visualName.empty())
       {
         visualName = _link->name;
@@ -420,35 +418,6 @@ inline namespace SDF_VERSION_NAMESPACE {
                 (g_fixedJointsTransformedInFixedJoints.find(_jnt->name) ==
                    g_fixedJointsTransformedInFixedJoints.end()));
   }
-
-  ////////////////////////////////////////////////////////////////////////////////
-  ignition::math::Pose3d USD2SDF::CopyPose(usd::Pose _pose)
-  {
-    ignition::math::Pose3d p;
-    p.Pos().X() = _pose.position.x;
-    p.Pos().Y() = _pose.position.y;
-    p.Pos().Z() = _pose.position.z;
-    p.Rot().X() = _pose.rotation.x;
-    p.Rot().Y() = _pose.rotation.y;
-    p.Rot().Z() = _pose.rotation.z;
-    p.Rot().W() = _pose.rotation.w;
-    return p;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////
-  usd::Pose USD2SDF::CopyPose(ignition::math::Pose3d _pose)
-  {
-    usd::Pose p;
-    p.position.x = _pose.Pos().X();
-    p.position.y = _pose.Pos().Y();
-    p.position.z = _pose.Pos().Z();
-    p.rotation.x = _pose.Rot().X();
-    p.rotation.y = _pose.Rot().Y();
-    p.rotation.z = _pose.Rot().Z();
-    p.rotation.w = _pose.Rot().W();
-    return p;
-  }
-
 
   ////////////////////////////////////////////////////////////////////////////////
   void USD2SDF::InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
@@ -633,7 +602,7 @@ inline namespace SDF_VERSION_NAMESPACE {
   ////////////////////////////////////////////////////////////////////////////////
   void USD2SDF::CreateCollision(tinyxml2::XMLElement* _elem,
                        usd::LinkConstSharedPtr _link,
-                       usd::CollisionSharedPtr _collision,
+                       std::shared_ptr<sdf::Collision> _collision,
                        const std::string &_oldLinkName)
   {
     auto* doc = _elem->GetDocument();
@@ -661,21 +630,23 @@ inline namespace SDF_VERSION_NAMESPACE {
 
     // set transform
     double pose[6];
-    pose[0] = _collision->origin.position.x;
-    pose[1] = _collision->origin.position.y;
-    pose[2] = _collision->origin.position.z;
-    _collision->origin.rotation.getRPY(pose[3], pose[4], pose[5]);
+    pose[0] = _collision->RawPose().Pos().X();
+    pose[1] = _collision->RawPose().Pos().Y();
+    pose[2] = _collision->RawPose().Pos().Z();
+    pose[3] = _collision->RawPose().Rot().Roll();
+    pose[4] = _collision->RawPose().Rot().Pitch();
+    pose[5] = _collision->RawPose().Rot().Yaw();
     AddKeyValue(sdfCollision, "pose", Values2str(6, pose));
 
     // add geometry block
-    if (!_collision || !_collision->geometry)
+    if (!_collision || !_collision->Geom())
     {
       sdfdbg << "urdf2sdf: collision of link [" << _link->name
              << "] has no <geometry>.\n";
     }
     else
     {
-      CreateGeometry(sdfCollision, _collision->geometry);
+      CreateGeometry(sdfCollision, _collision->Geom());
     }
 
     // set additional data from extensions
@@ -696,17 +667,17 @@ inline namespace SDF_VERSION_NAMESPACE {
     // Note, well as additional collision from
     //   lumped meshes (fixed joint reduction)
     unsigned int collisionCount = 0;
-    for (std::vector<usd::CollisionSharedPtr>::const_iterator
+    for (std::vector<std::shared_ptr<sdf::Collision>>::const_iterator
         collision = _link->collision_array.begin();
         collision != _link->collision_array.end();
         ++collision)
     {
       sdfdbg << "creating collision for link [" << _link->name
-             << "] collision [" << (*collision)->name << "]\n";
+             << "] collision [" << (*collision)->Name() << "]\n";
 
       // collision sdf has a name if it was lumped/reduced
       // otherwise, use the link name
-      std::string collisionName = (*collision)->name;
+      std::string collisionName = (*collision)->Name();
       if (collisionName.empty())
       {
         collisionName = _link->name;
@@ -739,31 +710,41 @@ inline namespace SDF_VERSION_NAMESPACE {
 
     // set mass properties
     // check and print a warning message
-    double roll, pitch, yaw;
-    _link->inertial->origin.rotation.getRPY(roll, pitch, yaw);
+    // double roll = _link->inertial->origin.Rot().Roll();
+    // double pitch = _link->inertial->origin.Rot().Pitch();
+    // double yaw = _link->inertial->origin.Rot().Yaw();
 
     /// add pose
-    ignition::math::Pose3d pose = CopyPose(_link->inertial->origin);
+    ignition::math::Pose3d pose = _link->inertial->Pose();
     AddTransform(inertial, pose);
 
+    const ignition::math::MassMatrix3d massMatrix = _link->inertial->MassMatrix();
     // add mass
+    double mass = massMatrix.Mass();
     AddKeyValue(inertial, "mass",
-                Values2str(1, &_link->inertial->mass));
+                Values2str(1, &mass));
 
     // add inertia (ixx, ixy, ixz, iyy, iyz, izz)
+    double ixx, ixy, ixz, iyy, iyz, izz;
+    ixx = massMatrix.Ixx();
+    ixy = massMatrix.Ixy();
+    ixz = massMatrix.Ixz();
+    iyy = massMatrix.Iyy();
+    iyz = massMatrix.Iyz();
+    izz = massMatrix.Izz();
     tinyxml2::XMLElement *inertia = doc->NewElement("inertia");
     AddKeyValue(inertia, "ixx",
-                Values2str(1, &_link->inertial->ixx));
+                Values2str(1, &ixx));
     AddKeyValue(inertia, "ixy",
-                Values2str(1, &_link->inertial->ixy));
+                Values2str(1, &ixy));
     AddKeyValue(inertia, "ixz",
-                Values2str(1, &_link->inertial->ixz));
+                Values2str(1, &ixz));
     AddKeyValue(inertia, "iyy",
-                Values2str(1, &_link->inertial->iyy));
+                Values2str(1, &iyy));
     AddKeyValue(inertia, "iyz",
-                Values2str(1, &_link->inertial->iyz));
+                Values2str(1, &iyz));
     AddKeyValue(inertia, "izz",
-                Values2str(1, &_link->inertial->izz));
+                Values2str(1, &izz));
     inertial->LinkEndChild(inertia);
 
     _elem->LinkEndChild(inertial);
@@ -843,7 +824,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       joint->SetAttribute("name", _link->parent_joint->name.c_str());
       // Add joint pose relative to parent link
       AddTransform(
-          joint, CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
+          joint, _link->parent_joint->parent_to_joint_origin_transform);
       auto pose = joint->FirstChildElement("pose");
       std::string relativeToAttr = _link->getParent()->name;
       if ("world" == relativeToAttr )
@@ -868,9 +849,9 @@ inline namespace SDF_VERSION_NAMESPACE {
       else if (jtype != "fixed")
       {
         double jointAxisXyzArray[3] =
-        { _link->parent_joint->axis.x,
-          _link->parent_joint->axis.y,
-          _link->parent_joint->axis.z};
+        { _link->parent_joint->axis.X(),
+          _link->parent_joint->axis.Y(),
+          _link->parent_joint->axis.Z()};
         AddKeyValue(jointAxis, "xyz",
                     Values2str(3, jointAxisXyzArray));
         if (_link->parent_joint->dynamics)
@@ -962,7 +943,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     if (_link->parent_joint)
     {
       // tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
-      AddTransform(_root, CopyPose(_link->pose));
+      AddTransform(_root, _link->pose);
       tinyxml2::XMLElement * pose = _root->FirstChildElement("pose");
       // pose->SetAttribute("relative_to", _link->name.c_str());
       elem->LinkEndChild(pose);
@@ -1006,7 +987,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     //  allow det(I) == zero, in the case of point mass geoms.
     // @todo:  keyword "world" should be a constant defined somewhere else
     if (_link->name != "world" &&
-        ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
+        ((!_link->inertial) || ignition::math::equal(_link->inertial->MassMatrix().Mass(), 0.0)))
     {
       if (!_link->child_links.empty())
       {
@@ -1092,8 +1073,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     // g_extensions.clear();
     g_fixedJointsTransformedInFixedJoints.clear();
     g_fixedJointsTransformedInRevoluteJoints.clear();
-    g_initialRobotPose.position = usd::Vector3(0, 0, 0);
-    g_initialRobotPose.rotation.setFromRPY(0, 0, 0);
+    g_initialRobotPose.Set(0, 0, 0, 0, 0, 0);
     g_initialRobotPoseValid = true;
 
     std::cerr << "rootLink->name " << rootLink->name << '\n';

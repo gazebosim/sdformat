@@ -80,9 +80,9 @@ public:
   };
 
   /// non-const getMaterial()
-  MaterialSharedPtr getMaterial(const std::string& name) const
+  std::shared_ptr<sdf::Material> getMaterial(const std::string& name) const
   {
-    MaterialSharedPtr ptr;
+    std::shared_ptr<sdf::Material> ptr;
     if (this->materials_.find(name) == this->materials_.end())
       ptr.reset();
     else
@@ -174,7 +174,7 @@ public:
   /// \brief complete list of Joints
   std::map<std::string, JointSharedPtr> joints_;
   /// \brief complete list of Materials
-  std::map<std::string, MaterialSharedPtr> materials_;
+  std::map<std::string, std::shared_ptr<sdf::Material>> materials_;
 
   /// \brief The name of the robot model
   std::string name_;

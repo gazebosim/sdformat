@@ -21,7 +21,8 @@
 #include <string>
 #include <vector>
 
-#include "usd_model/pose.hh"
+#include "ignition/math/Pose3.hh"
+#include "ignition/math/Vector3.hh"
 #include "usd_model/types.hh"
 
 namespace usd{
@@ -163,7 +164,7 @@ public:
   ///            FLOATING    N/A
   ///            PLANAR      plane normal axis
   ///            FIXED       N/A
-  Vector3 axis;
+  ignition::math::Vector3d axis;
 
   /// child Link element
   ///   child link frame is the same as the Joint frame
@@ -173,7 +174,7 @@ public:
   ///   origin specifies the transform from Parent Link to Joint Frame
   std::string parent_link_name;
   /// transform from Parent Link frame to Joint frame
-  Pose  parent_to_joint_origin_transform;
+  ignition::math::Pose3d  parent_to_joint_origin_transform;
 
   /// Joint Dynamics
   JointDynamicsSharedPtr dynamics;
@@ -192,10 +193,10 @@ public:
 
   void clear()
   {
-    this->axis.clear();
+    this->axis.Set();
     this->child_link_name.clear();
     this->parent_link_name.clear();
-    this->parent_to_joint_origin_transform.clear();
+    this->parent_to_joint_origin_transform.Reset();
     this->dynamics.reset();
     this->limits.reset();
     this->safety.reset();

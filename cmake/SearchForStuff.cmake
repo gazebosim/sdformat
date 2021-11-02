@@ -122,7 +122,7 @@ endif()
 ########################################
 # Find ignition common
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-common4 4.0 QUIET)
+find_package(ignition-common4 4.0 REQUIRED graphics)
 if (NOT ignition-common4_FOUND)
   message(STATUS "Looking for ignition-common4-config.cmake - not found")
   BUILD_ERROR ("Missing: Ignition math (libignition-common4-dev)")

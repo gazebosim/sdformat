@@ -67,11 +67,6 @@ namespace usd{
 
   class ModelInterface;
 
-  USD_TYPEDEF_CLASS_POINTER(Box);
-  USD_TYPEDEF_CLASS_POINTER(Collision);
-  USD_TYPEDEF_CLASS_POINTER(Cylinder);
-  USD_TYPEDEF_CLASS_POINTER(Geometry);
-  USD_TYPEDEF_CLASS_POINTER(Inertial);
   USD_TYPEDEF_CLASS_POINTER(Joint);
   USD_TYPEDEF_CLASS_POINTER(JointCalibration);
   USD_TYPEDEF_CLASS_POINTER(JointDynamics);
@@ -79,9 +74,6 @@ namespace usd{
   USD_TYPEDEF_CLASS_POINTER(JointMimic);
   USD_TYPEDEF_CLASS_POINTER(JointSafety);
   USD_TYPEDEF_CLASS_POINTER(Link);
-  USD_TYPEDEF_CLASS_POINTER(Material);
-  USD_TYPEDEF_CLASS_POINTER(Sphere);
-  USD_TYPEDEF_CLASS_POINTER(Visual);
   // typedef shared pointers
   typedef std::shared_ptr<ModelInterface> ModelInterfaceSharedPtr;
 

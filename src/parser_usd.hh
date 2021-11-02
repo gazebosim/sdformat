@@ -49,16 +49,16 @@ namespace sdf
       public: ~USD2SDF();
 
       std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem);
-      std::string Vector32Str(const usd::Vector3 _vector);
+      std::string Vector32Str(const ignition::math::Vector3d _vector);
       std::string Values2str(unsigned int _count, const double *_values);
       std::string Values2str(unsigned int _count, const int *_values);
       void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
                        const std::string &_value);
       void CreateGeometry(tinyxml2::XMLElement* _elem,
-                          usd::GeometrySharedPtr _geometry);
+                          const Geometry * _geometry);
 
       void CreateVisual(tinyxml2::XMLElement *_elem, usd::LinkConstSharedPtr _link,
-          usd::VisualSharedPtr _visual, const std::string &_oldLinkName);
+          std::shared_ptr<sdf::Visual> _visual, const std::string &_oldLinkName);
 
       void CreateVisuals(tinyxml2::XMLElement* _elem,
                          usd::LinkConstSharedPtr _link);
@@ -80,9 +80,6 @@ namespace sdf
       void CreateCollisions(tinyxml2::XMLElement* _elem,
                             usd::LinkConstSharedPtr _link);
 
-     ignition::math::Pose3d CopyPose(usd::Pose _pose);
-     usd::Pose CopyPose(ignition::math::Pose3d _pose);
-
      void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
                                   const std::string &_jointName);
 
@@ -98,7 +95,7 @@ namespace sdf
 
      void CreateCollision(tinyxml2::XMLElement* _elem,
                           usd::LinkConstSharedPtr _link,
-                          usd::CollisionSharedPtr _collision,
+                          std::shared_ptr<sdf::Collision> _collision,
                           const std::string &_oldLinkName);
 
       /// \brief Return true if the filename is a USD model.
@@ -114,7 +111,7 @@ namespace sdf
       std::set<std::string> g_fixedJointsTransformedInFixedJoints;
       bool g_reduceFixedJoints;
       bool g_enforceLimits;
-      usd::Pose g_initialRobotPose;
+      ignition::math::Pose3d g_initialRobotPose;
       bool g_initialRobotPoseValid = false;
 
     };

@@ -17,9 +17,10 @@
 
 #include "links.hh"
 
-#include <pxr/usd/usdGeom/sphere.h>
-#include <pxr/usd/usdGeom/cylinder.h>
 #include <pxr/usd/usdGeom/cube.h>
+#include <pxr/usd/usdGeom/cylinder.h>
+#include <pxr/usd/usdGeom/mesh.h>
+#include <pxr/usd/usdGeom/sphere.h>
 
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/base/gf/matrix4d.h"
@@ -27,10 +28,21 @@
 
 #include "sdf/Console.hh"
 
+#include "ignition/common/ColladaExporter.hh"
+#include "ignition/common/Mesh.hh"
+#include "ignition/common/SubMesh.hh"
 #include "ignition/common/Util.hh"
 
 #include "pxr/usd/usdPhysics/massAPI.h"
 #include "pxr/usd/usdPhysics/collisionAPI.h"
+
+#include "sdf/Box.hh"
+#include "sdf/Collision.hh"
+#include "sdf/Cylinder.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/Mesh.hh"
+#include "sdf/Sphere.hh"
+
 
 namespace usd
 {
@@ -48,7 +60,14 @@ namespace usd
       link->clear();
     }
 
-    std::vector<std::string> tokens = ignition::common::split(pxr::TfStringify(_prim.GetPath()), "/");
+    std::string primName = pxr::TfStringify(_prim.GetPath());
+    size_t pos = std::string::npos;
+    if ((pos  = primName.find("/World") )!= std::string::npos)
+    {
+      primName.erase(pos, std::string("/World").length());
+    }
+
+    std::vector<std::string> tokens = ignition::common::split(primName, "/");
     if (tokens.size() == 3)
     {
       link->name = pxr::TfStringify("/" + tokens[0] + "/" + tokens[1]);
@@ -60,41 +79,33 @@ namespace usd
 
     if (!link->inertial)
     {
-      link->inertial.reset(new Inertial());
-      link->inertial->clear();
+      link->inertial = std::make_shared<ignition::math::Inertiald>();
 
       if (_prim.HasAPI<pxr::UsdPhysicsMassAPI>())
       {
+        ignition::math::MassMatrix3d massMatrix;
         std::cerr << "UsdPhysicsMassAPI" << '\n';
         float mass;
-        pxr::GfVec3f center_of_mass;
+        pxr::GfVec3f centerOfMass;
+        pxr::GfVec3f diagonalInertia;
         _prim.GetAttribute(pxr::TfToken("physics:mass")).Get(&mass);
-        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass")).Get(&center_of_mass);
+        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass")).Get(&centerOfMass);
+        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia")).Get(&diagonalInertia);
 
-        std::cerr << "mass " << mass << '\n';
-
-
-        link->inertial->mass = mass;
-        if (link->inertial->mass < 0.0001)
+        if (mass < 0.0001)
         {
-          link->inertial->mass = 1.0;
+          mass = 1.0;
         }
-        link->inertial->origin.position = usd::Vector3(
-          center_of_mass[0], center_of_mass[1], center_of_mass[2]);
-        link->inertial->origin.rotation = usd::Rotation(0, 0, 0, 1.0);
+        massMatrix.SetMass(mass);
+        massMatrix.SetDiagonalMoments(
+          ignition::math::Vector3d(diagonalInertia[0], diagonalInertia[1], diagonalInertia[2]));
 
-        // TODO(ahcorde): Review
-        link->inertial->ixx = 0.16666;
-        link->inertial->ixy = 0.0;
-        link->inertial->ixz = 0.0;
-        link->inertial->iyy = 0.16666;
-        link->inertial->iyz = 0.0;
-        link->inertial->izz = 0.16666;
+        link->inertial->SetPose(ignition::math::Pose3d(
+            ignition::math::Vector3d(
+              centerOfMass[0], centerOfMass[1], centerOfMass[2]),
+            ignition::math::Quaterniond(0, 0, 0, 1.0)));
 
-        if (link->inertial->mass < 0.0001)
-        {
-          link->inertial->mass = 1.0;
-        }
+        link->inertial->SetMassMatrix(massMatrix);
       }
 
       auto variant_geom = pxr::UsdGeomGprim(_prim);
@@ -119,26 +130,26 @@ namespace usd
         if (op == "xformOp:scale")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:scale")).Get(&scale);
-          link->scale = Vector3(scale[0], scale[1], scale[2]);
+          link->scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
           std::cerr << "scale "<< scale << '\n';
         }
 
         if (op == "xformOp:translate")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:translate")).Get(&translate);
-          link->pose.position.x = translate[0] * _metersPerUnit;
-          link->pose.position.y = translate[1] * _metersPerUnit;
-          link->pose.position.z = translate[2] * _metersPerUnit;
+          link->pose.Pos().X() = translate[0] * _metersPerUnit;
+          link->pose.Pos().Y() = translate[1] * _metersPerUnit;
+          link->pose.Pos().Z() = translate[2] * _metersPerUnit;
           std::cerr << "translate " << translate << '\n';
 
         }
         if (op == "xformOp:orient")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:orient")).Get(&rotation_quad);
-          link->pose.rotation.x = rotation_quad.GetImaginary()[0];
-          link->pose.rotation.y = rotation_quad.GetImaginary()[1];
-          link->pose.rotation.z = rotation_quad.GetImaginary()[2];
-          link->pose.rotation.w = rotation_quad.GetReal();
+          link->pose.Rot().X() = rotation_quad.GetImaginary()[0];
+          link->pose.Rot().Y() = rotation_quad.GetImaginary()[1];
+          link->pose.Rot().Z() = rotation_quad.GetImaginary()[2];
+          link->pose.Rot().W() = rotation_quad.GetReal();
           std::cerr << "rotation_quad " << rotation_quad << '\n';
         }
 
@@ -148,44 +159,34 @@ namespace usd
           _prim.GetAttribute(pxr::TfToken("xformOp:transform")).Get(&transform);
           pxr::GfVec3d translateMatrix = transform.ExtractTranslation();
           pxr::GfQuatd rotation_quadMatrix = transform.ExtractRotationQuat();
-          link->pose.position.x = translateMatrix[0] * _metersPerUnit;
-          link->pose.position.y = translateMatrix[1] * _metersPerUnit;
-          link->pose.position.z = translateMatrix[2] * _metersPerUnit;
-          link->pose.rotation.x = rotation_quadMatrix.GetImaginary()[0];
-          link->pose.rotation.y = rotation_quadMatrix.GetImaginary()[1];
-          link->pose.rotation.z = rotation_quadMatrix.GetImaginary()[2];
-          link->pose.rotation.w = rotation_quadMatrix.GetReal();
+          link->pose.Pos().X() = translateMatrix[0] * _metersPerUnit;
+          link->pose.Pos().Y() = translateMatrix[1] * _metersPerUnit;
+          link->pose.Pos().Z() = translateMatrix[2] * _metersPerUnit;
+          link->pose.Rot().X() = rotation_quadMatrix.GetImaginary()[0];
+          link->pose.Rot().Y() = rotation_quadMatrix.GetImaginary()[1];
+          link->pose.Rot().Z() = rotation_quadMatrix.GetImaginary()[2];
+          link->pose.Rot().W() = rotation_quadMatrix.GetReal();
           std::cerr << "translate " << translateMatrix << '\n';
           std::cerr << "rotation_quad " << rotation_quadMatrix << '\n';
         }
       }
     }
 
-    // pxr::GfMatrix4d transform;
-    // bool resetsXformStack;
-    // variant_geom.GetLocalTransformation(&transform, &resetsXformStack);
-    //
-    // pxr::GfVec3d translate = transform.ExtractTranslation();
-    // pxr::GfRotation rotation = transform.ExtractRotation();
-    // pxr::GfQuatd rotation_quad = transform.ExtractRotationQuat();
+    sdf::Geometry geom;
 
-    // sdferr << "translate " << translate << "\n";
-    // sdferr << "rotation " << rotation.GetAxis() << "\n";
-    // sdferr << "rotation " << rotation.GetAngle() << "\n";
-    // sdferr << "rotation_quad " << rotation_quad << "\n";
-    // sdferr << "rotation_quad real " << rotation_quad.GetReal() << "\n";
-    // sdferr << "rotation_quad imaginary " << rotation_quad.GetImaginary() << "\n";
-
-    // pxr::VtVec3fArray extentArray;
-    // _prim.GetAttribute(pxr::TfToken("extent")).Get(&extentArray);
-
-    GeometrySharedPtr geom;
-
-    if (_prim.IsA<pxr::UsdGeomSphere>() || _prim.IsA<pxr::UsdGeomCylinder>() || _prim.IsA<pxr::UsdGeomCube>())
+    // if (!_prim.HasAPI<pxr::UsdPhysicsCollisionAPI>() &&
+    //     (_prim.IsA<pxr::UsdGeomSphere>() ||
+    //     _prim.IsA<pxr::UsdGeomCylinder>() ||
+    //     _prim.IsA<pxr::UsdGeomCube>() ||
+    //     _prim.IsA<pxr::UsdGeomMesh>()))
+    // {
+    if (_prim.IsA<pxr::UsdGeomSphere>() ||
+        _prim.IsA<pxr::UsdGeomCylinder>() ||
+        _prim.IsA<pxr::UsdGeomCube>() ||
+        _prim.IsA<pxr::UsdGeomMesh>())
     {
-      VisualSharedPtr vis;
-      vis.reset(new Visual());
-      vis->clear();
+      std::shared_ptr<sdf::Visual> vis;
+      vis = std::make_shared<sdf::Visual>();
 
       auto variant_geom = pxr::UsdGeomGprim(_prim);
 
@@ -209,23 +210,23 @@ namespace usd
         if (op == "xformOp:scale")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:scale")).Get(&scale);
-          link->scale = Vector3(scale[0], scale[1], scale[2]);
+          link->scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
         }
 
         if (op == "xformOp:translate")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:translate")).Get(&translate);
-          link->pose.position.x = translate[0] * _metersPerUnit;
-          link->pose.position.y = translate[1] * _metersPerUnit;
-          link->pose.position.z = translate[2] * _metersPerUnit;
+          link->pose.Pos().X() = translate[0] * _metersPerUnit;
+          link->pose.Pos().Y() = translate[1] * _metersPerUnit;
+          link->pose.Pos().Z() = translate[2] * _metersPerUnit;
         }
         if (op == "xformOp:orient")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:orient")).Get(&rotation_quad);
-          link->pose.rotation.x = rotation_quad.GetImaginary()[0];
-          link->pose.rotation.y = rotation_quad.GetImaginary()[1];
-          link->pose.rotation.z = rotation_quad.GetImaginary()[2];
-          link->pose.rotation.w = rotation_quad.GetReal();
+          link->pose.Rot().X() = rotation_quad.GetImaginary()[0];
+          link->pose.Rot().Y() = rotation_quad.GetImaginary()[1];
+          link->pose.Rot().Z() = rotation_quad.GetImaginary()[2];
+          link->pose.Rot().W() = rotation_quad.GetReal();
         }
 
         if (op == "xformOp:transform")
@@ -234,30 +235,45 @@ namespace usd
           _prim.GetAttribute(pxr::TfToken("xformOp:transform")).Get(&transform);
           translate = transform.ExtractTranslation();
           rotation_quad = transform.ExtractRotationQuat();
-          vis->origin.position.x = translate[0] * _metersPerUnit;
-          vis->origin.position.y = translate[1] * _metersPerUnit;
-          vis->origin.position.z = translate[2] * _metersPerUnit;
-          vis->origin.rotation.x = rotation_quad.GetImaginary()[0];
-          vis->origin.rotation.y = rotation_quad.GetImaginary()[1];
-          vis->origin.rotation.z = rotation_quad.GetImaginary()[2];
-          vis->origin.rotation.w = rotation_quad.GetReal();
+          vis->SetRawPose(
+            ignition::math::Pose3d(
+              ignition::math::Vector3d(
+                translate[0] * _metersPerUnit,
+                translate[1] * _metersPerUnit,
+                translate[2] * _metersPerUnit),
+              ignition::math::Quaterniond(
+                rotation_quad.GetImaginary()[0],
+                rotation_quad.GetImaginary()[1],
+                rotation_quad.GetImaginary()[2],
+                rotation_quad.GetReal())));
         }
       }
 
-      MaterialSharedPtr material;
+      sdf::Material material;
 
-      material.reset(new Material());
       variant_geom.GetDisplayColorAttr().Get(&color);
 
       pxr::VtFloatArray displayOpacity;
       _prim.GetAttribute(pxr::TfToken("primvars:displayOpacity")).Get(&displayOpacity);
 
       variant_geom.GetDisplayColorAttr().Get(&color);
-      material->color.r = color[0][2];
-      material->color.g = color[0][1];
-      material->color.b = color[0][0];
+      double alpha = 1.0;
       if (displayOpacity.size() > 0)
-        material->color.a = 1 - displayOpacity[0];
+      {
+        alpha = 1 - displayOpacity[0];
+      }
+      material.SetAmbient(
+        ignition::math::Color(
+          ignition::math::clamp(color[0][2] / 0.4, 0.0, 1.0),
+          ignition::math::clamp(color[0][1] / 0.4, 0.0, 1.0),
+          ignition::math::clamp(color[0][0] / 0.4, 0.0, 1.0),
+          alpha));
+      material.SetDiffuse(
+        ignition::math::Color(
+          ignition::math::clamp(color[0][2] / 0.8, 0.0, 1.0),
+          ignition::math::clamp(color[0][1] / 0.8, 0.0, 1.0),
+          ignition::math::clamp(color[0][0] / 0.8, 0.0, 1.0),
+          alpha));
 
       std::cerr << "color " << color << '\n';
       std::cerr << "displayOpacity " << displayOpacity << '\n';
@@ -271,18 +287,17 @@ namespace usd
         variant_sphere.GetRadiusAttr().Get(&radius);
         sdferr << "radius sphere" << radius << "\n";
 
-        // material->color.a = displayOpacity[0];
+        // material.color.a = displayOpacity[0];
 
         // variant_sphere.GetDisplayColorAttr().Set(color);
 
-        Sphere *s = new Sphere();
-        geom.reset(s);
-        s->clear();
-        s->type = Geometry::SPHERE;
-        s->radius = radius * _metersPerUnit * link->scale.x;
-        vis->name = "visual_sphere";
-        vis->geometry = geom;
-        vis->material = material;
+        sdf::Sphere s;
+        geom.SetType(sdf::GeometryType::SPHERE);
+        s.SetRadius(radius * _metersPerUnit * link->scale.X());
+        geom.SetSphereShape(s);
+        vis->SetName("visual_sphere");
+        vis->SetGeom(geom);
+        vis->SetMaterial(material);
         link->visual_array.push_back(vis);
       }
       else if (_prim.IsA<pxr::UsdGeomCylinder>())
@@ -293,15 +308,14 @@ namespace usd
         variant_cylinder.GetRadiusAttr().Get(&radius);
         variant_cylinder.GetHeightAttr().Get(&height);
 
-        Cylinder * s = new Cylinder();
-        geom.reset(s);
-        s->clear();
-        s->type = Geometry::CYLINDER;
-        s->radius = radius * _metersPerUnit * link->scale.x;
-        s->length = height * _metersPerUnit * link->scale.x;
-        vis->name = "visual_cylinder";
-        vis->geometry = geom;
-        vis->material = material;
+        sdf::Cylinder c;
+        geom.SetType(sdf::GeometryType::CYLINDER);
+        c.SetRadius(radius * _metersPerUnit * link->scale.X());
+        c.SetLength(height * _metersPerUnit * link->scale.X());
+        geom.SetCylinderShape(c);
+        vis->SetName("visual_cylinder");
+        vis->SetGeom(geom);
+        vis->SetMaterial(material);
         link->visual_array.push_back(vis);
       }
       else if (_prim.IsA<pxr::UsdGeomCube>())
@@ -314,15 +328,103 @@ namespace usd
 
         size = size * _metersPerUnit;
 
-        Box * box = new Box();
-        geom.reset(box);
-        box->clear();
-        box->type = Geometry::BOX;
-        box->dim = Vector3(size * link->scale.x, size * link->scale.y, size * link->scale.z);
-        vis->name = "visual_box";
-        vis->geometry = geom;
-        vis->material = material;
+        sdf::Box box;
+        geom.SetType(sdf::GeometryType::BOX);
+        box.SetSize(ignition::math::Vector3d(
+          size * link->scale.X(),
+          size * link->scale.Y(),
+          size * link->scale.Z()));
+        geom.SetBoxShape(box);
+        vis->SetName("visual_box");
+        vis->SetGeom(geom);
+        vis->SetMaterial(material);
         link->visual_array.push_back(vis);
+      }
+      else if (_prim.IsA<pxr::UsdGeomMesh>())
+      {
+        std::cerr << "/* UsdGeomMesh */" << '\n';
+        ignition::common::Mesh mesh;
+        ignition::common::SubMesh subMesh;
+        subMesh.SetName("lol");
+        subMesh.SetPrimitiveType(ignition::common::SubMesh::TRISTRIPS);
+        pxr::VtIntArray faceVertexIndices;
+        pxr::VtIntArray faceVertexCounts;
+        pxr::VtArray<pxr::GfVec3f> normals;
+        pxr::VtArray<pxr::GfVec3f> points;
+        pxr::VtArray<pxr::GfVec2f> textCoords;
+        _prim.GetAttribute(pxr::TfToken("faceVertexCounts")).Get(&faceVertexCounts);
+        _prim.GetAttribute(pxr::TfToken("faceVertexIndices")).Get(&faceVertexIndices);
+        _prim.GetAttribute(pxr::TfToken("normals")).Get(&normals);
+        _prim.GetAttribute(pxr::TfToken("points")).Get(&points);
+        _prim.GetAttribute(pxr::TfToken("primvars:st")).Get(&textCoords);
+
+        std::cerr << "faceVertexCounts.size() " << faceVertexCounts.size() << '\n';
+        std::cerr << "faceVertexIndices.size() " << faceVertexIndices.size() << '\n';
+
+        unsigned int indexVertex = 0;
+        for (unsigned int i = 0; i < faceVertexCounts.size(); ++i)
+        {
+          std::cerr << "faceVertexCounts[i] " << faceVertexCounts[i] << '\n';
+          if (faceVertexCounts[i] == 3)
+          {
+            unsigned int j = indexVertex;
+            unsigned int indexVertexStop = indexVertex + 3;
+            for (; j < indexVertexStop; ++j)
+            {
+              // std::cerr << "faceVertexIndices[i] " << faceVertexIndices[j] << '\n';
+              subMesh.AddIndex(faceVertexIndices[j]);
+              ++indexVertex;
+            }
+          }
+          else if (faceVertexCounts[i] == 4)
+          {
+            subMesh.AddIndex(faceVertexIndices[indexVertex]);
+            subMesh.AddIndex(faceVertexIndices[indexVertex + 1]);
+            subMesh.AddIndex(faceVertexIndices[indexVertex + 2]);
+
+            subMesh.AddIndex(faceVertexIndices[indexVertex]);
+            subMesh.AddIndex(faceVertexIndices[indexVertex + 2]);
+            subMesh.AddIndex(faceVertexIndices[indexVertex + 3]);
+
+            indexVertex+=4;
+          }
+        }
+
+        for (auto & textCoord: textCoords)
+        {
+          std::cerr << "textCoord " << textCoord << '\n';
+
+          subMesh.AddTexCoord(textCoord[0], textCoord[1]);
+        }
+
+        for (auto & point: points)
+        {
+          std::cerr << "point " << point << '\n';
+
+          subMesh.AddVertex(point[0], point[1], point[2]);
+        }
+
+        for (auto & normal: normals)
+        {
+          std::cerr << "normals " << normal << '\n';
+
+          subMesh.AddNormal(normal[0], normal[1], normal[2]);
+        }
+        mesh.AddSubMesh(subMesh);
+
+        sdf::Mesh meshGeom;
+        geom.SetType(sdf::GeometryType::MESH);
+        meshGeom.SetScale(ignition::math::Vector3d(link->scale.X(), link->scale.Y(), link->scale.Z()));
+        meshGeom.SetFilePath("/home/ahcorde/tmp/sdformat/build/salida.dae");
+        geom.SetMeshShape(meshGeom);
+        vis->SetName("visual_mesh");
+        vis->SetGeom(geom);
+        vis->SetMaterial(material);
+        link->visual_array.push_back(vis);
+
+        // Export with extension
+        ignition::common::ColladaExporter exporter;
+        exporter.Export(&mesh, "/home/ahcorde/tmp/sdformat/build/salida", false);
       }
     }
 
@@ -336,13 +438,12 @@ namespace usd
 
     if (collisionEnabled)
     {
-      CollisionSharedPtr col;
-      col.reset(new Collision());
+      sdf::Collision col;
 
       // add _collision extension
       std::string collisionName = link->name + kCollisionExt;
-      col->name = collisionName;
-      col->geometry = geom;
+      col.SetName(collisionName);
+      col.SetGeom(geom);
 
       auto variant_geom = pxr::UsdGeomGprim(_prim);
 
@@ -353,7 +454,7 @@ namespace usd
         sdferr << "No transforms available!\n";
       }
 
-      pxr::GfVec3d scale(1, 1, 1);
+      pxr::GfVec3f scale(1, 1, 1);
       pxr::GfVec3d translate(0, 0, 0);
       pxr::GfQuatd rotation_quad(1, 0, 0, 0);
 
@@ -366,22 +467,34 @@ namespace usd
         if (op == "xformOp:scale")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:scale")).Get(&scale);
+          std::cerr << "col scale " << scale[0] << " " << scale[1] << " " << scale[2] << '\n';
+          // col.scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
         }
 
         if (op == "xformOp:translate")
         {
+          // FIX this
+          pxr::GfVec3f translate(0, 0, 0);
           _prim.GetAttribute(pxr::TfToken("xformOp:translate")).Get(&translate);
-          col->origin.position.x = translate[0] * _metersPerUnit;
-          col->origin.position.y = translate[1] * _metersPerUnit;
-          col->origin.position.z = translate[2] * _metersPerUnit;
+          col.SetRawPose(
+            ignition::math::Pose3d(
+              ignition::math::Vector3d(
+                translate[0] * _metersPerUnit,
+                translate[1] * _metersPerUnit,
+                translate[2] * _metersPerUnit),
+              col.RawPose().Rot()));
         }
         if (op == "xformOp:orient")
         {
           _prim.GetAttribute(pxr::TfToken("xformOp:orient")).Get(&rotation_quad);
-          col->origin.rotation.x = rotation_quad.GetImaginary()[0];
-          col->origin.rotation.y = rotation_quad.GetImaginary()[1];
-          col->origin.rotation.z = rotation_quad.GetImaginary()[2];
-          col->origin.rotation.w = rotation_quad.GetReal();
+          col.SetRawPose(
+            ignition::math::Pose3d(
+              col.RawPose().Pos(),
+              ignition::math::Quaterniond(
+                rotation_quad.GetImaginary()[0],
+                rotation_quad.GetImaginary()[1],
+                rotation_quad.GetImaginary()[2],
+                rotation_quad.GetReal())));
         }
 
         if (op == "xformOp:transform")
@@ -390,17 +503,37 @@ namespace usd
           _prim.GetAttribute(pxr::TfToken("xformOp:transform")).Get(&transform);
           translate = transform.ExtractTranslation();
           rotation_quad = transform.ExtractRotationQuat();
-          col->origin.position.x = translate[0] * _metersPerUnit;
-          col->origin.position.y = translate[1] * _metersPerUnit;
-          col->origin.position.z = translate[2] * _metersPerUnit;
-          col->origin.rotation.x = rotation_quad.GetImaginary()[0];
-          col->origin.rotation.y = rotation_quad.GetImaginary()[1];
-          col->origin.rotation.z = rotation_quad.GetImaginary()[2];
-          col->origin.rotation.w = rotation_quad.GetReal();
+          col.SetRawPose(
+            ignition::math::Pose3d(
+              ignition::math::Vector3d(
+                translate[0] * _metersPerUnit,
+                translate[1] * _metersPerUnit,
+                translate[2] * _metersPerUnit),
+              ignition::math::Quaterniond(
+                rotation_quad.GetImaginary()[0],
+                rotation_quad.GetImaginary()[1],
+                rotation_quad.GetImaginary()[2],
+                rotation_quad.GetReal())));
         }
       }
 
-      link->collision_array.push_back(col);
+      if (_prim.IsA<pxr::UsdGeomCube>())
+      {
+        const sdf::Box * box = col.Geom()->BoxShape();
+        ignition::math::Vector3d size = box->Size();
+        // box->SetSize(ignition::math::Vector3d(
+        //   size.X() * col.scale.X(),
+        //   size.Y() * col.scale.Y(),
+        //   size.Z() * col.scale.Z()));
+        // std::cerr << "scale cube " << col.scale.X() << " " << col.scale.Y() << " link->scale.Z() " << col.scale.Z() << '\n';
+        // std::cerr << "dim cube " << box->dim.X() << " " << box->dim.Y() << " " << box->dim.Z() << '\n';
+      }
+
+      std::shared_ptr<sdf::Collision> colPtr = std::make_shared<sdf::Collision>();
+      colPtr->SetRawPose(col.RawPose());
+      colPtr->SetGeom(geom);
+      colPtr->SetName(col.Name());
+      link->collision_array.push_back(colPtr);
       // Collision (optional)
       // Assign the first collision to the .collision ptr, if it exists
       if (!link->collision_array.empty())
@@ -421,7 +554,7 @@ namespace usd
       //       if (link->visual->material)
       //       {
       //
-      //         model->materials_.insert(make_pair(link->visual->material->name,link->visual->material));
+      //         model->materials_.insert(make_pair(link->visual->material.name,link->visual->material));
       //       }
       //       else
       //       {

@@ -45,16 +45,14 @@ namespace usd
     if (variant_physics_joint.GetBody1Rel())
       variant_physics_joint.GetBody1Rel().GetTargets(&body1);
 
-    if (body0.size() > 0 )
-    {
-      std::cerr << "body0[0].GetString() " << body0[0].GetString() << '\n';
-      joint->child_link_name = body0[0].GetString();
-    }
-
     if (body1.size() > 0 )
     {
-      std::cerr << "body0[1].GetString() " << body1[0].GetString() << '\n';
-      joint->parent_link_name = body1[0].GetString();
+      joint->child_link_name = body1[0].GetString();
+    }
+
+    if (body0.size() > 0 )
+    {
+      joint->parent_link_name = body0[0].GetString();
     }
     else
     {
@@ -71,7 +69,7 @@ namespace usd
 
       std::string joint_name = _prim.GetName().GetText();
 
-      joint->parent_to_joint_origin_transform.clear();
+      joint->parent_to_joint_origin_transform.Reset();
       joint->type = Joint::FIXED;
 
       return joint;
@@ -88,15 +86,15 @@ namespace usd
       variant_physics_prismatic_joint.GetAxisAttr().Get(&axis);
       if (axis == pxr::UsdGeomTokens->x)
       {
-        joint->axis = usd::Vector3(1, 0, 0);
+        joint->axis = ignition::math::Vector3d(1, 0, 0);
       }
       if (axis == pxr::UsdGeomTokens->y)
       {
-        joint->axis = usd::Vector3(0, 1, 0);
+        joint->axis = ignition::math::Vector3d(0, 1, 0);
       }
       if (axis == pxr::UsdGeomTokens->z)
       {
-        joint->axis = usd::Vector3(0, 0, 1);
+        joint->axis = ignition::math::Vector3d(0, 0, 1);
       }
 
       pxr::GfVec3f localPose0, localPose1;
@@ -108,12 +106,13 @@ namespace usd
       variant_physics_prismatic_joint.GetLocalRot1Attr().Get(&localRot1);
 
       auto trans = (localPose0 + localPose1) * _metersPerUnit;
-      joint->parent_to_joint_origin_transform.position = Vector3(trans[0], trans[1], trans[2]);
-      joint->parent_to_joint_origin_transform.rotation =
-        Rotation(localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
-                 localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
-                 localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2],
-                 localRot0.GetReal() + localRot1.GetReal());
+      joint->parent_to_joint_origin_transform.Set(
+        ignition::math::Vector3d(trans[0], trans[1], trans[2]),
+        ignition::math::Quaterniond(
+          localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
+          localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
+          localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2],
+          localRot0.GetReal() + localRot1.GetReal()));
 
       float lowerLimit;
       float upperLimit;
@@ -138,15 +137,15 @@ namespace usd
       variant_physics_revolute_joint.GetAxisAttr().Get(&axis);
       if (axis == pxr::UsdGeomTokens->x)
       {
-        joint->axis = usd::Vector3(1, 0, 0);
+        joint->axis = ignition::math::Vector3d(1, 0, 0);
       }
       if (axis == pxr::UsdGeomTokens->y)
       {
-        joint->axis = usd::Vector3(0, 1, 0);
+        joint->axis = ignition::math::Vector3d(0, 1, 0);
       }
       if (axis == pxr::UsdGeomTokens->z)
       {
-        joint->axis = usd::Vector3(0, 0, 1);
+        joint->axis = ignition::math::Vector3d(0, 0, 1);
       }
 
       pxr::GfVec3f localPose0, localPose1;
@@ -158,12 +157,13 @@ namespace usd
       variant_physics_revolute_joint.GetLocalRot1Attr().Get(&localRot1);
 
       auto trans = (localPose0 + localPose1) * _metersPerUnit;
-      joint->parent_to_joint_origin_transform.position = Vector3(trans[0], trans[1], trans[2]);
-      joint->parent_to_joint_origin_transform.rotation =
-        Rotation(localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
-                 localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
-                 localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2],
-                 localRot0.GetReal() + localRot1.GetReal());
+      joint->parent_to_joint_origin_transform.Set(
+        ignition::math::Vector3d(trans[0], trans[1], trans[2]),
+        ignition::math::Quaterniond(
+          localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
+          localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
+          localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2],
+          localRot0.GetReal() + localRot1.GetReal()));
 
       float lowerLimit;
       float upperLimit;

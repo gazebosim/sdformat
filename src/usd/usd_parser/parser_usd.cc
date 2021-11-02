@@ -26,9 +26,12 @@
 #include "pxr/base/gf/matrix4d.h"
 #include "pxr/base/gf/rotation.h"
 
-#include "pxr/usd/usdPhysics/scene.h"
-#include "pxr/usd/usdPhysics/joint.h"
+#include "pxr/usd/usdPhysics/collisionGroup.h"
 #include "pxr/usd/usdPhysics/fixedJoint.h"
+#include "pxr/usd/usdPhysics/joint.h"
+#include "pxr/usd/usdPhysics/scene.h"
+
+#include "pxr/usd/usdShade/material.h"
 
 #include "pxr/usd/usdLux/light.h"
 #include "pxr/usd/usdLux/sphereLight.h"
@@ -78,12 +81,12 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   std::string rootPath;
   std::string nameLink;
 
-  // insert <link name="world"/>
-  LinkSharedPtr worldLink = nullptr;
-  worldLink.reset(new Link);
-  worldLink->clear();
-  worldLink->name = "world";
-  model->links_.insert(make_pair(worldLink->name, worldLink));
+  // // insert <link name="world"/>
+  // LinkSharedPtr worldLink = nullptr;
+  // worldLink.reset(new Link);
+  // worldLink->clear();
+  // worldLink->name = "world";
+  // model->links_.insert(make_pair(worldLink->name, worldLink));
 
   // Get all Link elements
   for (auto const &prim : range ) {
@@ -120,6 +123,16 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       usd::ParsePhysicsScene(prim);
     }
 
+    if (prim.IsA<pxr::UsdPhysicsCollisionGroup>())
+    {
+      continue;
+    }
+
+    if (prim.IsA<pxr::UsdShadeMaterial>())
+    {
+      continue;
+    }
+
     if (prim.IsA<pxr::UsdPhysicsJoint>())
     {
       sdferr << "UsdPhysicsJoint" << "\n";
@@ -151,6 +164,8 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     //   sdferr << "Not a geometry" << "\n";
     //   continue;
     // }
+
+    sdferr << "nameLink " << nameLink << "\n";
 
     LinkSharedPtr link = nullptr;
     auto it = model->links_.find(nameLink);
