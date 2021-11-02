@@ -944,10 +944,9 @@ static bool contains(const std::string &_a, const std::string &_b)
 }
 
 /////////////////////////////////////////////////
-TEST(print, PoseRotationPrintingOptionsInDegrees)
+TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string path =
-    std::string(PROJECT_SOURCE_PATH) + "/test/sdf/rotations_in_degrees.sdf";
+  std::string path = sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
@@ -993,10 +992,9 @@ TEST(print, PoseRotationPrintingOptionsInDegrees)
 }
 
 /////////////////////////////////////////////////
-TEST(print, PoseRotationPrintingOptionsInRadians)
+TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string path =
-    std::string(PROJECT_SOURCE_PATH) + "/test/sdf/rotations_in_radians.sdf";
+  std::string path = sdf::testing::TestFile("sdf", "rotations_in_radians.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
@@ -1030,7 +1028,7 @@ TEST(print, PoseRotationPrintingOptionsInRadians)
                "<pose degrees='1' rotation_format='euler_rpy'>"
                "1 2 3 30 45.0001 60</pose>");
 
-  // Printing with snap_to_degrees 5
+  // Printing with snap_to_degrees 20
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 20 " +
       SdfVersion());
@@ -1041,10 +1039,10 @@ TEST(print, PoseRotationPrintingOptionsInRadians)
 }
 
 /////////////////////////////////////////////////
-TEST(print, PoseRotationPrintingOptionsInQuaternions)
+TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string path =
-    std::string(PROJECT_SOURCE_PATH) + "/test/sdf/rotations_in_quaternions.sdf";
+  const auto path = sdf::testing::TestFile(
+      "sdf", "rotations_in_quaternions.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
