@@ -349,6 +349,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetAltimeterSensor(alt);
 
     sdf::Altimeter *altMutable = sensor.AltimeterSensor();
+    ASSERT_NE(nullptr, altMutable);
     EXPECT_DOUBLE_EQ(altMutable->VerticalPositionNoise().Mean(),
         sensor.AltimeterSensor()->VerticalPositionNoise().Mean());
 
@@ -369,6 +370,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetAirPressureSensor(air);
 
     sdf::AirPressure *airMutable = sensor.AirPressureSensor();
+    ASSERT_NE(nullptr, airMutable);
     EXPECT_DOUBLE_EQ(airMutable->ReferenceAltitude(),
         sensor.AirPressureSensor()->ReferenceAltitude());
 
@@ -386,6 +388,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetCameraSensor(cam);
 
     sdf::Camera *camMutable = sensor.CameraSensor();
+    ASSERT_NE(nullptr, camMutable);
     EXPECT_DOUBLE_EQ(camMutable->NearClip(), sensor.CameraSensor()->NearClip());
 
     camMutable->SetNearClip(2.0);
@@ -402,6 +405,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetForceTorqueSensor(ftq);
 
     sdf::ForceTorque *ftqMutable = sensor.ForceTorqueSensor();
+    ASSERT_NE(nullptr, ftqMutable);
     EXPECT_DOUBLE_EQ(ftqMutable->ForceXNoise().Mean(),
         sensor.ForceTorqueSensor()->ForceXNoise().Mean());
 
@@ -422,6 +426,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetImuSensor(imu);
 
     sdf::Imu *imuMutable = sensor.ImuSensor();
+    ASSERT_NE(nullptr, imuMutable);
     EXPECT_DOUBLE_EQ(imuMutable->LinearAccelerationXNoise().Mean(),
         sensor.ImuSensor()->LinearAccelerationXNoise().Mean());
 
@@ -442,6 +447,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetLidarSensor(ldr);
 
     sdf::Lidar *ldrMutable = sensor.LidarSensor();
+    ASSERT_NE(nullptr, ldrMutable);
     EXPECT_DOUBLE_EQ(ldrMutable->LidarNoise().Mean(),
         sensor.LidarSensor()->LidarNoise().Mean());
 
@@ -462,6 +468,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetMagnetometerSensor(mag);
 
     sdf::Magnetometer *magMutable = sensor.MagnetometerSensor();
+    ASSERT_NE(nullptr, magMutable);
     EXPECT_DOUBLE_EQ(magMutable->XNoise().Mean(),
         sensor.MagnetometerSensor()->XNoise().Mean());
 
@@ -481,6 +488,7 @@ TEST(DOMSensor, MutableSensors)
     sensor.SetNavSatSensor(nav);
 
     sdf::NavSat *navMutable = sensor.NavSatSensor();
+    ASSERT_NE(nullptr, navMutable);
     EXPECT_DOUBLE_EQ(navMutable->HorizontalPositionNoise().Mean(),
         sensor.NavSatSensor()->HorizontalPositionNoise().Mean());
 
