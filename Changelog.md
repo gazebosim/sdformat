@@ -2,7 +2,7 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
-### libsdformat 9.7.1 (2021-11-03)
+### libsdformat 9.7.0 (2021-11-03)
 
 1. Make exception for plugins when checking for name uniqueness
     * [Pull request #733](https://github.com/ignitionrobotics/sdformat/pull/733)
