@@ -2,6 +2,23 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### libsdformat 9.7.1 (2021-11-03)
+
+1. Make exception for plugins when checking for name uniqueness
+    * [Pull request #733](https://github.com/ignitionrobotics/sdformat/pull/733)
+
+1. Backport test utilities from sdf10
+    * [Pull request #731](https://github.com/ignitionrobotics/sdformat/pull/731)
+
+1. Added Force Torque Noise functions + Unit tests
+    * [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+
+1. Add Joint DOM API to access joint sensors
+    * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
+
+1. Add force torque sensor
+    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
+
 ### libsdformat 9.6.1 (2021-09-07)
 
 1. Parse URDF continuous joint effort/velocity limits
