@@ -21,12 +21,19 @@
 #include <pxr/usd/usd/primRange.h>
 
 #include "sdf/Joint.hh"
+#include "usd_model/link.hh"
 
 namespace usd
 {
   std::shared_ptr<sdf::Joint> ParseJoints(
     const pxr::UsdPrim &_prim, const std::string &_path,
     const double _metersPerUnit);
+
+  std::pair<std::shared_ptr<sdf::Joint>, LinkSharedPtr>
+    ParseVehicleJoints(
+      const pxr::UsdPrim &_prim,
+      const std::string &_path,
+      const double _metersPerUnit);
 }
 
 #endif

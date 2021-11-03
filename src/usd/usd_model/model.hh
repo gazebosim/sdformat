@@ -120,8 +120,10 @@ public:
         {
           throw ParseError("parent link [" + parent_link_name + "] of joint [" + joint->first + "] not found.  This is not valid according to the URDF spec. Every link you refer to from a joint needs to be explicitly defined in the robot description. To fix this problem you can either remove this joint [" + joint->first + "] from your urdf file, or add \"<link name=\"" + parent_link_name + "\" />\" to your urdf file.");
         }
+        std::cerr << "Joint name: " << joint->second->Name()
+                  << " child_link " << child_link->name
+                  << " parent_link: " << parent_link->name << '\n';
 
-        std::cerr << "child_link " << child_link->name << " parent_link: " << parent_link->name << '\n';
         //set parent link for child link
         child_link->setParent(parent_link);
 

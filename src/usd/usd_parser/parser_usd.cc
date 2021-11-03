@@ -81,8 +81,16 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   std::string rootPath;
   std::string nameLink;
 
+  bool skipNext = false;
+
   // Get all Link elements
-  for (auto const &prim : range ) {
+  for (auto const &prim : range) {
+
+    if (skipNext)
+    {
+      skipNext = false;
+      continue;
+    }
 
     std::string primName = pxr::TfStringify(prim.GetPath());
 
@@ -126,6 +134,17 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       continue;
     }
 
+    pxr::TfTokenVector schemas = prim.GetAppliedSchemas();
+    bool isPhysxVehicleWheelAPI = false;
+    for (auto & token : schemas)
+    {
+      std::cerr << "GetText " << token.GetText() << '\n';
+      if (std::string(token.GetText()) == "PhysxVehicleWheelAPI")
+      {
+        isPhysxVehicleWheelAPI = true;
+      }
+    }
+
     if (prim.IsA<pxr::UsdPhysicsJoint>())
     {
       sdferr << "UsdPhysicsJoint" << "\n";
@@ -136,6 +155,27 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
         model->joints_.insert(make_pair(joint->Name(), joint));
       }
 
+      continue;
+    }
+
+    if (isPhysxVehicleWheelAPI)
+    {
+      std::pair<std::shared_ptr<sdf::Joint>, LinkSharedPtr> result =
+        usd::ParseVehicleJoints(prim, primName, metersPerUnit);
+      std::shared_ptr<sdf::Joint> joint = result.first;
+      LinkSharedPtr link = result.second;
+      if (joint != nullptr)
+      {
+        std::cerr << "Inserted joint " << joint->Name() << '\n';
+
+        model->joints_.insert(make_pair(joint->Name(), joint));
+      }
+      if (link != nullptr)
+      {
+        std::cerr << "Insetred link " << primName << '\n';
+        model->links_.insert(make_pair(primName, link));
+      }
+      skipNext = true;
       continue;
     }
 
@@ -152,11 +192,11 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       continue;
     }
 
-    // if (!prim.IsA<pxr::UsdGeomGprim>())
-    // {
-    //   sdferr << "Not a geometry" << "\n";
-    //   continue;
-    // }
+    if (!prim.IsA<pxr::UsdGeomGprim>())
+    {
+      sdferr << "Not a geometry" << "\n";
+      continue;
+    }
 
     sdferr << "nameLink " << nameLink << "\n";
 
