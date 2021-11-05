@@ -149,9 +149,11 @@ public:
     this->root_link_.reset();
 
     // find the links that have no parent in the tree
-    for (std::map<std::string, LinkSharedPtr>::const_iterator l=this->links_.begin(); l!=this->links_.end(); l++)
+    std::map<std::string, LinkSharedPtr>::const_iterator l;
+    for (l = this->links_.begin(); l != this->links_.end(); ++l)
     {
-      std::map<std::string, std::string >::const_iterator parent = parent_link_tree.find(l->first);
+      std::map<std::string, std::string >::const_iterator parent =
+        parent_link_tree.find(l->first);
       if (parent == parent_link_tree.end())
       {
         // store root link

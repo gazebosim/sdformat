@@ -57,6 +57,7 @@ public:
 
   /// if more than one visual element is specified, all visual elements are placed in this array (the visual member points to the first element of the array)
   std::vector<std::shared_ptr<sdf::Visual>> visual_array;
+  std::vector<std::string> visual_array_material_name;
 
   /// Parent Joint element
   ///   explicitly stating "parent" because we want directional-ness for tree structure

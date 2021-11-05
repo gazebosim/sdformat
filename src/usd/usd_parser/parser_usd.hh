@@ -30,5 +30,6 @@ namespace usd {
   ModelInterfaceSharedPtr parseUSDFile(const std::string &filename);
   ModelInterfaceSharedPtr parseUSD(const std::string &xml_string);
   void exportUSD();
+  bool isUSD(const std::string &filename);
 }
 #endif

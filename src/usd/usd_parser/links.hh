@@ -24,7 +24,11 @@
 
 namespace usd
 {
-  LinkSharedPtr ParseLinks(const pxr::UsdPrim &_prim, LinkSharedPtr &_link, const double _metersPerUnit);
+  LinkSharedPtr ParseLinks(
+    const pxr::UsdPrim &_prim,
+    LinkSharedPtr &_link,
+    const double _metersPerUnit,
+    int &_skip);
 }
 
 #endif

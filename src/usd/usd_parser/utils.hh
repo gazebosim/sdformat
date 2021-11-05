@@ -24,13 +24,16 @@
 #include <pxr/base/gf/matrix4d.h>
 #include <pxr/base/gf/rotation.h>
 
-#include "pxr/usd/usdGeom/gprim.h"
+#include <pxr/usd/usdGeom/gprim.h>
+
+#include <ignition/math/Quaternion.hh>
 
 #include "sdf/Material.hh"
 
+
 namespace usd{
 
-  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
+  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim, int &_skip);
 
   template<typename T1, typename T2, typename T3>
   std::tuple<T1, T2, T3, bool, bool, bool> ParseTransform(
@@ -42,6 +45,7 @@ namespace usd{
 
     T1 scale(1, 1, 1);
     T2 translate(0, 0, 0);
+    T1 translate_euler(0, 0, 0);
     T3 rotation_quad(1, 0, 0, 0);
 
     bool isScale = false;
@@ -59,6 +63,15 @@ namespace usd{
         _prim.GetAttribute(pxr::TfToken("xformOp:scale")).Get(&scale);
         std::cerr << "scale "<< scale << '\n';
         isScale = true;
+      }
+      if (op == "xformOp:rotateZYX")
+      {
+        _prim.GetAttribute(pxr::TfToken("xformOp:rotateZYX")).Get(&translate_euler);
+        ignition::math::Quaterniond q;
+        q.Euler(translate_euler[2], translate_euler[1], translate_euler[0]);
+        rotation_quad.SetImaginary(q.X(), q.Z(), q.Z());
+        rotation_quad.SetReal(q.W());
+        isRotation = true;
       }
 
       if (op == "xformOp:translate")

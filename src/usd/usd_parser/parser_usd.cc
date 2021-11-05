@@ -22,6 +22,9 @@
 #include <pxr/usd/usd/primRange.h>
 #include "pxr/usd/usdGeom/gprim.h"
 
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
+
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/base/gf/matrix4d.h"
 #include "pxr/base/gf/rotation.h"
@@ -43,11 +46,18 @@
 #include "physics.hh"
 #include "joints.hh"
 #include "links.hh"
+#include "utils.hh"
 #include "sdf/Console.hh"
+#include "sdf/Mesh.hh"
 
 #include <fstream>
 
 #include <ignition/common/Util.hh>
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/SubMesh.hh>
+#include <ignition/common/ColladaLoader.hh>
+#include <ignition/common/ColladaExporter.hh>
+#include <ignition/common/Material.hh>
 
 namespace usd {
 
@@ -81,14 +91,16 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   std::string rootPath;
   std::string nameLink;
 
-  bool skipNext = false;
+  int skipNext = 0;
+
+  std::map<std::string, std::shared_ptr<ignition::common::Material>> materials;
 
   // Get all Link elements
   for (auto const &prim : range) {
 
     if (skipNext)
     {
-      skipNext = false;
+      --skipNext;
       continue;
     }
 
@@ -131,6 +143,20 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
     if (prim.IsA<pxr::UsdShadeMaterial>())
     {
+      auto variantMaterial = pxr::UsdShadeMaterial(prim);
+
+      std::cerr << "Material!!! " << variantMaterial.GetPath().GetName() << '\n';
+      sdf::Material material = ParseMaterial(prim, skipNext);
+      std::string materialName = std::string(variantMaterial.GetPath().GetName());
+
+      std::shared_ptr<ignition::common::Material> materialCommon
+         = std::make_shared<ignition::common::Material>();
+
+      materialCommon->SetEmissive(material.Emissive());
+      materialCommon->SetDiffuse(material.Diffuse());
+
+      materials.insert(std::pair<std::string, std::shared_ptr<ignition::common::Material>>
+        (materialName, materialCommon));
       continue;
     }
 
@@ -175,7 +201,7 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
         std::cerr << "Insetred link " << primName << '\n';
         model->links_.insert(make_pair(primName, link));
       }
-      skipNext = true;
+      skipNext++;
       continue;
     }
 
@@ -204,11 +230,11 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     auto it = model->links_.find(nameLink);
     if (it != model->links_.end())
     {
-      link = usd::ParseLinks(prim, it->second, metersPerUnit);
+      link = usd::ParseLinks(prim, it->second, metersPerUnit, skipNext);
     }
     else
     {
-      link = usd::ParseLinks(prim, link, metersPerUnit);
+      link = usd::ParseLinks(prim, link, metersPerUnit, skipNext);
 
       if (link)
       {
@@ -222,18 +248,6 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     }
   }
 
-  // for (auto link: model->links_)
-  // {
-  //   std::cerr << "link name " << link.second->name << '\n';
-  // }
-  //
-  // for (auto joint: model->joints_)
-  // {
-  //   std::cerr << "joints name " << joint.second->name << '\n';
-  //   std::cerr << "\t parent " << joint.second->parent_link_name << '\n';
-  //   std::cerr << "\t child " << joint.second->child_link_name << '\n';
-  // }
-
   for (auto & joint : model->joints_)
   {
     if (joint.second->ParentLinkName() == "world")
@@ -246,6 +260,75 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       model->links_.insert(make_pair(worldLink->name, worldLink));
     }
   }
+
+  std::cerr << "++++++++++++++++++++++++++++++++++++++++++" << '\n';
+  for (auto &link: model->links_)
+  {
+    std::cerr << ">>>>>> link->name " << link.second->name << '\n';
+    for (unsigned int i = 0; i < link.second->visual_array.size(); ++i)
+    {
+      std::string materialName = link.second->visual_array_material_name[i];
+      if (!materialName.empty())
+      {
+        std::cerr << "materialName " << materialName << '\n';
+
+        auto it = materials.find(materialName);
+        if (it != materials.end())
+        {
+          if (link.second->visual_array[i]->Geom() != nullptr)
+          {
+            if (link.second->visual_array[i]->Geom()->Type() == sdf::GeometryType::MESH)
+            {
+              ignition::common::ColladaLoader colladaLoader;
+              std::string fileName = link.second->visual_array[i]->Geom()->MeshShape()->FilePath();
+              std::cerr << "fileName " << fileName << '\n';
+              // int a;
+              // std::cin >> a;
+              ignition::common::Mesh * meshReload = colladaLoader.Load(fileName);
+              if (meshReload)
+              {
+                std::cerr << "meshReload " << meshReload->SubMeshCount() << '\n';
+                std::cerr << "meshReload " << meshReload->VertexCount() << '\n';
+                for (unsigned j = 0; j < meshReload->SubMeshCount(); j++)
+                {
+                  std::weak_ptr<ignition::common::SubMesh> subMesh = meshReload->SubMeshByIndex(j);
+                  std::cerr << "subMesh Name " << subMesh.lock()->Name() << '\n';
+                  std::cerr << "link.second->visual_array[i] Name " << link.second->visual_array[i]->Name() << '\n';
+
+                  int index = meshReload->AddMaterial(it->second);
+                  subMesh.lock()->SetMaterialIndex(index);
+                }
+
+                ignition::common::ColladaExporter exporter;
+                exporter.Export(meshReload, fileName.substr(0, fileName.size() - 4), false);
+                delete meshReload;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  std::cerr << "++++++++++++++++++++++++++++++++++++++++++" << '\n';
+
+
+  std::cerr << "********************************" << '\n';
+  std::cerr << "model->links_ " << model->links_.size() << '\n';
+  for (auto link: model->links_)
+  {
+    std::cerr << "link name " << link.second->name << '\n';
+  }
+
+  std::cerr << "................................." << '\n';
+  std::cerr << "model->joints_ " << model->joints_.size() << '\n';
+  for (auto joint: model->joints_)
+  {
+    std::cerr << "joints name " << joint.second->Name() << '\n';
+    std::cerr << "\t parent " << joint.second->ParentLinkName() << '\n';
+    std::cerr << "\t child " << joint.second->ChildLinkName() << '\n';
+  }
+  std::cerr << "********************************" << '\n';
+
 
   // every link has children links and joints, but no parents, so we create a
   // local convenience data structure for keeping child->parent relations
@@ -281,6 +364,11 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   return nullptr;
 }
 
+bool isUSD(const std::string &filename)
+{
+  auto referencee = pxr::UsdStage::Open(filename);
+  return referencee != nullptr;
+}
 
 ModelInterfaceSharedPtr parseUSDFile(const std::string &filename)
 {

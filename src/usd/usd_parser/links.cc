@@ -21,6 +21,9 @@
 #include <pxr/usd/usdGeom/cylinder.h>
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/sphere.h>
+#include <pxr/usd/usdGeom/subset.h>
+#include <pxr/usd/usd/relationship.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/base/gf/matrix4d.h"
@@ -50,7 +53,11 @@ namespace usd
 {
   const char kCollisionExt[] = "_collision";
 
-  LinkSharedPtr ParseLinks(const pxr::UsdPrim &_prim, LinkSharedPtr &link, const double _metersPerUnit)
+  LinkSharedPtr ParseLinks(
+    const pxr::UsdPrim &_prim,
+    LinkSharedPtr &link,
+    const double _metersPerUnit,
+    int &_skip)
   {
     std::cerr << "************ ADDED LINK ************" << '\n';
 
@@ -68,7 +75,7 @@ namespace usd
     }
 
     std::vector<std::string> tokens = ignition::common::split(primName, "/");
-    if (tokens.size() == 3)
+    if (tokens.size() >= 3)
     {
       link->name = pxr::TfStringify("/" + tokens[0] + "/" + tokens[1]);
     }
@@ -113,11 +120,11 @@ namespace usd
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
       pxr::GfVec3f translate = std::get<1>(transformsTuple);
-      pxr::GfQuatf rotation_quad = std::get<2>(transformsTuple);
+      pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
 
-      bool isScale = std::get<3>(transformsTuple);;
-      bool isTranslate = std::get<4>(transformsTuple);;
-      bool isRotation = std::get<5>(transformsTuple);;
+      bool isScale = std::get<3>(transformsTuple);
+      bool isTranslate = std::get<4>(transformsTuple);
+      bool isRotation = std::get<5>(transformsTuple);
 
       if (isScale)
       {
@@ -131,10 +138,10 @@ namespace usd
       }
       if (isRotation)
       {
-        link->pose.Rot().X() = rotation_quad.GetImaginary()[0];
-        link->pose.Rot().Y() = rotation_quad.GetImaginary()[1];
-        link->pose.Rot().Z() = rotation_quad.GetImaginary()[2];
-        link->pose.Rot().W() = rotation_quad.GetReal();
+        link->pose.Rot().X() = rotationQuad.GetImaginary()[0];
+        link->pose.Rot().Y() = rotationQuad.GetImaginary()[1];
+        link->pose.Rot().Z() = rotationQuad.GetImaginary()[2];
+        link->pose.Rot().W() = rotationQuad.GetReal();
       }
     }
 
@@ -168,7 +175,7 @@ namespace usd
 
       pxr::GfVec3d scale = std::get<0>(transformsTuple);
       pxr::GfVec3d translate = std::get<1>(transformsTuple);
-      pxr::GfQuatd rotation_quad = std::get<2>(transformsTuple);
+      pxr::GfQuatd rotationQuad = std::get<2>(transformsTuple);
 
       bool isScale = std::get<3>(transformsTuple);;
       bool isTranslate = std::get<4>(transformsTuple);;
@@ -185,13 +192,14 @@ namespace usd
               translate[1] * _metersPerUnit,
               translate[2] * _metersPerUnit),
             ignition::math::Quaterniond(
-              rotation_quad.GetReal(),
-              rotation_quad.GetImaginary()[0],
-              rotation_quad.GetImaginary()[1],
-              rotation_quad.GetImaginary()[2])));
+              rotationQuad.GetReal(),
+              rotationQuad.GetImaginary()[0],
+              rotationQuad.GetImaginary()[1],
+              rotationQuad.GetImaginary()[2])));
       }
 
-      sdf::Material material = ParseMaterial(_prim);
+      int voidvar;
+      sdf::Material material = ParseMaterial(_prim, voidvar);
 
       if (_prim.IsA<pxr::UsdGeomSphere>())
       {
@@ -253,7 +261,6 @@ namespace usd
         std::cerr << "/* UsdGeomMesh */" << '\n';
         ignition::common::Mesh mesh;
         ignition::common::SubMesh subMesh;
-        subMesh.SetName("lol");
         subMesh.SetPrimitiveType(ignition::common::SubMesh::TRISTRIPS);
         pxr::VtIntArray faceVertexIndices;
         pxr::VtIntArray faceVertexCounts;
@@ -309,7 +316,10 @@ namespace usd
         {
           // std::cerr << "point " << point << '\n';
 
-          subMesh.AddVertex(point[0], point[1], point[2]);
+          subMesh.AddVertex(
+            point[0] * _metersPerUnit,
+            point[1] * _metersPerUnit,
+            point[2] * _metersPerUnit);
         }
 
         for (auto & normal: normals)
@@ -322,34 +332,156 @@ namespace usd
 
         sdf::Mesh meshGeom;
         geom.SetType(sdf::GeometryType::MESH);
-        meshGeom.SetScale(ignition::math::Vector3d(link->scale.X(), link->scale.Y(), link->scale.Z()));
-        geom.SetMeshShape(meshGeom);
+        if (isScale)
+        {
+          meshGeom.SetScale(ignition::math::Vector3d(link->scale.X(), link->scale.Y(), link->scale.Z()));
+        }
         vis->SetName("visual_mesh");
         vis->SetGeom(geom);
         vis->SetMaterial(material);
 
-        std::vector<std::string> tokens = ignition::common::split(link->name, "/");
+        std::vector<std::string> tokensChild = ignition::common::split(link->name, "/");
         std::string directoryMesh;
-        if (tokens.size() > 1)
+        if (tokensChild.size() > 1)
         {
-          for (int i = 0; i < tokens.size() - 1; ++i)
+          for (int i = 0; i < tokensChild.size() - 1; ++i)
           {
             if (i == 0)
-              directoryMesh = ignition::common::joinPaths(tokens[0], tokens[i+1]);
+              directoryMesh = ignition::common::joinPaths(tokensChild[0], tokensChild[i+1]);
             else
-              directoryMesh = ignition::common::joinPaths(directoryMesh, tokens[i+1]);
+              directoryMesh = ignition::common::joinPaths(directoryMesh, tokensChild[i+1]);
+          }
+        }
+        std::cerr << "directoryMesh " << directoryMesh + ".dae" << '\n';
+        meshGeom.SetFilePath(directoryMesh + ".dae");
+        geom.SetMeshShape(meshGeom);
+
+        for (const auto & child : _prim.GetChildren())
+        {
+          if (child.IsA<pxr::UsdGeomSubset>())
+          {
+            ignition::common::Mesh meshSubset;
+
+            ignition::common::SubMesh subMeshSubset;
+            subMeshSubset.SetPrimitiveType(ignition::common::SubMesh::TRISTRIPS);
+            subMeshSubset.SetName(tokensChild[tokensChild.size()-1]);
+
+            pxr::VtIntArray faceVertexIndices;
+            child.GetAttribute(pxr::TfToken("indices")).Get(&faceVertexIndices);
+            std::cerr << "faceVertexIndices " << faceVertexIndices.size() << '\n';
+            for (unsigned int i = 0; i < faceVertexIndices.size(); ++i)
+            {
+              subMeshSubset.AddIndex(subMesh.Index(faceVertexIndices[i]));
+            }
+
+            for (int i = 0; i < subMesh.VertexCount(); ++i)
+            {
+              subMeshSubset.AddVertex(subMesh.Vertex(i));
+            }
+            for (int i = 0; i < subMesh.NormalCount(); ++i)
+            {
+              subMeshSubset.AddNormal(subMesh.Normal(i));
+            }
+            for (int i = 0; i < subMesh.TexCoordCount(); ++i)
+            {
+              subMeshSubset.AddTexCoord(subMesh.TexCoord(i));
+            }
+            meshSubset.AddSubMesh(subMeshSubset);
+            std::shared_ptr<sdf::Visual> visSubset;
+            visSubset = std::make_shared<sdf::Visual>();
+            sdf::Mesh meshGeomSubset;
+            sdf::Geometry geomSubset;
+            geomSubset.SetType(sdf::GeometryType::MESH);
+            if (isScale)
+            {
+              meshGeom.SetScale(ignition::math::Vector3d(link->scale.X(), link->scale.Y(), link->scale.Z()));
+            }
+
+            std::vector<std::string> tokens = ignition::common::split(pxr::TfStringify(child.GetPath()), "/");
+            std::string directoryMesh;
+            if (tokens.size() > 1)
+            {
+              for (int i = 0; i < tokens.size() - 1; ++i)
+              {
+                if (i == 0)
+                  directoryMesh = ignition::common::joinPaths(tokens[0], tokens[i+1]);
+                else
+                  directoryMesh = ignition::common::joinPaths(directoryMesh, tokens[i+1]);
+              }
+            }
+            if (ignition::common::createDirectories(directoryMesh))
+            {
+              directoryMesh = ignition::common::joinPaths(directoryMesh, tokens[tokens.size()-1]);
+
+              // Export with extension
+              ignition::common::ColladaExporter exporter;
+              exporter.Export(&meshSubset, directoryMesh, false);
+            }
+            std::cerr << "directoryMesh " << directoryMesh + ".dae" << '\n';
+            meshGeom.SetFilePath(directoryMesh + ".dae");
+
+            geomSubset.SetMeshShape(meshGeom);
+            visSubset->SetName("mesh_subset");
+            visSubset->SetGeom(geomSubset);
+
+            auto parentPrim = _prim.GetParent().GetParent();
+
+            std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsParentTuple =
+              ParseTransform<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf>(parentPrim);
+
+            pxr::GfVec3f scaleSubset = std::get<0>(transformsParentTuple);
+            pxr::GfVec3f translateSubset = std::get<1>(transformsParentTuple);
+            pxr::GfQuatf rotationQuadSubset = std::get<2>(transformsParentTuple);
+
+            bool isScaleSubset = std::get<3>(transformsParentTuple);
+            bool isTranslateSubset = std::get<4>(transformsParentTuple);
+            bool isRotationSubset = std::get<5>(transformsParentTuple);
+
+            if (isTranslateSubset && isRotationSubset)
+            {
+              link->pose.Pos().X() = translateSubset[0] * _metersPerUnit;
+              link->pose.Pos().Y() = translateSubset[1] * _metersPerUnit;
+              link->pose.Pos().Z() = translateSubset[2] * _metersPerUnit;
+              link->pose.Rot().X() = rotationQuadSubset.GetImaginary()[0];
+              link->pose.Rot().Y() = rotationQuadSubset.GetImaginary()[1];
+              link->pose.Rot().Z() = rotationQuadSubset.GetImaginary()[2];
+              link->pose.Rot().W() = rotationQuadSubset.GetReal();
+            }
+            // visSubset->SetPoseRelativeTo(link->name);
+            std::cerr << "vis " << vis->RawPose() << '\n';
+            link->visual_array.push_back(visSubset);
+
+            auto variantGeomSubset = pxr::UsdGeomSubset(child);
+            std::string nameMaterial;
+
+            auto bindMaterial = pxr::UsdShadeMaterialBindingAPI(child);
+            pxr::UsdRelationship directBindingRel =
+              bindMaterial.GetDirectBindingRel();
+
+            pxr::SdfPathVector paths;
+            directBindingRel.GetTargets(&paths);
+            for (auto p: paths)
+            {
+              std::vector<std::string> tokensMaterial =
+                ignition::common::split(pxr::TfStringify(p), "/");
+
+              if(tokens.size() > 0)
+              {
+                nameMaterial = tokensMaterial[tokensMaterial.size() - 1];
+              }
+            }
+            std::cerr << "nameMaterial " << nameMaterial << '\n';
+            link->visual_array_material_name.push_back(nameMaterial);
           }
         }
         if (ignition::common::createDirectories(directoryMesh))
         {
-          directoryMesh = ignition::common::joinPaths(directoryMesh, tokens[tokens.size()-1]);
+          directoryMesh = ignition::common::joinPaths(directoryMesh, tokensChild[tokensChild.size()-1]);
 
           // Export with extension
           ignition::common::ColladaExporter exporter;
           exporter.Export(&mesh, directoryMesh, false);
         }
-        meshGeom.SetFilePath(directoryMesh + "dae");
-
       }
 
       pxr::TfTokenVector schemas = _prim.GetAppliedSchemas();
@@ -368,6 +500,7 @@ namespace usd
       if (isOnlyCollision != 2)
       {
         link->visual_array.push_back(vis);
+        link->visual_array_material_name.push_back("");
       }
     }
 
@@ -393,7 +526,7 @@ namespace usd
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
       pxr::GfVec3d translate = std::get<1>(transformsTuple);
-      pxr::GfQuatd rotation_quad = std::get<2>(transformsTuple);
+      pxr::GfQuatd rotationQuad = std::get<2>(transformsTuple);
 
       bool isScale = std::get<3>(transformsTuple);;
       bool isTranslate = std::get<4>(transformsTuple);;
@@ -418,10 +551,10 @@ namespace usd
           ignition::math::Pose3d(
             col.RawPose().Pos(),
             ignition::math::Quaterniond(
-              rotation_quad.GetReal(),
-              rotation_quad.GetImaginary()[0],
-              rotation_quad.GetImaginary()[1],
-              rotation_quad.GetImaginary()[2])));
+              rotationQuad.GetReal(),
+              rotationQuad.GetImaginary()[0],
+              rotationQuad.GetImaginary()[1],
+              rotationQuad.GetImaginary()[2])));
       }
 
       std::shared_ptr<sdf::Collision> colPtr = std::make_shared<sdf::Collision>();

@@ -339,7 +339,8 @@ namespace usd
             link->pose.Rot().Z() = rot.Z();
             link->pose.Rot().W() = rot.W();
 
-            sdf::Material material = ParseMaterial(_prim);
+            int voidvar;
+            sdf::Material material = ParseMaterial(_prim, voidvar);
 
             auto variant_cylinder = pxr::UsdGeomCylinder(child);
             double radius;

@@ -32,7 +32,7 @@ namespace sdf {
 inline namespace SDF_VERSION_NAMESPACE {
 
   const int g_outputDecimalPrecision = 16;
-  const char kLumpPrefix[] = "_fixed_joint_lump__";
+  const char kLumpPrefix[] = "";
   const char kVisualExt[] = "_visual";
   const char kCollisionExt[] = "_collision";
 
@@ -165,8 +165,6 @@ inline namespace SDF_VERSION_NAMESPACE {
   void USD2SDF::CreateGeometry(tinyxml2::XMLElement* _elem,
                       const Geometry * _geometry)
   {
-    sdferr << "CreateGeometry\n";
-
     auto* doc = _elem->GetDocument();
     tinyxml2::XMLElement *sdfGeometry = doc->NewElement("geometry");
 
@@ -276,8 +274,6 @@ inline namespace SDF_VERSION_NAMESPACE {
   void USD2SDF::CreateVisual(tinyxml2::XMLElement *_elem, usd::LinkConstSharedPtr _link,
       std::shared_ptr<sdf::Visual> _visual, const std::string &_oldLinkName)
   {
-    sdferr << "CreateVisual\n";
-
     auto* doc = _elem->GetDocument();
     // begin create sdf visual node
     tinyxml2::XMLElement *sdfVisual = doc->NewElement("visual");
@@ -363,8 +359,6 @@ inline namespace SDF_VERSION_NAMESPACE {
   void USD2SDF::CreateVisuals(tinyxml2::XMLElement* _elem,
                      usd::LinkConstSharedPtr _link)
   {
-    sdferr << "CreateVisuals\n";
-
     // loop through all visuals in
     //   visual_array (urdf 0.3.x)
     //   visual_groups (urdf 0.2.x)
@@ -377,9 +371,6 @@ inline namespace SDF_VERSION_NAMESPACE {
         visual != _link->visual_array.end();
         ++visual)
     {
-      sdferr << "creating visual for link [" << _link->name
-             << "] visual [" << (*visual)->Name() << "]\n";
-
       // visual sdf has a name if it was lumped/reduced
       // otherwise, use the link name
       std::string visualName = (*visual)->Name();
@@ -756,11 +747,9 @@ inline namespace SDF_VERSION_NAMESPACE {
                    usd::LinkConstSharedPtr _link,
                    ignition::math::Pose3d &/*_currentTransform*/)
   {
-    sdferr << "createJoint" << '\n';
     // compute the joint tag
     std::string jtype;
     jtype.clear();
-    std::cerr << "_link->parent_joint != nullptr " << (_link->parent_joint == nullptr) << '\n';
     if (_link->parent_joint != nullptr)
     {
       switch (_link->parent_joint->Type())
@@ -940,8 +929,6 @@ inline namespace SDF_VERSION_NAMESPACE {
                   usd::LinkConstSharedPtr _link,
                   ignition::math::Pose3d &_currentTransform)
   {
-    sdferr << "CreateLink\n";
-
     // create new body
     tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("link");
 
@@ -957,7 +944,13 @@ inline namespace SDF_VERSION_NAMESPACE {
       // tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
       AddTransform(_root, _link->pose);
       tinyxml2::XMLElement * pose = _root->FirstChildElement("pose");
-      // pose->SetAttribute("relative_to", _link->name.c_str());
+      // if (!_link->visual->PoseRelativeTo().empty())
+      // {
+      //   if (_link->getParent() != nullptr)
+      //   {
+      //     pose->SetAttribute("relative_to", _link->getParent()->name.c_str());
+      //   }
+      // }
       elem->LinkEndChild(pose);
     }
     else
@@ -992,7 +985,6 @@ inline namespace SDF_VERSION_NAMESPACE {
                  usd::LinkConstSharedPtr _link,
                  const ignition::math::Pose3d &_transform)
   {
-    sdferr << "createSDF\n";
     ignition::math::Pose3d _currentTransform = _transform;
 
     // must have an <inertial> block and cannot have zero mass.
@@ -1042,20 +1034,14 @@ inline namespace SDF_VERSION_NAMESPACE {
     // recurse into children
     for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
     {
-      std::cerr << "recurse into children " << _link->name << '\n';
       CreateSDF(_root, _link->child_links[i], _currentTransform);
     }
-    sdferr << "createSDF end\n";
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////
   bool USD2SDF::IsUSD(const std::string &_filename)
   {
-    sdferr << "IsUSD" << '\n';
-    usd::ModelInterfaceSharedPtr robotModel = usd::parseUSDFile(_filename);
-    sdferr << "IsUSD2" << '\n';
-    return robotModel != nullptr;
+    return usd::isUSD(_filename);
   }
 
   //parser_urdf.cc InitModelString
