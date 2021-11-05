@@ -3,7 +3,7 @@
 <model name="parent_model">
   <link name="link1">
     <pose rotation_format='quat_xyzw'>
-      1 2 3   0.0222595 0.439681 0.360424 0.822363
+      1 2 3   0.0222483 0.439767 0.360423 0.822317
     </pose>
   </link>
 </model>

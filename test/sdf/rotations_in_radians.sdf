@@ -2,7 +2,7 @@
 <sdf version="1.9">
 <model name="parent_model">
   <link name="link1">
-    <pose>1 2 3   0.5236 0.7854 1.0472</pose>
+    <pose>1 2 3   0.523756 0.785555 1.0473546</pose>
   </link>
 </model>
 </sdf>

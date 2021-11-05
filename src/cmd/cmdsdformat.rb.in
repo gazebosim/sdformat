@@ -31,7 +31,7 @@ require 'optparse'
 LIBRARY_NAME = '@library_location@'
 LIBRARY_VERSION = '@SDF_VERSION_FULL@'
 COMMON_OPTIONS =
-               "  -h [ --help -]                    Print this help message.\n"\
+               "  -h [ --help ]                    Print this help message.\n"\
                "  --force-version <VERSION>        Use a specific library version.\n"\
                '  --versions                       Show the available versions.'
 COMMANDS = {  'sdf' =>
@@ -44,7 +44,8 @@ COMMANDS = {  'sdf' =>
                        "                                                     use only and the output may change without any promise of stability)\n" +
                        "  -p [ --print ] arg                                 Print converted arg.\n" +
                        "  --degrees                                          Only used in --print, where pose rotation angles are printed in degrees.\n" +
-                       "  --snap-to-degrees arg                              Only used in --print, to snap pose rotation angles to this specified interval in degrees.\n" +
+                       "  --snap-to-degrees arg                              Only used in --print, to snap pose rotation angles to this specified interval in degrees. This value must be between 0 and 360.\n" +
+                       "  --snap-tolerance arg                               Only used in --print, in conjunction with --snap-to-degrees, specifies the tolerance at which snapping occurs. This value must be between 0 and 360. If unspecified, its default value is 0.01.\n" +
                        COMMON_OPTIONS
             }
 
@@ -60,6 +61,7 @@ class Cmd
     options = {}
     options['degrees'] = 0
     options['snap_to_degrees'] = 0
+    options['snap_tolerance'] = 0.01
 
     usage = COMMANDS[args[0]]
 
@@ -88,7 +90,19 @@ class Cmd
       end
       opts.on('--snap-to-degrees arg', Integer,
               'Printed rotations are snapped to specified degree intervals') do |arg|
+        if arg == 0 || arg > 360
+          puts "Degree interval to snap to must be more than 0, and less than or equal to 360."
+          exit(-1)
+        end
         options['snap_to_degrees'] = arg
+      end
+      opts.on('--snap-tolerance arg', Float,
+              'Printed rotations are snapped if they are within this specified tolerance') do |arg|
+        if arg < 0 || arg > 360
+          puts "Rotation snapping tolerance must be more than 0, and less than 360."
+          exit(-1)
+        end
+        options['snap_tolerance'] = arg
       end
       opts.on('-g arg', '--graph type', String,
               'Print PoseRelativeTo or FrameAttachedTo graph') do |graph_type|
@@ -171,10 +185,11 @@ class Cmd
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
-          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees)'
+          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance)'
           exit(Importer.cmdPrint(File.expand_path(options['print']),
                                  options['degrees'],
-                                 options['snap_to_degrees']))
+                                 options['snap_to_degrees'],
+                                 options['snap_tolerance']))
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))

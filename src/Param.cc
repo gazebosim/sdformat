@@ -977,7 +977,8 @@ std::string GetPoseAsString(const PrintConfig& _config,
        << IGN_RTOD(_value.Pitch()) << " "
        << IGN_RTOD(_value.Yaw());
   }
-  else if (_config.GetRotationSnapToDegrees().has_value())
+  else if (_config.GetRotationSnapToDegrees().has_value() &&
+           _config.GetRotationSnapTolerance().has_value())
   {
     // Returns a snapped value if it is within epsilon distance of multiples
     // of interval, otherwise the orginal value is returned.
@@ -999,10 +1000,14 @@ std::string GetPoseAsString(const PrintConfig& _config,
 
     const double snapToDegrees =
         static_cast<double>(_config.GetRotationSnapToDegrees().value());
+    const double snapTolerance =
+        static_cast<double>(_config.GetRotationSnapTolerance().value());
     ss << _value.Pos() << " ";
-    ss << snapToInterval(IGN_RTOD(_value.Roll()), snapToDegrees, 0.01) << " "
-       << snapToInterval(IGN_RTOD(_value.Pitch()), snapToDegrees, 0.01) << " "
-       << snapToInterval(IGN_RTOD(_value.Yaw()), snapToDegrees, 0.01);
+    ss << snapToInterval(IGN_RTOD(_value.Roll()), snapToDegrees, snapTolerance)
+       << " "
+       << snapToInterval(IGN_RTOD(_value.Pitch()), snapToDegrees, snapTolerance)
+       << " "
+       << snapToInterval(IGN_RTOD(_value.Yaw()), snapToDegrees, snapTolerance);
   }
   else
   {

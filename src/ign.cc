@@ -134,7 +134,7 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
-    int inDegrees, int snapToDegrees)
+    int inDegrees, int snapToDegrees, float snapTolerance)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -158,9 +158,14 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
 
   sdf::PrintConfig config;
   if (inDegrees!= 0)
+  {
     config.SetRotationInDegrees(true);
+  }
   if (snapToDegrees > 0)
-    config.SetRotationSnapToDegrees(static_cast<unsigned int>(snapToDegrees));
+  {
+    config.SetRotationSnapToDegrees(static_cast<unsigned int>(snapToDegrees),
+                                    static_cast<double>(snapTolerance));
+  }
 
   sdf->PrintValues(config);
   return 0;

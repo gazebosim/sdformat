@@ -16,16 +16,23 @@
 */
 
 #include "sdf/PrintConfig.hh"
-#include "sdf/Assert.hh"
+#include "sdf/Console.hh"
 
 using namespace sdf;
 
 /////////////////////////////////////////////////
 class PrintConfig::Implementation
 {
+  /// \brief True if rotation in poses are to be printed in degrees.
   public: bool rotationInDegrees = false;
 
+  /// \brief The interval in degrees, which rotation in poses shall snap to,
+  /// if they are within the tolerance value of rotationSnapTolerance.
   public: std::optional<unsigned int> rotationSnapToDegrees = std::nullopt;
+
+  /// \brief The tolerance which is used to determine whether snapping of
+  /// rotation in poses happen.
+  public: std::optional<double> rotationSnapTolerance = std::nullopt;
 };
 
 /////////////////////////////////////////////////
@@ -47,16 +54,36 @@ bool PrintConfig::GetRotationInDegrees() const
 }
 
 /////////////////////////////////////////////////
-void PrintConfig::SetRotationSnapToDegrees(unsigned int _value)
+bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
+                                           double _tolerance)
 {
-  SDF_ASSERT((_value > 0 && _value <= 360),
-      "interval value to snap to must be larger than 0, "
-      "and less than or equal to 360");
-  this->dataPtr->rotationSnapToDegrees = _value;
+  if (_interval == 0 || _interval > 360)
+  {
+    sdferr << "Interval value to snap to must be larger than 0, and less than "
+           << "or equal to 360.\n";
+    return false;
+  }
+
+  if (_tolerance <= 0 || _tolerance > 360)
+  {
+    sdferr << "Tolerance must be larger than 0, and less than or equal to "
+           << "360.\n";
+    return false;
+  }
+
+  this->dataPtr->rotationSnapToDegrees = _interval;
+  this->dataPtr->rotationSnapTolerance = _tolerance;
+  return true;
 }
 
 /////////////////////////////////////////////////
 std::optional<unsigned int> PrintConfig::GetRotationSnapToDegrees() const
 {
   return this->dataPtr->rotationSnapToDegrees;
+}
+
+/////////////////////////////////////////////////
+std::optional<double> PrintConfig::GetRotationSnapTolerance() const
+{
+  return this->dataPtr->rotationSnapTolerance;
 }

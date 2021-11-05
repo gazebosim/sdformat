@@ -2,7 +2,7 @@
 <sdf version="1.9">
 <model name="parent_model">
   <link name="link1">
-    <pose degrees='1'>1 2 3   30.0001 45.0001 60.0001</pose>
+    <pose degrees='1'>1 2 3   30.009 45.009 60.009</pose>
   </link>
 </model>
 </sdf>

@@ -46,11 +46,16 @@ TEST(PrintConfig, RotationSnapToDegrees)
 {
   sdf::PrintConfig config;
   EXPECT_FALSE(config.GetRotationSnapToDegrees().has_value());
+  EXPECT_FALSE(config.GetRotationSnapTolerance().has_value());
 
-  config.SetRotationSnapToDegrees(5);
+  EXPECT_TRUE(config.SetRotationSnapToDegrees(5, 0.01));
   ASSERT_TRUE(config.GetRotationSnapToDegrees().has_value());
   EXPECT_EQ(5u, config.GetRotationSnapToDegrees().value());
+  ASSERT_TRUE(config.GetRotationSnapTolerance().has_value());
+  EXPECT_DOUBLE_EQ(0.01, config.GetRotationSnapTolerance().value());
 
-  EXPECT_THROW(config.SetRotationSnapToDegrees(0), sdf::Exception);
-  EXPECT_THROW(config.SetRotationSnapToDegrees(361), sdf::Exception);
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(0, 0.01));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(360 + 1e6, 0.01));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, -1e6));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, 360 + 1e6));
 }

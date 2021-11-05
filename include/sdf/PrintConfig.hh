@@ -45,17 +45,25 @@ class SDFORMAT_VISIBLE PrintConfig
   public: bool GetRotationInDegrees() const;
 
   /// \brief Sets the option for printing pose rotation in degrees as well as
-  /// snapping the rotation to the desired interval, with a tolerance of
-  /// 0.01 degrees.
-  /// \param[in] Degrees interval to snap to. This value must be larger than 0
-  /// but less than or equal to 360, otherwise an exception will be thrown.
-  public: void SetRotationSnapToDegrees(unsigned int _interval);
+  /// snapping the rotation to the desired interval, with the provided
+  /// tolerance.
+  /// \param[in] _interval Degrees interval to snap to.
+  /// \param[in] _tolerance Tolerance which snapping occurs.
+  /// \return True, unless the interval is 0 or larger than 360, or the
+  /// tolerance is less than 0 or larger than 360.
+  public: bool SetRotationSnapToDegrees(unsigned int _interval,
+                                        double _tolerance);
 
   /// \brief Gets the current degree value that pose rotations will snap to when
   /// printed.
   /// \return The assigned degrees interval value to snap to. If it has not been
   /// assigned, a nullopt will be returned.
   public: std::optional<unsigned int> GetRotationSnapToDegrees() const;
+
+  /// \brief Gets the tolerance for snapping degree values when printed.
+  /// \return The assigned tolerance value which allows snapping to happen. If
+  /// it has not been assigned, a nullopt will be returned.
+  public: std::optional<double> GetRotationSnapTolerance() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
