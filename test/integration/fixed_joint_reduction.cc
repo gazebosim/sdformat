@@ -36,6 +36,8 @@ const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT[] =
     "fixed_joint_reduction_collision_visual_empty_root.urdf";
 const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF[] =
     "fixed_joint_reduction_collision_visual_empty_root.sdf";
+const char SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION[] =
+    "fixed_joint_reduction_plugin_frame_extension.urdf";
 
 static std::string GetFullTestFilePath(const char *_input)
 {
@@ -744,7 +746,9 @@ TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
 {
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION, robot));
+  ASSERT_TRUE(sdf::readFile(
+      GetFullTestFilePath(SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION),
+      robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
   sdf::ElementPtr plugin = model->GetElement("plugin");
