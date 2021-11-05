@@ -1323,10 +1323,13 @@ TEST(Frame, IncludeFrameWithSubmodel)
     << "</world>"
     << "</sdf>";
 
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-  sdf::ElementPtr worldElem = sdfParsed->Root()->GetElement("world");
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  ASSERT_EQ(1u, world->ModelCount());
 
   /* top level model: using include will merge top_level_model and box_with_submodel into:
    *  <model name='top_level_model'>
@@ -1338,11 +1341,18 @@ TEST(Frame, IncludeFrameWithSubmodel)
    *   </model>
    * </model>
   */
-  sdf::ElementPtr modelElem = worldElem->GetElement("model");
-  EXPECT_EQ(modelElem->Get<std::string>("name"), "top_level_model");
-  sdf::ElementPtr modelPoseElem =
-    modelElem->GetElement("link")->GetElement("pose");
-  EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ(model->Name(), "top_level_model");
+
+  const sdf::Link *link0 = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link0);
+  EXPECT_EQ(link0->Name(), "box_with_submodel::link");
+
+  ignition::math::Pose3d linkPose;
+  sdf::Errors resolveErrors = link0->SemanticPose().Resolve(linkPose);
+  EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
+  EXPECT_EQ(linkPose,
             ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
   /* submodel: pose from parent is translated to model. links are the same
    * ...
@@ -1353,10 +1363,14 @@ TEST(Frame, IncludeFrameWithSubmodel)
    *     <pose frame=''>5 5 0 0 -0 0</pose>
    *   </model>
    */
-  sdf::ElementPtr subModelElem = modelElem->GetElement("model");
-  EXPECT_EQ(subModelElem->Get<std::string>("name"),
+  const sdf::Model *submodel = model->ModelByIndex(0);
+  ASSERT_NE(nullptr, submodel);
+  EXPECT_EQ(submodel->Name(),
             "box_with_submodel::submodel_of_box_with_submodel");
-  sdf::ElementPtr subModelPoseElem = subModelElem->GetElement("pose");
-  EXPECT_EQ(subModelPoseElem->Get<ignition::math::Pose3d>(),
+
+  ignition::math::Pose3d submodelPose;
+  resolveErrors = submodel->SemanticPose().Resolve(submodelPose);
+  EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
+  EXPECT_EQ(submodelPose,
             ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
 }
