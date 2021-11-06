@@ -961,7 +961,7 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.009 45.009 60.009</pose>");
+               "1 2 3   30.009 45.009 60.009</pose>");
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
@@ -970,7 +970,7 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45 60</pose>");
+               "1 2 3   30 45 60</pose>");
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
@@ -979,7 +979,7 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45.009 60</pose>");
+               "1 2 3   30 45.009 60</pose>");
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
@@ -988,7 +988,7 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.009 45.009 60</pose>");
+               "1 2 3   30.009 45.009 60</pose>");
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.00009
   output = custom_exec_str(
@@ -997,7 +997,7 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.009 45.009 60.009</pose>");
+               "1 2 3   30.009 45.009 60.009</pose>");
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.00011
   output = custom_exec_str(
@@ -1006,7 +1006,7 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45 60</pose>");
+               "1 2 3   30 45 60</pose>");
 }
 
 /////////////////////////////////////////////////
@@ -1027,7 +1027,7 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.009 45.009 60.009</pose>");
+               "1 2 3   30.009 45.009 60.009</pose>");
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
@@ -1036,7 +1036,7 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45 60</pose>");
+               "1 2 3   30 45 60</pose>");
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
@@ -1045,7 +1045,7 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45.009 60</pose>");
+               "1 2 3   30 45.009 60</pose>");
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
@@ -1054,7 +1054,7 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.009 45.009 60</pose>");
+               "1 2 3   30.009 45.009 60</pose>");
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.00009
   output = custom_exec_str(
@@ -1063,7 +1063,7 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.009 45.009 60.009</pose>");
+               "1 2 3   30.009 45.009 60.009</pose>");
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.00011
   output = custom_exec_str(
@@ -1072,7 +1072,7 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45 60</pose>");
+               "1 2 3   30 45 60</pose>");
 }
 
 /////////////////////////////////////////////////
@@ -1095,7 +1095,7 @@ TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.0091 45.009 60.0091</pose>");
+               "1 2 3   30.0091 45.009 60.0091</pose>");
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
@@ -1104,7 +1104,7 @@ TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45 60</pose>");
+               "1 2 3   30 45 60</pose>");
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
@@ -1113,7 +1113,7 @@ TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45.009 60</pose>");
+               "1 2 3   30 45.009 60</pose>");
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
@@ -1122,7 +1122,7 @@ TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.0091 45.009 60</pose>");
+               "1 2 3   30.0091 45.009 60</pose>");
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.00009
   output = custom_exec_str(
@@ -1131,7 +1131,7 @@ TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30.0091 45.009 60.0091</pose>");
+               "1 2 3   30.0091 45.009 60.0091</pose>");
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
@@ -1140,7 +1140,7 @@ TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='1' rotation_format='euler_rpy'>"
-               "1 2 3 30 45 60</pose>");
+               "1 2 3   30 45 60</pose>");
 }
 
 /////////////////////////////////////////////////

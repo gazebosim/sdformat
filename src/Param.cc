@@ -972,7 +972,7 @@ std::string GetPoseAsString(const PrintConfig& _config,
   StringStreamClassicLocale ss;
   if (_config.GetRotationInDegrees())
   {
-    ss << _value.Pos() << " ";
+    ss << _value.Pos() << "   ";
     ss << IGN_RTOD(_value.Roll()) << " "
        << IGN_RTOD(_value.Pitch()) << " "
        << IGN_RTOD(_value.Yaw());
@@ -985,7 +985,7 @@ std::string GetPoseAsString(const PrintConfig& _config,
     auto snapToInterval =
         [](double _val, double _interval, double _epsilon)
     {
-      int quotient = _val / _interval;
+      int quotient = static_cast<int>(_val / _interval);
       double remainder = _val - (quotient * _interval);
 
       if (abs(remainder) < _epsilon)
@@ -1002,7 +1002,7 @@ std::string GetPoseAsString(const PrintConfig& _config,
         static_cast<double>(_config.GetRotationSnapToDegrees().value());
     const double snapTolerance =
         static_cast<double>(_config.GetRotationSnapTolerance().value());
-    ss << _value.Pos() << " ";
+    ss << _value.Pos() << "   ";
     ss << snapToInterval(IGN_RTOD(_value.Roll()), snapToDegrees, snapTolerance)
        << " "
        << snapToInterval(IGN_RTOD(_value.Pitch()), snapToDegrees, snapTolerance)
