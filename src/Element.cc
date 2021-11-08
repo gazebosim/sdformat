@@ -558,7 +558,7 @@ void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
     if (_config.GetRotationInDegrees() || _config.GetRotationSnapToDegrees())
     {
       attributeExceptions.insert("degrees");
-      _out << " " << "degrees='1'";
+      _out << " " << "degrees='true'";
 
       attributeExceptions.insert("rotation_format");
       _out << " " << "rotation_format='euler_rpy'";
