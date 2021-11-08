@@ -510,7 +510,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
   {
     _out << _prefix << "<" << this->dataPtr->name;
 
-    this->PrintAttributes(_includeDefaultAttributes, _config, _out);
+    this->dataPtr->PrintAttributes(_includeDefaultAttributes, _config, _out);
 
     if (this->dataPtr->elements.size() > 0)
     {
@@ -546,14 +546,14 @@ void Element::PrintValuesImpl(const std::string &_prefix,
 }
 
 /////////////////////////////////////////////////
-void Element::PrintAttributes(bool _includeDefaultAttributes,
+void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
                               const PrintConfig &_config,
                               std::ostringstream &_out) const
 {
   // Here we handle exceptions for different printing configurations
   std::set<std::string> attributeExceptions;
 
-  if (this->dataPtr->name == "pose")
+  if (this->name == "pose")
   {
     if (_config.GetRotationInDegrees() || _config.GetRotationSnapToDegrees())
     {
@@ -566,8 +566,8 @@ void Element::PrintAttributes(bool _includeDefaultAttributes,
   }
 
   Param_V::const_iterator aiter;
-  for (aiter = this->dataPtr->attributes.begin();
-       aiter != this->dataPtr->attributes.end(); ++aiter)
+  for (aiter = this->attributes.begin();
+       aiter != this->attributes.end(); ++aiter)
   {
     // Only print attribute values if they were set
     // TODO(anyone): GetRequired is added here to support up-conversions where

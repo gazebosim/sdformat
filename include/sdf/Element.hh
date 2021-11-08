@@ -589,14 +589,6 @@ namespace sdf
                                   const PrintConfig &_config,
                                   std::ostringstream &_out) const;
 
-    /// \brief Generate the string (XML) for the attributes.
-    /// \param[in] _includeDefaultAttributes flag to include default attributes.
-    /// \param[in] _config Configuration for printing attributes.
-    /// \param[out] _out the std::ostringstream to write output to.
-    private: void PrintAttributes(bool _includeDefaultAttributes,
-                                  const PrintConfig &_config,
-                                  std::ostringstream &_out) const;
-
     /// \brief Create a new Param object and return it.
     /// \param[in] _key Key for the parameter.
     /// \param[in] _type String name for the value type (double,
@@ -686,6 +678,14 @@ namespace sdf
 
     /// \brief XML path of this element.
     public: std::string xmlPath;
+
+    /// \brief Generate the string (XML) for the attributes.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for printing attributes.
+    /// \param[out] _out the std::ostringstream to write output to.
+    public: void PrintAttributes(bool _includeDefaultAttributes,
+                                 const PrintConfig &_config,
+                                 std::ostringstream &_out) const;
   };
 
   ///////////////////////////////////////////////
