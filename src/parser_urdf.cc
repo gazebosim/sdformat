@@ -221,10 +221,6 @@ std::string Values2str(unsigned int _count, const double *_values);
 
 void CreateGeometry(TiXmlElement *_elem, urdf::GeometrySharedPtr _geometry);
 
-ignition::math::Pose3d inverseTransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
-    urdf::Pose _parentToLinkTransform);
-
 /// reduced fixed joints: transform to parent frame
 urdf::Pose TransformToParentFrame(urdf::Pose _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
@@ -2429,31 +2425,6 @@ ignition::math::Pose3d TransformToParentFrame(
   return transformInParentLinkFrame;
 }
 
-/////////////////////////////////////////////////
-/// reduced fixed joints: transform to parent frame
-ignition::math::Pose3d inverseTransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
-    urdf::Pose _parentToLinkTransform)
-{
-  ignition::math::Pose3d transformInParentLinkFrame;
-  //   rotate link pose to parentLink frame
-  urdf::Rotation ri = _parentToLinkTransform.rotation.GetInverse();
-  ignition::math::Quaterniond q1(ri.w, ri.x, ri.y, ri.z);
-  transformInParentLinkFrame.Pos() = q1 * _transformInLinkFrame.Pos();
-  urdf::Rotation r2 = _parentToLinkTransform.rotation.GetInverse();
-  ignition::math::Quaterniond q3(r2.w, r2.x, r2.y, r2.z);
-  transformInParentLinkFrame.Rot() = q3 * _transformInLinkFrame.Rot();
-  //   translate link to parentLink frame
-  transformInParentLinkFrame.Pos().X() = transformInParentLinkFrame.Pos().X()
-    - _parentToLinkTransform.position.x;
-  transformInParentLinkFrame.Pos().Y() = transformInParentLinkFrame.Pos().Y()
-    - _parentToLinkTransform.position.y;
-  transformInParentLinkFrame.Pos().Z() = transformInParentLinkFrame.Pos().Z()
-    - _parentToLinkTransform.position.z;
-
-  return transformInParentLinkFrame;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
 {
@@ -3499,20 +3470,27 @@ void ReduceSDFExtensionPluginFrameReplace(
         TiXmlNode* rpyKey = (*_blobIt)->FirstChild("rpyOffset");
         if (rpyKey)
         {
-          urdf::Vector3 rpy = ParseVector3(rpyKey, M_PI/180.0);
+          urdf::Vector3 rpy = ParseVector3(rpyKey);
           _reductionTransform.Rot() =
             ignition::math::Quaterniond::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
           // remove xyzOffset and rpyOffset
           (*_blobIt)->RemoveChild(rpyKey);
         }
+        TiXmlNode* correctedOffsetKey =
+            (*_blobIt)->FirstChild("ignition::corrected_offsets");
+        if (correctedOffsetKey)
+        {
+          (*_blobIt)->RemoveChild(correctedOffsetKey);
+        }
 
         // pass through the parent transform from fixed joint reduction
-        _reductionTransform = inverseTransformToParentFrame(_reductionTransform,
+        _reductionTransform = TransformToParentFrame(_reductionTransform,
             _link->parent_joint->parent_to_joint_origin_transform);
 
         // create new offset xml blocks
         xyzKey = new TiXmlElement("xyzOffset");
         rpyKey = new TiXmlElement("rpyOffset");
+        correctedOffsetKey = new TiXmlElement("ignition::corrected_offsets");
 
         // create new offset xml blocks
         urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
@@ -3533,12 +3511,15 @@ void ReduceSDFExtensionPluginFrameReplace(
 
         TiXmlText* xyzTxt = new TiXmlText(xyzStream.str());
         TiXmlText* rpyTxt = new TiXmlText(rpyStream.str());
+        TiXmlText* correctedOffsetTxt = new TiXmlText("1");
 
         xyzKey->LinkEndChild(xyzTxt);
         rpyKey->LinkEndChild(rpyTxt);
+        correctedOffsetKey->LinkEndChild(correctedOffsetTxt);
 
         (*_blobIt)->LinkEndChild(xyzKey);
         (*_blobIt)->LinkEndChild(rpyKey);
+        (*_blobIt)->LinkEndChild(correctedOffsetKey);
       }
     }
   }
