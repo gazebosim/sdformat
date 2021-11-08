@@ -944,9 +944,10 @@ static bool contains(const std::string &_a, const std::string &_b)
 }
 
 /////////////////////////////////////////////////
-TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string path = sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
+  const std::string path =
+      sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
@@ -1010,9 +1011,10 @@ TEST(print_in_pose_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string path = sdf::testing::TestFile("sdf", "rotations_in_radians.sdf");
+  const std::string path =
+      sdf::testing::TestFile("sdf", "rotations_in_radians.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
@@ -1076,10 +1078,222 @@ TEST(print_in_pose_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_pose_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto path = sdf::testing::TestFile(
       "sdf", "rotations_in_quaternions.sdf");
+
+  // Default printing
+  std::string output = custom_exec_str(
+      IgnCommand() + " sdf -p" + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose rotation_format='quat_xyzw'>"
+               "1 2 3 0.0222483 0.439767 0.360423 0.822317</pose>");
+
+  // Printing with in_degrees
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --degrees " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.0091 45.009 60.0091</pose>");
+
+  // Printing with snap_to_degrees 5
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 60</pose>");
+
+  // Printing with snap_to_degrees 2
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 2 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45.009 60</pose>");
+
+  // Printing with snap_to_degrees 20
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 20 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.0091 45.009 60</pose>");
+
+  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      "--snap-tolerance 0.008 " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.0091 45.009 60.0091</pose>");
+
+  // Printing with snap_to_degrees 5
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      "--snap-tolerance 0.01 " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 60</pose>");
+}
+
+/////////////////////////////////////////////////
+TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  // Set SDF_PATH so that included models can be found
+  sdf::testing::setenv(
+    "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
+  const std::string path =
+      sdf::testing::TestFile("sdf", "includes_rotations_in_degrees.sdf");
+
+  // Default printing
+  std::string output = custom_exec_str(
+      IgnCommand() + " sdf -p" + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true'>1 2 3 30.009 45.009 60.009</pose>");
+
+  // Printing with in_degrees
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --degrees " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 45.009 60.009</pose>");
+
+  // Printing with snap_to_degrees 5
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 60</pose>");
+
+  // Printing with snap_to_degrees 2
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 2 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45.009 60</pose>");
+
+  // Printing with snap_to_degrees 20
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 20 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 45.009 60</pose>");
+
+  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      "--snap-tolerance 0.008 " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 45.009 60.009</pose>");
+
+  // Printing with snap_to_degrees 5, snap_tolerance 0.00011
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      "--snap-tolerance 0.01 " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 60</pose>");
+}
+
+/////////////////////////////////////////////////
+TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  // Set SDF_PATH so that included models can be found
+  sdf::testing::setenv(
+    "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
+  const std::string path =
+      sdf::testing::TestFile("sdf", "includes_rotations_in_radians.sdf");
+
+  // Default printing
+  std::string output = custom_exec_str(
+      IgnCommand() + " sdf -p" + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose>1 2 3 0.523756 0.785555 1.0473546</pose>");
+
+  // Printing with in_degrees
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --degrees " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 45.009 60.009</pose>");
+
+  // Printing with snap_to_degrees 5
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 60</pose>");
+
+  // Printing with snap_to_degrees 2
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 2 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45.009 60</pose>");
+
+  // Printing with snap_to_degrees 20
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 20 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 45.009 60</pose>");
+
+  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      "--snap-tolerance 0.008 " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 45.009 60.009</pose>");
+
+  // Printing with snap_to_degrees 5, snap_tolerance 0.00011
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      "--snap-tolerance 0.01 " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 60</pose>");
+}
+
+/////////////////////////////////////////////////
+TEST(print_includes_rotations_in_quaternions,
+     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  // Set SDF_PATH so that included models can be found
+  sdf::testing::setenv(
+    "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
+  const auto path = sdf::testing::TestFile(
+      "sdf", "includes_rotations_in_quaternions.sdf");
 
   // Default printing
   std::string output = custom_exec_str(

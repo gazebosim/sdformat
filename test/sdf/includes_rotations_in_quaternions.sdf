@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="default">
+
+    <include>
+      <uri>test_model</uri>
+      <name>parent_model</name>
+      <pose rotation_format='quat_xyzw'>
+        1 2 3   0.0222483 0.439767 0.360423 0.822317
+      </pose>
+    </include>
+
+  </world>
+</sdf>
