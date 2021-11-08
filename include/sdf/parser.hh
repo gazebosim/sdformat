@@ -388,6 +388,16 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool checkJointParentChildLinkNames(const sdf::Root *_root);
 
+  /// \brief Check that all joints in contained models specify parent
+  /// and child names that match the names of sibling links, joints,
+  /// models, or frames.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root SDF Root object to check recursively.
+  /// \param[out] _errors Detected errors will be appended to this variable.
+  SDFORMAT_VISIBLE
+  void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors);
+
   /// \brief For the world and each model, check that the attached_to graphs
   /// build without errors and have no cycles.
   /// Confirm that following directed edges from each vertex in the graph
