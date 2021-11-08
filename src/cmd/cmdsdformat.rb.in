@@ -44,8 +44,8 @@ COMMANDS = {  'sdf' =>
                        "                                                     use only and the output may change without any promise of stability)\n" +
                        "  -p [ --print ] arg                                 Print converted arg.\n" +
                        "  --degrees                                          Only used in --print, where pose rotation angles are printed in degrees.\n" +
-                       "  --snap-to-degrees arg                              Only used in --print, to snap pose rotation angles to this specified interval in degrees. This value must be between 0 and 360.\n" +
-                       "  --snap-tolerance arg                               Only used in --print, in conjunction with --snap-to-degrees, specifies the tolerance at which snapping occurs. This value must be between 0 and 360. If unspecified, its default value is 0.01.\n" +
+                       "  --snap-to-degrees arg                              Only used in --print, to snap pose rotation angles to this specified interval in degrees. This value must be between larger than 0, less than or equal to 360, and larger than the defined snap tolerance.\n" +
+                       "  --snap-tolerance arg                               Only used in --print, in conjunction with --snap-to-degrees, specifies the tolerance at which snapping occurs. This value must be larger than 0, less than 360, and less than the defined degrees value to snap to. If unspecified, its default value is 0.01.\n" +
                        COMMON_OPTIONS
             }
 
@@ -60,7 +60,6 @@ class Cmd
   def parse(args)
     options = {}
     options['degrees'] = 0
-    options['snap_to_degrees'] = 0
     options['snap_tolerance'] = 0.01
 
     usage = COMMANDS[args[0]]
@@ -185,10 +184,18 @@ class Cmd
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
+          snap_to_degrees = 0
+          if options.key?('snap_to_degrees')
+            if options['snap_to_degrees'] < options['snap_tolerance']
+              puts "Rotation snapping tolerance must be larger than the snapping tolerance."
+              exit(-1)
+            end
+            snap_to_degrees = options['snap_to_degrees']
+          end
           Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance)'
           exit(Importer.cmdPrint(File.expand_path(options['print']),
                                  options['degrees'],
-                                 options['snap_to_degrees'],
+                                 snap_to_degrees,
                                  options['snap_tolerance']))
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
