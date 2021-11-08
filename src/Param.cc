@@ -315,7 +315,12 @@ std::string Param::GetAsString(const PrintConfig &_config) const
       return this->dataPtr->strValue;
 
     ignition::math::Pose3d val;
-    SDF_ASSERT(this->Get<ignition::math::Pose3d>(val), "Invalid pose value");
+    if (!this->Get<ignition::math::Pose3d>(val))
+    {
+      sdferr << "Failed to retrieve Pose value from a Pose Param.\n";
+      return this->dataPtr->strValue;
+    }
+
     return GetPoseAsString(_config, val);
   }
   else
