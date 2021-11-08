@@ -991,7 +991,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.008 " + SdfVersion());
@@ -1000,7 +1000,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60.009</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00011
+  // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
@@ -1058,7 +1058,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.008 " + SdfVersion());
@@ -1067,7 +1067,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60.009</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00011
+  // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
@@ -1126,7 +1126,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.0091 45.009 60</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.008 " + SdfVersion());
@@ -1135,7 +1135,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.0091 45.009 60.0091</pose>");
 
-  // Printing with snap_to_degrees 5
+  // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
@@ -1196,7 +1196,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.008 " + SdfVersion());
@@ -1205,7 +1205,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60.009</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00011
+  // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
@@ -1266,7 +1266,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.008 " + SdfVersion());
@@ -1275,7 +1275,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 45.009 60.009</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00011
+  // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
@@ -1338,7 +1338,7 @@ TEST(print_includes_rotations_in_quaternions,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.0091 45.009 60</pose>");
 
-  // Printing with snap_to_degrees 5, snap_tolerance 0.00009
+  // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.008 " + SdfVersion());
@@ -1347,7 +1347,7 @@ TEST(print_includes_rotations_in_quaternions,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.0091 45.009 60.0091</pose>");
 
-  // Printing with snap_to_degrees 5
+  // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
