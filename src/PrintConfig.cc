@@ -64,10 +64,11 @@ bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
     return false;
   }
 
-  if (_tolerance <= 0 || _tolerance > 360)
+  if (_tolerance <= 0 || _tolerance > 360 ||
+      _tolerance >= static_cast<double>(_interval))
   {
-    sdferr << "Tolerance must be larger than 0, and less than or equal to "
-           << "360.\n";
+    sdferr << "Tolerance must be larger than 0, less than or equal to "
+           << "360, and less than the provided interval.\n";
     return false;
   }
 

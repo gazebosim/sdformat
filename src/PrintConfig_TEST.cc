@@ -55,7 +55,14 @@ TEST(PrintConfig, RotationSnapToDegrees)
   EXPECT_DOUBLE_EQ(0.01, config.GetRotationSnapTolerance().value());
 
   EXPECT_FALSE(config.SetRotationSnapToDegrees(0, 0.01));
-  EXPECT_FALSE(config.SetRotationSnapToDegrees(360 + 1e6, 0.01));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(360 + 1, 0.01));
   EXPECT_FALSE(config.SetRotationSnapToDegrees(5, -1e6));
-  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, 360 + 1e6));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, 360 + 1e-6));
+
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, 5 + 1e-6));
+  EXPECT_TRUE(config.SetRotationSnapToDegrees(5, 5 - 1e-6));
+  ASSERT_TRUE(config.GetRotationSnapToDegrees().has_value());
+  EXPECT_EQ(5u, config.GetRotationSnapToDegrees().value());
+  ASSERT_TRUE(config.GetRotationSnapTolerance().has_value());
+  EXPECT_DOUBLE_EQ(5 - 1e-6, config.GetRotationSnapTolerance().value());
 }

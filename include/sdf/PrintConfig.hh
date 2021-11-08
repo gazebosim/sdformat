@@ -47,10 +47,11 @@ class SDFORMAT_VISIBLE PrintConfig
   /// \brief Sets the option for printing pose rotation in degrees as well as
   /// snapping the rotation to the desired interval, with the provided
   /// tolerance.
-  /// \param[in] _interval Degrees interval to snap to.
-  /// \param[in] _tolerance Tolerance which snapping occurs.
-  /// \return True, unless the interval is 0 or larger than 360, or the
-  /// tolerance is less than 0 or larger than 360.
+  /// \param[in] _interval Degrees interval to snap to, this value must be
+  /// larger than 0, and less than or equal to 360.
+  /// \param[in] _tolerance Tolerance which snapping occurs, this value must be
+  /// larger than 0, less than 360, and less than the provided interval.
+  /// \return True, unless any of the provided values are not valid.
   public: bool SetRotationSnapToDegrees(unsigned int _interval,
                                         double _tolerance);
 
