@@ -155,74 +155,81 @@ if (BUILD_SDF_TEST)
     )
   endif()
 
-  include_directories(${PROJECT_SOURCE_DIR}/test)
-  sdf_build_tests(${gtest_sources})
+  if (NOT WIN32)
+    # set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
+    set(gtest_sources ${gtest_sources} Utils_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
+    # set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
+    set(gtest_sources ${gtest_sources} XmlUtils_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
+    # set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
+    set(gtest_sources ${gtest_sources} FrameSemantics_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
+    # set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
+    set(gtest_sources ${gtest_sources} Converter_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
+    # set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc XmlUtils.cc)
+    set(gtest_sources ${gtest_sources} parser_urdf_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
+    # set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS ParamPassing.cc XmlUtils.cc parser.cc
+    # parser_urdf.cc FrameSemantics.cc Converter.cc EmbeddedSdf.cc SDFExtension.cc Utils.cc)
+    set(gtest_sources ${gtest_sources} ParamPassing_TEST.cc)
+  endif()
+
+  ign_build_tests(
+    TYPE UNIT
+    SOURCES ${gtest_sources}
+    # FIXME: This adds dependencies to ALL tests.
+    INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+  )
 
   if (TARGET UNIT_ign_TEST)
-    # Link the libraries that we always need.
-    target_link_libraries("UNIT_ign_TEST"
-      PUBLIC
-        ignition-cmake${IGN_CMAKE_VER}::utilities
-    )
+    target_link_libraries(UNIT_ign_TEST ignition-cmake${IGN_CMAKE_VER}::utilities)
   endif()
 
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
-    sdf_build_tests(Utils_TEST.cc)
+  if (TARGET UNIT_XmlUtils_TEST)
+    target_link_libraries(UNIT_XmlUtils_TEST ${TinyXML2_LIBRARIES})
   endif()
 
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
-    sdf_build_tests(XmlUtils_TEST.cc)
-    target_link_libraries(UNIT_XmlUtils_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+  if (TARGET UNIT_Converter_TEST)
+    target_link_libraries(UNIT_Converter_TEST ${TinyXML2_LIBRARIES})
   endif()
 
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
-    sdf_build_tests(FrameSemantics_TEST.cc)
-  endif()
-
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
-    sdf_build_tests(Converter_TEST.cc)
-    target_link_libraries(UNIT_Converter_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
-  endif()
-
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc XmlUtils.cc)
-    sdf_build_tests(parser_urdf_TEST.cc)
+  if (TARGET UNIT_parser_urdf_TEST)
     if (NOT USE_INTERNAL_URDF)
       target_compile_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_CFLAGS})
       if (${CMAKE_VERSION} VERSION_GREATER 3.13)
         target_link_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_LDFLAGS})
       endif()
-      target_link_libraries(UNIT_parser_urdf_TEST PRIVATE ${URDF_LIBRARIES})
+      target_link_libraries(UNIT_parser_urdf_TEST ${URDF_LIBRARIES})
     endif()
-    target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+    target_link_libraries(UNIT_parser_urdf_TEST ${TinyXML2_LIBRARIES})
   endif()
 
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS ParamPassing.cc XmlUtils.cc parser.cc
-    parser_urdf.cc FrameSemantics.cc Converter.cc EmbeddedSdf.cc SDFExtension.cc Utils.cc)
-    sdf_build_tests(ParamPassing_TEST.cc)
+  if (TARGET UNIT_ParamPassing_TEST)
     if (NOT USE_INTERNAL_URDF)
       target_compile_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_CFLAGS})
       if (${CMAKE_VERSION} VERSION_GREATER 3.13)
         target_link_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_LDFLAGS})
       endif()
-      target_link_libraries(UNIT_ParamPassing_TEST PRIVATE ${URDF_LIBRARIES})
+      target_link_libraries(UNIT_ParamPassing_TEST ${URDF_LIBRARIES})
     endif()
-    target_link_libraries(UNIT_ParamPassing_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+    target_link_libraries(UNIT_ParamPassing_TEST ${TinyXML2_LIBRARIES})
   endif()
 endif()
 
-sdf_add_library(${sdf_target} ${sources})
-target_compile_features(${sdf_target} PUBLIC cxx_std_17)
-target_link_libraries(${sdf_target}
+ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
@@ -230,10 +237,10 @@ target_link_libraries(${sdf_target}
     ${TinyXML2_LIBRARIES})
 
 if (WIN32)
-  target_compile_definitions(${sdf_target} PRIVATE URDFDOM_STATIC)
+  target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
 endif()
 
-target_include_directories(${sdf_target}
+target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
@@ -243,15 +250,13 @@ message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
 message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
 
 if (NOT USE_INTERNAL_URDF)
-  target_compile_options(${sdf_target} PRIVATE ${URDF_CFLAGS})
+  target_compile_options(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE ${URDF_CFLAGS})
   if (${CMAKE_VERSION} VERSION_GREATER 3.13)
-    target_link_options(${sdf_target} PRIVATE ${URDF_LDFLAGS})
+    target_link_options(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE ${URDF_LDFLAGS})
   endif()
-  target_link_libraries(${sdf_target} PRIVATE ${URDF_LIBRARIES})
+  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE ${URDF_LIBRARIES})
 endif()
 
-sdf_install_library(${sdf_target})
-
 if(NOT WIN32)
-  add_subdirectory(cmd)
+  # add_subdirectory(cmd)
 endif()

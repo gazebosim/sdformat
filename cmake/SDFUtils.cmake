@@ -30,26 +30,6 @@ MACRO (LIST_TO_STRING _string _list)
 ENDMACRO (LIST_TO_STRING)
 
 #################################################
-# BUILD ERROR macro
-macro (BUILD_ERROR)
-  foreach (str ${ARGN})
-    SET (msg "\t${str}")
-    MESSAGE (STATUS ${msg})
-    APPEND_TO_CACHED_LIST(build_errors "build errors" ${msg})
-  endforeach ()
-endmacro (BUILD_ERROR)
-
-#################################################
-# BUILD WARNING macro
-macro (BUILD_WARNING)
-  foreach (str ${ARGN})
-    SET (msg "\t${str}" )
-    MESSAGE (STATUS ${msg} )
-    APPEND_TO_CACHED_LIST(build_warnings "build warning" ${msg})
-  endforeach (str ${ARGN})
-endmacro (BUILD_WARNING)
-
-#################################################
 macro (sdf_add_library _name)
   set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
   add_library(${_name} ${ARGN})
@@ -108,21 +88,12 @@ macro (sdf_install_executable _name)
 endmacro ()
 
 #################################################
-macro (sdf_setup_unix)
-endmacro()
-
-#################################################
 macro (sdf_setup_windows)
   # Need for M_PI constant
-  add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN)
+  add_definitions(-D_USE_MATH_DEFINES)
   # And force linking to MSVC dynamic runtime
   set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
   set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
-endmacro()
-
-#################################################
-macro (sdf_setup_apple)
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined -Wl,dynamic_lookup")
 endmacro()
 
 #################################################
