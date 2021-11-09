@@ -26,6 +26,7 @@ set (sources
   Frame.cc
   FrameSemantics.cc
   Filesystem.cc
+  ForceTorque.cc
   Geometry.cc
   Gui.cc
   Heightmap.cc
@@ -98,6 +99,7 @@ if (BUILD_SDF_TEST)
     Exception_TEST.cc
     Frame_TEST.cc
     Filesystem_TEST.cc
+    ForceTorque_TEST.cc
     Geometry_TEST.cc
     Gui_TEST.cc
     Heightmap_TEST.cc

@@ -3660,9 +3660,11 @@ void ReduceSDFExtensionPluginFrameReplace(
 
         xyzKey->LinkEndChild(xyzTxt);
         rpyKey->LinkEndChild(rpyTxt);
+        correctedOffsetKey->LinkEndChild(correctedOffsetTxt);
 
         (*_blobIt)->LinkEndChild(xyzKey);
         (*_blobIt)->LinkEndChild(rpyKey);
+        (*_blobIt)->LinkEndChild(correctedOffsetKey);
       }
     }
   }

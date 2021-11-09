@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="model">
+    <link name="link1"/>
+    <link name="link2"/>
+    <joint name="joint" type="fixed">
+      <parent>link1</parent>
+      <child>link2</child>
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose>10 11 12 0 0 0</pose>
+        <force_torque>
+          <frame>parent</frame>
+          <measure_direction>parent_to_child</measure_direction>
+          <force>
+            <x>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>1</mean>
+                <stddev>1.1</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>2</mean>
+                <stddev>2.1</stddev>
+              </noise>
+            </z>
+          </force>
+          <torque>
+            <x>
+              <noise type="gaussian">
+                <mean>3</mean>
+                <stddev>3.1</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>4</mean>
+                <stddev>4.1</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>5</mean>
+                <stddev>5.1</stddev>
+              </noise>
+            </z>
+          </torque>
+        </force_torque>
+      </sensor>
+    </joint>
+  </model>
+</sdf>

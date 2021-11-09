@@ -111,8 +111,20 @@ set (build_warnings "" CACHE INTERNAL "build warnings" FORCE)
 set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
      "Location of CMake scripts")
 
-message (STATUS "\n\n====== Finding 3rd Party Packages ======")
 include (${sdf_cmake_dir}/SDFUtils.cmake)
+
+message (STATUS "\n\n====== Finding 3rd Party Packages ======")
+ # Use of tinyxml. System installation on UNIX. Internal copy on WIN
+if (UNIX)
+  message (STATUS "Using system tinyxml")
+  set (USE_EXTERNAL_TINYXML True)
+elseif(WIN32)
+  message (STATUS "Using internal tinyxml code")
+  set (USE_EXTERNAL_TINYXML False)
+else()
+  message (STATUS "Unknown platform")
+  BUILD_ERROR("Unknown platform")
+endif()
 include (${sdf_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 

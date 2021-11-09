@@ -28,6 +28,7 @@
 #include "sdf/World.hh"
 #include "FrameSemantics.hh"
 #include "Utils.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -255,10 +256,15 @@ Errors World::Load(sdf::ElementPtr _sdf)
     _sdf->Get<ignition::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
 
-  if (!_sdf->HasUniqueChildNames())
+  for (const auto &[name, size] :
+       _sdf->CountNamedElements("", Element::NameUniquenessExceptions()))
   {
-    sdfwarn << "Non-unique names detected in XML children of world with name["
-            << this->Name() << "].\n";
+    if (size > 1)
+    {
+      sdfwarn << "Non-unique name[" << name << "] detected " << size
+              << " times in XML children of world with name[" << this->Name()
+              << "].\n";
+    }
   }
 
   // Set of implicit and explicit frame names in this model for tracking
