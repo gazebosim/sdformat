@@ -406,11 +406,10 @@ namespace sdf
     /// \param[in] _typeName The data type of the value
     /// \param[in] _value The value
     /// \param[in] _valueStr The string representation of the value
-    public: bool SDFORMAT_VISIBLE StringFromValueImpl(
-                                    const PrintConfig &_config,
-                                    const std::string &_typeName,
-                                    ParamVariant *_value,
-                                    std::string &_valueStr) const;
+    public: bool StringFromValueImpl(const PrintConfig &_config,
+                                     const std::string &_typeName,
+                                     ParamVariant *_value,
+                                     std::string &_valueStr) const;
 
     /// \brief Data type to string mapping
     /// \return The type as a string, empty string if unknown type
