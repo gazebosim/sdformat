@@ -5,7 +5,7 @@
     <include>
       <uri>test_model</uri>
       <name>parent_model</name>
-      <pose degrees='true'>1 2 3   30.009 45.009 60.009</pose>
+      <pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>
     </include>
 
   </world>

@@ -5,7 +5,7 @@
     <include>
       <uri>test_model</uri>
       <name>parent_model</name>
-      <pose>1 2 3   0.523756 0.785555 1.0473546</pose>
+      <pose>1 2 3   0.523756 0.785241 -1.04735</pose>
     </include>
 
   </world>

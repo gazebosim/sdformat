@@ -985,34 +985,38 @@ std::string GetPoseAsString(const PrintConfig& _config,
   else if (_config.GetRotationSnapToDegrees().has_value() &&
            _config.GetRotationSnapTolerance().has_value())
   {
-    // Returns a snapped value if it is within epsilon distance of multiples
+    // Returns a snapped value if it is within the tolerance of multiples
     // of interval, otherwise the orginal value is returned.
     auto snapToInterval =
-        [](double _val, double _interval, double _epsilon)
+        [](double _val, unsigned int _interval, double _tolerance)
     {
-      int quotient = static_cast<int>(_val / _interval);
-      double remainder = _val - (quotient * _interval);
+      const double sign = (_val < 0) ? -1 : 1;
+      unsigned int quotient = static_cast<unsigned int>(abs(_val)) / _interval;
 
-      if (abs(remainder) < _epsilon)
+      double lowerRemainder =
+          abs(_val) - static_cast<double>(quotient * _interval);
+      if (lowerRemainder< _tolerance)
       {
-        return _interval * quotient;
+        return static_cast<double>(_interval * quotient) * sign;
       }
-      else
+
+      double higherRemainder =
+          static_cast<double>(++quotient * _interval) - abs(_val);
+      if (higherRemainder < _tolerance)
       {
-        return _val;
+        return static_cast<double>(_interval * quotient) * sign;
       }
+
+      return _val;
     };
 
-    const double snapToDegrees =
-        static_cast<double>(_config.GetRotationSnapToDegrees().value());
-    const double snapTolerance =
-        static_cast<double>(_config.GetRotationSnapTolerance().value());
+    const unsigned int interval = _config.GetRotationSnapToDegrees().value();
+    const double tolerance = _config.GetRotationSnapTolerance().value();
+
     ss << _value.Pos() << "   ";
-    ss << snapToInterval(IGN_RTOD(_value.Roll()), snapToDegrees, snapTolerance)
-       << " "
-       << snapToInterval(IGN_RTOD(_value.Pitch()), snapToDegrees, snapTolerance)
-       << " "
-       << snapToInterval(IGN_RTOD(_value.Yaw()), snapToDegrees, snapTolerance);
+    ss << snapToInterval(IGN_RTOD(_value.Roll()), interval, tolerance) << " "
+       << snapToInterval(IGN_RTOD(_value.Pitch()), interval, tolerance) << " "
+       << snapToInterval(IGN_RTOD(_value.Yaw()), interval, tolerance);
   }
   else
   {

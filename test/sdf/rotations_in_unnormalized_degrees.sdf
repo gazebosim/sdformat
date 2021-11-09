@@ -2,9 +2,7 @@
 <sdf version="1.9">
 <model name="parent_model">
   <link name="link1">
-    <pose rotation_format='quat_xyzw'>
-      1 2 3   0.391948 0.200425 -0.532046 0.723279
-    </pose>
+    <pose degrees='true'>1 2 3   390.009 764.991 -420.009</pose>
   </link>
 </model>
 </sdf>

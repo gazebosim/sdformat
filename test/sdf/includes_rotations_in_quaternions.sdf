@@ -6,7 +6,7 @@
       <uri>test_model</uri>
       <name>parent_model</name>
       <pose rotation_format='quat_xyzw'>
-        1 2 3   0.0222483 0.439767 0.360423 0.822317
+        1 2 3   0.391948 0.200425 -0.532046 0.723279
       </pose>
     </include>
 
