@@ -25,6 +25,7 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Joint.hh"
+#include "sdf/Pbr.hh"
 
 using namespace sdf;
 
@@ -349,7 +350,35 @@ inline namespace SDF_VERSION_NAMESPACE {
           color_ambient[3] = _visual->Material()->Ambient().A();
           AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
         }
+        if (materialTag->FirstChildElement("emissive") == nullptr)
+        {
+          double color_emissive[4];
+          color_emissive[0] = _visual->Material()->Emissive().R();
+          color_emissive[1] = _visual->Material()->Emissive().G();
+          color_emissive[2] = _visual->Material()->Emissive().B();
+          color_emissive[3] = _visual->Material()->Emissive().A();
+          AddKeyValue(materialTag, "emissive", Values2str(4, color_emissive));
+        }
       }
+
+      const sdf::Pbr * pbr = _visual->Material()->PbrMaterial();
+      if(pbr != nullptr)
+      {
+        const sdf::PbrWorkflow * pbrWorkflow = pbr->Workflow(sdf::PbrWorkflowType::METAL);
+        if (pbrWorkflow != nullptr)
+        {
+          AddKeyValue(materialTag, "pbr", "");
+          auto pbrTag = materialTag->FirstChildElement("pbr");
+          AddKeyValue(pbrTag, "metal", "");
+          auto metalTag = pbrTag->FirstChildElement("metal");
+
+          double roughness = pbrWorkflow->Roughness();
+          double metalness = pbrWorkflow->Metalness();
+          AddKeyValue(metalTag, "roughness", Values2str(1, &roughness));
+          AddKeyValue(metalTag, "metalness", Values2str(1, &metalness));
+        }
+      }
+
     }
     // end create _visual node
     _elem->LinkEndChild(sdfVisual);

@@ -27,6 +27,8 @@
 #include "ignition/math/Pose3.hh"
 #include "ignition/math/Vector3.hh"
 
+#include "ignition/common/Material.hh"
+
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Joint.hh"
@@ -58,6 +60,7 @@ public:
   /// if more than one visual element is specified, all visual elements are placed in this array (the visual member points to the first element of the array)
   std::vector<std::shared_ptr<sdf::Visual>> visual_array;
   std::vector<std::string> visual_array_material_name;
+  std::vector<std::shared_ptr<ignition::common::Material>> visual_array_material;
 
   /// Parent Joint element
   ///   explicitly stating "parent" because we want directional-ness for tree structure

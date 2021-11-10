@@ -53,6 +53,67 @@ namespace usd
 {
   const char kCollisionExt[] = "_collision";
 
+  void getInertial(const pxr::UsdPrim &_prim, LinkSharedPtr &link,
+    float &_mass, pxr::GfVec3f _centerOfMass, pxr::GfVec3f _diagonalInertia)
+  {
+    ignition::math::MassMatrix3d massMatrix;
+    std::cerr << "UsdPhysicsMassAPI " <<  pxr::TfStringify(_prim.GetPath()) << '\n';
+
+    if (pxr::UsdAttribute massAttribute =
+      _prim.GetAttribute(pxr::TfToken("physics:mass")))
+    {
+      massAttribute.Get(&_mass);
+      std::cerr << "MASS " << _mass << '\n';
+
+      if (_mass == 0.0)
+      {
+        if (_prim.GetParent())
+        {
+          std::cerr << "try to find it in parents" << '\n';
+          getInertial(_prim.GetParent(), link, _mass, _centerOfMass, _diagonalInertia);
+        }
+      }
+      else
+      {
+        if (pxr::UsdAttribute centerOfMassAttribute =
+          _prim.GetAttribute(pxr::TfToken("physics:centerOfMass"))) {
+          centerOfMassAttribute.Get(&_centerOfMass);
+
+        }
+        if (pxr::UsdAttribute diagonalInertiaAttribute =
+          _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia"))) {
+          diagonalInertiaAttribute.Get(&_diagonalInertia);
+        }
+
+        if (_mass < 0.0001)
+        {
+          _mass = 1.0;
+        }
+
+        std::cerr << "centerOfMass " << _centerOfMass << '\n';
+        std::cerr << "diagonalInertia " << _diagonalInertia << '\n';
+
+        massMatrix.SetMass(_mass);
+        massMatrix.SetDiagonalMoments(
+          ignition::math::Vector3d(
+            _diagonalInertia[0],
+            _diagonalInertia[1],
+            _diagonalInertia[2]));
+
+        link->inertial->SetPose(ignition::math::Pose3d(
+            ignition::math::Vector3d(
+              _centerOfMass[0], _centerOfMass[1], _centerOfMass[2]),
+            ignition::math::Quaterniond(1.0, 0, 0, 0)));
+
+        link->inertial->SetMassMatrix(massMatrix);
+      }
+    }
+    else
+    {
+      getInertial(_prim.GetParent(), link, _mass, _centerOfMass, _diagonalInertia);
+    }
+  }
+
   LinkSharedPtr ParseLinks(
     const pxr::UsdPrim &_prim,
     LinkSharedPtr &link,
@@ -90,29 +151,10 @@ namespace usd
 
       if (_prim.HasAPI<pxr::UsdPhysicsMassAPI>())
       {
-        ignition::math::MassMatrix3d massMatrix;
-        std::cerr << "UsdPhysicsMassAPI" << '\n';
         float mass;
         pxr::GfVec3f centerOfMass;
         pxr::GfVec3f diagonalInertia;
-        _prim.GetAttribute(pxr::TfToken("physics:mass")).Get(&mass);
-        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass")).Get(&centerOfMass);
-        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia")).Get(&diagonalInertia);
-
-        if (mass < 0.0001)
-        {
-          mass = 1.0;
-        }
-        massMatrix.SetMass(mass);
-        massMatrix.SetDiagonalMoments(
-          ignition::math::Vector3d(diagonalInertia[0], diagonalInertia[1], diagonalInertia[2]));
-
-        link->inertial->SetPose(ignition::math::Pose3d(
-            ignition::math::Vector3d(
-              centerOfMass[0], centerOfMass[1], centerOfMass[2]),
-            ignition::math::Quaterniond(1.0, 0, 0, 0)));
-
-        link->inertial->SetMassMatrix(massMatrix);
+        getInertial(_prim, link, mass, centerOfMass, diagonalInertia);
       }
 
       std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple = ParseTransform
@@ -371,7 +413,9 @@ namespace usd
             std::cerr << "faceVertexIndices " << faceVertexIndices.size() << '\n';
             for (unsigned int i = 0; i < faceVertexIndices.size(); ++i)
             {
-              subMeshSubset.AddIndex(subMesh.Index(faceVertexIndices[i]));
+              subMeshSubset.AddIndex(subMesh.Index(faceVertexIndices[i] * 3));
+              subMeshSubset.AddIndex(subMesh.Index(faceVertexIndices[i] * 3 + 1));
+              subMeshSubset.AddIndex(subMesh.Index(faceVertexIndices[i] * 3 + 2));
             }
 
             for (int i = 0; i < subMesh.VertexCount(); ++i)

@@ -23,6 +23,8 @@
 #include <pxr/usd/usdShade/shader.h>
 #include <pxr/usd/usdShade/input.h>
 
+#include "sdf/Pbr.hh"
+
 namespace usd
 {
   sdf::Material ParseMaterial(const pxr::UsdPrim &_prim, int &_skip)
@@ -74,8 +76,9 @@ namespace usd
           pxr::GfVec3f emissiveColor {0, 0, 0};
           bool enableEmission = false;
 
-
-
+          bool isPBR = false;
+          sdf::PbrWorkflow pbrWorkflow;
+          ignition::math::Color emissiveColorCommon;
 
           std::vector<pxr::UsdShadeInput> inputs = variantshader.GetInputs();
           for (auto &input : inputs)
@@ -89,31 +92,68 @@ namespace usd
 
               material.SetDiffuse(
                 ignition::math::Color(
-                  diffuseColor[2],
+                  diffuseColor[0],
                   diffuseColor[1],
-                  diffuseColor[0]));
+                  diffuseColor[2]));
+              std::cerr << "diffuse " << ignition::math::Color(
+                diffuseColor[0],
+                diffuseColor[1],
+                diffuseColor[2]) << '\n';
             }
-            else if (input.GetBaseName() == "diffuse_color_constant")
+            else if (input.GetBaseName() == "metallic_constant")
+            {
+              pxr::UsdShadeInput metallicConstantShaderInput =
+                variantshader.GetInput(pxr::TfToken("metallic_constant"));
+              float metallicConstant;
+              metallicConstantShaderInput.Get(&metallicConstant);
+              pbrWorkflow.SetMetalness(metallicConstant);
+              isPBR = true;
+            }
+            else if (input.GetBaseName() == "reflection_roughness_constant")
+            {
+              pxr::UsdShadeInput reflectionRoughnessConstantShaderInput =
+                variantshader.GetInput(pxr::TfToken("reflection_roughness_constant"));
+              float reflectionRoughnessConstant;
+              reflectionRoughnessConstantShaderInput.Get(&reflectionRoughnessConstant);
+              pbrWorkflow.SetRoughness(reflectionRoughnessConstant);
+              isPBR = true;
+            }
+            else if (input.GetBaseName() == "enable_emission")
             {
               pxr::UsdShadeInput enableEmissiveShaderInput =
                 variantshader.GetInput(pxr::TfToken("enable_emission"));
               enableEmissiveShaderInput.Get(&enableEmission);
+              std::cerr << "enableEmission " << enableEmission << '\n';
             }
             else if (input.GetBaseName() == "emissive_color")
             {
-              if (enableEmission)
-              {
+              // if (enableEmission)
+              // {
                 pxr::UsdShadeInput emissiveColorShaderInput =
                   variantshader.GetInput(pxr::TfToken("emissive_color"));
-                emissiveColorShaderInput.Get(&emissiveColor);
+                if (emissiveColorShaderInput.Get(&emissiveColor))
+                {
+                  std::cerr << "emissiveColor " << emissiveColor << '\n';
 
-                material.SetDiffuse(
-                  ignition::math::Color(
-                    emissiveColor[2],
+                  emissiveColorCommon = ignition::math::Color(
+                    emissiveColor[0],
                     emissiveColor[1],
-                    emissiveColor[0]));
-              }
+                    emissiveColor[2]);
+                }
+              // }
             }
+          }
+
+          if (enableEmission)
+          {
+            material.SetEmissive(emissiveColorCommon);
+          }
+
+          if (isPBR)
+          {
+            sdf::Pbr pbr;
+            pbr.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
+            material.SetPbrMaterial(pbr);
           }
 
           // std::cerr << "diffuseColor " << diffuseColor << '\n';

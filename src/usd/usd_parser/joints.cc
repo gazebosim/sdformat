@@ -100,17 +100,18 @@ namespace usd
       pxr::TfToken axis;
       sdf::JointAxis jointAxis;
       variant_physics_prismatic_joint.GetAxisAttr().Get(&axis);
+      ignition::math::Vector3d v;
       if (axis == pxr::UsdGeomTokens->x)
       {
-        jointAxis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+        v = ignition::math::Vector3d(1, 0, 0);
       }
       if (axis == pxr::UsdGeomTokens->y)
       {
-        jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+        v = ignition::math::Vector3d(0, 1, 0);
       }
       if (axis == pxr::UsdGeomTokens->z)
       {
-        jointAxis.SetXyz(ignition::math::Vector3d(0, 0, 1));
+        v = ignition::math::Vector3d(0, 0, 1);
       }
 
       pxr::GfVec3f localPose0, localPose1;
@@ -122,22 +123,59 @@ namespace usd
       variant_physics_prismatic_joint.GetLocalRot1Attr().Get(&localRot1);
 
       auto trans = (localPose0 + localPose1) * _metersPerUnit;
+
+      ignition::math::Quaterniond q1(
+        localRot0.GetReal(),
+        localRot0.GetImaginary()[0],
+        localRot0.GetImaginary()[1],
+        localRot0.GetImaginary()[2]);
+      ignition::math::Quaterniond q2(
+        localRot1.GetReal(),
+        localRot1.GetImaginary()[0],
+        localRot1.GetImaginary()[1],
+        localRot1.GetImaginary()[2]);
+
+      std::cerr << "============================== " << q2 * v << '\n';
+
+      jointAxis.SetXyz(-(q2 * v).Round());
+
       joint->SetRawPose(
         ignition::math::Pose3d(
           ignition::math::Vector3d(trans[0], trans[1], trans[2]),
-          ignition::math::Quaterniond(
-            localRot0.GetReal() + localRot1.GetReal(),
-            localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
-            localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
-            localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2])));
+          ignition::math::Quaterniond(q1 * q2)));
 
       float lowerLimit;
       float upperLimit;
+      float stiffness;
+      float damping;
+      float maxForce;
+      float jointFriction;
+      float vel;
+
       _prim.GetAttribute(pxr::TfToken("physics:lowerLimit")).Get(&lowerLimit);
       _prim.GetAttribute(pxr::TfToken("physics:upperLimit")).Get(&upperLimit);
+      _prim.GetAttribute(pxr::TfToken("drive:linear:physics:stiffness")).Get(&stiffness);
+      _prim.GetAttribute(pxr::TfToken("drive:linear:physics:damping")).Get(&damping);
+      _prim.GetAttribute(pxr::TfToken("drive:linear:physics:maxForce")).Get(&maxForce);
+      _prim.GetAttribute(pxr::TfToken("physxJoint:maxJointVelocity")).Get(&vel);
+
+      pxr::UsdAttribute jointFrictionAttribute;
+      if (jointFrictionAttribute = _prim.GetAttribute(pxr::TfToken("physxJoint:jointFriction")))
+      {
+        jointFrictionAttribute.Get(&jointFriction);
+      }
+      else if (jointFrictionAttribute = _prim.GetAttribute(pxr::TfToken("jointFriction")))
+      {
+        jointFrictionAttribute.Get(&jointFriction);
+      }
 
       jointAxis.SetLower(lowerLimit * _metersPerUnit);
       jointAxis.SetUpper(upperLimit * _metersPerUnit);
+      jointAxis.SetDamping(damping);
+      jointAxis.SetEffort(maxForce);
+      jointAxis.SetSpringStiffness(stiffness);
+      jointAxis.SetFriction(jointFriction);
+      jointAxis.SetMaxVelocity(vel);
 
       joint->SetAxis(0, jointAxis);
 
@@ -154,17 +192,18 @@ namespace usd
       sdf::JointAxis jointAxis;
       pxr::TfToken axis;
       variant_physics_revolute_joint.GetAxisAttr().Get(&axis);
+      ignition::math::Vector3d v;
       if (axis == pxr::UsdGeomTokens->x)
       {
-        jointAxis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+        v = ignition::math::Vector3d(1, 0, 0);
       }
       if (axis == pxr::UsdGeomTokens->y)
       {
-        jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+        v = ignition::math::Vector3d(0, 1, 0);
       }
       if (axis == pxr::UsdGeomTokens->z)
       {
-        jointAxis.SetXyz(ignition::math::Vector3d(0, 0, 1));
+        v = ignition::math::Vector3d(0, 0, 1);
       }
 
       pxr::GfVec3f localPose0, localPose1;
@@ -176,32 +215,60 @@ namespace usd
       variant_physics_revolute_joint.GetLocalRot1Attr().Get(&localRot1);
 
       auto trans = (localPose0 + localPose1) * _metersPerUnit;
+
+      ignition::math::Quaterniond q1(
+        localRot0.GetReal(),
+        localRot0.GetImaginary()[0],
+        localRot0.GetImaginary()[1],
+        localRot0.GetImaginary()[2]);
+      ignition::math::Quaterniond q2(
+        localRot1.GetReal(),
+        localRot1.GetImaginary()[0],
+        localRot1.GetImaginary()[1],
+        localRot1.GetImaginary()[2]);
+
+      std::cerr << "============================== " << q2 * v << '\n';
+
+      jointAxis.SetXyz(v);
+
       joint->SetRawPose(
         ignition::math::Pose3d(
           ignition::math::Vector3d(trans[0], trans[1], trans[2]),
-          ignition::math::Quaterniond(
-            localRot0.GetReal() + localRot1.GetReal(),
-            localRot0.GetImaginary()[0] + localRot1.GetImaginary()[0],
-            localRot0.GetImaginary()[1] + localRot1.GetImaginary()[1],
-            localRot0.GetImaginary()[2] + localRot1.GetImaginary()[2])));
+          ignition::math::Quaterniond(q1)));
 
       float lowerLimit;
       float upperLimit;
       float stiffness;
       float damping;
       float jointFriction;
+      float maxForce;
+      float vel;
       _prim.GetAttribute(pxr::TfToken("physics:lowerLimit")).Get(&lowerLimit);
       _prim.GetAttribute(pxr::TfToken("physics:upperLimit")).Get(&upperLimit);
       _prim.GetAttribute(pxr::TfToken("drive:angular:physics:stiffness")).Get(&stiffness);
       _prim.GetAttribute(pxr::TfToken("drive:angular:physics:damping")).Get(&damping);
-      _prim.GetAttribute(pxr::TfToken("physxJoint:jointFriction")).Get(&jointFriction);
+      _prim.GetAttribute(pxr::TfToken("drive:angular:physics:maxForce")).Get(&maxForce);
+      _prim.GetAttribute(pxr::TfToken("physxJoint:maxJointVelocity")).Get(&vel);
+
+      pxr::UsdAttribute jointFrictionAttribute;
+      if (jointFrictionAttribute = _prim.GetAttribute(pxr::TfToken("physxJoint:jointFriction")))
+      {
+        jointFrictionAttribute.Get(&jointFriction);
+      }
+      else if (jointFrictionAttribute = _prim.GetAttribute(pxr::TfToken("jointFriction")))
+      {
+        jointFrictionAttribute.Get(&jointFriction);
+      }
 
       jointAxis.SetLower(lowerLimit * 3.1416 / 180.0);
       jointAxis.SetUpper(upperLimit * 3.1416 / 180.0);
-      jointAxis.SetEffort(stiffness);
+      jointAxis.SetEffort(maxForce);
+
+      jointAxis.SetSpringStiffness(stiffness);
 
       jointAxis.SetDamping(damping);
       jointAxis.SetFriction(jointFriction);
+      jointAxis.SetMaxVelocity(vel);
 
       joint->SetAxis(0, jointAxis);
 

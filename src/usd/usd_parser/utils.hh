@@ -68,7 +68,7 @@ namespace usd{
       {
         _prim.GetAttribute(pxr::TfToken("xformOp:rotateZYX")).Get(&translate_euler);
         ignition::math::Quaterniond q;
-        q.Euler(translate_euler[2], translate_euler[1], translate_euler[0]);
+        q.Euler(translate_euler[2] * 3.1416/180, translate_euler[1]* 3.1416/180, translate_euler[0]* 3.1416/180);
         rotation_quad.SetImaginary(q.X(), q.Z(), q.Z());
         rotation_quad.SetReal(q.W());
         isRotation = true;

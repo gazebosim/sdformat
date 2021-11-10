@@ -49,6 +49,7 @@
 #include "utils.hh"
 #include "sdf/Console.hh"
 #include "sdf/Mesh.hh"
+#include "sdf/Pbr.hh"
 
 #include <fstream>
 
@@ -94,6 +95,7 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   int skipNext = 0;
 
   std::map<std::string, std::shared_ptr<ignition::common::Material>> materials;
+  std::map<std::string, sdf::Material> materialsSDF;
 
   // Get all Link elements
   for (auto const &prim : range) {
@@ -154,7 +156,20 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
       materialCommon->SetEmissive(material.Emissive());
       materialCommon->SetDiffuse(material.Diffuse());
+      const sdf::Pbr * pbr = material.PbrMaterial();
+      if(pbr != nullptr)
+      {
+        const sdf::PbrWorkflow * pbrWorkflow = pbr->Workflow(sdf::PbrWorkflowType::METAL);
+        if (pbrWorkflow != nullptr)
+        {
+          ignition::common::Pbr pbrCommon;
+          pbrCommon.SetRoughness(pbrWorkflow->Roughness());
+          pbrCommon.SetMetalness(pbrWorkflow->Metalness());
+          materialCommon->SetPbrMaterial(pbrCommon);
+        }
+      }
 
+      materialsSDF.insert(std::pair<std::string, sdf::Material>(materialName, material));
       materials.insert(std::pair<std::string, std::shared_ptr<ignition::common::Material>>
         (materialName, materialCommon));
       continue;
@@ -265,6 +280,9 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   for (auto &link: model->links_)
   {
     std::cerr << ">>>>>> link->name " << link.second->name << '\n';
+
+    link.second->visual_array_material.resize(link.second->visual_array.size());
+
     for (unsigned int i = 0; i < link.second->visual_array.size(); ++i)
     {
       std::string materialName = link.second->visual_array_material_name[i];
@@ -273,7 +291,8 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
         std::cerr << "materialName " << materialName << '\n';
 
         auto it = materials.find(materialName);
-        if (it != materials.end())
+        auto itSDF = materialsSDF.find(materialName);
+        if (it != materials.end() && itSDF != materialsSDF.end())
         {
           if (link.second->visual_array[i]->Geom() != nullptr)
           {
@@ -296,7 +315,14 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
                   std::cerr << "link.second->visual_array[i] Name " << link.second->visual_array[i]->Name() << '\n';
 
                   int index = meshReload->AddMaterial(it->second);
+                  link.second->visual_array_material[i] = it->second;
+                  link.second->visual_array[i]->SetMaterial(itSDF->second);
                   subMesh.lock()->SetMaterialIndex(index);
+
+                  if (materialName == "EmissiveBlue")
+                  {
+                    std::cerr << "it->second->Diffuse() " << it->second->Diffuse() << '\n';
+                  }
                 }
 
                 ignition::common::ColladaExporter exporter;
