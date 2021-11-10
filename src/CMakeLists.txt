@@ -258,5 +258,5 @@ if (NOT USE_INTERNAL_URDF)
 endif()
 
 if(NOT WIN32)
-  # add_subdirectory(cmd)
+  add_subdirectory(cmd)
 endif()
