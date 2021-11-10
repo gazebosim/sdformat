@@ -263,8 +263,8 @@ TEST(DOMSensor, Type)
     sdf::SensorType::WIRELESS_RECEIVER,
     sdf::SensorType::WIRELESS_TRANSMITTER,
     sdf::SensorType::THERMAL_CAMERA,
-    sdf::SensorType::WIDE_ANGLE_CAMERA,
-    sdf::SensorType::CUSTOM
+    sdf::SensorType::CUSTOM,
+    sdf::SensorType::WIDE_ANGLE_CAMERA
   };
   std::vector<std::string> typeStrs =
   {
@@ -289,8 +289,8 @@ TEST(DOMSensor, Type)
     "wireless_receiver",
     "wireless_transmitter",
     "thermal_camera",
-    "wideanglecamera",
-    "custom"
+    "custom",
+    "wideanglecamera"
   };
 
   for (size_t i = 0; i < types.size(); ++i)

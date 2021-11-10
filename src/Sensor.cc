@@ -64,8 +64,8 @@ const std::vector<std::string> sensorTypeStrs =
   "navsat",
   "segmentation_camera",
   "boundingbox_camera",
-  "wideanglecamera",
-  "custom"
+  "custom",
+  "wideanglecamera"
 };
 
 class sdf::Sensor::Implementation
