@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "ignition/sdformat.hh"
+#include "sdformat.hh"
 
 std::string get_sdf_string(const std::string &_version)
 {

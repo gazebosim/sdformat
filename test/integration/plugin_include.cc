@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include "ignition/sdformat.hh"
+#include "sdformat.hh"
 
 #include "test_config.h"
 

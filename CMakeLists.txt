@@ -38,10 +38,6 @@ configure_file (include/sdf/config.hh.in
   include/sdf/config.hh)
 
 if (BUILD_SDF)
-  include_directories(include
-    ${PROJECT_BINARY_DIR}/include
-    )
-
   ign_configure_project(INCLUDE_DIR sdf NO_IGNITION_PREFIX)
 
   message (STATUS "\n\n====== Finding 3rd Party Packages ======")

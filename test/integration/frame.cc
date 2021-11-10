@@ -30,7 +30,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "ignition/sdformat/config.hh"
+#include "sdf/config.hh"
 
 #include "test_config.h"
 

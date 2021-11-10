@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include "ignition/sdformat.hh"
+#include "sdformat.hh"
 
 TEST(CheckFixForLocal, CheckFixForCxxLocal)
 {

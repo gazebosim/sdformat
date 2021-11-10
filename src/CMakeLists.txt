@@ -198,11 +198,11 @@ if (BUILD_SDF_TEST)
   endif()
 
   if (TARGET UNIT_XmlUtils_TEST)
-    target_link_libraries(UNIT_XmlUtils_TEST ${TinyXML2_LIBRARIES})
+    target_link_libraries(UNIT_XmlUtils_TEST ${TINYXML2_LIBRARIES})
   endif()
 
   if (TARGET UNIT_Converter_TEST)
-    target_link_libraries(UNIT_Converter_TEST ${TinyXML2_LIBRARIES})
+    target_link_libraries(UNIT_Converter_TEST ${TINYXML2_LIBRARIES})
   endif()
 
   if (TARGET UNIT_parser_urdf_TEST)
@@ -213,7 +213,7 @@ if (BUILD_SDF_TEST)
       endif()
       target_link_libraries(UNIT_parser_urdf_TEST ${URDF_LIBRARIES})
     endif()
-    target_link_libraries(UNIT_parser_urdf_TEST ${TinyXML2_LIBRARIES})
+    target_link_libraries(UNIT_parser_urdf_TEST ${TINYXML2_LIBRARIES})
   endif()
 
   if (TARGET UNIT_ParamPassing_TEST)
@@ -224,7 +224,7 @@ if (BUILD_SDF_TEST)
       endif()
       target_link_libraries(UNIT_ParamPassing_TEST ${URDF_LIBRARIES})
     endif()
-    target_link_libraries(UNIT_ParamPassing_TEST ${TinyXML2_LIBRARIES})
+    target_link_libraries(UNIT_ParamPassing_TEST ${TINYXML2_LIBRARIES})
   endif()
 endif()
 
@@ -234,7 +234,7 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
   PRIVATE
-    ${TinyXML2_LIBRARIES})
+    ${TINYXML2_LIBRARIES})
 
 if (WIN32)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
