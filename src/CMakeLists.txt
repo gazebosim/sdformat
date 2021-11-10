@@ -200,7 +200,7 @@ if (BUILD_SDF_TEST)
       if (${CMAKE_VERSION} VERSION_GREATER 3.13)
         target_link_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_LDFLAGS})
       endif()
-      target_link_libraries(UNIT_parser_urdf_TEST ${URDF_LIBRARIES})
+      target_link_libraries(UNIT_parser_urdf_TEST URDF::URDF)
     endif()
     target_link_libraries(UNIT_parser_urdf_TEST ${TINYXML2_LIBRARIES})
   endif()
@@ -211,7 +211,7 @@ if (BUILD_SDF_TEST)
       if (${CMAKE_VERSION} VERSION_GREATER 3.13)
         target_link_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_LDFLAGS})
       endif()
-      target_link_libraries(UNIT_ParamPassing_TEST ${URDF_LIBRARIES})
+      target_link_libraries(UNIT_ParamPassing_TEST URDF::URDF)
     endif()
     target_link_libraries(UNIT_ParamPassing_TEST ${TINYXML2_LIBRARIES})
   endif()
@@ -235,7 +235,7 @@ if (USE_INTERNAL_URDF)
 else()
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     PRIVATE
-      ${URDF_LIBRARIES}
+      URDF::URDF
   )
 endif()
 
@@ -248,17 +248,6 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
 )
-
-message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
-message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
-
-if (NOT USE_INTERNAL_URDF)
-  target_compile_options(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE ${URDF_CFLAGS})
-  if (${CMAKE_VERSION} VERSION_GREATER 3.13)
-    target_link_options(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE ${URDF_LDFLAGS})
-  endif()
-  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE ${URDF_LIBRARIES})
-endif()
 
 if(NOT WIN32)
   add_subdirectory(cmd)

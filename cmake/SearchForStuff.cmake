@@ -12,38 +12,20 @@ ign_find_package(TINYXML2 REQUIRED)
 #  1. if USE_INTERNAL_URDF is unset, try to use system installation, fallback to internal copy
 #  2. if USE_INTERNAL_URDF is set to True, use the internal copy
 #  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
-
-if (NOT PKG_CONFIG_FOUND)
-  if (NOT DEFINED USE_INTERNAL_URDF)
-    ign_build_warning("Couldn't find pkg-config for urdfdom, using internal copy")
-    set(USE_INTERNAL_URDF true)
-  elseif(NOT USE_INTERNAL_URDF)
-    ign_build_error("Couldn't find pkg-config for urdfdom")
+if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
+  ign_find_package(URDF VERSION 1.0 QUIET)
+  if (NOT URDF_FOUND)
+    if (DEFINED USE_INTERNAL_URDF AND NOT USE_INTERNAL_URDF)
+      ign_build_error("Couldn't find the urdfdom >= 1.0 system installation")
+    else()
+      # fallback to internal urdf
+      set(USE_INTERNAL_URDF ON)
+    endif()
   endif()
 endif()
 
-if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
-  # check for urdfdom with pkg-config
-  pkg_check_modules(URDF urdfdom>=1.0)
-
-  if (NOT URDF_FOUND)
-    find_package(urdfdom QUIET)
-    if (urdfdom_FOUND)
-      set(URDF_INCLUDE_DIRS ${urdfdom_INCLUDE_DIRS})
-      # ${urdfdom_LIBRARIES} already contains absolute library filenames
-      set(URDF_LIBRARY_DIRS "")
-      set(URDF_LIBRARIES ${urdfdom_LIBRARIES})
-    elseif (NOT DEFINED USE_INTERNAL_URDF)
-      message(STATUS "Couldn't find urdfdom >= 1.0, using internal copy")
-      set(USE_INTERNAL_URDF true)
-    else()
-      ign_build_error("Couldn't find the urdfdom >= 1.0 system installation")
-    endif()
-  else()
-    # what am I doing here? pkg-config and cmake
-    set(URDF_INCLUDE_DIRS ${URDF_INCLUDEDIR})
-    set(URDF_LIBRARY_DIRS ${URDF_LIBDIR})
-  endif()
+if (USE_INTERNAL_URDF)
+  message(STATUS "Using internal URDF")
 endif()
 
 #################################################
