@@ -124,11 +124,11 @@ namespace sdf
     /// \brief A boundingbox camera sensor
     BOUNDINGBOX_CAMERA = 23,
 
-    /// \brief A wide angle camera sensor
-    WIDE_ANGLE_CAMERA = 24,
-
     /// \brief A custom sensor
-    CUSTOM = 25
+    CUSTOM = 24,
+
+    /// \brief A wide angle camera sensor
+    WIDE_ANGLE_CAMERA = 25
   };
 
   /// \brief Information about an SDF sensor.
