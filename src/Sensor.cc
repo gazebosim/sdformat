@@ -522,6 +522,12 @@ const Magnetometer *Sensor::MagnetometerSensor() const
 }
 
 /////////////////////////////////////////////////
+Magnetometer *Sensor::MagnetometerSensor()
+{
+  return optionalToPointer(this->dataPtr->magnetometer);
+}
+
+/////////////////////////////////////////////////
 void Sensor::SetMagnetometerSensor(const Magnetometer &_mag)
 {
   this->dataPtr->magnetometer = _mag;
@@ -529,6 +535,12 @@ void Sensor::SetMagnetometerSensor(const Magnetometer &_mag)
 
 /////////////////////////////////////////////////
 const Altimeter *Sensor::AltimeterSensor() const
+{
+  return optionalToPointer(this->dataPtr->altimeter);
+}
+
+/////////////////////////////////////////////////
+Altimeter *Sensor::AltimeterSensor()
 {
   return optionalToPointer(this->dataPtr->altimeter);
 }
@@ -546,6 +558,12 @@ const AirPressure *Sensor::AirPressureSensor() const
 }
 
 /////////////////////////////////////////////////
+AirPressure *Sensor::AirPressureSensor()
+{
+  return optionalToPointer(this->dataPtr->airPressure);
+}
+
+/////////////////////////////////////////////////
 void Sensor::SetAirPressureSensor(const AirPressure &_air)
 {
   this->dataPtr->airPressure = _air;
@@ -553,6 +571,12 @@ void Sensor::SetAirPressureSensor(const AirPressure &_air)
 
 /////////////////////////////////////////////////
 const Lidar *Sensor::LidarSensor() const
+{
+  return optionalToPointer(this->dataPtr->lidar);
+}
+
+/////////////////////////////////////////////////
+Lidar *Sensor::LidarSensor()
 {
   return optionalToPointer(this->dataPtr->lidar);
 }
@@ -597,6 +621,12 @@ const Camera *Sensor::CameraSensor() const
 }
 
 /////////////////////////////////////////////////
+Camera *Sensor::CameraSensor()
+{
+  return optionalToPointer(this->dataPtr->camera);
+}
+
+/////////////////////////////////////////////////
 void Sensor::SetForceTorqueSensor(const ForceTorque &_ft)
 {
   this->dataPtr->forceTorque = _ft;
@@ -604,6 +634,12 @@ void Sensor::SetForceTorqueSensor(const ForceTorque &_ft)
 
 /////////////////////////////////////////////////
 const ForceTorque *Sensor::ForceTorqueSensor() const
+{
+  return optionalToPointer(this->dataPtr->forceTorque);
+}
+
+/////////////////////////////////////////////////
+ForceTorque *Sensor::ForceTorqueSensor()
 {
   return optionalToPointer(this->dataPtr->forceTorque);
 }
@@ -621,6 +657,12 @@ const NavSat *Sensor::NavSatSensor() const
 }
 
 /////////////////////////////////////////////////
+NavSat *Sensor::NavSatSensor()
+{
+  return optionalToPointer(this->dataPtr->navSat);
+}
+
+/////////////////////////////////////////////////
 void Sensor::SetImuSensor(const Imu &_imu)
 {
   this->dataPtr->imu = _imu;
@@ -628,6 +670,12 @@ void Sensor::SetImuSensor(const Imu &_imu)
 
 /////////////////////////////////////////////////
 const Imu *Sensor::ImuSensor() const
+{
+  return optionalToPointer(this->dataPtr->imu);
+}
+
+/////////////////////////////////////////////////
+Imu *Sensor::ImuSensor()
 {
   return optionalToPointer(this->dataPtr->imu);
 }

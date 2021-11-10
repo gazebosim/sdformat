@@ -256,6 +256,13 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Magnetometer *MagnetometerSensor() const;
 
+    /// \brief Get a mutable magnetometer sensor, or nullptr if this sensor type
+    /// is not a Magnetometer.
+    /// \return Pointer to the Magnetometer sensor, or nullptr if this
+    /// Sensor is not a Magnetometer.
+    /// \sa SensorType Type() const
+    public: Magnetometer *MagnetometerSensor();
+
     /// \brief Set the magnetometer sensor.
     /// \param[in] _mag The magnetometer sensor.
     public: void SetMagnetometerSensor(const Magnetometer &_mag);
@@ -267,6 +274,13 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Altimeter *AltimeterSensor() const;
 
+    /// \brief Get a mutable altimeter sensor, or nullptr if this sensor type
+    /// is not an Altimeter.
+    /// \return Pointer to the Altimeter sensor, or nullptr if this
+    /// Sensor is not a Altimeter.
+    /// \sa SensorType Type() const
+    public: Altimeter *AltimeterSensor();
+
     /// \brief Set the altimeter sensor.
     /// \param[in] _alt The altimeter sensor.
     public: void SetAltimeterSensor(const Altimeter &_alt);
@@ -277,6 +291,13 @@ namespace sdf
     /// Sensor is not a AirPressure sensor.
     /// \sa SensorType Type() const
     public: const AirPressure *AirPressureSensor() const;
+
+    /// \brief Get a mutable air pressure sensor, or nullptr if this sensor type
+    /// is not an AirPressure sensor.
+    /// \return Pointer to the AirPressure sensor, or nullptr if this
+    /// Sensor is not a AirPressure sensor.
+    /// \sa SensorType Type() const
+    public: AirPressure *AirPressureSensor();
 
     /// \brief Set the air pressure sensor.
     /// \param[in] _air The air pressure sensor.
@@ -293,6 +314,13 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Camera *CameraSensor() const;
 
+    /// \brief Get a mutable camera sensor, or nullptr if the
+    /// sensor does not contain a camera sensor.
+    /// \return Pointer to the sensor's camera, or nullptr if the sensor
+    /// is not a camera.
+    /// \sa SensorType Type() const
+    public: Camera *CameraSensor();
+
     /// \brief Set the NAVSAT sensor.
     /// \param[in] _navsat The NAVSAT sensor.
     public: void SetNavSatSensor(const NavSat &_navsat);
@@ -303,6 +331,13 @@ namespace sdf
     /// is not an NAVSAT.
     /// \sa SensorType Type() const
     public: const NavSat *NavSatSensor() const;
+
+    /// \brief Get a mutable NAVSAT sensor, or nullptr if the sensor
+    /// does not contain an NAVSAT sensor.
+    /// \return Pointer to the sensor's NAVSAT, or nullptr if the sensor
+    /// is not an NAVSAT.
+    /// \sa SensorType Type() const
+    public: NavSat *NavSatSensor();
 
     /// \brief Set the force torque sensor.
     /// \param[in] _ft The force torque sensor.
@@ -315,6 +350,13 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const ForceTorque *ForceTorqueSensor() const;
 
+    /// \brief Get a mutable force torque sensor, or nullptr if the sensor
+    /// does not contain a force torque sensor.
+    /// \return Pointer to the force torque sensor, or nullptr if the sensor
+    /// is not a force torque sensor.
+    /// \sa SensorType Type() const
+    public: ForceTorque *ForceTorqueSensor();
+
     /// \brief Set the IMU sensor.
     /// \param[in] _imu The IMU sensor.
     public: void SetImuSensor(const Imu &_imu);
@@ -326,12 +368,26 @@ namespace sdf
     /// \sa SensorType Type() const
     public: const Imu *ImuSensor() const;
 
+    /// \brief Get a mutable IMU sensor, or nullptr if the sensor
+    /// does not contain an IMU sensor.
+    /// \return Pointer to the sensor's IMU, or nullptr if the sensor
+    /// is not an IMU.
+    /// \sa SensorType Type() const
+    public: Imu *ImuSensor();
+
     /// \brief Get the lidar sensor, or nullptr if this sensor type is not a
     /// Lidar.
     /// \return Pointer to the Lidar sensor, or nullptr if this Sensor is not a
     /// Lidar.
     /// \sa SensorType Type() const
     public: const Lidar *LidarSensor() const;
+
+    /// \brief Get a mutable lidar sensor, or nullptr if this sensor type is
+    /// not a Lidar.
+    /// \return Pointer to the Lidar sensor, or nullptr if this Sensor is not a
+    /// Lidar.
+    /// \sa SensorType Type() const
+    public: Lidar *LidarSensor();
 
     /// \brief Set the lidar sensor.
     /// \param[in] _lidar The lidar sensor.
