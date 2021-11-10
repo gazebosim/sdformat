@@ -1,13 +1,5 @@
 include (${sdf_cmake_dir}/SDFUtils.cmake)
 
-link_directories(
-  ${PROJECT_BINARY_DIR}/test
-)
-
-if (NOT USE_INTERNAL_URDF)
-  link_directories(${URDF_LIBRARY_DIRS})
-endif()
-
 set (sources
   Actor.cc
   AirPressure.cc
@@ -79,7 +71,6 @@ set (sources
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (USE_INTERNAL_URDF)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/urdf)
   set(sources ${sources}
   urdf/urdf_parser/model.cpp
   urdf/urdf_parser/link.cpp
@@ -89,8 +80,6 @@ if (USE_INTERNAL_URDF)
   urdf/urdf_parser/urdf_model_state.cpp
   urdf/urdf_parser/urdf_sensor.cpp
   urdf/urdf_parser/world.cpp)
-else()
-  include_directories(${URDF_INCLUDE_DIRS})
 endif()
 
 if (BUILD_SDF_TEST)
@@ -229,12 +218,26 @@ if (BUILD_SDF_TEST)
 endif()
 
 ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
   PRIVATE
-    ${TINYXML2_LIBRARIES})
+    ${TINYXML2_LIBRARIES}
+)
+
+if (USE_INTERNAL_URDF)
+  target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+    PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/urdf
+  )
+else()
+  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+    PRIVATE
+      ${URDF_LIBRARIES}
+  )
+endif()
 
 if (WIN32)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
