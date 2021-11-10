@@ -1,19 +1,10 @@
 include (FindPkgConfig)
 
-# Detect the architecture
-include (${project_cmake_dir}/TargetArch.cmake)
-target_architecture(ARCH)
 message(STATUS "Building for arch: ${ARCH}")
 
 #################################################
-# Find ign-cmake
-find_package(ignition-cmake2 2.9 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
-
-#################################################
 # Find tinyxml2.
-list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
-find_package(TinyXML2 REQUIRED)
+ign_find_package(TINYXML2 REQUIRED)
 
 ################################################
 # Find urdfdom parser. Logic:
@@ -62,7 +53,7 @@ ign_find_package(ignition-tools)
 ################################################
 # Find the Python interpreter for running the
 # check_test_ran.py script
-find_package(PythonInterp 3 QUIET)
+ign_find_package(PythonInterp VERSION 3 QUIET)
 
 ################################################
 # Find psutil python package for memory tests
@@ -97,11 +88,6 @@ macro (check_gcc_visibility)
   include (CheckCXXCompilerFlag)
   check_cxx_compiler_flag(-fvisibility=hidden GCC_SUPPORTS_VISIBILITY)
 endmacro()
-
-########################################
-# Find ignition cmake2
-find_package(ignition-cmake2 2.9 REQUIRED)
-
 
 ########################################
 # Find ignition math
