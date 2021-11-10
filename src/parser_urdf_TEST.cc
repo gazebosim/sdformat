@@ -19,7 +19,7 @@
 
 #include <list>
 
-#include "sdf/sdf.hh"
+#include "sdformat.hh"
 #include "parser_urdf.hh"
 
 /////////////////////////////////////////////////

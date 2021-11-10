@@ -15,7 +15,7 @@
  *
 */
 #include <iostream>
-#include <sdf/sdf.hh>
+#include <ignition/sdformat.hh>
 
 int main(int argc, char **argv)
 {

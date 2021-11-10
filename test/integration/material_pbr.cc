@@ -17,7 +17,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include "sdf/sdf.hh"
+#include "ignition/sdformat.hh"
 #include "sdf/Pbr.hh"
 
 #include "test_config.h"

@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "ignition/sdformat.hh"
 
 #include "test_config.h"
 

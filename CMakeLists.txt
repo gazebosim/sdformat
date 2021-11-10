@@ -90,24 +90,18 @@ if (WIN32)
   sdf_setup_windows()
 endif ()
 
+configure_file (include/sdf/config.hh.in
+  include/sdf/config.hh)
+
 if (BUILD_SDF)
   include_directories(include
-    ${PROJECT_BINARY_DIR}
     ${PROJECT_BINARY_DIR}/include
     )
 
-  link_directories(${PROJECT_BINARY_DIR}/src)
-
-  if (NOT DEFINED BUILD_TESTING OR BUILD_TESTING)
-    set(BUILD_SDF_TEST TRUE)
-  else()
-    set(BUILD_SDF_TEST FALSE)
-  endif()
-
-  ign_configure_project(NO_IGNITION_PREFIX)
+  ign_configure_project(INCLUDE_DIR sdf NO_IGNITION_PREFIX)
   ign_configure_build(QUIT_IF_BUILD_ERRORS)
   ign_create_packages()
-  ign_create_docs()
+  # ign_create_docs()
 
   # TODO: add header that redirects "sdf/sdf_config.h" to "${ignitin_prefix}/sdformat/config.hh"
   # install(

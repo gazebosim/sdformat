@@ -24,7 +24,7 @@
 
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "test_config.h"
 
 #ifdef _WIN32

@@ -34,57 +34,12 @@ macro (sdf_add_library _name)
   set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
   add_library(${_name} ${ARGN})
   set_target_properties(${_name} PROPERTIES DEFINE_SYMBOL "BUILDING_SDFORMAT_SHARED")
-  if(NOT BUILD_SHARED_LIBS)
-    target_compile_definitions(${_name} PUBLIC SDFORMAT_STATIC_DEFINE)
-  endif()
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
   if (MSVC)
     set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
     set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${LIBS_DESTINATION})
     set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${LIBS_DESTINATION})
   endif ()
-endmacro ()
-
-#################################################
-macro (sdf_add_executable _name)
-  add_executable(${_name} ${ARGN})
-endmacro ()
-
-
-#################################################
-macro (sdf_install_includes _subdir)
-  install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir} COMPONENT headers)
-endmacro()
-
-#################################################
-macro (sdf_install_library _name)
-  set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
-  install (
-    TARGETS ${_name}
-    EXPORT ${_name}
-    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-    COMPONENT shlib)
-
-# Export and install target
-export(
-  EXPORT ${_name}
-  FILE ${PROJECT_BINARY_DIR}/cmake/${sdf_target_output_filename}
-  NAMESPACE ${PROJECT_EXPORT_NAME}::)
-
-install(
-  EXPORT ${_name}
-  DESTINATION ${sdf_config_install_dir}
-  FILE ${sdf_target_output_filename}
-  NAMESPACE ${PROJECT_EXPORT_NAME}::)
-
-endmacro ()
-
-#################################################
-macro (sdf_install_executable _name)
-  set_target_properties(${_name} PROPERTIES VERSION ${SDF_VERSION_FULL})
-  install (TARGETS ${_name} DESTINATION ${BIN_INSTALL_DIR})
 endmacro ()
 
 #################################################

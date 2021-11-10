@@ -20,7 +20,7 @@
 #include <memory>
 #include <string.h>
 
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
 #include "sdf/parser.hh"

@@ -25,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
 
