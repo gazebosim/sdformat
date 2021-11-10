@@ -1,5 +1,10 @@
 ## libsdformat 12.X
 
+### libsdformat 12.1.0 (2021-11-09)
+
+1. Support accessing mutable sensor types.
+    * [Pull request #737](https://github.com/ignitionrobotics/sdformat/pull/737)
+
 ### libsdformat 12.0.0 (2021-09-30)
 
 1. Make exception for plugins when checking for name uniqueness
