@@ -312,27 +312,26 @@ std::string Param::GetAsString(const PrintConfig &_config) const
     return this->dataPtr->strValue.value();
   }
 
-  std::string strValue;
-  SDF_ASSERT(
-      this->dataPtr->StringFromValueImpl(
-          _config,
-          this->dataPtr->typeName,
-          this->dataPtr->defaultValue,
-          strValue),
-      "Unable to get string from default value");
-  return strValue;
+  return this->GetDefaultAsString(_config);
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
   std::string defaultStr;
-  SDF_ASSERT(this->dataPtr->StringFromValueImpl(_config,
-                                                this->dataPtr->typeName,
-                                                this->dataPtr->defaultValue,
-                                                defaultStr),
-             "Unable to get string from default value");
-  return defaultStr;
+  if (this->dataPtr->StringFromValueImpl(_config,
+                                         this->dataPtr->typeName,
+                                         this->dataPtr->defaultValue,
+                                         defaultStr))
+  {
+    return defaultStr;
+  }
+
+  sdferr << "Unable to get string from default value, "
+         << "using ParamStreamer instead.\n";
+  StringStreamClassicLocale ss;
+  ss << ParamStreamer{ this->dataPtr->defaultValue };
+  return ss.str();
 }
 
 //////////////////////////////////////////////////
