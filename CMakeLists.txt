@@ -34,9 +34,6 @@ if (WIN32)
   sdf_setup_windows()
 endif ()
 
-configure_file (include/sdf/config.hh.in
-  include/sdf/config.hh)
-
 if (BUILD_SDF)
   ign_configure_project(INCLUDE_DIR sdf NO_IGNITION_PREFIX)
 
@@ -47,6 +44,7 @@ if (BUILD_SDF)
 
   ign_configure_build(QUIT_IF_BUILD_ERRORS)
   ign_create_packages()
+
   # ign_create_docs()
 
   # TODO: add header that redirects "sdf/sdf_config.h" to "${ignitin_prefix}/sdformat/config.hh"

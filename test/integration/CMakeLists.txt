@@ -8,6 +8,7 @@ set(tests
   collision_dom.cc
   converter.cc
   default_elements.cc
+  deprecated_headers.cc
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   element_tracing.cc
@@ -76,5 +77,5 @@ endif()
 if (UNIX AND NOT APPLE)
   configure_file(all_symbols_have_version.bash.in ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash @ONLY)
   add_test(NAME INTEGRATION_versioned_symbols
-    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${SDF_MAJOR_VERSION}.so)
+    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${PROJECT_VERSION_MAJOR}.so)
 endif()

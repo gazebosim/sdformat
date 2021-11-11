@@ -68,7 +68,6 @@ set (sources
   World.cc
   XmlUtils.cc
 )
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (USE_INTERNAL_URDF)
   set(sources ${sources}
@@ -218,6 +217,11 @@ if (BUILD_SDF_TEST)
 endif()
 
 ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+
+target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
