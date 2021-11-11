@@ -183,7 +183,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
 /// reduced fixed joints:  apply appropriate frame updates in plugins
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionPluginFrameReplace(
-      std::vector<XMLDocumentPtr>::iterator _blobIt,
+      tinyxml2::XMLElement *_blob,
       urdf::LinkSharedPtr _link, const std::string &_pluginName,
       const std::string &_elementName,
       ignition::math::Pose3d _reductionTransform);
@@ -2579,12 +2579,12 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
            << debugStreamIn.CStr() << "]\n";
 
     ReduceSDFExtensionContactSensorFrameReplace(blobIt, _link);
-    ReduceSDFExtensionPluginFrameReplace(blobIt, _link,
-                                         "plugin", "bodyName",
-                                         _ge->reductionTransform);
-    ReduceSDFExtensionPluginFrameReplace(blobIt, _link,
-                                         "plugin", "frameName",
-                                         _ge->reductionTransform);
+    ReduceSDFExtensionPluginFrameReplace(
+        (*blobIt)->FirstChildElement(), _link, "plugin", "bodyName",
+        _ge->reductionTransform);
+    ReduceSDFExtensionPluginFrameReplace(
+        (*blobIt)->FirstChildElement(), _link, "plugin", "frameName",
+        _ge->reductionTransform);
     ReduceSDFExtensionProjectorFrameReplace(blobIt, _link);
     ReduceSDFExtensionGripperFrameReplace(blobIt, _link);
     ReduceSDFExtensionJointFrameReplace(blobIt, _link);
@@ -3581,25 +3581,24 @@ void ReduceSDFExtensionContactSensorFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionPluginFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link,
     const std::string &_pluginName, const std::string &_elementName,
     ignition::math::Pose3d _reductionTransform)
 {
   std::string linkName = _link->name;
   std::string parentLinkName = _link->getParent()->name;
-  tinyxml2::XMLElement *rootElement = (*_blobIt)->FirstChildElement();
-  if (rootElement->Name() == _pluginName)
+  if (_blob->Name() == _pluginName)
   {
     // replace element containing _link names to parent link names
     // find first instance of xyz and rpy, replace with reduction transform
     tinyxml2::XMLNode *elementNode =
-      rootElement->FirstChildElement(_elementName.c_str());
+      _blob->FirstChildElement(_elementName.c_str());
     if (elementNode)
     {
       if (GetKeyValueAsString(elementNode->ToElement()) == linkName)
       {
-        rootElement->DeleteChild(elementNode);
+        _blob->DeleteChild(elementNode);
         auto* doc = elementNode->GetDocument();
         tinyxml2::XMLElement *bodyNameKey =
           doc->NewElement(_elementName.c_str());
@@ -3608,27 +3607,27 @@ void ReduceSDFExtensionPluginFrameReplace(
         tinyxml2::XMLText *bodyNameTxt =
           doc->NewText(bodyNameStream.str().c_str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
-        rootElement->LinkEndChild(bodyNameKey);
+        _blob->LinkEndChild(bodyNameKey);
         /// @todo update transforms for this sdf plugin too
 
         // look for offset transforms, add reduction transform
-        tinyxml2::XMLNode *xyzKey = rootElement->FirstChildElement("xyzOffset");
+        tinyxml2::XMLNode *xyzKey = _blob->FirstChildElement("xyzOffset");
         if (xyzKey)
         {
           urdf::Vector3 v1 = ParseVector3(xyzKey);
           _reductionTransform.Pos() =
             ignition::math::Vector3d(v1.x, v1.y, v1.z);
           // remove xyzOffset and rpyOffset
-          rootElement->DeleteChild(xyzKey);
+          _blob->DeleteChild(xyzKey);
         }
-        tinyxml2::XMLNode *rpyKey = rootElement->FirstChildElement("rpyOffset");
+        tinyxml2::XMLNode *rpyKey = _blob->FirstChildElement("rpyOffset");
         if (rpyKey)
         {
           urdf::Vector3 rpy = ParseVector3(rpyKey, M_PI/180.0);
           _reductionTransform.Rot() =
             ignition::math::Quaterniond::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
           // remove xyzOffset and rpyOffset
-          rootElement->DeleteChild(rpyKey);
+          _blob->DeleteChild(rpyKey);
         }
 
         // pass through the parent transform from fixed joint reduction
@@ -3662,8 +3661,8 @@ void ReduceSDFExtensionPluginFrameReplace(
         xyzKey->LinkEndChild(xyzTxt);
         rpyKey->LinkEndChild(rpyTxt);
 
-        rootElement->LinkEndChild(xyzKey);
-        rootElement->LinkEndChild(rpyKey);
+        _blob->LinkEndChild(xyzKey);
+        _blob->LinkEndChild(rpyKey);
       }
     }
   }
