@@ -21,13 +21,13 @@
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  class SDFORMAT_VISIBLE Gui
+  class IGNITION_SDFORMAT_VISIBLE Gui
   {
     /// \brief Default constructor
     public: Gui();

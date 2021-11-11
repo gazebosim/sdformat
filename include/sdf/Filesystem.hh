@@ -23,7 +23,7 @@
 
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/config.hh>
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -36,20 +36,20 @@ namespace sdf
     /// \brief Determine whether the given path exists on the filesystem.
     /// \param[in] _path  The path to check for existence
     /// \return True if the path exists on the filesystem, false otherwise.
-    SDFORMAT_VISIBLE
+    IGNITION_SDFORMAT_VISIBLE
     bool exists(const std::string &_path);
 
     /// \brief Determine whether the given path is a directory.
     /// \param[in] _path  The path to check
     /// \return True if given path exists and is a directory, false otherwise.
-    SDFORMAT_VISIBLE
+    IGNITION_SDFORMAT_VISIBLE
     bool is_directory(const std::string &_path);
 
     /// \brief Create a new directory on the filesystem.  Intermediate
     ///        directories must already exist.
     /// \param[in] _path  The new directory path to create
     /// \return True if directory creation was successful, false otherwise.
-    SDFORMAT_VISIBLE
+    IGNITION_SDFORMAT_VISIBLE
     bool create_directory(const std::string &_path);
 
     // The below is C++ variadic template magic to allow an append
@@ -59,7 +59,7 @@ namespace sdf
     ///        onto the passed-in string.
     /// \param[in] _s  The path to start with.
     /// \return The original path with the platform path separator appended.
-    SDFORMAT_VISIBLE
+    IGNITION_SDFORMAT_VISIBLE
     std::string const separator(std::string const &_s);
 
     /// \brief Append one or more additional path elements to the first
@@ -78,18 +78,18 @@ namespace sdf
 
     /// \brief Get the current working path.
     /// \return Current working path if successful, the empty path on error.
-    SDFORMAT_VISIBLE
+    IGNITION_SDFORMAT_VISIBLE
     std::string current_path();
 
     /// \brief Given a path, get just the basename portion.
     /// \param[in] _path  The full path.
     /// \return A new string with just the basename portion of the path.
-    SDFORMAT_VISIBLE
+    IGNITION_SDFORMAT_VISIBLE
     std::string basename(const std::string &_path);
 
     /// \class DirIter Filesystem.hh
     /// \brief A class for iterating over all items in a directory.
-    class SDFORMAT_VISIBLE DirIter
+    class IGNITION_SDFORMAT_VISIBLE DirIter
     {
       /// \brief Constructor.
       /// \param[in] _in  Directory to iterate over.

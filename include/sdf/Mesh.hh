@@ -32,7 +32,7 @@ namespace sdf
 
   /// \brief Mesh represents a mesh shape, and is usually accessed through a
   /// Geometry.
-  class SDFORMAT_VISIBLE Mesh
+  class IGNITION_SDFORMAT_VISIBLE Mesh
   {
     /// \brief Constructor
     public: Mesh();

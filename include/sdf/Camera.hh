@@ -57,7 +57,7 @@ namespace sdf
   };
 
   /// \brief Information about a monocular camera sensor.
-  class SDFORMAT_VISIBLE Camera
+  class IGNITION_SDFORMAT_VISIBLE Camera
   {
     /// \brief Constructor
     public: Camera();

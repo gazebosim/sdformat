@@ -30,7 +30,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Sphere represents a sphere shape, and is usually accessed through a
   /// Geometry.
-  class SDFORMAT_VISIBLE Sphere
+  class IGNITION_SDFORMAT_VISIBLE Sphere
   {
     /// \brief Constructor
     public: Sphere();

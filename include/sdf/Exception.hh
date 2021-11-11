@@ -26,7 +26,7 @@
 
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/config.hh>
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -45,7 +45,7 @@ namespace sdf
 
   /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
-  class SDFORMAT_VISIBLE Exception
+  class IGNITION_SDFORMAT_VISIBLE Exception
   {
     /// \brief Constructor
     public: Exception();
@@ -108,7 +108,7 @@ namespace sdf
   /// \brief Class for generating Internal Gazebo Errors:
   ///        those errors which should never happend and
   ///        represent programming bugs.
-  class SDFORMAT_VISIBLE InternalError : public Exception
+  class IGNITION_SDFORMAT_VISIBLE InternalError : public Exception
   {
     /// \brief Constructor
     public: InternalError();
@@ -130,7 +130,7 @@ namespace sdf
   ///        sdf assertions. They include information about the
   ///        assertion expression violated, function where problem
   ///        appeared and assertion debug message.
-  class SDFORMAT_VISIBLE AssertionInternalError : public InternalError
+  class IGNITION_SDFORMAT_VISIBLE AssertionInternalError : public InternalError
   {
     /// \brief Constructor for assertions
     /// \param[in] _file File name

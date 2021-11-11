@@ -29,7 +29,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Cylinder represents a cylinder shape, and is usually accessed
   /// through a Geometry.
-  class SDFORMAT_VISIBLE Cylinder
+  class IGNITION_SDFORMAT_VISIBLE Cylinder
   {
     /// \brief Constructor
     public: Cylinder();

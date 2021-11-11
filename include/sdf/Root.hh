@@ -23,7 +23,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -51,7 +51,7 @@ namespace sdf
   ///
   /// \snippet examples/dom.cc rootUsage
   ///
-  class SDFORMAT_VISIBLE Root
+  class IGNITION_SDFORMAT_VISIBLE Root
   {
     /// \brief Default constructor
     public: Root();

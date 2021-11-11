@@ -30,7 +30,7 @@
 #include "sdf/Scene.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -51,7 +51,7 @@ namespace sdf
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
 
-  class SDFORMAT_VISIBLE World
+  class IGNITION_SDFORMAT_VISIBLE World
   {
     /// \brief Default constructor
     public: World();

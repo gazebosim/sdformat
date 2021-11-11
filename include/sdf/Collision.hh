@@ -25,7 +25,7 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -42,7 +42,7 @@ namespace sdf
   /// with a link. This can be different from the visual properties of a link.
   /// For example, simple collision models are often used to reduce
   /// computation time.
-  class SDFORMAT_VISIBLE Collision
+  class IGNITION_SDFORMAT_VISIBLE Collision
   {
     /// \brief Default constructor
     public: Collision();

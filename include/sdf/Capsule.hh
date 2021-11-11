@@ -29,7 +29,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Capsule represents a capsule shape, and is usually accessed
   /// through a Geometry.
-  class SDFORMAT_VISIBLE Capsule
+  class IGNITION_SDFORMAT_VISIBLE Capsule
   {
     /// \brief Constructor
     public: Capsule();

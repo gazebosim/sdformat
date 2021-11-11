@@ -31,7 +31,7 @@ namespace sdf
   /// \brief AirPressure contains information about a general
   /// purpose fluid pressure sensor.
   /// This sensor can be attached to a link.
-  class SDFORMAT_VISIBLE AirPressure
+  class IGNITION_SDFORMAT_VISIBLE AirPressure
   {
     /// \brief Default constructor
     public: AirPressure();

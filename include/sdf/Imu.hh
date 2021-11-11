@@ -30,7 +30,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Imu contains information about an imu sensor.
   /// This sensor can be attached to a link.
-  class SDFORMAT_VISIBLE Imu
+  class IGNITION_SDFORMAT_VISIBLE Imu
   {
     /// \brief Default constructor
     public: Imu();

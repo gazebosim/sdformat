@@ -44,7 +44,7 @@ namespace sdf
   /// \brief The Noise class contains information about a noise
   /// model, such as a Gaussian distribution. A Noise DOM object is
   /// typically available from a Sensor.
-  class SDFORMAT_VISIBLE Noise
+  class IGNITION_SDFORMAT_VISIBLE Noise
   {
     /// \brief Default constructor
     public: Noise();

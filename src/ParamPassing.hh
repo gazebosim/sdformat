@@ -22,7 +22,7 @@
 
 #include "sdf/ParserConfig.hh"
 #include "sdf/SDFImpl.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {

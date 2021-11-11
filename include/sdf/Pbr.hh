@@ -22,7 +22,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -55,7 +55,7 @@ namespace sdf
 
   /// \brief This class contains Physically-Based-Rendering (PBR) workflow
   /// properties.
-  class SDFORMAT_VISIBLE PbrWorkflow
+  class IGNITION_SDFORMAT_VISIBLE PbrWorkflow
   {
     /// \brief Default constructor
     public: PbrWorkflow();
@@ -235,7 +235,7 @@ namespace sdf
 
   /// \brief This class provides access to Physically-Based-Rendering (PBR)
   ///  material workflows.
-  class SDFORMAT_VISIBLE Pbr
+  class IGNITION_SDFORMAT_VISIBLE Pbr
   {
     /// \brief Default constructor
     public: Pbr();

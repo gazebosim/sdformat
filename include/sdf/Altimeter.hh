@@ -30,7 +30,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Altimeter contains information about an altimeter sensor.
   /// This sensor can be attached to a link.
-  class SDFORMAT_VISIBLE Altimeter
+  class IGNITION_SDFORMAT_VISIBLE Altimeter
   {
     /// \brief Default constructor
     public: Altimeter();

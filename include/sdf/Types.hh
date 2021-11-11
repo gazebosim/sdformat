@@ -26,7 +26,7 @@
 #include <vector>
 
 #include <sdf/config.hh>
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 #include "sdf/Error.hh"
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -75,20 +75,20 @@ namespace sdf
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.
   /// \return A vector of strings containing the split tokens.
-  SDFORMAT_VISIBLE
+  IGNITION_SDFORMAT_VISIBLE
   std::vector<std::string> split(const std::string &_str,
                                  const std::string &_splitter);
 
   /// \brief Trim leading and trailing whitespace from a string.
   /// \param[in] _in The string to trim.
   /// \return A string containing the trimmed value.
-  SDFORMAT_VISIBLE
+  IGNITION_SDFORMAT_VISIBLE
   std::string trim(const char *_in);
 
   /// \brief Trim leading and trailing whitespace from a string.
   /// \param[in] _in The string to trim.
   /// \return A string containing the trimmed value.
-  SDFORMAT_VISIBLE
+  IGNITION_SDFORMAT_VISIBLE
   std::string trim(const std::string &_in);
 
   /// \brief check if two values are equal, within a tolerance
@@ -109,12 +109,12 @@ namespace sdf
   /// \param[in,out] _out The output stream.
   /// \param[in] _err The errors to output.
   /// \return Reference to the given output stream
-  SDFORMAT_VISIBLE std::ostream &operator<<(
+  IGNITION_SDFORMAT_VISIBLE std::ostream &operator<<(
       std::ostream &_out, const sdf::Errors &_errs);
 
   /// \brief A Time class, can be used to hold wall- or sim-time.
   /// stored as sec and nano-sec.
-  class SDFORMAT_VISIBLE Time
+  class IGNITION_SDFORMAT_VISIBLE Time
   {
     /// \brief Constructor
     public: Time()
@@ -170,7 +170,7 @@ namespace sdf
   };
 
   /// \brief A class for inertial information about a link.
-  class SDFORMAT_VISIBLE Inertia
+  class IGNITION_SDFORMAT_VISIBLE Inertia
   {
     public: double mass;
   };
@@ -178,13 +178,13 @@ namespace sdf
   /// \brief Transforms a string to its lowercase equivalent
   /// \param[in] _in String to convert to lowercase
   /// \return Lowercase equilvalent of _in.
-  std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
+  std::string IGNITION_SDFORMAT_VISIBLE lowercase(const std::string &_in);
 
   /// \brief Split a name into a two strings based on the '::' delimeter
   /// \param[in] _absoluteName The fully qualified absolute name
   /// \return A pair with the absolute name minus the leaf node name, and the
   /// leaf name
-  SDFORMAT_VISIBLE
+  IGNITION_SDFORMAT_VISIBLE
   std::pair<std::string, std::string> SplitName(
       const std::string &_absoluteName);
 
@@ -193,7 +193,7 @@ namespace sdf
   /// \param[in] _scopeName the left-hand-side component
   /// \param[in] _localName the right-hand-side component
   /// \return A full string with the names joined by the '::' delimeter.
-  SDFORMAT_VISIBLE
+  IGNITION_SDFORMAT_VISIBLE
   std::string JoinName(
       const std::string &_scopeName, const std::string &_localName);
   }

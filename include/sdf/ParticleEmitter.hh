@@ -26,7 +26,7 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -57,7 +57,7 @@ namespace sdf
   /// \brief A description of a particle emitter, which can be attached
   /// to a link. A particle emitter can be used to describe fog, smoke, and
   /// dust.
-  class SDFORMAT_VISIBLE ParticleEmitter
+  class IGNITION_SDFORMAT_VISIBLE ParticleEmitter
   {
     /// \brief Default constructor
     public: ParticleEmitter();

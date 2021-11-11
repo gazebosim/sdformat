@@ -26,7 +26,7 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -45,7 +45,7 @@ namespace sdf
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
 
-  class SDFORMAT_VISIBLE Model
+  class IGNITION_SDFORMAT_VISIBLE Model
   {
     /// \brief Default constructor
     public: Model();

@@ -25,7 +25,7 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -39,7 +39,7 @@ namespace sdf
 
   /// \brief A Frame element descibes the properties associated with an
   /// explicit frame defined in a Model or World.
-  class SDFORMAT_VISIBLE Frame
+  class IGNITION_SDFORMAT_VISIBLE Frame
   {
     /// \brief Default constructor
     public: Frame();

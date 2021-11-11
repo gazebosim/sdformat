@@ -31,7 +31,7 @@ namespace sdf
 
   /// \brief Magnetometer contains information about a magnetometer sensor.
   /// This sensor can be attached to a link.
-  class SDFORMAT_VISIBLE Magnetometer
+  class IGNITION_SDFORMAT_VISIBLE Magnetometer
   {
     /// \brief Default constructor
     public: Magnetometer();

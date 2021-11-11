@@ -28,7 +28,7 @@
 #include "sdf/Types.hh"
 
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -41,7 +41,7 @@ template <typename T>
 class ScopedGraph;
 
 /// \brief Class used in reposture callbacks of custom parsers to resolve poses.
-class SDFORMAT_VISIBLE InterfaceModelPoseGraph
+class IGNITION_SDFORMAT_VISIBLE InterfaceModelPoseGraph
 {
   /// \brief Resolve pose relative to world
   /// \param[out] _pose Resolved pose

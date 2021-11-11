@@ -20,7 +20,7 @@
 #include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -28,7 +28,7 @@ inline namespace SDF_VERSION_NAMESPACE
 {
 
 /// This class contains configuration options for printing elements.
-class SDFORMAT_VISIBLE PrintConfig
+class IGNITION_SDFORMAT_VISIBLE PrintConfig
 {
   /// \brief Default constructor.
   public: PrintConfig();

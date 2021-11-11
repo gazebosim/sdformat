@@ -23,7 +23,7 @@
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser

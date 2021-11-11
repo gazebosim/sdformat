@@ -22,7 +22,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -42,7 +42,7 @@ namespace sdf
   };
 
   /// \brief This class contains visual material properties.
-  class SDFORMAT_VISIBLE Material
+  class IGNITION_SDFORMAT_VISIBLE Material
   {
     /// \brief Default constructor
     public: Material();

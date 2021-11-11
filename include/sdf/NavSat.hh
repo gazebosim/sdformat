@@ -72,7 +72,7 @@ namespace sdf
   ///   </navsat>
   /// </sensor>
   /// ~~~
-  class SDFORMAT_VISIBLE NavSat
+  class IGNITION_SDFORMAT_VISIBLE NavSat
   {
     /// \brief Default constructor
     public: NavSat();

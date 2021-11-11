@@ -24,14 +24,14 @@
 #include <ignition/utils/ImplPtr.hh>
 
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
 /// \brief Interface element representing a Joint
-class SDFORMAT_VISIBLE InterfaceJoint
+class IGNITION_SDFORMAT_VISIBLE InterfaceJoint
 {
   /// \brief Constructor
   /// \param[in] name The *local* name.

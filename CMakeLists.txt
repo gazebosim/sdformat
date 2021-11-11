@@ -47,14 +47,6 @@ if (BUILD_SDF)
 
   # ign_create_docs()
 
-  # TODO: add header that redirects "sdf/sdf_config.h" to "${ignitin_prefix}/sdformat/config.hh"
-  # install(
-  #   FILES
-  #     ${PROJECT_BINARY_DIR}/sdf/sdf_config.h
-  #   DESTINATION
-  #     ${IGN_INCLUDE_INSTALL_DIR_FULL}/sdf
-  # )
-
   add_subdirectory(sdf)
   add_subdirectory(conf)
   add_subdirectory(doc)

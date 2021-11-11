@@ -21,14 +21,14 @@
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Contact information for a surface.
-  class SDFORMAT_VISIBLE Contact
+  class IGNITION_SDFORMAT_VISIBLE Contact
   {
     /// \brief Default constructor
     public: Contact();
@@ -59,7 +59,7 @@ namespace sdf
   };
 
   /// \brief Surface information for a collision.
-  class SDFORMAT_VISIBLE Surface
+  class IGNITION_SDFORMAT_VISIBLE Surface
   {
     /// \brief Default constructor
     public: Surface();

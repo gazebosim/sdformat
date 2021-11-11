@@ -30,7 +30,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Box represents a box shape, and is usually accessed through a
   /// Geometry.
-  class SDFORMAT_VISIBLE Box
+  class IGNITION_SDFORMAT_VISIBLE Box
   {
     /// \brief Constructor
     public: Box();

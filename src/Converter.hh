@@ -23,7 +23,7 @@
 #include <tuple>
 
 #include <sdf/config.hh>
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {

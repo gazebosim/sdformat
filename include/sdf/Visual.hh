@@ -30,7 +30,7 @@
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -43,7 +43,7 @@ namespace sdf
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
-  class SDFORMAT_VISIBLE Visual
+  class IGNITION_SDFORMAT_VISIBLE Visual
   {
     /// \brief Default constructor
     public: Visual();

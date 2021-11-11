@@ -25,7 +25,7 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -129,7 +129,7 @@ namespace sdf
   };
 
   /// \brief Information about an SDF sensor.
-  class SDFORMAT_VISIBLE Sensor
+  class IGNITION_SDFORMAT_VISIBLE Sensor
   {
     /// \brief Default constructor
     public: Sensor();

@@ -28,7 +28,7 @@
 #include "sdf/Param.hh"
 #include "sdf/PrintConfig.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 #include "sdf/Types.hh"
 
 #ifdef _WIN32
@@ -47,7 +47,7 @@ namespace sdf
   //
 
   class ElementPrivate;
-  class SDFORMAT_VISIBLE Element;
+  class IGNITION_SDFORMAT_VISIBLE Element;
 
   /// \def ElementPtr
   /// \brief Shared pointer to an SDF Element
@@ -70,7 +70,7 @@ namespace sdf
 
   /// \class Element Element.hh sdf/sdf.hh
   /// \brief SDF Element class
-  class SDFORMAT_VISIBLE Element :
+  class IGNITION_SDFORMAT_VISIBLE Element :
     public std::enable_shared_from_this<Element>
   {
     /// \brief Constructor.

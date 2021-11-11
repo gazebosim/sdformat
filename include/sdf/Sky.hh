@@ -24,13 +24,13 @@
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  class SDFORMAT_VISIBLE Sky
+  class IGNITION_SDFORMAT_VISIBLE Sky
   {
     /// \brief Default constructor
     public: Sky();

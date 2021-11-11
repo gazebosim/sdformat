@@ -102,7 +102,7 @@ namespace sdf
   ///     </ray>
   /// </sensor>
   /// ~~~
-  class SDFORMAT_VISIBLE Lidar
+  class IGNITION_SDFORMAT_VISIBLE Lidar
   {
     /// \brief Default constructor
     public: Lidar();

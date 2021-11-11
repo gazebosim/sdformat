@@ -61,7 +61,7 @@ namespace sdf
 
   /// \brief ForceTorque contains information about a force torque sensor.
   /// This sensor can be attached to a joint.
-  class SDFORMAT_VISIBLE ForceTorque
+  class IGNITION_SDFORMAT_VISIBLE ForceTorque
   {
     /// \brief Default constructor
     public: ForceTorque();

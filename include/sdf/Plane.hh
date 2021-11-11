@@ -33,7 +33,7 @@ namespace sdf
 
   /// \brief Plane represents a plane shape, and is usually accessed through a
   /// Geometry.
-  class SDFORMAT_VISIBLE Plane
+  class IGNITION_SDFORMAT_VISIBLE Plane
   {
     /// \brief Constructor
     public: Plane();

@@ -19,7 +19,7 @@
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 using namespace sdf;
 

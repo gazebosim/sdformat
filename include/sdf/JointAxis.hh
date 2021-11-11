@@ -25,7 +25,7 @@
 #include "sdf/Exception.hh"
 #include "sdf/Types.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 namespace sdf
 {
@@ -39,7 +39,7 @@ namespace sdf
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
   /// and the axis of translation for prismatic joints.
-  class SDFORMAT_VISIBLE JointAxis
+  class IGNITION_SDFORMAT_VISIBLE JointAxis
   {
     /// \brief Default constructor
     public: JointAxis();

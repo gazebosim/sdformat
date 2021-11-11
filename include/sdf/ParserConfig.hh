@@ -28,7 +28,7 @@
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/Export.hh"
 
 
 namespace sdf
@@ -81,7 +81,7 @@ class ParserConfigPrivate;
 ///   sdf::Root root;
 ///   root.Load("path/to/file.sdf", config);
 /// \endcode
-class SDFORMAT_VISIBLE ParserConfig
+class IGNITION_SDFORMAT_VISIBLE ParserConfig
 {
   /// type alias for the map from URI scheme to search directories
   public: using SchemeToPathMap =
