@@ -77,7 +77,7 @@ public:
   { parent_link_ = parent; }
 
   ignition::math::Pose3d pose;
-  ignition::math::Vector3d scale;
+  ignition::math::Vector3d scale{1, 1, 1};
 
   void clear()
   {
@@ -88,6 +88,7 @@ public:
     this->visual_array.clear();
     this->scale.Set();
     this->pose.Reset();
+    scale = ignition::math::Vector3d(1, 1, 1);
   };
 
 private:

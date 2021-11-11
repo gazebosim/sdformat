@@ -30,8 +30,8 @@ namespace usd
     pxr::GfVec3f gravity;
     float magnitude;
     variant_physics_scene.GetGravityDirectionAttr().Get(&gravity);
-    sdferr << "gravity " << gravity << "\n";
+    std::cerr << "\tgravity " << gravity << "\n";
     variant_physics_scene.GetGravityMagnitudeAttr().Get(&magnitude);
-    sdferr << "magnitude " << magnitude << "\n";
+    std::cerr << "\tmagnitude " << magnitude << "\n";
   }
 }

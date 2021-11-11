@@ -211,6 +211,8 @@ inline namespace SDF_VERSION_NAMESPACE {
         type = "mesh";
         {
           const sdf::Mesh * mesh = _geometry->MeshShape();
+          if (!mesh)
+            break;
           geometryType = doc->NewElement(type.c_str());
           AddKeyValue(geometryType, "scale", Vector32Str(mesh->Scale()));
           // do something more to meshes

@@ -33,7 +33,10 @@
 
 namespace usd{
 
-  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim, int &_skip);
+  std::string directoryFromUSDPath(std::string &_primPath);
+  void removeSubStr(std::string &_str, const std::string &_substr);
+
+  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
 
   template<typename T1, typename T2, typename T3>
   std::tuple<T1, T2, T3, bool, bool, bool> ParseTransform(

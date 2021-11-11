@@ -67,89 +67,55 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   ModelInterfaceSharedPtr model(new ModelInterface);
   model->clear();
 
-  auto referencee = pxr::UsdStage::CreateInMemory();
-  if (!referencee->GetRootLayer()->ImportFromString(xml_string))
+  // auto referencee = pxr::UsdStage::CreateInMemory();
+  // if (!referencee->GetRootLayer()->ImportFromString(xml_string))
+  // {
+  //   return nullptr;
+  // }
+
+  auto referencee = pxr::UsdStage::Open(xml_string);
+  if (!referencee)
   {
     return nullptr;
   }
 
+  auto range = pxr::UsdPrimRange::Stage(referencee);
+
+  double metersPerUnit;
+  std::string defaultName;
+  referencee->GetMetadata<double>(pxr::TfToken("metersPerUnit"), &metersPerUnit);
+  defaultName = referencee->GetDefaultPrim().GetName().GetText();
+  std::cerr << "metersPerUnit" << metersPerUnit << '\n';
+  std::cerr << "defaultPrim" << defaultName << '\n';
+  std::string rootPath;
+  std::string nameLink;
+
   // Get robot name
-  const char *name = "test";
-  if (!name)
+  model->name_ = defaultName;
+  if (model->name_.empty())
   {
     model.reset();
     return model;
   }
-  model->name_ = std::string(name);
-
-  // TODO(ahcorde): Get all Material elements
-
-  auto range = pxr::UsdPrimRange::Stage(referencee);
-
-  double metersPerUnit;
-  referencee->GetMetadata<double>(pxr::TfToken("metersPerUnit"), &metersPerUnit);
-  std::cerr << "/* metersPerUnit */" << metersPerUnit << '\n';
-  std::string rootPath;
-  std::string nameLink;
 
   int skipNext = 0;
 
   std::map<std::string, std::shared_ptr<ignition::common::Material>> materials;
   std::map<std::string, sdf::Material> materialsSDF;
 
-  // Get all Link elements
-  for (auto const &prim : range) {
-
-    if (skipNext)
-    {
-      --skipNext;
-      continue;
-    }
-
+  for (auto const &prim : range)
+  {
     std::string primName = pxr::TfStringify(prim.GetPath());
-
-    sdferr << "------------------------------------------------------\n";
-    sdferr << "pathName " << primName << "\n";
-    // sdferr << prim.GetName().GetText() << "\n";
-
-    size_t pos = std::string::npos;
-    if ((pos  = primName.find("/World") )!= std::string::npos)
-    {
-      primName.erase(pos, std::string("/World").length());
-    }
-
-    std::vector<std::string> tokens = ignition::common::split(primName, "/");
-    if (tokens.size() == 0)
-      continue;
-
-    if (tokens.size() == 1)
-    {
-      rootPath = prim.GetName().GetText();
-    }
-    std::cerr << "rootPath " << rootPath << " " << tokens.size() << '\n';
-
-    if (tokens.size() > 1)
-    {
-      nameLink = "/" + tokens[0] + "/" + tokens[1];
-    }
-
-    if (prim.IsA<pxr::UsdPhysicsScene>())
-    {
-      usd::ParsePhysicsScene(prim);
-    }
-
-    if (prim.IsA<pxr::UsdPhysicsCollisionGroup>())
-    {
-      continue;
-    }
-
     if (prim.IsA<pxr::UsdShadeMaterial>())
     {
-      auto variantMaterial = pxr::UsdShadeMaterial(prim);
+      std::string materialName = std::string(prim.GetName());
 
-      std::cerr << "Material!!! " << variantMaterial.GetPath().GetName() << '\n';
-      sdf::Material material = ParseMaterial(prim, skipNext);
-      std::string materialName = std::string(variantMaterial.GetPath().GetName());
+      if (materials.find(materialName) != materials.end())
+      {
+        continue;
+      }
+      std::cerr << "new material!!! " << materialName << '\n';
+      sdf::Material material = ParseMaterial(prim);
 
       std::shared_ptr<ignition::common::Material> materialCommon
          = std::make_shared<ignition::common::Material>();
@@ -172,6 +138,54 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       materialsSDF.insert(std::pair<std::string, sdf::Material>(materialName, material));
       materials.insert(std::pair<std::string, std::shared_ptr<ignition::common::Material>>
         (materialName, materialCommon));
+    }
+  }
+
+  // return nullptr;
+
+  // Get all Link elements
+  for (auto const &prim : range)
+  {
+    if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
+    {
+      continue;
+    }
+
+    if (skipNext)
+    {
+      --skipNext;
+      continue;
+    }
+
+    std::string primName = pxr::TfStringify(prim.GetPath());
+
+    sdferr << "------------------------------------------------------\n";
+    std::cerr << "pathName " << primName << "\n";
+
+    removeSubStr(primName, "/World");
+
+    std::vector<std::string> tokens = ignition::common::split(primName, "/");
+    if (tokens.size() == 0)
+      continue;
+
+    if (tokens.size() == 1)
+    {
+      rootPath = prim.GetName().GetText();
+    }
+    std::cerr << "\trootPath " << rootPath << " " << tokens.size() << '\n';
+
+    if (tokens.size() > 1)
+    {
+      nameLink = "/" + tokens[0] + "/" + tokens[1];
+    }
+
+    if (prim.IsA<pxr::UsdPhysicsScene>())
+    {
+      usd::ParsePhysicsScene(prim);
+    }
+
+    if (prim.IsA<pxr::UsdPhysicsCollisionGroup>())
+    {
       continue;
     }
 
@@ -245,11 +259,11 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     auto it = model->links_.find(nameLink);
     if (it != model->links_.end())
     {
-      link = usd::ParseLinks(prim, it->second, metersPerUnit, skipNext);
+      link = usd::ParseLinks(prim, it->second, materials, materialsSDF, metersPerUnit, skipNext);
     }
     else
     {
-      link = usd::ParseLinks(prim, link, metersPerUnit, skipNext);
+      link = usd::ParseLinks(prim, link, materials, materialsSDF, metersPerUnit, skipNext);
 
       if (link)
       {
@@ -276,68 +290,6 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     }
   }
 
-  std::cerr << "++++++++++++++++++++++++++++++++++++++++++" << '\n';
-  for (auto &link: model->links_)
-  {
-    std::cerr << ">>>>>> link->name " << link.second->name << '\n';
-
-    link.second->visual_array_material.resize(link.second->visual_array.size());
-
-    for (unsigned int i = 0; i < link.second->visual_array.size(); ++i)
-    {
-      std::string materialName = link.second->visual_array_material_name[i];
-      if (!materialName.empty())
-      {
-        std::cerr << "materialName " << materialName << '\n';
-
-        auto it = materials.find(materialName);
-        auto itSDF = materialsSDF.find(materialName);
-        if (it != materials.end() && itSDF != materialsSDF.end())
-        {
-          if (link.second->visual_array[i]->Geom() != nullptr)
-          {
-            if (link.second->visual_array[i]->Geom()->Type() == sdf::GeometryType::MESH)
-            {
-              ignition::common::ColladaLoader colladaLoader;
-              std::string fileName = link.second->visual_array[i]->Geom()->MeshShape()->FilePath();
-              std::cerr << "fileName " << fileName << '\n';
-              // int a;
-              // std::cin >> a;
-              ignition::common::Mesh * meshReload = colladaLoader.Load(fileName);
-              if (meshReload)
-              {
-                std::cerr << "meshReload " << meshReload->SubMeshCount() << '\n';
-                std::cerr << "meshReload " << meshReload->VertexCount() << '\n';
-                for (unsigned j = 0; j < meshReload->SubMeshCount(); j++)
-                {
-                  std::weak_ptr<ignition::common::SubMesh> subMesh = meshReload->SubMeshByIndex(j);
-                  std::cerr << "subMesh Name " << subMesh.lock()->Name() << '\n';
-                  std::cerr << "link.second->visual_array[i] Name " << link.second->visual_array[i]->Name() << '\n';
-
-                  int index = meshReload->AddMaterial(it->second);
-                  link.second->visual_array_material[i] = it->second;
-                  link.second->visual_array[i]->SetMaterial(itSDF->second);
-                  subMesh.lock()->SetMaterialIndex(index);
-
-                  if (materialName == "EmissiveBlue")
-                  {
-                    std::cerr << "it->second->Diffuse() " << it->second->Diffuse() << '\n';
-                  }
-                }
-
-                ignition::common::ColladaExporter exporter;
-                exporter.Export(meshReload, fileName.substr(0, fileName.size() - 4), false);
-                delete meshReload;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  std::cerr << "++++++++++++++++++++++++++++++++++++++++++" << '\n';
-
-
   std::cerr << "********************************" << '\n';
   std::cerr << "model->links_ " << model->links_.size() << '\n';
   for (auto link: model->links_)
@@ -354,7 +306,6 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     std::cerr << "\t child " << joint.second->ChildLinkName() << '\n';
   }
   std::cerr << "********************************" << '\n';
-
 
   // every link has children links and joints, but no parents, so we create a
   // local convenience data structure for keeping child->parent relations
@@ -399,14 +350,14 @@ bool isUSD(const std::string &filename)
 ModelInterfaceSharedPtr parseUSDFile(const std::string &filename)
 {
   auto referencee = pxr::UsdStage::Open(filename);
-  std::ifstream stream( filename.c_str() );
-  if (!stream)
+  // std::ifstream stream(filename.c_str());
+  if (!referencee)
   {
     return ModelInterfaceSharedPtr();
   }
-  std::string xml_str((std::istreambuf_iterator<char>(stream)),
-                     std::istreambuf_iterator<char>());
-  return usd::parseUSD(xml_str);
+  // std::string xml_str((std::istreambuf_iterator<char>(stream)),
+  //                      std::istreambuf_iterator<char>());
+  return usd::parseUSD(filename);
 }
 
 void exportUSD()

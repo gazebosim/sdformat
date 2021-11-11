@@ -37,7 +37,9 @@
 
 namespace usd
 {
-  std::shared_ptr<sdf::Joint> ParseJoints(const pxr::UsdPrim &_prim, const std::string &_path,
+  std::shared_ptr<sdf::Joint> ParseJoints(
+    const pxr::UsdPrim &_prim,
+    const std::string &_path,
     const double _metersPerUnit)
   {
     std::cerr << "************ ADDED JOINT ************" << '\n';
@@ -274,6 +276,18 @@ namespace usd
 
       return joint;
     }
+    else if (_prim.IsA<pxr::UsdPhysicsJoint>())
+    {
+      auto variant_physics_fixed_joint = pxr::UsdPhysicsJoint(_prim);
+
+      sdferr << "UsdPhysicsJoint" << "\n";
+
+      std::string joint_name = _prim.GetName().GetText();
+
+      joint->SetType(sdf::JointType::FIXED);
+
+      return joint;
+    }
     //limtis
 
     // Get safety
@@ -324,15 +338,17 @@ namespace usd
       _prim.GetAttribute(
         pxr::TfToken("physxVehicleWheelAttachment:wheelCenterOfMassOffset")).Get(&centerOfMass);
 
-        std::cerr << "mass " << mass << '\n';
-        std::cerr << "centerOfMass " << centerOfMass << '\n';
+      std::cerr << "mass " << mass << '\n';
+      std::cerr << "centerOfMass " << centerOfMass << '\n';
 
       massMatrix.SetMass(mass);
       link->inertial->SetMassMatrix(massMatrix);
 
       link->inertial->SetPose(ignition::math::Pose3d(
           ignition::math::Vector3d(
-            centerOfMass[0], centerOfMass[1], centerOfMass[2]),
+            centerOfMass[0] * _metersPerUnit,
+            centerOfMass[1] * _metersPerUnit,
+            centerOfMass[2] * _metersPerUnit),
           ignition::math::Quaterniond(1.0, 0, 0, 0)));
     }
 
@@ -406,8 +422,7 @@ namespace usd
             link->pose.Rot().Z() = rot.Z();
             link->pose.Rot().W() = rot.W();
 
-            int voidvar;
-            sdf::Material material = ParseMaterial(_prim, voidvar);
+            sdf::Material material = ParseMaterial(_prim);
 
             auto variant_cylinder = pxr::UsdGeomCylinder(child);
             double radius;

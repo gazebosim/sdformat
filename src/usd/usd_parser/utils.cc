@@ -23,11 +23,38 @@
 #include <pxr/usd/usdShade/shader.h>
 #include <pxr/usd/usdShade/input.h>
 
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/Util.hh>
+
 #include "sdf/Pbr.hh"
 
 namespace usd
 {
-  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim, int &_skip)
+  std::string directoryFromUSDPath(std::string &_primPath)
+  {
+    std::vector<std::string> tokensChild = ignition::common::split(_primPath, "/");
+    std::string directoryMesh;
+    if (tokensChild.size() > 1)
+    {
+      directoryMesh = tokensChild[0];
+      for (int i = 1; i < tokensChild.size() - 1; ++i)
+      {
+          directoryMesh = ignition::common::joinPaths(directoryMesh, tokensChild[i+1]);
+      }
+    }
+    return directoryMesh;
+  }
+
+  void removeSubStr(std::string &_str, const std::string &_substr)
+  {
+    size_t pos = std::string::npos;
+    if ((pos = _str.find("/World") )!= std::string::npos)
+    {
+      _str.erase(pos, _substr.length());
+    }
+  }
+
+  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim)
   {
     sdf::Material material;
     if(_prim.IsA<pxr::UsdGeomGprim>())
@@ -63,10 +90,10 @@ namespace usd
     else if (_prim.IsA<pxr::UsdShadeMaterial>())
     {
       auto variantMaterial = pxr::UsdShadeMaterial(_prim);
-      std::cerr << "UsdShadeMaterial" << '\n';
+      std::cerr << "\tUsdShadeMaterial" << '\n';
       for (const auto & child : _prim.GetChildren())
       {
-        std::cerr << "child " << pxr::TfStringify(child.GetPath()) << '\n';
+        std::cerr << "\tchild " << pxr::TfStringify(child.GetPath()) << '\n';
 
         if (child.IsA<pxr::UsdShadeShader>())
         {
@@ -83,7 +110,7 @@ namespace usd
           std::vector<pxr::UsdShadeInput> inputs = variantshader.GetInputs();
           for (auto &input : inputs)
           {
-            std::cerr << "GetFullName " << input.GetFullName() << " " << input.GetBaseName() << '\n';
+            std::cerr << "\tGetFullName " << input.GetFullName() << " " << input.GetBaseName() << '\n';
             if (input.GetBaseName() == "diffuse_color_constant")
             {
               pxr::UsdShadeInput diffuseShaderInput =
@@ -95,7 +122,7 @@ namespace usd
                   diffuseColor[0],
                   diffuseColor[1],
                   diffuseColor[2]));
-              std::cerr << "diffuse " << ignition::math::Color(
+              std::cerr << "\tdiffuse " << ignition::math::Color(
                 diffuseColor[0],
                 diffuseColor[1],
                 diffuseColor[2]) << '\n';
@@ -123,24 +150,21 @@ namespace usd
               pxr::UsdShadeInput enableEmissiveShaderInput =
                 variantshader.GetInput(pxr::TfToken("enable_emission"));
               enableEmissiveShaderInput.Get(&enableEmission);
-              std::cerr << "enableEmission " << enableEmission << '\n';
+              std::cerr << "\tenableEmission " << enableEmission << '\n';
             }
             else if (input.GetBaseName() == "emissive_color")
             {
-              // if (enableEmission)
-              // {
                 pxr::UsdShadeInput emissiveColorShaderInput =
                   variantshader.GetInput(pxr::TfToken("emissive_color"));
                 if (emissiveColorShaderInput.Get(&emissiveColor))
                 {
-                  std::cerr << "emissiveColor " << emissiveColor << '\n';
+                  std::cerr << "\temissiveColor " << emissiveColor << '\n';
 
                   emissiveColorCommon = ignition::math::Color(
                     emissiveColor[0],
                     emissiveColor[1],
                     emissiveColor[2]);
                 }
-              // }
             }
           }
 
@@ -155,17 +179,9 @@ namespace usd
             pbr.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
             material.SetPbrMaterial(pbr);
           }
-
-          // std::cerr << "diffuseColor " << diffuseColor << '\n';
-          // std::cerr << "emissive_color " << emissiveColor << '\n';
-          // std::cerr << "enableEmission " << enableEmission << '\n';
-
-          ++_skip;
         }
-        // exit(-1);
       }
     }
     return material;
   }
-
 }
