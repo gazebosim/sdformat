@@ -307,35 +307,26 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString(const PrintConfig &_config) const
 {
-  (void)_config;
-  StringStreamClassicLocale ss;
-
   if (this->dataPtr->strValue.has_value())
   {
-    ss << this->dataPtr->strValue.value();
-  }
-  else
-  {
-    std::string strValue;
-    SDF_ASSERT(
-        this->dataPtr->StringFromValueImpl(
-            PrintConfig(),
-            this->dataPtr->typeName,
-            this->dataPtr->defaultValue,
-            strValue),
-        "Unable to get string from default value");
-    ss << strValue;
+    return this->dataPtr->strValue.value();
   }
 
-  return ss.str();
+  std::string strValue;
+  SDF_ASSERT(
+      this->dataPtr->StringFromValueImpl(
+          _config,
+          this->dataPtr->typeName,
+          this->dataPtr->defaultValue,
+          strValue),
+      "Unable to get string from default value");
+  return strValue;
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
-  (void)_config;
   std::string defaultStr;
-
   SDF_ASSERT(this->dataPtr->StringFromValueImpl(_config,
                                                 this->dataPtr->typeName,
                                                 this->dataPtr->defaultValue,
@@ -885,7 +876,6 @@ bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
                                        const ParamVariant &_value,
                                        std::string &_valueStr) const
 {
-  StringStreamClassicLocale ss;
   if (_typeName == "ignition::math::Pose3d" ||
       _typeName == "pose" ||
       _typeName == "Pose")
@@ -899,6 +889,7 @@ bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
     return PoseStringFromValue(_config, {}, _value, _valueStr);
   }
 
+  StringStreamClassicLocale ss;
   ss << ParamStreamer{ _value };
   _valueStr = ss.str();
   return true;
@@ -974,13 +965,7 @@ bool Param::SetParentElement(ElementPtr _parentElement)
 void Param::Reset()
 {
   this->dataPtr->value = this->dataPtr->defaultValue;
-  std::string strValue;
-  SDF_ASSERT(this->dataPtr->StringFromValueImpl(PrintConfig(),
-                                                this->dataPtr->typeName,
-                                                this->dataPtr->defaultValue,
-                                                strValue),
-             "Unable to obtain string from default value");
-  this->dataPtr->strValue = strValue;
+  this->dataPtr->strValue = std::nullopt;
   this->dataPtr->set = false;
 }
 
