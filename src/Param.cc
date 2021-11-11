@@ -321,7 +321,7 @@ std::string Param::GetAsString(const PrintConfig &_config) const
         this->dataPtr->StringFromValueImpl(
             PrintConfig(),
             this->dataPtr->typeName,
-            &this->dataPtr->defaultValue,
+            this->dataPtr->defaultValue,
             strValue),
         "Unable to get string from default value");
     ss << strValue;
@@ -338,7 +338,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 
   SDF_ASSERT(this->dataPtr->StringFromValueImpl(_config,
                                                 this->dataPtr->typeName,
-                                                &this->dataPtr->defaultValue,
+                                                this->dataPtr->defaultValue,
                                                 defaultStr),
              "Unable to get string from default value");
   return defaultStr;
@@ -353,7 +353,7 @@ std::optional<std::string> Param::GetMinValueAsString(
     std::string valueStr;
     if (!this->dataPtr->StringFromValueImpl(_config,
                                             this->dataPtr->typeName,
-                                            &this->dataPtr->minValue.value(),
+                                            this->dataPtr->minValue.value(),
                                             valueStr))
     {
       sdferr << "Unable to get min value as string.\n";
@@ -374,7 +374,7 @@ std::optional<std::string> Param::GetMaxValueAsString(
     std::string valueStr;
     if (!this->dataPtr->StringFromValueImpl(_config,
                                             this->dataPtr->typeName,
-                                            &this->dataPtr->maxValue.value(),
+                                            this->dataPtr->maxValue.value(),
                                             valueStr))
     {
       sdferr << "Unable to get max value as string.\n";
@@ -793,14 +793,14 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 /////////////////////////////////////////////////
 bool PoseStringFromValue(const PrintConfig &_config,
                          const Param_V &_parentAttributes,
-                         ParamPrivate::ParamVariant *_value,
+                         const ParamPrivate::ParamVariant &_value,
                          std::string &_valueStr)
 {
   (void)_config;
   StringStreamClassicLocale ss;
 
-  ignition::math::Pose3d *pose =
-      std::get_if<ignition::math::Pose3d>(_value);
+  const ignition::math::Pose3d *pose =
+      std::get_if<ignition::math::Pose3d>(&_value);
   if (!pose)
   {
     sdferr << "Unable to get pose value from variant.\n";
@@ -882,7 +882,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
 /////////////////////////////////////////////////
 bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
                                        const std::string &_typeName,
-                                       ParamVariant *_value,
+                                       const ParamVariant &_value,
                                        std::string &_valueStr) const
 {
   StringStreamClassicLocale ss;
@@ -898,13 +898,10 @@ bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
     }
     return PoseStringFromValue(_config, {}, _value, _valueStr);
   }
-  else
-  {
-    ss << ParamStreamer{ *_value };
-    _valueStr = ss.str();
-    return true;
-  }
-  return false;
+
+  ss << ParamStreamer{ _value };
+  _valueStr = ss.str();
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -980,7 +977,7 @@ void Param::Reset()
   std::string strValue;
   SDF_ASSERT(this->dataPtr->StringFromValueImpl(PrintConfig(),
                                                 this->dataPtr->typeName,
-                                                &this->dataPtr->defaultValue,
+                                                this->dataPtr->defaultValue,
                                                 strValue),
              "Unable to obtain string from default value");
   this->dataPtr->strValue = strValue;
@@ -997,7 +994,7 @@ bool Param::Reparse()
   }
   else if (!this->dataPtr->StringFromValueImpl(PrintConfig(),
                                                this->dataPtr->typeName,
-                                               &this->dataPtr->defaultValue,
+                                               this->dataPtr->defaultValue,
                                                strToReparse))
   {
     sdferr << "Failed to obtain string from default value during reparsing.\n";

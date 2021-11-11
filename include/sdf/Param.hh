@@ -406,9 +406,11 @@ namespace sdf
     /// \param[in] _typeName The data type of the value
     /// \param[in] _value The value
     /// \param[in] _valueStr The string representation of the value
+    /// \return True if the string was successfully retrieved from the value,
+    /// false otherwise.
     public: bool StringFromValueImpl(const PrintConfig &_config,
                                      const std::string &_typeName,
-                                     ParamVariant *_value,
+                                     const ParamVariant &_value,
                                      std::string &_valueStr) const;
 
     /// \brief Data type to string mapping
