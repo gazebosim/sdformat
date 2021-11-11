@@ -71,6 +71,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->description = _description;
   this->dataPtr->set = false;
   this->dataPtr->ignoreParentAttributes = false;
+  this->dataPtr->defaultStrValue = _default;
 
   SDF_ASSERT(
       this->dataPtr->ValueFromStringImpl(
@@ -307,9 +308,13 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString(const PrintConfig &_config) const
 {
-  if (this->dataPtr->strValue.has_value())
+  if (this->dataPtr->strValue.has_value() && !this->dataPtr->strValue->empty())
   {
     return this->dataPtr->strValue.value();
+  }
+  else if(!this->dataPtr->strValue.has_value())
+  {
+    return this->dataPtr->defaultStrValue;
   }
 
   return this->GetDefaultAsString(_config);
@@ -910,6 +915,7 @@ bool Param::SetFromString(const std::string &_value,
   else if (str.empty())
   {
     this->dataPtr->value = this->dataPtr->defaultValue;
+    this->dataPtr->strValue = str;
     return true;
   }
 
@@ -1003,6 +1009,12 @@ bool Param::Reparse()
           << "reverting to previous value '" << this->GetAsString() << "'.\n";
     }
     return false;
+  }
+  // ValueFromStringImpl might make assumptions as to what the default value
+  // should be, so if strToReparse is empty, assign the correct default value.
+  if (strToReparse.empty())
+  {
+    this->dataPtr->value = this->dataPtr->defaultValue;
   }
   return true;
 }

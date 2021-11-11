@@ -1534,6 +1534,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   {
     if (!_sdf->GetValue()->Reparse())
       return false;
+    if (!_sdf->GetValue()->SetFromString(""))
+      return false;
   }
 
   if (_sdf->GetCopyChildren())
