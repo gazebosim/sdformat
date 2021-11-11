@@ -45,8 +45,6 @@ if (BUILD_SDF)
   ign_configure_build(QUIT_IF_BUILD_ERRORS)
   ign_create_packages()
 
-  # ign_create_docs()
-
   add_subdirectory(sdf)
   add_subdirectory(conf)
   add_subdirectory(doc)
