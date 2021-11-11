@@ -40,5 +40,5 @@ if (IGNITION-TOOLS_BINARY_DIRS)
       COMMENT "Generating full description for spec ${desc_ver}"
       VERBATIM)
   endforeach()
-  add_custom_target(sdf_descriptions DEPENDS ${description_targets} ${sdf_target})
+  add_custom_target(sdf_descriptions DEPENDS ${description_targets} ${PROJECT_NAME})
 endif()
