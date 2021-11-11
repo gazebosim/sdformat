@@ -64,11 +64,11 @@ endif()
 ########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
-ign_find_package(ignition-math6 VERSION 6.8 QUIET)
+ign_find_package(ignition-math6 VERSION 6.8 REQUIRED)
 set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 ########################################
 # Find ignition utils
 # Set a variable for generating ProjectConfig.cmake
-ign_find_package(ignition-utils1 QUIET)
+ign_find_package(ignition-utils1 REQUIRED)
 set(IGN_UTILS_VER ${ignition-utils1_VERSION_MAJOR})
