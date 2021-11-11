@@ -43,6 +43,7 @@ COMMANDS = {  'sdf' =>
                        "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                    use only and the output may change without any promise of stability)\n" +
                        "  -p [ --print ] arg                Print converted arg.\n" +
+                       "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg.\n" +
                        COMMON_OPTIONS
             }
 
@@ -75,9 +76,11 @@ class Cmd
       opts.on('-d', '--describe [VERSION]', 'Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@)') do |v|
         options['describe'] = v
       end
-      opts.on('-p arg', '--print arg', String,
-              'Print converted arg') do |arg|
-        options['print'] = arg
+      opts.on('-p', '--print', 'Print converted arg') do
+        options['print'] = 1
+      end
+      opts.on('-i', '--preserve-includes', 'Preserve included tags when printing converted arg') do
+        options['preserve_includes'] = 1
       end
       opts.on('-g arg', '--graph type', String,
               'Print PoseRelativeTo or FrameAttachedTo graph') do |graph_type|
@@ -100,6 +103,21 @@ class Cmd
     end
 
     options['command'] = ARGV[0]
+
+    if options['preserve_includes'] and not options['print']
+      puts usage
+      exit(-1)
+    end
+
+    if options['print']
+      filename = args.pop
+      if filename
+        options['print'] = filename
+      else
+        puts usage
+        exit(-1)
+      end
+    end
 
     options
   end
@@ -160,8 +178,13 @@ class Cmd
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
-          Importer.extern 'int cmdPrint(const char *)'
-          exit(Importer.cmdPrint(File.expand_path(options['print'])))
+          if options['preserve_includes']
+            Importer.extern 'int cmdPrintPreserveIncludes(const char *)'
+            exit(Importer.cmdPrintPreserveIncludes(File.expand_path(options['print'])))
+          else
+            Importer.extern 'int cmdPrint(const char *)'
+            exit(Importer.cmdPrint(File.expand_path(options['print'])))
+          end
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))

@@ -33,6 +33,16 @@ class SDFORMAT_VISIBLE PrintConfig
   /// \brief Default constructor.
   public: PrintConfig();
 
+  /// \brief Set print config to preserve <include> tags.
+  /// \param[in] _preserve True to preserve <include> tags.
+  /// False to expand included model.
+  public: void SetPreserveIncludes(bool _preserve);
+
+  /// \brief Check if <include> tags are to be preserved or expanded.
+  /// \return True if <include> tags are preserved.
+  /// False if they are to be expanded.
+  public: bool PreserveIncludes() const;
+
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };
