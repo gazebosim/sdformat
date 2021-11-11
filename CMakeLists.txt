@@ -5,7 +5,7 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat13 VERSION 13.0)
+project (sdformat13 VERSION 13.0.0)
 
 # The protocol version has nothing to do with the package version set below.
 # It represents the current version of sdformat implement by the software
