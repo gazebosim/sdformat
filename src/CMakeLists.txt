@@ -200,7 +200,7 @@ if (BUILD_SDF_TEST)
       if (${CMAKE_VERSION} VERSION_GREATER 3.13)
         target_link_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_LDFLAGS})
       endif()
-      target_link_libraries(UNIT_parser_urdf_TEST URDF::URDF)
+      target_link_libraries(UNIT_parser_urdf_TEST IgnURDFDOM::IgnURDFDOM)
     endif()
     target_link_libraries(UNIT_parser_urdf_TEST ${TINYXML2_LIBRARIES})
   endif()
@@ -211,7 +211,7 @@ if (BUILD_SDF_TEST)
       if (${CMAKE_VERSION} VERSION_GREATER 3.13)
         target_link_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_LDFLAGS})
       endif()
-      target_link_libraries(UNIT_ParamPassing_TEST URDF::URDF)
+      target_link_libraries(UNIT_ParamPassing_TEST IgnURDFDOM::IgnURDFDOM)
     endif()
     target_link_libraries(UNIT_ParamPassing_TEST ${TINYXML2_LIBRARIES})
   endif()
@@ -235,7 +235,7 @@ if (USE_INTERNAL_URDF)
 else()
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     PRIVATE
-      URDF::URDF
+      IgnURDFDOM::IgnURDFDOM
   )
 endif()
 

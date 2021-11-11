@@ -13,8 +13,8 @@ ign_find_package(TINYXML2 REQUIRED)
 #  2. if USE_INTERNAL_URDF is set to True, use the internal copy
 #  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
 if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
-  ign_find_package(URDF VERSION 1.0 QUIET)
-  if (NOT URDF_FOUND)
+  ign_find_package(IgnURDFDOM VERSION 1.0 QUIET)
+  if (NOT IgnURDFDOM_FOUND)
     if (DEFINED USE_INTERNAL_URDF AND NOT USE_INTERNAL_URDF)
       ign_build_error("Couldn't find the urdfdom >= 1.0 system installation")
     else()
