@@ -740,7 +740,8 @@ TEST(SDFParser, FixedJointReductionSimple)
 /////////////////////////////////////////////////
 // This test uses a urdf that has chained fixed joints with plugin that
 // contains bodyName, xyzOffset and rpyOffset.
-// Test to make sure that the bodyName is updated to the new base link.
+// Test to make sure that the bodyName is updated to the new base link
+// and that the offsets have the correct transform and frame of reference
 TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
 {
   sdf::SDFPtr robot(new sdf::SDF());
@@ -751,6 +752,13 @@ TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
   sdf::ElementPtr model = robot->Root()->GetElement("model");
   sdf::ElementPtr plugin = model->GetElement("plugin");
 
+  auto xyzOffset = plugin->Get<ignition::math::Vector3d>("xyzOffset");
+  auto rpyOffset = plugin->Get<ignition::math::Vector3d>("rpyOffset");
   auto bodyName = plugin->Get<std::string>("bodyName");
   EXPECT_EQ("base_link", bodyName);
+  EXPECT_EQ(ignition::math::Vector3d(-0.707108, 1.70711, 0), xyzOffset);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, 1.5708), rpyOffset);
+
+  bool correctedOffset = plugin->Get<bool>("ignition::corrected_offsets");
+  EXPECT_TRUE(correctedOffset);
 }

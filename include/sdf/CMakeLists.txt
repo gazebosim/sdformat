@@ -15,6 +15,7 @@ set (headers
   Error.hh
   Exception.hh
   Filesystem.hh
+  ForceTorque.hh
   Frame.hh
   Geometry.hh
   Gui.hh
