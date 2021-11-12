@@ -35,7 +35,7 @@ if (WIN32)
 endif ()
 
 if (BUILD_SDF)
-  ign_configure_project(INCLUDE_DIR sdf NO_IGNITION_PREFIX)
+  ign_configure_project(REPLACE_IGNITION_INCLUDE_PATH sdf NO_IGNITION_PREFIX)
 
   message (STATUS "\n\n====== Finding 3rd Party Packages ======")
   include (${sdf_cmake_dir}/SDFUtils.cmake)
