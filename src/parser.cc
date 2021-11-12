@@ -1401,12 +1401,18 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   for (std::map<std::string, std::string>::iterator iter = replace.begin();
        iter != replace.end(); ++iter)
   {
-    replace_all(str, std::string("\"") + iter->first + "\"",
-                std::string("\"") + iter->second + "\"");
-    replace_all(str, std::string("'") + iter->first + "'",
-                std::string("'") + iter->second + "'");
-    replace_all(str, std::string(">") + iter->first + "<",
-                std::string(">") + iter->second + "<");
+    std::string oldName(iter->first);
+    std::string nameWithNestedPrefix(iter->second);
+    replace_all(str, std::string("\"") + oldName + "\"",
+                     std::string("\"") + nameWithNestedPrefix + "\"");
+    replace_all(str, std::string("'") + oldName + "'",
+                     std::string("'") + nameWithNestedPrefix + "'");
+    replace_all(str, std::string(">") + oldName + "<",
+                     std::string(">") + nameWithNestedPrefix + "<");
+    // Deal with nested model inside other nested model and already with
+    // ::namespace:: entries in the name
+    replace_all(str, std::string(">") + oldName + "::",
+                     std::string(">") + nameWithNestedPrefix + "::");
   }
 
   _includeSDF->ClearElements();
@@ -1720,7 +1726,8 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
   if (!shouldValidateElement(_elem))
     return true;
 
-  bool result = _elem->HasUniqueChildNames();
+  bool result =
+      _elem->HasUniqueChildNames("", Element::NameUniquenessExceptions());
   if (!result)
   {
     std::cerr << "Error: Non-unique names detected in "
