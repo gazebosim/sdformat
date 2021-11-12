@@ -203,7 +203,7 @@ TEST(Pose1_9, PoseStringOutput)
   ASSERT_NE(nullptr, poseParam);
 
   const std::string strOutput = poseParam->GetAsString();
-  EXPECT_EQ("0 0 0 0 0 0 1", strOutput);
+  EXPECT_EQ("0 0 0   0 0 0 1", strOutput);
 }
 
 //////////////////////////////////////////////////

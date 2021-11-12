@@ -822,6 +822,12 @@ bool PoseStringFromValue(const PrintConfig &_config,
   const std::string defaultRotationFormat = "euler_rpy";
   std::string rotationFormat = defaultRotationFormat;
 
+  // When @degrees and @rotation_format attributes are not set, a single space
+  // delimiter is used to prevent breaking behavior and tests.
+  const std::string defaultPosRotDelimiter = " ";
+  const std::string threeSpacedDelimiter = "   ";
+  std::string posRotDelimiter = defaultPosRotDelimiter;
+
   for (const auto &p : _parentAttributes)
   {
     const std::string key = p->GetKey();
@@ -833,10 +839,18 @@ bool PoseStringFromValue(const PrintConfig &_config,
         sdferr << "Unable to get //pose[@degrees] attribute as bool.\n";
         return false;
       }
+      if (p->GetSet())
+      {
+        posRotDelimiter = threeSpacedDelimiter;
+      }
     }
     else if (key == "rotation_format")
     {
       rotationFormat = p->GetAsString();
+      if (p->GetSet())
+      {
+        posRotDelimiter = threeSpacedDelimiter;
+      }
     }
   }
 
@@ -848,7 +862,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   }
   else if (rotationFormat == "quat_xyzw")
   {
-    ss << pose->Pos() << " "
+    ss << pose->Pos() << posRotDelimiter
        << sanitizeZero(pose->Rot().X()) << " "
        << sanitizeZero(pose->Rot().Y()) << " "
        << sanitizeZero(pose->Rot().Z()) << " "
@@ -858,7 +872,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   }
   else if (rotationFormat == "euler_rpy" && inDegrees)
   {
-    ss << pose->Pos() << " "
+    ss << pose->Pos() << posRotDelimiter
        << sanitizeZero(IGN_RTOD(pose->Rot().Roll())) << " "
        << sanitizeZero(IGN_RTOD(pose->Rot().Pitch())) << " "
        << sanitizeZero(IGN_RTOD(pose->Rot().Yaw()));
@@ -866,7 +880,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
     return true;
   }
 
-  ss << pose->Pos() << " "
+  ss << pose->Pos() << posRotDelimiter
      << sanitizeZero(pose->Rot().Roll()) << " "
      << sanitizeZero(pose->Rot().Pitch()) << " "
      << sanitizeZero(pose->Rot().Yaw());
