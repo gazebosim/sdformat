@@ -874,6 +874,9 @@ TEST(Param, PoseWithDefaultValue)
   poseElem->AddValue("pose", "1 0 0 0 0 0", false);
   poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
 
+  // Clone poseElem for testing Parm::SetFromString
+  auto poseElemClone = poseElem->Clone();
+
   const std::string testString = R"(
   <sdf version="1.9">
     <pose rotation_format="quat_xyzw"/>
@@ -887,6 +890,15 @@ TEST(Param, PoseWithDefaultValue)
   const std::string expectedString =
       "<pose rotation_format='quat_xyzw'>1 0 0 0 0 0 1</pose>\n";
   EXPECT_STREQ(expectedString.c_str(), poseElem->ToString("").c_str());
+
+  // same test but using Param::SetFromString
+  poseElemClone->GetAttribute("rotation_format")->SetFromString("quat_xyzw");
+  auto value = poseElemClone->GetValue();
+  value->SetFromString("");
+  value->Reparse();
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), poseElemClone->Get<Pose>());
+  EXPECT_STREQ(expectedString.c_str(), poseElemClone->ToString("").c_str());
 }
 
 /////////////////////////////////////////////////
