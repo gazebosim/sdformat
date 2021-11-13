@@ -184,4 +184,138 @@ namespace usd
     }
     return material;
   }
+
+  std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> ParseTransform(
+    const pxr::UsdPrim &_prim)
+  {
+    auto variant_geom = pxr::UsdGeomGprim(_prim);
+
+    auto transforms = variant_geom.GetXformOpOrderAttr();
+
+    pxr::GfVec3f scale(1, 1, 1);
+    pxr::GfVec3f translate(0, 0, 0);
+    pxr::GfQuatf rotationQuad(1, 0, 0, 0);
+
+    bool isScale = false;
+    bool isTranslate = false;
+    bool isRotation = false;
+
+    pxr::VtTokenArray xformOpOrder;
+    transforms.Get(&xformOpOrder);
+    for (auto & op: xformOpOrder)
+    {
+      std::cerr << "xformOpOrder " << op << '\n';
+      std::string s = op;
+      if (op == "xformOp:scale")
+      {
+        auto attribute = _prim.GetAttribute(pxr::TfToken("xformOp:scale"));
+        if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3f")
+        {
+          attribute.Get(&scale);
+        }
+        else if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3d")
+        {
+          pxr::GfVec3d scaleTmp(1, 1, 1);
+          attribute.Get(&scaleTmp);
+          scale[0] = scaleTmp[0];
+          scale[1] = scaleTmp[1];
+          scale[2] = scaleTmp[2];
+        }
+
+        std::cerr << "scale "<< scale << '\n';
+        isScale = true;
+      }
+      else if (op == "xformOp:rotateZYX")
+      {
+        pxr::GfVec3f rotationEuler(0, 0, 0);
+        auto attribute = _prim.GetAttribute(pxr::TfToken("xformOp:rotateZYX"));
+        if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3f")
+        {
+          attribute.Get(&rotationEuler);
+        }
+        else if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3d")
+        {
+          pxr::GfVec3f rotationEulerTmp(0, 0, 0);
+          attribute.Get(&rotationEulerTmp);
+          rotationEuler[0] = rotationEulerTmp[0];
+          rotationEuler[1] = rotationEulerTmp[1];
+          rotationEuler[2] = rotationEulerTmp[2];
+        }
+
+        std::cerr << "GetCPPTypeName " << attribute.GetTypeName().GetCPPTypeName()<< '\n';
+        ignition::math::Quaterniond q;
+        q.Euler(
+          rotationEuler[2] * 3.1416 / 180,
+          rotationEuler[1] * 3.1416 / 180,
+          rotationEuler[0] * 3.1416 / 180);
+        rotationQuad.SetImaginary(q.X(), q.Y(), q.Z());
+        rotationQuad.SetReal(q.W());
+        isRotation = true;
+        std::cerr << "euler rot " << rotationEuler << '\n';
+      }
+      else if (op == "xformOp:translate")
+      {
+        auto attribute = _prim.GetAttribute(pxr::TfToken("xformOp:translate"));
+        if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3f")
+        {
+          attribute.Get(&translate);
+        }
+        else if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3d")
+        {
+          pxr::GfVec3d translateTmp(0, 0, 0);
+          attribute.Get(&translateTmp);
+          translate[0] = translateTmp[0];
+          translate[1] = translateTmp[1];
+          translate[2] = translateTmp[2];
+        }
+        std::cerr << "translate " << translate << '\n';
+        isTranslate = true;
+      }
+      else if (op == "xformOp:orient")
+      {
+        auto attribute = _prim.GetAttribute(pxr::TfToken("xformOp:orient"));
+        if (attribute.GetTypeName().GetCPPTypeName() == "GfQuatf")
+        {
+          attribute.Get(&rotationQuad);
+        }
+        else if (attribute.GetTypeName().GetCPPTypeName() == "GfQuatd")
+        {
+          pxr::GfQuatd rotationQuadTmp;
+          attribute.Get(&rotationQuad);
+          rotationQuad.SetImaginary(
+            rotationQuadTmp.GetImaginary()[0],
+            rotationQuadTmp.GetImaginary()[1],
+            rotationQuadTmp.GetImaginary()[2]);
+          rotationQuad.SetReal(rotationQuadTmp.GetReal());
+        }
+        std::cerr << "rotationQuad " << rotationQuad << '\n';
+        isRotation = true;
+      }
+
+      if (op == "xformOp:transform")
+      {
+        pxr::GfMatrix4d transform;
+        _prim.GetAttribute(pxr::TfToken("xformOp:transform")).Get(&transform);
+        pxr::GfVec3d translateMatrix = transform.ExtractTranslation();
+        pxr::GfQuatd rotation_quadMatrix = transform.ExtractRotationQuat();
+        translate[0] = translateMatrix[0];
+        translate[1] = translateMatrix[1];
+        translate[2] = translateMatrix[2];
+        rotationQuad.SetImaginary(
+          rotation_quadMatrix.GetImaginary()[0],
+          rotation_quadMatrix.GetImaginary()[1],
+          rotation_quadMatrix.GetImaginary()[2]);
+        rotationQuad.SetReal(rotation_quadMatrix.GetReal());
+        scale[0] = transform[0][0];
+        scale[1] = transform[1][1];
+        scale[2] = transform[2][2];
+        isTranslate = true;
+        isRotation = true;
+        isScale = true;
+        std::cerr << "translate " << translateMatrix << '\n';
+        std::cerr << "rotation_quad " << rotation_quadMatrix << '\n';
+      }
+    }
+    return std::make_tuple(scale, translate, rotationQuad, isScale, isTranslate, isRotation);
+  }
 }

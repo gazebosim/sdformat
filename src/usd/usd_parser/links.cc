@@ -24,6 +24,7 @@
 #include <pxr/usd/usdGeom/subset.h>
 #include <pxr/usd/usd/relationship.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
+#include "pxr/usd/usd/primCompositionQuery.h"
 
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/base/gf/matrix4d.h"
@@ -37,8 +38,11 @@
 #include "ignition/common/SubMesh.hh"
 #include "ignition/common/Util.hh"
 
+#include "ignition/math/Matrix4.hh"
+
 #include "pxr/usd/usdPhysics/massAPI.h"
 #include "pxr/usd/usdPhysics/collisionAPI.h"
+#include "pxr/usd/usdPhysics/rigidBodyAPI.h"
 
 #include "sdf/Box.hh"
 #include "sdf/Collision.hh"
@@ -140,7 +144,7 @@ namespace usd
         sdf::Geometry geomSubset;
         geomSubset.SetType(sdf::GeometryType::MESH);
 
-        _meshGeom.SetScale(ignition::math::Vector3d(_scale.X(), _scale.Y(), _scale.Z()));
+        // _meshGeom.SetScale(ignition::math::Vector3d(_scale.X(), _scale.Y(), _scale.Z()));
 
         std::string childPathName = pxr::TfStringify(child.GetPath());
         std::string directoryMesh = directoryFromUSDPath(childPathName);
@@ -162,8 +166,8 @@ namespace usd
 
         auto parentPrim = _prim.GetParent().GetParent();
 
-        std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsParentTuple =
-          ParseTransform<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf>(parentPrim);
+        std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsParentTuple
+         = ParseTransform(parentPrim);
 
         pxr::GfVec3f scaleSubset = std::get<0>(transformsParentTuple);
         pxr::GfVec3f translateSubset = std::get<1>(transformsParentTuple);
@@ -219,7 +223,6 @@ namespace usd
     unsigned int indexVertex = 0;
     for (unsigned int i = 0; i < faceVertexCounts.size(); ++i)
     {
-      // std::cerr << "faceVertexCounts[i] " << faceVertexCounts[i] << '\n';
       if (faceVertexCounts[i] == 3)
       {
         unsigned int j = indexVertex;
@@ -253,9 +256,9 @@ namespace usd
     for (auto & point: points)
     {
       subMesh.AddVertex(
-        point[0], //* _metersPerUnit,
-        point[1], //* _metersPerUnit,
-        point[2]); //* _metersPerUnit);
+        point[0] * _metersPerUnit,
+        point[1] * _metersPerUnit,
+        point[2] * _metersPerUnit);
     }
 
     for (auto & normal: normals)
@@ -268,10 +271,110 @@ namespace usd
 
     meshGeom.SetScale(ignition::math::Vector3d(_scale.X(), _scale.Y(), _scale.Z()));
 
-    _vis->SetName("visual_mesh");
-    _vis->SetMaterial(_material);
+    auto parent = _prim.GetParent();
+    if (parent)
+    {
+      if (parent.IsA<pxr::UsdGeomMesh>())
+      {
+        std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+          ParseTransform(parent);
+
+        pxr::GfVec3f scale = std::get<0>(transformsTuple);
+        pxr::GfVec3f translate = std::get<1>(transformsTuple);
+        pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
+
+        bool isScale = std::get<3>(transformsTuple);
+        bool isTranslate = std::get<4>(transformsTuple);
+        bool isRotation = std::get<5>(transformsTuple);
+
+        ignition::math::Vector3d scaleMath = ignition::math::Vector3d(
+          scale[0], scale[1], scale[2]);
+
+        ignition::math::Pose3d superParentPose = ignition::math::Pose3d(
+          ignition::math::Vector3d(0, 0, 0),
+          ignition::math::Quaterniond(0.707, 0, 0, 0.707));
+
+        ignition::math::Pose3d parentPose = ignition::math::Pose3d(
+          ignition::math::Vector3d(
+            translate[0],
+            translate[1],
+            translate[2]) * _metersPerUnit,
+          ignition::math::Quaterniond(
+            rotationQuad.GetReal(),
+            rotationQuad.GetImaginary()[0],
+            rotationQuad.GetImaginary()[1],
+            rotationQuad.GetImaginary()[2]));
+
+        meshGeom.SetScale(meshGeom.Scale() * scaleMath);
+
+        ignition::math::Pose3d visPose = _vis->RawPose();
+        // visPose.Pos() *= _scale * scaleMath;
+        std::cerr << ">>>>>>>>>>>>>>>>>> RawPose "<< visPose << '\n';
+        std::cerr << ">>>>>>>>>>>>>>>>>> parentPose "<< parentPose << '\n';
+
+        std::cerr << ">>>>>>>>>>>>>>>>>> parentPose * visPose " << parentPose * visPose << '\n';
+
+        ignition::math::Pose3d combinedPose = (parentPose) * visPose;
+        combinedPose.Pos() *= meshGeom.Scale();
+        std::cerr << ">>>>>>>>>>>>>>>>>> combinedPose " << combinedPose << '\n';
+        _vis->SetRawPose(combinedPose);
+      }
+      else
+      {
+        // TODO(ahcorde): review this
+//         std::string primName = pxr::TfStringify(parent.GetPath());
+//         std::cerr << "parent primName " << primName << '\n';
+//         auto p = parent.GetPropertyNames();
+//         for (auto t : p)
+//         {
+//           std::cerr << "t " << t.GetText() << '\n';
+//         }
+// std::cerr << "----" << '\n';
+//         p = parent.GetAuthoredPropertyNames();
+//         for (auto t : p)
+//         {
+//           std::cerr << "t " << t.GetText() << '\n';
+//         }
+//
+//         std::cerr << "---- properties" << '\n';
+//
+//         std::vector<pxr::UsdProperty> properties = parent.GetProperties();
+//         for (auto property: properties)
+//         {
+//           // if (UsdAttribute attr = property.As<UsdAttribute>()) {
+//           //    // use attribute 'attr'.
+//           // }
+//           if (pxr::UsdRelationship rel = property.As<pxr::UsdRelationship>())
+//           {
+//             pxr::SdfPathVector paths;
+//             rel.GetTargets(&paths);
+//             for (auto p: paths)
+//             {
+//               std::cerr << pxr::TfStringify(p) << "\n";
+//             }
+//           }
+//         }
+//
+//         std::cerr << "=================== parent ? " << primName << '\n';
+//         std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+//           ParseTransform(parent);
+//
+//         pxr::GfVec3f scale = std::get<0>(transformsTuple);
+//         pxr::GfVec3f translate = std::get<1>(transformsTuple);
+//         pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
+//
+//         bool isScale = std::get<3>(transformsTuple);
+//         bool isTranslate = std::get<4>(transformsTuple);
+//         bool isRotation = std::get<5>(transformsTuple);
+//         std::cerr << "=================== " << '\n';
+
+      }
+    }
 
     std::string primName = pxr::TfStringify(_prim.GetPath());
+
+    _vis->SetName("_" + ignition::common::basename(primName) + "_");
+    _vis->SetMaterial(_material);
 
     std::string directoryMesh = directoryFromUSDPath(primName);
 
@@ -390,56 +493,96 @@ namespace usd
     _vis->SetMaterial(_material);
   }
 
-  void getInertial(const pxr::UsdPrim &_prim, LinkSharedPtr &link,
-    float &_mass, pxr::GfVec3f _centerOfMass, pxr::GfVec3f _diagonalInertia)
+  void getTransforms(
+    const pxr::UsdPrim &_prim,
+    LinkSharedPtr &_link,
+    const double _metersPerUnit)
   {
-    ignition::math::MassMatrix3d massMatrix;
-    std::cerr << "UsdPhysicsMassAPI " <<  pxr::TfStringify(_prim.GetPath()) << '\n';
-
-    if (pxr::UsdAttribute massAttribute =
-      _prim.GetAttribute(pxr::TfToken("physics:mass")))
+    if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
     {
-      massAttribute.Get(&_mass);
-      std::cerr << "MASS " << _mass << '\n';
+      std::cerr << "\tUsdPhysicsRigidBodyAPI" << '\n';
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+        ParseTransform(_prim);
 
-      if (_mass <= 0.0)
+      pxr::GfVec3f scale = std::get<0>(transformsTuple);
+      pxr::GfVec3f translate = std::get<1>(transformsTuple);
+      pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
+
+      bool isScale = std::get<3>(transformsTuple);
+      bool isTranslate = std::get<4>(transformsTuple);
+      bool isRotation = std::get<5>(transformsTuple);
+
+      if (isScale)
       {
-        if (_prim.GetParent())
-        {
-          std::cerr << "try to find it in parents" << '\n';
-          getInertial(_prim.GetParent(), link, _mass, _centerOfMass, _diagonalInertia);
-        }
+        _link->scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
       }
-      else
+      if (isTranslate)
       {
+        _link->pose.Pos().X() = translate[0] * _metersPerUnit;
+        _link->pose.Pos().Y() = translate[1] * _metersPerUnit;
+        _link->pose.Pos().Z() = translate[2] * _metersPerUnit;
+      }
+      if (isRotation)
+      {
+        _link->pose.Rot().X() = rotationQuad.GetImaginary()[0];
+        _link->pose.Rot().Y() = rotationQuad.GetImaginary()[1];
+        _link->pose.Rot().Z() = rotationQuad.GetImaginary()[2];
+        _link->pose.Rot().W() = rotationQuad.GetReal();
+      }
+      std::cerr << "\t\tlink->pose.Pos() " << _link->pose.Pos() << '\n';
+      std::cerr << "\t\tlink->pose.Rot() " << _link->pose.Rot() << '\n';
+    }
+    else
+    {
+      getTransforms(_prim.GetParent(), _link, _metersPerUnit);
+    }
+  }
+
+  void getInertial(const pxr::UsdPrim &_prim, LinkSharedPtr &link)
+  {
+    float mass;
+    pxr::GfVec3f centerOfMass;
+    pxr::GfVec3f diagonalInertia;
+
+    ignition::math::MassMatrix3d massMatrix;
+
+    if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
+    {
+      std::cerr << "UsdPhysicsMassAPI " <<  pxr::TfStringify(_prim.GetPath()) << '\n';
+      if (pxr::UsdAttribute massAttribute =
+        _prim.GetAttribute(pxr::TfToken("physics:mass")))
+      {
+        massAttribute.Get(&mass);
+        std::cerr << "MASS " << mass << '\n';
+
         if (pxr::UsdAttribute centerOfMassAttribute =
           _prim.GetAttribute(pxr::TfToken("physics:centerOfMass"))) {
-          centerOfMassAttribute.Get(&_centerOfMass);
+          centerOfMassAttribute.Get(&centerOfMass);
 
         }
         if (pxr::UsdAttribute diagonalInertiaAttribute =
           _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia"))) {
-          diagonalInertiaAttribute.Get(&_diagonalInertia);
+          diagonalInertiaAttribute.Get(&diagonalInertia);
         }
 
-        if (_mass < 0.0001)
+        if (mass < 0.0001)
         {
-          _mass = 1.0;
+          mass = 0.1;
         }
 
-        std::cerr << "centerOfMass " << _centerOfMass << '\n';
-        std::cerr << "diagonalInertia " << _diagonalInertia << '\n';
+        std::cerr << "centerOfMass " << centerOfMass << '\n';
+        std::cerr << "diagonalInertia " << diagonalInertia << '\n';
 
-        massMatrix.SetMass(_mass);
+        massMatrix.SetMass(mass);
         massMatrix.SetDiagonalMoments(
           ignition::math::Vector3d(
-            _diagonalInertia[0],
-            _diagonalInertia[1],
-            _diagonalInertia[2]));
+            diagonalInertia[0],
+            diagonalInertia[1],
+            diagonalInertia[2]));
 
         link->inertial->SetPose(ignition::math::Pose3d(
             ignition::math::Vector3d(
-              _centerOfMass[0], _centerOfMass[1], _centerOfMass[2]),
+              centerOfMass[0], centerOfMass[1], centerOfMass[2]),
             ignition::math::Quaterniond(1.0, 0, 0, 0)));
 
         link->inertial->SetMassMatrix(massMatrix);
@@ -447,7 +590,11 @@ namespace usd
     }
     else
     {
-      getInertial(_prim.GetParent(), link, _mass, _centerOfMass, _diagonalInertia);
+      auto parent = _prim.GetParent();
+      if (parent)
+      {
+        getInertial(parent, link);
+      }
     }
   }
 
@@ -468,11 +615,7 @@ namespace usd
     }
 
     std::string primName = pxr::TfStringify(_prim.GetPath());
-    size_t pos = std::string::npos;
-    if ((pos  = primName.find("/World") )!= std::string::npos)
-    {
-      primName.erase(pos, std::string("/World").length());
-    }
+    removeSubStr(primName, "/World");
 
     std::vector<std::string> tokens = ignition::common::split(primName, "/");
     if (tokens.size() >= 3)
@@ -484,54 +627,14 @@ namespace usd
       link->name = pxr::TfStringify(_prim.GetPath());
     }
 
+
     if (!link->inertial)
     {
       link->inertial = std::make_shared<ignition::math::Inertiald>();
-
-      if (_prim.HasAPI<pxr::UsdPhysicsMassAPI>())
-      {
-        float mass;
-        pxr::GfVec3f centerOfMass;
-        pxr::GfVec3f diagonalInertia;
-        getInertial(_prim, link, mass, centerOfMass, diagonalInertia);
-      }
-      else
-      {
-        float mass;
-        pxr::GfVec3f centerOfMass;
-        pxr::GfVec3f diagonalInertia;
-        getInertial(_prim.GetParent(), link, mass, centerOfMass, diagonalInertia);
-      }
-
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple = ParseTransform
-        <pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf>(_prim);
-
-      pxr::GfVec3f scale = std::get<0>(transformsTuple);
-      pxr::GfVec3f translate = std::get<1>(transformsTuple);
-      pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
-
-      bool isScale = std::get<3>(transformsTuple);
-      bool isTranslate = std::get<4>(transformsTuple);
-      bool isRotation = std::get<5>(transformsTuple);
-
-      if (isScale)
-      {
-        link->scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
-      }
-      if (isTranslate)
-      {
-        link->pose.Pos().X() = translate[0] * _metersPerUnit;
-        link->pose.Pos().Y() = translate[1] * _metersPerUnit;
-        link->pose.Pos().Z() = translate[2] * _metersPerUnit;
-      }
-      if (isRotation)
-      {
-        link->pose.Rot().X() = rotationQuad.GetImaginary()[0];
-        link->pose.Rot().Y() = rotationQuad.GetImaginary()[1];
-        link->pose.Rot().Z() = rotationQuad.GetImaginary()[2];
-        link->pose.Rot().W() = rotationQuad.GetReal();
-      }
+      getInertial(_prim, link);
     }
+
+    getTransforms(_prim, link, _metersPerUnit);
 
     sdf::Geometry geom;
     if (_prim.IsA<pxr::UsdGeomSphere>() ||
@@ -551,16 +654,16 @@ namespace usd
         sdferr << "No transforms available!\n";
       }
 
-      std::tuple<pxr::GfVec3d, pxr::GfVec3d, pxr::GfQuatd, bool, bool, bool> transformsTuple =
-        ParseTransform<pxr::GfVec3d, pxr::GfVec3d, pxr::GfQuatd>(_prim);
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+        ParseTransform(_prim);
+      pxr::GfVec3f scale = std::get<0>(transformsTuple);
+      pxr::GfVec3f translate = std::get<1>(transformsTuple);
+      pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
 
-      pxr::GfVec3d scale = std::get<0>(transformsTuple);
-      pxr::GfVec3d translate = std::get<1>(transformsTuple);
-      pxr::GfQuatd rotationQuad = std::get<2>(transformsTuple);
+      bool isScale = std::get<3>(transformsTuple);
+      bool isTranslate = std::get<4>(transformsTuple);
+      bool isRotation = std::get<5>(transformsTuple);
 
-      bool isScale = std::get<3>(transformsTuple);;
-      bool isTranslate = std::get<4>(transformsTuple);;
-      bool isRotation = std::get<5>(transformsTuple);;
 
       if (isScale)
         link->scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
@@ -577,6 +680,11 @@ namespace usd
               rotationQuad.GetImaginary()[0],
               rotationQuad.GetImaginary()[1],
               rotationQuad.GetImaginary()[2])));
+      }
+      else
+      {
+        vis->SetRawPose(link->pose);
+        link->pose = ignition::math::Pose3d();
       }
 
       sdf::Material material = ParseMaterial(_prim);
@@ -611,7 +719,7 @@ namespace usd
       }
 
       std::cerr << "isOnlyCollision " << isOnlyCollision << '\n';
-      if (isOnlyCollision != 2)
+      if (isOnlyCollision != 2 && !_prim.IsA<pxr::UsdGeomMesh>())
       {
         link->visual_array.push_back(vis);
         link->visual_array_material_name.push_back("");
@@ -635,8 +743,8 @@ namespace usd
       col.SetName(collisionName);
       col.SetGeom(geom);
 
-      std::tuple<pxr::GfVec3f, pxr::GfVec3d, pxr::GfQuatd, bool, bool, bool> transformsTuple = ParseTransform
-        <pxr::GfVec3f, pxr::GfVec3d, pxr::GfQuatd>(_prim);
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+        ParseTransform(_prim);
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
       pxr::GfVec3d translate = std::get<1>(transformsTuple);

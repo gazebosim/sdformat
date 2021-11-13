@@ -367,12 +367,12 @@ namespace usd
     {
       auto variant_geom = pxr::UsdGeomGprim(_prim);
 
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatd, bool, bool, bool> transformsTuple = ParseTransform
-        <pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatd>(_prim);
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+        ParseTransform(_prim);
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
       pxr::GfVec3f translate = std::get<1>(transformsTuple);
-      pxr::GfQuatd rotation_quad = std::get<2>(transformsTuple);
+      pxr::GfQuatf rotation_quad = std::get<2>(transformsTuple);
       bool isScale = std::get<3>(transformsTuple);
 
       std::string joint_name = _prim.GetName().GetText();
