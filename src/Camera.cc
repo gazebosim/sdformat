@@ -174,6 +174,9 @@ class sdf::Camera::Implementation
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
+  /// \brief True if this camera has custom intrinsics values
+  public: bool hasIntrinsics = false;
+
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityMask{4294967295u};
 };
@@ -367,6 +370,7 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensIntrinsicsCy).first;
       this->dataPtr->lensIntrinsicsS = intrinsics->Get<double>("s",
           this->dataPtr->lensIntrinsicsS).first;
+      this->dataPtr->hasIntrinsics = true;
     }
   }
 
@@ -865,6 +869,7 @@ double Camera::LensIntrinsicsFx() const
 void Camera::SetLensIntrinsicsFx(double _fx)
 {
   this->dataPtr->lensIntrinsicsFx = _fx;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -877,6 +882,7 @@ double Camera::LensIntrinsicsFy() const
 void Camera::SetLensIntrinsicsFy(double _fy)
 {
   this->dataPtr->lensIntrinsicsFy = _fy;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -889,6 +895,7 @@ double Camera::LensIntrinsicsCx() const
 void Camera::SetLensIntrinsicsCx(double _cx)
 {
   this->dataPtr->lensIntrinsicsCx = _cx;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -901,6 +908,7 @@ double Camera::LensIntrinsicsCy() const
 void Camera::SetLensIntrinsicsCy(double _cy)
 {
   this->dataPtr->lensIntrinsicsCy = _cy;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -913,6 +921,7 @@ double Camera::LensIntrinsicsSkew() const
 void Camera::SetLensIntrinsicsSkew(double _s)
 {
   this->dataPtr->lensIntrinsicsS = _s;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -967,4 +976,10 @@ uint32_t Camera::VisibilityMask() const
 void Camera::SetVisibilityMask(uint32_t _mask)
 {
   this->dataPtr->visibilityMask = _mask;
+}
+
+/////////////////////////////////////////////////
+bool Camera::HasLensIntrinsics() const
+{
+  return this->dataPtr->hasIntrinsics;
 }

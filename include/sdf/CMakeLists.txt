@@ -50,6 +50,7 @@ set (headers
   PrintConfig.hh
   Root.hh
   Scene.hh
+  SDFDomConversion.hh
   SDFImpl.hh
   SemanticPose.hh
   Sensor.hh
