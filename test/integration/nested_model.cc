@@ -244,6 +244,54 @@ TEST(NestedModel, State)
 }
 
 ////////////////////////////////////////
+// Test parsing a include element that has a pose element and includes a
+// submodel
+TEST(NestedModel, IncludeFlatteningNames)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "nested_names_test");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<model name='top_level_model'>"
+    << "  <include>"
+    << "    <uri>" + MODEL_PATH +"</uri>"
+    << "  </include>"
+    << "</model>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
+
+  sdf::ElementPtr modelElem = sdfParsed->Root()->GetElement("model");
+  EXPECT_EQ(modelElem->Get<std::string>("name"), "top_level_model");
+
+  sdf::ElementPtr linkElem = modelElem->GetElement("link");
+  EXPECT_EQ(linkElem->Get<std::string>("name"), "main_model_prefix::frame");
+
+  sdf::ElementPtr jointElem = modelElem->GetElement("joint");
+  EXPECT_EQ(jointElem->Get<std::string>("name"), "main_model_prefix::joint1");
+  EXPECT_EQ(jointElem->Get<std::string>("parent"),
+    "main_model_prefix::subnested_model");
+  EXPECT_EQ(jointElem->Get<std::string>("child"),
+    "main_model_prefix::subnested_model::link1") <<
+    "Flattening logic for nested models failed (check parser.cc)";
+
+  sdf::ElementPtr joint2Elem = jointElem->GetNextElement("joint");
+  EXPECT_EQ(joint2Elem->Get<std::string>("name"), "main_model_prefix::joint2");
+  EXPECT_EQ(joint2Elem->Get<std::string>("parent"),
+    "main_model_prefix::subnested_model::link1") <<
+    "Flattening logic for nested models failed (check parser.cc)";
+  EXPECT_EQ(joint2Elem->Get<std::string>("child"),
+    "main_model_prefix::joint1") <<
+    "Flattening logic for nested models failed (check parser.cc)";
+}
+
+////////////////////////////////////////
 // Test parsing models with joints nested via <include>
 // Confirm that joint axis rotation is handled differently for 1.4 and 1.5+
 TEST(NestedModel, NestedInclude)

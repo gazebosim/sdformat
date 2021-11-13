@@ -366,6 +366,20 @@ namespace sdf
     /// names. Also return true if no elements of the specified type are found.
     public: bool HasUniqueChildNames(const std::string &_type = "") const;
 
+    /// \brief Checks whether any child elements of the specified element type,
+    /// except those listed in \p _ignoreElements, have identical name attribute
+    /// values and returns false if so.
+    /// \param[in] _type The type of Element to check. If empty, check names
+    /// of all child elements.
+    /// \param[in] _ignoreElements A list of child element types to ignore when
+    /// checking for uniqueness.
+    /// \return True if all child elements with name attributes of the
+    /// specified type have unique names, return false if there are duplicated
+    /// names. Also return true if no elements of the specified type are found.
+    public: bool HasUniqueChildNames(
+                const std::string &_type,
+                const std::vector<std::string> &_ignoreElements) const;
+
     /// \brief Count the number of child elements of the specified element type
     /// that have the same name attribute value.
     /// \param[in] _type The type of Element to check. If empty, count names
@@ -375,6 +389,20 @@ namespace sdf
     /// there are exclusively unique names.
     public: std::map<std::string, std::size_t>
             CountNamedElements(const std::string &_type = "") const;
+
+    /// \brief Count the number of child elements of the specified element type
+    /// that have the same name attribute value with the exception of elements
+    /// listed in \p _ignoreElements.
+    /// \param[in] _type The type of Element to check. If empty, count names
+    /// of all child elements.
+    /// \param[in] _ignoreElements A list of child element types to ignore when
+    /// checking for uniqueness.
+    /// \return Map from Element names to a count of how many times the name
+    /// occurs. The count should never be 0. If all 2nd values are 1, then
+    /// there are exclusively unique names.
+    public: std::map<std::string, std::size_t> CountNamedElements(
+                const std::string &_type,
+                const std::vector<std::string> &_ignoreElements) const;
 
     /// \brief Return a pointer to the child element with the provided name.
     ///
@@ -524,6 +552,11 @@ namespace sdf
     /// \param[in] _name the name of the element to look for.
     /// \return A pointer to the named element if found, nullptr otherwise.
     public: ElementPtr GetElementImpl(const std::string &_name) const;
+
+    /// \brief List of elements to which exceptions are made when checking for
+    /// name uniqueness.
+    /// \return List of element types that are allowed to have name collisions.
+    public: static std::vector<std::string> NameUniquenessExceptions();
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
