@@ -56,6 +56,8 @@ bool convertNoiseDomToElement(sdf::ElementPtr _elem,
   // camera and lidar <noise> does not have type attribute
   if (!simpleNoise)
     _elem->GetAttribute("type")->Set<std::string>(noiseType);
+  else
+    _elem->GetElement("type")->Set<std::string>(noiseType);
   _elem->GetElement("mean")->Set<double>(_noise.Mean());
   _elem->GetElement("stddev")->Set<double>(_noise.StdDev());
 
