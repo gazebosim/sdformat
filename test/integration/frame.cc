@@ -1300,14 +1300,15 @@ TEST(Frame, IncludeFrameWithSubmodel)
   ASSERT_NE(nullptr, model);
   EXPECT_EQ(model->Name(), "top_level_model");
 
-  const sdf::Link *link0 = model->LinkByIndex(0);
+  const sdf::Link *link0 = model->LinkByName("box_with_submodel::link");
   ASSERT_NE(nullptr, link0);
-  EXPECT_EQ(link0->Name(), "box_with_submodel::link");
+  EXPECT_EQ(link0->Name(), "link");
 
   ignition::math::Pose3d linkPose;
-  sdf::Errors resolveErrors = link0->SemanticPose().Resolve(linkPose);
+  sdf::Errors resolveErrors = model->SemanticPose().Resolve(linkPose,
+      "top_level_model::box_with_submodel::link");
   EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
-  EXPECT_EQ(linkPose,
+  EXPECT_EQ(linkPose.Inverse(),
             ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
   /* submodel: pose from parent is translated to model. links are the same
    * ...
@@ -1318,14 +1319,16 @@ TEST(Frame, IncludeFrameWithSubmodel)
    *     <pose frame=''>5 5 0 0 -0 0</pose>
    *   </model>
    */
-  const sdf::Model *submodel = model->ModelByIndex(0);
+  const sdf::Model *submodel = model->ModelByName(
+      "box_with_submodel::submodel_of_box_with_submodel");
   ASSERT_NE(nullptr, submodel);
   EXPECT_EQ(submodel->Name(),
-            "box_with_submodel::submodel_of_box_with_submodel");
+            "submodel_of_box_with_submodel");
 
   ignition::math::Pose3d submodelPose;
-  resolveErrors = submodel->SemanticPose().Resolve(submodelPose);
+  resolveErrors = model->SemanticPose().Resolve(submodelPose,
+      "top_level_model::box_with_submodel");
   EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
-  EXPECT_EQ(submodelPose,
+  EXPECT_EQ(submodelPose.Inverse(),
             ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
 }
