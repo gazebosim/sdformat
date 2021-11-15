@@ -366,3 +366,35 @@ bool Lidar::operator!=(const Lidar &_lidar) const
 {
   return !(*this == _lidar);
 }
+
+/////////////////////////////////////////////////
+bool Lidar::PopulateElement(sdf::ElementPtr _elem) const
+{
+  sdf::ElementPtr scanElem = _elem->GetElement("scan");
+  sdf::ElementPtr horElem = scanElem->GetElement("horizontal");
+  horElem->GetElement("samples")->Set<double>(this->HorizontalScanSamples());
+  horElem->GetElement("resolution")->Set<double>(
+      this->HorizontalScanResolution());
+  horElem->GetElement("min_angle")->Set<double>(
+      this->HorizontalScanMinAngle().Radian());
+  horElem->GetElement("max_angle")->Set<double>(
+      this->HorizontalScanMaxAngle().Radian());
+
+  sdf::ElementPtr vertElem = scanElem->GetElement("vertical");
+  vertElem->GetElement("samples")->Set<double>(this->VerticalScanSamples());
+  vertElem->GetElement("resolution")->Set<double>(
+      this->VerticalScanResolution());
+  vertElem->GetElement("min_angle")->Set<double>(
+      this->VerticalScanMinAngle().Radian());
+  vertElem->GetElement("max_angle")->Set<double>(
+      this->VerticalScanMaxAngle().Radian());
+
+  sdf::ElementPtr rangeElem = _elem->GetElement("range");
+  rangeElem->GetElement("min")->Set<double>(this->RangeMin());
+  rangeElem->GetElement("max")->Set<double>(this->RangeMax());
+  rangeElem->GetElement("resolution")->Set<double>(
+      this->RangeResolution());
+
+  sdf::ElementPtr noiseElem = _elem->GetElement("noise");
+  return this->dataPtr->lidarNoise.PopulateElement(noiseElem, true);
+}

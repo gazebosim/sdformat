@@ -65,7 +65,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto altimeterSensor = std::make_unique<sdf::Sensor>();
     altimeterSensor->Load(sensorElem);
 
@@ -90,7 +90,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto cameraSensor = std::make_unique<sdf::Sensor>();
     cameraSensor->Load(sensorElem);
 
@@ -145,7 +145,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto depthSensor = std::make_unique<sdf::Sensor>();
     depthSensor->Load(sensorElem);
 
@@ -166,7 +166,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto rgbdSensor = std::make_unique<sdf::Sensor>();
     rgbdSensor->Load(sensorElem);
 
@@ -188,7 +188,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto thermalSensor = std::make_unique<sdf::Sensor>();
     thermalSensor->Load(sensorElem);
 
@@ -210,7 +210,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto segmentationSensor = std::make_unique<sdf::Sensor>();
     segmentationSensor->Load(sensorElem);
 
@@ -234,7 +234,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto forceTorqueSensor = std::make_unique<sdf::Sensor>();
     forceTorqueSensor->Load(sensorElem);
 
@@ -253,7 +253,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto gpuLidarSensor = std::make_unique<sdf::Sensor>();
     gpuLidarSensor->Load(sensorElem);
 
@@ -288,7 +288,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto imuSensor = std::make_unique<sdf::Sensor>();
     imuSensor->Load(sensorElem);
 
@@ -358,7 +358,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto magnetometerSensor = std::make_unique<sdf::Sensor>();
     magnetometerSensor->Load(sensorElem);
 
@@ -386,7 +386,7 @@ TEST(SDFDomConversion, Sensors)
     sdf::initFile("sensor.sdf", sensorElem);
 
     // convert to sdf element and load it back
-    sdf::convertSensorDomToElement(sensorElem, *sensor);
+    sensor->PopulateElement(sensorElem);
     auto airPressureSensor = std::make_unique<sdf::Sensor>();
     airPressureSensor->Load(sensorElem);
 
