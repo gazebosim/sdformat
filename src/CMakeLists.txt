@@ -64,7 +64,6 @@ set (sources
   Root.cc
   Scene.cc
   SDF.cc
-  SDFDomConversion.cc
   SDFExtension.cc
   SemanticPose.cc
   Sensor.cc
