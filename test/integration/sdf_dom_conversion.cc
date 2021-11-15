@@ -29,7 +29,6 @@
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
 #include "sdf/Root.hh"
-#include "sdf/SDFDomConversion.hh"
 #include "sdf/Sensor.hh"
 #include "test_config.h"
 
