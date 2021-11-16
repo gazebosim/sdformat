@@ -448,3 +448,49 @@ void Light::SetType(const LightType _type)
 {
   this->dataPtr->type = _type;
 }
+
+/////////////////////////////////////////////////
+bool Light::PopulateElement(sdf::ElementPtr _elem) const
+{
+  std::string lightTypeStr = "point";
+  switch (this->Type())
+  {
+    case LightType::POINT:
+      lightTypeStr = "point";
+      break;
+    case LightType::DIRECTIONAL:
+      lightTypeStr = "directional";
+      break;
+    case LightType::SPOT:
+      lightTypeStr = "spot";
+      break;
+    default:
+      break;
+  }
+  _elem->GetAttribute("type")->Set<std::string>(lightTypeStr);
+  _elem->GetAttribute("name")->Set<std::string>(this->Name());
+  _elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  _elem->GetElement("cast_shadows")->Set<bool>(this->CastShadows());
+  _elem->GetElement("intensity")->Set<double>(this->Intensity());
+  _elem->GetElement("direction")->Set<ignition::math::Vector3d>(
+      this->Direction());
+  _elem->GetElement("diffuse")->Set<ignition::math::Color>(this->Diffuse());
+  _elem->GetElement("specular")->Set<ignition::math::Color>(this->Specular());
+  sdf::ElementPtr attenuationElem = _elem->GetElement("attenuation");
+  attenuationElem->GetElement("linear")->Set<double>(
+      this->LinearAttenuationFactor());
+  attenuationElem->GetElement("constant")->Set<double>(
+      this->ConstantAttenuationFactor());
+  attenuationElem->GetElement("quadratic")->Set<double>(
+      this->QuadraticAttenuationFactor());
+  attenuationElem->GetElement("range")->Set<double>(
+      this->AttenuationRange());
+
+  sdf::ElementPtr spotElem = _elem->GetElement("spot");
+  spotElem->GetElement("inner_angle")->Set<double>(
+      this->SpotInnerAngle().Radian());
+  spotElem->GetElement("outer_angle")->Set<double>(
+      this->SpotOuterAngle().Radian());
+  spotElem->GetElement("falloff")->Set<double>(this->SpotFalloff());
+  return true;
+}
