@@ -18,6 +18,7 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Light.hh"
+#include "sdf/parser.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
@@ -450,8 +451,11 @@ void Light::SetType(const LightType _type)
 }
 
 /////////////////////////////////////////////////
-bool Light::PopulateElement(sdf::ElementPtr _elem) const
+sdf::ElementPtr Light::ToElement() const
 {
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("light.sdf", elem);
+
   std::string lightTypeStr = "point";
   switch (this->Type())
   {
@@ -467,16 +471,16 @@ bool Light::PopulateElement(sdf::ElementPtr _elem) const
     default:
       break;
   }
-  _elem->GetAttribute("type")->Set<std::string>(lightTypeStr);
-  _elem->GetAttribute("name")->Set<std::string>(this->Name());
-  _elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
-  _elem->GetElement("cast_shadows")->Set<bool>(this->CastShadows());
-  _elem->GetElement("intensity")->Set<double>(this->Intensity());
-  _elem->GetElement("direction")->Set<ignition::math::Vector3d>(
+  elem->GetAttribute("type")->Set<std::string>(lightTypeStr);
+  elem->GetAttribute("name")->Set<std::string>(this->Name());
+  elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  elem->GetElement("cast_shadows")->Set<bool>(this->CastShadows());
+  elem->GetElement("intensity")->Set<double>(this->Intensity());
+  elem->GetElement("direction")->Set<ignition::math::Vector3d>(
       this->Direction());
-  _elem->GetElement("diffuse")->Set<ignition::math::Color>(this->Diffuse());
-  _elem->GetElement("specular")->Set<ignition::math::Color>(this->Specular());
-  sdf::ElementPtr attenuationElem = _elem->GetElement("attenuation");
+  elem->GetElement("diffuse")->Set<ignition::math::Color>(this->Diffuse());
+  elem->GetElement("specular")->Set<ignition::math::Color>(this->Specular());
+  sdf::ElementPtr attenuationElem = elem->GetElement("attenuation");
   attenuationElem->GetElement("linear")->Set<double>(
       this->LinearAttenuationFactor());
   attenuationElem->GetElement("constant")->Set<double>(
@@ -486,11 +490,11 @@ bool Light::PopulateElement(sdf::ElementPtr _elem) const
   attenuationElem->GetElement("range")->Set<double>(
       this->AttenuationRange());
 
-  sdf::ElementPtr spotElem = _elem->GetElement("spot");
+  sdf::ElementPtr spotElem = elem->GetElement("spot");
   spotElem->GetElement("inner_angle")->Set<double>(
       this->SpotInnerAngle().Radian());
   spotElem->GetElement("outer_angle")->Set<double>(
       this->SpotOuterAngle().Radian());
   spotElem->GetElement("falloff")->Set<double>(this->SpotFalloff());
-  return true;
+  return elem;
 }

@@ -268,10 +268,10 @@ namespace sdf
     private: void SetPoseRelativeToGraph(
         sdf::ScopedGraph<PoseRelativeToGraph> _graph);
 
-    /// \brief Fill the provided _elem with data from this light.
-    /// \param[out] _elem SDF element point to populate
-    /// \return True if successful.
-    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+    /// \brief Create and return an SDF element filled with data from this
+    /// light object.
+    /// \return SDF element pointer with updated light values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,

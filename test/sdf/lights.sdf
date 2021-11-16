@@ -1,0 +1,93 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="default">
+
+    <light name="point_light" type="point">
+      <cast_shadows>false</cast_shadows>
+      <pose>10 2 100 0 0 0</pose>
+      <diffuse>0.0 0.1 0.8 1.0</diffuse>
+      <specular>0.03 0.02 0.0 0.5</specular>
+      <attenuation>
+        <range>1234</range>
+        <linear>2</linear>
+        <constant>0.01</constant>
+        <quadratic>11.2</quadratic>
+      </attenuation>
+    </light>
+
+
+    <light name="spot_light" type="spot">
+      <cast_shadows>true</cast_shadows>
+      <diffuse>0.0 0.05 0.06 1.0</diffuse>
+      <specular>0.05 0.04 0.1 1.0</specular>
+      <direction>1 5.1 2.1</direction>
+      <attenuation>
+        <range>12.34</range>
+        <linear>0.01</linear>
+        <constant>0.02</constant>
+        <quadratic>0.0001</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0.1</inner_angle>
+        <outer_angle>0.5</outer_angle>
+        <falloff>2.2</falloff>
+      </spot>
+    </light>
+
+    <light name="directional_light" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>1 1 2 0 0 0</pose>
+      <intensity>2.2</intensity>
+      <direction>5 5.2 6</direction>
+      <diffuse>0.0 0.0 0.3 1.0</diffuse>
+      <specular>0.0 0.9 0.11 1.0</specular>
+    </light>
+
+    <model name="model_lights">
+      <link name="link">
+
+        <light name="link_point_light" type="point">
+          <cast_shadows>false</cast_shadows>
+          <pose>10 20 100 0 0 0</pose>
+          <diffuse>1.0 0.0 0.6 1.0</diffuse>
+          <specular>0.3 0.2 0.0 1.0</specular>
+          <attenuation>
+            <range>1235</range>
+            <linear>1</linear>
+            <constant>-1.0</constant>
+            <quadratic>10.2</quadratic>
+          </attenuation>
+        </light>
+
+        <light name="link_spot_light" type="spot">
+          <cast_shadows>true</cast_shadows>
+          <diffuse>0.0 0.05 0.06 1.0</diffuse>
+          <specular>0.03 0.02 0.0 1.0</specular>
+          <direction>1 5 2</direction>
+          <attenuation>
+            <range>12.35</range>
+            <linear>0.1</linear>
+            <constant>0.2</constant>
+            <quadratic>0.001</quadratic>
+          </attenuation>
+          <spot>
+            <inner_angle>0.1</inner_angle>
+            <outer_angle>0.5</outer_angle>
+            <falloff>2.2</falloff>
+          </spot>
+        </light>
+
+        <light name="link_directional_light" type="directional">
+          <pose>0 1 2 0 0 0</pose>
+          <intensity>1.2</intensity>
+          <direction>4 5 6</direction>
+          <diffuse>0.0 1.0 0.2 1.0</diffuse>
+          <specular>0.0 0.2 0.1 1.0</specular>
+          <cast_shadows>true</cast_shadows>
+        </light>
+
+      </link>
+    </model>
+
+  </world>
+</sdf>

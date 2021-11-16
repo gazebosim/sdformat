@@ -429,10 +429,7 @@ TEST(SDFDomConversion, Lights)
   // point
   {
     const sdf::Light *light = world->LightByIndex(0);
-    sdf::ElementPtr lightElem(new sdf::Element);
-    sdf::initFile("light.sdf", lightElem);
-
-    light->PopulateElement(lightElem);
+    sdf::ElementPtr lightElem = light->ToElement();
     auto pointLight = std::make_unique<sdf::Light>();
     pointLight->Load(lightElem);
     ASSERT_NE(nullptr, pointLight);
@@ -455,10 +452,7 @@ TEST(SDFDomConversion, Lights)
   // spot
   {
     const sdf::Light *light = world->LightByIndex(1u);
-    sdf::ElementPtr lightElem(new sdf::Element);
-    sdf::initFile("light.sdf", lightElem);
-
-    light->PopulateElement(lightElem);
+    sdf::ElementPtr lightElem = light->ToElement();
     auto spotLight = std::make_unique<sdf::Light>();
     spotLight->Load(lightElem);
     ASSERT_NE(nullptr, spotLight);
@@ -481,10 +475,7 @@ TEST(SDFDomConversion, Lights)
   // directional
   {
     const sdf::Light *light = world->LightByIndex(2u);
-    sdf::ElementPtr lightElem(new sdf::Element);
-    sdf::initFile("light.sdf", lightElem);
-
-    light->PopulateElement(lightElem);
+    sdf::ElementPtr lightElem = light->ToElement();
     auto dirLight = std::make_unique<sdf::Light>();
     dirLight->Load(lightElem);
     ASSERT_NE(nullptr, dirLight);
@@ -511,10 +502,7 @@ TEST(SDFDomConversion, Lights)
   // spot
   {
     const sdf::Light *light = link->LightByName("link_spot_light");
-    sdf::ElementPtr lightElem(new sdf::Element);
-    sdf::initFile("light.sdf", lightElem);
-
-    light->PopulateElement(lightElem);
+    sdf::ElementPtr lightElem = light->ToElement();
     auto spotLight = std::make_unique<sdf::Light>();
     spotLight->Load(lightElem);
     ASSERT_NE(nullptr, spotLight);
@@ -537,10 +525,7 @@ TEST(SDFDomConversion, Lights)
   // point
   {
     const sdf::Light *light = link->LightByName("link_point_light");
-    sdf::ElementPtr lightElem(new sdf::Element);
-    sdf::initFile("light.sdf", lightElem);
-
-    light->PopulateElement(lightElem);
+    sdf::ElementPtr lightElem = light->ToElement();
     auto pointLight = std::make_unique<sdf::Light>();
     pointLight->Load(lightElem);
     ASSERT_NE(nullptr, pointLight);
@@ -563,10 +548,7 @@ TEST(SDFDomConversion, Lights)
   // directional
   {
     const sdf::Light *light = link->LightByName("link_directional_light");
-    sdf::ElementPtr lightElem(new sdf::Element);
-    sdf::initFile("light.sdf", lightElem);
-
-    light->PopulateElement(lightElem);
+    sdf::ElementPtr lightElem = light->ToElement();
     auto dirLight = std::make_unique<sdf::Light>();
     dirLight->Load(lightElem);
     ASSERT_NE(nullptr, dirLight);
