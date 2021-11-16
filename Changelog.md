@@ -499,6 +499,43 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### libsdformat 9.7.0 (2021-11-03)
+
+1. Make exception for plugins when checking for name uniqueness
+    * [Pull request #733](https://github.com/ignitionrobotics/sdformat/pull/733)
+
+1. Backport test utilities from sdf10
+    * [Pull request #731](https://github.com/ignitionrobotics/sdformat/pull/731)
+
+1. Added Force Torque Noise functions + Unit tests
+    * [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+
+1. Add Joint DOM API to access joint sensors
+    * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
+
+1. Add force torque sensor
+    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
+
+### libsdformat 9.6.1 (2021-09-07)
+
+1. Parse URDF continuous joint effort/velocity limits
+    * [Pull request #684](https://github.com/ignitionrobotics/sdformat/pull/684)
+
+1. Add a codecheck make target
+    * [Pull request #682](https://github.com/ignitionrobotics/sdformat/pull/682)
+
+1. Refactor sdf::readXml
+    * [Pull request #681](https://github.com/ignitionrobotics/sdformat/pull/681)
+
+1. Upgrade cpplint and fix new errors
+    * [Pull request #680](https://github.com/ignitionrobotics/sdformat/pull/680)
+
+1. BUG: add missing plugin element to include
+    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
+
+1. Added comment reminder to update functions
+    * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
+
 ### libsdformat 9.6.0 (2021-08-18)
 
 1. Adds `enable_metrics` flag to Sensor.
@@ -1212,7 +1249,21 @@
 
 ## libsdformat 6.0
 
-### libsdformat 6.X.X (20XX-XX-XX)
+### libsdformat 6.3.1 (2021-07-06)
+
+1. Fix flattening logic for nested model names
+    * [Pull request 597](https://github.com/osrf/sdformat/pull/597)
+
+1. Translate poses of nested models inside other nested models
+    * [Pull request 596](https://github.com/osrf/sdformat/pull/596)
+
+### libsdformat 6.3.0 (2021-06-21)
+
+1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
+    * [Pull request 580](https://github.com/osrf/sdformat/pull/580)
+
+1. Parse rpyOffset as radians
+    * [Pull request 497](https://github.com/osrf/sdformat/pull/497)
 
 1. Parse urdf files to SDFormat 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [BitBucket pull request 575](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/575)

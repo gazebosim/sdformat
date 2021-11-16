@@ -114,6 +114,14 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
+  // Check an SDF world file is allowed to have duplicate plugin names
+  {
+    std::string path = pathBase +"/world_duplicate_plugins.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
 
   // Check an SDF file with sibling elements of the same type (link)
   // that have duplicate names.
@@ -149,6 +157,15 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
+  }
+
+  // Check an SDF model file is allowed to have duplicate plugin names
+  {
+    std::string path = pathBase +"/model_duplicate_plugins.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 
   // Check an SDF file with sibling elements of the same type (collision)

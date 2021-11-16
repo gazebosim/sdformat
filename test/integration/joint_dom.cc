@@ -892,9 +892,24 @@ TEST(DOMJoint, Sensors)
   EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
       forceTorqueSensor->RawPose());
-  auto forceTorqueSensorConfig = forceTorqueSensor->ForceTorqueSensor();
-  ASSERT_NE(nullptr, forceTorqueSensorConfig);
-  EXPECT_EQ(sdf::ForceTorqueFrame::PARENT, forceTorqueSensorConfig->Frame());
+  auto forceTorqueSensorObj = forceTorqueSensor->ForceTorqueSensor();
+  ASSERT_NE(nullptr, forceTorqueSensorObj);
+  EXPECT_EQ(sdf::ForceTorqueFrame::PARENT, forceTorqueSensorObj->Frame());
   EXPECT_EQ(sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD,
-      forceTorqueSensorConfig->MeasureDirection());
+      forceTorqueSensorObj->MeasureDirection());
+
+  EXPECT_DOUBLE_EQ(0.0, forceTorqueSensorObj->ForceXNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.1, forceTorqueSensorObj->ForceXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(1.0, forceTorqueSensorObj->ForceYNoise().Mean());
+  EXPECT_DOUBLE_EQ(1.1, forceTorqueSensorObj->ForceYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.0, forceTorqueSensorObj->ForceZNoise().Mean());
+  EXPECT_DOUBLE_EQ(2.1, forceTorqueSensorObj->ForceZNoise().StdDev());
+
+  EXPECT_DOUBLE_EQ(3.0, forceTorqueSensorObj->TorqueXNoise().Mean());
+  EXPECT_DOUBLE_EQ(3.1, forceTorqueSensorObj->TorqueXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(4.0, forceTorqueSensorObj->TorqueYNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.1, forceTorqueSensorObj->TorqueYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(5.0, forceTorqueSensorObj->TorqueZNoise().Mean());
+  EXPECT_DOUBLE_EQ(5.1, forceTorqueSensorObj->TorqueZNoise().StdDev());
+
 }
