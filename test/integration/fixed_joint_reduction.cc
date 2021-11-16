@@ -36,6 +36,8 @@ const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT[] =
     "fixed_joint_reduction_collision_visual_empty_root.urdf";
 const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF[] =
     "fixed_joint_reduction_collision_visual_empty_root.sdf";
+const char SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION[] =
+    "fixed_joint_reduction_plugin_frame_extension.urdf";
 
 static std::string GetFullTestFilePath(const char *_input)
 {
@@ -733,4 +735,30 @@ TEST(SDFParser, FixedJointReductionSimple)
     EXPECT_NEAR(ixz, mapIxyIxzIyz[linkName].Y(), gc_tolerance);
     EXPECT_NEAR(iyz, mapIxyIxzIyz[linkName].Z(), gc_tolerance);
   }
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has chained fixed joints with plugin that
+// contains bodyName, xyzOffset and rpyOffset.
+// Test to make sure that the bodyName is updated to the new base link
+// and that the offsets have the correct transform and frame of reference
+TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
+{
+  sdf::SDFPtr robot(new sdf::SDF());
+  sdf::init(robot);
+  ASSERT_TRUE(sdf::readFile(
+      GetFullTestFilePath(SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION), robot));
+
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  sdf::ElementPtr plugin = model->GetElement("plugin");
+
+  auto xyzOffset = plugin->Get<ignition::math::Vector3d>("xyzOffset");
+  auto rpyOffset = plugin->Get<ignition::math::Vector3d>("rpyOffset");
+  auto bodyName = plugin->Get<std::string>("bodyName");
+  EXPECT_EQ("base_link", bodyName);
+  EXPECT_EQ(ignition::math::Vector3d(-0.707108, 1.70711, 0), xyzOffset);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, 1.5708), rpyOffset);
+
+  bool correctedOffset = plugin->Get<bool>("ignition::corrected_offsets");
+  EXPECT_TRUE(correctedOffset);
 }
