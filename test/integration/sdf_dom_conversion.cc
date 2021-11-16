@@ -581,6 +581,4 @@ TEST(SDFDomConversion, Lights)
         dirLight->Specular());
     EXPECT_EQ(ignition::math::Vector3d(4.0, 5.0, 6.0), dirLight->Direction());
   }
-
-
 }
