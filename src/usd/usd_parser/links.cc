@@ -57,6 +57,74 @@ namespace usd
 {
   const char kCollisionExt[] = "_collision";
 
+  ignition::math::Pose3d GetTransform(
+    const pxr::UsdPrim &_prim,
+    LinkSharedPtr &_link,
+    const double _metersPerUnit)
+  {
+    ignition::math::Pose3d result;
+    if (_prim.IsA<pxr::UsdGeomSubset>())
+    {
+      std::cerr << "UsdGeomSubset" << '\n';
+      pxr::UsdPrim parent = _prim.GetParent();
+      while(parent)
+      {
+        if (parent)
+        {
+          pxr::UsdPrimCompositionQuery query =
+            pxr::UsdPrimCompositionQuery::GetDirectReferences(parent);
+          std::vector<pxr::UsdPrimCompositionQueryArc> arcs =
+            query.GetCompositionArcs();
+          bool isAPropReference = false;
+          for (auto & a : arcs)
+          {
+            pxr::SdfLayerHandle handler = a.GetIntroducingLayer();
+            std::set<std::string> ss = handler->GetExternalReferences();
+            for (auto & s : ss)
+            {
+              if (s.find("Prop") != std::string::npos &&
+                  parent.GetPath().GetName() == "geometry")
+              {
+                isAPropReference = true;
+                break;
+              }
+            }
+          }
+          if (isAPropReference)
+          {
+            std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsParentTuple
+              = ParseTransform(parent);
+
+            pxr::GfVec3f scaleSubset = std::get<0>(transformsParentTuple);
+            pxr::GfVec3f translateSubset = std::get<1>(transformsParentTuple);
+            pxr::GfQuatf rotationQuadSubset = std::get<2>(transformsParentTuple);
+
+            bool isScaleSubset = std::get<3>(transformsParentTuple);
+            bool isTranslateSubset = std::get<4>(transformsParentTuple);
+            bool isRotationSubset = std::get<5>(transformsParentTuple);
+
+            if (isTranslateSubset && isRotationSubset)
+            {
+              result = ignition::math::Pose3d(
+                ignition::math::Vector3d(
+                  translateSubset[0], translateSubset[1], translateSubset[2]
+                ) * _metersPerUnit,
+                ignition::math::Quaterniond(
+                  rotationQuadSubset.GetReal(),
+                  rotationQuadSubset.GetImaginary()[0],
+                  rotationQuadSubset.GetImaginary()[1],
+                  rotationQuadSubset.GetImaginary()[2]));
+              _link->pose = result;
+              std::cerr << "result " << result << '\n';
+            }
+          }
+        }
+        parent = parent.GetParent();
+      }
+    }
+    return result;
+  }
+
   std::string ParseMaterialName(const pxr::UsdPrim &_prim)
   {
     // Materials
@@ -147,7 +215,7 @@ namespace usd
         // _meshGeom.SetScale(ignition::math::Vector3d(_scale.X(), _scale.Y(), _scale.Z()));
 
         std::string childPathName = pxr::TfStringify(child.GetPath());
-        std::string directoryMesh = directoryFromUSDPath(childPathName);
+        std::string directoryMesh = directoryFromUSDPath(childPathName) + childPathName;
 
         if (ignition::common::createDirectories(directoryMesh))
         {
@@ -187,6 +255,7 @@ namespace usd
           link->pose.Rot().Z() = rotationQuadSubset.GetImaginary()[2];
           link->pose.Rot().W() = rotationQuadSubset.GetReal();
         }
+        // GetTransform(child, link, _metersPerUnit);
 
         link->visual_array.push_back(visSubset);
       }
@@ -248,6 +317,7 @@ namespace usd
       // TODO(ahcorde): 5? 6?, 7?...
     }
 
+    std::cerr << "textCoords " << textCoords.size() << '\n';
     for (auto & textCoord: textCoords)
     {
       subMesh.AddTexCoord(textCoord[0], textCoord[1]);
@@ -270,13 +340,14 @@ namespace usd
     _geom.SetType(sdf::GeometryType::MESH);
 
     meshGeom.SetScale(ignition::math::Vector3d(_scale.X(), _scale.Y(), _scale.Z()));
+    std::cerr << "meshGeom setScale " << ignition::math::Vector3d(_scale.X(), _scale.Y(), _scale.Z()) << '\n';
 
     auto parent = _prim.GetParent();
     if (parent)
     {
       if (parent.IsA<pxr::UsdGeomMesh>())
       {
-        std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+        std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
           ParseTransform(parent);
 
         pxr::GfVec3f scale = std::get<0>(transformsTuple);
@@ -286,88 +357,135 @@ namespace usd
         bool isScale = std::get<3>(transformsTuple);
         bool isTranslate = std::get<4>(transformsTuple);
         bool isRotation = std::get<5>(transformsTuple);
+        bool isRotationZYX = std::get<6>(transformsTuple);
 
         ignition::math::Vector3d scaleMath = ignition::math::Vector3d(
           scale[0], scale[1], scale[2]);
 
-        ignition::math::Pose3d superParentPose = ignition::math::Pose3d(
-          ignition::math::Vector3d(0, 0, 0),
-          ignition::math::Quaterniond(0.707, 0, 0, 0.707));
+        ignition::math::Pose3d visPose = _vis->RawPose();
+        ignition::math::Pose3d combinedPose;
 
-        ignition::math::Pose3d parentPose = ignition::math::Pose3d(
-          ignition::math::Vector3d(
-            translate[0],
-            translate[1],
-            translate[2]) * _metersPerUnit,
-          ignition::math::Quaterniond(
+        std::cerr << "meshGeom2 setScale " << meshGeom.Scale() << '\n';
+        std::cerr << "meshGeom2 scaleMath " << scaleMath << '\n';
+
+        meshGeom.SetScale(meshGeom.Scale() * scaleMath);
+        std::cerr << "meshGeom2 setScale final " << meshGeom.Scale() << '\n';
+
+        if (!isRotationZYX)
+        {
+          ignition::math::Pose3d parentPose = ignition::math::Pose3d(
+            ignition::math::Vector3d(
+              translate[0],
+              translate[1],
+              translate[2]) * _metersPerUnit,
+            ignition::math::Quaterniond(
+              rotationQuad.GetReal(),
+              rotationQuad.GetImaginary()[0],
+              rotationQuad.GetImaginary()[1],
+              rotationQuad.GetImaginary()[2]));
+          combinedPose = (parentPose) * visPose;
+        }
+        else
+        {
+          ignition::math::Quaterniond rotationMath(
             rotationQuad.GetReal(),
             rotationQuad.GetImaginary()[0],
             rotationQuad.GetImaginary()[1],
-            rotationQuad.GetImaginary()[2]));
+            rotationQuad.GetImaginary()[2]);
+          ignition::math::Vector3d rotationMathEuler = rotationMath.Euler();
+          ignition::math::Quaterniond quadZ,quadY, quadX;
+          quadZ.Euler(0, 0, rotationMathEuler[2]);
+          quadY.Euler(0, rotationMathEuler[1], 0);
+          quadX.Euler(rotationMathEuler[0], 0, 0);
 
-        meshGeom.SetScale(meshGeom.Scale() * scaleMath);
+          ignition::math::Pose3d parentPoseZ = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0), quadZ);
+          ignition::math::Pose3d parentPoseY = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0), quadY);
+          ignition::math::Pose3d parentPoseX = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0), quadX);
 
-        ignition::math::Pose3d visPose = _vis->RawPose();
-        // visPose.Pos() *= _scale * scaleMath;
-        std::cerr << ">>>>>>>>>>>>>>>>>> RawPose "<< visPose << '\n';
-        std::cerr << ">>>>>>>>>>>>>>>>>> parentPose "<< parentPose << '\n';
+          ignition::math::Pose3d parentPoseT = ignition::math::Pose3d(
+            ignition::math::Vector3d(
+              translate[0],
+              translate[1],
+              translate[2]) * _metersPerUnit,
+            ignition::math::Quaterniond(1, 0, 0, 0));
 
-        std::cerr << ">>>>>>>>>>>>>>>>>> parentPose * visPose " << parentPose * visPose << '\n';
-
-        ignition::math::Pose3d combinedPose = (parentPose) * visPose;
-        combinedPose.Pos() *= meshGeom.Scale();
-        std::cerr << ">>>>>>>>>>>>>>>>>> combinedPose " << combinedPose << '\n';
+          combinedPose =
+            parentPoseT * (parentPoseX * (parentPoseY * (parentPoseZ * (visPose))));
+          combinedPose.Pos() *= meshGeom.Scale();
+        }
         _vis->SetRawPose(combinedPose);
       }
       else
       {
-        // TODO(ahcorde): review this
-//         std::string primName = pxr::TfStringify(parent.GetPath());
-//         std::cerr << "parent primName " << primName << '\n';
-//         auto p = parent.GetPropertyNames();
-//         for (auto t : p)
-//         {
-//           std::cerr << "t " << t.GetText() << '\n';
-//         }
-// std::cerr << "----" << '\n';
-//         p = parent.GetAuthoredPropertyNames();
-//         for (auto t : p)
-//         {
-//           std::cerr << "t " << t.GetText() << '\n';
-//         }
-//
-//         std::cerr << "---- properties" << '\n';
-//
-//         std::vector<pxr::UsdProperty> properties = parent.GetProperties();
-//         for (auto property: properties)
-//         {
-//           // if (UsdAttribute attr = property.As<UsdAttribute>()) {
-//           //    // use attribute 'attr'.
-//           // }
-//           if (pxr::UsdRelationship rel = property.As<pxr::UsdRelationship>())
-//           {
-//             pxr::SdfPathVector paths;
-//             rel.GetTargets(&paths);
-//             for (auto p: paths)
-//             {
-//               std::cerr << pxr::TfStringify(p) << "\n";
-//             }
-//           }
-//         }
-//
-//         std::cerr << "=================== parent ? " << primName << '\n';
-//         std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
-//           ParseTransform(parent);
-//
-//         pxr::GfVec3f scale = std::get<0>(transformsTuple);
-//         pxr::GfVec3f translate = std::get<1>(transformsTuple);
-//         pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
-//
-//         bool isScale = std::get<3>(transformsTuple);
-//         bool isTranslate = std::get<4>(transformsTuple);
-//         bool isRotation = std::get<5>(transformsTuple);
-//         std::cerr << "=================== " << '\n';
+        pxr::UsdPrimCompositionQuery query = pxr::UsdPrimCompositionQuery::GetDirectReferences(parent);
 
+        std::vector<pxr::UsdPrimCompositionQueryArc> arcs = query.GetCompositionArcs();
+        bool isAPropReference = false;
+        for (auto & a : arcs )
+        {
+          pxr::SdfLayerHandle handler = a.GetIntroducingLayer();
+          std::set<std::string> ss = handler->GetExternalReferences();
+          if (ss.size() > 1)
+          {
+            isAPropReference = true;
+          }
+        }
+
+        if (isAPropReference)
+        {
+          std::cerr << "=================== isAPropReference " << '\n';
+          std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
+            ParseTransform(parent);
+
+          pxr::GfVec3f scale = std::get<0>(transformsTuple);
+          pxr::GfVec3f translate = std::get<1>(transformsTuple);
+          pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
+
+          bool isScale = std::get<3>(transformsTuple);
+          bool isTranslate = std::get<4>(transformsTuple);
+          bool isRotation = std::get<5>(transformsTuple);
+
+          ignition::math::Quaterniond rotationMath(
+            rotationQuad.GetReal(),
+            rotationQuad.GetImaginary()[0],
+            rotationQuad.GetImaginary()[1],
+            rotationQuad.GetImaginary()[2]);
+          ignition::math::Vector3d rotationMathEuler = rotationMath.Euler();
+          ignition::math::Quaterniond quadZ,quadY, quadX;
+          quadZ.Euler(0, 0, rotationMathEuler[2]);
+          quadY.Euler(0, rotationMathEuler[1], 0);
+          quadX.Euler(rotationMathEuler[0], 0, 0);
+
+          ignition::math::Vector3d parentScale = ignition::math::Vector3d(
+            scale[0], scale[1], scale[2]);
+
+          ignition::math::Pose3d parentPoseZ = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0), quadZ);
+          ignition::math::Pose3d parentPoseY = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0), quadY);
+          ignition::math::Pose3d parentPoseX = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0), quadX);
+
+          std::cerr << "meshGeom3 setScale " << meshGeom.Scale() << '\n';
+          std::cerr << "meshGeom3 parentScale " << parentScale << '\n';
+
+
+          meshGeom.SetScale(meshGeom.Scale() * parentScale);
+          std::cerr << "meshGeom3 setScale final " << meshGeom.Scale() << '\n';
+
+          ignition::math::Pose3d visPose = _vis->RawPose();
+          // std::cerr << "parentPose " << parentPose << '\n';
+          std::cerr << "visPose " << visPose << '\n';
+          ignition::math::Pose3d combinedPose =
+            parentPoseX * (parentPoseY * (parentPoseZ * visPose));
+          std::cerr << "combinedPose " << combinedPose << '\n';
+          // combinedPose.Pos() *= meshGeom.Scale();
+          _vis->SetRawPose(combinedPose);
+          std::cerr << "=================== isAPropReference " << '\n';
+        }
       }
     }
 
@@ -376,7 +494,7 @@ namespace usd
     _vis->SetName("_" + ignition::common::basename(primName) + "_");
     _vis->SetMaterial(_material);
 
-    std::string directoryMesh = directoryFromUSDPath(primName);
+    std::string directoryMesh = directoryFromUSDPath(primName) + primName;
 
     std::cerr << "directoryMesh " << directoryMesh + ".dae" << '\n';
     meshGeom.SetFilePath(
@@ -501,7 +619,7 @@ namespace usd
     if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
     {
       std::cerr << "\tUsdPhysicsRigidBodyAPI" << '\n';
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
         ParseTransform(_prim);
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
@@ -654,7 +772,7 @@ namespace usd
         sdferr << "No transforms available!\n";
       }
 
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
         ParseTransform(_prim);
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
       pxr::GfVec3f translate = std::get<1>(transformsTuple);
@@ -743,7 +861,7 @@ namespace usd
       col.SetName(collisionName);
       col.SetGeom(geom);
 
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
         ParseTransform(_prim);
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);

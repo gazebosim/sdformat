@@ -214,6 +214,7 @@ inline namespace SDF_VERSION_NAMESPACE {
           if (!mesh)
             break;
           geometryType = doc->NewElement(type.c_str());
+          std::cerr << "mesh->Scale() CreateGeom" << mesh->Scale() << '\n';
           AddKeyValue(geometryType, "scale", Vector32Str(mesh->Scale()));
           // do something more to meshes
           {
@@ -285,10 +286,13 @@ inline namespace SDF_VERSION_NAMESPACE {
     if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
         _oldLinkName.empty())
     {
+      std::cerr << "/* visual name " << _oldLinkName.c_str() << '\n';
       sdfVisual->SetAttribute("name", _oldLinkName.c_str());
     }
     else
     {
+      std::cerr << "/* visual name " << _link->name + kLumpPrefix + _oldLinkName << '\n';
+
       sdfVisual->SetAttribute("name",
           (_link->name + kLumpPrefix + _oldLinkName).c_str());
     }
@@ -378,6 +382,22 @@ inline namespace SDF_VERSION_NAMESPACE {
           double metalness = pbrWorkflow->Metalness();
           AddKeyValue(metalTag, "roughness", Values2str(1, &roughness));
           AddKeyValue(metalTag, "metalness", Values2str(1, &metalness));
+          if (!pbrWorkflow->MetalnessMap().empty())
+          {
+            AddKeyValue(metalTag, "metalness_map", pbrWorkflow->MetalnessMap());
+          }
+          if (!pbrWorkflow->AlbedoMap().empty())
+          {
+            AddKeyValue(metalTag, "albedo_map", pbrWorkflow->AlbedoMap());
+          }
+          if (!pbrWorkflow->NormalMap().empty())
+          {
+            AddKeyValue(metalTag, "normal_map", pbrWorkflow->NormalMap());
+          }
+          if (!pbrWorkflow->RoughnessMap().empty())
+          {
+            AddKeyValue(metalTag, "roughness_map", pbrWorkflow->RoughnessMap());
+          }
         }
       }
 

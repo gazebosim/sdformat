@@ -37,7 +37,7 @@ namespace usd{
 
   sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
 
-  std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> ParseTransform(
+  std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> ParseTransform(
     const pxr::UsdPrim &_prim);
 }
 

@@ -131,6 +131,22 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
           ignition::common::Pbr pbrCommon;
           pbrCommon.SetRoughness(pbrWorkflow->Roughness());
           pbrCommon.SetMetalness(pbrWorkflow->Metalness());
+          if (!pbrWorkflow->MetalnessMap().empty())
+          {
+            pbrCommon.SetMetalnessMap(pbrWorkflow->MetalnessMap());
+          }
+          if (!pbrWorkflow->AlbedoMap().empty())
+          {
+            pbrCommon.SetAlbedoMap(pbrWorkflow->AlbedoMap());
+          }
+          if (!pbrWorkflow->NormalMap().empty())
+          {
+            pbrCommon.SetNormalMap(pbrWorkflow->NormalMap());
+          }
+          if (!pbrWorkflow->RoughnessMap().empty())
+          {
+            pbrCommon.SetRoughnessMap(pbrWorkflow->RoughnessMap());
+          }
           materialCommon->SetPbrMaterial(pbrCommon);
         }
       }
@@ -140,8 +156,6 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
         (materialName, materialCommon));
     }
   }
-
-  // return nullptr;
 
   // Get all Link elements
   for (auto const &prim : range)

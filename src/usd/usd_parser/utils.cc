@@ -25,6 +25,7 @@
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
+#include <ignition/math/Helpers.hh>
 
 #include "sdf/Pbr.hh"
 
@@ -111,7 +112,51 @@ namespace usd
           for (auto &input : inputs)
           {
             std::cerr << "\tGetFullName " << input.GetFullName() << " " << input.GetBaseName() << '\n';
-            if (input.GetBaseName() == "diffuse_color_constant")
+            if (input.GetBaseName() == "diffuse_texture")
+            {
+              pxr::SdfAssetPath materialPath;
+              pxr::UsdShadeInput diffuseTextureShaderInput =
+                variantshader.GetInput(pxr::TfToken("diffuse_texture"));
+              auto source = diffuseTextureShaderInput.GetConnectedSources();
+              diffuseTextureShaderInput.Get(&materialPath);
+              std::cerr << "AlbedoMap " << materialPath.GetAssetPath() << '\n';
+              pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
+              isPBR = true;
+            }
+            else if (input.GetBaseName() == "normalmap_texture")
+            {
+              pxr::SdfAssetPath materialPath;
+              pxr::UsdShadeInput normalTextureShaderInput =
+                variantshader.GetInput(pxr::TfToken("normalmap_texture"));
+              auto source = normalTextureShaderInput.GetConnectedSources();
+              normalTextureShaderInput.Get(&materialPath);
+              std::cerr << "NormalMap " << materialPath.GetAssetPath() << '\n';
+              pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
+              isPBR = true;
+            }
+            else if (input.GetBaseName() == "reflectionroughness_texture")
+            {
+              pxr::SdfAssetPath materialPath;
+              pxr::UsdShadeInput roughnessTextureShaderInput =
+                variantshader.GetInput(pxr::TfToken("reflectionroughness_texture"));
+              auto source = roughnessTextureShaderInput.GetConnectedSources();
+              roughnessTextureShaderInput.Get(&materialPath);
+              std::cerr << "roughnessMap " << materialPath.GetAssetPath() << '\n';
+              pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
+              isPBR = true;
+            }
+            else if (input.GetBaseName() == "metallic_texture")
+            {
+              pxr::SdfAssetPath materialPath;
+              pxr::UsdShadeInput metallicTextureShaderInput =
+                variantshader.GetInput(pxr::TfToken("metallic_texture"));
+              auto source = metallicTextureShaderInput.GetConnectedSources();
+              metallicTextureShaderInput.Get(&materialPath);
+              std::cerr << "MetalnessMap " << materialPath.GetAssetPath() << '\n';
+              pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
+              isPBR = true;
+            }
+            else if (input.GetBaseName() == "diffuse_color_constant")
             {
               pxr::UsdShadeInput diffuseShaderInput =
                 variantshader.GetInput(pxr::TfToken("diffuse_color_constant"));
@@ -185,7 +230,7 @@ namespace usd
     return material;
   }
 
-  std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> ParseTransform(
+  std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> ParseTransform(
     const pxr::UsdPrim &_prim)
   {
     auto variant_geom = pxr::UsdGeomGprim(_prim);
@@ -199,6 +244,7 @@ namespace usd
     bool isScale = false;
     bool isTranslate = false;
     bool isRotation = false;
+    bool isRotationZYX = false;
 
     pxr::VtTokenArray xformOpOrder;
     transforms.Get(&xformOpOrder);
@@ -245,11 +291,12 @@ namespace usd
         std::cerr << "GetCPPTypeName " << attribute.GetTypeName().GetCPPTypeName()<< '\n';
         ignition::math::Quaterniond q;
         q.Euler(
-          rotationEuler[2] * 3.1416 / 180,
-          rotationEuler[1] * 3.1416 / 180,
-          rotationEuler[0] * 3.1416 / 180);
+          rotationEuler[0] * 3.1416 / 180.0,
+          rotationEuler[1] * 3.1416 / 180.0,
+          rotationEuler[2] * 3.1416 / 180.0);
         rotationQuad.SetImaginary(q.X(), q.Y(), q.Z());
         rotationQuad.SetReal(q.W());
+        isRotationZYX = true;
         isRotation = true;
         std::cerr << "euler rot " << rotationEuler << '\n';
       }
@@ -298,24 +345,52 @@ namespace usd
         _prim.GetAttribute(pxr::TfToken("xformOp:transform")).Get(&transform);
         pxr::GfVec3d translateMatrix = transform.ExtractTranslation();
         pxr::GfQuatd rotation_quadMatrix = transform.ExtractRotationQuat();
-        translate[0] = translateMatrix[0];
-        translate[1] = translateMatrix[1];
-        translate[2] = translateMatrix[2];
-        rotationQuad.SetImaginary(
-          rotation_quadMatrix.GetImaginary()[0],
-          rotation_quadMatrix.GetImaginary()[1],
-          rotation_quadMatrix.GetImaginary()[2]);
-        rotationQuad.SetReal(rotation_quadMatrix.GetReal());
+
+        ignition::math::Matrix4d m(
+          transform[0][0], transform[0][1], transform[0][2], transform[0][3],
+          transform[1][0], transform[1][1], transform[1][2], transform[1][3],
+          transform[2][0], transform[2][1], transform[2][2], transform[2][3],
+          transform[3][0], transform[3][1], transform[3][2], transform[3][3]
+        );
+        ignition::math::Vector3d eulerAngles = m.EulerRotation(true);
+        std::cerr << "eulerAngles " << eulerAngles << '\n';
+        ignition::math::Matrix4d inverseR(ignition::math::Pose3d(
+          ignition::math::Vector3d(0, 0, 0),
+          ignition::math::Quaterniond(-eulerAngles[0], -eulerAngles[1], -eulerAngles[2])));
+
+        pxr::GfMatrix4d inverseR2(
+          inverseR(0, 0), inverseR(0, 1), inverseR(0, 2), inverseR(0, 3),
+          inverseR(1, 0), inverseR(1, 1), inverseR(1, 2), inverseR(1, 3),
+          inverseR(2, 0), inverseR(2, 1), inverseR(2, 2), inverseR(2, 3),
+          inverseR(3, 0), inverseR(3, 1), inverseR(3, 2), inverseR(3, 3));
+
+        m = inverseR * m;
+        transform = inverseR2 * transform;
+        ignition::math::Vector3d t = m.Translation();
+        // ignition::math::Vector3d euler = m.EulerRotation(true);
+        ignition::math::Quaternion r(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+
         scale[0] = transform[0][0];
         scale[1] = transform[1][1];
         scale[2] = transform[2][2];
+
+        pxr::GfVec3d translateVector = transform.ExtractTranslation();
+        // pxr::GfQuatd rotation_quadMatrix = transform.ExtractRotationQuat();
+        translate[0] = translateVector[0];
+        translate[1] = translateVector[1];
+        translate[2] = translateVector[2];
+        rotationQuad.SetImaginary(r.X(), r.Y(), r.Z());
+        rotationQuad.SetReal(r.W());
+
         isTranslate = true;
         isRotation = true;
         isScale = true;
         std::cerr << "translate " << translateMatrix << '\n';
         std::cerr << "rotation_quad " << rotation_quadMatrix << '\n';
+        std::cerr << "scale " << scale << '\n';
       }
     }
-    return std::make_tuple(scale, translate, rotationQuad, isScale, isTranslate, isRotation);
+    return std::make_tuple(scale, translate, rotationQuad,
+                           isScale, isTranslate, isRotation, isRotationZYX);
   }
 }

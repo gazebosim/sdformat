@@ -367,7 +367,7 @@ namespace usd
     {
       auto variant_geom = pxr::UsdGeomGprim(_prim);
 
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool> transformsTuple =
+      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
         ParseTransform(_prim);
 
       pxr::GfVec3f scale = std::get<0>(transformsTuple);
