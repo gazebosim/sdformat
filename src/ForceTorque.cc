@@ -277,3 +277,79 @@ void ForceTorque::SetMeasureDirection(
 {
   this->dataPtr->measure_direction = _direction;
 }
+
+/////////////////////////////////////////////////
+bool ForceTorque::PopulateElement(sdf::ElementPtr _elem) const
+{
+  bool result = true;
+  std::string frame;
+  switch (this->Frame())
+  {
+    case sdf::ForceTorqueFrame::PARENT:
+      frame = "parent";
+      break;
+    case sdf::ForceTorqueFrame::CHILD:
+      frame = "child";
+      break;
+    case sdf::ForceTorqueFrame::SENSOR:
+      frame = "sensor";
+      break;
+    case sdf::ForceTorqueFrame::INVALID:
+    default:
+      break;
+  }
+  if (!frame.empty())
+    _elem->GetElement("frame")->Set<std::string>(frame);
+
+  std::string measureDirection;
+  switch (this->MeasureDirection())
+  {
+    case sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD:
+      measureDirection = "parent_to_child";
+      break;
+    case sdf::ForceTorqueMeasureDirection::CHILD_TO_PARENT:
+      measureDirection = "child_to_parent";
+      break;
+    case sdf::ForceTorqueMeasureDirection::INVALID:
+    default:
+      break;
+  }
+  if (!measureDirection.empty())
+  {
+    _elem->GetElement("measure_direction")->Set<std::string>(measureDirection);
+  }
+
+  sdf::ElementPtr forceElem = _elem->GetElement("force");
+  sdf::ElementPtr forceXElem = forceElem->GetElement("x");
+  sdf::ElementPtr forceXNoiseElem = forceXElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->forceXNoise.PopulateElement(forceXNoiseElem);
+
+  sdf::ElementPtr forceYElem = forceElem->GetElement("y");
+  sdf::ElementPtr forceYNoiseElem = forceYElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->forceYNoise.PopulateElement(forceYNoiseElem);
+
+  sdf::ElementPtr forceZElem = forceElem->GetElement("z");
+  sdf::ElementPtr forceZNoiseElem = forceZElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->forceZNoise.PopulateElement(forceZNoiseElem);
+
+  sdf::ElementPtr torqueElem = _elem->GetElement("torque");
+  sdf::ElementPtr torqueXElem = torqueElem->GetElement("x");
+  sdf::ElementPtr torqueXNoiseElem = torqueXElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->torqueXNoise.PopulateElement(torqueXNoiseElem);
+
+  sdf::ElementPtr torqueYElem = torqueElem->GetElement("y");
+  sdf::ElementPtr torqueYNoiseElem = torqueYElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->torqueYNoise.PopulateElement(torqueYNoiseElem);
+
+  sdf::ElementPtr torqueZElem = torqueElem->GetElement("z");
+  sdf::ElementPtr torqueZNoiseElem = torqueZElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->torqueZNoise.PopulateElement(torqueZNoiseElem);
+
+  return result;
+}
