@@ -680,7 +680,14 @@ sdf::ElementPtr Sensor::ToElement() const
 
   elem->GetAttribute("type")->Set<std::string>(this->TypeStr());
   elem->GetAttribute("name")->Set<std::string>(this->Name());
-  elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
   elem->GetElement("topic")->Set<std::string>(this->Topic());
   elem->GetElement("update_rate")->Set<double>(this->UpdateRate());
   elem->GetElement("enable_metrics")->Set<double>(this->EnableMetrics());

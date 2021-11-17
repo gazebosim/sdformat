@@ -992,7 +992,13 @@ sdf::ElementPtr Camera::ToElement() const
   sdf::initFile("camera.sdf", elem);
 
   elem->GetAttribute("name")->Set<std::string>(this->Name());
-  elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
   elem->GetElement("horizontal_fov")->Set<double>(
       this->HorizontalFov().Radian());
   sdf::ElementPtr imageElem = elem->GetElement("image");
@@ -1015,6 +1021,8 @@ sdf::ElementPtr Camera::ToElement() const
   saveElem->GetAttribute("enabled")->Set<bool>(this->SaveFrames());
   if (this->SaveFrames())
     saveElem->GetElement("path")->Set<std::string>(this->SaveFramesPath());
+  elem->GetElement("visibility_mask")->Set<uint32_t>(
+      this->VisibilityMask());
 
   sdf::ElementPtr noiseElem = elem->GetElement("noise");
   std::string noiseType;
