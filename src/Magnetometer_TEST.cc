@@ -117,7 +117,7 @@ TEST(DOMMagnetometer, ToElement)
 {
   // test calling ToElement on a DOM object constructed without calling Load
   sdf::Magnetometer mag;
-  sdf::Noise defaultNoise, noise;
+  sdf::Noise noise;
   noise.SetType(sdf::NoiseType::GAUSSIAN);
   noise.SetMean(1.2);
   noise.SetStdDev(2.3);
