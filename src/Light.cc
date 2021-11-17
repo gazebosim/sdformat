@@ -473,7 +473,14 @@ sdf::ElementPtr Light::ToElement() const
   }
   elem->GetAttribute("type")->Set<std::string>(lightTypeStr);
   elem->GetAttribute("name")->Set<std::string>(this->Name());
-  elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
   elem->GetElement("cast_shadows")->Set<bool>(this->CastShadows());
   elem->GetElement("intensity")->Set<double>(this->Intensity());
   elem->GetElement("direction")->Set<ignition::math::Vector3d>(
