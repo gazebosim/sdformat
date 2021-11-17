@@ -130,3 +130,28 @@ bool Magnetometer::operator==(const Magnetometer &_mag) const
 
   return true;
 }
+
+/////////////////////////////////////////////////
+bool Magnetometer::PopulateElement(sdf::ElementPtr _elem) const
+{
+  bool result = true;
+  sdf::ElementPtr magnetometerXElem = _elem->GetElement("x");
+  sdf::ElementPtr magnetometerXNoiseElem =
+    magnetometerXElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->noise[0].PopulateElement(magnetometerXNoiseElem);
+
+  sdf::ElementPtr magnetometerYElem = _elem->GetElement("y");
+  sdf::ElementPtr magnetometerYNoiseElem =
+    magnetometerYElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->noise[1].PopulateElement(magnetometerYNoiseElem);
+
+  sdf::ElementPtr magnetometerZElem = _elem->GetElement("z");
+  sdf::ElementPtr magnetometerZNoiseElem =
+    magnetometerZElem->GetElement("noise");
+  result = result &&
+    this->dataPtr->noise[2].PopulateElement(magnetometerZNoiseElem);
+
+  return result;
+}

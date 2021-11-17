@@ -113,3 +113,13 @@ void AirPressure::SetPressureNoise(const Noise &_noise)
 {
   this->dataPtr->noise = _noise;
 }
+
+/////////////////////////////////////////////////
+bool AirPressure::PopulateElement(sdf::ElementPtr _elem) const
+{
+  _elem->GetElement("reference_altitude")->Set<double>(
+      this->ReferenceAltitude());
+  sdf::ElementPtr pressureElem = _elem->GetElement("pressure");
+  sdf::ElementPtr noiseElem = pressureElem->GetElement("noise");
+  return this->dataPtr->noise.PopulateElement(noiseElem);
+}

@@ -248,3 +248,45 @@ bool Noise::operator==(const Noise &_noise) const
     ignition::math::equal(this->dataPtr->dynamicBiasCorrelationTime,
                           _noise.DynamicBiasCorrelationTime());
 }
+
+/////////////////////////////////////////////////
+bool Noise::PopulateElement(sdf::ElementPtr _elem, bool _simpleNoise) const
+{
+  std::string noiseType;
+  switch (this->Type())
+  {
+    case sdf::NoiseType::NONE:
+      noiseType = "none";
+      break;
+    case sdf::NoiseType::GAUSSIAN:
+      noiseType = "gaussian";
+      break;
+    case sdf::NoiseType::GAUSSIAN_QUANTIZED:
+      noiseType = "gaussian_quantized";
+      break;
+    default:
+      noiseType = "none";
+  }
+  // camera and lidar <noise> does not have type attribute
+  if (!_simpleNoise)
+    _elem->GetAttribute("type")->Set<std::string>(noiseType);
+  else
+    _elem->GetElement("type")->Set<std::string>(noiseType);
+
+  _elem->GetElement("mean")->Set<double>(this->Mean());
+  _elem->GetElement("stddev")->Set<double>(this->StdDev());
+
+  // camera and lidar <noise> does not have the sdf params below
+  if (!_simpleNoise)
+  {
+    _elem->GetElement("bias_mean")->Set<double>(this->BiasMean());
+    _elem->GetElement("bias_stddev")->Set<double>(this->BiasStdDev());
+    _elem->GetElement("dynamic_bias_stddev")->Set<double>(
+      this->DynamicBiasStdDev());
+    _elem->GetElement("dynamic_bias_correlation_time")->Set<double>(
+        this->DynamicBiasCorrelationTime());
+    _elem->GetElement("precision")->Set<double>(this->Precision());
+  }
+
+  return true;
+}

@@ -468,6 +468,15 @@ namespace sdf
     /// \param[in] _mask visibility mask
     public: void SetVisibilityMask(uint32_t _mask);
 
+    /// \brief Get whether or not the camera has instrinsics values set
+    /// \return True if the camera has instrinsics values set, false otherwise
+    public: bool HasLensIntrinsics() const;
+
+    /// \brief Fill the provided _elem with data from this sensor type.
+    /// \param[out] _elem SDF element point to populate
+    /// \return True if successful.
+    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

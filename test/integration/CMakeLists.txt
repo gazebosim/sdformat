@@ -46,6 +46,7 @@ set(tests
   scene_dom.cc
   sdf_basic.cc
   sdf_custom.cc
+  sdf_dom_conversion.cc
   surface_dom.cc
   unknown.cc
   urdf_gazebo_extensions.cc

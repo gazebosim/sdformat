@@ -670,3 +670,68 @@ Imu *Sensor::ImuSensor()
 {
   return optionalToPointer(this->dataPtr->imu);
 }
+
+/////////////////////////////////////////////////
+bool Sensor::PopulateElement(sdf::ElementPtr _elem) const
+{
+  _elem->GetAttribute("type")->Set<std::string>(this->TypeStr());
+  _elem->GetAttribute("name")->Set<std::string>(this->Name());
+  _elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  _elem->GetElement("topic")->Set<std::string>(this->Topic());
+  _elem->GetElement("update_rate")->Set<double>(this->UpdateRate());
+  _elem->GetElement("enable_metrics")->Set<double>(this->EnableMetrics());
+
+  // air pressure
+  if (this->Type() == sdf::SensorType::AIR_PRESSURE &&
+      this->dataPtr->airPressure)
+  {
+    sdf::ElementPtr airPressureElem = _elem->GetElement("air_pressure");
+    return this->dataPtr->airPressure->PopulateElement(airPressureElem);
+  }
+  // altimeter
+  else if (this->Type() == sdf::SensorType::ALTIMETER &&
+      this->dataPtr->altimeter)
+  {
+    sdf::ElementPtr altimeterElem = _elem->GetElement("altimeter");
+    return this->dataPtr->altimeter->PopulateElement(altimeterElem);
+  }
+  // camera, depth, thermal, segmentation
+  else if (this->CameraSensor())
+  {
+    sdf::ElementPtr cameraElem = _elem->GetElement("camera");
+    return this->dataPtr->camera->PopulateElement(cameraElem);
+  }
+  // force torque
+  else if (this->Type() == sdf::SensorType::FORCE_TORQUE  &&
+      this->dataPtr->forceTorque)
+  {
+    sdf::ElementPtr forceTorqueElem = _elem->GetElement("force_torque");
+    return this->dataPtr->forceTorque->PopulateElement(forceTorqueElem);
+  }
+  // imu
+  else if (this->Type() == sdf::SensorType::IMU && this->dataPtr->imu)
+  {
+    sdf::ElementPtr imuElem = _elem->GetElement("imu");
+    return this->dataPtr->imu->PopulateElement(imuElem);
+  }
+  // lidar, gpu_lidar
+  else if ((this->Type() == sdf::SensorType::GPU_LIDAR ||
+            this->Type() == sdf::SensorType::LIDAR) &&
+           this->dataPtr->lidar)
+  {
+    sdf::ElementPtr rayElem = (_elem->HasElement("ray")) ?
+        _elem->GetElement("ray") : _elem->GetElement("lidar");
+    return this->dataPtr->lidar->PopulateElement(rayElem);
+  }
+  // magnetometer
+  else if (this->Type() == sdf::SensorType::MAGNETOMETER &&
+      this->dataPtr->magnetometer)
+  {
+    sdf::ElementPtr magnetometerElem = _elem->GetElement("magnetometer");
+    return this->dataPtr->magnetometer->PopulateElement(magnetometerElem);
+  }
+
+  std::cout << "Conversion of sensor type: [" << this->TypeStr() << "] from "
+    << "SDF DOM to Element is not supported yet." << std::endl;
+  return false;
+}
