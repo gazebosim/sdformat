@@ -17,6 +17,7 @@
 #include <array>
 #include <string>
 #include "sdf/Altimeter.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -129,16 +130,18 @@ bool Altimeter::operator==(const Altimeter &_alt) const
 }
 
 /////////////////////////////////////////////////
-bool Altimeter::PopulateElement(sdf::ElementPtr _elem) const
+sdf::ElementPtr Altimeter::ToElement() const
 {
-  sdf::ElementPtr verticalPosElem = _elem->GetElement("vertical_position");
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("altimeter.sdf", elem);
+
+  sdf::ElementPtr verticalPosElem = elem->GetElement("vertical_position");
   sdf::ElementPtr verticalPosNoiseElem = verticalPosElem->GetElement("noise");
+  verticalPosNoiseElem->Copy(this->dataPtr->verticalPositionNoise.ToElement());
 
-  sdf::ElementPtr verticalVelElem = _elem->GetElement("vertical_velocity");
+  sdf::ElementPtr verticalVelElem = elem->GetElement("vertical_velocity");
   sdf::ElementPtr verticalVelNoiseElem = verticalVelElem->GetElement("noise");
+  verticalVelNoiseElem->Copy(this->dataPtr->verticalVelocityNoise.ToElement());
 
-  return
-    this->dataPtr->verticalPositionNoise.PopulateElement(verticalPosNoiseElem)
-    &&
-    this->dataPtr->verticalVelocityNoise.PopulateElement(verticalVelNoiseElem);
+  return elem;
 }
