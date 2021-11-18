@@ -190,6 +190,27 @@
 
       <sensor name="gpu_lidar_sensor" type="gpu_lidar">
         <pose>1 2 3 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>640</samples>
+              <resolution>1</resolution>
+              <min_angle>-1.396263</min_angle>
+              <max_angle>1.396263</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>0.01</resolution>
+              <min_angle>0.1</min_angle>
+              <max_angle>0.2</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.08</min>
+            <max>10.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </ray>
       </sensor>
 
       <sensor name="imu_sensor" type="imu">

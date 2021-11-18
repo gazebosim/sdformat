@@ -253,6 +253,11 @@ namespace sdf
     /// \returen True if 'this' != _imu.
     public: bool operator!=(const Imu &_imu) const;
 
+    /// \brief Fill the provided _elem with data from this sensor type.
+    /// \param[out] _elem SDF element point to populate
+    /// \return True if successful.
+    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

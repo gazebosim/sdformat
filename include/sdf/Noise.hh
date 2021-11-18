@@ -162,6 +162,14 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Fill the provided _elem with data from this sensor type.
+    /// \param[out] _elem SDF element point to populate
+    /// \param[in] _simpleNoise True if the element should be populated with
+    /// just type, mean, and standard deviation.
+    /// \return True if successful.
+    public: bool PopulateElement(sdf::ElementPtr _elem,
+                bool _simpleNoise = false) const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
