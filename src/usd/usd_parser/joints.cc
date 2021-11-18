@@ -217,7 +217,8 @@ namespace usd
       variant_physics_revolute_joint.GetLocalRot1Attr().Get(&localRot1);
 
       auto trans = (localPose0 + localPose1) * _metersPerUnit;
-
+      std::cerr << "trans " << trans << '\n';
+      // exit(-1);
       ignition::math::Quaterniond q1(
         localRot0.GetReal(),
         localRot0.GetImaginary()[0],
@@ -367,13 +368,14 @@ namespace usd
     {
       auto variant_geom = pxr::UsdGeomGprim(_prim);
 
-      std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
-        ParseTransform(_prim);
-
-      pxr::GfVec3f scale = std::get<0>(transformsTuple);
-      pxr::GfVec3f translate = std::get<1>(transformsTuple);
-      pxr::GfQuatf rotation_quad = std::get<2>(transformsTuple);
-      bool isScale = std::get<3>(transformsTuple);
+      Transforms t = ParseTransform(_prim);
+      // std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
+      //   ParseTransform(_prim);
+      //
+      // pxr::GfVec3f scale = std::get<0>(transformsTuple);
+      // pxr::GfVec3f translate = std::get<1>(transformsTuple);
+      // pxr::GfQuatf rotation_quad = std::get<2>(transformsTuple);
+      // bool isScale = std::get<3>(transformsTuple);
 
       std::string joint_name = _prim.GetName().GetText();
       joint->SetType(sdf::JointType::CONTINUOUS);
@@ -384,16 +386,8 @@ namespace usd
       jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
 
       joint->SetRawPose(
-        ignition::math::Pose3d(
-          ignition::math::Vector3d(
-            translate[0] * _metersPerUnit,
-            translate[1] * _metersPerUnit,
-            translate[2] * _metersPerUnit),
-          ignition::math::Quaterniond(
-            rotation_quad.GetReal(),
-            rotation_quad.GetImaginary()[0],
-            rotation_quad.GetImaginary()[1],
-            rotation_quad.GetImaginary()[2])));
+        ignition::math::Pose3d(t.translate * _metersPerUnit,
+          ignition::math::Quaterniond(t.q[0])));
 
       std::string childName;
       std::string parentName = pxr::TfStringify(_prim.GetPath().GetParentPath());
@@ -452,18 +446,10 @@ namespace usd
 
             if (child.IsA<pxr::UsdGeomCube>())
             {
-              if (isScale)
-              {
-                const sdf::Box * box = colPtr->Geom()->BoxShape();
-                sdf::Box * boxEditable = const_cast<sdf::Box*>(box);
-                ignition::math::Vector3d size = box->Size();
-                boxEditable->SetSize(ignition::math::Vector3d(
-                  size.X() * scale[0],
-                  size.Y() * scale[1],
-                  size.Z() * scale[2]));
-                // std::cerr << "scale cube " << col.scale.X() << " " << col.scale.Y() << " link->scale.Z() " << col.scale.Z() << '\n';
-                // std::cerr << "dim cube " << box->dim.X() << " " << box->dim.Y() << " " << box->dim.Z() << '\n';
-              }
+              const sdf::Box * box = colPtr->Geom()->BoxShape();
+              sdf::Box * boxEditable = const_cast<sdf::Box*>(box);
+              ignition::math::Vector3d size = box->Size();
+              boxEditable->SetSize(t.scale);
             }
 
             colPtr->SetName(col.Name());

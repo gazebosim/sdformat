@@ -33,6 +33,7 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Visual.hh"
+#include "sdf/Light.hh"
 
 #include "types.hh"
 
@@ -61,6 +62,9 @@ public:
   std::vector<std::shared_ptr<sdf::Visual>> visual_array;
   std::vector<std::string> visual_array_material_name;
   std::vector<std::shared_ptr<ignition::common::Material>> visual_array_material;
+
+  std::map<std::string, std::shared_ptr<sdf::Light>> lights_;
+  std::map<std::string, std::shared_ptr<sdf::Sensor>> sensors_;
 
   /// Parent Joint element
   ///   explicitly stating "parent" because we want directional-ness for tree structure

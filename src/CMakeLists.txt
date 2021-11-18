@@ -101,7 +101,9 @@ set(sources ${sources}
   usd/usd_parser/parser_usd.cc
   usd/usd_parser/physics.cc
   usd/usd_parser/joints.cc
+  usd/usd_parser/lights.cc
   usd/usd_parser/links.cc
+  usd/usd_parser/sensors.cc
   usd/usd_parser/utils.cc
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/usd)

@@ -88,6 +88,14 @@ namespace sdf
 
      void CopyBlob(tinyxml2::XMLElement *_src, tinyxml2::XMLElement *_blob_parent);
 
+     void AddLights(
+       const std::map<std::string, std::shared_ptr<sdf::Light>> &_lights,
+       tinyxml2::XMLElement *attach);
+
+     void AddSensors(
+       const std::map<std::string, std::shared_ptr<sdf::Sensor>> &_sensors,
+       tinyxml2::XMLElement *attach);
+
      /// reduced fixed joints:  check if a fixed joint should be lumped
      ///   checking both the joint type and if disabledFixedJointLumping
      ///   option is set

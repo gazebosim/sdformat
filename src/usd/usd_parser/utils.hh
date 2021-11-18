@@ -37,8 +37,35 @@ namespace usd{
 
   sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
 
-  std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> ParseTransform(
-    const pxr::UsdPrim &_prim);
+  class Transforms
+  {
+  public:
+    ignition::math::Vector3d scale{1, 1, 1};
+    std::vector<ignition::math::Quaterniond> q;
+    ignition::math::Vector3d translate{0, 0, 0};
+    bool isRotationZYX = false;
+    bool isRotation = false;
+    bool isTranslate = false;
+  };
+
+  Transforms ParseTransform(const pxr::UsdPrim &_prim);
+
+  void GetTransform(
+    const pxr::UsdPrim &_prim,
+    const double _metersPerUnit,
+    ignition::math::Pose3d &_pose,
+    ignition::math::Vector3d &_scale,
+    const std::string &_name);
+
+  void GetAllTransforms(
+    const pxr::UsdPrim &_prim,
+    const double _metersPerUnit,
+    std::vector<ignition::math::Pose3d> &_tfs,
+    ignition::math::Vector3d &_scale,
+    const std::string &_name);
+
+  // std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> ParseTransform(
+  //   const pxr::UsdPrim &_prim);
 }
 
 #endif

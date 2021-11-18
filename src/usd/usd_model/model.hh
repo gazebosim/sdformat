@@ -25,6 +25,7 @@
 
 #include <sdf/Joint.hh>
 #include <sdf/JointAxis.hh>
+#include <sdf/Light.hh>
 
 namespace usd {
 
@@ -144,7 +145,7 @@ public:
     }
   }
 
-  void initRoot(const std::map<std::string, std::string> &parent_link_tree)
+  void initRoot(std::map<std::string, std::string> &parent_link_tree)
   {
     this->root_link_.reset();
 
@@ -164,7 +165,16 @@ public:
         // we already found a root link
         else
         {
-          throw ParseError("Two root links found: [" + this->root_link_->name + "] and [" + l->first + "]");
+          std::shared_ptr<sdf::Joint> joint = nullptr;
+          joint = std::make_shared<sdf::Joint>();
+          joint->SetParentLinkName(this->root_link_->name);
+          joint->SetChildLinkName(l->first);
+          joint->SetName(this->root_link_->name + "_" + l->first + "_joint");
+          joint->SetType(sdf::JointType::FIXED);
+          this->joints_.insert(make_pair(joint->Name(), joint));
+          initTree(parent_link_tree);
+          l--;
+          // throw ParseError("Two root links found: [" + this->root_link_->name + "] and [" + l->first + "]");
         }
       }
     }
@@ -183,6 +193,8 @@ public:
   std::map<std::string, std::shared_ptr<sdf::Joint>> joints_;
   /// \brief complete list of Materials
   std::map<std::string, std::shared_ptr<sdf::Material>> materials_;
+
+  std::map<std::string, std::shared_ptr<sdf::Light>> lights_;
 
   /// \brief The name of the robot model
   std::string name_;

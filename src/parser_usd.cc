@@ -21,8 +21,10 @@
 #include "SDFExtension.hh"
 
 #include "sdf/Box.hh"
+#include "sdf/Camera.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Mesh.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Pbr.hh"
@@ -1027,6 +1029,10 @@ inline namespace SDF_VERSION_NAMESPACE {
     // make a <joint:...> block
     CreateJoint(_root, _link, _currentTransform);
 
+    AddLights(_link->lights_, elem);
+
+    AddSensors(_link->sensors_, elem);
+
     // add body to document
     _root->LinkEndChild(elem);
   }
@@ -1095,6 +1101,175 @@ inline namespace SDF_VERSION_NAMESPACE {
     return usd::isUSD(_filename);
   }
 
+  void USD2SDF::AddSensors(
+    const std::map<std::string, std::shared_ptr<sdf::Sensor>> &_sensors,
+    tinyxml2::XMLElement *attach)
+  {
+    for (auto & sensor : _sensors)
+    {
+      std::shared_ptr<sdf::Sensor> sdfSensor = sensor.second;
+
+      std::string sensorType;
+      switch (sdfSensor->Type()) {
+        case sdf::SensorType::CAMERA:
+          sensorType = "camera";
+          break;
+        default:
+          sensorType = "";
+      }
+
+      std::cerr << "sensorType " << sensorType << '\n';
+
+      if (sensorType.empty())
+        return;
+
+      tinyxml2::XMLElement *sensorXML = attach->GetDocument()->NewElement("sensor");
+
+      sensorXML->SetAttribute("type", sensorType.c_str());
+
+      if (sdfSensor->Type() == sdf::SensorType::CAMERA)
+      {
+        const sdf::Camera * camera = sdfSensor->CameraSensor();
+        sensorXML->SetAttribute("name", camera->Name().c_str());
+
+        double pose_value[4];
+        pose_value[0] = camera->RawPose().Pos().X();
+        pose_value[1] = camera->RawPose().Pos().Y();
+        pose_value[2] = camera->RawPose().Pos().Z();
+        pose_value[3] = camera->RawPose().Rot().Euler()[0];
+        pose_value[4] = camera->RawPose().Rot().Euler()[1];
+        pose_value[5] = camera->RawPose().Rot().Euler()[2];
+        AddKeyValue(sensorXML, "pose", Values2str(6, pose_value));
+
+        tinyxml2::XMLElement *cameraXML =
+          sensorXML->GetDocument()->NewElement("camera");
+
+        double horizontalAperture = camera->HorizontalFov().Radian();
+        double focalLength = camera->LensFocalLength();
+        double nearClip = camera->NearClip();
+        double farClip = camera->FarClip();
+        double width = camera->ImageWidth();
+        double height = camera->ImageHeight();
+        double alwaysOn = 1;
+        double visualize = 1;
+        double updateRate = 30;
+        // AddKeyValue(cameraXML, "horizontal_fov", Values2str(1, &horizontalAperture));
+        AddKeyValue(sensorXML, "always_on", Values2str(1, &alwaysOn));
+        AddKeyValue(sensorXML, "visualize", Values2str(1, &visualize));
+        AddKeyValue(sensorXML, "update_rate", Values2str(1, &updateRate));
+
+        tinyxml2::XMLElement *imageXML =
+          cameraXML->GetDocument()->NewElement("image");
+        AddKeyValue(imageXML, "width", Values2str(1, &width));
+        AddKeyValue(imageXML, "height", Values2str(1, &height));
+        cameraXML->LinkEndChild(imageXML);
+
+        tinyxml2::XMLElement *clipXML =
+          cameraXML->GetDocument()->NewElement("clip");
+        AddKeyValue(clipXML, "near", Values2str(1, &nearClip));
+        AddKeyValue(clipXML, "far", Values2str(1, &farClip));
+        cameraXML->LinkEndChild(clipXML);
+
+        tinyxml2::XMLElement *customFunctionXML =
+          cameraXML->GetDocument()->NewElement("custom_function");
+        AddKeyValue(customFunctionXML, "f", Values2str(1, &focalLength));
+        cameraXML->LinkEndChild(customFunctionXML);
+
+        sensorXML->LinkEndChild(cameraXML);
+        attach->LinkEndChild(sensorXML);
+      }
+    }
+  }
+
+  void USD2SDF::AddLights(
+    const std::map<std::string, std::shared_ptr<sdf::Light>> &_lights,
+    tinyxml2::XMLElement *attach)
+  {
+    for (auto & light : _lights)
+    {
+      std::shared_ptr<sdf::Light> sdfLight = light.second;
+      tinyxml2::XMLElement *lightXML = attach->GetDocument()->NewElement("light");
+      lightXML->SetAttribute("name", sdfLight->Name().c_str());
+
+      std::string lightType;
+      switch (sdfLight->Type()) {
+        case sdf::LightType::DIRECTIONAL:
+          lightType = "directional";
+          break;
+        case sdf::LightType::POINT:
+          lightType = "point";
+          break;
+        case sdf::LightType::SPOT:
+          lightType = "spot";
+          break;
+        default:
+          lightType = "invalid";
+      }
+      lightXML->SetAttribute("type", lightType.c_str());
+
+      double pose_value[4];
+      pose_value[0] = sdfLight->RawPose().Pos().X();
+      pose_value[1] = sdfLight->RawPose().Pos().Y();
+      pose_value[2] = sdfLight->RawPose().Pos().Z();
+      pose_value[3] = sdfLight->RawPose().Rot().Euler()[0];
+      pose_value[4] = sdfLight->RawPose().Rot().Euler()[1];
+      pose_value[5] = sdfLight->RawPose().Rot().Euler()[2];
+      AddKeyValue(lightXML, "pose", Values2str(6, pose_value));
+
+      double color_diffuse[4];
+      color_diffuse[0] = sdfLight->Diffuse().R();
+      color_diffuse[1] = sdfLight->Diffuse().G();
+      color_diffuse[2] = sdfLight->Diffuse().B();
+      color_diffuse[3] = sdfLight->Diffuse().A();
+      AddKeyValue(lightXML, "diffuse", Values2str(4, color_diffuse));
+
+      double color_specular[4];
+      color_specular[0] = sdfLight->Specular().R();
+      color_specular[1] = sdfLight->Specular().G();
+      color_specular[2] = sdfLight->Specular().B();
+      color_specular[3] = sdfLight->Specular().A();
+      AddKeyValue(lightXML, "specular", Values2str(4, color_specular));
+
+      double intensity = sdfLight->Intensity();
+      AddKeyValue(lightXML, "intensity", Values2str(1, &intensity));
+
+      tinyxml2::XMLElement *attenuationXML =
+        lightXML->GetDocument()->NewElement("attenuation");
+
+      double range = sdfLight->AttenuationRange();
+      double constant = sdfLight->ConstantAttenuationFactor();
+      double linear = sdfLight->LinearAttenuationFactor();
+      double quadratic = sdfLight->QuadraticAttenuationFactor();
+      AddKeyValue(attenuationXML, "range", Values2str(1, &range));
+      AddKeyValue(attenuationXML, "constant", Values2str(1, &constant));
+      AddKeyValue(attenuationXML, "linear", Values2str(1, &linear));
+      AddKeyValue(attenuationXML, "quadratic", Values2str(1, &quadratic));
+
+      double direction[3];
+      direction[0] = sdfLight->Direction().X();
+      direction[1] = sdfLight->Direction().Y();
+      direction[2] = sdfLight->Direction().Z();
+      AddKeyValue(lightXML, "direction", Values2str(3, direction));
+
+      if (sdfLight->Type() == sdf::LightType::SPOT)
+      {
+        tinyxml2::XMLElement *spotXML =
+          lightXML->GetDocument()->NewElement("spot");
+
+        double innerAngle = sdfLight->SpotInnerAngle().Radian();
+        double outerAngle = sdfLight->SpotOuterAngle().Radian();
+        double falloff = sdfLight->SpotFalloff();
+        AddKeyValue(spotXML, "inner_angle", Values2str(1, &innerAngle));
+        AddKeyValue(spotXML, "outer_angle", Values2str(1, &outerAngle));
+        AddKeyValue(spotXML, "falloff", Values2str(1, &falloff));
+        lightXML->LinkEndChild(spotXML);
+      }
+
+      lightXML->LinkEndChild(attenuationXML);
+      attach->LinkEndChild(lightXML);
+    }
+  }
+
   //parser_urdf.cc InitModelString
   void USD2SDF::read(const std::string &_filename,
     tinyxml2::XMLDocument* _sdfXmlOut)
@@ -1144,6 +1319,33 @@ inline namespace SDF_VERSION_NAMESPACE {
       // convert, starting from root link
       CreateSDF(robot, rootLink, transform);
     }
+
+    AddLights(robotModel->lights_, world);
+
+    tinyxml2::XMLElement *physicsPluginXML =
+      world->GetDocument()->NewElement("plugin");
+    physicsPluginXML->SetAttribute("name", "ignition::gazebo::systems::Physics");
+    physicsPluginXML->SetAttribute("filename", "ignition-gazebo-physics-system");
+    world->LinkEndChild(physicsPluginXML);
+
+    tinyxml2::XMLElement *sensorsPluginXML =
+      world->GetDocument()->NewElement("plugin");
+    sensorsPluginXML->SetAttribute("name", "ignition::gazebo::systems::Sensors");
+    sensorsPluginXML->SetAttribute("filename", "ignition-gazebo-sensors-system");
+    world->LinkEndChild(sensorsPluginXML);
+
+    tinyxml2::XMLElement *userCommandsPluginXML =
+      world->GetDocument()->NewElement("plugin");
+    userCommandsPluginXML->SetAttribute("name", "ignition::gazebo::systems::UserCommands");
+    userCommandsPluginXML->SetAttribute("filename", "ignition-gazebo-user-commands-system");
+    world->LinkEndChild(userCommandsPluginXML);
+
+    tinyxml2::XMLElement *sceneBroadcasterPluginXML =
+      world->GetDocument()->NewElement("plugin");
+    sceneBroadcasterPluginXML->SetAttribute("name", "ignition::gazebo::systems::SceneBroadcaster");
+    sceneBroadcasterPluginXML->SetAttribute("filename", "ignition-gazebo-scene-broadcaster-system");
+    world->LinkEndChild(sceneBroadcasterPluginXML);
+
 
     sdf = _sdfXmlOut->NewElement("sdf");
     sdf->SetAttribute("version", "1.7");

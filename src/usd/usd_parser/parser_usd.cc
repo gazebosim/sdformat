@@ -22,6 +22,8 @@
 #include <pxr/usd/usd/primRange.h>
 #include "pxr/usd/usdGeom/gprim.h"
 
+#include "pxr/usd/usdLux/light.h"
+
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 
@@ -39,13 +41,17 @@
 #include "pxr/usd/usdLux/light.h"
 #include "pxr/usd/usdLux/sphereLight.h"
 
+#include "pxr/usd/usdGeom/camera.h"
+
 // #include "pxr/base/tf/staticTokens.h"
 // #include "pxr/usd/usdRi/tokens.h"
 
 #include "usd_parser/parser_usd.hh"
 #include "physics.hh"
 #include "joints.hh"
+#include "lights.hh"
 #include "links.hh"
+#include "sensors.hh"
 #include "utils.hh"
 #include "sdf/Console.hh"
 #include "sdf/Mesh.hh"
@@ -85,7 +91,11 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   std::string defaultName;
   referencee->GetMetadata<double>(pxr::TfToken("metersPerUnit"), &metersPerUnit);
   defaultName = referencee->GetDefaultPrim().GetName().GetText();
+  pxr::TfToken axis;
+  referencee->GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
+  std::string upAxis = axis.GetText();
   std::cerr << "metersPerUnit" << metersPerUnit << '\n';
+  std::cerr << "upAxis: " << upAxis << '\n';
   std::cerr << "defaultPrim" << defaultName << '\n';
   std::string rootPath;
   std::string nameLink;
@@ -191,6 +201,45 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
     if (tokens.size() > 1)
     {
       nameLink = "/" + tokens[0] + "/" + tokens[1];
+    }
+
+    if (primName.find(nameLink) == std::string::npos)
+    {
+      nameLink = "";
+    }
+
+    if (prim.IsA<pxr::UsdLuxLight>())
+    {
+      std::cerr << "Light!" << '\n';
+      std::cerr << "\tprimName " << primName << '\n';
+      std::cerr << "\tnameLink " << nameLink << '\n';
+      std::cerr << "\tprimName.find(nameLink) == std::string::npos " << (primName.find(nameLink) == std::string::npos) << '\n';
+
+      auto light = ParseLights(prim, metersPerUnit, nameLink);
+      if (light)
+      {
+        if (model->links_.find(nameLink) == model->links_.end())
+        {
+          model->lights_.insert(std::pair<std::string, std::shared_ptr<sdf::Light>>
+            (prim.GetPath().GetName(), light));
+        }
+        else
+        {
+            model->links_[nameLink]->lights_.insert(std::pair<std::string, std::shared_ptr<sdf::Light>>
+              (prim.GetPath().GetName(), light));
+        }
+      }
+      continue;
+    }
+
+    if(prim.IsA<pxr::UsdGeomCamera>())
+    {
+      auto sensor = ParseSensors(prim, metersPerUnit, nameLink);
+      model->links_[nameLink]->sensors_.insert(
+        std::pair<std::string, std::shared_ptr<sdf::Sensor>>
+          (prim.GetPath().GetName(), sensor));
+      std::cerr << "camera!" << '\n';
+      continue;
     }
 
     if (prim.IsA<pxr::UsdPhysicsScene>())
