@@ -21,7 +21,6 @@
 
 #define SDF_PKG_VERSION "${SDF_VERSION}"
 #define SDF_VERSION_FULL "${SDF_VERSION_FULL}"
-#define SDF_VERSION_NAME ${SDF_VERSION_NAME}
 #define SDF_VERSION_NAMESPACE v${SDF_MAJOR_VERSION}
 
 #define SDF_VERSION_HEADER "Simulation Description Format (SDF), version ${SDF_PROTOCOL_VERSION}\nCopyright (C) 2014 Open Source Robotics Foundation.\nReleased under the Apache 2 License.\nhttp://gazebosim.org/sdf\n\n"
