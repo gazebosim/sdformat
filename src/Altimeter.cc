@@ -127,3 +127,18 @@ bool Altimeter::operator==(const Altimeter &_alt) const
 
   return true;
 }
+
+/////////////////////////////////////////////////
+bool Altimeter::PopulateElement(sdf::ElementPtr _elem) const
+{
+  sdf::ElementPtr verticalPosElem = _elem->GetElement("vertical_position");
+  sdf::ElementPtr verticalPosNoiseElem = verticalPosElem->GetElement("noise");
+
+  sdf::ElementPtr verticalVelElem = _elem->GetElement("vertical_velocity");
+  sdf::ElementPtr verticalVelNoiseElem = verticalVelElem->GetElement("noise");
+
+  return
+    this->dataPtr->verticalPositionNoise.PopulateElement(verticalPosNoiseElem)
+    &&
+    this->dataPtr->verticalVelocityNoise.PopulateElement(verticalVelNoiseElem);
+}

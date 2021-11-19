@@ -174,6 +174,9 @@ class sdf::Camera::Implementation
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
+  /// \brief True if this camera has custom intrinsics values
+  public: bool hasIntrinsics = false;
+
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityMask{4294967295u};
 };
@@ -367,6 +370,7 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensIntrinsicsCy).first;
       this->dataPtr->lensIntrinsicsS = intrinsics->Get<double>("s",
           this->dataPtr->lensIntrinsicsS).first;
+      this->dataPtr->hasIntrinsics = true;
     }
   }
 
@@ -865,6 +869,7 @@ double Camera::LensIntrinsicsFx() const
 void Camera::SetLensIntrinsicsFx(double _fx)
 {
   this->dataPtr->lensIntrinsicsFx = _fx;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -877,6 +882,7 @@ double Camera::LensIntrinsicsFy() const
 void Camera::SetLensIntrinsicsFy(double _fy)
 {
   this->dataPtr->lensIntrinsicsFy = _fy;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -889,6 +895,7 @@ double Camera::LensIntrinsicsCx() const
 void Camera::SetLensIntrinsicsCx(double _cx)
 {
   this->dataPtr->lensIntrinsicsCx = _cx;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -901,6 +908,7 @@ double Camera::LensIntrinsicsCy() const
 void Camera::SetLensIntrinsicsCy(double _cy)
 {
   this->dataPtr->lensIntrinsicsCy = _cy;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -913,6 +921,7 @@ double Camera::LensIntrinsicsSkew() const
 void Camera::SetLensIntrinsicsSkew(double _s)
 {
   this->dataPtr->lensIntrinsicsS = _s;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
@@ -967,4 +976,86 @@ uint32_t Camera::VisibilityMask() const
 void Camera::SetVisibilityMask(uint32_t _mask)
 {
   this->dataPtr->visibilityMask = _mask;
+}
+
+/////////////////////////////////////////////////
+bool Camera::HasLensIntrinsics() const
+{
+  return this->dataPtr->hasIntrinsics;
+}
+
+/////////////////////////////////////////////////
+bool Camera::PopulateElement(sdf::ElementPtr _elem) const
+{
+  _elem->GetAttribute("name")->Set<std::string>(this->Name());
+  _elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
+  _elem->GetElement("horizontal_fov")->Set<double>(
+      this->HorizontalFov().Radian());
+  sdf::ElementPtr imageElem = _elem->GetElement("image");
+  imageElem->GetElement("width")->Set<double>(this->ImageWidth());
+  imageElem->GetElement("height")->Set<double>(this->ImageHeight());
+  imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
+  sdf::ElementPtr clipElem = _elem->GetElement("clip");
+  clipElem->GetElement("near")->Set<double>(this->NearClip());
+  clipElem->GetElement("far")->Set<double>(this->FarClip());
+
+  if (this->dataPtr->hasDepthCamera)
+  {
+    sdf::ElementPtr depthElem = _elem->GetElement("depth_camera");
+    sdf::ElementPtr depthClipElem = depthElem->GetElement("clip");
+    depthClipElem->GetElement("near")->Set<double>(this->DepthNearClip());
+    depthClipElem->GetElement("far")->Set<double>(this->DepthFarClip());
+  }
+
+  sdf::ElementPtr saveElem = _elem->GetElement("save");
+  saveElem->GetAttribute("enabled")->Set<bool>(this->SaveFrames());
+  if (this->SaveFrames())
+    saveElem->GetElement("path")->Set<std::string>(this->SaveFramesPath());
+
+  sdf::ElementPtr noiseElem = _elem->GetElement("noise");
+  this->dataPtr->imageNoise.PopulateElement(noiseElem, true);
+
+  sdf::ElementPtr distortionElem = _elem->GetElement("distortion");
+  distortionElem->GetElement("k1")->Set<double>(this->DistortionK1());
+  distortionElem->GetElement("k2")->Set<double>(this->DistortionK2());
+  distortionElem->GetElement("k3")->Set<double>(this->DistortionK3());
+  distortionElem->GetElement("p1")->Set<double>(this->DistortionP1());
+  distortionElem->GetElement("p2")->Set<double>(this->DistortionP2());
+  distortionElem->GetElement("center")->Set<ignition::math::Vector2d>(
+      this->DistortionCenter());
+
+  sdf::ElementPtr lensElem = _elem->GetElement("lens");
+  lensElem->GetElement("type")->Set<std::string>(this->LensType());
+  lensElem->GetElement("scale_to_hfov")->Set<bool>(this->LensScaleToHfov());
+  lensElem->GetElement("cutoff_angle")->Set<double>(
+     this->LensCutoffAngle().Radian());
+  lensElem->GetElement("env_texture_size")->Set<double>(
+      this->LensEnvironmentTextureSize());
+  if (this->LensType() == "custom")
+  {
+    sdf::ElementPtr customLensElem = lensElem->GetElement("custom_function");
+    customLensElem->GetElement("c1")->Set<double>(this->LensC1());
+    customLensElem->GetElement("c2")->Set<double>(this->LensC2());
+    customLensElem->GetElement("c3")->Set<double>(this->LensC3());
+    customLensElem->GetElement("f")->Set<double>(this->LensFocalLength());
+    customLensElem->GetElement("fun")->Set<std::string>(
+        this->LensFunction());
+  }
+  if (this->HasLensIntrinsics())
+  {
+    sdf::ElementPtr intrinsicsElem = lensElem->GetElement("intrinsics");
+    intrinsicsElem->GetElement("fx")->Set<double>(this->LensIntrinsicsFx());
+    intrinsicsElem->GetElement("fy")->Set<double>(this->LensIntrinsicsFy());
+    intrinsicsElem->GetElement("cx")->Set<double>(this->LensIntrinsicsCx());
+    intrinsicsElem->GetElement("cy")->Set<double>(this->LensIntrinsicsCy());
+    intrinsicsElem->GetElement("s")->Set<double>(this->LensIntrinsicsSkew());
+  }
+
+  if (this->HasSegmentationType())
+  {
+    _elem->GetElement("segmentation_type")->Set<std::string>(
+        this->SegmentationType());
+  }
+
+  return true;
 }
