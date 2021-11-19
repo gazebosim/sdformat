@@ -65,7 +65,7 @@ const std::vector<std::string> sensorTypeStrs =
   "segmentation_camera",
   "boundingbox_camera",
   "custom",
-  "wideanglecamera"
+  "wide_angle_camera"
 };
 
 class sdf::Sensor::Implementation
@@ -304,7 +304,7 @@ Errors Sensor::Load(ElementPtr _sdf)
     Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
-  else if (type == "wideanglecamera")
+  else if (type == "wideanglecamera" || type == "wide_angle_camera")
   {
     this->dataPtr->type = SensorType::WIDE_ANGLE_CAMERA;
     this->dataPtr->camera.emplace();

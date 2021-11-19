@@ -290,7 +290,7 @@ TEST(DOMSensor, Type)
     "wireless_transmitter",
     "thermal_camera",
     "custom",
-    "wideanglecamera"
+    "wide_angle_camera"
   };
 
   for (size_t i = 0; i < types.size(); ++i)
