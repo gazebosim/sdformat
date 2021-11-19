@@ -103,7 +103,13 @@ namespace usd
         auto it = _materials.find(nameMaterial);
         if (it != _materials.end())
         {
+          std::cerr << "material found" << '\n';
           link->visual_array_material.push_back(it->second);
+        }
+        else
+        {
+          std::cerr << "material NOT found" << '\n';
+          link->visual_array_material.push_back(std::make_shared<ignition::common::Material>());
         }
         link->visual_array_material_name.push_back(nameMaterial);
 
@@ -115,9 +121,11 @@ namespace usd
         subMeshSubset.SetPrimitiveType(ignition::common::SubMesh::TRISTRIPS);
         subMeshSubset.SetName("subgeommesh");
 
-        meshSubset.AddMaterial(it->second);
-        subMeshSubset.SetMaterialIndex(meshSubset.MaterialCount() - 1);
-
+        if (it != _materials.end())
+        {
+          meshSubset.AddMaterial(it->second);
+          subMeshSubset.SetMaterialIndex(meshSubset.MaterialCount() - 1);
+        }
         pxr::VtIntArray faceVertexIndices;
         child.GetAttribute(pxr::TfToken("indices")).Get(&faceVertexIndices);
         std::cerr << "faceVertexIndices " << faceVertexIndices.size() << '\n';
@@ -277,7 +285,8 @@ namespace usd
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
     GetTransform(_prim, _metersPerUnit, pose, scale, link->name);
-    meshGeom.SetScale(scale);
+    std::cerr << "Mesh setScale " << scale << '\n';
+    meshGeom.SetScale(scale * link->scale);
     _vis->SetRawPose(pose);
     //
     // auto parent = _prim.GetParent();
@@ -580,13 +589,11 @@ namespace usd
           tmpPrim = tmpPrim.GetParent();
         }
       }
-      std::cerr << "PaserLinks" << '\n';
-          ignition::math::Pose3d pose;
-          ignition::math::Vector3d scale(1, 1, 1);
-          GetTransform(tmpPrim, _metersPerUnit, pose, scale, "");
-          link->pose = pose;
-          link->scale = scale;
-      std::cerr << "PaserLinks" << '\n';
+      ignition::math::Pose3d pose;
+      ignition::math::Vector3d scale(1, 1, 1);
+      GetTransform(tmpPrim, _metersPerUnit, pose, scale, "");
+      link->pose = pose;
+      link->scale = scale;
     }
 
     sdf::Geometry geom;
@@ -640,23 +647,38 @@ namespace usd
       //   link->pose = ignition::math::Pose3d();
       // }
 
-      sdf::Material material = ParseMaterial(_prim);
+      pxr::TfTokenVector schemas = _prim.GetAppliedSchemas();
+      bool isPhysicsMeshCollisionAPI = false;
+      // for (auto & token : schemas)
+      // {
+      //   std::cerr << "GetText " << token.GetText() << '\n';
+      //   if (std::string(token.GetText()) == "PhysicsMeshCollisionAPI" )
+      //   {
+      //     isPhysicsMeshCollisionAPI = true;
+      //     break;
+      //   }
+      // }
 
-      if (_prim.IsA<pxr::UsdGeomSphere>())
+      if (!isPhysicsMeshCollisionAPI)
       {
-        ParseSphere(_prim, vis, material, geom, link->scale, _metersPerUnit);
-      }
-      else if (_prim.IsA<pxr::UsdGeomCylinder>())
-      {
-        ParseCylinder(_prim, vis, material, geom, link->scale, _metersPerUnit);
-      }
-      else if (_prim.IsA<pxr::UsdGeomCube>())
-      {
-        ParseCube(_prim, vis, material, geom, link->scale, _metersPerUnit);
-      }
-      else if (_prim.IsA<pxr::UsdGeomMesh>())
-      {
-        ParseMesh(_prim, link, vis, material, _materialsSDF, geom, _materials, link->scale, _metersPerUnit);
+        sdf::Material material = ParseMaterial(_prim);
+
+        if (_prim.IsA<pxr::UsdGeomSphere>())
+        {
+          ParseSphere(_prim, vis, material, geom, link->scale, _metersPerUnit);
+        }
+        else if (_prim.IsA<pxr::UsdGeomCylinder>())
+        {
+          ParseCylinder(_prim, vis, material, geom, link->scale, _metersPerUnit);
+        }
+        else if (_prim.IsA<pxr::UsdGeomCube>())
+        {
+          ParseCube(_prim, vis, material, geom, link->scale, _metersPerUnit);
+        }
+        else if (_prim.IsA<pxr::UsdGeomMesh>())
+        {
+          ParseMesh(_prim, link, vis, material, _materialsSDF, geom, _materials, link->scale, _metersPerUnit);
+        }
       }
     //
     //   pxr::TfTokenVector schemas = _prim.GetAppliedSchemas();

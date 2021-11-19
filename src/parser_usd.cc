@@ -1274,53 +1274,63 @@ inline namespace SDF_VERSION_NAMESPACE {
   void USD2SDF::read(const std::string &_filename,
     tinyxml2::XMLDocument* _sdfXmlOut)
   {
-    usd::ModelInterfaceSharedPtr robotModel = usd::parseUSDFile(_filename);
-    if (!robotModel)
+    std::vector<usd::ModelInterfaceSharedPtr> robotModels = usd::parseUSDFile(_filename);
+    tinyxml2::XMLElement *world = nullptr;
+    tinyxml2::XMLElement *sdf = nullptr;
+    for(auto & robotModel: robotModels)
     {
-      sdferr << "Unable to call parseURDF on robot model\n";
-      return;
-    }
-    tinyxml2::XMLElement *world = _sdfXmlOut->NewElement("world");
-    world->SetAttribute("name", robotModel->getName().c_str());
-
-    // create root element and define needed namespaces
-    tinyxml2::XMLElement *robot = _sdfXmlOut->NewElement("model");
-
-    // set model name to urdf robot name if not specified
-    robot->SetAttribute("name", robotModel->getName().c_str());
-
-    usd::LinkConstSharedPtr rootLink = robotModel->getRoot();
-    tinyxml2::XMLElement *sdf;
-
-    ignition::math::Pose3d transform;
-
-    // g_extensions.clear();
-    g_fixedJointsTransformedInFixedJoints.clear();
-    g_fixedJointsTransformedInRevoluteJoints.clear();
-    g_initialRobotPose.Set(0, 0, 0, 0, 0, 0);
-    g_initialRobotPoseValid = true;
-
-    std::cerr << "rootLink->name " << rootLink->name << '\n';
-
-    if (rootLink->name == "world")
-    {
-      // convert all children link
-      for (std::vector<usd::LinkSharedPtr>::const_iterator
-          child = rootLink->child_links.begin();
-          child != rootLink->child_links.end(); ++child)
+      if (!robotModel)
       {
-        std::cerr << "child->name " << (*child)->name << '\n';
-
-        CreateSDF(robot, (*child), transform);
+        sdferr << "Unable to call parseURDF on robot model\n";
+        return;
       }
-    }
-    else
-    {
-      // convert, starting from root link
-      CreateSDF(robot, rootLink, transform);
-    }
+      if (world == nullptr)
+      {
+        world = _sdfXmlOut->NewElement("world");
+        world->SetAttribute("name", robotModel->world_name_.c_str());
 
-    AddLights(robotModel->lights_, world);
+        sdf = _sdfXmlOut->NewElement("sdf");
+        sdf->SetAttribute("version", "1.7");
+      }
+
+      // create root element and define needed namespaces
+      tinyxml2::XMLElement *robot = _sdfXmlOut->NewElement("model");
+
+      // set model name to urdf robot name if not specified
+      robot->SetAttribute("name", robotModel->getName().c_str());
+
+      usd::LinkConstSharedPtr rootLink = robotModel->getRoot();
+
+      ignition::math::Pose3d transform;
+
+      // g_extensions.clear();
+      g_fixedJointsTransformedInFixedJoints.clear();
+      g_fixedJointsTransformedInRevoluteJoints.clear();
+      g_initialRobotPose.Set(0, 0, 0, 0, 0, 0);
+      g_initialRobotPoseValid = true;
+
+      std::cerr << "rootLink->name " << rootLink->name << '\n';
+
+      if (rootLink->name == "world")
+      {
+        // convert all children link
+        for (std::vector<usd::LinkSharedPtr>::const_iterator
+            child = rootLink->child_links.begin();
+            child != rootLink->child_links.end(); ++child)
+        {
+          std::cerr << "child->name " << (*child)->name << '\n';
+
+          CreateSDF(robot, (*child), transform);
+        }
+      }
+      else
+      {
+        // convert, starting from root link
+        CreateSDF(robot, rootLink, transform);
+      }
+      AddLights(robotModel->lights_, world);
+      world->LinkEndChild(robot);
+    }
 
     tinyxml2::XMLElement *physicsPluginXML =
       world->GetDocument()->NewElement("plugin");
@@ -1346,11 +1356,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     sceneBroadcasterPluginXML->SetAttribute("filename", "ignition-gazebo-scene-broadcaster-system");
     world->LinkEndChild(sceneBroadcasterPluginXML);
 
-
-    sdf = _sdfXmlOut->NewElement("sdf");
-    sdf->SetAttribute("version", "1.7");
     sdf->LinkEndChild(world);
-    world->LinkEndChild(robot);
 
     _sdfXmlOut->LinkEndChild(sdf);
     _sdfXmlOut->SaveFile("salida.xml");

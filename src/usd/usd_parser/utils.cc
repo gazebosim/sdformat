@@ -270,6 +270,7 @@ namespace usd
     ignition::math::Vector3d &_scale,
     const std::string &_name)
   {
+    std::cerr << "initial _scale " << _scale << '\n';
     pxr::UsdPrim parent = _prim;
     while(parent)
     {
@@ -281,7 +282,9 @@ namespace usd
       Transforms t = ParseTransform(parent);
 
       ignition::math::Pose3d pose;
+      std::cerr << "t.scale " << t.scale << '\n';
       _scale *= t.scale;
+      std::cerr << "_scale " << _scale << '\n';
 
       pose.Pos() = t.translate * _metersPerUnit;
 
@@ -484,33 +487,36 @@ namespace usd
         transform = inverseR2 * transform;
         // ignition::math::Vector3d t = m.Translation();
         // ignition::math::Vector3d euler = m.EulerRotation(true);
-        ignition::math::Quaternion r(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+        // ignition::math::Quaternion r(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+
+        std::cerr << "m " << m << '\n';
+        std::cerr << "transform " << transform << '\n';
 
         t.scale[0] = transform[0][0];
         t.scale[1] = transform[1][1];
         t.scale[2] = transform[2][2];
 
         pxr::GfVec3d translateVector = transform.ExtractTranslation();
+        pxr::GfQuatd rotationInversed = transform.ExtractRotationQuat();
         t.translate = ignition::math::Vector3d(
           translateVector[0], translateVector[1], translateVector[2]);
-        ignition::math::Quaterniond q(
-          rotationQuad.GetReal(),
-          rotationQuad.GetImaginary()[0],
-          rotationQuad.GetImaginary()[1],
-          rotationQuad.GetImaginary()[2]);
+        ignition::math::Quaterniond q(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
         t.q.push_back(q);
         // translate[0] = translateVector[0];
         // translate[1] = translateVector[1];
         // translate[2] = translateVector[2];
         // rotationQuad.SetImaginary(r.X(), r.Y(), r.Z());
-        rotationQuad.SetReal(r.W());
+        // rotationQuad.SetReal(r.W());
 
         // isTranslate = true;
         // isRotation = true;
         // isScale = true;
-        std::cerr << "translate " << translateMatrix << '\n';
-        std::cerr << "rotation_quad " << rotation_quadMatrix << '\n';
-        std::cerr << "scale " << scale << '\n';
+        t.isTranslate = true;
+        t.isRotation = true;
+
+        std::cerr << "translate " << t.translate << '\n';
+        std::cerr << "rotation_quad " << q << '\n';
+        std::cerr << "scale " << t.scale << '\n';
       }
     }
     return t;

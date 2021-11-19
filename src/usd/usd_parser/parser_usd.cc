@@ -68,10 +68,12 @@
 
 namespace usd {
 
-ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
+std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
 {
-  ModelInterfaceSharedPtr model(new ModelInterface);
+  std::vector<ModelInterfaceSharedPtr> models;
+  ModelInterfaceSharedPtr model = std::make_shared<ModelInterface>();
   model->clear();
+  models.push_back(model);
 
   // auto referencee = pxr::UsdStage::CreateInMemory();
   // if (!referencee->GetRootLayer()->ImportFromString(xml_string))
@@ -82,7 +84,7 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   auto referencee = pxr::UsdStage::Open(xml_string);
   if (!referencee)
   {
-    return nullptr;
+    return models;
   }
 
   auto range = pxr::UsdPrimRange::Stage(referencee);
@@ -100,13 +102,7 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
   std::string rootPath;
   std::string nameLink;
 
-  // Get robot name
-  model->name_ = defaultName;
-  if (model->name_.empty())
-  {
-    model.reset();
-    return model;
-  }
+  model->world_name_ = defaultName;
 
   int skipNext = 0;
 
@@ -115,6 +111,9 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
   for (auto const &prim : range)
   {
+    if (model->name_.empty() && !prim.IsA<pxr::UsdPhysicsScene>())
+      model->name_ = prim.GetName().GetText();
+
     std::string primName = pxr::TfStringify(prim.GetPath());
     if (prim.IsA<pxr::UsdShadeMaterial>())
     {
@@ -194,6 +193,28 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
     if (tokens.size() == 1)
     {
+      if (!rootPath.empty())
+      {
+        std::cerr << "rootPath " << rootPath << '\n';
+        std::cerr << "prim.GetName().GetText() " << prim.GetName().GetText() << '\n';
+        // float a;
+        // std::cin >> a;
+        if (rootPath != prim.GetName().GetText() && !prim.IsA<pxr::UsdPhysicsScene>())
+        {
+
+          auto isSameModel = [&](ModelInterfaceSharedPtr _model){ return _model->name_ == model->name_; };
+
+          if (std::find_if(begin(models), end(models), isSameModel) == models.end())
+          {
+            model = std::make_shared<ModelInterface>();
+            model->world_name_ = defaultName;
+            model->clear();
+            model->name_ = prim.GetName().GetText();
+            models.push_back(model);
+            rootPath = prim.GetName().GetText();
+          }
+        }
+      }
       rootPath = prim.GetName().GetText();
     }
     std::cerr << "\trootPath " << rootPath << " " << tokens.size() << '\n';
@@ -334,74 +355,110 @@ ModelInterfaceSharedPtr parseUSD(const std::string &xml_string)
       }
     }
 
-    if (model->links_.empty()){
-      model.reset();
-      return model;
-    }
+    // if (model->links_.empty()){
+    //   model.reset();
+    //   return model;
+    // }
   }
 
-  for (auto & joint : model->joints_)
+  for (auto & m : models)
   {
-    if (joint.second->ParentLinkName() == "world")
+    for (auto & link: m->links_)
     {
-      // insert <link name="world"/>
-      LinkSharedPtr worldLink = nullptr;
-      worldLink.reset(new Link);
-      worldLink->clear();
-      worldLink->name = "world";
-      model->links_.insert(make_pair(worldLink->name, worldLink));
+      if (ignition::math::equal(link.second->inertial->MassMatrix().Mass(), 0.0))
+      {
+        ignition::math::MassMatrix3d massMatrix;
+        massMatrix.SetMass(0.0001);
+        massMatrix.SetDiagonalMoments(
+          ignition::math::Vector3d());
+
+        link.second->inertial->SetPose(ignition::math::Pose3d(
+            ignition::math::Vector3d(0, 0, 0),
+            ignition::math::Quaterniond(1.0, 0, 0, 0)));
+
+        link.second->inertial->SetMassMatrix(massMatrix);
+        std::shared_ptr<sdf::Joint> joint = nullptr;
+        joint = std::make_shared<sdf::Joint>();
+        std::string joint_name = link.second->name;
+        joint->SetName(joint_name + "_joint");
+
+        joint->SetType(sdf::JointType::FIXED);
+        joint->SetParentLinkName("world");
+        joint->SetChildLinkName(link.second->name);
+        m->joints_.insert(make_pair(joint->Name(), joint));
+
+      }
     }
   }
 
-  std::cerr << "********************************" << '\n';
-  std::cerr << "model->links_ " << model->links_.size() << '\n';
-  for (auto link: model->links_)
+  std::cerr << "models " << models.size() << '\n';
+
+  for (auto & m : models)
   {
-    std::cerr << "link name " << link.second->name << '\n';
+    std::cerr << "++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
+    std::cerr << "\tmodel name " << m->name_ << '\n';
+
+    for (auto & joint : m->joints_)
+    {
+      if (joint.second->ParentLinkName() == "world")
+      {
+        // insert <link name="world"/>
+        LinkSharedPtr worldLink = nullptr;
+        worldLink.reset(new Link);
+        worldLink->clear();
+        worldLink->name = "world";
+        m->links_.insert(make_pair(worldLink->name, worldLink));
+      }
+    }
+
+    std::cerr << "\t********************************" << '\n';
+    std::cerr << "\tmodel->links_ " << m->links_.size() << '\n';
+    for (auto link: m->links_)
+    {
+      std::cerr << "\tlink name " << link.second->name << '\n';
+    }
+
+    std::cerr << "\t................................." << '\n';
+    std::cerr << "\tmodel->joints_ " << m->joints_.size() << '\n';
+    for (auto joint: m->joints_)
+    {
+      std::cerr << "\tjoints name " << joint.second->Name() << '\n';
+      std::cerr << "\t\t parent " << joint.second->ParentLinkName() << '\n';
+      std::cerr << "\t\t child " << joint.second->ChildLinkName() << '\n';
+    }
+    std::cerr << "\t********************************" << '\n';
+
+    // every link has children links and joints, but no parents, so we create a
+    // local convenience data structure for keeping child->parent relations
+    std::map<std::string, std::string> parent_link_tree;
+    parent_link_tree.clear();
+
+    // building tree: name mapping
+    try
+    {
+      m->initTree(parent_link_tree);
+    }
+    catch(ParseError &e)
+    {
+      m.reset();
+      sdferr << "error initTree " << e.what()  << "\n";
+      // return model;
+    }
+
+    // find the root link
+    try
+    {
+      m->initRoot(parent_link_tree);
+    }
+    catch(ParseError &e)
+    {
+      m.reset();
+      sdferr << "error initRoot " << e.what() << "\n";
+      // return model;
+    }
   }
 
-  std::cerr << "................................." << '\n';
-  std::cerr << "model->joints_ " << model->joints_.size() << '\n';
-  for (auto joint: model->joints_)
-  {
-    std::cerr << "joints name " << joint.second->Name() << '\n';
-    std::cerr << "\t parent " << joint.second->ParentLinkName() << '\n';
-    std::cerr << "\t child " << joint.second->ChildLinkName() << '\n';
-  }
-  std::cerr << "********************************" << '\n';
-
-  // every link has children links and joints, but no parents, so we create a
-  // local convenience data structure for keeping child->parent relations
-  std::map<std::string, std::string> parent_link_tree;
-  parent_link_tree.clear();
-
-  // building tree: name mapping
-  try
-  {
-    model->initTree(parent_link_tree);
-  }
-  catch(ParseError &e)
-  {
-    model.reset();
-    sdferr << "error initTree " << e.what()  << "\n";
-    return model;
-  }
-
-  // find the root link
-  try
-  {
-    model->initRoot(parent_link_tree);
-  }
-  catch(ParseError &e)
-  {
-    model.reset();
-    sdferr << "error initRoot " << e.what() << "\n";
-    return model;
-  }
-
-  if (referencee)
-    return model;
-  return nullptr;
+  return models;
 }
 
 bool isUSD(const std::string &filename)
@@ -410,13 +467,13 @@ bool isUSD(const std::string &filename)
   return referencee != nullptr;
 }
 
-ModelInterfaceSharedPtr parseUSDFile(const std::string &filename)
+std::vector<ModelInterfaceSharedPtr> parseUSDFile(const std::string &filename)
 {
   auto referencee = pxr::UsdStage::Open(filename);
   // std::ifstream stream(filename.c_str());
   if (!referencee)
   {
-    return ModelInterfaceSharedPtr();
+    return std::vector<ModelInterfaceSharedPtr>();
   }
   // std::string xml_str((std::istreambuf_iterator<char>(stream)),
   //                      std::istreambuf_iterator<char>());
