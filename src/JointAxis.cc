@@ -387,8 +387,16 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   sdf::ElementPtr axisElem = elem->GetElement(axisElemName);
   sdf::ElementPtr xyzElem = axisElem->GetElement("xyz");
   xyzElem->Set<ignition::math::Vector3d>(this->Xyz());
-  xyzElem->GetAttribute("expressed_in")->Set<std::string>(
-      this->XyzExpressedIn());
+  if (!this->XyzExpressedIn().empty())
+  {
+    xyzElem->GetAttribute("expressed_in")->Set<std::string>(
+        this->XyzExpressedIn());
+  }
+  else if (this->dataPtr->useParentModelFrame)
+  {
+     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
+        "__model__");
+  }
   sdf::ElementPtr dynElem = axisElem->GetElement("dynamics");
   dynElem->GetElement("damping")->Set<double>(this->Damping());
   dynElem->GetElement("friction")->Set<double>(this->Friction());
