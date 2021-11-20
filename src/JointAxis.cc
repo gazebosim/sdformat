@@ -23,6 +23,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/parser.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
@@ -372,4 +373,36 @@ Errors JointAxis::ResolveXyz(
 sdf::ElementPtr JointAxis::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("joint.sdf", elem);
+
+  std::string axisElemName = "axis";
+  if (_index > 0u)
+    axisElemName += std::to_string(_index + 1);
+  sdf::ElementPtr axisElem = elem->GetElement(axisElemName);
+  sdf::ElementPtr xyzElem = axisElem->GetElement("xyz");
+  xyzElem->Set<ignition::math::Vector3d>(this->Xyz());
+  xyzElem->GetAttribute("expressed_in")->Set<std::string>(
+      this->XyzExpressedIn());
+  sdf::ElementPtr dynElem = axisElem->GetElement("dynamics");
+  dynElem->GetElement("damping")->Set<double>(this->Damping());
+  dynElem->GetElement("friction")->Set<double>(this->Friction());
+  dynElem->GetElement("spring_reference")->Set<double>(
+      this->SpringReference());
+  dynElem->GetElement("spring_stiffness")->Set<double>(
+      this->SpringStiffness());
+
+  sdf::ElementPtr limitElem = axisElem->GetElement("limit");
+  limitElem->GetElement("lower")->Set<double>(this->Lower());
+  limitElem->GetElement("upper")->Set<double>(this->Upper());
+  limitElem->GetElement("effort")->Set<double>(this->Effort());
+  limitElem->GetElement("velocity")->Set<double>(this->MaxVelocity());
+  limitElem->GetElement("stiffness")->Set<double>(this->Stiffness());
+  limitElem->GetElement("dissipation")->Set<double>(this->Dissipation());
+  return axisElem;
 }
