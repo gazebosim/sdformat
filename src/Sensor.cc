@@ -65,7 +65,8 @@ const std::vector<std::string> sensorTypeStrs =
   "navsat",
   "segmentation_camera",
   "boundingbox_camera",
-  "custom"
+  "custom",
+  "wide_angle_camera"
 };
 
 class sdf::Sensor::Implementation
@@ -170,6 +171,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
     case SensorType::DEPTH_CAMERA:
     case SensorType::RGBD_CAMERA:
     case SensorType::THERMAL_CAMERA:
+    case SensorType::WIDE_ANGLE_CAMERA:
     case SensorType::SEGMENTATION_CAMERA:
     case SensorType::BOUNDINGBOX_CAMERA:
       return *(this->dataPtr->camera) == *(_sensor.dataPtr->camera);
@@ -299,6 +301,13 @@ Errors Sensor::Load(ElementPtr _sdf)
   else if (type == "boundingbox" || type == "boundingbox_camera")
   {
     this->dataPtr->type = SensorType::BOUNDINGBOX_CAMERA;
+    this->dataPtr->camera.emplace();
+    Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "wideanglecamera" || type == "wide_angle_camera")
+  {
+    this->dataPtr->type = SensorType::WIDE_ANGLE_CAMERA;
     this->dataPtr->camera.emplace();
     Errors err = this->dataPtr->camera->Load(_sdf->GetElement("camera"));
     errors.insert(errors.end(), err.begin(), err.end());
