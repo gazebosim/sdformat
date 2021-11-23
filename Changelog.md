@@ -1,5 +1,23 @@
 ## libsdformat 12.X
 
+### libsdformat 12.2.0 (2021-11-23)
+
+1. Convert Joint DOM to Element.
+    * [Pull request #759](https://github.com/ignitionrobotics/sdformat/pull/759)
+
+1. Populate light sdf::ElementPtr from Light DOM
+    * [Pull request #755](https://github.com/ignitionrobotics/sdformat/pull/755)
+
+1. Add function to convert Sensor DOM to sdf::ElementPtr
+    * [Pull request #753](https://github.com/ignitionrobotics/sdformat/pull/753)
+    * [Pull request #757](https://github.com/ignitionrobotics/sdformat/pull/757)
+
+1. Support wide angle camera.
+    * [Pull request #744](https://github.com/ignitionrobotics/sdformat/pull/744)
+
+1. Forward ports
+    * [Pull request #756](https://github.com/ignitionrobotics/sdformat/pull/756)
+
 ### libsdformat 12.1.0 (2021-11-09)
 
 1. Support accessing mutable sensor types.
