@@ -209,6 +209,17 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     }
   }
 
+  for (const auto &[name, size] :
+       _sdf->CountNamedElements("", Element::NameUniquenessExceptions()))
+  {
+    if (size > 1)
+    {
+      sdfwarn << "Non-unique name[" << name << "] detected " << size
+              << " times in XML children of world with name[" << this->Name()
+              << "].\n";
+    }
+  }
+
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
   std::unordered_set<std::string> frameNames;
