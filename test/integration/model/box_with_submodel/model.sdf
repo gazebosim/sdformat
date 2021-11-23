@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="box_with_submodel">
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+    </link>
+    <model name="submodel_of_box_with_submodel">
+      <link name="submodel_link">
+        <pose>0 0 0 0 0 0</pose>
+      </link>
+    </model>
+  </model>
+</sdf>

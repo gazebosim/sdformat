@@ -472,10 +472,10 @@ namespace sdf
     /// \return True if the camera has instrinsics values set, false otherwise
     public: bool HasLensIntrinsics() const;
 
-    /// \brief Fill the provided _elem with data from this sensor type.
-    /// \param[out] _elem SDF element point to populate
-    /// \return True if successful.
-    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+    /// \brief Create and return an SDF element filled with data from this
+    /// camera.
+    /// \return SDF element pointer with updated camera values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

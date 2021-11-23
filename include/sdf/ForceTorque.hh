@@ -154,10 +154,10 @@ namespace sdf
     /// \returen True if 'this' != _ft.
     public: bool operator!=(const ForceTorque &_ft) const;
 
-    /// \brief Fill the provided _elem with data from this sensor type.
-    /// \param[out] _elem SDF element point to populate
-    /// \return True if successful.
-    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+    /// \brief Create and return an SDF element filled with data from this
+    /// force torque sensor.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

@@ -409,6 +409,11 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat 5.x to 6.x
 
+### Additions
+
+1. **sdf/parser.hh**
+   + bool recursiveSameTypeUniqueNames(sdf::ElementPtr)
+
 ### Deprecations
 
 1. **sdf/Types.hh**

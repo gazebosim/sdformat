@@ -250,3 +250,50 @@ TEST(DOMJoint, CopyAssignmentAfterMove)
   EXPECT_EQ(joint1Axis.Xyz(), joint2.Axis(0)->Xyz());
   EXPECT_EQ(joint1Axis1.Xyz(), joint2.Axis(1)->Xyz());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Joint joint;
+  joint.SetRawPose({-1, -2, -3, 0, IGN_PI, 0});
+  joint.SetPoseRelativeTo("link");
+  joint.SetName("test_joint");
+  joint.SetParentLinkName("parent");
+  joint.SetChildLinkName("child");
+  joint.SetType(sdf::JointType::BALL);
+  sdf::JointAxis axis;
+  EXPECT_TRUE(axis.SetXyz(ignition::math::Vector3d(1, 0, 0)).empty());
+  joint.SetAxis(0, axis);
+  sdf::JointAxis axis1;
+  EXPECT_TRUE(axis1.SetXyz(ignition::math::Vector3d(0, 1, 0)).empty());
+  joint.SetAxis(1, axis1);
+
+  sdf::ElementPtr jointElem = joint.ToElement();
+  EXPECT_NE(nullptr, jointElem);
+  EXPECT_EQ(nullptr, joint.Element());
+
+  // verify values after loading the element back
+  sdf::Joint joint2;
+  joint2.Load(jointElem);
+
+  EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, 0, IGN_PI, 0),
+            joint2.RawPose());
+  EXPECT_EQ("link", joint2.PoseRelativeTo());
+  EXPECT_EQ("test_joint", joint2.Name());
+  EXPECT_EQ("parent", joint2.ParentLinkName());
+  EXPECT_EQ("child", joint2.ChildLinkName());
+  EXPECT_EQ(sdf::JointType::BALL, joint2.Type());
+  ASSERT_TRUE(nullptr != joint2.Axis(0));
+  ASSERT_TRUE(nullptr != joint2.Axis(1));
+  EXPECT_EQ(axis.Xyz(), joint2.Axis(0)->Xyz());
+  EXPECT_EQ(axis1.Xyz(), joint2.Axis(1)->Xyz());
+
+  // make changes to DOM and verify ToElement produces updated values
+  joint2.SetParentLinkName("new_parent");
+  sdf::ElementPtr joint2Elem = joint2.ToElement();
+  EXPECT_NE(nullptr, joint2Elem);
+  sdf::Joint joint3;
+  joint3.Load(joint2Elem);
+  EXPECT_EQ("new_parent", joint3.ParentLinkName());
+}
