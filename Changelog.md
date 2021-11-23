@@ -58,9 +58,6 @@
 1. Check joint parent link names in Model::Load.
     * [Pull request #726](https://github.com/ignitionrobotics/sdformat/pull/726)
 
-1. Add force torque sensor
-    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
-
 1. Add Joint DOM API to access joint sensors 
     * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
 
@@ -71,9 +68,7 @@
     * [Pull request #716](https://github.com/ignitionrobotics/sdformat/pull/716)
 
 1. Fix URDF fixed joint reduction of plugins
-    * [Pull request #745](https://github.com/ignitionrobotics/sdformat/pull/745)
-
-1. Fix URDF fixed joint reduction of plugins
+    * [Pull request #500](https://github.com/ignitionrobotics/sdformat/pull/500)
     * [Pull request #745](https://github.com/ignitionrobotics/sdformat/pull/745)
 
 ### libsdformat 12.1.0 (2021-11-09)
