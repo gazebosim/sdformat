@@ -216,7 +216,7 @@ inline namespace SDF_VERSION_NAMESPACE {
           if (!mesh)
             break;
           geometryType = doc->NewElement(type.c_str());
-          std::cerr << "mesh->Scale() CreateGeom" << mesh->Scale() << '\n';
+          // std::cerr << "mesh->Scale() CreateGeom" << mesh->Scale() << '\n';
           AddKeyValue(geometryType, "scale", Vector32Str(mesh->Scale()));
           // do something more to meshes
           {
@@ -288,12 +288,12 @@ inline namespace SDF_VERSION_NAMESPACE {
     if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
         _oldLinkName.empty())
     {
-      std::cerr << "/* visual name " << _oldLinkName.c_str() << '\n';
+      // std::cerr << "/* visual name " << _oldLinkName.c_str() << '\n';
       sdfVisual->SetAttribute("name", _oldLinkName.c_str());
     }
     else
     {
-      std::cerr << "/* visual name " << _link->name + kLumpPrefix + _oldLinkName << '\n';
+      // std::cerr << "/* visual name " << _link->name + kLumpPrefix + _oldLinkName << '\n';
 
       sdfVisual->SetAttribute("name",
           (_link->name + kLumpPrefix + _oldLinkName).c_str());
@@ -335,39 +335,6 @@ inline namespace SDF_VERSION_NAMESPACE {
         AddKeyValue(sdfVisual, "material", "");
         materialTag = sdfVisual->FirstChildElement("material");
       }
-      // If the specular and diffuse are defined by an extension then don't
-      // use the color values
-      if (materialTag->FirstChildElement("diffuse") == nullptr &&
-          materialTag->FirstChildElement("ambient") == nullptr)
-      {
-        if (materialTag->FirstChildElement("diffuse") == nullptr)
-        {
-          double color_diffuse[4];
-          color_diffuse[0] = _visual->Material()->Diffuse().R();
-          color_diffuse[1] = _visual->Material()->Diffuse().G();
-          color_diffuse[2] = _visual->Material()->Diffuse().B();
-          color_diffuse[3] = _visual->Material()->Diffuse().A();
-          AddKeyValue(materialTag, "diffuse", Values2str(4, color_diffuse));
-        }
-        if (materialTag->FirstChildElement("ambient") == nullptr)
-        {
-          double color_ambient[4];
-          color_ambient[0] = _visual->Material()->Ambient().R();
-          color_ambient[1] = _visual->Material()->Ambient().G();
-          color_ambient[2] = _visual->Material()->Ambient().B();
-          color_ambient[3] = _visual->Material()->Ambient().A();
-          AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
-        }
-        if (materialTag->FirstChildElement("emissive") == nullptr)
-        {
-          double color_emissive[4];
-          color_emissive[0] = _visual->Material()->Emissive().R();
-          color_emissive[1] = _visual->Material()->Emissive().G();
-          color_emissive[2] = _visual->Material()->Emissive().B();
-          color_emissive[3] = _visual->Material()->Emissive().A();
-          AddKeyValue(materialTag, "emissive", Values2str(4, color_emissive));
-        }
-      }
 
       const sdf::Pbr * pbr = _visual->Material()->PbrMaterial();
       if(pbr != nullptr)
@@ -401,8 +368,53 @@ inline namespace SDF_VERSION_NAMESPACE {
             AddKeyValue(metalTag, "roughness_map", pbrWorkflow->RoughnessMap());
           }
         }
+        double color_diffuse[3];
+        color_diffuse[0] = 1;
+        color_diffuse[1] = 1;
+        color_diffuse[2] = 1;
+        AddKeyValue(materialTag, "diffuse", Values2str(3, color_diffuse));
+        double color_specular[3];
+        color_specular[0] = 1;
+        color_specular[1] = 1;
+        color_specular[2] = 1;
+        AddKeyValue(materialTag, "specular", Values2str(3, color_specular));
       }
-
+      else
+      {
+        // If the specular and diffuse are defined by an extension then don't
+        // use the color values
+        if (materialTag->FirstChildElement("diffuse") == nullptr &&
+            materialTag->FirstChildElement("ambient") == nullptr)
+        {
+          if (materialTag->FirstChildElement("diffuse") == nullptr)
+          {
+            double color_diffuse[4];
+            color_diffuse[0] = _visual->Material()->Diffuse().R();
+            color_diffuse[1] = _visual->Material()->Diffuse().G();
+            color_diffuse[2] = _visual->Material()->Diffuse().B();
+            color_diffuse[3] = _visual->Material()->Diffuse().A();
+            AddKeyValue(materialTag, "diffuse", Values2str(4, color_diffuse));
+          }
+          if (materialTag->FirstChildElement("ambient") == nullptr)
+          {
+            double color_ambient[4];
+            color_ambient[0] = _visual->Material()->Ambient().R();
+            color_ambient[1] = _visual->Material()->Ambient().G();
+            color_ambient[2] = _visual->Material()->Ambient().B();
+            color_ambient[3] = _visual->Material()->Ambient().A();
+            AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
+          }
+          if (materialTag->FirstChildElement("emissive") == nullptr)
+          {
+            double color_emissive[4];
+            color_emissive[0] = _visual->Material()->Emissive().R();
+            color_emissive[1] = _visual->Material()->Emissive().G();
+            color_emissive[2] = _visual->Material()->Emissive().B();
+            color_emissive[3] = _visual->Material()->Emissive().A();
+            AddKeyValue(materialTag, "emissive", Values2str(4, color_emissive));
+          }
+        }
+      }
     }
     // end create _visual node
     _elem->LinkEndChild(sdfVisual);
@@ -848,7 +860,6 @@ inline namespace SDF_VERSION_NAMESPACE {
         && FixedJointShouldBeReduced(_link->parent_joint)
         && g_reduceFixedJoints)
     {
-      std::cerr << "return ?" << '\n';
       return;
     }
 

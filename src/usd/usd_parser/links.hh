@@ -24,7 +24,7 @@
 
 namespace usd
 {
-  LinkSharedPtr ParseLinks(
+  std::string ParseLinks(
     const pxr::UsdPrim &_prim,
     LinkSharedPtr &_link,
     std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,

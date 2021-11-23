@@ -89,6 +89,7 @@ namespace usd
     LinkSharedPtr &link,
     ignition::common::SubMesh &_subMesh,
     sdf::Mesh &_meshGeom,
+    std::map<std::string, sdf::Material> &_materialsSDF,
     std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,
     const ignition::math::Vector3d &_scale,
     const double &_metersPerUnit)
@@ -99,12 +100,17 @@ namespace usd
     {
       if (child.IsA<pxr::UsdGeomSubset>())
       {
+        std::shared_ptr<sdf::Visual> visSubset;
+        visSubset = std::make_shared<sdf::Visual>();
+
         std::string nameMaterial = ParseMaterialName(child);
         auto it = _materials.find(nameMaterial);
-        if (it != _materials.end())
+        auto itSDF = _materialsSDF.find(nameMaterial);
+        if (it != _materials.end() && itSDF != _materialsSDF.end())
         {
           std::cerr << "material found" << '\n';
           link->visual_array_material.push_back(it->second);
+          visSubset->SetMaterial(itSDF->second);
         }
         else
         {
@@ -129,11 +135,23 @@ namespace usd
         pxr::VtIntArray faceVertexIndices;
         child.GetAttribute(pxr::TfToken("indices")).Get(&faceVertexIndices);
         std::cerr << "faceVertexIndices " << faceVertexIndices.size() << '\n';
+        std::cerr << "_subMesh.VertexCount() " << _subMesh.VertexCount() << '\n';
+        std::cerr << "_subMesh.NormalCount() " << _subMesh.NormalCount() << '\n';
+        std::cerr << "_subMesh.TexCoordCount() " << _subMesh.TexCoordCount() << '\n';
+
         for (unsigned int i = 0; i < faceVertexIndices.size(); ++i)
         {
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3));
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3 + 1));
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3 + 2));
+
+          // subMeshSubset.AddTexCoord(_subMesh.TexCoord(_subMesh.Index(faceVertexIndices[i] * 3)));
+          // subMeshSubset.AddTexCoord(_subMesh.TexCoord(_subMesh.Index(faceVertexIndices[i] * 3 + 1)));
+          // subMeshSubset.AddTexCoord(_subMesh.TexCoord(_subMesh.Index(faceVertexIndices[i] * 3 + 2)));
+          //
+          // subMeshSubset.AddNormal(_subMesh.Normal(_subMesh.Index(faceVertexIndices[i] * 3)));
+          // subMeshSubset.AddNormal(_subMesh.Normal(_subMesh.Index(faceVertexIndices[i] * 3 + 1)));
+          // subMeshSubset.AddNormal(_subMesh.Normal(_subMesh.Index(faceVertexIndices[i] * 3 + 2)));
         }
 
         for (int i = 0; i < _subMesh.VertexCount(); ++i)
@@ -148,9 +166,13 @@ namespace usd
         {
           subMeshSubset.AddTexCoord(_subMesh.TexCoord(i));
         }
+
+        std::cerr << "subMeshSubset.IndexCount() " << subMeshSubset.IndexCount() << '\n';
+        std::cerr << "subMeshSubset.VertexCount() " << subMeshSubset.VertexCount() << '\n';
+        std::cerr << "subMeshSubset.NormalCount() " << subMeshSubset.NormalCount() << '\n';
+        std::cerr << "subMeshSubset.TexCoordCount() " << subMeshSubset.TexCoordCount() << '\n';
+
         meshSubset.AddSubMesh(subMeshSubset);
-        std::shared_ptr<sdf::Visual> visSubset;
-        visSubset = std::make_shared<sdf::Visual>();
         sdf::Mesh meshGeomSubset;
         sdf::Geometry geomSubset;
         geomSubset.SetType(sdf::GeometryType::MESH);
@@ -196,13 +218,12 @@ namespace usd
     const ignition::math::Vector3d &_scale,
     const double &_metersPerUnit)
   {
-    if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->z) {
-      std::cerr << "TEST Z" << '\n';
-    }
-    if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->y) {
-      std::cerr << "TEST Y" << '\n';
-    }
-
+    // if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->z) {
+    //   std::cerr << "TEST Z" << '\n';
+    // }
+    // if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->y) {
+    //   std::cerr << "TEST Y" << '\n';
+    // }
 
     // auto variantMesh = pxr::UsdGeomMesh(_prim);
     // pxr::TfToken axis;
@@ -231,6 +252,16 @@ namespace usd
     _prim.GetAttribute(pxr::TfToken("normals")).Get(&normals);
     _prim.GetAttribute(pxr::TfToken("points")).Get(&points);
     _prim.GetAttribute(pxr::TfToken("primvars:st")).Get(&textCoords);
+
+    std::cerr << "faceVertexCounts " << faceVertexCounts.size() << '\n';
+    std::cerr << "faceVertexIndices " << faceVertexIndices.size() << '\n';
+    std::cerr << "normals " << normals.size() << '\n';
+    std::cerr << "points " << points.size() << '\n';
+    if (textCoords.size() == 0)
+    {
+      _prim.GetAttribute(pxr::TfToken("primvars:st_1")).Get(&textCoords);
+    }
+    std::cerr << "primvars:st " << textCoords.size() << '\n';
 
     unsigned int indexVertex = 0;
     for (unsigned int i = 0; i < faceVertexCounts.size(); ++i)
@@ -285,7 +316,7 @@ namespace usd
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
     GetTransform(_prim, _metersPerUnit, pose, scale, link->name);
-    std::cerr << "Mesh setScale " << scale << '\n';
+    // std::cerr << "Mesh setScale " << scale << '\n';
     meshGeom.SetScale(scale * link->scale);
     _vis->SetRawPose(pose);
     //
@@ -335,7 +366,7 @@ namespace usd
         directoryMesh, ignition::common::basename(directoryMesh)) + ".dae");
 
     int numSubMeshes = ParseMeshSubGeom(
-      _prim, link, subMesh, meshGeom, _materials, _scale, _metersPerUnit);
+      _prim, link, subMesh, meshGeom, _materialsSDF, _materials, _scale, _metersPerUnit);
 
     _geom.SetMeshShape(meshGeom);
     _vis->SetGeom(_geom);
@@ -504,7 +535,7 @@ namespace usd
     }
   }
 
-  LinkSharedPtr ParseLinks(
+  std::string ParseLinks(
     const pxr::UsdPrim &_prim,
     LinkSharedPtr &link,
     std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,
@@ -514,28 +545,28 @@ namespace usd
   {
     std::cerr << "************ ADDED LINK ************" << '\n';
 
-    pxr::TfToken axis = pxr::UsdGeomGetStageUpAxis(_prim.GetStage());
-    // _prim.GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
-    std::string upAxis = axis.GetText();
-    std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
-
-    pxr::UsdPrimCompositionQuery query =
-      pxr::UsdPrimCompositionQuery::GetDirectReferences(_prim);
-
-    std::vector<pxr::UsdPrimCompositionQueryArc> arcs =
-      query.GetCompositionArcs();
-    bool isAPropReference = false;
-    for (auto & a : arcs )
-    {
-      pxr::SdfLayerHandle handler = a.GetIntroducingLayer();
-      auto stage = pxr::UsdStage::Open(handler);
-      if (stage)
-      {
-        stage->GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
-        upAxis = axis.GetText();
-        std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
-      }
-    }
+    // pxr::TfToken axis = pxr::UsdGeomGetStageUpAxis(_prim.GetStage());
+    // // _prim.GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
+    // std::string upAxis = axis.GetText();
+    // std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
+    //
+    // pxr::UsdPrimCompositionQuery query =
+    //   pxr::UsdPrimCompositionQuery::GetDirectReferences(_prim);
+    //
+    // std::vector<pxr::UsdPrimCompositionQueryArc> arcs =
+    //   query.GetCompositionArcs();
+    // bool isAPropReference = false;
+    // for (auto & a : arcs )
+    // {
+    //   pxr::SdfLayerHandle handler = a.GetIntroducingLayer();
+    //   auto stage = pxr::UsdStage::Open(handler);
+    //   if (stage)
+    //   {
+    //     stage->GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
+    //     upAxis = axis.GetText();
+    //     std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
+    //   }
+    // }
 
     bool newlink = false;
 
@@ -549,14 +580,25 @@ namespace usd
     std::string primName = pxr::TfStringify(_prim.GetPath());
     removeSubStr(primName, "/World");
 
-    std::vector<std::string> tokens = ignition::common::split(primName, "/");
-    if (tokens.size() >= 3)
+    if(link->name.empty())
     {
-      link->name = pxr::TfStringify("/" + tokens[0] + "/" + tokens[1]);
+      std::vector<std::string> tokens = ignition::common::split(primName, "/");
+      if (tokens.size() >= 3)
+      {
+        link->name = pxr::TfStringify("/" + tokens[0] + "/" + tokens[1]);
+      }
+      else
+      {
+        link->name = pxr::TfStringify(_prim.GetPath());
+      }
     }
-    else
+
+    std::string result = link->name;
+
+    if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
     {
-      link->name = pxr::TfStringify(_prim.GetPath());
+      result = primName;//pxr::TfStringify(_prim.GetPath());
+      link->name = primName;
     }
 
     if (!link->inertial)
@@ -788,6 +830,6 @@ namespace usd
       std::cerr << "Link nullptr" << '\n';
     }
 
-    return link;
+    return result;
   }
 }

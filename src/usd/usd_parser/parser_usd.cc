@@ -21,8 +21,9 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usd/primRange.h>
 #include "pxr/usd/usdGeom/gprim.h"
+#include "pxr/usd/usdPhysics/rigidBodyAPI.h"
 
-#include "pxr/usd/usdLux/light.h"
+// #include "pxr/usd/usdLux/light.h"
 
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
@@ -38,7 +39,8 @@
 
 #include "pxr/usd/usdShade/material.h"
 
-#include "pxr/usd/usdLux/light.h"
+#include "pxr/usd/usdLux/lightAPI.h"
+#include "pxr/usd/usdLux/boundableLightBase.h"
 #include "pxr/usd/usdLux/sphereLight.h"
 
 #include "pxr/usd/usdGeom/camera.h"
@@ -75,12 +77,6 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
   model->clear();
   models.push_back(model);
 
-  // auto referencee = pxr::UsdStage::CreateInMemory();
-  // if (!referencee->GetRootLayer()->ImportFromString(xml_string))
-  // {
-  //   return nullptr;
-  // }
-
   auto referencee = pxr::UsdStage::Open(xml_string);
   if (!referencee)
   {
@@ -99,7 +95,9 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
   std::cerr << "metersPerUnit" << metersPerUnit << '\n';
   std::cerr << "upAxis: " << upAxis << '\n';
   std::cerr << "defaultPrim" << defaultName << '\n';
-  std::string rootPath;
+
+  std::string modelName;
+  std::string baseLink;
   std::string nameLink;
 
   model->world_name_ = defaultName;
@@ -111,9 +109,6 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
 
   for (auto const &prim : range)
   {
-    if (model->name_.empty() && !prim.IsA<pxr::UsdPhysicsScene>())
-      model->name_ = prim.GetName().GetText();
-
     std::string primName = pxr::TfStringify(prim.GetPath());
     if (prim.IsA<pxr::UsdShadeMaterial>())
     {
@@ -169,6 +164,14 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
   // Get all Link elements
   for (auto const &prim : range)
   {
+    if (prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
+    {
+      nameLink = pxr::TfStringify(prim.GetPath());
+    }
+
+    if (model->name_.empty() && !prim.IsA<pxr::UsdPhysicsScene>())
+      model->name_ = prim.GetName().GetText();
+
     if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
     {
       continue;
@@ -193,13 +196,13 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
 
     if (tokens.size() == 1)
     {
-      if (!rootPath.empty())
+      if (!modelName.empty())
       {
-        std::cerr << "rootPath " << rootPath << '\n';
+        std::cerr << "modelName " << modelName << '\n';
         std::cerr << "prim.GetName().GetText() " << prim.GetName().GetText() << '\n';
         // float a;
         // std::cin >> a;
-        if (rootPath != prim.GetName().GetText() && !prim.IsA<pxr::UsdPhysicsScene>())
+        if (modelName != prim.GetName().GetText() && !prim.IsA<pxr::UsdPhysicsScene>())
         {
 
           auto isSameModel = [&](ModelInterfaceSharedPtr _model){ return _model->name_ == model->name_; };
@@ -211,42 +214,42 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
             model->clear();
             model->name_ = prim.GetName().GetText();
             models.push_back(model);
-            rootPath = prim.GetName().GetText();
+            modelName = prim.GetName().GetText();
           }
         }
       }
-      rootPath = prim.GetName().GetText();
+      modelName = prim.GetName().GetText();
     }
-    std::cerr << "\trootPath " << rootPath << " " << tokens.size() << '\n';
+    std::cerr << "\tmodelName " << modelName << " " << tokens.size() << '\n';
 
     if (tokens.size() > 1)
     {
-      nameLink = "/" + tokens[0] + "/" + tokens[1];
+      baseLink = "/" + tokens[0] + "/" + tokens[1];
     }
 
-    if (primName.find(nameLink) == std::string::npos)
+    if (primName.find(baseLink) == std::string::npos)
     {
-      nameLink = "";
+      baseLink = "";
     }
 
-    if (prim.IsA<pxr::UsdLuxLight>())
+    if (prim.IsA<pxr::UsdLuxBoundableLightBase>())
     {
       std::cerr << "Light!" << '\n';
       std::cerr << "\tprimName " << primName << '\n';
-      std::cerr << "\tnameLink " << nameLink << '\n';
-      std::cerr << "\tprimName.find(nameLink) == std::string::npos " << (primName.find(nameLink) == std::string::npos) << '\n';
+      std::cerr << "\tbaseLink " << baseLink << '\n';
+      std::cerr << "\tprimName.find(baseLink) == std::string::npos " << (primName.find(baseLink) == std::string::npos) << '\n';
 
-      auto light = ParseLights(prim, metersPerUnit, nameLink);
+      auto light = ParseLights(prim, metersPerUnit, baseLink);
       if (light)
       {
-        if (model->links_.find(nameLink) == model->links_.end())
+        if (model->links_.find(baseLink) == model->links_.end())
         {
           model->lights_.insert(std::pair<std::string, std::shared_ptr<sdf::Light>>
             (prim.GetPath().GetName(), light));
         }
         else
         {
-            model->links_[nameLink]->lights_.insert(std::pair<std::string, std::shared_ptr<sdf::Light>>
+            model->links_[baseLink]->lights_.insert(std::pair<std::string, std::shared_ptr<sdf::Light>>
               (prim.GetPath().GetName(), light));
         }
       }
@@ -255,11 +258,18 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
 
     if(prim.IsA<pxr::UsdGeomCamera>())
     {
-      auto sensor = ParseSensors(prim, metersPerUnit, nameLink);
-      model->links_[nameLink]->sensors_.insert(
-        std::pair<std::string, std::shared_ptr<sdf::Sensor>>
-          (prim.GetPath().GetName(), sensor));
-      std::cerr << "camera!" << '\n';
+      if (!baseLink.empty())
+      {
+        auto sensor = ParseSensors(prim, metersPerUnit, baseLink);
+        std::cerr << "baseLink " << baseLink << '\n';
+        if(sensor)
+        {
+          model->links_[baseLink]->sensors_.insert(
+            std::pair<std::string, std::shared_ptr<sdf::Sensor>>
+              (prim.GetPath().GetName(), sensor));
+        }
+        std::cerr << "camera!" << '\n';
+      }
       continue;
     }
 
@@ -321,37 +331,29 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
     if (tokens.size() == 1)
       continue;
 
-    if (prim.IsA<pxr::UsdLuxLight>())
-    {
-      sdferr << "Light" << "\n";
-      if (prim.IsA<pxr::UsdLuxSphereLight>())
-      {
-        sdferr << "Sphere light" << "\n";
-      }
-      continue;
-    }
-
     if (!prim.IsA<pxr::UsdGeomGprim>())
     {
       sdferr << "Not a geometry" << "\n";
       continue;
     }
 
+    sdferr << "baseLink " << baseLink << "\n";
     sdferr << "nameLink " << nameLink << "\n";
 
     LinkSharedPtr link = nullptr;
     auto it = model->links_.find(nameLink);
     if (it != model->links_.end())
     {
-      link = usd::ParseLinks(prim, it->second, materials, materialsSDF, metersPerUnit, skipNext);
+      usd::ParseLinks(prim, it->second, materials, materialsSDF, metersPerUnit, skipNext);
     }
     else
     {
-      link = usd::ParseLinks(prim, link, materials, materialsSDF, metersPerUnit, skipNext);
+      usd::ParseLinks(prim, link, materials, materialsSDF, metersPerUnit, skipNext);
 
       if (link)
       {
-          model->links_.insert(make_pair(nameLink, link));
+        link->name = nameLink;
+        model->links_.insert(make_pair(nameLink, link));
       }
     }
 
@@ -367,6 +369,9 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
     {
       if (ignition::math::equal(link.second->inertial->MassMatrix().Mass(), 0.0))
       {
+        if (link.second->name == "world" || link.second->name.empty())
+          continue;
+        std::cerr << "Added joint to " << link.second->name << '\n';
         ignition::math::MassMatrix3d massMatrix;
         massMatrix.SetMass(0.0001);
         massMatrix.SetDiagonalMoments(
@@ -377,21 +382,25 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
             ignition::math::Quaterniond(1.0, 0, 0, 0)));
 
         link.second->inertial->SetMassMatrix(massMatrix);
-        std::shared_ptr<sdf::Joint> joint = nullptr;
-        joint = std::make_shared<sdf::Joint>();
-        std::string joint_name = link.second->name;
-        joint->SetName(joint_name + "_joint");
-
-        joint->SetType(sdf::JointType::FIXED);
-        joint->SetParentLinkName("world");
-        joint->SetChildLinkName(link.second->name);
-        m->joints_.insert(make_pair(joint->Name(), joint));
-
+        // std::shared_ptr<sdf::Joint> joint = nullptr;
+        // joint = std::make_shared<sdf::Joint>();
+        // std::string joint_name = link.second->name;
+        // joint->SetName(joint_name + "_joint");
+        //
+        // joint->SetType(sdf::JointType::FIXED);
+        // joint->SetParentLinkName("world");
+        // joint->SetChildLinkName(link.second->name);
+        // m->joints_.insert(make_pair(joint->Name(), joint));
       }
     }
   }
 
   std::cerr << "models " << models.size() << '\n';
+
+  for (auto & m : models)
+  {
+    m->links_.erase("");
+  }
 
   for (auto & m : models)
   {
@@ -415,7 +424,9 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
     std::cerr << "\tmodel->links_ " << m->links_.size() << '\n';
     for (auto link: m->links_)
     {
-      std::cerr << "\tlink name " << link.second->name << '\n';
+      std::cerr << "\tlink name "
+                   << "\n\t\t" << link.first
+                   << "\n\t\t" << link.second->name << '\n';
     }
 
     std::cerr << "\t................................." << '\n';

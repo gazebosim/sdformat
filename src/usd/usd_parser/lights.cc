@@ -17,7 +17,8 @@
 
 #include "lights.hh"
 
-#include "pxr/usd/usdLux/light.h"
+#include "pxr/usd/usdLux/lightAPI.h"
+#include "pxr/usd/usdLux/boundableLightBase.h"
 #include "pxr/usd/usdLux/distantLight.h"
 #include "pxr/usd/usdLux/diskLight.h"
 
@@ -33,7 +34,7 @@ namespace usd
     std::shared_ptr<sdf::Light> light;
     light = std::make_shared<sdf::Light>();
 
-    auto variantLight = pxr::UsdLuxLight(_prim);
+    auto variantLight = pxr::UsdLuxBoundableLightBase(_prim);
 
     if (_prim.IsA<pxr::UsdLuxDistantLight>())
     {
