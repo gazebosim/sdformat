@@ -85,10 +85,10 @@ namespace sdf
     /// \returen True if 'this' != _mag.
     public: bool operator!=(const Magnetometer &_mag) const;
 
-    /// \brief Fill the provided _elem with data from this sensor type.
-    /// \param[out] _elem SDF element point to populate
-    /// \return True if successful.
-    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+    /// \brief Create and return an SDF element filled with data from this
+    /// magnetometer.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

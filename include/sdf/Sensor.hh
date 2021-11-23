@@ -206,10 +206,10 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Fill the provided _elem with data from this sensor.
-    /// \param[out] _elem SDF element point to populate
-    /// \return True if successful.
-    public: bool PopulateElement(sdf::ElementPtr _elem) const;
+    /// \brief Create and return an SDF element filled with data from this
+    /// sensor.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Get the sensor type.
     /// \return The sensor type.

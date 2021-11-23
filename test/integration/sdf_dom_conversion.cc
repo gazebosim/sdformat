@@ -22,7 +22,9 @@
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Element.hh"
+#include "sdf/ForceTorque.hh"
 #include "sdf/Imu.hh"
+#include "sdf/Joint.hh"
 #include "sdf/Lidar.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
@@ -62,11 +64,8 @@ TEST(SDFDomConversion, Sensors)
   // altimeter
   {
     const sdf::Sensor *sensor = link->SensorByIndex(0);
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto altimeterSensor = std::make_unique<sdf::Sensor>();
     altimeterSensor->Load(sensorElem);
 
@@ -87,11 +86,8 @@ TEST(SDFDomConversion, Sensors)
   // camera
   {
     const sdf::Sensor *sensor = link->SensorByName("camera_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto cameraSensor = std::make_unique<sdf::Sensor>();
     cameraSensor->Load(sensorElem);
 
@@ -142,11 +138,8 @@ TEST(SDFDomConversion, Sensors)
   // depth
   {
     const sdf::Sensor *sensor = link->SensorByName("depth_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto depthSensor = std::make_unique<sdf::Sensor>();
     depthSensor->Load(sensorElem);
 
@@ -163,11 +156,8 @@ TEST(SDFDomConversion, Sensors)
   // rgbd
   {
     const sdf::Sensor *sensor = link->SensorByName("rgbd_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto rgbdSensor = std::make_unique<sdf::Sensor>();
     rgbdSensor->Load(sensorElem);
 
@@ -185,11 +175,8 @@ TEST(SDFDomConversion, Sensors)
   // thermal
   {
     const sdf::Sensor *sensor = link->SensorByName("thermal_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto thermalSensor = std::make_unique<sdf::Sensor>();
     thermalSensor->Load(sensorElem);
 
@@ -207,11 +194,8 @@ TEST(SDFDomConversion, Sensors)
   // segmentation
   {
     const sdf::Sensor *sensor = link->SensorByName("segmentation_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto segmentationSensor = std::make_unique<sdf::Sensor>();
     segmentationSensor->Load(sensorElem);
 
@@ -231,11 +215,8 @@ TEST(SDFDomConversion, Sensors)
   // force torque
   {
     const sdf::Sensor *sensor = link->SensorByName("force_torque_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto forceTorqueSensor = std::make_unique<sdf::Sensor>();
     forceTorqueSensor->Load(sensorElem);
 
@@ -250,11 +231,8 @@ TEST(SDFDomConversion, Sensors)
   // gpu lidar
   {
     const sdf::Sensor *sensor = link->SensorByName("gpu_lidar_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto gpuLidarSensor = std::make_unique<sdf::Sensor>();
     gpuLidarSensor->Load(sensorElem);
 
@@ -285,11 +263,8 @@ TEST(SDFDomConversion, Sensors)
   // imu
   {
     const sdf::Sensor *sensor = link->SensorByName("imu_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto imuSensor = std::make_unique<sdf::Sensor>();
     imuSensor->Load(sensorElem);
 
@@ -355,11 +330,8 @@ TEST(SDFDomConversion, Sensors)
   // magnetometer
   {
     const sdf::Sensor *sensor = link->SensorByName("magnetometer_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto magnetometerSensor = std::make_unique<sdf::Sensor>();
     magnetometerSensor->Load(sensorElem);
 
@@ -383,11 +355,8 @@ TEST(SDFDomConversion, Sensors)
   // air pressure
   {
     const sdf::Sensor *sensor = link->SensorByName("air_pressure_sensor");
-    sdf::ElementPtr sensorElem(new sdf::Element);
-    sdf::initFile("sensor.sdf", sensorElem);
-
     // convert to sdf element and load it back
-    sensor->PopulateElement(sensorElem);
+    sdf::ElementPtr sensorElem = sensor->ToElement();
     auto airPressureSensor = std::make_unique<sdf::Sensor>();
     airPressureSensor->Load(sensorElem);
 
@@ -563,4 +532,71 @@ TEST(SDFDomConversion, Lights)
         dirLight->Specular());
     EXPECT_EQ(ignition::math::Vector3d(4.0, 5.0, 6.0), dirLight->Direction());
   }
+}
+
+//////////////////////////////////////////////////
+TEST(SDFDomConversion, Joints)
+{
+  // this test loads the joint_sensors.sdf test file, then
+  // 1) converts each type of sensor DOM to Element
+  // 2) loads the Element back to DOM,
+  // 3) verify the values
+  // Some of the verification code is adapted from joint_dom.cc
+  const std::string testFile =
+      sdf::testing::TestFile("sdf", "joint_sensors.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_TRUE(errors.empty());
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  // Get joint
+  const sdf::Joint *j = model->JointByName("joint");
+  ASSERT_NE(nullptr, j);
+
+  // convert to sdf element and load it back
+  sdf::ElementPtr jointElem = j->ToElement();
+  auto joint = std::make_unique<sdf::Joint>();
+  joint->Load(jointElem);
+  ASSERT_NE(nullptr, joint);
+  EXPECT_EQ("joint", joint->Name());
+  EXPECT_EQ(1u, joint->SensorCount());
+
+  EXPECT_EQ("link1", joint->ParentLinkName());
+  EXPECT_EQ("link2", joint->ChildLinkName());
+  EXPECT_EQ(sdf::JointType::FIXED, joint->Type());
+
+  // Get the force_torque sensor
+  const sdf::Sensor *forceTorqueSensor =
+    joint->SensorByName("force_torque_sensor");
+  ASSERT_NE(nullptr, forceTorqueSensor);
+  EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
+  EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+      forceTorqueSensor->RawPose());
+  auto forceTorqueSensorObj = forceTorqueSensor->ForceTorqueSensor();
+  ASSERT_NE(nullptr, forceTorqueSensorObj);
+  EXPECT_EQ(sdf::ForceTorqueFrame::PARENT, forceTorqueSensorObj->Frame());
+  EXPECT_EQ(sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD,
+      forceTorqueSensorObj->MeasureDirection());
+
+  EXPECT_DOUBLE_EQ(0.0, forceTorqueSensorObj->ForceXNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.1, forceTorqueSensorObj->ForceXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(1.0, forceTorqueSensorObj->ForceYNoise().Mean());
+  EXPECT_DOUBLE_EQ(1.1, forceTorqueSensorObj->ForceYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(2.0, forceTorqueSensorObj->ForceZNoise().Mean());
+  EXPECT_DOUBLE_EQ(2.1, forceTorqueSensorObj->ForceZNoise().StdDev());
+
+  EXPECT_DOUBLE_EQ(3.0, forceTorqueSensorObj->TorqueXNoise().Mean());
+  EXPECT_DOUBLE_EQ(3.1, forceTorqueSensorObj->TorqueXNoise().StdDev());
+  EXPECT_DOUBLE_EQ(4.0, forceTorqueSensorObj->TorqueYNoise().Mean());
+  EXPECT_DOUBLE_EQ(4.1, forceTorqueSensorObj->TorqueYNoise().StdDev());
+  EXPECT_DOUBLE_EQ(5.0, forceTorqueSensorObj->TorqueZNoise().Mean());
+  EXPECT_DOUBLE_EQ(5.1, forceTorqueSensorObj->TorqueZNoise().StdDev());
 }
