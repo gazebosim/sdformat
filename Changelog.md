@@ -17,6 +17,64 @@
 
 1. Forward ports
     * [Pull request #756](https://github.com/ignitionrobotics/sdformat/pull/756)
+    * [Pull request #734](https://github.com/ignitionrobotics/sdformat/pull/734)
+    * [Pull request #738](https://github.com/ignitionrobotics/sdformat/pull/738)
+    * [Pull request #750](https://github.com/ignitionrobotics/sdformat/pull/750)
+    * [Pull request #752](https://github.com/ignitionrobotics/sdformat/pull/752)
+
+1. Changelog links to BitBucket backup.
+    * [Pull request #237](https://github.com/ignitionrobotics/sdformat/pull/237)
+
+1. Update BitBucket links.
+    * [Pull request #248](https://github.com/ignitionrobotics/sdformat/pull/248)
+
+1. Cherry-pick [sdf4] Update BitBucket links -> sdf6 
+    * [Pull request #258](https://github.com/ignitionrobotics/sdformat/pull/258)
+
+1.  Patch popen/pclose method for Windows.
+    * [Pull request #297](https://github.com/ignitionrobotics/sdformat/pull/297)
+
+1. Parse rpyOffset as radians 
+    * [Pull request #497](https://github.com/ignitionrobotics/sdformat/pull/497)
+
+1. Fix flattening logic for nested model names (sdf6) 
+    * [Pull request #597](https://github.com/ignitionrobotics/sdformat/pull/597)
+
+1. Translate poses of nested models inside other nested models (sdf6).
+    * [Pull request #596](https://github.com/ignitionrobotics/sdformat/pull/596)
+
+1. Use Ubuntu bionic in CI
+    * [Pull request #626](https://github.com/ignitionrobotics/sdformat/pull/626)
+
+1. Create CODEOWNERS with azeey and scpeters.
+    * [Pull request #650](https://github.com/ignitionrobotics/sdformat/pull/650)
+
+1. Remove bitbucket-pipelines.
+    * [Pull request #674](https://github.com/ignitionrobotics/sdformat/pull/674)
+
+1. Check joint parent/child names in Root::Load.
+    * [Pull request #727](https://github.com/ignitionrobotics/sdformat/pull/727)
+
+1. Check joint parent link names in Model::Load.
+    * [Pull request #726](https://github.com/ignitionrobotics/sdformat/pull/726)
+
+1. Add force torque sensor
+    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
+
+1. Add Joint DOM API to access joint sensors 
+    * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
+
+1. Remove outdated deprecation note from parser_urdf.hh
+    * [Pull request #740](https://github.com/ignitionrobotics/sdformat/pull/740)
+
+1. DOC: only allow one canonical_link attribute
+    * [Pull request #716](https://github.com/ignitionrobotics/sdformat/pull/716)
+
+1. Fix URDF fixed joint reduction of plugins
+    * [Pull request #745](https://github.com/ignitionrobotics/sdformat/pull/745)
+
+1. Fix URDF fixed joint reduction of plugins
+    * [Pull request #745](https://github.com/ignitionrobotics/sdformat/pull/745)
 
 ### libsdformat 12.1.0 (2021-11-09)
 
