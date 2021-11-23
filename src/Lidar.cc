@@ -15,6 +15,7 @@
  *
  */
 #include "sdf/Lidar.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 using namespace ignition;
@@ -365,4 +366,61 @@ bool Lidar::operator==(const Lidar &_lidar) const
 bool Lidar::operator!=(const Lidar &_lidar) const
 {
   return !(*this == _lidar);
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Lidar::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("lidar.sdf", elem);
+
+  sdf::ElementPtr scanElem = elem->GetElement("scan");
+  sdf::ElementPtr horElem = scanElem->GetElement("horizontal");
+  horElem->GetElement("samples")->Set<double>(this->HorizontalScanSamples());
+  horElem->GetElement("resolution")->Set<double>(
+      this->HorizontalScanResolution());
+  horElem->GetElement("min_angle")->Set<double>(
+      this->HorizontalScanMinAngle().Radian());
+  horElem->GetElement("max_angle")->Set<double>(
+      this->HorizontalScanMaxAngle().Radian());
+
+  sdf::ElementPtr vertElem = scanElem->GetElement("vertical");
+  vertElem->GetElement("samples")->Set<double>(this->VerticalScanSamples());
+  vertElem->GetElement("resolution")->Set<double>(
+      this->VerticalScanResolution());
+  vertElem->GetElement("min_angle")->Set<double>(
+      this->VerticalScanMinAngle().Radian());
+  vertElem->GetElement("max_angle")->Set<double>(
+      this->VerticalScanMaxAngle().Radian());
+
+  sdf::ElementPtr rangeElem = elem->GetElement("range");
+  rangeElem->GetElement("min")->Set<double>(this->RangeMin());
+  rangeElem->GetElement("max")->Set<double>(this->RangeMax());
+  rangeElem->GetElement("resolution")->Set<double>(
+      this->RangeResolution());
+
+  sdf::ElementPtr noiseElem = elem->GetElement("noise");
+  std::string noiseType;
+  switch (this->dataPtr->lidarNoise.Type())
+  {
+    case sdf::NoiseType::NONE:
+      noiseType = "none";
+      break;
+    case sdf::NoiseType::GAUSSIAN:
+      noiseType = "gaussian";
+      break;
+    case sdf::NoiseType::GAUSSIAN_QUANTIZED:
+      noiseType = "gaussian_quantized";
+      break;
+    default:
+      noiseType = "none";
+  }
+
+  // lidar does not use noise.sdf description
+  noiseElem->GetElement("type")->Set<std::string>(noiseType);
+  noiseElem->GetElement("mean")->Set<double>(this->dataPtr->lidarNoise.Mean());
+  noiseElem->GetElement("stddev")->Set<double>(
+      this->dataPtr->lidarNoise.StdDev());
+
+  return elem;
 }

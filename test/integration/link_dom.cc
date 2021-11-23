@@ -243,7 +243,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(25u, link->SensorCount());
+  EXPECT_EQ(26u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -647,6 +647,37 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(3.4, airSensor->PressureNoise().Mean());
   EXPECT_DOUBLE_EQ(5.6, airSensor->PressureNoise().StdDev());
   EXPECT_DOUBLE_EQ(123.4, airSensor->ReferenceAltitude());
+
+  // Get the wide angle camera sensor
+  EXPECT_TRUE(link->SensorNameExists("wide_angle_camera_sensor"));
+  const sdf::Sensor *wideAngleCameraSensor =
+      link->SensorByName("wide_angle_camera_sensor");
+  ASSERT_NE(nullptr, wideAngleCameraSensor);
+  EXPECT_EQ("wide_angle_camera_sensor", wideAngleCameraSensor->Name());
+  EXPECT_EQ(sdf::SensorType::WIDE_ANGLE_CAMERA, wideAngleCameraSensor->Type());
+  EXPECT_EQ(ignition::math::Pose3d(20, 30, 40, 0, 0, 0),
+      wideAngleCameraSensor->RawPose());
+  EXPECT_FALSE(wideAngleCameraSensor->EnableMetrics());
+  const sdf::Camera *wideAngleCam = wideAngleCameraSensor->CameraSensor();
+  ASSERT_NE(nullptr, wideAngleCam);
+  EXPECT_EQ("wide_angle_cam", wideAngleCam->Name());
+  EXPECT_EQ(ignition::math::Pose3d(0.2, 0.3, 0.4, 0, 0, 0),
+            wideAngleCam->RawPose());
+  EXPECT_DOUBLE_EQ(3.14, wideAngleCam->HorizontalFov().Radian());
+  EXPECT_EQ(320u, wideAngleCam->ImageWidth());
+  EXPECT_EQ(240u, wideAngleCam->ImageHeight());
+  EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, wideAngleCam->PixelFormat());
+  EXPECT_DOUBLE_EQ(0.1, wideAngleCam->NearClip());
+  EXPECT_DOUBLE_EQ(100, wideAngleCam->FarClip());
+  EXPECT_EQ("custom", wideAngleCam->LensType());
+  EXPECT_TRUE(wideAngleCam->LensScaleToHfov());
+  EXPECT_DOUBLE_EQ(1.05, wideAngleCam->LensC1());
+  EXPECT_DOUBLE_EQ(4.0, wideAngleCam->LensC2());
+  EXPECT_DOUBLE_EQ(0.0, wideAngleCam->LensC3());
+  EXPECT_DOUBLE_EQ(1.0, wideAngleCam->LensFocalLength());
+  EXPECT_EQ("tan", wideAngleCam->LensFunction());
+  EXPECT_DOUBLE_EQ(3.1415, wideAngleCam->LensCutoffAngle().Radian());
+  EXPECT_EQ(512, wideAngleCam->LensEnvironmentTextureSize());
 }
 
 /////////////////////////////////////////////////

@@ -263,7 +263,8 @@ TEST(DOMSensor, Type)
     sdf::SensorType::WIRELESS_RECEIVER,
     sdf::SensorType::WIRELESS_TRANSMITTER,
     sdf::SensorType::THERMAL_CAMERA,
-    sdf::SensorType::CUSTOM
+    sdf::SensorType::CUSTOM,
+    sdf::SensorType::WIDE_ANGLE_CAMERA
   };
   std::vector<std::string> typeStrs =
   {
@@ -288,7 +289,8 @@ TEST(DOMSensor, Type)
     "wireless_receiver",
     "wireless_transmitter",
     "thermal_camera",
-    "custom"
+    "custom",
+    "wide_angle_camera"
   };
 
   for (size_t i = 0; i < types.size(); ++i)
@@ -499,4 +501,47 @@ TEST(DOMSensor, MutableSensors)
     EXPECT_DOUBLE_EQ(
         sensor.NavSatSensor()->HorizontalPositionNoise().Mean(), 2.0);
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Sensor sensor;
+  sensor.SetName("my_sensor");
+  sensor.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
+  sensor.SetType(sdf::SensorType::MAGNETOMETER);
+  sensor.SetPoseRelativeTo("a_frame");
+  sensor.SetUpdateRate(0.123);
+
+  sdf::Noise noise;
+  noise.SetMean(0.1);
+  sdf::Magnetometer mag;
+  mag.SetXNoise(noise);
+  sensor.SetMagnetometerSensor(mag);
+
+  sdf::ElementPtr sensorElem = sensor.ToElement();
+  EXPECT_NE(nullptr, sensorElem);
+  EXPECT_EQ(nullptr, sensor.Element());
+
+  // verify values after loading the element back
+  sdf::Sensor sensor2;
+  sensor2.Load(sensorElem);
+
+  EXPECT_EQ("my_sensor", sensor2.Name());
+  EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
+  EXPECT_EQ("a_frame", sensor2.PoseRelativeTo());
+  ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
+  EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
+                   sensor2.MagnetometerSensor()->XNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.123, sensor2.UpdateRate());
+
+  // make changes to DOM and verify ToElement produces updated values
+  sensor2.SetUpdateRate(1.23);
+  sdf::ElementPtr sensor2Elem = sensor2.ToElement();
+  EXPECT_NE(nullptr, sensor2Elem);
+  sdf::Sensor sensor3;
+  sensor3.Load(sensor2Elem);
+  EXPECT_DOUBLE_EQ(1.23, sensor3.UpdateRate());
 }

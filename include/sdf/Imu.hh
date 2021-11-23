@@ -253,6 +253,11 @@ namespace sdf
     /// \returen True if 'this' != _imu.
     public: bool operator!=(const Imu &_imu) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// imu sensor.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

@@ -225,6 +225,11 @@ namespace sdf
     /// \sa bool SensorNameExists(const std::string &_name) const
     public: const Sensor *SensorByName(const std::string &_name) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// joint.
+    /// \return SDF element pointer with updated joint values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
     /// parent and child link names. This is private and is intended to be
     /// called by Model::Load.
