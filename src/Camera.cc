@@ -16,6 +16,7 @@
 */
 #include <array>
 #include "sdf/Camera.hh"
+#include "sdf/parser.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -985,37 +986,68 @@ bool Camera::HasLensIntrinsics() const
 }
 
 /////////////////////////////////////////////////
-bool Camera::PopulateElement(sdf::ElementPtr _elem) const
+sdf::ElementPtr Camera::ToElement() const
 {
-  _elem->GetAttribute("name")->Set<std::string>(this->Name());
-  _elem->GetElement("pose")->Set<ignition::math::Pose3d>(this->RawPose());
-  _elem->GetElement("horizontal_fov")->Set<double>(
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("camera.sdf", elem);
+
+  elem->GetAttribute("name")->Set<std::string>(this->Name());
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  elem->GetElement("horizontal_fov")->Set<double>(
       this->HorizontalFov().Radian());
-  sdf::ElementPtr imageElem = _elem->GetElement("image");
+  sdf::ElementPtr imageElem = elem->GetElement("image");
   imageElem->GetElement("width")->Set<double>(this->ImageWidth());
   imageElem->GetElement("height")->Set<double>(this->ImageHeight());
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
-  sdf::ElementPtr clipElem = _elem->GetElement("clip");
+  sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
   clipElem->GetElement("far")->Set<double>(this->FarClip());
 
   if (this->dataPtr->hasDepthCamera)
   {
-    sdf::ElementPtr depthElem = _elem->GetElement("depth_camera");
+    sdf::ElementPtr depthElem = elem->GetElement("depth_camera");
     sdf::ElementPtr depthClipElem = depthElem->GetElement("clip");
     depthClipElem->GetElement("near")->Set<double>(this->DepthNearClip());
     depthClipElem->GetElement("far")->Set<double>(this->DepthFarClip());
   }
 
-  sdf::ElementPtr saveElem = _elem->GetElement("save");
+  sdf::ElementPtr saveElem = elem->GetElement("save");
   saveElem->GetAttribute("enabled")->Set<bool>(this->SaveFrames());
   if (this->SaveFrames())
     saveElem->GetElement("path")->Set<std::string>(this->SaveFramesPath());
+  elem->GetElement("visibility_mask")->Set<uint32_t>(
+      this->VisibilityMask());
 
-  sdf::ElementPtr noiseElem = _elem->GetElement("noise");
-  this->dataPtr->imageNoise.PopulateElement(noiseElem, true);
+  sdf::ElementPtr noiseElem = elem->GetElement("noise");
+  std::string noiseType;
+  switch (this->dataPtr->imageNoise.Type())
+  {
+    case sdf::NoiseType::NONE:
+      noiseType = "none";
+      break;
+    case sdf::NoiseType::GAUSSIAN:
+      noiseType = "gaussian";
+      break;
+    case sdf::NoiseType::GAUSSIAN_QUANTIZED:
+      noiseType = "gaussian_quantized";
+      break;
+    default:
+      noiseType = "none";
+  }
 
-  sdf::ElementPtr distortionElem = _elem->GetElement("distortion");
+  // camera does not use noise.sdf description
+  noiseElem->GetElement("type")->Set<std::string>(noiseType);
+  noiseElem->GetElement("mean")->Set<double>(this->dataPtr->imageNoise.Mean());
+  noiseElem->GetElement("stddev")->Set<double>(
+      this->dataPtr->imageNoise.StdDev());
+
+  sdf::ElementPtr distortionElem = elem->GetElement("distortion");
   distortionElem->GetElement("k1")->Set<double>(this->DistortionK1());
   distortionElem->GetElement("k2")->Set<double>(this->DistortionK2());
   distortionElem->GetElement("k3")->Set<double>(this->DistortionK3());
@@ -1024,7 +1056,7 @@ bool Camera::PopulateElement(sdf::ElementPtr _elem) const
   distortionElem->GetElement("center")->Set<ignition::math::Vector2d>(
       this->DistortionCenter());
 
-  sdf::ElementPtr lensElem = _elem->GetElement("lens");
+  sdf::ElementPtr lensElem = elem->GetElement("lens");
   lensElem->GetElement("type")->Set<std::string>(this->LensType());
   lensElem->GetElement("scale_to_hfov")->Set<bool>(this->LensScaleToHfov());
   lensElem->GetElement("cutoff_angle")->Set<double>(
@@ -1053,9 +1085,9 @@ bool Camera::PopulateElement(sdf::ElementPtr _elem) const
 
   if (this->HasSegmentationType())
   {
-    _elem->GetElement("segmentation_type")->Set<std::string>(
+    elem->GetElement("segmentation_type")->Set<std::string>(
         this->SegmentationType());
   }
 
-  return true;
+  return elem;
 }

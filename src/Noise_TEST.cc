@@ -219,3 +219,43 @@ TEST(DOMNoise, Load)
   EXPECT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(10.2, noise.DynamicBiasCorrelationTime());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMNoise, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Noise noise;
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  noise.SetDynamicBiasStdDev(9.1);
+  noise.SetDynamicBiasCorrelationTime(19.12);
+
+  sdf::ElementPtr noiseElem = noise.ToElement();
+  EXPECT_NE(nullptr, noiseElem);
+  EXPECT_EQ(nullptr, noise.Element());
+
+  // verify values after loading the element back
+  sdf::Noise noise2;
+  noise2.Load(noiseElem);
+
+  EXPECT_EQ(sdf::NoiseType::GAUSSIAN, noise2.Type());
+  EXPECT_DOUBLE_EQ(1.2, noise2.Mean());
+  EXPECT_DOUBLE_EQ(2.3, noise2.StdDev());
+  EXPECT_DOUBLE_EQ(4.5, noise2.BiasMean());
+  EXPECT_DOUBLE_EQ(6.7, noise2.BiasStdDev());
+  EXPECT_DOUBLE_EQ(8.9, noise2.Precision());
+  EXPECT_DOUBLE_EQ(9.1, noise2.DynamicBiasStdDev());
+  EXPECT_DOUBLE_EQ(19.12, noise2.DynamicBiasCorrelationTime());
+
+  // make changes to DOM and verify ToElement produces updated values
+  noise2.SetPrecision(0.1234);
+  sdf::ElementPtr noise2Elem = noise2.ToElement();
+  EXPECT_NE(nullptr, noise2Elem);
+  sdf::Noise noise3;
+  noise3.Load(noise2Elem);
+  EXPECT_DOUBLE_EQ(0.1234, noise3.Precision());
+}

@@ -17,6 +17,7 @@
 #include <array>
 #include <string>
 #include "sdf/Imu.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -367,12 +368,13 @@ bool Imu::OrientationEnabled() const
 }
 
 /////////////////////////////////////////////////
-bool Imu::PopulateElement(sdf::ElementPtr _elem) const
+sdf::ElementPtr Imu::ToElement() const
 {
-  bool result = true;
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("imu.sdf", elem);
 
   sdf::ElementPtr orientationRefFrameElem =
-    _elem->GetElement("orientation_reference_frame");
+    elem->GetElement("orientation_reference_frame");
   orientationRefFrameElem->GetElement("localization")->Set<std::string>(
       this->Localization());
 
@@ -388,40 +390,34 @@ bool Imu::PopulateElement(sdf::ElementPtr _elem) const
   gravDirX->GetAttribute("parent_frame")->Set<std::string>(
       this->GravityDirXParentFrame());
 
-  sdf::ElementPtr angularVelElem = _elem->GetElement("angular_velocity");
+  sdf::ElementPtr angularVelElem = elem->GetElement("angular_velocity");
   sdf::ElementPtr angularVelXElem = angularVelElem->GetElement("x");
   sdf::ElementPtr angularVelXNoiseElem = angularVelXElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->angularVelXNoise.PopulateElement(angularVelXNoiseElem);
+  angularVelXNoiseElem->Copy(this->dataPtr->angularVelXNoise.ToElement());
 
   sdf::ElementPtr angularVelYElem = angularVelElem->GetElement("y");
   sdf::ElementPtr angularVelYNoiseElem = angularVelYElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->angularVelYNoise.PopulateElement(angularVelYNoiseElem);
+  angularVelYNoiseElem->Copy(this->dataPtr->angularVelYNoise.ToElement());
 
   sdf::ElementPtr angularVelZElem = angularVelElem->GetElement("z");
   sdf::ElementPtr angularVelZNoiseElem = angularVelZElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->angularVelZNoise.PopulateElement(angularVelZNoiseElem);
+  angularVelZNoiseElem->Copy(this->dataPtr->angularVelZNoise.ToElement());
 
-  sdf::ElementPtr linearAccElem = _elem->GetElement("linear_acceleration");
+  sdf::ElementPtr linearAccElem = elem->GetElement("linear_acceleration");
   sdf::ElementPtr linearAccXElem = linearAccElem->GetElement("x");
   sdf::ElementPtr linearAccXNoiseElem = linearAccXElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->linearAccelXNoise.PopulateElement(linearAccXNoiseElem);
+  linearAccXNoiseElem->Copy(this->dataPtr->linearAccelXNoise.ToElement());
 
   sdf::ElementPtr linearAccYElem = linearAccElem->GetElement("y");
   sdf::ElementPtr linearAccYNoiseElem = linearAccYElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->linearAccelYNoise.PopulateElement(linearAccYNoiseElem);
+  linearAccYNoiseElem->Copy(this->dataPtr->linearAccelYNoise.ToElement());
 
   sdf::ElementPtr linearAccZElem = linearAccElem->GetElement("z");
   sdf::ElementPtr linearAccZNoiseElem = linearAccZElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->linearAccelZNoise.PopulateElement(linearAccZNoiseElem);
+  linearAccZNoiseElem->Copy(this->dataPtr->linearAccelZNoise.ToElement());
 
-  _elem->GetElement("enable_orientation")->Set<bool>(
+  elem->GetElement("enable_orientation")->Set<bool>(
       this->OrientationEnabled());
 
-  return result;
+  return elem;
 }

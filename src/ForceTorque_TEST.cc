@@ -109,3 +109,53 @@ TEST(DOMForceTorque, Load)
   // The ForceTorque::Load function is tested more thouroughly in the
   // link_dom.cc integration test.
 }
+
+/////////////////////////////////////////////////
+TEST(DOMForceTorque, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::ForceTorque ft;
+  sdf::Noise noise;
+
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  ft.SetForceXNoise(noise);
+  ft.SetForceYNoise(noise);
+  ft.SetForceZNoise(noise);
+  ft.SetTorqueXNoise(noise);
+  ft.SetTorqueYNoise(noise);
+  ft.SetTorqueZNoise(noise);
+  ft.SetFrame(sdf::ForceTorqueFrame::PARENT);
+  ft.SetMeasureDirection(sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD);
+
+  sdf::ElementPtr ftElem = ft.ToElement();
+  EXPECT_NE(nullptr, ftElem);
+  EXPECT_EQ(nullptr, ft.Element());
+
+  // verify values after loading the element back
+  sdf::ForceTorque ft2;
+  ft2.Load(ftElem);
+
+  EXPECT_EQ(noise, ft2.ForceXNoise());
+  EXPECT_EQ(noise, ft2.ForceYNoise());
+  EXPECT_EQ(noise, ft2.ForceZNoise());
+  EXPECT_EQ(noise, ft2.TorqueXNoise());
+  EXPECT_EQ(noise, ft2.TorqueYNoise());
+  EXPECT_EQ(noise, ft2.TorqueZNoise());
+  EXPECT_EQ(sdf::ForceTorqueFrame::PARENT, ft2.Frame());
+  EXPECT_EQ(sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD,
+      ft2.MeasureDirection());
+
+  // make changes to DOM and verify ToElement produces updated values
+  ft2.SetMeasureDirection(sdf::ForceTorqueMeasureDirection::CHILD_TO_PARENT);
+  sdf::ElementPtr ft2Elem = ft2.ToElement();
+  EXPECT_NE(nullptr, ft2Elem);
+  sdf::ForceTorque ft3;
+  ft3.Load(ft2Elem);
+  EXPECT_EQ(sdf::ForceTorqueMeasureDirection::CHILD_TO_PARENT,
+      ft3.MeasureDirection());
+}
