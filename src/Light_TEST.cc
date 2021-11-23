@@ -319,3 +319,60 @@ TEST(DOMLight, AttenuationClamp)
   light.SetQuadraticAttenuationFactor(-1.0);
   EXPECT_DOUBLE_EQ(0.0, light.QuadraticAttenuationFactor());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLight, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Light light;
+  light.SetName("test_light_assignment");
+  light.SetType(sdf::LightType::SPOT);
+  light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  light.SetPoseRelativeTo("ground_plane");
+  light.SetCastShadows(true);
+  light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
+  light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
+  light.SetAttenuationRange(3.2);
+  light.SetLinearAttenuationFactor(0.1);
+  light.SetConstantAttenuationFactor(0.5);
+  light.SetQuadraticAttenuationFactor(0.01);
+  light.SetDirection({0.1, 0.2, 1});
+  light.SetSpotInnerAngle(1.9);
+  light.SetSpotOuterAngle(3.3);
+  light.SetSpotFalloff(0.9);
+  light.SetIntensity(1.7);
+
+  sdf::ElementPtr lightElem = light.ToElement();
+  EXPECT_NE(nullptr, lightElem);
+  EXPECT_EQ(nullptr, light.Element());
+
+  // verify values after loading the element back
+  sdf::Light light2;
+  light2.Load(lightElem);
+
+  EXPECT_NE(nullptr, light2.Element());
+  EXPECT_EQ("test_light_assignment", light2.Name());
+  EXPECT_EQ(sdf::LightType::SPOT, light2.Type());
+  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
+  EXPECT_TRUE(light2.CastShadows());
+  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
+  EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
+  EXPECT_DOUBLE_EQ(0.1, light2.LinearAttenuationFactor());
+  EXPECT_DOUBLE_EQ(0.5, light2.ConstantAttenuationFactor());
+  EXPECT_DOUBLE_EQ(0.01, light2.QuadraticAttenuationFactor());
+  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 1), light2.Direction());
+  EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
+  EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
+  EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
+  EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
+
+  // make changes to DOM and verify ToElement produces updated values
+  light2.SetCastShadows(false);
+  sdf::ElementPtr light2Elem = light2.ToElement();
+  EXPECT_NE(nullptr, light2Elem);
+  sdf::Light light3;
+  light3.Load(light2Elem);
+  EXPECT_FALSE(light3.CastShadows());
+}

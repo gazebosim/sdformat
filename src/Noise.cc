@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include "sdf/Noise.hh"
+#include "sdf/parser.hh"
 #include "sdf/Types.hh"
 
 using namespace sdf;
@@ -247,4 +248,41 @@ bool Noise::operator==(const Noise &_noise) const
                           _noise.DynamicBiasStdDev()) &&
     ignition::math::equal(this->dataPtr->dynamicBiasCorrelationTime,
                           _noise.DynamicBiasCorrelationTime());
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Noise::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("noise.sdf", elem);
+
+  std::string noiseType;
+  switch (this->Type())
+  {
+    case sdf::NoiseType::NONE:
+      noiseType = "none";
+      break;
+    case sdf::NoiseType::GAUSSIAN:
+      noiseType = "gaussian";
+      break;
+    case sdf::NoiseType::GAUSSIAN_QUANTIZED:
+      noiseType = "gaussian_quantized";
+      break;
+    default:
+      noiseType = "none";
+  }
+  elem->GetAttribute("type")->Set<std::string>(noiseType);
+  elem->GetElement("mean")->Set<double>(this->Mean());
+  elem->GetElement("stddev")->Set<double>(this->StdDev());
+
+  // camera and lidar <noise> does not have the sdf params below
+  elem->GetElement("bias_mean")->Set<double>(this->BiasMean());
+  elem->GetElement("bias_stddev")->Set<double>(this->BiasStdDev());
+  elem->GetElement("dynamic_bias_stddev")->Set<double>(
+    this->DynamicBiasStdDev());
+  elem->GetElement("dynamic_bias_correlation_time")->Set<double>(
+      this->DynamicBiasCorrelationTime());
+  elem->GetElement("precision")->Set<double>(this->Precision());
+
+  return elem;
 }

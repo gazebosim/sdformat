@@ -60,10 +60,6 @@ namespace sdf
 }
 
 //////////////////////////////////////////////////
-std::string GetPoseAsString(const PrintConfig& _config,
-    const ignition::math::Pose3d &_value);
-
-//////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
              const std::string &_description)
@@ -77,8 +73,14 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->ignoreParentAttributes = false;
   this->dataPtr->defaultStrValue = _default;
 
-  SDF_ASSERT(this->ValueFromString(_default), "Invalid parameter");
-  this->dataPtr->defaultValue = this->dataPtr->value;
+  SDF_ASSERT(
+      this->dataPtr->ValueFromStringImpl(
+          this->dataPtr->typeName,
+          _default,
+          this->dataPtr->defaultValue),
+      "Invalid parameter");
+  this->dataPtr->value = this->dataPtr->defaultValue;
+  this->dataPtr->strValue = std::nullopt;
 }
 
 //////////////////////////////////////////////////
@@ -306,37 +308,42 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString(const PrintConfig &_config) const
 {
-  std::string outputStr;
-  if (this->dataPtr->typeName == "ignition::math::Pose3d" ||
-      this->dataPtr->typeName == "pose" ||
-      this->dataPtr->typeName == "Pose")
+  std::string valueStr;
+  if (this->dataPtr->StringFromValueImpl(_config,
+                                         this->dataPtr->typeName,
+                                         this->dataPtr->value,
+                                         valueStr))
   {
-    if (!_config.GetRotationInDegrees() && !_config.GetRotationSnapToDegrees())
-      return this->dataPtr->strValue;
-
-    ignition::math::Pose3d val;
-    if (!this->Get<ignition::math::Pose3d>(val))
-    {
-      sdferr << "Failed to retrieve Pose value from a Pose Param.\n";
-      return this->dataPtr->strValue;
-    }
-
-    return GetPoseAsString(_config, val);
-  }
-  else
-  {
-    outputStr = this->dataPtr->strValue;
+    return valueStr;
   }
 
-  return outputStr;
+  if (this->dataPtr->strValue.has_value())
+  {
+    sdferr << "Unable to get string from value, returning string used to set"
+           << "the value instead.\n";
+    return this->dataPtr->strValue.value();
+  }
+
+  sdferr << "Unable to get string from value, and value has not been set"
+         << "before, returning string of default value instead.\n";
+  return this->GetDefaultAsString(_config);
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
-  (void)_config;
-  StringStreamClassicLocale ss;
+  std::string defaultStr;
+  if (this->dataPtr->StringFromValueImpl(_config,
+                                         this->dataPtr->typeName,
+                                         this->dataPtr->defaultValue,
+                                         defaultStr))
+  {
+    return defaultStr;
+  }
 
+  sdferr << "Unable to get string from default value, "
+         << "using ParamStreamer instead.\n";
+  StringStreamClassicLocale ss;
   ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
 }
@@ -347,11 +354,17 @@ std::optional<std::string> Param::GetMinValueAsString(
 {
   if (this->dataPtr->minValue.has_value())
   {
-    (void)_config;
-    StringStreamClassicLocale ss;
+    std::string valueStr;
+    if (!this->dataPtr->StringFromValueImpl(_config,
+                                            this->dataPtr->typeName,
+                                            this->dataPtr->minValue.value(),
+                                            valueStr))
+    {
+      sdferr << "Unable to get min value as string.\n";
+      return std::nullopt;
+    }
 
-    ss << ParamStreamer{ *this->dataPtr->minValue };
-    return ss.str();
+    return valueStr;
   }
   return std::nullopt;
 }
@@ -362,11 +375,17 @@ std::optional<std::string> Param::GetMaxValueAsString(
 {
   if (this->dataPtr->maxValue.has_value())
   {
-    (void)_config;
-    StringStreamClassicLocale ss;
+    std::string valueStr;
+    if (!this->dataPtr->StringFromValueImpl(_config,
+                                            this->dataPtr->typeName,
+                                            this->dataPtr->maxValue.value(),
+                                            valueStr))
+    {
+      sdferr << "Unable to get max value as string.\n";
+      return std::nullopt;
+    }
 
-    ss << ParamStreamer{ *this->dataPtr->maxValue };
-    return ss.str();
+    return valueStr;
   }
   return std::nullopt;
 }
@@ -484,8 +503,6 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   const std::size_t defaultDesiredSize = 6u;
   std::size_t desiredSize = defaultDesiredSize;
 
-  std::string defaultValueStr = "0 0 0 0 0 0";
-
   for (const auto &p : _attributes)
   {
     const std::string key = p->GetKey();
@@ -510,7 +527,6 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       else if (rotationFormat == "quat_xyzw")
       {
         desiredSize = 7u;
-        defaultValueStr = "0 0 0 0 0 0 1";
       }
       else
       {
@@ -529,8 +545,13 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     return false;
   }
 
-  std::string input = _input.empty() ? defaultValueStr : _input;
-  StringStreamClassicLocale ss(input);
+  if (_input.empty())
+  {
+    _value = ignition::math::Pose3d::Zero;
+    return true;
+  }
+
+  StringStreamClassicLocale ss(_input);
   std::string token;
   std::array<double, 7> values;
   std::size_t valueIndex = 0;
@@ -545,7 +566,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stod
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< input
+      sdferr << "Invalid argument. Unable to set value ["<< _input
              << "] for key [" << _key << "].\n";
       isValidPose = false;
       break;
@@ -570,7 +591,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     {
       sdferr << "The value for //pose[@rotation_format='" << rotationFormat
           << "'] must have " << desiredSize
-          << " values, but more than that were found in '" << input << "'.\n";
+          << " values, but more than that were found in '" << _input << "'.\n";
       isValidPose = false;
       break;
     }
@@ -585,7 +606,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   {
     sdferr << "The value for //pose[@rotation_format='" << rotationFormat
         << "'] must have " << desiredSize << " values, but " << valueIndex
-        << " were found instead in '" << input << "'.\n";
+        << " were found instead in '" << _input << "'.\n";
     return false;
   }
 
@@ -608,17 +629,6 @@ bool ParsePoseUsingStringStream(const std::string &_input,
         values[6], values[3], values[4], values[5]);
   }
 
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool Param::ValueFromString(const std::string &_value)
-{
-  if (!this->dataPtr->ValueFromStringImpl(
-      this->dataPtr->typeName, _value, this->dataPtr->value))
-    return false;
-
-  this->dataPtr->strValue = _value;
   return true;
 }
 
@@ -785,6 +795,254 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 }
 
 //////////////////////////////////////////////////
+/// \brief Helper function for GetAsString for pose.
+/// \param[in] _config Printing configuration for the output string.
+/// \param[in] _value The pose value of the param.
+std::string GetPoseAsString(const PrintConfig& _config,
+    const ignition::math::Pose3d &_value)
+{
+  StringStreamClassicLocale ss;
+  if (_config.GetRotationInDegrees())
+  {
+    ss << _value.Pos() << "   ";
+    ss << IGN_RTOD(_value.Roll()) << " "
+       << IGN_RTOD(_value.Pitch()) << " "
+       << IGN_RTOD(_value.Yaw());
+  }
+  else if (_config.GetRotationSnapToDegrees().has_value() &&
+           _config.GetRotationSnapTolerance().has_value())
+  {
+    // Returns a snapped value if it is within the tolerance of multiples
+    // of interval, otherwise the orginal value is returned.
+    auto snapToInterval =
+        [](double _val, unsigned int _interval, double _tolerance)
+    {
+      const double sign = (_val < 0) ? -1 : 1;
+      unsigned int quotient = static_cast<unsigned int>(abs(_val)) / _interval;
+
+      double lowerRemainder =
+          abs(_val) - static_cast<double>(quotient * _interval);
+      if (lowerRemainder< _tolerance)
+      {
+        return static_cast<double>(_interval * quotient) * sign;
+      }
+
+      double higherRemainder =
+          static_cast<double>(++quotient * _interval) - abs(_val);
+      if (higherRemainder < _tolerance)
+      {
+        return static_cast<double>(_interval * quotient) * sign;
+      }
+
+      return _val;
+    };
+
+    const unsigned int interval = _config.GetRotationSnapToDegrees().value();
+    const double tolerance = _config.GetRotationSnapTolerance().value();
+
+    ss << _value.Pos() << "   ";
+    ss << snapToInterval(IGN_RTOD(_value.Roll()), interval, tolerance) << " "
+       << snapToInterval(IGN_RTOD(_value.Pitch()), interval, tolerance) << " "
+       << snapToInterval(IGN_RTOD(_value.Yaw()), interval, tolerance);
+  }
+  else
+  {
+    ss << _value.Pos() << " " << _value.Rot().Euler();
+  }
+
+  return ss.str();
+}
+
+/////////////////////////////////////////////////
+bool PoseStringFromValue(const PrintConfig &_config,
+                         const Param_V &_parentAttributes,
+                         const ParamPrivate::ParamVariant &_value,
+                         std::string &_valueStr)
+{
+  StringStreamClassicLocale ss;
+
+  const ignition::math::Pose3d *pose =
+      std::get_if<ignition::math::Pose3d>(&_value);
+  if (!pose)
+  {
+    sdferr << "Unable to get pose value from variant.\n";
+    return false;
+  }
+
+  const bool defaultInDegrees = false;
+  bool inDegrees = defaultInDegrees;
+
+  const std::string defaultRotationFormat = "euler_rpy";
+  std::string rotationFormat = defaultRotationFormat;
+
+  // When @degrees and @rotation_format attributes are not set, a single space
+  // delimiter is used to prevent breaking behavior and tests.
+  const std::string defaultPosRotDelimiter = " ";
+  const std::string threeSpacedDelimiter = "   ";
+  std::string posRotDelimiter = defaultPosRotDelimiter;
+
+  const bool defaultSnapDegreesToInterval = false;
+  bool snapDegreesToInterval = defaultSnapDegreesToInterval;
+
+  // Checking parent Element Attributes for desired pose representations.
+  for (const auto &p : _parentAttributes)
+  {
+    const std::string key = p->GetKey();
+
+    if (key == "degrees")
+    {
+      if (!p->Get<bool>(inDegrees))
+      {
+        sdferr << "Unable to get //pose[@degrees] attribute as bool.\n";
+        return false;
+      }
+      if (p->GetSet())
+      {
+        posRotDelimiter = threeSpacedDelimiter;
+      }
+    }
+    else if (key == "rotation_format")
+    {
+      rotationFormat = p->GetAsString();
+      if (p->GetSet())
+      {
+        posRotDelimiter = threeSpacedDelimiter;
+      }
+    }
+  }
+  
+  // Checking PrintConfig for desired pose representations. This overrides
+  // any parent Element Attributes.
+  if (_config.GetRotationInDegrees())
+  {
+    inDegrees = true;
+    rotationFormat = "euler_rpy";
+  }
+  if (_config.GetRotationSnapToDegrees().has_value() &&
+      _config.GetRotationSnapTolerance().has_value())
+  {
+    inDegrees = true;
+    rotationFormat = "euler_rpy";
+    snapDegreesToInterval = true;
+  }
+
+  // Helper function that sanitizes zero values like '-0'
+  auto sanitizeZero = [](double _number)
+  {
+    StringStreamClassicLocale stream;
+    if (std::fpclassify(_number) == FP_ZERO)
+    {
+      stream << 0;
+    }
+    else
+    {
+      stream << _number;
+    }
+    return stream.str();
+  };
+
+  // Returning pose string representations based on desired configurations.
+  if (rotationFormat == "quat_xyzw" && inDegrees)
+  {
+    sdferr << "Invalid pose with //pose[@degrees='true'] and "
+           << "//pose[@rotation_format='quat_xyzw'].\n";
+    return false;
+  }
+  else if (rotationFormat == "quat_xyzw")
+  {
+    ss << pose->Pos() << posRotDelimiter
+       << sanitizeZero(pose->Rot().X()) << " "
+       << sanitizeZero(pose->Rot().Y()) << " "
+       << sanitizeZero(pose->Rot().Z()) << " "
+       << sanitizeZero(pose->Rot().W());
+    _valueStr = ss.str();
+    return true;
+  }
+  else if (rotationFormat == "euler_rpy" && inDegrees && snapDegreesToInterval)
+  {
+    // Helper function that returns a snapped value if it is within the
+    // tolerance of multiples of interval, otherwise the orginal value is
+    // returned.
+    auto snapToInterval =
+        [](double _val, unsigned int _interval, double _tolerance)
+    {
+      const double sign = (_val < 0) ? -1 : 1;
+      unsigned int quotient = static_cast<unsigned int>(abs(_val)) / _interval;
+
+      double lowerRemainder =
+          abs(_val) - static_cast<double>(quotient * _interval);
+      if (lowerRemainder< _tolerance)
+      {
+        return static_cast<double>(_interval * quotient) * sign;
+      }
+
+      double higherRemainder =
+          static_cast<double>(++quotient * _interval) - abs(_val);
+      if (higherRemainder < _tolerance)
+      {
+        return static_cast<double>(_interval * quotient) * sign;
+      }
+
+      return _val;
+    };
+
+    const unsigned int interval = _config.GetRotationSnapToDegrees().value();
+    const double tolerance = _config.GetRotationSnapTolerance().value();
+
+    ss << pose->Pos() << posRotDelimiter
+       << sanitizeZero(snapToInterval(
+              IGN_RTOD(pose->Rot().Roll()), interval, tolerance)) << " "
+       << sanitizeZero(snapToInterval(
+              IGN_RTOD(pose->Rot().Pitch()), interval, tolerance)) << " "
+       << sanitizeZero(snapToInterval(
+              IGN_RTOD(pose->Rot().Yaw()), interval, tolerance));
+    _valueStr = ss.str();
+    return true;
+  }
+  else if (rotationFormat == "euler_rpy" && inDegrees)
+  {
+    ss << pose->Pos() << posRotDelimiter
+       << sanitizeZero(IGN_RTOD(pose->Rot().Roll())) << " "
+       << sanitizeZero(IGN_RTOD(pose->Rot().Pitch())) << " "
+       << sanitizeZero(IGN_RTOD(pose->Rot().Yaw()));
+    _valueStr = ss.str();
+    return true;
+  }
+
+  ss << pose->Pos() << posRotDelimiter
+     << sanitizeZero(pose->Rot().Roll()) << " "
+     << sanitizeZero(pose->Rot().Pitch()) << " "
+     << sanitizeZero(pose->Rot().Yaw());
+  _valueStr = ss.str();
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
+                                       const std::string &_typeName,
+                                       const ParamVariant &_value,
+                                       std::string &_valueStr) const
+{
+  if (_typeName == "ignition::math::Pose3d" ||
+      _typeName == "pose" ||
+      _typeName == "Pose")
+  {
+    const ElementPtr p = this->parentElement.lock();
+    if (!this->ignoreParentAttributes && p)
+    {
+      return PoseStringFromValue(
+          _config, p->GetAttributes(), _value, _valueStr);
+    }
+    return PoseStringFromValue(_config, {}, _value, _valueStr);
+  }
+
+  StringStreamClassicLocale ss;
+  ss << ParamStreamer{ _value };
+  _valueStr = ss.str();
+  return true;
+}
+
+//////////////////////////////////////////////////
 bool Param::SetFromString(const std::string &_value,
                           bool _ignoreParentAttributes)
 {
@@ -800,14 +1058,18 @@ bool Param::SetFromString(const std::string &_value,
   else if (str.empty())
   {
     this->dataPtr->value = this->dataPtr->defaultValue;
+    this->dataPtr->strValue = str;
     return true;
   }
 
   auto oldValue = this->dataPtr->value;
-  if (!this->ValueFromString(str))
+  if (!this->dataPtr->ValueFromStringImpl(this->dataPtr->typeName,
+                                          str,
+                                          this->dataPtr->value))
   {
     return false;
   }
+  this->dataPtr->strValue = str;
 
   // Check if the value is permitted
   if (!this->ValidateValue())
@@ -851,19 +1113,35 @@ bool Param::SetParentElement(ElementPtr _parentElement)
 void Param::Reset()
 {
   this->dataPtr->value = this->dataPtr->defaultValue;
-  this->dataPtr->strValue = this->dataPtr->defaultStrValue;
+  this->dataPtr->strValue = std::nullopt;
   this->dataPtr->set = false;
 }
 
 //////////////////////////////////////////////////
 bool Param::Reparse()
 {
+  std::string strToReparse;
+  if (this->dataPtr->strValue.has_value())
+  {
+    strToReparse = this->dataPtr->strValue.value();
+  }
+  // A default PrintConfig can be used here, as Reparse() is not called in the
+  // code path from the 'ign sdf -p' command.
+  else if (!this->dataPtr->StringFromValueImpl(PrintConfig(),
+                                               this->dataPtr->typeName,
+                                               this->dataPtr->defaultValue,
+                                               strToReparse))
+  {
+    sdferr << "Failed to obtain string from default value during reparsing.\n";
+    return false;
+  }
+
   if (!this->dataPtr->ValueFromStringImpl(
-      this->dataPtr->typeName, this->dataPtr->strValue, this->dataPtr->value))
+      this->dataPtr->typeName, strToReparse, this->dataPtr->value))
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {
-      sdferr << "Failed to set value '" << this->dataPtr->strValue
+      sdferr << "Failed to set value '" << strToReparse
           << "' to key [" << this->GetKey()
           << "] for new parent element of name '" << parentElement->GetName()
           << "', reverting to previous value '"
@@ -871,11 +1149,17 @@ bool Param::Reparse()
     }
     else
     {
-      sdferr << "Failed to set value '" << this->dataPtr->strValue
+      sdferr << "Failed to set value '" << strToReparse
           << "' to key [" << this->GetKey() << "] without a parent element, "
           << "reverting to previous value '" << this->GetAsString() << "'.\n";
     }
     return false;
+  }
+  // ValueFromStringImpl might make assumptions as to what the default value
+  // should be, so if strToReparse is empty, assign the correct default value.
+  if (strToReparse.empty())
+  {
+    this->dataPtr->value = this->dataPtr->defaultValue;
   }
   return true;
 }
@@ -965,63 +1249,4 @@ bool Param::ValidateValue() const
         }
         return true;
       }, this->dataPtr->value);
-}
-
-//////////////////////////////////////////////////
-/// \brief Helper function for GetAsString for pose.
-/// \param[in] _config Printing configuration for the output string.
-/// \param[in] _value The pose value of the param.
-std::string GetPoseAsString(const PrintConfig& _config,
-    const ignition::math::Pose3d &_value)
-{
-  StringStreamClassicLocale ss;
-  if (_config.GetRotationInDegrees())
-  {
-    ss << _value.Pos() << "   ";
-    ss << IGN_RTOD(_value.Roll()) << " "
-       << IGN_RTOD(_value.Pitch()) << " "
-       << IGN_RTOD(_value.Yaw());
-  }
-  else if (_config.GetRotationSnapToDegrees().has_value() &&
-           _config.GetRotationSnapTolerance().has_value())
-  {
-    // Returns a snapped value if it is within the tolerance of multiples
-    // of interval, otherwise the orginal value is returned.
-    auto snapToInterval =
-        [](double _val, unsigned int _interval, double _tolerance)
-    {
-      const double sign = (_val < 0) ? -1 : 1;
-      unsigned int quotient = static_cast<unsigned int>(abs(_val)) / _interval;
-
-      double lowerRemainder =
-          abs(_val) - static_cast<double>(quotient * _interval);
-      if (lowerRemainder< _tolerance)
-      {
-        return static_cast<double>(_interval * quotient) * sign;
-      }
-
-      double higherRemainder =
-          static_cast<double>(++quotient * _interval) - abs(_val);
-      if (higherRemainder < _tolerance)
-      {
-        return static_cast<double>(_interval * quotient) * sign;
-      }
-
-      return _val;
-    };
-
-    const unsigned int interval = _config.GetRotationSnapToDegrees().value();
-    const double tolerance = _config.GetRotationSnapTolerance().value();
-
-    ss << _value.Pos() << "   ";
-    ss << snapToInterval(IGN_RTOD(_value.Roll()), interval, tolerance) << " "
-       << snapToInterval(IGN_RTOD(_value.Pitch()), interval, tolerance) << " "
-       << snapToInterval(IGN_RTOD(_value.Yaw()), interval, tolerance);
-  }
-  else
-  {
-    ss << _value.Pos() << " " << _value.Rot().Euler();
-  }
-
-  return ss.str();
 }
