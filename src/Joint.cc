@@ -160,7 +160,7 @@ Errors Joint::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
         "Joint with name[" + this->dataPtr->name +
-        "] must specify different link names for "
+        "] must specify different frame names for "
         "parent and child, while [" + this->dataPtr->childLinkName +
         "] was specified for both."});
   }

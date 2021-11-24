@@ -6,6 +6,7 @@
     <link name="link3"/>
     <link name="link4"/>
     <link name="link5"/>
+    <link name="link6"/>
 
     <joint name="joint1" type="revolute">
       <child>link1</child>

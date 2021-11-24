@@ -993,7 +993,7 @@ class PlacementFrame: public ::testing::Test
   }
 
   public: sdf::SemanticPose GetChildEntitySemanticPose(
-      const sdf::World *_world, const std::string _entityName)
+      const sdf::World *_world, const std::string &_entityName)
   {
     return _world->ModelByName(_entityName)->SemanticPose();
   }
