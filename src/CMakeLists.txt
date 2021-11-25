@@ -95,10 +95,12 @@ else()
 endif()
 
 find_package(pxr REQUIRED)
+find_package(CGAL)
 
 include_directories(${PXR_INCLUDE_DIRS})
 set(sources ${sources}
   usd/usd_parser/parser_usd.cc
+  usd/usd_parser/polygon_helper.cc
   usd/usd_parser/physics.cc
   usd/usd_parser/joints.cc
   usd/usd_parser/lights.cc
@@ -251,6 +253,7 @@ target_link_libraries(${sdf_target}
     ignition-common${IGN_COMMON_VER}::graphics
     ${PYTHON_LIBRARY}
     ${PXR_LIBRARIES}
+    CGAL::CGAL
   PRIVATE
     ${TinyXML2_LIBRARIES})
 

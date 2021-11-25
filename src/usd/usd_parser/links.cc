@@ -53,6 +53,7 @@
 #include "sdf/Sphere.hh"
 
 #include "utils.hh"
+#include "polygon_helper.hh"
 
 #include "pxr/usd/usdGeom/metrics.h"
 
@@ -144,14 +145,6 @@ namespace usd
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3));
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3 + 1));
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3 + 2));
-
-          // subMeshSubset.AddTexCoord(_subMesh.TexCoord(_subMesh.Index(faceVertexIndices[i] * 3)));
-          // subMeshSubset.AddTexCoord(_subMesh.TexCoord(_subMesh.Index(faceVertexIndices[i] * 3 + 1)));
-          // subMeshSubset.AddTexCoord(_subMesh.TexCoord(_subMesh.Index(faceVertexIndices[i] * 3 + 2)));
-          //
-          // subMeshSubset.AddNormal(_subMesh.Normal(_subMesh.Index(faceVertexIndices[i] * 3)));
-          // subMeshSubset.AddNormal(_subMesh.Normal(_subMesh.Index(faceVertexIndices[i] * 3 + 1)));
-          // subMeshSubset.AddNormal(_subMesh.Normal(_subMesh.Index(faceVertexIndices[i] * 3 + 2)));
         }
 
         for (int i = 0; i < _subMesh.VertexCount(); ++i)
@@ -259,39 +252,19 @@ namespace usd
     std::cerr << "points " << points.size() << '\n';
     if (textCoords.size() == 0)
     {
-      _prim.GetAttribute(pxr::TfToken("primvars:st_1")).Get(&textCoords);
+      _prim.GetAttribute(pxr::TfToken("primvars:st_0")).Get(&textCoords);
     }
     std::cerr << "primvars:st " << textCoords.size() << '\n';
 
-    unsigned int indexVertex = 0;
-    for (unsigned int i = 0; i < faceVertexCounts.size(); ++i)
+    std::vector<unsigned int> indexes = PolygonToTriangles(
+      faceVertexIndices, faceVertexCounts, points);
+    for (unsigned int i = 0; i < indexes.size(); ++i)
     {
-      if (faceVertexCounts[i] == 3)
-      {
-        unsigned int j = indexVertex;
-        unsigned int indexVertexStop = indexVertex + 3;
-        for (; j < indexVertexStop; ++j)
-        {
-          subMesh.AddIndex(faceVertexIndices[j]);
-          ++indexVertex;
-        }
-      }
-      else if (faceVertexCounts[i] == 4)
-      {
-        subMesh.AddIndex(faceVertexIndices[indexVertex]);
-        subMesh.AddIndex(faceVertexIndices[indexVertex + 1]);
-        subMesh.AddIndex(faceVertexIndices[indexVertex + 2]);
-
-        subMesh.AddIndex(faceVertexIndices[indexVertex]);
-        subMesh.AddIndex(faceVertexIndices[indexVertex + 2]);
-        subMesh.AddIndex(faceVertexIndices[indexVertex + 3]);
-
-        indexVertex+=4;
-      }
-      // TODO(ahcorde): 5? 6?, 7?...
+      subMesh.AddIndex(indexes[i]);
     }
 
     std::cerr << "textCoords " << textCoords.size() << '\n';
+
     for (auto & textCoord: textCoords)
     {
       subMesh.AddTexCoord(textCoord[0], textCoord[1]);
@@ -319,39 +292,6 @@ namespace usd
     // std::cerr << "Mesh setScale " << scale << '\n';
     meshGeom.SetScale(scale * link->scale);
     _vis->SetRawPose(pose);
-    //
-    // auto parent = _prim.GetParent();
-    // if (parent.IsA<pxr::UsdGeomMesh>())
-    // {
-    //   _vis->SetRawPose(pose);
-    // }
-    // else
-    // {
-    //   pxr::UsdPrimCompositionQuery query =
-    //     pxr::UsdPrimCompositionQuery::GetDirectReferences(parent);
-    //
-    //   std::vector<pxr::UsdPrimCompositionQueryArc> arcs =
-    //     query.GetCompositionArcs();
-    //   bool isAPropReference = false;
-    //   for (auto & a : arcs )
-    //   {
-    //     pxr::SdfLayerHandle handler = a.GetIntroducingLayer();
-    //     std::set<std::string> ss = handler->GetExternalReferences();
-    //     for (auto & s : ss)
-    //     {
-    //       if (s.find("Prop") != std::string::npos &&
-    //           parent.GetPath().GetName() == "geometry")
-    //       {
-    //         isAPropReference = true;
-    //         break;
-    //       }
-    //     }
-    //   }
-    //   if (isAPropReference)
-    //   {
-    //     _vis->SetRawPose(pose);
-    //   }
-    // }
 
     std::string primName = pxr::TfStringify(_prim.GetPath());
 

@@ -337,6 +337,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       }
 
       const sdf::Pbr * pbr = _visual->Material()->PbrMaterial();
+      bool isMap = false;
       if(pbr != nullptr)
       {
         const sdf::PbrWorkflow * pbrWorkflow = pbr->Workflow(sdf::PbrWorkflowType::METAL);
@@ -354,20 +355,27 @@ inline namespace SDF_VERSION_NAMESPACE {
           if (!pbrWorkflow->MetalnessMap().empty())
           {
             AddKeyValue(metalTag, "metalness_map", pbrWorkflow->MetalnessMap());
+            isMap = true;
           }
           if (!pbrWorkflow->AlbedoMap().empty())
           {
             AddKeyValue(metalTag, "albedo_map", pbrWorkflow->AlbedoMap());
+            isMap = true;
           }
           if (!pbrWorkflow->NormalMap().empty())
           {
             AddKeyValue(metalTag, "normal_map", pbrWorkflow->NormalMap());
+            isMap = true;
           }
           if (!pbrWorkflow->RoughnessMap().empty())
           {
             AddKeyValue(metalTag, "roughness_map", pbrWorkflow->RoughnessMap());
+            isMap = true;
           }
         }
+      }
+      if (isMap)
+      {
         double color_diffuse[3];
         color_diffuse[0] = 1;
         color_diffuse[1] = 1;
