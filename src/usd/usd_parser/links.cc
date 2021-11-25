@@ -193,7 +193,7 @@ namespace usd
         std::cerr << "link->name " << link->name << '\n';
         GetTransform(child, _metersPerUnit, pose, scale, link->name);
         // link->pose = pose;
-        // vis->SetRawPose(pose);
+        visSubset->SetRawPose(pose);
         link->visual_array.push_back(visSubset);
       }
     }
@@ -267,7 +267,7 @@ namespace usd
 
     for (auto & textCoord: textCoords)
     {
-      subMesh.AddTexCoord(textCoord[0], textCoord[1]);
+      subMesh.AddTexCoord(textCoord[0], (1 - textCoord[1]));
     }
 
     for (auto & point: points)
