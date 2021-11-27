@@ -66,6 +66,11 @@ class SDFORMAT_VISIBLE PrintConfig
   /// it has not been assigned, a nullopt will be returned.
   public: std::optional<double> GetRotationSnapTolerance() const;
 
+  /// \brief Return true if both PrintConfig objects contain the same values.
+  /// \param[in] _config PrintConfig to compare.
+  /// \return True if 'this' == _config.
+  public: bool operator==(const PrintConfig &_config) const;
+
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };

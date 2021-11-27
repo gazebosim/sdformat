@@ -88,3 +88,15 @@ std::optional<double> PrintConfig::GetRotationSnapTolerance() const
 {
   return this->dataPtr->rotationSnapTolerance;
 }
+
+/////////////////////////////////////////////////
+bool PrintConfig::operator==(const PrintConfig &_config) const
+{
+  if (this->GetRotationInDegrees() == _config.GetRotationInDegrees() &&
+      this->GetRotationSnapToDegrees() == _config.GetRotationSnapToDegrees() &&
+      this->GetRotationSnapTolerance() == _config.GetRotationSnapTolerance())
+  {
+    return true;
+  }
+  return false;
+}

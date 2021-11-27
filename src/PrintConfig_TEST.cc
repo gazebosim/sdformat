@@ -66,3 +66,30 @@ TEST(PrintConfig, RotationSnapToDegrees)
   ASSERT_TRUE(config.GetRotationSnapTolerance().has_value());
   EXPECT_DOUBLE_EQ(5 - 1e-6, config.GetRotationSnapTolerance().value());
 }
+
+/////////////////////////////////////////////////
+TEST(PrintConfig, Compare)
+{
+  sdf::PrintConfig first;
+  sdf::PrintConfig second;
+  EXPECT_TRUE(first == second);
+  EXPECT_TRUE(second == first);
+
+  first.SetRotationInDegrees(true);
+  EXPECT_TRUE(first.GetRotationInDegrees());
+  EXPECT_FALSE(second.GetRotationInDegrees());
+  EXPECT_FALSE(first == second);
+  EXPECT_FALSE(second == first);
+
+  second.SetRotationInDegrees(true);
+  EXPECT_TRUE(first == second);
+  EXPECT_TRUE(second == first);
+
+  EXPECT_TRUE(first.SetRotationSnapToDegrees(5, 0.01));
+  EXPECT_FALSE(first == second);
+  EXPECT_FALSE(second == first);
+
+  EXPECT_TRUE(second.SetRotationSnapToDegrees(5, 0.01));
+  EXPECT_TRUE(first == second);
+  EXPECT_TRUE(second == first);
+}
