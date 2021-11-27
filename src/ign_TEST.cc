@@ -954,7 +954,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       IgnCommand() + " sdf -p" + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
-               "<pose degrees='true'>1 2 3 30.009 44.991 -60.009</pose>");
+               "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
@@ -1089,7 +1089,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose rotation_format='quat_xyzw'>"
-               "1 2 3 0.391948 0.200425 -0.532046 0.723279</pose>");
+               "1 2 3   0.391948 0.200425 -0.532046 0.723279</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
@@ -1159,7 +1159,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       IgnCommand() + " sdf -p" + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
-               "<pose degrees='true'>1 2 3 30.009 44.991 -60.009</pose>");
+               "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
@@ -1301,7 +1301,7 @@ TEST(print_includes_rotations_in_quaternions,
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose rotation_format='quat_xyzw'>"
-               "1 2 3 0.391948 0.200425 -0.532046 0.723279</pose>");
+               "1 2 3   0.391948 0.200425 -0.532046 0.723279</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
@@ -1365,11 +1365,14 @@ TEST(print_rotations_in_unnormalized_degrees,
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_degrees.sdf");
 
   // Default printing
+  // Unnormalized degree values cannot be returned as is, as its string is
+  // returned by parsing the pose value, whenever a parent Element Attribute,
+  // or PrintConfig is used.
   std::string output = custom_exec_str(
       IgnCommand() + " sdf -p" + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
-               "<pose degrees='true'>1 2 3 390.009 764.991 -420.009</pose>");
+               "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
