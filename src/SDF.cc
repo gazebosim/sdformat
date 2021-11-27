@@ -28,7 +28,6 @@
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "sdf/PrintConfig.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
