@@ -93,6 +93,21 @@ else()
   include_directories(${URDF_INCLUDE_DIRS})
 endif()
 
+# Find PXR. This is temporary to allow for SDF -> USD development.
+# Once SDFormat supports ign-cmake, this will be a separate component.
+find_package(pxr REQUIRED)
+include_directories(${PXR_INCLUDE_DIRS})
+# Add SDF -> USD code. This is also temporary, and will be in a separate
+# component once SDFormat supports ign-cmake.
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/usd)
+set(sources ${sources}
+  usd/sdf_usd_parser/geometry.cc
+  usd/sdf_usd_parser/link.cc
+  usd/sdf_usd_parser/model.cc
+  usd/sdf_usd_parser/visual.cc
+  usd/sdf_usd_parser/world.cc
+)
+
 if (BUILD_SDF_TEST)
   set (gtest_sources
     Actor_TEST.cc
@@ -226,6 +241,7 @@ target_link_libraries(${sdf_target}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    ${PXR_LIBRARIES}
   PRIVATE
     ${TinyXML2_LIBRARIES})
 

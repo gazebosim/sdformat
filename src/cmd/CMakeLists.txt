@@ -42,3 +42,24 @@ file(GENERATE
 
 # Install the ruby command line library in an unversioned location.
 install(FILES ${cmd_script_generated} DESTINATION lib/ruby/ignition)
+
+#===============================================================================
+# SDF -> USD converter
+find_package(ignition-common4 COMPONENTS graphics REQUIRED)
+set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+add_executable(usdConverter
+  usdConverter.cc
+)
+
+target_link_libraries(usdConverter
+  PUBLIC
+    ignition-common${IGN_COMMON_VER}::graphics
+    ${sdf_target}
+)
+
+install(
+  TARGETS
+    usdConverter
+  DESTINATION
+    ${BIN_INSTALL_DIR}
+)
