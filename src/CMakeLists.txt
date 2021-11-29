@@ -18,6 +18,7 @@ set (sources
   Capsule.cc
   Collision.cc
   Console.cc
+  Conversions.cc
   Converter.cc
   Cylinder.cc
   Element.cc
@@ -99,6 +100,8 @@ find_package(CGAL)
 
 include_directories(${PXR_INCLUDE_DIRS})
 set(sources ${sources}
+  usd/usd/USDStage.cc
+  usd/usd/USDData.cc
   usd/usd_parser/parser_usd.cc
   usd/usd_parser/polygon_helper.cc
   usd/usd_parser/physics.cc
@@ -121,6 +124,7 @@ if (BUILD_SDF_TEST)
     Capsule_TEST.cc
     Collision_TEST.cc
     Console_TEST.cc
+    Conversions_TEST.cc
     Cylinder_TEST.cc
     Element_TEST.cc
     Ellipsoid_TEST.cc
@@ -179,6 +183,14 @@ if (BUILD_SDF_TEST)
     target_link_libraries("UNIT_ign_TEST"
       PUBLIC
         ignition-cmake${IGN_CMAKE_VER}::utilities
+    )
+  endif()
+
+  if (TARGET UNIT_Conversions_TEST)
+    # Link the libraries that we always need.
+    target_link_libraries("UNIT_Conversions_TEST"
+      PUBLIC
+        ignition-common${IGN_COMMON_VER}::graphics
     )
   endif()
 

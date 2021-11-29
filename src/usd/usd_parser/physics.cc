@@ -23,15 +23,14 @@
 
 namespace usd
 {
-  void ParsePhysicsScene(const pxr::UsdPrim &_prim)
+  void ParsePhysicsScene(const pxr::UsdPrim &_prim, WorldInterfaceSharedPtr &_world)
   {
-    sdferr << "UsdPhysicsScene" << "\n";
     auto variant_physics_scene = pxr::UsdPhysicsScene(_prim);
     pxr::GfVec3f gravity;
-    float magnitude;
     variant_physics_scene.GetGravityDirectionAttr().Get(&gravity);
-    std::cerr << "\tgravity " << gravity << "\n";
-    variant_physics_scene.GetGravityMagnitudeAttr().Get(&magnitude);
-    std::cerr << "\tmagnitude " << magnitude << "\n";
+    _world->gravity[0] = gravity[0];
+    _world->gravity[1] = gravity[1];
+    _world->gravity[2] = gravity[2];
+    variant_physics_scene.GetGravityMagnitudeAttr().Get(&_world->magnitude);
   }
 }

@@ -21,15 +21,14 @@
 #include <pxr/usd/usd/primRange.h>
 
 #include "usd_model/link.hh"
+#include "usd/USDData.hh"
 
 namespace usd
 {
   std::string ParseLinks(
     const pxr::UsdPrim &_prim,
     LinkSharedPtr &_link,
-    std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,
-    std::map<std::string, sdf::Material> &_materialsSDF,
-    const double _metersPerUnit,
+    USDData &_usdData,
     int &_skip);
 }
 

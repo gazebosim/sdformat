@@ -43,10 +43,12 @@ namespace usd{
   typedef std::shared_ptr<double> DoubleSharedPtr;
 
   class ModelInterface;
+  class WorldInterface;
 
   USD_TYPEDEF_CLASS_POINTER(Link);
   // typedef shared pointers
   typedef std::shared_ptr<ModelInterface> ModelInterfaceSharedPtr;
+  typedef std::shared_ptr<WorldInterface> WorldInterfaceSharedPtr;
 
   // create *_pointer_cast functions in urdf namespace
   template<class T, class U>

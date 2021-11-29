@@ -19,7 +19,6 @@
 
 #include <ignition/utils/cli/CLI.hpp>
 
-#include "sdf/sdf_config.h"
 #include "sdf/sdf.hh"
 
 //////////////////////////////////////////////////

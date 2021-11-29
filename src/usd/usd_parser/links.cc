@@ -51,11 +51,14 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/Conversions.hh"
 
 #include "utils.hh"
 #include "polygon_helper.hh"
 
 #include "pxr/usd/usdGeom/metrics.h"
+
+#include "usd/USDStage.hh"
 
 namespace usd
 {
@@ -90,11 +93,14 @@ namespace usd
     LinkSharedPtr &link,
     ignition::common::SubMesh &_subMesh,
     sdf::Mesh &_meshGeom,
-    std::map<std::string, sdf::Material> &_materialsSDF,
-    std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,
     const ignition::math::Vector3d &_scale,
-    const double &_metersPerUnit)
+    USDData &_usdData)
   {
+    std::pair<std::string, std::shared_ptr<USDStage>> data =
+      _usdData.findStage(_prim.GetPath().GetName());
+
+    double metersPerUnit = data.second->_metersPerUnit;
+
     int numSubMeshes = 0;
 
     for (const auto & child : _prim.GetChildren())
@@ -105,20 +111,19 @@ namespace usd
         visSubset = std::make_shared<sdf::Visual>();
 
         std::string nameMaterial = ParseMaterialName(child);
-        auto it = _materials.find(nameMaterial);
-        auto itSDF = _materialsSDF.find(nameMaterial);
-        if (it != _materials.end() && itSDF != _materialsSDF.end())
+        auto it = _usdData.materials.find(nameMaterial);
+        if (it != _usdData.materials.end())
         {
           std::cerr << "material found" << '\n';
-          link->visual_array_material.push_back(it->second);
-          visSubset->SetMaterial(itSDF->second);
+          // link->visual_array_material.push_back(it->second);
+          visSubset->SetMaterial(it->second);
         }
         else
         {
           std::cerr << "material NOT found" << '\n';
-          link->visual_array_material.push_back(std::make_shared<ignition::common::Material>());
+          // link->visual_array_material.push_back(std::make_shared<ignition::common::Material>());
         }
-        link->visual_array_material_name.push_back(nameMaterial);
+        // link->visual_array_material_name.push_back(nameMaterial);
 
         ignition::common::Mesh meshSubset;
 
@@ -128,9 +133,10 @@ namespace usd
         subMeshSubset.SetPrimitiveType(ignition::common::SubMesh::TRISTRIPS);
         subMeshSubset.SetName("subgeommesh");
 
-        if (it != _materials.end())
+        if (it != _usdData.materials.end())
         {
-          meshSubset.AddMaterial(it->second);
+          std::shared_ptr<ignition::common::Material> matCommon = convertMaterial(it->second);
+          meshSubset.AddMaterial(matCommon);
           subMeshSubset.SetMaterialIndex(meshSubset.MaterialCount() - 1);
         }
         pxr::VtIntArray faceVertexIndices;
@@ -147,15 +153,15 @@ namespace usd
           subMeshSubset.AddIndex(_subMesh.Index(faceVertexIndices[i] * 3 + 2));
         }
 
-        for (int i = 0; i < _subMesh.VertexCount(); ++i)
+        for (unsigned int i = 0; i < _subMesh.VertexCount(); ++i)
         {
           subMeshSubset.AddVertex(_subMesh.Vertex(i));
         }
-        for (int i = 0; i < _subMesh.NormalCount(); ++i)
+        for (unsigned int i = 0; i < _subMesh.NormalCount(); ++i)
         {
           subMeshSubset.AddNormal(_subMesh.Normal(i));
         }
-        for (int i = 0; i < _subMesh.TexCoordCount(); ++i)
+        for (unsigned int i = 0; i < _subMesh.TexCoordCount(); ++i)
         {
           subMeshSubset.AddTexCoord(_subMesh.TexCoord(i));
         }
@@ -191,7 +197,7 @@ namespace usd
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale(1, 1, 1);
         std::cerr << "link->name " << link->name << '\n';
-        GetTransform(child, _metersPerUnit, pose, scale, link->name);
+        GetTransform(child, _usdData, pose, scale, link->name);
         // link->pose = pose;
         visSubset->SetRawPose(pose);
         link->visual_array.push_back(visSubset);
@@ -200,16 +206,13 @@ namespace usd
     return numSubMeshes;
   }
 
-  void ParseMesh(
+  ignition::math::Pose3d ParseMesh(
     const pxr::UsdPrim &_prim,
     LinkSharedPtr &link,
     std::shared_ptr<sdf::Visual> &_vis,
-    const sdf::Material &_material,
-    std::map<std::string, sdf::Material> &_materialsSDF,
     sdf::Geometry &_geom,
-    std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,
     const ignition::math::Vector3d &_scale,
-    const double &_metersPerUnit)
+    USDData &_usdData)
   {
     // if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->z) {
     //   std::cerr << "TEST Z" << '\n';
@@ -230,6 +233,11 @@ namespace usd
     // // _prim.GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
     // std::string upAxis = axis.GetText();
     // std::cerr << "upAxis " << upAxis << '\n';
+
+    std::pair<std::string, std::shared_ptr<USDStage>> data =
+      _usdData.findStage(_prim.GetPath().GetName());
+
+    double metersPerUnit = data.second->_metersPerUnit;
 
     std::cerr << "/* UsdGeomMesh */" << '\n';
     ignition::common::Mesh mesh;
@@ -270,12 +278,30 @@ namespace usd
       subMesh.AddTexCoord(textCoord[0], (1 - textCoord[1]));
     }
 
+    bool upAxisZ = (data.second->_upAxis == "Z");
+    ignition::math::Matrix4d m(
+      1, 0, 0, 0,
+      0, 0, -1, 0,
+      0, 1, 0, 0,
+      0, 0, 0, 1);
     for (auto & point: points)
     {
-      subMesh.AddVertex(
-        point[0] * _metersPerUnit,
-        point[1] * _metersPerUnit,
-        point[2] * _metersPerUnit);
+      if(upAxisZ)
+      {
+        subMesh.AddVertex(
+          point[0] * metersPerUnit,
+          point[1] * metersPerUnit,
+          point[2] * metersPerUnit);
+      }
+      else
+      {
+        ignition::math::Vector3d v(
+          point[0] * metersPerUnit,
+          point[1] * metersPerUnit,
+          point[2] * metersPerUnit);
+        v = m * v;
+        subMesh.AddVertex(v);
+      }
     }
 
     for (auto & normal: normals)
@@ -288,15 +314,11 @@ namespace usd
 
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
-    GetTransform(_prim, _metersPerUnit, pose, scale, link->name);
+    GetTransform(_prim, _usdData, pose, scale, link->name);
     // std::cerr << "Mesh setScale " << scale << '\n';
     meshGeom.SetScale(scale * link->scale);
-    _vis->SetRawPose(pose);
 
     std::string primName = pxr::TfStringify(_prim.GetPath());
-
-    _vis->SetName("_" + ignition::common::basename(primName) + "_");
-    _vis->SetMaterial(_material);
 
     std::string directoryMesh = directoryFromUSDPath(primName) + primName;
 
@@ -306,7 +328,7 @@ namespace usd
         directoryMesh, ignition::common::basename(directoryMesh)) + ".dae");
 
     int numSubMeshes = ParseMeshSubGeom(
-      _prim, link, subMesh, meshGeom, _materialsSDF, _materials, _scale, _metersPerUnit);
+      _prim, link, subMesh, meshGeom, _scale, _usdData);
 
     _geom.SetMeshShape(meshGeom);
     _vis->SetGeom(_geom);
@@ -314,19 +336,19 @@ namespace usd
     if (numSubMeshes == 0)
     {
       std::string nameMaterial = ParseMaterialName(_prim);
-      auto it = _materials.find(nameMaterial);
-      auto itSDF = _materialsSDF.find(nameMaterial);
-      if (it != _materials.end() && itSDF != _materialsSDF.end())
+      auto it = _usdData.materials.find(nameMaterial);
+      if (it != _usdData.materials.end())
       {
-        _vis->SetMaterial(itSDF->second);
-        link->visual_array_material.push_back(it->second);
-        mesh.AddMaterial(it->second);
+        _vis->SetMaterial(it->second);
+        // link->visual_array_material.push_back(it->second);
+        std::shared_ptr<ignition::common::Material> matCommon = convertMaterial(it->second);
+        mesh.AddMaterial(matCommon);
         subMesh.SetMaterialIndex(mesh.MaterialCount() - 1);
         std::cerr << " \t Setted material " << nameMaterial << " to " << primName << '\n';
       }
       link->visual_array.push_back(_vis);
 
-      link->visual_array_material_name.push_back(nameMaterial);
+      // link->visual_array_material_name.push_back(nameMaterial);
       mesh.AddSubMesh(subMesh);
 
       if (ignition::common::createDirectories(directoryMesh))
@@ -337,10 +359,10 @@ namespace usd
         exporter.Export(&mesh, directoryMesh, false);
       }
     }
+    return pose;
   }
 
-  void ParseCube(const pxr::UsdPrim &_prim, std::shared_ptr<sdf::Visual> &_vis,
-    const sdf::Material &_material,
+  void ParseCube(const pxr::UsdPrim &_prim,
     sdf::Geometry &_geom,
     ignition::math::Vector3d &_scale,
     const double _metersPerUnit)
@@ -361,14 +383,11 @@ namespace usd
     sdferr << "this is a cube" << box.Size() << "\n";
 
     _geom.SetBoxShape(box);
-    _vis->SetName("visual_box");
-    _vis->SetGeom(_geom);
-    _vis->SetMaterial(_material);
   }
 
-  void ParseSphere(const pxr::UsdPrim &_prim, std::shared_ptr<sdf::Visual> &_vis,
-    const sdf::Material &_material,
-    sdf::Geometry &_geom, ignition::math::Vector3d &_scale,
+  void ParseSphere(const pxr::UsdPrim &_prim,
+    sdf::Geometry &_geom,
+    ignition::math::Vector3d &_scale,
     const double _metersPerUnit)
   {
     double radius;
@@ -380,15 +399,10 @@ namespace usd
     _geom.SetType(sdf::GeometryType::SPHERE);
     s.SetRadius(radius * _metersPerUnit * _scale.X());
     _geom.SetSphereShape(s);
-    _vis->SetName("visual_sphere");
-    _vis->SetGeom(_geom);
-    _vis->SetMaterial(_material);
   }
 
   void ParseCylinder(
     const pxr::UsdPrim &_prim,
-    std::shared_ptr<sdf::Visual> &_vis,
-    const sdf::Material &_material,
     sdf::Geometry &_geom,
     const ignition::math::Vector3d &_scale,
     const double _metersPerUnit)
@@ -410,9 +424,6 @@ namespace usd
       << " height :" << height * _metersPerUnit * _scale.X() << "\n";
 
     _geom.SetCylinderShape(c);
-    _vis->SetName("visual_cylinder");
-    _vis->SetGeom(_geom);
-    _vis->SetMaterial(_material);
   }
 
   void getInertial(const pxr::UsdPrim &_prim, LinkSharedPtr &link)
@@ -478,9 +489,7 @@ namespace usd
   std::string ParseLinks(
     const pxr::UsdPrim &_prim,
     LinkSharedPtr &link,
-    std::map<std::string, std::shared_ptr<ignition::common::Material>> &_materials,
-    std::map<std::string, sdf::Material> &_materialsSDF,
-    const double _metersPerUnit,
+    USDData &_usdData,
     int &_skip)
   {
     std::cerr << "************ ADDED LINK ************" << '\n';
@@ -507,6 +516,11 @@ namespace usd
     //     std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
     //   }
     // }
+
+    std::pair<std::string, std::shared_ptr<USDStage>> data =
+      _usdData.findStage(_prim.GetPath().GetName());
+
+    double metersPerUnit = data.second->_metersPerUnit;
 
     bool newlink = false;
 
@@ -573,7 +587,7 @@ namespace usd
       }
       ignition::math::Pose3d pose;
       ignition::math::Vector3d scale(1, 1, 1);
-      GetTransform(tmpPrim, _metersPerUnit, pose, scale, "");
+      GetTransform(tmpPrim, _usdData, pose, scale, "");
       link->pose = pose;
       link->scale = scale;
     }
@@ -588,46 +602,6 @@ namespace usd
       vis = std::make_shared<sdf::Visual>();
 
       auto variant_geom = pxr::UsdGeomGprim(_prim);
-
-      auto transforms = variant_geom.GetXformOpOrderAttr();
-
-      if (!transforms)
-      {
-        sdferr << "No transforms available!\n";
-      }
-      //
-      // std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
-      //   ParseTransform(_prim);
-      // pxr::GfVec3f scale = std::get<0>(transformsTuple);
-      // pxr::GfVec3f translate = std::get<1>(transformsTuple);
-      // pxr::GfQuatf rotationQuad = std::get<2>(transformsTuple);
-      //
-      // bool isScale = std::get<3>(transformsTuple);
-      // bool isTranslate = std::get<4>(transformsTuple);
-      // bool isRotation = std::get<5>(transformsTuple);
-      //
-      //
-      // if (isScale)
-      //   link->scale = ignition::math::Vector3d(scale[0], scale[1], scale[2]);
-      // if (isTranslate && isRotation)
-      // {
-      //   vis->SetRawPose(
-      //     ignition::math::Pose3d(
-      //       ignition::math::Vector3d(
-      //         translate[0] * _metersPerUnit,
-      //         translate[1] * _metersPerUnit,
-      //         translate[2] * _metersPerUnit),
-      //       ignition::math::Quaterniond(
-      //         rotationQuad.GetReal(),
-      //         rotationQuad.GetImaginary()[0],
-      //         rotationQuad.GetImaginary()[1],
-      //         rotationQuad.GetImaginary()[2])));
-      // }
-      // else
-      // {
-      //   vis->SetRawPose(link->pose);
-      //   link->pose = ignition::math::Pose3d();
-      // }
 
       pxr::TfTokenVector schemas = _prim.GetAppliedSchemas();
       bool isPhysicsMeshCollisionAPI = false;
@@ -647,33 +621,46 @@ namespace usd
 
         if (_prim.IsA<pxr::UsdGeomSphere>())
         {
-          ParseSphere(_prim, vis, material, geom, link->scale, _metersPerUnit);
+          ParseSphere(_prim, geom, link->scale, metersPerUnit);
+          vis->SetName("visual_sphere");
+          vis->SetGeom(geom);
+          vis->SetMaterial(material);
         }
         else if (_prim.IsA<pxr::UsdGeomCylinder>())
         {
-          ParseCylinder(_prim, vis, material, geom, link->scale, _metersPerUnit);
+          ParseCylinder(_prim, geom, link->scale, metersPerUnit);
+          vis->SetName("visual_cylinder");
+          vis->SetGeom(geom);
+          vis->SetMaterial(material);
         }
         else if (_prim.IsA<pxr::UsdGeomCube>())
         {
-          ParseCube(_prim, vis, material, geom, link->scale, _metersPerUnit);
+          ParseCube(_prim, geom, link->scale, metersPerUnit);
+          vis->SetName("visual_box");
+          vis->SetGeom(geom);
+          vis->SetMaterial(material);
         }
         else if (_prim.IsA<pxr::UsdGeomMesh>())
         {
-          ParseMesh(_prim, link, vis, material, _materialsSDF, geom, _materials, link->scale, _metersPerUnit);
+          vis->SetMaterial(material);
+          ignition::math::Pose3d pose = ParseMesh(
+            _prim, link, vis, geom, link->scale, _usdData);
+          vis->SetName("_" + ignition::common::basename(primName) + "_");
+          vis->SetRawPose(pose);
         }
       }
-    //
-    //   pxr::TfTokenVector schemas = _prim.GetAppliedSchemas();
-    //   int isOnlyCollision = 0;
-    //   for (auto & token : schemas)
-    //   {
-    //     std::cerr << "GetText " << token.GetText() << '\n';
-    //     if (std::string(token.GetText()) == "PhysicsCollisionAPI" ||
-    //         std::string(token.GetText()) == "PhysxCollisionAPI" )
-    //     {
-    //       isOnlyCollision = 2;
-    //     }
-    //   }
+
+      // pxr::TfTokenVector schemas = _prim.GetAppliedSchemas();
+      // int isOnlyCollision = 0;
+      // for (auto & token : schemas)
+      // {
+      //   std::cerr << "GetText " << token.GetText() << '\n';
+      //   if (std::string(token.GetText()) == "PhysicsCollisionAPI" ||
+      //       std::string(token.GetText()) == "PhysxCollisionAPI" )
+      //   {
+      //     isOnlyCollision = 2;
+      //   }
+      // }
     //
     //   std::cerr << "isOnlyCollision " << isOnlyCollision << '\n';
     //   if (isOnlyCollision != 2 && !_prim.IsA<pxr::UsdGeomMesh>())
@@ -683,87 +670,57 @@ namespace usd
     //   }
     // }
     //
-    // bool collisionEnabled = false;
-    // if (_prim.HasAPI<pxr::UsdPhysicsCollisionAPI>())
-    // {
-    //   std::cerr << "UsdPhysicsCollisionAPI" << '\n';
-    //
-    //   _prim.GetAttribute(pxr::TfToken("physics:collisionEnabled")).Get(&collisionEnabled);
-    // }
-    //
-    // if (collisionEnabled)
-    // {
-    //   sdf::Collision col;
-    //
-    //   // add _collision extension
-    //   std::string collisionName = link->name + kCollisionExt;
-    //   col.SetName(collisionName);
-    //   col.SetGeom(geom);
-    //
-    //   std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
-    //     ParseTransform(_prim);
-    //
-    //   pxr::GfVec3f scale = std::get<0>(transformsTuple);
-    //   pxr::GfVec3d translate = std::get<1>(transformsTuple);
-    //   pxr::GfQuatd rotationQuad = std::get<2>(transformsTuple);
-    //
-    //   bool isScale = std::get<3>(transformsTuple);;
-    //   bool isTranslate = std::get<4>(transformsTuple);;
-    //   bool isRotation = std::get<5>(transformsTuple);;
-    //
-    //   if (isTranslate)
-    //   {
-    //     col.SetRawPose(
-    //       ignition::math::Pose3d(
-    //         ignition::math::Vector3d(
-    //           translate[0] * _metersPerUnit,
-    //           translate[1] * _metersPerUnit,
-    //           translate[2] * _metersPerUnit),
-    //         col.RawPose().Rot()));
-    //   }
-    //   if (isRotation)
-    //   {
-    //     col.SetRawPose(
-    //       ignition::math::Pose3d(
-    //         col.RawPose().Pos(),
-    //         ignition::math::Quaterniond(
-    //           rotationQuad.GetReal(),
-    //           rotationQuad.GetImaginary()[0],
-    //           rotationQuad.GetImaginary()[1],
-    //           rotationQuad.GetImaginary()[2])));
-    //   }
-    //
-    //   std::shared_ptr<sdf::Collision> colPtr = std::make_shared<sdf::Collision>();
-    //   colPtr->SetRawPose(col.RawPose());
-    //   colPtr->SetGeom(geom);
-    //   colPtr->SetName(col.Name());
-    //
-    //   if (_prim.IsA<pxr::UsdGeomCube>())
-    //   {
-    //     if (isScale)
-    //     {
-    //       const sdf::Box * box = colPtr->Geom()->BoxShape();
-    //       sdf::Box * boxEditable = const_cast<sdf::Box*>(box);
-    //       ignition::math::Vector3d size = box->Size();
-    //       boxEditable->SetSize(ignition::math::Vector3d(
-    //         size.X() * scale[0],
-    //         size.Y() * scale[1],
-    //         size.Z() * scale[2]));
-    //     }
-    //   }
-    //
-    //   link->collision_array.push_back(colPtr);
-    //   // Collision (optional)
-    //   // Assign the first collision to the .collision ptr, if it exists
-    //   if (!link->collision_array.empty())
-    //     link->collision = link->collision_array[0];
-    }
+      bool collisionEnabled = false;
+      if (_prim.HasAPI<pxr::UsdPhysicsCollisionAPI>())
+      {
+        std::cerr << "UsdPhysicsCollisionAPI" << '\n';
 
-    // Visual (optional)
-    // Assign the first visual to the .visual ptr, if it exists
-    if (link != nullptr) {
-      if (!link->visual_array.empty())
-        link->visual = link->visual_array[0];
+        _prim.GetAttribute(pxr::TfToken("physics:collisionEnabled")).Get(&collisionEnabled);
+      }
+
+      if (collisionEnabled)
+      {
+        sdf::Collision col;
+
+        // add _collision extension
+        std::string collisionName = link->name + kCollisionExt;
+        col.SetName(collisionName);
+        col.SetGeom(geom);
+
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale(1, 1, 1);
+        GetTransform(_prim, _usdData, pose, scale, "");
+        col.SetRawPose(pose);
+
+        std::shared_ptr<sdf::Collision> colPtr = std::make_shared<sdf::Collision>();
+        colPtr->SetRawPose(col.RawPose());
+        colPtr->SetGeom(geom);
+        colPtr->SetName(col.Name());
+
+        if (_prim.IsA<pxr::UsdGeomCube>())
+        {
+          const sdf::Box * box = colPtr->Geom()->BoxShape();
+          sdf::Box * boxEditable = const_cast<sdf::Box*>(box);
+          ignition::math::Vector3d size = box->Size();
+          boxEditable->SetSize(ignition::math::Vector3d(
+            size.X() * scale[0],
+            size.Y() * scale[1],
+            size.Z() * scale[2]));
+        }
+
+        link->collision_array.push_back(colPtr);
+        // Collision (optional)
+        // Assign the first collision to the .collision ptr, if it exists
+        if (!link->collision_array.empty())
+          link->collision = link->collision_array[0];
+      }
+
+      // Visual (optional)
+      // Assign the first visual to the .visual ptr, if it exists
+      if (link != nullptr) {
+        if (!link->visual_array.empty())
+          link->visual = link->visual_array[0];
+      }
     }
     else
     {

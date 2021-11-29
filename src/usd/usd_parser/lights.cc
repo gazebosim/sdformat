@@ -24,17 +24,25 @@
 
 #include "utils.hh"
 
+#include "usd/USDStage.hh"
+
+
 namespace usd
 {
   std::shared_ptr<sdf::Light> ParseLights(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     const std::string &_linkName)
   {
     std::shared_ptr<sdf::Light> light;
     light = std::make_shared<sdf::Light>();
 
     auto variantLight = pxr::UsdLuxBoundableLightBase(_prim);
+
+    std::pair<std::string, std::shared_ptr<USDStage>> lightUSDData =
+      _usdData.findStage(_prim.GetPath().GetName());
+
+    double metersPerUnit = lightUSDData.second->_metersPerUnit;
 
     if (_prim.IsA<pxr::UsdLuxDistantLight>())
     {
@@ -57,7 +65,7 @@ namespace usd
 
       ignition::math::Pose3d pose;
       ignition::math::Vector3d scale(1, 1, 1);
-      GetTransform(_prim, _metersPerUnit, pose, scale, _linkName);
+      GetTransform(_prim, _usdData, pose, scale, _linkName);
 
       light->SetName(_prim.GetPath().GetName());
       light->SetRawPose(pose);

@@ -51,6 +51,7 @@ target_link_libraries(sdfconverter
   PUBLIC
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
     ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
+    ignition-common${IGN_COMMON_VER}::graphics
     ${sdf_target}
 )
 

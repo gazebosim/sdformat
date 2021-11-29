@@ -22,18 +22,19 @@
 
 #include "sdf/Joint.hh"
 #include "usd_model/link.hh"
+#include "usd/USDData.hh"
 
 namespace usd
 {
   std::shared_ptr<sdf::Joint> ParseJoints(
     const pxr::UsdPrim &_prim, const std::string &_path,
-    const double _metersPerUnit);
+    USDData &_usdData);
 
   std::pair<std::shared_ptr<sdf::Joint>, LinkSharedPtr>
     ParseVehicleJoints(
       const pxr::UsdPrim &_prim,
       const std::string &_path,
-      const double _metersPerUnit);
+      USDData &_usdData);
 }
 
 #endif

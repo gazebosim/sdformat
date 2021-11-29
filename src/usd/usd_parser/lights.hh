@@ -22,11 +22,13 @@
 
 #include "sdf/Light.hh"
 
+#include "usd/USDData.hh"
+
 namespace usd
 {
   std::shared_ptr<sdf::Light> ParseLights(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     const std::string &_linkName);
 }
 

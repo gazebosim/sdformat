@@ -38,7 +38,7 @@ namespace usd
     if (tokensChild.size() > 1)
     {
       directoryMesh = tokensChild[0];
-      for (int i = 1; i < tokensChild.size() - 1; ++i)
+      for (unsigned int i = 1; i < tokensChild.size() - 1; ++i)
       {
           directoryMesh = ignition::common::joinPaths(directoryMesh, tokensChild[i+1]);
       }
@@ -46,13 +46,15 @@ namespace usd
     return directoryMesh;
   }
 
-  void removeSubStr(std::string &_str, const std::string &_substr)
+  std::string removeSubStr(const std::string &_str, const std::string &_substr)
   {
+    std::string result = _str;
     size_t pos = std::string::npos;
-    if ((pos = _str.find(_substr) )!= std::string::npos)
+    if ((pos = result.find(_substr) )!= std::string::npos)
     {
-      _str.erase(pos, _substr.length());
+      result.erase(pos, _substr.length());
     }
+    return result;
   }
 
   sdf::Material ParseMaterial(const pxr::UsdPrim &_prim)
@@ -91,10 +93,7 @@ namespace usd
     }
     else if (_prim.IsA<pxr::UsdShadeMaterial>())
     {
-      std::cerr << "UsdShadeMaterial" << '\n';
-
       auto variantMaterial = pxr::UsdShadeMaterial(_prim);
-      std::cerr << "\tUsdShadeMaterial" << '\n';
       for (const auto & child : _prim.GetChildren())
       {
         std::cerr << "\tchild " << pxr::TfStringify(child.GetPath()) << '\n';
@@ -268,12 +267,13 @@ namespace usd
 
   void GetAllTransforms(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     std::vector<ignition::math::Pose3d> &_tfs,
     ignition::math::Vector3d &_scale,
     const std::string &_name)
   {
     pxr::UsdPrim parent = _prim;
+    double metersPerUnit = 1.0;
     while(parent)
     {
       if (pxr::TfStringify(parent.GetPath()) == _name)
@@ -286,7 +286,55 @@ namespace usd
       ignition::math::Pose3d pose;
       _scale *= t.scale;
 
-      pose.Pos() = t.translate * _metersPerUnit;
+      std::cout << "parent.GetPath().GetName() " << parent.GetPath().GetName() << '\n';
+
+      std::pair<std::string, std::shared_ptr<USDStage>> data =
+        _usdData.findStage(parent.GetPath().GetName());
+
+      if (data.second != nullptr)
+      {
+        metersPerUnit = data.second->_metersPerUnit;
+        // std::string upAxis = data.second->_upAxis;
+        // std::cerr << "upAxis " << upAxis << '\n';
+        // if(upAxis == "Y")
+        // {
+        //   ignition::math::Matrix4d m(
+        //     1, 0, 0, 0,
+        //     0, 0, -1, 0,
+        //     0, 1, 0, 0,
+        //     0, 0, 0, 1);
+        //   t.translate = m * t.translate;
+        //
+        //   ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
+        //     ignition::math::Vector3d(0 ,0 ,0),
+        //     ignition::math::Quaterniond(0.707, 0.707, 0, 0));
+        //
+        //   _tfs.push_back(poseAxisUpY);
+        //
+        //   // std::cerr << "m.Rotation() " << m.Rotation() << '\n';
+        //   // exit(-1);
+        //   // // ignition::math::Pose3d translateUpAxisY = ignition::math::Pose3d(
+        //   // //   t.translate,
+        //   // //   ignition::math::Quaterniond(0, 0, 0));
+        //   // t.translate = ignition::math::Vector3d(t.translate[0], -t.translate[2], t.translate[1]);
+        //   // if (!t.isRotationZYX)
+        //   // {
+        //   //   if (t.isRotation)
+        //   //   {
+        //   //     auto eulerAngles = t.q[0].Euler();
+        //   //     t.q[0] = ignition::math::Quaterniond(eulerAngles[0], eulerAngles[2], eulerAngles[1]);
+        //   //   }
+        //   // }
+        //   // else
+        //   // {
+        //   //   auto qtemp = t.q[2];
+        //   //   t.q[2] = t.q[1];
+        //   //   t.q[1] = qtemp;
+        //   // }
+        // }
+      }
+
+      pose.Pos() = t.translate * metersPerUnit;
 
       if (!t.isRotationZYX)
       {
@@ -306,11 +354,27 @@ namespace usd
           ignition::math::Vector3d(0 ,0 ,0), t.q[0]);
 
         ignition::math::Pose3d poseT = ignition::math::Pose3d(
-          t.translate * _metersPerUnit,
+          t.translate * metersPerUnit,
           ignition::math::Quaterniond(1, 0, 0, 0));
+        if (data.second != nullptr)
+        {
+          std::string upAxis = data.second->_upAxis;
+          if (upAxis == "Z")
+          {
+            _tfs.push_back(poseZ);
+            _tfs.push_back(poseY);
+          }
+          else
+          {
+            ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
+              ignition::math::Vector3d(0 ,0 ,0),
+              ignition::math::Quaterniond(0.707, -0.707, 0, 0));
+            _tfs.push_back(poseAxisUpY);
+            _tfs.push_back(poseY);
+            _tfs.push_back(poseZ);
+          }
+        }
 
-        _tfs.push_back(poseZ);
-        _tfs.push_back(poseY);
         _tfs.push_back(poseX);
         _tfs.push_back(poseT);
       }
@@ -320,14 +384,14 @@ namespace usd
 
   void GetTransform(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     ignition::math::Pose3d &_pose,
     ignition::math::Vector3d &_scale,
     const std::string &_name)
   {
     std::vector<ignition::math::Pose3d> tfs;
 
-    GetAllTransforms(_prim, _metersPerUnit, tfs, _scale, _name);
+    GetAllTransforms(_prim, _usdData, tfs, _scale, _name);
     std::cerr << "pose " << _pose << '\n';
     for (auto & rt : tfs)
     {

@@ -164,15 +164,6 @@ public:
         // we already found a root link
         else
         {
-          // std::shared_ptr<sdf::Joint> joint = nullptr;
-          // joint = std::make_shared<sdf::Joint>();
-          // joint->SetParentLinkName(this->root_link_->name);
-          // joint->SetChildLinkName(l->first);
-          // joint->SetName(this->root_link_->name + "_" + l->first + "_joint");
-          // joint->SetType(sdf::JointType::FIXED);
-          // this->joints_.insert(make_pair(joint->Name(), joint));
-          // initTree(parent_link_tree);
-          // l--;
           throw ParseError("Two root links found: [" + this->root_link_->name + "] and [" + l->first + "]");
         }
       }
@@ -193,11 +184,12 @@ public:
   /// \brief complete list of Materials
   std::map<std::string, std::shared_ptr<sdf::Material>> materials_;
 
-  std::map<std::string, std::shared_ptr<sdf::Light>> lights_;
+  // std::map<std::string, std::shared_ptr<sdf::Light>> lights_;
+
+  ignition::math::Pose3d pose;
 
   /// \brief The name of the robot model
   std::string name_;
-  std::string world_name_;
 };
 }
 

@@ -28,7 +28,7 @@ namespace usd
 {
   std::shared_ptr<sdf::Sensor> ParseSensors(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     const std::string &_linkName)
   {
     std::shared_ptr<sdf::Sensor> sensor;
@@ -50,7 +50,7 @@ namespace usd
 
       ignition::math::Pose3d pose;
       ignition::math::Vector3d scale(1, 1, 1);
-      GetTransform(_prim, _metersPerUnit, pose, scale, _linkName);
+      GetTransform(_prim, _usdData, pose, scale, _linkName);
 
       sensor->SetName(_prim.GetPath().GetName());
       camera.SetName(_prim.GetPath().GetName());

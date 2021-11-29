@@ -24,6 +24,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Types.hh"
 #include "usd_parser/parser_usd.hh"
+#include "usd_model/types.hh"
 
 #include "ignition/math/Pose3.hh"
 

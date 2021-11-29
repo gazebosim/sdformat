@@ -40,11 +40,16 @@ namespace usd
   std::shared_ptr<sdf::Joint> ParseJoints(
     const pxr::UsdPrim &_prim,
     const std::string &_path,
-    const double _metersPerUnit)
+    USDData &_usdData)
   {
     std::cerr << "************ ADDED JOINT ************" << '\n';
     std::shared_ptr<sdf::Joint> joint = nullptr;
     joint = std::make_shared<sdf::Joint>();
+
+    std::pair<std::string, std::shared_ptr<USDStage>> lightUSDData =
+      _usdData.findStage(_prim.GetPath().GetName());
+    
+    double metersPerUnit = lightUSDData.second->_metersPerUnit;
 
     pxr::SdfPathVector body0, body1;
 
@@ -124,7 +129,7 @@ namespace usd
       variant_physics_prismatic_joint.GetLocalRot0Attr().Get(&localRot0);
       variant_physics_prismatic_joint.GetLocalRot1Attr().Get(&localRot1);
 
-      auto trans = (localPose0 + localPose1) * _metersPerUnit;
+      auto trans = (localPose0 + localPose1) * metersPerUnit;
 
       ignition::math::Quaterniond q1(
         localRot0.GetReal(),
@@ -171,8 +176,8 @@ namespace usd
         jointFrictionAttribute.Get(&jointFriction);
       }
 
-      jointAxis.SetLower(lowerLimit * _metersPerUnit);
-      jointAxis.SetUpper(upperLimit * _metersPerUnit);
+      jointAxis.SetLower(lowerLimit * metersPerUnit);
+      jointAxis.SetUpper(upperLimit * metersPerUnit);
       jointAxis.SetDamping(damping);
       jointAxis.SetEffort(maxForce);
       jointAxis.SetSpringStiffness(stiffness);
@@ -216,7 +221,7 @@ namespace usd
       variant_physics_revolute_joint.GetLocalRot0Attr().Get(&localRot0);
       variant_physics_revolute_joint.GetLocalRot1Attr().Get(&localRot1);
 
-      auto trans = (localPose0 + localPose1) * _metersPerUnit;
+      auto trans = (localPose0 + localPose1) * metersPerUnit;
       std::cerr << "trans " << trans << '\n';
       // exit(-1);
       ignition::math::Quaterniond q1(
@@ -306,7 +311,7 @@ namespace usd
     ParseVehicleJoints(
       const pxr::UsdPrim &_prim,
       const std::string &_path,
-      const double _metersPerUnit)
+      USDData &_usdData)
   {
     std::cerr << "************ ADDED VEHICLE JOINT ************" << '\n';
     LinkSharedPtr link = nullptr;
@@ -315,6 +320,11 @@ namespace usd
     joint = std::make_shared<sdf::Joint>();
     link.reset(new Link);
     link->clear();
+
+    std::pair<std::string, std::shared_ptr<USDStage>> lightUSDData =
+      _usdData.findStage(_prim.GetPath().GetName());
+
+    double metersPerUnit = lightUSDData.second->_metersPerUnit;
 
     std::string primName = pxr::TfStringify(_prim.GetPath());
     size_t pos = std::string::npos;
@@ -347,9 +357,7 @@ namespace usd
 
       link->inertial->SetPose(ignition::math::Pose3d(
           ignition::math::Vector3d(
-            centerOfMass[0] * _metersPerUnit,
-            centerOfMass[1] * _metersPerUnit,
-            centerOfMass[2] * _metersPerUnit),
+            centerOfMass[0], centerOfMass[1], centerOfMass[2]) * metersPerUnit,
           ignition::math::Quaterniond(1.0, 0, 0, 0)));
     }
 
@@ -386,7 +394,7 @@ namespace usd
       jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
 
       joint->SetRawPose(
-        ignition::math::Pose3d(t.translate * _metersPerUnit,
+        ignition::math::Pose3d(t.translate * metersPerUnit,
           ignition::math::Quaterniond(t.q[0])));
 
       std::string childName;
@@ -426,8 +434,8 @@ namespace usd
 
             sdf::Cylinder c;
             geom.SetType(sdf::GeometryType::CYLINDER);
-            c.SetRadius(radius * _metersPerUnit);
-            c.SetLength(height * _metersPerUnit);
+            c.SetRadius(radius * metersPerUnit);
+            c.SetLength(height * metersPerUnit);
             geom.SetCylinderShape(c);
             vis->SetName("visual_cylinder");
             vis->SetGeom(geom);

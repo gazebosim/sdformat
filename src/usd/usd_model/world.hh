@@ -15,22 +15,36 @@
  *
 */
 
+#ifndef USD_MODEL_WORLD_HH
+#define USD_MODEL_WORLD_HH
 
-#ifndef USD_PARSER_USD_PARSER_HH
-#define USD_PARSER_USD_PARSER_HH
-
+#include <ostream>
 #include <string>
-// #include <sdf/sdf_config.hh>
+#include <vector>
 
-#include "usd_model/model.hh"
-#include "usd_model/link.hh"
-#include "usd_model/types.hh"
-#include "usd_model/world.hh"
+#include <ignition/math/Vector3.hh>
+
+#include <sdf/Light.hh>
+
+#include "types.hh"
 
 namespace usd {
-  WorldInterfaceSharedPtr parseUSDFile(const std::string &filename);
-  WorldInterfaceSharedPtr parseUSD(const std::string &xml_string);
-  void exportUSD();
-  bool isUSD(const std::string &filename);
+  class WorldInterface {
+    public:
+      std::string _worldName;
+      std::vector<ModelInterfaceSharedPtr> _models;
+      std::map<std::string, std::shared_ptr<sdf::Light>> _lights;
+
+      float magnitude;
+      ignition::math::Vector3d gravity;
+
+      friend std::ostream& operator<<(std::ostream& os, const WorldInterface& _world)
+      {
+        os << "World name: " << _world._worldName;
+        os << _world.gravity * _world.magnitude << "\n";
+        return os;
+      }
+  };
 }
+
 #endif

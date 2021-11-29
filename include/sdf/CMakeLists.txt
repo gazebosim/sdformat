@@ -11,6 +11,7 @@ set (headers
   Capsule.hh
   Collision.hh
   Console.hh
+  Conversions.hh
   Cylinder.hh
   Element.hh
   Ellipsoid.hh

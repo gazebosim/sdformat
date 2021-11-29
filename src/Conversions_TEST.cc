@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
+#include <gtest/gtest.h>
 
-#ifndef USD_PARSER_USD_PARSER_HH
-#define USD_PARSER_USD_PARSER_HH
-
-#include <string>
-// #include <sdf/sdf_config.hh>
-
-#include "usd_model/model.hh"
-#include "usd_model/link.hh"
-#include "usd_model/types.hh"
-#include "usd_model/world.hh"
-
-namespace usd {
-  WorldInterfaceSharedPtr parseUSDFile(const std::string &filename);
-  WorldInterfaceSharedPtr parseUSD(const std::string &xml_string);
-  void exportUSD();
-  bool isUSD(const std::string &filename);
+/////////////////////////////////////////////////
+/// Main
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
-#endif

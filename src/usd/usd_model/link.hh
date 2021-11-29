@@ -60,8 +60,8 @@ public:
 
   /// if more than one visual element is specified, all visual elements are placed in this array (the visual member points to the first element of the array)
   std::vector<std::shared_ptr<sdf::Visual>> visual_array;
-  std::vector<std::string> visual_array_material_name;
-  std::vector<std::shared_ptr<ignition::common::Material>> visual_array_material;
+  // std::vector<std::string> visual_array_material_name;
+  // std::vector<std::shared_ptr<ignition::common::Material>> visual_array_material;
 
   std::map<std::string, std::shared_ptr<sdf::Light>> lights_;
   std::map<std::string, std::shared_ptr<sdf::Sensor>> sensors_;

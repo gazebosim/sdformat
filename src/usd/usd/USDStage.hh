@@ -15,22 +15,24 @@
  *
 */
 
-
-#ifndef USD_PARSER_USD_PARSER_HH
-#define USD_PARSER_USD_PARSER_HH
+#ifndef USD_USDSTAGE_HH
+#define USD_USDSTAGE_HH
 
 #include <string>
-// #include <sdf/sdf_config.hh>
-
-#include "usd_model/model.hh"
-#include "usd_model/link.hh"
-#include "usd_model/types.hh"
-#include "usd_model/world.hh"
+#include <set>
 
 namespace usd {
-  WorldInterfaceSharedPtr parseUSDFile(const std::string &filename);
-  WorldInterfaceSharedPtr parseUSD(const std::string &xml_string);
-  void exportUSD();
-  bool isUSD(const std::string &filename);
+
+  class USDStage
+  {
+    public:
+      USDStage(const std::string &_refFileName);
+
+      std::string _referenceName;
+      std::string _filename;
+      std::string _upAxis = "Z";
+      double _metersPerUnit = 1.0;
+      std::set<std::string> _paths;
+  };
 }
 #endif

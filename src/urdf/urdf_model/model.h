@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -58,7 +58,7 @@ public:
       ptr = this->links_.find(name)->second;
     return ptr;
   };
-  
+
   JointConstSharedPtr getJoint(const std::string& name) const
   {
     JointConstSharedPtr ptr;
@@ -68,8 +68,8 @@ public:
       ptr = this->joints_.find(name)->second;
     return ptr;
   };
-  
-  
+
+
   const std::string& getName() const {return name_;};
   void getLinks(std::vector<LinkSharedPtr >& links) const
   {
@@ -78,7 +78,7 @@ public:
       links.push_back(link->second);
     }
   };
-  
+
   void clear()
   {
     name_.clear();
@@ -87,7 +87,7 @@ public:
     this->materials_.clear();
     this->root_link_.reset();
   };
-  
+
   /// non-const getLink()
   void getLink(const std::string& name, LinkSharedPtr &link) const
   {
@@ -98,7 +98,7 @@ public:
       ptr = this->links_.find(name)->second;
     link = ptr;
   };
-  
+
   /// non-const getMaterial()
   MaterialSharedPtr getMaterial(const std::string& name) const
   {
@@ -109,7 +109,7 @@ public:
       ptr = this->materials_.find(name)->second;
     return ptr;
   };
-  
+
   void initTree(std::map<std::string, std::string> &parent_link_tree)
   {
     // loop through all joints, for every link, assign children links and children joints
@@ -117,7 +117,7 @@ public:
     {
       std::string parent_link_name = joint->second->parent_link_name;
       std::string child_link_name = joint->second->child_link_name;
-      
+
       if (parent_link_name.empty() || child_link_name.empty())
       {
         throw ParseError("Joint [" + joint->second->name + "] is missing a parent and/or child link specification.");
@@ -136,13 +136,13 @@ public:
         {
           throw ParseError("parent link [" + parent_link_name + "] of joint [" + joint->first + "] not found.  This is not valid according to the URDF spec. Every link you refer to from a joint needs to be explicitly defined in the robot description. To fix this problem you can either remove this joint [" + joint->first + "] from your urdf file, or add \"<link name=\"" + parent_link_name + "\" />\" to your urdf file.");
         }
-        
+
         //set parent link for child link
         child_link->setParent(parent_link);
 
-        //set parent joint for child link        
+        //set parent joint for child link
         child_link->parent_joint = joint->second;
-        
+
         //set child joint for parent link
         parent_link->child_joints.push_back(joint->second);
 
@@ -154,11 +154,11 @@ public:
       }
     }
   }
-  
+
   void initRoot(const std::map<std::string, std::string> &parent_link_tree)
-  { 
+  {
     this->root_link_.reset();
-    
+
     // find the links that have no parent in the tree
     for (std::map<std::string, LinkSharedPtr>::const_iterator l=this->links_.begin(); l!=this->links_.end(); l++)
     {
@@ -182,8 +182,8 @@ public:
       throw ParseError("No root link found. The robot xml is not a valid tree.");
     }
   }
-  
-  
+
+
   /// \brief complete list of Links
   std::map<std::string, LinkSharedPtr> links_;
   /// \brief complete list of Joints

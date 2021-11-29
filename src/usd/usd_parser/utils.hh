@@ -29,11 +29,12 @@
 #include <ignition/math/Quaternion.hh>
 
 #include "sdf/Material.hh"
+#include "usd/USDData.hh"
 
 namespace usd{
 
   std::string directoryFromUSDPath(std::string &_primPath);
-  void removeSubStr(std::string &_str, const std::string &_substr);
+  std::string removeSubStr(const std::string &_str, const std::string &_substr);
 
   sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
 
@@ -52,14 +53,14 @@ namespace usd{
 
   void GetTransform(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     ignition::math::Pose3d &_pose,
     ignition::math::Vector3d &_scale,
     const std::string &_name);
 
   void GetAllTransforms(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     std::vector<ignition::math::Pose3d> &_tfs,
     ignition::math::Vector3d &_scale,
     const std::string &_name);

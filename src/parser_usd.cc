@@ -1151,7 +1151,7 @@ inline namespace SDF_VERSION_NAMESPACE {
         const sdf::Camera * camera = sdfSensor->CameraSensor();
         sensorXML->SetAttribute("name", camera->Name().c_str());
 
-        double pose_value[4];
+        double pose_value[6];
         pose_value[0] = camera->RawPose().Pos().X();
         pose_value[1] = camera->RawPose().Pos().Y();
         pose_value[2] = camera->RawPose().Pos().Z();
@@ -1226,7 +1226,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       }
       lightXML->SetAttribute("type", lightType.c_str());
 
-      double pose_value[4];
+      double pose_value[6];
       pose_value[0] = sdfLight->RawPose().Pos().X();
       pose_value[1] = sdfLight->RawPose().Pos().Y();
       pose_value[2] = sdfLight->RawPose().Pos().Z();
@@ -1293,23 +1293,30 @@ inline namespace SDF_VERSION_NAMESPACE {
   void USD2SDF::read(const std::string &_filename,
     tinyxml2::XMLDocument* _sdfXmlOut)
   {
-    std::vector<usd::ModelInterfaceSharedPtr> robotModels = usd::parseUSDFile(_filename);
+    usd::WorldInterfaceSharedPtr worldInterface = usd::parseUSDFile(_filename);
     tinyxml2::XMLElement *world = nullptr;
     tinyxml2::XMLElement *sdf = nullptr;
+
+    if (worldInterface == nullptr)
+      return;
+
+    world = _sdfXmlOut->NewElement("world");
+    world->SetAttribute("name", worldInterface->_worldName.c_str());
+
+    sdf = _sdfXmlOut->NewElement("sdf");
+    sdf->SetAttribute("version", "1.7");
+
+    std::cerr << "worldInterface->_lights " << worldInterface->_lights.size() << '\n';
+
+    AddLights(worldInterface->_lights, world);
+
+    std::vector<usd::ModelInterfaceSharedPtr> robotModels = worldInterface->_models;
     for(auto & robotModel: robotModels)
     {
       if (!robotModel)
       {
         sdferr << "Unable to call parseURDF on robot model\n";
         return;
-      }
-      if (world == nullptr)
-      {
-        world = _sdfXmlOut->NewElement("world");
-        world->SetAttribute("name", robotModel->world_name_.c_str());
-
-        sdf = _sdfXmlOut->NewElement("sdf");
-        sdf->SetAttribute("version", "1.7");
       }
 
       // create root element and define needed namespaces
@@ -1320,12 +1327,18 @@ inline namespace SDF_VERSION_NAMESPACE {
 
       usd::LinkConstSharedPtr rootLink = robotModel->getRoot();
 
-      ignition::math::Pose3d transform;
+      ignition::math::Pose3d transform = robotModel->pose;
 
       // g_extensions.clear();
       g_fixedJointsTransformedInFixedJoints.clear();
       g_fixedJointsTransformedInRevoluteJoints.clear();
-      g_initialRobotPose.Set(0, 0, 0, 0, 0, 0);
+      g_initialRobotPose.Set(
+        robotModel->pose.Pos().X(),
+        robotModel->pose.Pos().Y(),
+        robotModel->pose.Pos().Z(),
+        robotModel->pose.Rot().Roll(),
+        robotModel->pose.Rot().Pitch(),
+        robotModel->pose.Rot().Yaw());
       g_initialRobotPoseValid = true;
 
       std::cerr << "rootLink->name " << rootLink->name << '\n';
@@ -1347,7 +1360,7 @@ inline namespace SDF_VERSION_NAMESPACE {
         // convert, starting from root link
         CreateSDF(robot, rootLink, transform);
       }
-      AddLights(robotModel->lights_, world);
+      // AddLights(robotModel->lights_, world);
       world->LinkEndChild(robot);
     }
 

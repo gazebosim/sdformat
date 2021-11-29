@@ -21,12 +21,13 @@
 #include <pxr/usd/usd/primRange.h>
 
 #include "sdf/Sensor.hh"
+#include "usd/USDData.hh"
 
 namespace usd
 {
   std::shared_ptr<sdf::Sensor> ParseSensors(
     const pxr::UsdPrim &_prim,
-    const double _metersPerUnit,
+    USDData &_usdData,
     const std::string &_linkName);
 }
 
