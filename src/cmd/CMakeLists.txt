@@ -43,6 +43,8 @@ file(GENERATE
 # Install the ruby command line library in an unversioned location.
 install(FILES ${cmd_script_generated} DESTINATION lib/ruby/ignition)
 
+#===============================================================================
+# USD -> SDF converter
 add_executable(sdfconverter
   sdfconverter.cpp
 )
@@ -59,4 +61,23 @@ install(
   ${gui_executable}
   DESTINATION
   ${BIN_INSTALL_DIR}
+)
+
+#===============================================================================
+# SDF -> USD converter
+add_executable(usdConverter
+  usdConverter.cc
+)
+
+target_link_libraries(usdConverter
+  PUBLIC
+    ignition-common${IGN_COMMON_VER}::graphics
+    ${sdf_target}
+)
+
+install(
+  TARGETS
+    usdConverter
+  DESTINATION
+    ${BIN_INSTALL_DIR}
 )

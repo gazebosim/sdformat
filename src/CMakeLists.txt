@@ -98,6 +98,7 @@ find_package(pxr REQUIRED)
 
 include_directories(${PXR_INCLUDE_DIRS})
 set(sources ${sources}
+  # source files for parsing from USD to SDF
   usd/usd_parser/parser_usd.cc
   usd/usd_parser/physics.cc
   usd/usd_parser/joints.cc
@@ -105,6 +106,12 @@ set(sources ${sources}
   usd/usd_parser/links.cc
   usd/usd_parser/sensors.cc
   usd/usd_parser/utils.cc
+  # source files for parsing from SDF to USD
+  usd/sdf_parser/geometry.cc
+  usd/sdf_parser/link.cc
+  usd/sdf_parser/model.cc
+  usd/sdf_parser/visual.cc
+  usd/sdf_parser/world.cc
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/usd)
 
