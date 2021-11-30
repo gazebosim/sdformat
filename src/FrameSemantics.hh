@@ -122,9 +122,12 @@ namespace sdf
   /// \brief Build a FrameAttachedToGraph for an Interface Model.
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Interface model from which to build attached_to graph.
+  /// //sdf/model. This is currently ignored for InterfaceModels and is only
+  /// present here to keep the function signature similar to the
+  /// buildFrameAttachedToGraph function that takes an sdf::Model.
   /// \return Errors.
   Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
-              InterfaceModelConstPtr _model);
+              const InterfaceModel* _model, bool _isRoot = false);
 
   /// \brief Build a FrameAttachedToGraph for a world.
   /// \param[out] _out Graph object to write.
@@ -145,9 +148,13 @@ namespace sdf
   /// \brief Build a PoseRelativeToGraph for an Interface model.
   /// \param[out] _out Graph object to write.
   /// \param[in] _model Interface model from which to build relative_to graph.
+  /// \param[in] _isRoot True if the model is a standalone model, i.e,
+  /// //sdf/model. This is currently ignored for InterfaceModels and is only
+  /// present here to keep the function signature similar to the
+  /// buildPoseRelativeToGraph function that takes an sdf::Model.
   /// \return Errors.
   Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
-              InterfaceModelConstPtr _model);
+              const InterfaceModel* _model, bool _isRoot = false);
 
   /// \brief Build a PoseRelativeToGraph for a world.
   /// \param[out] _out Graph object to write.
