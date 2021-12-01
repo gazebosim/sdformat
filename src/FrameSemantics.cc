@@ -293,7 +293,7 @@ template <typename T>
 inline constexpr bool IsFrame =
     std::is_same_v<T, sdf::Frame> || std::is_same_v<T, sdf::InterfaceFrame>;
 
-/// \brief Check if type T is an sdf::Frame or sdf::InterfaceFrame
+/// \brief Check if type T is an sdf::Joint or sdf::InterfaceJoint
 template <typename T>
 inline constexpr bool IsJoint =
     std::is_same_v<T, sdf::Joint> || std::is_same_v<T, sdf::InterfaceJoint>;
@@ -378,7 +378,7 @@ getFrameTypeAndRepr(const ParentT *)
       return {FrameType::MODEL, "Nested Interface Model"};
     }
   }
-  else
+  else if constexpr (std::is_same_v<ParentT, sdf::InterfaceModel>)
   {
     if constexpr (std::is_same_v<ElementT, sdf::InterfaceModel>)
     {
