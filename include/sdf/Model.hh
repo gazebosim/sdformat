@@ -346,6 +346,33 @@ namespace sdf
     public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
+    /// \brief Add a link to the model.
+    /// \param[in] _link Link to add.
+    /// \return True if successfull, false if a link with the name already
+    /// exists.
+    public: bool AddLink(const Link &_link);
+
+    /// \brief Add a joint to the model.
+    /// \param[in] _link Joint to add.
+    /// \return True if successfull, false if a joint with the name already
+    /// exists.
+    public: bool AddJoint(const Joint &_joint);
+
+    /// \brief Add a model to the model.
+    /// \param[in] _model Model to add.
+    /// \return True if successfull, false if a model with the name already
+    /// exists.
+    public: bool AddModel(const Model &_model);
+
+    /// \brief Remove all links.
+    public: void ClearLinks();
+
+    /// \brief Remove all joints.
+    public: void ClearJoints();
+
+    /// \brief Remove all models.
+    public: void ClearModels();
+
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and

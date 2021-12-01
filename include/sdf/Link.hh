@@ -252,6 +252,42 @@ namespace sdf
     /// \sa Model::SetEnableWind(bool)
     public: void SetEnableWind(bool _enableWind);
 
+    /// \brief Add a collision to the link.
+    /// \param[in] _collision Collision to add.
+    /// \return True if successfull, false if a collision with the name already
+    /// exists.
+    public: bool AddCollision(const Collision &_collision);
+
+    /// \brief Add a visual to the link.
+    /// \param[in] _visual Visual to add.
+    /// \return True if successfull, false if a visual with the name already
+    /// exists.
+    public: bool AddVisual(const Visual &_visual);
+
+    /// \brief Add a light to the link.
+    /// \param[in] _light Light to add.
+    /// \return True if successfull, false if a light with the name already
+    /// exists.
+    public: bool AddLight(const Light &_light);
+
+    /// \brief Add a sensor to the link.
+    /// \param[in] _sensor Sensor to add.
+    /// \return True if successfull, false if a sensor with the name already
+    /// exists.
+    public: bool AddSensor(const Sensor &_sensor);
+
+    /// \brief Remove all collisions
+    public: void ClearCollisions();
+
+    /// \brief Remove all visuals
+    public: void ClearVisuals();
+
+    /// \brief Remove all lights
+    public: void ClearLights();
+
+    /// \brief Remove all sensors
+    public: void ClearSensors();
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
