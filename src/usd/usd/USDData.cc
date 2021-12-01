@@ -59,10 +59,7 @@ namespace usd {
     }
     else
     {
-      if (ignition::common::isDirectory(inputPath))
-      {
-        this->directoryPath = ignition::common::joinPaths(ignition::common::cwd(), inputPath);
-      }
+      this->directoryPath = ignition::common::joinPaths(ignition::common::cwd(), inputPath);
     }
 
     auto range = pxr::UsdPrimRange::Stage(referencee);

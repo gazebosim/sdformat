@@ -23,6 +23,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Lidar.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Sphere.hh"
@@ -187,6 +188,24 @@ inline namespace SDF_VERSION_NAMESPACE {
           sizeVals[2] = box->Size().Z();
           geometryType = doc->NewElement(type.c_str());
           AddKeyValue(geometryType, "size", Values2str(sizeCount, sizeVals));
+        }
+        break;
+      case sdf::GeometryType::PLANE:
+        type = "plane";
+        {
+          const sdf::Plane * plane = _geometry->PlaneShape();
+          geometryType = doc->NewElement(type.c_str());
+          ignition::math::Vector3d normalPlane = plane->Normal();
+          ignition::math::Vector2d sizePlane = plane->Size();
+          double normalV[3];
+          normalV[0] = normalPlane[0];
+          normalV[1] = normalPlane[1];
+          normalV[2] = normalPlane[2];
+          double sizeV[2];
+          sizeV[0] = sizePlane[0];
+          sizeV[1] = sizePlane[1];
+          AddKeyValue(geometryType, "normal", Values2str(3, normalV));
+          AddKeyValue(geometryType, "size", Values2str(2, sizeV));
         }
         break;
       case sdf::GeometryType::CYLINDER:
@@ -1133,6 +1152,9 @@ inline namespace SDF_VERSION_NAMESPACE {
         case sdf::SensorType::CAMERA:
           sensorType = "camera";
           break;
+        case sdf::SensorType::LIDAR:
+          sensorType = "gpu_lidar";
+          break;
         default:
           sensorType = "";
       }
@@ -1195,6 +1217,72 @@ inline namespace SDF_VERSION_NAMESPACE {
         cameraXML->LinkEndChild(customFunctionXML);
 
         sensorXML->LinkEndChild(cameraXML);
+        attach->LinkEndChild(sensorXML);
+      }
+      else if (sdfSensor->Type() == sdf::SensorType::LIDAR)
+      {
+        const sdf::Lidar * lidar = sdfSensor->LidarSensor();
+        sensorXML->SetAttribute("name", sensor.second->Name().c_str());
+        double pose_value[6];
+        pose_value[0] = sdfSensor->RawPose().Pos().X();
+        pose_value[1] = sdfSensor->RawPose().Pos().Y();
+        pose_value[2] = sdfSensor->RawPose().Pos().Z();
+        pose_value[3] = sdfSensor->RawPose().Rot().Euler()[0];
+        pose_value[4] = sdfSensor->RawPose().Rot().Euler()[1];
+        pose_value[5] = sdfSensor->RawPose().Rot().Euler()[2];
+        AddKeyValue(sensorXML, "pose", Values2str(6, pose_value));
+
+        int alwaysOn = 1;
+        AddKeyValue(sensorXML, "alwaysOn", Values2str(1, &alwaysOn));
+        int visualize = 1;
+        AddKeyValue(sensorXML, "visualize", Values2str(1, &visualize));
+        int update_rate = 1;
+        AddKeyValue(sensorXML, "update_rate", Values2str(1, &update_rate));
+        AddKeyValue(sensorXML, "topic", sensor.second->Name().c_str());
+
+        tinyxml2::XMLElement *rayXML =
+          sensorXML->GetDocument()->NewElement("lidar");
+
+        tinyxml2::XMLElement *scanXML =
+          rayXML->GetDocument()->NewElement("scan");
+        rayXML->LinkEndChild(scanXML);
+
+        tinyxml2::XMLElement *horizontalXML =
+          scanXML->GetDocument()->NewElement("horizontal");
+        scanXML->LinkEndChild(horizontalXML);
+        double hSamples = lidar->HorizontalScanSamples();
+        double hResolution = lidar->HorizontalScanResolution();
+        double hMin = lidar->HorizontalScanMinAngle().Radian();
+        double hMax = lidar->HorizontalScanMaxAngle().Radian();
+        AddKeyValue(horizontalXML, "samples", Values2str(1, &hSamples));
+        AddKeyValue(horizontalXML, "resolution", Values2str(1, &hResolution));
+        AddKeyValue(horizontalXML, "min_angle", Values2str(1, &hMin));
+        AddKeyValue(horizontalXML, "max_angle", Values2str(1, &hMax));
+
+        tinyxml2::XMLElement *verticalXML =
+          scanXML->GetDocument()->NewElement("vertical");
+        scanXML->LinkEndChild(verticalXML);
+        double vSamples = lidar->VerticalScanSamples();
+        double vResolution = lidar->VerticalScanResolution();
+        double vMin = lidar->VerticalScanMinAngle().Radian();
+        double vMax = lidar->VerticalScanMaxAngle().Radian();
+        AddKeyValue(verticalXML, "samples", Values2str(1, &vSamples));
+        AddKeyValue(verticalXML, "resolution", Values2str(1, &vResolution));
+        AddKeyValue(verticalXML, "min_angle", Values2str(1, &vMin));
+        AddKeyValue(verticalXML, "max_angle", Values2str(1, &vMax));
+
+        tinyxml2::XMLElement *rangeXML =
+          rayXML->GetDocument()->NewElement("range");
+        rayXML->LinkEndChild(rangeXML);
+
+        double rangeMin = lidar->RangeMin();
+        double rangeMax = lidar->RangeMax();
+        double rangeResolution = lidar->RangeResolution();
+        AddKeyValue(rangeXML, "min", Values2str(1, &rangeMin));
+        AddKeyValue(rangeXML, "max", Values2str(1, &rangeMax));
+        AddKeyValue(rangeXML, "resolution", Values2str(1, &rangeResolution));
+
+        sensorXML->LinkEndChild(rayXML);
         attach->LinkEndChild(sensorXML);
       }
     }

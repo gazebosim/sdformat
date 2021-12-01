@@ -21,6 +21,7 @@
 #include "pxr/usd/usdGeom/gprim.h"
 
 #include "sdf/Camera.hh"
+#include "sdf/Lidar.hh"
 
 #include "utils.hh"
 
@@ -34,6 +35,10 @@ namespace usd
     std::shared_ptr<sdf::Sensor> sensor;
     sensor = std::make_shared<sdf::Sensor>();
 
+    ignition::math::Pose3d pose;
+    ignition::math::Vector3d scale(1, 1, 1);
+    GetTransform(_prim, _usdData, pose, scale, _linkName);
+    sensor->SetRawPose(pose);
     if(_prim.IsA<pxr::UsdGeomCamera>())
     {
       sensor->SetType(sdf::SensorType::CAMERA);
@@ -48,10 +53,6 @@ namespace usd
       variantCamera.GetFocalLengthAttr().Get(&focalLength);
       variantCamera.GetClippingRangeAttr().Get(&clippingRange);
 
-      ignition::math::Pose3d pose;
-      ignition::math::Vector3d scale(1, 1, 1);
-      GetTransform(_prim, _usdData, pose, scale, _linkName);
-
       sensor->SetName(_prim.GetPath().GetName());
       camera.SetName(_prim.GetPath().GetName());
       camera.SetHorizontalFov(horizontalAperture);
@@ -63,6 +64,47 @@ namespace usd
       camera.SetImageHeight(480);
       camera.SetPixelFormat(sdf::PixelFormatType::RGB_INT8);
       sensor->SetCameraSensor(camera);
+    }
+    else if (std::string(_prim.GetPrimTypeInfo().GetTypeName().GetText()) == "Lidar")
+    {
+      sensor->SetType(sdf::SensorType::LIDAR);
+
+      sdf::Lidar lidar;
+      sensor->SetName(_prim.GetPath().GetName());
+
+      float hFOV;
+      float hResolution;
+      float vFOV;
+      float vResolution;
+      _prim.GetAttribute(pxr::TfToken("horizontalFov")).Get(&hFOV);
+      _prim.GetAttribute(pxr::TfToken("horizontalResolution")).Get(&hResolution);
+      _prim.GetAttribute(pxr::TfToken("verticalFov")).Get(&vFOV);
+      _prim.GetAttribute(pxr::TfToken("verticalResolution")).Get(&vResolution);
+      hResolution *= 3.1416/180;
+      vResolution *= 3.1416/180;
+      hFOV *= 3.1416/180;
+      vFOV *= 3.1416/180;
+
+      lidar.SetHorizontalScanMinAngle(ignition::math::Angle(-hFOV / 2));
+      lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(hFOV / 2));
+      lidar.SetHorizontalScanResolution(1);
+      lidar.SetHorizontalScanSamples(hFOV / hResolution);
+
+      lidar.SetVerticalScanMinAngle(ignition::math::Angle(-vFOV / 2));
+      lidar.SetVerticalScanMaxAngle(ignition::math::Angle(vFOV / 2));
+      lidar.SetVerticalScanResolution(1);
+      lidar.SetVerticalScanSamples(vFOV / vResolution);
+
+      float minRange;
+      float maxRange;
+      _prim.GetAttribute(pxr::TfToken("minRange")).Get(&minRange);
+      _prim.GetAttribute(pxr::TfToken("maxRange")).Get(&maxRange);
+
+      lidar.SetRangeMin(minRange);
+      lidar.SetRangeMax(maxRange);
+      lidar.SetRangeResolution(0.1);
+
+      sensor->SetLidarSensor(lidar);
     }
     return sensor;
   }

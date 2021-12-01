@@ -229,23 +229,24 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
       }
       continue;
     }
-  //   if(prim.IsA<pxr::UsdGeomCamera>())
-  //   {
-  //     if (!baseLink.empty())
-  //     {
-  //       auto sensor = ParseSensors(prim, metersPerUnit, baseLink);
-  //       std::cerr << "baseLink " << baseLink << '\n';
-  //       if(sensor)
-  //       {
-  //         model->links_[baseLink]->sensors_.insert(
-  //           std::pair<std::string, std::shared_ptr<sdf::Sensor>>
-  //             (prim.GetPath().GetName(), sensor));
-  //       }
-  //       std::cerr << "camera!" << '\n';
-  //     }
-  //     continue;
-  //   }
-  //
+    if(prim.IsA<pxr::UsdGeomCamera>() ||
+       std::string(prim.GetPrimTypeInfo().GetTypeName().GetText()) == "Lidar")
+    {
+      if (!baseLink.empty())
+      {
+        auto sensor = ParseSensors(prim, usdData, baseLink);
+        std::cerr << "baseLink " << baseLink << '\n';
+        if(sensor)
+        {
+          model->links_[baseLink]->sensors_.insert(
+            std::pair<std::string, std::shared_ptr<sdf::Sensor>>
+              (prim.GetPath().GetName(), sensor));
+        }
+        std::cerr << "camera!" << '\n';
+      }
+      continue;
+    }
+
 
   //
   //   if (prim.IsA<pxr::UsdPhysicsCollisionGroup>())
@@ -302,7 +303,7 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
   //   if (tokens.size() == 1)
   //     continue;
   //
-    if (!prim.IsA<pxr::UsdGeomGprim>())
+    if (!prim.IsA<pxr::UsdGeomGprim>() && !(std::string(prim.GetPrimTypeInfo().GetTypeName().GetText()) == "Plane"))
     {
       sdferr << "Not a geometry" << "\n";
       continue;
@@ -327,22 +328,28 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
         model->links_.insert(make_pair(nameLink, link));
       }
     }
-
   }
 
   for (auto & m : world->_models)
   {
     for (auto & link: m->links_)
     {
-      if (ignition::math::equal(link.second->inertial->MassMatrix().Mass(), 0.0))
+      if (ignition::math::equal(link.second->inertial->MassMatrix().Mass(), 0.0) ||
+          link.second->inertial->MassMatrix().DiagonalMoments() == ignition::math::Vector3d(0., 0., 0.))
       {
         if (link.second->name == "world" || link.second->name.empty())
           continue;
         std::cerr << "Added joint to " << link.second->name << '\n';
-        ignition::math::MassMatrix3d massMatrix;
-        massMatrix.SetMass(0.0001);
-        massMatrix.SetDiagonalMoments(
-          ignition::math::Vector3d(0.0001, 0.0001, 0.0001));
+        ignition::math::MassMatrix3d massMatrix = link.second->inertial->MassMatrix();
+        if (ignition::math::equal(link.second->inertial->MassMatrix().Mass(), 0.0))
+        {
+          massMatrix.SetMass(0.0001);
+        }
+        if (link.second->inertial->MassMatrix().DiagonalMoments() == ignition::math::Vector3d(0., 0., 0.))
+        {
+          massMatrix.SetDiagonalMoments(
+            ignition::math::Vector3d(0.0001, 0.0001, 0.0001));
+        }
 
         link.second->inertial->SetPose(ignition::math::Pose3d(
             ignition::math::Vector3d(0, 0, 0),
@@ -410,6 +417,17 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
       std::cerr << "\tlink name "
                    << "\n\t\t" << link.first
                    << "\n\t\t" << link.second->name << '\n';
+
+     for (auto visual: link.second->visual_array)
+     {
+       std::cerr << "\t\tvisual name "
+                  << "\n\t\t\t" << visual->Name() << "\n";
+     }
+     for (auto col: link.second->collision_array)
+     {
+       std::cerr << "\t\tCollision name "
+                  << "\n\t\t\t" << col->Name() << "\n";
+     }
     }
 
     std::cerr << "\t................................." << '\n';

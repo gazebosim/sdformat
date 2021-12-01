@@ -49,7 +49,7 @@ namespace usd{
     bool isTranslate = false;
   };
 
-  Transforms ParseTransform(const pxr::UsdPrim &_prim);
+  Transforms ParseTransform(const pxr::UsdPrim &_prim, USDData &_usdData);
 
   void GetTransform(
     const pxr::UsdPrim &_prim,

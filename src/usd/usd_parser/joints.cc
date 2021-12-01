@@ -48,7 +48,7 @@ namespace usd
 
     std::pair<std::string, std::shared_ptr<USDStage>> lightUSDData =
       _usdData.findStage(_prim.GetPath().GetName());
-    
+
     double metersPerUnit = lightUSDData.second->_metersPerUnit;
 
     pxr::SdfPathVector body0, body1;
@@ -376,7 +376,7 @@ namespace usd
     {
       auto variant_geom = pxr::UsdGeomGprim(_prim);
 
-      Transforms t = ParseTransform(_prim);
+      Transforms t = ParseTransform(_prim, _usdData);
       // std::tuple<pxr::GfVec3f, pxr::GfVec3f, pxr::GfQuatf, bool, bool, bool, bool> transformsTuple =
       //   ParseTransform(_prim);
       //

@@ -281,7 +281,7 @@ namespace usd
         return;
       }
 
-      Transforms t = ParseTransform(parent);
+      Transforms t = ParseTransform(parent, _usdData);
 
       ignition::math::Pose3d pose;
       _scale *= t.scale;
@@ -294,44 +294,44 @@ namespace usd
       if (data.second != nullptr)
       {
         metersPerUnit = data.second->_metersPerUnit;
-        // std::string upAxis = data.second->_upAxis;
-        // std::cerr << "upAxis " << upAxis << '\n';
-        // if(upAxis == "Y")
-        // {
-        //   ignition::math::Matrix4d m(
-        //     1, 0, 0, 0,
-        //     0, 0, -1, 0,
-        //     0, 1, 0, 0,
-        //     0, 0, 0, 1);
-        //   t.translate = m * t.translate;
-        //
-        //   ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
-        //     ignition::math::Vector3d(0 ,0 ,0),
-        //     ignition::math::Quaterniond(0.707, 0.707, 0, 0));
-        //
-        //   _tfs.push_back(poseAxisUpY);
-        //
-        //   // std::cerr << "m.Rotation() " << m.Rotation() << '\n';
-        //   // exit(-1);
-        //   // // ignition::math::Pose3d translateUpAxisY = ignition::math::Pose3d(
-        //   // //   t.translate,
-        //   // //   ignition::math::Quaterniond(0, 0, 0));
-        //   // t.translate = ignition::math::Vector3d(t.translate[0], -t.translate[2], t.translate[1]);
-        //   // if (!t.isRotationZYX)
-        //   // {
-        //   //   if (t.isRotation)
-        //   //   {
-        //   //     auto eulerAngles = t.q[0].Euler();
-        //   //     t.q[0] = ignition::math::Quaterniond(eulerAngles[0], eulerAngles[2], eulerAngles[1]);
-        //   //   }
-        //   // }
-        //   // else
-        //   // {
-        //   //   auto qtemp = t.q[2];
-        //   //   t.q[2] = t.q[1];
-        //   //   t.q[1] = qtemp;
-        //   // }
-        // }
+        std::string upAxis = data.second->_upAxis;
+        std::cerr << "upAxis " << upAxis << '\n';
+      //   if(upAxis == "Y")
+      //   {
+      //     ignition::math::Matrix4d m(
+      //       1, 0, 0, 0,
+      //       0, 0, -1, 0,
+      //       0, 1, 0, 0,
+      //       0, 0, 0, 1);
+      //     t.translate = m * t.translate;
+      //   //
+      //   //   ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
+      //   //     ignition::math::Vector3d(0 ,0 ,0),
+      //   //     ignition::math::Quaterniond(0.707, 0.707, 0, 0));
+      //   //
+      //   //   _tfs.push_back(poseAxisUpY);
+      //   //
+      //   //   // std::cerr << "m.Rotation() " << m.Rotation() << '\n';
+      //   //   // exit(-1);
+      //   //   // // ignition::math::Pose3d translateUpAxisY = ignition::math::Pose3d(
+      //   //   // //   t.translate,
+      //   //   // //   ignition::math::Quaterniond(0, 0, 0));
+      //   //   // t.translate = ignition::math::Vector3d(t.translate[0], -t.translate[2], t.translate[1]);
+      //   //   // if (!t.isRotationZYX)
+      //   //   // {
+      //   //   //   if (t.isRotation)
+      //   //   //   {
+      //   //   //     auto eulerAngles = t.q[0].Euler();
+      //   //   //     t.q[0] = ignition::math::Quaterniond(eulerAngles[0], eulerAngles[2], eulerAngles[1]);
+      //   //   //   }
+      //   //   // }
+      //   //   // else
+      //   //   // {
+      //   //   //   auto qtemp = t.q[2];
+      //   //   //   t.q[2] = t.q[1];
+      //   //   //   t.q[1] = qtemp;
+      //   //   // }
+      //   }
       }
 
       pose.Pos() = t.translate * metersPerUnit;
@@ -356,27 +356,41 @@ namespace usd
         ignition::math::Pose3d poseT = ignition::math::Pose3d(
           t.translate * metersPerUnit,
           ignition::math::Quaterniond(1, 0, 0, 0));
-        if (data.second != nullptr)
-        {
-          std::string upAxis = data.second->_upAxis;
-          if (upAxis == "Z")
-          {
-            _tfs.push_back(poseZ);
-            _tfs.push_back(poseY);
-          }
-          else
-          {
-            ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
-              ignition::math::Vector3d(0 ,0 ,0),
-              ignition::math::Quaterniond(0.707, -0.707, 0, 0));
-            _tfs.push_back(poseAxisUpY);
-            _tfs.push_back(poseY);
-            _tfs.push_back(poseZ);
-          }
-        }
+        // if (data.second != nullptr)
+        // {
+        // //   std::string upAxis = data.second->_upAxis;
+        //   if (upAxis == "Z")
+        //   {
+        //     _tfs.push_back(poseZ);
+        //     _tfs.push_back(poseY);
+        //   }
+        //   else
+        //   {
+        //     ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
+        //       ignition::math::Vector3d(0 ,0 ,0),
+        //       ignition::math::Quaterniond(0.707, -0.707, 0, 0));
+        //     _tfs.push_back(poseAxisUpY);
+        //     _tfs.push_back(poseY);
+        //     _tfs.push_back(poseZ);
+        //   }
+        // }
 
+        _tfs.push_back(poseZ);
+        _tfs.push_back(poseY);
         _tfs.push_back(poseX);
         _tfs.push_back(poseT);
+      }
+      if (data.second != nullptr)
+      {
+        std::string upAxis = data.second->_upAxis;
+        std::cerr << "ALEX: " << upAxis << '\n';
+        if (upAxis == "Y")
+        {
+          ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
+            ignition::math::Vector3d(0 ,0 ,0),
+            ignition::math::Quaterniond(1.57, 0, 0));
+          _tfs.push_back(poseUpAxis);
+        }
       }
       parent = parent.GetParent();
     }
@@ -395,12 +409,16 @@ namespace usd
     std::cerr << "pose " << _pose << '\n';
     for (auto & rt : tfs)
     {
+      std::cerr << "rt " << rt << '\n';
+    }
+    for (auto & rt : tfs)
+    {
       _pose = rt * _pose;
       std::cerr << "pose " << _pose << '\n';
     }
   }
 
-  Transforms ParseTransform(const pxr::UsdPrim &_prim)
+  Transforms ParseTransform(const pxr::UsdPrim &_prim, USDData &_usdData)
   {
     auto variant_geom = pxr::UsdGeomGprim(_prim);
     auto transforms = variant_geom.GetXformOpOrderAttr();
@@ -445,7 +463,7 @@ namespace usd
         }
         else if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3d")
         {
-          pxr::GfVec3f rotationEulerTmp(0, 0, 0);
+          pxr::GfVec3d rotationEulerTmp(0, 0, 0);
           attribute.Get(&rotationEulerTmp);
           rotationEuler[0] = rotationEulerTmp[0];
           rotationEuler[1] = rotationEulerTmp[1];
@@ -530,6 +548,30 @@ namespace usd
           transform[3][0], transform[3][1], transform[3][2], transform[3][3]
         );
         std::cerr << "m " << m << '\n';
+
+        std::pair<std::string, std::shared_ptr<USDStage>> data =
+          _usdData.findStage(_prim.GetPath().GetName());
+
+        // bool upAxisZ = (data.second->_upAxis == "Z");
+        // if(!upAxisZ)
+        // {
+        //   ignition::math::Matrix4d mUpAxis(
+        //     1, 0, 0, 0,
+        //     0, 0, -1, 0,
+        //     0, 1, 0, 0,
+        //     0, 0, 0, 1);
+        //
+        //   pxr::GfMatrix4d mUpAxis2(
+        //     1, 0, 0, 0,
+        //     0, 0, -1, 0,
+        //     0, 1, 0, 0,
+        //     0, 0, 0, 1);
+        //
+        //   m = mUpAxis * m;
+        //   transform = mUpAxis2 * transform;
+        //   std::cerr << "m upAxis " << m << '\n';
+        // }
+
         ignition::math::Vector3d eulerAngles = m.EulerRotation(true);
         std::cerr << "eulerAngles " << eulerAngles << '\n';
         ignition::math::Matrix4d inverseRX(ignition::math::Pose3d(
