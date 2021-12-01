@@ -23,7 +23,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
-#include "sdformat.hh"
+#include "sdf/sdf.hh"
 
 #include "test_config.h"
 

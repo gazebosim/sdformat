@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <ignition/math/Color.hh>
-#include "sdformat.hh"
+#include "sdf/sdf.hh"
 
 #include "test_config.h"
 

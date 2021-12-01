@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sdformat.hh"
+#include "sdf/sdf.hh"
 
 std::string get_sdf_string()
 {

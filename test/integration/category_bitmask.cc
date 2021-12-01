@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sdformat.hh"
+#include "sdf/sdf.hh"
 
 /////////////////////////////////////////////////
 TEST(CategoryBitmask, WasSpecified)

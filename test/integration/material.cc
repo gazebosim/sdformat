@@ -20,7 +20,7 @@
 
 #include <ignition/math/Color.hh>
 
-#include "sdformat.hh"
+#include "sdf/sdf.hh"
 #include "test_config.h"
 
 void ExpectInvalidWithMessage(sdf::Errors &_errors, std::string _compType)
