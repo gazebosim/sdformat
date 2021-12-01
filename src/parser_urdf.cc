@@ -31,7 +31,7 @@
 #include <urdf_model/link.h>
 #include <urdf_parser/urdf_parser.h>
 
-#include "sdformat.hh"
+#include "sdf/sdf.hh"
 
 #include "XmlUtils.hh"
 #include "SDFExtension.hh"

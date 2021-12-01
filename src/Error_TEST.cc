@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <optional>
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/Error.hh"
 
 /////////////////////////////////////////////////

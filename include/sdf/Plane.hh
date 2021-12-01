@@ -23,7 +23,7 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -33,7 +33,7 @@ namespace sdf
 
   /// \brief Plane represents a plane shape, and is usually accessed through a
   /// Geometry.
-  class IGNITION_SDFORMAT_VISIBLE Plane
+  class SDFORMAT_VISIBLE Plane
   {
     /// \brief Constructor
     public: Plane();

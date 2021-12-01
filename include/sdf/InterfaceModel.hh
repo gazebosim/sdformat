@@ -32,8 +32,8 @@
 #include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Types.hh"
 
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -54,7 +54,7 @@ using RepostureFunction =
     std::function<void(const sdf::InterfaceModelPoseGraph &)>;
 
 /// \brief Interface element representing a Model
-class IGNITION_SDFORMAT_VISIBLE InterfaceModel
+class SDFORMAT_VISIBLE InterfaceModel
 {
   /// \brief Constructor
   /// \param[in] name The *local* name (no nesting, e.g. "::").  If this name

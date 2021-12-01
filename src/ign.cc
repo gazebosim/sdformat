@@ -20,18 +20,18 @@
 #include <memory>
 #include <string.h>
 
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
 #include "sdf/parser.hh"
-#include "sdf/Export.hh"
+#include "sdf/system_util.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "ign.hh"
 
 //////////////////////////////////////////////////
-extern "C" IGNITION_SDFORMAT_VISIBLE int cmdCheck(const char *_path)
+extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 {
   int result = 0;
 
@@ -99,7 +99,7 @@ extern "C" IGNITION_SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-extern "C" IGNITION_SDFORMAT_VISIBLE char *ignitionVersion()
+extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
 {
 #ifdef _MSC_VER
   return _strdup(SDF_VERSION_FULL);
@@ -111,7 +111,7 @@ extern "C" IGNITION_SDFORMAT_VISIBLE char *ignitionVersion()
 //////////////////////////////////////////////////
 /// \brief Print the full description of the SDF spec.
 /// \return 0 on success, -1 if SDF could not be initialized.
-extern "C" IGNITION_SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
+extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
 
@@ -131,7 +131,7 @@ extern "C" IGNITION_SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 }
 
 //////////////////////////////////////////////////
-extern "C" IGNITION_SDFORMAT_VISIBLE int cmdPrint(const char *_path)
+extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -160,7 +160,7 @@ extern "C" IGNITION_SDFORMAT_VISIBLE int cmdPrint(const char *_path)
 
 //////////////////////////////////////////////////
 // cppcheck-suppress unusedFunction
-extern "C" IGNITION_SDFORMAT_VISIBLE int cmdGraph(
+extern "C" SDFORMAT_VISIBLE int cmdGraph(
     const char *_graphType, const char *_path)
 {
   if (!sdf::filesystem::exists(_path))

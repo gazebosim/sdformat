@@ -24,8 +24,8 @@
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -82,7 +82,7 @@ namespace sdf
     UNIVERSAL = 9
   };
 
-  class IGNITION_SDFORMAT_VISIBLE Joint
+  class SDFORMAT_VISIBLE Joint
   {
     /// \brief Default constructor
     public: Joint();

@@ -22,7 +22,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -30,7 +30,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Imu contains information about an imu sensor.
   /// This sensor can be attached to a link.
-  class IGNITION_SDFORMAT_VISIBLE Imu
+  class SDFORMAT_VISIBLE Imu
   {
     /// \brief Default constructor
     public: Imu();

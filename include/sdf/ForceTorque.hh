@@ -22,7 +22,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -61,7 +61,7 @@ namespace sdf
 
   /// \brief ForceTorque contains information about a force torque sensor.
   /// This sensor can be attached to a joint.
-  class IGNITION_SDFORMAT_VISIBLE ForceTorque
+  class SDFORMAT_VISIBLE ForceTorque
   {
     /// \brief Default constructor
     public: ForceTorque();

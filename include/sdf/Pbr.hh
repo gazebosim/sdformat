@@ -21,8 +21,8 @@
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -55,7 +55,7 @@ namespace sdf
 
   /// \brief This class contains Physically-Based-Rendering (PBR) workflow
   /// properties.
-  class IGNITION_SDFORMAT_VISIBLE PbrWorkflow
+  class SDFORMAT_VISIBLE PbrWorkflow
   {
     /// \brief Default constructor
     public: PbrWorkflow();
@@ -235,7 +235,7 @@ namespace sdf
 
   /// \brief This class provides access to Physically-Based-Rendering (PBR)
   ///  material workflows.
-  class IGNITION_SDFORMAT_VISIBLE Pbr
+  class SDFORMAT_VISIBLE Pbr
   {
     /// \brief Default constructor
     public: Pbr();

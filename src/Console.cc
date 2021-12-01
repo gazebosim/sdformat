@@ -24,7 +24,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 
 using namespace sdf;
 

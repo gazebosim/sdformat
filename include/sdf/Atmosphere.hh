@@ -22,8 +22,8 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 
 namespace sdf
@@ -42,7 +42,7 @@ namespace sdf
   /// an atmospheric model and related parameters such as temperature
   /// and pressure at sea level. An Atmosphere instance is optionally part of
   /// a World.
-  class IGNITION_SDFORMAT_VISIBLE Atmosphere
+  class SDFORMAT_VISIBLE Atmosphere
   {
     /// \brief Default constructor
     public: Atmosphere();

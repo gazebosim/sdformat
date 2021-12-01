@@ -23,8 +23,8 @@
 #include <memory>
 #include <string>
 
-#include <sdf/config.hh>
-#include "sdf/Export.hh"
+#include <sdf/sdf_config.h>
+#include "sdf/system_util.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -65,10 +65,10 @@ namespace sdf
   typedef std::shared_ptr<Console> ConsolePtr;
 
   /// \brief Message, error, warning, and logging functionality
-  class IGNITION_SDFORMAT_VISIBLE Console
+  class SDFORMAT_VISIBLE Console
   {
     /// \brief An ostream-like class that we'll use for logging.
-    public: class IGNITION_SDFORMAT_VISIBLE ConsoleStream
+    public: class SDFORMAT_VISIBLE ConsoleStream
     {
       /// \brief Constructor.
       /// \param[in] _stream Pointer to an output stream operator. Can be

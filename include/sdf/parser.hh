@@ -20,8 +20,8 @@
 #include <string>
 
 #include "sdf/SDFImpl.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser
@@ -43,14 +43,14 @@ namespace sdf
   /// \brief Initialize the SDF interface from the embedded root spec file
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
 
   /// \brief Initialize the SDF interface using a file
   /// \param[in] _filename Name of the SDF file
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, SDFPtr _sdf);
 
   /// \brief Initialize the SDF interface using a file
@@ -58,7 +58,7 @@ namespace sdf
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool initFile(
       const std::string &_filename, const ParserConfig &_config, SDFPtr _sdf);
 
@@ -66,7 +66,7 @@ namespace sdf
   /// \param[in] _filename Name of the SDF file
   /// \param[in] _sdf Pointer to an SDF Element object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, ElementPtr _sdf);
 
   /// \brief Initialize an SDFElement interface using a file
@@ -74,7 +74,7 @@ namespace sdf
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf Pointer to an SDF Element object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, const ParserConfig &_config,
       ElementPtr _sdf);
 
@@ -82,7 +82,7 @@ namespace sdf
   /// \param[in] _xmlString XML string to be parsed.
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
 
   /// \brief Initialize the SDF interface using a string
@@ -90,7 +90,7 @@ namespace sdf
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool initString(
       const std::string &_xmlString, const ParserConfig &_config, SDFPtr _sdf);
 
@@ -101,7 +101,7 @@ namespace sdf
   /// SDF version
   /// \param[in] _filename Name of the SDF file
   /// \return Populated SDF pointer.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   sdf::SDFPtr readFile(const std::string &_filename);
 
   /// \brief Populate the SDF values from a file
@@ -112,7 +112,7 @@ namespace sdf
   /// \param[in] _filename Name of the SDF file
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return Populated SDF pointer.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   sdf::SDFPtr readFile(const std::string &_filename, Errors &_errors);
 
   /// \brief Populate the SDF values from a file
@@ -124,7 +124,7 @@ namespace sdf
   /// \param[in] _config Custom parser configuration
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return Populated SDF pointer.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   sdf::SDFPtr readFile(const std::string &_filename,
       const ParserConfig &_config, Errors &_errors);
 
@@ -137,7 +137,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a file
@@ -150,7 +150,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, const ParserConfig &_config,
       SDFPtr _sdf, Errors &_errors);
 
@@ -165,7 +165,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readFileWithoutConversion(
       const std::string &_filename, SDFPtr _sdf, Errors &_errors);
 
@@ -181,7 +181,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readFileWithoutConversion(const std::string &_filename,
       const ParserConfig &_config, SDFPtr _sdf, Errors &_errors);
 
@@ -193,7 +193,7 @@ namespace sdf
   /// \param[in] _filename Name of the SDF file
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a string
@@ -205,7 +205,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors);
 
   /// \brief Populate the SDF values from a string
@@ -218,7 +218,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, const ParserConfig &_config,
       SDFPtr _sdf, Errors &_errors);
 
@@ -230,7 +230,7 @@ namespace sdf
   /// \param[in] _xmlString XML string to be parsed.
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, SDFPtr _sdf);
 
   /// \brief Populate the SDF values from a string
@@ -242,7 +242,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF Element object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf,
       Errors &_errors);
 
@@ -256,7 +256,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF Element object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, const ParserConfig &_config,
       ElementPtr _sdf, Errors &_errors);
 
@@ -271,7 +271,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readStringWithoutConversion(
       const std::string &_xmlString, SDFPtr _sdf, Errors &_errors);
 
@@ -285,7 +285,7 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readStringWithoutConversion(const std::string &_xmlString,
       const ParserConfig &_config, SDFPtr _sdf, Errors &_errors);
 
@@ -297,7 +297,7 @@ namespace sdf
   /// \param[in] _xmlString XML string to be parsed.
   /// \param[in] _sdf Pointer to an SDF Element object.
   /// \return True if successful.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf);
 
   /// \brief Get the file path to the model file
@@ -305,7 +305,7 @@ namespace sdf
   /// \return string with the full filesystem path to the best version (greater
   ///         SDF protocol supported by this sdformat version) of the .sdf
   ///         model files hosted by _modelDirPath.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   std::string getModelFilePath(const std::string &_modelDirPath);
 
   /// \brief Convert an SDF file to a specific SDF version.
@@ -313,7 +313,7 @@ namespace sdf
   /// \param[in] _version Version to convert _filename to.
   /// \param[out] _sdf Pointer to the converted SDF document.
   /// \return True on success.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool convertFile(const std::string &_filename, const std::string &_version,
                    SDFPtr _sdf);
 
@@ -323,7 +323,7 @@ namespace sdf
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf Pointer to the converted SDF document.
   /// \return True on success.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool convertFile(const std::string &_filename, const std::string &_version,
                    const ParserConfig &_config, SDFPtr _sdf);
 
@@ -332,7 +332,7 @@ namespace sdf
   /// \param[in] _version Version to convert _filename to.
   /// \param[out] _sdf Pointer to the converted SDF document.
   /// \return True on success.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
                      const std::string &_version, SDFPtr _sdf);
 
@@ -342,7 +342,7 @@ namespace sdf
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf Pointer to the converted SDF document.
   /// \return True on success.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString, const std::string &_version,
                      const ParserConfig &_config, SDFPtr _sdf);
 
@@ -353,7 +353,7 @@ namespace sdf
   /// rather than terminating early when the first error is found.
   /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all models have valid canonical_link attributes.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool checkCanonicalLinkNames(const sdf::Root *_root);
 
   /// \brief For the world and each model, check that the attached_to graphs
@@ -364,7 +364,7 @@ namespace sdf
   /// rather than terminating early when the first error is found.
   /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all attached_to graphs are valid.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool checkFrameAttachedToGraph(const sdf::Root *_root);
 
   /// \brief Check that for each frame, the attached_to attribute value
@@ -375,7 +375,7 @@ namespace sdf
   /// rather than terminating early when the first error is found.
   /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all frames have valid attached_to attributes.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool checkFrameAttachedToNames(const sdf::Root *_root);
 
   /// \brief Check that all joints in contained models specify parent
@@ -385,7 +385,7 @@ namespace sdf
   /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all models have joints with valid parent and child
   /// link names.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool checkJointParentChildLinkNames(const sdf::Root *_root);
 
   /// \brief For the world and each model, check that the attached_to graphs
@@ -396,7 +396,7 @@ namespace sdf
   /// rather than terminating early when the first error is found.
   /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all attached_to graphs are valid.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool checkPoseRelativeToGraph(const sdf::Root *_root);
 
   /// \brief Check that all sibling elements of the same type have unique names.
@@ -405,7 +405,7 @@ namespace sdf
   /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained elements have do not share a name with
   /// sibling elements of the same type.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem);
 
   /// \brief Check that all sibling elements of the any type have unique names.
@@ -414,7 +414,7 @@ namespace sdf
   /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained elements have do not share a name with
   /// sibling elements of any type.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem);
 
   /// \brief Check that all sibling elements do not contain the delimiter
@@ -424,7 +424,7 @@ namespace sdf
   /// containing '::' is found.
   /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained element names do not have the delimiter '::'
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem);
 
   /// \brief Check whether the element should be validated. If this returns
@@ -432,7 +432,7 @@ namespace sdf
   /// skip this element and its descendants.
   /// \param[in] _elem SDF Element to check.
   /// \return True if the element should be validated
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   bool shouldValidateElement(sdf::ElementPtr _elem);
   }
 }

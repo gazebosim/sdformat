@@ -20,15 +20,15 @@
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Contact information for a surface.
-  class IGNITION_SDFORMAT_VISIBLE Contact
+  class SDFORMAT_VISIBLE Contact
   {
     /// \brief Default constructor
     public: Contact();
@@ -59,7 +59,7 @@ namespace sdf
   };
 
   /// \brief Surface information for a collision.
-  class IGNITION_SDFORMAT_VISIBLE Surface
+  class SDFORMAT_VISIBLE Surface
   {
     /// \brief Default constructor
     public: Surface();

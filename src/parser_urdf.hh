@@ -18,13 +18,13 @@
 #define SDFORMAT_URDF2SDF_HH_
 
 #include <tinyxml2.h>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 #include <string>
 
 #include "sdf/Console.hh"
 #include "sdf/Types.hh"
-#include "sdf/Export.hh"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {

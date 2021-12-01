@@ -22,7 +22,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -31,7 +31,7 @@ namespace sdf
   /// \brief AirPressure contains information about a general
   /// purpose fluid pressure sensor.
   /// This sensor can be attached to a link.
-  class IGNITION_SDFORMAT_VISIBLE AirPressure
+  class SDFORMAT_VISIBLE AirPressure
   {
     /// \brief Default constructor
     public: AirPressure();

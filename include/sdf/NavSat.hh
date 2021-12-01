@@ -21,7 +21,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 #include <ignition/math/Angle.hh>
 
@@ -72,7 +72,7 @@ namespace sdf
   ///   </navsat>
   /// </sensor>
   /// ~~~
-  class IGNITION_SDFORMAT_VISIBLE NavSat
+  class SDFORMAT_VISIBLE NavSat
   {
     /// \brief Default constructor
     public: NavSat();

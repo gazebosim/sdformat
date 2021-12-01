@@ -22,14 +22,14 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Texture to be used on heightmaps.
-  class IGNITION_SDFORMAT_VISIBLE HeightmapTexture
+  class SDFORMAT_VISIBLE HeightmapTexture
   {
     /// \brief Constructor
     public: HeightmapTexture();
@@ -76,7 +76,7 @@ namespace sdf
   };
 
   /// \brief Blend information to be used between textures on heightmaps.
-  class IGNITION_SDFORMAT_VISIBLE HeightmapBlend
+  class SDFORMAT_VISIBLE HeightmapBlend
   {
     /// \brief Constructor
     public: HeightmapBlend();
@@ -116,7 +116,7 @@ namespace sdf
 
   /// \brief Heightmap represents a shape defined by a 2D field, and is usually
   /// accessed through a Geometry.
-  class IGNITION_SDFORMAT_VISIBLE Heightmap
+  class SDFORMAT_VISIBLE Heightmap
   {
     /// \brief Constructor
     public: Heightmap();

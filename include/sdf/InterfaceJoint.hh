@@ -23,15 +23,15 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/utils/ImplPtr.hh>
 
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
 {
 /// \brief Interface element representing a Joint
-class IGNITION_SDFORMAT_VISIBLE InterfaceJoint
+class SDFORMAT_VISIBLE InterfaceJoint
 {
   /// \brief Constructor
   /// \param[in] name The *local* name.

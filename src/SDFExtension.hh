@@ -26,7 +26,7 @@
 
 #include <ignition/math/Pose3.hh>
 
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 #include "sdf/Types.hh"
 
 namespace sdf

@@ -22,8 +22,8 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -33,7 +33,7 @@ namespace sdf
 
   /// \brief The physics element specifies the type and properties of a
   /// dynamics engine.
-  class IGNITION_SDFORMAT_VISIBLE Physics
+  class SDFORMAT_VISIBLE Physics
   {
     /// \brief Default constructor
     public: Physics();

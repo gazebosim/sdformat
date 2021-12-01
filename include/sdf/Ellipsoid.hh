@@ -21,7 +21,7 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -29,7 +29,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Ellipsoid represents a ellipsoid shape, and is usually accessed
   /// through a Geometry.
-  class IGNITION_SDFORMAT_VISIBLE Ellipsoid
+  class SDFORMAT_VISIBLE Ellipsoid
   {
     /// \brief Constructor
     public: Ellipsoid();

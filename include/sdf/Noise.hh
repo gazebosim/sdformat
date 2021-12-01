@@ -20,7 +20,7 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -44,7 +44,7 @@ namespace sdf
   /// \brief The Noise class contains information about a noise
   /// model, such as a Gaussian distribution. A Noise DOM object is
   /// typically available from a Sensor.
-  class IGNITION_SDFORMAT_VISIBLE Noise
+  class SDFORMAT_VISIBLE Noise
   {
     /// \brief Default constructor
     public: Noise();

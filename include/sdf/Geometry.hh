@@ -20,7 +20,7 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -74,7 +74,7 @@ namespace sdf
   /// Type function to determine the type of shape contained within a
   /// Geometry. Access to shape data, such as a box's size, is achieved
   /// through the shape accessors, such as const Box *BoxShape() const.
-  class IGNITION_SDFORMAT_VISIBLE Geometry
+  class SDFORMAT_VISIBLE Geometry
   {
     /// \brief Default constructor
     public: Geometry();

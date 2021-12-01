@@ -23,7 +23,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 
 namespace sdf
@@ -102,7 +102,7 @@ namespace sdf
   ///     </ray>
   /// </sensor>
   /// ~~~
-  class IGNITION_SDFORMAT_VISIBLE Lidar
+  class SDFORMAT_VISIBLE Lidar
   {
     /// \brief Default constructor
     public: Lidar();

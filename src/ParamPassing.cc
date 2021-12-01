@@ -20,7 +20,7 @@
 
 #include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 
 #include "ParamPassing.hh"
 #include "parser_private.hh"

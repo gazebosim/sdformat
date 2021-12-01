@@ -20,8 +20,8 @@
 
 #include <cstring>
 
-#include <sdf/config.hh>
-#include "sdf/Export.hh"
+#include <sdf/sdf_config.h>
+#include "sdf/system_util.hh"
 
 // Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
@@ -30,11 +30,11 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \brief External hook to execute 'ign sdf -k' from the command line.
 /// \param[in] _path Path to the file to validate.
 /// \return Zero on success, negative one otherwise.
-extern "C" IGNITION_SDFORMAT_VISIBLE int cmdCheck(const char *_path);
+extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path);
 
 /// \brief External hook to read the library version.
 /// \return C-string representing the version. Ex.: 0.1.2
-extern "C" IGNITION_SDFORMAT_VISIBLE char *ignitionVersion();
+extern "C" SDFORMAT_VISIBLE char *ignitionVersion();
 }
 
 #endif

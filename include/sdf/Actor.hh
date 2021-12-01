@@ -27,8 +27,8 @@
 #include "sdf/Types.hh"
 #include "sdf/Link.hh"
 #include "sdf/Joint.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -36,7 +36,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
   /// \brief Animation in Actor.
-  class IGNITION_SDFORMAT_VISIBLE Animation
+  class SDFORMAT_VISIBLE Animation
   {
     /// \brief Default constructor
     public: Animation();
@@ -94,7 +94,7 @@ namespace sdf
   };
 
   /// \brief Waypoint for Trajectory.
-  class IGNITION_SDFORMAT_VISIBLE Waypoint
+  class SDFORMAT_VISIBLE Waypoint
   {
     /// \brief Default constructor
     public: Waypoint();
@@ -128,7 +128,7 @@ namespace sdf
   };
 
   /// \brief Trajectory for Animation.
-  class IGNITION_SDFORMAT_VISIBLE Trajectory
+  class SDFORMAT_VISIBLE Trajectory
   {
     /// \brief Default constructor
     public: Trajectory();
@@ -187,7 +187,7 @@ namespace sdf
 
 
   /// \brief Provides a description of an actor.
-  class IGNITION_SDFORMAT_VISIBLE Actor
+  class SDFORMAT_VISIBLE Actor
   {
     /// \brief Default constructor
     public: Actor();

@@ -21,8 +21,8 @@
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -42,7 +42,7 @@ namespace sdf
   };
 
   /// \brief This class contains visual material properties.
-  class IGNITION_SDFORMAT_VISIBLE Material
+  class SDFORMAT_VISIBLE Material
   {
     /// \brief Default constructor
     public: Material();

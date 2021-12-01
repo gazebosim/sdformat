@@ -21,7 +21,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -31,7 +31,7 @@ namespace sdf
 
   /// \brief Magnetometer contains information about a magnetometer sensor.
   /// This sensor can be attached to a link.
-  class IGNITION_SDFORMAT_VISIBLE Magnetometer
+  class SDFORMAT_VISIBLE Magnetometer
   {
     /// \brief Default constructor
     public: Magnetometer();

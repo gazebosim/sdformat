@@ -22,7 +22,7 @@
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
-#include <sdf/config.hh>
+#include <sdf/sdf_config.h>
 
 namespace sdf
 {
@@ -30,7 +30,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief Altimeter contains information about an altimeter sensor.
   /// This sensor can be attached to a link.
-  class IGNITION_SDFORMAT_VISIBLE Altimeter
+  class SDFORMAT_VISIBLE Altimeter
   {
     /// \brief Default constructor
     public: Altimeter();

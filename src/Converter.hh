@@ -22,8 +22,8 @@
 #include <string>
 #include <tuple>
 
-#include <sdf/config.hh>
-#include "sdf/Export.hh"
+#include <sdf/sdf_config.h>
+#include "sdf/system_util.hh"
 
 namespace sdf
 {

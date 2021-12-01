@@ -24,8 +24,8 @@
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/config.hh>
-#include "sdf/Export.hh"
+#include <sdf/sdf_config.h>
+#include "sdf/system_util.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -51,7 +51,7 @@ namespace sdf
   /// The name of the default frame to resolve to must not be empty.
   /// This class only has a private constructor, and may only be accessed from
   /// its friend DOM classes.
-  class IGNITION_SDFORMAT_VISIBLE SemanticPose
+  class SDFORMAT_VISIBLE SemanticPose
   {
     /// \brief Get the raw Pose3 transform.
     /// \return The raw Pose3 transform.

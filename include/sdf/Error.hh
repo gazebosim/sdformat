@@ -21,8 +21,8 @@
 #include <string>
 #include <optional>
 #include <ignition/utils/ImplPtr.hh>
-#include <sdf/config.hh>
-#include "sdf/Export.hh"
+#include <sdf/sdf_config.h>
+#include "sdf/system_util.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -149,7 +149,7 @@ namespace sdf
     MERGE_INCLUDE_UNSUPPORTED,
   };
 
-  class IGNITION_SDFORMAT_VISIBLE Error
+  class SDFORMAT_VISIBLE Error
   {
     /// \brief Default constructor
     public: Error();
@@ -234,7 +234,7 @@ namespace sdf
     /// \param[in,out] _out The output stream.
     /// \param[in] _err The error to output.
     /// \return Reference to the given output stream
-    public: friend IGNITION_SDFORMAT_VISIBLE std::ostream &operator<<(
+    public: friend SDFORMAT_VISIBLE std::ostream &operator<<(
         std::ostream &_out, const sdf::Error &_err);
 
     /// \brief Private data pointer.

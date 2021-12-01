@@ -26,8 +26,8 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/PrintConfig.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -44,7 +44,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  class IGNITION_SDFORMAT_VISIBLE SDF;
+  class SDFORMAT_VISIBLE SDF;
   class SDFPrivate;
 
   /// \def SDFPtr
@@ -75,7 +75,7 @@ namespace sdf
   /// \param[in] _useCallback True to find a file based on a registered
   /// callback if the file is not found via the normal mechanism.
   /// \return File's full path.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   std::string findFile(const std::string &_filename,
                        bool _searchLocalPath = true,
                        bool _useCallback = false);
@@ -93,7 +93,7 @@ namespace sdf
   /// callback if the file is not found via the normal mechanism.
   /// \param[in] _config Custom parser configuration
   /// \return File's full path.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   std::string findFile(const std::string &_filename,
                        bool _searchLocalPath,
                        bool _useCallback,
@@ -104,18 +104,18 @@ namespace sdf
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   void addURIPath(const std::string &_uri, const std::string &_path);
 
   /// \brief Set the callback to use when SDF can't find a file.
   /// The callback should return a complete path to the requested file, or
   /// and empty string if the file was not found in the callback.
   /// \param[in] _cb The callback function.
-  IGNITION_SDFORMAT_VISIBLE
+  SDFORMAT_VISIBLE
   void setFindCallback(std::function<std::string (const std::string &)> _cb);
 
   /// \brief Base SDF class
-  class IGNITION_SDFORMAT_VISIBLE SDF
+  class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
     /// \brief Destructor

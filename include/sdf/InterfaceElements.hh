@@ -27,8 +27,8 @@
 #include "sdf/InterfaceModel.hh"
 #include "sdf/Types.hh"
 
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -41,7 +41,7 @@ inline namespace SDF_VERSION_NAMESPACE
 #endif
 /// \brief Contains the necessary information about an included model file
 /// for custom model parsers to be able to find the file and parse it.
-class IGNITION_SDFORMAT_VISIBLE NestedInclude
+class SDFORMAT_VISIBLE NestedInclude
 {
   /// \brief Constructor
   public: NestedInclude();

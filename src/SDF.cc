@@ -30,7 +30,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 #include "EmbeddedSdf.hh"
 
 namespace sdf

@@ -37,8 +37,8 @@
 
 #include "sdf/Console.hh"
 #include "sdf/PrintConfig.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 #include "sdf/Types.hh"
 
 #ifdef _WIN32
@@ -54,11 +54,11 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  class IGNITION_SDFORMAT_VISIBLE Element;
+  class SDFORMAT_VISIBLE Element;
   using ElementPtr = std::shared_ptr<Element>;
   using ElementWeakPtr = std::weak_ptr<Element>;
 
-  class IGNITION_SDFORMAT_VISIBLE Param;
+  class SDFORMAT_VISIBLE Param;
 
   /// \def ParamPtr
   /// \brief Shared pointer to a Param
@@ -113,7 +113,7 @@ namespace sdf
 
   /// \class Param Param.hh sdf/sdf.hh
   /// \brief A parameter class
-  class IGNITION_SDFORMAT_VISIBLE Param
+  class SDFORMAT_VISIBLE Param
   {
     /// \brief Constructor.
     /// \param[in] _key Key for the parameter.
@@ -401,7 +401,7 @@ namespace sdf
     /// \param[in] _valueStr The value as a string
     /// \param[out] _valueToSet The value to set
     /// \return True if the value was successfully set, false otherwise
-    public: bool IGNITION_SDFORMAT_VISIBLE ValueFromStringImpl(
+    public: bool SDFORMAT_VISIBLE ValueFromStringImpl(
                                     const std::string &_typeName,
                                     const std::string &_valueStr,
                                     ParamVariant &_valueToSet) const;

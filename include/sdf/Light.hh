@@ -26,8 +26,8 @@
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -60,7 +60,7 @@ namespace sdf
 
   /// \brief Provides a description of a light source. A light source can be
   /// point, spot, or directional light.
-  class IGNITION_SDFORMAT_VISIBLE Light
+  class SDFORMAT_VISIBLE Light
   {
     /// \brief Default constructor
     public: Light();

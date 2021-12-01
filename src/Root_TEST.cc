@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Actor.hh"
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Link.hh"

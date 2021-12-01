@@ -18,8 +18,8 @@
 #include "sdf/Element.hh"
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 using namespace sdf;
 

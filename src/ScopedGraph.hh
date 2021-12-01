@@ -27,7 +27,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/graph/Graph.hh>
 
-#include "sdf/config.hh"
+#include "sdf/sdf_config.h"
 
 namespace sdf
 {

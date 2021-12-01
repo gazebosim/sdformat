@@ -29,8 +29,8 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
-#include "sdf/config.hh"
-#include "sdf/Export.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
 
 namespace sdf
 {
@@ -43,7 +43,7 @@ namespace sdf
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
-  class IGNITION_SDFORMAT_VISIBLE Visual
+  class SDFORMAT_VISIBLE Visual
   {
     /// \brief Default constructor
     public: Visual();
