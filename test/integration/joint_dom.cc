@@ -218,7 +218,7 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
   auto errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e << std::endl;
-  ASSERT_EQ(7u, errors.size());
+  ASSERT_EQ(10u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -549,7 +549,7 @@ TEST(DOMJoint, LoadInvalidChild)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(6u, errors.size());
+  EXPECT_EQ(8u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -564,6 +564,8 @@ TEST(DOMJoint, LoadInvalidChild)
   // errors[3]
   // errors[4]
   // errors[5]
+  // errors[6]
+  // errors[7]
 }
 
 /////////////////////////////////////////////////
@@ -584,7 +586,7 @@ TEST(DOMJoint, LoadLinkJointSameName17Invalid)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(7u, errors.size());
+  EXPECT_EQ(9u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(

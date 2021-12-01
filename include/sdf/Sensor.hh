@@ -125,7 +125,10 @@ namespace sdf
     BOUNDINGBOX_CAMERA = 23,
 
     /// \brief A custom sensor
-    CUSTOM = 24
+    CUSTOM = 24,
+
+    /// \brief A wide angle camera sensor
+    WIDE_ANGLE_CAMERA = 25
   };
 
   /// \brief Information about an SDF sensor.
@@ -202,6 +205,11 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// sensor.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Get the sensor type.
     /// \return The sensor type.

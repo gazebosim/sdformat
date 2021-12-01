@@ -44,7 +44,6 @@ inline namespace SDF_VERSION_NAMESPACE {
 // Helpful functions when debugging in gdb
 void printGraph(const ScopedGraph<PoseRelativeToGraph> &_graph)
 {
-  std::stringstream ss;
   std::cout << _graph.Graph() << std::endl;
 }
 void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
@@ -258,7 +257,7 @@ std::pair<const Link *, std::string>
 /// be modified.
 static Errors resolveModelPoseWithPlacementFrame(
     const ignition::math::Pose3d &_rawPose,
-    const std::string _placementFrame,
+    const std::string &_placementFrame,
     const sdf::ScopedGraph<PoseRelativeToGraph> &_graph,
     ignition::math::Pose3d &_resolvedPose)
 {

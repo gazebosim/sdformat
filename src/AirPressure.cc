@@ -17,6 +17,7 @@
 #include <array>
 #include <string>
 #include "sdf/AirPressure.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -112,4 +113,19 @@ const Noise &AirPressure::PressureNoise() const
 void AirPressure::SetPressureNoise(const Noise &_noise)
 {
   this->dataPtr->noise = _noise;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr AirPressure::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("air_pressure.sdf", elem);
+
+  elem->GetElement("reference_altitude")->Set<double>(
+      this->ReferenceAltitude());
+  sdf::ElementPtr pressureElem = elem->GetElement("pressure");
+  sdf::ElementPtr noiseElem = pressureElem->GetElement("noise");
+  noiseElem->Copy(this->dataPtr->noise.ToElement());
+
+  return elem;
 }
