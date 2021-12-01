@@ -30,14 +30,16 @@
 
 #include "sdf/Material.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd{
 
-  std::string directoryFromUSDPath(std::string &_primPath);
-  void removeSubStr(std::string &_str, const std::string &_substr);
+  std::string SDFORMAT_VISIBLE directoryFromUSDPath(std::string &_primPath);
+  void SDFORMAT_VISIBLE removeSubStr(std::string &_str, const std::string &_substr);
 
-  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
+  sdf::Material SDFORMAT_VISIBLE ParseMaterial(const pxr::UsdPrim &_prim);
 
-  class Transforms
+  class SDFORMAT_VISIBLE Transforms
   {
   public:
     ignition::math::Vector3d scale{1, 1, 1};
@@ -48,16 +50,16 @@ namespace usd{
     bool isTranslate = false;
   };
 
-  Transforms ParseTransform(const pxr::UsdPrim &_prim);
+  Transforms SDFORMAT_VISIBLE ParseTransform(const pxr::UsdPrim &_prim);
 
-  void GetTransform(
+  void SDFORMAT_VISIBLE GetTransform(
     const pxr::UsdPrim &_prim,
     const double _metersPerUnit,
     ignition::math::Pose3d &_pose,
     ignition::math::Vector3d &_scale,
     const std::string &_name);
 
-  void GetAllTransforms(
+  void SDFORMAT_VISIBLE GetAllTransforms(
     const pxr::UsdPrim &_prim,
     const double _metersPerUnit,
     std::vector<ignition::math::Pose3d> &_tfs,

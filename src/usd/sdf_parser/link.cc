@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_LINK_HH_
-#define SDF_PARSER_LINK_HH_
-
 #include "link.hh"
 
 #include <string>
@@ -27,7 +24,8 @@
 #include "sdf/Link.hh"
 #include "usd/sdf_parser/visual.hh"
 
-using namespace usd;
+
+namespace usd {
 
 bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
     const std::string &_path)
@@ -52,4 +50,4 @@ bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
   return true;
 }
 
-#endif
+}

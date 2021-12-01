@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_GEOMETRY_HH_
-#define SDF_PARSER_GEOMETRY_HH_
-
 #include "geometry.hh"
 
 #include <iostream>
@@ -63,39 +60,37 @@ namespace usd
     // TODO(adlarkin) finish this
     return false;
   }
-}
 
-using namespace usd;
-
-bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
-    const std::string &_path)
-{
-  bool typeParsed = false;
-  switch (_geometry.Type())
+  bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
+      const std::string &_path)
   {
-    case sdf::GeometryType::BOX:
-      typeParsed = ParseSdfBoxGeometry(_geometry, _stage, _path);
-      break;
-    case sdf::GeometryType::CYLINDER:
-      typeParsed = ParseSdfCylinderGeometry(_geometry, _stage, _path);
-      break;
-    case sdf::GeometryType::SPHERE:
-      typeParsed = ParseSdfSphereGeometry(_geometry, _stage, _path);
-      break;
-    case sdf::GeometryType::MESH:
-      typeParsed = ParseSdfMeshGeometry(_geometry, _stage, _path);
-      break;
-    case sdf::GeometryType::CAPSULE:
-      typeParsed = ParseSdfCapsuleGeometry(_geometry, _stage, _path);
-      break;
-    case sdf::GeometryType::PLANE:
-    case sdf::GeometryType::ELLIPSOID:
-    case sdf::GeometryType::HEIGHTMAP:
-    default:
-      std::cerr << "Geometry type is either invalid or not supported.\n";
+    bool typeParsed = false;
+    switch (_geometry.Type())
+    {
+      case sdf::GeometryType::BOX:
+        typeParsed = ParseSdfBoxGeometry(_geometry, _stage, _path);
+        break;
+      case sdf::GeometryType::CYLINDER:
+        typeParsed = ParseSdfCylinderGeometry(_geometry, _stage, _path);
+        break;
+      case sdf::GeometryType::SPHERE:
+        typeParsed = ParseSdfSphereGeometry(_geometry, _stage, _path);
+        break;
+      case sdf::GeometryType::MESH:
+        typeParsed = ParseSdfMeshGeometry(_geometry, _stage, _path);
+        break;
+      case sdf::GeometryType::CAPSULE:
+        typeParsed = ParseSdfCapsuleGeometry(_geometry, _stage, _path);
+        break;
+      case sdf::GeometryType::PLANE:
+      case sdf::GeometryType::ELLIPSOID:
+      case sdf::GeometryType::HEIGHTMAP:
+      default:
+        std::cerr << "Geometry type is either invalid or not supported.\n";
+    }
+
+    return typeParsed;
   }
 
-  return typeParsed;
 }
 
-#endif

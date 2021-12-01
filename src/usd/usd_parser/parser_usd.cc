@@ -188,7 +188,7 @@ std::vector<ModelInterfaceSharedPtr> parseUSD(const std::string &xml_string)
     sdferr << "------------------------------------------------------\n";
     std::cerr << "pathName " << primName << "\n";
 
-    removeSubStr(primName, "/World");
+    usd::removeSubStr(primName, "/World");
 
     std::vector<std::string> tokens = ignition::common::split(primName, "/");
     if (tokens.size() == 0)

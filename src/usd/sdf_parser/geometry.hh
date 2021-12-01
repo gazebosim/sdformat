@@ -24,6 +24,8 @@
 
 #include "sdf/Geometry.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
   /// \brief Parse an SDF geometry into a USD stage.
@@ -34,7 +36,7 @@ namespace usd
   /// a valid USD path.
   /// \return True if _geometry was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
+  bool SDFORMAT_VISIBLE ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path);
 }
 

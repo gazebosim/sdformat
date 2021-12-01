@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_WORLD_HH_
-#define SDF_PARSER_WORLD_HH_
-
 #include "world.hh"
 
 #include <iostream>
@@ -28,7 +25,7 @@
 #include "sdf/World.hh"
 #include "usd/sdf_parser/model.hh"
 
-using namespace usd;
+namespace usd {
 
 bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
     const std::string &_path)
@@ -49,5 +46,4 @@ bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
 
   return true;
 }
-
-#endif
+}  // namespace usd

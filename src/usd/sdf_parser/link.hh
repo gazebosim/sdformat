@@ -24,6 +24,8 @@
 
 #include "sdf/Link.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
   /// \brief Parse an SDF link into a USD stage.
@@ -34,7 +36,7 @@ namespace usd
   /// a valid USD path.
   /// \return True if _link was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
+  bool SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
       const std::string &_path);
 }
 

@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_VISUAL_HH_
-#define SDF_PARSER_VISUAL_HH_
-
 #include "visual.hh"
 
 #include <iostream>
@@ -28,7 +25,7 @@
 #include "sdf/Visual.hh"
 #include "usd/sdf_parser/geometry.hh"
 
-using namespace usd;
+namespace usd {
 
 bool ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
     const std::string &_path)
@@ -45,4 +42,4 @@ bool ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
   return true;
 }
 
-#endif
+}

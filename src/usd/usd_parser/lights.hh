@@ -22,9 +22,11 @@
 
 #include "sdf/Light.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
-  std::shared_ptr<sdf::Light> ParseLights(
+  std::shared_ptr<sdf::Light> SDFORMAT_VISIBLE ParseLights(
     const pxr::UsdPrim &_prim,
     const double _metersPerUnit,
     const std::string &_linkName);

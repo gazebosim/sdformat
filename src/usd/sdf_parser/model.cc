@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_MODEL_HH_
-#define SDF_PARSER_MODEL_HH_
-
 #include "model.hh"
 
 #include <iostream>
@@ -28,7 +25,7 @@
 #include "sdf/Model.hh"
 #include "usd/sdf_parser/link.hh"
 
-using namespace usd;
+namespace usd {
 
 bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
     const std::string &_path)
@@ -53,4 +50,4 @@ bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
   return true;
 }
 
-#endif
+}

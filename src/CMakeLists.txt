@@ -97,7 +97,7 @@ endif()
 find_package(pxr REQUIRED)
 
 include_directories(${PXR_INCLUDE_DIRS})
-set(sources ${sources}
+list(APPEND sources
   # source files for parsing from USD to SDF
   usd/usd_parser/parser_usd.cc
   usd/usd_parser/physics.cc

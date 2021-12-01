@@ -24,6 +24,8 @@
 
 #include "sdf/Visual.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
   /// \brief Parse an SDF visual into a USD stage.
@@ -34,7 +36,7 @@ namespace usd
   /// a valid USD path.
   /// \return True if _visual was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
+  bool SDFORMAT_VISIBLE ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
       const std::string &_path);
 }
 

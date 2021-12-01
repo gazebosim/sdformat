@@ -24,6 +24,8 @@
 
 #include "sdf/World.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
   /// \brief Parse an SDF world into a USD stage.
@@ -34,7 +36,7 @@ namespace usd
   /// a valid USD path.
   /// \return True if _world was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
+  bool SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
       const std::string &_path);
 }
 

@@ -22,9 +22,11 @@
 
 #include "sdf/Sensor.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
-  std::shared_ptr<sdf::Sensor> ParseSensors(
+  std::shared_ptr<sdf::Sensor> SDFORMAT_VISIBLE ParseSensors(
     const pxr::UsdPrim &_prim,
     const double _metersPerUnit,
     const std::string &_linkName);

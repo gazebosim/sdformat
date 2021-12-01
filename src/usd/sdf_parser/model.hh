@@ -24,6 +24,8 @@
 
 #include "sdf/Model.hh"
 
+#include "sdf/sdf_config.h"
+
 namespace usd
 {
   /// \brief Parse an SDF model into a USD stage.
@@ -34,7 +36,7 @@ namespace usd
   /// a valid USD path.
   /// \return True if _model was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
+  bool SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path);
 }
 
