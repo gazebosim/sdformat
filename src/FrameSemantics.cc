@@ -313,11 +313,9 @@ inline constexpr bool IsInterfaceElement =
 template <typename T>
 inline constexpr const char *elemToString(const T *)
 {
-  // cppcheck-suppress syntaxError
-  // cppcheck-suppress unmatchedSuppression
-  if constexpr (std::is_same_v<T, sdf::World>)
+  if (std::is_same_v<T, sdf::World>)
     return "World";
-  if constexpr (std::is_same_v<T, sdf::Model>)
+  if (std::is_same_v<T, sdf::Model>)
     return "Model";
   return "Unknown";
 }
@@ -523,6 +521,8 @@ void addVerticesToGraph(ScopedGraph<GraphT> &_out, const ParentT *_parent,
         _errors.insert(_errors.end(), nestedErrors.begin(),
                         nestedErrors.end());
       }
+      // Suppress windows warning C4100.
+      (void) _frameType;
     }
     else
     {
