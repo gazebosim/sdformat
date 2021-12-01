@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_MODEL_HH_
-#define SDF_PARSER_MODEL_HH_
-
 #include "model.hh"
 
 #include <iostream>
@@ -52,5 +49,3 @@ bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
 
   return true;
 }
-
-#endif

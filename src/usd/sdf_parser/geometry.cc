@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_GEOMETRY_HH_
-#define SDF_PARSER_GEOMETRY_HH_
-
 #include "geometry.hh"
 
 #include <iostream>
@@ -97,5 +94,3 @@ bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stag
 
   return typeParsed;
 }
-
-#endif

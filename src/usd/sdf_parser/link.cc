@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_LINK_HH_
-#define SDF_PARSER_LINK_HH_
-
 #include "link.hh"
 
 #include <string>
@@ -51,5 +48,3 @@ bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
   }
   return true;
 }
-
-#endif

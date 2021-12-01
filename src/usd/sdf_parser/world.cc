@@ -15,9 +15,6 @@
  *
 */
 
-#ifndef SDF_PARSER_WORLD_HH_
-#define SDF_PARSER_WORLD_HH_
-
 #include "world.hh"
 
 #include <iostream>
@@ -49,5 +46,3 @@ bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
 
   return true;
 }
-
-#endif
