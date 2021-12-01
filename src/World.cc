@@ -797,3 +797,50 @@ Errors World::Implementation::LoadSphericalCoordinates(
 
   return errors;
 }
+
+/////////////////////////////////////////////////
+void World::ClearModels()
+{
+  this->dataPtr->models.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearActors()
+{
+  this->dataPtr->actors.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearLights()
+{
+  this->dataPtr->lights.clear();
+}
+
+/////////////////////////////////////////////////
+bool World::AddModel(const Model &_model)
+{
+  if (this->ModelNameExists(_model.Name()))
+    return false;
+  this->dataPtr->models.push_back(_model);
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddActor(const Actor &_actor)
+{
+  if (this->ActorNameExists(_actor.Name()))
+    return false;
+  this->dataPtr->actors.push_back(_actor);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddLight(const Light &_light)
+{
+  if (this->LightNameExists(_light.Name()))
+    return false;
+  this->dataPtr->lights.push_back(_light);
+
+  return true;
+}
