@@ -348,19 +348,19 @@ namespace sdf
 
     /// \brief Add a link to the model.
     /// \param[in] _link Link to add.
-    /// \return True if successfull, false if a link with the name already
+    /// \return True if successful, false if a link with the name already
     /// exists.
     public: bool AddLink(const Link &_link);
 
     /// \brief Add a joint to the model.
     /// \param[in] _link Joint to add.
-    /// \return True if successfull, false if a joint with the name already
+    /// \return True if successful, false if a joint with the name already
     /// exists.
     public: bool AddJoint(const Joint &_joint);
 
     /// \brief Add a model to the model.
     /// \param[in] _model Model to add.
-    /// \return True if successfull, false if a model with the name already
+    /// \return True if successful, false if a model with the name already
     /// exists.
     public: bool AddModel(const Model &_model);
 
