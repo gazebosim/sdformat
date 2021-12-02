@@ -24,6 +24,7 @@
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/capsule.h>
 #include <pxr/usd/usdGeom/cube.h>
 #include <pxr/usd/usdGeom/cylinder.h>
 #include <pxr/usd/usdGeom/sphere.h>
@@ -33,6 +34,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/Capsule.hh"
 
 namespace usd
 {
@@ -104,8 +106,19 @@ namespace usd
   bool ParseSdfCapsuleGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    // TODO(adlarkin) finish this
-    return false;
+    const auto &sdfCapsule = _geometry.CapsuleShape();
+
+    auto usdCapsule = pxr::UsdGeomCapsule::Define(_stage, pxr::SdfPath(_path));
+    usdCapsule.CreateRadiusAttr().Set(sdfCapsule->Radius());
+    usdCapsule.CreateHeightAttr().Set(sdfCapsule->Length());
+    pxr::GfVec3f endPoint(sdfCapsule->Radius());
+    endPoint[2] += 0.5 * sdfCapsule->Length();
+    pxr::VtArray<pxr::GfVec3f> extentBounds;
+    extentBounds.push_back(-1.0 * endPoint);
+    extentBounds.push_back(endPoint);
+    usdCapsule.CreateExtentAttr().Set(extentBounds);
+
+    return true;
   }
 
   bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
