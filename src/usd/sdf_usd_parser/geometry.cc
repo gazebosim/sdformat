@@ -108,6 +108,8 @@ namespace usd
         _geometry.MeshShape()->Uri());
 
     pxr::VtArray<pxr::GfVec3f> meshPoints;
+    pxr::VtArray<pxr::GfVec2f> uvs;
+    pxr::VtArray<pxr::GfVec3f> normals;
     pxr::VtArray<int> faceVertexIndices;
     pxr::VtArray<int> faceVertexCounts;
     for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
@@ -130,6 +132,21 @@ namespace usd
       // copy the submesh's indices to the usd mesh's "faceVertexIndices" array
       for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
         faceVertexIndices.push_back(subMesh->Index(j));
+
+      // copy the submesh's texture coordinate to the usd mesh's
+      // "faceVertexIndices" array
+      for (unsigned int j = 0; j < subMesh->TexCoordCount(); ++j)
+      {
+        const auto &uv = subMesh->TexCoord(j);
+        uvs.push_back(pxr::GfVec2f(uv[0], 1- uv[1]));
+      }
+
+      // copy the submesh's normals to the usd mesh's "faceVertexIndices" array
+      for (unsigned int j = 0; j < subMesh->NormalCount(); ++j)
+      {
+        const auto &normal = subMesh->Normal(j);
+        normals.push_back(pxr::GfVec3f(normal[0], normal[1], normal[2]));
+      }
 
       // set the usd mesh's "faceVertexCounts" array according to
       // the submesh primitive type
@@ -174,6 +191,15 @@ namespace usd
     usdMesh.CreatePointsAttr().Set(meshPoints);
     usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
     usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
+
+    auto coordinates = usdMesh.CreatePrimvar(
+        pxr::TfToken("st"), pxr::SdfValueTypeNames->Float2Array,
+        pxr::UsdGeomTokens->vertex);
+
+    coordinates.Set(uvs);
+
+    usdMesh.CreateNormalsAttr().Set(normals);
+
     const auto &meshMin = ignMesh->Min();
     const auto &meshMax = ignMesh->Max();
     pxr::VtArray<pxr::GfVec3f> extentBounds;
@@ -233,4 +259,3 @@ namespace usd
     return typeParsed;
   }
 }
-
