@@ -124,10 +124,21 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \brief Gets registered links.
   public: const std::vector<sdf::InterfaceLink> &Links() const;
 
+  /// \brief Whether the custom parser supports merge-include.
+  /// \return If set by the custom parser, return the set value, otherwise
+  /// nullopt.
+  public: std::optional<bool> ParserSupportsMergeInclude() const;
+
+  /// \brief Set whether the custom parser supports merge-include.
+  /// \brief[in] _val True if the custom parser supports merge-include.
+  public: void SetParserSupportsMergeInclude(bool _val);
+
   /// \brief Recursively invoke the reposture callback if a the callback is set.
   /// \param[in] _poseGraph Object used for resolving poses.
-  private: void InvokeRespostureFunction(
-      sdf::ScopedGraph<PoseRelativeToGraph> _graph) const;
+  /// \param[in] _name Override name of graph scope.
+  private: void InvokeRepostureFunction(
+               sdf::ScopedGraph<PoseRelativeToGraph> _graph,
+               const std::optional<std::string> &_name) const;
 
   friend World;
   friend Model;

@@ -247,7 +247,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 
   ElementPtr proxyModelFrame = _parent->AddElement("frame");
   const std::string proxyModelFrameName =
-      "_merged__" + model->Name() + "__model__";
+      computeMergedModelProxyFrameName(model->Name());
 
   proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
 

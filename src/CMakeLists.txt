@@ -179,7 +179,7 @@ if (BUILD_SDF_TEST)
   endif()
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc Utils.cc)
     sdf_build_tests(FrameSemantics_TEST.cc)
   endif()
 

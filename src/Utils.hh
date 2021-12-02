@@ -229,6 +229,11 @@ namespace sdf
       return &_opt.value();
     return nullptr;
   }
+
+  /// \brief Function to compute a merged model's proxy frame name
+  /// \param [in] _modelName The merged model's name
+  /// \return The computed frame name
+  std::string computeMergedModelProxyFrameName(const std::string &_modelName);
 }
 }
 #endif

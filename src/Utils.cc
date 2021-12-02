@@ -255,6 +255,11 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
           includeElem->Get<std::string>("placement_frame"));
     }
 
+    if (includeElem->HasAttribute("merge"))
+    {
+      include.SetIsMerge(includeElem->Get<bool>("merge"));
+    }
+
     // Iterate through custom model parsers in reverse per the SDFormat proposal
     // See http://sdformat.org/tutorials?tut=composition_proposal&cat=pose_semantics_docs&#1-5-minimal-libsdformat-interface-types-for-non-sdformat-models
     const auto &customParsers =  _config.CustomModelParsers();
@@ -277,6 +282,15 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
           allErrors.emplace_back(sdf::ErrorCode::ATTRIBUTE_INVALID,
               "Missing name of custom model with URI [" + include.Uri() + "]");
         }
+        else if (include.IsMerge().value_or(false) &&
+                 !model->ParserSupportsMergeInclude().value_or(false))
+        {
+          allErrors.emplace_back(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+                                 "Custom parser does not support "
+                                 "merge-include, but merge-include was "
+                                 "requested for model with uri [" +
+                                     include.Uri() + "]");
+        }
         else
         {
           _models.emplace_back(include, model);
@@ -289,6 +303,12 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
   }
 
   return allErrors;
+}
+
+/////////////////////////////////////////////////
+std::string computeMergedModelProxyFrameName(const std::string &_modelName)
+{
+  return "_merged__" + _modelName + "__model__";
 }
 }
 }

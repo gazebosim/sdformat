@@ -60,7 +60,8 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
 
   for (auto &[name, frame] : _doc["frames"].Map())
   {
-    const auto attachedTo = frame["attached_to"].ParamGet<std::string>();
+    const auto attachedTo =
+        frame["attached_to"].ParamGet<std::string>("__model__");
     const auto pose = frame["pose"].ParamGet<ignition::math::Pose3d>();
     model->AddFrame({name, attachedTo, pose});
   }
@@ -79,35 +80,47 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
   return model;
 }
 
-sdf::InterfaceModelPtr customTomlParser(
-    const sdf::NestedInclude &_include, sdf::Errors &_errors)
+class CustomTomlParser
 {
-  toml::Document doc = toml::parseToml(_include.ResolvedFileName(), _errors);
-  if (_errors.empty())
+  public: CustomTomlParser(bool _supportsMergeInclude = true)
+      : supportsMergeInclude(_supportsMergeInclude)
   {
-    const std::string modelName =
+  }
+
+  public: sdf::InterfaceModelPtr operator()(const sdf::NestedInclude &_include,
+                                            sdf::Errors &_errors)
+  {
+    toml::Document doc = toml::parseToml(_include.ResolvedFileName(), _errors);
+    if (_errors.empty())
+    {
+      const std::string modelName =
         _include.LocalModelName().value_or(doc["name"].ParamGet<std::string>());
 
-    if (_include.IsStatic().has_value())
-    {
-      // if //include/static is set, override the value in the inluded model
-      sdf::Param param("static", "bool", "false", false);
-      param.Set(*_include.IsStatic());
-      doc["static"] = {param};
-    }
-    if (_include.IncludeRawPose().has_value())
-    {
-      // if //include/static is set, override the value in the inluded model
-      sdf::Param poseParam("pose", "pose", "", false);
-      poseParam.Set(*_include.IncludeRawPose());
-      doc["pose"] = {poseParam};
-    }
+      if (_include.IsStatic().has_value())
+      {
+        // if //include/static is set, override the value in the inluded model
+        sdf::Param param("static", "bool", "false", false);
+        param.Set(*_include.IsStatic());
+        doc["static"] = {param};
+      }
+      if (_include.IncludeRawPose().has_value())
+      {
+        // if //include/static is set, override the value in the inluded model
+        sdf::Param poseParam("pose", "pose", "", false);
+        poseParam.Set(*_include.IncludeRawPose());
+        doc["pose"] = {poseParam};
+      }
 
-    return parseModel(doc, modelName);
+      auto model = parseModel(doc, modelName);
+      model->SetParserSupportsMergeInclude(this->supportsMergeInclude);
+      return model;
+    }
+    return nullptr;
   }
-  return nullptr;
-}
 
+  public:
+  bool supportsMergeInclude;
+};
 
 bool endsWith(const std::string &_str, const std::string &_suffix)
 {
@@ -131,9 +144,11 @@ class InterfaceAPI : public ::testing::Test
           return sdf::filesystem::append(modelDir, _file);
         });
   }
+  public: void CheckFrameSemantics(const sdf::World *world);
 
   public: std::string modelDir;
   public: sdf::ParserConfig config;
+  public: CustomTomlParser customTomlParser;
 };
 
 /////////////////////////////////////////////////
@@ -299,7 +314,7 @@ void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
     EXPECT_EQ(expLinks[link.Name()], link.PoseInModelFrame());
   }
   std::map <std::string, std::pair<std::string, Pose3d>> expFrames = {
-      {"frame_1", {"", Pose3d(0, 1, 0.0, 0, 0, 0)}},
+      {"frame_1", {"__model__", Pose3d(0, 1, 0.0, 0, 0, 0)}},
       {"frame_2", {"lower_link", Pose3d(0, 0, 1, 0, 0, 0)}},
   };
 
@@ -343,7 +358,7 @@ TEST_F(InterfaceAPI, TomlParserWorldInclude)
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "world_include_with_interface_api.sdf");
 
-  this->config.RegisterCustomModelParser(customTomlParser);
+  this->config.RegisterCustomModelParser(this->customTomlParser);
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile, this->config);
   EXPECT_TRUE(errors.empty()) << errors;
@@ -362,7 +377,7 @@ TEST_F(InterfaceAPI, TomlParserModelInclude)
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "model_include_with_interface_api.sdf");
 
-  this->config.RegisterCustomModelParser(customTomlParser);
+  this->config.RegisterCustomModelParser(this->customTomlParser);
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile, this->config);
   EXPECT_TRUE(errors.empty()) << errors;
@@ -375,21 +390,9 @@ TEST_F(InterfaceAPI, TomlParserModelInclude)
   TomlParserTest(interfaceModel);
 }
 
-/////////////////////////////////////////////////
-TEST_F(InterfaceAPI, FrameSemantics)
+void InterfaceAPI::CheckFrameSemantics(const sdf::World *world)
 {
   using ignition::math::Pose3d;
-  const std::string testFile = sdf::testing::TestFile(
-      "sdf", "include_with_interface_api_frame_semantics.sdf");
-
-  this->config.RegisterCustomModelParser(customTomlParser);
-  sdf::Root root;
-  sdf::Errors errors = root.Load(testFile, config);
-  EXPECT_TRUE(errors.empty()) << errors;
-
-  const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_NE(nullptr, world);
-  EXPECT_EQ(1u, world->InterfaceModelCount());
 
   auto resolvePoseNoErrors =
       [](const sdf::SemanticPose &_semPose, const std::string &_relativeTo = "")
@@ -544,6 +547,24 @@ TEST_F(InterfaceAPI, FrameSemantics)
 }
 
 /////////////////////////////////////////////////
+TEST_F(InterfaceAPI, FrameSemantics)
+{
+  const std::string testFile = sdf::testing::TestFile(
+      "sdf", "include_with_interface_api_frame_semantics.sdf");
+  this->config.RegisterCustomModelParser(this->customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ(1u, world->InterfaceModelCount());
+
+  SCOPED_TRACE("InterfaceAPI.FrameSemantics");
+  this->CheckFrameSemantics(world);
+}
+
+/////////////////////////////////////////////////
 TEST_F(InterfaceAPI, Reposturing)
 {
   using ignition::math::Pose3d;
@@ -641,6 +662,7 @@ TEST_F(InterfaceAPI, Reposturing)
 
     return testing::AssertionSuccess();
   };
+
   // There are two included models using a custom parser.
   // In each of the included models, there are two models and two links.
   ASSERT_EQ(8u, posesAfterReposture.size());
@@ -819,7 +841,7 @@ TEST_F(InterfaceAPI, NameCollision)
 {
   using ignition::math::Pose3d;
 
-  this->config.RegisterCustomModelParser(customTomlParser);
+  this->config.RegisterCustomModelParser(this->customTomlParser);
 
   // ---------------- Name collision in //world/include ----------------
   {
@@ -859,4 +881,221 @@ TEST_F(InterfaceAPI, NameCollision)
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
   }
+}
+
+class InterfaceAPIMergeInclude : public InterfaceAPI
+{
+};
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, MergeIncludeNotSupported)
+{
+  const std::string testSdf = R"(
+  <sdf version="1.9">
+    <model name="parent_model">
+      <include merge="true">
+        <uri>double_pendulum.toml</uri>
+      </include>
+    </model>
+  </sdf>)";
+  CustomTomlParser parserWithNoMergeInclude(false);
+  this->config.RegisterCustomModelParser(parserWithNoMergeInclude);
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, Parsing)
+{
+  const std::string testSdf = R"(
+  <sdf version="1.9">
+    <model name="parent_model">
+      <include merge="true">
+        <uri>double_pendulum.toml</uri>
+        <name>test_name</name>
+      </include>
+    </model>
+  </sdf>)";
+  this->config.RegisterCustomModelParser(this->customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  ASSERT_EQ(3u, model->InterfaceLinkCount());
+  EXPECT_NE(nullptr, model->InterfaceLinkByIndex(0));
+  EXPECT_NE(nullptr, model->InterfaceLinkByIndex(1));
+  EXPECT_NE(nullptr, model->InterfaceLinkByIndex(2));
+
+  ASSERT_EQ(2u, model->InterfaceJointCount());
+  EXPECT_NE(nullptr, model->InterfaceJointByIndex(0));
+  EXPECT_NE(nullptr, model->InterfaceJointByIndex(1));
+
+  ASSERT_EQ(2u, model->InterfaceFrameCount());
+  EXPECT_NE(nullptr, model->InterfaceFrameByIndex(0));
+  EXPECT_NE(nullptr, model->InterfaceFrameByIndex(1));
+
+  ASSERT_EQ(2u, model->InterfaceModelCount());
+  EXPECT_NE(nullptr, model->InterfaceModelByIndex(0));
+  EXPECT_NE(nullptr, model->InterfaceModelByIndex(1));
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, FrameSemantics)
+{
+  const std::string testFile = sdf::testing::TestFile(
+      "sdf", "merge_include_with_interface_api_frame_semantics.sdf");
+  this->config.RegisterCustomModelParser(this->customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  SCOPED_TRACE("InterfaceAPIMergeInclude.FrameSemantics");
+  this->CheckFrameSemantics(world);
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, Reposturing)
+{
+  using ignition::math::Pose3d;
+  const std::string testFile = sdf::testing::TestFile(
+      "sdf", "merge_include_with_interface_api_reposture.sdf");
+
+  std::unordered_map<std::string, Pose3d> posesAfterReposture;
+  std::unordered_map<std::string, std::vector<std::string>> elementsToReposture;
+
+  // Create a resposture callback function for a given absolute model name. The
+  // name is used to store poses in `posesAfterReposture` as well as to lookup
+  // interface models in `models`
+  auto makeRepostureFunc = [&](const std::string &_absoluteName)
+  {
+    auto repostureFunc =
+        [modelName = _absoluteName, &elementsToReposture, &posesAfterReposture](
+            const sdf::InterfaceModelPoseGraph &_graph)
+    {
+      auto modelIt = elementsToReposture.find(modelName);
+      ASSERT_TRUE(modelIt != elementsToReposture.end());
+
+      for (const auto &elem : modelIt->second)
+      {
+        ignition::math::Pose3d pose;
+        sdf::Errors errors =
+            _graph.ResolveNestedFramePose(pose, elem);
+        EXPECT_TRUE(errors.empty()) << errors;
+        posesAfterReposture[sdf::JoinName(modelName, elem)] = pose;
+      }
+    };
+    return repostureFunc;
+  };
+
+  auto repostureTestParser = [&](const sdf::NestedInclude &_include,
+                                 sdf::Errors &) -> sdf::InterfaceModelPtr
+  {
+    bool fileHasCorrectSuffix =
+        endsWith(_include.ResolvedFileName(), ".nonce_1");
+    EXPECT_TRUE(fileHasCorrectSuffix)
+        << "File: " << _include.ResolvedFileName();
+    if (!fileHasCorrectSuffix)
+      return nullptr;
+
+    // Use parent name because we know merge=true
+    const std::string absoluteModelName = _include.AbsoluteParentName();
+    // The following is equivalent to
+    // <model name="M0"> <!-- Merged into parent model
+    //   <pose relative_to="F1">0 0 0  π/2 0 0</pose> <!-- From //include -->
+    //   <!-- World pose of M0: (1 2 3   π/2 0 0)
+    //   <link name="base_link"/> <!-- World pose: (1 2 3   π/2 0 0) -->
+    //   <link name="top_link">
+    //     <pose>0 0 1   0 0 0</pose> <!-- World pose: (1 1 3   π/2 0 0) -->
+    //   </link>
+    //   <joint name="j1" type="fixed">
+    //     <pose>1 0 0   0 0 0</pose> <!-- World pose: (2 1 3   0 0 0) -->
+    //     <parent>base_link</parent>
+    //     <child>top_link</child>
+    //   </joint>
+    //   <frame name="frame1">
+    //     <pose>0 1 0   0 0 0</pose> <!-- World pose: (1 2 4   π/2 0 0) -->
+    //   </frame>
+    //   <frame name="frame2" attached_to="frame1">
+    //     <pose>0 0 1   0 0 0</pose> <!-- World pose: (1 1 4   π/2 0 0) -->
+    //   </frame>
+    //   <model name="nested_model">
+    //     <pose>3 0 0   0 0 0</pose> <!-- World pose: (4 2 3   π/2 0 0) -->
+    //     <link name="nested_link">
+    //       <pose>0 0 0   π/2 0 0</pose> <!-- World pose: (4 2 3   π 0 0) -->
+    //     </link>
+    //   </model>
+    // </model>
+    auto model = std::make_shared<sdf::InterfaceModel>(
+        *_include.LocalModelName(), makeRepostureFunc(absoluteModelName), false,
+        "base_link", Pose3d{});
+    model->AddLink({"base_link", {}});
+    model->AddLink({"top_link", Pose3d(0, 0, 1, 0, 0, 0)});
+    model->AddJoint({"j1", "top_link", Pose3d(1, 0, 0, 0, 0, 0)});
+    model->AddFrame({"frame1", "__model__", Pose3d(0, 1, 0, 0, 0, 0)});
+    model->AddFrame({"frame2", "frame1", Pose3d(0, 0, 1, 0, 0, 0)});
+    elementsToReposture[absoluteModelName].emplace_back("base_link");
+    elementsToReposture[absoluteModelName].emplace_back("top_link");
+    elementsToReposture[absoluteModelName].emplace_back("j1");
+    elementsToReposture[absoluteModelName].emplace_back("frame1");
+    elementsToReposture[absoluteModelName].emplace_back("frame2");
+
+    elementsToReposture[absoluteModelName].emplace_back("nested_model");
+    const std::string absoluteNestedModelName =
+        sdf::JoinName(absoluteModelName, "nested_model");
+    auto nestedModel = std::make_shared<sdf::InterfaceModel>("nested_model",
+        makeRepostureFunc(absoluteNestedModelName), false, "nested_link",
+        Pose3d(3, 0, 0, 0, 0, 0));
+
+    nestedModel->AddLink({"nested_link", Pose3d(0, 0, 0, IGN_PI_2, 0, 0)});
+    elementsToReposture[absoluteNestedModelName].emplace_back("nested_link");
+
+    model->AddNestedModel(nestedModel);
+    model->SetParserSupportsMergeInclude(true);
+    return model;
+  };
+
+  this->config.RegisterCustomModelParser(repostureTestParser);
+  this->config.SetFindCallback(
+      [](const auto &_fileName)
+      {
+        return _fileName;
+      });
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  auto checkPose =
+      [&posesAfterReposture](
+          const std::string &_name, const Pose3d &_expectedPose)
+  {
+    auto it = posesAfterReposture.find(_name);
+    if (it == posesAfterReposture.end())
+      return testing::AssertionFailure() << _name << " not found in map";
+
+    if (_expectedPose != it->second)
+    {
+      return testing::AssertionFailure()
+          << "Expected pose: " << _expectedPose << " actual: " << it->second;
+    }
+
+    return testing::AssertionSuccess();
+  };
+  // There is one included model using a custom parser containing two models and
+  // two links.
+  ASSERT_EQ(7u, posesAfterReposture.size());
+  EXPECT_TRUE(checkPose("parent_model::base_link", {1, 2, 3, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::top_link", {1, 1, 3, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::j1", {2, 1, 3, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::frame1", {1, 2, 4, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::frame2", {1, 1, 4, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(
+      checkPose("parent_model::nested_model", {4, 2, 3, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose(
+      "parent_model::nested_model::nested_link", {4, 2, 3, IGN_PI, 0, 0}));
 }

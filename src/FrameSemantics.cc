@@ -36,6 +36,7 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
+#include "Utils.hh"
 
 namespace sdf
 {
@@ -396,35 +397,38 @@ struct ForEachElement;
 /////////////////////////////////////////////////
 /// \brief Macro to partially specialize the ElementT template parameter of the
 /// ForEachElement struct
-#define SPECIALIZE_ELEMENT_FOR_EACH(ElemName)                                  \
-  template <typename ParentT>                                                  \
-  struct ForEachElement<ElemName, ParentT>                                     \
-  {                                                                            \
-    explicit ForEachElement(const ParentT *_parent) : parent(_parent)          \
-    {                                                                          \
-    }                                                                          \
-                                                                               \
-    template <typename FuncT>                                                  \
-    void operator()(FuncT _func)                                               \
-    {                                                                          \
-      auto [frameType, elementType] = getFrameTypeAndRepr<ElemName>(parent);   \
-      for (uint64_t i = 0; i < this->parent->ElemName##Count(); ++i)           \
-      {                                                                        \
-        _func(*this->parent->ElemName##ByIndex(i), i, frameType, elementType); \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    const ParentT *parent;                                                     \
+#define SPECIALIZE_ELEMENT_FOR_EACH(ElemName)                                \
+  template <typename ParentT>                                                \
+  struct ForEachElement<ElemName, ParentT>                                   \
+  {                                                                          \
+    explicit ForEachElement(const ParentT *_parent) : parent(_parent)        \
+    {                                                                        \
+    }                                                                        \
+                                                                             \
+    template <typename FuncT>                                                \
+    void operator()(FuncT _func)                                             \
+    {                                                                        \
+      auto [frameType, elementType] = getFrameTypeAndRepr<ElemName>(parent); \
+      {                                                                      \
+        for (uint64_t i = 0; i < this->parent->ElemName##Count(); ++i)       \
+        {                                                                    \
+          _func(*this->parent->ElemName##ByIndex(i), i, frameType,           \
+                elementType);                                                \
+        }                                                                    \
+      }                                                                      \
+    }                                                                        \
+                                                                             \
+    const ParentT *parent;                                                   \
   };
 
 /////////////////////////////////////////////////
 /// \brief Macro to partially specialize the ElementT template parameter of the
 /// ForEachElement struct where ParentT is an interface element type
 #define SPECIALIZE_INTERFACE_ELEMENT_FOR_EACH(ElemName)                      \
-  template <typename ParentT>                                                \
-  struct ForEachElement<Interface##ElemName, ParentT>                        \
+  template <>                                                                \
+  struct ForEachElement<Interface##ElemName, InterfaceModel>                 \
   {                                                                          \
-    explicit ForEachElement(const ParentT *_parent) : parent(_parent)        \
+    explicit ForEachElement(const InterfaceModel *_parent) : parent(_parent) \
     {                                                                        \
     }                                                                        \
     template <typename FuncT>                                                \
@@ -438,13 +442,16 @@ struct ForEachElement;
         ++counter;                                                           \
       }                                                                      \
     }                                                                        \
-    const ParentT *parent;                                                   \
+    const InterfaceModel *parent;                                            \
   };
 
 SPECIALIZE_ELEMENT_FOR_EACH(Model)
 SPECIALIZE_ELEMENT_FOR_EACH(Link)
+SPECIALIZE_ELEMENT_FOR_EACH(InterfaceLink)
 SPECIALIZE_ELEMENT_FOR_EACH(Frame)
+SPECIALIZE_ELEMENT_FOR_EACH(InterfaceFrame)
 SPECIALIZE_ELEMENT_FOR_EACH(Joint)
+SPECIALIZE_ELEMENT_FOR_EACH(InterfaceJoint)
 SPECIALIZE_ELEMENT_FOR_EACH(InterfaceModel)
 
 SPECIALIZE_INTERFACE_ELEMENT_FOR_EACH(Link)
@@ -960,8 +967,9 @@ Errors buildFrameAttachedToGraph(
         "Invalid model element in sdf::Model."});
     return errors;
   }
-  else if (_model->LinkCount() == 0 && _model->ModelCount() == 0 &&
-      _model->InterfaceModelCount() == 0 && !_model->Static())
+  else if (_model->LinkCount() == 0 && _model->InterfaceLinkCount() == 0 &&
+           _model->ModelCount() == 0 && _model->InterfaceModelCount() == 0 &&
+           !_model->Static())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -1003,12 +1011,15 @@ Errors buildFrameAttachedToGraph(
 
   // add link vertices
   addVerticesToGraph<Link>(outModel, _model, errors);
+  addVerticesToGraph<InterfaceLink>(outModel, _model, errors);
 
   // add joint vertices
   addVerticesToGraph<Joint>(outModel, _model, errors);
+  addVerticesToGraph<InterfaceJoint>(outModel, _model, errors);
 
   // add frame vertices
   addVerticesToGraph<Frame>(outModel, _model, errors);
+  addVerticesToGraph<InterfaceFrame>(outModel, _model, errors);
 
   // add nested model vertices
   addVerticesToGraph<Model>(outModel, _model, errors);
@@ -1016,11 +1027,45 @@ Errors buildFrameAttachedToGraph(
   // add nested interface model vertices
   addVerticesToGraph<InterfaceModel>(outModel, _model, errors);
 
+  // add vertices for the proxy frames of merged models
+  for (const auto &[nestedInclude, mergedModel] :
+       _model->MergedInterfaceModels())
+  {
+    const std::string proxyModelFrameName =
+        computeMergedModelProxyFrameName(mergedModel->Name());
+    outModel.AddVertex(proxyModelFrameName, sdf::FrameType::FRAME);
+  }
+
   // add edges from joint to child frames
   addEdgesToGraph<Joint>(outModel, _model, errors);
+  addEdgesToGraph<InterfaceJoint>(outModel, _model, errors);
 
   // add frame edges
   addEdgesToGraph<Frame>(outModel, _model, errors);
+  addEdgesToGraph<InterfaceFrame>(outModel, _model, errors);
+
+  // Add edges for merged interface models
+  for (const auto &item : _model->MergedInterfaceModels())
+  {
+    auto &nestedModel = item.second;
+    const std::string proxyModelFrameName =
+        computeMergedModelProxyFrameName(nestedModel->Name());
+    auto proxyFrameVertexId = outModel.VertexIdByName(proxyModelFrameName);
+
+    const auto canonicalLinkName = nestedModel->CanonicalLinkName();
+    const auto canonicalLinkId = outModel.VertexIdByName(canonicalLinkName);
+    if (ignition::math::graph::kNullId == canonicalLinkId)
+    {
+      errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+          "canonical_link with name[" + canonicalLinkName +
+          "] not found in model with name[" + nestedModel->Name() + "]."});
+    }
+    else
+    {
+      // Add an edge from the proxy model frame to the canonical link found.
+      outModel.AddEdge({proxyFrameVertexId, canonicalLinkId}, true);
+    }
+  }
 
   // identify canonical link, which may be nested
   const auto[canonicalLink, canonicalLinkName] =
@@ -1265,15 +1310,23 @@ Errors buildPoseRelativeToGraph(
   // Set the edge weight to 0 to indicate that this is an aliasing edge.
   edge.SetWeight(0);
 
-  // add link vertices and default edge if relative_to is empty
+  // add link vertices
   addVerticesToGraph<Link>(outModel, _model, errors);
+
+  // add merged interface link vertices
+  addVerticesToGraph<InterfaceLink>(outModel, _model, errors);
 
   // add joint vertices
   addVerticesToGraph<Joint>(outModel, _model, errors);
 
-  // add frame vertices and default edge if both
-  // relative_to and attached_to are empty
+  // add merged interface joint vertices
+  addVerticesToGraph<InterfaceJoint>(outModel, _model, errors);
+
+  // add frame vertices
   addVerticesToGraph<Frame>(outModel, _model, errors);
+
+  // add merged interface frame vertices
+  addVerticesToGraph<InterfaceFrame>(outModel, _model, errors);
 
   // add nested model vertices
   addVerticesToGraph<Model>(outModel, _model, errors);
@@ -1281,23 +1334,75 @@ Errors buildPoseRelativeToGraph(
   // add nested interface model vertices
   addVerticesToGraph<InterfaceModel>(outModel, _model, errors);
 
+  // add vertices for the proxy frames of merged models
+  for (const auto &[nestedInclude, mergedModel] :
+       _model->MergedInterfaceModels())
+  {
+    const std::string proxyModelFrameName =
+        computeMergedModelProxyFrameName(mergedModel->Name());
+    outModel.AddVertex(proxyModelFrameName, sdf::FrameType::FRAME);
+  }
+
   // now that all vertices have been added to the graph,
   // add the edges that reference other vertices
 
   // add link edges
   addEdgesToGraph<Link>(outModel, _model, errors);
 
+  // We need special handling for merged interface links, see below
+
   // add joint edges
   addEdgesToGraph<Joint>(outModel, _model, errors);
 
+  // add merged interface joint edges
+  addEdgesToGraph<InterfaceJoint>(outModel, _model, errors);
+
   // add frame edges
   addEdgesToGraph<Frame>(outModel, _model, errors);
+
+  // add merged interface frame edges
+  addEdgesToGraph<InterfaceFrame>(outModel, _model, errors);
 
   // add nested model edges
   addEdgesToGraph<Model>(outModel, _model, errors);
 
   // add nested interface model edges
   addEdgesToGraph<InterfaceModel>(outModel, _model, errors);
+
+  // Add edges for merged interface models and handle merged and links.
+  for (const auto &[nestedInclude, mergedModel] :
+       _model->MergedInterfaceModels())
+  {
+    const std::string proxyModelFrameName =
+        computeMergedModelProxyFrameName(mergedModel->Name());
+    auto proxyFrameVertexId = outModel.VertexIdByName(proxyModelFrameName);
+
+    auto nestedIncludeRelativeToId = outModel.ScopeVertexId();
+    const std::string nestedIncludeRelativeTo =
+      nestedInclude->IncludePoseRelativeTo().value_or("");
+    if (!nestedIncludeRelativeTo.empty())
+    {
+      nestedIncludeRelativeToId =
+        outModel.VertexIdByName(nestedIncludeRelativeTo);
+    }
+    if (ignition::math::graph::kNullId == nestedIncludeRelativeToId)
+    {
+      // ERROR
+    }
+
+    const auto nestedPoseRawPose = nestedInclude->IncludeRawPose().value_or(
+        mergedModel->ModelFramePoseInParentFrame());
+
+    _out.AddEdge({nestedIncludeRelativeToId, proxyFrameVertexId},
+                 nestedPoseRawPose);
+
+    // add merged interface link edges
+    for (const auto &link : mergedModel->Links())
+    {
+      auto linkId = outModel.VertexIdByName(link.Name());
+      outModel.AddEdge({proxyFrameVertexId, linkId}, link.PoseInModelFrame());
+    }
+  }
 
   if (_isRoot)
   {
