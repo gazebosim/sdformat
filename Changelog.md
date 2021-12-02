@@ -1,5 +1,13 @@
 ## libsdformat 12.X
 
+### libsdformat 12.3.0 (2021-12-01)
+
+1. Fix empty pose parsing fail for rotation_format='quat_xyzw' 
+    * [Pull request #729](https://github.com/ignitionrobotics/sdformat/pull/729)
+
+1. Added Add & Clear function to World, Model, and Link.
+    * [Pull request #765](https://github.com/ignitionrobotics/sdformat/pull/765)
+
 ### libsdformat 12.2.0 (2021-11-23)
 
 1. Convert Joint DOM to Element.
