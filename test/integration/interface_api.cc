@@ -1099,3 +1099,125 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
   EXPECT_TRUE(checkPose(
       "parent_model::nested_model::nested_link", {4, 2, 3, IGN_PI, 0, 0}));
 }
+
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, PlacementFrame)
+{
+  using ignition::math::Pose3d;
+  std::unordered_map<std::string, Pose3d> modelPosesAfterReposture;
+  auto repostureTestParser =
+      [&](const sdf::NestedInclude &_include, sdf::Errors &)
+  {
+    std::string modelName = sdf::JoinName(_include.AbsoluteParentName(),
+                                          *_include.LocalModelName());
+    auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
+                             const sdf::InterfaceModelPoseGraph &_graph)
+    {
+      ignition::math::Pose3d pose;
+      sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
+      EXPECT_TRUE(errors.empty()) << errors;
+      modelPosesAfterReposture[modelName] = pose;
+    };
+
+    auto model = std::make_shared<sdf::InterfaceModel>(
+        *_include.LocalModelName(), repostureFunc, false, "base_link",
+        _include.IncludeRawPose().value_or(Pose3d{}));
+    model->AddLink({"base_link", Pose3d(0, 1, 0, 0, 0, 0)});
+    model->AddFrame({"frame_1", "__model__", Pose3d(0, 0, 1, 0, 0, 0)});
+    model->SetParserSupportsMergeInclude(true);
+    return model;
+  };
+
+  this->config.RegisterCustomModelParser(repostureTestParser);
+  this->config.SetFindCallback(
+      [](const auto &_fileName)
+      {
+        return _fileName;
+      });
+
+  // ---------------- Placement frame in //sdf/model/include ----------------
+  {
+    const std::string testSdf = R"(
+  <sdf version="1.9">
+    <model name="parent_model">
+      <include merge="true">
+        <uri>non_existent_file.test</uri>
+        <name>test_model</name>
+        <pose>1 0 0 0 0 0</pose>
+        <placement_frame>frame_1</placement_frame>
+      </include>
+      <frame name="test_frame"/>
+    </model>
+  </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    const auto *parentModel = root.Model();
+    ASSERT_NE(nullptr, parentModel);
+    const auto *testFrame = parentModel->FrameByName("test_frame");
+    ASSERT_NE(nullptr, testFrame);
+    {
+      // Since there is no InterfaceModel::SemanticPose, we resolve the pose of
+      // test_frame relative to the test_model and take the inverse as the pose
+      // of the test_model relative to the world.
+      Pose3d pose;
+      sdf::Errors resolveErrors = testFrame->SemanticPose().Resolve(
+          pose, "_merged__test_model__model__");
+      EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+      EXPECT_EQ(Pose3d(1, 0, -1, 0, 0, 0), pose.Inverse());
+    }
+    {
+      Pose3d pose;
+      sdf::Errors resolveErrors =
+          testFrame->SemanticPose().Resolve(pose, "frame_1");
+      EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+      EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), pose.Inverse());
+    }
+  }
+
+  // ---------------- Placement frame in //world//model/include ----------------
+  {
+    const std::string testSdf = R"(
+  <sdf version="1.9">
+    <world name="default">
+      <model name="parent_model">
+        <include merge="true">
+          <uri>non_existent_file.test</uri>
+          <name>test_model</name>
+          <pose>1 0 0 0 0 0</pose>
+          <placement_frame>frame_1</placement_frame>
+        </include>
+        <frame name="test_frame"/>
+      </model>
+    </world>
+  </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+    EXPECT_TRUE(errors.empty()) << errors;
+    const auto *world = root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    const auto *parentModel = world->ModelByIndex(0);
+    ASSERT_NE(nullptr, parentModel);
+    const auto *testFrame = parentModel->FrameByName("test_frame");
+    ASSERT_NE(nullptr, testFrame);
+    {
+      // Since there is no InterfaceModel::SemanticPose, we resolve the pose of
+      // test_frame relative to the test_model and take the inverse as the pose
+      // of the test_model relative to the world.
+      Pose3d pose;
+      sdf::Errors resolveErrors = testFrame->SemanticPose().Resolve(
+          pose, "_merged__test_model__model__");
+      EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+      EXPECT_EQ(Pose3d(1, 0, -1, 0, 0, 0), pose.Inverse());
+    }
+    {
+      Pose3d pose;
+      sdf::Errors resolveErrors =
+          testFrame->SemanticPose().Resolve(pose, "frame_1");
+      EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+      EXPECT_EQ(Pose3d(1, 0, 0, 0, 0, 0), pose.Inverse());
+    }
+  }
+}

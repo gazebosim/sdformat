@@ -1393,8 +1393,12 @@ Errors buildPoseRelativeToGraph(
     const auto nestedPoseRawPose = nestedInclude->IncludeRawPose().value_or(
         mergedModel->ModelFramePoseInParentFrame());
 
-    _out.AddEdge({nestedIncludeRelativeToId, proxyFrameVertexId},
-                 nestedPoseRawPose);
+    // We have to add this edge now with an identity pose to be able to call
+    // resolveModelPoseWithPlacementFrame, which in turn calls
+    // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
+    // pose is calculated.
+    auto parentToProxyEdge =
+        _out.AddEdge({nestedIncludeRelativeToId, proxyFrameVertexId}, {});
 
     // add merged interface link edges
     for (const auto &link : mergedModel->Links())
@@ -1402,6 +1406,14 @@ Errors buildPoseRelativeToGraph(
       auto linkId = outModel.VertexIdByName(link.Name());
       outModel.AddEdge({proxyFrameVertexId, linkId}, link.PoseInModelFrame());
     }
+
+    ignition::math::Pose3d resolvedModelPose = nestedPoseRawPose;
+    sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
+        nestedPoseRawPose, nestedInclude->PlacementFrame().value_or(""),
+        outModel, resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+
+    outModel.UpdateEdge(parentToProxyEdge, resolvedModelPose);
   }
 
   if (_isRoot)
@@ -1418,6 +1430,8 @@ Errors buildPoseRelativeToGraph(
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     outModel.UpdateEdge(rootToModel, resolvedModelPose);
+
+    printGraph(outModel);
   }
   return errors;
 }
