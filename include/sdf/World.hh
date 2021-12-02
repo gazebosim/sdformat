@@ -180,6 +180,33 @@ namespace sdf
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
+    /// \brief Add a model to the world.
+    /// \param[in] _model Model to add.
+    /// \return True if successful, false if a model with the name already
+    /// exists.
+    public: bool AddModel(const Model &_model);
+
+    /// \brief Add an actor to the world.
+    /// \param[in] _actor Actor to add.
+    /// \return True if successful, false if an actor with the name already
+    /// exists.
+    public: bool AddActor(const Actor &_actor);
+
+    /// \brief Add a light to the world.
+    /// \param[in] _light Light to add.
+    /// \return True if successful, false if a lights with the name already
+    /// exists.
+    public: bool AddLight(const Light &_light);
+
+    /// \brief Remove all models.
+    public: void ClearModels();
+
+    /// \brief Remove all models.
+    public: void ClearActors();
+
+    /// \brief Remove all models.
+    public: void ClearLights();
+
     /// \brief Get the number of actors.
     /// \return Number of actors contained in this World object.
     public: uint64_t ActorCount() const;
