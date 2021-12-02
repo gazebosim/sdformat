@@ -20,6 +20,9 @@
 #include <iostream>
 #include <string>
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+#include <ignition/common/SubMesh.hh>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/sdf/path.h>
@@ -27,12 +30,14 @@
 #include <pxr/usd/usdGeom/capsule.h>
 #include <pxr/usd/usdGeom/cube.h>
 #include <pxr/usd/usdGeom/cylinder.h>
+#include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/sphere.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 
-#include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/Mesh.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Capsule.hh"
 
@@ -99,8 +104,84 @@ namespace usd
   bool ParseSdfMeshGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    // TODO(adlarkin) finish this
-    return false;
+    auto ignMesh = ignition::common::MeshManager::Instance()->Load(
+        _geometry.MeshShape()->Uri());
+
+    pxr::VtArray<pxr::GfVec3f> meshPoints;
+    pxr::VtArray<int> faceVertexIndices;
+    pxr::VtArray<int> faceVertexCounts;
+    for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
+    {
+      auto subMesh = ignMesh->SubMeshByIndex(i).lock();
+      if (!subMesh)
+      {
+        std::cerr << "Unable to get a shared pointer to submesh at index ["
+                  << i << "] of parent mesh [" << ignMesh->Name() << "]\n";
+        return false;
+      }
+
+      // copy the submesh's vertices to the usd mesh's "points" array
+      for (unsigned int v = 0; v < subMesh->VertexCount(); ++v)
+      {
+        const auto &vertex = subMesh->Vertex(v);
+        meshPoints.push_back(pxr::GfVec3f(vertex.X(), vertex.Y(), vertex.Z()));
+      }
+
+      // copy the submesh's indices to the usd mesh's "faceVertexIndices" array
+      for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
+        faceVertexIndices.push_back(subMesh->Index(j));
+
+      // set the usd mesh's "faceVertexCounts" array according to
+      // the submesh primitive type
+      // TODO(adlarkin) support all primitive types. The computations are more
+      // involved for LINESTRIPS, TRIFANS, and TRISTRIPS. I will need to spend
+      // some time deriving what the number of faces for these primitive types
+      // are, given the number of indices. The "faceVertexCounts" array will
+      // also not have the same value for every element in the array for these
+      // more complex primitive types (see the TODO note in the for loop below)
+      unsigned int verticesPerFace = 0;
+      unsigned int numFaces = 0;
+      switch (subMesh->SubMeshPrimitiveType())
+      {
+        case ignition::common::SubMesh::PrimitiveType::POINTS:
+          verticesPerFace = 1;
+          numFaces = subMesh->IndexCount();
+          break;
+        case ignition::common::SubMesh::PrimitiveType::LINES:
+          verticesPerFace = 2;
+          numFaces = subMesh->IndexCount() / 2;
+          break;
+        case ignition::common::SubMesh::PrimitiveType::TRIANGLES:
+          verticesPerFace = 3;
+          numFaces = subMesh->IndexCount() / 3;
+          break;
+        case ignition::common::SubMesh::PrimitiveType::LINESTRIPS:
+        case ignition::common::SubMesh::PrimitiveType::TRIFANS:
+        case ignition::common::SubMesh::PrimitiveType::TRISTRIPS:
+        default:
+          std::cerr << "Submesh " << subMesh->Name()
+                    << " has a primitive type that is not supported.\n";
+          return false;
+      }
+      // TODO(adlarkin) update this loop to allow for varying element
+      // values in the array (see TODO note above). Right now, the
+      // array only allows for all elements to have one value, which in
+      // this case is "verticesPerFace"
+      for (unsigned int n = 0; n < numFaces; ++n)
+        faceVertexCounts.push_back(verticesPerFace);
+    }
+    auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(_path));
+    usdMesh.CreatePointsAttr().Set(meshPoints);
+    usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
+    usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
+    const auto &meshMin = ignMesh->Min();
+    const auto &meshMax = ignMesh->Max();
+    pxr::VtArray<pxr::GfVec3f> extentBounds;
+    extentBounds.push_back(pxr::GfVec3f(meshMin.X(), meshMin.Y(), meshMin.Z()));
+    extentBounds.push_back(pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
+    usdMesh.CreateExtentAttr().Set(extentBounds);
+
+    return true;
   }
 
   bool ParseSdfCapsuleGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,

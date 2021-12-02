@@ -102,7 +102,7 @@ endmacro()
 
 ########################################
 # Find ignition cmake2
-# Only for using the testing macros and creating the codecheck target, not 
+# Only for using the testing macros and creating the codecheck target, not
 # really being use to configure the whole project
 find_package(ignition-cmake2 2.3 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
@@ -117,6 +117,18 @@ if (NOT ignition-math6_FOUND)
 else()
   set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGN_MATH_VER}-config.cmake - found")
+endif()
+
+########################################
+# Find ignition common
+# Set a variable for generating ProjectConfig.cmake
+find_package(ignition-common4 COMPONENTS graphics REQUIRED)
+if (NOT ignition-common4_FOUND)
+  message(STATUS "Looking for ignition-common4-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition math (libignition-common4-dev)")
+else()
+  set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+  message(STATUS "Looking for ignition-common${IGN_COMMON_VER}-config.cmake - found")
 endif()
 
 ########################################

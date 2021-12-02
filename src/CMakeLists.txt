@@ -240,6 +240,8 @@ target_compile_features(${sdf_target} PUBLIC cxx_std_17)
 target_link_libraries(${sdf_target}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
+    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
+    ignition-common${IGN_COMMON_VER}::graphics
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
     ${PXR_LIBRARIES}
   PRIVATE
