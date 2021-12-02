@@ -20,16 +20,22 @@
 #include <iostream>
 #include <string>
 
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/xform.h>
 
 #include "sdf/Model.hh"
 #include "sdf_usd_parser/link.hh"
+#include "sdf_usd_parser/utils.hh"
 
 namespace usd
 {
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
+    auto usdModelXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
+    usd::SetPose(_model.RawPose(), usdModelXform);
+
     // TODO(adlarkin) finish parsing model. It will look something like this
     // (this does not cover parsing all elements of a model):
     //  * ParseSdfLink

@@ -20,16 +20,22 @@
 #include <iostream>
 #include <string>
 
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/xform.h>
 
 #include "sdf/Visual.hh"
 #include "sdf_usd_parser/geometry.hh"
+#include "sdf_usd_parser/utils.hh"
 
 namespace usd
 {
   bool ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
+    auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
+    usd::SetPose(_visual.RawPose(), usdVisualXform);
+
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
     if (!ParseSdfGeometry(geometry, _stage, geometryPath))

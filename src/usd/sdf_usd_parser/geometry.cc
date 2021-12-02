@@ -20,17 +20,38 @@
 #include <iostream>
 #include <string>
 
+#include <pxr/base/gf/vec3f.h>
+#include <pxr/base/vt/array.h>
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/cube.h>
+#include <pxr/usd/usdGeom/xformCommonAPI.h>
 
 #include "sdf/Geometry.hh"
+#include "sdf/Box.hh"
 
 namespace usd
 {
   bool ParseSdfBoxGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    // TODO(adlarkin) finish this
-    return false;
+    // USD defines a cube (i.e., a box with all dimensions being equal),
+    // but not a box. So, we will take a 1x1x1 cube and scale it according
+    // to the SDF box's dimensions to achieve varying dimensions
+    auto usdCube = pxr::UsdGeomCube::Define(_stage, pxr::SdfPath(_path));
+    usdCube.CreateSizeAttr().Set(1.0);
+    pxr::GfVec3f endPoint(0.5);
+    pxr::VtArray<pxr::GfVec3f> extentBounds;
+    extentBounds.push_back(-1.0 * endPoint);
+    extentBounds.push_back(endPoint);
+    usdCube.CreateExtentAttr().Set(extentBounds);
+
+    pxr::UsdGeomXformCommonAPI cubeXformAPI(usdCube);
+    cubeXformAPI.SetScale(pxr::GfVec3f(
+          _geometry.BoxShape()->Size().X(),
+          _geometry.BoxShape()->Size().Y(),
+          _geometry.BoxShape()->Size().Z()));
+    return true;
   }
 
   bool ParseSdfCylinderGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,

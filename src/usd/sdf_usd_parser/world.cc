@@ -20,6 +20,8 @@
 #include <iostream>
 #include <string>
 
+#include <pxr/usd/sdf/path.h>
+#include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 
 #include "sdf/World.hh"
@@ -30,6 +32,8 @@ namespace usd
   bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
+    auto usdWorldPrim = _stage->DefinePrim(pxr::SdfPath(_path));
+
     // parse all of the world's models and convert them to USD
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {

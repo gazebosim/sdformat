@@ -19,16 +19,22 @@
 
 #include <string>
 
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/xform.h>
 
 #include "sdf/Link.hh"
 #include "sdf_usd_parser/visual.hh"
+#include "sdf_usd_parser/utils.hh"
 
 namespace usd
 {
   bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
+    auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
+    usd::SetPose(_link.RawPose(), usdLinkXform);
+
     // TODO(adlarkin) finish parsing link. It will look something like this
     // (this does not cover all elements of a link that need to be parsed):
     //  * ParseSdfVisual

@@ -60,7 +60,7 @@ int main(int argc, const char* argv[])
   if (!usd::ParseSdfWorld(*world, stage, worldPath))
   {
     std::cerr << "Error parsing world [" << world->Name() << "]\n";
-    return -5;
+    //return -5;
   }
 
   if (!stage->GetRootLayer()->Export(argv[2]))
