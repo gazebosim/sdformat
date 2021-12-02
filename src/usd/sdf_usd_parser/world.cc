@@ -23,6 +23,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/tokens.h>
 
 #include "sdf/World.hh"
 #include "sdf_usd_parser/model.hh"
@@ -33,6 +34,8 @@ namespace usd
       const std::string &_path)
   {
     auto usdWorldPrim = _stage->DefinePrim(pxr::SdfPath(_path));
+
+    _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
 
     // parse all of the world's models and convert them to USD
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
