@@ -26,11 +26,13 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/cube.h>
 #include <pxr/usd/usdGeom/cylinder.h>
+#include <pxr/usd/usdGeom/sphere.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Sphere.hh"
 
 namespace usd
 {
@@ -80,8 +82,16 @@ namespace usd
   bool ParseSdfSphereGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    // TODO(adlarkin) finish this
-    return false;
+    const auto &sdfSphere = _geometry.SphereShape();
+
+    auto usdSphere = pxr::UsdGeomSphere::Define(_stage, pxr::SdfPath(_path));
+    usdSphere.CreateRadiusAttr().Set(sdfSphere->Radius());
+    pxr::VtArray<pxr::GfVec3f> extentBounds;
+    extentBounds.push_back(pxr::GfVec3f(-1.0 * sdfSphere->Radius()));
+    extentBounds.push_back(pxr::GfVec3f(sdfSphere->Radius()));
+    usdSphere.CreateExtentAttr().Set(extentBounds);
+
+    return true;
   }
 
   bool ParseSdfMeshGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
