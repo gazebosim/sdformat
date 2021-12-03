@@ -30,87 +30,81 @@
 
 namespace usd
 {
-  void RemoveProperty(
-    pxr::UsdStageRefPtr &_stage,
-    pxr::SdfPath prim_path,
-    pxr::TfToken property_name)
-  {
-    for (auto &layer : _stage->GetLayerStack())
-    {
-      auto primSpec = layer->GetPrimAtPath(prim_path);
-      if (primSpec)
-      {
-        auto propertySpec =
-          layer->GetPropertyAtPath(
-            prim_path.AppendProperty(property_name));
-        if (propertySpec)
-        {
-          // primSpec.RemoveProperty(propertySpec);
-        }
-      }
-    }
-  }
-
+  /// \brief Fill Material shader attributes and properties
+  /// \param[in] _prim USD primitive
+  /// \param[in] _name Name of the field attribute or property
+  /// \param[in] _vType Type of the field
+  /// \param[in] _value Value of the field
+  /// \param[in] _customData Custom data to set the field
+  /// \param[in] _displayName Display name
+  /// \param[in] _displayGroup Display group
+  /// \param[in] _doc Documentation of the field
+  /// \param[in] _colorSpace if the material is a texture, we can specify the
+  /// colorSpace of the image
   template<typename T>
   void CreateMaterialInput(
-    pxr::UsdPrim &_prim, std::string name, pxr::SdfValueTypeName vType, T value,
-    std::map<pxr::TfToken, pxr::VtValue> &_customData, pxr::TfToken displayName = pxr::TfToken(""),
-    pxr::TfToken displayGroup = pxr::TfToken(""), std::string doc = "",
-    pxr::TfToken colorSpace = pxr::TfToken(""))
+    pxr::UsdPrim &_prim,
+    std::string _name,
+    pxr::SdfValueTypeName _vType,
+    T _value,
+    std::map<pxr::TfToken, pxr::VtValue> &_customData,
+    pxr::TfToken _displayName = pxr::TfToken(""),
+    pxr::TfToken _displayGroup = pxr::TfToken(""),
+    std::string _doc = "",
+    pxr::TfToken _colorSpace = pxr::TfToken(""))
   {
     auto shader = pxr::UsdShadeShader(_prim);
     if (shader)
     {
-      auto existingInput = shader.GetInput(pxr::TfToken(name));
+      auto existingInput = shader.GetInput(pxr::TfToken(_name));
       pxr::SdfValueTypeName vTypeName;
-      if (vType.IsScalar())
+      if (_vType.IsScalar())
       {
-        vTypeName = vType.GetScalarType();
-      } else if (vType.IsArray())
+        vTypeName = _vType.GetScalarType();
+      } else if (_vType.IsArray())
       {
-        vTypeName = vType.GetArrayType();
-      }
-      if (existingInput &&
-          existingInput.GetTypeName() != vTypeName)
-      {
-        // RemoveProperty(shader.GetPrim().GetPath(), existingInput.GetFullName());
+        vTypeName = _vType.GetArrayType();
       }
       auto surfaceInput = shader.CreateInput(
-        pxr::TfToken(name), vTypeName);
-      surfaceInput.Set(value);
+        pxr::TfToken(_name), vTypeName);
+      surfaceInput.Set(_value);
       auto attr = surfaceInput.GetAttr();
 
       for (auto& [key, customValue]: _customData)
       {
-        attr.SetCustomDataByKey(key, customValue);//pxr::TfToken("default"), pxr::VtValue(pxr::GfVec3f(0.2, 0.2, 0.2)));
+        attr.SetCustomDataByKey(key, customValue);
       }
-      if (!displayName.GetString().empty())
+      if (!_displayName.GetString().empty())
       {
-        attr.SetDisplayName(displayName);
+        attr.SetDisplayName(_displayName);
       }
-      if (!displayGroup.GetString().empty())
+      if (!_displayGroup.GetString().empty())
       {
-        attr.SetDisplayGroup(displayGroup);
+        attr.SetDisplayGroup(_displayGroup);
       }
-      if (!doc.empty())
+      if (!_doc.empty())
       {
-        attr.SetDocumentation(doc);
+        attr.SetDocumentation(_doc);
       }
-      if (!colorSpace.GetString().empty())
+      if (!_colorSpace.GetString().empty())
       {
-        attr.SetColorSpace(colorSpace);
+        attr.SetColorSpace(_colorSpace);
       }
     }
   }
 
-  pxr::UsdShadeMaterial ParseSdfMaterial(const sdf::Material *_material, pxr::UsdStageRefPtr &_stage)
+  pxr::UsdShadeMaterial ParseSdfMaterial(
+    const sdf::Material *_material, pxr::UsdStageRefPtr &_stage)
   {
     auto looksPrim = _stage->GetPrimAtPath(pxr::SdfPath("/Looks"));
     if (!looksPrim)
     {
-      looksPrim = _stage->DefinePrim(pxr::SdfPath("/Looks"), pxr::TfToken("Scope"));
+      looksPrim = _stage->DefinePrim(
+        pxr::SdfPath("/Looks"), pxr::TfToken("Scope"));
     }
 
+    // This variable will increase with every new material to avoid collision
+    // with the names of the materials
     static int i = 0;
 
     auto usdMaterialPrim = _stage->GetPrimAtPath(
@@ -154,7 +148,8 @@ namespace usd
     std::map<pxr::TfToken, pxr::VtValue> customDataDiffuse =
     {
       {pxr::TfToken("default"), pxr::VtValue(pxr::GfVec3f(0.2, 0.2, 0.2))},
-      {pxr::TfToken("range:max"), pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
+      {pxr::TfToken("range:max"),
+       pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
     ignition::math::Color diffuse = _material->Diffuse();
@@ -171,7 +166,8 @@ namespace usd
     std::map<pxr::TfToken, pxr::VtValue> customDataEmissive =
     {
       {pxr::TfToken("default"), pxr::VtValue(pxr::GfVec3f(1, 0.1, 0.1))},
-      {pxr::TfToken("range:max"), pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
+      {pxr::TfToken("range:max"),
+       pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
     ignition::math::Color emissive = _material->Emissive();
@@ -260,7 +256,6 @@ namespace usd
           "Higher roughness values lead to more blurry reflections");
         if (!pbrWorkflow->AlbedoMap().empty())
         {
-          std::cerr << "pbrWorkflow->AlbedoMap() "<< pbrWorkflow->AlbedoMap() << '\n';
           std::map<pxr::TfToken, pxr::VtValue> customDataDiffuseTexture =
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
@@ -327,7 +322,8 @@ namespace usd
             "",
             pxr::TfToken("raw"));
 
-          std::map<pxr::TfToken, pxr::VtValue> customDataRoughnessTextureInfluence =
+          std::map<pxr::TfToken, pxr::VtValue>
+            customDataRoughnessTextureInfluence =
           {
             {pxr::TfToken("default"), pxr::VtValue(0)},
             {pxr::TfToken("range:max"), pxr::VtValue(1)},
