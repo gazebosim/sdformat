@@ -34,6 +34,7 @@
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/sphere.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
+#include <pxr/usd/usdPhysics/collisionAPI.h>
 
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -265,7 +266,31 @@ namespace usd
         std::cerr << "Geometry type is either invalid or not supported\n";
     }
 
+    // Set the collision. In SDF, the collision is defined separately from
+    // the visual's geometry (in case a user wants to define a simpler collision,
+    // for example). In USD, the collision can be attached to the geometry so
+    // that the collision shape is the geometry shape.
+    // TODO(adlarkin) support the option of a different collision shape,
+    // especially for meshes - here's more information about how to do this:
+    // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html?highlight=collision#turning-meshes-into-shapes
+    if (typeParsed)
+    {
+      auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
+      if (!geomPrim)
+      {
+        std::cerr << "Internal error: unable to get prim at path ["
+                  << _path << "], but a geom prim should exist at this path\n";
+        return false;
+      }
+
+      if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
+      {
+        std::cerr << "Internal error: unable to apply a collision to the "
+                  << "prim at path [" << _path << "]\n";
+        return false;
+      }
+    }
+
     return typeParsed;
   }
 }
-
