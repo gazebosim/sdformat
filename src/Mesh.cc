@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
 
 using namespace sdf;
@@ -175,4 +176,33 @@ bool Mesh::CenterSubmesh() const
 void Mesh::SetCenterSubmesh(const bool _center)
 {
   this->dataPtr->centerSubmesh = _center;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Mesh::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("mesh_shape.sdf", elem);
+
+  // Uri
+  sdf::ElementPtr uriElem = elem->GetElement("uri");
+  uriElem->Set(this->Uri());
+
+  // Submesh
+  if (!this->dataPtr->submesh.empty())
+  {
+    sdf::ElementPtr subMeshElem = elem->GetElement("submesh");
+
+    sdf::ElementPtr subMeshNameElem = subMeshElem->GetElement("name");
+    subMeshNameElem->Set(this->dataPtr->submesh);
+
+    sdf::ElementPtr subMeshCenterElem = subMeshElem->GetElement("center");
+    subMeshCenterElem->Set(this->dataPtr->centerSubmesh);
+  }
+
+  // Scale
+  sdf::ElementPtr scaleElem = elem->GetElement("scale");
+  scaleElem->Set(this->Scale());
+
+  return elem;
 }
