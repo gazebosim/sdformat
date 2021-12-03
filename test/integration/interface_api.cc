@@ -393,7 +393,7 @@ TEST_F(InterfaceAPI, FrameSemantics)
   EXPECT_EQ(1u, world->InterfaceModelCount());
 
   auto resolvePoseNoErrors =
-      [](const sdf::SemanticPose &_semPose, const std::string _relativeTo = "")
+      [](const sdf::SemanticPose &_semPose, const std::string &_relativeTo = "")
   {
     Pose3d pose;
     sdf::Errors resolveErrors = _semPose.Resolve(pose, _relativeTo);

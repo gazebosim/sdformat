@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include "sdf/Noise.hh"
+#include "sdf/parser.hh"
 #include "sdf/Types.hh"
 
 using namespace sdf;
@@ -250,8 +251,11 @@ bool Noise::operator==(const Noise &_noise) const
 }
 
 /////////////////////////////////////////////////
-bool Noise::PopulateElement(sdf::ElementPtr _elem, bool _simpleNoise) const
+sdf::ElementPtr Noise::ToElement() const
 {
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("noise.sdf", elem);
+
   std::string noiseType;
   switch (this->Type())
   {
@@ -267,26 +271,18 @@ bool Noise::PopulateElement(sdf::ElementPtr _elem, bool _simpleNoise) const
     default:
       noiseType = "none";
   }
-  // camera and lidar <noise> does not have type attribute
-  if (!_simpleNoise)
-    _elem->GetAttribute("type")->Set<std::string>(noiseType);
-  else
-    _elem->GetElement("type")->Set<std::string>(noiseType);
-
-  _elem->GetElement("mean")->Set<double>(this->Mean());
-  _elem->GetElement("stddev")->Set<double>(this->StdDev());
+  elem->GetAttribute("type")->Set<std::string>(noiseType);
+  elem->GetElement("mean")->Set<double>(this->Mean());
+  elem->GetElement("stddev")->Set<double>(this->StdDev());
 
   // camera and lidar <noise> does not have the sdf params below
-  if (!_simpleNoise)
-  {
-    _elem->GetElement("bias_mean")->Set<double>(this->BiasMean());
-    _elem->GetElement("bias_stddev")->Set<double>(this->BiasStdDev());
-    _elem->GetElement("dynamic_bias_stddev")->Set<double>(
-      this->DynamicBiasStdDev());
-    _elem->GetElement("dynamic_bias_correlation_time")->Set<double>(
-        this->DynamicBiasCorrelationTime());
-    _elem->GetElement("precision")->Set<double>(this->Precision());
-  }
+  elem->GetElement("bias_mean")->Set<double>(this->BiasMean());
+  elem->GetElement("bias_stddev")->Set<double>(this->BiasStdDev());
+  elem->GetElement("dynamic_bias_stddev")->Set<double>(
+    this->DynamicBiasStdDev());
+  elem->GetElement("dynamic_bias_correlation_time")->Set<double>(
+      this->DynamicBiasCorrelationTime());
+  elem->GetElement("precision")->Set<double>(this->Precision());
 
-  return true;
+  return elem;
 }

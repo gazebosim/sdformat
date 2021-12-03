@@ -211,3 +211,48 @@ TEST(DOMCamera, Construction)
   // The Camera::Load function is tested more thoroughly in the
   // link_dom.cc integration test.
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCamera, ToElement)
+{
+  sdf::Camera cam;
+  cam.SetName("my_camera");
+  EXPECT_EQ("my_camera", cam.Name());
+  cam.SetHorizontalFov(1.45);
+  cam.SetImageWidth(123);
+  cam.SetImageHeight(125);
+  cam.SetPixelFormat(sdf::PixelFormatType::L_INT8);
+  cam.SetNearClip(0.2);
+  cam.SetFarClip(200.2);
+  cam.SetVisibilityMask(123u);
+  cam.SetPoseRelativeTo("/frame");
+  cam.SetSaveFrames(true);
+  cam.SetSaveFramesPath("/tmp");
+
+  sdf::ElementPtr camElem = cam.ToElement();
+  EXPECT_NE(nullptr, camElem);
+  EXPECT_EQ(nullptr, cam.Element());
+
+  // verify values after loading the element back
+  sdf::Camera cam2;
+  cam2.Load(camElem);
+
+  EXPECT_DOUBLE_EQ(1.45, cam2.HorizontalFov().Radian());
+  EXPECT_EQ(123u, cam2.ImageWidth());
+  EXPECT_EQ(125u, cam2.ImageHeight());
+  EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam2.PixelFormat());
+  EXPECT_DOUBLE_EQ(0.2, cam2.NearClip());
+  EXPECT_DOUBLE_EQ(200.2, cam2.FarClip());
+  EXPECT_EQ(123u, cam2.VisibilityMask());
+  EXPECT_EQ("/frame", cam2.PoseRelativeTo());
+  EXPECT_TRUE(cam2.SaveFrames());
+  EXPECT_EQ("/tmp", cam2.SaveFramesPath());
+
+  // make changes to DOM and verify ToElement produces updated values
+  cam2.SetNearClip(0.33);
+  sdf::ElementPtr cam2Elem = cam2.ToElement();
+  EXPECT_NE(nullptr, cam2Elem);
+  sdf::Camera cam3;
+  cam3.Load(cam2Elem);
+  EXPECT_DOUBLE_EQ(0.33, cam3.NearClip());
+}

@@ -497,3 +497,63 @@ void Link::SetEnableWind(const bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
 }
+
+//////////////////////////////////////////////////
+bool Link::AddCollision(const Collision &_collision)
+{
+  if (this->CollisionNameExists(_collision.Name()))
+    return false;
+  this->dataPtr->collisions.push_back(_collision);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Link::AddVisual(const Visual &_visual)
+{
+  if (this->VisualNameExists(_visual.Name()))
+    return false;
+  this->dataPtr->visuals.push_back(_visual);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Link::AddLight(const Light &_light)
+{
+  if (this->LightNameExists(_light.Name()))
+    return false;
+  this->dataPtr->lights.push_back(_light);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Link::AddSensor(const Sensor &_sensor)
+{
+  if (this->SensorNameExists(_sensor.Name()))
+    return false;
+  this->dataPtr->sensors.push_back(_sensor);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Link::ClearCollisions()
+{
+  this->dataPtr->collisions.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearVisuals()
+{
+  this->dataPtr->visuals.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearLights()
+{
+  this->dataPtr->lights.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearSensors()
+{
+  this->dataPtr->sensors.clear();
+}

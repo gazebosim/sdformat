@@ -23,6 +23,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/parser.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
@@ -159,7 +160,7 @@ Errors Joint::Load(ElementPtr _sdf)
   {
     errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
         "Joint with name[" + this->dataPtr->name +
-        "] must specify different link names for "
+        "] must specify different frame names for "
         "parent and child, while [" + this->dataPtr->childLinkName +
         "] was specified for both."});
   }
@@ -444,4 +445,86 @@ const Sensor *Joint::SensorByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Joint::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("joint.sdf", elem);
+
+  elem->GetAttribute("name")->Set<std::string>(this->Name());
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  std::string jointType = "invalid";
+  switch (this->Type())
+  {
+    case JointType::BALL:
+      jointType = "ball";
+      break;
+    case JointType::CONTINUOUS:
+      jointType = "continuous";
+      break;
+    case JointType::FIXED:
+      jointType = "fixed";
+      break;
+    case JointType::PRISMATIC:
+      jointType = "prismatic";
+      break;
+    case JointType::GEARBOX:
+      jointType = "gearbox";
+      break;
+    case JointType::REVOLUTE:
+      jointType = "revolute";
+      break;
+    case JointType::REVOLUTE2:
+      jointType = "revolute2";
+      break;
+    case JointType::SCREW:
+      jointType = "screw";
+      break;
+    case JointType::UNIVERSAL:
+      jointType = "universal";
+      break;
+    default:
+      break;
+  }
+
+  elem->GetAttribute("type")->Set<std::string>(jointType);
+  elem->GetElement("parent")->Set<std::string>(this->ParentLinkName());
+  elem->GetElement("child")->Set<std::string>(this->ChildLinkName());
+  for (unsigned int i = 0u; i < 2u; ++i)
+  {
+    const JointAxis *axis =  this->Axis(i);
+    if (!axis)
+      break;
+
+    std::string axisElemName = "axis";
+    if (i > 0u)
+      axisElemName += std::to_string(i+1);
+    sdf::ElementPtr axisElem = elem->GetElement(axisElemName);
+    axisElem->Copy(axis->ToElement(i));
+  }
+
+  for (uint64_t i = 0u; i < this->SensorCount(); ++i)
+  {
+    const Sensor *sensor = this->SensorByIndex(i);
+    if (!sensor)
+      continue;
+    sdf::ElementPtr sensorElem = elem->GetElement("sensor");
+    sensorElem->Copy(sensor->ToElement());
+  }
+
+  if (this->Type() == JointType::SCREW)
+    elem->GetElement("thread_pitch")->Set<double>(this->ThreadPitch());
+
+  // gearbox_ratio, gearbox_reference_box, and physcs elements are not yet
+  // supported.
+  return elem;
 }

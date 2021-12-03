@@ -17,6 +17,7 @@
 #include <array>
 #include <string>
 #include "sdf/Magnetometer.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -132,26 +133,25 @@ bool Magnetometer::operator==(const Magnetometer &_mag) const
 }
 
 /////////////////////////////////////////////////
-bool Magnetometer::PopulateElement(sdf::ElementPtr _elem) const
+sdf::ElementPtr Magnetometer::ToElement() const
 {
-  bool result = true;
-  sdf::ElementPtr magnetometerXElem = _elem->GetElement("x");
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("magnetometer.sdf", elem);
+
+  sdf::ElementPtr magnetometerXElem = elem->GetElement("x");
   sdf::ElementPtr magnetometerXNoiseElem =
     magnetometerXElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->noise[0].PopulateElement(magnetometerXNoiseElem);
+  magnetometerXNoiseElem->Copy(this->dataPtr->noise[0].ToElement());
 
-  sdf::ElementPtr magnetometerYElem = _elem->GetElement("y");
+  sdf::ElementPtr magnetometerYElem = elem->GetElement("y");
   sdf::ElementPtr magnetometerYNoiseElem =
     magnetometerYElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->noise[1].PopulateElement(magnetometerYNoiseElem);
+  magnetometerYNoiseElem->Copy(this->dataPtr->noise[1].ToElement());
 
-  sdf::ElementPtr magnetometerZElem = _elem->GetElement("z");
+  sdf::ElementPtr magnetometerZElem = elem->GetElement("z");
   sdf::ElementPtr magnetometerZNoiseElem =
     magnetometerZElem->GetElement("noise");
-  result = result &&
-    this->dataPtr->noise[2].PopulateElement(magnetometerZNoiseElem);
+  magnetometerZNoiseElem->Copy(this->dataPtr->noise[2].ToElement());
 
-  return result;
+  return elem;
 }
