@@ -325,11 +325,6 @@ namespace sdf
       return _out;
     }
 
-    /// \brief Private method to set the Element from a passed-in string.
-    /// \param[in] _value Value to set the parameter to.
-    /// \return True if the parameter was successfully set, false otherwise.
-    private: bool ValueFromString(const std::string &_value);
-
     /// \brief Private data
     private: std::unique_ptr<ParamPrivate> dataPtr;
   };
@@ -382,7 +377,7 @@ namespace sdf
     public: bool ignoreParentAttributes;
 
     /// \brief This parameter's value that was provided as a string
-    public: std::string strValue;
+    public: std::optional<std::string> strValue;
 
     /// \brief This parameter's default value that was provided as a string
     public: std::string defaultStrValue;
@@ -405,6 +400,18 @@ namespace sdf
                                     const std::string &_typeName,
                                     const std::string &_valueStr,
                                     ParamVariant &_valueToSet) const;
+
+    /// \brief Method used to get the string representation from a ParamVariant
+    /// \param[in] _config Print configuration for the string output
+    /// \param[in] _typeName The data type of the value
+    /// \param[in] _value The value
+    /// \param[in] _valueStr The string representation of the value
+    /// \return True if the string was successfully retrieved from the value,
+    /// false otherwise.
+    public: bool StringFromValueImpl(const PrintConfig &_config,
+                                     const std::string &_typeName,
+                                     const ParamVariant &_value,
+                                     std::string &_valueStr) const;
 
     /// \brief Data type to string mapping
     /// \return The type as a string, empty string if unknown type

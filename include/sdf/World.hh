@@ -182,19 +182,19 @@ namespace sdf
 
     /// \brief Add a model to the world.
     /// \param[in] _model Model to add.
-    /// \return True if successfull, false if a model with the name already
+    /// \return True if successful, false if a model with the name already
     /// exists.
     public: bool AddModel(const Model &_model);
 
     /// \brief Add an actor to the world.
     /// \param[in] _actor Actor to add.
-    /// \return True if successfull, false if an actor with the name already
+    /// \return True if successful, false if an actor with the name already
     /// exists.
     public: bool AddActor(const Actor &_actor);
 
     /// \brief Add a light to the world.
     /// \param[in] _light Light to add.
-    /// \return True if successfull, false if a lights with the name already
+    /// \return True if successful, false if a lights with the name already
     /// exists.
     public: bool AddLight(const Light &_light);
 

@@ -595,6 +595,15 @@ bool Link::AddLight(const Light &_light)
 }
 
 //////////////////////////////////////////////////
+bool Link::AddSensor(const Sensor &_sensor)
+{
+  if (this->SensorNameExists(_sensor.Name()))
+    return false;
+  this->dataPtr->sensors.push_back(_sensor);
+  return true;
+}
+
+//////////////////////////////////////////////////
 void Link::ClearCollisions()
 {
   this->dataPtr->collisions.clear();
@@ -610,4 +619,10 @@ void Link::ClearVisuals()
 void Link::ClearLights()
 {
   this->dataPtr->lights.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearSensors()
+{
+  this->dataPtr->sensors.clear();
 }

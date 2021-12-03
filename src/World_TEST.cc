@@ -18,6 +18,9 @@
 #include <gtest/gtest.h>
 #include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
+#include "sdf/Light.hh"
+#include "sdf/Actor.hh"
+#include "sdf/Model.hh"
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////
@@ -347,4 +350,73 @@ TEST(DOMWorld, SetScene)
   EXPECT_TRUE(world.Scene()->Grid());
   EXPECT_TRUE(world.Scene()->Shadows());
   EXPECT_TRUE(world.Scene()->OriginVisual());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, AddModel)
+{
+  sdf::World world;
+  EXPECT_EQ(0u, world.ModelCount());
+
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_TRUE(world.AddModel(model));
+  EXPECT_EQ(1u, world.ModelCount());
+  EXPECT_FALSE(world.AddModel(model));
+  EXPECT_EQ(1u, world.ModelCount());
+
+  world.ClearModels();
+  EXPECT_EQ(0u, world.ModelCount());
+
+  EXPECT_TRUE(world.AddModel(model));
+  EXPECT_EQ(1u, world.ModelCount());
+  const sdf::Model *modelFromWorld = world.ModelByIndex(0);
+  ASSERT_NE(nullptr, modelFromWorld);
+  EXPECT_EQ(modelFromWorld->Name(), model.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, AddActor)
+{
+  sdf::World world;
+  EXPECT_EQ(0u, world.ActorCount());
+
+  sdf::Actor actor;
+  actor.SetName("actor1");
+  EXPECT_TRUE(world.AddActor(actor));
+  EXPECT_EQ(1u, world.ActorCount());
+  EXPECT_FALSE(world.AddActor(actor));
+  EXPECT_EQ(1u, world.ActorCount());
+
+  world.ClearActors();
+  EXPECT_EQ(0u, world.ActorCount());
+
+  EXPECT_TRUE(world.AddActor(actor));
+  EXPECT_EQ(1u, world.ActorCount());
+  const sdf::Actor *actorFromWorld = world.ActorByIndex(0);
+  ASSERT_NE(nullptr, actorFromWorld);
+  EXPECT_EQ(actorFromWorld->Name(), actor.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, AddLight)
+{
+  sdf::World world;
+  EXPECT_EQ(0u, world.LightCount());
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(world.AddLight(light));
+  EXPECT_EQ(1u, world.LightCount());
+  EXPECT_FALSE(world.AddLight(light));
+  EXPECT_EQ(1u, world.LightCount());
+
+  world.ClearLights();
+  EXPECT_EQ(0u, world.LightCount());
+
+  EXPECT_TRUE(world.AddLight(light));
+  EXPECT_EQ(1u, world.LightCount());
+  const sdf::Light *lightFromWorld = world.LightByIndex(0);
+  ASSERT_NE(nullptr, lightFromWorld);
+  EXPECT_EQ(lightFromWorld->Name(), light.Name());
 }
