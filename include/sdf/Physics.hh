@@ -103,13 +103,13 @@ namespace sdf
     public: void SetRealTimeFactor(const double _factor);
 
     /// \brief Get the maximum number of contacts allowed between two
-    /// entities. This value can be over ridden by a max_contacts element in a
+    /// entities. This value can be overridden by a max_contacts element in a
     /// collision element.
     /// \return Maximum number of contacts.
     public: int MaxContacts() const;
 
     /// \brief Set the maximum number of contacts allowed between two
-    /// entities. This value can be over ridden by a max_contacts element in a
+    /// entities. This value can be overridden by a max_contacts element in a
     /// collision element.
     /// \param[in] _maxContacts Maximum number of contacts.
     public: void SetMaxContacts(int _maxContacts);
