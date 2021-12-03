@@ -25,6 +25,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Model.hh"
 #include "sdf_usd_parser/link.hh"
@@ -54,6 +55,24 @@ namespace usd
     else
     {
       usd::SetPose(_model.RawPose(), usdModelXform);
+    }
+
+    if (!_model.Static())
+    {
+      auto modelPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
+      if (!modelPrim)
+      {
+        std::cerr << "Internal error: unable to get prim at path ["
+                  << _path << "], but a model prim should exist at this path\n";
+        return false;
+      }
+
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(modelPrim))
+      {
+        std::cerr << "Internal error: unable to mark model at path ["
+                  << _path << "] as a rigid body\n";
+        return false;
+      }
     }
 
     // TODO(adlarkin) finish parsing model. It will look something like this
