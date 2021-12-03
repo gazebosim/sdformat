@@ -112,7 +112,6 @@ namespace usd
     pxr::UsdShadeMaterial material;
     if (!usdMaterialPrim)
     {
-      std::cerr << "create Material xform" << '\n';
       material = pxr::UsdShadeMaterial::Define(
         _stage,
         pxr::SdfPath(std::string("/Looks/Material_") + std::to_string(i)));

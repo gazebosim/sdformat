@@ -65,7 +65,6 @@ namespace usd
     auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
     if (materialUSD && geomPrim)
     {
-      std::cerr << "Binding material" << '\n';
       pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
     }
 
