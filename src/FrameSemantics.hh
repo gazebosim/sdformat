@@ -242,5 +242,6 @@ namespace sdf
       const ignition::math::graph::VertexId &_frameVertexId,
       const ignition::math::graph::VertexId &_resolveToVertexId);
   }
+
 }
 #endif

@@ -268,7 +268,7 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
   this->config.RegisterCustomModelParser(createCustomParser(3));
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
   // Check that custom parsers are called in reverse order of registration.
   ASSERT_EQ(3u, customParserCallOrder.size());
   // Parser 0 will not be visited because parser 1 will be successful.
