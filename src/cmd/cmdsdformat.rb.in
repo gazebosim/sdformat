@@ -43,7 +43,7 @@ COMMANDS = {  'sdf' =>
                        "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                    use only and the output may change without any promise of stability)\n" +
                        "  -p [ --print ] arg                Print converted arg.\n" +
-                       "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg.\n" +
+                       "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
                        COMMON_OPTIONS
             }
 
@@ -79,7 +79,7 @@ class Cmd
       opts.on('-p', '--print', 'Print converted arg') do
         options['print'] = 1
       end
-      opts.on('-i', '--preserve-includes', 'Preserve included tags when printing converted arg') do
+      opts.on('-i', '--preserve-includes', 'Preserve included tags when printing converted arg (does not preserve merge-includes)') do
         options['preserve_includes'] = 1
       end
       opts.on('-g arg', '--graph type', String,

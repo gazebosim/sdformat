@@ -145,3 +145,77 @@ R"(<model name='test2'>
   EXPECT_EQ(modelWithInclude->Element()->ToString("", config),
             modelWithIncludeStr);
 }
+
+/////////////////////////////////////////////////
+// Test verifies preserving includes does not work for merge-includes.
+// Need to update test if issue is addressed.
+// https://github.com/ignitionrobotics/sdformat/issues/769
+TEST(PrintConfig, PreserveIncludesWithMerge)
+{
+  const std::string modelPath = sdf::testing::TestFile("integration", "model");
+
+  sdf::setFindCallback(
+      [&](const std::string &_file)
+      {
+        return sdf::filesystem::append(modelPath, _file);
+      });
+
+  const std::string includeMergeStr =
+R"(<model name="m2">
+  <include merge="true">
+    <uri>box</uri>
+    <name>test_box2</name>
+  </include>
+</model>
+)";
+
+  const std::string sdfStr =
+    "<sdf version='1.9'>"
+    "  <world name='default'>"
+    + includeMergeStr +
+    "  </world>"
+    "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(sdfStr);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto *world = root.WorldByIndex(0);
+  ASSERT_NE(world, nullptr);
+  auto *includeMergedModel = world->ModelByIndex(0);
+  ASSERT_NE(includeMergedModel, nullptr);
+
+  const std::string expectedIncludeMerge =
+R"(<model name='m2'>
+  <frame name='_merged__test_box2__model__' attached_to='link'>
+    <pose relative_to='__model__'>0 0 0.5 0 -0 0</pose>
+  </frame>
+  <link name='link'>
+    <collision name='collision'>
+      <geometry>
+        <box>
+          <size>1 1 1</size>
+        </box>
+      </geometry>
+    </collision>
+    <visual name='visual'>
+      <geometry>
+        <box>
+          <size>1 1 1</size>
+        </box>
+      </geometry>
+    </visual>
+    <pose relative_to='_merged__test_box2__model__'>0 0 0 0 0 0</pose>
+  </link>
+</model>
+)";
+
+  sdf::PrintConfig config;
+  EXPECT_EQ(includeMergedModel->Element()->ToString("", config),
+            expectedIncludeMerge);
+  config.SetPreserveIncludes(true);
+  EXPECT_NE(includeMergedModel->Element()->ToString("", config),
+            includeMergeStr);
+  EXPECT_EQ(includeMergedModel->Element()->ToString("", config),
+            expectedIncludeMerge);
+}
