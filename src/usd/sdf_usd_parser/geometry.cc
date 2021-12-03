@@ -23,6 +23,7 @@
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/SubMesh.hh>
+#include <ignition/math/Vector3.hh>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/sdf/path.h>
@@ -33,13 +34,16 @@
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/sphere.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
+#include <pxr/usd/usdPhysics/collisionAPI.h>
 
 #include "sdf/Box.hh"
+#include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
+#include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
-#include "sdf/Capsule.hh"
+#include "sdf_usd_parser/utils.hh"
 
 namespace usd
 {
@@ -228,6 +232,36 @@ namespace usd
     return true;
   }
 
+  bool ParseSdfPlaneGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
+      const std::string &_path)
+  {
+    const auto &sdfPlane = _geometry.PlaneShape();
+
+    // Currently, there is no USDGeom plane class (it will be added in the future - see
+    // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html#plane-shapes),
+    // so the current workaround is to make a large, thin box.
+    // To keep things simple for now, a plane will only be parsed if its normal is
+    // the unit z vector (0, 0, 1).
+    // TODO(adlarkin) support plane normals other than the unit z vector (can update
+    // comment above once this functionality is added)
+    // TODO(adlarkin) update this to use the pxr::USDGeomPlane class when it's added
+    if (sdfPlane->Normal() != ignition::math::Vector3d::UnitZ)
+    {
+      std::cerr << "Only planes with a unit z vector normal are supported\n";
+      return false;
+    }
+
+    sdf::Box box;
+    box.SetSize(ignition::math::Vector3d(
+          sdfPlane->Size().X(), sdfPlane->Size().Y(), usd::kPlaneThickness));
+
+    sdf::Geometry planeBoxGeometry;
+    planeBoxGeometry.SetType(sdf::GeometryType::BOX);
+    planeBoxGeometry.SetBoxShape(box);
+
+    return ParseSdfBoxGeometry(planeBoxGeometry, _stage, _path);
+  }
+
   bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
@@ -250,10 +284,37 @@ namespace usd
         typeParsed = ParseSdfCapsuleGeometry(_geometry, _stage, _path);
         break;
       case sdf::GeometryType::PLANE:
+        typeParsed = ParseSdfPlaneGeometry(_geometry, _stage, _path);
+        break;
       case sdf::GeometryType::ELLIPSOID:
       case sdf::GeometryType::HEIGHTMAP:
       default:
         std::cerr << "Geometry type is either invalid or not supported\n";
+    }
+
+    // Set the collision. In SDF, the collision is defined separately from
+    // the visual's geometry (in case a user wants to define a simpler collision,
+    // for example). In USD, the collision can be attached to the geometry so
+    // that the collision shape is the geometry shape.
+    // TODO(adlarkin) support the option of a different collision shape,
+    // especially for meshes - here's more information about how to do this:
+    // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html?highlight=collision#turning-meshes-into-shapes
+    if (typeParsed)
+    {
+      auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
+      if (!geomPrim)
+      {
+        std::cerr << "Internal error: unable to get prim at path ["
+                  << _path << "], but a geom prim should exist at this path\n";
+        return false;
+      }
+
+      if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
+      {
+        std::cerr << "Internal error: unable to apply a collision to the "
+                  << "prim at path [" << _path << "]\n";
+        return false;
+      }
     }
 
     return typeParsed;

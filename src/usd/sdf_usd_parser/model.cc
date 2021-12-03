@@ -20,9 +20,12 @@
 #include <iostream>
 #include <string>
 
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Model.hh"
 #include "sdf_usd_parser/link.hh"
@@ -34,7 +37,43 @@ namespace usd
       const std::string &_path)
   {
     auto usdModelXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
-    usd::SetPose(_model.RawPose(), usdModelXform);
+    // since USD does not have a plane yet, planes are being represented as a
+    // wide, thin box. The plane/box pose needs to be offset according to the
+    // thickness to ensure that the top of the plane is at the correct height.
+    // This pose offset workaround will no longer be needed when a pxr::USDGeomPlane
+    // class is created (see the notes in the usd::ParseSdfPlaneGeometry method in
+    // the geometry.cc file for more information)
+    if (usd::IsPlane(_model))
+    {
+      ignition::math::Vector3d planePosition(
+          _model.RawPose().X(),
+          _model.RawPose().Y(),
+          _model.RawPose().Z() - (0.5 * usd::kPlaneThickness));
+      usd::SetPose(ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
+          usdModelXform);
+    }
+    else
+    {
+      usd::SetPose(_model.RawPose(), usdModelXform);
+    }
+
+    if (!_model.Static())
+    {
+      auto modelPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
+      if (!modelPrim)
+      {
+        std::cerr << "Internal error: unable to get prim at path ["
+                  << _path << "], but a model prim should exist at this path\n";
+        return false;
+      }
+
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(modelPrim))
+      {
+        std::cerr << "Internal error: unable to mark model at path ["
+                  << _path << "] as a rigid body\n";
+        return false;
+      }
+    }
 
     // TODO(adlarkin) finish parsing model. It will look something like this
     // (this does not cover parsing all elements of a model):
