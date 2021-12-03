@@ -31,11 +31,8 @@ namespace usd
   /// \brief Parse an SDF material into a USD stage.
   /// \param[in] _material The SDF material to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _geometry.
-  /// \param[in] _path The USD path of the parsed geometry in _stage, which must be
-  /// a valid USD path.
-  /// \return True if _geometry was succesfully parsed into _stage with a path of
-  /// _path. False otherwise.
+  /// of _material.
+  /// \return The parsed usd material (invalid material if parsing failed)
   pxr::UsdShadeMaterial SDFORMAT_VISIBLE
   ParseSdfMaterial(const sdf::Material *_material,
       pxr::UsdStageRefPtr &_stage);

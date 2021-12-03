@@ -15,25 +15,22 @@
  *
 */
 
-#include <map>
-
 #include "sdf_usd_parser/material.hh"
 
-#include "pxr/usd/usdShade/connectableAPI.h"
-#include <pxr/usd/usdShade/materialBindingAPI.h>
-#include <pxr/usd/sdf/types.h>
-
-#include <pxr/usd/usd/prim.h>
-#include <pxr/base/tf/stringUtils.h>
+#include <map>
 
 #include <ignition/math/Color.hh>
+#include <pxr/base/tf/stringUtils.h>
+#include <pxr/usd/sdf/types.h>
+#include <pxr/usd/usd/prim.h>
+#include <pxr/usd/usdShade/connectableAPI.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 
 #include "sdf/Pbr.hh"
 
 namespace usd
 {
-
-  void remove_property(
+  void RemoveProperty(
     pxr::UsdStageRefPtr &_stage,
     pxr::SdfPath prim_path,
     pxr::TfToken property_name)
@@ -55,7 +52,7 @@ namespace usd
   }
 
   template<typename T>
-  void create_material_input(
+  void CreateMaterialInput(
     pxr::UsdPrim &_prim, std::string name, pxr::SdfValueTypeName vType, T value,
     std::map<pxr::TfToken, pxr::VtValue> &_customData, pxr::TfToken displayName = pxr::TfToken(""),
     pxr::TfToken displayGroup = pxr::TfToken(""), std::string doc = "",
@@ -76,7 +73,7 @@ namespace usd
       if (existingInput &&
           existingInput.GetTypeName() != vTypeName)
       {
-        // remove_property(shader.GetPrim().GetPath(), existingInput.GetFullName());
+        // RemoveProperty(shader.GetPrim().GetPath(), existingInput.GetFullName());
       }
       auto surfaceInput = shader.CreateInput(
         pxr::TfToken(name), vTypeName);
@@ -161,7 +158,7 @@ namespace usd
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
     ignition::math::Color diffuse = _material->Diffuse();
-    create_material_input<pxr::GfVec3f>(
+    CreateMaterialInput<pxr::GfVec3f>(
       shaderPrim,
       "diffuse_color_constant",
       pxr::SdfValueTypeNames->Color3f,
@@ -178,7 +175,7 @@ namespace usd
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
     ignition::math::Color emissive = _material->Emissive();
-    create_material_input<pxr::GfVec3f>(
+    CreateMaterialInput<pxr::GfVec3f>(
       shaderPrim,
       "emissive_color",
       pxr::SdfValueTypeNames->Color3f,
@@ -193,7 +190,7 @@ namespace usd
       {pxr::TfToken("default"), pxr::VtValue(0)}
     };
 
-    create_material_input<bool>(
+    CreateMaterialInput<bool>(
       shaderPrim,
       "enable_emission",
       pxr::SdfValueTypeNames->Bool,
@@ -209,7 +206,7 @@ namespace usd
       {pxr::TfToken("range:max"), pxr::VtValue(100000)},
       {pxr::TfToken("range:min"), pxr::VtValue(0)}
     };
-    create_material_input<float>(
+    CreateMaterialInput<float>(
       shaderPrim,
       "emissive_intensity",
       pxr::SdfValueTypeNames->Float,
@@ -237,7 +234,7 @@ namespace usd
           {pxr::TfToken("range:max"), pxr::VtValue(1)},
           {pxr::TfToken("range:min"), pxr::VtValue(0)}
         };
-        create_material_input<float>(
+        CreateMaterialInput<float>(
           shaderPrim,
           "metallic_constant",
           pxr::SdfValueTypeNames->Float,
@@ -252,7 +249,7 @@ namespace usd
           {pxr::TfToken("range:max"), pxr::VtValue(1)},
           {pxr::TfToken("range:min"), pxr::VtValue(0)}
         };
-        create_material_input<float>(
+        CreateMaterialInput<float>(
           shaderPrim,
           "reflection_roughness_constant",
           pxr::SdfValueTypeNames->Float,
@@ -268,7 +265,7 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
-          create_material_input<pxr::SdfAssetPath>(
+          CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "diffuse_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -285,7 +282,7 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
-          create_material_input<pxr::SdfAssetPath>(
+          CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "metallic_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -302,7 +299,7 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
-          create_material_input<pxr::SdfAssetPath>(
+          CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "normalmap_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -319,7 +316,7 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
-          create_material_input<pxr::SdfAssetPath>(
+          CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "reflectionroughness_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -337,7 +334,7 @@ namespace usd
             {pxr::TfToken("range:min"), pxr::VtValue(0)}
           };
 
-          create_material_input<bool>(
+          CreateMaterialInput<bool>(
             shaderPrim,
             "reflection_roughness_texture_influence",
             pxr::SdfValueTypeNames->Bool,

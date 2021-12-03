@@ -23,6 +23,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 
 #include "sdf/Visual.hh"
@@ -38,7 +39,7 @@ namespace usd
     auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
     usd::SetPose(_visual.RawPose(), usdVisualXform);
 
-    const sdf::Material * material = _visual.Material();
+    const auto material = _visual.Material();
     pxr::UsdShadeMaterial materialUSD;
 
     if (material)
@@ -46,8 +47,9 @@ namespace usd
       materialUSD = ParseSdfMaterial(material, _stage);
       if (!materialUSD)
       {
-        std::cerr << "Error parsing geometry attached to visual ["
-                  << "]\n";
+        std::cerr << "Error parsing material attached to visual ["
+                  << _visual.Name() << "]\n";
+        return false;
       }
     }
 
@@ -57,14 +59,14 @@ namespace usd
     {
       std::cerr << "Error parsing geometry attached to visual ["
                 << _visual.Name() << "]\n";
-      // return false;
+      return false;
     }
 
-    auto geom = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
-    if (materialUSD && geom)
+    auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
+    if (materialUSD && geomPrim)
     {
       std::cerr << "Binding material" << '\n';
-      pxr::UsdShadeMaterialBindingAPI(geom).Bind(materialUSD);
+      pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
     }
 
     return true;

@@ -24,6 +24,7 @@
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/SubMesh.hh>
 #include <ignition/math/Vector3.hh>
+#include <pxr/base/gf/vec2f.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/sdf/path.h>
@@ -137,15 +138,14 @@ namespace usd
       for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
         faceVertexIndices.push_back(subMesh->Index(j));
 
-      // copy the submesh's texture coordinate to the usd mesh's
-      // "faceVertexIndices" array
+      // copy the submesh's texture coordinates
       for (unsigned int j = 0; j < subMesh->TexCoordCount(); ++j)
       {
         const auto &uv = subMesh->TexCoord(j);
-        uvs.push_back(pxr::GfVec2f(uv[0], 1- uv[1]));
+        uvs.push_back(pxr::GfVec2f(uv[0], 1 - uv[1]));
       }
 
-      // copy the submesh's normals to the usd mesh's "faceVertexIndices" array
+      // copy the submesh's normals
       for (unsigned int j = 0; j < subMesh->NormalCount(); ++j)
       {
         const auto &normal = subMesh->Normal(j);
@@ -199,7 +199,6 @@ namespace usd
     auto coordinates = usdMesh.CreatePrimvar(
         pxr::TfToken("st"), pxr::SdfValueTypeNames->Float2Array,
         pxr::UsdGeomTokens->vertex);
-
     coordinates.Set(uvs);
 
     usdMesh.CreateNormalsAttr().Set(normals);
