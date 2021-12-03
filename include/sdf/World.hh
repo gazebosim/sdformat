@@ -180,6 +180,33 @@ namespace sdf
     /// \return True if there exists a model with the given name.
     public: bool ModelNameExists(const std::string &_name) const;
 
+    /// \brief Add a model to the world.
+    /// \param[in] _model Model to add.
+    /// \return True if successfull, false if a model with the name already
+    /// exists.
+    public: bool AddModel(const Model &_model);
+
+    /// \brief Add an actor to the world.
+    /// \param[in] _actor Actor to add.
+    /// \return True if successfull, false if an actor with the name already
+    /// exists.
+    public: bool AddActor(const Actor &_actor);
+
+    /// \brief Add a light to the world.
+    /// \param[in] _light Light to add.
+    /// \return True if successfull, false if a lights with the name already
+    /// exists.
+    public: bool AddLight(const Light &_light);
+
+    /// \brief Remove all models.
+    public: void ClearModels();
+
+    /// \brief Remove all models.
+    public: void ClearActors();
+
+    /// \brief Remove all models.
+    public: void ClearLights();
+
     /// \brief Get the number of actors.
     /// \return Number of actors contained in this World object.
     public: uint64_t ActorCount() const;
@@ -324,6 +351,11 @@ namespace sdf
     /// \sa uint64_t InterfaceModelCount() const
     public: const NestedInclude* InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// world.
+    /// \return SDF element pointer with updated world values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be

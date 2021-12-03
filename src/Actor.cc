@@ -19,6 +19,7 @@
 #include <ignition/math/Pose3.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Error.hh"
+#include "sdf/parser.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -680,4 +681,74 @@ const std::string &Actor::FilePath() const
 void Actor::SetFilePath(const std::string &_filePath)
 {
   this->dataPtr->filePath = _filePath;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Actor::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("actor.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  // Skin
+  if (this->dataPtr->skinFilename != "__default__")
+  {
+    sdf::ElementPtr skinElem = elem->GetElement("skin");
+    skinElem->GetElement("filename")->Set(this->dataPtr->skinFilename);
+    skinElem->GetElement("scale")->Set(this->dataPtr->skinScale);
+  }
+
+  // Script
+  sdf::ElementPtr scriptElem = elem->GetElement("script");
+  scriptElem->GetElement("loop")->Set(this->ScriptLoop());
+  scriptElem->GetElement("delay_start")->Set(this->ScriptDelayStart());
+  scriptElem->GetElement("auto_start")->Set(this->ScriptAutoStart());
+  // Trajectory for the script
+  for (const sdf::Trajectory &traj : this->dataPtr->trajectories)
+  {
+    sdf::ElementPtr trajElem = scriptElem->AddElement("trajectory");
+    trajElem->GetAttribute("id")->Set(traj.Id());
+    trajElem->GetAttribute("type")->Set(traj.Type());
+    trajElem->GetAttribute("tension")->Set(traj.Tension());
+    // Waypoints in the trajectory.
+    for (uint64_t  i = 0; i < traj.WaypointCount(); ++i)
+    {
+      const Waypoint *wp = traj.WaypointByIndex(i);
+      if (wp)
+      {
+        sdf::ElementPtr wayElem = trajElem->AddElement("waypoint");
+        wayElem->GetElement("time")->Set(wp->Time());
+        wayElem->GetElement("pose")->Set(wp->Pose());
+      }
+    }
+  }
+
+  // Animations
+  for (const sdf::Animation &anim : this->dataPtr->animations)
+  {
+    sdf::ElementPtr animElem = elem->AddElement("animation");
+    animElem->GetAttribute("name")->Set(anim.Name());
+    animElem->GetElement("filename")->Set(anim.Filename());
+    animElem->GetElement("scale")->Set(anim.Scale());
+    animElem->GetElement("interpolate_x")->Set(anim.InterpolateX());
+  }
+
+  // Joints
+  for (const sdf::Joint &joint : this->dataPtr->joints)
+    elem->InsertElement(joint.ToElement());
+
+  // Link
+  for (const sdf::Link &link : this->dataPtr->links)
+    elem->InsertElement(link.ToElement());
+
+  return elem;
 }

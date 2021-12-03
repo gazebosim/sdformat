@@ -160,6 +160,11 @@ namespace sdf
     /// \param[in] _laserRetro The lidar reflective intensity.
     public: void SetLaserRetro(double _laserRetro);
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// visual.
+    /// \return SDF element pointer with updated visual values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.

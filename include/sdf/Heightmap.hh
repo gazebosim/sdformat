@@ -214,6 +214,11 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// heightmap.
+    /// \return SDF element pointer with updated heightmap values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

@@ -190,6 +190,11 @@ namespace sdf
     /// \paramp[in] _filePath Full path to the file on disk.
     public: void SetFilePath(const std::string &_filePath);
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// material.
+    /// \return SDF element pointer with updated material values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

@@ -25,6 +25,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
+#include "sdf/parser.hh"
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
@@ -496,4 +497,117 @@ bool Link::EnableWind() const
 void Link::SetEnableWind(const bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Link::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("link.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  // inertial
+  sdf::ElementPtr inertialElem = elem->GetElement("inertial");
+  inertialElem->GetElement("pose")->Set(
+      this->dataPtr->inertial.Pose());
+  const ignition::math::MassMatrix3d &massMatrix =
+    this->dataPtr->inertial.MassMatrix();
+  inertialElem->GetElement("mass")->Set<double>(massMatrix.Mass());
+  sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+  inertiaElem->GetElement("ixx")->Set(massMatrix.Ixx());
+  inertiaElem->GetElement("ixy")->Set(massMatrix.Ixy());
+  inertiaElem->GetElement("ixz")->Set(massMatrix.Ixz());
+  inertiaElem->GetElement("iyy")->Set(massMatrix.Iyy());
+  inertiaElem->GetElement("iyz")->Set(massMatrix.Iyz());
+  inertiaElem->GetElement("izz")->Set(massMatrix.Izz());
+
+  // wind mode
+  elem->GetElement("enable_wind")->Set(this->EnableWind());
+
+  // Collisions
+  for (const sdf::Collision &collision : this->dataPtr->collisions)
+  {
+    elem->InsertElement(collision.ToElement());
+  }
+
+  // Light
+  for (const sdf::Light &light : this->dataPtr->lights)
+  {
+    elem->InsertElement(light.ToElement());
+  }
+
+  // Particle emitters
+  for (const sdf::ParticleEmitter &emitter : this->dataPtr->emitters)
+  {
+    elem->InsertElement(emitter.ToElement());
+  }
+
+  // Sensors
+  for (const sdf::Sensor &sensor : this->dataPtr->sensors)
+  {
+    elem->InsertElement(sensor.ToElement());
+  }
+
+  // Visuals
+  for (const sdf::Visual &visual : this->dataPtr->visuals)
+  {
+    elem->InsertElement(visual.ToElement());
+  }
+
+  return elem;
+}
+
+//////////////////////////////////////////////////
+bool Link::AddCollision(const Collision &_collision)
+{
+  if (this->CollisionNameExists(_collision.Name()))
+    return false;
+  this->dataPtr->collisions.push_back(_collision);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Link::AddVisual(const Visual &_visual)
+{
+  if (this->VisualNameExists(_visual.Name()))
+    return false;
+  this->dataPtr->visuals.push_back(_visual);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Link::AddLight(const Light &_light)
+{
+  if (this->LightNameExists(_light.Name()))
+    return false;
+  this->dataPtr->lights.push_back(_light);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Link::ClearCollisions()
+{
+  this->dataPtr->collisions.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearVisuals()
+{
+  this->dataPtr->visuals.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearLights()
+{
+  this->dataPtr->lights.clear();
 }

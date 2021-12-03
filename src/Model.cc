@@ -790,3 +790,96 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
     return &this->dataPtr->interfaceModels[_index].first;
   return nullptr;
 }
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Model::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("model.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+
+  if (!this->dataPtr->canonicalLink.empty())
+  {
+    elem->GetAttribute("canonical_link")->Set(this->dataPtr->canonicalLink);
+  }
+
+  if (!this->dataPtr->placementFrameName.empty())
+  {
+    elem->GetAttribute("placement_frame")->Set(
+        this->dataPtr->placementFrameName);
+  }
+
+  elem->GetElement("static")->Set(this->Static());
+  elem->GetElement("self_collide")->Set(this->SelfCollide());
+  elem->GetElement("allow_auto_disable")->Set(this->AllowAutoDisable());
+  elem->GetElement("enable_wind")->Set(this->EnableWind());
+
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  // Links
+  for (const sdf::Link &link : this->dataPtr->links)
+    elem->InsertElement(link.ToElement());
+
+  // Joints
+  for (const sdf::Joint &joint : this->dataPtr->joints)
+    elem->InsertElement(joint.ToElement());
+
+  // Model
+  for (const sdf::Model &model : this->dataPtr->models)
+    elem->InsertElement(model.ToElement());
+
+  return elem;
+}
+
+//////////////////////////////////////////////////
+bool Model::AddLink(const Link &_link)
+{
+  if (this->LinkNameExists(_link.Name()))
+    return false;
+  this->dataPtr->links.push_back(_link);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Model::AddJoint(const Joint &_joint)
+{
+  if (this->JointNameExists(_joint.Name()))
+    return false;
+  this->dataPtr->joints.push_back(_joint);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Model::AddModel(const Model &_model)
+{
+  if (this->ModelNameExists(_model.Name()))
+    return false;
+  this->dataPtr->models.push_back(_model);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Model::ClearLinks()
+{
+  this->dataPtr->links.clear();
+}
+
+//////////////////////////////////////////////////
+void Model::ClearJoints()
+{
+  this->dataPtr->joints.clear();
+}
+
+//////////////////////////////////////////////////
+void Model::ClearModels()
+{
+  this->dataPtr->models.clear();
+}

@@ -72,6 +72,11 @@ namespace sdf
     /// \return A reference to an ignition::math::Cylinderd object.
     public: ignition::math::Cylinderd &Shape();
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// actor.
+    /// \return SDF element pointer with updated actor values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

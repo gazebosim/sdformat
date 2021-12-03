@@ -316,6 +316,11 @@ namespace sdf
     /// \paramp[in] _filePath Full path to the file on disk.
     public: void SetFilePath(const std::string &_filePath);
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// particle emitter.
+    /// \return SDF element pointer with updated particle emitter values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Set the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.

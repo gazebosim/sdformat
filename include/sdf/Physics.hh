@@ -102,6 +102,23 @@ namespace sdf
     /// \param[in] _factor The target real time factor.
     public: void SetRealTimeFactor(const double _factor);
 
+    /// \brief Get the maximum number of contacts allowed between two
+    /// entities. This value can be over ridden by a max_contacts element in a
+    /// collision element.
+    /// \return Maximum number of contacts.
+    public: int MaxContacts() const;
+
+    /// \brief Set the maximum number of contacts allowed between two
+    /// entities. This value can be over ridden by a max_contacts element in a
+    /// collision element.
+    /// \param[in] _maxContacts Maximum number of contacts.
+    public: void SetMaxContacts(int _maxContacts);
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// physics.
+    /// \return SDF element pointer with updated physics values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
