@@ -790,3 +790,48 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
     return &this->dataPtr->interfaceModels[_index].first;
   return nullptr;
 }
+
+//////////////////////////////////////////////////
+bool Model::AddLink(const Link &_link)
+{
+  if (this->LinkNameExists(_link.Name()))
+    return false;
+  this->dataPtr->links.push_back(_link);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Model::AddJoint(const Joint &_joint)
+{
+  if (this->JointNameExists(_joint.Name()))
+    return false;
+  this->dataPtr->joints.push_back(_joint);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Model::AddModel(const Model &_model)
+{
+  if (this->ModelNameExists(_model.Name()))
+    return false;
+  this->dataPtr->models.push_back(_model);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Model::ClearLinks()
+{
+  this->dataPtr->links.clear();
+}
+
+//////////////////////////////////////////////////
+void Model::ClearJoints()
+{
+  this->dataPtr->joints.clear();
+}
+
+//////////////////////////////////////////////////
+void Model::ClearModels()
+{
+  this->dataPtr->models.clear();
+}

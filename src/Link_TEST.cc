@@ -211,3 +211,95 @@ TEST(DOMLink, InvalidInertia)
   EXPECT_DOUBLE_EQ(3.4, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_FALSE(link.Inertial().MassMatrix().IsValid());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddCollision)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.CollisionCount());
+
+  sdf::Collision collision;
+  collision.SetName("collision1");
+  EXPECT_TRUE(link.AddCollision(collision));
+  EXPECT_EQ(1u, link.CollisionCount());
+  EXPECT_FALSE(link.AddCollision(collision));
+  EXPECT_EQ(1u, link.CollisionCount());
+
+  link.ClearCollisions();
+  EXPECT_EQ(0u, link.CollisionCount());
+
+  EXPECT_TRUE(link.AddCollision(collision));
+  EXPECT_EQ(1u, link.CollisionCount());
+  const sdf::Collision *collisionFromLink = link.CollisionByIndex(0);
+  ASSERT_NE(nullptr, collisionFromLink);
+  EXPECT_EQ(collisionFromLink->Name(), collision.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddVisual)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.VisualCount());
+
+  sdf::Visual visual;
+  visual.SetName("visual1");
+  EXPECT_TRUE(link.AddVisual(visual));
+  EXPECT_EQ(1u, link.VisualCount());
+  EXPECT_FALSE(link.AddVisual(visual));
+  EXPECT_EQ(1u, link.VisualCount());
+
+  link.ClearVisuals();
+  EXPECT_EQ(0u, link.VisualCount());
+
+  EXPECT_TRUE(link.AddVisual(visual));
+  EXPECT_EQ(1u, link.VisualCount());
+  const sdf::Visual *visualFromLink = link.VisualByIndex(0);
+  ASSERT_NE(nullptr, visualFromLink);
+  EXPECT_EQ(visualFromLink->Name(), visual.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddLight)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.LightCount());
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(link.AddLight(light));
+  EXPECT_EQ(1u, link.LightCount());
+  EXPECT_FALSE(link.AddLight(light));
+  EXPECT_EQ(1u, link.LightCount());
+
+  link.ClearLights();
+  EXPECT_EQ(0u, link.LightCount());
+
+  EXPECT_TRUE(link.AddLight(light));
+  EXPECT_EQ(1u, link.LightCount());
+  const sdf::Light *lightFromLink = link.LightByIndex(0);
+  ASSERT_NE(nullptr, lightFromLink);
+  EXPECT_EQ(lightFromLink->Name(), light.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddSensor)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.SensorCount());
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(link.AddSensor(sensor));
+  EXPECT_EQ(1u, link.SensorCount());
+  EXPECT_FALSE(link.AddSensor(sensor));
+  EXPECT_EQ(1u, link.SensorCount());
+
+  link.ClearSensors();
+  EXPECT_EQ(0u, link.SensorCount());
+
+  EXPECT_TRUE(link.AddSensor(sensor));
+  EXPECT_EQ(1u, link.SensorCount());
+  const sdf::Sensor *sensorFromLink = link.SensorByIndex(0);
+  ASSERT_NE(nullptr, sensorFromLink);
+  EXPECT_EQ(sensorFromLink->Name(), sensor.Name());
+}

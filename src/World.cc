@@ -209,6 +209,17 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     }
   }
 
+  for (const auto &[name, size] :
+       _sdf->CountNamedElements("", Element::NameUniquenessExceptions()))
+  {
+    if (size > 1)
+    {
+      sdfwarn << "Non-unique name[" << name << "] detected " << size
+              << " times in XML children of world with name[" << this->Name()
+              << "].\n";
+    }
+  }
+
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
   std::unordered_set<std::string> frameNames;
@@ -785,4 +796,51 @@ Errors World::Implementation::LoadSphericalCoordinates(
       elevation, heading);
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+void World::ClearModels()
+{
+  this->dataPtr->models.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearActors()
+{
+  this->dataPtr->actors.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearLights()
+{
+  this->dataPtr->lights.clear();
+}
+
+/////////////////////////////////////////////////
+bool World::AddModel(const Model &_model)
+{
+  if (this->ModelNameExists(_model.Name()))
+    return false;
+  this->dataPtr->models.push_back(_model);
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddActor(const Actor &_actor)
+{
+  if (this->ActorNameExists(_actor.Name()))
+    return false;
+  this->dataPtr->actors.push_back(_actor);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddLight(const Light &_light)
+{
+  if (this->LightNameExists(_light.Name()))
+    return false;
+  this->dataPtr->lights.push_back(_light);
+
+  return true;
 }

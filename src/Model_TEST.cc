@@ -213,3 +213,72 @@ TEST(DOMModel, CopyAssignmentAfterMove)
   EXPECT_EQ("model2", model1.Name());
   EXPECT_EQ("model1", model2.Name());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMModel, AddLink)
+{
+  sdf::Model model;
+  EXPECT_EQ(0u, model.LinkCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+  EXPECT_EQ(1u, model.LinkCount());
+  EXPECT_FALSE(model.AddLink(link));
+  EXPECT_EQ(1u, model.LinkCount());
+
+  model.ClearLinks();
+  EXPECT_EQ(0u, model.LinkCount());
+
+  EXPECT_TRUE(model.AddLink(link));
+  EXPECT_EQ(1u, model.LinkCount());
+  const sdf::Link *linkFromModel = model.LinkByIndex(0);
+  ASSERT_NE(nullptr, linkFromModel);
+  EXPECT_EQ(linkFromModel->Name(), link.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, AddJoint)
+{
+  sdf::Model model;
+  EXPECT_EQ(0u, model.JointCount());
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+  EXPECT_EQ(1u, model.JointCount());
+  EXPECT_FALSE(model.AddJoint(joint));
+  EXPECT_EQ(1u, model.JointCount());
+
+  model.ClearJoints();
+  EXPECT_EQ(0u, model.JointCount());
+
+  EXPECT_TRUE(model.AddJoint(joint));
+  EXPECT_EQ(1u, model.JointCount());
+  const sdf::Joint *jointFromModel = model.JointByIndex(0);
+  ASSERT_NE(nullptr, jointFromModel);
+  EXPECT_EQ(jointFromModel->Name(), joint.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, AddModel)
+{
+  sdf::Model model;
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("model1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+  EXPECT_EQ(1u, model.ModelCount());
+  EXPECT_FALSE(model.AddModel(nestedModel));
+  EXPECT_EQ(1u, model.ModelCount());
+
+  model.ClearModels();
+  EXPECT_EQ(0u, model.ModelCount());
+
+  EXPECT_TRUE(model.AddModel(nestedModel));
+  EXPECT_EQ(1u, model.ModelCount());
+  const sdf::Model *modelFromModel = model.ModelByIndex(0);
+  ASSERT_NE(nullptr, modelFromModel);
+  EXPECT_EQ(modelFromModel->Name(), nestedModel.Name());
+}
