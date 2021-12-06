@@ -44,7 +44,7 @@
 1. Adds `enable_metrics` flag to Sensor.
     * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
 
-1. Add GPS sensor DOM to sdf9
+1. Add GPS / NavSat sensor DOM to sdf9
     * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
 
 1. Support parsing elements that are not part of the schema
@@ -268,7 +268,7 @@
     * [BitBucket pull request 644](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/644)
     * [BitBucket pull request 645](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/645)
 
-1. sdf 1.7: remove `//world/joint` element since it has never been used.
+1. SDFormat 1.7: remove `//world/joint` element since it has never been used.
     * [BitBucket pull request 637](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/637)
 
 1. Add clipping for depth camera on rgbd camera sensor
@@ -289,7 +289,7 @@
 1. Access the original parsed version of an SDF document with `Element::OriginalVersion`.
     * [BitBucket pull request 640](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/640)
 
-1. Model::Load: fail fast if an sdf 1.7 file has name collisions.
+1. Model::Load: fail fast if an SDFormat 1.7 file has name collisions.
     * [BitBucket pull request 648](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/648)
 
 1. Keep DOM objects even if they were loaded with errors.
@@ -311,6 +311,9 @@
 
 1. Enforce rules about reserved names and unique names among sibling elements.
     * [BitBucket pull request 600](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/600)
+    * This also implements changes necessary for parsing custom elements and
+    attributes per the following proposal:
+    [Custom elements and attributes](http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal)
 
 1. Relax name checking, so name collisions generate warnings and names are automatically changed.
     * [BitBucket pull request 621](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/621)
@@ -318,7 +321,7 @@
 1. Unversioned library name for ign tool commands.
     * [BitBucket pull request 612](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/612)
 
-1. Initial version of sdformat 1.7 specification.
+1. Initial version of SDFormat 1.7 specification.
     * [BitBucket pull request 588](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/588)
 
 1. Converter: add `<map>` element for converting fixed values.
@@ -327,19 +330,19 @@
 1. Converter: add `descendant_name` attribute to recursively search for elements to convert.
     * [BitBucket pull request 596](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/596)
 
-1. sdf 1.7: replace `use_parent_model_frame` element with `//axis/xyz/@expressed_in` attribute.
+1. SDFormat 1.7: replace `use_parent_model_frame` element with `//axis/xyz/@expressed_in` attribute.
     * [BitBucket pull request 589](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/589)
 
-1. sdf 1.7: replace `//pose/@frame` attribute with `//pose/@relative_to` attribute.
+1. SDFormat 1.7: replace `//pose/@frame` attribute with `//pose/@relative_to` attribute.
     * [BitBucket pull request 597](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/597)
 
-1. sdf 1.7: add `//model/@canonical_link` attribute and require models to have at least one link.
+1. SDFormat 1.7: add `//model/@canonical_link` attribute and require models to have at least one link.
     * [BitBucket pull request 601](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/601)
 
 1. Static models: allow them to have no links and skip building FrameAttachedToGraph.
     * [BitBucket pull request 626](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/626)
 
-1. sdf 1.7: add `//frame/attached_to`, only allow frames in model and world, add Frame DOM.
+1. SDFormat 1.7: add `//frame/attached_to`, only allow frames in model and world, add Frame DOM.
     * [BitBucket pull request 603](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/603)
 
 1. FrameSemantics API: add FrameAttachedToGraph and functions for building graph and resolving attached-to body.
@@ -373,11 +376,11 @@
     * [BitBucket pull request 622](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/622)
     * [BitBucket pull request 623](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/623)
 
-## SDFormat 8.0
+## libsdformat 8.0
 
-### SDFormat 8.X.X (202X-XX-XX)
+### libsdformat 8.X.X (202X-XX-XX)
 
-### SDFormat 8.9.0 (2020-09-04)
+### libsdformat 8.9.0 (2020-09-04)
 
 1. Find python3 in cmake, fix warning
     * [Pull request 328](https://github.com/osrf/sdformat/pull/328)
@@ -399,7 +402,7 @@
     * [BitBucket pull request 677](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/677)
     * [BitBucket pull request 686](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/686)
 
-### SDFormat 8.8.0 (2020-03-18)
+### libsdformat 8.8.0 (2020-03-18)
 
 1. Add Transparency to visual DOM
     * [BitBucket pull request 671](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/671)
@@ -422,7 +425,7 @@
 1. Rename SDF to SDFormat / libsdformat on documentation
     * [BitBucket pull request 666](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/666)
 
-### SDFormat 8.7.1 (2020-01-13)
+### libsdformat 8.7.1 (2020-01-13)
 
 1. Fix memory leaks in move assignment operator.
     * [BitBucket pull request 641](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/641)
@@ -430,7 +433,7 @@
 1. Refactoring based on rule-of-five guidance to address memory leaks
     * [BitBucket pull request 644](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/644)
 
-### SDFormat 8.7.0 (2019-12-13)
+### libsdformat 8.7.0 (2019-12-13)
 
 1. Remove some URDF error messages
     * [BitBucket pull request 605](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/605)
@@ -444,12 +447,12 @@
 1. Add clipping for depth camera on rgbd camera sensor
     * [BitBucket pull request 628](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/628)
 
-### SDFormat 8.6.1 (2019-12-05)
+### libsdformat 8.6.1 (2019-12-05)
 
 1. Unversioned lib name for cmds
     * [BitBucket pull request 612](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/612)
 
-### SDFormat 8.6.0 (2019-11-20)
+### libsdformat 8.6.0 (2019-11-20)
 
 1. configure.bat: use ign-math6, not gz11
     * [BitBucket pull request 595](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/595)
@@ -469,7 +472,7 @@
 1. Build `Utils_TEST` with Utils.cc explicitly passed since its symbols are not visible.
     * [BitBucket pull request 572](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/572)
 
-### SDFormat 8.5.0 (2019-11-06)
+### libsdformat 8.5.0 (2019-11-06)
 
 1. Add `thermal_camera` sensor type
     * [BitBucket pull request 586](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/586)
@@ -487,7 +490,7 @@
     * [BitBucket pull request 584](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/584)
     * [BitBucket pull request 573](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/573)
 
-### SDFormat 8.4.0 (2019-10-22)
+### libsdformat 8.4.0 (2019-10-22)
 
 1. Accept relative path in `<uri>`.
     * [BitBucket pull request 558](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/558)
@@ -524,7 +527,7 @@
 1. Converter: remove all matching elements specified by `<remove>` tag.
     * [BitBucket pull request 551](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/551)
 
-### SDFormat 8.3.0 (2019-08-17)
+### libsdformat 8.3.0 (2019-08-17)
 
 1. Added Actor DOM
     * [BitBucket pull request 547](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/547)
@@ -532,12 +535,12 @@
 1. Print cmake build warnings and errors to std_err
     * [BitBucket pull request 549](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/549)
 
-### SDFormat 8.2.0 (2019-06-18)
+### libsdformat 8.2.0 (2019-06-18)
 
 1. Added RGBD Camera Sensor type.
     * [BitBucket pull request 540](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/540)
 
-### SDFormat 8.1.0 (2019-05-20)
+### libsdformat 8.1.0 (2019-05-20)
 
 1.  Change installation path of SDF description files to allow side-by-side installation.
     * [BitBucket pull request 538](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/538)
@@ -564,7 +567,7 @@
 1. Added AirPressure SDF DOM
     * [BitBucket pull request 528](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/528)
 
-1. Update sdf noise elements
+1. Update SDFormat noise elements
     * [BitBucket pull request 525](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/525)
     * [BitBucket pull request 522](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/522)
 
@@ -599,7 +602,7 @@
     * [BitBucket pull request 511](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/511)
     * [Issue 202](https://github.com/osrf/sdformat/issues/202)
 
-### SDFormat 8.0.0 (2019-03-01)
+### libsdformat 8.0.0 (2019-03-01)
 
 1. Rename depth camera from 'depth' to 'depth_camera'
     * [BitBucket pull request 507](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/507)
@@ -671,14 +674,14 @@
     * [BitBucket pull request 488](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/488)
     * [BitBucket pull request 481](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/481)
 
-## SDFormat 7.0
+## libsdformat 7.0
 
-### SDFormat 7.0.0 (xxxx-xx-xx)
+### libsdformat 7.0.0 (xxxx-xx-xx)
 
 1. Build Utils_TEST with Utils.cc explicitly passed since its symbols are not visible.
     * [BitBucket pull request 572](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/572)
 
-1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+1. Parse urdf files to SDFormat 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [BitBucket pull request 575](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/575)
 
 1. Set camera intrinsics axis skew (s) default value to 0
@@ -694,7 +697,7 @@
     * [BitBucket pull request 557](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/557)
     * [BitBucket pull request 464](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/464)
 
-1. Backport cmake and sdf spec changes from version 8.
+1. Backport cmake and SDFormat spec changes from version 8.
     * [BitBucket pull request 550](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/550)
     * [BitBucket pull request 538](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/538)
     * [BitBucket pull request 525](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/525)
@@ -726,12 +729,12 @@
 1. SDF DOM: Add Element() accessor to Gui, JointAxis and World classes.
     * [BitBucket pull request 450](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/450)
 
-1. Adds the equalivent of gz sdf -d to sdformat. The command line option
+1. Adds the equalivent of gz sdf -d to libsdformat. The command line option
    will print the full description of the SDF spec.
     * [BitBucket pull request 424](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/424)
 
-1. Adds the equalivent of gz sdf -p to sdformat. The command line option
-   will convert and print the specified sdf file.
+1. Adds the equalivent of gz sdf -p to libsdformat. The command line option
+   will convert and print the specified SDFormat file.
     * [BitBucket pull request 494](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/494)
 
 1. SDF DOM: Additions to the document object model.
@@ -747,9 +750,9 @@
     * [BitBucket pull request 420](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/420)
 
 
-## SDFormat 6.0
+## libsdformat 6.0
 
-### SDFormat 6.3.1 (2021-07-06)
+### libsdformat 6.3.1 (2021-07-06)
 
 1. Fix flattening logic for nested model names
     * [Pull request 597](https://github.com/osrf/sdformat/pull/597)
@@ -757,7 +760,7 @@
 1. Translate poses of nested models inside other nested models
     * [Pull request 596](https://github.com/osrf/sdformat/pull/596)
 
-### SDFormat 6.3.0 (2021-06-21)
+### libsdformat 6.3.0 (2021-06-21)
 
 1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
     * [Pull request 580](https://github.com/osrf/sdformat/pull/580)
@@ -765,7 +768,7 @@
 1. Parse rpyOffset as radians
     * [Pull request 497](https://github.com/osrf/sdformat/pull/497)
 
-1. Parse urdf files to sdf 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
+1. Parse urdf files to SDFormat 1.5 instead of 1.4 to avoid `use_parent_model_frame`.
     * [BitBucket pull request 575](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/575)
 
 1. Set camera intrinsics axis skew (s) default value to 0
@@ -783,7 +786,7 @@
 1. Converter: remove all matching elements specified by `<remove>` tag.
     * [BitBucket pull request 551](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/551)
 
-### SDFormat 6.2.0 (2019-01-17)
+### libsdformat 6.2.0 (2019-01-17)
 
 1. Add geometry for sonar collision shape
     * [BitBucket pull request 495](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/495)
@@ -795,15 +798,15 @@
     * [BitBucket pull request 466](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/466)
 
 
-### SDFormat 6.1.0 (2018-10-04)
+### libsdformat 6.1.0 (2018-10-04)
 
 1. Add collision\_detector to dart physics config
     * [BitBucket pull request 440](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/440)
 
-1. Fix Windows support for SDFormat6
+1. Fix Windows support for libsdformat6
     * [BitBucket pull request 401](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/401)
 
-1. root.sdf: default sdf version 1.6
+1. root.sdf: default SDFormat version 1.6
     * [BitBucket pull request 425](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/425)
 
 1. parser\_urdf: print value of highstop instead of pointer address
@@ -813,7 +816,7 @@
     * [BitBucket pull request 402](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/402)
 
 
-### SDFormat 6.0.0 (2018-01-25)
+### libsdformat 6.0.0 (2018-01-25)
 
 1. SDF DOM: Added a document object model.
     * [BitBucket pull request 387](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/387)
@@ -846,69 +849,69 @@
 1. Deprecated sdf::Color, and switch to use ignition::math::Color
     * [BitBucket pull request 330](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/330)
 
-## SDFormat 5.x
+## libsdformat 5.x
 
-### SDFormat 5.x.x (2017-xx-xx)
+### libsdformat 5.x.x (2017-xx-xx)
 
-### SDFormat 5.3.0 (2017-11-13)
+### libsdformat 5.3.0 (2017-11-13)
 
 1. Added wrapper around root SDF for an SDF element
-    * [BitBucket pull request 378](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/378)
-    * [BitBucket pull request 372](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/372)
+    * [BitBucket pull request 378](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/378)
+    * [BitBucket pull request 372](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/372)
 
 1. Add ODE parallelization parameters: threaded islands and position correction
-    * [BitBucket pull request 380](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/380)
+    * [BitBucket pull request 380](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/380)
 
 1. surface.sdf: expand documentation of friction and slip coefficients
-    * [BitBucket pull request 343](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/343)
+    * [BitBucket pull request 343](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/343)
 
 1. Add preserveFixedJoint option to the URDF parser
-    * [BitBucket pull request 352](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/352)
+    * [BitBucket pull request 352](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/352)
 
 1. Add light as child of link
-    * [BitBucket pull request 373](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/373)
+    * [BitBucket pull request 373](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/373)
 
-### SDFormat 5.2.0 (2017-08-03)
+### libsdformat 5.2.0 (2017-08-03)
 
 1. Added a block for DART-specific physics properties.
     * [BitBucket pull request 369](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/369)
 
 1. Fix parser to read plugin child elements within an `<include>`
-    * [BitBucket pull request 350](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/350)
+    * [BitBucket pull request 350](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/350)
 
-1. Choosing models with more recent sdf version with `<include>` tag
-    * [BitBucket pull request 291](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/291)
+1. Choosing models with more recent SDFormat version with `<include>` tag
+    * [BitBucket pull request 291](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/291)
     * [Issue 123](https://github.com/osrf/sdformat/issues/123)
 
 1. Added `<category_bitmask>` to 1.6 surface contact parameters
-    * [BitBucket pull request 318](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/318)
+    * [BitBucket pull request 318](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/318)
 
 1. Support light insertion in state
-    * [BitBucket pull request 325](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/325)
+    * [BitBucket pull request 325](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/325)
 
 1. Case insensitive boolean strings
-    * [BitBucket pull request 322](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/322)
+    * [BitBucket pull request 322](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/322)
 
 1. Enable coverage testing
-    * [BitBucket pull request 317](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/317)
+    * [BitBucket pull request 317](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/317)
 
 1. Add `friction_model` parameter to ode solver
-    * [BitBucket pull request 294](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/294)
-    * [Gazebo pull request 1522](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-request/1522)
+    * [BitBucket pull request 294](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/294)
+    * [Gazebo pull request 1522](https://osrf-migration.github.io/gazebo-gh-pages/#!/osrf/gazebo/pull-requests/1522)
 
 1. Add cmake `@PKG_NAME@_LIBRARY_DIRS` variable to cmake config file
-    * [BitBucket pull request 292](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-request/292)
+    * [BitBucket pull request 292](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/292)
 
-### SDFormat 5.1.0 (2017-02-22)
+### libsdformat 5.1.0 (2017-02-22)
 
 1. Fixed `sdf::convertFile` and `sdf::convertString` always converting to latest version
     * [BitBucket pull request 320](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/320)
-1. Added back the ability to set sdf version at runtime
+1. Added back the ability to set SDFormat version at runtime
     * [BitBucket pull request 307](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/307)
 
-### SDFormat 5.0.0 (2017-01-25)
+### libsdformat 5.0.0 (2017-01-25)
 
-1. Removed SDFormat 4 deprecations
+1. Removed libsdformat 4 deprecations
     * [BitBucket pull request 295](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/295)
 
 1. Added an example
@@ -931,11 +934,11 @@
 1. Simplifier way of retrieving a value from SDF using Get
     * [BitBucket pull request 285](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/285)
 
-## SDFormat 4.0
+## libsdformat 4.0
 
-### SDFormat 4.x.x (2017-xx-xx)
+### libsdformat 4.x.x (2017-xx-xx)
 
-### SDFormat 4.4.0 (2017-10-26)
+### libsdformat 4.4.0 (2017-10-26)
 
 1. Add ODE parallelization parameters: threaded islands and position correction
     * [BitBucket pull request 380](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/380)
@@ -949,7 +952,7 @@
 1. Add light as child of link
     * [BitBucket pull request 373](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/373)
 
-### SDFormat 4.3.2 (2017-07-19)
+### libsdformat 4.3.2 (2017-07-19)
 
 1. Add documentation for `Element::GetFirstElement()` and `Element::GetNextElement()`
     * [BitBucket pull request 341](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/341)
@@ -957,15 +960,15 @@
 1. Fix parser to read plugin child elements within an `<include>`
     * [BitBucket pull request 350](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/350)
 
-### SDFormat 4.3.1 (2017-03-24)
+### libsdformat 4.3.1 (2017-03-24)
 
 1. Fix segmentation Fault in `sdf::getBestSupportedModelVersion`
     * [BitBucket pull request 327](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/327)
     * [Issue 152](https://github.com/osrf/sdformat/issues/152)
 
-### SDFormat 4.3.0 (2017-03-20)
+### libsdformat 4.3.0 (2017-03-20)
 
-1. Choosing models with more recent sdf version with `<include>` tag
+1. Choosing models with more recent SDFormat version with `<include>` tag
     * [BitBucket pull request 291](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/291)
     * [Issue 123](https://github.com/osrf/sdformat/issues/123)
 
@@ -994,7 +997,7 @@
 1. Add cmake `@PKG_NAME@_LIBRARY_DIRS` variable to cmake config file
     * [BitBucket pull request 292](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/292)
 
-### SDFormat 4.2.0 (2016-10-10)
+### libsdformat 4.2.0 (2016-10-10)
 
 1. Added tag to specify ODE friction model.
     * [BitBucket pull request 294](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/294)
@@ -1005,7 +1008,7 @@
 1. Added IMU orientation specification to SDF.
     * [BitBucket pull request 284](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/284)
 
-### SDFormat 4.1.1 (2016-07-08)
+### libsdformat 4.1.1 (2016-07-08)
 
 1. Added documentation and animation to `<actor>` element.
     * [BitBucket pull request 280](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/280)
@@ -1013,7 +1016,7 @@
 1. Added tag to specify initial joint position
     * [BitBucket pull request 279](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/279)
 
-### SDFormat 4.1.0 (2016-04-01)
+### libsdformat 4.1.0 (2016-04-01)
 
 1. Added SDF conversion functions to parser including sdf::convertFile and sdf::convertString.
     * [BitBucket pull request 266](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/266)
@@ -1021,7 +1024,7 @@
 1. Added an upload script
     * [BitBucket pull request 256](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/256)
 
-### SDFormat 4.0.0 (2015-01-12)
+### libsdformat 4.0.0 (2015-01-12)
 
 1. Boost pointers and boost::function in the public API have been replaced
    by their std::equivalents (C++11 standard)
@@ -1045,18 +1048,18 @@
     * [BitBucket pull request 243](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/243)
     * [BitBucket pull request 199](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/199)
 
-## SDFormat 3.0
+## libsdformat 3.0
 
-### SDFormat 3.X.X (201X-XX-XX)
+### libsdformat 3.X.X (201X-XX-XX)
 
 1. Improve precision of floating point parameters
     * [BitBucket pull request 273](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/273)
     * [BitBucket pull request 276](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/276)
 
-### SDFormat 3.7.0 (2015-11-20)
+### libsdformat 3.7.0 (2015-11-20)
 
 1. Add spring pass through for sdf3
-    * [Design document](https://github.com/osrf/gazebo_design/pull-requests/23)
+    * [Design document](https://osrf-migration.github.io/osrf-others-gh-pages/#!/osrf/gazebo_design/pull-requests/23)
     * [BitBucket pull request 242](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/242)
 
 1. Support frame specification in SDF
@@ -1065,7 +1068,7 @@
 1. Remove boost from SDFExtension
     * [BitBucket pull request 229](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/229)
 
-### SDFormat 3.6.0 (2015-10-27)
+### libsdformat 3.6.0 (2015-10-27)
 
 1. Add light state
     * [BitBucket pull request 227](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/227)
@@ -1074,21 +1077,21 @@
 1. Fix links in API documentation
     * [BitBucket pull request 231](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/231)
 
-### SDFormat 3.5.0 (2015-10-07)
+### libsdformat 3.5.0 (2015-10-07)
 
 1. Camera lens description (Replaces #213)
     * [BitBucket pull request 215](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/215)
 1. Fix shared pointer reference loop in Element and memory leak (#104)
     * [BitBucket pull request 230](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/230)
 
-### SDFormat 3.4.0 (2015-10-05)
+### libsdformat 3.4.0 (2015-10-05)
 
 1. Support nested model states
     * [BitBucket pull request 223](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/223)
 1. Cleaner way to set SDF_PATH for tests
     * [BitBucket pull request 226](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/226)
 
-### SDFormat 3.3.0 (2015-09-15)
+### libsdformat 3.3.0 (2015-09-15)
 
 1. Windows Boost linking errors
     * [BitBucket pull request 206](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/206)
@@ -1099,7 +1102,7 @@
 1. Torsional friction default surface radius not infinity
     * [BitBucket pull request 217](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/217)
 
-### SDFormat 3.2.2 (2015-08-24)
+### libsdformat 3.2.2 (2015-08-24)
 
 1. Added battery element (contribution from Olivier Crave)
     * [BitBucket pull request #204](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/204)
@@ -1108,17 +1111,17 @@
 1. Allow Visual Studio 2015
     * [BitBucket pull request #208](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/208)
 
-### SDFormat 3.1.1 (2015-08-03)
+### libsdformat 3.1.1 (2015-08-03)
 
 1. Fix tinyxml linking error
     * [BitBucket pull request #209](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/209)
 
-### SDFormat 3.1.0 (2015-08-02)
+### libsdformat 3.1.0 (2015-08-02)
 
 1. Added logical camera sensor to SDF
     * [BitBucket pull request #207](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/207)
 
-### SDFormat 3.0.0 (2015-07-24)
+### libsdformat 3.0.0 (2015-07-24)
 
 1. Added battery to SDF
     * [BitBucket pull request 204](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/204)
@@ -1158,7 +1161,7 @@
     * [BitBucket pull request 147](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/147)
     * [Issue 60](https://github.com/osrf/sdformat/issues/60)
 
-## SDFormat 2.x
+## libsdformat 2.x
 
 1. rename cfm_damping --> implicit_spring_damper
     * [BitBucket pull request 59](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/59)
@@ -1170,7 +1173,7 @@
     * [BitBucket pull request 64](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/64)
 1. `<use_true_size>` element used by DEM heightmaps
     * [BitBucket pull request 67](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/67)
-1. Do not export urdf symbols in sdformat 1.4
+1. Do not export urdf symbols in SDFormat 1.4
     * [BitBucket pull request 75](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/75)
 1. adding deformable properties per issue #32
     * [BitBucket pull request 78](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/78)
@@ -1185,7 +1188,7 @@
     * [Gazebo issue 494](https://github.com/osrf/gazebo/issues/494)
 1. Implement SDF_PROTOCOL_VERSION (issue #51)
     * [BitBucket pull request 90](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/90)
-1. Port sdformat to compile on Windows (MSVC)
+1. Port libsdformat to compile on Windows (MSVC)
     * [BitBucket pull request 101](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/101)
 1. Separate material properties in material.sdf
     * [BitBucket pull request 104](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/104)
@@ -1211,7 +1214,7 @@
     * [BitBucket pull request 127](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/127)
 1. Backport magnetometer
     * [BitBucket pull request 128](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/128)
-1. Add flag for MOI rescaling to sdf 1.4
+1. Add flag for MOI rescaling to SDFormat 1.4
     * [BitBucket pull request 121](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/121)
 1. Parse urdf joint friction parameters, add corresponding test
     * [BitBucket pull request 129](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/129)
@@ -1236,9 +1239,9 @@
 1. Backport fix for latin locales (pull request #147)
     * [BitBucket pull request 150](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/150)
 
-## SDFormat 1.4
+## libsdformat 1.4
 
-### SDFormat 1.4.8 (2013-09-06)
+### libsdformat 1.4.8 (2013-09-06)
 
 1. Fix inertia transformations when reducing fixed joints in URDF
     * [BitBucket pull request 48](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/48/fix-for-issue-22-reducing-inertia-across/diff)
@@ -1248,12 +1251,12 @@
     * [BitBucket pull request 46](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/46/convert-a-few-more-sdfwarns-to-sdflog-fix/diff)
     * [Commit](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/commits/b15d5a1ecc57abee6691618d02d59bbc3d1b84dc)
 
-### SDFormat 1.4.7 (2013-08-22)
+### libsdformat 1.4.7 (2013-08-22)
 
 1. Direct console messages to std_err
     * [BitBucket pull request 44](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/44/fix-19-direct-all-messages-to-std_err)
 
-### SDFormat 1.4.6 (2013-08-20)
+### libsdformat 1.4.6 (2013-08-20)
 
 1. Add tags for GPS sensor and sensor noise
     * [BitBucket pull request 36](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/36/gps-sensor-sensor-noise-and-spherical)
@@ -1271,7 +1274,7 @@
     * [BitBucket pull request 38](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/38/add-provide_feedback-for-bullet-joint)
 1. Various bug, style and test fixes
 
-### SDFormat 1.4.5 (2013-07-23)
+### libsdformat 1.4.5 (2013-07-23)
 
 1. Deprecated Gazebo's internal SDF code
 1. Use templatized Get functions for retrieving values from SDF files

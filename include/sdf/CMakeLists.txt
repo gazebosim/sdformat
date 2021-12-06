@@ -53,8 +53,7 @@ set (headers
 
 set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)
 foreach (hdr ${headers})
-  APPEND_TO_CACHED_STRING(sdf_headers
-    "SDF Headers" "#include <sdf/${hdr}>\n")
+  set(sdf_headers "${sdf_headers}#include <sdf/${hdr}>\n")
 endforeach()
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sdf.hh.in
                 ${CMAKE_CURRENT_BINARY_DIR}/sdf.hh)
