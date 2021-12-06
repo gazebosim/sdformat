@@ -65,6 +65,11 @@ namespace sdf
     /// \return A reference to an ignition::math::Boxd object.
     public: ignition::math::Boxd &Shape();
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// box.
+    /// \return SDF element pointer with updated box values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
