@@ -353,7 +353,6 @@ std::optional<std::string> Param::GetMinValueAsString(
     if (!this->dataPtr->StringFromValueImpl(_config,
                                             this->dataPtr->typeName,
                                             this->dataPtr->minValue.value(),
-                                            std::nullopt,
                                             valueStr))
     {
       sdferr << "Unable to get min value as string.\n";
@@ -375,7 +374,6 @@ std::optional<std::string> Param::GetMaxValueAsString(
     if (!this->dataPtr->StringFromValueImpl(_config,
                                             this->dataPtr->typeName,
                                             this->dataPtr->maxValue.value(),
-                                            std::nullopt,
                                             valueStr))
     {
       sdferr << "Unable to get max value as string.\n";
@@ -981,6 +979,21 @@ bool ParamPrivate::StringFromValueImpl(
     const PrintConfig &_config,
     const std::string &_typeName,
     const ParamVariant &_value,
+    std::string &_valueStr) const
+{
+  return this->StringFromValueImpl(
+      _config,
+      _typeName,
+      _value,
+      std::nullopt,
+      _valueStr);
+}
+
+/////////////////////////////////////////////////
+bool ParamPrivate::StringFromValueImpl(
+    const PrintConfig &_config,
+    const std::string &_typeName,
+    const ParamVariant &_value,
     const std::optional<std::string> &_originalStr,
     std::string &_valueStr) const
 {
@@ -1097,7 +1110,6 @@ bool Param::Reparse()
   else if (!this->dataPtr->StringFromValueImpl(PrintConfig(),
                                                this->dataPtr->typeName,
                                                this->dataPtr->defaultValue,
-                                               std::nullopt,
                                                strToReparse))
   {
     sdferr << "Failed to obtain string from default value during reparsing.\n";
