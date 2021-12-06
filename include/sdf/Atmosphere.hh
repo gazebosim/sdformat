@@ -95,6 +95,11 @@ namespace sdf
     /// \return True if this instance equals the given atmosphere.
     public: bool operator==(const Atmosphere &_atmosphere);
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// atmosphere.
+    /// \return SDF element pointer with updated atmosphere values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
