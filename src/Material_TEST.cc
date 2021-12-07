@@ -289,3 +289,10 @@ TEST(DOMMaterial, InvalidSdf)
   sdf::Errors errors = material.Load(elem);
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMMaterial, ToElement)
+{
+  sdf::Material material;
+
+}
