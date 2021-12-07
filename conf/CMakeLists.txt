@@ -15,7 +15,7 @@ set(ign_library_path "${CMAKE_INSTALL_PREFIX}/lib/ruby/ignition/cmd${PROJECT_NAM
 # Note that the major version of the library is included in the name.
 # Ex: sdformat0.yaml
 configure_file(
-  "${PROJECT_NAME_NO_VERSION_LOWER}.yaml.in"
+  "${CMAKE_SOURCE_DIR}/conf/${PROJECT_NAME_NO_VERSION_LOWER}.yaml.in"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.yaml" @ONLY)
 
 # Install the yaml configuration files in an unversioned location.
