@@ -295,10 +295,10 @@ TEST(DOMMaterial, ToElement)
 {
   sdf::Material material;
 
-  material.SetAmbient(ignition::math::Color(0.1, 0.2, 0.3, 1));
-  material.SetDiffuse(ignition::math::Color(0.4, 0.5, 0.6, 0.5));
-  material.SetSpecular(ignition::math::Color(0.6, 0.4, 0.8, 0.8));
-  material.SetEmissive(ignition::math::Color(0.2, 0.7, 0.9, 0.1));
+  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1f));
+  material.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.5f));
+  material.SetSpecular(ignition::math::Color(0.6f, 0.4f, 0.8f, 0.8f));
+  material.SetEmissive(ignition::math::Color(0.2f, 0.7f, 0.9f, 0.1f));
 
   material.SetRenderOrder(0.5);
   material.SetLighting(false);
