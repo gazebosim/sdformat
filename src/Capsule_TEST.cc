@@ -179,3 +179,21 @@ TEST(DOMCapsule, Shape)
   EXPECT_DOUBLE_EQ(0.123, capsule.Radius());
   EXPECT_DOUBLE_EQ(0.456, capsule.Length());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCapsule, ToElement)
+{
+  sdf::Capsule capsule;
+
+  capsule.SetRadius(1.2);
+  capsule.SetLength(0.5);
+
+  sdf::ElementPtr elem = capsule.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Capsule capsule2;
+  capsule2.Load(elem);
+
+  EXPECT_DOUBLE_EQ(capsule.Radius(), capsule2.Radius());
+  EXPECT_DOUBLE_EQ(capsule.Length(), capsule2.Length());
+}

@@ -16,6 +16,7 @@
 */
 #include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
+#include "sdf/parser.hh"
 #include "sdf/Plane.hh"
 
 using namespace sdf;
@@ -149,4 +150,19 @@ const ignition::math::Planed &Plane::Shape() const
 ignition::math::Planed &Plane::Shape()
 {
   return this->dataPtr->plane;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Plane::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("plane_shape.sdf", elem);
+
+  sdf::ElementPtr normalElem = elem->GetElement("normal");
+  normalElem->Set(this->Normal());
+
+  sdf::ElementPtr sizeElem = elem->GetElement("size");
+  sizeElem->Set(this->Size());
+
+  return elem;
 }

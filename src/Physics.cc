@@ -16,6 +16,7 @@
 */
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/parser.hh"
 #include "sdf/Physics.hh"
 #include "Utils.hh"
 
@@ -41,6 +42,9 @@ class sdf::Physics::Implementation
 
   /// \brief Desired realtime factor.
   public: double rtf {1.0};
+
+  /// \brief Maximum number of contacts allowed between two entities.
+  public: int maxContacts{20};
 };
 
 /////////////////////////////////////////////////
@@ -113,6 +117,9 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   }
   this->dataPtr->rtf = doublePair.first;
 
+  this->dataPtr->maxContacts =
+    _sdf->Get<int>("max_contacts", this->dataPtr->maxContacts).first;
+
   return errors;
 }
 
@@ -180,4 +187,35 @@ double Physics::RealTimeFactor() const
 void Physics::SetRealTimeFactor(const double _factor)
 {
   this->dataPtr->rtf = _factor;
+}
+
+/////////////////////////////////////////////////
+int Physics::MaxContacts() const
+{
+  return this->dataPtr->maxContacts;
+}
+
+/////////////////////////////////////////////////
+void Physics::SetMaxContacts(int _maxContacts)
+{
+  this->dataPtr->maxContacts = _maxContacts;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Physics::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("physics.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+  elem->GetAttribute("default")->Set(this->IsDefault());
+  elem->GetAttribute("type")->Set(this->EngineType());
+
+  elem->GetElement("max_step_size")->Set(this->MaxStepSize());
+  elem->GetElement("real_time_factor")->Set(this->RealTimeFactor());
+  elem->GetElement("max_contacts")->Set(this->MaxContacts());
+
+  /// \todo(nkoenig) Support engine specific parameters.
+
+  return elem;
 }
