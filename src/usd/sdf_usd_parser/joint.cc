@@ -22,27 +22,104 @@
 #include <unordered_map>
 
 #include <ignition/math/Angle.hh>
+#include <ignition/math/Quaternion.hh>
 #include <ignition/math/Vector3.hh>
+#include <pxr/base/gf/quatf.h>
+#include <pxr/base/gf/vec3f.h>
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/relationship.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
 
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 
 namespace usd
 {
+  /// \brief Helper function for setting a USD joint's pose relative to the
+  /// joint's parent and child links.
+  /// \param[in] _jointPrim The USD joint prim
+  /// \param[in] _joint The SDF representation of _jointPrim
+  /// \param[in] _parentModel The SDF model that has the SDF definition of
+  /// _joint, which is used to extract pose information from the joint's parent
+  /// and child links.
+  /// \return True if _joint's pose was properly set relative to the joint's
+  /// parent and child links. False otherwise
+  /// \note By default, SDF has the joint at the root of the child link. So,
+  /// this method assumes that the USD joint should be placed at the root of the
+  /// child link to mimic the default SDF behavior.
+  /// TODO(adlarkin) handle joints that don't have a default pose at the root of
+  /// the child link
+  bool SetUSDJointPose(pxr::UsdPhysicsJoint &_jointPrim,
+      const sdf::Joint &_joint, const sdf::Model &_parentModel)
+  {
+      auto sdfChildLink = _parentModel.LinkByName(_joint.ChildLinkName());
+      if (!sdfChildLink)
+      {
+        std::cerr << "Internal error: unable to find a link named ["
+                  << _joint.ChildLinkName() << "] in model ["
+                  << _parentModel.Name() << "]\n";
+        return false;
+      }
+
+      auto sdfParentLink = _parentModel.LinkByName(_joint.ParentLinkName());
+      if (!sdfParentLink)
+      {
+        std::cerr << "Internal error: unable to find a link named ["
+                  << _joint.ParentLinkName() << "] in model ["
+                  << _parentModel.Name() << "]\n";
+        return false;
+      }
+
+      // Compute the child link's pose w.r.t the parent link's pose.
+      //
+      // Given the following frame names:
+      // W: World/inertial frame
+      // P: Parent link frame
+      // C: Child link frame
+      //
+      // And the following quantities:
+      // parentWorldPose (X_WP): Pose of the parent link frame w.r.t the world
+      // childWorldPose (X_WC): Pose of the child link frame w.r.t the world
+      // childParentPose (X_PC): Pose of the child link frame w.r.t. the parent
+      //   link frame
+      //
+      // The pose of the child link frame w.r.t the parent link frame (X_PC)
+      // is calculated as:
+      //   X_PC = (X_WP)^-1 * X_WC
+      const auto &x_wp = sdfParentLink->RawPose();
+      const auto &x_wc = sdfChildLink->RawPose();
+      const auto &childParentPose = x_wp.Inverse() * x_wc;
+
+      const auto &relativePosition = childParentPose.Pos();
+      const auto &relativeRotation = childParentPose.Rot();
+
+      // set the joint's pose relative to the parent link to be at the root of
+      // the child link (see \note in the method documentation above)
+      _jointPrim.CreateLocalPos0Attr().Set(pxr::GfVec3f(
+            relativePosition.X(), relativePosition.Y(), relativePosition.Z()));
+      _jointPrim.CreateLocalRot0Attr().Set(pxr::GfQuatf(
+            relativeRotation.W(), relativeRotation.X(),
+            relativeRotation.Y(), relativeRotation.Z()));
+
+      // since we are currently assuming that the joint is attached to the root
+      // of the child link (see the \note in the method documentation above),
+      // the position and rotation offset relative to the child link is 0
+      _jointPrim.CreateLocalPos1Attr().Set(pxr::GfVec3f(0.0));
+      _jointPrim.CreateLocalRot1Attr().Set(pxr::GfQuatf(1.0, 0.0, 0.0, 0.0));
+
+      return true;
+  }
+
   bool ParseSdfRevoluteJoint(const sdf::Joint &_joint,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path,
-      const pxr::SdfPath &_parentLinkPath, const pxr::SdfPath &_childLinkPath)
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     auto usdJoint =
       pxr::UsdPhysicsRevoluteJoint::Define(_stage, pxr::SdfPath(_path));
-
-    usdJoint.CreateBody0Rel().AddTarget(_parentLinkPath);
-    usdJoint.CreateBody1Rel().AddTarget(_childLinkPath);
 
     if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
@@ -71,6 +148,7 @@ namespace usd
 
   bool ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
+      const sdf::Model &_parentModel,
       const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath)
   {
     auto it = _linkToUSDPath.find(_joint.ParentLinkName());
@@ -97,8 +175,7 @@ namespace usd
     switch (_joint.Type())
     {
       case sdf::JointType::REVOLUTE:
-        typeParsed = ParseSdfRevoluteJoint(_joint, _stage, _path,
-            parentLinkPath, childLinkPath);
+        typeParsed = ParseSdfRevoluteJoint(_joint, _stage, _path);
         break;
       case sdf::JointType::BALL:
       case sdf::JointType::CONTINUOUS:
@@ -111,6 +188,28 @@ namespace usd
       case sdf::JointType::INVALID:
       default:
         std::cerr << "Joint type is either invalid or not supported\n";
+    }
+
+    if (typeParsed)
+    {
+      auto jointPrim = pxr::UsdPhysicsJoint::Get(_stage, pxr::SdfPath(_path));
+      if (!jointPrim)
+      {
+        std::cerr << "Internal error: unable to get prim at path ["
+                  << _path << "], but a joint prim should exist at this path\n";
+        return false;
+      }
+
+      // define the joint's parent/child links
+      jointPrim.CreateBody0Rel().AddTarget(parentLinkPath);
+      jointPrim.CreateBody1Rel().AddTarget(childLinkPath);
+
+      if (!SetUSDJointPose(jointPrim, _joint, _parentModel))
+      {
+        std::cerr << "Unable to set the joint pose for joint ["
+                  << _joint.Name() << "]\n";
+        return false;
+      }
     }
 
     return typeParsed;

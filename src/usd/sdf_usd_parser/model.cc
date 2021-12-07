@@ -98,7 +98,7 @@ namespace usd
     {
       const auto joint = *(_model.JointByIndex(i));
       const auto jointPath = std::string(_path + "/" + joint.Name());
-      if (!ParseSdfJoint(joint, _stage, jointPath, sdfLinkToUSDPath))
+      if (!ParseSdfJoint(joint, _stage, jointPath, _model, sdfLinkToUSDPath))
       {
         std::cerr << "Error parsing joint [" << joint.Name() << "]\n";
         return false;

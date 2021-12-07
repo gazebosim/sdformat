@@ -23,6 +23,7 @@
 #include <pxr/usd/usd/stage.h>
 
 #include "sdf/Joint.hh"
+#include "sdf/Model.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
@@ -33,11 +34,13 @@ namespace usd
   /// of _joint.
   /// \param[in] _path The USD path of the parsed joint in _stage, which must be
   /// a valid USD path.
+  /// \param[in] _parentModel The model that is the parent of _joint
   /// \param[in] _linkToUSDPath a map of a link's SDF name to the link's USD path.
   /// \return True if _joint was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
   bool SDFORMAT_VISIBLE ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
+      const sdf::Model &_parentModel,
       const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath);
 }
 
