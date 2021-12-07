@@ -10,7 +10,7 @@ set(cmd_script_configured_test "${cmd_script_generated_test}.configured")
 set(library_location "$<TARGET_FILE:${PROJECT_NAME}>")
 
 configure_file(
-  "cmd${PROJECT_NAME_NO_VERSION_LOWER}.rb.in"
+  "${CMAKE_SOURCE_DIR}/src/cmd/cmd${PROJECT_NAME_NO_VERSION_LOWER}.rb.in"
   "${cmd_script_configured_test}"
   @ONLY)
 
