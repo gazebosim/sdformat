@@ -24,6 +24,7 @@
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
+#include <pxr/usd/usdPhysics/scene.h>
 
 #include "sdf/World.hh"
 #include "sdf_usd_parser/model.hh"
@@ -33,9 +34,14 @@ namespace usd
   bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
+    _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
+
     auto usdWorldPrim = _stage->DefinePrim(pxr::SdfPath(_path));
 
-    _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
+    auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
+        pxr::SdfPath(_path + "/physics"));
+    // TODO(adlarkin) populate information in usdPhysics, if needed?
+    // Otherwise, no need to save the return variable
 
     // parse all of the world's models and convert them to USD
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)

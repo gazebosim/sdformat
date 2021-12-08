@@ -22,6 +22,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdPhysics/massAPI.h>
 
 #include "sdf/Link.hh"
 #include "sdf_usd_parser/visual.hh"
@@ -32,8 +33,30 @@ namespace usd
   bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
+    const pxr::SdfPath sdfLinkPath(_path);
+
+    auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
     usd::SetPose(_link.RawPose(), usdLinkXform);
+
+    // apply a mass to this link
+    // TODO(adlarkin) don't apply mass to static links? I don't think it
+    // matters because static bodies in USD (i.e., bodies that either
+    // have or are children of a PhysicsRigidBodyAPI) are implicitly given
+    // an infinite mass. So, even if the generated USD file shows a static
+    // link having a non-infinite mass (default mass in SDF is 1), the link
+    // should still behave as a static body. But, maybe it would be worth
+    // skipping applying masses to static links to avoid confusion in the
+    // resulting USD file
+    auto massAPI =
+      pxr::UsdPhysicsMassAPI::Apply(_stage->GetPrimAtPath(sdfLinkPath));
+    if (!massAPI)
+    {
+      std::cerr << "Unable to attach mass properties to link ["
+                << _link.Name() << "]\n";
+      return false;
+    }
+    massAPI.CreateMassAttr().Set(
+        static_cast<float>(_link.Inertial().MassMatrix().Mass()));
 
     // TODO(adlarkin) finish parsing link. It will look something like this
     // (this does not cover all elements of a link that need to be parsed):
