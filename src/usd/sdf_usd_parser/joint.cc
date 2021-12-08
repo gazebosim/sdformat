@@ -32,6 +32,7 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
+#include <pxr/usd/usdPhysics/prismaticJoint.h>
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
 #include <pxr/usd/usdPhysics/sphericalJoint.h>
 
@@ -183,6 +184,33 @@ namespace usd
     return true;
   }
 
+  bool ParseSdfPrismaticJoint(const sdf::Joint &_joint,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
+  {
+    auto usdJoint =
+      pxr::UsdPhysicsPrismaticJoint::Define(_stage, pxr::SdfPath(_path));
+
+    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX)
+      usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY)
+      usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ)
+      usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
+    else
+    {
+      std::cerr << "Prismatic joint [" << _joint.Name() << "] has an invalid "
+                << "axis: [" << _joint.Axis()->Xyz() << "]\n";
+      return false;
+    }
+
+    usdJoint.CreateLowerLimitAttr().Set(
+        static_cast<float>(_joint.Axis()->Lower()));
+    usdJoint.CreateUpperLimitAttr().Set(
+        static_cast<float>(_joint.Axis()->Upper()));
+
+    return true;
+  }
+
   bool ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const sdf::Model &_parentModel,
@@ -227,9 +255,11 @@ namespace usd
       case sdf::JointType::FIXED:
         typeParsed = ParseSdfFixedJoint(_joint, _stage, _path);
         break;
+      case sdf::JointType::PRISMATIC:
+        typeParsed = ParseSdfPrismaticJoint(_joint, _stage, _path);
+        break;
       case sdf::JointType::CONTINUOUS:
       case sdf::JointType::GEARBOX:
-      case sdf::JointType::PRISMATIC:
       case sdf::JointType::REVOLUTE2:
       case sdf::JointType::SCREW:
       case sdf::JointType::UNIVERSAL:
