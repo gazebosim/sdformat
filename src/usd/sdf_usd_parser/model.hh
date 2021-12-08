@@ -33,10 +33,13 @@ namespace usd
   /// of _model.
   /// \param[in] _path The USD path of the parsed model in _stage, which must be
   /// a valid USD path.
+  /// \param[in] _worldPath The path to the USD world prim. This is needed if
+  /// the model has any joints with the world as its parent.
   /// \return True if _model was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
   bool SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path);
+      pxr::UsdStageRefPtr &_stage, const std::string &_path,
+      const pxr::SdfPath &_worldPath);
 }
 
 #endif

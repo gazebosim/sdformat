@@ -36,7 +36,7 @@
 namespace usd
 {
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path)
+      const std::string &_path, const pxr::SdfPath &_worldPath)
   {
     auto usdModelXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
     // since USD does not have a plane yet, planes are being represented as a
@@ -98,7 +98,8 @@ namespace usd
     {
       const auto joint = *(_model.JointByIndex(i));
       const auto jointPath = std::string(_path + "/" + joint.Name());
-      if (!ParseSdfJoint(joint, _stage, jointPath, _model, sdfLinkToUSDPath))
+      if (!ParseSdfJoint(joint, _stage, jointPath, _model,
+            sdfLinkToUSDPath, _worldPath))
       {
         std::cerr << "Error parsing joint [" << joint.Name() << "]\n";
         return false;

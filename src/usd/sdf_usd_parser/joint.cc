@@ -30,6 +30,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/relationship.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
 #include <pxr/usd/usdPhysics/sphericalJoint.h>
@@ -58,15 +59,28 @@ namespace usd
   bool SetUSDJointPose(pxr::UsdPhysicsJoint &_jointPrim,
       const sdf::Joint &_joint, const sdf::Model &_parentModel)
   {
-      auto sdfChildLink = _parentModel.LinkByName(_joint.ChildLinkName());
-      if (!sdfChildLink)
-      {
-        std::cerr << "Internal error: unable to find a link named ["
-                  << _joint.ChildLinkName() << "] in model ["
-                  << _parentModel.Name() << "]\n";
-        return false;
-      }
+    auto sdfChildLink = _parentModel.LinkByName(_joint.ChildLinkName());
+    if (!sdfChildLink)
+    {
+      std::cerr << "Internal error: unable to find a link named ["
+                << _joint.ChildLinkName() << "] in model ["
+                << _parentModel.Name() << "]\n";
+      return false;
+    }
 
+    ignition::math::Vector3d relativePosition;
+    ignition::math::Quaterniond relativeRotation;
+
+    if (_joint.ParentLinkName() == "world")
+    {
+      // This joint's parent is the world, and the SDF child link pose is
+      // w.r.t world by default, so no pose computations need to be done
+      // since the child link pose is already w.r.t the parent
+      relativePosition = sdfChildLink->RawPose().Pos();
+      relativeRotation = sdfChildLink->RawPose().Rot();
+    }
+    else
+    {
       auto sdfParentLink = _parentModel.LinkByName(_joint.ParentLinkName());
       if (!sdfParentLink)
       {
@@ -96,24 +110,26 @@ namespace usd
       const auto &x_wc = sdfChildLink->RawPose();
       const auto &childParentPose = x_wp.Inverse() * x_wc;
 
-      const auto &relativePosition = childParentPose.Pos();
-      const auto &relativeRotation = childParentPose.Rot();
+      relativePosition = childParentPose.Pos();
+      relativeRotation = childParentPose.Rot();
+    }
 
-      // set the joint's pose relative to the parent link to be at the root of
-      // the child link (see \note in the method documentation above)
-      _jointPrim.CreateLocalPos0Attr().Set(pxr::GfVec3f(
-            relativePosition.X(), relativePosition.Y(), relativePosition.Z()));
-      _jointPrim.CreateLocalRot0Attr().Set(pxr::GfQuatf(
-            relativeRotation.W(), relativeRotation.X(),
-            relativeRotation.Y(), relativeRotation.Z()));
 
-      // since we are currently assuming that the joint is attached to the root
-      // of the child link (see the \note in the method documentation above),
-      // the position and rotation offset relative to the child link is 0
-      _jointPrim.CreateLocalPos1Attr().Set(pxr::GfVec3f(0.0));
-      _jointPrim.CreateLocalRot1Attr().Set(pxr::GfQuatf(1.0, 0.0, 0.0, 0.0));
+    // set the joint's pose relative to the parent link to be at the root of
+    // the child link (see \note in the method documentation above)
+    _jointPrim.CreateLocalPos0Attr().Set(pxr::GfVec3f(
+          relativePosition.X(), relativePosition.Y(), relativePosition.Z()));
+    _jointPrim.CreateLocalRot0Attr().Set(pxr::GfQuatf(
+          relativeRotation.W(), relativeRotation.X(),
+          relativeRotation.Y(), relativeRotation.Z()));
 
-      return true;
+    // since we are currently assuming that the joint is attached to the root
+    // of the child link (see the \note in the method documentation above),
+    // the position and rotation offset relative to the child link is 0
+    _jointPrim.CreateLocalPos1Attr().Set(pxr::GfVec3f(0.0));
+    _jointPrim.CreateLocalRot1Attr().Set(pxr::GfQuatf(1.0, 0.0, 0.0, 0.0));
+
+    return true;
   }
 
   bool ParseSdfRevoluteJoint(const sdf::Joint &_joint,
@@ -150,8 +166,7 @@ namespace usd
   bool ParseSdfBallJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
-    auto usdJoint =
-      pxr::UsdPhysicsSphericalJoint::Define(_stage, pxr::SdfPath(_path));
+    pxr::UsdPhysicsSphericalJoint::Define(_stage, pxr::SdfPath(_path));
 
     // While USD allows for cone limits that can restrict motion in a given
     // range, SDF does not have limits for a ball joint. So, there's
@@ -160,22 +175,37 @@ namespace usd
     return true;
   }
 
+  bool ParseSdfFixedJoint(const sdf::Joint &_joint,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
+  {
+    pxr::UsdPhysicsFixedJoint::Define(_stage, pxr::SdfPath(_path));
+
+    return true;
+  }
+
   bool ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const sdf::Model &_parentModel,
-      const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath)
+      const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath,
+      const pxr::SdfPath &_worldPath)
   {
-    auto it = _linkToUSDPath.find(_joint.ParentLinkName());
-    if (it == _linkToUSDPath.end())
+    // the joint's parent may be "world". If this is the case, the joint's
+    // parent should be set to the world prim, not a link
+    auto parentLinkPath = _worldPath;
+    if (_joint.ParentLinkName() != "world")
     {
-      std::cerr << "Unable to find a USD path for link ["
-                << _joint.ParentLinkName() << "], which is the parent link "
-                << "of joint [" << _joint.Name() << "]\n";
-      return false;
+      const auto it = _linkToUSDPath.find(_joint.ParentLinkName());
+      if (it == _linkToUSDPath.end())
+      {
+        std::cerr << "Unable to find a USD path for link ["
+                  << _joint.ParentLinkName() << "], which is the parent link "
+                  << "of joint [" << _joint.Name() << "]\n";
+        return false;
+      }
+      parentLinkPath = it->second;
     }
-    const auto parentLinkPath = it->second;
 
-    it = _linkToUSDPath.find(_joint.ChildLinkName());
+    const auto it = _linkToUSDPath.find(_joint.ChildLinkName());
     if (it == _linkToUSDPath.end())
     {
       std::cerr << "Unable to find a USD path for link ["
@@ -194,8 +224,10 @@ namespace usd
       case sdf::JointType::BALL:
         typeParsed = ParseSdfBallJoint(_joint, _stage, _path);
         break;
-      case sdf::JointType::CONTINUOUS:
       case sdf::JointType::FIXED:
+        typeParsed = ParseSdfFixedJoint(_joint, _stage, _path);
+        break;
+      case sdf::JointType::CONTINUOUS:
       case sdf::JointType::GEARBOX:
       case sdf::JointType::PRISMATIC:
       case sdf::JointType::REVOLUTE2:

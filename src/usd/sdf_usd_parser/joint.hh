@@ -36,12 +36,15 @@ namespace usd
   /// a valid USD path.
   /// \param[in] _parentModel The model that is the parent of _joint
   /// \param[in] _linkToUSDPath a map of a link's SDF name to the link's USD path.
+  /// \param[in] _worldPath The USD path of the world prim. This is needed if
+  /// _joint's parent is the world.
   /// \return True if _joint was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
   bool SDFORMAT_VISIBLE ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const sdf::Model &_parentModel,
-      const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath);
+      const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath,
+      const pxr::SdfPath &_worldPath);
 }
 
 #endif

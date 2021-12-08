@@ -36,7 +36,8 @@ namespace usd
   {
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
 
-    auto usdWorldPrim = _stage->DefinePrim(pxr::SdfPath(_path));
+    const auto worldPrimPath = pxr::SdfPath(_path);
+    auto usdWorldPrim = _stage->DefinePrim(worldPrimPath);
 
     auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
         pxr::SdfPath(_path + "/physics"));
@@ -48,7 +49,7 @@ namespace usd
     {
       const auto model = *(_world.ModelByIndex(i));
       const auto modelPath = std::string(_path + "/" + model.Name());
-      if (!ParseSdfModel(model, _stage, modelPath))
+      if (!ParseSdfModel(model, _stage, modelPath, worldPrimPath))
       {
         std::cerr << "Error parsing model [" << model.Name() << "]\n";
         return false;
