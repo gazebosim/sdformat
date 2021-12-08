@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
@@ -28,13 +29,14 @@
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Model.hh"
+#include "sdf_usd_parser/joint.hh"
 #include "sdf_usd_parser/link.hh"
 #include "sdf_usd_parser/utils.hh"
 
 namespace usd
 {
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path)
+      const std::string &_path, const pxr::SdfPath &_worldPath)
   {
     auto usdModelXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
     // since USD does not have a plane yet, planes are being represented as a
@@ -75,22 +77,36 @@ namespace usd
       }
     }
 
-    // TODO(adlarkin) finish parsing model. It will look something like this
-    // (this does not cover parsing all elements of a model):
-    //  * ParseSdfLink
-    //  * ParseSdfJoint
-
-    // parse all of the model's links and convert them to USD
+    // Parse all of the model's links and convert them to USD.
+    // Map a link's SDF name to its USD path so that USD joints know which
+    // USD links to connect to.
+    std::unordered_map<std::string, pxr::SdfPath> sdfLinkToUSDPath;
     for (uint64_t i = 0; i < _model.LinkCount(); ++i)
     {
       const auto link = *(_model.LinkByIndex(i));
       const auto linkPath = std::string(_path + "/" + link.Name());
+      sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
       if (!ParseSdfLink(link, _stage, linkPath))
       {
         std::cerr << "Error parsing link [" << link.Name() << "]\n";
         return false;
       }
     }
+
+    // Parse all of the model's joints and convert them to USD.
+    for (uint64_t i = 0; i < _model.JointCount(); ++i)
+    {
+      const auto joint = *(_model.JointByIndex(i));
+      const auto jointPath = std::string(_path + "/" + joint.Name());
+      if (!ParseSdfJoint(joint, _stage, jointPath, _model,
+            sdfLinkToUSDPath, _worldPath))
+      {
+        std::cerr << "Error parsing joint [" << joint.Name() << "]\n";
+        return false;
+      }
+    }
+
+    // TODO(adlarkin) finish parsing model
 
     return true;
   }

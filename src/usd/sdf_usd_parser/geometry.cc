@@ -291,11 +291,18 @@ namespace usd
         std::cerr << "Geometry type is either invalid or not supported\n";
     }
 
-    // Set the collision. In SDF, the collision is defined separately from
-    // the visual's geometry (in case a user wants to define a simpler collision,
+    // Set the collision for this geometry.
+    // In SDF, the collisions of a link are defined separately from
+    // the link's visual geometries (in case a user wants to define a simpler collision,
     // for example). In USD, the collision can be attached to the geometry so
     // that the collision shape is the geometry shape.
-    // TODO(adlarkin) support the option of a different collision shape,
+    // The current approach that's taken here (attaching a collision to the
+    // geometry) assumes that for every visual in a link, the visual should have a
+    // collision that matches its geometry. This approach currently ignores
+    // collisions defined in a link since it instead creates collisions for a link
+    // that match a link's visual geometries.
+    // TODO(adlarkin) support the option of a different collision shape (i.e.,
+    // don't ignore collisions defined in a link),
     // especially for meshes - here's more information about how to do this:
     // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html?highlight=collision#turning-meshes-into-shapes
     if (typeParsed)
