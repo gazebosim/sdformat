@@ -24,6 +24,7 @@
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
+#include "sdf/parser.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 
@@ -269,4 +270,45 @@ void Geometry::SetHeightmapShape(const Heightmap &_heightmap)
 sdf::ElementPtr Geometry::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Geometry::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("geometry.sdf", elem);
+
+  switch (this->dataPtr->type)
+  {
+    case GeometryType::BOX:
+      elem->InsertElement(this->dataPtr->box->ToElement());
+      break;
+    case GeometryType::CYLINDER:
+      elem->InsertElement(this->dataPtr->cylinder->ToElement());
+      break;
+    case GeometryType::PLANE:
+      elem->InsertElement(this->dataPtr->plane->ToElement());
+      break;
+    case GeometryType::SPHERE:
+      elem->InsertElement(this->dataPtr->sphere->ToElement());
+      break;
+    case GeometryType::MESH:
+      elem->InsertElement(this->dataPtr->mesh->ToElement());
+      break;
+    case GeometryType::HEIGHTMAP:
+      elem->InsertElement(this->dataPtr->heightmap->ToElement());
+      break;
+    case GeometryType::CAPSULE:
+      elem->InsertElement(this->dataPtr->capsule->ToElement());
+      break;
+    case GeometryType::ELLIPSOID:
+      elem->InsertElement(this->dataPtr->ellipsoid->ToElement());
+      break;
+    case GeometryType::EMPTY:
+    default:
+      elem->AddElement("empty");
+      break;
+  }
+
+  return elem;
 }
