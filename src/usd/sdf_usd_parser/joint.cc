@@ -32,6 +32,7 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
+#include <pxr/usd/usdPhysics/sphericalJoint.h>
 
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
@@ -146,6 +147,19 @@ namespace usd
     return true;
   }
 
+  bool ParseSdfBallJoint(const sdf::Joint &_joint,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
+  {
+    auto usdJoint =
+      pxr::UsdPhysicsSphericalJoint::Define(_stage, pxr::SdfPath(_path));
+
+    // While USD allows for cone limits that can restrict motion in a given
+    // range, SDF does not have limits for a ball joint. So, there's
+    // nothing to do after creating a UsdPhysicsSphericalJoint, since this
+    // joint by default has no limits (i.e., allows for circular motion)
+    return true;
+  }
+
   bool ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const sdf::Model &_parentModel,
@@ -178,6 +192,8 @@ namespace usd
         typeParsed = ParseSdfRevoluteJoint(_joint, _stage, _path);
         break;
       case sdf::JointType::BALL:
+        typeParsed = ParseSdfBallJoint(_joint, _stage, _path);
+        break;
       case sdf::JointType::CONTINUOUS:
       case sdf::JointType::FIXED:
       case sdf::JointType::GEARBOX:
