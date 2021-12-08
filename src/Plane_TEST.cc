@@ -167,3 +167,21 @@ TEST(DOMPlane, Shape)
       plane.Shape().Offset());
   EXPECT_EQ(ignition::math::Vector2d(1, 2), plane.Size());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, ToElement)
+{
+  sdf::Plane plane;
+
+  plane.SetNormal(ignition::math::Vector3d(0, 1, 0));
+  plane.SetSize(ignition::math::Vector2d(2, 4));
+
+  sdf::ElementPtr elem = plane.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Plane plane2;
+  plane2.Load(elem);
+
+  EXPECT_EQ(plane.Normal(), plane2.Normal());
+  EXPECT_EQ(plane.Size(), plane2.Size());
+}
