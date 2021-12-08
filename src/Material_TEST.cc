@@ -295,7 +295,7 @@ TEST(DOMMaterial, ToElement)
 {
   sdf::Material material;
 
-  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1f));
+  material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
   material.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.5f));
   material.SetSpecular(ignition::math::Color(0.6f, 0.4f, 0.8f, 0.8f));
   material.SetEmissive(ignition::math::Color(0.2f, 0.7f, 0.9f, 0.1f));
