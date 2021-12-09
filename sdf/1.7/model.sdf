@@ -15,7 +15,7 @@
     <description>
       The name of the model's canonical link, to which the model's implicit
       coordinate frame is attached. If unset or set to an empty string, the
-      first `//link` listed as a direct child of this model is chosen as the
+      first `/link` listed as a direct child of this model is chosen as the
       canonical link. If the model has no direct `/link` children, it will
       instead be attached to the first nested (or included) model's implicit
       frame.
