@@ -292,7 +292,7 @@ TEST(DOMVisual, ToElement)
   sdf::Visual visual;
   visual.SetName("my-visual");
   visual.SetCastShadows(true);
-  visual.SetTransparency(0.2);
+  visual.SetTransparency(0.2f);
   visual.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   visual.SetVisibilityFlags(1234u);
   visual.SetHasLaserRetro(true);
