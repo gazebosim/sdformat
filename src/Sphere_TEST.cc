@@ -133,3 +133,19 @@ TEST(DOMSphere, Shape)
   sphere.Shape().SetRadius(0.123);
   EXPECT_DOUBLE_EQ(0.123, sphere.Radius());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, ToElement)
+{
+  sdf::Sphere sphere;
+
+  sphere.SetRadius(1.2);
+
+  sdf::ElementPtr elem = sphere.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Sphere sphere2;
+  sphere2.Load(elem);
+
+  EXPECT_DOUBLE_EQ(sphere.Radius(), sphere2.Radius());
+}

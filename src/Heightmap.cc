@@ -19,6 +19,7 @@
 
 #include "Utils.hh"
 #include "sdf/Heightmap.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -458,4 +459,50 @@ const HeightmapBlend *Heightmap::BlendByIndex(uint64_t _index) const
 void Heightmap::AddBlend(const HeightmapBlend &_blend)
 {
   this->dataPtr->blends.push_back(_blend);
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Heightmap::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("heightmap_shape.sdf", elem);
+
+  // Uri
+  sdf::ElementPtr uriElem = elem->GetElement("uri");
+  uriElem->Set(this->Uri());
+
+  // Size
+  sdf::ElementPtr sizeElem = elem->GetElement("size");
+  sizeElem->Set(this->Size());
+
+  // Position
+  sdf::ElementPtr posElem = elem->GetElement("pos");
+  posElem->Set(this->Position());
+
+  // Terrain paging
+  sdf::ElementPtr pagingElem = elem->GetElement("use_terrain_paging");
+  pagingElem->Set(this->UseTerrainPaging());
+
+  // Sampling
+  sdf::ElementPtr samplingElem = elem->GetElement("sampling");
+  samplingElem->Set(this->Sampling());
+
+  // Textures
+  for (const HeightmapTexture &tex : this->dataPtr->textures)
+  {
+    sdf::ElementPtr texElem = elem->AddElement("texture");
+    texElem->GetElement("size")->Set(tex.Size());
+    texElem->GetElement("diffuse")->Set(tex.Diffuse());
+    texElem->GetElement("normal")->Set(tex.Normal());
+  }
+
+  // Blends
+  for (const HeightmapBlend &blend : this->dataPtr->blends)
+  {
+    sdf::ElementPtr blendElem = elem->AddElement("blend");
+    blendElem->GetElement("min_height")->Set(blend.MinHeight());
+    blendElem->GetElement("fade_dist")->Set(blend.FadeDistance());
+  }
+
+  return elem;
 }

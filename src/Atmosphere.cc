@@ -18,6 +18,7 @@
 #include <string>
 #include <ignition/math/Helpers.hh>
 #include "sdf/Atmosphere.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -143,4 +144,18 @@ bool Atmosphere::operator==(const Atmosphere &_atmosphere)
                           _atmosphere.dataPtr->temperatureGradient) &&
     ignition::math::equal(this->dataPtr->pressure,
                           _atmosphere.dataPtr->pressure);
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Atmosphere::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("atmosphere.sdf", elem);
+
+  elem->GetAttribute("type")->Set("adiabatic");
+  elem->GetElement("temperature")->Set(this->Temperature().Kelvin());
+  elem->GetElement("pressure")->Set(this->Pressure());
+  elem->GetElement("temperature_gradient")->Set(this->TemperatureGradient());
+
+  return elem;
 }
