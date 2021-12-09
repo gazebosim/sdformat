@@ -125,10 +125,22 @@ endif()
 find_package(ignition-common4 COMPONENTS graphics REQUIRED)
 if (NOT ignition-common4_FOUND)
   message(STATUS "Looking for ignition-common4-config.cmake - not found")
-  BUILD_ERROR ("Missing: Ignition math (libignition-common4-dev)")
+  BUILD_ERROR ("Missing: Ignition common (libignition-common4-dev)")
 else()
   set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
   message(STATUS "Looking for ignition-common${IGN_COMMON_VER}-config.cmake - found")
+endif()
+
+########################################
+# Find ignition fuel
+# Set a variable for generating ProjectConfig.cmake
+find_package(ignition-fuel_tools7 REQUIRED)
+if (NOT ignition-fuel_tools7_FOUND)
+  message(STATUS "Looking for ignition-fuel_tools7-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition fuel (libignition-fuel_tools7-dev)")
+else()
+  set(IGN_FUEL_TOOLS_VER ${ignition-fuel_tools7_VERSION_MAJOR})
+  message(STATUS "Looking for ignition-fuel_tools${IGN_FUEL_TOOLS_VER}-config.cmake - found")
 endif()
 
 ########################################
