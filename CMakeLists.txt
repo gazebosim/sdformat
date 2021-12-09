@@ -106,6 +106,10 @@ if (BUILD_SDF)
 
   message (STATUS "----------------------------------------\n")
 
+  if (WIN32)
+    sdf_setup_windows()
+  endif ()
+
   ign_configure_build(QUIT_IF_BUILD_ERRORS)
   ign_create_packages()
 
