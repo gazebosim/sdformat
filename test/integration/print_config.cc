@@ -29,11 +29,12 @@ TEST(PrintConfig, PreserveIncludes)
 {
   const std::string modelPath = sdf::testing::TestFile("integration", "model");
 
-  sdf::setFindCallback(
-      [&](const std::string &_file)
-      {
-        return sdf::filesystem::append(modelPath, _file);
-      });
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetFindCallback(
+    [&](const std::string &_file)
+    {
+      return sdf::filesystem::append(modelPath, _file);
+    });
 
   const std::string includeStr =
 R"(<include>
@@ -66,7 +67,7 @@ R"(<model name='test2'>
     "</sdf>";
 
   sdf::Root root;
-  sdf::Errors errors = root.LoadSdfString(sdfStr);
+  sdf::Errors errors = root.LoadSdfString(sdfStr, parserConfig);
   EXPECT_TRUE(errors.empty()) << errors;
 
   auto *world = root.WorldByIndex(0);
@@ -154,11 +155,12 @@ TEST(PrintConfig, PreserveIncludesWithMerge)
 {
   const std::string modelPath = sdf::testing::TestFile("integration", "model");
 
-  sdf::setFindCallback(
-      [&](const std::string &_file)
-      {
-        return sdf::filesystem::append(modelPath, _file);
-      });
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetFindCallback(
+    [&](const std::string &_file)
+    {
+      return sdf::filesystem::append(modelPath, _file);
+    });
 
   const std::string includeMergeStr =
 R"(<model name="m2">
@@ -177,7 +179,7 @@ R"(<model name="m2">
     "</sdf>";
 
   sdf::Root root;
-  sdf::Errors errors = root.LoadSdfString(sdfStr);
+  sdf::Errors errors = root.LoadSdfString(sdfStr, parserConfig);
   EXPECT_TRUE(errors.empty()) << errors;
 
   auto *world = root.WorldByIndex(0);
