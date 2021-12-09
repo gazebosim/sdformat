@@ -17,6 +17,7 @@
 
 #include "sdf_usd_parser/world.hh"
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
