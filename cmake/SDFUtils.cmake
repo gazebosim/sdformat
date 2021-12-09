@@ -1,127 +1,3 @@
-################################################################################
-#APPEND_TO_CACHED_STRING(_string _cacheDesc [items...])
-# Appends items to a cached list.
-MACRO (APPEND_TO_CACHED_STRING _string _cacheDesc)
-  FOREACH (newItem ${ARGN})
-    SET (${_string} "${${_string}} ${newItem}" CACHE INTERNAL ${_cacheDesc} FORCE)
-  ENDFOREACH (newItem ${ARGN})
-  #STRING(STRIP ${${_string}} ${_string})
-ENDMACRO (APPEND_TO_CACHED_STRING)
-
-################################################################################
-# APPEND_TO_CACHED_LIST (_list _cacheDesc [items...]
-# Appends items to a cached list.
-MACRO (APPEND_TO_CACHED_LIST _list _cacheDesc)
-  SET (tempList ${${_list}})
-  FOREACH (newItem ${ARGN})
-    LIST (APPEND tempList ${newItem})
-  ENDFOREACH (newItem ${newItem})
-  SET (${_list} ${tempList} CACHE INTERNAL ${_cacheDesc} FORCE)
-ENDMACRO(APPEND_TO_CACHED_LIST)
-
-#################################################
-# Macro to turn a list into a string (why doesn't CMake have this built-in?)
-MACRO (LIST_TO_STRING _string _list)
-    SET (${_string})
-    FOREACH (_item ${_list})
-      SET (${_string} "${${_string}} ${_item}")
-    ENDFOREACH (_item)
-    #STRING(STRIP ${${_string}} ${_string})
-ENDMACRO (LIST_TO_STRING)
-
-#################################################
-# BUILD ERROR macro
-macro (BUILD_ERROR)
-  foreach (str ${ARGN})
-    SET (msg "\t${str}")
-    MESSAGE (STATUS ${msg})
-    APPEND_TO_CACHED_LIST(build_errors "build errors" ${msg})
-  endforeach ()
-endmacro (BUILD_ERROR)
-
-#################################################
-# BUILD WARNING macro
-macro (BUILD_WARNING)
-  foreach (str ${ARGN})
-    SET (msg "\t${str}" )
-    MESSAGE (STATUS ${msg} )
-    APPEND_TO_CACHED_LIST(build_warnings "build warning" ${msg})
-  endforeach (str ${ARGN})
-endmacro (BUILD_WARNING)
-
-#################################################
-macro (sdf_add_library _name)
-  set(LIBS_DESTINATION ${PROJECT_BINARY_DIR}/src)
-  set_source_files_properties(${ARGN} PROPERTIES COMPILE_DEFINITIONS "BUILDING_DLL")
-  add_library(${_name} SHARED ${ARGN})
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
-  if (MSVC)
-    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LIBS_DESTINATION})
-    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${LIBS_DESTINATION})
-    set_target_properties( ${_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${LIBS_DESTINATION})
-  endif ()
-endmacro ()
-
-#################################################
-macro (sdf_add_executable _name)
-  add_executable(${_name} ${ARGN})
-endmacro ()
-
-
-#################################################
-macro (sdf_install_includes _subdir)
-  install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir} COMPONENT headers)
-endmacro()
-
-#################################################
-macro (sdf_install_library _name)
-  set_target_properties(${_name} PROPERTIES SOVERSION ${SDF_MAJOR_VERSION} VERSION ${SDF_VERSION_FULL})
-  install (
-    TARGETS ${_name}
-    EXPORT ${_name}
-    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-    COMPONENT shlib)
-
-# Export and install target
-export(
-  EXPORT ${_name}
-  FILE ${PROJECT_BINARY_DIR}/cmake/${sdf_target_output_filename}
-  NAMESPACE ${PROJECT_EXPORT_NAME}::)
-
-install(
-  EXPORT ${_name}
-  DESTINATION ${sdf_config_install_dir}
-  FILE ${sdf_target_output_filename}
-  NAMESPACE ${PROJECT_EXPORT_NAME}::)
-
-endmacro ()
-
-#################################################
-macro (sdf_install_executable _name)
-  set_target_properties(${_name} PROPERTIES VERSION ${SDF_VERSION_FULL})
-  install (TARGETS ${_name} DESTINATION ${BIN_INSTALL_DIR})
-endmacro ()
-
-#################################################
-macro (sdf_setup_unix)
-endmacro()
-
-#################################################
-macro (sdf_setup_windows)
-  # Need for M_PI constant
-  add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN)
-  # And force linking to MSVC dynamic runtime
-  set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
-  set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
-endmacro()
-
-#################################################
-macro (sdf_setup_apple)
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined -Wl,dynamic_lookup")
-endmacro()
-
 #################################################
 # VAR: SDF_BUILD_TESTS_EXTRA_EXE_SRCS
 # Hack: extra sources to build binaries can be supplied to gz_build_tests in
@@ -141,7 +17,7 @@ macro (sdf_build_tests)
     )
 
     add_dependencies(${BINARY_NAME}
-      gtest gtest_main ${sdf_target}
+      gtest gtest_main ${PROJECT_LIBRARY_TARGET_NAME}
       )
 
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
@@ -151,7 +27,7 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME} PRIVATE
         libgtest.a
         libgtest_main.a
-        ${sdf_target}
+        ${PROJECT_LIBRARY_TARGET_NAME}
         pthread
         ${IGNITION-MATH_LIBRARIES}
       )
@@ -159,14 +35,14 @@ macro (sdf_build_tests)
       target_link_libraries(${BINARY_NAME} PRIVATE
         gtest.lib
         gtest_main.lib
-        ${sdf_target}
+        ${PROJECT_LIBRARY_TARGET_NAME}
         ${IGNITION-MATH_LIBRARIES}
       )
 
       # Copy in sdformat library
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:sdformat${SDF_MAJOR_VERSION}>
+        $<TARGET_FILE:sdformat${PROJECT_VERSION_MAJOR}>
         $<TARGET_FILE_DIR:${BINARY_NAME}> VERBATIM)
 
     endif()
@@ -210,20 +86,6 @@ macro (sdf_build_tests)
   endforeach()
 
   set(GZ_BUILD_TESTS_EXTRA_EXE_SRCS "")
-endmacro()
-
-#################################################
-# Macro to setup supported compiler warnings
-# Based on work of Florent Lamiraux, Thomas Moulard, JRL, CNRS/AIST.
-include(CheckCXXCompilerFlag)
-
-macro(filter_valid_compiler_warnings)
-  foreach(flag ${ARGN})
-    CHECK_CXX_COMPILER_FLAG(${flag} R${flag})
-    if(${R${flag}})
-      set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${flag}")
-    endif()
-  endforeach()
 endmacro()
 
 #################################################

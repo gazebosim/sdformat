@@ -4,10 +4,6 @@ link_directories(
   ${PROJECT_BINARY_DIR}/test
 )
 
-if (NOT USE_INTERNAL_URDF)
-  link_directories(${URDF_LIBRARY_DIRS})
-endif()
-
 set (sources
   Actor.cc
   AirPressure.cc
@@ -79,8 +75,6 @@ if (USE_INTERNAL_URDF)
   urdf/urdf_parser/urdf_model_state.cpp
   urdf/urdf_parser/urdf_sensor.cpp
   urdf/urdf_parser/world.cpp)
-else()
-  include_directories(${URDF_INCLUDE_DIRS})
 endif()
 
 if (BUILD_SDF_TEST)
@@ -141,9 +135,9 @@ if (BUILD_SDF_TEST)
     )
   endif()
 
-  include_directories(${PROJECT_SOURCE_DIR}/test)
-  sdf_build_tests(${gtest_sources})
+  ign_build_tests(SOURCES ${gtest_sources} INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test)
 
+  include_directories(${PROJECT_SOURCE_DIR}/test)
   if (TARGET UNIT_ign_TEST)
     # Link the libraries that we always need.
     target_link_libraries("UNIT_ign_TEST"
@@ -161,7 +155,7 @@ if (BUILD_SDF_TEST)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
     sdf_build_tests(XmlUtils_TEST.cc)
     target_link_libraries(UNIT_XmlUtils_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+      TINYXML2::TINYXML2)
   endif()
 
   if (NOT WIN32)
@@ -173,21 +167,17 @@ if (BUILD_SDF_TEST)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
     sdf_build_tests(Converter_TEST.cc)
     target_link_libraries(UNIT_Converter_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+      TINYXML2::TINYXML2)
   endif()
 
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc XmlUtils.cc)
     sdf_build_tests(parser_urdf_TEST.cc)
     if (NOT USE_INTERNAL_URDF)
-      target_compile_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_CFLAGS})
-      if (${CMAKE_VERSION} VERSION_GREATER 3.13)
-        target_link_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_LDFLAGS})
-      endif()
-      target_link_libraries(UNIT_parser_urdf_TEST PRIVATE ${URDF_LIBRARIES})
+      target_link_libraries(UNIT_parser_urdf_TEST PRIVATE IgnURDFDOM::IgnURDFDOM)
     endif()
     target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+      TINYXML2::TINYXML2)
   endif()
 
   if (NOT WIN32)
@@ -195,47 +185,39 @@ if (BUILD_SDF_TEST)
           parser_urdf.cc FrameSemantics.cc Converter.cc EmbeddedSdf.cc SDFExtension.cc)
     sdf_build_tests(ParamPassing_TEST.cc)
     if (NOT USE_INTERNAL_URDF)
-      target_compile_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_CFLAGS})
-      if (${CMAKE_VERSION} VERSION_GREATER 3.13)
-        target_link_options(UNIT_ParamPassing_TEST PRIVATE ${URDF_LDFLAGS})
-      endif()
-      target_link_libraries(UNIT_ParamPassing_TEST PRIVATE ${URDF_LIBRARIES})
+      target_link_libraries(UNIT_ParamPassing_TEST PRIVATE IgnURDFDOM::IgnURDFDOM)
     endif()
     target_link_libraries(UNIT_ParamPassing_TEST PRIVATE
-      ${TinyXML2_LIBRARIES})
+      TINYXML2::TINYXML2)
   endif()
 endif()
 
-sdf_add_library(${sdf_target} ${sources})
-target_compile_features(${sdf_target} PUBLIC cxx_std_17)
-target_link_libraries(${sdf_target}
+ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+
+target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
   PRIVATE
-    ${TinyXML2_LIBRARIES})
+    TINYXML2::TINYXML2)
 
 if (WIN32)
-  target_compile_definitions(${sdf_target} PRIVATE URDFDOM_STATIC)
+  target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
 endif()
 
-target_include_directories(${sdf_target}
+target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
 )
 
-message (STATUS "URDF_LIBRARY_DIRS=${URDF_LIBRARY_DIRS}")
-message (STATUS "URDF_LIBRARIES=${URDF_LIBRARIES}")
-
 if (NOT USE_INTERNAL_URDF)
-  target_compile_options(${sdf_target} PRIVATE ${URDF_CFLAGS})
-  if (${CMAKE_VERSION} VERSION_GREATER 3.13)
-    target_link_options(${sdf_target} PRIVATE ${URDF_LDFLAGS})
-  endif()
-  target_link_libraries(${sdf_target} PRIVATE ${URDF_LIBRARIES})
+  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE IgnURDFDOM::IgnURDFDOM)
 endif()
-
-sdf_install_library(${sdf_target})
 
 if(NOT WIN32)
   add_subdirectory(cmd)
