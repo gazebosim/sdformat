@@ -26,7 +26,6 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
-#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Model.hh"
 #include "sdf_usd_parser/joint.hh"
@@ -60,24 +59,6 @@ namespace usd
       usd::SetPose(_model.RawPose(), _stage, sdfModelPath);
     }
 
-    if (!_model.Static())
-    {
-      auto modelPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
-      if (!modelPrim)
-      {
-        std::cerr << "Internal error: unable to get prim at path ["
-                  << _path << "], but a model prim should exist at this path\n";
-        return false;
-      }
-
-      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(modelPrim))
-      {
-        std::cerr << "Internal error: unable to mark model at path ["
-                  << _path << "] as a rigid body\n";
-        return false;
-      }
-    }
-
     // Parse all of the model's links and convert them to USD.
     // Map a link's SDF name to its USD path so that USD joints know which
     // USD links to connect to.
@@ -87,7 +68,7 @@ namespace usd
       const auto link = *(_model.LinkByIndex(i));
       const auto linkPath = std::string(_path + "/" + link.Name());
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
-      if (!ParseSdfLink(link, _stage, linkPath))
+      if (!ParseSdfLink(link, _stage, linkPath, !_model.Static()))
       {
         std::cerr << "Error parsing link [" << link.Name() << "]\n";
         return false;
