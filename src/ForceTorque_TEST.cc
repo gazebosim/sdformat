@@ -22,6 +22,38 @@
 TEST(DOMForceTorque, Construction)
 {
   sdf::ForceTorque ft;
+  sdf::Noise defaultNoise, noise;
+
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+
+  EXPECT_EQ(defaultNoise, ft.ForceXNoise());
+  ft.SetForceXNoise(noise);
+  EXPECT_EQ(noise, ft.ForceXNoise());
+
+  EXPECT_EQ(defaultNoise, ft.ForceYNoise());
+  ft.SetForceYNoise(noise);
+  EXPECT_EQ(noise, ft.ForceYNoise());
+
+  EXPECT_EQ(defaultNoise, ft.ForceZNoise());
+  ft.SetForceZNoise(noise);
+  EXPECT_EQ(noise, ft.ForceZNoise());
+
+  EXPECT_EQ(defaultNoise, ft.TorqueXNoise());
+  ft.SetTorqueXNoise(noise);
+  EXPECT_EQ(noise, ft.TorqueXNoise());
+
+  EXPECT_EQ(defaultNoise, ft.TorqueYNoise());
+  ft.SetTorqueYNoise(noise);
+  EXPECT_EQ(noise, ft.TorqueYNoise());
+
+  EXPECT_EQ(defaultNoise, ft.TorqueZNoise());
+  ft.SetTorqueZNoise(noise);
+  EXPECT_EQ(noise, ft.TorqueZNoise());
 
   EXPECT_EQ(ft.Frame(), sdf::ForceTorqueFrame::CHILD);
   ft.SetFrame(sdf::ForceTorqueFrame::PARENT);

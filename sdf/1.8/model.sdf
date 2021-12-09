@@ -11,7 +11,7 @@
     </description>
   </attribute>
 
-  <attribute name="canonical_link" type="string" default="" required="*">
+  <attribute name="canonical_link" type="string" default="" required="0">
     <description>
       The name of the model's canonical link, to which the model's implicit
       coordinate frame is attached. If unset or set to an empty string, the
@@ -52,7 +52,7 @@
 
   <element name="include" required="*">
     <description>
-      Include resources from a URI. This can be used to nest models. Included resources can only contain one 'model', 'light' or 'actor' element. The URI can point to a directory or a file. If the URI is a directory, it must conform to the model database structure (see /tutorials?tut=composition&amp;cat=specification&amp;#defining-models-in-separate-files).
+      Include resources from a URI. This can be used to nest models. The included resource can only contain one 'model' element. The URI can point to a directory or a file. If the URI is a directory, it must conform to the model database structure (see /tutorials?tut=composition&amp;cat=specification&amp;#defining-models-in-separate-files).
     </description>
     <element name="uri" type="string" default="__default__" required="1">
       <description>URI to a resource, such as a model</description>

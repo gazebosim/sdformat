@@ -114,6 +114,14 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
+  // Check an SDF world file is allowed to have duplicate plugin names
+  {
+    std::string path = pathBase +"/world_duplicate_plugins.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
 
   // Check an SDF file with sibling elements of the same type (link)
   // that have duplicate names.
@@ -149,6 +157,15 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
+  }
+
+  // Check an SDF model file is allowed to have duplicate plugin names
+  {
+    std::string path = pathBase +"/model_duplicate_plugins.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_EQ("Valid.\n", output) << output;
   }
 
   // Check an SDF file with sibling elements of the same type (collision)
@@ -257,7 +274,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Joint with name[joint] must "
-                          "specify different link names for parent and child, "
+                          "specify different frame names for parent and child, "
                           "while [link] was specified for both."),
               std::string::npos) << output;
   }
@@ -317,6 +334,17 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/joint_parent_frame.sdf";
 
     // Check joint_parent_frame.sdf
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with the infinite values for joint axis limits.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/joint_axis_infinite_limits.sdf";
+
+    // Check joint_axis_infinite_limits.sdf
     std::string output =
       custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;

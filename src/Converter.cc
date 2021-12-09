@@ -88,7 +88,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
     return false;
   }
 
-  if (!elem || !elem->Attribute("version"))
+  if (!elem->Attribute("version"))
   {
     sdferr << "  Unable to determine original SDF version\n";
     return false;
@@ -258,6 +258,10 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     else if (name == "remove")
     {
       Remove(_elem, childElem);
+    }
+    else if (name == "remove_empty")
+    {
+      Remove(_elem, childElem, true);
     }
     else if (name == "unflatten")
     {
@@ -640,10 +644,11 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 
 /////////////////////////////////////////////////
 void Converter::Remove(tinyxml2::XMLElement *_elem,
-                       tinyxml2::XMLElement *_removeElem)
+                       tinyxml2::XMLElement *_removeElem,
+                       bool _removeOnlyEmpty)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_removeElem != NULL, "Move element is NULL");
+  SDF_ASSERT(_removeElem != NULL, "remove element is NULL");
 
   const char *attributeName = _removeElem->Attribute("attribute");
   const char *elementName = _removeElem->Attribute("element");
@@ -657,7 +662,11 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
 
   if (attributeName)
   {
-    _elem->DeleteAttribute(attributeName);
+    const char * attributeValue = _elem->Attribute(attributeName);
+    if (!_removeOnlyEmpty || (attributeValue && strlen(attributeValue) == 0))
+    {
+      _elem->DeleteAttribute(attributeName);
+    }
   }
   else
   {
@@ -665,8 +674,13 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
 
     while (childElem)
     {
-      _elem->DeleteChild(childElem);
-      childElem = _elem->FirstChildElement(elementName);
+      auto nextSibling = childElem->NextSiblingElement(elementName);
+      if (!_removeOnlyEmpty || (!childElem->FirstAttribute() &&
+          childElem->NoChildren() && !childElem->GetText()))
+      {
+        _elem->DeleteChild(childElem);
+      }
+      childElem = nextSibling;
     }
   }
 }
@@ -694,12 +708,12 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   const char *fromNameStr = fromConvertElem->Attribute("name");
   const char *toNameStr = toConvertElem->Attribute("name");
 
-  if (!fromNameStr || fromNameStr[0] == '\0')
+  if (!fromNameStr || strlen(fromNameStr) == 0)
   {
     sdferr << "Map: <from> element requires a non-empty name attribute.\n";
     return;
   }
-  if (!toNameStr || toNameStr[0] == '\0')
+  if (!toNameStr || strlen(toNameStr) == 0)
   {
     sdferr << "Map: <to> element requires a non-empty name attribute.\n";
     return;

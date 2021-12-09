@@ -6,4 +6,10 @@
     </convert>
   </convert>
 
+  <convert descendant_name="inertial">
+    <convert name="pose">
+      <remove_empty attribute="relative_to" />
+    </convert>
+  </convert>
+
 </convert> <!-- End SDF -->
