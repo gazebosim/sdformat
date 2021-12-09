@@ -155,8 +155,8 @@ TEST(DOMParticleEmitter, ToElement)
   EXPECT_DOUBLE_EQ(emitter.Lifetime(), emitter2.Lifetime());
   EXPECT_DOUBLE_EQ(emitter.Rate(), emitter2.Rate());
   EXPECT_DOUBLE_EQ(emitter.ScaleRate(), emitter2.ScaleRate());
-  EXPECT_EQ(emitter.MinVelocity(), emitter2.MinVelocity());
-  EXPECT_EQ(emitter.MaxVelocity(), emitter2.MaxVelocity());
+  EXPECT_DOUBLE_EQ(emitter.MinVelocity(), emitter2.MinVelocity());
+  EXPECT_DOUBLE_EQ(emitter.MaxVelocity(), emitter2.MaxVelocity());
   EXPECT_EQ(emitter.Size(), emitter2.Size());
   EXPECT_EQ(emitter.ParticleSize(), emitter2.ParticleSize());
   EXPECT_EQ(emitter.ColorStart(), emitter2.ColorStart());
