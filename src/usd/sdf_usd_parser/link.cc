@@ -36,7 +36,7 @@ namespace usd
     const pxr::SdfPath sdfLinkPath(_path);
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
-    usd::SetPose(_link.RawPose(), usdLinkXform);
+    usd::SetPose(_link.RawPose(), _stage, sdfLinkPath);
 
     // apply a mass to this link
     // TODO(adlarkin) don't apply mass to static links? I don't think it
@@ -63,6 +63,7 @@ namespace usd
     //  * ParseSdfVisual
     //  * ParseSdfCollision
     //  * ParseSdfSensor
+    //  * ParseSdfLight (look at world.cc for how this is being done)
 
     // parse all of the link's visuals and convert them to USD
     for (uint64_t i = 0; i < _link.VisualCount(); ++i)

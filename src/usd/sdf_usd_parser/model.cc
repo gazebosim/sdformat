@@ -38,7 +38,8 @@ namespace usd
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, const pxr::SdfPath &_worldPath)
   {
-    auto usdModelXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
+    const pxr::SdfPath sdfModelPath(_path);
+    auto usdModelXform = pxr::UsdGeomXform::Define(_stage, sdfModelPath);
     // since USD does not have a plane yet, planes are being represented as a
     // wide, thin box. The plane/box pose needs to be offset according to the
     // thickness to ensure that the top of the plane is at the correct height.
@@ -52,11 +53,11 @@ namespace usd
           _model.RawPose().Y(),
           _model.RawPose().Z() - (0.5 * usd::kPlaneThickness));
       usd::SetPose(ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
-          usdModelXform);
+          _stage, sdfModelPath);
     }
     else
     {
-      usd::SetPose(_model.RawPose(), usdModelXform);
+      usd::SetPose(_model.RawPose(), _stage, sdfModelPath);
     }
 
     if (!_model.Static())

@@ -103,6 +103,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/usd)
 set(sources ${sources}
   usd/sdf_usd_parser/geometry.cc
   usd/sdf_usd_parser/joint.cc
+  usd/sdf_usd_parser/light.cc
   usd/sdf_usd_parser/link.cc
   usd/sdf_usd_parser/model.cc
   usd/sdf_usd_parser/visual.cc

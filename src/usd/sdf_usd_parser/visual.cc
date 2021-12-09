@@ -33,8 +33,9 @@ namespace usd
   bool ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
-    usd::SetPose(_visual.RawPose(), usdVisualXform);
+    const pxr::SdfPath sdfVisualPath(_path);
+    auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
+    usd::SetPose(_visual.RawPose(), _stage, sdfVisualPath);
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");

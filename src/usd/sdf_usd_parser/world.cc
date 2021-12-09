@@ -27,6 +27,7 @@
 #include <pxr/usd/usdPhysics/scene.h>
 
 #include "sdf/World.hh"
+#include "sdf_usd_parser/light.hh"
 #include "sdf_usd_parser/model.hh"
 
 namespace usd
@@ -36,7 +37,7 @@ namespace usd
   {
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
 
-    const auto worldPrimPath = pxr::SdfPath(_path);
+    const pxr::SdfPath worldPrimPath(_path);
     auto usdWorldPrim = _stage->DefinePrim(worldPrimPath);
 
     auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
@@ -52,6 +53,17 @@ namespace usd
       if (!ParseSdfModel(model, _stage, modelPath, worldPrimPath))
       {
         std::cerr << "Error parsing model [" << model.Name() << "]\n";
+        return false;
+      }
+    }
+
+    for (uint64_t i = 0; i < _world.LightCount(); ++i)
+    {
+      const auto light = *(_world.LightByIndex(i));
+      const auto lightPath = std::string(_path + "/" + light.Name());
+      if (!ParseSdfLight(light, _stage, lightPath))
+      {
+        std::cerr << "Error parsing light [" << light.Name() << "]\n";
         return false;
       }
     }
