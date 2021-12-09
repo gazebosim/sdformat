@@ -16,12 +16,12 @@
  */
 
 #include <iostream>
+#include <memory>
 
-#include <pxr/usd/usd/stage.h>
-
+#include <ignition/common/Util.hh>
 #include <ignition/fuel_tools/FuelClient.hh>
 #include <ignition/fuel_tools/Interface.hh>
-#include <ignition/common/Util.hh>
+#include <pxr/usd/usd/stage.h>
 
 #include "sdf/sdf.hh"
 #include "sdf_usd_parser/world.hh"
@@ -67,8 +67,6 @@ int main(int argc, const char* argv[])
       std::cout << e << "\n";
     return -2;
   }
-
-  // std::cerr << root.Element()->ToString("") << std::endl;
 
   // only support SDF files with exactly 1 world for now
   if (root.WorldCount() != 1u)
