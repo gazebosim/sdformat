@@ -19,8 +19,30 @@
 
 #include <pxr/usd/usd/stage.h>
 
+#include <ignition/fuel_tools/FuelClient.hh>
+#include <ignition/fuel_tools/Interface.hh>
+#include <ignition/common/Util.hh>
+
 #include "sdf/sdf.hh"
 #include "sdf_usd_parser/world.hh"
+
+
+std::unique_ptr<ignition::fuel_tools::FuelClient> fuelClient =
+  std::make_unique<ignition::fuel_tools::FuelClient>();
+
+//////////////////////////////////////////////////
+std::string FetchResource(const std::string &_uri)
+{
+  auto path =
+      ignition::fuel_tools::fetchResourceWithClient(_uri, *fuelClient.get());
+  return path;
+}
+
+//////////////////////////////////////////////////
+std::string FetchResourceUri(const ignition::common::URI &_uri)
+{
+  return FetchResource(_uri.Str());
+}
 
 int main(int argc, const char* argv[])
 {
@@ -31,6 +53,12 @@ int main(int argc, const char* argv[])
   }
 
   sdf::Root root;
+
+  // Configure SDF to fetch assets from ignition fuel.
+  sdf::setFindCallback(std::bind(&FetchResource, std::placeholders::_1));
+  ignition::common::addFindFileURICallback(
+    std::bind(&FetchResourceUri, std::placeholders::_1));
+
   auto errors = root.Load(argv[1]);
   if (!errors.empty())
   {
@@ -39,6 +67,8 @@ int main(int argc, const char* argv[])
       std::cout << e << "\n";
     return -2;
   }
+
+  // std::cerr << root.Element()->ToString("") << std::endl;
 
   // only support SDF files with exactly 1 world for now
   if (root.WorldCount() != 1u)

@@ -245,6 +245,7 @@ target_link_libraries(${sdf_target}
     ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
     ignition-common${IGN_COMMON_VER}::graphics
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+		ignition-fuel_tools${IGN_FUEL_TOOLS_VER}::ignition-fuel_tools${IGN_FUEL_TOOLS_VER}
     ${PXR_LIBRARIES}
   PRIVATE
     ${TinyXML2_LIBRARIES})

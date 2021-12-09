@@ -19,7 +19,14 @@
 
 #include <map>
 
+#include <ignition/common/URI.hh>
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/Util.hh>
+
+#include <ignition/fuel_tools/ClientConfig.hh>
+
 #include <ignition/math/Color.hh>
+
 #include <pxr/base/tf/stringUtils.h>
 #include <pxr/usd/sdf/types.h>
 #include <pxr/usd/usd/prim.h>
@@ -259,11 +266,16 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string fullnameAlbedoMap =
+            ignition::common::findFile(
+              ignition::common::URI(pbrWorkflow->AlbedoMap()).Str());
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "diffuse_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->AlbedoMap()),
+            pxr::SdfAssetPath(fullnameAlbedoMap),
             customDataDiffuseTexture,
             pxr::TfToken("Base Map"),
             pxr::TfToken("Albedo"),
@@ -276,11 +288,16 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string fullnameMetallnessMap =
+            ignition::common::findFile(
+              ignition::common::URI(pbrWorkflow->MetalnessMap()).Str());
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "metallic_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->MetalnessMap()),
+            pxr::SdfAssetPath(fullnameMetallnessMap),
             customDataMetallnessTexture,
             pxr::TfToken("Metallic Map"),
             pxr::TfToken("Reflectivity"),
@@ -293,11 +310,16 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string fullnameNormalMap =
+            ignition::common::findFile(
+              ignition::common::URI(pbrWorkflow->NormalMap()).Str());
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "normalmap_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->NormalMap()),
+            pxr::SdfAssetPath(fullnameNormalMap),
             customDataNormalTexture,
             pxr::TfToken("Normal Map"),
             pxr::TfToken("Normal"),
@@ -310,11 +332,15 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string fullnameRoughnessMap =
+            ignition::common::findFile(ignition::common::URI(pbrWorkflow->RoughnessMap()).Str());
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "reflectionroughness_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->RoughnessMap()),
+            pxr::SdfAssetPath(fullnameRoughnessMap),
             customDataRoughnessTexture,
             pxr::TfToken("RoughnessMap Map"),
             pxr::TfToken("RoughnessMap"),
