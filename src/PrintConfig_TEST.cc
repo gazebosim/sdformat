@@ -15,36 +15,18 @@
  *
 */
 
+#include <gtest/gtest.h>
+
 #include "sdf/PrintConfig.hh"
-
-namespace sdf
-{
-inline namespace SDF_VERSION_NAMESPACE
-{
-/////////////////////////////////////////////////
-class PrintConfig::Implementation
-{
-  /// \brief True to preserve <include> tags, false to expand.
-  public: bool preserveIncludes = false;
-};
+#include "test_config.h"
 
 /////////////////////////////////////////////////
-PrintConfig::PrintConfig()
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+TEST(PrintConfig, PreserveIncludes)
 {
-}
-
-/////////////////////////////////////////////////
-void PrintConfig::SetPreserveIncludes(bool _preserve)
-{
-  this->dataPtr->preserveIncludes = _preserve;
-}
-
-/////////////////////////////////////////////////
-bool PrintConfig::PreserveIncludes() const
-{
-  return this->dataPtr->preserveIncludes;
-}
-
-}
+  sdf::PrintConfig config;
+  EXPECT_FALSE(config.PreserveIncludes());
+  config.SetPreserveIncludes(true);
+  EXPECT_TRUE(config.PreserveIncludes());
+  config.SetPreserveIncludes(false);
+  EXPECT_FALSE(config.PreserveIncludes());
 }
