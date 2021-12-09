@@ -168,3 +168,35 @@ TEST(DOMcollision, SetSurface)
   ASSERT_NE(nullptr, collision.Surface()->Contact());
   EXPECT_EQ(collision.Surface()->Contact()->CollideBitmask(), 0x2);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, ToElement)
+{
+  sdf::Collision collision;
+
+  collision.SetName("my-collision");
+
+  sdf::Geometry geom;
+  collision.SetGeom(geom);
+  collision.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+
+  sdf::Surface surface;
+  sdf::Contact contact;
+  contact.SetCollideBitmask(123u);
+  surface.SetContact(contact);
+  collision.SetSurface(surface);
+
+  sdf::ElementPtr elem = collision.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Collision collision2;
+  collision2.Load(elem);
+  const sdf::Surface *surface2 = collision2.Surface();
+
+  EXPECT_EQ(collision.Name(), collision2.Name());
+  EXPECT_EQ(collision.RawPose(), collision2.RawPose());
+  EXPECT_NE(nullptr, collision2.Geom());
+  ASSERT_NE(nullptr, surface2);
+  ASSERT_NE(nullptr, surface2->Contact());
+  EXPECT_EQ(123u, surface2->Contact()->CollideBitmask());
+}
