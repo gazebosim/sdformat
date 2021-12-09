@@ -70,5 +70,5 @@ endif()
 if (UNIX AND NOT APPLE)
   configure_file(all_symbols_have_version.bash.in ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash @ONLY)
   add_test(NAME INTEGRATION_versioned_symbols
-    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${PROJECT_VERSION_MAJOR}.so)
+    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash $<TARGET_FILE:${PROJECT_NAME}>)
 endif()
