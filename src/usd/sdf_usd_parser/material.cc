@@ -17,9 +17,15 @@
 
 #include "sdf_usd_parser/material.hh"
 
+#include <filesystem>
 #include <map>
 
+#include <ignition/common/URI.hh>
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/Util.hh>
+
 #include <ignition/math/Color.hh>
+
 #include <pxr/base/tf/stringUtils.h>
 #include <pxr/usd/sdf/types.h>
 #include <pxr/usd/usd/prim.h>
@@ -30,6 +36,31 @@
 
 namespace usd
 {
+
+  bool copyMaterial(const std::string &_path, const std::string &_fullPath)
+  {
+    if (!_path.empty() && !_fullPath.empty())
+    {
+      auto fileName = ignition::common::basename(_path);
+      auto filePathIndex = _path.rfind(fileName);
+      auto filePath = _path.substr(0, filePathIndex);
+      if (!filePath.empty())
+      {
+        ignition::common::createDirectories(filePath);
+      }
+      return ignition::common::copyFile(_fullPath, _path);
+    }
+    return false;
+  }
+
+  std::string getCopyPath(const std::string &_uri)
+  {
+    return ignition::common::joinPaths(
+      "materials",
+      "textures",
+      ignition::common::basename(_uri));
+  }
+
   /// \brief Fill Material shader attributes and properties
   /// \param[in] _prim USD primitive
   /// \param[in] _name Name of the field attribute or property
@@ -106,6 +137,8 @@ namespace usd
     // This variable will increase with every new material to avoid collision
     // with the names of the materials
     static int i = 0;
+
+    // std::cerr << "Material " << std::string("/Looks/Material_") + std::to_string(i) << '\n';
 
     auto usdMaterialPrim = _stage->GetPrimAtPath(
       pxr::SdfPath(std::string("/Looks/Material_") + std::to_string(i)));
@@ -259,11 +292,25 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string copyPath = getCopyPath(pbrWorkflow->AlbedoMap());
+
+          std::string fullnameAlbedoMap =
+            ignition::common::findFile(
+              ignition::common::basename(pbrWorkflow->AlbedoMap()));
+
+          if (fullnameAlbedoMap.empty())
+          {
+            fullnameAlbedoMap = pbrWorkflow->AlbedoMap();
+          }
+
+          copyMaterial(copyPath, fullnameAlbedoMap);
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "diffuse_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->AlbedoMap()),
+            pxr::SdfAssetPath(copyPath),
             customDataDiffuseTexture,
             pxr::TfToken("Base Map"),
             pxr::TfToken("Albedo"),
@@ -276,11 +323,25 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string copyPath = getCopyPath(pbrWorkflow->MetalnessMap());
+
+          std::string fullnameMetallnessMap =
+            ignition::common::findFile(
+              ignition::common::basename(pbrWorkflow->MetalnessMap()));
+
+          if (fullnameMetallnessMap.empty())
+          {
+            fullnameMetallnessMap = pbrWorkflow->MetalnessMap();
+          }
+
+          copyMaterial(copyPath, fullnameMetallnessMap);
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "metallic_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->MetalnessMap()),
+            pxr::SdfAssetPath(copyPath),
             customDataMetallnessTexture,
             pxr::TfToken("Metallic Map"),
             pxr::TfToken("Reflectivity"),
@@ -293,11 +354,25 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string copyPath = getCopyPath(pbrWorkflow->NormalMap());
+
+          std::string fullnameNormalMap =
+            ignition::common::findFile(
+              ignition::common::basename(pbrWorkflow->NormalMap()));
+
+          if (fullnameNormalMap.empty())
+          {
+            fullnameNormalMap = pbrWorkflow->NormalMap();
+          }
+
+          copyMaterial(copyPath, fullnameNormalMap);
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "normalmap_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->NormalMap()),
+            pxr::SdfAssetPath(copyPath),
             customDataNormalTexture,
             pxr::TfToken("Normal Map"),
             pxr::TfToken("Normal"),
@@ -310,11 +385,25 @@ namespace usd
           {
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
+
+          std::string copyPath = getCopyPath(pbrWorkflow->RoughnessMap());
+
+          std::string fullnameRoughnessMap =
+            ignition::common::findFile(
+              ignition::common::basename(pbrWorkflow->RoughnessMap()));
+
+          if (fullnameRoughnessMap.empty())
+          {
+            fullnameRoughnessMap = pbrWorkflow->RoughnessMap();
+          }
+
+          copyMaterial(copyPath, fullnameRoughnessMap);
+
           CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "reflectionroughness_texture",
             pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(pbrWorkflow->RoughnessMap()),
+            pxr::SdfAssetPath(copyPath),
             customDataRoughnessTexture,
             pxr::TfToken("RoughnessMap Map"),
             pxr::TfToken("RoughnessMap"),

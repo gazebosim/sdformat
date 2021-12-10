@@ -22,8 +22,11 @@
 
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
+#include <ignition/common/Util.hh>
 #include <ignition/common/SubMesh.hh>
+
 #include <ignition/math/Vector3.hh>
+
 #include <pxr/base/gf/vec2f.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
@@ -36,15 +39,19 @@
 #include <pxr/usd/usdGeom/sphere.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #include <pxr/usd/usdPhysics/collisionAPI.h>
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
+#include "sdf/Conversions.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 #include "sdf_usd_parser/utils.hh"
+#include "sdf_usd_parser/material.hh"
 
 namespace usd
 {
@@ -109,106 +116,371 @@ namespace usd
   bool ParseSdfMeshGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    auto ignMesh = ignition::common::MeshManager::Instance()->Load(
-        _geometry.MeshShape()->Uri());
+    ignition::common::URI uri(_geometry.MeshShape()->Uri());
+    std::string fullname;
+    // std::cerr << "_geometry.MeshShape()->Uri() " << _geometry.MeshShape()->Uri() << '\n';
+    if (uri.Scheme() == "https" || uri.Scheme() == "http")
+    {
+      fullname =
+        ignition::common::findFile(uri.Str());
+    }
+    else
+    {
+      fullname =
+        ignition::common::findFile(_geometry.MeshShape()->Uri());
+    }
+    // std::cerr << "fullName" << fullname << '\n';
 
-    pxr::VtArray<pxr::GfVec3f> meshPoints;
-    pxr::VtArray<pxr::GfVec2f> uvs;
-    pxr::VtArray<pxr::GfVec3f> normals;
-    pxr::VtArray<int> faceVertexIndices;
-    pxr::VtArray<int> faceVertexCounts;
+    auto ignMesh = ignition::common::MeshManager::Instance()->Load(
+        fullname);
+
+    std::cerr << "ignMesh->SubMeshCount() " << ignMesh->SubMeshCount() << '\n';
+
+    // static std::string pathNameStatic;
+    // static int indexSubMesh = 0;
+    bool isNameInPath = false;
     for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
     {
       auto subMesh = ignMesh->SubMeshByIndex(i).lock();
-      if (!subMesh)
-      {
-        std::cerr << "Unable to get a shared pointer to submesh at index ["
-                  << i << "] of parent mesh [" << ignMesh->Name() << "]\n";
-        return false;
-      }
 
-      // copy the submesh's vertices to the usd mesh's "points" array
-      for (unsigned int v = 0; v < subMesh->VertexCount(); ++v)
+      if (ignMesh->SubMeshCount() != 1)
       {
-        const auto &vertex = subMesh->Vertex(v);
-        meshPoints.push_back(pxr::GfVec3f(vertex.X(), vertex.Y(), vertex.Z()));
-      }
+        std::string pathLowerCase = ignition::common::lowercase(_path);
+        std::string subMeshLowerCase = ignition::common::lowercase(subMesh->Name());
 
-      // copy the submesh's indices to the usd mesh's "faceVertexIndices" array
-      for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
-        faceVertexIndices.push_back(subMesh->Index(j));
-
-      // copy the submesh's texture coordinates
-      for (unsigned int j = 0; j < subMesh->TexCoordCount(); ++j)
-      {
-        const auto &uv = subMesh->TexCoord(j);
-        uvs.push_back(pxr::GfVec2f(uv[0], 1 - uv[1]));
+        if (pathLowerCase.find(subMeshLowerCase) != std::string::npos)
+        {
+          std::cerr << "> pathLowerCase " << pathLowerCase << '\n';
+          std::cerr << "> subMeshLowerCase " << subMeshLowerCase << '\n';
+          isNameInPath = true;
+        }
       }
-
-      // copy the submesh's normals
-      for (unsigned int j = 0; j < subMesh->NormalCount(); ++j)
-      {
-        const auto &normal = subMesh->Normal(j);
-        normals.push_back(pxr::GfVec3f(normal[0], normal[1], normal[2]));
-      }
-
-      // set the usd mesh's "faceVertexCounts" array according to
-      // the submesh primitive type
-      // TODO(adlarkin) support all primitive types. The computations are more
-      // involved for LINESTRIPS, TRIFANS, and TRISTRIPS. I will need to spend
-      // some time deriving what the number of faces for these primitive types
-      // are, given the number of indices. The "faceVertexCounts" array will
-      // also not have the same value for every element in the array for these
-      // more complex primitive types (see the TODO note in the for loop below)
-      unsigned int verticesPerFace = 0;
-      unsigned int numFaces = 0;
-      switch (subMesh->SubMeshPrimitiveType())
-      {
-        case ignition::common::SubMesh::PrimitiveType::POINTS:
-          verticesPerFace = 1;
-          numFaces = subMesh->IndexCount();
-          break;
-        case ignition::common::SubMesh::PrimitiveType::LINES:
-          verticesPerFace = 2;
-          numFaces = subMesh->IndexCount() / 2;
-          break;
-        case ignition::common::SubMesh::PrimitiveType::TRIANGLES:
-          verticesPerFace = 3;
-          numFaces = subMesh->IndexCount() / 3;
-          break;
-        case ignition::common::SubMesh::PrimitiveType::LINESTRIPS:
-        case ignition::common::SubMesh::PrimitiveType::TRIFANS:
-        case ignition::common::SubMesh::PrimitiveType::TRISTRIPS:
-        default:
-          std::cerr << "Submesh " << subMesh->Name()
-                    << " has a primitive type that is not supported.\n";
-          return false;
-      }
-      // TODO(adlarkin) update this loop to allow for varying element
-      // values in the array (see TODO note above). Right now, the
-      // array only allows for all elements to have one value, which in
-      // this case is "verticesPerFace"
-      for (unsigned int n = 0; n < numFaces; ++n)
-        faceVertexCounts.push_back(verticesPerFace);
     }
-    auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(_path));
-    usdMesh.CreatePointsAttr().Set(meshPoints);
-    usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
-    usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
 
-    auto coordinates = usdMesh.CreatePrimvar(
-        pxr::TfToken("st"), pxr::SdfValueTypeNames->Float2Array,
-        pxr::UsdGeomTokens->vertex);
-    coordinates.Set(uvs);
+    // if (!isNameInPath)
+    // {
+    //   if (pathNameStatic != _path)
+    //   {
+    //     pathNameStatic = _path;
+    //     indexSubMesh = 0;
+    //   }
+    //   else
+    //   {
+    //     indexSubMesh++;
+    //   }
+    // }
 
-    usdMesh.CreateNormalsAttr().Set(normals);
+    std::cerr << "isNameInPath " << isNameInPath << '\n';
+    // std::cerr << "pathNameStatic " << pathNameStatic << '\n';
+    // std::cerr << "indexSubMesh " << indexSubMesh << '\n';
 
-    const auto &meshMin = ignMesh->Min();
-    const auto &meshMax = ignMesh->Max();
-    pxr::VtArray<pxr::GfVec3f> extentBounds;
-    extentBounds.push_back(pxr::GfVec3f(meshMin.X(), meshMin.Y(), meshMin.Z()));
-    extentBounds.push_back(pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
-    usdMesh.CreateExtentAttr().Set(extentBounds);
+    if (isNameInPath)
+    {
+      for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
+      {
+        pxr::VtArray<pxr::GfVec3f> meshPoints;
+        pxr::VtArray<pxr::GfVec2f> uvs;
+        pxr::VtArray<pxr::GfVec3f> normals;
+        pxr::VtArray<int> faceVertexIndices;
+        pxr::VtArray<int> faceVertexCounts;
+
+        auto subMesh = ignMesh->SubMeshByIndex(i).lock();
+        if (!subMesh)
+        {
+          std::cerr << "Unable to get a shared pointer to submesh at index ["
+                    << i << "] of parent mesh [" << ignMesh->Name() << "]\n";
+          return false;
+        }
+
+        if (ignMesh->SubMeshCount() != 1 && isNameInPath)
+        {
+          std::string pathLowerCase = ignition::common::lowercase(_path);
+          std::string subMeshLowerCase = ignition::common::lowercase(subMesh->Name());
+
+          std::cerr << "pathLowerCase " << pathLowerCase << '\n';
+          std::cerr << "subMeshLowerCase " << subMeshLowerCase << '\n';
+
+          if (pathLowerCase.find(subMeshLowerCase) == std::string::npos)
+          {
+            continue;
+          }
+        }
+
+        // copy the submesh's vertices to the usd mesh's "points" array
+        for (unsigned int v = 0; v < subMesh->VertexCount(); ++v)
+        {
+          const auto &vertex = subMesh->Vertex(v);
+          meshPoints.push_back(pxr::GfVec3f(vertex.X(), vertex.Y(), vertex.Z()));
+        }
+
+        // copy the submesh's indices to the usd mesh's "faceVertexIndices" array
+        for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
+          faceVertexIndices.push_back(subMesh->Index(j));
+
+        // copy the submesh's texture coordinates
+        for (unsigned int j = 0; j < subMesh->TexCoordCount(); ++j)
+        {
+          const auto &uv = subMesh->TexCoord(j);
+          uvs.push_back(pxr::GfVec2f(uv[0], 1 - uv[1]));
+        }
+
+        // copy the submesh's normals
+        for (unsigned int j = 0; j < subMesh->NormalCount(); ++j)
+        {
+          const auto &normal = subMesh->Normal(j);
+          normals.push_back(pxr::GfVec3f(normal[0], normal[1], normal[2]));
+        }
+
+        // set the usd mesh's "faceVertexCounts" array according to
+        // the submesh primitive type
+        // TODO(adlarkin) support all primitive types. The computations are more
+        // involved for LINESTRIPS, TRIFANS, and TRISTRIPS. I will need to spend
+        // some time deriving what the number of faces for these primitive types
+        // are, given the number of indices. The "faceVertexCounts" array will
+        // also not have the same value for every element in the array for these
+        // more complex primitive types (see the TODO note in the for loop below)
+        unsigned int verticesPerFace = 0;
+        unsigned int numFaces = 0;
+        switch (subMesh->SubMeshPrimitiveType())
+        {
+          case ignition::common::SubMesh::PrimitiveType::POINTS:
+            verticesPerFace = 1;
+            numFaces = subMesh->IndexCount();
+            break;
+          case ignition::common::SubMesh::PrimitiveType::LINES:
+            verticesPerFace = 2;
+            numFaces = subMesh->IndexCount() / 2;
+            break;
+          case ignition::common::SubMesh::PrimitiveType::TRIANGLES:
+            verticesPerFace = 3;
+            numFaces = subMesh->IndexCount() / 3;
+            break;
+          case ignition::common::SubMesh::PrimitiveType::LINESTRIPS:
+          case ignition::common::SubMesh::PrimitiveType::TRIFANS:
+          case ignition::common::SubMesh::PrimitiveType::TRISTRIPS:
+          default:
+            std::cerr << "Submesh " << subMesh->Name()
+                      << " has a primitive type that is not supported.\n";
+            return false;
+        }
+        // TODO(adlarkin) update this loop to allow for varying element
+        // values in the array (see TODO note above). Right now, the
+        // array only allows for all elements to have one value, which in
+        // this case is "verticesPerFace"
+        for (unsigned int n = 0; n < numFaces; ++n)
+          faceVertexCounts.push_back(verticesPerFace);
+
+        std::string primName = _path + "/" + subMesh->Name();
+        int index = primName.find("-");
+        while(index != std::string::npos)
+        {
+          primName.replace(index, 1, "");
+          index = primName.find("-");
+        }
+
+        auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(primName));
+        usdMesh.CreatePointsAttr().Set(meshPoints);
+        usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
+        usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
+
+        auto coordinates = usdMesh.CreatePrimvar(
+            pxr::TfToken("st"), pxr::SdfValueTypeNames->Float2Array,
+            pxr::UsdGeomTokens->vertex);
+        coordinates.Set(uvs);
+
+        usdMesh.CreateNormalsAttr().Set(normals);
+
+        const auto &meshMin = ignMesh->Min();
+        const auto &meshMax = ignMesh->Max();
+        pxr::VtArray<pxr::GfVec3f> extentBounds;
+        extentBounds.push_back(pxr::GfVec3f(meshMin.X(), meshMin.Y(), meshMin.Z()));
+        extentBounds.push_back(pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
+        usdMesh.CreateExtentAttr().Set(extentBounds);
+
+        // int materialIndex = subMesh->MaterialIndex();
+        // std::cerr << "materialIndex " << materialIndex << '\n';
+        // if (materialIndex != -1)
+        // {
+        //   auto material = ignMesh->MaterialByIndex(materialIndex);
+        //   sdf::Material materialSdf = sdf::convert(material);
+        //   auto materialUSD = ParseSdfMaterial(&materialSdf, _stage);
+        //
+        //   auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path + "/" + subMesh->Name()));
+        //   if (materialUSD && geomPrim)
+        //   {
+        //     std::cerr << "bind material 1" << '\n';
+        //     pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+        //   }
+        // }
+      }
+    }
+    else
+    {
+      pxr::VtArray<pxr::GfVec3f> meshPoints;
+      pxr::VtArray<pxr::GfVec2f> uvs;
+      pxr::VtArray<pxr::GfVec3f> normals;
+      pxr::VtArray<int> faceVertexIndices;
+      pxr::VtArray<int> faceVertexCounts;
+
+      std::vector<pxr::VtArray<int>> subsetsIndexes;
+
+      int counter = 0;
+      int max = 0;
+      // for (unsigned int i = 0; i < 2; ++i)
+      for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
+      {
+        auto subMesh = ignMesh->SubMeshByIndex(i).lock();
+        if (!subMesh)
+        {
+          std::cerr << "Unable to get a shared pointer to submesh at index ["
+                    << i << "] of parent mesh [" << ignMesh->Name() << "]\n";
+          return false;
+        }
+
+        // copy the submesh's vertices to the usd mesh's "points" array
+        for (unsigned int v = 0; v < subMesh->VertexCount(); ++v)
+        {
+          const auto &vertex = subMesh->Vertex(v);
+          meshPoints.push_back(pxr::GfVec3f(vertex.X(), vertex.Y(), vertex.Z()));
+        }
+
+        // copy the submesh's indices to the usd mesh's "faceVertexIndices" array
+        pxr::VtArray<int> subsetIndexes;
+        int tempMax = 0;
+        for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
+        {
+          faceVertexIndices.push_back(subMesh->Index(j) + max);
+          if (subMesh->Index(j) > tempMax)
+          {
+            tempMax = subMesh->Index(j);
+          }
+          subsetIndexes.push_back(j + counter);
+        }
+
+        subsetsIndexes.push_back(subsetIndexes);
+
+        max += tempMax;
+        counter += subMesh->IndexCount();
+
+        // copy the submesh's texture coordinates
+        for (unsigned int j = 0; j < subMesh->TexCoordCount(); ++j)
+        {
+          const auto &uv = subMesh->TexCoord(j);
+          uvs.push_back(pxr::GfVec2f(uv[0], 1 - uv[1]));
+        }
+
+        // copy the submesh's normals
+        for (unsigned int j = 0; j < subMesh->NormalCount(); ++j)
+        {
+          const auto &normal = subMesh->Normal(j);
+          normals.push_back(pxr::GfVec3f(normal[0], normal[1], normal[2]));
+        }
+
+        // set the usd mesh's "faceVertexCounts" array according to
+        // the submesh primitive type
+        // TODO(adlarkin) support all primitive types. The computations are more
+        // involved for LINESTRIPS, TRIFANS, and TRISTRIPS. I will need to spend
+        // some time deriving what the number of faces for these primitive types
+        // are, given the number of indices. The "faceVertexCounts" array will
+        // also not have the same value for every element in the array for these
+        // more complex primitive types (see the TODO note in the for loop below)
+        unsigned int verticesPerFace = 0;
+        unsigned int numFaces = 0;
+        switch (subMesh->SubMeshPrimitiveType())
+        {
+          case ignition::common::SubMesh::PrimitiveType::POINTS:
+            verticesPerFace = 1;
+            numFaces = subMesh->IndexCount();
+            break;
+          case ignition::common::SubMesh::PrimitiveType::LINES:
+            verticesPerFace = 2;
+            numFaces = subMesh->IndexCount() / 2;
+            break;
+          case ignition::common::SubMesh::PrimitiveType::TRIANGLES:
+            verticesPerFace = 3;
+            numFaces = subMesh->IndexCount() / 3;
+            break;
+          case ignition::common::SubMesh::PrimitiveType::LINESTRIPS:
+          case ignition::common::SubMesh::PrimitiveType::TRIFANS:
+          case ignition::common::SubMesh::PrimitiveType::TRISTRIPS:
+          default:
+            std::cerr << "Submesh " << subMesh->Name()
+                      << " has a primitive type that is not supported.\n";
+            return false;
+        }
+        // TODO(adlarkin) update this loop to allow for varying element
+        // values in the array (see TODO note above). Right now, the
+        // array only allows for all elements to have one value, which in
+        // this case is "verticesPerFace"
+        for (unsigned int n = 0; n < numFaces; ++n)
+          faceVertexCounts.push_back(verticesPerFace);
+      }
+
+      auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
+      pxr::UsdGeomMesh usdMesh;
+      if (!geomPrim)
+      {
+        usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(_path));
+      }
+      else
+      {
+        usdMesh = pxr::UsdGeomMesh(geomPrim);
+      }
+
+      usdMesh.CreatePointsAttr().Set(meshPoints);
+      usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
+      usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
+
+      auto coordinates = usdMesh.CreatePrimvar(
+          pxr::TfToken("st"), pxr::SdfValueTypeNames->Float2Array,
+          pxr::UsdGeomTokens->vertex);
+      coordinates.Set(uvs);
+
+      usdMesh.CreateNormalsAttr().Set(normals);
+      usdMesh.SetNormalsInterpolation(pxr::TfToken("vertex"));
+
+      usdMesh.CreateSubdivisionSchemeAttr(pxr::VtValue(pxr::TfToken("none")));
+
+      const auto &meshMin = ignMesh->Min();
+      const auto &meshMax = ignMesh->Max();
+      pxr::VtArray<pxr::GfVec3f> extentBounds;
+      extentBounds.push_back(pxr::GfVec3f(meshMin.X(), meshMin.Y(), meshMin.Z()));
+      extentBounds.push_back(pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
+      usdMesh.CreateExtentAttr().Set(extentBounds);
+
+      for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
+      // for (unsigned int i = 0; i < 2; ++i)
+      {
+        auto subMesh = ignMesh->SubMeshByIndex(i).lock();
+
+        std::string primName = _path + "/" + subMesh->Name();
+        int index = primName.find("-");
+        while(index != std::string::npos)
+        {
+          primName.replace(index, 1, "");
+          index = primName.find("-");
+        }
+
+        auto usdsubsetMesh = pxr::UsdGeomSubset::Define(
+          _stage, pxr::SdfPath(primName));
+        usdsubsetMesh.CreateIndicesAttr().Set(subsetsIndexes[i]);
+        usdsubsetMesh.CreateFamilyNameAttr().Set(pxr::VtValue(pxr::TfToken("")));
+        usdsubsetMesh.CreateElementTypeAttr().Set(pxr::VtValue(pxr::TfToken("face")));
+        int materialIndex = subMesh->MaterialIndex();
+        std::cerr << "materialIndex " << materialIndex << '\n';
+        if (materialIndex != -1)
+        {
+          auto material = ignMesh->MaterialByIndex(materialIndex);
+          sdf::Material materialSdf = sdf::convert(material);
+          auto materialUSD = ParseSdfMaterial(&materialSdf, _stage);
+
+          if (materialUSD)
+          {
+            pxr::UsdShadeMaterialBindingAPI(usdsubsetMesh).Bind(materialUSD);
+          }
+        }
+      }
+    }
 
     return true;
   }
@@ -315,12 +587,12 @@ namespace usd
         return false;
       }
 
-      if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
-      {
-        std::cerr << "Internal error: unable to apply a collision to the "
-                  << "prim at path [" << _path << "]\n";
-        return false;
-      }
+      // if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
+      // {
+      //   std::cerr << "Internal error: unable to apply a collision to the "
+      //             << "prim at path [" << _path << "]\n";
+      //   return false;
+      // }
     }
 
     return typeParsed;
