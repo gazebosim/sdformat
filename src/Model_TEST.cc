@@ -325,10 +325,10 @@ TEST(DOMModel, ToElement)
   {
     for (int i = 0; i < 3; ++i)
     {
-      sdf::Model model;
-      model.SetName("model" + std::to_string(i));
-      EXPECT_TRUE(model.AddModel(model));
-      EXPECT_FALSE(model.AddModel(model));
+      sdf::Model nestedModel;
+      nestedModel.SetName("model" + std::to_string(i));
+      EXPECT_TRUE(model.AddModel(nestedModel));
+      EXPECT_FALSE(model.AddModel(nestedModel));
     }
     model.ClearModels();
   }
@@ -349,14 +349,14 @@ TEST(DOMModel, ToElement)
   EXPECT_EQ(model.PlacementFrameName(), model2.PlacementFrameName());
 
   EXPECT_EQ(model.LinkCount(), model2.LinkCount());
-  for (uint64_t i = 0; i < link2.LinkCount())
-    EXPECT_NE(nullptr, link2.LinkByIndex(i));
+  for (uint64_t i = 0; i < model2.LinkCount(); ++i)
+    EXPECT_NE(nullptr, model2.LinkByIndex(i));
 
   EXPECT_EQ(model.JointCount(), model2.JointCount());
-  for (uint64_t i = 0; i < joint2.JointCount())
-    EXPECT_NE(nullptr, joint2.JointByIndex(i));
+  for (uint64_t i = 0; i < model2.JointCount(); ++i)
+    EXPECT_NE(nullptr, model2.JointByIndex(i));
 
   EXPECT_EQ(model.ModelCount(), model2.ModelCount());
-  for (uint64_t i = 0; i < model2.ModelCount())
+  for (uint64_t i = 0; i < model2.ModelCount(); ++i)
     EXPECT_NE(nullptr, model2.ModelByIndex(i));
 }

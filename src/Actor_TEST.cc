@@ -559,7 +559,7 @@ TEST(DOMActor, ToElement)
   animation.SetScale(1.2);
   animation.SetInterpolateX(true);
 
-  sdf::ElementPtr elem = box.ToElement();
+  sdf::ElementPtr elem = actor.ToElement();
   ASSERT_NE(nullptr, elem);
 
   sdf::Actor actor2;
@@ -569,31 +569,30 @@ TEST(DOMActor, ToElement)
   EXPECT_EQ(actor.RawPose(), actor2.RawPose());
   EXPECT_DOUBLE_EQ(actor.SkinScale(), actor2.SkinScale());
   EXPECT_EQ(actor.ScriptLoop(), actor2.ScriptLoop());
-  EXPECT_DOUBLE_EQ(actor.DelayStart(), actor2.DelayStart());
+  EXPECT_DOUBLE_EQ(actor.ScriptDelayStart(), actor2.ScriptDelayStart());
 
   EXPECT_EQ(actor.LinkCount(), actor2.LinkCount());
-  for (uint64_t i = 0; i < link2.LinkCount())
-    EXPECT_NE(nullptr, link2.LinkByIndex(i));
+  for (uint64_t i = 0; i < actor2.LinkCount(); ++i)
+    EXPECT_NE(nullptr, actor2.LinkByIndex(i));
 
   EXPECT_EQ(actor.JointCount(), actor2.JointCount());
-  for (uint64_t i = 0; i < joint2.JointCount())
-    EXPECT_NE(nullptr, joint2.JointByIndex(i));
+  for (uint64_t i = 0; i < actor2.JointCount(); ++i)
+    EXPECT_NE(nullptr, actor2.JointByIndex(i));
 
-
-  ASSERT_EQ(1u, joint2.TrajectoryCount());
-  const sdf::Trajectory *trajectory2 = joint2.TrajectoryByIndex(0);
+  ASSERT_EQ(1u, actor2.TrajectoryCount());
+  const sdf::Trajectory *trajectory2 = actor2.TrajectoryByIndex(0u);
   ASSERT_NE(nullptr, trajectory2);
   EXPECT_EQ(trajectory.Id(), trajectory2->Id());
   EXPECT_EQ(trajectory.Type(), trajectory2->Type());
-  EXPECT_EQ(trajectory.Tension(), trajectory2->Tension());
+  EXPECT_DOUBLE_EQ(trajectory.Tension(), trajectory2->Tension());
 
   ASSERT_EQ(2u, trajectory2->WaypointCount());
-  const sdf::Waypoint *waypointA2 = trajectory2->WaypointAyIndex(0);
+  const sdf::Waypoint *waypointA2 = trajectory2->WaypointByIndex(0u);
   ASSERT_NE(nullptr, waypointA2);
   EXPECT_DOUBLE_EQ(waypointA.Time(), waypointA2->Time());
   EXPECT_EQ(waypointA.Pose(), waypointA2->Pose());
 
-  const sdf::Waypoint *waypointB2 = trajectory2->WaypointByIndex(0);
+  const sdf::Waypoint *waypointB2 = trajectory2->WaypointByIndex(1u);
   ASSERT_NE(nullptr, waypointB2);
   EXPECT_DOUBLE_EQ(waypointB.Time(), waypointB2->Time());
   EXPECT_EQ(waypointB.Pose(), waypointB2->Pose());
