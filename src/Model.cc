@@ -791,6 +791,54 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+sdf::ElementPtr Model::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("model.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+
+  if (!this->dataPtr->canonicalLink.empty())
+  {
+    elem->GetAttribute("canonical_link")->Set(this->dataPtr->canonicalLink);
+  }
+
+  if (!this->dataPtr->placementFrameName.empty())
+  {
+    elem->GetAttribute("placement_frame")->Set(
+        this->dataPtr->placementFrameName);
+  }
+
+  elem->GetElement("static")->Set(this->Static());
+  elem->GetElement("self_collide")->Set(this->SelfCollide());
+  elem->GetElement("allow_auto_disable")->Set(this->AllowAutoDisable());
+  elem->GetElement("enable_wind")->Set(this->EnableWind());
+
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  // Links
+  for (const sdf::Link &link : this->dataPtr->links)
+    elem->InsertElement(link.ToElement());
+
+  // Joints
+  for (const sdf::Joint &joint : this->dataPtr->joints)
+    elem->InsertElement(joint.ToElement());
+
+  // Model
+  for (const sdf::Model &model : this->dataPtr->models)
+    elem->InsertElement(model.ToElement());
+
+  return elem;
+}
+
 //////////////////////////////////////////////////
 bool Model::AddLink(const Link &_link)
 {
