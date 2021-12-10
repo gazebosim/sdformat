@@ -109,7 +109,7 @@ TEST(Element, SetExplicitlySetInFile)
   // set to the same value when using this function
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
   child->SetParent(elem);
-  elem->InsertElement(child);
+  elem->InsertElement(child, false);
 
   sdf::ElementPtr sibling = std::make_shared<sdf::Element>();
   sibling->SetParent(elem);
