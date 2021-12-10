@@ -462,10 +462,11 @@ namespace sdf
     /// \param[in] _elem the element object to add.
     public: void InsertElement(ElementPtr _elem);
 
-    /// \brief Add an element object.
+    /// \brief Add an element object, and optionall set the given element's
+    /// parent to this object.
     /// \param[in] _elem the element object to add.
-    /// \param[in] _setParentToSelf Set the _elem's parent to this object
-    /// and then insert.
+    /// \param[in] _setParentToSelf If true, set the _elem's parent to this
+    /// object and then insert.
     public: void InsertElement(ElementPtr _elem, bool _setParentToSelf);
 
     /// \brief Remove this element from its parent.
