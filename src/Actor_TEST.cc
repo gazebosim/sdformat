@@ -502,3 +502,98 @@ TEST(DOMTrajectory, CopyAssignmentAfterMove)
   EXPECT_TRUE(TrajectoriesEqual(sdf::Trajectory(), trajectory1));
   EXPECT_TRUE(TrajectoriesEqual(CreateDummyTrajectory(), trajectory2));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMActor, ToElement)
+{
+  sdf::Actor actor;
+
+  actor.SetName("my-actor");
+  actor.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  actor.SetSkinFilename("my-skinfilename");
+  actor.SetSkinScale(1.2);
+  actor.SetScriptLoop(true);
+  actor.SetScriptDelayStart(2.4);
+  actor.SetScriptAutoStart(true);
+
+  for (int j = 0; j < 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Link link;
+      link.SetName("link" + std::to_string(i));
+      EXPECT_TRUE(actor.AddLink(link));
+      EXPECT_FALSE(actor.AddLink(link));
+    }
+    actor.ClearLinks();
+  }
+
+  for (int j = 0; j < 1; ++j)
+  {
+    for (int i = 0; i < 2; ++i)
+    {
+      sdf::Joint joint;
+      joint.SetName("joint" + std::to_string(i));
+      EXPECT_TRUE(actor.AddJoint(joint));
+      EXPECT_FALSE(actor.AddJoint(joint));
+    }
+    actor.ClearJoints();
+  }
+
+  sdf::Trajectory trajectory;
+  trajectory.SetId(1);
+  trajectory.SetType("type");
+  trajectory.SetTension(1.0);
+  sdf::Waypoint waypointA, waypointB;
+  waypointA.SetTime(0.0);
+  waypointA.SetPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  trajectory.AddWaypoint(waypointA);
+  waypointB.SetTime(1.0);
+  waypointB.SetPose(ignition::math::Pose3d(2, 4, 6, 0.1, 0.2, 0.3));
+  trajectory.AddWaypoint(waypointB);
+  actor.AddTrajectory(trajectory);
+
+  sdf::Animation animation;
+  animation.SetName("my-animation");
+  animation.SetFilename("my-filename");
+  animation.SetScale(1.2);
+  animation.SetInterpolateX(true);
+
+  sdf::ElementPtr elem = actor.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Actor actor2;
+  actor2.Load(elem);
+
+  EXPECT_EQ(actor.Name(), actor2.Name());
+  EXPECT_EQ(actor.RawPose(), actor2.RawPose());
+  EXPECT_DOUBLE_EQ(actor.SkinScale(), actor2.SkinScale());
+  EXPECT_EQ(actor.ScriptLoop(), actor2.ScriptLoop());
+  EXPECT_DOUBLE_EQ(actor.ScriptDelayStart(), actor2.ScriptDelayStart());
+
+  EXPECT_EQ(actor.LinkCount(), actor2.LinkCount());
+  for (uint64_t i = 0; i < actor2.LinkCount(); ++i)
+    EXPECT_NE(nullptr, actor2.LinkByIndex(i));
+
+  EXPECT_EQ(actor.JointCount(), actor2.JointCount());
+  for (uint64_t i = 0; i < actor2.JointCount(); ++i)
+    EXPECT_NE(nullptr, actor2.JointByIndex(i));
+
+  ASSERT_EQ(1u, actor2.TrajectoryCount());
+  const sdf::Trajectory *trajectory2 = actor2.TrajectoryByIndex(0u);
+  ASSERT_NE(nullptr, trajectory2);
+  EXPECT_EQ(trajectory.Id(), trajectory2->Id());
+  EXPECT_EQ(trajectory.Type(), trajectory2->Type());
+  EXPECT_DOUBLE_EQ(trajectory.Tension(), trajectory2->Tension());
+
+  ASSERT_EQ(2u, trajectory2->WaypointCount());
+  const sdf::Waypoint *waypointA2 = trajectory2->WaypointByIndex(0u);
+  ASSERT_NE(nullptr, waypointA2);
+  EXPECT_DOUBLE_EQ(waypointA.Time(), waypointA2->Time());
+  EXPECT_EQ(waypointA.Pose(), waypointA2->Pose());
+
+  const sdf::Waypoint *waypointB2 = trajectory2->WaypointByIndex(1u);
+  ASSERT_NE(nullptr, waypointB2);
+  EXPECT_DOUBLE_EQ(waypointB.Time(), waypointB2->Time());
+  EXPECT_EQ(waypointB.Pose(), waypointB2->Pose());
+}
