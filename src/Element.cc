@@ -505,7 +505,11 @@ void Element::PrintValuesImpl(const std::string &_prefix,
                               const PrintConfig &_config,
                               std::ostringstream &_out) const
 {
-  if (this->GetExplicitlySetInFile() || _includeDefaultElements)
+  if (_config.PreserveIncludes() && this->GetIncludeElement() != nullptr)
+  {
+    _out << this->GetIncludeElement()->ToString(_prefix, _config);
+  }
+  else if (this->GetExplicitlySetInFile() || _includeDefaultElements)
   {
     _out << _prefix << "<" << this->dataPtr->name;
 
@@ -533,14 +537,11 @@ void Element::PrintValuesImpl(const std::string &_prefix,
       for (eiter = this->dataPtr->elements.begin();
            eiter != this->dataPtr->elements.end(); ++eiter)
       {
-        if ((*eiter)->GetExplicitlySetInFile() || _includeDefaultElements)
-        {
-          (*eiter)->ToString(_prefix + "  ",
-                             _includeDefaultElements,
-                             _includeDefaultAttributes,
-                             _config,
-                             _out);
-        }
+        (*eiter)->ToString(_prefix + "  ",
+                           _includeDefaultElements,
+                           _includeDefaultAttributes,
+                           _config,
+                           _out);
       }
       _out << _prefix << "</" << this->dataPtr->name << ">\n";
     }

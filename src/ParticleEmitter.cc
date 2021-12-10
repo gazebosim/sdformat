@@ -523,6 +523,15 @@ sdf::ElementPtr ParticleEmitter::ToElement() const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("particle_emitter.sdf", elem);
 
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetAttribute("type")->Set(this->TypeStr());
   elem->GetElement("emitting")->Set(this->Emitting());
@@ -539,6 +548,11 @@ sdf::ElementPtr ParticleEmitter::ToElement() const
   elem->GetElement("color_range_image")->Set(this->ColorRangeImage());
   elem->GetElement("topic")->Set(this->Topic());
   elem->GetElement("particle_scatter_ratio")->Set(this->ScatterRatio());
+
+  if (this->dataPtr->material)
+  {
+    elem->InsertElement(this->dataPtr->material->ToElement());
+  }
 
   return elem;
 }

@@ -683,6 +683,36 @@ void Actor::SetFilePath(const std::string &_filePath)
   this->dataPtr->filePath = _filePath;
 }
 
+//////////////////////////////////////////////////
+bool Actor::AddLink(const Link &_link)
+{
+  if (this->LinkNameExists(_link.Name()))
+    return false;
+  this->dataPtr->links.push_back(_link);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Actor::AddJoint(const Joint &_joint)
+{
+  if (this->JointNameExists(_joint.Name()))
+    return false;
+  this->dataPtr->joints.push_back(_joint);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Actor::ClearLinks()
+{
+  this->dataPtr->links.clear();
+}
+
+//////////////////////////////////////////////////
+void Actor::ClearJoints()
+{
+  this->dataPtr->joints.clear();
+}
+
 /////////////////////////////////////////////////
 sdf::ElementPtr Actor::ToElement() const
 {

@@ -360,6 +360,24 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Add a link to the actor.
+    /// \param[in] _link Link to add.
+    /// \return True if successful, false if a link with the name already
+    /// exists.
+    public: bool AddLink(const Link &_link);
+
+    /// \brief Add a joint to the actor.
+    /// \param[in] _link Joint to add.
+    /// \return True if successful, false if a joint with the name already
+    /// exists.
+    public: bool AddJoint(const Joint &_joint);
+
+    /// \brief Remove all links.
+    public: void ClearLinks();
+
+    /// \brief Remove all joints.
+    public: void ClearJoints();
+
     /// \brief Create and return an SDF element filled with data from this
     /// actor.
     /// \return SDF element pointer with updated actor values.
