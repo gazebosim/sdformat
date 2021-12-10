@@ -320,7 +320,7 @@ sdf::ElementPtr Visual::ToElement() const
   poseElem->Set<ignition::math::Pose3d>(this->RawPose());
 
   // Set the geometry
-  elem->InsertElement(this->dataPtr->geom.ToElement());
+  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
 
   elem->GetElement("cast_shadows")->Set(this->CastShadows());
   elem->GetElement("laser_retro")->Set(this->LaserRetro());
@@ -329,7 +329,7 @@ sdf::ElementPtr Visual::ToElement() const
 
   if (this->dataPtr->material)
   {
-    elem->InsertElement(this->dataPtr->material->ToElement());
+    elem->InsertElement(this->dataPtr->material->ToElement(), true);
   }
 
   return elem;

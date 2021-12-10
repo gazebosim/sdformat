@@ -930,6 +930,14 @@ void Element::InsertElement(ElementPtr _elem)
 }
 
 /////////////////////////////////////////////////
+void Element::InsertElement(ElementPtr _elem,  bool _setParentToSelf)
+{
+  if (_setParentToSelf)
+    _elem->SetParent(shared_from_this());
+  this->dataPtr->elements.push_back(_elem);
+}
+
+/////////////////////////////////////////////////
 bool Element::HasElementDescription(const std::string &_name) const
 {
   return this->GetElementDescription(_name) != ElementPtr();

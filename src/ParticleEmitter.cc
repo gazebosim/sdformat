@@ -551,7 +551,7 @@ sdf::ElementPtr ParticleEmitter::ToElement() const
 
   if (this->dataPtr->material)
   {
-    elem->InsertElement(this->dataPtr->material->ToElement());
+    elem->InsertElement(this->dataPtr->material->ToElement(), true);
   }
 
   return elem;

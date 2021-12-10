@@ -516,7 +516,7 @@ TEST(DOMActor, ToElement)
   actor.SetScriptDelayStart(2.4);
   actor.SetScriptAutoStart(true);
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 1; ++i)
     {
@@ -525,10 +525,11 @@ TEST(DOMActor, ToElement)
       EXPECT_TRUE(actor.AddLink(link));
       EXPECT_FALSE(actor.AddLink(link));
     }
-    actor.ClearLinks();
+    if (j == 0)
+      actor.ClearLinks();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 2; ++i)
     {
@@ -537,7 +538,8 @@ TEST(DOMActor, ToElement)
       EXPECT_TRUE(actor.AddJoint(joint));
       EXPECT_FALSE(actor.AddJoint(joint));
     }
-    actor.ClearJoints();
+    if (j == 0)
+      actor.ClearJoints();
   }
 
   sdf::Trajectory trajectory;

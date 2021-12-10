@@ -191,7 +191,7 @@ sdf::ElementPtr Scene::ToElement() const
   elem->GetElement("shadows")->Set(this->Shadows());
 
   if (this->dataPtr->sky)
-    elem->InsertElement(this->dataPtr->sky->ToElement());
+    elem->InsertElement(this->dataPtr->sky->ToElement(), true);
 
   return elem;
 }

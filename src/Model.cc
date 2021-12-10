@@ -826,15 +826,15 @@ sdf::ElementPtr Model::ToElement() const
 
   // Links
   for (const sdf::Link &link : this->dataPtr->links)
-    elem->InsertElement(link.ToElement());
+    elem->InsertElement(link.ToElement(), true);
 
   // Joints
   for (const sdf::Joint &joint : this->dataPtr->joints)
-    elem->InsertElement(joint.ToElement());
+    elem->InsertElement(joint.ToElement(), true);
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement());
+    elem->InsertElement(model.ToElement(), true);
 
   return elem;
 }

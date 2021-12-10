@@ -443,52 +443,56 @@ TEST(DOMWorld, ToElement)
   sdf::Scene scene;
   world.SetScene(scene);
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 2; ++i)
     {
       sdf::Model model;
       model.SetName("model" + std::to_string(i));
       EXPECT_TRUE(world.AddModel(model));
       EXPECT_FALSE(world.AddModel(model));
     }
-    world.ClearModels();
+    if (j == 0)
+      world.ClearModels();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 3; ++i)
     {
       sdf::Actor actor;
       actor.SetName("actor" + std::to_string(i));
       EXPECT_TRUE(world.AddActor(actor));
       EXPECT_FALSE(world.AddActor(actor));
     }
-    world.ClearActors();
+    if (j == 0)
+      world.ClearActors();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 4; ++i)
     {
       sdf::Light light;
       light.SetName("light" + std::to_string(i));
       EXPECT_TRUE(world.AddLight(light));
       EXPECT_FALSE(world.AddLight(light));
     }
-    world.ClearLights();
+    if (j == 0)
+      world.ClearLights();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 5; ++i)
     {
       sdf::Physics physics;
       physics.SetName("physics" + std::to_string(i));
       EXPECT_TRUE(world.AddPhysics(physics));
       EXPECT_FALSE(world.AddPhysics(physics));
     }
-    world.ClearPhysics();
+    if (j == 0)
+      world.ClearPhysics();
   }
 
   sdf::ElementPtr elem = world.ToElement();
@@ -502,7 +506,7 @@ TEST(DOMWorld, ToElement)
   EXPECT_EQ(world.WindLinearVelocity(), world2.WindLinearVelocity());
   EXPECT_EQ(world.Gravity(), world2.Gravity());
   EXPECT_EQ(world.MagneticField(), world2.MagneticField());
-  EXPECT_EQ(world.SphericalCoordinates(), world2.SphericalCoordinates());
+  EXPECT_EQ(*world.SphericalCoordinates(), *world2.SphericalCoordinates());
 
   const sdf::Atmosphere *atmosphere2 = world2.Atmosphere();
   ASSERT_NE(nullptr, atmosphere2);

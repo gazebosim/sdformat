@@ -217,10 +217,10 @@ sdf::ElementPtr Collision::ToElement() const
   poseElem->Set<ignition::math::Pose3d>(this->RawPose());
 
   // Set the geometry
-  elem->InsertElement(this->dataPtr->geom.ToElement());
+  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
 
   // Set the surface
-  elem->InsertElement(this->dataPtr->surface.ToElement());
+  elem->InsertElement(this->dataPtr->surface.ToElement(), true);
 
   return elem;
 }

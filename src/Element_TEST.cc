@@ -91,11 +91,9 @@ TEST(Element, SetExplicitlySetInFile)
 
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
-  elem->SetParent(parent);
-  parent->InsertElement(elem);
+  parent->InsertElement(elem, true);
   sdf::ElementPtr elem2 = std::make_shared<sdf::Element>();
-  elem2->SetParent(parent);
-  parent->InsertElement(elem2);
+  parent->InsertElement(elem2, true);
 
   EXPECT_TRUE(elem->GetExplicitlySetInFile());
 

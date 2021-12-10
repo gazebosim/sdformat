@@ -813,19 +813,19 @@ sdf::ElementPtr World::ToElement() const
 
   // Physics
   for (const sdf::Physics &physics : this->dataPtr->physics)
-    elem->InsertElement(physics.ToElement());
+    elem->InsertElement(physics.ToElement(), true);
 
   // Models
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement());
+    elem->InsertElement(model.ToElement(), true);
 
   // Actors
   for (const sdf::Actor &actor : this->dataPtr->actors)
-    elem->InsertElement(actor.ToElement());
+    elem->InsertElement(actor.ToElement(), true);
 
   // Lights
   for (const sdf::Light &light : this->dataPtr->lights)
-    elem->InsertElement(light.ToElement());
+    elem->InsertElement(light.ToElement(), true);
 
   // Spherical coordinates.
   if (this->dataPtr->sphericalCoordinates)
@@ -847,15 +847,19 @@ sdf::ElementPtr World::ToElement() const
 
   // Atmosphere
   if (this->dataPtr->atmosphere)
-    elem->InsertElement(this->dataPtr->atmosphere->ToElement());
+    elem->InsertElement(this->dataPtr->atmosphere->ToElement(), true);
 
   // Gui
   if (this->dataPtr->gui)
-    elem->InsertElement(this->dataPtr->gui->ToElement());
+    elem->InsertElement(this->dataPtr->gui->ToElement(), true);
 
   // Scene
   if (this->dataPtr->scene)
-    elem->InsertElement(this->dataPtr->scene->ToElement());
+    elem->InsertElement(this->dataPtr->scene->ToElement(), true);
+
+  // Audio
+  if (this->dataPtr->audioDevice != "default")
+    elem->GetElement("audio")->GetElement("device")->Set(this->AudioDevice());
 
   return elem;
 }
@@ -917,7 +921,11 @@ bool World::AddLight(const Light &_light)
 bool World::AddPhysics(const Physics &_physics)
 {
   if (this->PhysicsNameExists(_physics.Name()))
+  {
+    std::cout << "Not adding physics, it exists\n";
     return false;
+  }
+    std::cout << "Adding physics\n";
   this->dataPtr->physics.push_back(_physics);
 
   return true;
