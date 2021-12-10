@@ -65,7 +65,6 @@ set (sources
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (USE_INTERNAL_URDF)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/urdf)
   set(sources ${sources}
   urdf/urdf_parser/model.cpp
   urdf/urdf_parser/link.cpp
@@ -215,7 +214,15 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
 )
 
-if (NOT USE_INTERNAL_URDF)
+if (USE_INTERNAL_URDF)
+  target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+    PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/urdf
+  )
+  if (WIN32)
+    target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE -D_USE_MATH_DEFINES)
+  endif()
+else()
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE IgnURDFDOM::IgnURDFDOM)
 endif()
 

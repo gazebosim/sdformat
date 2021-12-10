@@ -1,13 +1,4 @@
 #################################################
-macro (sdf_setup_windows)
-  # Need for M_PI constant
-  add_definitions(-D_USE_MATH_DEFINES -DWINDOWS_LEAN_AND_MEAN)
-  # And force linking to MSVC dynamic runtime
-  set(CMAKE_C_FLAGS_DEBUG "/MDd ${CMAKE_C_FLAGS_DEBUG}")
-  set(CMAKE_C_FLAGS_RELEASE "/MD ${CMAKE_C_FLAGS_RELEASE}")
-endmacro()
-
-#################################################
 # VAR: SDF_BUILD_TESTS_EXTRA_EXE_SRCS
 # Hack: extra sources to build binaries can be supplied to gz_build_tests in
 # the variable SDF_BUILD_TESTS_EXTRA_EXE_SRCS. This variable will be clean up
