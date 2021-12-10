@@ -252,11 +252,6 @@ namespace sdf
     /// \sa Model::SetEnableWind(bool)
     public: void SetEnableWind(bool _enableWind);
 
-    /// \brief Create and return an SDF element filled with data from this
-    /// link.
-    /// \return SDF element pointer with updated link values.
-    public: sdf::ElementPtr ToElement() const;
-
     /// \brief Add a collision to the link.
     /// \param[in] _collision Collision to add.
     /// \return True if successful, false if a collision with the name already
