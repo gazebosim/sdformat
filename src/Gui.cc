@@ -15,6 +15,7 @@
  *
 */
 #include "sdf/Gui.hh"
+#include "sdf/parser.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -56,6 +57,8 @@ Errors Gui::Load(ElementPtr _sdf)
   this->dataPtr->fullscreen = _sdf->Get<bool>("fullscreen",
       this->dataPtr->fullscreen).first;
 
+  // \todo(nkoenig) Parse all the elements in gui.sdf
+
   return errors;
 }
 
@@ -81,4 +84,14 @@ bool Gui::operator==(const Gui &_gui) const
 sdf::ElementPtr Gui::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Gui::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("gui.sdf", elem);
+
+  elem->GetAttribute("fullscreen")->Set(this->dataPtr->fullscreen);
+  return elem;
 }

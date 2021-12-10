@@ -849,6 +849,14 @@ sdf::ElementPtr World::ToElement() const
   if (this->dataPtr->atmosphere)
     elem->InsertElement(this->dataPtr->atmosphere->ToElement());
 
+  // Gui
+  if (this->dataPtr->gui)
+    elem->InsertElement(this->dataPtr->gui->ToElement());
+
+  // Scene
+  if (this->dataPtr->scene)
+    elem->InsertElement(this->dataPtr->scene->ToElement());
+
   return elem;
 }
 
@@ -868,6 +876,12 @@ void World::ClearActors()
 void World::ClearLights()
 {
   this->dataPtr->lights.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearPhysics()
+{
+  this->dataPtr->physics.clear();
 }
 
 /////////////////////////////////////////////////
@@ -895,6 +909,16 @@ bool World::AddLight(const Light &_light)
   if (this->LightNameExists(_light.Name()))
     return false;
   this->dataPtr->lights.push_back(_light);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddPhysics(const Physics &_physics)
+{
+  if (this->PhysicsNameExists(_physics.Name()))
+    return false;
+  this->dataPtr->physics.push_back(_physics);
 
   return true;
 }

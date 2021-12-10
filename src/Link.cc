@@ -499,7 +499,6 @@ void Link::SetEnableWind(const bool _enableWind)
   this->dataPtr->enableWind = _enableWind;
 }
 
-
 //////////////////////////////////////////////////
 bool Link::AddCollision(const Collision &_collision)
 {

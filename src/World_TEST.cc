@@ -21,6 +21,7 @@
 #include "sdf/Light.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Model.hh"
+#include "sdf/Physics.hh"
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////
@@ -419,4 +420,112 @@ TEST(DOMWorld, AddLight)
   const sdf::Light *lightFromWorld = world.LightByIndex(0);
   ASSERT_NE(nullptr, lightFromWorld);
   EXPECT_EQ(lightFromWorld->Name(), light.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, ToElement)
+{
+  sdf::World world;
+
+  world.SetName("my-world");
+  world.SetAudioDevice("my-audio");
+  world.SetWindLinearVelocity(ignition::math::Vector3d(1, 2, 3));
+  world.SetGravity(ignition::math::Vector3d(-1, 5, 10));
+  world.SetMagneticField(ignition::math::Vector3d(2.0, 0.1, 0.5));
+  world.SetSphericalCoordinates(ignition::math::SphericalCoordinates());
+
+  sdf::Atmosphere atmosphere;
+  world.SetAtmosphere(atmosphere);
+
+  sdf::Gui gui;
+  world.SetGui(gui);
+
+  sdf::Scene scene;
+  world.SetScene(scene);
+
+  for (int j = 0; j < 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Model model;
+      model.SetName("model" + std::to_string(i));
+      EXPECT_TRUE(world.AddModel(model));
+      EXPECT_FALSE(world.AddModel(model));
+    }
+    world.ClearModels();
+  }
+
+  for (int j = 0; j < 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Actor actor;
+      actor.SetName("actor" + std::to_string(i));
+      EXPECT_TRUE(world.AddActor(actor));
+      EXPECT_FALSE(world.AddActor(actor));
+    }
+    world.ClearActors();
+  }
+
+  for (int j = 0; j < 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Light light;
+      light.SetName("light" + std::to_string(i));
+      EXPECT_TRUE(world.AddLight(light));
+      EXPECT_FALSE(world.AddLight(light));
+    }
+    world.ClearLights();
+  }
+
+  for (int j = 0; j < 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Physics physics;
+      physics.SetName("physics" + std::to_string(i));
+      EXPECT_TRUE(world.AddPhysics(physics));
+      EXPECT_FALSE(world.AddPhysics(physics));
+    }
+    world.ClearPhysics();
+  }
+
+  sdf::ElementPtr elem = world.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::World world2;
+  world2.Load(elem);
+
+  EXPECT_EQ(world.Name(), world2.Name());
+  EXPECT_EQ(world.AudioDevice(), world2.AudioDevice());
+  EXPECT_EQ(world.WindLinearVelocity(), world2.WindLinearVelocity());
+  EXPECT_EQ(world.Gravity(), world2.Gravity());
+  EXPECT_EQ(world.MagneticField(), world2.MagneticField());
+  EXPECT_EQ(world.SphericalCoordinates(), world2.SphericalCoordinates());
+
+  const sdf::Atmosphere *atmosphere2 = world2.Atmosphere();
+  ASSERT_NE(nullptr, atmosphere2);
+
+  const sdf::Gui *gui2 = world2.Gui();
+  ASSERT_NE(nullptr, gui2);
+
+  const sdf::Scene *scene2 = world2.Scene();
+  ASSERT_NE(nullptr, scene2);
+
+  EXPECT_EQ(world.ModelCount(), world2.ModelCount());
+  for (uint64_t i = 0; i < world2.ModelCount(); ++i)
+    EXPECT_NE(nullptr, world2.ModelByIndex(i));
+
+  EXPECT_EQ(world.LightCount(), world2.LightCount());
+  for (uint64_t i = 0; i < world2.LightCount(); ++i)
+    EXPECT_NE(nullptr, world2.LightByIndex(i));
+
+  EXPECT_EQ(world.ActorCount(), world2.ActorCount());
+  for (uint64_t i = 0; i < world2.ActorCount(); ++i)
+    EXPECT_NE(nullptr, world2.ActorByIndex(i));
+
+  EXPECT_EQ(world.PhysicsCount(), world2.PhysicsCount());
+  for (uint64_t i = 0; i < world2.PhysicsCount(); ++i)
+    EXPECT_NE(nullptr, world2.PhysicsByIndex(i));
 }

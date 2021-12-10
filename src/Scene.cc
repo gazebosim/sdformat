@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include "sdf/parser.hh"
 #include "sdf/Scene.hh"
 #include "Utils.hh"
 
@@ -175,4 +176,22 @@ const sdf::Sky *Scene::Sky() const
 sdf::ElementPtr Scene::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Scene::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("scene.sdf", elem);
+
+  elem->GetElement("ambient")->Set(this->Ambient());
+  elem->GetElement("background")->Set(this->Background());
+  elem->GetElement("grid")->Set(this->Grid());
+  elem->GetElement("origin_visual")->Set(this->OriginVisual());
+  elem->GetElement("shadows")->Set(this->Shadows());
+
+  if (this->dataPtr->sky)
+    elem->InsertElement(this->dataPtr->sky->ToElement());
+
+  return elem;
 }
