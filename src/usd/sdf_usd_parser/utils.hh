@@ -22,7 +22,7 @@
 #include <ignition/math/Pose3.hh>
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/gf/vec3f.h>
-#include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 
 #include "sdf/Geometry.hh"
@@ -35,7 +35,9 @@ namespace usd
 {
   /// \brief Set the pose of a pxr::UsdGeomXform object.
   /// \param[in] _pose The pose to set.
-  /// \param[in] _geomXform The object that should have a pose of _pose.
+  /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
+  /// \param[in] _usdPath The path to the USD prim that should have its
+  /// pose modified to match _pose.
   // TODO(adlarkin) handle a <pose> element's <relative_to> attribute.
   // Either this API will need to change to take the <relative_to> data, or
   // the code that calls this method elsewhere will need to update _pose to be
@@ -43,9 +45,9 @@ namespace usd
   // (probably best to update the API here to take the <relative_to> data.
   // If it's empty, then _pose doesn't need to be modified)
   inline void SDFORMAT_VISIBLE SetPose(const ignition::math::Pose3d &_pose,
-      pxr::UsdGeomXform &_geomXform)
+      pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_usdPath)
   {
-    pxr::UsdGeomXformCommonAPI geomXformAPI(_geomXform);
+    pxr::UsdGeomXformCommonAPI geomXformAPI(_stage->GetPrimAtPath(_usdPath));
 
     const auto &position = _pose.Pos();
     geomXformAPI.SetTranslate(pxr::GfVec3d(

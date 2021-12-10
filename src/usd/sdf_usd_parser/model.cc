@@ -26,7 +26,6 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
-#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Model.hh"
 #include "sdf_usd_parser/joint.hh"
@@ -38,7 +37,8 @@ namespace usd
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, const pxr::SdfPath &_worldPath)
   {
-    auto usdModelXform = pxr::UsdGeomXform::Define(_stage, pxr::SdfPath(_path));
+    const pxr::SdfPath sdfModelPath(_path);
+    auto usdModelXform = pxr::UsdGeomXform::Define(_stage, sdfModelPath);
     // since USD does not have a plane yet, planes are being represented as a
     // wide, thin box. The plane/box pose needs to be offset according to the
     // thickness to ensure that the top of the plane is at the correct height.
@@ -52,29 +52,11 @@ namespace usd
           _model.RawPose().Y(),
           _model.RawPose().Z() - (0.5 * usd::kPlaneThickness));
       usd::SetPose(ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
-          usdModelXform);
+          _stage, sdfModelPath);
     }
     else
     {
-      usd::SetPose(_model.RawPose(), usdModelXform);
-    }
-
-    if (!_model.Static())
-    {
-      auto modelPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
-      if (!modelPrim)
-      {
-        std::cerr << "Internal error: unable to get prim at path ["
-                  << _path << "], but a model prim should exist at this path\n";
-        return false;
-      }
-
-      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(modelPrim))
-      {
-        std::cerr << "Internal error: unable to mark model at path ["
-                  << _path << "] as a rigid body\n";
-        return false;
-      }
+      usd::SetPose(_model.RawPose(), _stage, sdfModelPath);
     }
 
     // Parse all of the model's links and convert them to USD.
@@ -86,7 +68,7 @@ namespace usd
       const auto link = *(_model.LinkByIndex(i));
       const auto linkPath = std::string(_path + "/" + link.Name());
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
-      if (!ParseSdfLink(link, _stage, linkPath))
+      if (!ParseSdfLink(link, _stage, linkPath, !_model.Static()))
       {
         std::cerr << "Error parsing link [" << link.Name() << "]\n";
         return false;

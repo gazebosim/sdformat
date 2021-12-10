@@ -17,6 +17,7 @@
 
 #include "sdf_usd_parser/world.hh"
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -27,16 +28,31 @@
 #include <pxr/usd/usdPhysics/scene.h>
 
 #include "sdf/World.hh"
+#include "sdf_usd_parser/light.hh"
 #include "sdf_usd_parser/model.hh"
 
 namespace usd
 {
+  // TODO(ahcorde): Move this function to common::Util.hh
+  void removeSpaces(std::string &_str)
+  {
+    _str.erase(
+      std::remove_if(
+        _str.begin(),
+        _str.end(),
+        [](unsigned char x)
+        {
+          return std::isspace(x);
+        }),
+      _str.end());
+  }
+
   bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
 
-    const auto worldPrimPath = pxr::SdfPath(_path);
+    const pxr::SdfPath worldPrimPath(_path);
     auto usdWorldPrim = _stage->DefinePrim(worldPrimPath);
 
     auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
@@ -48,10 +64,23 @@ namespace usd
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {
       const auto model = *(_world.ModelByIndex(i));
-      const auto modelPath = std::string(_path + "/" + model.Name());
+      auto modelPath = std::string(_path + "/" + model.Name());
+      removeSpaces(modelPath);
       if (!ParseSdfModel(model, _stage, modelPath, worldPrimPath))
       {
         std::cerr << "Error parsing model [" << model.Name() << "]\n";
+        return false;
+      }
+    }
+
+    for (uint64_t i = 0; i < _world.LightCount(); ++i)
+    {
+      const auto light = *(_world.LightByIndex(i));
+      auto lightPath = std::string(_path + "/" + light.Name());
+      removeSpaces(lightPath);
+      if (!ParseSdfLight(light, _stage, lightPath))
+      {
+        std::cerr << "Error parsing light [" << light.Name() << "]\n";
         return false;
       }
     }
