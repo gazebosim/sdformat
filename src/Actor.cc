@@ -774,12 +774,11 @@ sdf::ElementPtr Actor::ToElement() const
 
   // Joints
   for (const sdf::Joint &joint : this->dataPtr->joints)
-    elem->InsertElement(joint.ToElement());
+    elem->InsertElement(joint.ToElement(), true);
 
   // Link
   for (const sdf::Link &link : this->dataPtr->links)
-    elem->InsertElement(link.ToElement());
+    elem->InsertElement(link.ToElement(), true);
 
   return elem;
 }
-

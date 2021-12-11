@@ -281,28 +281,28 @@ sdf::ElementPtr Geometry::ToElement() const
   switch (this->dataPtr->type)
   {
     case GeometryType::BOX:
-      elem->InsertElement(this->dataPtr->box->ToElement());
+      elem->InsertElement(this->dataPtr->box->ToElement(), true);
       break;
     case GeometryType::CYLINDER:
-      elem->InsertElement(this->dataPtr->cylinder->ToElement());
+      elem->InsertElement(this->dataPtr->cylinder->ToElement(), true);
       break;
     case GeometryType::PLANE:
-      elem->InsertElement(this->dataPtr->plane->ToElement());
+      elem->InsertElement(this->dataPtr->plane->ToElement(), true);
       break;
     case GeometryType::SPHERE:
-      elem->InsertElement(this->dataPtr->sphere->ToElement());
+      elem->InsertElement(this->dataPtr->sphere->ToElement(), true);
       break;
     case GeometryType::MESH:
-      elem->InsertElement(this->dataPtr->mesh->ToElement());
+      elem->InsertElement(this->dataPtr->mesh->ToElement(), true);
       break;
     case GeometryType::HEIGHTMAP:
-      elem->InsertElement(this->dataPtr->heightmap->ToElement());
+      elem->InsertElement(this->dataPtr->heightmap->ToElement(), true);
       break;
     case GeometryType::CAPSULE:
-      elem->InsertElement(this->dataPtr->capsule->ToElement());
+      elem->InsertElement(this->dataPtr->capsule->ToElement(), true);
       break;
     case GeometryType::ELLIPSOID:
-      elem->InsertElement(this->dataPtr->ellipsoid->ToElement());
+      elem->InsertElement(this->dataPtr->ellipsoid->ToElement(), true);
       break;
     case GeometryType::EMPTY:
     default:

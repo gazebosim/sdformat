@@ -612,31 +612,31 @@ sdf::ElementPtr Link::ToElement() const
   // Collisions
   for (const sdf::Collision &collision : this->dataPtr->collisions)
   {
-    elem->InsertElement(collision.ToElement());
+    elem->InsertElement(collision.ToElement(), true);
   }
 
   // Light
   for (const sdf::Light &light : this->dataPtr->lights)
   {
-    elem->InsertElement(light.ToElement());
+    elem->InsertElement(light.ToElement(), true);
   }
 
   // Particle emitters
   for (const sdf::ParticleEmitter &emitter : this->dataPtr->emitters)
   {
-    elem->InsertElement(emitter.ToElement());
+    elem->InsertElement(emitter.ToElement(), true);
   }
 
   // Sensors
   for (const sdf::Sensor &sensor : this->dataPtr->sensors)
   {
-    elem->InsertElement(sensor.ToElement());
+    elem->InsertElement(sensor.ToElement(), true);
   }
 
   // Visuals
   for (const sdf::Visual &visual : this->dataPtr->visuals)
   {
-    elem->InsertElement(visual.ToElement());
+    elem->InsertElement(visual.ToElement(), true);
   }
 
   return elem;

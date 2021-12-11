@@ -319,7 +319,7 @@ TEST(DOMLink, ToElement)
   link.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   link.SetEnableWind(true);
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 1; ++i)
     {
@@ -328,22 +328,24 @@ TEST(DOMLink, ToElement)
       EXPECT_TRUE(link.AddCollision(collision));
       EXPECT_FALSE(link.AddCollision(collision));
     }
-    link.ClearCollisions();
+    if (j == 0)
+      link.ClearCollisions();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
-   for (int i = 0; i < 2; i++)
-   {
-     sdf::Visual visual;
-     visual.SetName("visual" + std::to_string(i));
-     EXPECT_TRUE(link.AddVisual(visual));
-     EXPECT_FALSE(link.AddVisual(visual));
-   }
-   link.ClearVisuals();
+    for (int i = 0; i < 2; i++)
+    {
+      sdf::Visual visual;
+      visual.SetName("visual" + std::to_string(i));
+      EXPECT_TRUE(link.AddVisual(visual));
+      EXPECT_FALSE(link.AddVisual(visual));
+    }
+    if (j == 0)
+     link.ClearVisuals();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 3; i++)
     {
@@ -352,10 +354,11 @@ TEST(DOMLink, ToElement)
       EXPECT_TRUE(link.AddLight(light));
       EXPECT_FALSE(link.AddLight(light));
     }
-    link.ClearLights();
+    if (j == 0)
+      link.ClearLights();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 4; i++)
     {
@@ -364,10 +367,11 @@ TEST(DOMLink, ToElement)
       EXPECT_TRUE(link.AddSensor(sensor));
       EXPECT_FALSE(link.AddSensor(sensor));
     }
-    link.ClearSensors();
+    if (j == 0)
+      link.ClearSensors();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 5; i++)
     {
@@ -376,7 +380,8 @@ TEST(DOMLink, ToElement)
       EXPECT_TRUE(link.AddParticleEmitter(emitter));
       EXPECT_FALSE(link.AddParticleEmitter(emitter));
     }
-    link.ClearParticleEmitters();
+    if (j == 0)
+      link.ClearParticleEmitters();
   }
 
   sdf::ElementPtr elem = link.ToElement();

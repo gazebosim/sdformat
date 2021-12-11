@@ -295,7 +295,7 @@ TEST(DOMModel, ToElement)
   model.SetEnableWind(true);
   model.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 1; ++i)
     {
@@ -304,12 +304,13 @@ TEST(DOMModel, ToElement)
       EXPECT_TRUE(model.AddLink(link));
       EXPECT_FALSE(model.AddLink(link));
     }
-    model.ClearLinks();
+    if (j == 0)
+      model.ClearLinks();
   }
   model.SetCanonicalLinkName("link1");
   model.SetPlacementFrameName("link0");
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 2; ++i)
     {
@@ -318,10 +319,11 @@ TEST(DOMModel, ToElement)
       EXPECT_TRUE(model.AddJoint(joint));
       EXPECT_FALSE(model.AddJoint(joint));
     }
-    model.ClearJoints();
+    if (j == 0)
+      model.ClearJoints();
   }
 
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 3; ++i)
     {
@@ -330,7 +332,8 @@ TEST(DOMModel, ToElement)
       EXPECT_TRUE(model.AddModel(nestedModel));
       EXPECT_FALSE(model.AddModel(nestedModel));
     }
-    model.ClearModels();
+    if (j == 0)
+      model.ClearModels();
   }
 
   sdf::ElementPtr elem = model.ToElement();
