@@ -32,12 +32,23 @@
 namespace usd
 {
   bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path, const bool _rigidBody)
+      const std::string &_path, const bool _rigidBody,
+      const std::string &_canonicalLink)
   {
     const pxr::SdfPath sdfLinkPath(_path);
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
-    usd::SetPose(_link.RawPose(), _stage, sdfLinkPath);
+    if (_link.PoseRelativeTo().empty())
+    {
+      usd::SetPose(_link.RawPose(), _stage, sdfLinkPath);
+    }
+    else
+    {
+      auto linkSP = _link.SemanticPose();
+      ignition::math::Pose3d pose;
+      linkSP.Resolve(pose, _canonicalLink);
+      usd::SetPose(pose, _stage, sdfLinkPath);
+    }
 
     if (_rigidBody)
     {
@@ -56,6 +67,15 @@ namespace usd
         return false;
       }
 
+      auto physicsRigidBodyAPI =
+        pxr::UsdPhysicsRigidBodyAPI(linkPrim);
+      if (!physicsRigidBodyAPI)
+      {
+        std::cerr << "Unable to attach mass properties to link ["
+                  << _link.Name() << "]\n";
+        return false;
+      }
+
       auto massAPI =
         pxr::UsdPhysicsMassAPI::Apply(linkPrim);
       if (!massAPI)
@@ -66,6 +86,14 @@ namespace usd
       }
       massAPI.CreateMassAttr().Set(
           static_cast<float>(_link.Inertial().MassMatrix().Mass()));
+
+      auto diagonalInertial = _link.Inertial().MassMatrix().DiagonalMoments();
+      massAPI.CreateDiagonalInertiaAttr().Set(pxr::GfVec3f(
+        diagonalInertial[0], diagonalInertial[1], diagonalInertial[2]));
+
+      auto centerOfMass = _link.Inertial().Pose();
+      massAPI.CreateCenterOfMassAttr().Set(pxr::GfVec3f(
+        centerOfMass.Pos().X(), centerOfMass.Pos().Y(), centerOfMass.Pos().Z()));
     }
 
     // TODO(adlarkin) finish parsing link. It will look something like this

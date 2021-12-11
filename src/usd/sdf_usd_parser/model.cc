@@ -59,6 +59,13 @@ namespace usd
       usd::SetPose(_model.RawPose(), _stage, sdfModelPath);
     }
 
+    auto canonicalLink = _model.CanonicalLink();
+    std::string canonicalLinkName;
+    if (canonicalLink)
+    {
+      canonicalLinkName = canonicalLink->Name();
+    }
+
     // Parse all of the model's links and convert them to USD.
     // Map a link's SDF name to its USD path so that USD joints know which
     // USD links to connect to.
@@ -68,7 +75,8 @@ namespace usd
       const auto link = *(_model.LinkByIndex(i));
       const auto linkPath = std::string(_path + "/" + link.Name());
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
-      if (!ParseSdfLink(link, _stage, linkPath, !_model.Static()))
+      if (!ParseSdfLink(link, _stage, linkPath,
+          !_model.Static(), canonicalLinkName))
       {
         std::cerr << "Error parsing link [" << link.Name() << "]\n";
         return false;

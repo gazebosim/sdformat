@@ -44,12 +44,20 @@ namespace usd
   {
     const pxr::SdfPath sdfVisualPath(_path);
     auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
-    usd::SetPose(_visual.RawPose(), _stage, sdfVisualPath);
+    if (_visual.PoseRelativeTo().empty())
+    {
+      usd::SetPose(_visual.RawPose(), _stage, sdfVisualPath);
+    }
+    else
+    {
+      auto visualSP = _visual.SemanticPose();
+      ignition::math::Pose3d pose;
+      visualSP.Resolve(pose, _visual.PoseRelativeTo());
+      usd::SetPose(pose, _stage, sdfVisualPath);
+    }
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
-    std::cerr << "_visual " << _visual.Name() << '\n';
-    std::cerr << "geometryPath " << geometryPath << '\n';
     if (!ParseSdfGeometry(geometry, _stage, geometryPath))
     {
       std::cerr << "Error parsing geometry attached to visual ["
@@ -60,44 +68,6 @@ namespace usd
     auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
     if (geomPrim)
     {
-      // // auto bindMaterial = pxr::UsdShadeMaterialBindingAPI(geomPrim);
-      // // pxr::UsdRelationship directBindingRel =
-      // //   bindMaterial.GetDirectBindingRel();
-      // //
-      // // pxr::SdfPathVector paths;
-      // // directBindingRel.GetTargets(&paths);
-      // // std::cerr << "paths " << paths.size() << '\n';
-      // // std::cerr << " bindMaterial.GetCollectionBindingRels() " << bindMaterial.GetCollectionBindingRels().size() << '\n';
-      // // if (bindMaterial.GetCollectionBindingRels().size() == 0)
-      // // {
-      // bool bindMaterial = true;
-      // if (geometry.Type() == sdf::GeometryType::MESH)
-      // {
-      //   ignition::common::URI uri(geometry.MeshShape()->Uri());
-      //   std::string fullname;
-      //   // std::cerr << "_geometry.MeshShape()->Uri() " << _geometry.MeshShape()->Uri() << '\n';
-      //   if (uri.Scheme() == "https" || uri.Scheme() == "http")
-      //   {
-      //     fullname =
-      //       ignition::common::findFile(uri.Str());
-      //   }
-      //   else
-      //   {
-      //     fullname =
-      //       ignition::common::findFile(geometry.MeshShape()->Uri());
-      //   }
-      //   // std::cerr << "fullName" << fullname << '\n';
-      //
-      //   auto ignMesh = ignition::common::MeshManager::Instance()->Load(
-      //       fullname);
-      //   if (ignMesh->MaterialCount() > 0)
-      //   {
-      //     bindMaterial = false;
-      //   }
-      // }
-      // if (bindMaterial)
-      // {
-      //
         const auto material = _visual.Material();
         pxr::UsdShadeMaterial materialUSD;
 
@@ -112,9 +82,7 @@ namespace usd
           }
         }
 
-        // std::cerr << "bind material 2" << '\n';
         pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
-      // }
     }
 
     return true;

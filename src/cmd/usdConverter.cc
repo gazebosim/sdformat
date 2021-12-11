@@ -126,12 +126,10 @@ std::string findFileByExtension(const std::string &_path)
 //////////////////////////////////////////////////
 std::string FindResources(const std::string &_uri)
 {
-  // std::cerr << "FindResources" << '\n';
-
   ignition::common::URI uri(_uri);
-  // std::cerr << "_uri path ~/.ignition/fuel/" << uri.Path().Str() << '\n';
   std::string path;
-
+  std::string home;
+  ignition::common::env("HOME", home, false);
   if (uri.Scheme() == "http" || uri.Scheme() == "https")
   {
     std::vector<std::string> tokens = ignition::common::split(uri.Path().Str(), "/");
@@ -141,34 +139,23 @@ std::string FindResources(const std::string &_uri)
     std::string type = ignition::common::lowercase(tokens[3]);
     std::string modelName = ignition::common::lowercase(tokens[4]);
     path = ignition::common::joinPaths(
-      "/home/ahcorde/.ignition/fuel/", server, owner, type, modelName);
+      home, ".ignition", "fuel", server, owner, type, modelName);
   }
   else
   {
-    path = "/home/ahcorde/.ignition/fuel/";
+    path = ignition::common::joinPaths(home, ".ignition", "fuel");
   }
-  std::cerr << "path " << path << '\n';
-
-  // if (!ignition::common::exists(path))
-  // {
-  //   // std::cerr << "not exsts" << '\n';
-  //   return "";
-  // }
 
   auto fileName = ignition::common::basename(uri.Path().Str());
   auto fileExtensionIndex = fileName.rfind(".");
-  // std::cerr << "fileName " << fileName << '\n';
-  // std::cerr << "fileExtensionIndex " << fileExtensionIndex << " " << (fileExtensionIndex == std::string::npos) << '\n';
   if (fileExtensionIndex == std::string::npos)
   {
     std::string result = findFileByExtension(path);
-    std::cerr << "file result sdf file " << result << '\n';
     return result;
   }
   else
   {
     std::string result = findFileByName(path, fileName);
-    std::cerr << "file result " << result << '\n';
     return result;
   }
   return "";
@@ -177,7 +164,6 @@ std::string FindResources(const std::string &_uri)
 //////////////////////////////////////////////////
 std::string FindResourceUri(const ignition::common::URI &_uri)
 {
-  std::cerr << "FindResourceUri" << '\n';
   return FindResources(_uri.Str());
 }
 
@@ -204,8 +190,6 @@ int main(int argc, const char* argv[])
       std::cout << e << "\n";
     return -2;
   }
-
-  // std::cerr << root.Element()->ToString("") << std::endl;
 
   // only support SDF files with exactly 1 world for now
   if (root.WorldCount() != 1u)
