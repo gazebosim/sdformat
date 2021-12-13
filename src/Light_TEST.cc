@@ -142,6 +142,9 @@ TEST(DOMLight, CopyConstructor)
   EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
+
+  EXPECT_TRUE(light == light2);
+  EXPECT_FALSE(light != light2);
 }
 
 /////////////////////////////////////////////////
@@ -183,6 +186,9 @@ TEST(DOMLight, CopyAssignmentOperator)
   EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
+
+  EXPECT_TRUE(light == light2);
+  EXPECT_FALSE(light != light2);
 }
 
 /////////////////////////////////////////////////
@@ -283,6 +289,15 @@ TEST(DOMLight, CopyAssignmentAfterMove)
 
   EXPECT_EQ("light2", light1.Name());
   EXPECT_EQ("light1", light2.Name());
+
+  // light1 and light2 have different names, they should be equal.
+  EXPECT_FALSE(light1 == light2);
+  EXPECT_TRUE(light1 != light2);
+
+  // Now they should be equal
+  light1.SetName("light1");
+  EXPECT_TRUE(light1 == light2);
+  EXPECT_FALSE(light1 != light2);
 }
 
 /////////////////////////////////////////////////
@@ -375,4 +390,7 @@ TEST(DOMLight, ToElement)
   sdf::Light light3;
   light3.Load(light2Elem);
   EXPECT_FALSE(light3.CastShadows());
+
+  EXPECT_FALSE(light == light2);
+  EXPECT_TRUE(light != light2);
 }

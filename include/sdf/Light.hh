@@ -273,6 +273,20 @@ namespace sdf
     /// \return SDF element pointer with updated light values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// Return true if this light object has the same property values as the
+    /// provided light object.
+    /// \param[in] _light Light object to compare against.
+    /// \return True if this light object has the same property values as
+    /// the provided _light object, false otherwise.
+    public: bool operator==(const Light &_light) const;
+
+    /// Return true if this light object has different property values from the
+    /// provided light object.
+    /// \param[in] _light Light object to compare against.
+    /// \return True if this light object has different property values from the
+    /// provided light object.
+    public: bool operator!=(const Light &_light) const;
+
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,
     /// but Link::SetPoseRelativeToGraph is a private function, so we need

@@ -16,6 +16,7 @@
 */
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include <ignition/math/Helpers.hh>
 #include "sdf/Error.hh"
 #include "sdf/Light.hh"
 #include "sdf/parser.hh"
@@ -504,4 +505,34 @@ sdf::ElementPtr Light::ToElement() const
       this->SpotOuterAngle().Radian());
   spotElem->GetElement("falloff")->Set<double>(this->SpotFalloff());
   return elem;
+}
+
+//////////////////////////////////////////////////
+bool Light::operator==(const Light &_light) const
+{
+  return this->Name() == _light.Name() &&
+    this->Type() == _light.Type() &&
+    this->RawPose() == _light.RawPose() &&
+    this->CastShadows() == _light.CastShadows() &&
+    ignition::math::equal(this->Intensity(),  _light.Intensity()) &&
+    this->Diffuse() == _light.Diffuse() &&
+    this->Specular() == _light.Specular() &&
+    ignition::math::equal(this->AttenuationRange(),
+                          _light.AttenuationRange()) &&
+    ignition::math::equal(this->LinearAttenuationFactor(),
+                          _light.LinearAttenuationFactor()) &&
+    ignition::math::equal(this->ConstantAttenuationFactor(),
+                          _light.ConstantAttenuationFactor()) &&
+    ignition::math::equal(this->QuadraticAttenuationFactor(),
+                          _light.QuadraticAttenuationFactor()) &&
+    this->Direction() == _light.Direction() &&
+    this->SpotInnerAngle() == _light.SpotInnerAngle() &&
+    this->SpotOuterAngle() == _light.SpotOuterAngle() &&
+    ignition::math::equal(this->SpotFalloff(), _light.SpotFalloff());
+}
+
+//////////////////////////////////////////////////
+bool Light::operator!=(const Light &_light) const
+{
+  return !(*this == _light);
 }
