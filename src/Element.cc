@@ -548,12 +548,14 @@ void Element::PrintValuesImpl(const std::string &_prefix,
 
 /////////////////////////////////////////////////
 void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
-                              const PrintConfig &_config,
-                              std::ostringstream &_out) const
+                                     const PrintConfig &_config,
+                                     std::ostringstream &_out) const
 {
-  // Here we handle exceptions for different printing configurations
+  // Attribute exceptions are used in the event of a non-default PrintConfig
+  // which modifies the Attributes of this Element that are printed out. The
+  // modifications to an Attribute by a PrintConfig will overwrite the original
+  // existing Attribute when this Element is printed.
   std::set<std::string> attributeExceptions;
-
   if (this->name == "pose")
   {
     if (_config.GetRotationInDegrees() || _config.GetRotationSnapToDegrees())
