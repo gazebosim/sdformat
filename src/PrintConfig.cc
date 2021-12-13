@@ -51,7 +51,7 @@ void PrintConfig::SetRotationInDegrees(bool _value)
 }
 
 /////////////////////////////////////////////////
-bool PrintConfig::GetRotationInDegrees() const
+bool PrintConfig::RotationInDegrees() const
 {
   return this->dataPtr->rotationInDegrees;
 }
@@ -93,13 +93,13 @@ bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
 }
 
 /////////////////////////////////////////////////
-std::optional<unsigned int> PrintConfig::GetRotationSnapToDegrees() const
+std::optional<unsigned int> PrintConfig::RotationSnapToDegrees() const
 {
   return this->dataPtr->rotationSnapToDegrees;
 }
 
 /////////////////////////////////////////////////
-std::optional<double> PrintConfig::GetRotationSnapTolerance() const
+std::optional<double> PrintConfig::RotationSnapTolerance() const
 {
   return this->dataPtr->rotationSnapTolerance;
 }
@@ -107,9 +107,9 @@ std::optional<double> PrintConfig::GetRotationSnapTolerance() const
 /////////////////////////////////////////////////
 bool PrintConfig::operator==(const PrintConfig &_config) const
 {
-  if (this->GetRotationInDegrees() == _config.GetRotationInDegrees() &&
-      this->GetRotationSnapToDegrees() == _config.GetRotationSnapToDegrees() &&
-      this->GetRotationSnapTolerance() == _config.GetRotationSnapTolerance())
+  if (this->RotationInDegrees() == _config.RotationInDegrees() &&
+      this->RotationSnapToDegrees() == _config.RotationSnapToDegrees() &&
+      this->RotationSnapTolerance() == _config.RotationSnapTolerance())
   {
     return true;
   }

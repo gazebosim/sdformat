@@ -558,7 +558,7 @@ void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
   std::set<std::string> attributeExceptions;
   if (this->name == "pose")
   {
-    if (_config.GetRotationInDegrees() || _config.GetRotationSnapToDegrees())
+    if (_config.RotationInDegrees() || _config.RotationSnapToDegrees())
     {
       attributeExceptions.insert("degrees");
       _out << " " << "degrees='true'";

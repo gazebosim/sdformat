@@ -859,14 +859,14 @@ bool PoseStringFromValue(const PrintConfig &_config,
 
   // Checking PrintConfig for desired pose representations. This overrides
   // any parent Element Attributes.
-  if (_config.GetRotationInDegrees())
+  if (_config.RotationInDegrees())
   {
     inDegrees = true;
     rotationFormat = "euler_rpy";
     posRotDelimiter = threeSpacedDelimiter;
   }
-  if (_config.GetRotationSnapToDegrees().has_value() &&
-      _config.GetRotationSnapTolerance().has_value())
+  if (_config.RotationSnapToDegrees().has_value() &&
+      _config.RotationSnapTolerance().has_value())
   {
     inDegrees = true;
     rotationFormat = "euler_rpy";
@@ -934,8 +934,8 @@ bool PoseStringFromValue(const PrintConfig &_config,
       return _val;
     };
 
-    const unsigned int interval = _config.GetRotationSnapToDegrees().value();
-    const double tolerance = _config.GetRotationSnapTolerance().value();
+    const unsigned int interval = _config.RotationSnapToDegrees().value();
+    const double tolerance = _config.RotationSnapTolerance().value();
 
     ss << pose->Pos() << posRotDelimiter
        << sanitizeZero(snapToInterval(
