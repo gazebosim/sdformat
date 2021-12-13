@@ -1511,31 +1511,48 @@ TEST(print_rotations_in_unnormalized_radians,
 TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
-      sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
+      sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
 
-  // --degrees after -p PATH
+  // -p PATH --degrees
   std::string output = custom_exec_str(
       IgnCommand() + " sdf -p " + path + " --degrees " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
-               "1 2 3   30.009 44.991 -60.009</pose>");
+               "1 2 3   30.009 44.9915 -60.009</pose>");
 
-  // --degrees between -p and PATH
-  output = custom_exec_str(
-      IgnCommand() + " sdf -p --degrees " + path + SdfVersion());
-  ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
-               "<pose degrees='true' rotation_format='euler_rpy'>"
-               "1 2 3   30.009 44.991 -60.009</pose>");
-
-  // --degrees before -p PATH
+  // --degrees -p PATH
   output = custom_exec_str(
       IgnCommand() + " sdf --degrees -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
-               "1 2 3   30.009 44.991 -60.009</pose>");
+               "1 2 3   30.009 44.9915 -60.009</pose>");
+
+  // -p PATH --snap-to-degrees ARG
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 -60</pose>");
+
+  // -p --snap-to-degrees ARG PATH
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p --snap-to-degrees 5 " + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 -60</pose>");
+
+  // --snap-to-degrees ARG -p PATH
+  output = custom_exec_str(
+      IgnCommand() + " sdf --snap-to-degrees 5 -p " + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 45 -60</pose>");
 }
 
 /////////////////////////////////////////////////
