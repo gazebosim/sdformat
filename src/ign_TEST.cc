@@ -1508,6 +1508,37 @@ TEST(print_rotations_in_unnormalized_radians,
 }
 
 /////////////////////////////////////////////////
+TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  const std::string path =
+      sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
+
+  // --degrees after -p PATH
+  std::string output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path + " --degrees " + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 44.991 -60.009</pose>");
+
+  // --degrees between -p and PATH
+  output = custom_exec_str(
+      IgnCommand() + " sdf -p --degrees " + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 44.991 -60.009</pose>");
+
+  // --degrees before -p PATH
+  output = custom_exec_str(
+      IgnCommand() + " sdf --degrees -p " + path + SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30.009 44.991 -60.009</pose>");
+}
+
+/////////////////////////////////////////////////
 TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";

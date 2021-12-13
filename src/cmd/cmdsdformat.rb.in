@@ -31,9 +31,9 @@ require 'optparse'
 LIBRARY_NAME = '@library_location@'
 LIBRARY_VERSION = '@SDF_VERSION_FULL@'
 COMMON_OPTIONS =
-               "  -h [ --help ]                    Print this help message.\n"\
-               "  --force-version <VERSION>        Use a specific library version.\n"\
-               '  --versions                       Show the available versions.'
+               "  -h [ --help ]                     Print this help message.\n"\
+               "  --force-version <VERSION>         Use a specific library version.\n"\
+               '  --versions                        Show the available versions.'
 COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
@@ -44,13 +44,12 @@ COMMANDS = {  'sdf' =>
                        "                                    use only and the output may change without any promise of stability)\n" +
                        "  -p [ --print ] arg                Print converted arg.\n" +
                        "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
-                       "      --degrees                     Only used in --print, where pose rotation angles are printed in degrees.\n" +
-                       "      --snap-to-degrees arg         Only used in --print, to snap pose rotation angles to this specified interval in\n" +
-                       "                                    degrees. This value must be between larger than 0, less than or equal to 360, and\n" +
-                       "                                    larger than the defined snap tolerance.\n" +
-                       "      --snap-tolerance arg          Only used in --print, in conjunction with --snap-to-degrees, specifies the tolerance at which snapping occurs. This value must be larger than 0, less than 360, and less\n" +
-                       "                                    than the defined degrees value to snap to. If unspecified, its default value is\n" +
-                       "                                    0.01.\n" +
+                       "      --degrees                     Pose rotation angles are printed in degrees.\n" +
+                       "      --snap-to-degrees arg         Snap pose rotation angles to this specified interval in degrees. This value must be\n" +
+                       "                                    larger than 0, less than or equal to 360, and larger than the defined snap tolerance.\n" +
+                       "      --snap-tolerance arg          Used in conjunction with --snap-to-degrees, specifies the tolerance at which snapping\n" +
+                       "                                    occurs. This value must be larger than 0, less than 360, and less than the defined\n" +
+                       "                                    degrees value to snap to. If unspecified, its default value is 0.01.\n" +
                        COMMON_OPTIONS
             }
 
