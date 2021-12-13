@@ -16,6 +16,7 @@
 */
 #include <sstream>
 #include "sdf/Cylinder.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -133,4 +134,19 @@ const ignition::math::Cylinderd &Cylinder::Shape() const
 ignition::math::Cylinderd &Cylinder::Shape()
 {
   return this->dataPtr->cylinder;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Cylinder::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("cylinder_shape.sdf", elem);
+
+  sdf::ElementPtr radiusElem = elem->GetElement("radius");
+  radiusElem->Set<double>(this->Radius());
+
+  sdf::ElementPtr lengthElem = elem->GetElement("length");
+  lengthElem->Set<double>(this->Length());
+
+  return elem;
 }

@@ -33,6 +33,9 @@ class PrintConfig::Implementation
   /// \brief The tolerance which is used to determine whether snapping of
   /// rotation in poses happen.
   public: std::optional<double> rotationSnapTolerance = std::nullopt;
+
+  /// \brief True to preserve <include> tags, false to expand.
+  public: bool preserveIncludes = false;
 };
 
 /////////////////////////////////////////////////
@@ -51,6 +54,18 @@ void PrintConfig::SetRotationInDegrees(bool _value)
 bool PrintConfig::GetRotationInDegrees() const
 {
   return this->dataPtr->rotationInDegrees;
+}
+
+/////////////////////////////////////////////////
+void PrintConfig::SetPreserveIncludes(bool _preserve)
+{
+  this->dataPtr->preserveIncludes = _preserve;
+}
+
+/////////////////////////////////////////////////
+bool PrintConfig::PreserveIncludes() const
+{
+  return this->dataPtr->preserveIncludes;
 }
 
 /////////////////////////////////////////////////

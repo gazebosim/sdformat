@@ -346,6 +346,11 @@ namespace sdf
     public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// model.
+    /// \return SDF element pointer with updated model values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Add a link to the model.
     /// \param[in] _link Link to add.
     /// \return True if successful, false if a link with the name already

@@ -93,7 +93,7 @@ namespace sdf
     public: ElementPtr GetParent() const;
 
     /// \brief Set the parent of this Element.
-    /// \param[in] _parent Paren for this element.
+    /// \param[in] _parent Parent for this element.
     public: void SetParent(const ElementPtr _parent);
 
     /// \brief Set the name of the Element.
@@ -461,6 +461,13 @@ namespace sdf
     /// \brief Add an element object.
     /// \param[in] _elem the element object to add.
     public: void InsertElement(ElementPtr _elem);
+
+    /// \brief Add an element object, and optionally set the given element's
+    /// parent to this object.
+    /// \param[in] _elem the element object to add.
+    /// \param[in] _setParentToSelf If true, set the _elem's parent to this
+    /// object and then insert.
+    public: void InsertElement(ElementPtr _elem, bool _setParentToSelf);
 
     /// \brief Remove this element from its parent.
     public: void RemoveFromParent();

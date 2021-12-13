@@ -38,14 +38,19 @@ COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
                        "  ign sdf [options]\n\n"\
                        "Options:\n\n"\
-                       "  -k [ --check ] arg                                 Check if an SDFormat file is valid.\n" +
-                       "  -d [ --describe ] [SPEC VERSION]                   Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
-                       "  -g [ --graph ] <pose, frame> arg                   Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
-                       "                                                     use only and the output may change without any promise of stability)\n" +
-                       "  -p [ --print ] arg                                 Print converted arg.\n" +
-                       "  --degrees                                          Only used in --print, where pose rotation angles are printed in degrees.\n" +
-                       "  --snap-to-degrees arg                              Only used in --print, to snap pose rotation angles to this specified interval in degrees. This value must be between larger than 0, less than or equal to 360, and larger than the defined snap tolerance.\n" +
-                       "  --snap-tolerance arg                               Only used in --print, in conjunction with --snap-to-degrees, specifies the tolerance at which snapping occurs. This value must be larger than 0, less than 360, and less than the defined degrees value to snap to. If unspecified, its default value is 0.01.\n" +
+                       "  -k [ --check ] arg                Check if an SDFormat file is valid.\n" +
+                       "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
+                       "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
+                       "                                    use only and the output may change without any promise of stability)\n" +
+                       "  -p [ --print ] arg                Print converted arg.\n" +
+                       "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
+                       "      --degrees                     Only used in --print, where pose rotation angles are printed in degrees.\n" +
+                       "      --snap-to-degrees arg         Only used in --print, to snap pose rotation angles to this specified interval in\n" +
+                       "                                    degrees. This value must be between larger than 0, less than or equal to 360, and\n" +
+                       "                                    larger than the defined snap tolerance.\n" +
+                       "      --snap-tolerance arg          Only used in --print, in conjunction with --snap-to-degrees, specifies the tolerance at which snapping occurs. This value must be larger than 0, less than 360, and less\n" +
+                       "                                    than the defined degrees value to snap to. If unspecified, its default value is\n" +
+                       "                                    0.01.\n" +
                        COMMON_OPTIONS
             }
 
@@ -80,9 +85,11 @@ class Cmd
       opts.on('-d', '--describe [VERSION]', 'Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@)') do |v|
         options['describe'] = v
       end
-      opts.on('-p arg', '--print arg', String,
-              'Print converted arg') do |arg|
-        options['print'] = arg
+      opts.on('-p', '--print', 'Print converted arg') do
+        options['print'] = 1
+      end
+      opts.on('-i', '--preserve-includes', 'Preserve included tags when printing converted arg (does not preserve merge-includes)') do
+        options['preserve_includes'] = 1
       end
       opts.on('--degrees', 'Printed pose rotations are will be in degrees') do |degrees|
         options['degrees'] = 1
@@ -124,6 +131,21 @@ class Cmd
     end
 
     options['command'] = ARGV[0]
+
+    if options['preserve_includes'] and not options['print']
+      puts usage
+      exit(-1)
+    end
+
+    if options['print']
+      filename = args.pop
+      if filename
+        options['print'] = filename
+      else
+        puts usage
+        exit(-1)
+      end
+    end
 
     options
   end
@@ -185,7 +207,10 @@ class Cmd
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
           snap_to_degrees = 0
-          if options.key?('snap_to_degrees')
+          if options['preserve_includes']
+            Importer.extern 'int cmdPrintPreserveIncludes(const char *)'
+            exit(Importer.cmdPrintPreserveIncludes(File.expand_path(options['print'])))
+          elsif options.key?('snap_to_degrees')
             if options['snap_to_degrees'] < options['snap_tolerance']
               puts "Rotation snapping tolerance must be larger than the snapping tolerance."
               exit(-1)

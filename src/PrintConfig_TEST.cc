@@ -17,8 +17,8 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/Assert.hh"
 #include "sdf/PrintConfig.hh"
+#include "test_config.h"
 
 /////////////////////////////////////////////////
 TEST(PrintConfig, Construction)
@@ -26,6 +26,7 @@ TEST(PrintConfig, Construction)
   sdf::PrintConfig config;
   EXPECT_FALSE(config.GetRotationInDegrees());
   EXPECT_FALSE(config.GetRotationSnapToDegrees());
+  EXPECT_FALSE(config.PreserveIncludes());
 }
 
 /////////////////////////////////////////////////
@@ -92,4 +93,15 @@ TEST(PrintConfig, Compare)
   EXPECT_TRUE(second.SetRotationSnapToDegrees(5, 0.01));
   EXPECT_TRUE(first == second);
   EXPECT_TRUE(second == first);
+}
+
+/////////////////////////////////////////////////
+TEST(PrintConfig, PreserveIncludes)
+{
+  sdf::PrintConfig config;
+  EXPECT_FALSE(config.PreserveIncludes());
+  config.SetPreserveIncludes(true);
+  EXPECT_TRUE(config.PreserveIncludes());
+  config.SetPreserveIncludes(false);
+  EXPECT_FALSE(config.PreserveIncludes());
 }

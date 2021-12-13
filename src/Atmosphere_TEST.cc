@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <ignition/math/Temperature.hh>
 #include <ignition/math/Vector3.hh>
 #include "sdf/World.hh"
 
@@ -129,4 +130,26 @@ TEST(DOMAtmosphere, CopyAssignmentAfterMove)
 
   EXPECT_DOUBLE_EQ(200.0, atmosphere1.Temperature().Kelvin());
   EXPECT_DOUBLE_EQ(100.0, atmosphere2.Temperature().Kelvin());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAtmosphere, ToElement)
+{
+  sdf::Atmosphere atmosphere;
+  atmosphere.SetType(sdf::AtmosphereType::ADIABATIC);
+  atmosphere.SetTemperature(ignition::math::Temperature(123));
+  atmosphere.SetTemperatureGradient(1.34);
+  atmosphere.SetPressure(2.65);
+
+  sdf::ElementPtr elem = atmosphere.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Atmosphere atmosphere2;
+  atmosphere2.Load(elem);
+
+  // verify values after loading the element back
+  EXPECT_EQ(atmosphere.Temperature(), atmosphere2.Temperature());
+  EXPECT_DOUBLE_EQ(atmosphere.TemperatureGradient(),
+      atmosphere2.TemperatureGradient());
+  EXPECT_DOUBLE_EQ(atmosphere.Pressure(), atmosphere2.Pressure());
 }
