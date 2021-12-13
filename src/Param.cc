@@ -330,7 +330,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
         _config,
         this->dataPtr->typeName,
         this->dataPtr->defaultValue,
-        std::optional<std::string>(this->dataPtr->defaultStrValue),
+        this->dataPtr->defaultStrValue,
         defaultStr))
   {
     return defaultStr;
