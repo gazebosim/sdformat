@@ -962,7 +962,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
@@ -1029,7 +1029,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
@@ -1096,7 +1096,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose rotation_format='quat_xyzw'>"
@@ -1167,7 +1167,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
@@ -1237,7 +1237,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
@@ -1308,7 +1308,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose rotation_format='quat_xyzw'>"
@@ -1380,7 +1380,7 @@ TEST(print_rotations_in_unnormalized_degrees,
   // returned by parsing the pose value, whenever a parent Element Attribute,
   // or PrintConfig is used.
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
@@ -1448,7 +1448,7 @@ TEST(print_rotations_in_unnormalized_radians,
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p" + path + SdfVersion());
+      IgnCommand() + " sdf -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose>1 2 3 -5.75943 -11.78112 5.23583</pose>");
