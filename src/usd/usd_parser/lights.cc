@@ -67,6 +67,12 @@ namespace usd
       ignition::math::Vector3d scale(1, 1, 1);
       GetTransform(_prim, _usdData, pose, scale, _linkName);
 
+      if(_prim.IsA<pxr::UsdLuxDistantLight>() && pose == ignition::math::Pose3d(0, 0, 0, 1.57, 0, 0))
+      {
+        pose = ignition::math::Pose3d(0, 0, 10, 0, 0, 0);
+        light->SetDirection(ignition::math::Vector3d(-0.5, 0.1, -0.9));
+      }
+
       light->SetName(_prim.GetPath().GetName());
       light->SetRawPose(pose);
       light->SetCastShadows(true);

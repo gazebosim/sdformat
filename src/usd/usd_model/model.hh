@@ -29,6 +29,23 @@
 
 namespace usd {
 
+class ROSPlugin
+{
+public:
+  virtual ~ROSPlugin() = default;
+
+  std::string pluginName_;
+};
+
+class ROSPluginDiffDrive : public ROSPlugin
+{
+public:
+  std::string leftWheelJointName_;
+  std::string rightWheelJointName_;
+  float wheelBase_;
+  float wheelRadius_;
+};
+
 class ModelInterface
 {
 public:
@@ -184,7 +201,7 @@ public:
   /// \brief complete list of Materials
   std::map<std::string, std::shared_ptr<sdf::Material>> materials_;
 
-  // std::map<std::string, std::shared_ptr<sdf::Light>> lights_;
+  std::vector<std::shared_ptr<ROSPlugin>> plugins_;
 
   ignition::math::Pose3d pose;
 

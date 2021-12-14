@@ -87,11 +87,10 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
   auto range = pxr::UsdPrimRange::Stage(referencee);
 
-  std::string modelName;
   std::string baseLink;
   std::string nameLink;
 
-  world->_worldName = referencee->GetDefaultPrim().GetName().GetText();;
+  world->_worldName = referencee->GetDefaultPrim().GetName().GetText();
 
   int skipNext = 0;
 
@@ -110,6 +109,32 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
     {
       --skipNext;
       continue;
+    }
+
+    if (std::string(prim.GetPrimTypeInfo().GetTypeName().GetText()) == "RosDifferentialBase")
+    {
+      auto leftWheelAttr = prim.GetAttribute(pxr::TfToken("leftWheelJointName"));
+      auto rightWheelAttr = prim.GetAttribute(pxr::TfToken("rightWheelJointName"));
+      auto wheelBaseAttr = prim.GetAttribute(pxr::TfToken("wheelBase"));
+      auto wheelRadiusAttr = prim.GetAttribute(pxr::TfToken("wheelRadius"));
+
+      std::shared_ptr<ROSPluginDiffDrive> plugin = std::make_shared<ROSPluginDiffDrive>();
+      plugin->pluginName_ = "RosDifferentialBase";
+
+      std::string leftWheelName;
+      std::string rightWheelName;
+      float wheelBase;
+      float wheelRadius;
+      wheelBaseAttr.Get<float>(&wheelBase);
+      wheelRadiusAttr.Get<float>(&wheelRadius);
+      leftWheelAttr.Get<std::string>(&leftWheelName);
+      rightWheelAttr.Get<std::string>(&rightWheelName);
+      plugin->leftWheelJointName_ = "/" + model->name_ + "/chassis_link/" + leftWheelName + "_joint";
+      plugin->rightWheelJointName_ = "/" + model->name_ + "/chassis_link/" + leftWheelName + "_joint";
+      plugin->wheelBase_ = wheelBase;
+      plugin->wheelRadius_ = wheelRadius;
+
+      model->plugins_.push_back(plugin);
     }
 
     if (prim.IsA<pxr::UsdPhysicsScene>())
@@ -157,39 +182,45 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
 
     if (tokens.size() >=2)
     {
-      nameLink = "/" + tokens[0] + "/" + tokens[1];
+      bool shortName = false;
+      if (tokens.size() == 2)
+      {
+        if (prim.IsA<pxr::UsdGeomGprim>() ||
+            (std::string(prim.GetPrimTypeInfo().GetTypeName().GetText()) == "Plane"))
+        {
+          if (prim.GetPath().GetName() != "imu")
+          {
+            nameLink = "/" + tokens[0];
+            shortName = true;
+          }
+        }
+      }
+      if(!shortName)
+      {
+        nameLink = "/" + tokens[0] + "/" + tokens[1];
+      }
     }
 
-  //     if (!modelName.empty())
-  //     {
-  //       std::cerr << "modelName " << modelName << '\n';
-  //       std::cerr << "prim.GetName().GetText() " << prim.GetName().GetText() << '\n';
-  //       // float a;
-  //       // std::cin >> a;
-  //       if (modelName != prim.GetName().GetText() && !prim.IsA<pxr::UsdPhysicsScene>())
-  //       {
-  //
-  //         auto isSameModel = [&](ModelInterfaceSharedPtr _model){ return _model->name_ == model->name_; };
-  //
-  //         if (std::find_if(begin(models), end(models), isSameModel) != models.end() || models.size() == 0)
-  //         {
-  //           model = std::make_shared<ModelInterface>();
-  //           model->world_name_ = defaultName;
-  //           model->clear();
-  //           model->name_ = prim.GetName().GetText();
-  //           std::cerr << "Insert new model" << '\n';
-  //           models.push_back(model);
-  //           modelName = prim.GetName().GetText();
-  //         }
-  //       }
-  //     }
-  //     modelName = prim.GetName().GetText();
-  //   }
-  //   std::cerr << "\tmodelName " << modelName << " " << tokens.size() << '\n';
-  //
     if (tokens.size() > 1)
     {
-      baseLink = "/" + tokens[0] + "/" + tokens[1];
+      bool shortName = false;
+      if (tokens.size() == 2)
+      {
+        if (prim.IsA<pxr::UsdGeomGprim>() ||
+            (std::string(prim.GetPrimTypeInfo().GetTypeName().GetText()) == "Plane"))
+        {
+          if (prim.GetPath().GetName() != "imu")
+          {
+            baseLink = "/" + tokens[0];
+            shortName = true;
+            // exit(-1);
+          }
+        }
+      }
+      if(!shortName)
+      {
+        baseLink = "/" + tokens[0] + "/" + tokens[1];
+      }
     }
 
     if (primName.find(baseLink) == std::string::npos)
@@ -238,9 +269,21 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
         std::cerr << "baseLink " << baseLink << '\n';
         if(sensor)
         {
-          model->links_[baseLink]->sensors_.insert(
-            std::pair<std::string, std::shared_ptr<sdf::Sensor>>
-              (prim.GetPath().GetName(), sensor));
+          auto it = model->links_.find(baseLink);
+          if (it != model->links_.end())
+          {
+            model->links_[baseLink]->sensors_.insert(
+              std::pair<std::string, std::shared_ptr<sdf::Sensor>>
+                (prim.GetPath().GetName(), sensor));
+          }
+          else
+          {
+            sdferr << "Not able to insert sensor " << baseLink << " is missing" << "\n";
+            for (auto & link : model->links_)
+            {
+              sdferr << "link names " << link.first << " " << link.second->name << "\n";
+            }
+          }
         }
         std::cerr << "camera!" << '\n';
       }
@@ -316,15 +359,14 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
     auto it = model->links_.find(nameLink);
     if (it != model->links_.end())
     {
-      usd::ParseLinks(prim, it->second, usdData, skipNext);
+      usd::ParseLinks(prim, nameLink, it->second, usdData, skipNext);
     }
     else
     {
-      usd::ParseLinks(prim, link, usdData, skipNext);
+      usd::ParseLinks(prim, nameLink, link, usdData, skipNext);
 
       if (link)
       {
-        link->name = nameLink;
         model->links_.insert(make_pair(nameLink, link));
       }
     }
@@ -356,15 +398,28 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
             ignition::math::Quaterniond(1.0, 0, 0, 0)));
 
         link.second->inertial->SetMassMatrix(massMatrix);
-        // std::shared_ptr<sdf::Joint> joint = nullptr;
-        // joint = std::make_shared<sdf::Joint>();
-        // std::string joint_name = link.second->name;
-        // joint->SetName(joint_name + "_joint");
-        //
-        // joint->SetType(sdf::JointType::FIXED);
-        // joint->SetParentLinkName("world");
-        // joint->SetChildLinkName(link.second->name);
-        // m->joints_.insert(make_pair(joint->Name(), joint));
+
+        bool linkHasJoint = false;
+        for (auto & joint: m->joints_)
+        {
+          if (joint.second->ParentLinkName() == link.first ||
+              joint.second->ChildLinkName() == link.first)
+          {
+            linkHasJoint = true;
+          }
+        }
+        if (!linkHasJoint)
+        {
+          std::shared_ptr<sdf::Joint> joint = nullptr;
+          joint = std::make_shared<sdf::Joint>();
+          std::string joint_name = link.second->name;
+          joint->SetName(joint_name + "_joint");
+
+          joint->SetType(sdf::JointType::FIXED);
+          joint->SetParentLinkName("world");
+          joint->SetChildLinkName(link.second->name);
+          m->joints_.insert(make_pair(joint->Name(), joint));
+        }
       }
     }
   }
@@ -372,6 +427,8 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
   for(auto iteratorModel = world->_models.begin(); iteratorModel != world->_models.end();)
   {
     auto & m = *iteratorModel;
+    // if (!m)
+    //   continue;
 
     if (m->links_.size() == 0)
     {
@@ -415,7 +472,7 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
     for (auto link: m->links_)
     {
       std::cerr << "\tlink name "
-                   << "\n\t\t" << link.first
+                   // << "\n\t\t" << link.first
                    << "\n\t\t" << link.second->name << '\n';
 
      for (auto visual: link.second->visual_array)
@@ -454,20 +511,20 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
     {
       m.reset();
       sdferr << "error initTree " << e.what()  << "\n";
-      // return model;
+      // continue;
     }
 
-    // find the root link
     try
     {
+      // find the root link
       m->initRoot(parent_link_tree);
     }
     catch(ParseError &e)
     {
       m.reset();
       sdferr << "error initRoot " << e.what() << "\n";
-      // return model;
     }
+
     ++iteratorModel;
   }
   //

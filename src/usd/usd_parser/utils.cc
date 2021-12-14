@@ -57,6 +57,18 @@ namespace usd
     return result;
   }
 
+  bool copyFile(const std::string &_ori, const std::string &_dest)
+  {
+    if (ignition::common::exists(_ori))
+    {
+      std::string baseName = ignition::common::basename(_dest);
+      std::string pathDest = removeSubStr(_dest, baseName);
+      ignition::common::createDirectories(pathDest);
+      return ignition::common::copyFile(_ori, _dest);
+    }
+    return false;
+  }
+
   sdf::Material ParseMaterial(const pxr::UsdPrim &_prim)
   {
     sdf::Material material;
@@ -123,6 +135,9 @@ namespace usd
               diffuseTextureShaderInput.Get(&materialPath);
               std::cerr << "\tAlbedoMap " << materialPath.GetAssetPath() << '\n';
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
+              std::string fullAlbedoName =
+                ignition::common::findFile(materialPath.GetAssetPath());
+              copyFile(fullAlbedoName, materialPath.GetAssetPath());
               isPBR = true;
             }
             else if (input.GetBaseName() == "normalmap_texture")
@@ -134,6 +149,9 @@ namespace usd
               normalTextureShaderInput.Get(&materialPath);
               std::cerr << "\tNormalMap " << materialPath.GetAssetPath() << '\n';
               pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
+              std::string fullNormalName =
+                ignition::common::findFile(materialPath.GetAssetPath());
+              copyFile(fullNormalName, materialPath.GetAssetPath());
               isPBR = true;
             }
             else if (input.GetBaseName() == "reflectionroughness_texture")
@@ -145,6 +163,9 @@ namespace usd
               roughnessTextureShaderInput.Get(&materialPath);
               std::cerr << "\troughnessMap " << materialPath.GetAssetPath() << '\n';
               pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
+              std::string fullRoughnessName =
+                ignition::common::findFile(materialPath.GetAssetPath());
+              copyFile(fullRoughnessName, materialPath.GetAssetPath());
               isPBR = true;
             }
             else if (input.GetBaseName() == "metallic_texture")
@@ -156,6 +177,9 @@ namespace usd
               metallicTextureShaderInput.Get(&materialPath);
               std::cerr << "\tMetalnessMap " << materialPath.GetAssetPath() << '\n';
               pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
+              std::string fullMetalnessName =
+                ignition::common::findFile(materialPath.GetAssetPath());
+              copyFile(fullMetalnessName, materialPath.GetAssetPath());
               isPBR = true;
             }
             else if (input.GetBaseName() == "diffuse_color_constant")

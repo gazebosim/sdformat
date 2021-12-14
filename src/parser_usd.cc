@@ -1377,6 +1377,75 @@ inline namespace SDF_VERSION_NAMESPACE {
     }
   }
 
+  void USD2SDF::AddPlugins(
+    const std::vector<std::shared_ptr<usd::ROSPlugin>> &_plugins,
+    const std::map<std::string, std::shared_ptr<sdf::Joint>> &_joints,
+    tinyxml2::XMLElement *attach)
+  {
+    bool jointStatePlugin = false;
+    std::vector<std::string> excludeJoints;
+    for (auto & plugin: _plugins)
+    {
+      if (plugin->pluginName_ == "RosDifferentialBase")
+      {
+        auto pluginDiff = std::dynamic_pointer_cast<usd::ROSPluginDiffDrive>(plugin);
+        if (pluginDiff)
+        {
+          tinyxml2::XMLElement *pluginXML =
+            attach->GetDocument()->NewElement("plugin");
+          pluginXML->SetAttribute("name", "ignition::gazebo::systems::DiffDrive");
+          pluginXML->SetAttribute("filename", "ignition-gazebo-diff-drive-system");
+          AddKeyValue(pluginXML, "left_joint", pluginDiff->leftWheelJointName_);
+          AddKeyValue(pluginXML, "right_joint", pluginDiff->rightWheelJointName_);
+          double wheelBase = pluginDiff->wheelBase_;
+          double wheelRadius = pluginDiff->wheelRadius_;
+          AddKeyValue(pluginXML, "wheel_separation", Values2str(1, &wheelBase));
+          AddKeyValue(pluginXML, "wheel_radius", Values2str(1, &wheelRadius));
+
+          excludeJoints.push_back(pluginDiff->leftWheelJointName_);
+          excludeJoints.push_back(pluginDiff->rightWheelJointName_);
+
+          attach->LinkEndChild(pluginXML);
+        }
+      }
+    }
+
+    if (_joints.size() > 0)
+    {
+      for (auto & [joint_name, joint]: _joints)
+      {
+        if (std::find(excludeJoints.begin(), excludeJoints.end(), joint_name) != excludeJoints.end())
+        {
+          jointStatePlugin = true;
+          continue;
+        }
+
+        auto jtype = joint->Type();
+        if (jtype == sdf::JointType::REVOLUTE || jtype == sdf::JointType::CONTINUOUS ||
+            jtype == sdf::JointType::PRISMATIC)
+        {
+          jointStatePlugin = true;
+          tinyxml2::XMLElement *controllerPluginXML =
+            attach->GetDocument()->NewElement("plugin");
+          controllerPluginXML->SetAttribute("name", "ignition::gazebo::systems::JointPositionController");
+          controllerPluginXML->SetAttribute("filename", "ignition-gazebo-joint-position-controller-system");
+
+          AddKeyValue(controllerPluginXML, "joint_name", joint_name);
+          attach->LinkEndChild(controllerPluginXML);
+        }
+      }
+    }
+
+    if (jointStatePlugin)
+    {
+      tinyxml2::XMLElement *jointStatePublisherPluginXML =
+        attach->GetDocument()->NewElement("plugin");
+      jointStatePublisherPluginXML->SetAttribute("name", "ignition::gazebo::systems::JointStatePublisher");
+      jointStatePublisherPluginXML->SetAttribute("filename", "ignition-gazebo-joint-state-publisher-system");
+      attach->LinkEndChild(jointStatePublisherPluginXML);
+    }
+  }
+
   //parser_urdf.cc InitModelString
   void USD2SDF::read(const std::string &_filename,
     tinyxml2::XMLDocument* _sdfXmlOut)
@@ -1389,7 +1458,12 @@ inline namespace SDF_VERSION_NAMESPACE {
       return;
 
     world = _sdfXmlOut->NewElement("world");
-    world->SetAttribute("name", worldInterface->_worldName.c_str());
+    std::string worldName = worldInterface->_worldName;
+    if (worldName.empty())
+    {
+      worldName = "world_name";
+    }
+    world->SetAttribute("name", worldName.c_str());
 
     sdf = _sdfXmlOut->NewElement("sdf");
     sdf->SetAttribute("version", "1.7");
@@ -1409,6 +1483,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 
       // create root element and define needed namespaces
       tinyxml2::XMLElement *robot = _sdfXmlOut->NewElement("model");
+
+      AddPlugins(robotModel->plugins_, robotModel->joints_, robot);
 
       // set model name to urdf robot name if not specified
       robot->SetAttribute("name", robotModel->getName().c_str());

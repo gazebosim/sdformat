@@ -43,6 +43,22 @@ namespace usd {
       });
   }
 
+  void addSubdirectories(std::string _path)
+  {
+    for (ignition::common::DirIter file(_path);
+      file != ignition::common::DirIter(); ++file)
+    {
+      std::string current(*file);
+
+      if (ignition::common::isDirectory(current))
+      {
+        auto systemPaths = ignition::common::systemPaths();
+        systemPaths->AddFilePaths(current);
+        addSubdirectories(current);
+      }
+    }
+  }
+
   bool USDData::Init()
   {
     auto referencee = pxr::UsdStage::Open(this->filename);
@@ -61,6 +77,8 @@ namespace usd {
     {
       this->directoryPath = ignition::common::joinPaths(ignition::common::cwd(), inputPath);
     }
+
+    addSubdirectories(directoryPath);
 
     auto range = pxr::UsdPrimRange::Stage(referencee);
 
@@ -160,22 +178,17 @@ namespace usd {
       std::string basename = ignition::common::basename(key);
       std::string subDirectory = removeSubStr(key, basename);
 
-      if (subDirectory != "./" && subDirectory != "../")
-      {
-        this->_subDirectories.push_back(subDirectory);
-      }
+      auto systemPaths = ignition::common::systemPaths();
+      std::cerr << "subDirectory " << ignition::common::joinPaths(this->directoryPath, subDirectory) << '\n';
+      systemPaths->AddFilePaths(ignition::common::joinPaths(this->directoryPath, subDirectory));
 
-      std::string fileNameRef = ignition::common::joinPaths(this->directoryPath, _ref);
-      unsigned int count = 0;
-      while(!ignition::common::exists(fileNameRef) && !ignition::common::isFile(fileNameRef))
+      addSubdirectories(ignition::common::joinPaths(this->directoryPath, subDirectory));
+
+      std::string fileNameRef = ignition::common::findFile(basename);
+      if (fileNameRef.empty())
       {
-        fileNameRef = ignition::common::joinPaths(this->directoryPath, this->_subDirectories[count], _ref);
-        count++;
-        if(count > this->_subDirectories.size())
-        {
-          std::cerr << "Not able to find asset [" << _ref << "]" << '\n';
-          return false;
-        }
+        std::cerr << "Not able to find asset [" << _ref << "]" << '\n';
+        return false;
       }
 
       // Add

@@ -67,13 +67,29 @@ namespace usd
         }
         Delaunay triangulation(P.begin(), P.end());
 
+        bool goodTriangle = true;
         for(Delaunay::Finite_facets_iterator fit = triangulation.finite_facets_begin();
             fit != triangulation.finite_facets_end(); ++fit)
         {
           auto &face = fit;
-          indices.emplace_back(face->first->vertex(0)->info());
-          indices.emplace_back(face->first->vertex(1)->info());
-          indices.emplace_back(face->first->vertex(2)->info());
+          if (face->first->vertex(0)->info() > maxIndex ||
+              face->first->vertex(1)->info() > maxIndex ||
+              face->first->vertex(2)->info() > maxIndex)
+          {
+            goodTriangle = false;
+          }
+        }
+
+        if (goodTriangle)
+        {
+          for(Delaunay::Finite_facets_iterator fit = triangulation.finite_facets_begin();
+              fit != triangulation.finite_facets_end(); ++fit)
+          {
+            auto &face = fit;
+            indices.emplace_back(face->first->vertex(0)->info());
+            indices.emplace_back(face->first->vertex(1)->info());
+            indices.emplace_back(face->first->vertex(2)->info());
+          }
         }
       }
     }

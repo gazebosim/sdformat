@@ -27,6 +27,7 @@ namespace usd
 {
   std::string ParseLinks(
     const pxr::UsdPrim &_prim,
+    const std::string &_nameLink,
     LinkSharedPtr &_link,
     USDData &_usdData,
     int &_skip);

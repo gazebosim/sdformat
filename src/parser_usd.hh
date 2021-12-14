@@ -93,6 +93,11 @@ namespace sdf
        const std::map<std::string, std::shared_ptr<sdf::Light>> &_lights,
        tinyxml2::XMLElement *attach);
 
+     void AddPlugins(
+       const std::vector<std::shared_ptr<usd::ROSPlugin>> &_plugins,
+       const std::map<std::string, std::shared_ptr<sdf::Joint>> &_joints,
+       tinyxml2::XMLElement *attach);
+
      void AddSensors(
        const std::map<std::string, std::shared_ptr<sdf::Sensor>> &_sensors,
        tinyxml2::XMLElement *attach);

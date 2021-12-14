@@ -41,6 +41,8 @@
 
 #include "ignition/math/Matrix4.hh"
 
+#include "ignition/common/GTSMeshUtils.hh"
+
 #include "pxr/usd/usdPhysics/massAPI.h"
 #include "pxr/usd/usdPhysics/collisionAPI.h"
 #include "pxr/usd/usdPhysics/rigidBodyAPI.h"
@@ -184,7 +186,6 @@ namespace usd
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale(1, 1, 1);
-        std::cerr << "link->name " << link->name << '\n';
         GetTransform(child, _usdData, pose, scale, link->name);
         // link->pose = pose;
         visSubset->SetRawPose(pose);
@@ -267,10 +268,8 @@ namespace usd
       0, 0, 0, 1);
     for (auto & point: points)
     {
-      ignition::math::Vector3d v(
-        point[0] * metersPerUnit,
-        point[1] * metersPerUnit,
-        point[2] * metersPerUnit);
+      ignition::math::Vector3d v =
+        ignition::math::Vector3d(point[0], point[1], point[2]) * metersPerUnit;
       if(upAxisZ)
       {
         subMesh.AddVertex(v);
@@ -278,7 +277,7 @@ namespace usd
       else
       {
         // std::cerr << "v " << v << '\n';
-        v = m * v;
+        // v = m * v;
         // std::cerr << "v zup" << v << '\n';
         subMesh.AddVertex(v);
       }
@@ -289,13 +288,28 @@ namespace usd
       subMesh.AddNormal(normal[0], normal[1], normal[2]);
     }
 
+    // std::cerr << "\t\t _prim " << pxr::TfStringify(_prim.GetPath()) << '\n';
+    // std::cerr << "\t\t _prim " << _prim.GetPath().GetName() << '\n';
+    // std::cerr << "\t\t normals " << normals.size() << '\n';
+    // std::cerr << "\t\t points " << points.size() << '\n';
+    // std::cerr << "\t\t textCoords " << textCoords.size() << '\n';
+    // std::cerr << "\t\t faceVertexIndices " << faceVertexIndices.size() << '\n';
+    // std::cerr << "\t\t faceVertexCounts " << faceVertexCounts.size() << '\n';
+
     sdf::Mesh meshGeom;
     _geom.SetType(sdf::GeometryType::MESH);
 
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
-    GetTransform(_prim, _usdData, pose, scale, link->name);
-    // std::cerr << "Mesh setScale " << scale << '\n';
+    size_t nSlash = std::count(link->name.begin(), link->name.end(), '/');
+    if (nSlash == 1)
+    {
+      GetTransform(_prim, _usdData, pose, scale, "/");
+    }
+    else
+    {
+      GetTransform(_prim, _usdData, pose, scale, link->name);
+    }
     meshGeom.SetScale(scale * link->scale);
 
     std::string primName = pxr::TfStringify(_prim.GetPath());
@@ -470,6 +484,7 @@ namespace usd
 
   std::string ParseLinks(
     const pxr::UsdPrim &_prim,
+    const std::string &_nameLink,
     LinkSharedPtr &link,
     USDData &_usdData,
     int &_skip)
@@ -545,10 +560,13 @@ namespace usd
 
     if (newlink)
     {
+      link->name = _nameLink;
+
+      std::cerr << "\t Creating a new Link! " << link->name << '\n';
       std::string originalPrimName = pxr::TfStringify(_prim.GetPath());
       size_t pos = std::string::npos;
       std::string name;
-      if ((pos = originalPrimName.find(link->name) )!= std::string::npos)
+      if ((pos = originalPrimName.find(link->name))!= std::string::npos)
       {
         name = originalPrimName.erase(
           pos + link->name.length(), originalPrimName.length() - (pos + link->name.length()));
@@ -570,7 +588,9 @@ namespace usd
       ignition::math::Pose3d pose;
       ignition::math::Vector3d scale(1, 1, 1);
       GetTransform(tmpPrim, _usdData, pose, scale, "");
-      link->pose = pose;
+      size_t nSlash = std::count(link->name.begin(), link->name.end(), '/');
+      if (nSlash > 1)
+        link->pose = pose;
       link->scale = scale;
     }
 
@@ -606,7 +626,8 @@ namespace usd
         _prim.GetAttribute(pxr::TfToken("physics:collisionEnabled")).Get(&collisionEnabled);
       }
 
-      if (!isPhysicsMeshCollisionAPI && !collisionEnabled)
+      if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
+        || (!isPhysicsMeshCollisionAPI && !collisionEnabled))
       {
         sdf::Material material = ParseMaterial(_prim);
 
@@ -665,6 +686,7 @@ namespace usd
         ignition::math::Pose3d poseCol;
         ignition::math::Vector3d scaleCol(1, 1, 1);
         GetTransform(_prim, _usdData, poseCol, scaleCol, link->name);
+
         if (_prim.IsA<pxr::UsdGeomSphere>())
         {
           ParseSphere(_prim, colGeom, scaleCol, metersPerUnit);
@@ -700,7 +722,7 @@ namespace usd
 
           ignition::math::Pose3d pose;
           ignition::math::Vector3d scale(1, 1, 1);
-          GetTransform(_prim, _usdData, pose, scale, "");
+          GetTransform(_prim, _usdData, pose, scale, pxr::TfStringify(_prim.GetPath()));
           col.SetRawPose(pose);
           std::cerr << "Add collision Plane" << '\n';
         }

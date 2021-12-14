@@ -57,7 +57,7 @@ target_link_libraries(sdfconverter
 
 install(
   TARGETS
-  ${gui_executable}
+  	sdfconverter
   DESTINATION
-  ${BIN_INSTALL_DIR}
+  	${BIN_INSTALL_DIR}
 )
