@@ -528,3 +528,18 @@ sdf::ElementPtr Joint::ToElement() const
   // supported.
   return elem;
 }
+
+//////////////////////////////////////////////////
+bool Joint::AddSensor(const Sensor &_sensor)
+{
+  if (this->SensorNameExists(_sensor.Name()))
+    return false;
+  this->dataPtr->sensors.push_back(_sensor);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Joint::ClearSensors()
+{
+  this->dataPtr->sensors.clear();
+}
