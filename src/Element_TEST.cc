@@ -228,7 +228,7 @@ TEST(Element, AddAttribute)
   ASSERT_TRUE(param->IsType<float>());
   ASSERT_EQ(param->GetKey(), "attr");
   ASSERT_EQ(param->GetTypeName(), "float");
-  ASSERT_EQ(param->GetDefaultAsString(), "0.0");
+  ASSERT_EQ(param->GetDefaultAsString(), "0");
   ASSERT_EQ(param->GetDescription(), "float description");
 }
 

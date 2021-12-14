@@ -788,7 +788,7 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -811,7 +811,7 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -863,7 +863,7 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -920,7 +920,7 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
   EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
@@ -954,13 +954,13 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   EXPECT_TRUE(valParam->Reparse());
 
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 

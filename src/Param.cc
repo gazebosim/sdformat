@@ -987,7 +987,19 @@ bool ParamPrivate::StringFromValueImpl(
     std::string &_valueStr) const
 {
   // This will be handled in a type specific manner
-  if (_typeName == "ignition::math::Pose3d" ||
+  if (_typeName == "bool")
+  {
+    const bool *val = std::get_if<bool>(&_value);
+    if (!val)
+    {
+      sdferr << "Unable to get bool value from variant.\n";
+      return false;
+    }
+
+    _valueStr = *val ? "true" : "false";
+    return true;
+  }
+  else if (_typeName == "ignition::math::Pose3d" ||
       _typeName == "pose" ||
       _typeName == "Pose")
   {
@@ -998,11 +1010,6 @@ bool ParamPrivate::StringFromValueImpl(
           _config, p->GetAttributes(), _value, _originalStr, _valueStr);
     }
     return PoseStringFromValue(_config, {}, _value, _originalStr, _valueStr);
-  }
-  else if (_originalStr.has_value() && !_originalStr->empty())
-  {
-    _valueStr = _originalStr.value();
-    return true;
   }
 
   StringStreamClassicLocale ss;
