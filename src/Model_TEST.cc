@@ -376,6 +376,7 @@ TEST(DOMModel, Uri)
   model.SetName(name);
   model.SetRawPose(pose);
   model.SetUri(uri);
+  EXPECT_EQ(uri, model.Uri());
 
   // ToElement using the URI, which should result in an <include>
   {
