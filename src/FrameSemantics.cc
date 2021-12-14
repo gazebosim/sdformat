@@ -563,22 +563,20 @@ void addVerticesToGraph(ScopedGraph<GraphT> &_out,
     {
       if constexpr (std::is_same_v<GraphT, sdf::FrameAttachedToGraph>)
       {
-        auto nestedErrors = buildFrameAttachedToGraph(_out, item, false);
-        _errors.insert(_errors.end(), nestedErrors.begin(),
-                        nestedErrors.end());
+        auto nestedErrors = wrapperBuildFrameAttachedToGraph(_out, item, false);
+        _errors.insert(_errors.end(), nestedErrors.begin(), nestedErrors.end());
       }
       else
       {
-        auto nestedErrors = buildPoseRelativeToGraph(_out, item, false);
-        _errors.insert(_errors.end(), nestedErrors.begin(),
-                        nestedErrors.end());
+        auto nestedErrors = wrapperBuildPoseRelativeToGraph(_out, item, false);
+        _errors.insert(_errors.end(), nestedErrors.begin(), nestedErrors.end());
       }
     }
     else
     {
       _out.AddVertex(item.name, item.frameType);
     }
-  };
+  }
 }
 
 /////////////////////////////////////////////////
@@ -742,8 +740,18 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 }
 
 /////////////////////////////////////////////////
-Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
-                                 const ModelWrapper &_model, bool _isRoot)
+/// \brief Helper function that actually build a FrameAttachedToGraph given a
+/// wrapped Model or Interface Model.
+/// \param[out] _out Graph object to write.
+/// \param[in] _model Wrapped Model or Interface model from which to build
+/// attached_to graph.
+/// \param[in] _isRoot True if the model is a standalone model, i.e,
+/// //sdf/model. This is not relevant if the _model is a wrapped Interface
+/// Model.
+/// \return Errors.
+Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
+                                        const ModelWrapper &_model,
+                                        bool _isRoot)
 {
   Errors errors;
 
@@ -856,19 +864,19 @@ Errors buildFrameAttachedToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
-  return buildFrameAttachedToGraph(_out, ModelWrapper(*_model), _isRoot);
+  return wrapperBuildFrameAttachedToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
 
 /////////////////////////////////////////////////
 Errors buildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
-                                 const InterfaceModel *_model, bool)
+                                 const InterfaceModel *_model)
 {
   if (!_model)
   {
     return Errors{
         {ErrorCode::ELEMENT_INVALID, "Invalid sdf::InterfaceModel pointer."}};
   }
-  return buildFrameAttachedToGraph(_out, ModelWrapper(*_model), false);
+  return wrapperBuildFrameAttachedToGraph(_out, ModelWrapper(*_model), false);
 }
 
 
@@ -908,8 +916,17 @@ Errors buildFrameAttachedToGraph(
 }
 
 /////////////////////////////////////////////////
-Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
-                                const ModelWrapper &_model, bool _isRoot)
+/// \brief Helper function that actually builds the PoseRelativeToGraph given a
+/// wrapped Model or Interface model.
+/// \param[out] _out Graph object to write.
+/// \param[in] _model Wrapped Model or Interface model from which to build
+/// relative_to graph.
+/// \param[in] _isRoot True if the model is a standalone model, i.e,
+/// //sdf/model. This is not relevant if the _model is a wrapped Interface
+/// Model.
+/// \return Errors.
+Errors wrapperBuildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
+                                       const ModelWrapper &_model, bool _isRoot)
 {
   Errors errors;
 
@@ -987,14 +1004,14 @@ Errors buildPoseRelativeToGraph(
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
 
-  return buildPoseRelativeToGraph(_out, ModelWrapper(*_model), _isRoot);
+  return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
 
 /////////////////////////////////////////////////
 Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
-                                const InterfaceModel *_model, bool)
+                                const InterfaceModel *_model)
 {
-  return buildPoseRelativeToGraph(_out, ModelWrapper(*_model), false);
+  return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), false);
 }
 
 /////////////////////////////////////////////////
