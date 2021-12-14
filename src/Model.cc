@@ -94,6 +94,10 @@ class sdf::Model::Implementation
 
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
   public: std::string poseGraphScopeVertexName;
+
+  /// \brief Optional URI string that specifies where this model was or
+  /// can be loaded from.
+  public: std::string uri = "";
 };
 
 /////////////////////////////////////////////////
@@ -792,11 +796,34 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement() const
+std::string Model::Uri() const
 {
+  return this->dataPtr->uri;
+}
+
+/////////////////////////////////////////////////
+void Model::SetUri(const std::string &_uri)
+{
+  this->dataPtr->uri = _uri;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Model::ToElement(bool _useUri) const
+{
+  if (_useUri && !this->dataPtr->uri.empty())
+  {
+    sdf::ElementPtr worldElem(new sdf::Element);
+    sdf::initFile("world.sdf", worldElem);
+
+    sdf::ElementPtr includeElem = worldElem->AddElement("include");
+    includeElem->GetElement("uri")->Set(this->Uri());
+    includeElem->GetElement("name")->Set(this->Name());
+    includeElem->GetElement("pose")->Set(this->RawPose());
+    return includeElem;
+  }
+
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("model.sdf", elem);
-
   elem->GetAttribute("name")->Set(this->Name());
 
   if (!this->dataPtr->canonicalLink.empty())

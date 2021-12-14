@@ -363,3 +363,56 @@ TEST(DOMModel, ToElement)
   for (uint64_t i = 0; i < model2.ModelCount(); ++i)
     EXPECT_NE(nullptr, model2.ModelByIndex(i));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMModel, Uri)
+{
+  sdf::Model model;
+  std::string name = "my-model";
+  ignition::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
+  std::string uri =
+    "https://fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model";
+
+  model.SetName(name);
+  model.SetRawPose(pose);
+  model.SetUri(uri);
+
+  // ToElement using the URI, which should result in an <include>
+  {
+    sdf::ElementPtr elem = model.ToElement();
+    EXPECT_EQ("include", elem->GetName());
+
+    sdf::ElementPtr uriElem = elem->GetElement("uri");
+    ASSERT_NE(nullptr, uriElem);
+    EXPECT_EQ(uri, uriElem->Get<std::string>());
+
+    sdf::ElementPtr nameElem = elem->GetElement("name");
+    ASSERT_NE(nullptr, nameElem);
+    EXPECT_EQ(name, nameElem->Get<std::string>());
+
+    sdf::ElementPtr poseElem = elem->GetElement("pose");
+    ASSERT_NE(nullptr, poseElem);
+    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+  }
+
+  // ToElement NOT using the URI, which should result in a <model>
+  {
+    sdf::ElementPtr elem = model.ToElement(false);
+    elem->PrintValues("  ");
+
+    // Should be a <model>
+    EXPECT_EQ("model", elem->GetName());
+
+    // URI should not exist
+    sdf::ElementPtr uriElem = elem->GetElement("uri");
+    ASSERT_EQ(nullptr, uriElem);
+
+    sdf::ParamPtr nameAttr = elem->GetAttribute("name");
+    ASSERT_NE(nullptr, nameAttr);
+    EXPECT_EQ(name, nameAttr->GetAsString());
+
+    sdf::ElementPtr poseElem = elem->GetElement("pose");
+    ASSERT_NE(nullptr, poseElem);
+    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+  }
+}
