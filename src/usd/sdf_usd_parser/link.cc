@@ -26,8 +26,9 @@
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Link.hh"
-#include "sdf_usd_parser/visual.hh"
+#include "sdf_usd_parser/sensor.hh"
 #include "sdf_usd_parser/utils.hh"
+#include "sdf_usd_parser/visual.hh"
 
 namespace usd
 {
@@ -86,6 +87,19 @@ namespace usd
         return false;
       }
     }
+
+    // convert the link's sensors
+    for (uint64_t i = 0; i < _link.SensorCount(); ++i)
+    {
+      const auto sensor = *(_link.SensorByIndex(i));
+      const auto sensorPath = std::string(_path + "/" + sensor.Name());
+      if (!ParseSdfSensor(sensor, _stage, sensorPath))
+      {
+        std::cerr << "Error parsing sensor [" << sensor.Name() << "]\n";
+        return false;
+      }
+    }
+
     return true;
   }
 }
