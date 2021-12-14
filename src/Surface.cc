@@ -16,6 +16,7 @@
  */
 
 #include "sdf/Element.hh"
+#include "sdf/parser.hh"
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -79,6 +80,7 @@ Errors Contact::Load(ElementPtr _sdf)
         static_cast<uint16_t>(_sdf->Get<unsigned int>("collide_bitmask"));
   }
 
+  // \todo(nkoenig) Parse the remaining collide properties.
   return errors;
 }
 /////////////////////////////////////////////////
@@ -137,6 +139,7 @@ Errors Surface::Load(ElementPtr _sdf)
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
+  // \todo(nkoenig) Parse the remaining surface properties.
   return errors;
 }
 /////////////////////////////////////////////////
@@ -155,4 +158,17 @@ const sdf::Contact *Surface::Contact() const
 void Surface::SetContact(const sdf::Contact &_contact)
 {
   this->dataPtr->contact = _contact;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Surface::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("surface.sdf", elem);
+
+  sdf::ElementPtr contactElem = elem->GetElement("contact");
+  contactElem->GetElement("collide_bitmask")->Set(
+      this->dataPtr->contact.CollideBitmask());
+
+  return elem;
 }

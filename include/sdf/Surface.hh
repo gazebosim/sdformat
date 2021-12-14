@@ -87,6 +87,11 @@ namespace sdf
     /// \param[in] _cont The contact object.
     public: void SetContact(const sdf::Contact &_contact);
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// surface.
+    /// \return SDF element pointer with updated surface values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

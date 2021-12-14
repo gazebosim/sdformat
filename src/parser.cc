@@ -203,8 +203,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 
   if (!_merge)
   {
-    firstElem->SetParent(_parent);
-    _parent->InsertElement(firstElem);
+    _parent->InsertElement(firstElem, true);
     return;
   }
   else if (firstElem->GetName() != "model")
@@ -347,8 +346,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
         (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
         (elem->GetName().find(':') != std::string::npos))
     {
-      elem->SetParent(_parent);
-      _parent->InsertElement(elem);
+      _parent->InsertElement(elem, true);
     }
   }
 }

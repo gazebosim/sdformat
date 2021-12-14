@@ -16,6 +16,7 @@
 */
 #include <sstream>
 #include "sdf/Capsule.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -133,4 +134,19 @@ const ignition::math::Capsuled &Capsule::Shape() const
 ignition::math::Capsuled &Capsule::Shape()
 {
   return this->dataPtr->capsule;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Capsule::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("capsule_shape.sdf", elem);
+
+  sdf::ElementPtr radiusElem = elem->GetElement("radius");
+  radiusElem->Set(this->Radius());
+
+  sdf::ElementPtr lengthElem = elem->GetElement("length");
+  lengthElem->Set(this->Length());
+
+  return elem;
 }

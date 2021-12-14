@@ -16,6 +16,7 @@
 */
 #include <ignition/math/Vector3.hh>
 #include "sdf/Box.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -111,4 +112,16 @@ const ignition::math::Boxd &Box::Shape() const
 ignition::math::Boxd &Box::Shape()
 {
   return this->dataPtr->box;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Box::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("box_shape.sdf", elem);
+
+  sdf::ElementPtr sizeElem = elem->GetElement("size");
+  sizeElem->Set(this->Size());
+
+  return elem;
 }

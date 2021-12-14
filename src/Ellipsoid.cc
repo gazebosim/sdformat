@@ -16,6 +16,7 @@
 */
 #include <sstream>
 #include "sdf/Ellipsoid.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -112,4 +113,16 @@ const ignition::math::Ellipsoidd &Ellipsoid::Shape() const
 ignition::math::Ellipsoidd &Ellipsoid::Shape()
 {
   return this->dataPtr->ellipsoid;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Ellipsoid::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("ellipsoid_shape.sdf", elem);
+
+  sdf::ElementPtr radiiElem = elem->GetElement("radii");
+  radiiElem->Set(this->Radii());
+
+  return elem;
 }

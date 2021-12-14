@@ -179,3 +179,25 @@ TEST(DOMMesh, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <uri>"));
   EXPECT_NE(nullptr, mesh.Element());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, ToElement)
+{
+  sdf::Mesh mesh;
+
+  mesh.SetUri("mesh-uri");
+  mesh.SetScale(ignition::math::Vector3d(1, 2, 3));
+  mesh.SetSubmesh("submesh");
+  mesh.SetCenterSubmesh(false);
+
+  sdf::ElementPtr elem = mesh.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Mesh mesh2;
+  mesh2.Load(elem);
+
+  EXPECT_EQ(mesh.Uri(), mesh2.Uri());
+  EXPECT_EQ(mesh.Scale(), mesh2.Scale());
+  EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
+  EXPECT_EQ(mesh.CenterSubmesh(), mesh2.CenterSubmesh());
+}

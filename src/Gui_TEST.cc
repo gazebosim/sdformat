@@ -123,3 +123,19 @@ TEST(DOMGui, Equal)
   gui.SetFullscreen(false);
   EXPECT_FALSE(gui == gui2);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMGui, ToElement)
+{
+  sdf::Gui gui;
+
+  gui.SetFullscreen(true);
+
+  sdf::ElementPtr elem = gui.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Gui gui2;
+  gui2.Load(elem);
+
+  EXPECT_EQ(gui.Fullscreen(), gui2.Fullscreen());
+}

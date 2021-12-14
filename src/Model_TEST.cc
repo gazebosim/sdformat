@@ -282,3 +282,84 @@ TEST(DOMModel, AddModel)
   ASSERT_NE(nullptr, modelFromModel);
   EXPECT_EQ(modelFromModel->Name(), nestedModel.Name());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMModel, ToElement)
+{
+  sdf::Model model;
+
+  model.SetName("my-model");
+  model.SetStatic(true);
+  model.SetSelfCollide(true);
+  model.SetAllowAutoDisable(true);
+  model.SetEnableWind(true);
+  model.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Link link;
+      link.SetName("link" + std::to_string(i));
+      EXPECT_TRUE(model.AddLink(link));
+      EXPECT_FALSE(model.AddLink(link));
+    }
+    if (j == 0)
+      model.ClearLinks();
+  }
+  model.SetCanonicalLinkName("link1");
+  model.SetPlacementFrameName("link0");
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 2; ++i)
+    {
+      sdf::Joint joint;
+      joint.SetName("joint" + std::to_string(i));
+      EXPECT_TRUE(model.AddJoint(joint));
+      EXPECT_FALSE(model.AddJoint(joint));
+    }
+    if (j == 0)
+      model.ClearJoints();
+  }
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 3; ++i)
+    {
+      sdf::Model nestedModel;
+      nestedModel.SetName("model" + std::to_string(i));
+      EXPECT_TRUE(model.AddModel(nestedModel));
+      EXPECT_FALSE(model.AddModel(nestedModel));
+    }
+    if (j == 0)
+      model.ClearModels();
+  }
+
+  sdf::ElementPtr elem = model.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Model model2;
+  model2.Load(elem);
+
+  EXPECT_EQ(model.Name(), model2.Name());
+  EXPECT_EQ(model.Static(), model2.Static());
+  EXPECT_EQ(model.SelfCollide(), model2.SelfCollide());
+  EXPECT_EQ(model.AllowAutoDisable(), model2.AllowAutoDisable());
+  EXPECT_EQ(model.EnableWind(), model2.EnableWind());
+  EXPECT_EQ(model.RawPose(), model2.RawPose());
+  EXPECT_EQ(model.CanonicalLinkName(), model2.CanonicalLinkName());
+  EXPECT_EQ(model.PlacementFrameName(), model2.PlacementFrameName());
+
+  EXPECT_EQ(model.LinkCount(), model2.LinkCount());
+  for (uint64_t i = 0; i < model2.LinkCount(); ++i)
+    EXPECT_NE(nullptr, model2.LinkByIndex(i));
+
+  EXPECT_EQ(model.JointCount(), model2.JointCount());
+  for (uint64_t i = 0; i < model2.JointCount(); ++i)
+    EXPECT_NE(nullptr, model2.JointByIndex(i));
+
+  EXPECT_EQ(model.ModelCount(), model2.ModelCount());
+  for (uint64_t i = 0; i < model2.ModelCount(); ++i)
+    EXPECT_NE(nullptr, model2.ModelByIndex(i));
+}

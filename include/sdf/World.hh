@@ -194,9 +194,15 @@ namespace sdf
 
     /// \brief Add a light to the world.
     /// \param[in] _light Light to add.
-    /// \return True if successful, false if a lights with the name already
+    /// \return True if successful, false if a light with the name already
     /// exists.
     public: bool AddLight(const Light &_light);
+
+    /// \brief Add a physics object to the world.
+    /// \param[in] _physics Physics to add.
+    /// \return True if successful, false if a physics object with the name
+    /// already exists.
+    public: bool AddPhysics(const Physics &_physics);
 
     /// \brief Remove all models.
     public: void ClearModels();
@@ -206,6 +212,9 @@ namespace sdf
 
     /// \brief Remove all models.
     public: void ClearLights();
+
+    /// \brief Remove all physics.
+    public: void ClearPhysics();
 
     /// \brief Get the number of actors.
     /// \return Number of actors contained in this World object.
@@ -351,6 +360,11 @@ namespace sdf
     /// \sa uint64_t InterfaceModelCount() const
     public: const NestedInclude* InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// world.
+    /// \return SDF element pointer with updated world values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be

@@ -134,6 +134,7 @@ if (BUILD_SDF_TEST)
     ParticleEmitter_TEST.cc
     Pbr_TEST.cc
     Physics_TEST.cc
+    PrintConfig_TEST.cc
     Plane_TEST.cc
     Root_TEST.cc
     Scene_TEST.cc
