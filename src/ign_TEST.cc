@@ -1556,6 +1556,24 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
+TEST(print_snap_to_degrees_tolerance_too_high,
+     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  const std::string path = sdf::testing::TestFile(
+      "sdf",
+      "rotations_in_degrees_high_snap_tolerance.sdf");
+
+  std::string output = custom_exec_str(
+      IgnCommand() + " sdf -p " + path +
+      " --snap-to-degrees 5 " + " --snap-tolerance 4" +
+      SdfVersion());
+  ASSERT_FALSE(output.empty());
+  EXPECT_PRED2(contains, output,
+               "<pose degrees='true' rotation_format='euler_rpy'>"
+               "1 2 3   30 50 60</pose>");
+}
+
+/////////////////////////////////////////////////
 TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";

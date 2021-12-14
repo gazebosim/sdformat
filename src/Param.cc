@@ -914,23 +914,12 @@ bool PoseStringFromValue(const PrintConfig &_config,
     auto snapToInterval =
         [](double _val, unsigned int _interval, double _tolerance)
     {
-      const double sign = (_val < 0) ? -1 : 1;
-      unsigned int quotient = static_cast<unsigned int>(abs(_val)) / _interval;
-
-      double lowerRemainder =
-          abs(_val) - static_cast<double>(quotient * _interval);
-      if (lowerRemainder< _tolerance)
+      double closestQuotient = std::round(_val / _interval);
+      double distance = std::abs(_val - closestQuotient * _interval);
+      if (distance < _tolerance)
       {
-        return static_cast<double>(_interval * quotient) * sign;
+        return _interval * closestQuotient;
       }
-
-      double higherRemainder =
-          static_cast<double>(++quotient * _interval) - abs(_val);
-      if (higherRemainder < _tolerance)
-      {
-        return static_cast<double>(_interval * quotient) * sign;
-      }
-
       return _val;
     };
 
