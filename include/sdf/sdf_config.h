@@ -18,9 +18,6 @@
 #ifndef SDF_SDF_CONFIG_H_
 #define SDF_SDF_CONFIG_H_
 
-// TODO(anyone): deprecate this header?
-// #pragma message("sdf/sdf_config.h is deprecated, use sdf/config.hh instead")
-
 #include <sdf/config.hh>
 
 #endif

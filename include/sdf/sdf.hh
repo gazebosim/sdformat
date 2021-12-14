@@ -18,9 +18,6 @@
 #ifndef SDF_SDF_HH_
 #define SDF_SDF_HH_
 
-// TODO(anyone): deprecate this header?
-// #pragma message("sdf/sdf.hh is deprecated, use sdformat.hh instead")
-
 #include <sdformat.hh>
 
 #endif
