@@ -230,6 +230,15 @@ namespace sdf
     /// \return SDF element pointer with updated joint values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Add a sensors to the joint.
+    /// \param[in] _sensor Sensor to add.
+    /// \return True if successful, false if a sensor with the name already
+    /// exists.
+    public: bool AddSensor(const Sensor &_sensor);
+
+    /// \brief Remove all sensors.
+    public: void ClearSensors();
+
     /// \brief Give the scoped FrameAttachedToGraph to be used for resolving
     /// parent and child link names. This is private and is intended to be
     /// called by Model::Load.

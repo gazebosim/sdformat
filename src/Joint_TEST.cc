@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Joint.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/JointAxis.hh"
 
 /////////////////////////////////////////////////
@@ -269,6 +270,19 @@ TEST(DOMJoint, ToElement)
   EXPECT_TRUE(axis1.SetXyz(ignition::math::Vector3d(0, 1, 0)).empty());
   joint.SetAxis(1, axis1);
 
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 3; ++i)
+    {
+      sdf::Sensor sensor;
+      sensor.SetName("sensor" + std::to_string(i));
+      EXPECT_TRUE(joint.AddSensor(sensor));
+      EXPECT_FALSE(joint.AddSensor(sensor));
+    }
+    if (j == 0)
+      joint.ClearSensors();
+  }
+
   sdf::ElementPtr jointElem = joint.ToElement();
   EXPECT_NE(nullptr, jointElem);
   EXPECT_EQ(nullptr, joint.Element());
@@ -288,6 +302,10 @@ TEST(DOMJoint, ToElement)
   ASSERT_TRUE(nullptr != joint2.Axis(1));
   EXPECT_EQ(axis.Xyz(), joint2.Axis(0)->Xyz());
   EXPECT_EQ(axis1.Xyz(), joint2.Axis(1)->Xyz());
+
+  EXPECT_EQ(joint.SensorCount(), joint.SensorCount());
+  for (uint64_t i = 0; i < joint.SensorCount(); ++i)
+    EXPECT_NE(nullptr, joint.SensorByIndex(i));
 
   // make changes to DOM and verify ToElement produces updated values
   joint2.SetParentLinkName("new_parent");

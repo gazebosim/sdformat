@@ -17,12 +17,13 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
-#include "sdf/Error.hh"
-#include "sdf/Types.hh"
-#include "sdf/Visual.hh"
-#include "sdf/Geometry.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
+#include "sdf/Error.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/parser.hh"
+#include "sdf/Types.hh"
+#include "sdf/Visual.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -299,4 +300,37 @@ void Visual::SetPoseRelativeToGraph(
     sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Visual::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("visual.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  // Set the geometry
+  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
+
+  elem->GetElement("cast_shadows")->Set(this->CastShadows());
+  elem->GetElement("laser_retro")->Set(this->LaserRetro());
+  elem->GetElement("transparency")->Set(this->Transparency());
+  elem->GetElement("visibility_flags")->Set(this->VisibilityFlags());
+
+  if (this->dataPtr->material)
+  {
+    elem->InsertElement(this->dataPtr->material->ToElement(), true);
+  }
+
+  return elem;
 }

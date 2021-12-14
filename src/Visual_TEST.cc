@@ -285,3 +285,38 @@ TEST(DOMVisual, SetLaserRetro)
   EXPECT_TRUE(visual.HasLaserRetro());
   EXPECT_DOUBLE_EQ(150, visual.LaserRetro());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, ToElement)
+{
+  sdf::Visual visual;
+  visual.SetName("my-visual");
+  visual.SetCastShadows(true);
+  visual.SetTransparency(0.2f);
+  visual.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  visual.SetVisibilityFlags(1234u);
+  visual.SetHasLaserRetro(true);
+  visual.SetLaserRetro(1.2);
+
+  sdf::Geometry geom;
+  visual.SetGeom(geom);
+
+  sdf::Material mat;
+  visual.SetMaterial(mat);
+
+  sdf::ElementPtr elem = visual.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Visual visual2;
+  visual2.Load(elem);
+
+  EXPECT_EQ(visual.Name(), visual2.Name());
+  EXPECT_EQ(visual.CastShadows(), visual2.CastShadows());
+  EXPECT_DOUBLE_EQ(visual.Transparency(), visual2.Transparency());
+  EXPECT_EQ(visual.RawPose(), visual2.RawPose());
+  EXPECT_EQ(visual.VisibilityFlags(), visual2.VisibilityFlags());
+  EXPECT_EQ(visual.HasLaserRetro(), visual2.HasLaserRetro());
+  EXPECT_DOUBLE_EQ(visual.LaserRetro(), visual2.LaserRetro());
+  EXPECT_NE(nullptr, visual2.Geom());
+  EXPECT_NE(nullptr, visual2.Material());
+}
