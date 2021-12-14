@@ -7,14 +7,12 @@ endif(COMMAND CMAKE_POLICY)
 
 project (sdformat10 VERSION 10.6.0)
 
-# The protocol version has nothing to do with the package version set below.
-# It represents the current version of sdformat implement by the software
+# The protocol version has nothing to do with the package version.
+# It represents the current version of SDFormat implemented by the software
 set (SDF_PROTOCOL_VERSION 1.7)
 
 set (project_cmake_dir ${PROJECT_SOURCE_DIR}/cmake
   CACHE PATH "Location of CMake scripts")
-
-message (STATUS "${PROJECT_NAME} version ${PROJECT_VERSION_FULL}")
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
@@ -75,7 +73,7 @@ if (BUILD_SDF)
   # Find psutil python package for memory tests
   include (${sdf_cmake_dir}/SDFUtils.cmake)
   find_python_module(psutil)
-  if(NOT PY_PSUTIL)
+  if (NOT PY_PSUTIL)
     ign_build_warning("Python psutil package not found. Memory leak tests will be skipped")
   endif()
 
@@ -93,9 +91,9 @@ if (BUILD_SDF)
   # Find ruby executable to produce xml schemas
   find_program(RUBY ruby)
   if (NOT RUBY)
-      ign_build_error ("Ruby version 1.9 is needed to build xml schemas")
+    ign_build_error ("Ruby version 1.9 is needed to build xml schemas")
   else()
-      message(STATUS "Found ruby executable: ${RUBY}")
+    message(STATUS "Found ruby executable: ${RUBY}")
   endif()
 
   ########################################
