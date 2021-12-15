@@ -37,9 +37,6 @@ namespace sdf
 
   // Forward declarations.
   class Frame;
-  class InterfaceFrame;
-  class InterfaceJoint;
-  class InterfaceLink;
   class InterfaceModel;
   class Joint;
   class Link;
@@ -384,51 +381,6 @@ namespace sdf
     /// \brief Remove all models.
     public: void ClearModels();
 
-    /// \brief Get the number of interface links that are immediate (not
-    /// recursively nested) children of this Model object.
-    /// \return Number of interface links contained in this Model object.
-    public: uint64_t InterfaceLinkCount() const;
-
-    /// \brief Get an immediate (not nested) child interface link based on an
-    /// index.
-    /// \param[in] _index Index of the interface link. The index should be in
-    /// the range [0..InterfaceLinkCount()).
-    /// \return Pointer to the interface link. Nullptr if the index does not
-    /// exist.
-    /// \sa uint64_t InterfaceLinkCount() const
-    public: const InterfaceLink *InterfaceLinkByIndex(
-                const uint64_t _index) const;
-
-    /// \brief Get the number of interface joints that are immediate (not
-    /// recursively nested) children of this Model object.
-    /// \return Number of interface joints contained in this Model object.
-    public: uint64_t InterfaceJointCount() const;
-
-    /// \brief Get an immediate (not nested) child interface joint based on an
-    /// index.
-    /// \param[in] _index Index of the interface joint. The index should be in
-    /// the range [0..InterfaceJointCount()).
-    /// \return Pointer to the interface joint. Nullptr if the index does not
-    /// exist.
-    /// \sa uint64_t InterfaceJointCount() const
-    public: const InterfaceJoint *InterfaceJointByIndex(
-                const uint64_t _index) const;
-
-    /// \brief Get the number of interface frames that are immediate (not
-    /// recursively nested) children of this Model object.
-    /// \return Number of interface frames contained in this Model object.
-    public: uint64_t InterfaceFrameCount() const;
-
-    /// \brief Get an immediate (not nested) child interface frame based on an
-    /// index.
-    /// \param[in] _index Index of the interface frame. The index should be in
-    /// the range [0..InterfaceFrameCount()).
-    /// \return Pointer to the interface frame. Nullptr if the index does not
-    /// exist.
-    /// \sa uint64_t InterfaceFrameCount() const
-    public: const InterfaceFrame *InterfaceFrameByIndex(
-                const uint64_t _index) const;
-
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and
@@ -456,14 +408,7 @@ namespace sdf
     friend class Root;
     friend class World;
 
-    /// \brief Allow buildPoseRelativeToGraph and buildFrameAttachedToGraph to
-    /// call MergedInterfaceModels.
-    friend Errors buildPoseRelativeToGraph(
-        ScopedGraph<PoseRelativeToGraph> &_out, const Model *_model,
-        bool _isRoot);
-    friend Errors buildFrameAttachedToGraph(
-        ScopedGraph<FrameAttachedToGraph> &_out, const Model *_model,
-        bool _isRoot);
+    friend class ModelWrapper;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

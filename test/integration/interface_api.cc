@@ -908,43 +908,6 @@ TEST_F(InterfaceAPIMergeInclude, MergeIncludeNotSupported)
 }
 
 /////////////////////////////////////////////////
-TEST_F(InterfaceAPIMergeInclude, Parsing)
-{
-  const std::string testSdf = R"(
-  <sdf version="1.9">
-    <model name="parent_model">
-      <include merge="true">
-        <uri>double_pendulum.toml</uri>
-        <name>test_name</name>
-      </include>
-    </model>
-  </sdf>)";
-  this->config.RegisterCustomModelParser(this->customTomlParser);
-  sdf::Root root;
-  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
-  EXPECT_TRUE(errors.empty()) << errors;
-  auto model = root.Model();
-  ASSERT_NE(nullptr, model);
-
-  ASSERT_EQ(3u, model->InterfaceLinkCount());
-  EXPECT_NE(nullptr, model->InterfaceLinkByIndex(0));
-  EXPECT_NE(nullptr, model->InterfaceLinkByIndex(1));
-  EXPECT_NE(nullptr, model->InterfaceLinkByIndex(2));
-
-  ASSERT_EQ(2u, model->InterfaceJointCount());
-  EXPECT_NE(nullptr, model->InterfaceJointByIndex(0));
-  EXPECT_NE(nullptr, model->InterfaceJointByIndex(1));
-
-  ASSERT_EQ(2u, model->InterfaceFrameCount());
-  EXPECT_NE(nullptr, model->InterfaceFrameByIndex(0));
-  EXPECT_NE(nullptr, model->InterfaceFrameByIndex(1));
-
-  ASSERT_EQ(2u, model->InterfaceModelCount());
-  EXPECT_NE(nullptr, model->InterfaceModelByIndex(0));
-  EXPECT_NE(nullptr, model->InterfaceModelByIndex(1));
-}
-
-/////////////////////////////////////////////////
 TEST_F(InterfaceAPIMergeInclude, FrameSemantics)
 {
   const std::string testFile = sdf::testing::TestFile(

@@ -23,8 +23,6 @@
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
-#include "sdf/InterfaceFrame.hh"
-#include "sdf/InterfaceJoint.hh"
 #include "sdf/InterfaceLink.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
@@ -92,12 +90,6 @@ class sdf::Model::Implementation
 
   /// \brief The interface links specified in this model.
   public: std::vector<InterfaceLink> interfaceLinks;
-
-  /// \brief The interface joints specified in this model.
-  public: std::vector<InterfaceJoint> interfaceJoints;
-
-  /// \brief The interface frames specified in this model.
-  public: std::vector<InterfaceFrame> interfaceFrames;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -235,50 +227,26 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->mergedInterfaceModels.emplace_back(ifaceInclude,
                                                         ifaceModel);
 
-      // Merge the interface elements to the parent model
+      // Copy interface links so that they can be used for resolving canonical
+      // links.
       for (const auto &ifaceLink : ifaceModel->Links())
       {
         this->dataPtr->interfaceLinks.push_back(ifaceLink);
-        // TODO(azeey) Check if frame exists and add to frameNames
-        frameNames.insert(ifaceLink.Name());
-      }
-
-      for (const auto &ifaceJoint : ifaceModel->Joints())
-      {
-        this->dataPtr->interfaceJoints.push_back(ifaceJoint);
-        // TODO(azeey) Check if frame exists and add to frameNames
-        frameNames.insert(ifaceJoint.Name());
-      }
-
-      for (const auto &ifaceFrame : ifaceModel->Frames())
-      {
-        if (ifaceFrame.AttachedTo().empty() ||
-            ifaceFrame.AttachedTo() == "__model__")
-        {
-          // Frames attached to the model frame are now attached to the proxy
-          // frame
-          InterfaceFrame newIfaceFrame(ifaceFrame.Name(), proxyModelFrameName,
-                                       ifaceFrame.PoseInAttachedToFrame());
-          this->dataPtr->interfaceFrames.push_back(newIfaceFrame);
-        }
-        else
-        {
-          this->dataPtr->interfaceFrames.push_back(ifaceFrame);
-        }
-        // TODO(azeey) Check if frame exists and add to frameNames
-        frameNames.insert(ifaceFrame.Name());
       }
 
       for (const auto &ifaceNestedModel : ifaceModel->NestedModels())
       {
         sdf::NestedInclude nestedInclude;
+        // The pose of nested interface models is always given relative to the
+        // parent model, but since this is a merged model, we set the relativeTo
+        // to proxyModelFrameName. This nested interface models don't actually
+        // have an //include that was used to nest them, so we create a
+        // NestedInclude object and fill in the the necessary bits.
         nestedInclude.SetIncludePoseRelativeTo(proxyModelFrameName);
         nestedInclude.SetIncludeRawPose(
             ifaceNestedModel->ModelFramePoseInParentFrame());
         this->dataPtr->interfaceModels.emplace_back(nestedInclude,
                                                     ifaceNestedModel);
-        // TODO(azeey) Check if frame exists and add to frameNames
-        frameNames.insert(ifaceNestedModel->Name());
       }
     }
   }
@@ -657,10 +625,10 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
       auto firstLink = this->LinkByIndex(0);
       return std::make_pair(firstLink, firstLink->Name());
     }
-    if (this->InterfaceLinkCount() > 0)
+    if (this->dataPtr->interfaceLinks.size() > 0)
     {
-      auto firstLink = this->InterfaceLinkByIndex(0);
-      return std::make_pair(nullptr, firstLink->Name());
+      const auto &firstLink = this->dataPtr->interfaceLinks.front();
+      return std::make_pair(nullptr, firstLink.Name());
     }
     else if (this->ModelCount() > 0)
     {
@@ -883,50 +851,6 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
 }
 
 /////////////////////////////////////////////////
-uint64_t Model::InterfaceLinkCount() const
-{
-  return this->dataPtr->interfaceLinks.size();
-}
-
-/////////////////////////////////////////////////
-const InterfaceLink * Model::InterfaceLinkByIndex(
-    const uint64_t _index) const
-{
-  if (_index < this->dataPtr->interfaceLinks.size())
-    return &this->dataPtr->interfaceLinks[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-uint64_t Model::InterfaceJointCount() const
-{
-  return this->dataPtr->interfaceJoints.size();
-}
-
-/////////////////////////////////////////////////
-const InterfaceJoint * Model::InterfaceJointByIndex(
-    const uint64_t _index) const
-{
-  if (_index < this->dataPtr->interfaceJoints.size())
-    return &this->dataPtr->interfaceJoints[_index];
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
-uint64_t Model::InterfaceFrameCount() const
-{
-  return this->dataPtr->interfaceFrames.size();
-}
-
-/////////////////////////////////////////////////
-const InterfaceFrame * Model::InterfaceFrameByIndex(
-    const uint64_t _index) const
-{
-  if (_index < this->dataPtr->interfaceFrames.size())
-    return &this->dataPtr->interfaceFrames[_index];
-  return nullptr;
-}
-
 const std::vector<
     std::pair<std::optional<sdf::NestedInclude>, sdf::InterfaceModelConstPtr>>
     &Model::MergedInterfaceModels() const
