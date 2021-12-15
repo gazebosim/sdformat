@@ -76,7 +76,7 @@ if (USE_INTERNAL_URDF)
   urdf/urdf_parser/world.cpp)
 endif()
 
-if (BUILD_SDF_TEST)
+if (BUILD_TESTING)
   set (gtest_sources
     Actor_TEST.cc
     AirPressure_TEST.cc
@@ -134,14 +134,17 @@ if (BUILD_SDF_TEST)
     )
   endif()
 
-  ign_build_tests(SOURCES ${gtest_sources} INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test)
+  ign_build_tests(
+    TYPE UNIT
+    SOURCES ${gtest_sources}
+    INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+  )
 
   include_directories(${PROJECT_SOURCE_DIR}/test)
   if (TARGET UNIT_ign_TEST)
     # Link the libraries that we always need.
     target_link_libraries("UNIT_ign_TEST"
-      PUBLIC
-        ignition-cmake${IGN_CMAKE_VER}::utilities
+      ignition-cmake${IGN_CMAKE_VER}::utilities
     )
   endif()
 
