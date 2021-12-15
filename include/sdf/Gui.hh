@@ -17,8 +17,11 @@
 #ifndef SDF_GUI_HH_
 #define SDF_GUI_HH_
 
+#include <string>
+
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -65,6 +68,36 @@ namespace sdf
     /// gui.
     /// \return SDF element pointer with updated gui values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Get the number of plugins.
+    /// \return Number of plugins contained in this Gui object.
+    public: uint64_t PluginCount() const;
+
+    /// \brief Get a plugin based on an index.
+    /// \param[in] _index Index of the plugin. The index should be in the
+    /// range [0..PluginCount()).
+    /// \return Pointer to the plugin. Nullptr if the index does not exist.
+    /// \sa uint64_t PluginCount() const
+    public: const Plugin *PluginByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a plugin name exists.
+    /// \param[in] _name Name of the plugin to check.
+    /// \return True if there exists a plugin with the given name.
+    public: bool PluginNameExists(const std::string &_name) const;
+
+    /// \brief Get a plugin based on a name.
+    /// \param[in] _name Name of the plugin.
+    /// \return Pointer to the plugin. Nullptr if the name does not exist.
+    public: const Plugin *PluginByName(const std::string &_name) const;
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to the link.
+    /// \param[in] _plugin Plugin to add.
+    /// \return True if successful, false if a plugin with the name already
+    /// exists.
+    public: bool AddPlugin(const Plugin &_plugin);
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
