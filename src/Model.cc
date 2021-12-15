@@ -819,6 +819,13 @@ sdf::ElementPtr Model::ToElement(bool _useUri) const
     includeElem->GetElement("uri")->Set(this->Uri());
     includeElem->GetElement("name")->Set(this->Name());
     includeElem->GetElement("pose")->Set(this->RawPose());
+    if (!this->dataPtr->poseRelativeTo.empty())
+    {
+      includeElem->GetElement("pose")->GetAttribute(
+          "relative_to")->Set<std::string>(this->dataPtr->poseRelativeTo);
+    }
+    includeElem->GetElement("static")->Set(this->Static());
+    includeElem->GetElement("placement_frame")->Set(this->PlacementFrameName());
     return includeElem;
   }
 

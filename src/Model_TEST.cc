@@ -375,6 +375,8 @@ TEST(DOMModel, Uri)
 
   model.SetName(name);
   model.SetRawPose(pose);
+  model.SetStatic(true);
+  model.SetPlacementFrameName("link0");
   model.SetUri(uri);
   EXPECT_EQ(uri, model.Uri());
 
@@ -394,6 +396,12 @@ TEST(DOMModel, Uri)
     sdf::ElementPtr poseElem = elem->GetElement("pose");
     ASSERT_NE(nullptr, poseElem);
     EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+
+    EXPECT_EQ("link0", elem->GetElement("placement_frame")->Get<std::string>());
+
+    sdf::ElementPtr staticElem = elem->GetElement("static");
+    ASSERT_NE(nullptr, staticElem);
+    EXPECT_EQ(true, staticElem->Get<bool>());
   }
 
   // ToElement NOT using the URI, which should result in a <model>
@@ -412,8 +420,16 @@ TEST(DOMModel, Uri)
     ASSERT_NE(nullptr, nameAttr);
     EXPECT_EQ(name, nameAttr->GetAsString());
 
+    sdf::ParamPtr placementFrameAttr = elem->GetAttribute("placement_frame");
+    ASSERT_NE(nullptr, placementFrameAttr);
+    EXPECT_EQ("link0", placementFrameAttr->GetAsString());
+
     sdf::ElementPtr poseElem = elem->GetElement("pose");
     ASSERT_NE(nullptr, poseElem);
     EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+
+    sdf::ElementPtr staticElem = elem->GetElement("static");
+    ASSERT_NE(nullptr, staticElem);
+    EXPECT_EQ(true, staticElem->Get<bool>());
   }
 }
