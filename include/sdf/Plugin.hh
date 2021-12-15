@@ -54,12 +54,12 @@ namespace sdf
 
     /// \brief Set the name of the plugin.
     /// The name of the plugin should be unique within the scope of its
-    // /parent.
+    /// parent.
     /// \param[in] _name Name of the plugin.
     public: void SetName(const std::string &_name);
 
     /// \brief Get the filename of the shared library.
-    /// \return Filanem of the shared library associated with the plugin.
+    /// \return Filename of the shared library associated with the plugin.
     public: std::string Filename() const;
 
     /// \brief Remove the contents of the plugin, this is everything that
@@ -72,7 +72,7 @@ namespace sdf
     public: const std::vector<sdf::ElementPtr> Contents() const;
 
     /// \brief Insert an element into the plugin content.
-    /// \param[in] _elem  Element to insert.
+    /// \param[in] _elem Element to insert.
     public: void InsertContent(const sdf::ElementPtr _elem);
 
     /// \brief Set the filename of the shared library.
