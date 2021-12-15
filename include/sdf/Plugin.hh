@@ -69,9 +69,11 @@ namespace sdf
     /// \brief Get the plugin contents. This is all the SDF elements that
     /// are children of the `<plugin>`.
     /// \return The child elements of this plugin.
-    public: const std::vector<sdf::ElementPtr> Contents() const;
+    public: const std::vector<sdf::ElementPtr> &Contents() const;
 
-    /// \brief Insert an element into the plugin content.
+    /// \brief Insert an element into the plugin content. This does not
+    /// modify the values in the sdf::ElementPtr returned by the `Element()`
+    /// function.
     /// \param[in] _elem Element to insert.
     public: void InsertContent(const sdf::ElementPtr _elem);
 

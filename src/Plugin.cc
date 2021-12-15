@@ -147,7 +147,7 @@ void Plugin::ClearContents()
 }
 
 /////////////////////////////////////////////////
-const std::vector<sdf::ElementPtr> Plugin::Contents() const
+const std::vector<sdf::ElementPtr> &Plugin::Contents() const
 {
   return this->dataPtr->contents;
 }

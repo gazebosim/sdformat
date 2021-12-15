@@ -183,25 +183,25 @@ TEST(DOMPlugin, Load)
 /////////////////////////////////////////////////
 TEST(DOMPlugin, LoadWithChildren)
 {
-  std::string pluginStr = R"(
-    <sdf version='1.9'>
-     <plugin filename='MinimalScene' name='3D View'>
-        <ignition-gui>
-          <title>3D View</title>
-          <property type='bool' key='showTitleBar'>false</property>
-          <property type='string' key='state'>docked</property>
-        </ignition-gui>
-        <engine>ogre</engine>
-        <scene>scene</scene>
-        <ambient_light>0.4 0.4 0.4</ambient_light>
-        <background_color>0.8 0.8 0.8</background_color>
-        <camera_pose>-6 0 6 0 0.5 0</camera_pose>
-      </plugin>
-    </sdf>)";
+  std::string pluginStr = R"(<plugin name='3D View' filename='MinimalScene'>
+  <ignition-gui>
+    <title>3D View</title>
+    <property type='bool' key='showTitleBar'>false</property>
+    <property type='string' key='state'>docked</property>
+  </ignition-gui>
+  <engine>ogre</engine>
+  <scene>scene</scene>
+  <ambient_light>0.4 0.4 0.4</ambient_light>
+  <background_color>0.8 0.8 0.8</background_color>
+  <camera_pose>-6 0 6 0 0.5 0</camera_pose>
+</plugin>
+)";
 
+  std::string pluginStrWithSdf = std::string("<sdf version='1.9'>") +
+    pluginStr + "</sdf>";
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("plugin.sdf", elem);
-  sdf::readString(pluginStr, elem);
+  sdf::readString(pluginStrWithSdf, elem);
 
   sdf::Plugin plugin;
   sdf::Errors errors;
@@ -218,6 +218,7 @@ TEST(DOMPlugin, LoadWithChildren)
 
   // The elements should be the same
   EXPECT_EQ(elem->ToString(""), toElem->ToString(""));
+  EXPECT_EQ(pluginStr, toElem->ToString(""));
 }
 
 /////////////////////////////////////////////////
