@@ -826,6 +826,7 @@ sdf::ElementPtr Model::ToElement(bool _useUri) const
     }
     includeElem->GetElement("static")->Set(this->Static());
     includeElem->GetElement("placement_frame")->Set(this->PlacementFrameName());
+
     return includeElem;
   }
 
@@ -868,7 +869,7 @@ sdf::ElementPtr Model::ToElement(bool _useUri) const
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(), true);
+    elem->InsertElement(model.ToElement(_useUri), true);
 
   return elem;
 }

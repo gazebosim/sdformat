@@ -20,6 +20,8 @@
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/parser.hh"
+#include "test_config.h"
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.
@@ -435,4 +437,43 @@ TEST(DOMModel, Uri)
     ASSERT_NE(nullptr, staticElem);
     EXPECT_EQ(true, staticElem->Get<bool>());
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, ToElementNestedHasUri)
+{
+  sdf::Model model;
+  model.SetName("parent");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child");
+  nestedModel.SetUri("child-uri");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+  EXPECT_EQ(1u, model.ModelCount());
+
+  sdf::Model nestedModel2;
+  nestedModel2.SetName("child2");
+  EXPECT_TRUE(model.AddModel(nestedModel2));
+  EXPECT_EQ(2u, model.ModelCount());
+
+  sdf::ElementPtr elem = model.ToElement();
+
+  // The parent model does not have a URI, so the element name should be
+  // "model".
+  ASSERT_NE(nullptr, elem);
+  EXPECT_EQ("model", elem->GetName());
+
+  // Get the child <include> element, which should exist because the nested
+  // model has a URI.
+  sdf::ElementPtr includeElem = elem->GetElement("include");
+  ASSERT_NE(nullptr, includeElem);
+  ASSERT_NE(nullptr, includeElem->GetElement("uri"));
+  EXPECT_EQ("child-uri", includeElem->GetElement("uri")->Get<std::string>());
+
+  // Get the child <model> element, which should exist because one nested
+  // model does not have a URI.
+  sdf::ElementPtr modelElem = elem->GetElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  EXPECT_EQ("child2", modelElem->GetAttribute("name")->GetAsString());
 }
