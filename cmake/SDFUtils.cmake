@@ -21,24 +21,18 @@ macro (sdf_build_tests)
       )
 
     link_directories(${IGNITION-MATH_LIBRARY_DIRS})
-    target_link_libraries(${BINARY_NAME} ${tinyxml2_LIBRARIES})
+    target_link_libraries(${BINARY_NAME} PRIVATE
+      gtest
+      gtest_main
+      ${IGNITION-MATH_LIBRARIES}
+      ${PROJECT_LIBRARY_TARGET_NAME}
+      ${tinyxml2_LIBRARIES})
 
     if (UNIX)
       target_link_libraries(${BINARY_NAME} PRIVATE
-        libgtest.a
-        libgtest_main.a
-        ${PROJECT_LIBRARY_TARGET_NAME}
         pthread
-        ${IGNITION-MATH_LIBRARIES}
       )
     elseif(WIN32)
-      target_link_libraries(${BINARY_NAME} PRIVATE
-        gtest.lib
-        gtest_main.lib
-        ${PROJECT_LIBRARY_TARGET_NAME}
-        ${IGNITION-MATH_LIBRARIES}
-      )
-
       # Copy in sdformat library
       add_custom_command(TARGET ${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -47,8 +41,8 @@ macro (sdf_build_tests)
 
     endif()
 
-    add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
-      --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
+    add_test(NAME ${BINARY_NAME} COMMAND
+      ${BINARY_NAME} --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
 
     set (_env_vars)
     set (sdf_paths)
