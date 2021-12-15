@@ -3,7 +3,7 @@ configure_file(test_config.h.in ${PROJECT_BINARY_DIR}/include/test_config.h)
 # Build gtest
 add_library(gtest STATIC gtest/src/gtest-all.cc)
 target_include_directories(gtest
-  PRIVATE
+  PUBLIC
     ${PROJECT_SOURCE_DIR}/test/gtest/include
     ${PROJECT_SOURCE_DIR}/test/gtest
 )

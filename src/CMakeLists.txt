@@ -1,5 +1,3 @@
-include (${sdf_cmake_dir}/SDFUtils.cmake)
-
 link_directories(
   ${PROJECT_BINARY_DIR}/test
 )
@@ -86,6 +84,7 @@ if (BUILD_TESTING)
     Camera_TEST.cc
     Collision_TEST.cc
     Console_TEST.cc
+    Converter_TEST.cc
     Cylinder_TEST.cc
     Element_TEST.cc
     Error_TEST.cc
@@ -93,6 +92,7 @@ if (BUILD_TESTING)
     Frame_TEST.cc
     Filesystem_TEST.cc
     ForceTorque_TEST.cc
+    FrameSemantics_TEST.cc
     Geometry_TEST.cc
     Gui_TEST.cc
     Heightmap_TEST.cc
@@ -109,7 +109,9 @@ if (BUILD_TESTING)
     NavSat_TEST.cc
     Noise_TEST.cc
     Param_TEST.cc
+    ParamPassing_TEST.cc
     parser_TEST.cc
+    parser_urdf_TEST.cc
     ParticleEmitter_TEST.cc
     Pbr_TEST.cc
     Physics_TEST.cc
@@ -123,7 +125,9 @@ if (BUILD_TESTING)
     Sphere_TEST.cc
     Surface_TEST.cc
     Types_TEST.cc
+    Utils_TEST.cc
     Visual_TEST.cc
+    XmlUtils_TEST.cc
     World_TEST.cc
   )
 
@@ -148,48 +152,31 @@ if (BUILD_TESTING)
     )
   endif()
 
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
-    sdf_build_tests(Utils_TEST.cc)
-  endif()
-
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
-    sdf_build_tests(XmlUtils_TEST.cc)
-    target_link_libraries(UNIT_XmlUtils_TEST PRIVATE
+  if (TARGET UNIT_XmlUtils_TEST)
+    target_link_libraries(UNIT_XmlUtils_TEST
       TINYXML2::TINYXML2)
   endif()
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
-    sdf_build_tests(FrameSemantics_TEST.cc)
-  endif()
-
-  if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
-    sdf_build_tests(Converter_TEST.cc)
-    target_link_libraries(UNIT_Converter_TEST PRIVATE
+    target_link_libraries(UNIT_Converter_TEST
       TINYXML2::TINYXML2)
   endif()
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc XmlUtils.cc)
-    sdf_build_tests(parser_urdf_TEST.cc)
     if (NOT USE_INTERNAL_URDF)
-      target_link_libraries(UNIT_parser_urdf_TEST PRIVATE IgnURDFDOM::IgnURDFDOM)
+      target_link_libraries(UNIT_parser_urdf_TEST
+        IgnURDFDOM::IgnURDFDOM)
     endif()
-    target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
+    target_link_libraries(UNIT_parser_urdf_TEST
       TINYXML2::TINYXML2)
   endif()
 
   if (NOT WIN32)
-    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS ParamPassing.cc XmlUtils.cc parser.cc
-          parser_urdf.cc FrameSemantics.cc Converter.cc EmbeddedSdf.cc SDFExtension.cc)
-    sdf_build_tests(ParamPassing_TEST.cc)
     if (NOT USE_INTERNAL_URDF)
-      target_link_libraries(UNIT_ParamPassing_TEST PRIVATE IgnURDFDOM::IgnURDFDOM)
+      target_link_libraries(UNIT_ParamPassing_TEST
+        IgnURDFDOM::IgnURDFDOM)
     endif()
-    target_link_libraries(UNIT_ParamPassing_TEST PRIVATE
+    target_link_libraries(UNIT_ParamPassing_TEST
       TINYXML2::TINYXML2)
   endif()
 endif()

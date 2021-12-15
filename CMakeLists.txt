@@ -78,16 +78,6 @@ if (BUILD_SDF)
   endif()
 
   ################################################
-  # Find Valgrind for checking memory leaks in the
-  # tests
-  find_program(VALGRIND_PROGRAM NAMES valgrind PATH ${VALGRIND_ROOT}/bin)
-  option(SDFORMAT_RUN_VALGRIND_TESTS "Run sdformat tests with Valgrind" FALSE)
-  mark_as_advanced(SDFORMAT_RUN_VALGRIND_TESTS)
-  if (SDFORMAT_RUN_VALGRIND_TESTS AND NOT VALGRIND_PROGRAM)
-    ign_build_warning("valgrind not found. Memory check tests will be skipped.")
-  endif()
-
-  ################################################
   # Find ruby executable to produce xml schemas
   find_program(RUBY ruby)
   if (NOT RUBY)
