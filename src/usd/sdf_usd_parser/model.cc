@@ -37,6 +37,12 @@ namespace usd
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, const pxr::SdfPath &_worldPath)
   {
+    if (_model.ModelCount())
+    {
+      std::cerr << "Nested models currently aren't supported\n";
+      return false;
+    }
+
     const pxr::SdfPath sdfModelPath(_path);
     auto usdModelXform = pxr::UsdGeomXform::Define(_stage, sdfModelPath);
     // since USD does not have a plane yet, planes are being represented as a
