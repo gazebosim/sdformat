@@ -1118,7 +1118,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 }
 
 /////////////////////////////////////////////////
-Errors buildPoseRelativeToGraph(
+Errors wrapperBuildPoseRelativeToGraph(
     ScopedGraph<PoseRelativeToGraph> &_out, const WorldWrapper &_world)
 {
   Errors errors;
@@ -1160,7 +1160,7 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
   }
-  return buildPoseRelativeToGraph(_out, WorldWrapper(*_world));
+  return wrapperBuildPoseRelativeToGraph(_out, WorldWrapper(*_world));
 }
 
 /////////////////////////////////////////////////
