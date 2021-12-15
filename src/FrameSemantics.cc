@@ -496,19 +496,19 @@ struct ModelWrapper: public WrapperBase
   {
     for (const auto &item : _ifaceModel.Links())
     {
-      links.emplace_back(item);
+      this->links.emplace_back(item);
     }
     for (const auto &item : _ifaceModel.Frames())
     {
-      frames.emplace_back(item);
+      this->frames.emplace_back(item);
     }
     for (const auto &item : _ifaceModel.Joints())
     {
-      joints.emplace_back(item);
+      this->joints.emplace_back(item);
     }
     for (const auto &item : _ifaceModel.NestedModels())
     {
-      models.emplace_back(*item);
+      this->models.emplace_back(*item);
     }
   }
 };
@@ -522,16 +522,16 @@ struct WorldWrapper: public WrapperBase
   {
     for (uint64_t i = 0; i < _world.FrameCount(); ++i)
     {
-      frames.emplace_back(*_world.FrameByIndex(i));
+      this->frames.emplace_back(*_world.FrameByIndex(i));
     }
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {
-      models.emplace_back(*_world.ModelByIndex(i));
+      this->models.emplace_back(*_world.ModelByIndex(i));
     }
     for (uint64_t i = 0; i < _world.InterfaceModelCount(); ++i)
     {
-      models.emplace_back(*_world.InterfaceModelNestedIncludeByIndex(i),
-                          *_world.InterfaceModelByIndex(i));
+      this->models.emplace_back(*_world.InterfaceModelNestedIncludeByIndex(i),
+                                *_world.InterfaceModelByIndex(i));
     }
   }
 
@@ -951,7 +951,7 @@ Errors wrapperBuildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
   // Set the edge weight to 0 to indicate that this is an aliasing edge.
   edge.SetWeight(0);
 
-  // add link vertices and default edge if relative_to is empty
+  // add link vertices
   addVerticesToGraph(outModel, _model.links, _model, errors);
 
   // add joint vertices
@@ -1015,7 +1015,7 @@ Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 }
 
 /////////////////////////////////////////////////
-Errors buildPoseRelativeToGraph(
+Errors wrapperBuildPoseRelativeToGraph(
     ScopedGraph<PoseRelativeToGraph> &_out, const WorldWrapper &_world)
 {
   Errors errors;
@@ -1057,7 +1057,7 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
   }
-  return buildPoseRelativeToGraph(_out, WorldWrapper(*_world));
+  return wrapperBuildPoseRelativeToGraph(_out, WorldWrapper(*_world));
 }
 
 /////////////////////////////////////////////////
