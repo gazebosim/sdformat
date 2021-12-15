@@ -26,6 +26,7 @@
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Link.hh"
+#include "sdf_usd_parser/light.hh"
 #include "sdf_usd_parser/sensor.hh"
 #include "sdf_usd_parser/utils.hh"
 #include "sdf_usd_parser/visual.hh"
@@ -73,8 +74,6 @@ namespace usd
     // (this does not cover all elements of a link that need to be parsed):
     //  * ParseSdfVisual
     //  * ParseSdfCollision
-    //  * ParseSdfSensor
-    //  * ParseSdfLight (look at world.cc for how this is being done)
 
     // parse all of the link's visuals and convert them to USD
     for (uint64_t i = 0; i < _link.VisualCount(); ++i)
@@ -96,6 +95,18 @@ namespace usd
       if (!ParseSdfSensor(sensor, _stage, sensorPath))
       {
         std::cerr << "Error parsing sensor [" << sensor.Name() << "]\n";
+        return false;
+      }
+    }
+
+    // links can have lights attached to them
+    for (uint64_t i = 0; i < _link.LightCount(); ++i)
+    {
+      const auto light = *(_link.LightByIndex(i));
+      auto lightPath = std::string(_path + "/" + light.Name());
+      if (!ParseSdfLight(light, _stage, lightPath))
+      {
+        std::cerr << "Error parsing light [" << light.Name() << "]\n";
         return false;
       }
     }
