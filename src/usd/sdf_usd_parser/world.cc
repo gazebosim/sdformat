@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 
+#include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
@@ -57,8 +58,12 @@ namespace usd
 
     auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
         pxr::SdfPath(_path + "/physics"));
-    // TODO(adlarkin) populate information in usdPhysics, if needed?
-    // Otherwise, no need to save the return variable
+    const auto &sdfWorldGravity = _world.Gravity();
+    const auto normalizedGravity = sdfWorldGravity.Normalized();
+    usdPhysics.CreateGravityDirectionAttr().Set(pxr::GfVec3f(
+          normalizedGravity.X(), normalizedGravity.Y(), normalizedGravity.Z()));
+    usdPhysics.CreateGravityMagnitudeAttr().Set(
+        static_cast<float>(sdfWorldGravity.Length()));
 
     // parse all of the world's models and convert them to USD
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
