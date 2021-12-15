@@ -377,6 +377,7 @@ TEST(DOMModel, Uri)
   model.SetRawPose(pose);
   model.SetStatic(true);
   model.SetPlacementFrameName("link0");
+  model.SetPoseRelativeTo("other");
   model.SetUri(uri);
   EXPECT_EQ(uri, model.Uri());
 
@@ -396,6 +397,7 @@ TEST(DOMModel, Uri)
     sdf::ElementPtr poseElem = elem->GetElement("pose");
     ASSERT_NE(nullptr, poseElem);
     EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
     EXPECT_EQ("link0", elem->GetElement("placement_frame")->Get<std::string>());
 
@@ -427,6 +429,7 @@ TEST(DOMModel, Uri)
     sdf::ElementPtr poseElem = elem->GetElement("pose");
     ASSERT_NE(nullptr, poseElem);
     EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
     sdf::ElementPtr staticElem = elem->GetElement("static");
     ASSERT_NE(nullptr, staticElem);
