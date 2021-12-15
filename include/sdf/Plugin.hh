@@ -78,7 +78,7 @@ namespace sdf
     /// \brief Set the filename of the shared library.
     /// \param[in] _filename Filename of the shared library associated with
     /// this plugin.
-    public: void SetFilename(const std::string &_name);
+    public: void SetFilename(const std::string &_filename);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
