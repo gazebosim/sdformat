@@ -319,6 +319,8 @@ struct LinkWrapper: public WrapperBase
   {
   }
 
+  /// \brief Constructor from name and pose data (without sdf::Link or
+  /// sdf::InterfaceLink)
   LinkWrapper(const std::string &_name, const ignition::math::Pose3d &_rawPose,
               const std::string &_relativeTo)
       : WrapperBase{_name, "Link", FrameType::LINK},
@@ -361,6 +363,8 @@ struct FrameWrapper: public WrapperBase
   {
   }
 
+  /// \brief Constructor from name, pose, and attachement data (without
+  /// sdf::Frame or sdf::InterfaceFrame)
   FrameWrapper(const std::string &_name, const ignition::math::Pose3d &_rawPose,
                const std::string &_relativeTo, const std::string &_attachedTo)
       : WrapperBase{_name, "Frame", FrameType::FRAME},
@@ -481,8 +485,8 @@ struct ModelWrapper: public WrapperBase
 
       for (const auto &item : model->Links())
       {
-        links.emplace_back(item.Name(), item.PoseInModelFrame(),
-                           proxyModelFrameName);
+        this->links.emplace_back(item.Name(), item.PoseInModelFrame(),
+                                 proxyModelFrameName);
       }
       for (const auto &item : model->Frames())
       {
@@ -491,15 +495,15 @@ struct ModelWrapper: public WrapperBase
         {
           attachedTo = proxyModelFrameName;
         }
-        frames.emplace_back(item.Name(), item.PoseInAttachedToFrame(),
-                            attachedTo, attachedTo);
+        this->frames.emplace_back(item.Name(), item.PoseInAttachedToFrame(),
+                                  attachedTo, attachedTo);
       }
       for (const auto &item : model->Joints())
       {
-        // TODO (azeey) In theory, the child could be "__model__" in which case,
+        // TODO(azeey) In theory, the child could be "__model__" in which case,
         // we'd have to use the proxy frame here, but not sure if "__model__" is
         // allowed for //joint/child.
-        joints.emplace_back(item);
+        this->joints.emplace_back(item);
       }
       if (nestedInclude->PlacementFrame().has_value())
       {
@@ -507,7 +511,7 @@ struct ModelWrapper: public WrapperBase
             {proxyModelFrameName, *nestedInclude->PlacementFrame()});
       }
 
-      // Skip adding nested interface models because they are already included 
+      // Skip adding nested interface models because they are already included
       // in the parent model's list of nested models.
     }
   }
