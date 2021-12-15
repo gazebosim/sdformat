@@ -2,64 +2,13 @@ link_directories(
   ${PROJECT_BINARY_DIR}/test
 )
 
-set (sources
-  Actor.cc
-  AirPressure.cc
-  Altimeter.cc
-  Atmosphere.cc
-  Box.cc
-  Camera.cc
-  Collision.cc
-  Console.cc
-  Converter.cc
-  Cylinder.cc
-  Element.cc
-  EmbeddedSdf.cc
-  Error.cc
-  Exception.cc
-  Frame.cc
-  FrameSemantics.cc
-  Filesystem.cc
-  ForceTorque.cc
-  Geometry.cc
-  Gui.cc
-  Heightmap.cc
-  ign.cc
-  Imu.cc
-  Joint.cc
-  JointAxis.cc
-  Lidar.cc
-  Light.cc
-  Link.cc
-  Magnetometer.cc
-  Material.cc
-  Mesh.cc
-  Model.cc
-  NavSat.cc
-  Noise.cc
-  parser.cc
-  parser_urdf.cc
-  Param.cc
-  ParamPassing.cc
-  ParticleEmitter.cc
-  Pbr.cc
-  Physics.cc
-  Plane.cc
-  Root.cc
-  Scene.cc
-  SDF.cc
-  SDFExtension.cc
-  SemanticPose.cc
-  Sensor.cc
-  Sky.cc
-  Sphere.cc
-  Surface.cc
-  Types.cc
-  Utils.cc
-  Visual.cc
-  World.cc
-  XmlUtils.cc
-)
+# Collect source files into the "sources" variable and unit test files into the
+# "gtest_sources" variable
+ign_get_libsources_and_unittests(sources gtest_sources)
+
+# Add the source file auto-generated into the build folder from sdf/CMakeLists.txt
+list(APPEND sources EmbeddedSdf.cc)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (USE_INTERNAL_URDF)
@@ -75,67 +24,19 @@ if (USE_INTERNAL_URDF)
 endif()
 
 if (BUILD_TESTING)
-  set (gtest_sources
-    Actor_TEST.cc
-    AirPressure_TEST.cc
-    Altimeter_TEST.cc
-    Atmosphere_TEST.cc
-    Box_TEST.cc
-    Camera_TEST.cc
-    Collision_TEST.cc
-    Console_TEST.cc
-    Converter_TEST.cc
-    Cylinder_TEST.cc
-    Element_TEST.cc
-    Error_TEST.cc
-    Exception_TEST.cc
-    Frame_TEST.cc
-    Filesystem_TEST.cc
-    ForceTorque_TEST.cc
-    FrameSemantics_TEST.cc
-    Geometry_TEST.cc
-    Gui_TEST.cc
-    Heightmap_TEST.cc
-    Imu_TEST.cc
-    Joint_TEST.cc
-    JointAxis_TEST.cc
-    Lidar_TEST.cc
-    Light_TEST.cc
-    Link_TEST.cc
-    Magnetometer_TEST.cc
-    Material_TEST.cc
-    Mesh_TEST.cc
-    Model_TEST.cc
-    NavSat_TEST.cc
-    Noise_TEST.cc
-    Param_TEST.cc
-    ParamPassing_TEST.cc
-    parser_TEST.cc
-    parser_urdf_TEST.cc
-    ParticleEmitter_TEST.cc
-    Pbr_TEST.cc
-    Physics_TEST.cc
-    Plane_TEST.cc
-    Root_TEST.cc
-    Scene_TEST.cc
-    SemanticPose_TEST.cc
-    SDF_TEST.cc
-    Sensor_TEST.cc
-    Sky_TEST.cc
-    Sphere_TEST.cc
-    Surface_TEST.cc
-    Types_TEST.cc
-    Utils_TEST.cc
-    Visual_TEST.cc
-    XmlUtils_TEST.cc
-    World_TEST.cc
-  )
-
   # Build this test file only if Ignition Tools is installed.
-  if (IGNITION-TOOLS_BINARY_DIRS)
-    set (gtest_sources ${gtest_sources}
-      ign_TEST.cc
-    )
+  if (NOT IGNITION-TOOLS_BINARY_DIRS)
+    list(REMOVE_ITEM gtest_sources ign_TEST.cc)
+  endif()
+
+  # Skip tests that don't work on Windows
+  if (WIN32)
+    list(REMOVE_ITEM gtest_sources Converter_TEST.cc)
+    list(REMOVE_ITEM gtest_sources FrameSemantics_TEST.cc)
+    list(REMOVE_ITEM gtest_sources ParamPassing_TEST.cc)
+    list(REMOVE_ITEM gtest_sources Utils_TEST.cc)
+    list(REMOVE_ITEM gtest_sources XmlUtils_TEST.cc)
+    list(REMOVE_ITEM gtest_sources parser_urdf_TEST.cc)
   endif()
 
   ign_build_tests(
@@ -157,12 +58,12 @@ if (BUILD_TESTING)
       TINYXML2::TINYXML2)
   endif()
 
-  if (NOT WIN32)
+  if (TARGET UNIT_Converter_TEST)
     target_link_libraries(UNIT_Converter_TEST
       TINYXML2::TINYXML2)
   endif()
 
-  if (NOT WIN32)
+  if (TARGET UNIT_parser_urdf_TEST)
     if (NOT USE_INTERNAL_URDF)
       target_link_libraries(UNIT_parser_urdf_TEST
         IgnURDFDOM::IgnURDFDOM)
@@ -171,7 +72,7 @@ if (BUILD_TESTING)
       TINYXML2::TINYXML2)
   endif()
 
-  if (NOT WIN32)
+  if (TARGET UNIT_ParamPassing_TEST)
     if (NOT USE_INTERNAL_URDF)
       target_link_libraries(UNIT_ParamPassing_TEST
         IgnURDFDOM::IgnURDFDOM)
