@@ -11,15 +11,9 @@ project (sdformat10 VERSION 10.6.0)
 # It represents the current version of SDFormat implemented by the software
 set (SDF_PROTOCOL_VERSION 1.7)
 
-set (project_cmake_dir ${PROJECT_SOURCE_DIR}/cmake
-  CACHE PATH "Location of CMake scripts")
-
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
-
-set (sdf_cmake_dir ${PROJECT_SOURCE_DIR}/cmake CACHE PATH
-     "Location of CMake scripts")
 
 #################################################
 # Find ign-cmake
@@ -71,7 +65,7 @@ if (BUILD_SDF)
 
   ################################################
   # Find psutil python package for memory tests
-  include (${sdf_cmake_dir}/SDFUtils.cmake)
+  include (${PROJECT_SOURCE_DIR}/cmake/SDFUtils.cmake)
   find_python_module(psutil)
   if (NOT PY_PSUTIL)
     ign_build_warning("Python psutil package not found. Memory leak tests will be skipped")

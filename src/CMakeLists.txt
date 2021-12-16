@@ -1,15 +1,9 @@
-link_directories(
-  ${PROJECT_BINARY_DIR}/test
-)
-
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable
 ign_get_libsources_and_unittests(sources gtest_sources)
 
 # Add the source file auto-generated into the build folder from sdf/CMakeLists.txt
 list(APPEND sources EmbeddedSdf.cc)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (USE_INTERNAL_URDF)
   set(sources ${sources}
@@ -42,10 +36,11 @@ if (BUILD_TESTING)
   ign_build_tests(
     TYPE UNIT
     SOURCES ${gtest_sources}
-    INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+    INCLUDE_DIRS
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${PROJECT_SOURCE_DIR}/test
   )
 
-  include_directories(${PROJECT_SOURCE_DIR}/test)
   if (TARGET UNIT_ign_TEST)
     # Link the libraries that we always need.
     target_link_libraries("UNIT_ign_TEST"
@@ -84,11 +79,6 @@ endif()
 
 ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
 
-target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
@@ -103,6 +93,8 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/..>
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 if (USE_INTERNAL_URDF)
