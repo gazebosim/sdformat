@@ -1373,6 +1373,7 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   }
 
   _includeSDF->ClearElements();
+  _includeSDF->RemoveAllAttributes();
   readString(str, _includeSDF, _errors);
 
   elem = _includeSDF->GetElement("model")->GetFirstElement();
