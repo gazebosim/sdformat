@@ -139,11 +139,14 @@ namespace usd
     auto usdJoint =
       pxr::UsdPhysicsRevoluteJoint::Define(_stage, pxr::SdfPath(_path));
 
-    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX)
+    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitX)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitY)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitZ)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     else
     {
@@ -190,11 +193,14 @@ namespace usd
     auto usdJoint =
       pxr::UsdPhysicsPrismaticJoint::Define(_stage, pxr::SdfPath(_path));
 
-    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX)
+    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitX)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitY)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitZ)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     else
     {
