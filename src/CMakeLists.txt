@@ -48,23 +48,17 @@ if (BUILD_TESTING)
     )
   endif()
 
-  if (TARGET UNIT_XmlUtils_TEST)
-    target_link_libraries(UNIT_XmlUtils_TEST
-      TINYXML2::TINYXML2)
-  endif()
-
   if (TARGET UNIT_Converter_TEST)
     target_link_libraries(UNIT_Converter_TEST
       TINYXML2::TINYXML2)
+    target_sources(UNIT_Converter_TEST PRIVATE
+      Converter.cc
+      EmbeddedSdf.cc
+      XmlUtils.cc)
   endif()
 
-  if (TARGET UNIT_parser_urdf_TEST)
-    if (NOT USE_INTERNAL_URDF)
-      target_link_libraries(UNIT_parser_urdf_TEST
-        IgnURDFDOM::IgnURDFDOM)
-    endif()
-    target_link_libraries(UNIT_parser_urdf_TEST
-      TINYXML2::TINYXML2)
+  if (TARGET UNIT_FrameSemantics_TEST)
+    target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc)
   endif()
 
   if (TARGET UNIT_ParamPassing_TEST)
@@ -74,6 +68,38 @@ if (BUILD_TESTING)
     endif()
     target_link_libraries(UNIT_ParamPassing_TEST
       TINYXML2::TINYXML2)
+    target_sources(UNIT_ParamPassing_TEST PRIVATE
+      Converter.cc
+      EmbeddedSdf.cc
+      FrameSemantics.cc
+      ParamPassing.cc
+      SDFExtension.cc
+      XmlUtils.cc
+      parser.cc
+      parser_urdf.cc)
+  endif()
+
+  if (TARGET UNIT_Utils_TEST)
+    target_sources(UNIT_Utils_TEST PRIVATE Utils.cc)
+  endif()
+
+  if (TARGET UNIT_XmlUtils_TEST)
+    target_link_libraries(UNIT_XmlUtils_TEST
+      TINYXML2::TINYXML2)
+    target_sources(UNIT_XmlUtils_TEST PRIVATE XmlUtils.cc)
+  endif()
+
+  if (TARGET UNIT_parser_urdf_TEST)
+    if (NOT USE_INTERNAL_URDF)
+      target_link_libraries(UNIT_parser_urdf_TEST
+        IgnURDFDOM::IgnURDFDOM)
+    endif()
+    target_link_libraries(UNIT_parser_urdf_TEST
+      TINYXML2::TINYXML2)
+    target_sources(UNIT_parser_urdf_TEST PRIVATE
+      SDFExtension.cc
+      XmlUtils.cc
+      parser_urdf.cc)
   endif()
 endif()
 

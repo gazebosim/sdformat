@@ -88,6 +88,7 @@ if (BUILD_SDF)
 
   message (STATUS "----------------------------------------\n")
 
+  set(USE_DEFAULT_VISIBILITY_HIDDEN TRUE)
   ign_configure_build(QUIT_IF_BUILD_ERRORS)
   ign_create_packages()
 
