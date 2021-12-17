@@ -26,6 +26,7 @@
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/camera.h>
+#include <pxr/usd/usdGeom/cube.h>
 #include <pxr/usd/usdGeom/xform.h>
 
 #include "sdf/Camera.hh"
@@ -96,10 +97,27 @@ namespace usd
     return true;
   }
 
+  bool ParseSdfImuSensor(const sdf::Sensor &/*_sensor*/, pxr::UsdStageRefPtr &_stage,
+      pxr::SdfPath &_path)
+  {
+    // for now, IMUs are defined as a cube geometry named "imu"
+    // (there will be an IMU schema released upstream in the future).
+    // It should be noted that the Carter robot example from isaac sim sample
+    // assets has its IMU prim labeled with a "kind = model", but
+    // https://graphics.pixar.com/usd/release/glossary.html#usdglossary-kind
+    // says, “'model' is considered an abstract type and should not be assigned as
+    // any prim’s kind." So, "kind = model" is not applied to the IMU prim here.
+    // TODO(adlarkin) update this code when an IMU schema is released
+    _path = _path.ReplaceName(pxr::TfToken("imu"));
+    pxr::UsdGeomCube::Define(_stage, pxr::SdfPath(_path));
+
+    return true;
+  }
+
   bool ParseSdfSensor(const sdf::Sensor &_sensor, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    const pxr::SdfPath sdfSensorPath(_path);
+    pxr::SdfPath sdfSensorPath(_path);
 
     bool typeParsed = false;
     switch (_sensor.Type())
@@ -112,9 +130,8 @@ namespace usd
         typeParsed = ParseSdfLidarSensor(_sensor, _stage, sdfSensorPath);
         break;
       case sdf::SensorType::IMU:
-        // TODO(adlarkin) figure out how to convert IMU. I found the following
-        // docs, but they seem to require isaac sim specific packages:
-        // https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.imu_sensor/docs/index.html#
+        typeParsed = ParseSdfImuSensor(_sensor, _stage, sdfSensorPath);
+        break;
       case sdf::SensorType::CONTACT:
         // TODO(adlarkin) figure out how to convert contact sensor. I found the
         // following docs, but they seem to require isaac sim specific packages:
