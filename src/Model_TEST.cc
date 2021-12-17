@@ -20,6 +20,8 @@
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/parser.hh"
+#include "test_config.h"
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.
@@ -362,4 +364,117 @@ TEST(DOMModel, ToElement)
   EXPECT_EQ(model.ModelCount(), model2.ModelCount());
   for (uint64_t i = 0; i < model2.ModelCount(); ++i)
     EXPECT_NE(nullptr, model2.ModelByIndex(i));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, Uri)
+{
+  sdf::Model model;
+  std::string name = "my-model";
+  ignition::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
+  std::string uri =
+    "https://fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model";
+
+  model.SetName(name);
+  model.SetRawPose(pose);
+  model.SetStatic(true);
+  model.SetPlacementFrameName("link0");
+  model.SetPoseRelativeTo("other");
+  model.SetUri(uri);
+  EXPECT_EQ(uri, model.Uri());
+
+  // ToElement using the URI, which should result in an <include>
+  {
+    sdf::ElementPtr elem = model.ToElement();
+    EXPECT_EQ("include", elem->GetName());
+
+    sdf::ElementPtr uriElem = elem->FindElement("uri");
+    ASSERT_NE(nullptr, uriElem);
+    EXPECT_EQ(uri, uriElem->Get<std::string>());
+
+    sdf::ElementPtr nameElem = elem->FindElement("name");
+    ASSERT_NE(nullptr, nameElem);
+    EXPECT_EQ(name, nameElem->Get<std::string>());
+
+    sdf::ElementPtr poseElem = elem->FindElement("pose");
+    ASSERT_NE(nullptr, poseElem);
+    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
+
+    EXPECT_EQ("link0",
+        elem->FindElement("placement_frame")->Get<std::string>());
+
+    sdf::ElementPtr staticElem = elem->FindElement("static");
+    ASSERT_NE(nullptr, staticElem);
+    EXPECT_EQ(true, staticElem->Get<bool>());
+  }
+
+  // ToElement NOT using the URI, which should result in a <model>
+  {
+    sdf::ElementPtr elem = model.ToElement(false);
+    elem->PrintValues("  ");
+
+    // Should be a <model>
+    EXPECT_EQ("model", elem->GetName());
+
+    // URI should not exist
+    sdf::ElementPtr uriElem = elem->FindElement("uri");
+    ASSERT_EQ(nullptr, uriElem);
+
+    sdf::ParamPtr nameAttr = elem->GetAttribute("name");
+    ASSERT_NE(nullptr, nameAttr);
+    EXPECT_EQ(name, nameAttr->GetAsString());
+
+    sdf::ParamPtr placementFrameAttr = elem->GetAttribute("placement_frame");
+    ASSERT_NE(nullptr, placementFrameAttr);
+    EXPECT_EQ("link0", placementFrameAttr->GetAsString());
+
+    sdf::ElementPtr poseElem = elem->FindElement("pose");
+    ASSERT_NE(nullptr, poseElem);
+    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
+
+    sdf::ElementPtr staticElem = elem->FindElement("static");
+    ASSERT_NE(nullptr, staticElem);
+    EXPECT_EQ(true, staticElem->Get<bool>());
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, ToElementNestedHasUri)
+{
+  sdf::Model model;
+  model.SetName("parent");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child");
+  nestedModel.SetUri("child-uri");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+  EXPECT_EQ(1u, model.ModelCount());
+
+  sdf::Model nestedModel2;
+  nestedModel2.SetName("child2");
+  EXPECT_TRUE(model.AddModel(nestedModel2));
+  EXPECT_EQ(2u, model.ModelCount());
+
+  sdf::ElementPtr elem = model.ToElement();
+
+  // The parent model does not have a URI, so the element name should be
+  // "model".
+  ASSERT_NE(nullptr, elem);
+  EXPECT_EQ("model", elem->GetName());
+
+  // Get the child <include> element, which should exist because the nested
+  // model has a URI.
+  sdf::ElementPtr includeElem = elem->FindElement("include");
+  ASSERT_NE(nullptr, includeElem);
+  ASSERT_NE(nullptr, includeElem->FindElement("uri"));
+  EXPECT_EQ("child-uri", includeElem->FindElement("uri")->Get<std::string>());
+
+  // Get the child <model> element, which should exist because one nested
+  // model does not have a URI.
+  sdf::ElementPtr modelElem = elem->FindElement("model");
+  ASSERT_NE(nullptr, modelElem);
+  EXPECT_EQ("child2", modelElem->GetAttribute("name")->GetAsString());
 }
