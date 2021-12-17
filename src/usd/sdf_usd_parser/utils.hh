@@ -20,6 +20,8 @@
 
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Quaternion.hh>
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/usd/stage.h>
@@ -28,22 +30,38 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf/SemanticPose.hh"
 #include "sdf/Visual.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
+  /// \brief Get an object's pose w.r.t. its parent.
+  /// \param[in] _obj The object whose pose should be computed/retrieved.
+  /// \tparam T An object that has the following method signatures:
+  ///   sdf::SemanticPose SemanticPose();
+  ///   std::string Name();
+  /// \return _obj's pose w.r.t. its parent. If there was an error computing
+  /// this pose, the pose's position will be NaNs.
+  template <typename T>
+  inline ignition::math::Pose3d PoseWrtParent(const T &_obj)
+  {
+    ignition::math::Pose3d pose(ignition::math::Vector3d::NaN,
+        ignition::math::Quaterniond::Identity);
+    auto errors = _obj.SemanticPose().Resolve(pose, "");
+    if (!errors.empty())
+    {
+      std::cerr << "Errors occurred when resolving the pose of ["
+                << _obj.Name() << "] w.r.t its parent:\n\t" << errors;
+    }
+    return pose;
+  }
+
   /// \brief Set the pose of a pxr::UsdGeomXform object.
   /// \param[in] _pose The pose to set.
   /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
   /// \param[in] _usdPath The path to the USD prim that should have its
   /// pose modified to match _pose.
-  // TODO(adlarkin) handle a <pose> element's <relative_to> attribute.
-  // Either this API will need to change to take the <relative_to> data, or
-  // the code that calls this method elsewhere will need to update _pose to be
-  // relative to the <relative_to> attribute data before calling this method
-  // (probably best to update the API here to take the <relative_to> data.
-  // If it's empty, then _pose doesn't need to be modified)
   inline void SDFORMAT_VISIBLE SetPose(const ignition::math::Pose3d &_pose,
       pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_usdPath)
   {

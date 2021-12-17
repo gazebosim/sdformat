@@ -108,6 +108,7 @@ set(sources ${sources}
   usd/sdf_usd_parser/link.cc
   usd/sdf_usd_parser/material.cc
   usd/sdf_usd_parser/model.cc
+  usd/sdf_usd_parser/sensor.cc
   usd/sdf_usd_parser/visual.cc
   usd/sdf_usd_parser/world.cc
 )

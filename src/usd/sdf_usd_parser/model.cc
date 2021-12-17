@@ -37,6 +37,12 @@ namespace usd
   bool ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, const pxr::SdfPath &_worldPath)
   {
+    if (_model.ModelCount())
+    {
+      std::cerr << "Nested models currently aren't supported\n";
+      return false;
+    }
+
     const pxr::SdfPath sdfModelPath(_path);
     auto usdModelXform = pxr::UsdGeomXform::Define(_stage, sdfModelPath);
     // since USD does not have a plane yet, planes are being represented as a
@@ -47,6 +53,9 @@ namespace usd
     // the geometry.cc file for more information)
     if (usd::IsPlane(_model))
     {
+      // TODO(adlarkin) does this computation need to be updated if the plane isn't
+      // flat (i.e., if _model.RawPose().Rot() - which is used in the SetPose call
+      // below - isn't an identity quaternion)?
       ignition::math::Vector3d planePosition(
           _model.RawPose().X(),
           _model.RawPose().Y(),
@@ -56,7 +65,7 @@ namespace usd
     }
     else
     {
-      usd::SetPose(_model.RawPose(), _stage, sdfModelPath);
+      usd::SetPose(usd::PoseWrtParent(_model), _stage, sdfModelPath);
     }
 
     auto canonicalLink = _model.CanonicalLink();

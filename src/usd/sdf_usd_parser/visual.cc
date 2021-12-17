@@ -44,17 +44,7 @@ namespace usd
   {
     const pxr::SdfPath sdfVisualPath(_path);
     auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
-    if (_visual.PoseRelativeTo().empty())
-    {
-      usd::SetPose(_visual.RawPose(), _stage, sdfVisualPath);
-    }
-    else
-    {
-      auto visualSP = _visual.SemanticPose();
-      ignition::math::Pose3d pose;
-      visualSP.Resolve(pose, _visual.PoseRelativeTo());
-      usd::SetPose(pose, _stage, sdfVisualPath);
-    }
+    usd::SetPose(usd::PoseWrtParent(_visual), _stage, sdfVisualPath);
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
