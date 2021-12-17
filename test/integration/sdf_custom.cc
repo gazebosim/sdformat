@@ -123,14 +123,29 @@ TEST(SDFParser, ReloadCustomElements)
       model2->Element()->FindElement("mysim:transmission");
   ASSERT_NE(nullptr, customElem1);
   ASSERT_NE(nullptr, customElem2);
-  EXPECT_EQ(customElem1->ToString(""), customElem2->ToString(""));
+
+  const std::string customElemStr =
+R"(<mysim:transmission name='simple_trans'>
+  <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
+  <mysim:joint name='J1'>
+    <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>
+  </mysim:joint>
+</mysim:transmission>
+)";
+  EXPECT_EQ(customElemStr, customElem1->ToString(""));
+  EXPECT_EQ(customElemStr, customElem2->ToString(""));
+
   sdf::ElementPtr customDesc1 =
       world1->Element()->FindElement("mysim:description");
   sdf::ElementPtr customDesc2 =
       world2->Element()->FindElement("mysim:description");
   ASSERT_NE(nullptr, customDesc1);
   ASSERT_NE(nullptr, customDesc2);
-  EXPECT_EQ(customDesc1->ToString(""), customDesc2->ToString(""));
+
+  const std::string customDescStr =
+    "<mysim:description>Description of this world</mysim:description>\n";
+  EXPECT_EQ(customDescStr, customDesc1->ToString(""));
+  EXPECT_EQ(customDescStr, customDesc2->ToString(""));
 }
 
 /////////////////////////////////////////////////
@@ -184,8 +199,11 @@ R"(<sdf version='1.7'>
   const sdf::Link *model12link2 = model12->LinkByIndex(0);
   ASSERT_NE(nullptr, model11link1);
   ASSERT_NE(nullptr, model12link2);
-  EXPECT_EQ(model11link1->Element()->ToString(""),
-            model12link2->Element()->ToString(""));
+
+  const std::string linkCustomAttrStr =
+    "<link name='L1' mysim:custom_attr_str='A' mysim:custom_attr_int='5'/>\n";
+  EXPECT_EQ(linkCustomAttrStr, model11link1->Element()->ToString(""));
+  EXPECT_EQ(linkCustomAttrStr, model12link2->Element()->ToString(""));
 
   // //model[@name=M1]/model[@name=M2]
   const sdf::Model *model21 = model11->ModelByIndex(0);
@@ -202,6 +220,16 @@ R"(<sdf version='1.7'>
   EXPECT_EQ(model21link1->Element()->ToString(""),
             model22link2->Element()->ToString(""));
 
+  // check custom attributes
+  sdf::ParamPtr param1 =
+      model21link1->Element()->GetAttribute("mysim:custom_attr_str");
+  sdf::ParamPtr param2 =
+      model22link2->Element()->GetAttribute("mysim:custom_attr_str");
+  ASSERT_NE(nullptr, param1);
+  ASSERT_NE(nullptr, param2);
+  EXPECT_EQ("B", param1->GetAsString());
+  EXPECT_EQ("B", param2->GetAsString());
+
   // //model[@name=M1]/model[@name=M2]/link[@name=L1]/mysim:transmission
   sdf::ElementPtr customElem1 =
       model21link1->Element()->FindElement("mysim:transmission");
@@ -209,7 +237,17 @@ R"(<sdf version='1.7'>
       model22link2->Element()->FindElement("mysim:transmission");
   ASSERT_NE(nullptr, customElem1);
   ASSERT_NE(nullptr, customElem2);
-  EXPECT_EQ(customElem1->ToString(""), customElem2->ToString(""));
+
+  const std::string customElemStr =
+R"(<mysim:transmission name='simple_trans'>
+  <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
+  <mysim:joint name='J1'>
+    <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>
+  </mysim:joint>
+</mysim:transmission>
+)";
+  EXPECT_EQ(customElemStr, customElem1->ToString(""));
+  EXPECT_EQ(customElemStr, customElem2->ToString(""));
 }
 
 /////////////////////////////////////////////////
@@ -273,8 +311,14 @@ R"(<sdf version='1.7'>
   const sdf::Link *model12link2 = model12->LinkByIndex(0);
   ASSERT_NE(nullptr, model11link1);
   ASSERT_NE(nullptr, model12link2);
-  EXPECT_EQ(model11link1->Element()->ToString(""),
-            model12link2->Element()->ToString(""));
+
+  const std::string linkCustomAttrStr =
+R"(<link name='M1::L1' mysim:custom_attr_str='A' mysim:custom_attr_int='5'>
+  <pose relative_to='M1::__model__'>0 0 0 0 -0 0</pose>
+</link>
+)";
+  EXPECT_EQ(linkCustomAttrStr, model11link1->Element()->ToString(""));
+  EXPECT_EQ(linkCustomAttrStr, model12link2->Element()->ToString(""));
 
   // //model[@name=test]/model[@name=M1::M2]
   const sdf::Model *model21 = model11->ModelByIndex(0);
@@ -291,6 +335,16 @@ R"(<sdf version='1.7'>
   EXPECT_EQ(model21link1->Element()->ToString(""),
             model22link2->Element()->ToString(""));
 
+  // check custom attributes
+  sdf::ParamPtr param1 =
+      model21link1->Element()->GetAttribute("mysim:custom_attr_str");
+  sdf::ParamPtr param2 =
+      model22link2->Element()->GetAttribute("mysim:custom_attr_str");
+  ASSERT_NE(nullptr, param1);
+  ASSERT_NE(nullptr, param2);
+  EXPECT_EQ("B", param1->GetAsString());
+  EXPECT_EQ("B", param2->GetAsString());
+
   // //model[@name=test]/model[@name=M1::M2]/link[@name=M1::L1]
   //  /mysim:transmission
   sdf::ElementPtr customElem1 =
@@ -299,5 +353,15 @@ R"(<sdf version='1.7'>
       model22link2->Element()->FindElement("mysim:transmission");
   ASSERT_NE(nullptr, customElem1);
   ASSERT_NE(nullptr, customElem2);
-  EXPECT_EQ(customElem1->ToString(""), customElem2->ToString(""));
+
+  const std::string customElemStr =
+R"(<mysim:transmission name='simple_trans'>
+  <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
+  <mysim:joint name='M1::J1'>
+    <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>
+  </mysim:joint>
+</mysim:transmission>
+)";
+  EXPECT_EQ(customElemStr, customElem1->ToString(""));
+  EXPECT_EQ(customElemStr, customElem2->ToString(""));
 }
