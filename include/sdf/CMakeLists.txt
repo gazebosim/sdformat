@@ -47,6 +47,7 @@ set (headers
   Pbr.hh
   Physics.hh
   Plane.hh
+  Plugin.hh
   PrintConfig.hh
   Root.hh
   Scene.hh
