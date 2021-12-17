@@ -17,10 +17,10 @@
 #ifndef SDF_PLUGIN_HH_
 #define SDF_PLUGIN_HH_
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/Types.hh>
@@ -32,11 +32,15 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
+  class PluginPrivate;
 
   class SDFORMAT_VISIBLE Plugin
   {
     /// \brief Default constructor
     public: Plugin();
+
+    /// \brief Default destructor
+    public: ~Plugin();
 
     /// \brief Copy constructor.
     /// \param[in] _plugin Plugin to copy.
@@ -112,7 +116,7 @@ namespace sdf
     public: Plugin &operator=(Plugin &&_plugin) noexcept;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    std::unique_ptr<sdf::PluginPrivate> dataPtr;
   };
 }
 }

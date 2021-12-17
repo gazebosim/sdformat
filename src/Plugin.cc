@@ -21,7 +21,7 @@
 
 using namespace sdf;
 
-class sdf::Plugin::Implementation
+class sdf::PluginPrivate
 {
   /// \brief Name of the plugin
   public: std::string name = "";
@@ -38,20 +38,26 @@ class sdf::Plugin::Implementation
 
 /////////////////////////////////////////////////
 Plugin::Plugin()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(std::make_unique<sdf::PluginPrivate>())
 {
 }
 
 /////////////////////////////////////////////////
+Plugin::~Plugin() = default;
+
+/////////////////////////////////////////////////
 Plugin::Plugin(const Plugin &_plugin)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(std::make_unique<sdf::PluginPrivate>())
 {
   // Copy
   *this = _plugin;
 }
 
 /////////////////////////////////////////////////
-Plugin::Plugin(Plugin &&_plugin) noexcept = default;
+Plugin::Plugin(Plugin &&_plugin) noexcept
+{
+  this->dataPtr = std::move(_plugin.dataPtr);
+}
 
 /////////////////////////////////////////////////
 Errors Plugin::Load(ElementPtr _sdf)
@@ -172,6 +178,9 @@ void Plugin::InsertContent(const sdf::ElementPtr _elem)
 /////////////////////////////////////////////////
 Plugin &Plugin::operator=(const Plugin &_plugin)
 {
+  if (!this->dataPtr)
+    this->dataPtr = std::make_unique<sdf::PluginPrivate>();
+
   this->dataPtr->name = _plugin.Name();
   this->dataPtr->filename = _plugin.Filename();
   if (_plugin.Element())
@@ -188,4 +197,8 @@ Plugin &Plugin::operator=(const Plugin &_plugin)
 }
 
 /////////////////////////////////////////////////
-Plugin &Plugin::operator=(Plugin &&_plugin) noexcept = default;
+Plugin &Plugin::operator=(Plugin &&_plugin) noexcept
+{
+  this->dataPtr = std::move(_plugin.dataPtr);
+  return *this;
+}
