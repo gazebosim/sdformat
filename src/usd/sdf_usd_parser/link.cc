@@ -34,8 +34,7 @@
 namespace usd
 {
   bool ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path, const bool _rigidBody,
-      const std::string &_canonicalLink)
+      const std::string &_path, const bool _rigidBody)
   {
     const pxr::SdfPath sdfLinkPath(_path);
 
@@ -54,17 +53,8 @@ namespace usd
 
       if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
       {
-        std::cerr << "Internal error: unable to mark link at path ["
-                  << _path << "] as a rigid body\n";
-        return false;
-      }
-
-      auto physicsRigidBodyAPI =
-        pxr::UsdPhysicsRigidBodyAPI(linkPrim);
-      if (!physicsRigidBodyAPI)
-      {
-        std::cerr << "Unable to attach mass properties to link ["
-                  << _link.Name() << "]\n";
+        std::cerr << "Internal error: unable to mark link at path [" << path
+                  << "] as a rigid body, so mass properties won't be attached\n";
         return false;
       }
 
@@ -78,14 +68,6 @@ namespace usd
       }
       massAPI.CreateMassAttr().Set(
           static_cast<float>(_link.Inertial().MassMatrix().Mass()));
-
-      auto diagonalInertial = _link.Inertial().MassMatrix().DiagonalMoments();
-      massAPI.CreateDiagonalInertiaAttr().Set(pxr::GfVec3f(
-        diagonalInertial[0], diagonalInertial[1], diagonalInertial[2]));
-
-      auto centerOfMass = _link.Inertial().Pose();
-      massAPI.CreateCenterOfMassAttr().Set(pxr::GfVec3f(
-        centerOfMass.Pos().X(), centerOfMass.Pos().Y(), centerOfMass.Pos().Z()));
     }
 
     // TODO(adlarkin) finish parsing link. It will look something like this

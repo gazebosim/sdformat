@@ -35,12 +35,11 @@ namespace usd
   /// a valid USD path.
   /// \param[in] _rigidBody Whether the link is a rigid body (i.e., non-static)
   /// or not. True for rigid body, false otherwise
-  /// \param[in] _canonicalLink Name of the canonical link
   /// \return True if _link was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
   bool SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
-      const bool _rigidBody, const std::string &_canonicalLink);
+      const bool _rigidBody);
 }
 
 #endif

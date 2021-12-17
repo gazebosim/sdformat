@@ -30,7 +30,6 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/relationship.h>
 #include <pxr/usd/usd/stage.h>
-#include <pxr/usd/usdPhysics/driveAPI.h>
 #include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdPhysics/prismaticJoint.h>
@@ -116,47 +115,30 @@ namespace usd
     auto usdJoint =
       pxr::UsdPhysicsRevoluteJoint::Define(_stage, pxr::SdfPath(_path));
 
-    const auto axis = _joint.Axis();
-
-    if (axis->Xyz() == ignition::math::Vector3d::UnitX ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitX)
+    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitX)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
-    else if (axis->Xyz() == ignition::math::Vector3d::UnitY ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitY)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitY)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
-    else if (axis->Xyz() == ignition::math::Vector3d::UnitZ ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitZ)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitZ)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     else
     {
       std::cerr << "Revolute joint [" << _joint.Name() << "] has an invalid "
-                << "axis: [" << axis->Xyz() << "]\n";
+                << "axis: [" << _joint.Axis()->Xyz() << "]\n";
       return false;
     }
 
     // Revolute joint limits in SDF are in radians, but USD expects degrees
     // of C++ type float
     auto sdfLimitDegrees = static_cast<float>(
-        ignition::math::Angle(axis->Lower()).Degree());
+        ignition::math::Angle(_joint.Axis()->Lower()).Degree());
     usdJoint.CreateLowerLimitAttr().Set(sdfLimitDegrees);
     sdfLimitDegrees = static_cast<float>(
-        ignition::math::Angle(axis->Upper()).Degree());
+        ignition::math::Angle(_joint.Axis()->Upper()).Degree());
     usdJoint.CreateUpperLimitAttr().Set(sdfLimitDegrees);
-
-    pxr::UsdPrim usdJointPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
-
-    if (!pxr::UsdPhysicsDriveAPI::Apply(usdJointPrim, pxr::TfToken("angular")))
-    {
-      std::cerr << "Internal error: unable to mark link at path ["
-                << _path << "] as a UsdPhysicsDriveAPI \n";
-      return false;
-    }
-
-    auto drive =
-      pxr::UsdPhysicsDriveAPI(usdJointPrim, pxr::TfToken("angular"));
-    drive.CreateDampingAttr().Set(static_cast<float>(axis->Damping()));
-    drive.CreateStiffnessAttr().Set(static_cast<float>(axis->Stiffness()));
-    drive.CreateMaxForceAttr().Set(static_cast<float>(axis->Effort()));
 
     return true;
   }
