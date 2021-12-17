@@ -80,24 +80,12 @@ namespace sdf
     /// \sa uint64_t PluginCount() const
     public: const Plugin *PluginByIndex(const uint64_t _index) const;
 
-    /// \brief Get whether a plugin name exists.
-    /// \param[in] _name Name of the plugin to check.
-    /// \return True if there exists a plugin with the given name.
-    public: bool PluginNameExists(const std::string &_name) const;
-
-    /// \brief Get a plugin based on a name.
-    /// \param[in] _name Name of the plugin.
-    /// \return Pointer to the plugin. Nullptr if the name does not exist.
-    public: const Plugin *PluginByName(const std::string &_name) const;
-
     /// \brief Remove all plugins
     public: void ClearPlugins();
 
     /// \brief Add a plugin to the link.
     /// \param[in] _plugin Plugin to add.
-    /// \return True if successful, false if a plugin with the name already
-    /// exists.
-    public: bool AddPlugin(const Plugin &_plugin);
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

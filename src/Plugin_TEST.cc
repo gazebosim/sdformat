@@ -219,6 +219,20 @@ TEST(DOMPlugin, LoadWithChildren)
   // The elements should be the same
   EXPECT_EQ(elem->ToString(""), toElem->ToString(""));
   EXPECT_EQ(pluginStr, toElem->ToString(""));
+
+  // Test plugin copy
+  sdf::Plugin plugin3;
+  plugin3 = plugin;
+  plugin.ClearContents();
+  sdf::Plugin plugin4(plugin3);
+
+  toElem = plugin3.ToElement();
+  EXPECT_EQ(6u, plugin3.Contents().size());
+  EXPECT_EQ(pluginStr, toElem->ToString(""));
+
+  toElem = plugin4.ToElement();
+  EXPECT_EQ(6u, plugin4.Contents().size());
+  EXPECT_EQ(pluginStr, toElem->ToString(""));
 }
 
 /////////////////////////////////////////////////

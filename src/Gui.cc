@@ -60,7 +60,7 @@ Errors Gui::Load(ElementPtr _sdf)
   this->dataPtr->fullscreen = _sdf->Get<bool>("fullscreen",
       this->dataPtr->fullscreen).first;
 
-  Errors pluginErrors = loadUniqueRepeated<Plugin>(_sdf, "plugin",
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
     this->dataPtr->plugins);
   errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
@@ -100,6 +100,11 @@ sdf::ElementPtr Gui::ToElement() const
   sdf::initFile("gui.sdf", elem);
 
   elem->GetAttribute("fullscreen")->Set(this->dataPtr->fullscreen);
+
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
 }
 
@@ -118,35 +123,13 @@ const Plugin *Gui::PluginByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
-bool Gui::PluginNameExists(const std::string &_name) const
-{
-  return nullptr != this->PluginByName(_name);
-}
-
-/////////////////////////////////////////////////
-const Plugin *Gui::PluginByName(const std::string &_name) const
-{
-  for (auto const &p : this->dataPtr->plugins)
-  {
-    if (p.Name() == _name)
-    {
-      return &p;
-    }
-  }
-  return nullptr;
-}
-
-/////////////////////////////////////////////////
 void Gui::ClearPlugins()
 {
   this->dataPtr->plugins.clear();
 }
 
 /////////////////////////////////////////////////
-bool Gui::AddPlugin(const Plugin &_plugin)
+void Gui::AddPlugin(const Plugin &_plugin)
 {
-  if (this->PluginNameExists(_plugin.Name()))
-    return false;
   this->dataPtr->plugins.push_back(_plugin);
-  return true;
 }

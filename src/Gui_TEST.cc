@@ -138,20 +138,19 @@ TEST(DOMGui, ToElement)
       sdf::Plugin plugin;
       plugin.SetName("name" + std::to_string(i));
       plugin.SetFilename("filename" + std::to_string(i));
-      EXPECT_TRUE(gui.AddPlugin(plugin));
-      EXPECT_TRUE(gui.PluginNameExists(plugin.Name()));
-      EXPECT_FALSE(gui.PluginNameExists(plugin.Name()+"a"));
-      EXPECT_FALSE(gui.AddPlugin(plugin));
+      gui.AddPlugin(plugin);
+      gui.AddPlugin(plugin);
     }
     if (j == 0)
     {
-      EXPECT_EQ(3u, gui.PluginCount());
+      EXPECT_EQ(6u, gui.PluginCount());
       gui.ClearPlugins();
       EXPECT_EQ(0u, gui.PluginCount());
     }
   }
 
 
+  EXPECT_EQ(6u, gui.PluginCount());
   sdf::ElementPtr elem = gui.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -159,4 +158,5 @@ TEST(DOMGui, ToElement)
   gui2.Load(elem);
 
   EXPECT_EQ(gui.Fullscreen(), gui2.Fullscreen());
+  EXPECT_EQ(6u, gui2.PluginCount());
 }

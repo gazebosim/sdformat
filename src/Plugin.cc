@@ -43,6 +43,14 @@ Plugin::Plugin()
 }
 
 /////////////////////////////////////////////////
+Plugin::Plugin(const Plugin &_plugin)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+{
+  // Copy
+  *this = _plugin;
+}
+
+/////////////////////////////////////////////////
 Errors Plugin::Load(ElementPtr _sdf)
 {
   Errors errors;
@@ -156,4 +164,22 @@ const std::vector<sdf::ElementPtr> &Plugin::Contents() const
 void Plugin::InsertContent(const sdf::ElementPtr _elem)
 {
   this->dataPtr->contents.push_back(_elem->Clone());
+}
+
+/////////////////////////////////////////////////
+Plugin &Plugin::operator=(const Plugin &_plugin)
+{
+  this->dataPtr->name = _plugin.Name();
+  this->dataPtr->filename = _plugin.Filename();
+  if (_plugin.Element())
+    this->dataPtr->sdf = _plugin.Element()->Clone();
+
+  this->dataPtr->contents.clear();
+  // Copy the contents of the plugin
+  for (const sdf::ElementPtr content : _plugin.Contents())
+  {
+    this->dataPtr->contents.push_back(content->Clone());
+  }
+
+  return *this;
 }
