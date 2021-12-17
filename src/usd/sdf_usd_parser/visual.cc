@@ -35,7 +35,7 @@ namespace usd
   {
     const pxr::SdfPath sdfVisualPath(_path);
     auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
-    usd::SetPose(_visual.RawPose(), _stage, sdfVisualPath);
+    usd::SetPose(usd::PoseWrtParent(_visual), _stage, sdfVisualPath);
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");

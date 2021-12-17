@@ -102,7 +102,7 @@ namespace usd
       // that as the orientation of the light's pose (I'd probably need to flip the
       // z axis of the direction vector before applying computations on it though,
       // since USD has lights pointing in -Z by default)
-      usd::SetPose(_light.RawPose(), _stage, sdfLightPath);
+      usd::SetPose(usd::PoseWrtParent(_light), _stage, sdfLightPath);
 
       if (increaseIntensity)
       {

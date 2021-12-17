@@ -124,7 +124,7 @@ namespace usd
     }
 
     if (typeParsed)
-      usd::SetPose(_sensor.RawPose(), _stage, sdfSensorPath);
+      usd::SetPose(usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
 
     return typeParsed;
   }

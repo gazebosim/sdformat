@@ -39,7 +39,7 @@ namespace usd
     const pxr::SdfPath sdfLinkPath(_path);
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
-    usd::SetPose(_link.RawPose(), _stage, sdfLinkPath);
+    usd::SetPose(usd::PoseWrtParent(_link), _stage, sdfLinkPath);
 
     if (_rigidBody)
     {
