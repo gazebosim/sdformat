@@ -808,9 +808,9 @@ void Model::SetUri(const std::string &_uri)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement(bool _useUri) const
+sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
 {
-  if (_useUri && !this->dataPtr->uri.empty())
+  if (_useIncludeTag && !this->dataPtr->uri.empty())
   {
     sdf::ElementPtr worldElem(new sdf::Element);
     sdf::initFile("world.sdf", worldElem);
@@ -869,7 +869,7 @@ sdf::ElementPtr Model::ToElement(bool _useUri) const
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(_useUri), true);
+    elem->InsertElement(model.ToElement(_useIncludeTag), true);
 
   return elem;
 }
