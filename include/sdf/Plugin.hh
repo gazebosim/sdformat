@@ -38,10 +38,13 @@ namespace sdf
     /// \brief Default constructor
     public: Plugin();
 
-    /// \brief Copy constructor. This is here so that we can copy the
-    /// plugin contents.
+    /// \brief Copy constructor.
     /// \param[in] _plugin Plugin to copy.
     public: Plugin(const Plugin &_plugin);
+
+    /// \brief Move constructor.
+    /// \param[in] _plugin Plugin to copy.
+    public: Plugin(Plugin &&_plugin) noexcept;
 
     /// \brief Load the plugin based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
@@ -102,6 +105,11 @@ namespace sdf
     /// \param[in] _plugin Plugin to copy
     /// \return A reference to this plugin
     public: Plugin &operator=(const Plugin &_plugin);
+
+    /// \brief Move assignment operator
+    /// \param[in] _plugin Plugin to move
+    /// \return A reference to this plugin
+    public: Plugin &operator=(Plugin &&_plugin) noexcept;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

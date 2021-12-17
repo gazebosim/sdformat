@@ -17,8 +17,6 @@
 #ifndef SDF_GUI_HH_
 #define SDF_GUI_HH_
 
-#include <string>
-
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Plugin.hh"

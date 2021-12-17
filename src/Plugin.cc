@@ -51,6 +51,9 @@ Plugin::Plugin(const Plugin &_plugin)
 }
 
 /////////////////////////////////////////////////
+Plugin::Plugin(Plugin &&_plugin) noexcept = default;
+
+/////////////////////////////////////////////////
 Errors Plugin::Load(ElementPtr _sdf)
 {
   Errors errors;
@@ -183,3 +186,6 @@ Plugin &Plugin::operator=(const Plugin &_plugin)
 
   return *this;
 }
+
+/////////////////////////////////////////////////
+Plugin &Plugin::operator=(Plugin &&_plugin) noexcept = default;
