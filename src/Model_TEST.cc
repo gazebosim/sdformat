@@ -388,22 +388,23 @@ TEST(DOMModel, Uri)
     sdf::ElementPtr elem = model.ToElement();
     EXPECT_EQ("include", elem->GetName());
 
-    sdf::ElementPtr uriElem = elem->GetElement("uri");
+    sdf::ElementPtr uriElem = elem->FindElement("uri");
     ASSERT_NE(nullptr, uriElem);
     EXPECT_EQ(uri, uriElem->Get<std::string>());
 
-    sdf::ElementPtr nameElem = elem->GetElement("name");
+    sdf::ElementPtr nameElem = elem->FindElement("name");
     ASSERT_NE(nullptr, nameElem);
     EXPECT_EQ(name, nameElem->Get<std::string>());
 
-    sdf::ElementPtr poseElem = elem->GetElement("pose");
+    sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
     EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
     EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
-    EXPECT_EQ("link0", elem->GetElement("placement_frame")->Get<std::string>());
+    EXPECT_EQ("link0",
+        elem->FindElement("placement_frame")->Get<std::string>());
 
-    sdf::ElementPtr staticElem = elem->GetElement("static");
+    sdf::ElementPtr staticElem = elem->FindElement("static");
     ASSERT_NE(nullptr, staticElem);
     EXPECT_EQ(true, staticElem->Get<bool>());
   }
@@ -417,7 +418,7 @@ TEST(DOMModel, Uri)
     EXPECT_EQ("model", elem->GetName());
 
     // URI should not exist
-    sdf::ElementPtr uriElem = elem->GetElement("uri");
+    sdf::ElementPtr uriElem = elem->FindElement("uri");
     ASSERT_EQ(nullptr, uriElem);
 
     sdf::ParamPtr nameAttr = elem->GetAttribute("name");
@@ -428,12 +429,12 @@ TEST(DOMModel, Uri)
     ASSERT_NE(nullptr, placementFrameAttr);
     EXPECT_EQ("link0", placementFrameAttr->GetAsString());
 
-    sdf::ElementPtr poseElem = elem->GetElement("pose");
+    sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
     EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
     EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
-    sdf::ElementPtr staticElem = elem->GetElement("static");
+    sdf::ElementPtr staticElem = elem->FindElement("static");
     ASSERT_NE(nullptr, staticElem);
     EXPECT_EQ(true, staticElem->Get<bool>());
   }
@@ -466,14 +467,14 @@ TEST(DOMModel, ToElementNestedHasUri)
 
   // Get the child <include> element, which should exist because the nested
   // model has a URI.
-  sdf::ElementPtr includeElem = elem->GetElement("include");
+  sdf::ElementPtr includeElem = elem->FindElement("include");
   ASSERT_NE(nullptr, includeElem);
-  ASSERT_NE(nullptr, includeElem->GetElement("uri"));
-  EXPECT_EQ("child-uri", includeElem->GetElement("uri")->Get<std::string>());
+  ASSERT_NE(nullptr, includeElem->FindElement("uri"));
+  EXPECT_EQ("child-uri", includeElem->FindElement("uri")->Get<std::string>());
 
   // Get the child <model> element, which should exist because one nested
   // model does not have a URI.
-  sdf::ElementPtr modelElem = elem->GetElement("model");
+  sdf::ElementPtr modelElem = elem->FindElement("model");
   ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ("child2", modelElem->GetAttribute("name")->GetAsString());
 }

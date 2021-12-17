@@ -348,14 +348,16 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// model.
-    /// \param[in] _useUri When true, the model's URI is used to create an
-    /// SDF `<include>` rather than a `<model>`. The model's URI must be
+    /// \param[in] _useIncludeTag When true, the model's URI is used to create
+    /// an SDF `<include>` rather than a `<model>`. The model's URI must be
     /// first set using the `Model::SetUri` function. If the model's URI is
     /// empty, then a `<model>` element will be generated. The default is true
     /// so that URI values are used when ToElement is called from a
-    /// World object.
+    /// World object. Make sure to use `Model::SetUri` even when the model
+    /// is loaded from an `<include>` tag since the parser will
+    /// automatically expand an `<include>` element to a `<model>` element.
     /// \return SDF element pointer with updated model values.
-    public: sdf::ElementPtr ToElement(bool _useUri = true) const;
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
 
     /// \brief Add a link to the model.
     /// \param[in] _link Link to add.
