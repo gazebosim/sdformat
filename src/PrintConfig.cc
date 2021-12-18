@@ -109,7 +109,8 @@ bool PrintConfig::operator==(const PrintConfig &_config) const
 {
   if (this->RotationInDegrees() == _config.RotationInDegrees() &&
       this->RotationSnapToDegrees() == _config.RotationSnapToDegrees() &&
-      this->RotationSnapTolerance() == _config.RotationSnapTolerance())
+      this->RotationSnapTolerance() == _config.RotationSnapTolerance() &&
+      this->PreserveIncludes() == _config.PreserveIncludes())
   {
     return true;
   }
