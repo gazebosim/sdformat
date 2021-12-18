@@ -947,7 +947,9 @@ bool PoseStringFromValue(const PrintConfig &_config,
   }
 
   // If no modification to the value is needed, the original string is returned.
-  if (_config == PrintConfig() &&
+  if (!_config.RotationInDegrees() &&
+      !_config.RotationSnapToDegrees().has_value() &&
+      !_config.RotationSnapTolerance().has_value() &&
       _originalStr.has_value() &&
       !_originalStr->empty())
   {
