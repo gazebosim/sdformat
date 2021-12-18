@@ -199,17 +199,6 @@ FindSinkVertex(
 }
 
 /////////////////////////////////////////////////
-std::pair<const Link *, std::string>
-    modelCanonicalLinkAndRelativeName(const Model *_model)
-{
-  if (nullptr == _model)
-  {
-    return std::make_pair(nullptr, "");
-  }
-  return _model->CanonicalLinkAndRelativeName();
-}
-
-/////////////////////////////////////////////////
 /// \brief Resolve the pose of a model taking into account the placement frame
 /// attribute. This function is used to calculate the pose of the edge between a
 /// model and its parent.
@@ -589,9 +578,7 @@ void addVerticesToGraph(ScopedGraph<GraphT> &_out,
 }
 
 /////////////////////////////////////////////////
-/// \brief Add edges to the PoseRelativeTo graph. This handles all ElementT
-/// types except Frame, InterfaceFrame. This also does not handle the case where
-/// ElementT is an InterfaceModelWrapper, but ParentT is either Model or World.
+/// \brief Add edges to the PoseRelativeTo graph.
 /// \tparam ElementT The type of Element. This must be a class that derives from
 /// WrapperBase.
 /// \param[in,out] _out The PoseRelativeTo graph to which edges will be added.
@@ -890,6 +877,11 @@ Errors buildFrameAttachedToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
+  else if (!_model->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
+  }
   return wrapperBuildFrameAttachedToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
 
@@ -936,6 +928,11 @@ Errors buildFrameAttachedToGraph(
   if (!_world)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
+  }
+  else if (!_world->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
   }
 
   return buildFrameAttachedToGraph(_out, WorldWrapper(*_world));
@@ -1029,6 +1026,11 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
+  else if (!_model->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
+  }
 
   return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
@@ -1037,6 +1039,11 @@ Errors buildPoseRelativeToGraph(
 Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
                                 const InterfaceModel *_model)
 {
+  if (!_model)
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid sdf::InterfaceModel pointer."}};
+  }
   return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), false);
 }
 
@@ -1082,6 +1089,11 @@ Errors buildPoseRelativeToGraph(
   if (!_world)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
+  }
+  else if (!_world->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
   }
   return wrapperBuildPoseRelativeToGraph(_out, WorldWrapper(*_world));
 }
