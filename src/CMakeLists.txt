@@ -103,7 +103,10 @@ if (BUILD_TESTING)
   endif()
 endif()
 
-ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+ign_create_core_library(SOURCES ${sources}
+  CXX_STANDARD 17
+  LEGACY_PROJECT_PREFIX SDFormat
+  )
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
