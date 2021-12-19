@@ -28,6 +28,9 @@ class sdf::Gui::Implementation
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief GUI plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
@@ -56,6 +59,10 @@ Errors Gui::Load(ElementPtr _sdf)
   // Get the full screen property
   this->dataPtr->fullscreen = _sdf->Get<bool>("fullscreen",
       this->dataPtr->fullscreen).first;
+
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   // \todo(nkoenig) Parse all the elements in gui.sdf
 
@@ -93,5 +100,36 @@ sdf::ElementPtr Gui::ToElement() const
   sdf::initFile("gui.sdf", elem);
 
   elem->GetAttribute("fullscreen")->Set(this->dataPtr->fullscreen);
+
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
+}
+
+/////////////////////////////////////////////////
+uint64_t Gui::PluginCount() const
+{
+  return this->dataPtr->plugins.size();
+}
+
+/////////////////////////////////////////////////
+const Plugin *Gui::PluginByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->plugins.size())
+    return &this->dataPtr->plugins[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+void Gui::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Gui::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }
