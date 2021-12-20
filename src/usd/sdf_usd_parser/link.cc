@@ -68,6 +68,17 @@ namespace usd
       }
       massAPI.CreateMassAttr().Set(
           static_cast<float>(_link.Inertial().MassMatrix().Mass()));
+
+      const auto diagonalInertial =
+        _link.Inertial().MassMatrix().DiagonalMoments();
+      massAPI.CreateDiagonalInertiaAttr().Set(pxr::GfVec3f(
+        diagonalInertial[0], diagonalInertial[1], diagonalInertial[2]));
+
+      const auto centerOfMass = _link.Inertial().Pose();
+      massAPI.CreateCenterOfMassAttr().Set(pxr::GfVec3f(
+        centerOfMass.Pos().X(),
+        centerOfMass.Pos().Y(),
+        centerOfMass.Pos().Z()));
     }
 
     // TODO(adlarkin) finish parsing link. It will look something like this
