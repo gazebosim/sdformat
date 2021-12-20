@@ -53,7 +53,7 @@ namespace usd
   {
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
     _stage->SetEndTimeCode(100);
-    _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1);
+    _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1.0);
     _stage->SetStartTimeCode(0);
     _stage->SetTimeCodesPerSecond(24);
 
