@@ -52,6 +52,10 @@ namespace usd
       const std::string &_path)
   {
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
+    _stage->SetEndTimeCode(100);
+    _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1);
+    _stage->SetStartTimeCode(0);
+    _stage->SetTimeCodesPerSecond(24);
 
     const pxr::SdfPath worldPrimPath(_path);
     auto usdWorldPrim = _stage->DefinePrim(worldPrimPath);
