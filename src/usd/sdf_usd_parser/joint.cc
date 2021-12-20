@@ -145,15 +145,15 @@ namespace usd
 
     pxr::UsdPrim usdJointPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
 
-    if (!pxr::UsdPhysicsDriveAPI::Apply(usdJointPrim, pxr::TfToken("angular")))
+    auto drive =
+      pxr::UsdPhysicsDriveAPI::Apply(usdJointPrim, pxr::TfToken("angular"));
+    if (!drive)
     {
       std::cerr << "Internal error: unable to mark link at path ["
-                << _path << "] as a UsdPhysicsDriveAPI \n";
+                << _path << "] as a UsdPhysicsDriveAPI\n";
       return false;
     }
 
-    auto drive =
-      pxr::UsdPhysicsDriveAPI(usdJointPrim, pxr::TfToken("angular"));
     drive.CreateDampingAttr().Set(static_cast<float>(axis->Damping()));
     drive.CreateStiffnessAttr().Set(static_cast<float>(axis->Stiffness()));
     drive.CreateMaxForceAttr().Set(static_cast<float>(axis->Effort()));
