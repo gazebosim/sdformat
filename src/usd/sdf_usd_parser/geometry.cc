@@ -515,12 +515,12 @@ namespace usd
         return false;
       }
 
-      // if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
-      // {
-      //   std::cerr << "Internal error: unable to apply a collision to the "
-      //             << "prim at path [" << _path << "]\n";
-      //   return false;
-      // }
+      if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
+      {
+        std::cerr << "Internal error: unable to apply a collision to the "
+                  << "prim at path [" << _path << "]\n";
+        return false;
+      }
     }
 
     return typeParsed;
