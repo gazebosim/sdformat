@@ -17,7 +17,6 @@
 
 #include "sdf_usd_parser/material.hh"
 
-#include <filesystem>
 #include <map>
 
 #include <ignition/common/URI.hh>

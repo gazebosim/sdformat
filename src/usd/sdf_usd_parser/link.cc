@@ -53,7 +53,7 @@ namespace usd
 
       if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
       {
-        std::cerr << "Internal error: unable to mark link at path [" << path
+        std::cerr << "Internal error: unable to mark link at path [" << _path
                   << "] as a rigid body, so mass properties won't be attached\n";
         return false;
       }
