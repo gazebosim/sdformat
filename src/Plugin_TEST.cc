@@ -201,7 +201,7 @@ TEST(DOMPlugin, LoadWithChildren)
     pluginStr + "</sdf>";
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("plugin.sdf", elem);
-  sdf::readString(pluginStrWithSdf, elem);
+  ASSERT_TRUE(sdf::readString(pluginStrWithSdf, elem));
 
   sdf::Plugin plugin;
   sdf::Errors errors;

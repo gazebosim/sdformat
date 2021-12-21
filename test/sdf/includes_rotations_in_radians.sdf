@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="default">
+
+    <include>
+      <uri>test_model</uri>
+      <name>parent_model</name>
+      <pose>1 2 3   0.523756 0.785241 -1.04735</pose>
+    </include>
+
+  </world>
+</sdf>

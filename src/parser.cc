@@ -1942,17 +1942,25 @@ void copyChildren(ElementPtr _sdf,
       ElementPtr element(new Element);
       element->SetParent(_sdf);
       element->SetName(elem_name);
-      if (elemXml->GetText() != nullptr)
-      {
-        element->AddValue("string", elemXml->GetText(), "1");
-      }
-
+      std::optional<std::string> typeName = std::nullopt;
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
-        element->AddAttribute(attribute->Name(), "string", "", 1, "");
-        element->GetAttribute(attribute->Name())->SetFromString(
+        const std::string attributeName(attribute->Name());
+        if (attributeName == "type")
+          typeName = attribute->Value();
+
+        element->AddAttribute(attributeName, "string", "", 1, "");
+        element->GetAttribute(attributeName)->SetFromString(
           attribute->Value());
+      }
+
+      if (elemXml->GetText() != nullptr)
+      {
+        if (typeName.has_value())
+          element->AddValue(typeName.value(), elemXml->GetText(), true);
+        else
+          element->AddValue("string", elemXml->GetText(), true);
       }
 
       copyChildren(element, elemXml, _onlyUnknown);
