@@ -54,7 +54,7 @@ if (BUILD_SDF)
 
   #################################################
   # Find ign command line utility:
-  ign_find_package(ignition-tools)
+  find_program(IGN_PROGRAM ign)
 
   ################################################
   # Find psutil python package for memory tests

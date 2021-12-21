@@ -19,7 +19,7 @@ endif()
 
 if (BUILD_TESTING)
   # Build this test file only if Ignition Tools is installed.
-  if (NOT IGNITION-TOOLS_BINARY_DIRS)
+  if (NOT IGN_PROGRAM)
     list(REMOVE_ITEM gtest_sources ign_TEST.cc)
   endif()
 
