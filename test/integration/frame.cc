@@ -489,7 +489,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(10u, errors.size());
+  ASSERT_EQ(10u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -745,7 +745,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(11u, errors.size());
+  ASSERT_EQ(11u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
