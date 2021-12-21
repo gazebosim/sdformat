@@ -157,6 +157,9 @@ if (BUILD_SDF_TEST)
     Scene_TEST.cc
     SemanticPose_TEST.cc
     SDF_TEST.cc
+    # TODO(adlarkin) update the cmake logic to only build this test if
+    # the PXR dependency is found
+    sdf_usd_TEST.cc
     Sensor_TEST.cc
     Sky_TEST.cc
     Sphere_TEST.cc
