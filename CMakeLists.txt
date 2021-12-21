@@ -13,6 +13,7 @@ set (SDF_PROTOCOL_VERSION 1.7)
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
+# BUILD_SDF is preserved for backwards compatibility but can be removed on the main branch
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
@@ -24,9 +25,6 @@ if (BUILD_SDF)
   ign_configure_project(
     NO_IGNITION_PREFIX
     REPLACE_IGNITION_INCLUDE_PATH sdf)
-
-  message (STATUS "\n\n====== Finding 3rd Party Packages ======")
-  message(STATUS "Building for arch: ${ARCH}")
 
   #################################################
   # Find tinyxml2.
@@ -59,11 +57,6 @@ if (BUILD_SDF)
   ign_find_package(ignition-tools)
 
   ################################################
-  # Find the Python interpreter for running the
-  # check_test_ran.py script
-  find_package(PythonInterp 3 QUIET)
-
-  ################################################
   # Find psutil python package for memory tests
   include (${PROJECT_SOURCE_DIR}/cmake/SDFUtils.cmake)
   find_python_module(psutil)
@@ -86,7 +79,6 @@ if (BUILD_SDF)
   ign_find_package(ignition-math6 VERSION REQUIRED)
   set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
-  message (STATUS "----------------------------------------\n")
 
   ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
   ign_create_packages()
