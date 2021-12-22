@@ -56,9 +56,33 @@ if (BUILD_SDF)
   # Find ign command line utility:
   find_program(IGN_PROGRAM ign)
 
+  #################################################
+  # Copied from catkin/cmake/empy.cmake
+  include(IgnPython)
+  function(find_python_module module)
+    # cribbed from http://www.cmake.org/pipermail/cmake/2011-January/041666.html
+    string(TOUPPER ${module} module_upper)
+    if(NOT PY_${module_upper})
+      if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
+        set(${module}_FIND_REQUIRED TRUE)
+      endif()
+      # A module's location is usually a directory, but for
+      # binary modules
+      # it's a .so file.
+      execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
+        RESULT_VARIABLE _${module}_status
+        OUTPUT_VARIABLE _${module}_location
+        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+      if(NOT _${module}_status)
+        set(PY_${module_upper} ${_${module}_location} CACHE STRING "Location of Python module ${module}")
+      endif(NOT _${module}_status)
+    endif(NOT PY_${module_upper})
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(PY_${module} DEFAULT_MSG PY_${module_upper})
+  endfunction(find_python_module)
+
   ################################################
   # Find psutil python package for memory tests
-  include (${PROJECT_SOURCE_DIR}/cmake/SDFUtils.cmake)
   find_python_module(psutil)
   if (NOT PY_PSUTIL)
     ign_build_warning("Python psutil package not found. Memory leak tests will be skipped")
