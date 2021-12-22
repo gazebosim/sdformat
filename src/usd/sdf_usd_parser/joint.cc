@@ -154,8 +154,19 @@ namespace usd
       return false;
     }
 
-    drive.CreateDampingAttr().Set(static_cast<float>(axis->Damping()));
-    drive.CreateStiffnessAttr().Set(static_cast<float>(axis->Stiffness()));
+
+    double damping = axis->Damping();
+    if (ignition::math::equal(damping, 0.0))
+    {
+      damping = 35;
+    }
+    drive.CreateDampingAttr().Set(static_cast<float>(damping));
+    double stiffness = axis->Stiffness();
+    if (ignition::math::equal(stiffness, 1e8))
+    {
+      stiffness = 350;
+    }
+    drive.CreateStiffnessAttr().Set(static_cast<float>(stiffness));
     drive.CreateMaxForceAttr().Set(static_cast<float>(axis->Effort()));
 
     return true;

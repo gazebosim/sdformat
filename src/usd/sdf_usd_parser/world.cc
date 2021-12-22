@@ -26,8 +26,10 @@
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
+#include <pxr/usd/usdPhysics/articulationRootAPI.h>
 #include <pxr/usd/usdPhysics/scene.h>
 
+#include "sdf/Joint.hh"
 #include "sdf/World.hh"
 #include "sdf_usd_parser/light.hh"
 #include "sdf_usd_parser/model.hh"
@@ -79,6 +81,33 @@ namespace usd
       {
         std::cerr << "Error parsing model [" << model.Name() << "]\n";
         return false;
+      }
+      bool isArticulated = false;
+      if (model.JointCount() > 0)
+      {
+        for (uint64_t j = 0; j < model.JointCount(); j++)
+        {
+          const auto joint = *(model.JointByIndex(j));
+          if (joint.Type() == sdf::JointType::REVOLUTE)
+          {
+            isArticulated = true;
+            break;
+          }
+        }
+      }
+      if (isArticulated)
+      {
+        auto prim = _stage->GetPrimAtPath(pxr::SdfPath(modelPath));
+        if (prim)
+        {
+          if (!pxr::UsdPhysicsArticulationRootAPI::Apply(prim))
+          {
+            std::cerr << "Internal error: unable to mark Xform at path ["
+                      << modelPath << "] as ArticulationRootAPI "
+                      << " some feature might not work\n";
+            return false;
+          }
+        }
       }
     }
 
