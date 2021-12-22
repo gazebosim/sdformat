@@ -18,6 +18,8 @@
 #ifndef SDF_SDF_CONFIG_H_
 #define SDF_SDF_CONFIG_H_
 
+// This file is kept for backwards compatibility.
+// Use sdf/config.hh directly instead.
 #include <sdf/config.hh>
 
 #endif

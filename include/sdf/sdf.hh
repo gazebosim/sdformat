@@ -18,6 +18,8 @@
 #ifndef SDF_SDF_HH_
 #define SDF_SDF_HH_
 
+// This file is kept for backwards compatibility.
+// Use sdformat.hh directly instead.
 #include <sdformat.hh>
 
 #endif
