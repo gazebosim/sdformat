@@ -35,7 +35,6 @@
 
 namespace usd
 {
-
   bool copyMaterial(const std::string &_path, const std::string &_fullPath)
   {
     if (!_path.empty() && !_fullPath.empty())
@@ -91,7 +90,8 @@ namespace usd
       if (_vType.IsScalar())
       {
         vTypeName = _vType.GetScalarType();
-      } else if (_vType.IsArray())
+      }
+      else if (_vType.IsArray())
       {
         vTypeName = _vType.GetArrayType();
       }
@@ -100,7 +100,7 @@ namespace usd
       surfaceInput.Set(_value);
       auto attr = surfaceInput.GetAttr();
 
-      for (auto& [key, customValue]: _customData)
+      for (const auto &[key, customValue] : _customData)
       {
         attr.SetCustomDataByKey(key, customValue);
       }
@@ -137,24 +137,18 @@ namespace usd
     // with the names of the materials
     static int i = 0;
 
-    // std::cerr << "Material " << std::string("/Looks/Material_") + std::to_string(i) << '\n';
+    const std::string mtl_path = "/Looks/Material_" + std::to_string(i);
 
-    auto usdMaterialPrim = _stage->GetPrimAtPath(
-      pxr::SdfPath(std::string("/Looks/Material_") + std::to_string(i)));
+    auto usdMaterialPrim = _stage->GetPrimAtPath(pxr::SdfPath(mtl_path));
     pxr::UsdShadeMaterial material;
     if (!usdMaterialPrim)
     {
-      material = pxr::UsdShadeMaterial::Define(
-        _stage,
-        pxr::SdfPath(std::string("/Looks/Material_") + std::to_string(i)));
+      material = pxr::UsdShadeMaterial::Define(_stage, pxr::SdfPath(mtl_path));
     }
     else
     {
       material = pxr::UsdShadeMaterial(usdMaterialPrim);
     }
-
-    std::string mtl_path =
-      "/Looks/" + pxr::TfMakeValidIdentifier("Material_") + std::to_string(i);
 
     auto shaderPrim = _stage->DefinePrim(
       pxr::SdfPath(mtl_path + "/Shader"), pxr::TfToken("Shader"));
@@ -163,17 +157,16 @@ namespace usd
       pxr::TfToken("out"), pxr::SdfValueTypeNames->Token);
     material.CreateSurfaceOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
-    material.CreateSurfaceOutput(
-      pxr::TfToken("mdl")).ConnectToSource(shader_out);
     material.CreateVolumeOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
     material.CreateDisplacementOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
-    pxr::UsdShadeShader(shaderPrim).GetImplementationSourceAttr().Set(
+    pxr::UsdShadeShader usdShader(shaderPrim);
+    usdShader.GetImplementationSourceAttr().Set(
       pxr::UsdShadeTokens->sourceAsset);
-    pxr::UsdShadeShader(shaderPrim).SetSourceAsset(
+    usdShader.SetSourceAsset(
       pxr::SdfAssetPath("OmniPBR.mdl"), pxr::TfToken("mdl"));
-    pxr::UsdShadeShader(shaderPrim).SetSourceAssetSubIdentifier(
+    usdShader.SetSourceAssetSubIdentifier(
       pxr::TfToken("OmniPBR"), pxr::TfToken("mdl"));
 
     std::map<pxr::TfToken, pxr::VtValue> customDataDiffuse =

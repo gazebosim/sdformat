@@ -18,8 +18,6 @@
 #ifndef SDF_PARSER_MATERIAL_HH_
 #define SDF_PARSER_MATERIAL_HH_
 
-#include <string>
-
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdShade/material.h>
 

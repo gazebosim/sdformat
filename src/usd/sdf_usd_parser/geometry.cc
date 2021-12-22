@@ -245,7 +245,7 @@ namespace usd
           faceVertexCounts.push_back(verticesPerFace);
 
         std::string primName = _path + "/" + subMesh->Name();
-        int index = primName.find("-");
+        auto index = primName.find("-");
         while(index != std::string::npos)
         {
           primName.replace(index, 1, "");
@@ -359,7 +359,7 @@ namespace usd
           faceVertexCounts.push_back(verticesPerFace);
 
         std::string primName = _path + "/" + subMesh->Name();
-        int index = primName.find("-");
+        auto index = primName.find("-");
         while(index != std::string::npos)
         {
           primName.replace(index, 1, "");

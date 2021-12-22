@@ -18,13 +18,14 @@
 #include "sdf/Conversions.hh"
 
 #include <ignition/common/Pbr.hh>
-#include <sdf/Pbr.hh>
+
+#include "sdf/Pbr.hh"
 
 namespace sdf
 {
   inline namespace SDF_VERSION_NAMESPACE {
 
-  sdf::Material convert(std::shared_ptr<ignition::common::Material> &_in)
+  sdf::Material convert(const std::shared_ptr<ignition::common::Material> &_in)
   {
     sdf::Material out;
     out.SetEmissive(_in->Emissive());
@@ -34,7 +35,7 @@ namespace sdf
     out.SetRenderOrder(_in->RenderOrder());
     out.SetLighting(_in->Lighting());
     out.SetDoubleSided(_in->TwoSidedEnabled());
-    ignition::common::Pbr * pbr = _in->PbrMaterial();
+    const ignition::common::Pbr * pbr = _in->PbrMaterial();
     if (pbr != nullptr)
     {
       out.SetNormalMap(pbr->NormalMap());
@@ -78,11 +79,10 @@ namespace sdf
     return out;
   }
 
-  std::shared_ptr<ignition::common::Material> convert(sdf::Material &_in)
+  std::shared_ptr<ignition::common::Material> convert(const sdf::Material &_in)
   {
     std::shared_ptr<ignition::common::Material> out =
       std::make_shared<ignition::common::Material>();
-    out->SetEmissive(_in.Emissive());
     out->SetEmissive(_in.Emissive());
     out->SetDiffuse(_in.Diffuse());
     out->SetSpecular(_in.Specular());
@@ -141,5 +141,5 @@ namespace sdf
     }
     return out;
   }
-}
+  }
 }

@@ -17,10 +17,9 @@
 
 #include <iostream>
 
-#include <pxr/usd/usd/stage.h>
-
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
+#include <pxr/usd/usd/stage.h>
 
 #include "sdf/sdf.hh"
 #include "sdf_usd_parser/world.hh"
@@ -96,7 +95,6 @@ std::string findFileByExtension(const std::string &_path)
     {
       auto systemPaths = ignition::common::systemPaths();
       systemPaths->AddFilePaths(current);
-      // std::cerr << "AddFilePaths " << current << '\n';
       std::string result = findFileByExtension(current);
       if (result.empty())
       {
@@ -129,7 +127,12 @@ std::string FindResources(const std::string &_uri)
   ignition::common::URI uri(_uri);
   std::string path;
   std::string home;
-  ignition::common::env("HOME", home, false);
+  if (!ignition::common::env("HOME", home, false))
+  {
+    std::cerr << "The HOME environment variable was not defined, "
+              << "so the resource [" << _uri << "] could not be found\n";
+    return "";
+  }
   if (uri.Scheme() == "http" || uri.Scheme() == "https")
   {
     std::vector<std::string> tokens = ignition::common::split(uri.Path().Str(), "/");
@@ -150,13 +153,11 @@ std::string FindResources(const std::string &_uri)
   auto fileExtensionIndex = fileName.rfind(".");
   if (fileExtensionIndex == std::string::npos)
   {
-    std::string result = findFileByExtension(path);
-    return result;
+    return findFileByExtension(path);
   }
   else
   {
-    std::string result = findFileByName(path, fileName);
-    return result;
+    return findFileByName(path, fileName);
   }
   return "";
 }

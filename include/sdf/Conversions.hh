@@ -22,7 +22,8 @@
 #include <memory>
 
 #include <ignition/common/Material.hh>
-#include <sdf/Material.hh>
+
+#include "sdf/Material.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
@@ -30,19 +31,19 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
-  /// \brief Specialized conversion from an SDF material to a Ignition Common
-  /// material.
-  /// \param[in] _in Ignition Common Material.
-  /// \return Geometry material.
-  SDFORMAT_VISIBLE
-  sdf::Material convert(std::shared_ptr<ignition::common::Material> &_in);
-
   /// \brief Specialized conversion from an Ignition Common Material
   /// to a SDF material
+  /// \param[in] _in Ignition Common Material.
+  /// \return SDF material.
+  SDFORMAT_VISIBLE
+  sdf::Material convert(const std::shared_ptr<ignition::common::Material> &_in);
+
+  /// \brief Specialized conversion from an SDF material to a Ignition Common
+  /// material.
   /// \param[in] _in SDF material.
   /// \return Ignition Common Material.
   SDFORMAT_VISIBLE
-  std::shared_ptr<ignition::common::Material> convert(sdf::Material &_in);
+  std::shared_ptr<ignition::common::Material> convert(const sdf::Material &_in);
   }
 }
 
