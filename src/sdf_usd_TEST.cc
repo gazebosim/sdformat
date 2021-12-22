@@ -220,8 +220,28 @@ TEST_F(UsdStageFixture, Lights)
   EXPECT_EQ(1, numDirectionalLights);
 }
 
+// Test cases I can do for models:
+//  - model with revolute joint
+//  - model with ball joint
+//  - model with fixed joint
+//  - model with prismatic joint
+//  - model with light attached to a link
+//  - model with "relative_to" poses
+//  - static/non-static models
+//  - model with camera sensor
+//  - model with lidar sensor
+//  - model with imu sensor
+//  - model with basic shape visuals and a triangle mesh visual
+//  - model that's a plane (would be good to test the temporary plane workaround)
+
 /////////////////////////////////////////////////
-TEST_F(UsdStageFixture, Models)
+TEST_F(UsdStageFixture, ModelJoints)
 {
-  // TODO(adlarkin) implement this
 }
+
+/////////////////////////////////////////////////
+TEST_F(UsdStageFixture, ModelSensors)
+{
+}
+
+// Also test things like physics in the world
