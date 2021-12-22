@@ -18,7 +18,7 @@ make sdf_descriptions
 
 # Date/time stamp sdf descriptions
 for f in @CMAKE_BINARY_DIR@/sdf/full_*.sdf; do
-  cp ${f} ${f%.sdf}_@SDF_VERSION_FULL@_$(date +%Y%m%d_%H%M%S).sdf
+  cp ${f} ${f%.sdf}_@PROJECT_VERSION_FULL@_$(date +%Y%m%d_%H%M%S).sdf
 done
 
 # Upload sdf descriptions
@@ -39,11 +39,11 @@ if [ ! -f "@CMAKE_BINARY_DIR@/doxygen/html/index.html" ]; then
 fi
 
 # The code API
-s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ --dry-run -v
+s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@PROJECT_VERSION_FULL@/ --dry-run -v
 
 echo -n "Upload code API(Y/n)? "
 read ans
 
 if [ "$ans" = "y" ] || [ "$ans" = "Y" ]; then
-  s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@SDF_VERSION_FULL@/ -v
+  s3cmd sync @CMAKE_BINARY_DIR@/doxygen/html/* s3://osrf-distributions/sdformat/api/@PROJECT_VERSION_FULL@/ -v
 fi

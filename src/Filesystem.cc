@@ -50,6 +50,7 @@
 #include <unistd.h>
 #else
 #include <windows.h>
+#include <winioctl.h>
 #include <winnt.h>
 #endif
 

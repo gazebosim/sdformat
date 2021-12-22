@@ -20,7 +20,7 @@ execute_process(
 # Generate aggregated SDF description files for use by the sdformat.org 
 # website. If the description files change, the generated full*.sdf files need 
 # to be removed before running this target.
-if (IGNITION-TOOLS_BINARY_DIRS)
+if (IGN_PROGRAM)
 
   # Update this list as new sdformat spec versions are added.
   set(sdf_desc_versions 1.4 1.5 1.6 1.7)
@@ -33,10 +33,10 @@ if (IGNITION-TOOLS_BINARY_DIRS)
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf
       COMMAND
         ${CMAKE_COMMAND} -E env IGN_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf
-        ${IGNITION-TOOLS_BINARY_DIRS}/ign
+        ${IGN_PROGRAM}
       ARGS sdf -d ${desc_ver} > ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf
       COMMENT "Generating full description for spec ${desc_ver}"
       VERBATIM)
   endforeach()
-  add_custom_target(sdf_descriptions DEPENDS ${description_targets} ${sdf_target})
+  add_custom_target(sdf_descriptions DEPENDS ${description_targets} ${PROJECT_LIBRARY_TARGET_NAME})
 endif()
