@@ -62,7 +62,13 @@ if (BUILD_TESTING)
   endif()
 
   if (TARGET UNIT_ParamPassing_TEST)
-    if (NOT USE_INTERNAL_URDF)
+    if (USE_INTERNAL_URDF)
+      target_include_directories(UNIT_ParamPassing_TEST PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
+      if (WIN32)
+        target_compile_definitions(UNIT_ParamPassing_TEST PRIVATE -D_USE_MATH_DEFINES)
+      endif()
+    else()
       target_link_libraries(UNIT_ParamPassing_TEST
         IgnURDFDOM::IgnURDFDOM)
     endif()
@@ -90,7 +96,15 @@ if (BUILD_TESTING)
   endif()
 
   if (TARGET UNIT_parser_urdf_TEST)
-    if (NOT USE_INTERNAL_URDF)
+    if (USE_INTERNAL_URDF)
+      target_include_directories(UNIT_parser_urdf_TEST PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
+      if (WIN32)
+        target_compile_definitions(UNIT_parser_urdf_TEST PRIVATE -D_USE_MATH_DEFINES)
+      endif()
+    else()
+      target_include_directories(UNIT_parser_urdf_TEST PRIVATE
+          ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
       target_link_libraries(UNIT_parser_urdf_TEST
         IgnURDFDOM::IgnURDFDOM)
     endif()
