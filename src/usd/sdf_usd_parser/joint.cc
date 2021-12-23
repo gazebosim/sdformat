@@ -76,16 +76,6 @@ namespace usd
         return false;
       }
     }
-    _jointPrim.CreateLocalPos0Attr().Set(pxr::GfVec3f(
-          parentToJoint.Pos().X(),
-          parentToJoint.Pos().Y(),
-          parentToJoint.Pos().Z()));
-    _jointPrim.CreateLocalRot0Attr().Set(pxr::GfQuatf(
-          parentToJoint.Rot().W(),
-          parentToJoint.Rot().X(),
-          parentToJoint.Rot().Y(),
-          parentToJoint.Rot().Z()));
-
     ignition::math::Pose3d childToJoint;
     auto errors = _joint.SemanticPose().Resolve(childToJoint,
         _joint.ChildLinkName());
@@ -97,15 +87,75 @@ namespace usd
                 << "\n\t" << errors;
       return false;
     }
+
+    auto rot0 = pxr::GfQuatf(
+          parentToJoint.Rot().W(),
+          parentToJoint.Rot().X(),
+          parentToJoint.Rot().Y(),
+          parentToJoint.Rot().Z());
+
+    auto rot1 = pxr::GfQuatf(
+          childToJoint.Rot().W(),
+          childToJoint.Rot().X(),
+          childToJoint.Rot().Y(),
+          childToJoint.Rot().Z());
+
+    const auto axis = _joint.Axis();
+
+    if (axis->Xyz() == ignition::math::Vector3d::UnitY)
+    {
+      auto jointRevolute = pxr::UsdPhysicsRevoluteJoint(_jointPrim);
+      if (jointRevolute)
+      {
+        ignition::math::Quaterniond fixRotation0;
+        ignition::math::Quaterniond fixRotation1;
+        fixRotation0 = ignition::math::Quaterniond(-90*3.1416/180, 3.1416, 3.1416);
+        fixRotation1 = ignition::math::Quaterniond(0, 0, 90*3.1416/180);
+        ignition::math::Quaterniond rot0Tmp(
+          parentToJoint.Rot().W(),
+          parentToJoint.Rot().X(),
+          parentToJoint.Rot().Y(),
+          parentToJoint.Rot().Z());
+        ignition::math::Quaterniond rot1Tmp(
+          childToJoint.Rot().W(),
+          childToJoint.Rot().X(),
+          childToJoint.Rot().Y(),
+          childToJoint.Rot().Z());
+
+        if (rot0Tmp == ignition::math::Quaterniond::Identity)
+        {
+          rot0Tmp = fixRotation1 * rot0Tmp;
+        }
+        else
+        {
+          rot0Tmp = fixRotation0 * rot0Tmp;
+        }
+        rot1Tmp = fixRotation1 * rot1Tmp;
+        rot0 = pxr::GfQuatf(
+              rot0Tmp.W(),
+              rot0Tmp.X(),
+              rot0Tmp.Y(),
+              rot0Tmp.Z());
+        rot1 = pxr::GfQuatf(
+              rot1Tmp.W(),
+              rot1Tmp.X(),
+              rot1Tmp.Y(),
+              rot1Tmp.Z());
+        jointRevolute.CreateAxisAttr().Set(pxr::TfToken("X"));
+      }
+    }
+
+    _jointPrim.CreateLocalPos0Attr().Set(pxr::GfVec3f(
+          parentToJoint.Pos().X(),
+          parentToJoint.Pos().Y(),
+          parentToJoint.Pos().Z()));
+    _jointPrim.CreateLocalRot0Attr().Set(rot0);
+
     _jointPrim.CreateLocalPos1Attr().Set(pxr::GfVec3f(
           childToJoint.Pos().X(),
           childToJoint.Pos().Y(),
           childToJoint.Pos().Z()));
-    _jointPrim.CreateLocalRot1Attr().Set(pxr::GfQuatf(
-          childToJoint.Rot().W(),
-          childToJoint.Rot().X(),
-          childToJoint.Rot().Y(),
-          childToJoint.Rot().Z()));
+    _jointPrim.CreateLocalRot1Attr().Set(rot1);
 
     return true;
   }
@@ -154,9 +204,11 @@ namespace usd
       return false;
     }
 
-
     // TODO(ahcorde): Review damping and stiffness values
     // I added these values as a proof of concept.
+    auto drive =
+      pxr::UsdPhysicsDriveAPI(usdJointPrim, pxr::TfToken("angular"));
+
     double damping = axis->Damping();
     if (ignition::math::equal(damping, 0.0))
     {
