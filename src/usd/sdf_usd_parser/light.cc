@@ -57,7 +57,8 @@ namespace usd
   bool ParseSdfDirectionalLight(const sdf::Light &_light,
       pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_path)
   {
-    pxr::UsdLuxDistantLight::Define(_stage, _path);
+    auto directionalLight = pxr::UsdLuxDistantLight::Define(_stage, _path);
+    directionalLight.CreateIntensityAttr().Set(1000.0f);
 
     return true;
   }
@@ -112,7 +113,7 @@ namespace usd
         auto lightPrim = _stage->GetPrimAtPath(sdfLightPath);
         lightPrim.CreateAttribute(pxr::TfToken("intensity"),
             pxr::SdfValueTypeNames->Float, false).Set(
-              static_cast<float>(_light.Intensity()) * 10000.0f);
+              static_cast<float>(_light.Intensity()) * 100.0f);
       }
 
       // TODO(adlarkin) Other things to look at (there may be more):
