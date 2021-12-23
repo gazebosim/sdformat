@@ -103,8 +103,6 @@ if (BUILD_TESTING)
         target_compile_definitions(UNIT_parser_urdf_TEST PRIVATE -D_USE_MATH_DEFINES)
       endif()
     else()
-      target_include_directories(UNIT_parser_urdf_TEST PRIVATE
-          ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
       target_link_libraries(UNIT_parser_urdf_TEST
         IgnURDFDOM::IgnURDFDOM)
     endif()
