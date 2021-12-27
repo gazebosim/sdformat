@@ -61,19 +61,23 @@ if (BUILD_TESTING)
     target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc)
   endif()
 
-  if (TARGET UNIT_ParamPassing_TEST)
-    if (USE_INTERNAL_URDF)
-      target_include_directories(UNIT_ParamPassing_TEST PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
-      if (WIN32)
-        target_compile_definitions(UNIT_ParamPassing_TEST PRIVATE -D_USE_MATH_DEFINES)
-      endif()
-    else()
-      target_link_libraries(UNIT_ParamPassing_TEST
-        IgnURDFDOM::IgnURDFDOM)
+  # Use interface library to deduplicate cmake logic for URDF linking
+  add_library(using_parser_urdf INTERFACE)
+  if (USE_INTERNAL_URDF)
+    target_include_directories(using_parser_urdf INTERFACE
+      ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
+    if (WIN32)
+      target_compile_definitions(using_parser_urdf INTERFACE -D_USE_MATH_DEFINES)
     endif()
+  else()
+    target_link_libraries(using_parser_urdf
+      IgnURDFDOM::IgnURDFDOM)
+  endif()
+
+  if (TARGET UNIT_ParamPassing_TEST)
     target_link_libraries(UNIT_ParamPassing_TEST
-      TINYXML2::TINYXML2)
+      TINYXML2::TINYXML2
+      using_parser_urdf)
     target_sources(UNIT_ParamPassing_TEST PRIVATE
       Converter.cc
       EmbeddedSdf.cc
@@ -96,18 +100,9 @@ if (BUILD_TESTING)
   endif()
 
   if (TARGET UNIT_parser_urdf_TEST)
-    if (USE_INTERNAL_URDF)
-      target_include_directories(UNIT_parser_urdf_TEST PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
-      if (WIN32)
-        target_compile_definitions(UNIT_parser_urdf_TEST PRIVATE -D_USE_MATH_DEFINES)
-      endif()
-    else()
-      target_link_libraries(UNIT_parser_urdf_TEST
-        IgnURDFDOM::IgnURDFDOM)
-    endif()
     target_link_libraries(UNIT_parser_urdf_TEST
-      TINYXML2::TINYXML2)
+      TINYXML2::TINYXML2
+      using_parser_urdf)
     target_sources(UNIT_parser_urdf_TEST PRIVATE
       SDFExtension.cc
       XmlUtils.cc
@@ -124,7 +119,8 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
   PRIVATE
-    TINYXML2::TINYXML2)
+    TINYXML2::TINYXML2
+    using_parser_urdf)
 
 if (WIN32)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
@@ -137,18 +133,6 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
-
-if (USE_INTERNAL_URDF)
-  target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
-    PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/urdf
-  )
-  if (WIN32)
-    target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE -D_USE_MATH_DEFINES)
-  endif()
-else()
-  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE IgnURDFDOM::IgnURDFDOM)
-endif()
 
 if(NOT WIN32)
   add_subdirectory(cmd)
