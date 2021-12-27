@@ -70,7 +70,7 @@ if (BUILD_TESTING)
       target_compile_definitions(using_parser_urdf INTERFACE -D_USE_MATH_DEFINES)
     endif()
   else()
-    target_link_libraries(using_parser_urdf
+    target_link_libraries(using_parser_urdf INTERFACE
       IgnURDFDOM::IgnURDFDOM)
   endif()
 
