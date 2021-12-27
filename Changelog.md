@@ -39,6 +39,9 @@
 1. Replace custom cmake code with ign-cmake2
     * [Pull request #780](https://github.com/osrf/sdformat/pull/780)
 
+1. Fix test compilation with USE_INTERNAL_URDF
+    * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
+
 ### libsdformat 10.6.0 (2021-09-08)
 
 1. Parse URDF continuous joint effort/velocity limits
