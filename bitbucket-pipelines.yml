@@ -23,7 +23,7 @@ pipelines:
           - sh tools/code_check.sh
           # Dependency: Ignition packages
           - apt-get -y install
-            libignition-cmake2-dev libignition-tools-dev libignition-math6-dev
+            libignition-cmake2-dev libignition-tools-dev libignition-math7-dev
             liburdfdom-dev
           # SDFormat
           - mkdir build

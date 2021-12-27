@@ -110,12 +110,12 @@ set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 ########################################
 # Find ignition math
 # Set a variable for generating ProjectConfig.cmake
-find_package(ignition-math6 6.8 QUIET)
-if (NOT ignition-math6_FOUND)
-  message(STATUS "Looking for ignition-math6-config.cmake - not found")
-  BUILD_ERROR ("Missing: Ignition math (libignition-math6-dev)")
+find_package(ignition-math7 QUIET)
+if (NOT ignition-math7_FOUND)
+  message(STATUS "Looking for ignition-math7-config.cmake - not found")
+  BUILD_ERROR ("Missing: Ignition math (libignition-math7-dev)")
 else()
-  set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
+  set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
   message(STATUS "Looking for ignition-math${IGN_MATH_VER}-config.cmake - found")
 endif()
 
