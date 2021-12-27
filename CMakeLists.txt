@@ -25,7 +25,7 @@ if (BUILD_SDF)
   ign_configure_project(
     NO_IGNITION_PREFIX
     REPLACE_IGNITION_INCLUDE_PATH sdf
-    VERSION_SUFFIX pre2)
+    VERSION_SUFFIX)
 
   #################################################
   # Find tinyxml2.

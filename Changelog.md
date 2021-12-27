@@ -1,6 +1,6 @@
 ## libsdformat 10.X
 
-### libsdformat 10.7.0 (2021-12-23)
+### libsdformat 10.7.0 (2021-12-27)
 
 1. Fix flattening logic for nested model names (merged forward from sdf6)
     * [Pull request #597](https://github.com/ignitionrobotics/sdformat/pull/597)
