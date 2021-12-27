@@ -103,12 +103,15 @@ namespace sdf
     /// \param[in] _color Emissive color.
     public: void SetEmissive(const ignition::math::Color &_color);
 
-    /// \brief Get render order
+    /// \brief Get render order for coplanar polygons. The higher value will
+    /// be rendered on top of the other coplanar polygons. The default value
+    /// is zero.
     /// \return Render order
     public: float RenderOrder() const;
 
-    /// \brief Set render order
+    /// \brief Set render order.
     /// \param[in] _renderOrder render order
+    /// \sa float RenderOrder() const
     public: void SetRenderOrder(const float _renderOrder);
 
     /// \brief Get whether dynamic lighting is enabled. The default
@@ -189,6 +192,11 @@ namespace sdf
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
     public: void SetFilePath(const std::string &_filePath);
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// material.
+    /// \return SDF element pointer with updated material values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

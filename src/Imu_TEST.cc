@@ -126,3 +126,58 @@ TEST(DOMImu, Load)
   // The Imu::Load function is test more thouroughly in the
   // link_dom.cc integration test.
 }
+
+/////////////////////////////////////////////////
+TEST(DOMImu, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Imu imu;
+  sdf::Noise noise;
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  imu.SetLinearAccelerationXNoise(noise);
+  imu.SetLinearAccelerationYNoise(noise);
+  imu.SetLinearAccelerationZNoise(noise);
+  imu.SetAngularVelocityXNoise(noise);
+  imu.SetAngularVelocityYNoise(noise);
+  imu.SetAngularVelocityZNoise(noise);
+  imu.SetGravityDirX(ignition::math::Vector3d::Zero);
+  imu.SetGravityDirXParentFrame("my_frame");
+  imu.SetCustomRpy(ignition::math::Vector3d::UnitZ);
+  imu.SetCustomRpyParentFrame("other_frame");
+  imu.SetLocalization("NED");
+  imu.SetOrientationEnabled(false);
+
+  sdf::ElementPtr imuElem = imu.ToElement();
+  EXPECT_NE(nullptr, imuElem);
+  EXPECT_EQ(nullptr, imu.Element());
+
+  // verify values after loading the element back
+  sdf::Imu imu2;
+  imu2.Load(imuElem);
+
+  EXPECT_EQ(noise, imu2.LinearAccelerationXNoise());
+  EXPECT_EQ(noise, imu2.LinearAccelerationYNoise());
+  EXPECT_EQ(noise, imu2.LinearAccelerationZNoise());
+  EXPECT_EQ(noise, imu2.AngularVelocityXNoise());
+  EXPECT_EQ(noise, imu2.AngularVelocityYNoise());
+  EXPECT_EQ(noise, imu2.AngularVelocityZNoise());
+  EXPECT_EQ(ignition::math::Vector3d::Zero, imu2.GravityDirX());
+  EXPECT_EQ("my_frame", imu2.GravityDirXParentFrame());
+  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imu2.CustomRpy());
+  EXPECT_EQ("other_frame", imu2.CustomRpyParentFrame());
+  EXPECT_EQ("NED", imu2.Localization());
+  EXPECT_FALSE(imu2.OrientationEnabled());
+
+  // make changes to DOM and verify ToElement produces updated values
+  imu2.SetGravityDirX(ignition::math::Vector3d(1, 2, 3));;
+  sdf::ElementPtr imu2Elem = imu2.ToElement();
+  EXPECT_NE(nullptr, imu2Elem);
+  sdf::Imu imu3;
+  imu3.Load(imu2Elem);
+  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), imu3.GravityDirX());
+}

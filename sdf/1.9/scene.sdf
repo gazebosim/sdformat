@@ -23,7 +23,7 @@
     </element>
 
     <element name="clouds" required="0">
-      <description>Sunset time [0..24]</description>
+      <description>Information about clouds in the sky.</description>
       <element name="speed" type="double" default="0.6" min="0.0" required="0">
         <description>Speed of the clouds</description>
       </element>

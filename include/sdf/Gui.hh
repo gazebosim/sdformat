@@ -19,6 +19,7 @@
 
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -60,6 +61,29 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// gui.
+    /// \return SDF element pointer with updated gui values.
+    public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Get the number of plugins.
+    /// \return Number of plugins contained in this Gui object.
+    public: uint64_t PluginCount() const;
+
+    /// \brief Get a plugin based on an index.
+    /// \param[in] _index Index of the plugin. The index should be in the
+    /// range [0..PluginCount()).
+    /// \return Pointer to the plugin. Nullptr if the index does not exist.
+    /// \sa uint64_t PluginCount() const
+    public: const Plugin *PluginByIndex(const uint64_t _index) const;
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to the link.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

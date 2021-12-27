@@ -64,6 +64,11 @@ namespace sdf
     /// \return A reference to an ignition::math::Ellipsoidd object.
     public: ignition::math::Ellipsoidd &Shape();
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// ellipsoid.
+    /// \return SDF element pointer with updated ellipsoid values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

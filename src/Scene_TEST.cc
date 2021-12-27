@@ -170,3 +170,33 @@ TEST(DOMScene, Set)
   scene.SetSky(sky);
   EXPECT_NE(nullptr, scene.Sky());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMScene, ToElement)
+{
+  sdf::Scene scene;
+
+  scene.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  scene.SetBackground(ignition::math::Color(0.2f, 0.3f, 0.4f, 1.0f));
+  scene.SetGrid(true);
+  scene.SetOriginVisual(true);
+  scene.SetShadows(true);
+
+  sdf::Sky sky;
+  scene.SetSky(sky);
+
+  sdf::ElementPtr elem = scene.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Scene scene2;
+  scene2.Load(elem);
+
+  EXPECT_EQ(scene.Ambient(), scene2.Ambient());
+  EXPECT_EQ(scene.Background(), scene2.Background());
+  EXPECT_EQ(scene.Grid(), scene2.Grid());
+  EXPECT_EQ(scene.OriginVisual(), scene2.OriginVisual());
+  EXPECT_EQ(scene.Shadows(), scene2.Shadows());
+
+  const sdf::Sky *sky2 = scene2.Sky();
+  ASSERT_NE(nullptr, sky2);
+}

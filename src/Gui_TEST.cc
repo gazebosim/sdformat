@@ -123,3 +123,40 @@ TEST(DOMGui, Equal)
   gui.SetFullscreen(false);
   EXPECT_FALSE(gui == gui2);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMGui, ToElement)
+{
+  sdf::Gui gui;
+
+  gui.SetFullscreen(true);
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 3; ++i)
+    {
+      sdf::Plugin plugin;
+      plugin.SetName("name" + std::to_string(i));
+      plugin.SetFilename("filename" + std::to_string(i));
+      gui.AddPlugin(plugin);
+      gui.AddPlugin(plugin);
+    }
+    if (j == 0)
+    {
+      EXPECT_EQ(6u, gui.PluginCount());
+      gui.ClearPlugins();
+      EXPECT_EQ(0u, gui.PluginCount());
+    }
+  }
+
+
+  EXPECT_EQ(6u, gui.PluginCount());
+  sdf::ElementPtr elem = gui.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Gui gui2;
+  gui2.Load(elem);
+
+  EXPECT_EQ(gui.Fullscreen(), gui2.Fullscreen());
+  EXPECT_EQ(6u, gui2.PluginCount());
+}
