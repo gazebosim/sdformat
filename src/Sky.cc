@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include "sdf/parser.hh"
 #include "sdf/Sky.hh"
 #include "Utils.hh"
 
@@ -200,4 +201,25 @@ Errors Sky::Load(ElementPtr _sdf)
 sdf::ElementPtr Sky::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Sky::ToElement() const
+{
+  sdf::ElementPtr sceneElem(new sdf::Element);
+  sdf::initFile("scene.sdf", sceneElem);
+  sdf::ElementPtr elem = sceneElem->GetElement("sky");
+
+  elem->GetElement("time")->Set(this->Time());
+  elem->GetElement("sunrise")->Set(this->Sunrise());
+  elem->GetElement("sunset")->Set(this->Sunset());
+
+  sdf::ElementPtr cloudElem = elem->GetElement("clouds");
+  cloudElem->GetElement("speed")->Set(this->CloudSpeed());
+  cloudElem->GetElement("direction")->Set(this->CloudDirection().Radian());
+  cloudElem->GetElement("humidity")->Set(this->CloudHumidity());
+  cloudElem->GetElement("mean_size")->Set(this->CloudMeanSize());
+  cloudElem->GetElement("ambient")->Set(this->CloudAmbient());
+
+  return elem;
 }

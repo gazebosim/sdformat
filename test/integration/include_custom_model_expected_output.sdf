@@ -211,7 +211,7 @@
           <!-- <sensor name='camera' type='camera'>
             <pose>-0.2 0 0.3 0 -0 0</pose>
             <camera> -->
-              <horizontal_fov>1.0469999999999999</horizontal_fov>
+              <horizontal_fov>1.047</horizontal_fov>
               <image>
                 <width>1280</width>
                 <!-- modified with above -->
@@ -332,7 +332,7 @@
 
         </link>
         <link name='caster'>
-          <pose relative_to='right_wheel'>0 0 0 0 -0 0</pose>
+          <pose relative_to='right_wheel'>0 0 0 0 0 0</pose>
           <!-- modified with above -->
           <!-- <pose relative_to='__model__'>-0.957138 -0 -0.125 0 -0 0</pose> -->
           <inertial>
@@ -457,16 +457,16 @@
       </model>
     </model>
     <gravity>0 0 -9.8</gravity>
-    <magnetic_field>5.5645e-6 22.8758e-6 -42.3884e-6</magnetic_field>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
     <atmosphere type='adiabatic'/>
     <physics type='ode'>
       <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
+      <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
     <scene>
-      <ambient>0.4 0.4 0.4 1.0</ambient>
-      <background>.7 .7 .7 1</background>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
       <shadows>true</shadows>
     </scene>
   </world>

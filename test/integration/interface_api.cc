@@ -32,6 +32,7 @@
 #include "sdf/InterfaceModel.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
@@ -268,7 +269,7 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
   this->config.RegisterCustomModelParser(createCustomParser(3));
   sdf::Root root;
   sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
   // Check that custom parsers are called in reverse order of registration.
   ASSERT_EQ(3u, customParserCallOrder.size());
   // Parser 0 will not be visited because parser 1 will be successful.
@@ -392,7 +393,7 @@ TEST_F(InterfaceAPI, FrameSemantics)
   EXPECT_EQ(1u, world->InterfaceModelCount());
 
   auto resolvePoseNoErrors =
-      [](const sdf::SemanticPose &_semPose, const std::string _relativeTo = "")
+      [](const sdf::SemanticPose &_semPose, const std::string &_relativeTo = "")
   {
     Pose3d pose;
     sdf::Errors resolveErrors = _semPose.Resolve(pose, _relativeTo);
@@ -859,4 +860,38 @@ TEST_F(InterfaceAPI, NameCollision)
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
   }
+}
+
+/////////////////////////////////////////////////
+// Tests PrintConfig
+TEST_F(InterfaceAPI, TomlParserModelIncludePrintConfig)
+{
+  const std::string testFile = sdf::testing::TestFile(
+      "sdf", "model_include_with_interface_api.sdf");
+
+  this->config.RegisterCustomModelParser(customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  const sdf::ElementPtr includeElem = model->Element()->GetFirstElement();
+  ASSERT_NE(nullptr, includeElem);
+
+  const std::string expectedIncludeStr =
+R"(<include>
+  <uri>double_pendulum.toml</uri>
+  <pose>1 0 0 0 0 0</pose>
+  <extra>
+    <info1>value1</info1>
+    <info2>value2</info2>
+  </extra>
+</include>
+)";
+
+  sdf::PrintConfig printConfig;
+  EXPECT_EQ(includeElem->ToString("", printConfig), expectedIncludeStr);
+  printConfig.SetPreserveIncludes(true);
+  EXPECT_EQ(includeElem->ToString("", printConfig), expectedIncludeStr);
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include "sdf/parser.hh"
 #include "sdf/Sphere.hh"
 
 using namespace sdf;
@@ -110,4 +111,16 @@ ignition::math::Sphered &Sphere::Shape()
 sdf::ElementPtr Sphere::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Sphere::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("sphere_shape.sdf", elem);
+
+  sdf::ElementPtr radiusElem = elem->GetElement("radius");
+  radiusElem->Set<double>(this->Radius());
+
+  return elem;
 }

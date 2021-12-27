@@ -156,6 +156,54 @@ TEST(Pose1_9, PoseExpressionFormats)
     EXPECT_EQ(Pose(1, 2, 3, 0.7071068, 0.7071068, 0, 0),
               link->Inertial().Pose());
   }
+
+  model = world->ModelByIndex(18);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_empty_quat_xyzw", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+
+  model = world->ModelByIndex(19);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_empty_quat_xyzw_degrees_false", model->Name());
+  EXPECT_EQ(Pose::Zero, model->RawPose());
+}
+
+//////////////////////////////////////////////////
+TEST(Pose1_9, PoseStringOutput)
+{
+  std::ostringstream stream;
+  stream
+      << "<sdf version='1.9'>"
+      << "<model name='parent'>"
+      << "  <pose rotation_format='quat_xyzw'/>"
+      << "  <link name='link'/>"
+      << "</model>"
+      << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  sdf::Root root;
+  errors = root.Load(sdfParsed);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  auto elem = model->Element();
+  ASSERT_NE(nullptr, elem);
+
+  auto poseElem = elem->GetElement("pose");
+  ASSERT_NE(nullptr, poseElem);
+
+  auto poseParam = poseElem->GetValue();
+  ASSERT_NE(nullptr, poseParam);
+
+  const std::string strOutput = poseParam->GetAsString();
+  EXPECT_EQ("0 0 0   0 0 0 1", strOutput);
 }
 
 //////////////////////////////////////////////////
@@ -271,31 +319,6 @@ TEST(Pose1_9, BadModelPoses)
 
     EXPECT_PRED2(contains, buffer.str(),
         "//pose[@degrees='true'] does not apply when parsing quaternions");
-  }
-
-  {
-    buffer.str("");
-    std::ostringstream stream;
-    stream
-        << "<sdf version='1.9'>"
-        << "  <model name='quat_xyzw_with_empty_value'>"
-        << "    <pose rotation_format='quat_xyzw'></pose>"
-        << "    <link name='link'/>"
-        << "  </model>"
-        << "</sdf>";
-
-    sdf::SDFPtr sdfParsed(new sdf::SDF());
-    sdf::init(sdfParsed);
-    sdf::Errors errors;
-    EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
-    EXPECT_FALSE(errors.empty());
-
-    // Setting //pose[@rotation_format='quat_xyzw'] should fail here as
-    // the defined default value from sdf/1.9/pose.sdf is '0 0 0 0 0 0'
-    // which is only a 6-tuple.
-    EXPECT_PRED2(contains, buffer.str(),
-        "//pose[@rotation_format='quat_xyzw'] must have 7 values, "
-        "but 6 were found instead in '0 0 0 0 0 0'");
   }
 }
 
@@ -765,7 +788,7 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -788,7 +811,7 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -840,7 +863,7 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -864,9 +887,11 @@ TEST(Pose1_9, ToStringWithQuatXYZ)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  // The string output has changed as it was parsed from the value, instead of
+  // the original string.
   std::string elemStr = poseElem->ToString("");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
-  EXPECT_PRED2(contains, elemStr, "0.7071068 0 0 0.7071068");
+  EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
 
 //////////////////////////////////////////////////
@@ -892,10 +917,12 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  // The string output has changed as it was parsed from the value, instead of
+  // the original string.
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
-  EXPECT_PRED2(contains, elemStr, "0.7071068 0 0 0.7071068");
+  EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
 
 //////////////////////////////////////////////////
@@ -918,18 +945,22 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   std::string elemStr = poseElem->ToString("");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
-  // Changing to degrees
+  // Changing to attribute to degrees, however this does not modify the
+  // value of the underlying Param. Reparse needs to be called, which uses
+  // the input from SetFromString, to get a new value.
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
   ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+  EXPECT_TRUE(valParam->Reparse());
+
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 

@@ -175,3 +175,21 @@ TEST(DOMCylinder, Shape)
   EXPECT_DOUBLE_EQ(0.123, cylinder.Radius());
   EXPECT_DOUBLE_EQ(0.456, cylinder.Length());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, ToElement)
+{
+  sdf::Cylinder cylinder;
+
+  cylinder.SetRadius(1.2);
+  cylinder.SetLength(0.5);
+
+  sdf::ElementPtr elem = cylinder.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Cylinder cylinder2;
+  cylinder2.Load(elem);
+
+  EXPECT_DOUBLE_EQ(cylinder.Radius(), cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(cylinder.Length(), cylinder2.Length());
+}

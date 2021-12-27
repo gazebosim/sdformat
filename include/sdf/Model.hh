@@ -346,6 +346,54 @@ namespace sdf
     public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// model.
+    /// \param[in] _useIncludeTag When true, the model's URI is used to create
+    /// an SDF `<include>` rather than a `<model>`. The model's URI must be
+    /// first set using the `Model::SetUri` function. If the model's URI is
+    /// empty, then a `<model>` element will be generated. The default is true
+    /// so that URI values are used when ToElement is called from a
+    /// World object. Make sure to use `Model::SetUri` even when the model
+    /// is loaded from an `<include>` tag since the parser will
+    /// automatically expand an `<include>` element to a `<model>` element.
+    /// \return SDF element pointer with updated model values.
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+
+    /// \brief Add a link to the model.
+    /// \param[in] _link Link to add.
+    /// \return True if successful, false if a link with the name already
+    /// exists.
+    public: bool AddLink(const Link &_link);
+
+    /// \brief Add a joint to the model.
+    /// \param[in] _link Joint to add.
+    /// \return True if successful, false if a joint with the name already
+    /// exists.
+    public: bool AddJoint(const Joint &_joint);
+
+    /// \brief Add a model to the model.
+    /// \param[in] _model Model to add.
+    /// \return True if successful, false if a model with the name already
+    /// exists.
+    public: bool AddModel(const Model &_model);
+
+    /// \brief Remove all links.
+    public: void ClearLinks();
+
+    /// \brief Remove all joints.
+    public: void ClearJoints();
+
+    /// \brief Remove all models.
+    public: void ClearModels();
+
+    /// \brief Get the URI associated with this model
+    /// \return The model's URI, or empty string if it has not been set.
+    public: std::string Uri() const;
+
+    /// \brief Set the URI associated with this model.
+    /// \param[in] _uri The model's URI.
+    public: void SetUri(const std::string &_uri);
+
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and

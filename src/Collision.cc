@@ -20,6 +20,7 @@
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/parser.hh"
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
@@ -196,4 +197,30 @@ sdf::SemanticPose Collision::SemanticPose() const
 sdf::ElementPtr Collision::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Collision::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("collision.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  // Set the geometry
+  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
+
+  // Set the surface
+  elem->InsertElement(this->dataPtr->surface.ToElement(), true);
+
+  return elem;
 }
