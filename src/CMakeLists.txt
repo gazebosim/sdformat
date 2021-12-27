@@ -5,16 +5,26 @@ ign_get_libsources_and_unittests(sources gtest_sources)
 # Add the source file auto-generated into the build folder from sdf/CMakeLists.txt
 list(APPEND sources EmbeddedSdf.cc)
 
+# Use interface library to deduplicate cmake logic for URDF linking
+add_library(using_parser_urdf INTERFACE)
 if (USE_INTERNAL_URDF)
   set(sources ${sources}
-  urdf/urdf_parser/model.cpp
-  urdf/urdf_parser/link.cpp
-  urdf/urdf_parser/joint.cpp
-  urdf/urdf_parser/pose.cpp
-  urdf/urdf_parser/twist.cpp
-  urdf/urdf_parser/urdf_model_state.cpp
-  urdf/urdf_parser/urdf_sensor.cpp
-  urdf/urdf_parser/world.cpp)
+    urdf/urdf_parser/model.cpp
+    urdf/urdf_parser/link.cpp
+    urdf/urdf_parser/joint.cpp
+    urdf/urdf_parser/pose.cpp
+    urdf/urdf_parser/twist.cpp
+    urdf/urdf_parser/urdf_model_state.cpp
+    urdf/urdf_parser/urdf_sensor.cpp
+    urdf/urdf_parser/world.cpp)
+  target_include_directories(using_parser_urdf INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
+  if (WIN32)
+    target_compile_definitions(using_parser_urdf INTERFACE -D_USE_MATH_DEFINES)
+  endif()
+else()
+  target_link_libraries(using_parser_urdf INTERFACE
+    IgnURDFDOM::IgnURDFDOM)
 endif()
 
 if (BUILD_TESTING)
@@ -59,19 +69,6 @@ if (BUILD_TESTING)
 
   if (TARGET UNIT_FrameSemantics_TEST)
     target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc)
-  endif()
-
-  # Use interface library to deduplicate cmake logic for URDF linking
-  add_library(using_parser_urdf INTERFACE)
-  if (USE_INTERNAL_URDF)
-    target_include_directories(using_parser_urdf INTERFACE
-      ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
-    if (WIN32)
-      target_compile_definitions(using_parser_urdf INTERFACE -D_USE_MATH_DEFINES)
-    endif()
-  else()
-    target_link_libraries(using_parser_urdf INTERFACE
-      IgnURDFDOM::IgnURDFDOM)
   endif()
 
   if (TARGET UNIT_ParamPassing_TEST)
