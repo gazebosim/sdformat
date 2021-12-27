@@ -209,6 +209,17 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     }
   }
 
+  for (const auto &[name, size] :
+       _sdf->CountNamedElements("", Element::NameUniquenessExceptions()))
+  {
+    if (size > 1)
+    {
+      sdfwarn << "Non-unique name[" << name << "] detected " << size
+              << " times in XML children of world with name[" << this->Name()
+              << "].\n";
+    }
+  }
+
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
   std::unordered_set<std::string> frameNames;
@@ -785,4 +796,137 @@ Errors World::Implementation::LoadSphericalCoordinates(
       elevation, heading);
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr World::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("world.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->Name());
+  elem->GetElement("gravity")->Set(this->Gravity());
+  elem->GetElement("magnetic_field")->Set(this->MagneticField());
+
+  sdf::ElementPtr windElem = elem->GetElement("wind");
+  windElem->GetElement("linear_velocity")->Set(this->WindLinearVelocity());
+
+  // Physics
+  for (const sdf::Physics &physics : this->dataPtr->physics)
+    elem->InsertElement(physics.ToElement(), true);
+
+  // Models
+  for (const sdf::Model &model : this->dataPtr->models)
+    elem->InsertElement(model.ToElement(), true);
+
+  // Actors
+  for (const sdf::Actor &actor : this->dataPtr->actors)
+    elem->InsertElement(actor.ToElement(), true);
+
+  // Lights
+  for (const sdf::Light &light : this->dataPtr->lights)
+    elem->InsertElement(light.ToElement(), true);
+
+  // Spherical coordinates.
+  if (this->dataPtr->sphericalCoordinates)
+  {
+    sdf::ElementPtr sphericalElem = elem->GetElement("spherical_coordinates");
+    sphericalElem->GetElement("surface_model")->Set(
+        ignition::math::SphericalCoordinates::Convert(
+          this->dataPtr->sphericalCoordinates->Surface()));
+    sphericalElem->GetElement("world_frame_orientation")->Set("ENU");
+    sphericalElem->GetElement("latitude_deg")->Set(
+        this->dataPtr->sphericalCoordinates->LatitudeReference().Degree());
+    sphericalElem->GetElement("longitude_deg")->Set(
+        this->dataPtr->sphericalCoordinates->LongitudeReference().Degree());
+    sphericalElem->GetElement("elevation")->Set(
+        this->dataPtr->sphericalCoordinates->ElevationReference());
+    sphericalElem->GetElement("heading_deg")->Set(
+        this->dataPtr->sphericalCoordinates->HeadingOffset().Degree());
+  }
+
+  // Atmosphere
+  if (this->dataPtr->atmosphere)
+    elem->InsertElement(this->dataPtr->atmosphere->ToElement(), true);
+
+  // Gui
+  if (this->dataPtr->gui)
+    elem->InsertElement(this->dataPtr->gui->ToElement(), true);
+
+  // Scene
+  if (this->dataPtr->scene)
+    elem->InsertElement(this->dataPtr->scene->ToElement(), true);
+
+  // Audio
+  if (this->dataPtr->audioDevice != "default")
+    elem->GetElement("audio")->GetElement("device")->Set(this->AudioDevice());
+
+  return elem;
+}
+
+/////////////////////////////////////////////////
+void World::ClearModels()
+{
+  this->dataPtr->models.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearActors()
+{
+  this->dataPtr->actors.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearLights()
+{
+  this->dataPtr->lights.clear();
+}
+
+/////////////////////////////////////////////////
+void World::ClearPhysics()
+{
+  this->dataPtr->physics.clear();
+}
+
+/////////////////////////////////////////////////
+bool World::AddModel(const Model &_model)
+{
+  if (this->ModelNameExists(_model.Name()))
+    return false;
+  this->dataPtr->models.push_back(_model);
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddActor(const Actor &_actor)
+{
+  if (this->ActorNameExists(_actor.Name()))
+    return false;
+  this->dataPtr->actors.push_back(_actor);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddLight(const Light &_light)
+{
+  if (this->LightNameExists(_light.Name()))
+    return false;
+  this->dataPtr->lights.push_back(_light);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddPhysics(const Physics &_physics)
+{
+  if (this->PhysicsNameExists(_physics.Name()))
+  {
+    std::cout << "Not adding physics, it exists\n";
+    return false;
+  }
+    std::cout << "Adding physics\n";
+  this->dataPtr->physics.push_back(_physics);
+
+  return true;
 }

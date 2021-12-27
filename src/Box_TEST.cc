@@ -143,3 +143,19 @@ TEST(DOMBox, Shape)
   box.Shape().SetSize(ignition::math::Vector3d(1, 2, 3));
   EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), box.Size());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMBox, ToElement)
+{
+  sdf::Box box;
+
+  box.SetSize(ignition::math::Vector3d(1, 2, 3));
+
+  sdf::ElementPtr elem = box.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Box box2;
+  box2.Load(elem);
+
+  EXPECT_EQ(box.Size(), box2.Size());
+}

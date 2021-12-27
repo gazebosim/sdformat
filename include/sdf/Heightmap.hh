@@ -47,8 +47,8 @@ namespace sdf
     public: double Size() const;
 
     /// \brief Set the size of the texture in meters.
-    /// \param[in] _uri The size of the texture in meters.
-    public: void SetSize(double _uri);
+    /// \param[in] _size The size of the texture in meters.
+    public: void SetSize(double _size);
 
     /// \brief Get the heightmap texture's diffuse map.
     /// \return The diffuse map of the heightmap texture.
@@ -213,6 +213,11 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// heightmap.
+    /// \return SDF element pointer with updated heightmap values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

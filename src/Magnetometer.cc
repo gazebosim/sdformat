@@ -17,6 +17,7 @@
 #include <array>
 #include <string>
 #include "sdf/Magnetometer.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 
@@ -129,4 +130,28 @@ bool Magnetometer::operator==(const Magnetometer &_mag) const
   }
 
   return true;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Magnetometer::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("magnetometer.sdf", elem);
+
+  sdf::ElementPtr magnetometerXElem = elem->GetElement("x");
+  sdf::ElementPtr magnetometerXNoiseElem =
+    magnetometerXElem->GetElement("noise");
+  magnetometerXNoiseElem->Copy(this->dataPtr->noise[0].ToElement());
+
+  sdf::ElementPtr magnetometerYElem = elem->GetElement("y");
+  sdf::ElementPtr magnetometerYNoiseElem =
+    magnetometerYElem->GetElement("noise");
+  magnetometerYNoiseElem->Copy(this->dataPtr->noise[1].ToElement());
+
+  sdf::ElementPtr magnetometerZElem = elem->GetElement("z");
+  sdf::ElementPtr magnetometerZNoiseElem =
+    magnetometerZElem->GetElement("noise");
+  magnetometerZNoiseElem->Copy(this->dataPtr->noise[2].ToElement());
+
+  return elem;
 }

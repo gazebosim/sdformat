@@ -186,3 +186,33 @@ TEST(DOMSky, Set)
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f),
       sky.CloudAmbient());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMSky, ToElement)
+{
+  sdf::Sky sky;
+
+  sky.SetTime(1.2);
+  sky.SetSunrise(0.5);
+  sky.SetSunset(10.2);
+  sky.SetCloudSpeed(100.2);
+  sky.SetCloudDirection(1.56);
+  sky.SetCloudHumidity(0.2);
+  sky.SetCloudMeanSize(0.5);
+  sky.SetCloudAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+
+  sdf::ElementPtr elem = sky.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Sky sky2;
+  sky2.Load(elem);
+
+  EXPECT_DOUBLE_EQ(sky.Time(), sky2.Time());
+  EXPECT_DOUBLE_EQ(sky.Sunrise(), sky2.Sunrise());
+  EXPECT_DOUBLE_EQ(sky.Sunset(), sky2.Sunset());
+  EXPECT_DOUBLE_EQ(sky.CloudSpeed(), sky2.CloudSpeed());
+  EXPECT_EQ(sky.CloudDirection(), sky2.CloudDirection());
+  EXPECT_DOUBLE_EQ(sky.CloudHumidity(), sky2.CloudHumidity());
+  EXPECT_DOUBLE_EQ(sky.CloudMeanSize(), sky2.CloudMeanSize());
+  EXPECT_EQ(sky.CloudAmbient(), sky2.CloudAmbient());
+}

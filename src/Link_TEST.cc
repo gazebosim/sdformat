@@ -211,3 +211,206 @@ TEST(DOMLink, InvalidInertia)
   EXPECT_DOUBLE_EQ(3.4, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_FALSE(link.Inertial().MassMatrix().IsValid());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddCollision)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.CollisionCount());
+
+  sdf::Collision collision;
+  collision.SetName("collision1");
+  EXPECT_TRUE(link.AddCollision(collision));
+  EXPECT_EQ(1u, link.CollisionCount());
+  EXPECT_FALSE(link.AddCollision(collision));
+  EXPECT_EQ(1u, link.CollisionCount());
+
+  link.ClearCollisions();
+  EXPECT_EQ(0u, link.CollisionCount());
+
+  EXPECT_TRUE(link.AddCollision(collision));
+  EXPECT_EQ(1u, link.CollisionCount());
+  const sdf::Collision *collisionFromLink = link.CollisionByIndex(0);
+  ASSERT_NE(nullptr, collisionFromLink);
+  EXPECT_EQ(collisionFromLink->Name(), collision.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddVisual)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.VisualCount());
+
+  sdf::Visual visual;
+  visual.SetName("visual1");
+  EXPECT_TRUE(link.AddVisual(visual));
+  EXPECT_EQ(1u, link.VisualCount());
+  EXPECT_FALSE(link.AddVisual(visual));
+  EXPECT_EQ(1u, link.VisualCount());
+
+  link.ClearVisuals();
+  EXPECT_EQ(0u, link.VisualCount());
+
+  EXPECT_TRUE(link.AddVisual(visual));
+  EXPECT_EQ(1u, link.VisualCount());
+  const sdf::Visual *visualFromLink = link.VisualByIndex(0);
+  ASSERT_NE(nullptr, visualFromLink);
+  EXPECT_EQ(visualFromLink->Name(), visual.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddLight)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.LightCount());
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(link.AddLight(light));
+  EXPECT_EQ(1u, link.LightCount());
+  EXPECT_FALSE(link.AddLight(light));
+  EXPECT_EQ(1u, link.LightCount());
+
+  link.ClearLights();
+  EXPECT_EQ(0u, link.LightCount());
+
+  EXPECT_TRUE(link.AddLight(light));
+  EXPECT_EQ(1u, link.LightCount());
+  const sdf::Light *lightFromLink = link.LightByIndex(0);
+  ASSERT_NE(nullptr, lightFromLink);
+  EXPECT_EQ(lightFromLink->Name(), light.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, AddSensor)
+{
+  sdf::Link link;
+  EXPECT_EQ(0u, link.SensorCount());
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(link.AddSensor(sensor));
+  EXPECT_EQ(1u, link.SensorCount());
+  EXPECT_FALSE(link.AddSensor(sensor));
+  EXPECT_EQ(1u, link.SensorCount());
+
+  link.ClearSensors();
+  EXPECT_EQ(0u, link.SensorCount());
+
+  EXPECT_TRUE(link.AddSensor(sensor));
+  EXPECT_EQ(1u, link.SensorCount());
+  const sdf::Sensor *sensorFromLink = link.SensorByIndex(0);
+  ASSERT_NE(nullptr, sensorFromLink);
+  EXPECT_EQ(sensorFromLink->Name(), sensor.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, ToElement)
+{
+  sdf::Link link;
+  link.SetName("my-name");
+
+  ignition::math::Inertiald inertial {
+    {2.3,
+      ignition::math::Vector3d(1.4, 2.3, 3.2),
+      ignition::math::Vector3d(0.1, 0.2, 0.3)},
+      ignition::math::Pose3d(1, 2, 3, 0, 0, 0)};
+  EXPECT_TRUE(link.SetInertial(inertial));
+  link.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  link.SetEnableWind(true);
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 1; ++i)
+    {
+      sdf::Collision collision;
+      collision.SetName("collision" + std::to_string(i));
+      EXPECT_TRUE(link.AddCollision(collision));
+      EXPECT_FALSE(link.AddCollision(collision));
+    }
+    if (j == 0)
+      link.ClearCollisions();
+  }
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 2; i++)
+    {
+      sdf::Visual visual;
+      visual.SetName("visual" + std::to_string(i));
+      EXPECT_TRUE(link.AddVisual(visual));
+      EXPECT_FALSE(link.AddVisual(visual));
+    }
+    if (j == 0)
+     link.ClearVisuals();
+  }
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 3; i++)
+    {
+      sdf::Light light;
+      light.SetName("light" + std::to_string(i));
+      EXPECT_TRUE(link.AddLight(light));
+      EXPECT_FALSE(link.AddLight(light));
+    }
+    if (j == 0)
+      link.ClearLights();
+  }
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      sdf::Sensor sensor;
+      sensor.SetName("sensor" + std::to_string(i));
+      EXPECT_TRUE(link.AddSensor(sensor));
+      EXPECT_FALSE(link.AddSensor(sensor));
+    }
+    if (j == 0)
+      link.ClearSensors();
+  }
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 5; i++)
+    {
+      sdf::ParticleEmitter emitter;
+      emitter.SetName("emitter" + std::to_string(i));
+      EXPECT_TRUE(link.AddParticleEmitter(emitter));
+      EXPECT_FALSE(link.AddParticleEmitter(emitter));
+    }
+    if (j == 0)
+      link.ClearParticleEmitters();
+  }
+
+  sdf::ElementPtr elem = link.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Link link2;
+  link2.Load(elem);
+
+  EXPECT_EQ(link.Name(), link2.Name());
+  EXPECT_EQ(link.Inertial(), link2.Inertial());
+  EXPECT_EQ(link.RawPose(), link2.RawPose());
+  EXPECT_EQ(link.EnableWind(), link2.EnableWind());
+  EXPECT_EQ(link.CollisionCount(), link2.CollisionCount());
+  for (uint64_t i = 0; i < link2.CollisionCount(); ++i)
+    EXPECT_NE(nullptr, link2.CollisionByIndex(i));
+
+  EXPECT_EQ(link.VisualCount(), link2.VisualCount());
+  for (uint64_t i = 0; i < link2.VisualCount(); ++i)
+    EXPECT_NE(nullptr, link2.VisualByIndex(i));
+
+  EXPECT_EQ(link.LightCount(), link2.LightCount());
+  for (uint64_t i = 0; i < link2.LightCount(); ++i)
+    EXPECT_NE(nullptr, link2.LightByIndex(i));
+
+  EXPECT_EQ(link.SensorCount(), link2.SensorCount());
+  for (uint64_t i = 0; i < link2.SensorCount(); ++i)
+    EXPECT_NE(nullptr, link2.SensorByIndex(i));
+
+  EXPECT_EQ(link.ParticleEmitterCount(), link2.ParticleEmitterCount());
+  for (uint64_t i = 0; i < link2.ParticleEmitterCount(); ++i)
+    EXPECT_NE(nullptr, link2.ParticleEmitterByIndex(i));
+}

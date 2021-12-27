@@ -84,6 +84,11 @@ namespace sdf
     /// \returen True if 'this' != _mag.
     public: bool operator!=(const AirPressure &_air) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// air pressure sensor.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

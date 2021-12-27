@@ -74,9 +74,9 @@
         </element>
         <element name="pose" type="pose" default="0 0 0 0 0 0" required="1">
           <description>The pose which should be reached at the given time.</description>
-        </element>
+        </element> <!-- End Pose -->
       </element> <!-- End Waypoint -->
-    </element> <!-- End Action -->
+    </element> <!-- End Trajectory -->
   </element> <!-- End Script -->
 
   <include filename="link.sdf" required="+"/>
