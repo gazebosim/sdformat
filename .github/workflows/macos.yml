@@ -32,7 +32,9 @@ jobs:
           popd
           echo '# END SECTION'
         fi
-        brew install --only-dependencies ${PACKAGE} || brew install ignition-math7 --verbose;
+        # ignition-math7 has problems with swig, remove it for now
+        brew remove swig || true
+        brew install --only-dependencies ${PACKAGE};
 
     - run: mkdir build
     - name: cmake
