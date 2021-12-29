@@ -5,5 +5,5 @@ libignition-utils1-dev
 libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils
-python-psutil
+python3-psutil
 ruby-dev
