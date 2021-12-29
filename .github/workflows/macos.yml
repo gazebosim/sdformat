@@ -18,6 +18,18 @@ jobs:
     - name: Install base dependencies
       run: |
         brew tap osrf/simulation;
+        if [[ -n "${ghprbSourceBranch}" ]] && \
+          brew install wget
+          wget https://github.com/ignition-tooling/release-tools/raw/master/jenkins-scripts/tools/detect_ci_matching_branch.py
+          python3 detect_ci_matching_branch.py "${ghprbSourceBranch}"
+        then
+          echo "# BEGIN SECTION: trying to checkout branch ${ghprbSourceBranch} from osrf/simulation"
+          pushd $(brew --repo osrf/simulation)
+          git fetch origin ${ghprbSourceBranch} || true
+          git checkout ${ghprbSourceBranch} || true
+          popd
+          echo '# END SECTION'
+        fi
         brew install --only-dependencies ${PACKAGE};
 
     - run: mkdir build
