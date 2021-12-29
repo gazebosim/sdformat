@@ -70,7 +70,7 @@
           </model>
           <pose>0 10 0 1.570796326794895 0 0</pose>
         </model>
-        <pose>10 0 0 0 -0 1.5708</pose>
+        <pose>10 0 0 0 0 1.5708</pose>
       </model>
     </model>
   </world>

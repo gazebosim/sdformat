@@ -193,7 +193,7 @@ R"(<model name="m2">
   const std::string expectedIncludeMerge =
 R"(<model name='m2'>
   <frame name='_merged__test_box2__model__' attached_to='link'>
-    <pose relative_to='__model__'>0 0 0.5 0 -0 0</pose>
+    <pose relative_to='__model__'>0 0 0.5 0 0 0</pose>
   </frame>
   <link name='link'>
     <collision name='collision'>
