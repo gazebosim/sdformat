@@ -293,45 +293,53 @@ R"(<sdf version='1.7'>
   ASSERT_NE(nullptr, world2);
 
   // //model[@name=test]
-  const sdf::Model *model11 = world1->ModelByIndex(0);
-  const sdf::Model *model12 = world2->ModelByIndex(0);
+  const sdf::Model *model01 = world1->ModelByIndex(0);
+  const sdf::Model *model02 = world2->ModelByIndex(0);
+  ASSERT_NE(nullptr, model01);
+  ASSERT_NE(nullptr, model02);
+  EXPECT_EQ("test", model01->Name());
+  EXPECT_EQ("test", model02->Name());
+  EXPECT_EQ(model01->Element()->ToString(""), model02->Element()->ToString(""));
+
+  // //model[@name=test]/model[@name=M1]
+  const sdf::Model *model11 = model01->ModelByIndex(0);
+  const sdf::Model *model12 = model02->ModelByIndex(0);
   ASSERT_NE(nullptr, model11);
   ASSERT_NE(nullptr, model12);
+  EXPECT_EQ("M1", model11->Name());
+  EXPECT_EQ("M1", model12->Name());
   EXPECT_EQ(model11->Element()->ToString(""), model12->Element()->ToString(""));
 
-  // //model[@name=test]/frame[@name=M1::__model__]
-  const sdf::Frame *frame1 = model11->FrameByIndex(0);
-  const sdf::Frame *frame2 = model12->FrameByIndex(0);
-  ASSERT_NE(nullptr, frame1);
-  ASSERT_NE(nullptr, frame2);
-  EXPECT_EQ(frame1->Element()->ToString(""), frame2->Element()->ToString(""));
-
-  // //model[@name=test]/link[@name=M1::L1]
+  // //model[@name=test]/model[@name=M1]/link[@name=L1]
   const sdf::Link *model11link1 = model11->LinkByIndex(0);
   const sdf::Link *model12link2 = model12->LinkByIndex(0);
   ASSERT_NE(nullptr, model11link1);
   ASSERT_NE(nullptr, model12link2);
+  EXPECT_EQ("L1", model11link1->Name());
+  EXPECT_EQ("L1", model12link2->Name());
 
   const std::string linkCustomAttrStr =
-R"(<link name='M1::L1' mysim:custom_attr_str='A' mysim:custom_attr_int='5'>
-  <pose relative_to='M1::__model__'>0 0 0 0 -0 0</pose>
-</link>
+R"(<link name='L1' mysim:custom_attr_str='A' mysim:custom_attr_int='5'/>
 )";
   EXPECT_EQ(linkCustomAttrStr, model11link1->Element()->ToString(""));
   EXPECT_EQ(linkCustomAttrStr, model12link2->Element()->ToString(""));
 
-  // //model[@name=test]/model[@name=M1::M2]
+  // //model[@name=test]/model[@name=M1]/model[@name=M2]
   const sdf::Model *model21 = model11->ModelByIndex(0);
   const sdf::Model *model22 = model12->ModelByIndex(0);
   ASSERT_NE(nullptr, model21);
   ASSERT_NE(nullptr, model22);
+  EXPECT_EQ("M2", model21->Name());
+  EXPECT_EQ("M2", model22->Name());
   EXPECT_EQ(model21->Element()->ToString(""), model22->Element()->ToString(""));
 
-  // //model[@name=test]/model[@name=M1::M2]/link[@name=M1::L1]
+  // //model[@name=test]/model[@name=M1]/model[@name=M2]/link[@name=L1]
   const sdf::Link *model21link1 = model21->LinkByIndex(0);
   const sdf::Link *model22link2 = model22->LinkByIndex(0);
   ASSERT_NE(nullptr, model21link1);
   ASSERT_NE(nullptr, model22link2);
+  EXPECT_EQ("L1", model21link1->Name());
+  EXPECT_EQ("L1", model22link2->Name());
   EXPECT_EQ(model21link1->Element()->ToString(""),
             model22link2->Element()->ToString(""));
 
@@ -357,7 +365,7 @@ R"(<link name='M1::L1' mysim:custom_attr_str='A' mysim:custom_attr_int='5'>
   const std::string customElemStr =
 R"(<mysim:transmission name='simple_trans'>
   <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
-  <mysim:joint name='M1::J1'>
+  <mysim:joint name='J1'>
     <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>
   </mysim:joint>
 </mysim:transmission>
