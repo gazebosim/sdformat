@@ -411,7 +411,7 @@ ignition::math::Angle Light::SpotInnerAngle() const
 /////////////////////////////////////////////////
 void Light::SetSpotInnerAngle(const ignition::math::Angle &_angle)
 {
-  this->dataPtr->spotInnerAngle.Radian(std::max(0.0, _angle.Radian()));
+  this->dataPtr->spotInnerAngle.SetRadian(std::max(0.0, _angle.Radian()));
 }
 
 /////////////////////////////////////////////////
@@ -423,7 +423,7 @@ ignition::math::Angle Light::SpotOuterAngle() const
 /////////////////////////////////////////////////
 void Light::SetSpotOuterAngle(const ignition::math::Angle &_angle)
 {
-  this->dataPtr->spotOuterAngle.Radian(std::max(0.0, _angle.Radian()));
+  this->dataPtr->spotOuterAngle.SetRadian(std::max(0.0, _angle.Radian()));
 }
 
 /////////////////////////////////////////////////

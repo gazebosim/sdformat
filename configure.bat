@@ -4,7 +4,7 @@
 
 
 :: Install dependencies
-call %win_lib% :install_ign_project ign-math ign-math6
+call %win_lib% :install_ign_project ign-math main
 
 :: Set configuration variables
 @set build_type=Release
