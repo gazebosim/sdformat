@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.7" xmlns:mysim="http://example.org/mysim/schema">
+  <model name="M1">
+    <link name="L1" mysim:custom_attr_str="A" mysim:custom_attr_int="5" />
+    <link name="L2" />
+    <joint name="J1" type="revolute">
+      <parent>L1</parent>
+      <child>L2</child>
+    </joint>
+
+    <model name="M2">
+      <link name="L1" mysim:custom_attr_str="B">
+        <mysim:transmission name="simple_trans">
+          <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
+          <mysim:joint name="J1">
+            <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>
+          </mysim:joint>
+        </mysim:transmission>
+      </link>
+    </model>
+  </model>
+</sdf>
