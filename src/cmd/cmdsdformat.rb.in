@@ -29,7 +29,7 @@ require 'optparse'
 
 # Constants.
 LIBRARY_NAME = '@library_location@'
-LIBRARY_VERSION = '@SDF_VERSION_FULL@'
+LIBRARY_VERSION = '@PROJECT_VERSION_FULL@'
 COMMON_OPTIONS =
                "  -h [ --help ]                    Print this help message.\n"\
                "  --force-version <VERSION>        Use a specific library version.\n"\
