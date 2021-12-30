@@ -457,6 +457,48 @@
 
 ## libsdformat 10.X
 
+### libsdformat 10.7.0 (2021-12-27)
+
+1. Fix flattening logic for nested model names (merged forward from sdf6)
+    * [Pull request #597](https://github.com/ignitionrobotics/sdformat/pull/597)
+
+1. Create CODEOWNERS with azeey and scpeters
+    * [Pull request #650](https://github.com/ignitionrobotics/sdformat/pull/650)
+
+1. Fix xyz and rpy offsets in fixed joint reduction
+    * [Pull request #500](https://github.com/ignitionrobotics/sdformat/pull/500)
+
+1. Check joint parent link names in Model::Load
+    * [Pull request #726](https://github.com/osrf/sdformat/pull/726)
+
+1. Make exception for plugins when checking for name uniqueness
+    * [Pull request #733](https://github.com/ignitionrobotics/sdformat/pull/733)
+
+1. Added Force Torque Noise functions + Unit tests
+    * [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+
+1. Add Joint DOM API to access joint sensors
+    * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
+
+1. Add force torque sensor
+    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
+    * A contribution from Nick Lamprianidis <nlamprian@gmail.com>
+
+1. Remove outdated deprecation note from parser_urdf.hh
+    * [Pull request #740](https://github.com/osrf/sdformat/pull/740)
+
+1. Fix URDF fixed joint reduction of plugins
+    * [Pull request #745](https://github.com/osrf/sdformat/pull/745)
+
+1. Fix loading nested include with custom attributes
+    * [Pull request #789](https://github.com/ignitionrobotics/sdformat/pull/789)
+
+1. Replace custom cmake code with ign-cmake2
+    * [Pull request #780](https://github.com/osrf/sdformat/pull/780)
+
+1. Fix test compilation with USE_INTERNAL_URDF
+    * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
+
 ### libsdformat 10.6.0 (2021-09-08)
 
 1. Parse URDF continuous joint effort/velocity limits
