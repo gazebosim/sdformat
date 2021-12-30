@@ -499,6 +499,7 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
   _html += "</div>\n";
 }
 
+/////////////////////////////////////////////////
 void Element::PrintValuesImpl(const std::string &_prefix,
                               bool _includeDefaultElements,
                               bool _includeDefaultAttributes,
@@ -513,22 +514,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
   {
     _out << _prefix << "<" << this->dataPtr->name;
 
-    Param_V::const_iterator aiter;
-    for (aiter = this->dataPtr->attributes.begin();
-         aiter != this->dataPtr->attributes.end(); ++aiter)
-    {
-      // Only print attribute values if they were set
-      // TODO(anyone): GetRequired is added here to support up-conversions where
-      // a new required attribute with a default value is added. We would have
-      // better separation of concerns if the conversion process set the
-      // required attributes with their default values.
-      if ((*aiter)->GetSet() || (*aiter)->GetRequired() ||
-          _includeDefaultAttributes)
-      {
-        _out << " " << (*aiter)->GetKey() << "='"
-             << (*aiter)->GetAsString(_config) << "'";
-      }
-    }
+    this->dataPtr->PrintAttributes(_includeDefaultAttributes, _config, _out);
 
     if (this->dataPtr->elements.size() > 0)
     {
@@ -555,6 +541,50 @@ void Element::PrintValuesImpl(const std::string &_prefix,
       else
       {
         _out << "/>\n";
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
+                                     const PrintConfig &_config,
+                                     std::ostringstream &_out) const
+{
+  // Attribute exceptions are used in the event of a non-default PrintConfig
+  // which modifies the Attributes of this Element that are printed out. The
+  // modifications to an Attribute by a PrintConfig will overwrite the original
+  // existing Attribute when this Element is printed.
+  std::set<std::string> attributeExceptions;
+  if (this->name == "pose")
+  {
+    if (_config.RotationInDegrees() || _config.RotationSnapToDegrees())
+    {
+      attributeExceptions.insert("degrees");
+      _out << " " << "degrees='true'";
+
+      attributeExceptions.insert("rotation_format");
+      _out << " " << "rotation_format='euler_rpy'";
+    }
+  }
+
+  Param_V::const_iterator aiter;
+  for (aiter = this->attributes.begin();
+       aiter != this->attributes.end(); ++aiter)
+  {
+    // Only print attribute values if they were set
+    // TODO(anyone): GetRequired is added here to support up-conversions where
+    // a new required attribute with a default value is added. We would have
+    // better separation of concerns if the conversion process set the
+    // required attributes with their default values.
+    if ((*aiter)->GetSet() || (*aiter)->GetRequired() ||
+        _includeDefaultAttributes)
+    {
+      const std::string key = (*aiter)->GetKey();
+      const auto it = attributeExceptions.find(key);
+      if (it == attributeExceptions.end())
+      {
+        _out << " " << key << "='" << (*aiter)->GetAsString(_config) << "'";
       }
     }
   }

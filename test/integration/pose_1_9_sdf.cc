@@ -788,7 +788,7 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -811,7 +811,7 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -863,7 +863,7 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -887,9 +887,11 @@ TEST(Pose1_9, ToStringWithQuatXYZ)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  // The string output has changed as it was parsed from the value, instead of
+  // the original string.
   std::string elemStr = poseElem->ToString("");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
-  EXPECT_PRED2(contains, elemStr, "0.7071068 0 0 0.7071068");
+  EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
 
 //////////////////////////////////////////////////
@@ -915,10 +917,12 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  // The string output has changed as it was parsed from the value, instead of
+  // the original string.
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
-  EXPECT_PRED2(contains, elemStr, "0.7071068 0 0 0.7071068");
+  EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
 
 //////////////////////////////////////////////////
@@ -941,18 +945,22 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   std::string elemStr = poseElem->ToString("");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
-  // Changing to degrees
+  // Changing to attribute to degrees, however this does not modify the
+  // value of the underlying Param. Reparse needs to be called, which uses
+  // the input from SetFromString, to get a new value.
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
   ASSERT_TRUE(degreesAttrib->Set<bool>(true));
+  EXPECT_TRUE(valParam->Reparse());
+
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='1'");
+  EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='0'");
+  EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 

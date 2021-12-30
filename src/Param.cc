@@ -308,13 +308,15 @@ void Param::Update()
 //////////////////////////////////////////////////
 std::string Param::GetAsString(const PrintConfig &_config) const
 {
-  if (this->dataPtr->strValue.has_value() && !this->dataPtr->strValue->empty())
+  std::string valueStr;
+  if (this->GetSet() &&
+      this->dataPtr->StringFromValueImpl(_config,
+                                         this->dataPtr->typeName,
+                                         this->dataPtr->value,
+                                         this->dataPtr->strValue,
+                                         valueStr))
   {
-    return this->dataPtr->strValue.value();
-  }
-  else if(!this->dataPtr->strValue.has_value())
-  {
-    return this->dataPtr->defaultStrValue;
+    return valueStr;
   }
 
   return this->GetDefaultAsString(_config);
@@ -324,10 +326,12 @@ std::string Param::GetAsString(const PrintConfig &_config) const
 std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
   std::string defaultStr;
-  if (this->dataPtr->StringFromValueImpl(_config,
-                                         this->dataPtr->typeName,
-                                         this->dataPtr->defaultValue,
-                                         defaultStr))
+  if (this->dataPtr->StringFromValueImpl(
+        _config,
+        this->dataPtr->typeName,
+        this->dataPtr->defaultValue,
+        this->dataPtr->defaultStrValue,
+        defaultStr))
   {
     return defaultStr;
   }
@@ -785,13 +789,22 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
   return true;
 }
 
+//////////////////////////////////////////////////
+/// \brief Helper function for StringFromValueImpl for pose.
+/// \param[in] _config Printing configuration for the output string.
+/// \param[in] _parentAttributes Parent Element Attributes.
+/// \param[in] _value The variant value of this pose.
+/// \param[in] _originalStr The original string used to set this pose value.
+/// \param[out] _valueStr The pose as a string.
+/// \return True if the string was successfully retrieved from the pose, false
+/// otherwise.
 /////////////////////////////////////////////////
 bool PoseStringFromValue(const PrintConfig &_config,
                          const Param_V &_parentAttributes,
                          const ParamPrivate::ParamVariant &_value,
+                         const std::optional<std::string> &_originalStr,
                          std::string &_valueStr)
 {
-  (void)_config;
   StringStreamClassicLocale ss;
 
   const ignition::math::Pose3d *pose =
@@ -801,20 +814,6 @@ bool PoseStringFromValue(const PrintConfig &_config,
     sdferr << "Unable to get pose value from variant.\n";
     return false;
   }
-
-  auto sanitizeZero = [](double _number)
-  {
-    StringStreamClassicLocale stream;
-    if (std::fpclassify(_number) == FP_ZERO)
-    {
-      stream << 0;
-    }
-    else
-    {
-      stream << _number;
-    }
-    return stream.str();
-  };
 
   const bool defaultInDegrees = false;
   bool inDegrees = defaultInDegrees;
@@ -828,6 +827,10 @@ bool PoseStringFromValue(const PrintConfig &_config,
   const std::string threeSpacedDelimiter = "   ";
   std::string posRotDelimiter = defaultPosRotDelimiter;
 
+  const bool defaultSnapDegreesToInterval = false;
+  bool snapDegreesToInterval = defaultSnapDegreesToInterval;
+
+  // Checking parent Element Attributes for desired pose representations.
   for (const auto &p : _parentAttributes)
   {
     const std::string key = p->GetKey();
@@ -854,6 +857,39 @@ bool PoseStringFromValue(const PrintConfig &_config,
     }
   }
 
+  // Checking PrintConfig for desired pose representations. This overrides
+  // any parent Element Attributes.
+  if (_config.RotationInDegrees())
+  {
+    inDegrees = true;
+    rotationFormat = "euler_rpy";
+    posRotDelimiter = threeSpacedDelimiter;
+  }
+  if (_config.RotationSnapToDegrees().has_value() &&
+      _config.RotationSnapTolerance().has_value())
+  {
+    inDegrees = true;
+    rotationFormat = "euler_rpy";
+    snapDegreesToInterval = true;
+    posRotDelimiter = threeSpacedDelimiter;
+  }
+
+  // Helper function that sanitizes zero values like '-0'
+  auto sanitizeZero = [](double _number)
+  {
+    StringStreamClassicLocale stream;
+    if (std::fpclassify(_number) == FP_ZERO)
+    {
+      stream << 0;
+    }
+    else
+    {
+      stream << _number;
+    }
+    return stream.str();
+  };
+
+  // Returning pose string representations based on desired configurations.
   if (rotationFormat == "quat_xyzw" && inDegrees)
   {
     sdferr << "Invalid pose with //pose[@degrees='true'] and "
@@ -870,6 +906,36 @@ bool PoseStringFromValue(const PrintConfig &_config,
     _valueStr = ss.str();
     return true;
   }
+  else if (rotationFormat == "euler_rpy" && inDegrees && snapDegreesToInterval)
+  {
+    // Helper function that returns a snapped value if it is within the
+    // tolerance of multiples of interval, otherwise the orginal value is
+    // returned.
+    auto snapToInterval =
+        [](double _val, unsigned int _interval, double _tolerance)
+    {
+      double closestQuotient = std::round(_val / _interval);
+      double distance = std::abs(_val - closestQuotient * _interval);
+      if (distance < _tolerance)
+      {
+        return _interval * closestQuotient;
+      }
+      return _val;
+    };
+
+    const unsigned int interval = _config.RotationSnapToDegrees().value();
+    const double tolerance = _config.RotationSnapTolerance().value();
+
+    ss << pose->Pos() << posRotDelimiter
+       << sanitizeZero(snapToInterval(
+              IGN_RTOD(pose->Rot().Roll()), interval, tolerance)) << " "
+       << sanitizeZero(snapToInterval(
+              IGN_RTOD(pose->Rot().Pitch()), interval, tolerance)) << " "
+       << sanitizeZero(snapToInterval(
+              IGN_RTOD(pose->Rot().Yaw()), interval, tolerance));
+    _valueStr = ss.str();
+    return true;
+  }
   else if (rotationFormat == "euler_rpy" && inDegrees)
   {
     ss << pose->Pos() << posRotDelimiter
@@ -877,6 +943,17 @@ bool PoseStringFromValue(const PrintConfig &_config,
        << sanitizeZero(IGN_RTOD(pose->Rot().Pitch())) << " "
        << sanitizeZero(IGN_RTOD(pose->Rot().Yaw()));
     _valueStr = ss.str();
+    return true;
+  }
+
+  // If no modification to the value is needed, the original string is returned.
+  if (!_config.RotationInDegrees() &&
+      !_config.RotationSnapToDegrees().has_value() &&
+      !_config.RotationSnapTolerance().has_value() &&
+      _originalStr.has_value() &&
+      !_originalStr->empty())
+  {
+    _valueStr = _originalStr.value();
     return true;
   }
 
@@ -889,12 +966,42 @@ bool PoseStringFromValue(const PrintConfig &_config,
 }
 
 /////////////////////////////////////////////////
-bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
-                                       const std::string &_typeName,
-                                       const ParamVariant &_value,
-                                       std::string &_valueStr) const
+bool ParamPrivate::StringFromValueImpl(
+    const PrintConfig &_config,
+    const std::string &_typeName,
+    const ParamVariant &_value,
+    std::string &_valueStr) const
 {
-  if (_typeName == "ignition::math::Pose3d" ||
+  return this->StringFromValueImpl(
+      _config,
+      _typeName,
+      _value,
+      std::nullopt,
+      _valueStr);
+}
+
+/////////////////////////////////////////////////
+bool ParamPrivate::StringFromValueImpl(
+    const PrintConfig &_config,
+    const std::string &_typeName,
+    const ParamVariant &_value,
+    const std::optional<std::string> &_originalStr,
+    std::string &_valueStr) const
+{
+  // This will be handled in a type specific manner
+  if (_typeName == "bool")
+  {
+    const bool *val = std::get_if<bool>(&_value);
+    if (!val)
+    {
+      sdferr << "Unable to get bool value from variant.\n";
+      return false;
+    }
+
+    _valueStr = *val ? "true" : "false";
+    return true;
+  }
+  else if (_typeName == "ignition::math::Pose3d" ||
       _typeName == "pose" ||
       _typeName == "Pose")
   {
@@ -902,9 +1009,9 @@ bool ParamPrivate::StringFromValueImpl(const PrintConfig &_config,
     if (!this->ignoreParentAttributes && p)
     {
       return PoseStringFromValue(
-          _config, p->GetAttributes(), _value, _valueStr);
+          _config, p->GetAttributes(), _value, _originalStr, _valueStr);
     }
-    return PoseStringFromValue(_config, {}, _value, _valueStr);
+    return PoseStringFromValue(_config, {}, _value, _originalStr, _valueStr);
   }
 
   StringStreamClassicLocale ss;

@@ -21,6 +21,81 @@
 #include "test_config.h"
 
 /////////////////////////////////////////////////
+TEST(PrintConfig, Construction)
+{
+  sdf::PrintConfig config;
+  EXPECT_FALSE(config.RotationInDegrees());
+  EXPECT_FALSE(config.RotationSnapToDegrees());
+  EXPECT_FALSE(config.PreserveIncludes());
+}
+
+/////////////////////////////////////////////////
+TEST(PrintConfig, RotationInDegrees)
+{
+  sdf::PrintConfig config;
+  EXPECT_FALSE(config.RotationInDegrees());
+
+  config.SetRotationInDegrees(true);
+  EXPECT_TRUE(config.RotationInDegrees());
+
+  config.SetRotationInDegrees(false);
+  EXPECT_FALSE(config.RotationInDegrees());
+}
+
+/////////////////////////////////////////////////
+TEST(PrintConfig, RotationSnapToDegrees)
+{
+  sdf::PrintConfig config;
+  EXPECT_FALSE(config.RotationSnapToDegrees().has_value());
+  EXPECT_FALSE(config.RotationSnapTolerance().has_value());
+
+  EXPECT_TRUE(config.SetRotationSnapToDegrees(5, 0.01));
+  ASSERT_TRUE(config.RotationSnapToDegrees().has_value());
+  EXPECT_EQ(5u, config.RotationSnapToDegrees().value());
+  ASSERT_TRUE(config.RotationSnapTolerance().has_value());
+  EXPECT_DOUBLE_EQ(0.01, config.RotationSnapTolerance().value());
+
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(0, 0.01));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(360 + 1, 0.01));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, -1e6));
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, 360 + 1e-6));
+
+  EXPECT_FALSE(config.SetRotationSnapToDegrees(5, 5 + 1e-6));
+  EXPECT_TRUE(config.SetRotationSnapToDegrees(5, 5 - 1e-6));
+  ASSERT_TRUE(config.RotationSnapToDegrees().has_value());
+  EXPECT_EQ(5u, config.RotationSnapToDegrees().value());
+  ASSERT_TRUE(config.RotationSnapTolerance().has_value());
+  EXPECT_DOUBLE_EQ(5 - 1e-6, config.RotationSnapTolerance().value());
+}
+
+/////////////////////////////////////////////////
+TEST(PrintConfig, Compare)
+{
+  sdf::PrintConfig first;
+  sdf::PrintConfig second;
+  EXPECT_TRUE(first == second);
+  EXPECT_TRUE(second == first);
+
+  first.SetRotationInDegrees(true);
+  EXPECT_TRUE(first.RotationInDegrees());
+  EXPECT_FALSE(second.RotationInDegrees());
+  EXPECT_FALSE(first == second);
+  EXPECT_FALSE(second == first);
+
+  second.SetRotationInDegrees(true);
+  EXPECT_TRUE(first == second);
+  EXPECT_TRUE(second == first);
+
+  EXPECT_TRUE(first.SetRotationSnapToDegrees(5, 0.01));
+  EXPECT_FALSE(first == second);
+  EXPECT_FALSE(second == first);
+
+  EXPECT_TRUE(second.SetRotationSnapToDegrees(5, 0.01));
+  EXPECT_TRUE(first == second);
+  EXPECT_TRUE(second == first);
+}
+
+/////////////////////////////////////////////////
 TEST(PrintConfig, PreserveIncludes)
 {
   sdf::PrintConfig config;
