@@ -1912,13 +1912,13 @@ void copyChildren(ElementPtr _sdf,
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->Name();
+    std::string elemName = elemXml->Name();
 
-    if (_sdf->HasElementDescription(elem_name))
+    if (_sdf->HasElementDescription(elemName))
     {
       if (!_onlyUnknown)
       {
-        sdf::ElementPtr element = _sdf->AddElement(elem_name);
+        sdf::ElementPtr element = _sdf->AddElement(elemName);
 
         // FIXME: copy attributes
         for (const auto *attribute = elemXml->FirstAttribute();
@@ -1941,13 +1941,15 @@ void copyChildren(ElementPtr _sdf,
     {
       ElementPtr element(new Element);
       element->SetParent(_sdf);
-      element->SetName(elem_name);
+      element->SetName(elemName);
       std::optional<std::string> typeName = std::nullopt;
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
         const std::string attributeName(attribute->Name());
-        if (attributeName == "type")
+        // TODO(chapulina) This isn't a good place to parse pose-specific
+        // attributes
+        if (elemName == "pose" && attributeName == "type")
           typeName = attribute->Value();
 
         element->AddAttribute(attributeName, "string", "", 1, "");
