@@ -186,7 +186,7 @@ TEST(DOMPlugin, LoadWithChildren)
   std::string pluginStr = R"(<plugin name='3D View' filename='MinimalScene'>
   <ignition-gui>
     <title>3D View</title>
-    <property type='bool' key='showTitleBar'>false</property>
+    <property type='bool' key='showTitleBar'>0</property>
     <property type='string' key='state'>docked</property>
   </ignition-gui>
   <engine>ogre</engine>
