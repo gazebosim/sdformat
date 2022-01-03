@@ -640,14 +640,17 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
   std::string tmp(trimmed);
   std::string lowerTmp = lowercase(trimmed);
 
-  // "true" and "false" doesn't work properly
-  if (lowerTmp == "true")
+  // "true" and "false" doesn't work properly (except for string)
+  if (_typeName != "string" && _typeName != "std::string")
   {
-    tmp = "1";
-  }
-  else if (lowerTmp == "false")
-  {
-    tmp = "0";
+    if (lowerTmp == "true")
+    {
+      tmp = "1";
+    }
+    else if (lowerTmp == "false")
+    {
+      tmp = "0";
+    }
   }
 
   bool isHex = lowerTmp.compare(0, 2, "0x") == 0;
