@@ -39,6 +39,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
 #include "sdf/Cylinder.hh"
+#include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
@@ -236,6 +237,28 @@ namespace usd
     return ParseSdfBoxGeometry(planeBoxGeometry, _stage, _path);
   }
 
+  bool ParseSdfEllipsoid(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
+      const std::string &_path) {
+    const auto sdfEllipsoid = _geometry.EllipsoidShape();
+    
+    auto usdEllipsoid = pxr::UsdGeomSphere::Define(_stage, pxr::SdfPath(_path));
+    const auto &maxRadii = sdfEllipsoid->Radii().Max();
+    usdEllipsoid.CreateRadiusAttr().Set(maxRadii);
+    pxr::UsdGeomXformCommonAPI xform(usdEllipsoid);
+    xform.SetScale(pxr::GfVec3f{
+      sdfEllipsoid->Radii().X() / maxRadii,
+      sdfEllipsoid->Radii().Y() / maxRadii,
+      sdfEllipsoid->Radii().Z() / maxRadii,
+    });
+    // extents is the bounds before any transformation
+    pxr::VtArray<pxr::GfVec3f> extentBounds;
+    extentBounds.push_back(pxr::GfVec3f{-maxRadii});
+    extentBounds.push_back(pxr::GfVec3f{maxRadii});
+    usdEllipsoid.CreateExtentAttr().Set(extentBounds);
+
+    return true;
+  }
+
   bool ParseSdfGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
@@ -261,6 +284,8 @@ namespace usd
         typeParsed = ParseSdfPlaneGeometry(_geometry, _stage, _path);
         break;
       case sdf::GeometryType::ELLIPSOID:
+        typeParsed = ParseSdfEllipsoid(_geometry, _stage, _path);
+        break;
       case sdf::GeometryType::HEIGHTMAP:
       default:
         std::cerr << "Geometry type is either invalid or not supported\n";
