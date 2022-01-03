@@ -121,6 +121,10 @@ namespace usd
         attr.SetColorSpace(_colorSpace);
       }
     }
+    else
+    {
+      std::cerr << "Not able to convert the prim to a UsdShadeShader\n";
+    }
   }
 
   pxr::UsdShadeMaterial ParseSdfMaterial(
@@ -150,8 +154,15 @@ namespace usd
       material = pxr::UsdShadeMaterial(usdMaterialPrim);
     }
 
-    auto shaderPrim = _stage->DefinePrim(
-      pxr::SdfPath(mtl_path + "/Shader"), pxr::TfToken("Shader"));
+    auto usdShader = pxr::UsdShadeShader::Define(
+      _stage,
+      pxr::SdfPath(mtl_path + "/Shader"));
+    auto shaderPrim = _stage->GetPrimAtPath(pxr::SdfPath(mtl_path + "/Shader"));
+    if (!shaderPrim)
+    {
+      std::cerr << "Not able to cast the UsdShadeShader to a Prim" << '\n';
+      return material;
+    }
 
     auto shader_out = pxr::UsdShadeConnectableAPI(shaderPrim).CreateOutput(
       pxr::TfToken("out"), pxr::SdfValueTypeNames->Token);
@@ -161,7 +172,6 @@ namespace usd
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
     material.CreateDisplacementOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
-    pxr::UsdShadeShader usdShader(shaderPrim);
     usdShader.GetImplementationSourceAttr().Set(
       pxr::UsdShadeTokens->sourceAsset);
     usdShader.SetSourceAsset(

@@ -24,32 +24,12 @@
 #include "sdf/sdf.hh"
 #include "sdf_usd_parser/world.hh"
 
-// //////////////////////////////////////////////////
-// // Getting the first .sdf file in the path
-// std::string findFuelResourceSdf(const std::string &_path)
-// {
-//   if (!common::exists(_path))
-//     return "";
-//
-//   for (common::DirIter file(_path); file != common::DirIter(); ++file)
-//   {
-//     std::string current(*file);
-//     if (!common::isFile(current))
-//       continue;
-//
-//     auto fileName = common::basename(current);
-//     auto fileExtensionIndex = fileName.rfind(".");
-//     auto fileExtension = fileName.substr(fileExtensionIndex + 1);
-//
-//     if (fileExtension == "sdf")
-//     {
-//       return current;
-//     }
-//   }
-//   return "";
-// }
-
 //////////////////////////////////////////////////
+/// \brief Get the full path of a file
+/// \param[in] _path Where to being searching for the file
+/// \param[in] _name The name of the file to find
+/// \return The full path to the file named _name. Empty string is returned if
+/// the file could not be found.
 std::string findFileByName(const std::string &_path, const std::string &_name)
 {
   for (ignition::common::DirIter file(_path);
@@ -84,8 +64,30 @@ std::string findFileByName(const std::string &_path, const std::string &_name)
 }
 
 //////////////////////////////////////////////////
-std::string findFileByExtension(const std::string &_path)
+/// \brief Get the full path of a file based on the extension
+/// \param[in] _path Where to being searching for the file
+/// \param[in] _extension Where to being searching for the file
+/// \return The full path to the file with an extension _extension. Empty
+/// string is returned if the file could not be found.
+std::string findFileByExtension(
+  const std::string &_path, const std::string &_extension,
+  bool insertDirectories = false)
 {
+  if (insertDirectories)
+  {
+    for (ignition::common::DirIter file(_path);
+      file != ignition::common::DirIter(); ++file)
+    {
+      std::string current(*file);
+      if (ignition::common::isDirectory(current))
+      {
+        auto systemPaths = ignition::common::systemPaths();
+        systemPaths->AddFilePaths(current);
+        findFileByExtension(current, "", true);
+      }
+    }
+  }
+
   for (ignition::common::DirIter file(_path);
     file != ignition::common::DirIter(); ++file)
   {
@@ -93,9 +95,7 @@ std::string findFileByExtension(const std::string &_path)
 
     if (ignition::common::isDirectory(current))
     {
-      auto systemPaths = ignition::common::systemPaths();
-      systemPaths->AddFilePaths(current);
-      std::string result = findFileByExtension(current);
+      std::string result = findFileByExtension(current, _extension);
       if (result.empty())
       {
         continue;
@@ -113,7 +113,7 @@ std::string findFileByExtension(const std::string &_path)
     auto fileExtensionIndex = fileName.rfind(".");
     auto fileExtension = fileName.substr(fileExtensionIndex + 1);
 
-    if (fileExtension == "sdf")
+    if (fileExtension == _extension)
     {
       return current;
     }
@@ -122,6 +122,11 @@ std::string findFileByExtension(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
+/// \brief This functions is used by sdf::setFindCallback to find
+/// the resources defined in the URI
+/// \param[in] _uri URI of the file to find
+/// \return The full path to the uri. Empty
+/// string is returned if the file could not be found.
 std::string FindResources(const std::string &_uri)
 {
   ignition::common::URI uri(_uri);
@@ -153,7 +158,7 @@ std::string FindResources(const std::string &_uri)
   auto fileExtensionIndex = fileName.rfind(".");
   if (fileExtensionIndex == std::string::npos)
   {
-    return findFileByExtension(path);
+    return findFileByExtension(path, "sdf", true);
   }
   else
   {
@@ -163,6 +168,11 @@ std::string FindResources(const std::string &_uri)
 }
 
 //////////////////////////////////////////////////
+/// \brief This functions is used by sdf::addFindFileURICallback to find
+/// the resources defined in the URI
+/// \param[in] _uri URI of the file to find
+/// \return The full path to the uri. Empty
+/// string is returned if the file could not be found.
 std::string FindResourceUri(const ignition::common::URI &_uri)
 {
   return FindResources(_uri.Str());

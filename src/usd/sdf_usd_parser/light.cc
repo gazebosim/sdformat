@@ -82,7 +82,7 @@ namespace usd
         // (along with the intensity from the base light class), which is high
         // to approximate the sun. So, intensity for directional lights
         // don't need to be increased any further
-        increaseIntensity = false;
+        increaseIntensity = true;
         typeParsed = ParseSdfDirectionalLight(_light, _stage, sdfLightPath);
         break;
       case sdf::LightType::INVALID:

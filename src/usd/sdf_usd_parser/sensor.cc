@@ -45,11 +45,12 @@ namespace usd
 
     // TODO(adlarkin) check units to make sure they match (no documented units for SDF)
     usdCamera.CreateFocalLengthAttr().Set(
-        static_cast<float>(sdfCamera->LensFocalLength()));
+        static_cast<float>(sdfCamera->LensFocalLength() * 180 / 3.1416));
     usdCamera.CreateClippingRangeAttr().Set(pxr::GfVec2f(
-          static_cast<float>(sdfCamera->NearClip()),
-          static_cast<float>(sdfCamera->FarClip())));
-
+        static_cast<float>(sdfCamera->NearClip()),
+        static_cast<float>(sdfCamera->FarClip())));
+    usdCamera.CreateHorizontalApertureAttr().Set(
+        static_cast<float>(sdfCamera->HorizontalFov().Degree()));
     // TODO(adlarkin) Do I need to handle the following in USD
     // (I don't think there's an SDF equivalent):
     //  * horizontal and vertical aperture (there's also an offset for these)
@@ -141,7 +142,17 @@ namespace usd
     }
 
     if (typeParsed)
-      usd::SetPose(usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
+    {
+      if (_sensor.Type() == sdf::SensorType::CAMERA)
+      {
+        ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
+        usd::SetPose(poseCamera * usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
+      }
+      else
+      {
+        usd::SetPose(usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
+      }
+    }
 
     return typeParsed;
   }

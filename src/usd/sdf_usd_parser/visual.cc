@@ -64,9 +64,8 @@ namespace usd
                       << _visual.Name() << "]\n";
             return false;
           }
+          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
         }
-
-        pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
     }
     else
     {

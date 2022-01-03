@@ -170,7 +170,7 @@ namespace usd
           return false;
         }
 
-        if (ignMesh->SubMeshCount() != 1 && isNameInPath)
+        if (ignMesh->SubMeshCount() != 1)
         {
           std::string pathLowerCase = ignition::common::lowercase(_path);
           std::string subMeshLowerCase = ignition::common::lowercase(subMesh->Name());
@@ -465,7 +465,7 @@ namespace usd
   bool ParseSdfEllipsoid(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path) {
     const auto sdfEllipsoid = _geometry.EllipsoidShape();
-    
+
     auto usdEllipsoid = pxr::UsdGeomSphere::Define(_stage, pxr::SdfPath(_path));
     const auto &maxRadii = sdfEllipsoid->Radii().Max();
     usdEllipsoid.CreateRadiusAttr().Set(maxRadii);

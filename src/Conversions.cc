@@ -75,6 +75,17 @@ namespace sdf
       }
       out.SetPbrMaterial(pbrOut);
     }
+    else
+    {
+      if (!_in->TextureImage().empty())
+      {
+        sdf::Pbr pbrOut;
+        sdf::PbrWorkflow pbrWorkflow;
+        pbrWorkflow.SetAlbedoMap(_in->TextureImage());
+        pbrOut.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, pbrWorkflow);
+        out.SetPbrMaterial(pbrOut);
+      }
+    }
 
     return out;
   }
@@ -89,8 +100,7 @@ namespace sdf
     out->SetAmbient(_in.Ambient());
     out->SetRenderOrder(_in.RenderOrder());
     out->SetLighting(_in.Lighting());
-    // TODO(ahcorde): Review this
-    // out->SetTwoSidedEnabled(_in.DoubleSided());
+    out->SetAlphaFromTexture(false, false, _in.DoubleSided());
 
     const sdf::Pbr * pbr = _in.PbrMaterial();
     if (pbr != nullptr)
