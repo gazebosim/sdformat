@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
-#ifndef SDF_VISIBLE_HH_
-#define SDF_VISIBLE_HH_
-
-#include <sdf/Export.hh>
-
-/** \def SDFORMAT_VISIBLE
- * Use to represent "symbol visible" if supported
  */
-#define SDFORMAT_VISIBLE IGNITION_SDFORMAT_VISIBLE
 
-/** \def SDFORMAT_HIDDEN
- * Use to represent "symbol hidden" if supported
- */
-#define SDFORMAT_HIDDEN IGNITION_SDFORMAT_HIDDEN
+#ifndef SDF_SDF_CONFIG_H_
+#define SDF_SDF_CONFIG_H_
 
-// SDF_VISIBLE_HH_
+// This file is kept for backwards compatibility.
+// Use sdf/config.hh directly instead.
+#include <sdf/config.hh>
+
 #endif

@@ -7,7 +7,12 @@
   </attribute>
 
   <element name="static" type="bool" default="false" required="0">
-    <description>If set to true, the model is immovable. Otherwise the model is simulated in the dynamics engine.</description>
+    <description>
+      If set to true, the model is immovable; i.e., a dynamics engine will not
+      update its position. The model's implicit frame will be attached to the
+      world's implicit frame. This holds even if this model is nested (or
+      included) by another model.
+    </description>
   </element>
 
   <element name="self_collide" type="bool" default="false" required="0">
