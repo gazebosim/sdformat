@@ -64,12 +64,10 @@ find_program(XMLLINT_EXE xmllint)
 if (EXISTS ${XMLLINT_EXE})
   set (tests ${tests} schema_test.cc)
 else()
-  BUILD_WARNING("xmllint not found. schema_test won't be run")
+  ign_build_warning("xmllint not found. schema_test won't be run")
 endif()
 
-link_directories(${PROJECT_BINARY_DIR}/test)
-
-sdf_build_tests(${tests})
+ign_build_tests(TYPE ${TEST_TYPE} SOURCES ${tests} INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test)
 
 if (EXISTS ${XMLLINT_EXE})
   # Need to run schema target (build .xsd files) before running schema_test
@@ -80,5 +78,5 @@ endif()
 if (UNIX AND NOT APPLE)
   configure_file(all_symbols_have_version.bash.in ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash @ONLY)
   add_test(NAME INTEGRATION_versioned_symbols
-    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash ${CMAKE_BINARY_DIR}/src/libsdformat${SDF_MAJOR_VERSION}.so)
+    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash $<TARGET_FILE:${PROJECT_NAME}>)
 endif()

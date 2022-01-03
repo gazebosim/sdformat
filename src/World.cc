@@ -245,7 +245,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 
   for (const auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    frameNames.insert(ifaceModelPair.second->Name()).second;
+    frameNames.insert(ifaceModelPair.second->Name());
   }
 
   // Load all the physics.

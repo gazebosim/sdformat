@@ -340,7 +340,6 @@ TEST(Pose1_9, PoseSet8ValuesFail)
 #endif
 
   buffer.str("");
-  using Pose = ignition::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -928,8 +927,6 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
 //////////////////////////////////////////////////
 TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
 {
-  using Pose = ignition::math::Pose3d;
-
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);

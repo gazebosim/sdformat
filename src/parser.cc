@@ -1912,13 +1912,13 @@ void copyChildren(ElementPtr _sdf,
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->Name();
+    std::string elemName = elemXml->Name();
 
-    if (_sdf->HasElementDescription(elem_name))
+    if (_sdf->HasElementDescription(elemName))
     {
       if (!_onlyUnknown)
       {
-        sdf::ElementPtr element = _sdf->AddElement(elem_name);
+        sdf::ElementPtr element = _sdf->AddElement(elemName);
 
         // FIXME: copy attributes
         for (const auto *attribute = elemXml->FirstAttribute();
@@ -1941,26 +1941,18 @@ void copyChildren(ElementPtr _sdf,
     {
       ElementPtr element(new Element);
       element->SetParent(_sdf);
-      element->SetName(elem_name);
-      std::optional<std::string> typeName = std::nullopt;
+      element->SetName(elemName);
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
-        const std::string attributeName(attribute->Name());
-        if (attributeName == "type")
-          typeName = attribute->Value();
-
-        element->AddAttribute(attributeName, "string", "", 1, "");
-        element->GetAttribute(attributeName)->SetFromString(
-          attribute->Value());
+        element->AddAttribute(attribute->Name(), "string", "", 1, "");
+        element->GetAttribute(attribute->Name())->SetFromString(
+            attribute->Value());
       }
 
       if (elemXml->GetText() != nullptr)
       {
-        if (typeName.has_value())
-          element->AddValue(typeName.value(), elemXml->GetText(), true);
-        else
-          element->AddValue("string", elemXml->GetText(), true);
+        element->AddValue("string", elemXml->GetText(), true);
       }
 
       copyChildren(element, elemXml, _onlyUnknown);

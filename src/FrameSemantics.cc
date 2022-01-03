@@ -780,7 +780,6 @@ Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 
   const std::string scopeContextName = "__model__";
 
-  auto rootId = ignition::math::graph::kNullId;
   if (_isRoot)
   {
     // The __root__ vertex identifies the scope that contains a root level
@@ -793,7 +792,6 @@ Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
     // more complexity to the validateFrameAttachedToGraph code.
     _out = _out.AddScopeVertex(
         "", "__root__", scopeContextName, sdf::FrameType::STATIC_MODEL);
-    rootId = _out.ScopeVertexId();
   }
 
   const auto modelId = _out.AddVertex(_model.name, frameType).Id();
