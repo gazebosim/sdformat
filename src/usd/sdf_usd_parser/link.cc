@@ -26,6 +26,7 @@
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Link.hh"
+#include "sdf_usd_parser/light.hh"
 #include "sdf_usd_parser/sensor.hh"
 #include "sdf_usd_parser/utils.hh"
 #include "sdf_usd_parser/visual.hh"
@@ -38,7 +39,7 @@ namespace usd
     const pxr::SdfPath sdfLinkPath(_path);
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
-    usd::SetPose(_link.RawPose(), _stage, sdfLinkPath);
+    usd::SetPose(usd::PoseWrtParent(_link), _stage, sdfLinkPath);
 
     if (_rigidBody)
     {
@@ -67,14 +68,23 @@ namespace usd
       }
       massAPI.CreateMassAttr().Set(
           static_cast<float>(_link.Inertial().MassMatrix().Mass()));
+
+      const auto diagonalInertial =
+        _link.Inertial().MassMatrix().DiagonalMoments();
+      massAPI.CreateDiagonalInertiaAttr().Set(pxr::GfVec3f(
+        diagonalInertial[0], diagonalInertial[1], diagonalInertial[2]));
+
+      const auto centerOfMass = _link.Inertial().Pose();
+      massAPI.CreateCenterOfMassAttr().Set(pxr::GfVec3f(
+        centerOfMass.Pos().X(),
+        centerOfMass.Pos().Y(),
+        centerOfMass.Pos().Z()));
     }
 
     // TODO(adlarkin) finish parsing link. It will look something like this
     // (this does not cover all elements of a link that need to be parsed):
     //  * ParseSdfVisual
     //  * ParseSdfCollision
-    //  * ParseSdfSensor
-    //  * ParseSdfLight (look at world.cc for how this is being done)
 
     // parse all of the link's visuals and convert them to USD
     for (uint64_t i = 0; i < _link.VisualCount(); ++i)
@@ -96,6 +106,18 @@ namespace usd
       if (!ParseSdfSensor(sensor, _stage, sensorPath))
       {
         std::cerr << "Error parsing sensor [" << sensor.Name() << "]\n";
+        return false;
+      }
+    }
+
+    // links can have lights attached to them
+    for (uint64_t i = 0; i < _link.LightCount(); ++i)
+    {
+      const auto light = *(_link.LightByIndex(i));
+      auto lightPath = std::string(_path + "/" + light.Name());
+      if (!ParseSdfLight(light, _stage, lightPath))
+      {
+        std::cerr << "Error parsing light [" << light.Name() << "]\n";
         return false;
       }
     }

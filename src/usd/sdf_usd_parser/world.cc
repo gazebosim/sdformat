@@ -21,12 +21,15 @@
 #include <iostream>
 #include <string>
 
+#include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
+#include <pxr/usd/usdPhysics/articulationRootAPI.h>
 #include <pxr/usd/usdPhysics/scene.h>
 
+#include "sdf/Joint.hh"
 #include "sdf/World.hh"
 #include "sdf_usd_parser/light.hh"
 #include "sdf_usd_parser/model.hh"
@@ -51,14 +54,22 @@ namespace usd
       const std::string &_path)
   {
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
+    _stage->SetEndTimeCode(100);
+    _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1.0);
+    _stage->SetStartTimeCode(0);
+    _stage->SetTimeCodesPerSecond(24);
 
     const pxr::SdfPath worldPrimPath(_path);
     auto usdWorldPrim = _stage->DefinePrim(worldPrimPath);
 
     auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
         pxr::SdfPath(_path + "/physics"));
-    // TODO(adlarkin) populate information in usdPhysics, if needed?
-    // Otherwise, no need to save the return variable
+    const auto &sdfWorldGravity = _world.Gravity();
+    const auto normalizedGravity = sdfWorldGravity.Normalized();
+    usdPhysics.CreateGravityDirectionAttr().Set(pxr::GfVec3f(
+          normalizedGravity.X(), normalizedGravity.Y(), normalizedGravity.Z()));
+    usdPhysics.CreateGravityMagnitudeAttr().Set(
+        static_cast<float>(sdfWorldGravity.Length()));
 
     // parse all of the world's models and convert them to USD
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
@@ -70,6 +81,28 @@ namespace usd
       {
         std::cerr << "Error parsing model [" << model.Name() << "]\n";
         return false;
+      }
+      if (model.JointCount() > 0)
+      {
+        for (uint64_t j = 0; j < model.JointCount(); j++)
+        {
+          const auto joint = *(model.JointByIndex(j));
+          if (joint.Type() == sdf::JointType::REVOLUTE)
+          {
+            auto prim = _stage->GetPrimAtPath(pxr::SdfPath(modelPath));
+            if (prim)
+            {
+              if (!pxr::UsdPhysicsArticulationRootAPI::Apply(prim))
+              {
+                std::cerr << "Internal error: unable to mark Xform at path ["
+                          << modelPath << "] as ArticulationRootAPI "
+                          << "some feature might not work\n";
+                continue;
+              }
+            }
+            break;
+          }
+        }
       }
     }
 

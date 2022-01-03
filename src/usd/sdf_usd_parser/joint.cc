@@ -22,7 +22,7 @@
 #include <unordered_map>
 
 #include <ignition/math/Angle.hh>
-#include <ignition/math/Quaternion.hh>
+#include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include <pxr/base/gf/quatf.h>
 #include <pxr/base/gf/vec3f.h>
@@ -30,6 +30,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/relationship.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdPhysics/driveAPI.h>
 #include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdPhysics/prismaticJoint.h>
@@ -40,95 +41,71 @@
 #include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
+#include "sdf_usd_parser/utils.hh"
 
 namespace usd
 {
   /// \brief Helper function for setting a USD joint's pose relative to the
-  /// joint's parent and child links.
+  /// joint's parent and child.
   /// \param[in] _jointPrim The USD joint prim
   /// \param[in] _joint The SDF representation of _jointPrim
-  /// \param[in] _parentModel The SDF model that has the SDF definition of
-  /// _joint, which is used to extract pose information from the joint's parent
-  /// and child links.
+  /// \param[in] _parentModel The SDF model that is the parent of _joint
   /// \return True if _joint's pose was properly set relative to the joint's
-  /// parent and child links. False otherwise
-  /// \note By default, SDF has the joint at the root of the child link. So,
-  /// this method assumes that the USD joint should be placed at the root of the
-  /// child link to mimic the default SDF behavior.
-  /// TODO(adlarkin) handle joints that don't have a default pose at the root of
-  /// the child link
+  /// parent and child. False otherwise
   bool SetUSDJointPose(pxr::UsdPhysicsJoint &_jointPrim,
       const sdf::Joint &_joint, const sdf::Model &_parentModel)
   {
-    auto sdfChildLink = _parentModel.LinkByName(_joint.ChildLinkName());
-    if (!sdfChildLink)
-    {
-      std::cerr << "Internal error: unable to find a link named ["
-                << _joint.ChildLinkName() << "] in model ["
-                << _parentModel.Name() << "]\n";
-      return false;
-    }
-
-    ignition::math::Vector3d relativePosition;
-    ignition::math::Quaterniond relativeRotation;
-
+    ignition::math::Pose3d parentToJoint;
     if (_joint.ParentLinkName() == "world")
     {
-      // This joint's parent is the world, and the SDF child link pose is
-      // w.r.t world by default, so no pose computations need to be done
-      // since the child link pose is already w.r.t the parent
-      relativePosition = sdfChildLink->RawPose().Pos();
-      relativeRotation = sdfChildLink->RawPose().Rot();
+      const auto modelToJoint = usd::PoseWrtParent(_joint);
+      // it is assumed the _parentModel's parent is the world
+      const auto worldToModel = usd::PoseWrtParent(_parentModel);
+      parentToJoint = worldToModel * modelToJoint;
     }
     else
     {
-      auto sdfParentLink = _parentModel.LinkByName(_joint.ParentLinkName());
-      if (!sdfParentLink)
+      auto errors =
+        _joint.SemanticPose().Resolve(parentToJoint, _joint.ParentLinkName());
+      if (!errors.empty())
       {
-        std::cerr << "Internal error: unable to find a link named ["
-                  << _joint.ParentLinkName() << "] in model ["
-                  << _parentModel.Name() << "]\n";
+        std::cerr << "Unable to get the pose of joint [" << _joint.Name()
+                  << "] w.r.t. its parent [" << _joint.ParentLinkName() << "]\n"
+                  << "The following errors occurred during pose computation:"
+                  << "\n\t" << errors;
         return false;
       }
-
-      // Compute the child link's pose w.r.t the parent link's pose.
-      //
-      // Given the following frame names:
-      // W: World/inertial frame
-      // P: Parent link frame
-      // C: Child link frame
-      //
-      // And the following quantities:
-      // parentWorldPose (X_WP): Pose of the parent link frame w.r.t the world
-      // childWorldPose (X_WC): Pose of the child link frame w.r.t the world
-      // childParentPose (X_PC): Pose of the child link frame w.r.t. the parent
-      //   link frame
-      //
-      // The pose of the child link frame w.r.t the parent link frame (X_PC)
-      // is calculated as:
-      //   X_PC = (X_WP)^-1 * X_WC
-      const auto &x_wp = sdfParentLink->RawPose();
-      const auto &x_wc = sdfChildLink->RawPose();
-      const auto &childParentPose = x_wp.Inverse() * x_wc;
-
-      relativePosition = childParentPose.Pos();
-      relativeRotation = childParentPose.Rot();
     }
-
-
-    // set the joint's pose relative to the parent link to be at the root of
-    // the child link (see \note in the method documentation above)
     _jointPrim.CreateLocalPos0Attr().Set(pxr::GfVec3f(
-          relativePosition.X(), relativePosition.Y(), relativePosition.Z()));
+          parentToJoint.Pos().X(),
+          parentToJoint.Pos().Y(),
+          parentToJoint.Pos().Z()));
     _jointPrim.CreateLocalRot0Attr().Set(pxr::GfQuatf(
-          relativeRotation.W(), relativeRotation.X(),
-          relativeRotation.Y(), relativeRotation.Z()));
+          parentToJoint.Rot().W(),
+          parentToJoint.Rot().X(),
+          parentToJoint.Rot().Y(),
+          parentToJoint.Rot().Z()));
 
-    // since we are currently assuming that the joint is attached to the root
-    // of the child link (see the \note in the method documentation above),
-    // the position and rotation offset relative to the child link is 0
-    _jointPrim.CreateLocalPos1Attr().Set(pxr::GfVec3f(0.0));
-    _jointPrim.CreateLocalRot1Attr().Set(pxr::GfQuatf(1.0, 0.0, 0.0, 0.0));
+    ignition::math::Pose3d childToJoint;
+    auto errors = _joint.SemanticPose().Resolve(childToJoint,
+        _joint.ChildLinkName());
+    if (!errors.empty())
+    {
+      std::cerr << "Unable to get the pose of joint [" << _joint.Name()
+                << "] w.r.t. its child [" << _joint.ChildLinkName() << "]\n"
+                << "The following errors occurred during pose computation:"
+                << "\n\t" << errors;
+      return false;
+    }
+    _jointPrim.CreateLocalPos1Attr().Set(pxr::GfVec3f(
+          childToJoint.Pos().X(),
+          childToJoint.Pos().Y(),
+          childToJoint.Pos().Z()));
+    _jointPrim.CreateLocalRot1Attr().Set(pxr::GfQuatf(
+          childToJoint.Rot().W(),
+          childToJoint.Rot().X(),
+          childToJoint.Rot().Y(),
+          childToJoint.Rot().Z()));
 
     return true;
   }
@@ -139,27 +116,60 @@ namespace usd
     auto usdJoint =
       pxr::UsdPhysicsRevoluteJoint::Define(_stage, pxr::SdfPath(_path));
 
-    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX)
+    const auto axis = _joint.Axis();
+
+    if (axis->Xyz() == ignition::math::Vector3d::UnitX ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitX)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY)
+    else if (axis->Xyz() == ignition::math::Vector3d::UnitY ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitY)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ)
+    else if (axis->Xyz() == ignition::math::Vector3d::UnitZ ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitZ)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     else
     {
       std::cerr << "Revolute joint [" << _joint.Name() << "] has an invalid "
-                << "axis: [" << _joint.Axis()->Xyz() << "]\n";
+                << "axis: [" << axis->Xyz() << "]\n";
       return false;
     }
 
     // Revolute joint limits in SDF are in radians, but USD expects degrees
     // of C++ type float
     auto sdfLimitDegrees = static_cast<float>(
-        ignition::math::Angle(_joint.Axis()->Lower()).Degree());
+        ignition::math::Angle(axis->Lower()).Degree());
     usdJoint.CreateLowerLimitAttr().Set(sdfLimitDegrees);
     sdfLimitDegrees = static_cast<float>(
-        ignition::math::Angle(_joint.Axis()->Upper()).Degree());
+        ignition::math::Angle(axis->Upper()).Degree());
     usdJoint.CreateUpperLimitAttr().Set(sdfLimitDegrees);
+
+    pxr::UsdPrim usdJointPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
+
+    auto drive =
+      pxr::UsdPhysicsDriveAPI::Apply(usdJointPrim, pxr::TfToken("angular"));
+    if (!drive)
+    {
+      std::cerr << "Internal error: unable to mark link at path ["
+                << _path << "] as a UsdPhysicsDriveAPI\n";
+      return false;
+    }
+
+
+    // TODO(ahcorde): Review damping and stiffness values
+    // I added these values as a proof of concept.
+    double damping = axis->Damping();
+    if (ignition::math::equal(damping, 0.0))
+    {
+      damping = 35;
+    }
+    drive.CreateDampingAttr().Set(static_cast<float>(damping));
+    double stiffness = axis->Stiffness();
+    if (ignition::math::equal(stiffness, 1e8))
+    {
+      stiffness = 350;
+    }
+    drive.CreateStiffnessAttr().Set(static_cast<float>(stiffness));
+    drive.CreateMaxForceAttr().Set(static_cast<float>(axis->Effort()));
 
     return true;
   }
@@ -190,11 +200,14 @@ namespace usd
     auto usdJoint =
       pxr::UsdPhysicsPrismaticJoint::Define(_stage, pxr::SdfPath(_path));
 
-    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX)
+    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitX)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitY)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ)
+    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ ||
+        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitZ)
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     else
     {

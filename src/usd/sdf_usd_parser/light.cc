@@ -19,11 +19,13 @@
 
 #include <string>
 
+#include <pxr/base/tf/token.h>
 #include <pxr/usd/sdf/path.h>
+#include <pxr/usd/sdf/types.h>
 #include <pxr/usd/usdLux/diskLight.h>
 #include <pxr/usd/usdLux/distantLight.h>
-#include <pxr/usd/usdLux/lightAPI.h>
 #include <pxr/usd/usdLux/sphereLight.h>
+#include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 
 #include "sdf/Light.hh"
@@ -55,7 +57,8 @@ namespace usd
   bool ParseSdfDirectionalLight(const sdf::Light &_light,
       pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_path)
   {
-    pxr::UsdLuxDistantLight::Define(_stage, _path);
+    auto directionalLight = pxr::UsdLuxDistantLight::Define(_stage, _path);
+    directionalLight.CreateIntensityAttr().Set(1000.0f);
 
     return true;
   }
@@ -100,26 +103,17 @@ namespace usd
       // that as the orientation of the light's pose (I'd probably need to flip the
       // z axis of the direction vector before applying computations on it though,
       // since USD has lights pointing in -Z by default)
-      usd::SetPose(_light.RawPose(), _stage, sdfLightPath);
+      usd::SetPose(usd::PoseWrtParent(_light), _stage, sdfLightPath);
 
       if (increaseIntensity)
       {
-        // TODO(adlarkin) double check if the bounds for intensity are the same
-        // for SDF and USD... right now, I have to multiply intensity by a scalar
-        // factor to make light visible with isaac sim
-        // (intensity of 1 doesn't seem to make the light visible/noticeable in USD)
-        //
-        // This actually doesn't work in isaac sim. There seems to be an intensity
-        // attribute, and an inputs:intensity attribute. I need to set the intensity
-        // attribute, but the call below is setting inputs:intensity. I am not sure
-        // how to modify the intensity attribute (I am also not sure how these two
-        // attributes differ). Trying to modify the concerete
-        // light types in each light helper parsing method above results in the
-        // same issue. Maybe there's a way to apply inputs:intensity to intensity
-        // somehow?
-        auto lightAPI = pxr::UsdLuxLightAPI(_stage->GetPrimAtPath(sdfLightPath));
-        lightAPI.CreateIntensityAttr().Set(
-            static_cast<float>(_light.Intensity()) * 10000.0f);
+        // This is a workaround to set the light's intensity attribute. Using the
+        // UsdLuxLightAPI sets the light's inputs:intensity attribute, but isaac
+        // sim reads the light's intensity attribute
+        auto lightPrim = _stage->GetPrimAtPath(sdfLightPath);
+        lightPrim.CreateAttribute(pxr::TfToken("intensity"),
+            pxr::SdfValueTypeNames->Float, false).Set(
+              static_cast<float>(_light.Intensity()) * 100.0f);
       }
 
       // TODO(adlarkin) Other things to look at (there may be more):
