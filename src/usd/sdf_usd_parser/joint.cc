@@ -155,6 +155,8 @@ namespace usd
     }
 
 
+    // TODO(ahcorde): Review damping and stiffness values
+    // I added these values as a proof of concept.
     double damping = axis->Damping();
     if (ignition::math::equal(damping, 0.0))
     {

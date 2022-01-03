@@ -82,7 +82,6 @@ namespace usd
         std::cerr << "Error parsing model [" << model.Name() << "]\n";
         return false;
       }
-      bool isArticulated = false;
       if (model.JointCount() > 0)
       {
         for (uint64_t j = 0; j < model.JointCount(); j++)
@@ -90,22 +89,18 @@ namespace usd
           const auto joint = *(model.JointByIndex(j));
           if (joint.Type() == sdf::JointType::REVOLUTE)
           {
-            isArticulated = true;
+            auto prim = _stage->GetPrimAtPath(pxr::SdfPath(modelPath));
+            if (prim)
+            {
+              if (!pxr::UsdPhysicsArticulationRootAPI::Apply(prim))
+              {
+                std::cerr << "Internal error: unable to mark Xform at path ["
+                          << modelPath << "] as ArticulationRootAPI "
+                          << "some feature might not work\n";
+                continue;
+              }
+            }
             break;
-          }
-        }
-      }
-      if (isArticulated)
-      {
-        auto prim = _stage->GetPrimAtPath(pxr::SdfPath(modelPath));
-        if (prim)
-        {
-          if (!pxr::UsdPhysicsArticulationRootAPI::Apply(prim))
-          {
-            std::cerr << "Internal error: unable to mark Xform at path ["
-                      << modelPath << "] as ArticulationRootAPI "
-                      << " some feature might not work\n";
-            return false;
           }
         }
       }
