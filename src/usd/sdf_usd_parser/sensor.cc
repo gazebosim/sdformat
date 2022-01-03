@@ -43,7 +43,9 @@ namespace usd
 
     auto sdfCamera = _sensor.CameraSensor();
 
-    // TODO(adlarkin) check units to make sure they match (no documented units for SDF)
+    // TODO(adlarkin) check units to make sure they match (no documented
+    // units for SDF)
+    // TODO (ahcorde): check the magic number 10
     usdCamera.CreateFocalLengthAttr().Set(
         static_cast<float>(sdfCamera->LensFocalLength() * 10));
     usdCamera.CreateClippingRangeAttr().Set(pxr::GfVec2f(
@@ -52,11 +54,6 @@ namespace usd
 
     usdCamera.CreateHorizontalApertureAttr().Set(
       static_cast<float>(sdfCamera->HorizontalFov().Degree()));
-
-    // TODO(adlarkin) Do I need to handle the following in USD
-    // (I don't think there's an SDF equivalent):
-    //  * horizontal and vertical aperture (there's also an offset for these)
-
     return true;
   }
 
