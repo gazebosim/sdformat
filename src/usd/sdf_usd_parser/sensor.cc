@@ -57,7 +57,7 @@ namespace usd
       // TODO(ahcorde): The default value in USD is 50, but something more
       // similar to ignition Gazebo is 47.
       usdCamera.CreateFocalLengthAttr().Set(
-          static_cast<float>(47.0f));
+          static_cast<float>(40.0f));
     }
     usdCamera.CreateClippingRangeAttr().Set(pxr::GfVec2f(
           static_cast<float>(sdfCamera->NearClip()),
