@@ -156,7 +156,7 @@ namespace usd
       if (_sensor.Type() == sdf::SensorType::CAMERA)
       {
         ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
-        usd::SetPose(poseCamera * usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
+        usd::SetPose(usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
       }
       else
       {
