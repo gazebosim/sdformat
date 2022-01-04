@@ -57,6 +57,18 @@ namespace usd
     return pose;
   }
 
+  inline std::string removeDash(const std::string &_str)
+  {
+     std::string result = _str;
+     auto index = result.find("-");
+     while(index != std::string::npos)
+     {
+       result.replace(index, 1, "_");
+       index = result.find("-");
+     }
+     return result;
+  }
+
   /// \brief Set the pose of a pxr::UsdGeomXform object.
   /// \param[in] _pose The pose to set.
   /// \param[in] _stage The stage that contains the USD prim at path _usdPath.

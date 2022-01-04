@@ -35,10 +35,14 @@
 
 namespace usd
 {
+  /// \brief Copy a file in a directory
+  /// \param[in] _path path where the copy will be located
+  /// \param[in] _fullPath name of the file to copy
   bool copyMaterial(const std::string &_path, const std::string &_fullPath)
   {
     if (!_path.empty() && !_fullPath.empty())
     {
+      ///
       auto fileName = ignition::common::basename(_path);
       auto filePathIndex = _path.rfind(fileName);
       auto filePath = _path.substr(0, filePathIndex);
@@ -51,7 +55,11 @@ namespace usd
     return false;
   }
 
-  std::string getCopyPath(const std::string &_uri)
+  /// \brief Create the path to copy the material
+  /// \param[in] _uri full path of the file to copy
+  /// \return A relative path to save the material, the path looks like:
+  /// materials/textures/<filename with extension>
+  std::string getMaterialCopyPath(const std::string &_uri)
   {
     return ignition::common::joinPaths(
       "materials",
@@ -72,15 +80,15 @@ namespace usd
   /// colorSpace of the image
   template<typename T>
   void CreateMaterialInput(
-    pxr::UsdPrim &_prim,
-    std::string _name,
-    pxr::SdfValueTypeName _vType,
+    const pxr::UsdPrim &_prim,
+    const std::string &_name,
+    const pxr::SdfValueTypeName &_vType,
     T _value,
-    std::map<pxr::TfToken, pxr::VtValue> &_customData,
-    pxr::TfToken _displayName = pxr::TfToken(""),
-    pxr::TfToken _displayGroup = pxr::TfToken(""),
-    std::string _doc = "",
-    pxr::TfToken _colorSpace = pxr::TfToken(""))
+    const std::map<pxr::TfToken, pxr::VtValue> &_customData,
+    const pxr::TfToken &_displayName = pxr::TfToken(""),
+    const pxr::TfToken &_displayGroup = pxr::TfToken(""),
+    const std::string &_doc = "",
+    const pxr::TfToken &_colorSpace = pxr::TfToken(""))
   {
     auto shader = pxr::UsdShadeShader(_prim);
     if (shader)
@@ -295,7 +303,7 @@ namespace usd
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
 
-          std::string copyPath = getCopyPath(pbrWorkflow->AlbedoMap());
+          std::string copyPath = getMaterialCopyPath(pbrWorkflow->AlbedoMap());
 
           std::string fullnameAlbedoMap =
             ignition::common::findFile(
@@ -326,7 +334,7 @@ namespace usd
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
 
-          std::string copyPath = getCopyPath(pbrWorkflow->MetalnessMap());
+          std::string copyPath = getMaterialCopyPath(pbrWorkflow->MetalnessMap());
 
           std::string fullnameMetallnessMap =
             ignition::common::findFile(
@@ -357,7 +365,7 @@ namespace usd
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
 
-          std::string copyPath = getCopyPath(pbrWorkflow->NormalMap());
+          std::string copyPath = getMaterialCopyPath(pbrWorkflow->NormalMap());
 
           std::string fullnameNormalMap =
             ignition::common::findFile(
@@ -388,7 +396,7 @@ namespace usd
             {pxr::TfToken("default"), pxr::VtValue(pxr::SdfAssetPath())},
           };
 
-          std::string copyPath = getCopyPath(pbrWorkflow->RoughnessMap());
+          std::string copyPath = getMaterialCopyPath(pbrWorkflow->RoughnessMap());
 
           std::string fullnameRoughnessMap =
             ignition::common::findFile(

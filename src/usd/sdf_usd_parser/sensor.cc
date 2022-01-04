@@ -44,8 +44,20 @@ namespace usd
     auto sdfCamera = _sensor.CameraSensor();
 
     // TODO(adlarkin) check units to make sure they match (no documented units for SDF)
-    usdCamera.CreateFocalLengthAttr().Set(
-        static_cast<float>(sdfCamera->LensFocalLength() * 180 / 3.1416));
+    // When then focal length is not defined in the SDF the default value is 1,
+    // The following condition adapt this value to USD.
+    if (!ignition::math::equal(sdfCamera->LensFocalLength(), 1.0))
+    {
+      usdCamera.CreateFocalLengthAttr().Set(
+          static_cast<float>(sdfCamera->LensFocalLength()));
+    }
+    else
+    {
+      // TODO(ahcorde): The default value in USD is 50, but something more
+      // similar to ignition Gazebo is 47.
+      usdCamera.CreateFocalLengthAttr().Set(
+          static_cast<float>(40.0f));
+    }
     usdCamera.CreateClippingRangeAttr().Set(pxr::GfVec2f(
         static_cast<float>(sdfCamera->NearClip()),
         static_cast<float>(sdfCamera->FarClip())));
@@ -146,7 +158,7 @@ namespace usd
       if (_sensor.Type() == sdf::SensorType::CAMERA)
       {
         ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
-        usd::SetPose(poseCamera * usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
+        usd::SetPose(usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
       }
       else
       {
