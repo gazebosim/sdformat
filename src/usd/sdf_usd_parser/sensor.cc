@@ -45,9 +45,20 @@ namespace usd
 
     // TODO(adlarkin) check units to make sure they match (no documented
     // units for SDF)
-    // TODO (ahcorde): check the magic number 10
-    usdCamera.CreateFocalLengthAttr().Set(
-        static_cast<float>(sdfCamera->LensFocalLength() * 10));
+    // When then focal length is not defined in the SDF the default value is 1,
+    // The following condition adapt this value to USD.
+    if (!ignition::math::equal(sdfCamera->LensFocalLength(), 1.0))
+    {
+      usdCamera.CreateFocalLengthAttr().Set(
+          static_cast<float>(sdfCamera->LensFocalLength()));
+    }
+    else
+    {
+      // TODO(ahcorde): The default value in USD is 50, but something more
+      // similar to ignition Gazebo is 47.
+      usdCamera.CreateFocalLengthAttr().Set(
+          static_cast<float>(47.0f));
+    }
     usdCamera.CreateClippingRangeAttr().Set(pxr::GfVec2f(
           static_cast<float>(sdfCamera->NearClip()),
           static_cast<float>(sdfCamera->FarClip())));
