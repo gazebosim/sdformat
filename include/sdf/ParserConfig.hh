@@ -168,6 +168,10 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the registered custom model parsers
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
+  public: void SetPreserveFixedJoint(bool _preserveFixedJoint);
+
+  public: bool PreserveFixedJoint() const;
+
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };
