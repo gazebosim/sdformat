@@ -17,31 +17,17 @@
 #ifndef SDF_VISIBLE_HH_
 #define SDF_VISIBLE_HH_
 
+#include <sdf/Export.hh>
+
 /** \def SDFORMAT_VISIBLE
  * Use to represent "symbol visible" if supported
  */
+#define SDFORMAT_VISIBLE IGNITION_SDFORMAT_VISIBLE
 
 /** \def SDFORMAT_HIDDEN
  * Use to represent "symbol hidden" if supported
  */
-
-#if defined _WIN32 || defined __CYGWIN__
-  #ifdef BUILDING_SDFORMAT_SHARED
-    #define SDFORMAT_VISIBLE __declspec(dllexport)
-  #elif !defined SDFORMAT_STATIC_DEFINE
-    #define SDFORMAT_VISIBLE __declspec(dllimport)
-  #else
-    #define SDFORMAT_VISIBLE
-  #endif
-#else
-  #if __GNUC__ >= 4 && !defined SDFORMAT_STATIC_DEFINE
-    #define SDFORMAT_VISIBLE __attribute__ ((visibility ("default")))
-    #define SDFORMAT_HIDDEN  __attribute__ ((visibility ("hidden")))
-  #else
-    #define SDFORMAT_VISIBLE
-    #define SDFORMAT_HIDDEN
-  #endif
-#endif
+#define SDFORMAT_HIDDEN IGNITION_SDFORMAT_HIDDEN
 
 // SDF_VISIBLE_HH_
 #endif

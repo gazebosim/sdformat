@@ -276,6 +276,12 @@ namespace sdf
     /// exists.
     public: bool AddSensor(const Sensor &_sensor);
 
+    /// \brief Add a particle emitter to the link.
+    /// \param[in] _emitter Particle emitter to add.
+    /// \return True if successful, false if a particle emitter with the name
+    /// already exists.
+    public: bool AddParticleEmitter(const ParticleEmitter &_sensor);
+
     /// \brief Remove all collisions
     public: void ClearCollisions();
 
@@ -287,6 +293,14 @@ namespace sdf
 
     /// \brief Remove all sensors
     public: void ClearSensors();
+
+    /// \brief Remove all particle emitters
+    public: void ClearParticleEmitters();
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// link.
+    /// \return SDF element pointer with updated link values.
+    public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

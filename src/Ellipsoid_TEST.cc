@@ -139,3 +139,19 @@ TEST(DOMEllipsoid, Shape)
   ellipsoid.Shape().SetRadii(expectedRadii);
   EXPECT_EQ(expectedRadii, ellipsoid.Radii());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMEllipsoid, ToElement)
+{
+  sdf::Ellipsoid ellipsoid;
+
+  ellipsoid.SetRadii(ignition::math::Vector3d(0.1, 1.2, 3.4));
+
+  sdf::ElementPtr elem = ellipsoid.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Ellipsoid ellipsoid2;
+  ellipsoid2.Load(elem);
+
+  EXPECT_EQ(ellipsoid.Radii(), ellipsoid2.Radii());
+}

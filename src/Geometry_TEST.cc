@@ -21,6 +21,7 @@
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
@@ -258,4 +259,208 @@ TEST(DOMGeometry, Plane)
   EXPECT_NE(nullptr, geom.PlaneShape());
   EXPECT_EQ(ignition::math::Vector3d::UnitX, geom.PlaneShape()->Normal());
   EXPECT_EQ(ignition::math::Vector2d(9, 8), geom.PlaneShape()->Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, ToElement)
+{
+  // Box
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::BOX);
+    sdf::Box box;
+    geom.SetBoxShape(box);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_NE(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Capsule
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::CAPSULE);
+    sdf::Capsule capsule;
+    geom.SetCapsuleShape(capsule);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_NE(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Cylinder
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::CYLINDER);
+    sdf::Cylinder cylinder;
+    geom.SetCylinderShape(cylinder);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_NE(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Ellipsoid
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::ELLIPSOID);
+    sdf::Ellipsoid ellipsoid;
+    geom.SetEllipsoidShape(ellipsoid);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_NE(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Sphere
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::SPHERE);
+    sdf::Sphere sphere;
+    geom.SetSphereShape(sphere);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_NE(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Plane
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::PLANE);
+    sdf::Plane plane;
+    geom.SetPlaneShape(plane);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_NE(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Mesh
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::MESH);
+    sdf::Mesh mesh;
+    geom.SetMeshShape(mesh);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_NE(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+  }
+
+  // Heightmap
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::HEIGHTMAP);
+    sdf::Heightmap heightmap;
+    geom.SetHeightmapShape(heightmap);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_NE(nullptr, geom2.HeightmapShape());
+  }
 }

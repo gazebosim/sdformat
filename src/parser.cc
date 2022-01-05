@@ -203,8 +203,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 
   if (!_merge)
   {
-    firstElem->SetParent(_parent);
-    _parent->InsertElement(firstElem);
+    _parent->InsertElement(firstElem, true);
     return;
   }
   else if (firstElem->GetName() != "model")
@@ -347,8 +346,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
         (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
         (elem->GetName().find(':') != std::string::npos))
     {
-      elem->SetParent(_parent);
-      _parent->InsertElement(elem);
+      _parent->InsertElement(elem, true);
     }
   }
 }
@@ -1914,13 +1912,13 @@ void copyChildren(ElementPtr _sdf,
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->Name();
+    std::string elemName = elemXml->Name();
 
-    if (_sdf->HasElementDescription(elem_name))
+    if (_sdf->HasElementDescription(elemName))
     {
       if (!_onlyUnknown)
       {
-        sdf::ElementPtr element = _sdf->AddElement(elem_name);
+        sdf::ElementPtr element = _sdf->AddElement(elemName);
 
         // FIXME: copy attributes
         for (const auto *attribute = elemXml->FirstAttribute();
@@ -1943,18 +1941,18 @@ void copyChildren(ElementPtr _sdf,
     {
       ElementPtr element(new Element);
       element->SetParent(_sdf);
-      element->SetName(elem_name);
-      if (elemXml->GetText() != nullptr)
-      {
-        element->AddValue("string", elemXml->GetText(), "1");
-      }
-
+      element->SetName(elemName);
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
         element->AddAttribute(attribute->Name(), "string", "", 1, "");
         element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->Value());
+            attribute->Value());
+      }
+
+      if (elemXml->GetText() != nullptr)
+      {
+        element->AddValue("string", elemXml->GetText(), true);
       }
 
       copyChildren(element, elemXml, _onlyUnknown);

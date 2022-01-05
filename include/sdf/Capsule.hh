@@ -72,6 +72,11 @@ namespace sdf
     /// \return A reference to an ignition::math::Capsuled object.
     public: ignition::math::Capsuled &Shape();
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// capsule.
+    /// \return SDF element pointer with updated capsule values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

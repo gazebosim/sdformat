@@ -19,8 +19,9 @@
 #include <string>
 #include <vector>
 
-#include "sdf/ParticleEmitter.hh"
 #include "sdf/Error.hh"
+#include "sdf/parser.hh"
+#include "sdf/ParticleEmitter.hh"
 #include "sdf/Types.hh"
 
 #include "FrameSemantics.hh"
@@ -515,3 +516,45 @@ void ParticleEmitter::SetPoseRelativeToGraph(
 {
   this->dataPtr->poseRelativeToGraph = _graph;
 }
+
+/////////////////////////////////////////////////
+sdf::ElementPtr ParticleEmitter::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("particle_emitter.sdf", elem);
+
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+
+  elem->GetAttribute("name")->Set(this->Name());
+  elem->GetAttribute("type")->Set(this->TypeStr());
+  elem->GetElement("emitting")->Set(this->Emitting());
+  elem->GetElement("duration")->Set(this->Duration());
+  elem->GetElement("size")->Set(this->Size());
+  elem->GetElement("particle_size")->Set(this->ParticleSize());
+  elem->GetElement("lifetime")->Set(this->Lifetime());
+  elem->GetElement("rate")->Set(this->Rate());
+  elem->GetElement("min_velocity")->Set(this->MinVelocity());
+  elem->GetElement("max_velocity")->Set(this->MaxVelocity());
+  elem->GetElement("scale_rate")->Set(this->ScaleRate());
+  elem->GetElement("color_start")->Set(this->ColorStart());
+  elem->GetElement("color_end")->Set(this->ColorEnd());
+  elem->GetElement("color_range_image")->Set(this->ColorRangeImage());
+  elem->GetElement("topic")->Set(this->Topic());
+  elem->GetElement("particle_scatter_ratio")->Set(this->ScatterRatio());
+
+  if (this->dataPtr->material)
+  {
+    elem->InsertElement(this->dataPtr->material->ToElement(), true);
+  }
+
+  return elem;
+}
+
+
