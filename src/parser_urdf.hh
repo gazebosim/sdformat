@@ -23,6 +23,7 @@
 #include <string>
 
 #include "sdf/Console.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"
 
@@ -43,22 +44,28 @@ namespace sdf
 
     /// \brief convert urdf xml document string to sdf xml document
     /// \param[in] _xmlDoc document containing the urdf model.
+    /// \param[in] _config Custom parser configuration
     /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     public: void InitModelDoc(const tinyxml2::XMLDocument* _xmlDoc,
+                              const ParserConfig& _config,
                               tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf file to sdf xml document
     /// \param[in] _urdfStr a string containing filename of the urdf model.
+    /// \param[in] _config Custom parser configuration
     /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     public: void InitModelFile(const std::string &_filename,
+                               const ParserConfig& _config,
                                tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf string to sdf xml document, with option to enforce
     /// limits.
     /// \param[in] _urdfStr a string containing model urdf
+    /// \param[in] _config Custom parser configuration
     /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     /// \param[in] _enforceLimits option to enforce joint limits
     public: void InitModelString(const std::string &_urdfStr,
+                                 const ParserConfig& _parserConfig,
                                  tinyxml2::XMLDocument *_sdfXmlDoc,
                                  bool _enforceLimits = true);
 

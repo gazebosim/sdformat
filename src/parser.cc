@@ -508,7 +508,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelFile(filename, &doc);
+    u2g.InitModelFile(filename, _config, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -585,7 +585,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, &doc);
+    u2g.InitModelString(_xmlString, _config, &doc);
 
     if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                     _config, _errors))
