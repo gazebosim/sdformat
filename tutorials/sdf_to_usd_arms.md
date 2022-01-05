@@ -28,15 +28,15 @@ Add to the `panda` prim the following:
 
  - Create -> Isaac -> ROS -> Clock
  - Create -> Isaac -> ROS -> Joint State
-    - Set *targetPrims* to `/fuel/panda`
+    - Set *targetPrims* to `/empty/panda`
  - Create -> Isaac -> ROS -> Pose tree
-    - Set *articulationPrim* to `/fuel/panda`
+    - Set *articulationPrim* to `/empty/panda`
 
 Now run the simulation.
 
 ## Move the arm (option 1):
 
-Open a new terminal and source ROS:
+Open a new terminal and source ROS (replace `rosdistro` with the ROS version you have [installed](https://wiki.ros.org/ROS/Installation)):
 
 ```bash
 source /opt/ros/<rosdistro>/setup.bash
@@ -82,21 +82,24 @@ while not rospy.is_shutdown():
     rate.sleep()
 ```
 
-Now you can move the robot typing:
+Now you can move the robot with this script:
 
 ```bash
-python3 move_robot.py
+python3 move_arm.py
 ```
 
 ## Move the arm (option 2)
 
 Inside `~/.local/share/ov/pkg/isaac_sim-2021.2.1/` you might find a ROS workspace under the folder `ros_workspace`.
-Source your ROS distro.
+Source your ROS distro (replace `rosdistro` with the ROS version that is [installed](https://wiki.ros.org/ROS/Installation)):
+
+```bash
+source /opt/ros/<rosdistro>/setup.bash
+```
 
 Compile the code:
 
 ```bash
-source /opt/ros/<rosdistro>/setup.bash
 cd ~/.local/share/ov/pkg/isaac_sim-2021.2.1/ros_workspace
 catkin_make_isolated
 source devel_isolated/setup.bash
@@ -108,4 +111,4 @@ Run the Moveit example:
 roslaunch isaac_moveit franka_isaac_execution.launch
 ```
 
-If you want to learn more about how to move the arm using MoveIt, you should follow [these instruccions](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/tutorial_ros_moveit.html#running-moveit).
+If you want to learn more about how to move the arm using MoveIt, you should follow [these instruccions](httpsIf you want to learn more about how to move the arm using MoveIt, you should follow [these instructions](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/tutorial_ros_moveit.html#running-moveit).
