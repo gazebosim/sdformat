@@ -33,20 +33,24 @@ std::string getMinimalUrdfTxt()
 }
 
 /////////////////////////////////////////////////
-std::string convertUrdfStrToSdfStr(const std::string &_urdf)
+std::string convertUrdfStrToSdfStr(
+    const std::string &_urdf,
+    const sdf::ParserConfig &_config = sdf::ParserConfig::GlobalConfig())
 {
   sdf::URDF2SDF parser_;
   tinyxml2::XMLDocument sdf_result;
-  parser_.InitModelString(_urdf, &sdf_result);
+  parser_.InitModelString(_urdf, _config, &sdf_result);
   tinyxml2::XMLPrinter printer;
   sdf_result.Accept(&printer);
   return printer.CStr();
 }
 
 /////////////////////////////////////////////////
-void convertUrdfStrToSdf(const std::string &_urdf, sdf::SDF &_sdf)
+void convertUrdfStrToSdf(
+    const std::string &_urdf, sdf::SDF &_sdf,
+    const sdf::ParserConfig &_config = sdf::ParserConfig::GlobalConfig())
 {
-  _sdf.SetFromString(convertUrdfStrToSdfStr(_urdf));
+  _sdf.SetFromString(convertUrdfStrToSdfStr(_urdf, _config));
 }
 
 /////////////////////////////////////////////////
@@ -57,8 +61,9 @@ TEST(URDFParser, InitModelDoc_EmptyDoc_NoThrow)
   ASSERT_NO_THROW(
     tinyxml2::XMLDocument doc = tinyxml2::XMLDocument();
     sdf::URDF2SDF parser_;
+    sdf::ParserConfig config_;
     tinyxml2::XMLDocument sdf_result;
-    parser_.InitModelDoc(&doc, &sdf_result);
+    parser_.InitModelDoc(&doc, config_, &sdf_result);
   );    // NOLINT(whitespace/parens)
 }
 
@@ -70,8 +75,9 @@ TEST(URDFParser, InitModelDoc_BasicModel_NoThrow)
     tinyxml2::XMLDocument doc;
     doc.Parse(getMinimalUrdfTxt().c_str());
     sdf::URDF2SDF parser_;
+    sdf::ParserConfig config_;
     tinyxml2::XMLDocument sdf_result;
-    parser_.InitModelDoc(&doc, &sdf_result);
+    parser_.InitModelDoc(&doc, config_, &sdf_result);
   );    // NOLINT(whitespace/parens)
 }
 
@@ -82,9 +88,10 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
   tinyxml2::XMLDocument doc;
   doc.Parse(getMinimalUrdfTxt().c_str());
   sdf::URDF2SDF parser_;
+  sdf::ParserConfig config_;
 
   tinyxml2::XMLDocument sdf_result;
-  parser_.InitModelDoc(&doc, &sdf_result);
+  parser_.InitModelDoc(&doc, config_, &sdf_result);
 
   tinyxml2::XMLPrinter printer;
   sdf_result.Print(&printer);
@@ -117,8 +124,9 @@ TEST(URDFParser, ParseRobotOriginXYZBlank)
   tinyxml2::XMLDocument doc;
   doc.Parse(stream.str().c_str());
   sdf::URDF2SDF parser_;
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdf_result;
-  parser_.InitModelDoc(&doc, &sdf_result);
+  parser_.InitModelDoc(&doc, config_, &sdf_result);
   tinyxml2::XMLElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
   tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
@@ -138,8 +146,9 @@ TEST(URDFParser, ParseRobotOriginRPYBlank)
   tinyxml2::XMLDocument doc;
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdf_result;
-  parser_.InitModelDoc(&doc, &sdf_result);
+  parser_.InitModelDoc(&doc, config_, &sdf_result);
   tinyxml2::XMLElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
   tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
@@ -172,8 +181,9 @@ TEST(URDFParser, ParseRobotMaterialBlank)
   tinyxml2::XMLDocument doc;
   doc.Parse(stream.str().c_str());
   sdf::URDF2SDF parser;
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdfXml;
-  parser.InitModelDoc(&doc, &sdfXml);
+  parser.InitModelDoc(&doc, config_, &sdfXml);
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
   auto modelElem = sdfElem->FirstChildElement("model");
@@ -214,9 +224,10 @@ TEST(URDFParser, ParseRobotMaterialName)
   tinyxml2::XMLDocument doc;
   doc.Parse(stream.str().c_str());
   sdf::URDF2SDF parser;
+  sdf::ParserConfig config_;
 
   tinyxml2::XMLDocument sdfXml;
-  parser.InitModelDoc(&doc, &sdfXml);
+  parser.InitModelDoc(&doc, config_, &sdfXml);
 
   auto sdfElem = sdfXml.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdfElem);
@@ -254,8 +265,9 @@ TEST(URDFParser, ParseRobotOriginInvalidXYZ)
   tinyxml2::XMLDocument doc;
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdf_result;
-  parser_.InitModelDoc(&doc, &sdf_result);
+  parser_.InitModelDoc(&doc, config_, &sdf_result);
   tinyxml2::XMLElement *sdf = sdf_result.FirstChildElement("sdf");
   ASSERT_NE(nullptr, sdf);
   tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
@@ -316,8 +328,9 @@ TEST(URDFParser, ParseGazeboLinkFactors)
     tinyxml2::XMLDocument doc;
     sdf::URDF2SDF parser_;
     doc.Parse(stream.str().c_str());
+    sdf::ParserConfig config_;
     tinyxml2::XMLDocument sdf_result;
-    parser_.InitModelDoc(&doc, &sdf_result);
+    parser_.InitModelDoc(&doc, config_, &sdf_result);
 
     tinyxml2::XMLElement *tmp = sdf_result.FirstChildElement("sdf");
     ASSERT_NE(nullptr, tmp);
@@ -355,8 +368,9 @@ TEST(URDFParser, ParseGazeboInvalidDampingFactor)
   tinyxml2::XMLDocument doc;
   sdf::URDF2SDF parser_;
   doc.Parse(stream.str().c_str());
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdf_result;
-  ASSERT_THROW(parser_.InitModelDoc(&doc, &sdf_result),
+  ASSERT_THROW(parser_.InitModelDoc(&doc, config_, &sdf_result),
                std::invalid_argument);
 
   parser_.ListSDFExtensions();
@@ -428,8 +442,9 @@ TEST(URDFParser, ParseGazeboJointElements)
     tinyxml2::XMLDocument doc;
     sdf::URDF2SDF parser_;
     doc.Parse(stream.str().c_str());
+    sdf::ParserConfig config_;
     tinyxml2::XMLDocument sdf_result;
-    parser_.InitModelDoc(&doc, &sdf_result);
+    parser_.InitModelDoc(&doc, config_, &sdf_result);
 
     tinyxml2::XMLElement *tmp = sdf_result.FirstChildElement("sdf");
     ASSERT_NE(nullptr, tmp);
@@ -573,6 +588,55 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
   sdf::SDF fixedJointPreserveFixedJointSDF;
   convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
       fixedJointPreserveFixedJointSDF);
+  sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
+  ASSERT_NE(nullptr, elem);
+  ASSERT_TRUE(elem->HasElement("model"));
+  elem = elem->GetElement("model");
+  ASSERT_TRUE(elem->HasElement("joint"));
+  elem = elem->GetElement("joint");
+  std::string jointType = elem->Get<std::string>("type");
+  ASSERT_EQ(jointType, "fixed");
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, CheckParserConfig_preserveFixedJoint)
+{
+  // Convert a fixed joint with only preserveFixedJoint
+  // (i.e. converted to fixed joint)
+  std::ostringstream fixedJointPreserveFixedJoint;
+  fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
+    << "  <link name='link1'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <link name='link2'>"
+    << "    <inertial>"
+    << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+    << "      <mass value='1.0'/>"
+    << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+    << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+    << "    </inertial>"
+    << "  </link>"
+    << "  <joint name='joint1_2' type='fixed'>"
+    << "    <parent link='link1' />"
+    << "    <child  link='link2' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+    << "  </joint>"
+    << "</robot>";
+
+  // Check that there is a fixed joint in the converted SDF
+  sdf::SDF fixedJointPreserveFixedJointSDF;
+
+  // Set the config option to preserve fixed joints.
+  sdf::ParserConfig config_;
+  config_.SetPreserveFixedJoint(true);
+
+  convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
+      fixedJointPreserveFixedJointSDF, config_);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -817,8 +881,9 @@ TEST(URDFParser, OutputPrecision)
     </robot>)";
 
   sdf::URDF2SDF parser;
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdfResult;
-  parser.InitModelString(str, &sdfResult);
+  parser.InitModelString(str, config_, &sdfResult);
 
   auto root = sdfResult.RootElement();
   auto model = root->FirstChildElement("model");
@@ -891,8 +956,9 @@ TEST(URDFParser, ParseWhitespace)
   doc.Parse(str.c_str());
 
   sdf::URDF2SDF parser;
+  sdf::ParserConfig config_;
   tinyxml2::XMLDocument sdfXml;
-  parser.InitModelDoc(&doc, &sdfXml);
+  parser.InitModelDoc(&doc, config_, &sdfXml);
 
   auto root = sdfXml.RootElement();
   ASSERT_NE(nullptr, root);
