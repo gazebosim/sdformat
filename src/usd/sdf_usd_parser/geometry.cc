@@ -137,7 +137,7 @@ namespace usd
 
     // Some Meshes are splited in some submeshes, this loop check if the name
     // of the path is the same as the name of the submesh. In this case
-    // we create a USD mesh per submesh. 
+    // we create a USD mesh per submesh.
     bool isUSDPathInSubMeshName = false;
     for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
     {
@@ -152,6 +152,7 @@ namespace usd
         if (pathLowerCase.find(subMeshLowerCase) != std::string::npos)
         {
           isUSDPathInSubMeshName = true;
+          break;
         }
       }
     }

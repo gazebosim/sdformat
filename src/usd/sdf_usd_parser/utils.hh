@@ -18,6 +18,9 @@
 #ifndef SDF_PARSER_UTILS_HH_
 #define SDF_PARSER_UTILS_HH_
 
+#include <algorithm>
+#include <string>
+
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
@@ -59,14 +62,9 @@ namespace usd
 
   inline std::string removeDash(const std::string &_str)
   {
-     std::string result = _str;
-     auto index = result.find("-");
-     while(index != std::string::npos)
-     {
-       result.replace(index, 1, "_");
-       index = result.find("-");
-     }
-     return result;
+    std::string result = _str;
+    std::replace(result.begin(), result.end(), '-', '_');
+    return result;
   }
 
   /// \brief Set the pose of a pxr::UsdGeomXform object.
