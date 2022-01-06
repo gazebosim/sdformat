@@ -43,7 +43,8 @@ namespace usd
 
     auto sdfCamera = _sensor.CameraSensor();
 
-    // TODO(adlarkin) check units to make sure they match (no documented units for SDF)
+    // TODO(adlarkin) check units to make sure they match (no documented
+    // units for SDF)
     // When then focal length is not defined in the SDF the default value is 1,
     // The following condition adapt this value to USD.
     if (!ignition::math::equal(sdfCamera->LensFocalLength(), 1.0))
@@ -54,19 +55,16 @@ namespace usd
     else
     {
       // TODO(ahcorde): The default value in USD is 50, but something more
-      // similar to ignition Gazebo is 47.
+      // similar to ignition Gazebo is 40.
       usdCamera.CreateFocalLengthAttr().Set(
           static_cast<float>(40.0f));
     }
     usdCamera.CreateClippingRangeAttr().Set(pxr::GfVec2f(
-        static_cast<float>(sdfCamera->NearClip()),
-        static_cast<float>(sdfCamera->FarClip())));
-    usdCamera.CreateHorizontalApertureAttr().Set(
-        static_cast<float>(sdfCamera->HorizontalFov().Degree()));
-    // TODO(adlarkin) Do I need to handle the following in USD
-    // (I don't think there's an SDF equivalent):
-    //  * horizontal and vertical aperture (there's also an offset for these)
+          static_cast<float>(sdfCamera->NearClip()),
+          static_cast<float>(sdfCamera->FarClip())));
 
+    usdCamera.CreateHorizontalApertureAttr().Set(
+      static_cast<float>(sdfCamera->HorizontalFov().Degree()));
     return true;
   }
 
@@ -157,15 +155,17 @@ namespace usd
     {
       if (_sensor.Type() == sdf::SensorType::CAMERA)
       {
+        // Camera sensors are upAxis equal to "Y", we need to rotate the camera
+        // properly.
         ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
-        usd::SetPose(usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
+        usd::SetPose(
+          usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
       }
       else
       {
         usd::SetPose(usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
       }
     }
-
     return typeParsed;
   }
 }
