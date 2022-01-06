@@ -15,27 +15,27 @@
  *
 */
 
-#ifndef SDF_PARSER_GEOMETRY_HH_
-#define SDF_PARSER_GEOMETRY_HH_
+#ifndef SDF_USD_VISUAL_HH_
+#define SDF_USD_VISUAL_HH_
 
 #include <string>
 
 #include <pxr/usd/usd/stage.h>
 
-#include "sdf/Geometry.hh"
+#include "sdf/Visual.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
-  /// \brief Parse an SDF geometry into a USD stage.
-  /// \param[in] _geometry The SDF geometry to parse.
+  /// \brief Parse an SDF visual into a USD stage.
+  /// \param[in] _visual The SDF visual to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _geometry.
-  /// \param[in] _path The USD path of the parsed geometry in _stage, which must be
+  /// of _visual.
+  /// \param[in] _path The USD path of the parsed visual in _stage, which must be
   /// a valid USD path.
-  /// \return True if _geometry was succesfully parsed into _stage with a path of
+  /// \return True if _visual was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfGeometry(const sdf::Geometry &_geometry,
+  bool SDFORMAT_VISIBLE ParseSdfVisual(const sdf::Visual &_visual,
       pxr::UsdStageRefPtr &_stage, const std::string &_path);
 }
 

@@ -20,7 +20,7 @@
 #include <pxr/usd/usd/stage.h>
 
 #include "sdf/sdf.hh"
-#include "sdf_usd_parser/world.hh"
+#include "sdf/world.hh"
 
 int main(int argc, const char* argv[])
 {

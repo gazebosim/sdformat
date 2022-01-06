@@ -15,25 +15,27 @@
  *
 */
 
-#ifndef SDF_PARSER_SENSOR_HH_
-#define SDF_PARSER_SENSOR_HH_
+#ifndef SDF_USD_GEOMETRY_HH_
+#define SDF_USD_GEOMETRY_HH_
 
 #include <string>
 
 #include <pxr/usd/usd/stage.h>
 
-#include "sdf/Sensor.hh"
+#include "sdf/Geometry.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
-  /// \brief Parse an SDF sensor into a USD stage.
-  /// \param[in] _sensor The SDF sensor to parse.
+  /// \brief Parse an SDF geometry into a USD stage.
+  /// \param[in] _geometry The SDF geometry to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _sensor.
-  /// \param[in] _path The USD path of the parsed sensor in _stage, which must be
+  /// of _geometry.
+  /// \param[in] _path The USD path of the parsed geometry in _stage, which must be
   /// a valid USD path.
-  bool SDFORMAT_VISIBLE ParseSdfSensor(const sdf::Sensor &_sensor,
+  /// \return True if _geometry was succesfully parsed into _stage with a path of
+  /// _path. False otherwise.
+  bool SDFORMAT_VISIBLE ParseSdfGeometry(const sdf::Geometry &_geometry,
       pxr::UsdStageRefPtr &_stage, const std::string &_path);
 }
 

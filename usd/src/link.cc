@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/link.hh"
+#include "sdf/link.hh"
 
 #include <string>
 
@@ -26,10 +26,10 @@
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 
 #include "sdf/Link.hh"
-#include "sdf_usd_parser/light.hh"
-#include "sdf_usd_parser/sensor.hh"
-#include "sdf_usd_parser/utils.hh"
-#include "sdf_usd_parser/visual.hh"
+#include "sdf/light.hh"
+#include "sdf/sensor.hh"
+#include "sdf/utils.hh"
+#include "sdf/visual.hh"
 
 namespace usd
 {

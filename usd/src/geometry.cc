@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/geometry.hh"
+#include "sdf/geometry.hh"
 
 #include <iostream>
 #include <string>
@@ -44,7 +44,7 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
-#include "sdf_usd_parser/utils.hh"
+#include "sdf/utils.hh"
 
 namespace usd
 {
@@ -240,7 +240,7 @@ namespace usd
   bool ParseSdfEllipsoid(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path) {
     const auto sdfEllipsoid = _geometry.EllipsoidShape();
-    
+
     auto usdEllipsoid = pxr::UsdGeomSphere::Define(_stage, pxr::SdfPath(_path));
     const auto &maxRadii = sdfEllipsoid->Radii().Max();
     usdEllipsoid.CreateRadiusAttr().Set(maxRadii);

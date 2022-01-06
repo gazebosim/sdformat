@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_PARSER_JOINT_HH_
-#define SDF_PARSER_JOINT_HH_
+#ifndef SDF_USD_JOINT_HH_
+#define SDF_USD_JOINT_HH_
 
 #include <string>
 

@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/joint.hh"
+#include "sdf/joint.hh"
 
 #include <iostream>
 #include <string>
@@ -41,7 +41,7 @@
 #include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
-#include "sdf_usd_parser/utils.hh"
+#include "sdf/utils.hh"
 
 namespace usd
 {

@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/sensor.hh"
+#include "sdf/sensor.hh"
 
 #include <string>
 
@@ -32,7 +32,7 @@
 #include "sdf/Camera.hh"
 #include "sdf/Lidar.hh"
 #include "sdf/Sensor.hh"
-#include "sdf_usd_parser/utils.hh"
+#include "sdf/utils.hh"
 
 namespace usd
 {

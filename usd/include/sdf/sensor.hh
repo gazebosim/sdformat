@@ -15,27 +15,25 @@
  *
 */
 
-#ifndef SDF_PARSER_LIGHT_HH_
-#define SDF_PARSER_LIGHT_HH_
+#ifndef SDF_USD_SENSOR_HH_
+#define SDF_USD_SENSOR_HH_
 
 #include <string>
 
 #include <pxr/usd/usd/stage.h>
 
-#include "sdf/Light.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
-  /// \brief Parse an SDF light into a USD stage.
-  /// \param[in] _light The SDF light to parse.
+  /// \brief Parse an SDF sensor into a USD stage.
+  /// \param[in] _sensor The SDF sensor to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _light.
-  /// \param[in] _path The USD path of the parsed light in _stage, which must be
+  /// of _sensor.
+  /// \param[in] _path The USD path of the parsed sensor in _stage, which must be
   /// a valid USD path.
-  /// \return True if _light was succesfully parsed into _stage with a path of
-  /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
+  bool SDFORMAT_VISIBLE ParseSdfSensor(const sdf::Sensor &_sensor,
       pxr::UsdStageRefPtr &_stage, const std::string &_path);
 }
 

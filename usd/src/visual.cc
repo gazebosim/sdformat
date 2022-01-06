@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/visual.hh"
+#include "sdf/visual.hh"
 
 #include <iostream>
 #include <string>
@@ -25,8 +25,8 @@
 #include <pxr/usd/usdGeom/xform.h>
 
 #include "sdf/Visual.hh"
-#include "sdf_usd_parser/geometry.hh"
-#include "sdf_usd_parser/utils.hh"
+#include "sdf/geometry.hh"
+#include "sdf/utils.hh"
 
 namespace usd
 {

@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/world.hh"
+#include "sdf/world.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -31,8 +31,8 @@
 
 #include "sdf/Joint.hh"
 #include "sdf/World.hh"
-#include "sdf_usd_parser/light.hh"
-#include "sdf_usd_parser/model.hh"
+#include "sdf/light.hh"
+#include "sdf/model.hh"
 
 namespace usd
 {

@@ -15,28 +15,31 @@
  *
 */
 
-#ifndef SDF_PARSER_VISUAL_HH_
-#define SDF_PARSER_VISUAL_HH_
+#ifndef SDF_USD_LINK_HH_
+#define SDF_USD_LINK_HH_
 
 #include <string>
 
 #include <pxr/usd/usd/stage.h>
 
-#include "sdf/Visual.hh"
+#include "sdf/Link.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
-  /// \brief Parse an SDF visual into a USD stage.
-  /// \param[in] _visual The SDF visual to parse.
+  /// \brief Parse an SDF link into a USD stage.
+  /// \param[in] _link The SDF link to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _visual.
-  /// \param[in] _path The USD path of the parsed visual in _stage, which must be
+  /// of _link.
+  /// \param[in] _path The USD path of the parsed link in _stage, which must be
   /// a valid USD path.
-  /// \return True if _visual was succesfully parsed into _stage with a path of
+  /// \param[in] _rigidBody Whether the link is a rigid body (i.e., non-static)
+  /// or not. True for rigid body, false otherwise
+  /// \return True if _link was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfVisual(const sdf::Visual &_visual,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path);
+  bool SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path,
+      const bool _rigidBody);
 }
 
 #endif

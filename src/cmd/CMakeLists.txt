@@ -42,21 +42,3 @@ file(GENERATE
 
 # Install the ruby command line library in an unversioned location.
 install(FILES ${cmd_script_generated} DESTINATION lib/ruby/ignition)
-
-#===============================================================================
-# SDF -> USD converter
-add_executable(usdConverter
-  usdConverter.cc
-)
-
-target_link_libraries(usdConverter
-  PUBLIC
-    ${sdf_target}
-)
-
-install(
-  TARGETS
-    usdConverter
-  DESTINATION
-    ${BIN_INSTALL_DIR}
-)

@@ -15,31 +15,28 @@
  *
 */
 
-#ifndef SDF_PARSER_MODEL_HH_
-#define SDF_PARSER_MODEL_HH_
+#ifndef SDF_USD_LIGHT_HH_
+#define SDF_USD_LIGHT_HH_
 
 #include <string>
 
 #include <pxr/usd/usd/stage.h>
 
-#include "sdf/Model.hh"
+#include "sdf/Light.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
-  /// \brief Parse an SDF model into a USD stage.
-  /// \param[in] _model The SDF model to parse.
+  /// \brief Parse an SDF light into a USD stage.
+  /// \param[in] _light The SDF light to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _model.
-  /// \param[in] _path The USD path of the parsed model in _stage, which must be
+  /// of _light.
+  /// \param[in] _path The USD path of the parsed light in _stage, which must be
   /// a valid USD path.
-  /// \param[in] _worldPath The path to the USD world prim. This is needed if
-  /// the model has any joints with the world as its parent.
-  /// \return True if _model was succesfully parsed into _stage with a path of
+  /// \return True if _light was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path,
-      const pxr::SdfPath &_worldPath);
+  bool SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path);
 }
 
 #endif

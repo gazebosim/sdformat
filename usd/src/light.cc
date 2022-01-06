@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf_usd_parser/light.hh"
+#include "sdf/light.hh"
 
 #include <string>
 
@@ -29,7 +29,7 @@
 #include <pxr/usd/usd/stage.h>
 
 #include "sdf/Light.hh"
-#include "sdf_usd_parser/utils.hh"
+#include "sdf/utils.hh"
 
 namespace usd
 {

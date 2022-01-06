@@ -15,31 +15,31 @@
  *
 */
 
-#ifndef SDF_PARSER_LINK_HH_
-#define SDF_PARSER_LINK_HH_
+#ifndef SDF_USD_MODEL_HH_
+#define SDF_USD_MODEL_HH_
 
 #include <string>
 
 #include <pxr/usd/usd/stage.h>
 
-#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
 {
-  /// \brief Parse an SDF link into a USD stage.
-  /// \param[in] _link The SDF link to parse.
+  /// \brief Parse an SDF model into a USD stage.
+  /// \param[in] _model The SDF model to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _link.
-  /// \param[in] _path The USD path of the parsed link in _stage, which must be
+  /// of _model.
+  /// \param[in] _path The USD path of the parsed model in _stage, which must be
   /// a valid USD path.
-  /// \param[in] _rigidBody Whether the link is a rigid body (i.e., non-static)
-  /// or not. True for rigid body, false otherwise
-  /// \return True if _link was succesfully parsed into _stage with a path of
+  /// \param[in] _worldPath The path to the USD world prim. This is needed if
+  /// the model has any joints with the world as its parent.
+  /// \return True if _model was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
+  bool SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
-      const bool _rigidBody);
+      const pxr::SdfPath &_worldPath);
 }
 
 #endif
