@@ -55,7 +55,7 @@ namespace usd
     else
     {
       // TODO(ahcorde): The default value in USD is 50, but something more
-      // similar to ignition Gazebo is 47.
+      // similar to ignition Gazebo is 40.
       usdCamera.CreateFocalLengthAttr().Set(
           static_cast<float>(40.0f));
     }
@@ -155,8 +155,11 @@ namespace usd
     {
       if (_sensor.Type() == sdf::SensorType::CAMERA)
       {
+        // Camera sensors are upAxis equal to "Y", we need to rotate the camera
+        // properly.
         ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
-        usd::SetPose(usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
+        usd::SetPose(
+          usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
       }
       else
       {
