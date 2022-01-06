@@ -18,6 +18,7 @@ set (sources
   Capsule.cc
   Collision.cc
   Console.cc
+  Conversions.cc
   Converter.cc
   Cylinder.cc
   Element.cc
@@ -105,6 +106,7 @@ set(sources ${sources}
   usd/sdf_usd_parser/joint.cc
   usd/sdf_usd_parser/light.cc
   usd/sdf_usd_parser/link.cc
+  usd/sdf_usd_parser/material.cc
   usd/sdf_usd_parser/model.cc
   usd/sdf_usd_parser/sensor.cc
   usd/sdf_usd_parser/visual.cc

@@ -22,8 +22,12 @@
 
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
+#include <ignition/common/Util.hh>
 #include <ignition/common/SubMesh.hh>
+
 #include <ignition/math/Vector3.hh>
+
+#include <pxr/base/gf/vec2f.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/sdf/path.h>
@@ -33,11 +37,15 @@
 #include <pxr/usd/usdGeom/cylinder.h>
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/sphere.h>
+#include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #include <pxr/usd/usdPhysics/collisionAPI.h>
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
+#include "sdf/Conversions.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
@@ -45,6 +53,7 @@
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
 #include "sdf_usd_parser/utils.hh"
+#include "sdf_usd_parser/material.hh"
 
 namespace usd
 {
@@ -109,14 +118,53 @@ namespace usd
   bool ParseSdfMeshGeometry(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    auto ignMesh = ignition::common::MeshManager::Instance()->Load(
-        _geometry.MeshShape()->Uri());
+    ignition::common::URI uri(_geometry.MeshShape()->Uri());
+    std::string fullname;
 
-    pxr::VtArray<pxr::GfVec3f> meshPoints;
-    pxr::VtArray<int> faceVertexIndices;
-    pxr::VtArray<int> faceVertexCounts;
+    if (uri.Scheme() == "https" || uri.Scheme() == "http")
+    {
+      fullname =
+        ignition::common::findFile(uri.Str());
+    }
+    else
+    {
+      fullname =
+        ignition::common::findFile(_geometry.MeshShape()->Uri());
+    }
+
+    auto ignMesh = ignition::common::MeshManager::Instance()->Load(
+        fullname);
+
+    // Some Meshes are splited in some submeshes, this loop check if the name
+    // of the path is the same as the name of the submesh. In this case
+    // we create a USD mesh per submesh.
+    bool isUSDPathInSubMeshName = false;
     for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
     {
+      auto subMesh = ignMesh->SubMeshByIndex(i).lock();
+
+      if (ignMesh->SubMeshCount() != 1)
+      {
+        std::string pathLowerCase = ignition::common::lowercase(_path);
+        std::string subMeshLowerCase =
+          ignition::common::lowercase(subMesh->Name());
+
+        if (pathLowerCase.find(subMeshLowerCase) != std::string::npos)
+        {
+          isUSDPathInSubMeshName = true;
+          break;
+        }
+      }
+    }
+
+    for (unsigned int i = 0; i < ignMesh->SubMeshCount(); ++i)
+    {
+      pxr::VtArray<pxr::GfVec3f> meshPoints;
+      pxr::VtArray<pxr::GfVec2f> uvs;
+      pxr::VtArray<pxr::GfVec3f> normals;
+      pxr::VtArray<int> faceVertexIndices;
+      pxr::VtArray<int> faceVertexCounts;
+
       auto subMesh = ignMesh->SubMeshByIndex(i).lock();
       if (!subMesh)
       {
@@ -124,7 +172,19 @@ namespace usd
                   << i << "] of parent mesh [" << ignMesh->Name() << "]\n";
         return false;
       }
+      if (isUSDPathInSubMeshName)
+      {
+        if (ignMesh->SubMeshCount() != 1)
+        {
+          std::string pathLowerCase = ignition::common::lowercase(_path);
+          std::string subMeshLowerCase = ignition::common::lowercase(subMesh->Name());
 
+          if (pathLowerCase.find(subMeshLowerCase) == std::string::npos)
+          {
+            continue;
+          }
+        }
+      }
       // copy the submesh's vertices to the usd mesh's "points" array
       for (unsigned int v = 0; v < subMesh->VertexCount(); ++v)
       {
@@ -135,6 +195,20 @@ namespace usd
       // copy the submesh's indices to the usd mesh's "faceVertexIndices" array
       for (unsigned int j = 0; j < subMesh->IndexCount(); ++j)
         faceVertexIndices.push_back(subMesh->Index(j));
+
+      // copy the submesh's texture coordinates
+      for (unsigned int j = 0; j < subMesh->TexCoordCount(); ++j)
+      {
+        const auto &uv = subMesh->TexCoord(j);
+        uvs.push_back(pxr::GfVec2f(uv[0], 1 - uv[1]));
+      }
+
+      // copy the submesh's normals
+      for (unsigned int j = 0; j < subMesh->NormalCount(); ++j)
+      {
+        const auto &normal = subMesh->Normal(j);
+        normals.push_back(pxr::GfVec3f(normal[0], normal[1], normal[2]));
+      }
 
       // set the usd mesh's "faceVertexCounts" array according to
       // the submesh primitive type
@@ -174,17 +248,50 @@ namespace usd
       // this case is "verticesPerFace"
       for (unsigned int n = 0; n < numFaces; ++n)
         faceVertexCounts.push_back(verticesPerFace);
+
+      std::string primName = _path + "/" + subMesh->Name();
+      primName = removeDash(primName);
+
+      auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(primName));
+      usdMesh.CreatePointsAttr().Set(meshPoints);
+      usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
+      usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
+
+      auto coordinates = usdMesh.CreatePrimvar(
+          pxr::TfToken("st"), pxr::SdfValueTypeNames->Float2Array,
+          pxr::UsdGeomTokens->vertex);
+      coordinates.Set(uvs);
+
+      usdMesh.CreateNormalsAttr().Set(normals);
+      usdMesh.SetNormalsInterpolation(pxr::TfToken("vertex"));
+
+      usdMesh.CreateSubdivisionSchemeAttr(pxr::VtValue(pxr::TfToken("none")));
+
+      const auto &meshMin = ignMesh->Min();
+      const auto &meshMax = ignMesh->Max();
+      pxr::VtArray<pxr::GfVec3f> extentBounds;
+      extentBounds.push_back(pxr::GfVec3f(meshMin.X(), meshMin.Y(), meshMin.Z()));
+      extentBounds.push_back(pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
+      usdMesh.CreateExtentAttr().Set(extentBounds);
+
+      int materialIndex = subMesh->MaterialIndex();
+      if (materialIndex != -1)
+      {
+        auto material = ignMesh->MaterialByIndex(materialIndex);
+        sdf::Material materialSdf = sdf::convert(material);
+        auto materialUSD = ParseSdfMaterial(&materialSdf, _stage);
+
+        if(materialSdf.Emissive() != ignition::math::Color(0, 0, 0, 1)
+            || materialSdf.Specular() != ignition::math::Color(0, 0, 0, 1)
+            || materialSdf.PbrMaterial())
+        {
+          if (materialUSD)
+          {
+            pxr::UsdShadeMaterialBindingAPI(usdMesh).Bind(materialUSD);
+          }
+        }
+      }
     }
-    auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(_path));
-    usdMesh.CreatePointsAttr().Set(meshPoints);
-    usdMesh.CreateFaceVertexIndicesAttr().Set(faceVertexIndices);
-    usdMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts);
-    const auto &meshMin = ignMesh->Min();
-    const auto &meshMax = ignMesh->Max();
-    pxr::VtArray<pxr::GfVec3f> extentBounds;
-    extentBounds.push_back(pxr::GfVec3f(meshMin.X(), meshMin.Y(), meshMin.Z()));
-    extentBounds.push_back(pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
-    usdMesh.CreateExtentAttr().Set(extentBounds);
 
     return true;
   }
@@ -240,7 +347,7 @@ namespace usd
   bool ParseSdfEllipsoid(const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
       const std::string &_path) {
     const auto sdfEllipsoid = _geometry.EllipsoidShape();
-    
+
     auto usdEllipsoid = pxr::UsdGeomSphere::Define(_stage, pxr::SdfPath(_path));
     const auto &maxRadii = sdfEllipsoid->Radii().Max();
     usdEllipsoid.CreateRadiusAttr().Set(maxRadii);

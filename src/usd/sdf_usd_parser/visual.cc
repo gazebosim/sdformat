@@ -23,9 +23,12 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 
 #include "sdf/Visual.hh"
 #include "sdf_usd_parser/geometry.hh"
+#include "sdf_usd_parser/material.hh"
 #include "sdf_usd_parser/utils.hh"
 
 namespace usd
@@ -43,6 +46,31 @@ namespace usd
     {
       std::cerr << "Error parsing geometry attached to visual ["
                 << _visual.Name() << "]\n";
+      return false;
+    }
+
+    auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
+    if (geomPrim)
+    {
+        const auto material = _visual.Material();
+        pxr::UsdShadeMaterial materialUSD;
+
+        if (material)
+        {
+          materialUSD = usd::ParseSdfMaterial(material, _stage);
+          if (!materialUSD)
+          {
+            std::cerr << "Error parsing material attached to visual ["
+                      << _visual.Name() << "]\n";
+            return false;
+          }
+          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+        }
+    }
+    else
+    {
+      std::cerr << "Internal error: no geometry prim exists at path ["
+                << geometryPath << "]\n";
       return false;
     }
 

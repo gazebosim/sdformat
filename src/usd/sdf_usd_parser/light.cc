@@ -68,7 +68,6 @@ namespace usd
   {
     const pxr::SdfPath sdfLightPath(_path);
     bool typeParsed = false;
-    bool increaseIntensity = true;
     switch (_light.Type())
     {
       case sdf::LightType::POINT:
@@ -82,7 +81,6 @@ namespace usd
         // (along with the intensity from the base light class), which is high
         // to approximate the sun. So, intensity for directional lights
         // don't need to be increased any further
-        increaseIntensity = false;
         typeParsed = ParseSdfDirectionalLight(_light, _stage, sdfLightPath);
         break;
       case sdf::LightType::INVALID:
@@ -105,16 +103,14 @@ namespace usd
       // since USD has lights pointing in -Z by default)
       usd::SetPose(usd::PoseWrtParent(_light), _stage, sdfLightPath);
 
-      if (increaseIntensity)
-      {
-        // This is a workaround to set the light's intensity attribute. Using the
-        // UsdLuxLightAPI sets the light's inputs:intensity attribute, but isaac
-        // sim reads the light's intensity attribute
-        auto lightPrim = _stage->GetPrimAtPath(sdfLightPath);
-        lightPrim.CreateAttribute(pxr::TfToken("intensity"),
-            pxr::SdfValueTypeNames->Float, false).Set(
-              static_cast<float>(_light.Intensity()) * 100.0f);
-      }
+
+      // This is a workaround to set the light's intensity attribute. Using the
+      // UsdLuxLightAPI sets the light's inputs:intensity attribute, but isaac
+      // sim reads the light's intensity attribute
+      auto lightPrim = _stage->GetPrimAtPath(sdfLightPath);
+      lightPrim.CreateAttribute(pxr::TfToken("intensity"),
+          pxr::SdfValueTypeNames->Float, false).Set(
+            static_cast<float>(_light.Intensity()) * 100.0f);
 
       // TODO(adlarkin) Other things to look at (there may be more):
       // * exposure - I don't think SDF has this, but USD does
