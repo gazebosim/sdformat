@@ -6,7 +6,7 @@ cd /tmp
 mkdir usd_binaries
 cd usd_binaries
 
-apt install p7zip-full
+apt install p7zip-full -y
 
 wget https://developer.download.nvidia.com/USD/usd_binaries/21.05/usd-21-05-usd-linux64_py36-centos_release.7z
 
