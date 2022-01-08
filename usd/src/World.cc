@@ -24,6 +24,8 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
 
+#include "sdf/usd/Light.hh"
+
 namespace usd
 {
   bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
@@ -34,6 +36,17 @@ namespace usd
     _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1.0);
     _stage->SetStartTimeCode(0);
     _stage->SetTimeCodesPerSecond(24);
+
+    for (uint64_t i = 0; i < _world.LightCount(); ++i)
+    {
+      const auto light = *(_world.LightByIndex(i));
+      const auto lightPath = std::string(_path + "/" + light.Name());
+      if (!ParseSdfLight(light, _stage, lightPath))
+      {
+        std::cerr << "Error parsing light [" << light.Name() << "]\n";
+        return false;
+      }
+    }
 
     // TODO(ahcorde) Add parser
     std::cerr << "Parser is not yet implemented" << '\n';
