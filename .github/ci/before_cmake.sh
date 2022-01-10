@@ -37,7 +37,7 @@ cmake -DCMAKE_INSTALL_PREFIX="/tmp/USD" -DCMAKE_PREFIX_PATH="/tmp/USD" \
   -DBoost_NO_BOOST_CMAKE=On  \
   -DBoost_NO_SYSTEM_PATHS=True \
   -DBoost_INCLUDE_DIR=/usr/include  \
-  -DBoost_NO_BOOST_CMAKE=FALS \
+  -DBoost_NO_BOOST_CMAKE=FALSE \
   ..
 
 make install
