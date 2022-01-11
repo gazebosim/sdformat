@@ -424,6 +424,7 @@ namespace sdf
     friend class Root;
     friend class World;
 
+    // Allow ModelWrapper from FrameSemantics.cc to call MergedInterfaceModels
     friend class ModelWrapper;
 
     /// \brief Private data pointer.

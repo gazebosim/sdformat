@@ -119,8 +119,7 @@ class CustomTomlParser
     return nullptr;
   }
 
-  public:
-  bool supportsMergeInclude;
+  public: bool supportsMergeInclude;
 };
 
 bool endsWith(const std::string &_str, const std::string &_suffix)

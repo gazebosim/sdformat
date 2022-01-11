@@ -208,6 +208,8 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     frameNames.insert(model.Name());
   }
 
+  // Load InterfaceModels into a temporary container so we can have special
+  // handling for merged InterfaceModels.
   std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
       tmpInterfaceModels;
   // Load included models via the interface API
