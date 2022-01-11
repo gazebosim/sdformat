@@ -21,9 +21,13 @@
 #include <string>
 
 #include <pxr/base/gf/vec3f.h>
+#include <pxr/usd/sdf/path.h>
+#include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
+#include <pxr/usd/usdPhysics/scene.h>
 
+#include "sdf/World.hh"
 #include "sdf/usd/Light.hh"
 
 namespace usd
@@ -37,6 +41,18 @@ namespace usd
     _stage->SetStartTimeCode(0);
     _stage->SetTimeCodesPerSecond(24);
 
+    const pxr::SdfPath worldPrimPath(_path);
+    auto usdWorldPrim = _stage->DefinePrim(worldPrimPath);
+
+    auto usdPhysics = pxr::UsdPhysicsScene::Define(_stage,
+        pxr::SdfPath(_path + "/physics"));
+    const auto &sdfWorldGravity = _world.Gravity();
+    const auto normalizedGravity = sdfWorldGravity.Normalized();
+    usdPhysics.CreateGravityDirectionAttr().Set(pxr::GfVec3f(
+          normalizedGravity.X(), normalizedGravity.Y(), normalizedGravity.Z()));
+    usdPhysics.CreateGravityMagnitudeAttr().Set(
+        static_cast<float>(sdfWorldGravity.Length()));
+
     for (uint64_t i = 0; i < _world.LightCount(); ++i)
     {
       const auto light = *(_world.LightByIndex(i));
@@ -49,7 +65,9 @@ namespace usd
     }
 
     // TODO(ahcorde) Add parser
-    std::cerr << "Parser is not yet implemented" << '\n';
+    std::cerr << "Parser for a sdf world only parses physics information at "
+              << "the moment. Models that are children of the world "
+              << "are currently being ignored.\n";
 
     return true;
   }
