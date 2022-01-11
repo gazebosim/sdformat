@@ -102,6 +102,10 @@ class sdf::Model::Implementation
 
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
   public: std::string poseGraphScopeVertexName;
+
+  /// \brief Optional URI string that specifies where this model was or
+  /// can be loaded from.
+  public: std::string uri = "";
 };
 
 /////////////////////////////////////////////////
@@ -859,11 +863,42 @@ const std::vector<
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement() const
+std::string Model::Uri() const
 {
+  return this->dataPtr->uri;
+}
+
+/////////////////////////////////////////////////
+void Model::SetUri(const std::string &_uri)
+{
+  this->dataPtr->uri = _uri;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
+{
+  if (_useIncludeTag && !this->dataPtr->uri.empty())
+  {
+    sdf::ElementPtr worldElem(new sdf::Element);
+    sdf::initFile("world.sdf", worldElem);
+
+    sdf::ElementPtr includeElem = worldElem->AddElement("include");
+    includeElem->GetElement("uri")->Set(this->Uri());
+    includeElem->GetElement("name")->Set(this->Name());
+    includeElem->GetElement("pose")->Set(this->RawPose());
+    if (!this->dataPtr->poseRelativeTo.empty())
+    {
+      includeElem->GetElement("pose")->GetAttribute(
+          "relative_to")->Set<std::string>(this->dataPtr->poseRelativeTo);
+    }
+    includeElem->GetElement("static")->Set(this->Static());
+    includeElem->GetElement("placement_frame")->Set(this->PlacementFrameName());
+
+    return includeElem;
+  }
+
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("model.sdf", elem);
-
   elem->GetAttribute("name")->Set(this->Name());
 
   if (!this->dataPtr->canonicalLink.empty())
@@ -901,7 +936,7 @@ sdf::ElementPtr Model::ToElement() const
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(), true);
+    elem->InsertElement(model.ToElement(_useIncludeTag), true);
 
   return elem;
 }

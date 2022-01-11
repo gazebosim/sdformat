@@ -201,17 +201,6 @@ FindSinkVertex(
 }
 
 /////////////////////////////////////////////////
-std::pair<const Link *, std::string>
-    modelCanonicalLinkAndRelativeName(const Model *_model)
-{
-  if (nullptr == _model)
-  {
-    return std::make_pair(nullptr, "");
-  }
-  return _model->CanonicalLinkAndRelativeName();
-}
-
-/////////////////////////////////////////////////
 /// \brief Resolve the pose of a model taking into account the placement frame
 /// attribute. This function is used to calculate the pose of the edge between a
 /// model and its parent.
@@ -294,19 +283,19 @@ struct WrapperBase
   const std::string name;
   /// \brief Element type, such as Model, Link, or Interface Frame.
   const std::string elementType;
-  /// \brief Frame type used int the FrameAttachedTo or PoseRelativeTo graphs.
+  /// \brief Frame type used in the FrameAttachedTo or PoseRelativeTo graphs.
   const FrameType frameType;
 };
 
 /// \brief Wrapper for sdf::Link and sdf::InterfaceLink
-struct LinkWrapper: public WrapperBase
+struct LinkWrapper : public WrapperBase
 {
   /// \brief Constructor that takes an sdf::Link
   explicit LinkWrapper(const sdf::Link &_link)
       : WrapperBase{_link.Name(), "Link", FrameType::LINK},
         rawPose(_link.RawPose()),
-        relativeTo(_link.PoseRelativeTo()),
-        finalRelativeTo(relativeTo)
+        rawRelativeTo(_link.PoseRelativeTo()),
+        relativeTo(rawRelativeTo)
   {
   }
 
@@ -314,8 +303,8 @@ struct LinkWrapper: public WrapperBase
   explicit LinkWrapper(const sdf::InterfaceLink &_ifaceLink)
       : WrapperBase{_ifaceLink.Name(), "Interface Link", FrameType::LINK},
         rawPose(_ifaceLink.PoseInModelFrame()),
-        relativeTo("__model__"),
-        finalRelativeTo(relativeTo)
+        rawRelativeTo("__model__"),
+        relativeTo(rawRelativeTo)
   {
   }
 
@@ -325,30 +314,30 @@ struct LinkWrapper: public WrapperBase
               const std::string &_relativeTo)
       : WrapperBase{_name, "Link", FrameType::LINK},
         rawPose(_rawPose),
-        relativeTo(_relativeTo),
-        finalRelativeTo(relativeTo)
+        rawRelativeTo(_relativeTo),
+        relativeTo(rawRelativeTo)
   {
   }
 
   /// \brief Raw pose of the entity.
   const ignition::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
+  const std::string rawRelativeTo;
+  /// \brief The final @relative_to attribute. This is the same as rawRelativeTo
+  /// for links and interface links.
   const std::string relativeTo;
-  /// \brief The final @relative_to attribute. This the same as relativeTo for
-  /// links and interface links.
-  const std::string finalRelativeTo;
 };
 
 /// \brief Wrapper for sdf::Frame and sdf::InterfaceFrame
-struct FrameWrapper: public WrapperBase
+struct FrameWrapper : public WrapperBase
 {
   /// \brief Constructor that takes an sdf::Frame
   explicit FrameWrapper(const sdf::Frame &_frame)
       : WrapperBase{_frame.Name(), "Frame", FrameType::FRAME},
         rawPose(_frame.RawPose()),
-        relativeTo(_frame.PoseRelativeTo()),
+        rawRelativeTo(_frame.PoseRelativeTo()),
         attachedTo(_frame.AttachedTo()),
-        finalRelativeTo(relativeTo.empty() ? attachedTo : relativeTo)
+        relativeTo(rawRelativeTo.empty() ? attachedTo : rawRelativeTo)
   {
   }
 
@@ -356,9 +345,9 @@ struct FrameWrapper: public WrapperBase
   explicit FrameWrapper(const sdf::InterfaceFrame &_ifaceFrame)
       : WrapperBase{_ifaceFrame.Name(), "Interface Frame", FrameType::FRAME},
         rawPose(_ifaceFrame.PoseInAttachedToFrame()),
-        relativeTo(_ifaceFrame.AttachedTo()),
+        rawRelativeTo(_ifaceFrame.AttachedTo()),
         attachedTo(_ifaceFrame.AttachedTo()),
-        finalRelativeTo(attachedTo)
+        relativeTo(attachedTo)
 
   {
   }
@@ -369,34 +358,34 @@ struct FrameWrapper: public WrapperBase
                const std::string &_relativeTo, const std::string &_attachedTo)
       : WrapperBase{_name, "Frame", FrameType::FRAME},
         rawPose(_rawPose),
-        relativeTo(_relativeTo),
+        rawRelativeTo(_relativeTo),
         attachedTo(_attachedTo),
-        finalRelativeTo(relativeTo.empty() ? attachedTo : relativeTo)
+        relativeTo(relativeTo.empty() ? attachedTo : rawRelativeTo)
   {
   }
 
   /// \brief Raw pose of the entity.
   const ignition::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
-  const std::string relativeTo;
+  const std::string rawRelativeTo;
   /// \brief The //frame/@attached_to attribute.
   const std::string attachedTo;
   /// \brief The final @relative_to attribute. For sdf::Frame, this is set to
-  /// the attachedTo if the relativeTo is empty. For sdf::InterfaceFrame, it's
-  /// always set to attachedTo.
-  const std::string finalRelativeTo;
+  /// the attachedTo if the rawRelativeTo is empty. For sdf::InterfaceFrame,
+  /// it's always set to attachedTo.
+  const std::string relativeTo;
 };
 
 /// \brief Wrapper for sdf::Joint and sdf::InterfaceJoint
-struct JointWrapper: public WrapperBase
+struct JointWrapper : public WrapperBase
 {
   /// \brief Constructor that takes an sdf::Joint
   explicit JointWrapper(const sdf::Joint &_joint)
       : WrapperBase{_joint.Name(), "Joint", FrameType::JOINT},
         rawPose(_joint.RawPose()),
-        relativeTo(_joint.PoseRelativeTo()),
+        rawRelativeTo(_joint.PoseRelativeTo()),
         childName(_joint.ChildLinkName()),
-        finalRelativeTo(relativeTo.empty() ? childName : relativeTo)
+        relativeTo(rawRelativeTo.empty() ? childName : rawRelativeTo)
   {
   }
 
@@ -404,22 +393,22 @@ struct JointWrapper: public WrapperBase
   explicit JointWrapper(const sdf::InterfaceJoint &_ifaceJoint)
       : WrapperBase{_ifaceJoint.Name(), "Interface Joint", FrameType::JOINT},
         rawPose(_ifaceJoint.PoseInChildFrame()),
-        relativeTo(_ifaceJoint.ChildName()),
+        rawRelativeTo(_ifaceJoint.ChildName()),
         childName(_ifaceJoint.ChildName()),
-        finalRelativeTo(childName)
+        relativeTo(childName)
   {
   }
 
   /// \brief Raw pose of the entity.
   const ignition::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
-  const std::string relativeTo;
-  /// \brief The name of the child frame.
+  const std::string rawRelativeTo;
+  /// \brief The name of the child frame (i.e. content of //joint/child).
   const std::string childName;
   /// \brief The final @relative_to attribute. For sdf::Joint, this is set to
-  /// the childName if the relativeTo. For sdf::InterfaceJoint, it's always set
-  /// to childName.
-  const std::string finalRelativeTo;
+  /// the childName if the rawRelativeTo is empty. For sdf::InterfaceJoint, it's
+  /// always set to childName.
+  const std::string relativeTo;
 };
 
 /// \brief Placement frame information
@@ -432,7 +421,7 @@ struct PlacementFrameInfo
 };
 
 /// \brief Wrapper for sdf::Model and sdf::InterfaceModel
-struct ModelWrapper: public WrapperBase
+struct ModelWrapper : public WrapperBase
 {
   /// \brief Constructor that takes an sdf::Model
   explicit ModelWrapper(const sdf::Model &_model)
@@ -440,32 +429,32 @@ struct ModelWrapper: public WrapperBase
                     _model.Static() ? FrameType::STATIC_MODEL
                                     : FrameType::MODEL},
         rawPose(_model.RawPose()),
-        relativeTo(_model.PoseRelativeTo()),
-        finalRelativeTo(relativeTo),
+        rawRelativeTo(_model.PoseRelativeTo()),
+        relativeTo(rawRelativeTo),
         canonicalLinkName(_model.CanonicalLinkAndRelativeName().second),
         placementFrameName(_model.PlacementFrameName()),
         isStatic(_model.Static())
   {
     for (uint64_t i = 0; i < _model.LinkCount(); ++i)
     {
-      links.emplace_back(*_model.LinkByIndex(i));
+      this->links.emplace_back(*_model.LinkByIndex(i));
     }
     for (uint64_t i = 0; i < _model.FrameCount(); ++i)
     {
-      frames.emplace_back(*_model.FrameByIndex(i));
+      this->frames.emplace_back(*_model.FrameByIndex(i));
     }
     for (uint64_t i = 0; i < _model.JointCount(); ++i)
     {
-      joints.emplace_back(*_model.JointByIndex(i));
+      this->joints.emplace_back(*_model.JointByIndex(i));
     }
     for (uint64_t i = 0; i < _model.ModelCount(); ++i)
     {
-      models.emplace_back(*_model.ModelByIndex(i));
+      this->models.emplace_back(*_model.ModelByIndex(i));
     }
     for (uint64_t i = 0; i < _model.InterfaceModelCount(); ++i)
     {
-      models.emplace_back(*_model.InterfaceModelNestedIncludeByIndex(i),
-                          *_model.InterfaceModelByIndex(i));
+      this->models.emplace_back(*_model.InterfaceModelNestedIncludeByIndex(i),
+                                *_model.InterfaceModelByIndex(i));
     }
     for (const auto &[nestedInclude, model] : _model.MergedInterfaceModels())
     {
@@ -524,8 +513,8 @@ struct ModelWrapper: public WrapperBase
                     _ifaceModel.Static() ? FrameType::STATIC_MODEL
                                          : FrameType::MODEL},
         rawPose(_ifaceModel.ModelFramePoseInParentFrame()),
-        relativeTo(_nestedInclude.IncludePoseRelativeTo().value_or("")),
-        finalRelativeTo(relativeTo),
+        rawRelativeTo(_nestedInclude.IncludePoseRelativeTo().value_or("")),
+        relativeTo(rawRelativeTo),
         canonicalLinkName(_ifaceModel.CanonicalLinkName()),
         placementFrameName(_nestedInclude.PlacementFrame().value_or("")),
         isStatic(_ifaceModel.Static())
@@ -540,8 +529,8 @@ struct ModelWrapper: public WrapperBase
                     _ifaceModel.Static() ? FrameType::STATIC_MODEL
                                          : FrameType::MODEL},
         rawPose(_ifaceModel.ModelFramePoseInParentFrame()),
-        relativeTo(""),
-        finalRelativeTo(relativeTo),
+        rawRelativeTo(""),
+        relativeTo(rawRelativeTo),
         canonicalLinkName(_ifaceModel.CanonicalLinkName()),
         placementFrameName(""),
         isStatic(_ifaceModel.Static())
@@ -552,10 +541,10 @@ struct ModelWrapper: public WrapperBase
   /// \brief Raw pose of the entity.
   const ignition::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
-  const std::string relativeTo;
-  /// \brief The final @relative_to attribute. This is set to relativeTo for
+  const std::string rawRelativeTo;
+  /// \brief The final @relative_to attribute. This is set to rawRelativeTo for
   /// sdf::Model and sdf::InterfaceModel.
-  const std::string finalRelativeTo;
+  const std::string relativeTo;
   /// \brief The name of the resolved canonical link.
   const std::string canonicalLinkName;
   /// \brief The name of the placement frame.
@@ -597,7 +586,7 @@ struct ModelWrapper: public WrapperBase
 };
 
 /// \brief Wrapper for sdf::World
-struct WorldWrapper: public WrapperBase
+struct WorldWrapper : public WrapperBase
 {
   /// \brief Constructor that takes an sdf::World
   explicit WorldWrapper(const sdf::World &_world)
@@ -627,12 +616,21 @@ struct WorldWrapper: public WrapperBase
 /////////////////////////////////////////////////
 /// \brief Add vertices to either Frame attached to or Pose graph. If the child
 /// element is a model, it calls the corresponding build*Graph function.
+/// \tparam ElementT The type of Element. This must be a class that derives from
+/// WrapperBase.
+/// \tparam GraphT Type of Graph. Either PoseRelativeToGraph or
+/// FrameAttachedToGraph.
+/// \param[in,out] _out The graph to which vertices will be added.
+/// \param[in] _items List of Elements such as links, joints, etc for which
+/// vertices will be created in the graph.
+/// \param[in] _parent Parent element of the items in `_items`.
+/// \param[out] _errors Errors encountered while adding vertices.
 template <typename ElementT, typename GraphT>
 void addVerticesToGraph(ScopedGraph<GraphT> &_out,
-                        const std::vector<ElementT> &items,
+                        const std::vector<ElementT> &_items,
                         const WrapperBase &_parent, Errors &_errors)
 {
-  for (const auto &item : items)
+  for (const auto &item : _items)
   {
     if (_out.Count(item.name) > 0)
     {
@@ -663,9 +661,14 @@ void addVerticesToGraph(ScopedGraph<GraphT> &_out,
 }
 
 /////////////////////////////////////////////////
-/// \brief Add edges to the PoseRelativeTo graph. This handles all ElementT
-/// types except Frame, InterfaceFrame. This also does not handle the case where
-/// ElementT is an InterfaceModel, but ParentT is either Model or World.
+/// \brief Add edges to the PoseRelativeTo graph.
+/// \tparam ElementT The type of Element. This must be a class that derives from
+/// WrapperBase.
+/// \param[in,out] _out The PoseRelativeTo graph to which edges will be added.
+/// \param[in] _items List of Elements such as links, joints, etc for which
+/// edges will be created in the graph.
+/// \param[in] _parent Parent element of the items in `_items`.
+/// \param[out] _errors Errors encountered while adding edges.
 template <typename ElementT>
 void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
                      const std::vector<ElementT> &_items,
@@ -673,7 +676,7 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 {
   for (const auto &item : _items)
   {
-    const std::string relativeTo = item.finalRelativeTo;
+    const std::string &relativeTo = item.relativeTo;
     const ignition::math::Pose3d poseInRelativeTo = item.rawPose;
 
     auto itemId = _out.VertexIdByName(item.name);
@@ -683,7 +686,7 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 
     if constexpr (std::is_same_v<ElementT, FrameWrapper>)
     {
-      if (item.relativeTo.empty())
+      if (item.rawRelativeTo.empty())
       {
         typeForErrorMsg = "attached_to";
         errorCode = ErrorCode::FRAME_ATTACHED_TO_INVALID;
@@ -746,6 +749,11 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 
 /////////////////////////////////////////////////
 /// \brief Add Joint and InterfaceJoint edges to the FrameAttachedTo graph
+/// \param[in,out] _out The FrameAttachedTo graph to which edges will be added.
+/// \param[in] _joints List of joints for which edges will be created in the
+/// graph.
+/// \param[in] _model Parent model of the items in `_items`.
+/// \param[out] _errors Errors encountered while adding edges.
 void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
                      const std::vector<JointWrapper> &_joints,
                      const ModelWrapper &_model, Errors &_errors)
@@ -769,7 +777,12 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 }
 
 /////////////////////////////////////////////////
-/// \brief Add Joint and InterfaceJoint edges to the FrameAttachedTo graph
+/// \brief Add Frame and InterfaceFrame edges to the FrameAttachedTo graph
+/// \param[in,out] _out The FrameAttachedTo graph to which edges will be added.
+/// \param[in] _frames List of frames for which edges will be created in the
+/// graph.
+/// \param[in] _model Parent model of the items in `_items`.
+/// \param[out] _errors Errors encountered while adding edges.
 void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
                      const std::vector<FrameWrapper> &_frames,
                      const WrapperBase &_parent, Errors &_errors)
@@ -787,23 +800,23 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 
     if (_out.Count(attachedTo) != 1)
     {
-        std::stringstream errMsg;
-        errMsg << "attached_to name[" << attachedTo << "] specified by "
-               << lowercase(frame.elementType) << " with name[" << frame.name
-               << "] does not match a";
-        if (_parent.frameType == FrameType::WORLD)
-        {
-          errMsg << " model or frame name ";
-        }
-        else
-        {
-          errMsg << " nested model, link, joint, or frame name ";
-        }
-        errMsg << "in " + lowercase(_parent.elementType) + " with name[" +
-                      _parent.name + "].";
+      std::stringstream errMsg;
+      errMsg << "attached_to name[" << attachedTo << "] specified by "
+             << lowercase(frame.elementType) << " with name[" << frame.name
+             << "] does not match a";
+      if (_parent.frameType == FrameType::WORLD)
+      {
+        errMsg << " model or frame name ";
+      }
+      else
+      {
+        errMsg << " nested model, link, joint, or frame name ";
+      }
+      errMsg << "in " + lowercase(_parent.elementType) + " with name[" +
+                    _parent.name + "].";
 
-        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID, errMsg.str()});
-        continue;
+      _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID, errMsg.str()});
+      continue;
     }
 
     auto attachedToId = _out.VertexIdByName(attachedTo);
@@ -850,7 +863,6 @@ Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 
   const std::string scopeContextName = "__model__";
 
-  auto rootId = ignition::math::graph::kNullId;
   if (_isRoot)
   {
     // The __root__ vertex identifies the scope that contains a root level
@@ -863,7 +875,6 @@ Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
     // more complexity to the validateFrameAttachedToGraph code.
     _out = _out.AddScopeVertex(
         "", "__root__", scopeContextName, sdf::FrameType::STATIC_MODEL);
-    rootId = _out.ScopeVertexId();
   }
 
   const auto modelId = _out.AddVertex(_model.name, frameType).Id();
@@ -881,7 +892,7 @@ Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
   // add link vertices
   addVerticesToGraph(outModel, _model.links, _model, errors);
 
-  // add interface joint vertices
+  // add joint vertices
   addVerticesToGraph(outModel, _model.joints, _model, errors);
 
   // add frame vertices
@@ -947,6 +958,11 @@ Errors buildFrameAttachedToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
+  else if (!_model->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
+  }
   return wrapperBuildFrameAttachedToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
 
@@ -993,6 +1009,11 @@ Errors buildFrameAttachedToGraph(
   if (!_world)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
+  }
+  else if (!_world->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
   }
 
   return buildFrameAttachedToGraph(_out, WorldWrapper(*_world));
@@ -1110,6 +1131,11 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
+  else if (!_model->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
+  }
 
   return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
@@ -1118,6 +1144,11 @@ Errors buildPoseRelativeToGraph(
 Errors buildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
                                 const InterfaceModel *_model)
 {
+  if (!_model)
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid sdf::InterfaceModel pointer."}};
+  }
   return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), false);
 }
 
@@ -1163,6 +1194,11 @@ Errors buildPoseRelativeToGraph(
   if (!_world)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
+  }
+  else if (!_world->Element())
+  {
+    return Errors{
+        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
   }
   return wrapperBuildPoseRelativeToGraph(_out, WorldWrapper(*_world));
 }

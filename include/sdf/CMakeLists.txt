@@ -1,73 +1,8 @@
-include (${sdf_cmake_dir}/SDFUtils.cmake)
-
-set (headers
-  Actor.hh
-  AirPressure.hh
-  Altimeter.hh
-  Assert.hh
-  Atmosphere.hh
-  Box.hh
-  Camera.hh
-  Capsule.hh
-  Collision.hh
-  Console.hh
-  Cylinder.hh
-  Element.hh
-  Ellipsoid.hh
-  Error.hh
-  Exception.hh
-  Filesystem.hh
-  ForceTorque.hh
-  Frame.hh
-  Geometry.hh
-  Gui.hh
-  Heightmap.hh
-  Imu.hh
-  InterfaceElements.hh
-  InterfaceFrame.hh
-  InterfaceJoint.hh
-  InterfaceLink.hh
-  InterfaceModel.hh
-  InterfaceModelPoseGraph.hh
-  Joint.hh
-  JointAxis.hh
-  Lidar.hh
-  Light.hh
-  Link.hh
-  Magnetometer.hh
-  Material.hh
-  Mesh.hh
-  Model.hh
-  NavSat.hh
-  Noise.hh
-  Param.hh
-  parser.hh
-  ParserConfig.hh
-  ParticleEmitter.hh
-  Pbr.hh
-  Physics.hh
-  Plane.hh
-  PrintConfig.hh
-  Root.hh
-  Scene.hh
-  SDFImpl.hh
-  SemanticPose.hh
-  Sensor.hh
-  Sky.hh
-  Sphere.hh
-  Surface.hh
-  Types.hh
-  system_util.hh
-  Visual.hh
-  World.hh
+# Exlcude some files so that they are not added to the master header.
+ign_install_all_headers(EXCLUDE_FILES sdf.hh sdf_config.h)
+install(
+  FILES
+    sdf.hh
+    sdf_config.h
+  DESTINATION ${IGN_INCLUDE_INSTALL_DIR_FULL}/${PROJECT_INCLUDE_DIR}
 )
-
-set (sdf_headers "" CACHE INTERNAL "SDF headers" FORCE)
-foreach (hdr ${headers})
-  set(sdf_headers "${sdf_headers}#include <sdf/${hdr}>\n")
-endforeach()
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/sdf.hh.in
-                ${CMAKE_CURRENT_BINARY_DIR}/sdf.hh)
-
-sdf_install_includes("" ${headers}
-  ${CMAKE_CURRENT_BINARY_DIR}/sdf.hh)
