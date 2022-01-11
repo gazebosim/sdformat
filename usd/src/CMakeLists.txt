@@ -17,6 +17,11 @@ target_link_libraries(${usd_target}
 )
 
 # Build the unit tests
-ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${usd_target})
+ign_build_tests(
+  TYPE UNIT
+  SOURCES ${gtest_sources}
+  LIB_DEPS ${usd_target}
+  INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+)
 
 add_subdirectory(cmd)

@@ -53,7 +53,9 @@ namespace usd
         static_cast<float>(sdfWorldGravity.Length()));
 
     // TODO(ahcorde) Add parser
-    std::cerr << "Parser for a sdf world is not yet implemented\n";
+    std::cerr << "Parser for a sdf world only parses physics information at "
+              << "the moment. Models and lights that are children of the world "
+              << "are currently being ignored.\n";
 
     return true;
   }
