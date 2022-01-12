@@ -18,23 +18,15 @@
 #ifndef SDF_USD_UTILS_HH_
 #define SDF_USD_UTILS_HH_
 
-#include <algorithm>
-#include <string>
-
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
 #include <pxr/base/gf/vec3d.h>
-#include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 
-#include "sdf/Geometry.hh"
-#include "sdf/Link.hh"
-#include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
-#include "sdf/Visual.hh"
 #include "sdf/sdf_config.h"
 
 namespace usd
@@ -43,11 +35,10 @@ namespace usd
   /// \param[in] _obj The object whose pose should be computed/retrieved.
   /// \tparam T An object that has the following method signatures:
   ///   sdf::SemanticPose SemanticPose();
-  ///   std::string Name();
   /// \return _obj's pose w.r.t. its parent. If there was an error computing
   /// this pose, the pose's position will be NaNs.
   template <typename T>
-  inline ignition::math::Pose3d PoseWrtParent(const T &_obj)
+  inline ignition::math::Pose3d SDFORMAT_VISIBLE PoseWrtParent(const T &_obj)
   {
     ignition::math::Pose3d pose(ignition::math::Vector3d::NaN,
         ignition::math::Quaterniond::Identity);
