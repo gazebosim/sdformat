@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,14 +60,7 @@ namespace usd
     return pose;
   }
 
-  inline std::string removeDash(const std::string &_str)
-  {
-    std::string result = _str;
-    std::replace(result.begin(), result.end(), '-', '_');
-    return result;
-  }
-
-  /// \brief Set the pose of a pxr::UsdGeomXform object.
+  /// \brief Set the pose of a USD prim.
   /// \param[in] _pose The pose to set.
   /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
   /// \param[in] _usdPath The path to the USD prim that should have its
@@ -88,31 +81,6 @@ namespace usd
           ignition::math::Angle(rotation.Roll()).Degree(),
           ignition::math::Angle(rotation.Pitch()).Degree(),
           ignition::math::Angle(rotation.Yaw()).Degree()));
-  }
-
-  /// \brief Thickness of an sdf plane
-  /// \note This will no longer be needed when a pxr::USDGeomPlane class
-  /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
-  /// the geometry.cc file for more information)
-  static const double kPlaneThickness = 0.25;
-
-  /// \brief Check if an sdf model is a plane.
-  /// \param[in] _model The sdf model to check
-  /// \return True if _model is a plane. False otherwise
-  /// \note This method will no longer be needed when a pxr::USDGeomPlane class
-  /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
-  /// the geometry.cc file for more information)
-  inline bool SDFORMAT_VISIBLE IsPlane(const sdf::Model &_model)
-  {
-    if (_model.LinkCount() != 1u)
-      return false;
-
-    const auto &link = _model.LinkByIndex(0u);
-    if (link->VisualCount() != 1u)
-      return false;
-
-    const auto &visual = link->VisualByIndex(0u);
-    return visual->Geom()->Type() == sdf::GeometryType::PLANE;
   }
 }
 

@@ -21,7 +21,9 @@ ign_build_tests(
   TYPE UNIT
   SOURCES ${gtest_sources}
   LIB_DEPS ${usd_target}
-  INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+  INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/test
 )
 
 add_subdirectory(cmd)
