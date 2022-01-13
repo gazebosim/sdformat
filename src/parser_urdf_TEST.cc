@@ -632,11 +632,11 @@ TEST(URDFParser, CheckParserConfig_preserveFixedJoint)
   sdf::SDF fixedJointPreserveFixedJointSDF;
 
   // Set the config option to preserve fixed joints.
-  sdf::ParserConfig config_;
-  config_.SetPreserveFixedJoint(true);
+  sdf::ParserConfig config;
+  config.URDFSetPreserveFixedJoint(true);
 
   convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
-      fixedJointPreserveFixedJointSDF, config_);
+      fixedJointPreserveFixedJointSDF, config);
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));

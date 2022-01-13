@@ -159,13 +159,13 @@ const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 }
 
 /////////////////////////////////////////////////
-void ParserConfig::SetPreserveFixedJoint(bool _preserveFixedJoint)
+void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
 {
   this->dataPtr->preserveFixedJoint = _preserveFixedJoint;
 }
 
 /////////////////////////////////////////////////
-bool ParserConfig::PreserveFixedJoint() const
+bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
 }

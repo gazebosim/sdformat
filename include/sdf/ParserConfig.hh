@@ -169,10 +169,10 @@ class SDFORMAT_VISIBLE ParserConfig
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Set the preserveFixedJoint flag.
-  public: void SetPreserveFixedJoint(bool _preserveFixedJoint);
+  public: void URDFSetPreserveFixedJoint(bool _preserveFixedJoint);
 
   /// \brief Get the preserveFixedJoint flag value.
-  public: bool PreserveFixedJoint() const;
+  public: bool URDFPreserveFixedJoint() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

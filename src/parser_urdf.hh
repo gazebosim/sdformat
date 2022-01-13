@@ -55,7 +55,7 @@ namespace sdf
     /// \param[in] _config Custom parser configuration
     /// \param[inout] _sdfXmlDoc document to populate with the sdf model.
     public: void InitModelFile(const std::string &_filename,
-                               const ParserConfig& _config,
+                               const ParserConfig &_config,
                                tinyxml2::XMLDocument *_sdfXmlDoc);
 
     /// \brief convert urdf string to sdf xml document, with option to enforce

@@ -3247,7 +3247,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   }
 
   // Set g_reduceFixedJoints based on config value.
-  g_reduceFixedJoints = !_config.PreserveFixedJoint();
+  g_reduceFixedJoints = !_config.URDFPreserveFixedJoint();
 
   g_extensions.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
@@ -3274,7 +3274,6 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
     // is possible to disable fixed joint lumping only for selected joints
     if (g_reduceFixedJoints)
     {
-      std::cout << "reducing fixed joints" << std::endl << std::endl;
       ReduceFixedJoints(robot, urdf::const_pointer_cast<urdf::Link>(rootLink));
     }
 
