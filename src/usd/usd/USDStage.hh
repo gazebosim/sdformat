@@ -21,9 +21,11 @@
 #include <string>
 #include <set>
 
+#include "sdf/system_util.hh"
+
 namespace usd {
 
-  class USDStage
+  class SDFORMAT_VISIBLE USDStage
   {
     public:
       USDStage(const std::string &_refFileName);

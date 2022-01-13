@@ -18,11 +18,23 @@
 #ifndef USD_PARSER_POLYGON_HELPER_HH
 #define USD_PARSER_POLYGON_HELPER_HH
 
+#include <vector>
+
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/vt/array.h>
+
+#include "sdf/system_util.hh"
+
 namespace usd
 {
-  std::vector<unsigned int> PolygonToTriangles(
+  ///\brief Converts a vertex indicies of a polygon mesh to a vertex indicies of a triangle mesh.
+  ///\details This uses the fan-triangulating algorithm, so it only works if all polygons in
+  /// in the mesh are convex.
+  ///\param _faceVertexIndices A flat list of vertex indicies of a polygon mesh.
+  ///\param _faceVertexCounts A list containing the number of vertices for each face of the mesh.
+  ///\param _points A list of vertices.
+  ///\return A flat list of vertex indicies, with each face converted to one or more triangles.
+  std::vector<unsigned int> SDFORMAT_VISIBLE PolygonToTriangles(
     pxr::VtIntArray &_faceVertexIndices,
     pxr::VtIntArray &_faceVertexCounts,
     pxr::VtArray<pxr::GfVec3f> &_points);

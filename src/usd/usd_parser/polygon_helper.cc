@@ -72,12 +72,7 @@ namespace usd
             fit != triangulation.finite_facets_end(); ++fit)
         {
           auto &face = fit;
-          if (face->first->vertex(0)->info() > maxIndex ||
-              face->first->vertex(1)->info() > maxIndex ||
-              face->first->vertex(2)->info() > maxIndex)
-          {
-            goodTriangle = false;
-          }
+          goodTriangle = false;
         }
 
         if (goodTriangle)

@@ -144,7 +144,14 @@ namespace usd
 
       std::cerr << "============================== " << q2 * v << '\n';
 
-      jointAxis.SetXyz(-(q2 * v).Round());
+      auto errors = jointAxis.SetXyz(-(q2 * v).Round());
+      if (!errors.empty())
+      {
+        std::cerr << "Errors encountered when setting xyz of prismatic "
+                  << "joint axis:\n";
+        for (const auto &e : errors)
+          std::cerr << e << "\n";
+      }
 
       joint->SetRawPose(
         ignition::math::Pose3d(
@@ -237,7 +244,14 @@ namespace usd
 
       std::cerr << "============================== " << q2 * v << '\n';
 
-      jointAxis.SetXyz(v);
+      auto errors = jointAxis.SetXyz(v);
+      if (!errors.empty())
+      {
+        std::cerr << "Errors encountered when setting xyz of revolute "
+                  << "joint axis:\n";
+        for (const auto &e : errors)
+          std::cerr << e << "\n";
+      }
 
       joint->SetRawPose(
         ignition::math::Pose3d(
@@ -391,7 +405,14 @@ namespace usd
       sdf::JointAxis jointAxis;
       pxr::TfToken axis;
 
-      jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+      auto errors = jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+      if (!errors.empty())
+      {
+        std::cerr << "Errors encountered when setting xyz of vehicle "
+                  << "joint axis:\n";
+        for (const auto &e : errors)
+          std::cerr << e << "\n";
+      }
 
       joint->SetRawPose(
         ignition::math::Pose3d(t.translate * metersPerUnit,
@@ -401,8 +422,6 @@ namespace usd
       std::string parentName = pxr::TfStringify(_prim.GetPath().GetParentPath());
       for (const auto & child : _prim.GetChildren())
       {
-        std::string primName = pxr::TfStringify(child.GetPath());
-        std::cerr << "child primName " << primName << '\n';
         if (child.IsA<pxr::UsdGeomGprim>())
         {
           childName = pxr::TfStringify(_prim.GetPath());
@@ -471,7 +490,7 @@ namespace usd
         }
       }
 
-      size_t pos = std::string::npos;
+      pos = std::string::npos;
       if ((pos  = parentName.find("/World") )!= std::string::npos)
       {
         parentName.erase(pos, std::string("/World").length());
