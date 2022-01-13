@@ -96,7 +96,7 @@ else()
 endif()
 
 find_package(pxr REQUIRED)
-find_package(CGAL)
+find_package(CGAL 5)
 
 include_directories(${PXR_INCLUDE_DIRS})
 set(sources ${sources}

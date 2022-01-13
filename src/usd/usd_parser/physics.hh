@@ -20,11 +20,13 @@
 
 #include <pxr/usd/usd/primRange.h>
 
+#include "sdf/system_util.hh"
 #include "usd_model/world.hh"
 
 namespace usd
 {
-  void ParsePhysicsScene(const pxr::UsdPrim &_prim, WorldInterfaceSharedPtr &_world);
+  void SDFORMAT_VISIBLE ParsePhysicsScene(
+      const pxr::UsdPrim &_prim, WorldInterfaceSharedPtr &_world);
 }
 
 #endif

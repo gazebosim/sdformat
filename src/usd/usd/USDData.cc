@@ -17,7 +17,6 @@
 
 #include "USDData.hh"
 
-#include <filesystem>
 #include <iostream>
 
 #include <pxr/usd/usd/primCompositionQuery.h>
@@ -67,16 +66,7 @@ namespace usd {
       return false;
     }
 
-    std::string basename = ignition::common::basename(this->filename);
-    std::string inputPath = removeSubStr(this->filename, basename);
-    if (std::filesystem::path(this->filename).is_absolute())
-    {
-      this->directoryPath = inputPath;
-    }
-    else
-    {
-      this->directoryPath = ignition::common::joinPaths(ignition::common::cwd(), inputPath);
-    }
+    this->directoryPath = ignition::common::absPath(this->filename);
 
     addSubdirectories(directoryPath);
 
@@ -200,28 +190,5 @@ namespace usd {
       return true;
     }
     return false;
-  }
-
-  std::ostream& operator<<(std::ostream& os, const USDData& data)
-  {
-    os << "References:" << "\n";
-    for (auto &ref : data._references)
-    {
-      os << "\t" << ref.first << "\n";
-      os << "\t\t" << ref.second->_referenceName << "\n";
-      os << "\t\t" << ref.second->_upAxis << "\n";
-      os << "\t\t" << ref.second->_metersPerUnit << "\n";
-      for (auto &path : ref.second->_paths)
-      {
-        std::cerr << "\t\tPath " << path << '\n';
-      }
-    }
-    os << "Models:" << "\n";
-    for (auto &model : data._models)
-    {
-      os << "\t" << model << "\n";
-    }
-
-    return os;
   }
 }

@@ -28,17 +28,19 @@
 
 #include <ignition/math/Quaternion.hh>
 
+#include "sdf/system_util.hh"
 #include "sdf/Material.hh"
 #include "usd/USDData.hh"
 
 namespace usd{
 
-  std::string directoryFromUSDPath(std::string &_primPath);
-  std::string removeSubStr(const std::string &_str, const std::string &_substr);
+  std::string SDFORMAT_VISIBLE directoryFromUSDPath(std::string &_primPath);
+  std::string SDFORMAT_VISIBLE removeSubStr(const std::string &_str,
+      const std::string &_substr);
 
-  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim);
+  sdf::Material SDFORMAT_VISIBLE ParseMaterial(const pxr::UsdPrim &_prim);
 
-  class Transforms
+  class SDFORMAT_VISIBLE Transforms
   {
   public:
     ignition::math::Vector3d scale{1, 1, 1};
@@ -49,16 +51,17 @@ namespace usd{
     bool isTranslate = false;
   };
 
-  Transforms ParseTransform(const pxr::UsdPrim &_prim, USDData &_usdData);
+  Transforms SDFORMAT_VISIBLE ParseTransform(const pxr::UsdPrim &_prim,
+      USDData &_usdData);
 
-  void GetTransform(
+  void SDFORMAT_VISIBLE GetTransform(
     const pxr::UsdPrim &_prim,
     USDData &_usdData,
     ignition::math::Pose3d &_pose,
     ignition::math::Vector3d &_scale,
     const std::string &_name);
 
-  void GetAllTransforms(
+  void SDFORMAT_VISIBLE GetAllTransforms(
     const pxr::UsdPrim &_prim,
     USDData &_usdData,
     std::vector<ignition::math::Pose3d> &_tfs,

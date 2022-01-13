@@ -20,18 +20,19 @@
 
 #include <pxr/usd/usd/primRange.h>
 
+#include "sdf/system_util.hh"
 #include "sdf/Joint.hh"
 #include "usd_model/link.hh"
 #include "usd/USDData.hh"
 
 namespace usd
 {
-  std::shared_ptr<sdf::Joint> ParseJoints(
+  std::shared_ptr<sdf::Joint> SDFORMAT_VISIBLE ParseJoints(
     const pxr::UsdPrim &_prim, const std::string &_path,
     USDData &_usdData);
 
   std::pair<std::shared_ptr<sdf::Joint>, LinkSharedPtr>
-    ParseVehicleJoints(
+    SDFORMAT_VISIBLE ParseVehicleJoints(
       const pxr::UsdPrim &_prim,
       const std::string &_path,
       USDData &_usdData);

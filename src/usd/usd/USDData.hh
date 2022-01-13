@@ -26,11 +26,12 @@
 
 #include "USDStage.hh"
 
+#include "sdf/system_util.hh"
 #include "sdf/Material.hh"
 
 namespace usd {
 
-  class USDData {
+  class SDFORMAT_VISIBLE USDData {
     public:
       USDData(const std::string &_filename);
       bool Init();
@@ -40,7 +41,29 @@ namespace usd {
 
       std::pair<std::string, std::shared_ptr<USDStage>> findStage(const std::string &_name);
 
-      friend std::ostream& operator<<(std::ostream& output, const USDData& H);
+      friend std::ostream& operator<<(std::ostream& os, const USDData& data)
+      {
+        os << "References:" << "\n";
+        for (auto &ref : data._references)
+        {
+          os << "\t" << ref.first << "\n";
+          os << "\t\t" << ref.second->_referenceName << "\n";
+          os << "\t\t" << ref.second->_upAxis << "\n";
+          os << "\t\t" << ref.second->_metersPerUnit << "\n";
+          for (auto &path : ref.second->_paths)
+          {
+            std::cerr << "\t\tPath " << path << '\n';
+          }
+        }
+        os << "Models:" << "\n";
+        for (auto &model : data._models)
+        {
+          os << "\t" << model << "\n";
+        }
+
+        return os;
+      }
+
       std::string filename;
       std::string directoryPath;
       std::vector<std::string> _subDirectories;

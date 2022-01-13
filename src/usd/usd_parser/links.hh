@@ -20,12 +20,13 @@
 
 #include <pxr/usd/usd/primRange.h>
 
+#include "sdf/system_util.hh"
 #include "usd_model/link.hh"
 #include "usd/USDData.hh"
 
 namespace usd
 {
-  std::string ParseLinks(
+  std::string SDFORMAT_VISIBLE ParseLinks(
     const pxr::UsdPrim &_prim,
     const std::string &_nameLink,
     LinkSharedPtr &_link,
