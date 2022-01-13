@@ -195,6 +195,8 @@ namespace usd
 
     pxr::UsdPrim usdJointPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
 
+    // TODO(ahcorde): Review damping and stiffness values
+    // I added these values as a proof of concept.
     auto drive =
       pxr::UsdPhysicsDriveAPI::Apply(usdJointPrim, pxr::TfToken("angular"));
     if (!drive)
@@ -203,11 +205,6 @@ namespace usd
                 << _path << "] as a UsdPhysicsDriveAPI\n";
       return false;
     }
-
-    // TODO(ahcorde): Review damping and stiffness values
-    // I added these values as a proof of concept.
-    auto drive =
-      pxr::UsdPhysicsDriveAPI(usdJointPrim, pxr::TfToken("angular"));
 
     double damping = axis->Damping();
     if (ignition::math::equal(damping, 0.0))
