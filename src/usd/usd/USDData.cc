@@ -68,6 +68,9 @@ namespace usd {
 
     this->directoryPath = ignition::common::absPath(this->filename);
 
+    std::string basename = ignition::common::basename(this->directoryPath);
+    this->directoryPath = removeSubStr(this->directoryPath, basename);
+
     addSubdirectories(directoryPath);
 
     auto range = pxr::UsdPrimRange::Stage(referencee);
@@ -169,7 +172,7 @@ namespace usd {
       std::string subDirectory = removeSubStr(key, basename);
 
       auto systemPaths = ignition::common::systemPaths();
-      std::cerr << "subDirectory " << ignition::common::joinPaths(this->directoryPath, subDirectory) << '\n';
+      std::cerr << "Added directory " << ignition::common::joinPaths(this->directoryPath, subDirectory) << '\n';
       systemPaths->AddFilePaths(ignition::common::joinPaths(this->directoryPath, subDirectory));
 
       addSubdirectories(ignition::common::joinPaths(this->directoryPath, subDirectory));
