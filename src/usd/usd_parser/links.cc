@@ -101,8 +101,6 @@ namespace usd
     std::pair<std::string, std::shared_ptr<USDStage>> data =
       _usdData.findStage(_prim.GetPath().GetName());
 
-    double metersPerUnit = data.second->_metersPerUnit;
-
     int numSubMeshes = 0;
 
     for (const auto & child : _prim.GetChildren())

@@ -42,8 +42,6 @@ namespace usd
     std::pair<std::string, std::shared_ptr<USDStage>> lightUSDData =
       _usdData.findStage(_prim.GetPath().GetName());
 
-    double metersPerUnit = lightUSDData.second->_metersPerUnit;
-
     if (_prim.IsA<pxr::UsdLuxDistantLight>())
     {
       std::cerr << "\tDistant Light" << '\n';

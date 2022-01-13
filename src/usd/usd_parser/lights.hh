@@ -21,12 +21,13 @@
 #include <pxr/usd/usd/primRange.h>
 
 #include "sdf/Light.hh"
+#include "sdf/system_util.hh"
 
 #include "usd/USDData.hh"
 
 namespace usd
 {
-  std::shared_ptr<sdf::Light> ParseLights(
+  std::shared_ptr<sdf::Light> SDFORMAT_VISIBLE ParseLights(
     const pxr::UsdPrim &_prim,
     USDData &_usdData,
     const std::string &_linkName);

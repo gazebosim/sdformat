@@ -20,17 +20,22 @@
 #define USD_PARSER_USD_PARSER_HH
 
 #include <string>
-// #include <sdf/sdf_config.hh>
 
+#include "sdf/system_util.hh"
 #include "usd_model/model.hh"
 #include "usd_model/link.hh"
 #include "usd_model/types.hh"
 #include "usd_model/world.hh"
 
 namespace usd {
-  WorldInterfaceSharedPtr parseUSDFile(const std::string &filename);
-  WorldInterfaceSharedPtr parseUSD(const std::string &xml_string);
-  void exportUSD();
-  bool isUSD(const std::string &filename);
+  WorldInterfaceSharedPtr SDFORMAT_VISIBLE parseUSDFile(
+      const std::string &filename);
+
+  WorldInterfaceSharedPtr SDFORMAT_VISIBLE parseUSD(
+      const std::string &xml_string);
+
+  void SDFORMAT_VISIBLE exportUSD();
+
+  bool SDFORMAT_VISIBLE isUSD(const std::string &filename);
 }
 #endif
