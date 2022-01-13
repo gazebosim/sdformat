@@ -34,6 +34,9 @@ ign topic -t "/model/Carter/cmd_vel" -m ignition.msgs.Twist -p "linear: {x: 0.5}
 
 ## ROS
 
+Dependencies
+ - sudo apt-get install ros-foxy-ros-ign-bridge
+
 Now we are going to use ROS 2 to move the robot. For this we should run a bridge between
 Ignition Gazebo and ROS 2:
 
