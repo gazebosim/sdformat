@@ -18,7 +18,10 @@
 #include <string.h>
 
 #include <ignition/utils/cli/CLI.hpp>
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/sdf.hh"
 #include "sdf/usd/World.hh"
@@ -74,7 +77,8 @@ void runCommand(const Options &_opt)
   auto stage = pxr::UsdStage::CreateInMemory();
 
   const auto worldPath = std::string("/" + world->Name());
-  if (!usd::ParseSdfWorld(*world, stage, worldPath))
+  auto usdErrors = usd::ParseSdfWorld(*world, stage, worldPath);
+  if (usdErrors.empty())
   {
     std::cerr << "Error parsing world [" << world->Name() << "]\n";
     exit(-5);
@@ -112,7 +116,7 @@ int main(int argc, char** argv)
   app.set_help_all_flag("--help-all", "Show all help");
 
   app.add_flag_callback("--version", [](){
-    std::cout << strdup(SDF_VERSION_FULL) << std::endl;
+    std::cout << SDF_VERSION_FULL << std::endl;
     throw CLI::Success();
   });
 

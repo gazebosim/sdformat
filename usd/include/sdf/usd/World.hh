@@ -20,10 +20,12 @@
 
 #include <string>
 
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/World.hh"
-#include "sdf/sdf_config.h"
 
 namespace usd
 {
@@ -35,7 +37,7 @@ namespace usd
   /// a valid USD path.
   /// \return True if _world was succesfully parsed into _stage with a path of
   /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
+  sdf::Errors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
       pxr::UsdStageRefPtr &_stage, const std::string &_path);
 }
 

@@ -18,6 +18,8 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/usd/prim.h>
@@ -25,6 +27,7 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/usd/World.hh"
 #include "sdf/Root.hh"
@@ -57,7 +60,8 @@ TEST_F(UsdStageFixture, World)
   auto world = root.WorldByIndex(0u);
 
   const auto worldPath = std::string("/" + world->Name());
-  EXPECT_TRUE(usd::ParseSdfWorld(*world, this->stage, worldPath));
+  auto usdErrors = usd::ParseSdfWorld(*world, stage, worldPath);
+  EXPECT_TRUE(usdErrors.empty());
 
   // check top-level stage information
   EXPECT_DOUBLE_EQ(100.0, this->stage->GetEndTimeCode());
