@@ -359,6 +359,12 @@ namespace usd
       }
 
       pose.Pos() = t.translate * metersPerUnit;
+      // scaling is lost when we convert to pose, so we pre-scale the translation
+      // to make them match the scaled values.
+      if (!_tfs.empty()) {
+        auto& child = _tfs.back();
+        child.Pos().Set(child.Pos().X() * t.scale[0], child.Pos().Y() * t.scale[1], child.Pos().Z() * t.scale[2]);
+      }
 
       if (!t.isRotationZYX)
       {
@@ -560,105 +566,28 @@ namespace usd
 
       if (op == "xformOp:transform")
       {
+        // FIXME: Shear is lost (does sdformat support it?).
+
         pxr::GfMatrix4d transform;
         _prim.GetAttribute(pxr::TfToken("xformOp:transform")).Get(&transform);
-        pxr::GfVec3d translateMatrix = transform.ExtractTranslation();
-        pxr::GfQuatd rotation_quadMatrix = transform.ExtractRotationQuat();
+        const auto rot = transform.RemoveScaleShear();
+        const auto scaleShear = transform * rot.GetInverse();
 
-        ignition::math::Matrix4d m(
-          transform[0][0], transform[0][1], transform[0][2], transform[0][3],
-          transform[1][0], transform[1][1], transform[1][2], transform[1][3],
-          transform[2][0], transform[2][1], transform[2][2], transform[2][3],
-          transform[3][0], transform[3][1], transform[3][2], transform[3][3]
+        t.scale[0] = scaleShear[0][0];
+        t.scale[1] = scaleShear[1][1];
+        t.scale[2] = scaleShear[2][2];
+
+        const auto rotQuat = rot.ExtractRotationQuat();
+        t.translate = ignition::math::Vector3d(transform[3][0], transform[3][1], transform[3][2]);
+        ignition::math::Quaterniond q(
+          rotQuat.GetReal(),
+          rotQuat.GetImaginary()[0],
+          rotQuat.GetImaginary()[1],
+          rotQuat.GetImaginary()[2]
         );
-        std::cerr << "m " << m << '\n';
-
-        std::pair<std::string, std::shared_ptr<USDStage>> data =
-          _usdData.findStage(_prim.GetPath().GetName());
-
-        // bool upAxisZ = (data.second->_upAxis == "Z");
-        // if(!upAxisZ)
-        // {
-        //   ignition::math::Matrix4d mUpAxis(
-        //     1, 0, 0, 0,
-        //     0, 0, -1, 0,
-        //     0, 1, 0, 0,
-        //     0, 0, 0, 1);
-        //
-        //   pxr::GfMatrix4d mUpAxis2(
-        //     1, 0, 0, 0,
-        //     0, 0, -1, 0,
-        //     0, 1, 0, 0,
-        //     0, 0, 0, 1);
-        //
-        //   m = mUpAxis * m;
-        //   transform = mUpAxis2 * transform;
-        //   std::cerr << "m upAxis " << m << '\n';
-        // }
-
-        ignition::math::Vector3d eulerAngles = m.EulerRotation(true);
-        std::cerr << "eulerAngles " << eulerAngles << '\n';
-        ignition::math::Matrix4d inverseRX(ignition::math::Pose3d(
-          ignition::math::Vector3d(0, 0, 0),
-          ignition::math::Quaterniond(-eulerAngles[0], 0, 0)));
-        ignition::math::Matrix4d inverseRY(ignition::math::Pose3d(
-          ignition::math::Vector3d(0, 0, 0),
-          ignition::math::Quaterniond(0, -eulerAngles[1], 0)));
-        ignition::math::Matrix4d inverseRZ(ignition::math::Pose3d(
-          ignition::math::Vector3d(0, 0, 0),
-          ignition::math::Quaterniond(0, 0, -eulerAngles[2])));
-
-        pxr::GfMatrix4d inverseR2X(
-          inverseRX(0, 0), inverseRX(0, 1), inverseRX(0, 2), inverseRX(0, 3),
-          inverseRX(1, 0), inverseRX(1, 1), inverseRX(1, 2), inverseRX(1, 3),
-          inverseRX(2, 0), inverseRX(2, 1), inverseRX(2, 2), inverseRX(2, 3),
-          inverseRX(3, 0), inverseRX(3, 1), inverseRX(3, 2), inverseRX(3, 3));
-        pxr::GfMatrix4d inverseR2Y(
-          inverseRY(0, 0), inverseRY(0, 1), inverseRY(0, 2), inverseRY(0, 3),
-          inverseRY(1, 0), inverseRY(1, 1), inverseRY(1, 2), inverseRY(1, 3),
-          inverseRY(2, 0), inverseRY(2, 1), inverseRY(2, 2), inverseRY(2, 3),
-          inverseRY(3, 0), inverseRY(3, 1), inverseRY(3, 2), inverseRY(3, 3));
-        pxr::GfMatrix4d inverseR2Z(
-          inverseRZ(0, 0), inverseRZ(0, 1), inverseRZ(0, 2), inverseRZ(0, 3),
-          inverseRZ(1, 0), inverseRZ(1, 1), inverseRZ(1, 2), inverseRZ(1, 3),
-          inverseRZ(2, 0), inverseRZ(2, 1), inverseRZ(2, 2), inverseRZ(2, 3),
-          inverseRZ(3, 0), inverseRZ(3, 1), inverseRZ(3, 2), inverseRZ(3, 3));
-
-        m = inverseRX * (inverseRY * (inverseRZ * m));
-        transform = inverseR2X * (inverseR2Y * (inverseR2Z * transform));
-        // ignition::math::Vector3d t = m.Translation();
-        // ignition::math::Vector3d euler = m.EulerRotation(true);
-        // ignition::math::Quaternion r(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
-        std::cerr << "m " << m << '\n';
-
-        // std::cerr << "m " << m << '\n';
-        // std::cerr << "transform " << transform << '\n';
-
-        t.scale[0] = transform[0][0];
-        t.scale[1] = transform[1][1];
-        t.scale[2] = transform[2][2];
-
-        pxr::GfVec3d translateVector = transform.ExtractTranslation();
-        pxr::GfQuatd rotationInversed = transform.ExtractRotationQuat();
-        t.translate = ignition::math::Vector3d(
-          translateVector[0], translateVector[1], translateVector[2]);
-        ignition::math::Quaterniond q(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
         t.q.push_back(q);
-        // translate[0] = translateVector[0];
-        // translate[1] = translateVector[1];
-        // translate[2] = translateVector[2];
-        // rotationQuad.SetImaginary(r.X(), r.Y(), r.Z());
-        // rotationQuad.SetReal(r.W());
-
-        // isTranslate = true;
-        // isRotation = true;
-        // isScale = true;
         t.isTranslate = true;
         t.isRotation = true;
-
-        std::cerr << "translate " << t.translate << '\n';
-        std::cerr << "rotation_quad " << q << '\n';
-        std::cerr << "scale " << t.scale << '\n';
       }
     }
     return t;
