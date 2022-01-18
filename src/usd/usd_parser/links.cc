@@ -26,6 +26,8 @@
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 #include "pxr/usd/usd/primCompositionQuery.h"
 #include <pxr/usd/usd/stage.h>
+#include "pxr/usd/usd/modelAPI.h"
+#include "pxr/usd/kind/registry.h"
 
 #include "pxr/base/gf/vec3d.h"
 #include "pxr/base/gf/matrix4d.h"
@@ -624,7 +626,15 @@ namespace usd
         _prim.GetAttribute(pxr::TfToken("physics:collisionEnabled")).Get(&collisionEnabled);
       }
 
+      pxr::TfToken kind;
+      pxr::UsdModelAPI(_prim).GetKind(&kind);
+      // &&
+                  // KindRegistry::IsA(kind, KindTokens->component)
+
+      std::cerr << "_prim.IsModel() " << _prim.IsModel() << " " << kind << '\n';
+
       if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
+        || pxr::KindRegistry::IsA(kind, pxr::KindTokens->model)
         || (!isPhysicsMeshCollisionAPI && !collisionEnabled))
       {
         sdf::Material material = ParseMaterial(_prim);

@@ -413,7 +413,6 @@ namespace usd
       if (data.second != nullptr)
       {
         std::string upAxis = data.second->_upAxis;
-        std::cerr << "ALEX: " << upAxis << '\n';
         if (upAxis == "Y")
         {
           ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
