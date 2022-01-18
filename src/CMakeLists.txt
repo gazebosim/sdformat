@@ -96,7 +96,6 @@ else()
 endif()
 
 find_package(pxr REQUIRED)
-find_package(CGAL)
 
 include_directories(${PXR_INCLUDE_DIRS})
 set(sources ${sources}
@@ -265,7 +264,6 @@ target_link_libraries(${sdf_target}
     ignition-common${IGN_COMMON_VER}::graphics
     ${PYTHON_LIBRARY}
     ${PXR_LIBRARIES}
-    CGAL::CGAL
   PRIVATE
     ${TinyXML2_LIBRARIES})
 
