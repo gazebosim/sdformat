@@ -628,10 +628,6 @@ namespace usd
 
       pxr::TfToken kind;
       pxr::UsdModelAPI(_prim).GetKind(&kind);
-      // &&
-                  // KindRegistry::IsA(kind, KindTokens->component)
-
-      std::cerr << "_prim.IsModel() " << _prim.IsModel() << " " << kind << '\n';
 
       if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
         || pxr::KindRegistry::IsA(kind, pxr::KindTokens->model)
