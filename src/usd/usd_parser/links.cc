@@ -627,7 +627,11 @@ namespace usd
       }
 
       pxr::TfToken kind;
-      pxr::UsdModelAPI(_prim).GetKind(&kind);
+      if(!pxr::UsdModelAPI(_prim).GetKind(&kind))
+      {
+        auto parent = _prim.GetParent();
+        pxr::UsdModelAPI(parent).GetKind(&kind);
+      }
 
       if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
         || pxr::KindRegistry::IsA(kind, pxr::KindTokens->model)
