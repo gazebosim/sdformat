@@ -64,14 +64,12 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   auto tmpDir = ignition::common::tempDirectoryPath();
   auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
-  std::cerr << "tmp " << tmp << '\n';
   // Check a good SDF file
   {
     std::string path = ignition::common::joinPaths(pathBase,
       "/shapes_world.sdf");
-
     std::string output =
-      custom_exec_str(sdf2usdCommand() + " -i " + path + " -o " +
+      custom_exec_str(sdf2usdCommand() + " " + path + " " +
         ignition::common::joinPaths(tmp, "shapes.usd"));
     // TODO(ahcorde): Check the output when the parser is implemented
   }

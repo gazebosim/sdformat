@@ -44,7 +44,7 @@ struct Options
   std::string inputFilename{"input.sdf"};
 
   /// \brief output filename
-  std::string outputFilename{"output.sdf"};
+  std::string outputFilename{"output.usd"};
 };
 
 void runCommand(const Options &_opt)
@@ -95,11 +95,11 @@ void addFlags(CLI::App &_app)
 {
   auto opt = std::make_shared<Options>();
 
-  _app.add_option("-i,--input",
+  _app.add_option("input",
     opt->inputFilename,
     "Input filename");
 
-  _app.add_option("-o,--output",
+  _app.add_option("output",
     opt->outputFilename,
     "Output filename");
 
