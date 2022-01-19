@@ -832,6 +832,28 @@ TEST(Parser, ElementRemovedAfterDeprecation)
 }
 
 /////////////////////////////////////////////////
+/// Test for ParserConfig being passed down when parsing nested models
+TEST(Parser, NestedModelIncludes)
+{
+  const auto path =
+      sdf::testing::TestFile("integration", "model", "top_nested", "model.sdf");
+
+  auto findFileCb = [](const std::string &_uri)
+  {
+    return sdf::testing::TestFile("integration", "model", _uri);
+  };
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::SDFPtr sdf(new sdf::SDF());
+  sdf::init(sdf);
+
+  sdf::Errors errors;
+  EXPECT_TRUE(sdf::readFile(path, config, sdf, errors));
+  EXPECT_TRUE(errors.empty()) << errors;
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+
+  <model name="sub_nested">
+    <include>
+      <name>simple_model</name>
+      <uri>simple_model</uri>
+    </include>
+
+    <include>
+      <name>extra_model</name>
+      <uri>simple_model</uri>
+    </include>
+  </model>
+
+</sdf>
