@@ -23,7 +23,10 @@
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/prim.h>
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
+#pragma pop_macro ("__DEPRECATED")
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdPhysics/scene.h>
 
@@ -32,9 +35,10 @@
 
 namespace usd
 {
-  bool ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
+  sdf::Errors ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
+    sdf::Errors errors;
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
     _stage->SetEndTimeCode(100);
     _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1.0);
@@ -69,6 +73,6 @@ namespace usd
               << "the moment. Models that are children of the world "
               << "are currently being ignored.\n";
 
-    return true;
+    return errors;
   }
 }

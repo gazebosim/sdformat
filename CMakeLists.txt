@@ -116,7 +116,7 @@ if (BUILD_SDF)
 
   ########################################
   # Find PXR
-  ign_find_package(pxr REQUIRED_BY usd PKGCONFIG pxr)
+  ign_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
 
   ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
     COMPONENTS usd)

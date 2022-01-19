@@ -1,1 +1,1 @@
-ign_install_all_headers(COMPONENT usd)
+add_subdirectory(sdf/usd)
