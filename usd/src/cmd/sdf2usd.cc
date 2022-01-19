@@ -77,7 +77,7 @@ void runCommand(const Options &_opt)
   auto stage = pxr::UsdStage::CreateInMemory();
 
   const auto worldPath = std::string("/" + world->Name());
-  auto usdErrors = usd::ParseSdfWorld(*world, stage, worldPath);
+  auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
   if (usdErrors.empty())
   {
     std::cerr << "Error parsing world [" << world->Name() << "]\n";
