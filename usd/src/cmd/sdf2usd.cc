@@ -78,9 +78,12 @@ void runCommand(const Options &_opt)
 
   const auto worldPath = std::string("/" + world->Name());
   auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
-  if (usdErrors.empty())
+  if (!usdErrors.empty())
   {
-    std::cerr << "Error parsing world [" << world->Name() << "]\n";
+    std::cerr << "The following errors occurred when parsing world ["
+              << world->Name() << "]\n:";
+    for (const auto &e : errors)
+      std::cout << e << "\n";
     exit(-5);
   }
 
@@ -97,11 +100,11 @@ void addFlags(CLI::App &_app)
 
   _app.add_option("input",
     opt->inputFilename,
-    "Input filename");
+    "Input filename. Defaults to input.sdf unless otherwise specified.");
 
   _app.add_option("output",
     opt->outputFilename,
-    "Output filename");
+    "Output filename. Defaults to output.usd unless otherwise specified.");
 
   _app.callback([&_app, opt](){
     runCommand(*opt);
@@ -111,7 +114,7 @@ void addFlags(CLI::App &_app)
 //////////////////////////////////////////////////
 int main(int argc, char** argv)
 {
-  CLI::App app{"Sdf format converter"};
+  CLI::App app{"SDF to USD converter"};
 
   app.set_help_all_flag("--help-all", "Show all help");
 

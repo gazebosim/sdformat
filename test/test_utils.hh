@@ -19,6 +19,7 @@
 
 #include <ostream>
 #include <string>
+
 #include "sdf/Console.hh"
 #include "sdf/Root.hh"
 
