@@ -6,8 +6,6 @@ if(TARGET ${usd_target})
   target_link_libraries(sdf2usd
     PUBLIC
       ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
-      ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
-      ignition-common${IGN_COMMON_VER}::graphics
       ${usd_target}
   )
 

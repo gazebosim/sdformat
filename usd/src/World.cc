@@ -33,6 +33,11 @@
 #include "sdf/World.hh"
 #include "sdf/usd/Light.hh"
 
+namespace sdf
+{
+// Inline bracke to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+//
 namespace usd
 {
   sdf::Errors ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
@@ -75,4 +80,6 @@ namespace usd
 
     return errors;
   }
+}
+}
 }

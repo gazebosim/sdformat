@@ -19,7 +19,7 @@ target_link_libraries(${usd_target}
 ign_build_tests(
   TYPE UNIT
   SOURCES ${gtest_sources}
-  LIB_DEPS ${usd_target}
+  LIB_DEPS ${usd_target} ignition-cmake${IGN_CMAKE_VER}::utilities
   INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/test

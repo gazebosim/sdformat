@@ -45,6 +45,10 @@ class sdf::ParserConfig::Implementation
 
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
+
+  /// \brief Flag to explicitly preserve fixed joints when
+  /// reading the SDF/URDF file.
+  public: bool preserveFixedJoint = false;
 };
 
 
@@ -152,4 +156,16 @@ void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
 const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 {
   return this->dataPtr->customParsers;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
+{
+  this->dataPtr->preserveFixedJoint = _preserveFixedJoint;
+}
+
+/////////////////////////////////////////////////
+bool ParserConfig::URDFPreserveFixedJoint() const
+{
+  return this->dataPtr->preserveFixedJoint;
 }

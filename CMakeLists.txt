@@ -120,6 +120,7 @@ if (BUILD_SDF)
 
   ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
     COMPONENTS usd)
+
   ign_create_packages()
 
   add_subdirectory(sdf)

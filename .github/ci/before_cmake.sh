@@ -6,7 +6,7 @@ BUILD_DIR=`pwd`
 
 cd /tmp
 
-# check that we can compile USD from sources
+# check that we can compile USD from sources (only Focal)
 mkdir cmake_test
 cd cmake_test
 

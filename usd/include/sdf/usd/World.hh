@@ -25,22 +25,29 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/system_util.hh"
 #include "sdf/World.hh"
 
-namespace usd
+namespace sdf
 {
-  /// \brief Parse an SDF world into a USD stage.
-  /// \param[in] _world The SDF world to parse.
-  /// \param[in] _stage The stage that should contain the USD representation
-  /// of _world. It must be initialized first
-  /// \param[in] _path The USD path of the parsed world in _stage, which must be
-  /// a valid USD path.
-  /// \return Errors, which is a vector of Error objects. Each Error includes
-  /// an error code and message. An empty vector indicates no error.
-  sdf::Errors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path);
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+  namespace usd
+  {
+    /// \brief Parse an SDF world into a USD stage.
+    /// \param[in] _world The SDF world to parse.
+    /// \param[in] _stage The stage that should contain the USD representation
+    /// of _world. It must be initialized first
+    /// \param[in] _path The USD path of the parsed world in _stage, which must be
+    /// a valid USD path.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    sdf::Errors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
+        pxr::UsdStageRefPtr &_stage, const std::string &_path);
+  }
+  }
 }
 
 #endif
