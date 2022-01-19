@@ -298,6 +298,17 @@ namespace usd
   {
     pxr::UsdPrim parent = _prim;
     double metersPerUnit = 1.0;
+    std::string upAxis = "Y";
+
+    // this assumes that there can only be one stage
+    auto stageData = _usdData.findStage(parent.GetPath().GetName());
+    if (stageData.second != nullptr) {
+      metersPerUnit = stageData.second->_metersPerUnit;
+      upAxis = stageData.second->_upAxis;
+    }
+    std::cerr << "metersPerUnit " << metersPerUnit << '\n';
+    std::cerr << "upAxis " << upAxis << '\n';
+    
     while(parent)
     {
       if (pxr::TfStringify(parent.GetPath()) == _name)
@@ -311,52 +322,6 @@ namespace usd
       _scale *= t.scale;
 
       std::cout << "parent.GetPath().GetName() " << parent.GetPath().GetName() << '\n';
-
-      std::pair<std::string, std::shared_ptr<USDStage>> data =
-        _usdData.findStage(parent.GetPath().GetName());
-
-      if (data.second != nullptr)
-      {
-        metersPerUnit = data.second->_metersPerUnit;
-        std::string upAxis = data.second->_upAxis;
-        std::cerr << "upAxis " << upAxis << '\n';
-      //   if(upAxis == "Y")
-      //   {
-      //     ignition::math::Matrix4d m(
-      //       1, 0, 0, 0,
-      //       0, 0, -1, 0,
-      //       0, 1, 0, 0,
-      //       0, 0, 0, 1);
-      //     t.translate = m * t.translate;
-      //   //
-      //   //   ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
-      //   //     ignition::math::Vector3d(0 ,0 ,0),
-      //   //     ignition::math::Quaterniond(0.707, 0.707, 0, 0));
-      //   //
-      //   //   _tfs.push_back(poseAxisUpY);
-      //   //
-      //   //   // std::cerr << "m.Rotation() " << m.Rotation() << '\n';
-      //   //   // exit(-1);
-      //   //   // // ignition::math::Pose3d translateUpAxisY = ignition::math::Pose3d(
-      //   //   // //   t.translate,
-      //   //   // //   ignition::math::Quaterniond(0, 0, 0));
-      //   //   // t.translate = ignition::math::Vector3d(t.translate[0], -t.translate[2], t.translate[1]);
-      //   //   // if (!t.isRotationZYX)
-      //   //   // {
-      //   //   //   if (t.isRotation)
-      //   //   //   {
-      //   //   //     auto eulerAngles = t.q[0].Euler();
-      //   //   //     t.q[0] = ignition::math::Quaterniond(eulerAngles[0], eulerAngles[2], eulerAngles[1]);
-      //   //   //   }
-      //   //   // }
-      //   //   // else
-      //   //   // {
-      //   //   //   auto qtemp = t.q[2];
-      //   //   //   t.q[2] = t.q[1];
-      //   //   //   t.q[1] = qtemp;
-      //   //   // }
-      //   }
-      }
 
       pose.Pos() = t.translate * metersPerUnit;
       // scaling is lost when we convert to pose, so we pre-scale the translation
@@ -410,18 +375,15 @@ namespace usd
         _tfs.push_back(poseX);
         _tfs.push_back(poseT);
       }
-      if (data.second != nullptr)
-      {
-        std::string upAxis = data.second->_upAxis;
-        if (upAxis == "Y")
-        {
-          ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
-            ignition::math::Vector3d(0 ,0 ,0),
-            ignition::math::Quaterniond(1.57, 0, 0));
-          _tfs.push_back(poseUpAxis);
-        }
-      }
       parent = parent.GetParent();
+    }
+
+    if (upAxis == "Y")
+    {
+      ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
+        ignition::math::Vector3d(0 ,0 ,0),
+        ignition::math::Quaterniond(IGN_PI_2, 0, 0));
+      _tfs.push_back(poseUpAxis);
     }
   }
 
@@ -440,6 +402,15 @@ namespace usd
     {
       std::cerr << "rt " << rt << '\n';
     }
+    // if (_prim.GetPath().GetString() == "/Root/GearJoint/GearA/gearpoly0/gearpoly0") {
+    //   tfs.clear();
+    //   tfs.push_back(
+    //     ignition::math::Pose3d(ignition::math::Vector3d(10, 0, 0), ignition::math::Quaterniond(ignition::math::Vector3d(0, 0, 1), 0))
+    //   );
+    //   tfs.push_back(
+    //     ignition::math::Pose3d(ignition::math::Vector3d(0, 0, 0), ignition::math::Quaterniond(ignition::math::Vector3d(0, 0, 1), IGN_PI_4))
+    //   );
+    // }
     for (auto & rt : tfs)
     {
       _pose = rt * _pose;
