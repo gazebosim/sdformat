@@ -19,6 +19,8 @@
 #include <unordered_map>
 
 #include <gtest/gtest.h>
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/prim.h>
@@ -27,6 +29,7 @@
 #include <pxr/usd/usdLux/diskLight.h>
 #include <pxr/usd/usdLux/distantLight.h>
 #include <pxr/usd/usdLux/sphereLight.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Light.hh"
 #include "sdf/Root.hh"
@@ -51,15 +54,28 @@ class UsdLightStageFixture : public ::testing::Test
   public: void CheckLightIntensity(const pxr::UsdPrim &_lightPrim,
               const sdf::Light &_sdfLight)
   {
+    const float targetIntensity = _sdfLight.Intensity() * 100.0f;
+
     bool checkedIntensity = false;
     if (auto intensityAttr = _lightPrim.GetAttribute(pxr::TfToken("intensity")))
     {
       float intensityVal = 0.0;
       intensityAttr.Get(&intensityVal);
-      EXPECT_FLOAT_EQ(intensityVal, _sdfLight.Intensity() * 100.0f);
+      EXPECT_FLOAT_EQ(intensityVal, targetIntensity);
       checkedIntensity = true;
     }
     EXPECT_TRUE(checkedIntensity);
+
+    bool checkedInputIntensity = false;
+    if (auto intensityAttr = _lightPrim.GetAttribute(
+          pxr::TfToken("inputs:intensity")))
+    {
+      float intensityVal = 0.0;
+      intensityAttr.Get(&intensityVal);
+      EXPECT_FLOAT_EQ(intensityVal, targetIntensity);
+      checkedInputIntensity = true;
+    }
+    EXPECT_TRUE(checkedInputIntensity);
   }
 
   protected: void SetUp() override
@@ -91,7 +107,8 @@ TEST_F(UsdLightStageFixture, Lights)
     const auto light = *(world->LightByIndex(i));
     const auto lightPath = std::string("/" + light.Name());
     lightPathToSdf[lightPath] = light;
-    EXPECT_TRUE(usd::ParseSdfLight(light, this->stage, lightPath));
+    const auto errors = sdf::usd::ParseSdfLight(light, this->stage, lightPath);
+    EXPECT_TRUE(errors.empty());
   }
   EXPECT_EQ(world->LightCount(), lightPathToSdf.size());
 
@@ -138,7 +155,8 @@ TEST_F(UsdLightStageFixture, Lights)
     if (validLight)
     {
       this->CheckLightIntensity(lightUsd, lightSdf);
-      usd::testing::CheckPrimPose(lightUsd, usd::PoseWrtParent(lightSdf));
+      sdf::usd::testing::CheckPrimPose(lightUsd,
+          sdf::usd::PoseWrtParent(lightSdf));
     }
   }
   EXPECT_EQ(1, numPointLights);

@@ -25,6 +25,13 @@
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/usd/prim.h>
 
+#include "sdf/system_util.hh"
+
+namespace sdf
+{
+// Inline bracke to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+//
 namespace usd
 {
 namespace testing
@@ -89,5 +96,7 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
 
 } // namespace testing
 } // namespace usd
+}
+} // namespace sdf
 
 #endif

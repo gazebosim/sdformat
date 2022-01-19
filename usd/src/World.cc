@@ -66,16 +66,19 @@ namespace usd
     {
       const auto light = *(_world.LightByIndex(i));
       const auto lightPath = std::string(_path + "/" + light.Name());
-      if (!ParseSdfLight(light, _stage, lightPath))
+      const auto lightErrors = ParseSdfLight(light, _stage, lightPath);
+      if (!lightErrors.empty())
       {
-        std::cerr << "Error parsing light [" << light.Name() << "]\n";
-        return false;
+        std::cerr << "Error(s) occurred parsing light [" << light.Name() << "]\n";
+        for (const auto &e : lightErrors)
+          errors.push_back(e);
+        return errors;
       }
     }
 
     // TODO(ahcorde) Add parser
-    std::cerr << "Parser for a sdf world only parses physics information at "
-              << "the moment. Models that are children of the world "
+    std::cerr << "Parser for a sdf world only parses physics information and "
+              << "lights at the moment. Models that are children of the world "
               << "are currently being ignored.\n";
 
     return errors;

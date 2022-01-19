@@ -24,20 +24,29 @@
 #include <pxr/usd/sdf/types.h>
 #include <pxr/usd/usdLux/diskLight.h>
 #include <pxr/usd/usdLux/distantLight.h>
+#include <pxr/usd/usdLux/lightAPI.h>
 #include <pxr/usd/usdLux/sphereLight.h>
 #include <pxr/usd/usd/prim.h>
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Light.hh"
 #include "sdf/usd/Utils.hh"
 
+namespace sdf
+{
+// Inline bracke to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+//
 namespace usd
 {
-  bool ParseSdfLight(const sdf::Light &_light, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path)
+  sdf::Errors ParseSdfLight(const sdf::Light &_light,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     const pxr::SdfPath sdfLightPath(_path);
-    bool typeParsed = true;
+    sdf::Errors errors;
     switch (_light.Type())
     {
       case sdf::LightType::POINT:
@@ -55,33 +64,37 @@ namespace usd
         break;
       case sdf::LightType::INVALID:
       default:
-        std::cerr << "Light type is either invalid or not supported\n";
-        typeParsed = false;
+        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+              "The light type that was given cannot be parsed to USD."));
+        return errors;
     }
 
-    if (typeParsed)
-    {
-      // TODO(adlarkin) incorporate sdf::Light's <direction> somehow? According
-      // to the USD API, things like UsdLuxDistantLight and UsdLuxDiskLight emit
-      // light along the -Z axis, so I'm not sure if this can be changed.
-      usd::SetPose(usd::PoseWrtParent(_light), _stage, sdfLightPath);
+    // TODO(adlarkin) incorporate sdf::Light's <direction> somehow? According
+    // to the USD API, things like UsdLuxDistantLight and UsdLuxDiskLight emit
+    // light along the -Z axis, so I'm not sure if this can be changed.
+    sdf::usd::SetPose(sdf::usd::PoseWrtParent(_light), _stage, sdfLightPath);
 
-      // This is a workaround to set the light's intensity attribute. Using the
-      // UsdLuxLightAPI sets the light's inputs:intensity attribute, but isaac
-      // sim reads the light's intensity attribute
-      auto lightPrim = _stage->GetPrimAtPath(sdfLightPath);
-      lightPrim.CreateAttribute(pxr::TfToken("intensity"),
-          pxr::SdfValueTypeNames->Float, false).Set(
-            static_cast<float>(_light.Intensity()) * 100.0f);
+    // This is a workaround to set the light's intensity attribute. Using the
+    // UsdLuxLightAPI sets the light's "inputs:intensity" attribute, but isaac
+    // sim reads the light's "intensity" attribute. Both inputs:intensity and
+    // intensity are set to provide flexibility with other USD renderers
+    const float usdLightIntensity =
+      static_cast<float>(_light.Intensity()) * 100.0f;
+    auto lightPrim = _stage->GetPrimAtPath(sdfLightPath);
+    lightPrim.CreateAttribute(pxr::TfToken("intensity"),
+        pxr::SdfValueTypeNames->Float, false).Set(usdLightIntensity);
+    auto lightAPI = pxr::UsdLuxLightAPI(lightPrim);
+    lightAPI.CreateIntensityAttr().Set(usdLightIntensity);
 
-      // TODO(adlarkin) Other things to look at (there may be more):
-      // * exposure - I don't think SDF has this, but USD does. See the
-      //    UsdLightAPI::GetExposureAttr method
-      // * diffuse, specular - USD takes it as a scalar multiplier,
-      //    SDF takes it as a RGB color vector. Perhaps this can be handled by
-      //    applying a material to a light
-    }
+    // TODO(adlarkin) Other things to look at (there may be more):
+    // * exposure - I don't think SDF has this, but USD does. See the
+    //    UsdLightAPI::GetExposureAttr method
+    // * diffuse, specular - USD takes it as a scalar multiplier,
+    //    SDF takes it as a RGB color vector. Perhaps this can be handled by
+    //    applying a material to a light
 
-    return typeParsed;
+    return errors;
   }
+}
+}
 }

@@ -20,23 +20,34 @@
 
 #include <string>
 
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
+#pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/config.hh"
+#include "sdf/system_util.hh"
 #include "sdf/Light.hh"
-#include "sdf/sdf_config.h"
 
-namespace usd
+namespace sdf
 {
-  /// \brief Parse an SDF light into a USD stage.
-  /// \param[in] _light The SDF light to parse.
-  /// \param[in] _stage The stage that should contain the USD representation
-  /// of _light.
-  /// \param[in] _path The USD path of the parsed light in _stage, which must be
-  /// a valid USD path.
-  /// \return True if _light was succesfully parsed into _stage with a path of
-  /// _path. False otherwise.
-  bool SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path);
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+  namespace usd
+  {
+    /// \brief Parse an SDF light into a USD stage.
+    /// \param[in] _light The SDF light to parse.
+    /// \param[in] _stage The stage that should contain the USD representation
+    /// of _light.
+    /// \param[in] _path The USD path of the parsed light in _stage, which must
+    /// be a valid USD path.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    sdf::Errors SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
+        pxr::UsdStageRefPtr &_stage, const std::string &_path);
+  }
+  }
 }
 
 #endif
