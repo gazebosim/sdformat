@@ -105,3 +105,29 @@ TEST(DOMPhysics, CopyAssignmentAfterMove)
   EXPECT_EQ("physics2", physics1.Name());
   EXPECT_EQ("physics1", physics2.Name());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, ToElement)
+{
+  sdf::Physics physics;
+  physics.SetName("my-bullet-engine");
+  physics.SetDefault(true);
+  physics.SetEngineType("bullet");
+  physics.SetMaxStepSize(0.1);
+  physics.SetRealTimeFactor(20.4);
+  physics.SetMaxContacts(42);
+
+  sdf::ElementPtr elem = physics.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Physics physics2;
+  physics2.Load(elem);
+
+  // verify values after loading the element back
+  EXPECT_EQ(physics.Name(), physics2.Name());
+  EXPECT_EQ(physics.IsDefault(), physics2.IsDefault());
+  EXPECT_EQ(physics.EngineType(), physics2.EngineType());
+  EXPECT_DOUBLE_EQ(physics.MaxStepSize(), physics2.MaxStepSize());
+  EXPECT_DOUBLE_EQ(physics.RealTimeFactor(), physics2.RealTimeFactor());
+  EXPECT_EQ(physics.MaxContacts(), physics2.MaxContacts());
+}

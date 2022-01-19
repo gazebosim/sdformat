@@ -93,7 +93,7 @@ namespace sdf
     public: ElementPtr GetParent() const;
 
     /// \brief Set the parent of this Element.
-    /// \param[in] _parent Paren for this element.
+    /// \param[in] _parent Parent for this element.
     public: void SetParent(const ElementPtr _parent);
 
     /// \brief Set the name of the Element.
@@ -199,7 +199,7 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
-    /// \param[in] _config Configuration for printing the values.
+    /// \param[in] _config Configuration for converting to string.
     /// \return The string representation.
     public: std::string ToString(
         const std::string &_prefix,
@@ -462,6 +462,13 @@ namespace sdf
     /// \param[in] _elem the element object to add.
     public: void InsertElement(ElementPtr _elem);
 
+    /// \brief Add an element object, and optionally set the given element's
+    /// parent to this object.
+    /// \param[in] _elem the element object to add.
+    /// \param[in] _setParentToSelf If true, set the _elem's parent to this
+    /// object and then insert.
+    public: void InsertElement(ElementPtr _elem, bool _setParentToSelf);
+
     /// \brief Remove this element from its parent.
     public: void RemoveFromParent();
 
@@ -582,7 +589,7 @@ namespace sdf
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for printing values.
-    /// \param[out] _out the std::ostreamstream to write output to.
+    /// \param[out] _out the std::ostringstream to write output to.
     private: void PrintValuesImpl(const std::string &_prefix,
                                   bool _includeDefaultElements,
                                   bool _includeDefaultAttributes,
@@ -678,6 +685,14 @@ namespace sdf
 
     /// \brief XML path of this element.
     public: std::string xmlPath;
+
+    /// \brief Generate the string (XML) for the attributes.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for printing attributes.
+    /// \param[out] _out the std::ostringstream to write output to.
+    public: void PrintAttributes(bool _includeDefaultAttributes,
+                                 const PrintConfig &_config,
+                                 std::ostringstream &_out) const;
   };
 
   ///////////////////////////////////////////////

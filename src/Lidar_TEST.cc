@@ -118,3 +118,55 @@ TEST(DOMLidar, Load)
   // The Lidar::Load function is tested more thouroughly in the
   // link_dom.cc integration test.
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLidar, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Lidar lidar;
+  lidar.SetHorizontalScanSamples(123);
+  lidar.SetHorizontalScanResolution(0.45);
+  lidar.SetHorizontalScanMinAngle(ignition::math::Angle(0.67));
+  lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(0.89));
+  lidar.SetVerticalScanSamples(98);
+  lidar.SetVerticalScanResolution(0.76);
+  lidar.SetVerticalScanMinAngle(ignition::math::Angle(0.54));
+  lidar.SetVerticalScanMaxAngle(ignition::math::Angle(0.321));
+  lidar.SetRangeMin(1.2);
+  lidar.SetRangeMax(3.4);
+  lidar.SetRangeResolution(5.6);
+
+  sdf::Noise noise;
+  noise.SetMean(6.5);
+  noise.SetStdDev(3.79);
+  lidar.SetLidarNoise(noise);
+
+  sdf::ElementPtr lidarElem = lidar.ToElement();
+  EXPECT_NE(nullptr, lidarElem);
+  EXPECT_EQ(nullptr, lidar.Element());
+
+  // verify values after loading the element back
+  sdf::Lidar lidar2;
+  lidar2.Load(lidarElem);
+
+  EXPECT_EQ(123u, lidar2.HorizontalScanSamples());
+  EXPECT_DOUBLE_EQ(0.45, lidar2.HorizontalScanResolution());
+  EXPECT_DOUBLE_EQ(0.67, *(lidar2.HorizontalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(0.89, *(lidar2.HorizontalScanMaxAngle()));
+  EXPECT_EQ(98u, lidar2.VerticalScanSamples());
+  EXPECT_DOUBLE_EQ(0.76, lidar2.VerticalScanResolution());
+  EXPECT_DOUBLE_EQ(0.54, *(lidar2.VerticalScanMinAngle()));
+  EXPECT_DOUBLE_EQ(0.321, *(lidar2.VerticalScanMaxAngle()));
+  EXPECT_DOUBLE_EQ(1.2, lidar2.RangeMin());
+  EXPECT_DOUBLE_EQ(3.4, lidar2.RangeMax());
+  EXPECT_DOUBLE_EQ(5.6, lidar2.RangeResolution());
+  EXPECT_EQ(noise, lidar2.LidarNoise());
+
+  // make changes to DOM and verify ToElement produces updated values
+  lidar2.SetHorizontalScanSamples(111u);
+  sdf::ElementPtr lidar2Elem = lidar2.ToElement();
+  EXPECT_NE(nullptr, lidar2Elem);
+  sdf::Lidar lidar3;
+  lidar3.Load(lidar2Elem);
+  EXPECT_EQ(111u, lidar3.HorizontalScanSamples());
+}

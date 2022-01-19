@@ -232,6 +232,11 @@ namespace sdf
     /// \return True if 'this' != _lidar.
     public: bool operator!=(const Lidar &_lidar) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// lidar.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
   };

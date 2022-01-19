@@ -19,7 +19,7 @@
   </element>
 
   <element name="force" required="0">
-    <description>These elements are specific to measurement-frame force, 
+    <description>These elements are specific to measurement-frame force,
     which is expressed in Newtons</description>
     <element name="x" required="0">
       <description>Force along the X axis</description>
@@ -36,7 +36,7 @@
   </element>
 
   <element name="torque" required="0">
-    <description>These elements are specific to measurement-frame torque, 
+    <description>These elements are specific to measurement-frame torque,
     which is expressed in Newton-meters</description>
     <element name="x" required="0">
       <description>Torque about the X axis</description>

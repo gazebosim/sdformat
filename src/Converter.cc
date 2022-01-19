@@ -88,7 +88,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
     return false;
   }
 
-  if (!elem || !elem->Attribute("version"))
+  if (!elem->Attribute("version"))
   {
     sdferr << "  Unable to determine original SDF version\n";
     return false;

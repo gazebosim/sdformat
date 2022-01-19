@@ -111,3 +111,42 @@ TEST(DOMMagnetometer, Load)
   // The Magnetometer::Load function is test more thouroughly in the
   // link_dom.cc integration test.
 }
+
+/////////////////////////////////////////////////
+TEST(DOMMagnetometer, ToElement)
+{
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Magnetometer mag;
+  sdf::Noise noise;
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  mag.SetXNoise(noise);
+  mag.SetYNoise(noise);
+  mag.SetZNoise(noise);
+
+  sdf::ElementPtr magElem = mag.ToElement();
+  EXPECT_NE(nullptr, magElem);
+  EXPECT_EQ(nullptr, mag.Element());
+
+  // verify values after loading the element back
+  sdf::Magnetometer mag2;
+  mag2.Load(magElem);
+
+  EXPECT_EQ(noise, mag2.XNoise());
+  EXPECT_EQ(noise, mag2.YNoise());
+  EXPECT_EQ(noise, mag2.ZNoise());
+
+  // make changes to DOM and verify ToElement produces updated values
+  noise.SetBiasMean(11.22);
+  mag2.SetXNoise(noise);
+  sdf::ElementPtr mag2Elem = mag2.ToElement();
+  EXPECT_NE(nullptr, mag2Elem);
+  sdf::Magnetometer mag3;
+  mag3.Load(mag2Elem);
+  EXPECT_EQ(noise, mag3.XNoise());
+  EXPECT_NE(noise, mag.XNoise());
+}

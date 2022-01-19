@@ -489,7 +489,7 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(10u, errors.size());
+  ASSERT_EQ(10u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -745,7 +745,7 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(11u, errors.size());
+  ASSERT_EQ(11u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FRAME_ATTACHED_TO_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -1252,4 +1252,83 @@ TEST(DOMFrame, WorldIncludeModel)
     EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
     EXPECT_EQ(expectedPoses[i], modelPose);
   }
+}
+
+////////////////////////////////////////
+// Test parsing a include element that has a pose element and includes a
+// submodel
+TEST(Frame, IncludeFrameWithSubmodel)
+{
+  const std::string MODEL_PATH =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+                            "model", "box_with_submodel");
+
+  std::ostringstream stream;
+  std::string version = SDF_VERSION;
+  stream
+    << "<sdf version='" << version << "'>"
+    << "<world name='default'>"
+    << "<model name='top_level_model'>"
+    << "  <include>"
+    << "    <static>false</static>"
+    << "    <pose>5 5 0 0 0 0</pose>"
+    << "    <uri>" + MODEL_PATH +"</uri>"
+    << "  </include>"
+    << "</model>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  ASSERT_EQ(1u, world->ModelCount());
+
+  /* top level model: using include will merge top_level_model and box_with_submodel into:
+   *  <model name='top_level_model'>
+   *   <link name='box_with_submodel::link'>
+   *     <pose frame=''>5 5 0 0 -0 0</pose>  <<-- pose has been translated
+   *   </link>
+   *   <model name='box_with_submodel::submodel_box_with_submodel'>
+   *   ...
+   *   </model>
+   * </model>
+  */
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ(model->Name(), "top_level_model");
+
+  const sdf::Link *link0 = model->LinkByName("box_with_submodel::link");
+  ASSERT_NE(nullptr, link0);
+  EXPECT_EQ(link0->Name(), "link");
+
+  ignition::math::Pose3d linkPose;
+  sdf::Errors resolveErrors = model->SemanticPose().Resolve(linkPose,
+      "top_level_model::box_with_submodel::link");
+  EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
+  EXPECT_EQ(linkPose.Inverse(),
+            ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
+  /* submodel: pose from parent is translated to model. links are the same
+   * ...
+   *   <model name='box_with_submodel::submodel_box_with_submodel'>
+   *     <link name='submodel_link'>
+   *       <pose frame=''>0 0 0 0 -0 0</pose>
+   *     </link>
+   *     <pose frame=''>5 5 0 0 -0 0</pose>
+   *   </model>
+   */
+  const sdf::Model *submodel = model->ModelByName(
+      "box_with_submodel::submodel_of_box_with_submodel");
+  ASSERT_NE(nullptr, submodel);
+  EXPECT_EQ(submodel->Name(),
+            "submodel_of_box_with_submodel");
+
+  ignition::math::Pose3d submodelPose;
+  resolveErrors = model->SemanticPose().Resolve(submodelPose,
+      "top_level_model::box_with_submodel");
+  EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
+  EXPECT_EQ(submodelPose.Inverse(),
+            ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
 }

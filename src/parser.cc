@@ -203,8 +203,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 
   if (!_merge)
   {
-    firstElem->SetParent(_parent);
-    _parent->InsertElement(firstElem);
+    _parent->InsertElement(firstElem, true);
     return;
   }
   else if (firstElem->GetName() != "model")
@@ -347,8 +346,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
         (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
         (elem->GetName().find(':') != std::string::npos))
     {
-      elem->SetParent(_parent);
-      _parent->InsertElement(elem);
+      _parent->InsertElement(elem, true);
     }
   }
 }
@@ -883,6 +881,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
   tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
+    sdfdbg << "No <sdf> element in file[" << _source << "]\n";
     return false;
   }
 
@@ -897,7 +896,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     _sdf->SetFilePath(_source);
   }
 
-  if (sdfNode && sdfNode->Attribute("version"))
+  if (sdfNode->Attribute("version"))
   {
     if (_sdf->OriginalVersion().empty())
     {
@@ -959,15 +958,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
   }
   else
   {
-    if (!sdfNode)
-    {
-      sdfdbg << "No <sdf> element in file[" << _source << "]\n";
-    }
-    else if (!sdfNode->Attribute("version"))
-    {
-      sdfdbg << "SDF <sdf> element has no version in file["
-             << _source << "]\n";
-    }
+    sdfdbg << "SDF <sdf> element has no version in file["
+           << _source << "]\n";
     return false;
   }
 
@@ -989,6 +981,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
   tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
+    sdfdbg << "SDF has no <sdf> element\n";
     return false;
   }
 
@@ -997,7 +990,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     _sdf->SetFilePath(_source);
   }
 
-  if (sdfNode && sdfNode->Attribute("version"))
+  if (sdfNode->Attribute("version"))
   {
     if (_sdf->OriginalVersion().empty())
     {
@@ -1060,14 +1053,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
   }
   else
   {
-    if (!sdfNode)
-    {
-      sdfdbg << "SDF has no <sdf> element\n";
-    }
-    else if (!sdfNode->Attribute("version"))
-    {
-      sdfdbg << "<sdf> element has no version\n";
-    }
+    sdfdbg << "<sdf> element has no version\n";
     return false;
   }
 
@@ -1371,7 +1357,7 @@ static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 /// \param[out] _errors Captures errors found during parsing.
 /// \return True if the file name is successfully resolved, false on error.
 static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
-    const sdf::ParserConfig &_config, const std::string _includeXmlPath,
+    const sdf::ParserConfig &_config, const std::string &_includeXmlPath,
     const std::string &_errorSourcePath, std::string &_fileName,
     Errors &_errors)
 {
@@ -1533,6 +1519,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   else if (_sdf->GetValue())
   {
     if (!_sdf->GetValue()->Reparse())
+      return false;
+    if (!_sdf->GetValue()->SetFromString(""))
       return false;
   }
 
@@ -1924,13 +1912,13 @@ void copyChildren(ElementPtr _sdf,
   for (elemXml = _xml->FirstChildElement(); elemXml;
        elemXml = elemXml->NextSiblingElement())
   {
-    std::string elem_name = elemXml->Name();
+    std::string elemName = elemXml->Name();
 
-    if (_sdf->HasElementDescription(elem_name))
+    if (_sdf->HasElementDescription(elemName))
     {
       if (!_onlyUnknown)
       {
-        sdf::ElementPtr element = _sdf->AddElement(elem_name);
+        sdf::ElementPtr element = _sdf->AddElement(elemName);
 
         // FIXME: copy attributes
         for (const auto *attribute = elemXml->FirstAttribute();
@@ -1953,18 +1941,18 @@ void copyChildren(ElementPtr _sdf,
     {
       ElementPtr element(new Element);
       element->SetParent(_sdf);
-      element->SetName(elem_name);
-      if (elemXml->GetText() != nullptr)
-      {
-        element->AddValue("string", elemXml->GetText(), "1");
-      }
-
+      element->SetName(elemName);
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
         element->AddAttribute(attribute->Name(), "string", "", 1, "");
         element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->Value());
+            attribute->Value());
+      }
+
+      if (elemXml->GetText() != nullptr)
+      {
+        element->AddValue("string", elemXml->GetText(), true);
       }
 
       copyChildren(element, elemXml, _onlyUnknown);
@@ -2523,12 +2511,24 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
-  bool result = true;
-
-  auto checkModelJointParentChildNames = [](
-      const sdf::Model *_model) -> bool
+  Errors errors;
+  checkJointParentChildNames(_root, errors);
+  if (!errors.empty())
   {
-    bool modelResult = true;
+    std::cerr << "Error when attempting to resolve child link name:"
+              << std::endl
+              << errors;
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
+{
+  auto checkModelJointParentChildNames = [](
+      const sdf::Model *_model, Errors &errors) -> void
+  {
     for (uint64_t j = 0; j < _model->JointCount(); ++j)
     {
       auto joint = _model->JointByIndex(j);
@@ -2538,23 +2538,18 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
           !_model->JointNameExists(parentName) &&
           !_model->FrameNameExists(parentName))
       {
-        std::cerr << "Error: parent frame with name[" << parentName
-                  << "] specified by joint with name[" << joint->Name()
-                  << "] not found in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
+        errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+          "parent frame with name[" + parentName +
+          "] specified by joint with name[" + joint->Name() +
+          "] not found in model with name[" + _model->Name() + "]."});
       }
 
       const std::string &childName = joint->ChildLinkName();
       if (childName == "world")
       {
-        std::cerr << "Error: invalid child name[world"
-                  << "] specified by joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
+        errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "invalid child name[world] specified by joint with name[" +
+          joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
       if (!_model->LinkNameExists(childName) &&
@@ -2562,75 +2557,54 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
           !_model->FrameNameExists(childName) &&
           !_model->ModelNameExists(childName))
       {
-        std::cerr << "Error: child frame with name[" << childName
-                  << "] specified by joint with name[" << joint->Name()
-                  << "] not found in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
-        modelResult = false;
+        errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "child frame with name[" + childName +
+          "] specified by joint with name[" + joint->Name() +
+          "] not found in model with name[" + _model->Name() + "]."});
       }
 
       if (childName == joint->Name())
       {
-        std::cerr << "Error: joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "] must not specify its own name as the child frame."
-                  << std::endl;
-        modelResult = false;
+        errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+          "joint with name[" + joint->Name() +
+          "] in model with name[" + _model->Name() +
+          "] must not specify its own name as the child frame."});
       }
 
       if (parentName == joint->Name())
       {
-        std::cerr << "Error: joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "] must not specify its own name as the parent frame."
-                  << std::endl;
-        modelResult = false;
+        errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
+          "joint with name[" + joint->Name() +
+          "] in model with name[" + _model->Name() +
+          "] must not specify its own name as the parent frame."});
       }
 
       // Check that parent and child frames resolve to different links
       std::string resolvedChildName;
       std::string resolvedParentName;
-      auto errors = joint->ResolveChildLink(resolvedChildName);
-      if (!errors.empty())
-      {
-        std::cerr << "Error when attempting to resolve child link name:"
-                  << std::endl;
-        for (auto error : errors)
-        {
-          std::cerr << error.Message() << std::endl;
-        }
-        modelResult = false;
-      }
-      errors = joint->ResolveParentLink(resolvedParentName);
-      if (!errors.empty())
-      {
-        std::cerr << "Error when attempting to resolve parent link name:"
-                  << std::endl;
-        for (auto error : errors)
-        {
-          std::cerr << error.Message() << std::endl;
-        }
-        modelResult = false;
-      }
+
+      auto resolveErrors = joint->ResolveChildLink(resolvedChildName);
+      errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+
+      resolveErrors = joint->ResolveParentLink(resolvedParentName);
+      errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+
       if (resolvedChildName == resolvedParentName)
       {
-        std::cerr << "Error: joint with name[" << joint->Name()
-                  << "] in model with name[" << _model->Name()
-                  << "] specified parent frame [" << parentName
-                  << "] and child frame [" << childName
-                  << "] that both resolve to [" << resolvedChildName
-                  << "], but they should resolve to different values."
-                  << std::endl;
-        modelResult = false;
+        errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
+          "joint with name[" + joint->Name() +
+          "] in model with name[" + _model->Name() +
+          "] specified parent frame [" + parentName +
+          "] and child frame [" + childName +
+          "] that both resolve to [" + resolvedChildName +
+          "], but they should resolve to different values."});
       }
     }
-    return modelResult;
   };
 
   if (_root->Model())
   {
-    result = checkModelJointParentChildNames(_root->Model()) && result;
+    checkModelJointParentChildNames(_root->Model(), _errors);
   }
 
   for (uint64_t w = 0; w < _root->WorldCount(); ++w)
@@ -2639,11 +2613,9 @@ bool checkJointParentChildLinkNames(const sdf::Root *_root)
     for (uint64_t m = 0; m < world->ModelCount(); ++m)
     {
       auto model = world->ModelByIndex(m);
-      result = checkModelJointParentChildNames(model) && result;
+      checkModelJointParentChildNames(model, _errors);
     }
   }
-
-  return result;
 }
 
 //////////////////////////////////////////////////
