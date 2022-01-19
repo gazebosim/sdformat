@@ -7,11 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Ubuntu Bionic CI
     steps:
-      - name: Set env
-        run: |
-          export PATH=$PATH:/tmp/usd_binaries/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/usd_binaries/lib
-          export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/tmp/usd_binaries
       - name: Checkout
         uses: actions/checkout@v2
       - name: Compile and test
