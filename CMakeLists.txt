@@ -118,12 +118,8 @@ if (BUILD_SDF)
   # Find PXR
   ign_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
 
-  if (pxr_FOUND)
-    list(APPEND COMPONENTS_TO_BUILD usd)
-  endif()
-
   ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
-  COMPONENTS ${COMPONENTS_TO_BUILD})
+    COMPONENTS usd)
 
   ign_create_packages()
 
