@@ -1,13 +1,18 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.9">
   <model name="joint_invalid_child">
     <link name="link">
       <pose>0 0 1 0 0 0</pose>
     </link>
+    <link name="link2"/>
     <joint name="joint" type="fixed">
       <pose>0 0 3 0 0 0</pose>
       <parent>link</parent>
       <child>invalid</child>
+    </joint>
+    <joint name="joint2" type="fixed">
+      <parent>link2</parent>
+      <child>__model__</child>
     </joint>
   </model>
 </sdf>
