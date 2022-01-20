@@ -239,3 +239,22 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
     }
   }
 }
+
+/////////////////////////////////////////////////
+/// Test for ParserConfig being passed down when parsing nested models
+TEST(ParserConfig, NestedModelIncludesFilePath)
+{
+  const auto path =
+      sdf::testing::TestFile("integration", "model", "top_nested", "model.sdf");
+
+  auto findFileCb = [](const std::string &_uri)
+  {
+    return sdf::testing::TestFile("integration", "model", _uri);
+  };
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(path, config);
+  EXPECT_TRUE(errors.empty()) << errors;
+}
