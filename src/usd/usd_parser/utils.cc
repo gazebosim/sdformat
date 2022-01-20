@@ -402,15 +402,6 @@ namespace usd
     {
       std::cerr << "rt " << rt << '\n';
     }
-    // if (_prim.GetPath().GetString() == "/Root/GearJoint/GearA/gearpoly0/gearpoly0") {
-    //   tfs.clear();
-    //   tfs.push_back(
-    //     ignition::math::Pose3d(ignition::math::Vector3d(10, 0, 0), ignition::math::Quaterniond(ignition::math::Vector3d(0, 0, 1), 0))
-    //   );
-    //   tfs.push_back(
-    //     ignition::math::Pose3d(ignition::math::Vector3d(0, 0, 0), ignition::math::Quaterniond(ignition::math::Vector3d(0, 0, 1), IGN_PI_4))
-    //   );
-    // }
     for (auto & rt : tfs)
     {
       _pose = rt * _pose;
