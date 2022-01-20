@@ -360,7 +360,7 @@ struct FrameWrapper : public WrapperBase
         rawPose(_rawPose),
         rawRelativeTo(_relativeTo),
         attachedTo(_attachedTo),
-        relativeTo(relativeTo.empty() ? attachedTo : rawRelativeTo)
+        relativeTo(rawRelativeTo.empty() ? attachedTo : rawRelativeTo)
   {
   }
 

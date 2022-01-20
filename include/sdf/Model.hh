@@ -425,7 +425,7 @@ namespace sdf
     friend class World;
 
     // Allow ModelWrapper from FrameSemantics.cc to call MergedInterfaceModels
-    friend class ModelWrapper;
+    friend struct ModelWrapper;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
