@@ -54,7 +54,7 @@ class InterfaceModel::Implementation
   public: std::vector<sdf::InterfaceLink> links;
 
   /// \brief Whether the custom parser supports merge-includes
-  public: std::optional<bool> parserSupportsMergeInclude;
+  public: bool parserSupportsMergeInclude {false};
 };
 
 InterfaceModel::InterfaceModel(const std::string &_name,
@@ -146,7 +146,7 @@ const std::vector<sdf::InterfaceLink> &InterfaceModel::Links() const
 }
 
 /////////////////////////////////////////////////
-std::optional<bool> InterfaceModel::ParserSupportsMergeInclude() const
+bool InterfaceModel::ParserSupportsMergeInclude() const
 {
   return this->dataPtr->parserSupportsMergeInclude;
 }

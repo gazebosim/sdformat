@@ -283,7 +283,7 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
               "Missing name of custom model with URI [" + include.Uri() + "]");
         }
         else if (include.IsMerge().value_or(false) &&
-                 !model->ParserSupportsMergeInclude().value_or(false))
+                 !model->ParserSupportsMergeInclude())
         {
           allErrors.emplace_back(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
                                  "Custom parser does not support "

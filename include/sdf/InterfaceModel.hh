@@ -125,9 +125,8 @@ class SDFORMAT_VISIBLE InterfaceModel
   public: const std::vector<sdf::InterfaceLink> &Links() const;
 
   /// \brief Whether the custom parser supports merge-include.
-  /// \return If set by the custom parser, return the set value, otherwise
-  /// nullopt.
-  public: std::optional<bool> ParserSupportsMergeInclude() const;
+  /// \return True if the custom parser supports merge-include
+  public: bool ParserSupportsMergeInclude() const;
 
   /// \brief Set whether the custom parser supports merge-include.
   /// \brief[in] _val True if the custom parser supports merge-include.
