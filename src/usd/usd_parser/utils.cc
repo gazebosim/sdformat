@@ -306,9 +306,7 @@ namespace usd
       metersPerUnit = stageData.second->_metersPerUnit;
       upAxis = stageData.second->_upAxis;
     }
-    std::cerr << "metersPerUnit " << metersPerUnit << '\n';
-    std::cerr << "upAxis " << upAxis << '\n';
-    
+
     while(parent)
     {
       if (pxr::TfStringify(parent.GetPath()) == _name)
@@ -351,24 +349,6 @@ namespace usd
         ignition::math::Pose3d poseT = ignition::math::Pose3d(
           t.translate * metersPerUnit,
           ignition::math::Quaterniond(1, 0, 0, 0));
-        // if (data.second != nullptr)
-        // {
-        // //   std::string upAxis = data.second->_upAxis;
-        //   if (upAxis == "Z")
-        //   {
-        //     _tfs.push_back(poseZ);
-        //     _tfs.push_back(poseY);
-        //   }
-        //   else
-        //   {
-        //     ignition::math::Pose3d poseAxisUpY = ignition::math::Pose3d(
-        //       ignition::math::Vector3d(0 ,0 ,0),
-        //       ignition::math::Quaterniond(0.707, -0.707, 0, 0));
-        //     _tfs.push_back(poseAxisUpY);
-        //     _tfs.push_back(poseY);
-        //     _tfs.push_back(poseZ);
-        //   }
-        // }
 
         _tfs.push_back(poseZ);
         _tfs.push_back(poseY);

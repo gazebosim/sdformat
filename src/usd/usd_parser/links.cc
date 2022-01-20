@@ -203,26 +203,6 @@ namespace usd
     const ignition::math::Vector3d &_scale,
     USDData &_usdData)
   {
-    // if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->z) {
-    //   std::cerr << "TEST Z" << '\n';
-    // }
-    // if (pxr::UsdGeomGetStageUpAxis(_prim.GetStage()) == pxr::UsdGeomTokens->y) {
-    //   std::cerr << "TEST Y" << '\n';
-    // }
-
-    // auto variantMesh = pxr::UsdGeomMesh(_prim);
-    // pxr::TfToken axis;
-    // auto orientation = variantMesh.GetOrientationAttr();
-    // orientation.Get(&axis);
-    // std::cerr << "axis : " << axis.GetText() << '\n';
-    // std::cerr << "axis : " << pxr::UsdGeomGetFallbackUpAxis().GetText() << '\n';
-    // std::cerr << "axis : " << pxr::UsdGeomGetFallbackUpAxis().GetText() << '\n';
-
-    // axis = pxr::UsdGeomGetStageUpAxis(_prim.GetStage());
-    // // _prim.GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
-    // std::string upAxis = axis.GetText();
-    // std::cerr << "upAxis " << upAxis << '\n';
-
     std::pair<std::string, std::shared_ptr<USDStage>> data =
       _usdData.findStage(_prim.GetPath().GetName());
 
@@ -260,27 +240,11 @@ namespace usd
       subMesh.AddTexCoord(textCoord[0], (1 - textCoord[1]));
     }
 
-    bool upAxisZ = (data.second->_upAxis == "Z");
-    ignition::math::Matrix4d m(
-      1, 0, 0, 0,
-      0, 0, -1, 0,
-      0, 1, 0, 0,
-      0, 0, 0, 1);
     for (auto & point: points)
     {
       ignition::math::Vector3d v =
         ignition::math::Vector3d(point[0], point[1], point[2]) * metersPerUnit;
-      if(upAxisZ)
-      {
-        subMesh.AddVertex(v);
-      }
-      else
-      {
-        // std::cerr << "v " << v << '\n';
-        // v = m * v;
-        // std::cerr << "v zup" << v << '\n';
-        subMesh.AddVertex(v);
-      }
+      subMesh.AddVertex(v);
     }
 
     for (auto & normal: normals)
@@ -490,29 +454,6 @@ namespace usd
     int &_skip)
   {
     std::cerr << "************ ADDED LINK ************" << '\n';
-
-    // pxr::TfToken axis = pxr::UsdGeomGetStageUpAxis(_prim.GetStage());
-    // // _prim.GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
-    // std::string upAxis = axis.GetText();
-    // std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
-    //
-    // pxr::UsdPrimCompositionQuery query =
-    //   pxr::UsdPrimCompositionQuery::GetDirectReferences(_prim);
-    //
-    // std::vector<pxr::UsdPrimCompositionQueryArc> arcs =
-    //   query.GetCompositionArcs();
-    // bool isAPropReference = false;
-    // for (auto & a : arcs )
-    // {
-    //   pxr::SdfLayerHandle handler = a.GetIntroducingLayer();
-    //   auto stage = pxr::UsdStage::Open(handler);
-    //   if (stage)
-    //   {
-    //     stage->GetMetadata(pxr::UsdGeomTokens->upAxis, &axis);
-    //     upAxis = axis.GetText();
-    //     std::cerr << " ->>>>>>>> upAxis " << upAxis << '\n';
-    //   }
-    // }
 
     std::pair<std::string, std::shared_ptr<USDStage>> data =
       _usdData.findStage(_prim.GetPath().GetName());
