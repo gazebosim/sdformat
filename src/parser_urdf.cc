@@ -3213,6 +3213,7 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
 
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::InitModelString(const std::string &_urdfStr,
+                               const ParserConfig& _config,
                                tinyxml2::XMLDocument* _sdfXmlOut,
                                bool _enforceLimits)
 {
@@ -3244,6 +3245,10 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
     sdferr << "Unable to parse URDF string: " << urdfXml.ErrorStr() << "\n";
     return;
   }
+
+  // Set g_reduceFixedJoints based on config value.
+  g_reduceFixedJoints = !_config.URDFPreserveFixedJoint();
+
   g_extensions.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
   g_fixedJointsTransformedInRevoluteJoints.clear();
@@ -3319,22 +3324,24 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
 
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::InitModelDoc(const tinyxml2::XMLDocument *_xmlDoc,
+                            const ParserConfig& _config,
                             tinyxml2::XMLDocument *_sdfXmlDoc)
 {
   tinyxml2::XMLPrinter printer;
   _xmlDoc->Print(&printer);
   std::string urdfStr = printer.CStr();
-  InitModelString(urdfStr, _sdfXmlDoc);
+  InitModelString(urdfStr, _config, _sdfXmlDoc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::InitModelFile(const std::string &_filename,
+                             const ParserConfig& _config,
                              tinyxml2::XMLDocument *_sdfXmlDoc)
 {
   tinyxml2::XMLDocument xmlDoc;
   if (!xmlDoc.LoadFile(_filename.c_str()))
   {
-    this->InitModelDoc(&xmlDoc, _sdfXmlDoc);
+    this->InitModelDoc(&xmlDoc, _config, _sdfXmlDoc);
   }
   else
   {
