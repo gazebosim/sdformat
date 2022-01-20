@@ -2,6 +2,17 @@
 # "gtest_sources" variable.
 ign_get_libsources_and_unittests(sources gtest_sources)
 
+set(sources ${sources}
+  usd_parser/USDData.cc
+  usd_parser/USDStage.cc
+  usd_parser/utils.cc
+)
+
+set(gtest_sources ${gtest_sources}
+  usd_parser/USDData_TEST.cc
+  usd_parser/USDStage_TEST.cc
+)
+
 ign_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
 
 target_include_directories(${usd_target}
