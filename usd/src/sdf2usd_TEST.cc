@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/common/TempDirectory.hh>
 #include <ignition/utilities/ExtraTestMacros.hh>
 
@@ -71,6 +72,9 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(sdf2usdCommand() + " " + path + " " +
         ignition::common::joinPaths(tmp, "shapes.usd"));
+    // make sure that a shapes.usd file was generated
+    EXPECT_TRUE(ignition::common::isFile(
+      ignition::common::joinPaths(tmp, "shapes.usd")));
     // TODO(ahcorde): Check the output when the parser is implemented
   }
 }
