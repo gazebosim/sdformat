@@ -25,7 +25,6 @@ then
 
   wget https://github.com/PixarAnimationStudios/USD/archive/refs/tags/v21.11.zip
   unzip v21.11.zip
-  sed -i '2059 i \ \ \ \ requiredDependencies.remove(BOOST)' USD-21.11/build_scripts/build_usd.py
   cd USD-21.11
   mkdir build
   cd build
@@ -47,7 +46,6 @@ then
     -DPXR_BUILD_ALEMBIC_PLUGIN=OFF  \
     -DPXR_BUILD_DRACO_PLUGIN=OFF  \
     -DPXR_ENABLE_MATERIALX_SUPPORT=OFF  \
-    -DBoost_NO_BOOST_CMAKE=On  \
     -DBoost_INCLUDE_DIR=/usr/include  \
     -DBoost_NO_BOOST_CMAKE=FALSE \
     ..
