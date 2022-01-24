@@ -32,7 +32,8 @@
 
 static std::string sdf2usdCommand()
 {
-  return std::string(IGN_PATH) + "/sdf2usd";
+  return ignition::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
+      "sdf2usd");
 }
 
 /////////////////////////////////////////////////
@@ -68,14 +69,22 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check a good SDF file
   {
     std::string path = ignition::common::joinPaths(pathBase,
-      "/shapes_world.sdf");
+      "shapes_world.sdf");
+    const auto outputUsdFilePath =
+      ignition::common::joinPaths(tmp, "shapes.usd");
+    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
     std::string output =
-      custom_exec_str(sdf2usdCommand() + " " + path + " " +
-        ignition::common::joinPaths(tmp, "shapes.usd"));
+      custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
+    // TODO(adlarkin) make sure 'output' (i.e., the result of running the
+    // sdf2usd executable) is an empty string once the usd2sdf parser is fully
+    // implemented (right now, running the parser outputs an error indicating
+    // that functionality isn't complete)
+
     // make sure that a shapes.usd file was generated
-    EXPECT_TRUE(ignition::common::isFile(
-      ignition::common::joinPaths(tmp, "shapes.usd")));
-    // TODO(ahcorde): Check the output when the parser is implemented
+    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath));
+
+    // TODO(ahcorde): Check the contents of outputUsdFilePath when the parser
+    // is implemented
   }
 }
 
