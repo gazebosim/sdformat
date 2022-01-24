@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef SDF_USD_TEST_UTILS_HH_
-#define SDF_USD_TEST_UTILS_HH_
+#ifndef SDF_PARSER_USDTESTUTILS_HH_
+#define SDF_PARSER_USDTESTUTILS_HH_
 
 #include <gtest/gtest.h>
 #include <ignition/math/Angle.hh>

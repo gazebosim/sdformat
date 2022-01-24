@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/Light.hh"
+#include "sdf/usd/sdf_parser/Light.hh"
 
 #include <string>
 
@@ -33,7 +33,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Light.hh"
-#include "sdf/usd/Utils.hh"
+#include "sdf/usd/sdf_parser/Utils.hh"
 
 namespace sdf
 {

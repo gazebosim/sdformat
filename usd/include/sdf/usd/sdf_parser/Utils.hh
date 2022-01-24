@@ -15,19 +15,24 @@
  *
 */
 
-#ifndef SDF_USD_UTILS_HH_
-#define SDF_USD_UTILS_HH_
+#ifndef SDF_USD_SDF_PARSER_UTILS_HH_
+#define SDF_USD_SDF_PARSER_UTILS_HH_
 
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
-#include <pxr/base/gf/vec3d.h>
+
+// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/base/gf/vec3d.h>
 #include <pxr/usd/usd/stage.h>
-#pragma pop_macro ("__DEPRECATED")
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/SemanticPose.hh"
 #include "sdf/config.hh"

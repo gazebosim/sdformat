@@ -15,11 +15,15 @@
  *
 */
 
-#ifndef SDF_USD_WORLD_HH_
-#define SDF_USD_WORLD_HH_
+#ifndef SDF_USD_SDF_PARSER_LIGHT_HH_
+#define SDF_USD_SDF_PARSER_LIGHT_HH_
 
 #include <string>
 
+// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
@@ -27,7 +31,7 @@
 
 #include "sdf/config.hh"
 #include "sdf/system_util.hh"
-#include "sdf/World.hh"
+#include "sdf/Light.hh"
 
 namespace sdf
 {
@@ -36,15 +40,15 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Parse an SDF world into a USD stage.
-    /// \param[in] _world The SDF world to parse.
+    /// \brief Parse an SDF light into a USD stage.
+    /// \param[in] _light The SDF light to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _world. It must be initialized first
-    /// \param[in] _path The USD path of the parsed world in _stage, which must be
-    /// a valid USD path.
+    /// of _light.
+    /// \param[in] _path The USD path of the parsed light in _stage, which must
+    /// be a valid USD path.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    sdf::Errors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
+    sdf::Errors SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
         pxr::UsdStageRefPtr &_stage, const std::string &_path);
   }
   }
