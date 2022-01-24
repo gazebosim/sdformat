@@ -20,15 +20,19 @@
 #include <iostream>
 #include <string>
 
+// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/prim.h>
-#pragma push_macro ("__DEPRECATED")
-#undef __DEPRECATED
 #include <pxr/usd/usd/stage.h>
-#pragma pop_macro ("__DEPRECATED")
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/World.hh"
 
