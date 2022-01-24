@@ -18,7 +18,10 @@
 #define SDF_TEST_UTILS_HH_
 
 #include <ostream>
+#include <string>
+
 #include "sdf/Console.hh"
+#include "sdf/Root.hh"
 
 namespace sdf
 {
@@ -103,6 +106,25 @@ class RedirectConsoleStream
   /// restore the console stream when this object goes out of scope.
   private: sdf::Console::ConsoleStream oldStream;
 };
+
+/// \brief Load an SDF file into a sdf::Root object
+/// \param[in] _fileName The name of the file to load
+/// \param[in] _root The sdf::Root object to load the file into
+/// \return True if a file named _fileName was successfully loaded into
+/// _root. False otherwise
+bool LoadSdfFile(const std::string &_fileName, sdf::Root &_root)
+{
+  auto errors = _root.Load(_fileName);
+  if (!errors.empty())
+  {
+    std::cerr << "Errors encountered:\n";
+    for (const auto &e : errors)
+      std::cerr << e << "\n";
+    return false;
+  }
+
+  return true;
+}
 
 } // namespace testing
 } // namespace sdf
