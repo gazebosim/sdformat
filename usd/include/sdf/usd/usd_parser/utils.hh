@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_PARSER_UTILS_HH
-#define SDF_USD_PARSER_UTILS_HH
+#ifndef SDF_USD_USD_PARSER_UTILS_HH_
+#define SDF_USD_USD_PARSER_UTILS_HH_
 
 #include <string>
 

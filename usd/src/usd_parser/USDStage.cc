@@ -30,11 +30,13 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/usd_parser/USDStage.hh"
-#include "sdf/usd_parser/utils.hh"
+#include "sdf/usd/usd_parser/USDStage.hh"
+#include "sdf/usd/usd_parser/utils.hh"
 
-namespace sdf
-{
+namespace sdf {
+// Inline bracke to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+//
 namespace usd
 {
   /// \brief USDStage private data.
@@ -116,4 +118,5 @@ namespace usd
     return this->dataPtr->paths;
   }
 }  // usd
+}  // sdf version namespace
 }  // sdf

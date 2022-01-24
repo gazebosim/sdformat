@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_PARSER_USDDATA_HH
-#define SDF_USD_PARSER_USDDATA_HH
+#ifndef SDF_USD_USD_PARSER_USDDATA_HH_
+#define SDF_USD_USD_PARSER_USDDATA_HH_
 
 #include <memory>
 #include <set>
@@ -36,7 +36,7 @@
 #include "sdf/Material.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
-#include "sdf/usd_parser/USDStage.hh"
+#include "sdf/usd/usd_parser/USDStage.hh"
 
 namespace sdf
 {

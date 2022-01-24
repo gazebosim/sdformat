@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_PARSER_USDSTAGE_HH
-#define SDF_USD_PARSER_USDSTAGE_HH
+#ifndef SDF_USD_USD_PARSER_USDSTAGE_HH_
+#define SDF_USD_USD_PARSER_USDSTAGE_HH_
 
 #include <string>
 #include <set>

@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd_parser/utils.hh"
+#include "sdf/usd/usd_parser/utils.hh"
 
 #include <pxr/usd/usdShade/input.h>
 #include <pxr/usd/usdShade/material.h>

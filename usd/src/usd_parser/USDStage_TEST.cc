@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Filesystem.hh>
-#include <sdf/usd_parser/USDStage.hh>
+#include <sdf/usd/usd_parser/USDStage.hh>
 
 #include <ignition/utilities/ExtraTestMacros.hh>
 

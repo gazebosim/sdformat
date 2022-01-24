@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-#include "sdf/usd_parser/USDData.hh"
+#include "sdf/usd/usd_parser/USDData.hh"
 
 #include <string>
 #include <set>
@@ -35,11 +35,13 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
-#include "sdf/usd_parser/utils.hh"
+#include "sdf/usd/usd_parser/utils.hh"
 #include "sdf/Material.hh"
 
 namespace sdf {
-
+// Inline bracke to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+//
 namespace usd {
   /// \brief USDStage private data.
   class USDData::Implementation
@@ -258,5 +260,6 @@ namespace usd {
     }
     return false;
   }
+}
 }
 }
