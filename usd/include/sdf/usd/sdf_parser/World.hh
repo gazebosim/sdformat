@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_WORLD_HH_
-#define SDF_USD_WORLD_HH_
+#ifndef SDF_USD_SDF_PARSER_WORLD_HH_
+#define SDF_USD_SDF_PARSER_WORLD_HH_
 
 #include <string>
 
