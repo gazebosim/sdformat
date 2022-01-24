@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/World.hh"
+#include "sdf/usd/sdf_parser/World.hh"
 
 #include <iostream>
 #include <string>

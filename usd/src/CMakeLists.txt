@@ -1,6 +1,6 @@
-# Collect source files into the "sources" variable and unit test files into the
-# "gtest_sources" variable.
-ign_get_libsources_and_unittests(sources gtest_sources)
+set(sources
+  sdf_parser/World.cc
+)
 
 set(sources ${sources}
   usd_parser/USDData.cc
@@ -24,6 +24,11 @@ target_link_libraries(${usd_target}
   PUBLIC
     ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
     ${PXR_LIBRARIES}
+)
+
+set(gtest_sources
+  sdf_parser/sdf2usd_TEST.cc
+  sdf_parser/World_Sdf2Usd_TEST.cc
 )
 
 # Build the unit tests

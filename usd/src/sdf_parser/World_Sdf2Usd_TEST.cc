@@ -29,7 +29,7 @@
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/usd/World.hh"
+#include "sdf/usd/sdf_parser/World.hh"
 #include "sdf/Root.hh"
 #include "test_config.h"
 #include "test_utils.hh"
