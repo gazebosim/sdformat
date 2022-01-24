@@ -1573,7 +1573,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           SDFPtr includeSDF(new SDF);
           includeSDF->Root(includeSDFTemplate->Root()->Clone());
 
-          if (!readFile(filename, includeSDF))
+          if (!readFile(filename, _config, includeSDF, _errors))
           {
             Error err(
                 ErrorCode::FILE_READ,
