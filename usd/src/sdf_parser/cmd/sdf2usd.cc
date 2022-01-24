@@ -24,7 +24,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/sdf.hh"
-#include "sdf/usd/World.hh"
+#include "sdf/usd/sdf_parser/World.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
