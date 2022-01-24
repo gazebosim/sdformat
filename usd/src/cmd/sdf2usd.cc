@@ -17,6 +17,10 @@
 
 #include <string.h>
 
+// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
 #include <ignition/utils/cli/CLI.hpp>
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -24,7 +28,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/sdf.hh"
-#include "sdf/usd/World.hh"
+#include "sdf/usd/sdf_parser/World.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
