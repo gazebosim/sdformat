@@ -20,7 +20,10 @@
 
 #include <string>
 
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/usd/usdGeom/gprim.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Material.hh"
 

@@ -1,16 +1,8 @@
 set(sources
   sdf_parser/World.cc
-)
-
-set(sources ${sources}
   usd_parser/USDData.cc
   usd_parser/USDStage.cc
   usd_parser/utils.cc
-)
-
-set(gtest_sources ${gtest_sources}
-  usd_parser/USDData_TEST.cc
-  usd_parser/USDStage_TEST.cc
 )
 
 ign_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
@@ -29,6 +21,8 @@ target_link_libraries(${usd_target}
 set(gtest_sources
   sdf_parser/sdf2usd_TEST.cc
   sdf_parser/World_Sdf2Usd_TEST.cc
+  usd_parser/USDData_TEST.cc
+  usd_parser/USDStage_TEST.cc
 )
 
 # Build the unit tests

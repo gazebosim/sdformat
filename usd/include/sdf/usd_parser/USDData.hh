@@ -24,7 +24,10 @@
 #include <utility>
 #include <unordered_map>
 
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <ignition/utils/ImplPtr.hh>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Material.hh"
 #include "sdf/sdf_config.h"

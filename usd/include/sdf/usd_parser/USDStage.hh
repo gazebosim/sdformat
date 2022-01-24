@@ -21,7 +21,10 @@
 #include <string>
 #include <set>
 
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <ignition/utils/ImplPtr.hh>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
