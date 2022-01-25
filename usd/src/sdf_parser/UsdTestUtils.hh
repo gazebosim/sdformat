@@ -20,10 +20,19 @@
 #include <gtest/gtest.h>
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
+
+// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/usd/prim.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/system_util.hh"
 
@@ -94,6 +103,32 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
   EXPECT_TRUE(checkedOpOrder);
 }
 
+/// \brief Compare the Inertial of a USD prim to the desired values
+/// \param[in] _usdPrim The USD prim
+/// \param[in] _mass Mass of the link
+/// \param[in] _diagonalInertia Diagonal Inertia
+/// \param[in] _centerOfMass Center of mass
+/// \param[in] isRigid True if it's a rigid body, False otherwise
+void CheckInertial(const pxr::UsdPrim &_usdPrim,
+    float _mass,
+    const pxr::GfVec3f &_diagonalInertia,
+    const pxr::GfVec3f &_centerOfMass,
+    bool isRigid)
+{
+  float massUSD;
+  pxr::GfVec3f centerOfMassUSD;
+  pxr::GfVec3f diagonalInertiaUSD;
+
+  EXPECT_EQ(isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+  _usdPrim.GetAttribute(pxr::TfToken("physics:mass")).Get(&massUSD);
+  EXPECT_FLOAT_EQ(_mass, massUSD);
+  _usdPrim.GetAttribute(pxr::TfToken("physics:centerOfMass")).
+    Get(&centerOfMassUSD);
+  EXPECT_EQ(_centerOfMass, centerOfMassUSD);
+  _usdPrim.GetAttribute(pxr::TfToken("physics:diagonalInertia")).
+    Get(&diagonalInertiaUSD);
+  EXPECT_EQ(_diagonalInertia, diagonalInertiaUSD);
+}
 } // namespace testing
 } // namespace usd
 }

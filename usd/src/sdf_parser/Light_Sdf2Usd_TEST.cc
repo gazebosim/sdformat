@@ -99,8 +99,6 @@ TEST_F(UsdLightStageFixture, Lights)
   auto world = root.WorldByIndex(0u);
 
   // convert all lights attached directly to the world to USD
-  // TODO(adlarkin) convert and test lights attached to models once parsing
-  // functionality is added for sdf::Model to USD
   std::unordered_map<std::string, sdf::Light> lightPathToSdf;
   for (unsigned int i = 0; i < world->LightCount(); ++i)
   {
@@ -112,13 +110,41 @@ TEST_F(UsdLightStageFixture, Lights)
   }
   EXPECT_EQ(world->LightCount(), lightPathToSdf.size());
 
+  // parse all of the world's models and convert them to USD
+  for (uint64_t i = 0; i < world->ModelCount(); ++i)
+  {
+    std::string pathTmp = std::string("/") + world->Name();
+    const auto model = *(world->ModelByIndex(i));
+    for (uint64_t j = 0; j < model.LinkCount(); ++j)
+    {
+      pathTmp += std::string("/") + model.Name();
+      const auto link = *(model.LinkByIndex(j));
+
+      for (uint64_t k = 0; k < link.LightCount(); ++k)
+      {
+        const auto light = *(link.LightByIndex(k));
+        std::string lightPath = pathTmp + "/" + link.Name()
+          + std::string("/") + light.Name();
+        lightPathToSdf[lightPath] = light;
+        const auto errors =
+          sdf::usd::ParseSdfLight(light, this->stage, lightPath);
+        EXPECT_TRUE(errors.empty());
+      }
+    }
+  }
+
   // check that the lights were parsed correctly
   int numPointLights = 0;
   int numSpotLights = 0;
   int numDirectionalLights = 0;
   for (const auto &prim : this->stage->Traverse())
   {
-    auto iter = lightPathToSdf.find(prim.GetPath().GetString());
+    if (!(prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
+          prim.IsA<pxr::UsdLuxNonboundableLightBase>()))
+    {
+      continue;
+    }
+    auto iter = lightPathToSdf.find(pxr::TfStringify(prim.GetPath()));
     ASSERT_NE(lightPathToSdf.end(), iter);
     const auto lightUsd = this->stage->GetPrimAtPath(pxr::SdfPath(iter->first));
     const auto lightSdf = iter->second;
@@ -159,7 +185,7 @@ TEST_F(UsdLightStageFixture, Lights)
           sdf::usd::PoseWrtParent(lightSdf));
     }
   }
-  EXPECT_EQ(1, numPointLights);
-  EXPECT_EQ(1, numSpotLights);
-  EXPECT_EQ(1, numDirectionalLights);
+  EXPECT_EQ(2, numPointLights);
+  EXPECT_EQ(2, numSpotLights);
+  EXPECT_EQ(2, numDirectionalLights);
 }

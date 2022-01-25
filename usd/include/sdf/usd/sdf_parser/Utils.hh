@@ -34,7 +34,11 @@
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/Geometry.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
+#include "sdf/Visual.hh"
 #include "sdf/config.hh"
 #include "sdf/system_util.hh"
 
@@ -86,6 +90,31 @@ namespace sdf
             ignition::math::Angle(rotation.Roll()).Degree(),
             ignition::math::Angle(rotation.Pitch()).Degree(),
             ignition::math::Angle(rotation.Yaw()).Degree()));
+    }
+
+    /// \brief Thickness of an sdf plane
+    /// \note This will no longer be needed when a pxr::USDGeomPlane class
+    /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
+    /// the geometry.cc file for more information)
+    static const double kPlaneThickness = 0.25;
+
+    /// \brief Check if an sdf model is a plane.
+    /// \param[in] _model The sdf model to check
+    /// \return True if _model is a plane. False otherwise
+    /// \note This method will no longer be needed when a pxr::USDGeomPlane class
+    /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
+    /// the geometry.cc file for more information)
+    inline bool SDFORMAT_VISIBLE IsPlane(const sdf::Model &_model)
+    {
+      if (_model.LinkCount() != 1u)
+        return false;
+
+      const auto &link = _model.LinkByIndex(0u);
+      if (link->VisualCount() != 1u)
+        return false;
+
+      const auto &visual = link->VisualByIndex(0u);
+      return visual->Geom()->Type() == sdf::GeometryType::PLANE;
     }
   }
   }
