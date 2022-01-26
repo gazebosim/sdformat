@@ -1,0 +1,153 @@
+<?xml version="1.0" ?>
+<!--
+  Ignition Gazebo sensor demo for sensors that do not require rendering.
+
+  Listen to sensor readings:
+
+    Altimeter: ign topic -e -t /altimeter
+    Imu: ign topic -e -t /imu
+    Magnetometer: ign topic -e -t /magnetometer
+    Air pressure: ign topic -e -t /air_pressure
+-->
+<sdf version="1.6">
+  <world name="sensors">
+    <model name="sensors_box">
+      <pose>4 0 3.0 0 0.0 3.14</pose>
+      <link name="link">
+        <pose>0.05 0.05 0.05 0 0 0</pose>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </visual>
+        <sensor name="imu" type="imu">
+          <always_on>1</always_on>
+          <update_rate>100</update_rate>
+          <visualize>true</visualize>
+          <topic>imu</topic>
+          <enable_metrics>true</enable_metrics>
+        </sensor>
+      </link>
+    </model>
+    <model name="camera">
+      <pose>4 0 1.0 0 0.0 3.14</pose>
+      <link name="link">
+        <pose>0.05 0.05 0.05 0 0 0</pose>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </visual>
+        <sensor name="camera" type="camera">
+          <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+              <width>320</width>
+              <height>240</height>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>100</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <visualize>true</visualize>
+          <topic>camera</topic>
+        </sensor>
+      </link>
+    </model>
+
+    <model name="model_with_lidar">
+      <pose>4 0 0.5 0 0.0 3.14</pose>
+      <link name="link">
+        <pose>0.05 0.05 0.05 0 0 0</pose>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </visual>
+
+        <sensor name='gpu_lidar' type='gpu_lidar'>
+          <topic>lidar</topic>
+          <update_rate>10</update_rate>
+          <lidar>
+            <scan>
+              <horizontal>
+                <samples>640</samples>
+                <resolution>1</resolution>
+                <min_angle>-1.396263</min_angle>
+                <max_angle>1.396263</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>16</samples>
+                <resolution>1</resolution>
+                <min_angle>-0.261799</min_angle>
+                <max_angle>0.261799</max_angle>
+              </vertical>
+            </scan>
+            <range>
+              <min>0.08</min>
+              <max>10.0</max>
+              <resolution>0.01</resolution>
+            </range>
+          </lidar>
+          <alwaysOn>1</alwaysOn>
+          <visualize>true</visualize>
+        </sensor>
+      </link>
+      <static>true</static>
+    </model>
+  </world>
+</sdf>

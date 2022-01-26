@@ -34,6 +34,7 @@
 #include "sdf/Link.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
 #include "sdf/usd/sdf_parser/Utils.hh"
+#include "sdf/usd/sdf_parser/Sensor.hh"
 #include "sdf/usd/sdf_parser/Visual.hh"
 
 namespace sdf
@@ -111,6 +112,21 @@ namespace usd
         errors.insert(errors.end(), errorsLink.begin(), errorsLink.end() );
         errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
           "Error parsing visual [" + visual.Name() + "]"));
+        return errors;
+      }
+    }
+
+    // convert the link's sensors
+    for (uint64_t i = 0; i < _link.SensorCount(); ++i)
+    {
+      const auto sensor = *(_link.SensorByIndex(i));
+      const auto sensorPath = std::string(_path + "/" + sensor.Name());
+      auto errorsSensor = ParseSdfSensor(sensor, _stage, sensorPath);
+      if (errorsSensor.size() > 0)
+      {
+        errors.insert(errors.end(), errorsSensor.begin(), errorsSensor.end() );
+        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+          "Error parsing sensor [" + sensor.Name() + "]"));
         return errors;
       }
     }
