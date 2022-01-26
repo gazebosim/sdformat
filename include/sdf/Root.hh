@@ -151,6 +151,22 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Add a world to the root.
+    /// \param[in] _word World to add.
+    /// \return True if successful, false if a world with the name already
+    /// exists.
+    public: bool AddWorld(const World &_world);
+
+    /// \brief Remove all worlds.
+    public: void ClearWorlds();
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// root.
+    /// \param[in] _useIncludeTag This will pass the _useIncludeTag to
+    /// sdf::Model::ToElement.
+    /// \return SDF element pointer with updated root values.
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };
