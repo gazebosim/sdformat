@@ -58,6 +58,8 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/usd/sdf_parser/Conversions.hh"
+#include "sdf/usd/sdf_parser/Material.hh"
 #include "sdf/usd/sdf_parser/Utils.hh"
 
 namespace sdf
@@ -287,6 +289,24 @@ namespace usd
       extentBounds.push_back(
         pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
       usdMesh.CreateExtentAttr().Set(extentBounds);
+
+      int materialIndex = subMesh->MaterialIndex();
+      if (materialIndex != -1)
+      {
+        auto material = ignMesh->MaterialByIndex(materialIndex);
+        sdf::Material materialSdf = sdf::usd::convert(material);
+        auto materialUSD = ParseSdfMaterial(&materialSdf, _stage);
+
+        if(materialSdf.Emissive() != ignition::math::Color(0, 0, 0, 1)
+            || materialSdf.Specular() != ignition::math::Color(0, 0, 0, 1)
+            || materialSdf.PbrMaterial())
+        {
+          if (materialUSD)
+          {
+            pxr::UsdShadeMaterialBindingAPI(usdMesh).Bind(materialUSD);
+          }
+        }
+      }
     }
 
     return true;

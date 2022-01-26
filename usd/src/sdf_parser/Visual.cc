@@ -35,6 +35,7 @@
 
 #include "sdf/Visual.hh"
 #include "sdf/usd/sdf_parser/Geometry.hh"
+#include "sdf/usd/sdf_parser/Material.hh"
 #include "sdf/usd/sdf_parser/Utils.hh"
 
 namespace sdf
@@ -44,8 +45,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path)
+  sdf::Errors ParseSdfVisual(const sdf::Visual &_visual,
+    pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     sdf::Errors errors;
     const pxr::SdfPath sdfVisualPath(_path);
@@ -66,6 +67,34 @@ namespace usd
       errors.insert(errors.end(), geomErrors.begin(), geomErrors.end() );
       errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
         "Error parsing geometry attached to visual [" + _visual.Name() + "]"));
+      return errors;
+    }
+
+    auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
+    if (geomPrim)
+    {
+        const auto material = _visual.Material();
+        pxr::UsdShadeMaterial materialUSD;
+
+        if (material)
+        {
+          materialUSD = usd::ParseSdfMaterial(material, _stage);
+          if (!materialUSD)
+          {
+            errors.push_back(sdf::Error(
+              sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+              "Error parsing material attached to visual ["
+              + _visual.Name() + "]"));
+            return errors;
+          }
+          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+        }
+    }
+    else
+    {
+      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        "Internal error: no geometry prim exists at path ["
+        + geometryPath + "]"));
       return errors;
     }
 
