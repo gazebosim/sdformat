@@ -69,7 +69,7 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check a good SDF file
   {
     std::string path = ignition::common::joinPaths(pathBase,
-      "shapes_world.sdf");
+      "lights.sdf");
     const auto outputUsdFilePath =
       ignition::common::joinPaths(tmp, "shapes.usd");
     EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
@@ -81,7 +81,7 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // that functionality isn't complete)
 
     // make sure that a shapes.usd file was generated
-    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath));
+    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
 
     // TODO(ahcorde): Check the contents of outputUsdFilePath when the parser
     // is implemented
