@@ -34,6 +34,7 @@
 #include "sdf/Link.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
 #include "sdf/usd/sdf_parser/Utils.hh"
+#include "sdf/usd/sdf_parser/Visual.hh"
 
 namespace sdf
 {
@@ -92,6 +93,26 @@ namespace usd
         centerOfMass.Pos().X(),
         centerOfMass.Pos().Y(),
         centerOfMass.Pos().Z()));
+    }
+
+    // TODO(adlarkin) finish parsing link. It will look something like this
+    // (this does not cover all elements of a link that need to be parsed):
+    //  * ParseSdfVisual
+    //  * ParseSdfCollision
+
+    // parse all of the link's visuals and convert them to USD
+    for (uint64_t i = 0; i < _link.VisualCount(); ++i)
+    {
+      const auto visual = *(_link.VisualByIndex(i));
+      const auto visualPath = std::string(_path + "/" + visual.Name());
+      auto errorsLink = ParseSdfVisual(visual, _stage, visualPath);
+      if (errorsLink.size() > 0)
+      {
+        errors.insert(errors.end(), errorsLink.begin(), errorsLink.end() );
+        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+          "Error parsing visual [" + visual.Name() + "]"));
+        return errors;
+      }
     }
 
     // links can have lights attached to them

@@ -48,7 +48,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   sdf::Errors ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path, const pxr::SdfPath &_worldPath)
+      const std::string &_path, const pxr::SdfPath &/*_worldPath*/)
   {
     sdf::Errors errors;
 

@@ -58,7 +58,7 @@ class UsdStageFixture : public::testing::Test
 };
 
 /////////////////////////////////////////////////
-TEST_F(UsdStageFixture, World)
+TEST_F(UsdStageFixture, Visual)
 {
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
   ignition::common::addFindFileURICallback(
@@ -81,14 +81,15 @@ TEST_F(UsdStageFixture, World)
   std::string groundPlanePath = worldPath + "/" + "ground_plane";
   auto groundPlane = this->stage->GetPrimAtPath(pxr::SdfPath(groundPlanePath));
   ASSERT_TRUE(groundPlane);
-  sdf::usd::testing::CheckPrimPose(groundPlane,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, -0.125),
-        ignition::math::Quaterniond(0, 0, 0)));
   std::string groundPlaneLinkPath = groundPlanePath + "/" + "link";
   auto groundPlaneLink = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneLinkPath));
-  sdf::usd::testing::CheckPrimPose(groundPlaneLink,
+  ASSERT_TRUE(groundPlaneLink);
+  std::string groundPlaneVisualPath = groundPlaneLinkPath + "/" + "visual";
+  auto groundPlaneVisual = this->stage->GetPrimAtPath(
+    pxr::SdfPath(groundPlaneVisualPath));
+  ASSERT_TRUE(groundPlaneVisual);
+  sdf::usd::testing::CheckPrimPose(groundPlaneVisual,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
         ignition::math::Quaterniond(0, 0, 0)));
@@ -96,16 +97,14 @@ TEST_F(UsdStageFixture, World)
   std::string boxPath = worldPath + "/" + "box";
   auto box = this->stage->GetPrimAtPath(pxr::SdfPath(boxPath));
   ASSERT_TRUE(box);
-  sdf::usd::testing::CheckPrimPose(box,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 2.5),
-        ignition::math::Quaterniond(0, 0, 0)));
   std::string boxLinkPath = boxPath + "/" + "link";
   auto boxLink = this->stage->GetPrimAtPath(pxr::SdfPath(boxLinkPath));
   ASSERT_TRUE(boxLink);
-  sdf::usd::testing::CheckInertial(
-    boxLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfVec3f(0, 0, 0), true);
-  sdf::usd::testing::CheckPrimPose(boxLink,
+  std::string boxVisualPath = boxLinkPath + "/" + "box_vis";
+  auto boxVisual = this->stage->GetPrimAtPath(
+    pxr::SdfPath(boxVisualPath));
+  ASSERT_TRUE(boxVisual);
+  sdf::usd::testing::CheckPrimPose(boxVisual,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
         ignition::math::Quaterniond(0, 0, 0)));
@@ -113,16 +112,14 @@ TEST_F(UsdStageFixture, World)
   std::string cylinderPath = worldPath + "/" + "cylinder";
   auto cylinder = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderPath));
   ASSERT_TRUE(cylinder);
-  sdf::usd::testing::CheckPrimPose(cylinder,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(2, 0, 2.5),
-        ignition::math::Quaterniond(0, 0, 0)));
   std::string cylinderLinkPath = cylinderPath + "/" + "link";
   auto cylinderLink = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
   ASSERT_TRUE(cylinderLink);
-  sdf::usd::testing::CheckInertial(
-    cylinderLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfVec3f(0, 0, 0), true);
-  sdf::usd::testing::CheckPrimPose(cylinderLink,
+  std::string cylinderVisualPath = cylinderLinkPath + "/" + "visual";
+  auto cylinderVisual = this->stage->GetPrimAtPath(
+    pxr::SdfPath(cylinderVisualPath));
+  ASSERT_TRUE(cylinderVisual);
+  sdf::usd::testing::CheckPrimPose(cylinderVisual,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
         ignition::math::Quaterniond(0, 0, 0)));
@@ -130,17 +127,14 @@ TEST_F(UsdStageFixture, World)
   std::string spherePath = worldPath + "/" + "sphere";
   auto sphere = this->stage->GetPrimAtPath(pxr::SdfPath(spherePath));
   ASSERT_TRUE(sphere);
-  sdf::usd::testing::CheckPrimPose(sphere,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(4, 0, 2.5),
-        ignition::math::Quaterniond(0, 0, 0)));
   std::string sphereLinkPath = spherePath + "/" + "link";
   auto sphereLink = this->stage->GetPrimAtPath(pxr::SdfPath(sphereLinkPath));
   ASSERT_TRUE(sphereLink);
-  EXPECT_TRUE(sphereLink.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
-  sdf::usd::testing::CheckInertial(
-    sphereLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfVec3f(0, 0, 0), true);
-  sdf::usd::testing::CheckPrimPose(sphereLink,
+  std::string sphereVisualPath = sphereLinkPath + "/" + "sphere_vis";
+  auto sphereVisual = this->stage->GetPrimAtPath(
+    pxr::SdfPath(sphereVisualPath));
+  ASSERT_TRUE(sphereVisual);
+  sdf::usd::testing::CheckPrimPose(sphereVisual,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
         ignition::math::Quaterniond(0, 0, 0)));
@@ -148,16 +142,14 @@ TEST_F(UsdStageFixture, World)
   std::string capsulePath = worldPath + "/" + "capsule";
   auto capsule = this->stage->GetPrimAtPath(pxr::SdfPath(capsulePath));
   ASSERT_TRUE(capsule);
-  sdf::usd::testing::CheckPrimPose(capsule,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(6, 0, 2.5),
-        ignition::math::Quaterniond(0, 0, 0)));
   std::string capsuleLinkPath = capsulePath + "/" + "link";
   auto capsuleLink = this->stage->GetPrimAtPath(pxr::SdfPath(capsuleLinkPath));
   ASSERT_TRUE(capsuleLink);
-  sdf::usd::testing::CheckInertial(
-    capsuleLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfVec3f(0, 0, 0), true);
-  sdf::usd::testing::CheckPrimPose(capsuleLink,
+  std::string capsuleVisualPath = capsuleLinkPath + "/" + "visual";
+  auto capsuleVisual = this->stage->GetPrimAtPath(
+    pxr::SdfPath(capsuleVisualPath));
+  ASSERT_TRUE(capsuleVisual);
+  sdf::usd::testing::CheckPrimPose(capsuleVisual,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
         ignition::math::Quaterniond(0, 0, 0)));
@@ -165,16 +157,14 @@ TEST_F(UsdStageFixture, World)
   std::string meshPath = worldPath + "/" + "mesh";
   auto mesh = this->stage->GetPrimAtPath(pxr::SdfPath(meshPath));
   ASSERT_TRUE(mesh);
-  sdf::usd::testing::CheckPrimPose(mesh,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(8, 0, 2.5),
-        ignition::math::Quaterniond(0, 0, 0)));
   std::string meshLinkPath = meshPath + "/" + "link";
   auto meshLink = this->stage->GetPrimAtPath(pxr::SdfPath(meshLinkPath));
   ASSERT_TRUE(meshLink);
-  sdf::usd::testing::CheckInertial(
-    meshLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfVec3f(0, 0, 0), true);
-  sdf::usd::testing::CheckPrimPose(meshLink,
+  std::string meshVisualPath = meshLinkPath + "/" + "visual";
+  auto meshVisual = this->stage->GetPrimAtPath(
+    pxr::SdfPath(meshVisualPath));
+  ASSERT_TRUE(meshVisual);
+  sdf::usd::testing::CheckPrimPose(meshVisual,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
         ignition::math::Quaterniond(0, 0, 0)));

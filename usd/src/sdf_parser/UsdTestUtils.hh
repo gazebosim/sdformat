@@ -17,7 +17,10 @@
 #ifndef SDF_PARSER_USDTESTUTILS_HH_
 #define SDF_PARSER_USDTESTUTILS_HH_
 
+#include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/URI.hh>
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 
@@ -45,6 +48,30 @@ namespace usd
 {
 namespace testing
 {
+std::string findFileCb(const std::string &_input)
+{
+  return sdf::testing::TestFile("sdf", _input);
+}
+
+//////////////////////////////////////////////////
+/// \brief This functions is used by sdf::addFindFileURICallback to find
+/// the resources defined in the URI
+/// \param[in] _uri URI of the file to find
+/// \return The full path to the uri. Empty
+/// string is returned if the file could not be found.
+std::string FindResourceUri(const ignition::common::URI &_uri)
+{
+  std::string prefix = _uri.Scheme();
+  std::string suffix;
+  // Strip /
+  if (_uri.Path().IsAbsolute() && prefix != "file")
+    suffix += _uri.Path().Str().substr(1);
+  else
+    suffix += _uri.Path().Str();
+  suffix += _uri.Query().Str();
+
+  return findFileCb(ignition::common::copyFromUnixPath(suffix));
+}
 
 /// \brief Compare the pose of a USD prim to a desired pose
 /// \param[in] _usdPrim The USD prim
