@@ -56,7 +56,7 @@ class UsdStageFixture : public::testing::Test
 };
 
 /////////////////////////////////////////////////
-TEST_F(UsdStageFixture, World)
+TEST_F(UsdStageFixture, Link)
 {
   const auto path = sdf::testing::TestFile("sdf", "shapes_world.sdf");
   sdf::Root root;
@@ -82,6 +82,7 @@ TEST_F(UsdStageFixture, World)
   std::string groundPlaneLinkPath = groundPlanePath + "/" + "link";
   auto groundPlaneLink = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneLinkPath));
+  ASSERT_TRUE(groundPlaneLink);
   sdf::usd::testing::CheckPrimPose(groundPlaneLink,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 0),
@@ -131,7 +132,6 @@ TEST_F(UsdStageFixture, World)
   std::string sphereLinkPath = spherePath + "/" + "link";
   auto sphereLink = this->stage->GetPrimAtPath(pxr::SdfPath(sphereLinkPath));
   ASSERT_TRUE(sphereLink);
-  EXPECT_TRUE(sphereLink.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckInertial(
     sphereLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfVec3f(0, 0, 0), true);
   sdf::usd::testing::CheckPrimPose(sphereLink,

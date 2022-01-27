@@ -105,29 +105,54 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
 
 /// \brief Compare the Inertial of a USD prim to the desired values
 /// \param[in] _usdPrim The USD prim
-/// \param[in] _mass Mass of the link
-/// \param[in] _diagonalInertia Diagonal Inertia
-/// \param[in] _centerOfMass Center of mass
-/// \param[in] isRigid True if it's a rigid body, False otherwise
+/// \param[in] _targetMass Mass of the link that _usdPrim should have
+/// \param[in] _targetDiagonalInertia Diagonal Inertia that _usdPrim should have
+/// \param[in] _targetCenterOfMass Center of mass that _usdPrim should have
+/// \param[in] _isRigid True if _usdPrim should be a rigid body, False otherwise
 void CheckInertial(const pxr::UsdPrim &_usdPrim,
-    float _mass,
-    const pxr::GfVec3f &_diagonalInertia,
-    const pxr::GfVec3f &_centerOfMass,
-    bool isRigid)
+    float _targetMass,
+    const pxr::GfVec3f &_targetDiagonalInertia,
+    const pxr::GfVec3f &_targetCenterOfMass,
+    bool _isRigid)
 {
-  float massUSD;
-  pxr::GfVec3f centerOfMassUSD;
-  pxr::GfVec3f diagonalInertiaUSD;
+  bool checkedMass = false;
+  if (auto massAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:mass")))
+  {
+    float massUSD;
+    massAttr.Get(&massUSD);
+    EXPECT_FLOAT_EQ(_targetMass, massUSD);
+    checkedMass = true;
+  }
+  EXPECT_TRUE(checkedMass);
 
-  EXPECT_EQ(isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
-  _usdPrim.GetAttribute(pxr::TfToken("physics:mass")).Get(&massUSD);
-  EXPECT_FLOAT_EQ(_mass, massUSD);
-  _usdPrim.GetAttribute(pxr::TfToken("physics:centerOfMass")).
-    Get(&centerOfMassUSD);
-  EXPECT_EQ(_centerOfMass, centerOfMassUSD);
-  _usdPrim.GetAttribute(pxr::TfToken("physics:diagonalInertia")).
-    Get(&diagonalInertiaUSD);
-  EXPECT_EQ(_diagonalInertia, diagonalInertiaUSD);
+  bool checkedDiagInertia = false;
+  if (auto diagInertiaAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:diagonalInertia")))
+  {
+    pxr::GfVec3f diagonalInertiaUSD;
+    diagInertiaAttr.Get(&diagonalInertiaUSD);
+    EXPECT_FLOAT_EQ(_targetDiagonalInertia[0], diagonalInertiaUSD[0]);
+    EXPECT_FLOAT_EQ(_targetDiagonalInertia[1], diagonalInertiaUSD[1]);
+    EXPECT_FLOAT_EQ(_targetDiagonalInertia[2], diagonalInertiaUSD[2]);
+    checkedDiagInertia = true;
+  }
+  EXPECT_TRUE(checkedDiagInertia);
+
+  bool checkedCOM = false;
+  if (auto comAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:centerOfMass")))
+  {
+    pxr::GfVec3f centerOfMassUSD;
+    comAttr.Get(&centerOfMassUSD);
+    EXPECT_FLOAT_EQ(_targetCenterOfMass[0], centerOfMassUSD[0]);
+    EXPECT_FLOAT_EQ(_targetCenterOfMass[1], centerOfMassUSD[1]);
+    EXPECT_FLOAT_EQ(_targetCenterOfMass[2], centerOfMassUSD[2]);
+    checkedCOM = true;
+  }
+  EXPECT_TRUE(checkedCOM);
+
+  EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
 }
 } // namespace testing
 } // namespace usd

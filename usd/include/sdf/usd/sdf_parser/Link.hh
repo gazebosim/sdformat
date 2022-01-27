@@ -39,19 +39,20 @@ namespace sdf
   //
   namespace usd
   {
-  /// \brief Parse an SDF link into a USD stage.
-  /// \param[in] _link The SDF link to parse.
-  /// \param[in] _stage The stage that should contain the USD representation
-  /// of _link.
-  /// \param[in] _path The USD path of the parsed link in _stage, which must be
-  /// a valid USD path.
-  /// \param[in] _rigidBody Whether the link is a rigid body (i.e., non-static)
-  /// or not. True for rigid body, false otherwise
-  /// \return True if _link was succesfully parsed into _stage with a path of
-  /// _path. False otherwise.
-  sdf::Errors SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
-      pxr::UsdStageRefPtr &_stage, const std::string &_path,
-      const bool _rigidBody);
+    /// \brief Parse an SDF link into a USD stage.
+    /// \param[in] _link The SDF link to parse.
+    /// \param[in] _stage The stage that should contain the USD representation
+    /// of _link. This must be a valid, initialized stage.
+    /// \param[in] _path The USD path of the parsed link in _stage, which must
+    /// be a valid USD path.
+    /// \param[in] _rigidBody Whether the link is a rigid body (i.e.,
+    /// non-static) or not. True for rigid body, false otherwise
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no errors occurred
+    /// when parsing _link to its USD representation.
+    sdf::Errors SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
+        pxr::UsdStageRefPtr &_stage, const std::string &_path,
+        bool _rigidBody);
   }
   }
 }

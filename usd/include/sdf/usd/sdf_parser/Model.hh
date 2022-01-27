@@ -26,6 +26,7 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -42,13 +43,14 @@ namespace sdf
   /// \brief Parse an SDF model into a USD stage.
   /// \param[in] _model The SDF model to parse.
   /// \param[in] _stage The stage that should contain the USD representation
-  /// of _model.
+  /// of _model. This must be a valid, initialized stage.
   /// \param[in] _path The USD path of the parsed model in _stage, which must be
   /// a valid USD path.
   /// \param[in] _worldPath The path to the USD world prim. This is needed if
   /// the model has any joints with the world as its parent.
-  /// \return True if _model was succesfully parsed into _stage with a path of
-  /// _path. False otherwise.
+  /// \return Errors, which is a vector of Error objects. Each Error includes
+  /// an error code and message. An empty vector indicates no error occurred
+  /// when parsing _model to its USD representation.
   sdf::Errors SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const pxr::SdfPath &_worldPath);

@@ -43,7 +43,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   sdf::Errors ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path, const bool _rigidBody)
+      const std::string &_path, bool _rigidBody)
   {
     const pxr::SdfPath sdfLinkPath(_path);
     sdf::Errors errors;
@@ -100,7 +100,7 @@ namespace usd
       const auto light = *(_link.LightByIndex(i));
       auto lightPath = std::string(_path + "/" + light.Name());
       sdf::Errors lightErrors = ParseSdfLight(light, _stage, lightPath);
-      if (errors.size() > 0)
+      if (!errors.empty())
       {
         errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
               "Error parsing light [" + light.Name() + "]"));

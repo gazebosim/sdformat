@@ -22,6 +22,8 @@ set(gtest_sources
   sdf_parser/sdf2usd_TEST.cc
   sdf_parser/Light_Sdf2Usd_TEST.cc
   sdf_parser/Link_Sdf2Usd_TEST.cc
+  # TODO(adlarkin) add a test for SDF -> USD models once model parsing
+  # functionality is complete
   sdf_parser/World_Sdf2Usd_TEST.cc
 )
 
