@@ -1,0 +1,21 @@
+# This file is part of the interface_api integration test. The test contains a
+# very limited toml parser that is not capable of parsing the full toml syntax.
+# Specifically, arrays are not supported.
+name = "joint_model_child"
+pose = "0 0 0 0 0 0"
+canonical_link = "base"
+
+[links.base]
+pose = "0 0 0 0 0 0"
+
+# Test use of __model__ in joint parent or child
+[links.parent_link]
+pose = "0 0 0 0 0 0"
+
+[links.child_link]
+pose = "0 0 0 0 0 0"
+
+[joints.joint_model_child]
+parent = "parent_link"
+child = "__model__"
+type = "fixed"

@@ -968,7 +968,7 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
       return nullptr;
 
     // Use parent name because we know merge=true
-    const std::string absoluteModelName = _include.AbsoluteParentName();
+    const std::string &absoluteModelName = _include.AbsoluteParentName();
     // The following is equivalent to
     // <model name="M0"> <!-- Merged into parent model
     //   <pose relative_to="F1">0 0 0  π/2 0 0</pose> <!-- From //include -->
@@ -1217,4 +1217,33 @@ R"(<include>
   EXPECT_EQ(includeElem->ToString("", printConfig), expectedIncludeStr);
   printConfig.SetPreserveIncludes(true);
   EXPECT_EQ(includeElem->ToString("", printConfig), expectedIncludeStr);
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, JointModelChild)
+{
+    const std::string testSdf = R"(
+  <sdf version="1.9">
+    <model name="parent_model">
+      <link name="L1"/>
+      <include merge="true">
+        <uri>joint_model_parent_or_child.toml</uri>
+      </include>
+      <frame name="frame_1" attached_to="joint_model_child"/>
+    </model>
+  </sdf>)";
+
+  this->config.RegisterCustomModelParser(customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  {
+    auto frame = model->FrameByName("frame_1");
+    std::string body;
+    frame->ResolveAttachedToBody(body);
+    EXPECT_EQ("base", body);
+  }
 }

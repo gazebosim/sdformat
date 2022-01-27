@@ -470,7 +470,7 @@ struct ModelWrapper : public WrapperBase
       this->frames.emplace_back(proxyModelFrameName,
                                 nestedInclude->IncludeRawPose().value_or(
                                     model->ModelFramePoseInParentFrame()),
-                                poseRelativeTo, this->canonicalLinkName);
+                                poseRelativeTo, model->CanonicalLinkName());
 
       for (const auto &item : model->Links())
       {
@@ -489,10 +489,13 @@ struct ModelWrapper : public WrapperBase
       }
       for (const auto &item : model->Joints())
       {
-        // TODO(azeey) In theory, the child could be "__model__" in which case,
-        // we'd have to use the proxy frame here, but not sure if "__model__" is
-        // allowed for //joint/child.
-        this->joints.emplace_back(item);
+        std::string childName = item.ChildName();
+        if (item.ChildName() == "__model__")
+        {
+          childName = proxyModelFrameName;
+        }
+        this->joints.emplace_back(sdf::InterfaceJoint(item.Name(), childName,
+                                                      item.PoseInChildFrame()));
       }
       if (nestedInclude->PlacementFrame().has_value())
       {
