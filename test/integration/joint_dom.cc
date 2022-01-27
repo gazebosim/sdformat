@@ -613,7 +613,7 @@ TEST(DOMJoint, LoadInvalidChild)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  ASSERT_EQ(9u, errors.size());
+  EXPECT_EQ(8u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
@@ -630,12 +630,6 @@ TEST(DOMJoint, LoadInvalidChild)
   // errors[5]
   // errors[6]
   // errors[7]
-  // errors[8]
-  EXPECT_NE(
-      std::string::npos,
-      errors[8].Message().find("child frame with name[__model__] specified by "
-                               "joint with name[joint2] not found in model "
-                               "with name[joint_invalid_child]"));
 }
 
 /////////////////////////////////////////////////

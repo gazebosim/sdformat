@@ -489,6 +489,9 @@ struct ModelWrapper : public WrapperBase
       }
       for (const auto &item : model->Joints())
       {
+        // TODO(azeey) In theory, the child could be "__model__" in which case,
+        // we'd have to use the proxy frame here, but not sure if "__model__" is
+        // allowed for //joint/child.
         this->joints.emplace_back(item);
       }
       if (nestedInclude->PlacementFrame().has_value())
