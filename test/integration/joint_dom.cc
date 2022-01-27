@@ -231,6 +231,70 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointParentModelFrame)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_parent_model_frame.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("joint_parent_model_frame", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+
+  EXPECT_EQ(1u, model->JointCount());
+  auto *joint = model->JointByName("joint");
+  ASSERT_NE(nullptr, joint);
+  EXPECT_EQ("child_link", model->JointByName("joint")->ChildLinkName());
+  EXPECT_EQ("__model__", model->JointByName("joint")->ParentLinkName());
+  std::string resolvedLinkName;
+  EXPECT_TRUE(joint->ResolveParentLink(resolvedLinkName).empty());
+  EXPECT_EQ("base_link", resolvedLinkName);
+
+  ignition::math::Pose3d pose;
+  EXPECT_TRUE(
+    joint->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, LoadJointChildModelFrame)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_child_model_frame.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("joint_child_model_frame", model->Name());
+  EXPECT_EQ(2u, model->LinkCount());
+
+  EXPECT_EQ(1u, model->JointCount());
+  auto *joint = model->JointByName("joint");
+  ASSERT_NE(nullptr, joint);
+  EXPECT_EQ("__model__", model->JointByName("joint")->ChildLinkName());
+  EXPECT_EQ("parent_link", model->JointByName("joint")->ParentLinkName());
+  std::string resolvedLinkName;
+  EXPECT_TRUE(joint->ResolveChildLink(resolvedLinkName).empty());
+  EXPECT_EQ("base_link", resolvedLinkName);
+
+  ignition::math::Pose3d pose;
+  EXPECT_TRUE(
+    joint->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), pose);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointParentFrame)
 {
   const std::string testFile =
@@ -856,6 +920,38 @@ TEST(DOMJoint, LoadJointNestedParentChild)
     Pose pose;
     EXPECT_TRUE(j5->SemanticPose().Resolve(pose, "__model__").empty());
     EXPECT_EQ(Pose(0, -1, 1, IGN_PI_2, 0, 0), pose);
+  }
+  {
+    const sdf::Joint *j6 = model->JointByName("J6");
+    ASSERT_NE(nullptr, j6);
+    EXPECT_EQ("M1::__model__", j6->ParentLinkName());
+    EXPECT_EQ("L1", j6->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j6->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::L1", resolvedLinkName);
+    EXPECT_TRUE(j6->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+
+    Pose pose;
+    EXPECT_TRUE(j6->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(1, 0, 10, 0, IGN_PI_2, 0), pose);
+  }
+  {
+    const sdf::Joint *j7 = model->JointByName("J7");
+    ASSERT_NE(nullptr, j7);
+    EXPECT_EQ("L1", j7->ParentLinkName());
+    EXPECT_EQ("M1::__model__", j7->ChildLinkName());
+
+    std::string resolvedLinkName;
+    EXPECT_TRUE(j7->ResolveParentLink(resolvedLinkName).empty());
+    EXPECT_EQ("L1", resolvedLinkName);
+    EXPECT_TRUE(j7->ResolveChildLink(resolvedLinkName).empty());
+    EXPECT_EQ("M1::L1", resolvedLinkName);
+
+    Pose pose;
+    EXPECT_TRUE(j7->SemanticPose().Resolve(pose, "__model__").empty());
+    EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), pose);
   }
 }
 

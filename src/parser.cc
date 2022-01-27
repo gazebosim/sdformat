@@ -2256,7 +2256,10 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       auto joint = _model->JointByIndex(j);
 
       const std::string &parentName = joint->ParentLinkName();
-      if (parentName != "world" && !_model->LinkNameExists(parentName) &&
+      const std::string parentLocalName = sdf::SplitName(parentName).second;
+
+      if (parentName != "world" && parentLocalName != "__model__" &&
+          !_model->LinkNameExists(parentName) &&
           !_model->JointNameExists(parentName) &&
           !_model->FrameNameExists(parentName))
       {
@@ -2267,6 +2270,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       }
 
       const std::string &childName = joint->ChildLinkName();
+      const std::string childLocalName = sdf::SplitName(childName).second;
       if (childName == "world")
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
@@ -2274,7 +2278,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
-      if (!_model->LinkNameExists(childName) &&
+      if (childLocalName != "__model__" && !_model->LinkNameExists(childName) &&
           !_model->JointNameExists(childName) &&
           !_model->FrameNameExists(childName) &&
           !_model->ModelNameExists(childName))
