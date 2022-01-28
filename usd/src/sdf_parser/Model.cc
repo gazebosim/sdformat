@@ -35,6 +35,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Model.hh"
+#include "sdf/usd/sdf_parser/Joint.hh"
 #include "sdf/usd/sdf_parser/Link.hh"
 #include "sdf/usd/sdf_parser/Utils.hh"
 
@@ -46,7 +47,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   sdf::Errors ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path, const pxr::SdfPath &/*_worldPath*/)
+      const std::string &_path, const pxr::SdfPath &_worldPath)
   {
     sdf::Errors errors;
 
@@ -95,6 +96,24 @@ namespace usd
         errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
               "Error parsing link [" + link.Name() + "]"));
         errors.insert(errors.end(), linkErrors.begin(), linkErrors.end());
+        return errors;
+      }
+    }
+
+    // Parse all of the model's joints and convert them to USD.
+    for (uint64_t i = 0; i < _model.JointCount(); ++i)
+    {
+      const auto joint = *(_model.JointByIndex(i));
+      const auto jointPath = std::string(_path + "/" + joint.Name());
+      const auto jointErrors = ParseSdfJoint(joint, _stage, jointPath, _model,
+            sdfLinkToUSDPath, _worldPath);
+      if (!jointErrors.empty())
+      {
+        // TODO(adlarkin) change error code to USD-specific error code once
+        // USD-specific error codes are supported
+        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+              "Error parsing joint [" + joint.Name() + "]."));
+        errors.insert(errors.end(), jointErrors.begin(), jointErrors.end());
         return errors;
       }
     }

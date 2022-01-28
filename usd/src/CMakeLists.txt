@@ -1,4 +1,5 @@
 set(sources
+  sdf_parser/Joint.cc
   sdf_parser/Light.cc
   sdf_parser/Link.cc
   sdf_parser/Model.cc
@@ -24,6 +25,7 @@ set(gtest_sources
   sdf_parser/Link_Sdf2Usd_TEST.cc
   # TODO(adlarkin) add a test for SDF -> USD models once model parsing
   # functionality is complete
+  # TODO(adlarkin) add a test for SDF -> USD joints
   sdf_parser/World_Sdf2Usd_TEST.cc
 )
 
