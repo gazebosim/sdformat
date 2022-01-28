@@ -324,6 +324,18 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     {
       setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
                                false);
+
+      auto parent = elem->FindElement("parent");
+      if (nullptr != parent && parent->Get<std::string>() == "__model__")
+      {
+        parent->Set(proxyModelFrameName);
+      }
+      auto child = elem->FindElement("child");
+      if (nullptr != child && child->Get<std::string>() == "__model__")
+      {
+        child->Set(proxyModelFrameName);
+      }
+
       // cppcheck-suppress syntaxError
       // cppcheck-suppress unmatchedSuppression
       if (auto axis = elem->GetElementImpl("axis"); axis)
