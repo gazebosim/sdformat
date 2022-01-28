@@ -33,7 +33,6 @@
 #include "sdf/Model.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
-#include "sdf/Assert.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
