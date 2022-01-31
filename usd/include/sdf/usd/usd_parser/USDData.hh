@@ -34,6 +34,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Material.hh"
+#include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
@@ -55,18 +56,21 @@ namespace sdf
       public: USDData(const std::string &_filename);
 
       /// \brief Initialize the data inside the class with the stage
-      /// defined in the consttuctor
-      /// \return True if initialization was successful or False otherwise
-      public: bool Init();
+      /// defined in the constructor
+      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// an error code and message. An empty vector indicates no error.
+      public: sdf::Errors Init();
 
       /// \brief If a stage contains substages, this will allow to include
       /// them.
-      /// \return True if the stage was added successfully or False otherwise
-      public: bool AddStage(const std::string &_ref);
+      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// an error code and message. An empty vector indicates no error.
+      public: sdf::Errors AddStage(const std::string &_ref);
 
       /// \brief Read materials
-      /// \return Number of materials readed
-      public: int ParseMaterials();
+      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// an error code and message. An empty vector indicates no error.
+      public: sdf::Errors ParseMaterials();
 
       /// \brief Get all materials readed in the stage
       public: const std::unordered_map<std::string, sdf::Material> &

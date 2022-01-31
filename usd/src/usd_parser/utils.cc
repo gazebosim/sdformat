@@ -46,22 +46,33 @@ namespace sdf
   }
 
   /////////////////////////////////////////////////
-  bool copyFile(const std::string &_ori, const std::string &_dest)
+  sdf::Errors copyFile(const std::string &_ori, const std::string &_dest)
   {
+    sdf::Errors errors;
     if (ignition::common::exists(_ori))
     {
       std::string baseName = ignition::common::basename(_dest);
       std::string pathDest = removeSubStr(_dest, baseName);
       ignition::common::createDirectories(pathDest);
-      return ignition::common::copyFile(_ori, _dest);
+      if (!ignition::common::copyFile(_ori, _dest))
+      {
+        errors.emplace_back(
+            Error(ErrorCode::FILE_READ, "No able to copy the file " + _ori +
+                  " in " + _dest));
+      }
     }
-    return false;
+    else
+    {
+      errors.emplace_back(
+          Error(ErrorCode::FILE_READ, "File does not exists"));
+    }
+    return errors;
   }
 
   /////////////////////////////////////////////////
-  sdf::Material ParseMaterial(const pxr::UsdPrim &_prim)
+  sdf::Errors ParseMaterial(const pxr::UsdPrim &_prim, sdf::Material &_material)
   {
-    sdf::Material material;
+    sdf::Errors errors;
     // if the prim is a Geom then get the color values
     if(_prim.IsA<pxr::UsdGeomGprim>())
     {
@@ -81,13 +92,15 @@ namespace sdf
       {
         alpha = 1 - displayOpacity[0];
       }
-      material.SetAmbient(
+      // Refer to this comment in github to understand the ambient and diffuse
+      // https://github.com/osrf/sdformat/pull/526#discussion_r623937715
+      _material.SetAmbient(
         ignition::math::Color(
           ignition::math::clamp(color[0][2] / 0.4, 0.0, 1.0),
           ignition::math::clamp(color[0][1] / 0.4, 0.0, 1.0),
           ignition::math::clamp(color[0][0] / 0.4, 0.0, 1.0),
           alpha));
-      material.SetDiffuse(
+      _material.SetDiffuse(
         ignition::math::Color(
           ignition::math::clamp(color[0][2] / 0.8, 0.0, 1.0),
           ignition::math::clamp(color[0][1] / 0.8, 0.0, 1.0),
@@ -125,7 +138,15 @@ namespace sdf
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
                 ignition::common::findFile(materialPath.GetAssetPath());
-              copyFile(fullAlbedoName, materialPath.GetAssetPath());
+              sdf::Errors errorCopy = copyFile(
+                fullAlbedoName, materialPath.GetAssetPath());
+              if (!errorCopy.empty())
+              {
+                errors.emplace_back(
+                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
+                errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
+                return errors;
+              }
               isPBR = true;
             }
             else if (input.GetBaseName() == "normalmap_texture")
@@ -138,7 +159,15 @@ namespace sdf
               pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
               std::string fullNormalName =
                 ignition::common::findFile(materialPath.GetAssetPath());
-              copyFile(fullNormalName, materialPath.GetAssetPath());
+              auto errorCopy = copyFile(fullNormalName,
+                materialPath.GetAssetPath());
+              if (!errorCopy.empty())
+              {
+                errors.emplace_back(
+                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
+                errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
+                return errors;
+              }
               isPBR = true;
             }
             else if (input.GetBaseName() == "reflectionroughness_texture")
@@ -152,7 +181,15 @@ namespace sdf
               pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
               std::string fullRoughnessName =
                 ignition::common::findFile(materialPath.GetAssetPath());
-              copyFile(fullRoughnessName, materialPath.GetAssetPath());
+              auto errorCopy = copyFile(
+                fullRoughnessName, materialPath.GetAssetPath());
+              if (!errorCopy.empty())
+              {
+                errors.emplace_back(
+                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
+                errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
+                return errors;
+              }
               isPBR = true;
             }
             else if (input.GetBaseName() == "metallic_texture")
@@ -165,7 +202,15 @@ namespace sdf
               pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
               std::string fullMetalnessName =
                 ignition::common::findFile(materialPath.GetAssetPath());
-              copyFile(fullMetalnessName, materialPath.GetAssetPath());
+              auto errorCopy = copyFile(
+                fullMetalnessName, materialPath.GetAssetPath());
+              if (!errorCopy.empty())
+              {
+                errors.emplace_back(
+                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
+                errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
+                return errors;
+              }
               isPBR = true;
             }
             else if (input.GetBaseName() == "diffuse_color_constant")
@@ -192,7 +237,7 @@ namespace sdf
                     pxr::TfToken("diffuse_color_constant"));
                 diffuseShaderInput.Get(&diffuseColor);
               }
-              material.SetDiffuse(
+              _material.SetDiffuse(
                 ignition::math::Color(
                   diffuseColor[0],
                   diffuseColor[1],
@@ -263,19 +308,19 @@ namespace sdf
 
           if (enableEmission)
           {
-            material.SetEmissive(emissiveColorCommon);
+            _material.SetEmissive(emissiveColorCommon);
           }
 
           if (isPBR)
           {
             sdf::Pbr pbr;
             pbr.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
-            material.SetPbrMaterial(pbr);
+            _material.SetPbrMaterial(pbr);
           }
         }
       }
     }
-    return material;
+    return errors;
   }
 }
 }

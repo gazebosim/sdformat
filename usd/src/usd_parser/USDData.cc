@@ -87,12 +87,6 @@ namespace usd {
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
   {
     this->dataPtr->filename = _filename;
-
-    // Add the base stage to the structure
-    this->dataPtr->references.insert(
-      {_filename,
-       std::make_shared<USDStage>(_filename)
-      });
   }
 
   /////////////////////////////////////////////////
@@ -116,13 +110,31 @@ namespace usd {
   }
 
   /////////////////////////////////////////////////
-  bool USDData::Init()
+  sdf::Errors USDData::Init()
   {
+    sdf::Errors errors;
+
+    auto usdStage = std::make_shared<USDStage>(this->dataPtr->filename);
+    sdf::Errors errorsInit = usdStage->Init();
+    if(!errorsInit.empty())
+    {
+      errors.insert(errors.end(), errorsInit.begin(), errorsInit.end());
+      return errors;
+    }
+
+    // Add the base stage to the structure
+    this->dataPtr->references.insert(
+      {this->dataPtr->filename,
+       usdStage
+      });
+
     // it's the stage available
     auto referencee = pxr::UsdStage::Open(this->dataPtr->filename);
     if (!referencee)
     {
-      return false;
+      errors.emplace_back(
+        Error(ErrorCode::FILE_READ, "Failed to load usd file"));
+      return errors;
     }
 
     this->dataPtr->directoryPath = ignition::common::absPath(
@@ -172,16 +184,19 @@ namespace usd {
       }
     }
 
-    return true;
+    return errors;
   }
 
   /////////////////////////////////////////////////
-  int USDData::ParseMaterials()
+  sdf::Errors USDData::ParseMaterials()
   {
+    sdf::Errors errors;
     auto referencee = pxr::UsdStage::Open(this->dataPtr->filename);
     if (!referencee)
     {
-      return false;
+      errors.emplace_back(
+        Error(ErrorCode::FILE_READ, "Failed to load usd file"));
+      return errors;
     }
 
     auto range = pxr::UsdPrimRange::Stage(referencee);
@@ -199,12 +214,21 @@ namespace usd {
           continue;
         }
 
-        sdf::Material material = ParseMaterial(prim);
+        sdf::Material material;
+        sdf::Errors errrosMaterial = ParseMaterial(prim, material);
+        if (!errrosMaterial.empty())
+        {
+          errors.emplace_back(
+            Error(ErrorCode::ELEMENT_INVALID, "Error parsing material"));
+          errors.insert(
+            errors.end(), errrosMaterial.begin(), errrosMaterial.end());
+          return errors;
+        }
         this->dataPtr->materials.insert(std::pair<std::string, sdf::Material>(
           materialName, material));
       }
     }
-    return this->dataPtr->materials.size();
+    return errors;
   }
 
   /////////////////////////////////////////////////
@@ -228,8 +252,9 @@ namespace usd {
   }
 
   /////////////////////////////////////////////////
-  bool USDData::AddStage(const std::string &_ref)
+  sdf::Errors USDData::AddStage(const std::string &_ref)
   {
+    sdf::Errors errors;
     std::string key = _ref;
 
     auto search = this->dataPtr->references.find(_ref);
@@ -248,17 +273,32 @@ namespace usd {
       std::string fileNameRef = ignition::common::findFile(basename);
       if (fileNameRef.empty())
       {
-        std::cerr << "Not able to find asset [" << _ref << "]" << '\n';
-        return false;
+        errors.emplace_back(
+          Error(ErrorCode::ELEMENT_INVALID, "Not able to find asset ["
+            + _ref + "]"));
+        return errors;
+      }
+
+      auto usdStage = std::make_shared<USDStage>(fileNameRef);
+      sdf::Errors errorsInit = usdStage->Init();
+      if(!errorsInit.empty())
+      {
+        errors.insert(errors.end(), errorsInit.begin(), errorsInit.end());
+        return errors;
       }
 
       this->dataPtr->references.insert(
         {key,
          std::make_shared<USDStage>(fileNameRef)
         });
-      return true;
+        return errors;
     }
-    return false;
+    else
+    {
+      errors.emplace_back(
+        Error(ErrorCode::ELEMENT_INVALID, "Element already exists"));
+      return errors;
+    }
   }
 }
 }

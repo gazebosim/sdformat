@@ -36,6 +36,8 @@ TEST(USDStage, Constructor)
     std::string filename = ignition::common::joinPaths(pathBase,
       "/upAxisZ.usda");
     sdf::usd::USDStage stage(filename);
+    sdf::Errors errors = stage.Init();
+    EXPECT_EQ(0u, errors.size());
 
     EXPECT_EQ("Z", stage.GetUpAxis());
     EXPECT_DOUBLE_EQ(0.01, stage.GetMetersPerUnit());
@@ -47,6 +49,8 @@ TEST(USDStage, Constructor)
     std::string filename = ignition::common::joinPaths(pathBase,
       "/upAxisY.usda");
     sdf::usd::USDStage stage(filename);
+    sdf::Errors errors = stage.Init();
+    EXPECT_EQ(0u, errors.size());
 
     EXPECT_EQ("Y", stage.GetUpAxis());
     EXPECT_DOUBLE_EQ(1.0, stage.GetMetersPerUnit());
@@ -55,14 +59,18 @@ TEST(USDStage, Constructor)
 
   // Wrong upaxis
   {
-    EXPECT_THROW(sdf::usd::USDStage(ignition::common::joinPaths(pathBase,
-      "/upAxis_wrong.usda")), std::range_error);
+    sdf::usd::USDStage stage(ignition::common::joinPaths(pathBase,
+      "/upAxis_wrong.usda"));
+    sdf::Errors errors = stage.Init();
+    EXPECT_EQ(1u, errors.size());
   }
 
   // Invalid file
   {
-    EXPECT_THROW(sdf::usd::USDStage(ignition::common::joinPaths(pathBase,
-      "/invalid_name")), std::invalid_argument);
+    sdf::usd::USDStage stage(ignition::common::joinPaths(pathBase,
+      "/invalid_name"));
+    sdf::Errors errors = stage.Init();
+    EXPECT_EQ(1u, errors.size());
   }
 }
 

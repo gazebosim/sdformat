@@ -32,16 +32,18 @@ TEST(USDData, Constructor)
   pathBase = ignition::common::joinPaths(pathBase, "test", "usd");
 
   // Open a invalid USD file
-  EXPECT_THROW(sdf::usd::USDData(ignition::common::joinPaths(pathBase,
-    "/invalid_name")), std::invalid_argument);
+  sdf::usd::USDData data(ignition::common::joinPaths(pathBase,
+    "/invalid_name"));
+  sdf::Errors errors = data.Init();
+  EXPECT_EQ(1u, errors.size());
 
   // Open a valid USD file
   {
     std::string filename = ignition::common::joinPaths(pathBase,
       "/upAxisZ.usda");
     sdf::usd::USDData usdData(filename);
-    EXPECT_TRUE(usdData.Init());
-    EXPECT_EQ(6, usdData.ParseMaterials());
+    EXPECT_EQ(0u, usdData.Init().size());
+    EXPECT_EQ(0u, usdData.ParseMaterials().size());
     EXPECT_EQ(1u, usdData.GetAllReferences().size());
     EXPECT_EQ(2u, usdData.GetModels().size());
 

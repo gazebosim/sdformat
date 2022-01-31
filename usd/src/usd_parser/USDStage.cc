@@ -28,6 +28,7 @@
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/metrics.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/usd/usd_parser/USDStage.hh"
@@ -51,23 +52,34 @@ namespace usd
 
       /// \brief All USD paths available in the file
       std::set<std::string> paths;
+
+      std::string refFileName;
   };
 
   /////////////////////////////////////////////////
   USDStage::USDStage(const std::string &_refFileName)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
   {
+    this->dataPtr->refFileName = _refFileName;
+  }
+
+  /////////////////////////////////////////////////
+  sdf::Errors USDStage::Init()
+  {
+    sdf::Errors errors;
+
     // Open the stage
-    auto referencee = pxr::UsdStage::Open(_refFileName);
+    auto referencee = pxr::UsdStage::Open(this->dataPtr->refFileName);
     if (!referencee)
     {
-      // if the file doesn't exists throw and exception
-      throw std::invalid_argument("Stage file does not exists");
+      errors.emplace_back(
+        Error(ErrorCode::FILE_READ, "Failed to load usd file"));
+      return errors;
     }
 
     // Get meters per unit
-    referencee->GetMetadata<double>(
-      pxr::TfToken("metersPerUnit"), &this->dataPtr->metersPerUnit);
+    this->dataPtr->metersPerUnit =
+      pxr::UsdGeomGetStageMetersPerUnit(referencee);
 
     // is it up axis define, if so, read the value, if the value is
     // not 'Y' or 'Z' throw an exception
@@ -79,7 +91,9 @@ namespace usd
 
       if (this->dataPtr->upAxis != "Y" && this->dataPtr->upAxis != "Z")
       {
-        throw std::range_error("Up axis should be 'Y' or 'Z'");
+        errors.emplace_back(
+          Error(ErrorCode::ELEMENT_INVALID, "Up axis should be 'Y' or 'Z'"));
+        return errors;
       }
     }
 
@@ -98,6 +112,7 @@ namespace usd
 
       this->dataPtr->paths.insert(_prim.GetPath().GetName());
     }
+    return errors;
   }
 
   /////////////////////////////////////////////////

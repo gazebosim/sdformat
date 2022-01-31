@@ -38,7 +38,7 @@ namespace sdf
   //
   namespace usd
   {
-    /// Remove all substring appearances in the input string
+    /// Remove substring appearance in the input string
     /// \param[in] _str Original string where the substring will be removed
     /// \param[in] _substr Substring to use to find and remove in the original
     /// \return A new string without the substring
@@ -49,8 +49,11 @@ namespace sdf
     /// If the prim is a Geom then get the color values, or
     /// if the prim is a shade Material then get the texture values
     /// \param[in] _prim USD prim where the material is extracted
-    /// \return Material of the prim
-    sdf::Material SDFORMAT_VISIBLE ParseMaterial(const pxr::UsdPrim &_prim);
+    /// \param[out] _material Material of the prim
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    sdf::Errors ParseMaterial(const pxr::UsdPrim &_prim,
+      sdf::Material &_material);
 }
 }
 }
