@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 
+#include <ignition/common/Console.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Util.hh>
@@ -145,6 +146,11 @@ namespace usd
 
     auto ignMesh = ignition::common::MeshManager::Instance()->Load(
         fullname);
+    if (!ignMesh)
+    {
+      ignerr << "Failed to load mesh" << std::endl;
+      return false;
+    }
 
     // Some Meshes are splited in some submeshes, this loop check if the name
     // of the path is the same as the name of the submesh. In this case
@@ -431,6 +437,11 @@ namespace usd
           + _path + "]"));
         return errors;
       }
+    }
+    else
+    {
+      errors.emplace_back(
+          Error(ErrorCode::FILE_READ, "Failed to load sdf geometry"));
     }
 
     return errors;
