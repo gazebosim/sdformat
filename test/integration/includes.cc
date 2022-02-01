@@ -411,8 +411,8 @@ TEST(IncludesTest, MergeInclude)
   ASSERT_NE(nullptr, world);
   auto model = world->ModelByIndex(0);
   EXPECT_EQ("robot1", model->Name());
-  EXPECT_EQ(5u, model->LinkCount());
-  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(7u, model->LinkCount());
+  EXPECT_EQ(6u, model->JointCount());
   EXPECT_EQ(1u, model->ModelCount());
   ASSERT_NE(nullptr, model->CanonicalLink());
   EXPECT_EQ(model->LinkByIndex(0), model->CanonicalLink());
@@ -521,6 +521,20 @@ TEST(IncludesTest, MergeInclude)
     EXPECT_EQ(expectedXyz, xyz);
   }
 
+  // Check joint parent set as __model__
+  {
+    // left_wheel_joint's axis is expressed in __model__.
+    auto joint = model->JointByName("test_model_parent");
+    ASSERT_NE(nullptr, joint);
+    EXPECT_EQ(prefixedFrameName, joint->ParentLinkName());
+  }
+  // Check joint child set as __model__
+  {
+    // left_wheel_joint's axis is expressed in __model__.
+    auto joint = model->JointByName("test_model_child");
+    ASSERT_NE(nullptr, joint);
+    EXPECT_EQ(prefixedFrameName, joint->ChildLinkName());
+  }
 
   // Verify that plugins get merged
   auto modelElem = model->Element();
@@ -557,8 +571,8 @@ TEST(IncludesTest, MergeIncludePlacementFrame)
   ASSERT_NE(nullptr, world);
   auto model = world->ModelByIndex(1);
   EXPECT_EQ("robot2", model->Name());
-  EXPECT_EQ(5u, model->LinkCount());
-  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(7u, model->LinkCount());
+  EXPECT_EQ(6u, model->JointCount());
   auto topLink = model->LinkByName("top");
   ASSERT_NE(nullptr, topLink);
   Pose3d topLinkPose;
