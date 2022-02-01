@@ -16,8 +16,8 @@
 */
 
 #include <iostream>
-#include <string>
 #include <set>
+#include <string>
 
 // TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -25,10 +25,10 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/metrics.h>
+#include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/usd/usd_parser/USDStage.hh"

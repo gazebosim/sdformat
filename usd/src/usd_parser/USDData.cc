@@ -16,8 +16,8 @@
 */
 #include "sdf/usd/usd_parser/USDData.hh"
 
-#include <string>
 #include <set>
+#include <string>
 #include <unordered_map>
 
 // TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
@@ -35,8 +35,8 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
-#include "sdf/usd/usd_parser/utils.hh"
 #include "sdf/Material.hh"
+#include "sdf/usd/usd_parser/utils.hh"
 
 namespace sdf {
 // Inline bracke to help doxygen filtering.

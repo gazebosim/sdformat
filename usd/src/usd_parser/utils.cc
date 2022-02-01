@@ -17,12 +17,12 @@
 
 #include "sdf/usd/usd_parser/utils.hh"
 
-#include <pxr/usd/usdShade/input.h>
-#include <pxr/usd/usdShade/material.h>
-#include <pxr/usd/usdShade/shader.h>
-
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
+#include <pxr/usd/usdShade/input.h>
+
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/shader.h>
 
 #include "sdf/Pbr.hh"
 
