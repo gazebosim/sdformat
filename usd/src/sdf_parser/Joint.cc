@@ -117,8 +117,7 @@ namespace usd
           childToJoint.Rot().Z());
 
     const auto axis = _joint.Axis();
-
-    if (axis->Xyz() == ignition::math::Vector3d::UnitY)
+    if (axis && (axis->Xyz() == ignition::math::Vector3d::UnitY))
     {
       if (auto jointRevolute = pxr::UsdPhysicsRevoluteJoint(_jointPrim))
       {

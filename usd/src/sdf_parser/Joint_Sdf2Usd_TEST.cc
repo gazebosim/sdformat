@@ -38,6 +38,7 @@
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdPhysics/driveAPI.h>
+#include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -204,7 +205,7 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
 
   // load the world in the SDF file
   ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
-  auto model = root.Model();
+  const auto model = root.Model();
   ASSERT_NE(nullptr, model);
 
   // create a dummy world path so that we can call the sdf::usd::ParseSdfModel
@@ -319,23 +320,80 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
 
   // load the world in the SDF file
   ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
-  auto model = root.Model();
+  const auto model = root.Model();
   ASSERT_NE(nullptr, model);
 
-  // TODO(adlarkin) finish this. I need to double-check if the file being used
-  // for this test is sufficient to test pose w.r.t. world, or if I should
-  // create a different sdf file for this test (does the model need to be offset
-  // from the world origin, or is having the child link at a different location
-  // sufficient enough? I'd think the model should be offset since child link
-  // can't be w.r.t. world)
+  // create a dummy world path so that we can call the sdf::usd::ParseSdfModel
+  // API
+  const auto worldPath = pxr::SdfPath("/world");
+
+  const auto modelPath =
+    std::string(worldPath.GetString() + "/" + model->Name());
+  const auto errors =
+    sdf::usd::ParseSdfModel(*model, this->stage, modelPath, worldPath);
+  EXPECT_TRUE(errors.empty());
+
+  // save the model's USD joint paths so that they can be verified
+  std::unordered_map<std::string, const sdf::Joint *> jointPathToSdf;
+  for (uint64_t i = 0; i < model->JointCount(); ++i)
+  {
+    const auto joint = model->JointByIndex(i);
+    const auto jointPath = modelPath + "/" + joint->Name();
+    jointPathToSdf[jointPath] = joint;
+  }
+  EXPECT_EQ(model->JointCount(), jointPathToSdf.size());
+
+  // validate USD joints
+  int checkedJoints = 0;
+  for (const auto & prim : this->stage->Traverse())
+  {
+    if (!prim.IsA<pxr::UsdPhysicsJoint>())
+      continue;
+
+    auto iter = jointPathToSdf.find(prim.GetPath().GetString());
+    ASSERT_NE(jointPathToSdf.end(), iter);
+    const auto sdfJoint = iter->second;
+
+    // the only joint type in this test file is a fixed joint
+    EXPECT_TRUE(prim.IsA<pxr::UsdPhysicsFixedJoint>());
+    const auto usdFixedJoint =
+      pxr::UsdPhysicsFixedJoint::Get(this->stage, prim.GetPath());
+    ASSERT_TRUE(usdFixedJoint);
+
+    // make sure joint is pointing to the proper parent/child links.
+    // The parent in this test should be the world
+    this->CheckParentLinkPath(&usdFixedJoint, worldPath.GetString());
+    this->CheckChildLinkPath(&usdFixedJoint,
+        modelPath + "/" + sdfJoint->ChildLinkName());
+
+    // check joint's pose w.r.t. parent and child links. For this test case,
+    // we need to get the joint pose w.r.t. the world
+    ignition::math::Pose3d modelToJointPose;
+    auto poseErrors = sdfJoint->SemanticPose().Resolve(modelToJointPose);
+    EXPECT_TRUE(poseErrors.empty());
+    poseErrors.clear();
+    ignition::math::Pose3d worldToModelPose;
+    poseErrors = model->SemanticPose().Resolve(worldToModelPose);
+    const auto worldToJointPose = worldToModelPose * modelToJointPose;
+    EXPECT_TRUE(poseErrors.empty());
+    poseErrors.clear();
+    ignition::math::Pose3d childToJointPose;
+    poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
+          sdfJoint->ChildLinkName());
+    EXPECT_TRUE(poseErrors.empty());
+    this->CheckRelativeLinkPoses(&usdFixedJoint, worldToJointPose,
+        childToJointPose);
+
+    checkedJoints++;
+  }
+  EXPECT_EQ(checkedJoints, 1);
 }
 
-// TODO(adlarkin) test other joint types. All joint types should have their
-// parent/child link reference paths and pose w.r.t. parent/child links checked.
-// There are a few other particular things to check:
+// TODO(adlarkin) Add the following test cases:
 // 1. prismatic
 //    - prismatic joints share a few things with revolute joints that need to
 //      be checked: axisAttr, jointLimits
+//    - parent/child link reference paths and pose w.r.t. parent/child links
 // 2. Revolute joint with the axis being "y"
 //    - this is a special case; see the sdf::usd::SetUSDJointPose method in
 //      usd/src/sdf_parser/Joint.cc for how this is handled
