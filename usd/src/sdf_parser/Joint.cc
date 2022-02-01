@@ -203,11 +203,9 @@ namespace usd
 
     // Revolute joint limits in SDF are in radians, but USD expects degrees
     // of C++ type float
-    auto sdfLimitDegrees = static_cast<float>(
-        ignition::math::Angle(axis->Lower()).Degree());
+    auto sdfLimitDegrees = static_cast<float>(IGN_RTOD(axis->Lower()));
     usdJoint.CreateLowerLimitAttr().Set(sdfLimitDegrees);
-    sdfLimitDegrees = static_cast<float>(
-        ignition::math::Angle(axis->Upper()).Degree());
+    sdfLimitDegrees = static_cast<float>(IGN_RTOD(axis->Upper()));
     usdJoint.CreateUpperLimitAttr().Set(sdfLimitDegrees);
 
     pxr::UsdPrim usdJointPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
