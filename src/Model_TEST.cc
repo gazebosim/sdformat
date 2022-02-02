@@ -478,3 +478,88 @@ TEST(DOMModel, ToElementNestedHasUri)
   ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ("child2", modelElem->GetAttribute("name")->GetAsString());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MutableByIndex)
+{
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+
+  // Modify the link
+  sdf::Link *l = model.LinkByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("link1", l->Name());
+  l->SetName("link2");
+  EXPECT_EQ("link2", model.LinkByIndex(0)->Name());
+
+  // Modify the joint
+  sdf::Joint *j = model.JointByIndex(0);
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_EQ("joint2", model.JointByIndex(0)->Name());
+
+  // Modify the nested model
+  sdf::Model *m = model.ModelByIndex(0);
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("child1", m->Name());
+  m->SetName("child2");
+  EXPECT_EQ("child2", model.ModelByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MutableByName)
+{
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+
+  // Modify the link
+  sdf::Link *l = model.LinkByName("link1");
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("link1", l->Name());
+  l->SetName("link2");
+  EXPECT_FALSE(model.LinkNameExists("link1"));
+  EXPECT_TRUE(model.LinkNameExists("link2"));
+
+  // Modify the joint
+  sdf::Joint *j = model.JointByName("joint1");
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_FALSE(model.JointNameExists("joint1"));
+  EXPECT_TRUE(model.JointNameExists("joint2"));
+
+  // Modify the nested model
+  sdf::Model *m = model.ModelByName("child1");
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("child1", m->Name());
+  m->SetName("child2");
+  EXPECT_FALSE(model.ModelNameExists("child1"));
+  EXPECT_TRUE(model.ModelNameExists("child2"));
+}

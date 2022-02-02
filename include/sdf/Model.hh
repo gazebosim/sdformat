@@ -145,12 +145,27 @@ namespace sdf
     /// \sa uint64_t LinkCount() const
     public: const Link *LinkByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not nested) mutable child link based on an
+    /// index.
+    /// \param[in] _index Index of the link. The index should be in the
+    /// range [0..LinkCount()).
+    /// \return Pointer to the link. Nullptr if the index does not exist.
+    /// \sa uint64_t LinkCount() const
+    public: Link *LinkByIndex(uint64_t _index);
+
     /// \brief Get a link based on a name.
     /// \param[in] _name Name of the link.
     /// To get a link in a nested model, prefix the link name with the
     /// sequence of nested models containing this link, delimited by "::".
     /// \return Pointer to the link. Nullptr if the name does not exist.
     public: const Link *LinkByName(const std::string &_name) const;
+
+    /// \brief Get a mutable link based on a name.
+    /// \param[in] _name Name of the link.
+    /// To get a link in a nested model, prefix the link name with the
+    /// sequence of nested models containing this link, delimited by "::".
+    /// \return Pointer to the link. Nullptr if the name does not exist.
+    public: Link *LinkByName(const std::string &_name);
 
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
@@ -173,6 +188,14 @@ namespace sdf
     /// \sa uint64_t JointCount() const
     public: const Joint *JointByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not nested) mutable child joint based on an
+    /// index.
+    /// \param[in] _index Index of the joint. The index should be in the
+    /// range [0..JointCount()).
+    /// \return Pointer to the joint. Nullptr if the index does not exist.
+    /// \sa uint64_t JointCount() const
+    public: Joint *JointByIndex(uint64_t _index);
+
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
     /// To check for a joint in a nested model, prefix the joint name with
@@ -188,6 +211,15 @@ namespace sdf
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
+
+    /// \brief Get a mubtable joint based on a name.
+    /// \param[in] _name Name of the joint.
+    /// To get a joint in a nested model, prefix the joint name with the
+    /// sequence of nested models containing this joint, delimited by "::".
+    /// \return Pointer to the joint. Nullptr if a joint with the given name
+    ///  does not exist.
+    /// \sa bool JointNameExists(const std::string &_name) const
+    public: Joint *JointByName(const std::string &_name);
 
     /// \brief Get the number of explicit frames that are immediate (not nested)
     /// children of this Model object.
@@ -235,6 +267,14 @@ namespace sdf
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not recursively nested) mutable child model
+    // based on an index.
+    /// \param[in] _index Index of the nested model. The index should be in the
+    /// range [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: Model *ModelByIndex(uint64_t _index);
+
     /// \brief Get whether a nested model name exists.
     /// \param[in] _name Name of the nested model to check.
     /// To check for a model nested in other models, prefix the model name
@@ -250,6 +290,15 @@ namespace sdf
     ///  does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
+
+    /// \brief Get a mutable nested model based on a name.
+    /// \param[in] _name Name of the nested model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    ///  does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
+    public: Model *ModelByName(const std::string &_name);
 
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
