@@ -40,7 +40,9 @@
 #include <pxr/usd/usdPhysics/driveAPI.h>
 #include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
+#include <pxr/usd/usdPhysics/prismaticJoint.h>
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
+#include <pxr/usd/usdPhysics/sphericalJoint.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Joint.hh"
@@ -55,12 +57,40 @@
 // Fixture that creates a USD stage for each test case.
 class UsdJointStageFixture : public::testing::Test
 {
-  public: UsdJointStageFixture() = default;
+  public: UsdJointStageFixture() :
+          worldPath("/world")
+  {
+  }
 
   protected: void SetUp() override
   {
     this->stage = pxr::UsdStage::CreateInMemory();
     ASSERT_TRUE(this->stage);
+  }
+
+  /// \brief Parse the contents of a SDF file and convert to USD
+  /// \param[in] _sdfFile The full path to the SDF file to parse
+  public: void GenerateUSD(const std::string &_sdfFile)
+  {
+    // load the world in the SDF file
+    ASSERT_TRUE(sdf::testing::LoadSdfFile(_sdfFile, this->root));
+    this->model = const_cast<sdf::Model *>(this->root.Model());
+    ASSERT_NE(nullptr, this->model);
+
+    this->modelPath =
+      std::string(this->worldPath.GetString() + "/" + this->model->Name());
+    const auto errors = sdf::usd::ParseSdfModel(*(this->model), this->stage,
+        this->modelPath, this->worldPath);
+    EXPECT_TRUE(errors.empty());
+
+    // save the model's USD joint paths so that they can be verified
+    for (uint64_t i = 0; i < this->model->JointCount(); ++i)
+    {
+      const auto joint = this->model->JointByIndex(i);
+      const auto jointPath = this->modelPath + "/" + joint->Name();
+      this->jointPathToSdf[jointPath] = joint;
+    }
+    EXPECT_EQ(this->model->JointCount(), this->jointPathToSdf.size());
   }
 
   /// \brief Verify that a USD joint is pointing to the correct parent link.
@@ -194,39 +224,32 @@ class UsdJointStageFixture : public::testing::Test
     EXPECT_FLOAT_EQ(usdUpperLimit, _targetUpper);
   }
 
+  /// \brief The USD stage
   public: pxr::UsdStageRefPtr stage;
+
+  /// \brief The SDF model with joints to be parsed to USD
+  public: sdf::Model *model{nullptr};
+
+  /// \brief The USD path of the SDF world
+  public: const pxr::SdfPath worldPath;
+
+  /// \brief The string representation of this->model's USD path
+  public: std::string modelPath;
+
+  /// \brief Mapping of a joint's USD path to the corresponding SDF joint
+  public: std::unordered_map<std::string, const sdf::Joint *> jointPathToSdf;
+
+  /// \brief The root object of the SDF file that has been loaded. A reference
+  /// to the root must be kept so that pointer objects extracted from the root
+  /// (sdf::Model and sdf::Joint, for example) remain valid throughout the test
+  /// (destroying the sdf::Root object early invalidates referenced pointers)
+  private: sdf::Root root;
 };
 
 /////////////////////////////////////////////////
 TEST_F(UsdJointStageFixture, RevoluteJoints)
 {
-  const auto path = sdf::testing::TestFile("sdf", "double_pendulum.sdf");
-  sdf::Root root;
-
-  // load the world in the SDF file
-  ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
-  const auto model = root.Model();
-  ASSERT_NE(nullptr, model);
-
-  // create a dummy world path so that we can call the sdf::usd::ParseSdfModel
-  // API
-  const auto worldPath = pxr::SdfPath("/world");
-
-  const auto modelPath =
-    std::string(worldPath.GetString() + "/" + model->Name());
-  const auto errors =
-    sdf::usd::ParseSdfModel(*model, this->stage, modelPath, worldPath);
-  EXPECT_TRUE(errors.empty());
-
-  // save the model's USD joint paths so that they can be verified
-  std::unordered_map<std::string, const sdf::Joint *> jointPathToSdf;
-  for (uint64_t i = 0; i < model->JointCount(); ++i)
-  {
-    const auto joint = model->JointByIndex(i);
-    const auto jointPath = modelPath + "/" + joint->Name();
-    jointPathToSdf[jointPath] = joint;
-  }
-  EXPECT_EQ(model->JointCount(), jointPathToSdf.size());
+  this->GenerateUSD(sdf::testing::TestFile("sdf", "double_pendulum.sdf"));
 
   // validate USD joints
   int checkedJoints = 0;
@@ -235,8 +258,8 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
     if (!prim.IsA<pxr::UsdPhysicsJoint>())
       continue;
 
-    auto iter = jointPathToSdf.find(prim.GetPath().GetString());
-    ASSERT_NE(jointPathToSdf.end(), iter);
+    auto iter = this->jointPathToSdf.find(prim.GetPath().GetString());
+    ASSERT_NE(this->jointPathToSdf.end(), iter);
     const auto sdfJoint = iter->second;
 
     // the double pendulum model only has revolute joints
@@ -247,9 +270,9 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
 
     // make sure joint is pointing to the proper parent/child links
     this->CheckParentLinkPath(&usdRevoluteJoint,
-        modelPath + "/" + sdfJoint->ParentLinkName());
+        this->modelPath + "/" + sdfJoint->ParentLinkName());
     this->CheckChildLinkPath(&usdRevoluteJoint,
-        modelPath + "/" + sdfJoint->ChildLinkName());
+        this->modelPath + "/" + sdfJoint->ChildLinkName());
 
     // check joint's pose w.r.t. parent and child links
     ignition::math::Pose3d parentToJointPose;
@@ -315,33 +338,7 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
 /////////////////////////////////////////////////
 TEST_F(UsdJointStageFixture, JointParentIsWorld)
 {
-  const auto path = sdf::testing::TestFile("sdf", "joint_parent_world.sdf");
-  sdf::Root root;
-
-  // load the world in the SDF file
-  ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
-  const auto model = root.Model();
-  ASSERT_NE(nullptr, model);
-
-  // create a dummy world path so that we can call the sdf::usd::ParseSdfModel
-  // API
-  const auto worldPath = pxr::SdfPath("/world");
-
-  const auto modelPath =
-    std::string(worldPath.GetString() + "/" + model->Name());
-  const auto errors =
-    sdf::usd::ParseSdfModel(*model, this->stage, modelPath, worldPath);
-  EXPECT_TRUE(errors.empty());
-
-  // save the model's USD joint paths so that they can be verified
-  std::unordered_map<std::string, const sdf::Joint *> jointPathToSdf;
-  for (uint64_t i = 0; i < model->JointCount(); ++i)
-  {
-    const auto joint = model->JointByIndex(i);
-    const auto jointPath = modelPath + "/" + joint->Name();
-    jointPathToSdf[jointPath] = joint;
-  }
-  EXPECT_EQ(model->JointCount(), jointPathToSdf.size());
+  this->GenerateUSD(sdf::testing::TestFile("sdf", "joint_parent_world.sdf"));
 
   // validate USD joints
   int checkedJoints = 0;
@@ -350,8 +347,8 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
     if (!prim.IsA<pxr::UsdPhysicsJoint>())
       continue;
 
-    auto iter = jointPathToSdf.find(prim.GetPath().GetString());
-    ASSERT_NE(jointPathToSdf.end(), iter);
+    auto iter = this->jointPathToSdf.find(prim.GetPath().GetString());
+    ASSERT_NE(this->jointPathToSdf.end(), iter);
     const auto sdfJoint = iter->second;
 
     // the only joint type in this test file is a fixed joint
@@ -362,9 +359,9 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
 
     // make sure joint is pointing to the proper parent/child links.
     // The parent in this test should be the world
-    this->CheckParentLinkPath(&usdFixedJoint, worldPath.GetString());
+    this->CheckParentLinkPath(&usdFixedJoint, this->worldPath.GetString());
     this->CheckChildLinkPath(&usdFixedJoint,
-        modelPath + "/" + sdfJoint->ChildLinkName());
+        this->modelPath + "/" + sdfJoint->ChildLinkName());
 
     // check joint's pose w.r.t. parent and child links. For this test case,
     // we need to get the joint pose w.r.t. the world
@@ -373,7 +370,7 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
     ignition::math::Pose3d worldToModelPose;
-    poseErrors = model->SemanticPose().Resolve(worldToModelPose);
+    poseErrors = this->model->SemanticPose().Resolve(worldToModelPose);
     const auto worldToJointPose = worldToModelPose * modelToJointPose;
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
@@ -389,11 +386,76 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
   EXPECT_EQ(checkedJoints, 1);
 }
 
-// TODO(adlarkin) Add the following test cases:
-// 1. prismatic
-//    - prismatic joints share a few things with revolute joints that need to
-//      be checked: axisAttr, jointLimits
-//    - parent/child link reference paths and pose w.r.t. parent/child links
-// 2. Revolute joint with the axis being "y"
-//    - this is a special case; see the sdf::usd::SetUSDJointPose method in
-//      usd/src/sdf_parser/Joint.cc for how this is handled
+/////////////////////////////////////////////////
+TEST_F(UsdJointStageFixture, BallPrismaticJoint)
+{
+  this->GenerateUSD(sdf::testing::TestFile("sdf", "ball_prismatic_joint.sdf"));
+
+  // validate USD joints
+  int checkedBallJoints = 0;
+  int checkedPrismaticJoints = 0;
+  for (const auto & prim : this->stage->Traverse())
+  {
+    if (!prim.IsA<pxr::UsdPhysicsJoint>())
+      continue;
+
+    auto iter = this->jointPathToSdf.find(prim.GetPath().GetString());
+    ASSERT_NE(this->jointPathToSdf.end(), iter);
+    const auto sdfJoint = iter->second;
+
+    if (prim.IsA<pxr::UsdPhysicsSphericalJoint>())
+    {
+      checkedBallJoints++;
+    }
+    else if (prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
+    {
+      checkedPrismaticJoints++;
+
+      const auto usdPrismaticJoint =
+        pxr::UsdPhysicsPrismaticJoint::Get(this->stage, prim.GetPath());
+      ASSERT_TRUE(usdPrismaticJoint);
+
+      // check the joint's axis
+      this->VerifyJointAxis(usdPrismaticJoint, "Z");
+
+      // check the joint limits
+      this->VerifyJointLimits(usdPrismaticJoint,
+          static_cast<float>(sdfJoint->Axis()->Lower()),
+          static_cast<float>(sdfJoint->Axis()->Upper()),
+          false);
+    }
+    else
+    {
+      continue;
+    }
+
+    const auto usdJoint =
+      pxr::UsdPhysicsJoint::Get(this->stage, prim.GetPath());
+    ASSERT_TRUE(usdJoint);
+
+    // make sure joint is pointing to the proper parent/child links
+    this->CheckParentLinkPath(&usdJoint,
+        this->modelPath + "/" + sdfJoint->ParentLinkName());
+    this->CheckChildLinkPath(&usdJoint,
+        this->modelPath + "/" + sdfJoint->ChildLinkName());
+
+    // check joint's pose w.r.t. parent and child links
+    ignition::math::Pose3d parentToJointPose;
+    auto poseErrors = sdfJoint->SemanticPose().Resolve(parentToJointPose,
+          sdfJoint->ParentLinkName());
+    EXPECT_TRUE(poseErrors.empty());
+    poseErrors.clear();
+    ignition::math::Pose3d childToJointPose;
+    poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
+          sdfJoint->ChildLinkName());
+    EXPECT_TRUE(poseErrors.empty());
+    this->CheckRelativeLinkPoses(&usdJoint, parentToJointPose,
+        childToJointPose);
+  }
+  EXPECT_EQ(checkedBallJoints, 1);
+  EXPECT_EQ(checkedPrismaticJoints, 1);
+}
+
+// TODO(adlarkin) Add a test case for a revolute joint with the axis being "y".
+// This is a special case; see the sdf::usd::SetUSDJointPose method in
+// usd/src/sdf_parser/Joint.cc for how this is handled
