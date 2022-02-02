@@ -21,7 +21,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -188,13 +188,20 @@ namespace usd
 
     if (axis->Xyz() == ignition::math::Vector3d::UnitX ||
         axis->Xyz() == -ignition::math::Vector3d::UnitX)
+    {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
+    }
+    else if (axis->Xyz() == ignition::math::Vector3d::UnitY ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitY)
+    {
+      usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
+    }
     else if (axis->Xyz() == ignition::math::Vector3d::UnitZ ||
         axis->Xyz() == -ignition::math::Vector3d::UnitZ)
+    {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
-    // y axis is a special case that is handled in usd::SetUsdJointPose above
-    else if (!(axis->Xyz() == ignition::math::Vector3d::UnitY ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitY))
+    }
+    else
     {
       errors.push_back(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
             "Revolute joint [" + _joint.Name() + "] has an invalid axis."));
@@ -259,26 +266,34 @@ namespace usd
     auto usdJoint =
       pxr::UsdPhysicsPrismaticJoint::Define(_stage, pxr::SdfPath(_path));
 
-    if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitX ||
-        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitX)
+    const auto axis = _joint.Axis();
+
+    if (axis->Xyz() == ignition::math::Vector3d::UnitX ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitX)
+    {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitY ||
-        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitY)
+    }
+    else if (axis->Xyz() == ignition::math::Vector3d::UnitY ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitY)
+    {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
-    else if (_joint.Axis()->Xyz() == ignition::math::Vector3d::UnitZ ||
-        _joint.Axis()->Xyz() == -ignition::math::Vector3d::UnitZ)
+    }
+    else if (axis->Xyz() == ignition::math::Vector3d::UnitZ ||
+        axis->Xyz() == -ignition::math::Vector3d::UnitZ)
+    {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
+    }
     else
     {
       errors.push_back(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-            "Revolute joint [" + _joint.Name() + "] has an invalid axis."));
+            "Prismatic joint [" + _joint.Name() + "] has an invalid axis."));
       return errors;
     }
 
     usdJoint.CreateLowerLimitAttr().Set(
-        static_cast<float>(_joint.Axis()->Lower()));
+        static_cast<float>(axis->Lower()));
     usdJoint.CreateUpperLimitAttr().Set(
-        static_cast<float>(_joint.Axis()->Upper()));
+        static_cast<float>(axis->Upper()));
 
     return errors;
   }

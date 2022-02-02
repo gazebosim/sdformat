@@ -25,7 +25,7 @@
 #include <ignition/math/Quaternion.hh>
 #include <ignition/math/Vector3.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -55,6 +55,7 @@
 
 /////////////////////////////////////////////////
 // Fixture that creates a USD stage for each test case.
+// This fixture also provides methods for performing joint validation checks.
 class UsdJointStageFixture : public::testing::Test
 {
   public: UsdJointStageFixture() :
@@ -68,7 +69,9 @@ class UsdJointStageFixture : public::testing::Test
     ASSERT_TRUE(this->stage);
   }
 
-  /// \brief Parse the contents of a SDF file and convert to USD
+  /// \brief Parse the contents of a SDF file and convert to USD.
+  /// This method should be called at the beginning of a test case to set up
+  /// the USD contents that need to be checked/verified.
   /// \param[in] _sdfFile The full path to the SDF file to parse
   public: void GenerateUSD(const std::string &_sdfFile)
   {
