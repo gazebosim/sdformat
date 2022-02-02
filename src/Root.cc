@@ -384,9 +384,8 @@ const World *Root::WorldByIndex(const uint64_t _index) const
 /////////////////////////////////////////////////
 World *Root::WorldByIndex(const uint64_t _index)
 {
-  if (_index < this->dataPtr->worlds.size())
-    return &this->dataPtr->worlds[_index];
-  return nullptr;
+  return const_cast<World*>(
+      static_cast<const Root*>(this)->WorldByIndex(_index));
 }
 
 /////////////////////////////////////////////////
