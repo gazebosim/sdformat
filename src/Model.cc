@@ -825,7 +825,11 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
           "relative_to")->Set<std::string>(this->dataPtr->poseRelativeTo);
     }
     includeElem->GetElement("static")->Set(this->Static());
-    includeElem->GetElement("placement_frame")->Set(this->PlacementFrameName());
+    if (!this->dataPtr->placementFrameName.empty())
+    {
+      includeElem->GetElement("placement_frame")->Set(
+          this->PlacementFrameName());
+    }
 
     return includeElem;
   }

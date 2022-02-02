@@ -925,7 +925,6 @@ bool World::AddPhysics(const Physics &_physics)
     std::cout << "Not adding physics, it exists\n";
     return false;
   }
-    std::cout << "Adding physics\n";
   this->dataPtr->physics.push_back(_physics);
 
   return true;

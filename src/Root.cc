@@ -409,15 +409,33 @@ const Model *Root::Model() const
 }
 
 /////////////////////////////////////////////////
+void Root::SetModel(const sdf::Model &_model)
+{
+  this->dataPtr->modelLightOrActor = _model;
+}
+
+/////////////////////////////////////////////////
 const Light *Root::Light() const
 {
   return std::get_if<sdf::Light>(&this->dataPtr->modelLightOrActor);
 }
 
 /////////////////////////////////////////////////
+void Root::SetLight(const sdf::Light &_light)
+{
+  this->dataPtr->modelLightOrActor = _light;
+}
+
+/////////////////////////////////////////////////
 const Actor *Root::Actor() const
 {
   return std::get_if<sdf::Actor>(&this->dataPtr->modelLightOrActor);
+}
+
+/////////////////////////////////////////////////
+void Root::SetActor(const sdf::Actor &_actor)
+{
+  this->dataPtr->modelLightOrActor = _actor;
 }
 
 /////////////////////////////////////////////////
@@ -429,12 +447,10 @@ sdf::ElementPtr Root::Element() const
 /////////////////////////////////////////////////
 bool Root::AddWorld(const World &_world)
 {
-  if (!this->WorldNameExists(_world.Name()))
-  {
-    this->dataPtr->worlds.push_back(_world);
-    return true;
-  }
-  return false;
+  if (this->WorldNameExists(_world.Name()))
+    return false;
+  this->dataPtr->worlds.push_back(_world);
+  return true;
 }
 
 /////////////////////////////////////////////////
