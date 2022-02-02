@@ -382,6 +382,14 @@ const World *Root::WorldByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+World *Root::WorldByIndex(const uint64_t _index)
+{
+  if (_index < this->dataPtr->worlds.size())
+    return &this->dataPtr->worlds[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 bool Root::WorldNameExists(const std::string &_name) const
 {
   for (auto const &w : this->dataPtr->worlds)
@@ -416,4 +424,22 @@ const Actor *Root::Actor() const
 sdf::ElementPtr Root::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+bool Root::AddWorld(const World &_world)
+{
+  if (!this->WorldNameExists(_world.Name()))
+  {
+    this->dataPtr->worlds.push_back(_world);
+    // this->UpdateGraphs();
+    return true;
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+void Root::ClearWorlds()
+{
+  this->dataPtr->worlds.clear();
 }

@@ -125,6 +125,13 @@ namespace sdf
     /// \sa uint64_t WorldCount() const
     public: const World *WorldByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable world based on an index.
+    /// \param[in] _index Index of the world. The index should be in the
+    /// range [0..WorldCount()).
+    /// \return Pointer to the world. Nullptr if the index does not exist.
+    /// \sa uint64_t WorldCount() const
+    public: World *WorldByIndex(const uint64_t _index);
+
     /// \brief Get whether a world name exists.
     /// \param[in] _name Name of the world to check.
     /// \return True if there exists a world with the given name.
@@ -150,6 +157,16 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Add a world to the root.
+    /// \param[in] _word World to add.
+    /// \return True if successful, false if a world with the name already
+    /// exists.
+    /// \return True on success, false if the world name already exists.
+    public: bool AddWorld(const World &_world);
+
+    /// \brief Remove all worlds.
+    public: void ClearWorlds();
 
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
