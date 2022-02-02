@@ -39,57 +39,6 @@ using namespace sdf;
 
 class sdf::Link::Implementation
 {
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Sensor *SensorByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Sensor *SensorByName(const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const ParticleEmitter *ParticleEmitterByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const ParticleEmitter *ParticleEmitterByName(
-              const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Collision *CollisionByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Collision *CollisionByName(const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Visual *VisualByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Visual *VisualByName(const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Light *LightByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Light *LightByName(const std::string &_name) const;
-
   /// \brief Name of the link.
   public: std::string name = "";
 
@@ -264,21 +213,16 @@ uint64_t Link::VisualCount() const
 /////////////////////////////////////////////////
 const Visual *Link::VisualByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->VisualByIndex(_index);
+  if (_index < this->dataPtr->visuals.size())
+    return &this->dataPtr->visuals[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Visual *Link::VisualByIndex(uint64_t _index)
 {
-  return const_cast<Visual*>(this->dataPtr->VisualByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Visual *Link::Implementation::VisualByIndex(uint64_t _index) const
-{
-  if (_index < this->visuals.size())
-    return &this->visuals[_index];
-  return nullptr;
+  return const_cast<Visual*>(
+      static_cast<const Link*>(this)->VisualByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -303,21 +247,16 @@ uint64_t Link::CollisionCount() const
 /////////////////////////////////////////////////
 const Collision *Link::CollisionByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->CollisionByIndex(_index);
+  if (_index < this->dataPtr->collisions.size())
+    return &this->dataPtr->collisions[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Collision *Link::CollisionByIndex(uint64_t _index)
 {
-  return const_cast<Collision*>(this->dataPtr->CollisionByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Collision *Link::Implementation::CollisionByIndex(uint64_t _index) const
-{
-  if (_index < this->collisions.size())
-    return &this->collisions[_index];
-  return nullptr;
+  return const_cast<Collision*>(
+      static_cast<const Link*>(this)->CollisionByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -342,21 +281,16 @@ uint64_t Link::LightCount() const
 /////////////////////////////////////////////////
 const Light *Link::LightByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->LightByIndex(_index);
+  if (_index < this->dataPtr->lights.size())
+    return &this->dataPtr->lights[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Light *Link::LightByIndex(uint64_t _index)
 {
-  return const_cast<Light*>(this->dataPtr->LightByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Light *Link::Implementation::LightByIndex(uint64_t _index) const
-{
-  if (_index < this->lights.size())
-    return &this->lights[_index];
-  return nullptr;
+  return const_cast<Light*>(
+      static_cast<const Link*>(this)->LightByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -374,21 +308,16 @@ uint64_t Link::SensorCount() const
 /////////////////////////////////////////////////
 const Sensor *Link::SensorByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->SensorByIndex(_index);
+  if (_index < this->dataPtr->sensors.size())
+    return &this->dataPtr->sensors[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Sensor *Link::SensorByIndex(uint64_t _index)
 {
-  return const_cast<Sensor*>(this->dataPtr->SensorByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Sensor *Link::Implementation::SensorByIndex(uint64_t _index) const
-{
-  if (_index < this->sensors.size())
-    return &this->sensors[_index];
-  return nullptr;
+  return const_cast<Sensor*>(
+      static_cast<const Link*>(this)->SensorByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -407,19 +336,7 @@ bool Link::SensorNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Sensor *Link::SensorByName(const std::string &_name) const
 {
-  return this->dataPtr->SensorByName(_name);
-}
-
-/////////////////////////////////////////////////
-Sensor *Link::SensorByName(const std::string &_name)
-{
-  return const_cast<Sensor*>(this->dataPtr->SensorByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Sensor *Link::Implementation::SensorByName(const std::string &_name) const
-{
-  for (auto const &s : this->sensors)
+  for (auto const &s : this->dataPtr->sensors)
   {
     if (s.Name() == _name)
     {
@@ -427,6 +344,13 @@ const Sensor *Link::Implementation::SensorByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Sensor *Link::SensorByName(const std::string &_name)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Link*>(this)->SensorByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -438,23 +362,16 @@ uint64_t Link::ParticleEmitterCount() const
 /////////////////////////////////////////////////
 const ParticleEmitter *Link::ParticleEmitterByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->ParticleEmitterByIndex(_index);
+  if (_index < this->dataPtr->emitters.size())
+    return &this->dataPtr->emitters[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 ParticleEmitter *Link::ParticleEmitterByIndex(uint64_t _index)
 {
   return const_cast<ParticleEmitter*>(
-      this->dataPtr->ParticleEmitterByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const ParticleEmitter *Link::Implementation::ParticleEmitterByIndex(
-    uint64_t _index) const
-{
-  if (_index < this->emitters.size())
-    return &this->emitters[_index];
-  return nullptr;
+      static_cast<const Link*>(this)->ParticleEmitterByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -474,21 +391,7 @@ bool Link::ParticleEmitterNameExists(const std::string &_name) const
 const ParticleEmitter *Link::ParticleEmitterByName(
     const std::string &_name) const
 {
-  return this->dataPtr->ParticleEmitterByName(_name);
-}
-
-/////////////////////////////////////////////////
-ParticleEmitter *Link::ParticleEmitterByName(const std::string &_name)
-{
-  return const_cast<ParticleEmitter*>(
-      this->dataPtr->ParticleEmitterByName(_name));
-}
-
-/////////////////////////////////////////////////
-const ParticleEmitter *Link::Implementation::ParticleEmitterByName(
-    const std::string &_name) const
-{
-  for (auto const &e : this->emitters)
+  for (auto const &e : this->dataPtr->emitters)
   {
     if (e.Name() == _name)
     {
@@ -496,6 +399,13 @@ const ParticleEmitter *Link::Implementation::ParticleEmitterByName(
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+ParticleEmitter *Link::ParticleEmitterByName(const std::string &_name)
+{
+  return const_cast<ParticleEmitter *>(
+      static_cast<const Link*>(this)->ParticleEmitterByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -583,19 +493,7 @@ sdf::SemanticPose Link::SemanticPose() const
 /////////////////////////////////////////////////
 const Visual *Link::VisualByName(const std::string &_name) const
 {
-  return this->dataPtr->VisualByName(_name);
-}
-
-/////////////////////////////////////////////////
-Visual *Link::VisualByName(const std::string &_name)
-{
-  return const_cast<Visual*>(this->dataPtr->VisualByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Visual *Link::Implementation::VisualByName(const std::string &_name) const
-{
-  for (auto const &v : this->visuals)
+  for (auto const &v : this->dataPtr->visuals)
   {
     if (v.Name() == _name)
     {
@@ -606,47 +504,36 @@ const Visual *Link::Implementation::VisualByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Visual *Link::VisualByName(const std::string &_name)
+{
+  return const_cast<Visual *>(
+      static_cast<const Link*>(this)->VisualByName(_name));
+}
+
+/////////////////////////////////////////////////
 const Collision *Link::CollisionByName(const std::string &_name) const
 {
-  return this->dataPtr->CollisionByName(_name);
+  for (auto &c : this->dataPtr->collisions)
+  {
+    if (c.Name() == _name)
+    {
+      return &c;
+    }
+  }
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Collision *Link::CollisionByName(const std::string &_name)
 {
-  return const_cast<Collision*>(this->dataPtr->CollisionByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Collision *Link::Implementation::CollisionByName(
-    const std::string &_name) const
-{
-  for (auto &c : this->collisions)
-  {
-    if (c.Name() == _name)
-    {
-      return &c;
-    }
-  }
-  return nullptr;
+  return const_cast<Collision *>(
+      static_cast<const Link*>(this)->CollisionByName(_name));
 }
 
 /////////////////////////////////////////////////
 const Light *Link::LightByName(const std::string &_name) const
 {
-  return this->dataPtr->LightByName(_name);
-}
-
-/////////////////////////////////////////////////
-Light *Link::LightByName(const std::string &_name)
-{
-  return const_cast<Light*>(this->dataPtr->LightByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Light *Link::Implementation::LightByName(const std::string &_name) const
-{
-  for (auto const &c : this->lights)
+  for (auto const &c : this->dataPtr->lights)
   {
     if (c.Name() == _name)
     {
@@ -654,6 +541,14 @@ const Light *Link::Implementation::LightByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Light *Link::LightByName(const std::string &_name)
+{
+  return const_cast<Light *>(
+      static_cast<const Link*>(this)->LightByName(_name));
+
 }
 
 /////////////////////////////////////////////////
