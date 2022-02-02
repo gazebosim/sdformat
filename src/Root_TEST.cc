@@ -272,6 +272,48 @@ TEST(DOMRoot, FrameSemanticsOnMove)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMRoot, AddWorld)
+{
+  sdf::Root root;
+  EXPECT_EQ(0u, root.WorldCount());
+
+  sdf::World world;
+  world.SetName("world1");
+  EXPECT_TRUE(root.AddWorld(world));
+  EXPECT_EQ(1u, root.WorldCount());
+  EXPECT_FALSE(root.AddWorld(world));
+  EXPECT_EQ(1u, root.WorldCount());
+
+  root.ClearWorlds();
+  EXPECT_EQ(0u, root.WorldCount());
+
+  EXPECT_TRUE(root.AddWorld(world));
+  EXPECT_EQ(1u, root.WorldCount());
+  const sdf::World *worldFromRoot = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, worldFromRoot);
+  EXPECT_EQ(worldFromRoot->Name(), world.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, MutableByIndex)
+{
+  sdf::Root root;
+  EXPECT_EQ(0u, root.WorldCount());
+
+  sdf::World world;
+  world.SetName("world1");
+  EXPECT_TRUE(root.AddWorld(world));
+  EXPECT_EQ(1u, root.WorldCount());
+
+  // Modify the world
+  sdf::World *w = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, w);
+  EXPECT_EQ("world1", w->Name());
+  w->SetName("world2");
+  EXPECT_EQ("world2", root.WorldByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMRoot, ToElementEmpty)
 {
   sdf::Root root;

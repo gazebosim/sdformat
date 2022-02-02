@@ -382,6 +382,14 @@ const World *Root::WorldByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+World *Root::WorldByIndex(const uint64_t _index)
+{
+  if (_index < this->dataPtr->worlds.size())
+    return &this->dataPtr->worlds[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 bool Root::WorldNameExists(const std::string &_name) const
 {
   for (auto const &w : this->dataPtr->worlds)
@@ -419,6 +427,23 @@ sdf::ElementPtr Root::Element() const
 }
 
 /////////////////////////////////////////////////
+bool Root::AddWorld(const World &_world)
+{
+  if (!this->WorldNameExists(_world.Name()))
+  {
+    this->dataPtr->worlds.push_back(_world);
+    return true;
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+void Root::ClearWorlds()
+{
+  this->dataPtr->worlds.clear();
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
 {
   sdf::ElementPtr elem(new sdf::Element);
@@ -426,9 +451,24 @@ sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
 
   elem->GetAttribute("version")->Set(this->Version());
 
-  // Worlds
-  for (const sdf::World &world : this->dataPtr->worlds)
-    elem->InsertElement(world.ToElement(_useIncludeTag), true);
+  if (this->Model() != nullptr)
+  {
+    elem->InsertElement(this->Model()->ToElement(_useIncludeTag), true);
+  }
+  else if (this->Light() != nullptr)
+  {
+    elem->InsertElement(this->Light()->ToElement(), true);
+  }
+  else if (this->Actor() != nullptr)
+  {
+    elem->InsertElement(this->Actor()->ToElement(), true);
+  }
+  else
+  {
+    // Worlds
+    for (const sdf::World &world : this->dataPtr->worlds)
+      elem->InsertElement(world.ToElement(_useIncludeTag), true);
+  }
 
   return elem;
 }

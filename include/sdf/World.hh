@@ -363,6 +363,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// world.
+    /// \param[in] _useIncludeTag This parameter is passed through to the
+    /// Model::ToElement function.
     /// \return SDF element pointer with updated world values.
     public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
 
