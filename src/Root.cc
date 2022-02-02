@@ -38,7 +38,7 @@ using namespace sdf;
 class sdf::Root::Implementation
 {
   /// \brief Version string
-  public: std::string version = "";
+  public: std::string version = SDF_VERSION;
 
   /// \brief The worlds specified under the root SDF element
   public: std::vector<World> worlds;
@@ -200,7 +200,7 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
   // Get the SDF version.
   std::pair<std::string, bool> versionPair =
-    this->dataPtr->sdf->Get<std::string>("version", SDF_VERSION);
+    this->dataPtr->sdf->Get<std::string>("version", this->dataPtr->version);
 
   // Check that the version exists. Exit if the version is missing.
   // readFile will fail if the version is missing, so this
@@ -416,4 +416,19 @@ const Actor *Root::Actor() const
 sdf::ElementPtr Root::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("root.sdf", elem);
+
+  elem->GetAttribute("version")->Set(this->Version());
+
+  // Worlds
+  for (const sdf::World &world : this->dataPtr->worlds)
+    elem->InsertElement(world.ToElement(_useIncludeTag), true);
+
+  return elem;
 }

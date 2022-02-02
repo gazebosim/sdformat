@@ -32,7 +32,7 @@ TEST(DOMRoot, Construction)
 {
   sdf::Root root;
   EXPECT_EQ(nullptr, root.Element());
-  EXPECT_EQ("", root.Version());
+  EXPECT_EQ(SDF_VERSION, root.Version());
   EXPECT_FALSE(root.WorldNameExists("default"));
   EXPECT_FALSE(root.WorldNameExists(""));
   EXPECT_EQ(0u, root.WorldCount());
@@ -178,7 +178,7 @@ TEST(DOMRoot, StringActorSdfParse)
 TEST(DOMRoot, Set)
 {
   sdf::Root root;
-  EXPECT_STREQ("", root.Version().c_str());
+  EXPECT_STREQ(SDF_VERSION, root.Version().c_str());
   root.SetVersion(SDF_PROTOCOL_VERSION);
   EXPECT_STREQ(SDF_PROTOCOL_VERSION, root.Version().c_str());
 }
@@ -269,4 +269,50 @@ TEST(DOMRoot, FrameSemanticsOnMove)
     root2 = std::move(root1);
     testFrame1(root2);
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElementEmpty)
+{
+  sdf::Root root;
+
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElement)
+{
+  sdf::Root root;
+
+  sdf::World world1;
+  world1.SetName("world1");
+  root.AddWorld(world1);
+
+  sdf::World world2;
+  world2.SetName("world2");
+  root.AddWorld(world2);
+
+  EXPECT_EQ(2u, root.WorldCount());
+
+  // Conver to sdf::ElementPtr
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+  EXPECT_EQ(2u, root2.WorldCount());
+
+  ASSERT_NE(nullptr, root2.WorldByIndex(0));
+  EXPECT_EQ("world1", root2.WorldByIndex(0)->Name());
+
+  ASSERT_NE(nullptr, root2.WorldByIndex(1));
+  EXPECT_EQ("world2", root2.WorldByIndex(1)->Name());
 }

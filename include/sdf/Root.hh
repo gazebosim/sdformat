@@ -151,6 +151,13 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// root.
+    /// \param[in] _useIncludeTag This will pass the _useIncludeTag to
+    /// sdf::Model::ToElement.
+    /// \return SDF element pointer with updated root values.
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };

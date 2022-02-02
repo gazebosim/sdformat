@@ -364,7 +364,7 @@ namespace sdf
     /// \brief Create and return an SDF element filled with data from this
     /// world.
     /// \return SDF element pointer with updated world values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be
