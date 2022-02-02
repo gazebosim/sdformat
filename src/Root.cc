@@ -432,7 +432,6 @@ bool Root::AddWorld(const World &_world)
   if (!this->WorldNameExists(_world.Name()))
   {
     this->dataPtr->worlds.push_back(_world);
-    // this->UpdateGraphs();
     return true;
   }
   return false;
