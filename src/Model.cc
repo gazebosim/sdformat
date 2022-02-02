@@ -39,36 +39,6 @@ using namespace sdf;
 
 class sdf::Model::Implementation
 {
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Link *LinkByIndex(const uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Link *LinkByName(const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Joint *JointByIndex(const uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Joint *JointByName(const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Model *ModelByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Model *ModelByName(const std::string &_name) const;
-
   /// \brief Name of the model.
   public: std::string name = "";
 
@@ -446,21 +416,16 @@ uint64_t Model::LinkCount() const
 /////////////////////////////////////////////////
 const Link *Model::LinkByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->LinkByIndex(_index);
+  if (_index < this->dataPtr->links.size())
+    return &this->dataPtr->links[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Link *Model::LinkByIndex(uint64_t _index)
 {
-  return const_cast<Link*>(this->dataPtr->LinkByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Link *Model::Implementation::LinkByIndex(uint64_t _index) const
-{
-  if (_index < this->links.size())
-    return &this->links[_index];
-  return nullptr;
+  return const_cast<Link*>(
+      static_cast<const Model*>(this)->LinkByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -478,21 +443,16 @@ uint64_t Model::JointCount() const
 /////////////////////////////////////////////////
 const Joint *Model::JointByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->JointByIndex(_index);
+  if (_index < this->dataPtr->joints.size())
+    return &this->dataPtr->joints[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Joint *Model::JointByIndex(uint64_t _index)
 {
-  return const_cast<Joint*>(this->dataPtr->JointByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Joint *Model::Implementation::JointByIndex(uint64_t _index) const
-{
-  if (_index < this->joints.size())
-    return &this->joints[_index];
-  return nullptr;
+  return const_cast<Joint*>(
+      static_cast<const Model*>(this)->JointByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -503,18 +463,6 @@ bool Model::JointNameExists(const std::string &_name) const
 
 /////////////////////////////////////////////////
 const Joint *Model::JointByName(const std::string &_name) const
-{
-  return this->dataPtr->JointByName(_name);
-}
-
-/////////////////////////////////////////////////
-Joint *Model::JointByName(const std::string &_name)
-{
-  return const_cast<Joint*>(this->dataPtr->JointByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Joint *Model::Implementation::JointByName(const std::string &_name) const
 {
   auto index = _name.rfind("::");
   if (index != std::string::npos)
@@ -532,7 +480,7 @@ const Joint *Model::Implementation::JointByName(const std::string &_name) const
     // return nullptr;
   }
 
-  for (auto const &j : this->joints)
+  for (auto const &j : this->dataPtr->joints)
   {
     if (j.Name() == _name)
     {
@@ -540,6 +488,14 @@ const Joint *Model::Implementation::JointByName(const std::string &_name) const
     }
   }
   return nullptr;
+
+}
+
+/////////////////////////////////////////////////
+Joint *Model::JointByName(const std::string &_name)
+{
+  return const_cast<Joint*>(
+      static_cast<const Model*>(this)->JointByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -600,21 +556,16 @@ uint64_t Model::ModelCount() const
 /////////////////////////////////////////////////
 const Model *Model::ModelByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->ModelByIndex(_index);
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Model *Model::ModelByIndex(uint64_t _index)
 {
-  return const_cast<Model*>(this->dataPtr->ModelByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Model *Model::Implementation::ModelByIndex(uint64_t _index) const
-{
-  if (_index < this->models.size())
-    return &this->models[_index];
-  return nullptr;
+  return const_cast<Model*>(
+      static_cast<const Model*>(this)->ModelByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -626,23 +577,11 @@ bool Model::ModelNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Model *Model::ModelByName(const std::string &_name) const
 {
-  return this->dataPtr->ModelByName(_name);
-}
-
-/////////////////////////////////////////////////
-Model *Model::ModelByName(const std::string &_name)
-{
-  return const_cast<Model*>(this->dataPtr->ModelByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Model *Model::Implementation::ModelByName(const std::string &_name) const
-{
   auto index = _name.find("::");
   const std::string nextModelName = _name.substr(0, index);
   const Model *nextModel = nullptr;
 
-  for (auto const &m : this->models)
+  for (auto const &m : this->dataPtr->models)
   {
     if (m.Name() == nextModelName)
     {
@@ -656,6 +595,14 @@ const Model *Model::Implementation::ModelByName(const std::string &_name) const
     return nextModel->ModelByName(_name.substr(index + 2));
   }
   return nextModel;
+
+}
+
+/////////////////////////////////////////////////
+Model *Model::ModelByName(const std::string &_name)
+{
+  return const_cast<Model*>(
+      static_cast<const Model*>(this)->ModelByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -829,18 +776,6 @@ sdf::SemanticPose Model::SemanticPose() const
 /////////////////////////////////////////////////
 const Link *Model::LinkByName(const std::string &_name) const
 {
-  return this->dataPtr->LinkByName(_name);
-}
-
-/////////////////////////////////////////////////
-Link *Model::LinkByName(const std::string &_name)
-{
-  return const_cast<Link*>(this->dataPtr->LinkByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Link *Model::Implementation::LinkByName(const std::string &_name) const
-{
   auto index = _name.rfind("::");
   if (index != std::string::npos)
   {
@@ -857,7 +792,7 @@ const Link *Model::Implementation::LinkByName(const std::string &_name) const
     // return nullptr;
   }
 
-  for (auto const &l : this->links)
+  for (auto const &l : this->dataPtr->links)
   {
     if (l.Name() == _name)
     {
@@ -865,6 +800,14 @@ const Link *Model::Implementation::LinkByName(const std::string &_name) const
     }
   }
   return nullptr;
+
+}
+
+/////////////////////////////////////////////////
+Link *Model::LinkByName(const std::string &_name)
+{
+  return const_cast<Link*>(
+      static_cast<const Model*>(this)->LinkByName(_name));
 }
 
 /////////////////////////////////////////////////
