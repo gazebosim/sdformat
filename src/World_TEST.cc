@@ -533,3 +533,71 @@ TEST(DOMWorld, ToElement)
   for (uint64_t i = 0; i < world2.PhysicsCount(); ++i)
     EXPECT_NE(nullptr, world2.PhysicsByIndex(i));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, MutableByIndex)
+{
+  sdf::World world;
+
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_TRUE(world.AddModel(model));
+
+  sdf::Actor actor;
+  actor.SetName("actor1");
+  EXPECT_TRUE(world.AddActor(actor));
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(world.AddLight(light));
+
+  sdf::Physics physics;
+  physics.SetName("physics1");
+  EXPECT_TRUE(world.AddPhysics(physics));
+
+  // Modify the model
+  sdf::Model *m = world.ModelByIndex(0);
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("model1", m->Name());
+  m->SetName("model2");
+  EXPECT_EQ("model2", world.ModelByIndex(0)->Name());
+
+  // Modify the actor
+  sdf::Actor *a = world.ActorByIndex(0);
+  ASSERT_NE(nullptr, a);
+  EXPECT_EQ("actor1", a->Name());
+  a->SetName("actor2");
+  EXPECT_EQ("actor2", world.ActorByIndex(0)->Name());
+
+  // Modify the light
+  sdf::Light *l = world.LightByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("light1", l->Name());
+  l->SetName("light2");
+  EXPECT_EQ("light2", world.LightByIndex(0)->Name());
+
+  // Modify the physics
+  sdf::Physics *p = world.PhysicsByIndex(1);
+  ASSERT_NE(nullptr, p);
+  EXPECT_EQ("physics1", p->Name());
+  p->SetName("physics2");
+  EXPECT_EQ("physics2", world.PhysicsByIndex(1)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, MutableByName)
+{
+  sdf::World world;
+
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_TRUE(world.AddModel(model));
+
+  // Modify the model
+  sdf::Model *m = world.ModelByName("model1");
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("model1", m->Name());
+  m->SetName("model2");
+  EXPECT_FALSE(world.ModelByName("model1"));
+  EXPECT_TRUE(world.ModelByName("model2"));
+}
