@@ -45,31 +45,6 @@ class sdf::World::Implementation
   /// \return Errors, if any.
   public: Errors LoadSphericalCoordinates(sdf::ElementPtr _elem);
 
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Light *LightByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Model *ModelByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _name Element name.
-  /// \return Object pointer or nullptr
-  public: const Model *ModelByName(const std::string &_name) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Actor *ActorByIndex(uint64_t _index) const;
-
-  /// \brief Helper function for the public facing functions by the same name.
-  /// \param[in] _index Index value.
-  /// \return Object pointer or nullptr
-  public: const Physics *PhysicsByIndex(uint64_t _index) const;
-
   /// \brief Optional atmosphere model.
   public: std::optional<sdf::Atmosphere> atmosphere;
 
@@ -419,21 +394,16 @@ uint64_t World::ModelCount() const
 /////////////////////////////////////////////////
 const Model *World::ModelByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->ModelByIndex(_index);
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Model *World::ModelByIndex(uint64_t _index)
 {
-  return const_cast<Model*>(this->dataPtr->ModelByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Model *World::Implementation::ModelByIndex(uint64_t _index) const
-{
-  if (_index < this->models.size())
-    return &this->models[_index];
-  return nullptr;
+  return const_cast<Model*>(
+      static_cast<const World*>(this)->ModelByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -445,22 +415,11 @@ bool World::ModelNameExists(const std::string &_name) const
 /////////////////////////////////////////////////
 const Model *World::ModelByName(const std::string &_name) const
 {
-  return this->dataPtr->ModelByName(_name);
-}
-/////////////////////////////////////////////////
-Model *World::ModelByName(const std::string &_name)
-{
-  return const_cast<Model*>(this->dataPtr->ModelByName(_name));
-}
-
-/////////////////////////////////////////////////
-const Model *World::Implementation::ModelByName(const std::string &_name) const
-{
   auto index = _name.find("::");
   const std::string nextModelName = _name.substr(0, index);
   const Model *nextModel = nullptr;
 
-  for (auto const &m : this->models)
+  for (auto const &m : this->dataPtr->models)
   {
     if (m.Name() == nextModelName)
     {
@@ -474,6 +433,13 @@ const Model *World::Implementation::ModelByName(const std::string &_name) const
     return nextModel->ModelByName(_name.substr(index + 2));
   }
   return nextModel;
+}
+
+/////////////////////////////////////////////////
+Model *World::ModelByName(const std::string &_name)
+{
+  return const_cast<Model*>(
+      static_cast<const World*>(this)->ModelByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -590,21 +556,16 @@ uint64_t World::LightCount() const
 /////////////////////////////////////////////////
 const Light *World::LightByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->LightByIndex(_index);
+  if (_index < this->dataPtr->lights.size())
+    return &this->dataPtr->lights[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Light *World::LightByIndex(uint64_t _index)
 {
-  return const_cast<Light*>(this->dataPtr->LightByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Light *World::Implementation::LightByIndex(uint64_t _index) const
-{
-  if (_index < this->lights.size())
-    return &this->lights[_index];
-  return nullptr;
+  return const_cast<Light*>(
+      static_cast<const World*>(this)->LightByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -629,21 +590,16 @@ uint64_t World::ActorCount() const
 /////////////////////////////////////////////////
 const Actor *World::ActorByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->ActorByIndex(_index);
+  if (_index < this->dataPtr->actors.size())
+    return &this->dataPtr->actors[_index];
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
 Actor *World::ActorByIndex(uint64_t _index)
 {
-  return const_cast<Actor*>(this->dataPtr->ActorByIndex(_index));
-}
-
-/////////////////////////////////////////////////
-const Actor *World::Implementation::ActorByIndex(uint64_t _index) const
-{
-  if (_index < this->actors.size())
-    return &this->actors[_index];
-  return nullptr;
+  return const_cast<Actor*>(
+      static_cast<const World*>(this)->ActorByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -668,21 +624,16 @@ uint64_t World::PhysicsCount() const
 //////////////////////////////////////////////////
 const Physics *World::PhysicsByIndex(const uint64_t _index) const
 {
-  return this->dataPtr->PhysicsByIndex(_index);
+  if (_index < this->dataPtr->physics.size())
+    return &this->dataPtr->physics[_index];
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
 Physics *World::PhysicsByIndex(uint64_t _index)
 {
-  return const_cast<Physics*>(this->dataPtr->PhysicsByIndex(_index));
-}
-
-//////////////////////////////////////////////////
-const Physics *World::Implementation::PhysicsByIndex(uint64_t _index) const
-{
-  if (_index < this->physics.size())
-    return &this->physics[_index];
-  return nullptr;
+  return const_cast<Physics*>(
+      static_cast<const World*>(this)->PhysicsByIndex(_index));
 }
 
 //////////////////////////////////////////////////
