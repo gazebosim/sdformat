@@ -934,8 +934,7 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
   std::unordered_map<std::string, std::vector<std::string>> elementsToReposture;
 
   // Create a resposture callback function for a given absolute model name. The
-  // name is used to store poses in `posesAfterReposture` as well as to lookup
-  // interface models in `models`
+  // name is used to store poses in `posesAfterReposture`.
   auto makeRepostureFunc = [&](const std::string &_absoluteName)
   {
     auto repostureFunc =
@@ -1222,12 +1221,12 @@ R"(<include>
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPIMergeInclude, JointModelChild)
 {
-    const std::string testSdf = R"(
+  const std::string testSdf = R"(
   <sdf version="1.9">
     <model name="parent_model">
       <link name="L1"/>
       <include merge="true">
-        <uri>joint_model_parent_or_child.toml</uri>
+        <uri>joint_child_model_frame.toml</uri>
       </include>
       <frame name="frame_1" attached_to="joint_model_child"/>
     </model>

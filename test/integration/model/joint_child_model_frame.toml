@@ -8,7 +8,7 @@ canonical_link = "base"
 [links.base]
 pose = "0 0 0 0 0 0"
 
-# Test use of __model__ in joint parent or child
+# Test use of __model__ in joint child
 [links.parent_link]
 pose = "0 0 0 0 0 0"
 

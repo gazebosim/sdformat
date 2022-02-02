@@ -84,7 +84,7 @@ class sdf::Model::Implementation
   public: std::vector<std::pair<std::optional<sdf::NestedInclude>,
           sdf::InterfaceModelConstPtr>> interfaceModels;
 
-  /// \brief The interface models specified in this model.
+  /// \brief The interface models added into in this model via merge include.
   public: std::vector<std::pair<std::optional<sdf::NestedInclude>,
           sdf::InterfaceModelConstPtr>> mergedInterfaceModels;
 
