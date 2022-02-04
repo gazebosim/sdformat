@@ -5,6 +5,10 @@
     <description>An optional name for the camera.</description>
   </attribute>
 
+  <element name="triggered" type="bool" default="false" required="0">
+    <description>If the camera will be triggered by a topic</description>
+  </element> <!-- End Triggered -->
+
   <element name="horizontal_fov" type="double" default="1.047" min="0.1" max="6.283186" required="1">
     <description>Horizontal field of view</description>
   </element> <!-- End Horizontal_FOV -->
