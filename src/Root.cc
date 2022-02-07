@@ -417,3 +417,27 @@ sdf::ElementPtr Root::Element() const
 {
   return this->dataPtr->sdf;
 }
+
+/////////////////////////////////////////////////
+void Root::Clone(const sdf::Root &_root)
+{
+  this->dataPtr->version = _root.dataPtr->version;
+
+  this->dataPtr->worlds = _root.dataPtr->worlds;
+
+  this->dataPtr->modelLightOrActor = _root.dataPtr->modelLightOrActor;
+
+  this->dataPtr->worldFrameAttachedToGraphs =
+    _root.dataPtr->worldFrameAttachedToGraphs ;
+
+  this->dataPtr->modelFrameAttachedToGraph =
+    _root.dataPtr->modelFrameAttachedToGraph ;
+
+  this->dataPtr->worldPoseRelativeToGraphs =
+    _root.dataPtr->worldPoseRelativeToGraphs;
+
+  this->dataPtr->modelPoseRelativeToGraph =
+    _root.dataPtr->modelPoseRelativeToGraph;
+
+  this->dataPtr->sdf = _root.dataPtr->sdf;
+}

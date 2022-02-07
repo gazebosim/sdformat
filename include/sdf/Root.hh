@@ -151,6 +151,10 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Deep copy the provided Root object into this Root object.
+    /// \param[in] _root The Root object to copy.
+    public: void Clone(const sdf::Root &_root);
+
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };

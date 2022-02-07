@@ -109,6 +109,32 @@ TEST(DOMRoot, StringModelSdfParse)
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Actor());
   EXPECT_EQ(0u, root.WorldCount());
+
+  // Test cloning
+  sdf::Root root2;
+  root2.Clone(root);
+
+  const sdf::Model *model2 = root2.Model();
+  ASSERT_NE(nullptr, model2);
+  EXPECT_NE(nullptr, model2->Element());
+
+  EXPECT_EQ("shapes", model2->Name());
+  EXPECT_EQ(1u, model2->LinkCount());
+
+  const sdf::Link *link2 = model2->LinkByIndex(0);
+  ASSERT_NE(nullptr, link2);
+  EXPECT_NE(nullptr, link2->Element());
+  EXPECT_EQ("link", link2->Name());
+  EXPECT_EQ(1u, link2->CollisionCount());
+
+  const sdf::Collision *collision2 = link2->CollisionByIndex(0);
+  ASSERT_NE(nullptr, collision2);
+  EXPECT_NE(nullptr, collision2->Element());
+  EXPECT_EQ("box_col", collision2->Name());
+
+  EXPECT_EQ(nullptr, root2.Light());
+  EXPECT_EQ(nullptr, root2.Actor());
+  EXPECT_EQ(0u, root2.WorldCount());
 }
 
 /////////////////////////////////////////////////
