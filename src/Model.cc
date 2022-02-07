@@ -23,6 +23,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
+#include "sdf/InterfaceLink.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Joint.hh"
@@ -80,8 +81,15 @@ class sdf::Model::Implementation
   public: std::vector<Model> models;
 
   /// \brief The interface models specified in this model.
-  public: std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
-              interfaceModels;
+  public: std::vector<std::pair<std::optional<sdf::NestedInclude>,
+          sdf::InterfaceModelConstPtr>> interfaceModels;
+
+  /// \brief The interface models added into in this model via merge include.
+  public: std::vector<std::pair<std::optional<sdf::NestedInclude>,
+          sdf::InterfaceModelConstPtr>> mergedInterfaceModels;
+
+  /// \brief The interface links specified in this model.
+  public: std::vector<InterfaceLink> interfaceLinks;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -200,15 +208,53 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     frameNames.insert(model.Name());
   }
 
+  // Load InterfaceModels into a temporary container so we can have special
+  // handling for merged InterfaceModels.
+  std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
+      tmpInterfaceModels;
   // Load included models via the interface API
   Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
-      _sdf, _config, this->dataPtr->interfaceModels);
+      _sdf, _config, tmpInterfaceModels);
   errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
       interfaceModelLoadErrors.end());
 
-  for (const auto &ifaceModelPair : this->dataPtr->interfaceModels)
+  for (const auto &[ifaceInclude, ifaceModel] : tmpInterfaceModels)
   {
-    frameNames.insert(ifaceModelPair.second->Name());
+    if (!ifaceInclude.IsMerge().value_or(false))
+    {
+      frameNames.insert(ifaceModel->Name());
+      this->dataPtr->interfaceModels.emplace_back(ifaceInclude, ifaceModel);
+    }
+    else
+    {
+      const std::string proxyModelFrameName =
+          computeMergedModelProxyFrameName(ifaceModel->Name());
+
+      this->dataPtr->mergedInterfaceModels.emplace_back(ifaceInclude,
+                                                        ifaceModel);
+
+      // Copy interface links so that they can be used for resolving canonical
+      // links.
+      for (const auto &ifaceLink : ifaceModel->Links())
+      {
+        this->dataPtr->interfaceLinks.push_back(ifaceLink);
+      }
+
+      for (const auto &ifaceNestedModel : ifaceModel->NestedModels())
+      {
+        sdf::NestedInclude nestedInclude;
+        // The pose of nested interface models is always given relative to the
+        // parent model, but since this is a merged model, we set the relativeTo
+        // to proxyModelFrameName. This nested interface models don't actually
+        // have an //include that was used to nest them, so we create a
+        // NestedInclude object and fill in the the necessary bits.
+        nestedInclude.SetIncludePoseRelativeTo(proxyModelFrameName);
+        nestedInclude.SetIncludeRawPose(
+            ifaceNestedModel->ModelFramePoseInParentFrame());
+        this->dataPtr->interfaceModels.emplace_back(nestedInclude,
+                                                    ifaceNestedModel);
+      }
+    }
   }
 
   // Load all the links.
@@ -249,10 +295,11 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // If the model is not static and has no nested models:
-  // Require at least one link so the implicit model frame can be attached to
-  // something.
+  // Require at least one (interface) link so the implicit model frame can be
+  // attached to something.
   if (!this->Static() && this->dataPtr->links.empty() &&
-      this->dataPtr->models.empty() && this->dataPtr->interfaceModels.empty())
+      this->dataPtr->interfaceLinks.empty() && this->dataPtr->models.empty() &&
+      this->dataPtr->interfaceModels.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -621,6 +668,11 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
       auto firstLink = this->LinkByIndex(0);
       return std::make_pair(firstLink, firstLink->Name());
     }
+    if (this->dataPtr->interfaceLinks.size() > 0)
+    {
+      const auto &firstLink = this->dataPtr->interfaceLinks.front();
+      return std::make_pair(nullptr, firstLink.Name());
+    }
     else if (this->ModelCount() > 0)
     {
       // Recursively choose the canonical link of the first nested model
@@ -724,7 +776,17 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   }
   for (auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    ifaceModelPair.second->InvokeRespostureFunction(childPoseGraph);
+    // Don't invoke reposture for interface models that were merged because we
+    // will reposture them below with a different scope in the poe graph.
+    if (ifaceModelPair.first.has_value())
+    {
+      ifaceModelPair.second->InvokeRepostureFunction(childPoseGraph, {});
+    }
+  }
+  for (auto &ifaceModelPair : this->dataPtr->mergedInterfaceModels)
+  {
+    ifaceModelPair.second->InvokeRepostureFunction(this->dataPtr->poseGraph,
+                                                   this->Name());
   }
   for (auto &link : this->dataPtr->links)
   {
@@ -836,8 +898,16 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
     const uint64_t _index) const
 {
   if (_index < this->dataPtr->interfaceModels.size())
-    return &this->dataPtr->interfaceModels[_index].first;
+    return optionalToPointer(this->dataPtr->interfaceModels[_index].first);
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+const std::vector<
+    std::pair<std::optional<sdf::NestedInclude>, sdf::InterfaceModelConstPtr>>
+    &Model::MergedInterfaceModels() const
+{
+  return this->dataPtr->mergedInterfaceModels;
 }
 
 /////////////////////////////////////////////////
