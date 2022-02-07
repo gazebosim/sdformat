@@ -153,6 +153,8 @@ namespace sdf
 
     /// \brief Deep copy the provided Root object into this Root object.
     /// \param[in] _root The Root object to copy.
+    /// Deprecate this function in SDF version 13, and use
+    /// IGN_UTILS_IMPL_PTR instead.
     public: void Clone(const sdf::Root &_root);
 
     /// \brief Private data pointer
