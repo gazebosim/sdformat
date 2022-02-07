@@ -152,7 +152,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer
-    IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

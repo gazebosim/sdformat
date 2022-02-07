@@ -126,7 +126,7 @@ ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Root::Root()
-  : dataPtr(ignition::utils::MakeUniqueImpl<Implementation>())
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
 }
 
