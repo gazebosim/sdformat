@@ -95,6 +95,10 @@ namespace sdf
     /// \param[in] _name Name of the sensor.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get whether the camera is triggered by a topic.
+    /// \return If the camera is triggered by a topic.
+    public: bool Triggered() const;
+
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
     public: ignition::math::Angle HorizontalFov() const;
