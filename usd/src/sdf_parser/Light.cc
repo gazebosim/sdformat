@@ -42,11 +42,11 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfLight(const sdf::Light &_light,
+  sdf::usd::Errors ParseSdfLight(const sdf::Light &_light,
       pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     const pxr::SdfPath sdfLightPath(_path);
-    sdf::Errors errors;
+    sdf::usd::Errors errors;
     switch (_light.Type())
     {
       case sdf::LightType::POINT:

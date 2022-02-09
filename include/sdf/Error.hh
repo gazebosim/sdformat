@@ -147,18 +147,6 @@ namespace sdf
     /// \brief Merge include is unspported for the type of entity being
     /// included.
     MERGE_INCLUDE_UNSUPPORTED,
-
-    /// \brief Parsing a SDF object to a USD object failed.
-    /// This error type is specific to the USD component.
-    USD_SDF_TO_USD_PARSING_ERROR,
-
-    /// \brief The pxr::SdfPath does not point to a valid USD prim.
-    /// This error type is specific to the USD component.
-    USD_INVALID_PRIM_PATH,
-
-    /// \brief A pxr API was not able to be applied to a USD prim.
-    /// This error type is specific to the USD component.
-    USD_FAILED_PRIM_API_APPLY,
   };
 
   class SDFORMAT_VISIBLE Error

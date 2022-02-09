@@ -1,4 +1,5 @@
 set(sources
+  Error.cc
   sdf_parser/Light.cc
   sdf_parser/World.cc
 )
