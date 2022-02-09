@@ -56,7 +56,7 @@ class sdf::Camera::Implementation
   public: std::string name = "";
 
   /// \brief True if the camera is triggered by a topic.
-  public: bool triggered;
+  public: bool triggered{false};
 
   /// \brief Horizontal fied of view.
   public: ignition::math::Angle hfov{1.047};
@@ -412,6 +412,13 @@ void Camera::SetName(const std::string &_name)
 bool Camera::Triggered() const
 {
   return this->dataPtr->triggered;
+}
+
+
+/////////////////////////////////////////////////
+void Camera::SetTriggered(bool _triggered)
+{
+  this->dataPtr->triggered = _triggered;
 }
 
 /////////////////////////////////////////////////

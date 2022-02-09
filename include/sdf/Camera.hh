@@ -96,8 +96,12 @@ namespace sdf
     public: void SetName(const std::string &_name);
 
     /// \brief Get whether the camera is triggered by a topic.
-    /// \return If the camera is triggered by a topic.
+    /// \return True if the camera is triggered by a topic.
     public: bool Triggered() const;
+
+    /// \brief Set whether the camera should be triggered by a topic.
+    /// \param[in] _triggered True if the camera should be triggered by a topic.
+    public: void SetTriggered(bool _triggered);
 
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
