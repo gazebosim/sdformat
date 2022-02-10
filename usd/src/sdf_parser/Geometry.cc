@@ -267,7 +267,12 @@ namespace usd
       for (unsigned int n = 0; n < numFaces; ++n)
         faceVertexCounts.push_back(verticesPerFace);
 
-      std::string primName = _path + "/" + subMesh->Name();
+      std::string primName;
+      if (!subMesh->Name().empty())
+        primName = _path + "/" + subMesh->Name();
+      else
+        primName = _path + "/submesh_" + std::to_string(i);
+
       primName = removeDash(primName);
 
       auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(primName));
@@ -293,6 +298,14 @@ namespace usd
       extentBounds.push_back(
         pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
       usdMesh.CreateExtentAttr().Set(extentBounds);
+
+      pxr::UsdGeomXformCommonAPI xform(usdMesh);
+      ignition::math::Vector3d scale = _geometry.MeshShape()->Scale();
+      xform.SetScale(pxr::GfVec3f{
+        static_cast<float>(scale.X()),
+        static_cast<float>(scale.Y()),
+        static_cast<float>(scale.Z()),
+      });
     }
 
     return true;
