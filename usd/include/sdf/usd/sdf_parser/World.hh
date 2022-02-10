@@ -30,8 +30,8 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/config.hh"
+#include "sdf/usd/Export.hh"
 #include "sdf/World.hh"
-#include "../Export.hh"
 
 namespace sdf
 {

@@ -36,7 +36,7 @@
 
 #include "sdf/SemanticPose.hh"
 #include "sdf/system_util.hh"
-#include "../Export.hh"
+#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
