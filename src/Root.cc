@@ -440,6 +440,8 @@ sdf::Errors Root::AddWorld(const World &_world)
 void Root::ClearWorlds()
 {
   this->dataPtr->worlds.clear();
+  this->dataPtr->worldFrameAttachedToGraphs.clear();
+  this->dataPtr->worldPoseRelativeToGraphs.clear();
 }
 
 /////////////////////////////////////////////////
