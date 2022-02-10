@@ -109,6 +109,32 @@ TEST(DOMRoot, StringModelSdfParse)
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Actor());
   EXPECT_EQ(0u, root.WorldCount());
+
+  // Test cloning
+  sdf::Root root2;
+  root2.Clone(root);
+
+  const sdf::Model *model2 = root2.Model();
+  ASSERT_NE(nullptr, model2);
+  EXPECT_NE(nullptr, model2->Element());
+
+  EXPECT_EQ("shapes", model2->Name());
+  EXPECT_EQ(1u, model2->LinkCount());
+
+  const sdf::Link *link2 = model2->LinkByIndex(0);
+  ASSERT_NE(nullptr, link2);
+  EXPECT_NE(nullptr, link2->Element());
+  EXPECT_EQ("link", link2->Name());
+  EXPECT_EQ(1u, link2->CollisionCount());
+
+  const sdf::Collision *collision2 = link2->CollisionByIndex(0);
+  ASSERT_NE(nullptr, collision2);
+  EXPECT_NE(nullptr, collision2->Element());
+  EXPECT_EQ("box_col", collision2->Name());
+
+  EXPECT_EQ(nullptr, root2.Light());
+  EXPECT_EQ(nullptr, root2.Actor());
+  EXPECT_EQ(0u, root2.WorldCount());
 }
 
 /////////////////////////////////////////////////
@@ -279,15 +305,21 @@ TEST(DOMRoot, AddWorld)
 
   sdf::World world;
   world.SetName("world1");
-  EXPECT_TRUE(root.AddWorld(world));
+  sdf::Errors errors = root.AddWorld(world);
+  EXPECT_TRUE(errors.empty());
+  std::cout << "+++\n";
+  for (const auto &e : errors)
+    std::cout << e.Message() << std::endl;
+  std::cout << "---\n";
   EXPECT_EQ(1u, root.WorldCount());
-  EXPECT_FALSE(root.AddWorld(world));
+  EXPECT_FALSE(root.AddWorld(world).empty());
+  EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, root.AddWorld(world)[0].Code());
   EXPECT_EQ(1u, root.WorldCount());
 
   root.ClearWorlds();
   EXPECT_EQ(0u, root.WorldCount());
 
-  EXPECT_TRUE(root.AddWorld(world));
+  EXPECT_TRUE(root.AddWorld(world).empty());
   EXPECT_EQ(1u, root.WorldCount());
   const sdf::World *worldFromRoot = root.WorldByIndex(0);
   ASSERT_NE(nullptr, worldFromRoot);
@@ -302,7 +334,7 @@ TEST(DOMRoot, MutableByIndex)
 
   sdf::World world;
   world.SetName("world1");
-  EXPECT_TRUE(root.AddWorld(world));
+  EXPECT_TRUE(root.AddWorld(world).empty());
   EXPECT_EQ(1u, root.WorldCount());
 
   // Modify the world

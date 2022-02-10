@@ -162,11 +162,24 @@ namespace sdf
     /// \param[in] _word World to add.
     /// \return True if successful, false if a world with the name already
     /// exists.
-    /// \return True on success, false if the world name already exists.
-    public: bool AddWorld(const World &_world);
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors AddWorld(const World &_world);
 
     /// \brief Remove all worlds.
     public: void ClearWorlds();
+
+    /// \brief Deep copy the provided Root object into this Root object.
+    /// \param[in] _root The Root object to copy.
+    /// Deprecate this function in SDF version 13, and use
+    /// IGN_UTILS_IMPL_PTR instead.
+    public: void Clone(const sdf::Root &_root);
+
+    /// \brief Recreate the frame and pose graphs for the worlds and model
+    /// that are children of this Root object.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors UpdateGraphs();
 
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
