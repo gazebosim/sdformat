@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef SDF_USD_ERROR_HH_
-#define SDF_USD_ERROR_HH_
+#ifndef SDF_USD_USDERROR_HH_
+#define SDF_USD_USDERROR_HH_
 
 #include <sdf/Error.hh>
 #include <sdf/Export.hh>
