@@ -35,8 +35,8 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/SemanticPose.hh"
-#include "sdf/config.hh"
 #include "sdf/system_util.hh"
+#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
@@ -52,7 +52,8 @@ namespace sdf
     /// \return _obj's pose w.r.t. its parent. If there was an error computing
     /// this pose, the pose's position will be NaNs.
     template <typename T>
-    inline ignition::math::Pose3d SDFORMAT_VISIBLE PoseWrtParent(const T &_obj)
+    inline ignition::math::Pose3d IGNITION_SDFORMAT_USD_VISIBLE
+    PoseWrtParent(const T &_obj)
     {
       ignition::math::Pose3d pose(ignition::math::Vector3d::NaN,
           ignition::math::Quaterniond::Identity);
@@ -70,8 +71,10 @@ namespace sdf
     /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
     /// \param[in] _usdPath The path to the USD prim that should have its
     /// pose modified to match _pose.
-    inline void SDFORMAT_VISIBLE SetPose(const ignition::math::Pose3d &_pose,
-        pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_usdPath)
+    inline void IGNITION_SDFORMAT_USD_VISIBLE SetPose(
+        const ignition::math::Pose3d &_pose,
+        pxr::UsdStageRefPtr &_stage,
+        const pxr::SdfPath &_usdPath)
     {
       pxr::UsdGeomXformCommonAPI geomXformAPI(_stage->GetPrimAtPath(_usdPath));
 
