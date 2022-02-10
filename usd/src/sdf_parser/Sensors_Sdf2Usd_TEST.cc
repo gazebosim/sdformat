@@ -97,7 +97,7 @@ TEST_F(UsdStageFixture, Sensors)
 
   std::string lidarPath = worldPath + "/" + "model_with_lidar";
   std::string lidarLinkPath = lidarPath + "/" + "link";
-  std::string lidarSensorPath = lidarLinkPath + "/" + "gpu_lidar";
+  std::string lidarSensorPath = lidarLinkPath + "/gpu_lidar/sensor";
   auto lidarSensor = this->stage->GetPrimAtPath(
     pxr::SdfPath(lidarSensorPath));
   ASSERT_TRUE(lidarSensor);
