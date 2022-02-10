@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 #include <ignition/math/Pose3.hh>
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
@@ -44,6 +45,8 @@ namespace sdf
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
+  using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
+
 
   class SDFORMAT_VISIBLE Model
   {
@@ -410,11 +413,19 @@ namespace sdf
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
+    /// \brief Get the list of merged interface models.
+    /// \return The list of merged interface models.
+    private: const std::vector<std::pair<std::optional<sdf::NestedInclude>,
+             sdf::InterfaceModelConstPtr>> &MergedInterfaceModels() const;
+
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
     friend class Root;
     friend class World;
+
+    // Allow ModelWrapper from FrameSemantics.cc to call MergedInterfaceModels
+    friend struct ModelWrapper;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)
