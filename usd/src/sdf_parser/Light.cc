@@ -42,11 +42,11 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::usd::Errors ParseSdfLight(const sdf::Light &_light,
+  UsdErrors ParseSdfLight(const sdf::Light &_light,
       pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     const pxr::SdfPath sdfLightPath(_path);
-    sdf::usd::Errors errors;
+    UsdErrors errors;
     switch (_light.Type())
     {
       case sdf::LightType::POINT:
@@ -64,8 +64,9 @@ namespace usd
         break;
       case sdf::LightType::INVALID:
       default:
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-              "The light type that was given cannot be parsed to USD."));
+        errors.push_back(UsdError(sdf::Error(
+            sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+            "The light type that was given cannot be parsed to USD.")));
         return errors;
     }
 

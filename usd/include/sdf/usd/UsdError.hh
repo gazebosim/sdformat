@@ -48,7 +48,7 @@ namespace usd
 /// where an error toward the beginning of the vector can inform errors
 /// toward the end of the vector.
 /// \sa Errors
-enum class ErrorCode
+enum class UsdErrorCode
 {
   // \brief No error
   NONE = 0,
@@ -69,18 +69,18 @@ enum class ErrorCode
   FAILED_PRIM_API_APPLY,
 };
 
-class IGNITION_SDFORMAT_VISIBLE Error
+class IGNITION_SDFORMAT_VISIBLE UsdError
 {
   /// \brief Default constructor
  public:
-  Error();
+  UsdError();
 
   /// \brief Constructor.
   /// \param[in] _code The error code.
   /// \param[in] _message A description of the error.
   /// \sa ErrorCode.
  public:
-  Error(const ErrorCode _code, const std::string &_message);
+  UsdError(const UsdErrorCode _code, const std::string &_message);
 
   /// \brief Constructor.
   /// \param[in] _code The error code.
@@ -88,7 +88,7 @@ class IGNITION_SDFORMAT_VISIBLE Error
   /// \param[in] _filePath The file path that is related to this error.
   /// \sa ErrorCode.
  public:
-  Error(const ErrorCode _code, const std::string &_message,
+  UsdError(const UsdErrorCode _code, const std::string &_message,
         const std::string &_filePath);
 
   /// \brief Constructor.
@@ -99,20 +99,20 @@ class IGNITION_SDFORMAT_VISIBLE Error
   /// this error was raised.
   /// \sa ErrorCode.
  public:
-  Error(const ErrorCode _code, const std::string &_message,
+  UsdError(const UsdErrorCode _code, const std::string &_message,
         const std::string &_filePath, int _lineNumber);
 
   /// \brief Constructor.
   /// \param[in] _sdf_error Wrap a sdf error.
   /// \sa ErrorCode.
  public:
-  Error(const sdf::Error& _sdf_error);
+  explicit UsdError(const sdf::Error& _sdf_error);
 
   /// \brief Get the error code.
   /// \return An error code.
   /// \sa ErrorCode.
  public:
-  ErrorCode Code() const;
+  UsdErrorCode Code() const;
 
   /// \brief Get the error message, which is a description of the error.
   /// \return Error message.
@@ -168,13 +168,13 @@ class IGNITION_SDFORMAT_VISIBLE Error
   /// \return Reference to the given output stream
  public:
   friend IGNITION_SDFORMAT_VISIBLE std::ostream &operator<<(
-      std::ostream &_out, const sdf::usd::Error &_err);
+      std::ostream &_out, const sdf::usd::UsdError &_err);
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };
 
-using Errors = std::vector<Error>;
+using UsdErrors = std::vector<UsdError>;
 
 }  // namespace usd
 }  // namespace SDF_VERSION_NAMESPACE

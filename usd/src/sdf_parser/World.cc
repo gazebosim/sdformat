@@ -43,10 +43,10 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::usd::Errors ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
+  UsdErrors ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
       const std::string &_path)
   {
-    sdf::usd::Errors errors;
+    UsdErrors errors;
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
     _stage->SetEndTimeCode(100);
     _stage->SetMetadata(pxr::TfToken("metersPerUnit"), 1.0);

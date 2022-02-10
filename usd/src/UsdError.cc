@@ -15,17 +15,17 @@
  *
  */
 
-#include "sdf/usd/Error.hh"
+#include "sdf/usd/UsdError.hh"
 
 #include <iostream>
 
 using namespace sdf::usd;
 
-class sdf::usd::Error::Implementation
+class sdf::usd::UsdError::Implementation
 {
   /// \brief The error code value.
  public:
-  ErrorCode code = ErrorCode::NONE;
+  UsdErrorCode code = UsdErrorCode::NONE;
 
   /// \brief Description of the error.
  public:
@@ -44,10 +44,10 @@ class sdf::usd::Error::Implementation
 };
 
 /////////////////////////////////////////////////
-Error::Error() : dataPtr(ignition::utils::MakeImpl<Implementation>()) {}
+UsdError::UsdError() : dataPtr(ignition::utils::MakeImpl<Implementation>()) {}
 
 /////////////////////////////////////////////////
-Error::Error(const ErrorCode _code, const std::string &_message)
+UsdError::UsdError(const UsdErrorCode _code, const std::string &_message)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
@@ -55,7 +55,7 @@ Error::Error(const ErrorCode _code, const std::string &_message)
 }
 
 /////////////////////////////////////////////////
-Error::Error(const ErrorCode _code, const std::string &_message,
+UsdError::UsdError(const UsdErrorCode _code, const std::string &_message,
              const std::string &_filePath)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
@@ -65,7 +65,7 @@ Error::Error(const ErrorCode _code, const std::string &_message,
 }
 
 /////////////////////////////////////////////////
-Error::Error(const ErrorCode _code, const std::string &_message,
+UsdError::UsdError(const UsdErrorCode _code, const std::string &_message,
              const std::string &_filePath, int _lineNumber)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
@@ -76,57 +76,57 @@ Error::Error(const ErrorCode _code, const std::string &_message,
 }
 
 /////////////////////////////////////////////////
-Error::Error(const sdf::Error &_sdf_error)
+UsdError::UsdError(const sdf::Error &_sdf_error)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-  this->dataPtr->code = ErrorCode::SDF_ERROR;
+  this->dataPtr->code = UsdErrorCode::SDF_ERROR;
   this->dataPtr->sdf_error = _sdf_error;
 }
 
 /////////////////////////////////////////////////
-ErrorCode Error::Code() const { return this->dataPtr->code; }
+UsdErrorCode UsdError::Code() const { return this->dataPtr->code; }
 
 /////////////////////////////////////////////////
-std::string Error::Message() const { return this->dataPtr->message; }
+std::string UsdError::Message() const { return this->dataPtr->message; }
 
 /////////////////////////////////////////////////
-std::optional<std::string> Error::FilePath() const
+std::optional<std::string> UsdError::FilePath() const
 {
   return this->dataPtr->filePath;
 }
 
 /////////////////////////////////////////////////
-void Error::SetFilePath(const std::string &_filePath)
+void UsdError::SetFilePath(const std::string &_filePath)
 {
   this->dataPtr->filePath = _filePath;
 }
 
 /////////////////////////////////////////////////
-std::optional<int> Error::LineNumber() const
+std::optional<int> UsdError::LineNumber() const
 {
   return this->dataPtr->lineNumber;
 }
 
 /////////////////////////////////////////////////
-void Error::SetLineNumber(int _lineNumber)
+void UsdError::SetLineNumber(int _lineNumber)
 {
   this->dataPtr->lineNumber = _lineNumber;
 }
 
 /////////////////////////////////////////////////
-std::optional<sdf::Error> Error::SdfError() const
+std::optional<sdf::Error> UsdError::SdfError() const
 {
   return this->dataPtr->sdf_error;
 }
 
 /////////////////////////////////////////////////
-Error::operator bool() const { return this->dataPtr->code != ErrorCode::NONE; }
+UsdError::operator bool() const { return this->dataPtr->code != UsdErrorCode::NONE; }
 
 /////////////////////////////////////////////////
-bool Error::operator==(const bool _value) const
+bool UsdError::operator==(const bool _value) const
 {
-  return ((this->dataPtr->code != ErrorCode::NONE) && _value) ||
-         ((this->dataPtr->code == ErrorCode::NONE) && !_value);
+  return ((this->dataPtr->code != UsdErrorCode::NONE) && _value) ||
+         ((this->dataPtr->code == UsdErrorCode::NONE) && !_value);
 }
 
 namespace sdf
@@ -138,9 +138,9 @@ namespace usd
 {
 
 /////////////////////////////////////////////////
-std::ostream &operator<<(std::ostream &_out, const sdf::usd::Error &_err)
+std::ostream &operator<<(std::ostream &_out, const sdf::usd::UsdError &_err)
 {
-  if (_err.dataPtr->code == ErrorCode::SDF_ERROR)
+  if (_err.dataPtr->code == UsdErrorCode::SDF_ERROR)
   {
     _out << _err.dataPtr->sdf_error.value();
     return _out;
@@ -156,7 +156,7 @@ std::ostream &operator<<(std::ostream &_out, const sdf::usd::Error &_err)
   if (!pathInfo.empty()) pathInfo = "[" + pathInfo + "]: ";
 
   _out << "Error Code "
-       << static_cast<std::underlying_type<sdf::usd::ErrorCode>::type>(
+       << static_cast<std::underlying_type<sdf::usd::UsdErrorCode>::type>(
               _err.Code())
        << ": " << pathInfo << "Msg: " << _err.Message();
   return _out;

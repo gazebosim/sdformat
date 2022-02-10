@@ -32,7 +32,7 @@
 #include "sdf/config.hh"
 #include "sdf/system_util.hh"
 #include "sdf/World.hh"
-#include "../Error.hh"
+#include "../UsdError.hh"
 
 namespace sdf
 {
@@ -49,7 +49,7 @@ namespace sdf
     /// a valid USD path.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    sdf::usd::Errors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
+    UsdErrors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
         pxr::UsdStageRefPtr &_stage, const std::string &_path);
   }
   }
