@@ -30,7 +30,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/usd/Export.hh"
 #include "sdf/World.hh"
 
 namespace sdf
@@ -48,8 +48,10 @@ namespace sdf
     /// a valid USD path.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    sdf::Errors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
-        pxr::UsdStageRefPtr &_stage, const std::string &_path);
+    sdf::Errors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfWorld(
+        const sdf::World &_world,
+        pxr::UsdStageRefPtr &_stage,
+        const std::string &_path);
   }
   }
 }
