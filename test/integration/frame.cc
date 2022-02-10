@@ -676,60 +676,76 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  // Get the first world
-  const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_NE(nullptr, world);
-  EXPECT_EQ("world_frame_attached_to", world->Name());
-  EXPECT_EQ(1u, world->ModelCount());
-  EXPECT_NE(nullptr, world->ModelByIndex(0));
-  EXPECT_EQ(nullptr, world->ModelByIndex(1));
+  auto testFunc = std::function<void(sdf::Root &)>(
+      [](sdf::Root &_root)
+  {
+    // Get the first world
+    const sdf::World *world = _root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    EXPECT_EQ("world_frame_attached_to", world->Name());
+    EXPECT_EQ(1u, world->ModelCount());
+    EXPECT_NE(nullptr, world->ModelByIndex(0));
+    EXPECT_EQ(nullptr, world->ModelByIndex(1));
 
-  EXPECT_TRUE(world->ModelNameExists("M1"));
+    EXPECT_TRUE(world->ModelNameExists("M1"));
 
-  const sdf::Model *model = world->ModelByIndex(0);
-  ASSERT_NE(nullptr, model);
-  EXPECT_EQ("M1", model->Name());
-  EXPECT_EQ(1u, model->LinkCount());
-  EXPECT_NE(nullptr, model->LinkByIndex(0));
-  EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(1u, model->FrameCount());
-  EXPECT_NE(nullptr, model->FrameByIndex(0));
-  EXPECT_EQ(nullptr, model->FrameByIndex(1));
-  ASSERT_TRUE(model->LinkNameExists("L"));
-  ASSERT_TRUE(model->FrameNameExists("F0"));
-  EXPECT_EQ("L", model->FrameByName("F0")->AttachedTo());
+    const sdf::Model *model = world->ModelByIndex(0);
+    ASSERT_NE(nullptr, model);
+    EXPECT_EQ("M1", model->Name());
+    EXPECT_EQ(1u, model->LinkCount());
+    EXPECT_NE(nullptr, model->LinkByIndex(0));
+    EXPECT_EQ(nullptr, model->LinkByIndex(1));
+    EXPECT_EQ(1u, model->FrameCount());
+    EXPECT_NE(nullptr, model->FrameByIndex(0));
+    EXPECT_EQ(nullptr, model->FrameByIndex(1));
+    ASSERT_TRUE(model->LinkNameExists("L"));
+    ASSERT_TRUE(model->FrameNameExists("F0"));
+    EXPECT_EQ("L", model->FrameByName("F0")->AttachedTo());
 
-  EXPECT_EQ(4u, world->FrameCount());
-  EXPECT_NE(nullptr, world->FrameByIndex(0));
-  EXPECT_NE(nullptr, world->FrameByIndex(1));
-  EXPECT_NE(nullptr, world->FrameByIndex(2));
-  EXPECT_NE(nullptr, world->FrameByIndex(3));
-  EXPECT_EQ(nullptr, world->FrameByIndex(4));
-  ASSERT_TRUE(world->FrameNameExists("world_frame"));
-  ASSERT_TRUE(world->FrameNameExists("F0"));
-  ASSERT_TRUE(world->FrameNameExists("F1"));
-  ASSERT_TRUE(world->FrameNameExists("F2"));
+    EXPECT_EQ(4u, world->FrameCount());
+    EXPECT_NE(nullptr, world->FrameByIndex(0));
+    EXPECT_NE(nullptr, world->FrameByIndex(1));
+    EXPECT_NE(nullptr, world->FrameByIndex(2));
+    EXPECT_NE(nullptr, world->FrameByIndex(3));
+    EXPECT_EQ(nullptr, world->FrameByIndex(4));
+    ASSERT_TRUE(world->FrameNameExists("world_frame"));
+    ASSERT_TRUE(world->FrameNameExists("F0"));
+    ASSERT_TRUE(world->FrameNameExists("F1"));
+    ASSERT_TRUE(world->FrameNameExists("F2"));
 
-  EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
-  EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
-  EXPECT_EQ("F0", world->FrameByName("F1")->AttachedTo());
-  EXPECT_EQ("M1", world->FrameByName("F2")->AttachedTo());
+    EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
+    EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
+    EXPECT_EQ("F0", world->FrameByName("F1")->AttachedTo());
+    EXPECT_EQ("M1", world->FrameByName("F2")->AttachedTo());
 
-  EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
-  EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
-  EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
-  EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
+    EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
+    EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
+    EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
+    EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
 
-  std::string body;
-  EXPECT_TRUE(
-    world->FrameByName("world_frame")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("world", body);
-  EXPECT_TRUE(world->FrameByName("F0")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("world", body);
-  EXPECT_TRUE(world->FrameByName("F1")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("world", body);
-  EXPECT_TRUE(world->FrameByName("F2")->ResolveAttachedToBody(body).empty());
-  EXPECT_EQ("M1::L", body);
+    std::string body;
+    EXPECT_TRUE(
+      world->FrameByName("world_frame")->ResolveAttachedToBody(body).empty());
+    EXPECT_EQ("world", body);
+    EXPECT_TRUE(world->FrameByName("F0")->ResolveAttachedToBody(body).empty());
+    EXPECT_EQ("world", body);
+    EXPECT_TRUE(world->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+    EXPECT_EQ("world", body);
+    EXPECT_TRUE(world->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+    EXPECT_EQ("M1::L", body);
+  });
+
+  testFunc(root);
+
+  // Test UpdateGraphs
+  EXPECT_TRUE(root.UpdateGraphs().empty());
+  testFunc(root);
+
+  // Test cloning
+  sdf::Root root2;
+  root2.Clone(root);
+  testFunc(root);
+  testFunc(root2);
 }
 
 /////////////////////////////////////////////////

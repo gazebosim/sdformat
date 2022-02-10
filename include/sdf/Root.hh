@@ -157,6 +157,12 @@ namespace sdf
     /// IGN_UTILS_IMPL_PTR instead.
     public: void Clone(const sdf::Root &_root);
 
+    /// \brief Recreate the frame and pose graphs for the worlds and model
+    /// that are children of this Root object.
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors UpdateGraphs();
+
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };
