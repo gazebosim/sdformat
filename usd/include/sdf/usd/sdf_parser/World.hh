@@ -31,8 +31,8 @@
 
 #include "sdf/config.hh"
 #include "sdf/system_util.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/World.hh"
-#include "../UsdError.hh"
 
 namespace sdf
 {
@@ -45,10 +45,10 @@ namespace sdf
     /// \param[in] _world The SDF world to parse.
     /// \param[in] _stage The stage that should contain the USD representation
     /// of _world. It must be initialized first
-    /// \param[in] _path The USD path of the parsed world in _stage, which must be
-    /// a valid USD path.
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no error.
+    /// \param[in] _path The USD path of the parsed world in _stage, which must
+    /// be a valid USD path.
+    /// \return UsdErrors, which is a vector of Error objects. Each Error
+    /// includes an error code and message. An empty vector indicates no error.
     UsdErrors SDFORMAT_VISIBLE ParseSdfWorld(const sdf::World &_world,
         pxr::UsdStageRefPtr &_stage, const std::string &_path);
   }

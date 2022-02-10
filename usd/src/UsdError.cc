@@ -156,12 +156,14 @@ std::ostream &operator<<(std::ostream &_out, const sdf::usd::UsdError &_err)
 
   std::string pathInfo = "";
 
-  if (_err.FilePath().has_value()) pathInfo += ":" + _err.FilePath().value();
+  if (_err.FilePath().has_value())
+    pathInfo += ":" + _err.FilePath().value();
 
   if (_err.LineNumber().has_value())
     pathInfo += ":L" + std::to_string(_err.LineNumber().value());
 
-  if (!pathInfo.empty()) pathInfo = "[" + pathInfo + "]: ";
+  if (!pathInfo.empty())
+    pathInfo = "[" + pathInfo + "]: ";
 
   _out << "Error Code "
        << static_cast<std::underlying_type<sdf::usd::UsdErrorCode>::type>(

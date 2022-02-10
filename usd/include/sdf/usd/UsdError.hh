@@ -17,14 +17,15 @@
 #ifndef SDF_USD_USDERROR_HH_
 #define SDF_USD_USDERROR_HH_
 
-#include <sdf/Error.hh>
-#include <sdf/Export.hh>
-#include <sdf/config.hh>
-#include <ignition/utils/ImplPtr.hh>
-
 #include <optional>
 #include <string>
 #include <vector>
+
+#include <ignition/utils/ImplPtr.hh>
+
+#include <sdf/Error.hh>
+#include <sdf/Export.hh>
+#include <sdf/config.hh>
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -43,7 +44,7 @@ namespace sdf
   //
   /// \enum ErrorCode
   /// \brief Set of error codes. Usually one or more errors are returned in
-  /// an Errors vector. The collection of Errors should be take as a whole,
+  /// an Errors vector. The collection of Errors should be taken as a whole,
   /// where an error toward the beginning of the vector can inform errors
   /// toward the end of the vector.
   /// \sa Errors
@@ -56,15 +57,12 @@ namespace sdf
     SDF_ERROR,
 
     /// \brief Parsing a SDF object to a USD object failed.
-    /// This error type is specific to the USD component.
     SDF_TO_USD_PARSING_ERROR,
 
     /// \brief The pxr::SdfPath does not point to a valid USD prim.
-    /// This error type is specific to the USD component.
     INVALID_PRIM_PATH,
 
     /// \brief A pxr API was not able to be applied to a USD prim.
-    /// This error type is specific to the USD component.
     FAILED_PRIM_API_APPLY,
   };
 
