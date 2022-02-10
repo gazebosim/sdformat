@@ -83,8 +83,11 @@ namespace usd
   bool ParseSdfLidarSensor(const sdf::Sensor &_sensor,
     pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_path)
   {
-    pxr::UsdGeomXform::Define(_stage, _path);
-    auto lidarPrim = _stage->GetPrimAtPath(_path);
+    pxr::UsdGeomXform::Define(
+      _stage,
+      pxr::SdfPath(_path.GetString() + "/sensor"));
+    auto lidarPrim = _stage->GetPrimAtPath(
+      pxr::SdfPath(_path.GetString() + "/sensor"));
 
     auto sdfLidar = _sensor.LidarSensor();
 
@@ -132,7 +135,9 @@ namespace usd
     // any prim’s kind." So, "kind = model" is not applied to the IMU prim here.
     // TODO(adlarkin) update this code when an IMU schema is released
     _path = _path.ReplaceName(pxr::TfToken("imu"));
-    pxr::UsdGeomCube::Define(_stage, pxr::SdfPath(_path));
+    auto usdCube = pxr::UsdGeomCube::Define(_stage, pxr::SdfPath(_path));
+    // Set the size of the box very small
+    usdCube.CreateSizeAttr().Set(0.001);
 
     return true;
   }
