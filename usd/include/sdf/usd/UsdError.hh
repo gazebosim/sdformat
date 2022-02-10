@@ -24,7 +24,7 @@
 #include <ignition/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
-#include <sdf/Export.hh>
+#include <sdf/usd/Export.hh>
 #include <sdf/config.hh>
 
 #ifdef _WIN32
@@ -56,7 +56,7 @@ namespace sdf
     /// \brief A wrapped SDF error.
     SDF_ERROR,
 
-    /// \brief Parsing a SDF object to a USD object failed.
+    /// \brief Parsing of SDF object to a USD object failed.
     SDF_TO_USD_PARSING_ERROR,
 
     /// \brief The pxr::SdfPath does not point to a valid USD prim.
@@ -66,7 +66,7 @@ namespace sdf
     FAILED_PRIM_API_APPLY,
   };
 
-  class IGNITION_SDFORMAT_VISIBLE UsdError
+  class IGNITION_SDFORMAT_USD_VISIBLE UsdError
   {
     /// \brief Default constructor
     public: UsdError();
@@ -96,7 +96,7 @@ namespace sdf
                     const std::string &_filePath, int _lineNumber);
 
     /// \brief Constructor.
-    /// \param[in] _sdf_error Wrap a sdf error.
+    /// \param[in] _sdf_error Wrap an sdf error.
     /// \sa ErrorCode.
     public: explicit UsdError(const sdf::Error& _sdf_error);
 
