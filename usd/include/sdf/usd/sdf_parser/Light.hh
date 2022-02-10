@@ -30,7 +30,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/config.hh"
-#include "sdf/system_util.hh"
+#include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
 #include "sdf/Light.hh"
 
@@ -49,8 +49,10 @@ namespace sdf
     /// be a valid USD path.
     /// \return UsdErrors, which is a vector of Error objects. Each Error
     /// includes an error code and message. An empty vector indicates no error.
-    UsdErrors SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
-        pxr::UsdStageRefPtr &_stage, const std::string &_path);
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLight(
+        const sdf::Light &_light,
+        pxr::UsdStageRefPtr &_stage,
+        const std::string &_path);
   }
   }
 }
