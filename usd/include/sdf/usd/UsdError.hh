@@ -27,13 +27,6 @@
 #include <sdf/usd/Export.hh>
 #include <sdf/config.hh>
 
-#ifdef _WIN32
-// Disable warning C4251 which is triggered by
-// std::string
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
@@ -72,13 +65,15 @@ namespace sdf
     public: UsdError();
 
     /// \brief Constructor.
-    /// \param[in] _code The error code.
+    /// \param[in] _code The error code. If the error code is SDF_ERROR, the
+    /// constructor that takes an sdf::Error object should be used instead.
     /// \param[in] _message A description of the error.
     /// \sa ErrorCode.
     public: UsdError(const UsdErrorCode _code, const std::string &_message);
 
     /// \brief Constructor.
-    /// \param[in] _code The error code.
+    /// \param[in] _code The error code. If the error code is SDF_ERROR, the
+    /// constructor that takes an sdf::Error object should be used instead.
     /// \param[in] _message A description of the error.
     /// \param[in] _filePath The file path that is related to this error.
     /// \sa ErrorCode.
@@ -86,7 +81,8 @@ namespace sdf
                      const std::string &_filePath);
 
     /// \brief Constructor.
-    /// \param[in] _code The error code.
+    /// \param[in] _code The error code. If the error code is SDF_ERROR, the
+    /// constructor that takes an sdf::Error object should be used instead.
     /// \param[in] _message A description of the error.
     /// \param[in] _filePath The file path that is related to this error.
     /// \param[in] _lineNumber The line number in the provided file path where
@@ -98,7 +94,7 @@ namespace sdf
     /// \brief Constructor.
     /// \param[in] _sdf_error Wrap an sdf error.
     /// \sa ErrorCode.
-    public: explicit UsdError(const sdf::Error& _sdf_error);
+    public: explicit UsdError(const sdf::Error& _sdfError);
 
     /// \brief Get the error code.
     /// \return An error code.
@@ -107,7 +103,7 @@ namespace sdf
 
     /// \brief Get the error message, which is a description of the error.
     /// \return Error message.
-    public: std::string Message() const;
+    public: const std::string &Message() const;
 
     /// \brief Get the file path associated with this error.
     /// \return Returns the path of the file that this error is related to,

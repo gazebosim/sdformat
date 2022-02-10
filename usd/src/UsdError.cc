@@ -36,7 +36,7 @@ class sdf::usd::UsdError::Implementation
   public: std::optional<int> lineNumber = std::nullopt;
 
   /// \brief SDF error
-  public: std::optional<sdf::Error> sdf_error = std::nullopt;
+  public: std::optional<sdf::Error> sdfError = std::nullopt;
 };
 
 /////////////////////////////////////////////////
@@ -75,11 +75,11 @@ UsdError::UsdError(const UsdErrorCode _code, const std::string &_message,
 }
 
 /////////////////////////////////////////////////
-UsdError::UsdError(const sdf::Error &_sdf_error)
+UsdError::UsdError(const sdf::Error &_sdfError)
     : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = UsdErrorCode::SDF_ERROR;
-  this->dataPtr->sdf_error = _sdf_error;
+  this->dataPtr->sdfError = _sdfError;
 }
 
 /////////////////////////////////////////////////
@@ -89,7 +89,7 @@ UsdErrorCode UsdError::Code() const
 }
 
 /////////////////////////////////////////////////
-std::string UsdError::Message() const
+const std::string &UsdError::Message() const
 {
   return this->dataPtr->message;
 }
@@ -121,7 +121,7 @@ void UsdError::SetLineNumber(int _lineNumber)
 /////////////////////////////////////////////////
 std::optional<sdf::Error> UsdError::SdfError() const
 {
-  return this->dataPtr->sdf_error;
+  return this->dataPtr->sdfError;
 }
 
 /////////////////////////////////////////////////
@@ -148,16 +148,27 @@ namespace usd
 /////////////////////////////////////////////////
 std::ostream &operator<<(std::ostream &_out, const sdf::usd::UsdError &_err)
 {
-  if (_err.dataPtr->code == UsdErrorCode::SDF_ERROR)
+  if (_err.Code() == UsdErrorCode::SDF_ERROR)
   {
-    _out << _err.dataPtr->sdf_error.value();
+    // make sure that an SdfError was wrapped into the UsdError if the error
+    // code indicates an SDF error
+    if (_err.SdfError())
+    {
+      _out << _err.SdfError().value();
+    }
+    else
+    {
+      _out << "Error code is of type SDF_ERROR, but no sdf::Error object "
+           << "has been wrapped into this UsdError object.";
+    }
+
     return _out;
   }
 
   std::string pathInfo = "";
 
   if (_err.FilePath().has_value())
-    pathInfo += ":" + _err.FilePath().value();
+    pathInfo += _err.FilePath().value();
 
   if (_err.LineNumber().has_value())
     pathInfo += ":L" + std::to_string(_err.LineNumber().value());
