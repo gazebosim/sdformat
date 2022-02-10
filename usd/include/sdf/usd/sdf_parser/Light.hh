@@ -32,6 +32,7 @@
 #include "sdf/config.hh"
 #include "sdf/system_util.hh"
 #include "sdf/Light.hh"
+#include "../UsdError.hh"
 
 namespace sdf
 {
@@ -48,7 +49,7 @@ namespace sdf
     /// be a valid USD path.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    sdf::Errors SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
+    UsdErrors SDFORMAT_VISIBLE ParseSdfLight(const sdf::Light &_light,
         pxr::UsdStageRefPtr &_stage, const std::string &_path);
   }
   }

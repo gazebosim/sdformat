@@ -1,4 +1,5 @@
 set(sources
+  UsdError.cc
   sdf_parser/Light.cc
   sdf_parser/World.cc
 )
