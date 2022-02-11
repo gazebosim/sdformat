@@ -108,7 +108,7 @@ namespace sdf
     /// \brief Get the file path associated with this error.
     /// \return Returns the path of the file that this error is related to,
     /// nullopt otherwise.
-    public: std::optional<std::string> FilePath() const;
+    public: const std::optional<std::string> &FilePath() const;
 
     /// \brief Sets the file path that is associated with this error.
     /// \param[in] _filePath The file path that is related to this error. (e.g.

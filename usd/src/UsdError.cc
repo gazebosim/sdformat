@@ -95,7 +95,7 @@ const std::string &UsdError::Message() const
 }
 
 /////////////////////////////////////////////////
-std::optional<std::string> UsdError::FilePath() const
+const std::optional<std::string> &UsdError::FilePath() const
 {
   return this->dataPtr->filePath;
 }
