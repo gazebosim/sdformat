@@ -94,7 +94,7 @@ namespace sdf
     /// \brief Constructor.
     /// \param[in] _sdf_error Wrap an sdf error.
     /// \sa ErrorCode.
-    public: explicit UsdError(const sdf::Error& _sdfError);
+    public: explicit UsdError(const sdf::Error &_sdfError);
 
     /// \brief Get the error code.
     /// \return An error code.
