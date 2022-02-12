@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <ignition/math/Pose3.hh>
+
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/sdf/types.h>
@@ -33,7 +35,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Light.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../Utils.hh"
 
 namespace sdf
 {
@@ -73,7 +75,25 @@ namespace usd
     // TODO(adlarkin) incorporate sdf::Light's <direction> somehow? According
     // to the USD API, things like UsdLuxDistantLight and UsdLuxDiskLight emit
     // light along the -Z axis, so I'm not sure if this can be changed.
-    sdf::usd::SetPose(sdf::usd::PoseWrtParent(_light), _stage, sdfLightPath);
+    ignition::math::Pose3d pose;
+    auto poseErrors = sdf::usd::PoseWrtParent(_light, pose);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      return errors;
+    }
+
+    poseErrors = sdf::usd::SetPose(pose, _stage, sdfLightPath);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to set the pose of the light prim corresponding to the "
+            "SDF light named [" + _light.Name() + "]"));
+      return errors;
+    }
 
     // This is a workaround to set the light's intensity attribute. Using the
     // UsdLuxLightAPI sets the light's "inputs:intensity" attribute, but isaac
