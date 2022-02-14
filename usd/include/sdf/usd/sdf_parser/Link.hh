@@ -30,6 +30,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Link.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
@@ -50,7 +51,7 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no errors occurred
     /// when parsing _link to its USD representation.
-    sdf::Errors SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
+    UsdErrors SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
         pxr::UsdStageRefPtr &_stage, const std::string &_path,
         bool _rigidBody);
   }

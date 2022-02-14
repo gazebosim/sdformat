@@ -31,6 +31,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Model.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
@@ -51,7 +52,7 @@ namespace sdf
   /// \return Errors, which is a vector of Error objects. Each Error includes
   /// an error code and message. An empty vector indicates no error occurred
   /// when parsing _model to its USD representation.
-  sdf::Errors SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model,
+  UsdErrors SDFORMAT_VISIBLE ParseSdfModel(const sdf::Model &_model,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const pxr::SdfPath &_worldPath);
   }

@@ -42,11 +42,11 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
+  UsdErrors ParseSdfLink(const sdf::Link &_link, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, bool _rigidBody)
   {
     const pxr::SdfPath sdfLinkPath(_path);
-    sdf::Errors errors;
+    UsdErrors errors;
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
     usd::SetPose(usd::PoseWrtParent(_link), _stage, sdfLinkPath);
@@ -56,7 +56,7 @@ namespace usd
       auto linkPrim = _stage->GetPrimAtPath(sdfLinkPath);
       if (!linkPrim)
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
               "Internal error: unable to get prim at path ["
               + _path + "], but a link prim should exist at this path"));
         return errors;
@@ -64,7 +64,7 @@ namespace usd
 
       if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
               "Internal error: unable to mark link at path [" + _path
               + "] as a rigid body, so mass properties won't be attached"));
         return errors;
@@ -74,7 +74,7 @@ namespace usd
         pxr::UsdPhysicsMassAPI::Apply(linkPrim);
       if (!massAPI)
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
               "Unable to attach mass properties to link ["
               + _link.Name() + "]"));
         return errors;
@@ -99,10 +99,10 @@ namespace usd
     {
       const auto light = *(_link.LightByIndex(i));
       auto lightPath = std::string(_path + "/" + light.Name());
-      sdf::Errors lightErrors = ParseSdfLight(light, _stage, lightPath);
+      UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
       if (!errors.empty())
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
               "Error parsing light [" + light.Name() + "]"));
         errors.insert(errors.end(), lightErrors.begin(), lightErrors.end());
       }

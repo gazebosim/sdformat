@@ -45,14 +45,14 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
+  UsdErrors ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, const pxr::SdfPath &/*_worldPath*/)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
 
     if (_model.ModelCount())
     {
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+      errors.push_back(UsdError(sdf::usd::UsdErrorCode::SDF_ERROR,
             "Nested models currently aren't supported."));
       return errors;
     }
@@ -89,11 +89,13 @@ namespace usd
       const auto link = *(_model.LinkByIndex(i));
       const auto linkPath = std::string(_path + "/" + link.Name());
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
-      sdf::Errors linkErrors = ParseSdfLink(link, _stage, linkPath, !_model.Static());
+      UsdErrors linkErrors = ParseSdfLink(
+        link, _stage, linkPath, !_model.Static());
       if (linkErrors.size() > 0)
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-              "Error parsing link [" + link.Name() + "]"));
+        errors.push_back(
+          UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Error parsing link [" + link.Name() + "]"));
         errors.insert(errors.end(), linkErrors.begin(), linkErrors.end());
         return errors;
       }
