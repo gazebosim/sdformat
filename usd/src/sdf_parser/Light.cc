@@ -64,8 +64,9 @@ namespace usd
         break;
       case sdf::LightType::INVALID:
       default:
-        errors.push_back(UsdError(sdf::usd::UsdErrorCode::SDF_ERROR,
-            "The light type that was given cannot be parsed to USD."));
+        errors.push_back(UsdError(sdf::Error(
+            sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+            "The light type that was given cannot be parsed to USD.")));
         return errors;
     }
 

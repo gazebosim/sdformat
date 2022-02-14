@@ -47,7 +47,7 @@ namespace sdf
     /// of _light.
     /// \param[in] _path The USD path of the parsed light in _stage, which must
     /// be a valid USD path.
-    /// \return UsdErrors, which is a vector of Error objects. Each Error
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
     UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLight(
         const sdf::Light &_light,

@@ -23,7 +23,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -52,8 +52,9 @@ namespace usd
 
     if (_model.ModelCount())
     {
-      errors.push_back(UsdError(sdf::usd::UsdErrorCode::SDF_ERROR,
-            "Nested models currently aren't supported."));
+      errors.push_back(UsdError(
+            sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+              "Nested models currently aren't supported.")));
       return errors;
     }
 
@@ -91,7 +92,7 @@ namespace usd
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
       UsdErrors linkErrors = ParseSdfLink(
         link, _stage, linkPath, !_model.Static());
-      if (linkErrors.size() > 0)
+      if (!linkErrors.empty())
       {
         errors.push_back(
           UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,

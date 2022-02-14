@@ -22,7 +22,7 @@
 
 #include <ignition/common/Util.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -79,7 +79,8 @@ namespace usd
         ParseSdfModel(model, _stage, modelPath, worldPrimPath);
       if (!modelErrors.empty())
       {
-        errors.push_back(UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+        errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
               "Error parsing model [" + model.Name() + "]"));
         errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
       }
@@ -93,7 +94,8 @@ namespace usd
       UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
       if (!lightErrors.empty())
       {
-        errors.push_back(UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+        errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
               "Error parsing light [" + light.Name() + "]"));
         errors.insert(errors.end(), lightErrors.begin(), lightErrors.end());
       }
