@@ -1,4 +1,5 @@
 set(sources
+  UsdError.cc
   sdf_parser/Light.cc
   sdf_parser/Link.cc
   sdf_parser/Model.cc
@@ -25,6 +26,7 @@ set(gtest_sources
   # TODO(adlarkin) add a test for SDF -> USD models once model parsing
   # functionality is complete
   sdf_parser/World_Sdf2Usd_TEST.cc
+  UsdError_TEST.cc
 )
 
 # Build the unit tests
