@@ -47,7 +47,7 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Set an object's pose w.r.t. its parent.
+    /// \brief Get an object's pose w.r.t. its parent.
     /// \param[in] _obj The object whose pose should be computed/retrieved.
     /// \param[out] _pose The pose of _obj w.r.t. its parent.
     /// \tparam T An object that has the following method signatures:
