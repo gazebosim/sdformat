@@ -40,8 +40,8 @@
 #include "sdf/usd/sdf_parser/Light.hh"
 #include "test_config.h"
 #include "test_utils.hh"
-#include "../Utils.hh"
-#include "UsdTestUtils.hh"
+#include "../UsdTestUtils.hh"
+#include "../UsdUtils.hh"
 
 /////////////////////////////////////////////////
 // Fixture that creates a USD stage for each test case.

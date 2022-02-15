@@ -35,7 +35,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Light.hh"
-#include "../Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
