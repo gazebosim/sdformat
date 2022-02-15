@@ -39,8 +39,8 @@
 #include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Visual.hh"
-#include "sdf/config.hh"
 #include "sdf/system_util.hh"
+#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
@@ -56,7 +56,8 @@ namespace sdf
     /// \return _obj's pose w.r.t. its parent. If there was an error computing
     /// this pose, the pose's position will be NaNs.
     template <typename T>
-    inline ignition::math::Pose3d SDFORMAT_VISIBLE PoseWrtParent(const T &_obj)
+    inline ignition::math::Pose3d IGNITION_SDFORMAT_USD_VISIBLE
+    PoseWrtParent(const T &_obj)
     {
       ignition::math::Pose3d pose(ignition::math::Vector3d::NaN,
           ignition::math::Quaterniond::Identity);
@@ -81,8 +82,10 @@ namespace sdf
     /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
     /// \param[in] _usdPath The path to the USD prim that should have its
     /// pose modified to match _pose.
-    inline void SDFORMAT_VISIBLE SetPose(const ignition::math::Pose3d &_pose,
-        pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_usdPath)
+    inline void IGNITION_SDFORMAT_USD_VISIBLE SetPose(
+        const ignition::math::Pose3d &_pose,
+        pxr::UsdStageRefPtr &_stage,
+        const pxr::SdfPath &_usdPath)
     {
       pxr::UsdGeomXformCommonAPI geomXformAPI(_stage->GetPrimAtPath(_usdPath));
 
@@ -99,18 +102,11 @@ namespace sdf
             ignition::math::Angle(rotation.Yaw()).Degree()));
     }
 
-    /// \brief Thickness of an sdf plane
-    /// \note This will no longer be needed when a pxr::USDGeomPlane class
-    /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
-    /// the geometry.cc file for more information)
-    static const double kPlaneThickness = 0.25;
-
     /// \brief Check if an sdf model is a plane.
     /// \param[in] _model The sdf model to check
     /// \return True if _model is a plane. False otherwise
-    /// \note This method will no longer be needed when a pxr::USDGeomPlane class
-    /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
-    /// the geometry.cc file for more information)
+    /// \note This method will no longer be needed when a pxr::USDGeomPlane
+    /// class is created
     inline bool SDFORMAT_VISIBLE IsPlane(const sdf::Model &_model)
     {
       if (_model.LinkCount() != 1u)

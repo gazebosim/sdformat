@@ -36,6 +36,7 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
+#include "Utils.hh"
 
 namespace sdf
 {
@@ -306,6 +307,17 @@ struct LinkWrapper : public WrapperBase
   {
   }
 
+  /// \brief Constructor from name and pose data (without sdf::Link or
+  /// sdf::InterfaceLink)
+  LinkWrapper(const std::string &_name, const ignition::math::Pose3d &_rawPose,
+              const std::string &_relativeTo)
+      : WrapperBase{_name, "Link", FrameType::LINK},
+        rawPose(_rawPose),
+        rawRelativeTo(_relativeTo),
+        relativeTo(rawRelativeTo)
+  {
+  }
+
   /// \brief Raw pose of the entity.
   const ignition::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
@@ -336,6 +348,18 @@ struct FrameWrapper : public WrapperBase
         attachedTo(_ifaceFrame.AttachedTo()),
         relativeTo(attachedTo)
 
+  {
+  }
+
+  /// \brief Constructor from name, pose, and attachement data (without
+  /// sdf::Frame or sdf::InterfaceFrame)
+  FrameWrapper(const std::string &_name, const ignition::math::Pose3d &_rawPose,
+               const std::string &_relativeTo, const std::string &_attachedTo)
+      : WrapperBase{_name, "Frame", FrameType::FRAME},
+        rawPose(_rawPose),
+        rawRelativeTo(_relativeTo),
+        attachedTo(_attachedTo),
+        relativeTo(rawRelativeTo.empty() ? attachedTo : rawRelativeTo)
   {
   }
 
@@ -386,6 +410,15 @@ struct JointWrapper : public WrapperBase
   const std::string relativeTo;
 };
 
+/// \brief Placement frame information
+struct PlacementFrameInfo
+{
+  /// \brief Computed name of the proxy model frame
+  std::string proxyName;
+  /// \brief The name of placement frame from //include/placement_frame.
+  std::string placementFrameName;
+};
+
 /// \brief Wrapper for sdf::Model and sdf::InterfaceModel
 struct ModelWrapper : public WrapperBase
 {
@@ -421,6 +454,56 @@ struct ModelWrapper : public WrapperBase
     {
       this->models.emplace_back(*_model.InterfaceModelNestedIncludeByIndex(i),
                                 *_model.InterfaceModelByIndex(i));
+    }
+    for (const auto &[nestedInclude, model] : _model.MergedInterfaceModels())
+    {
+      const std::string proxyModelFrameName = computeMergedModelProxyFrameName(
+          nestedInclude->LocalModelName().value_or(model->Name()));
+
+      std::string poseRelativeTo =
+          nestedInclude->IncludePoseRelativeTo().value_or("");
+      if (poseRelativeTo.empty())
+      {
+        poseRelativeTo = "__model__";
+      }
+      this->frames.emplace_back(proxyModelFrameName,
+                                nestedInclude->IncludeRawPose().value_or(
+                                    model->ModelFramePoseInParentFrame()),
+                                poseRelativeTo, model->CanonicalLinkName());
+
+      for (const auto &item : model->Links())
+      {
+        this->links.emplace_back(item.Name(), item.PoseInModelFrame(),
+                                 proxyModelFrameName);
+      }
+      for (const auto &item : model->Frames())
+      {
+        std::string attachedTo = item.AttachedTo();
+        if (item.AttachedTo() == "__model__")
+        {
+          attachedTo = proxyModelFrameName;
+        }
+        this->frames.emplace_back(item.Name(), item.PoseInAttachedToFrame(),
+                                  attachedTo, attachedTo);
+      }
+      for (const auto &item : model->Joints())
+      {
+        std::string childName = item.ChildName();
+        if (item.ChildName() == "__model__")
+        {
+          childName = proxyModelFrameName;
+        }
+        this->joints.emplace_back(sdf::InterfaceJoint(item.Name(), childName,
+                                                      item.PoseInChildFrame()));
+      }
+      if (nestedInclude->PlacementFrame().has_value())
+      {
+        this->mergedModelPlacements.push_back(
+            {proxyModelFrameName, *nestedInclude->PlacementFrame()});
+      }
+
+      // Skip adding nested interface models because they are already included
+      // in the parent model's list of nested models.
     }
   }
 
@@ -479,6 +562,8 @@ struct ModelWrapper : public WrapperBase
   std::vector<JointWrapper> joints;
   /// \brief Children nested models and interface models.
   std::vector<ModelWrapper> models;
+  /// \brief Placement frame information for each merged model.
+  std::vector<PlacementFrameInfo> mergedModelPlacements;
 
   /// \brief Helper function to add children of interface models.
   private: void AddInterfaceChildren(const sdf::InterfaceModel &_ifaceModel)
@@ -1013,6 +1098,30 @@ Errors wrapperBuildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     outModel.UpdateEdge(rootToModel, resolvedModelPose);
+  }
+
+  // For each merge model, update the edge between the parent model and the
+  // proxy model frame to take into account the placement frame used when
+  // nesting the merged model via //include.
+  for (const auto &[proxyName, placementFrameName] :
+       _model.mergedModelPlacements)
+  {
+    auto proxyId = outModel.VertexIdByName(proxyName);
+    auto modelToProxy =
+        outModel.Graph().EdgeFromVertices(modelFrameId, proxyId);
+    const auto rawPose = modelToProxy.Data();
+
+    // We have to first set the edge data to an identity pose to be able to call
+    // resolveModelPoseWithPlacementFrame, which in turn calls
+    // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
+    // pose is calculated.
+    outModel.UpdateEdge(modelToProxy, ignition::math::Pose3d::Zero);
+    ignition::math::Pose3d resolvedModelPose;
+    sdf::Errors resolveErrors =
+        resolveModelPoseWithPlacementFrame(rawPose,
+            placementFrameName, outModel, resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+    outModel.UpdateEdge(modelToProxy, resolvedModelPose);
   }
   return errors;
 }
