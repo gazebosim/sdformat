@@ -414,3 +414,132 @@ TEST(DOMLink, ToElement)
   for (uint64_t i = 0; i < link2.ParticleEmitterCount(); ++i)
     EXPECT_NE(nullptr, link2.ParticleEmitterByIndex(i));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MutableByIndex)
+{
+  sdf::Link link;
+  link.SetName("my-name");
+
+  sdf::Visual visual;
+  visual.SetName("visual1");
+  EXPECT_TRUE(link.AddVisual(visual));
+
+  sdf::Collision collision;
+  collision.SetName("collision1");
+  EXPECT_TRUE(link.AddCollision(collision));
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(link.AddLight(light));
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(link.AddSensor(sensor));
+
+  sdf::ParticleEmitter pe;
+  pe.SetName("pe1");
+  EXPECT_TRUE(link.AddParticleEmitter(pe));
+
+  // Modify the visual
+  sdf::Visual *v = link.VisualByIndex(0);
+  ASSERT_NE(nullptr, v);
+  EXPECT_EQ("visual1", v->Name());
+  v->SetName("visual2");
+  EXPECT_EQ("visual2", link.VisualByIndex(0)->Name());
+
+  // Modify the collision
+  sdf::Collision *c = link.CollisionByIndex(0);
+  ASSERT_NE(nullptr, c);
+  EXPECT_EQ("collision1", c->Name());
+  c->SetName("collision2");
+  EXPECT_EQ("collision2", link.CollisionByIndex(0)->Name());
+
+  // Modify the light
+  sdf::Light *l = link.LightByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("light1", l->Name());
+  l->SetName("light2");
+  EXPECT_EQ("light2", link.LightByIndex(0)->Name());
+
+  // Modify the sensor
+  sdf::Sensor *s = link.SensorByIndex(0);
+  ASSERT_NE(nullptr, s);
+  EXPECT_EQ("sensor1", s->Name());
+  s->SetName("sensor2");
+  EXPECT_EQ("sensor2", link.SensorByIndex(0)->Name());
+
+  // Modify the particle emitter
+  sdf::ParticleEmitter *p = link.ParticleEmitterByIndex(0);
+  ASSERT_NE(nullptr, p);
+  EXPECT_EQ("pe1", p->Name());
+  p->SetName("pe2");
+  EXPECT_EQ("pe2", link.ParticleEmitterByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MutableByName)
+{
+  sdf::Link link;
+  link.SetName("my-name");
+
+  sdf::Visual visual;
+  visual.SetName("visual1");
+  EXPECT_TRUE(link.AddVisual(visual));
+
+  sdf::Collision collision;
+  collision.SetName("collision1");
+  EXPECT_TRUE(link.AddCollision(collision));
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(link.AddLight(light));
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(link.AddSensor(sensor));
+
+  sdf::ParticleEmitter pe;
+  pe.SetName("pe1");
+  EXPECT_TRUE(link.AddParticleEmitter(pe));
+
+  // Modify the visual
+  sdf::Visual *v = link.VisualByName("visual1");
+  ASSERT_NE(nullptr, v);
+  EXPECT_EQ("visual1", v->Name());
+  v->SetName("visual2");
+  EXPECT_FALSE(link.VisualNameExists("visual1"));
+  EXPECT_TRUE(link.VisualNameExists("visual2"));
+
+  // Modify the collision
+  sdf::Collision *c = link.CollisionByName("collision1");
+  ASSERT_NE(nullptr, c);
+  EXPECT_EQ("collision1", c->Name());
+  c->SetName("collision2");
+  EXPECT_FALSE(link.CollisionNameExists("collision1"));
+  EXPECT_TRUE(link.CollisionNameExists("collision2"));
+
+  // Modify the light
+  sdf::Light *l = link.LightByName("light1");
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("light1", l->Name());
+  l->SetName("light2");
+  EXPECT_FALSE(link.LightNameExists("light1"));
+  EXPECT_TRUE(link.LightNameExists("light2"));
+
+  // Modify the sensor
+  sdf::Sensor *s = link.SensorByName("sensor1");
+  ASSERT_NE(nullptr, s);
+  EXPECT_EQ("sensor1", s->Name());
+  s->SetName("sensor2");
+  EXPECT_FALSE(link.SensorNameExists("sensor1"));
+  EXPECT_TRUE(link.SensorNameExists("sensor2"));
+
+  // Modify the particle emitter
+  sdf::ParticleEmitter *p = link.ParticleEmitterByName("pe1");
+  ASSERT_NE(nullptr, p);
+  EXPECT_EQ("pe1", p->Name());
+  p->SetName("pe2");
+  EXPECT_FALSE(link.ParticleEmitterNameExists("pe1"));
+  EXPECT_TRUE(link.ParticleEmitterNameExists("pe2"));
+}
