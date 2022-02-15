@@ -15,10 +15,13 @@
  *
  */
 
+#include <gtest/gtest.h>
+
 #include <string>
 #include <unordered_map>
 
-#include <gtest/gtest.h>
+#include <ignition/math/Pose3.hh>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/base/tf/token.h>
@@ -35,10 +38,10 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
 #include "test_config.h"
 #include "test_utils.hh"
-#include "UsdTestUtils.hh"
+#include "../UsdTestUtils.hh"
+#include "../UsdUtils.hh"
 
 /////////////////////////////////////////////////
 // Fixture that creates a USD stage for each test case.
@@ -155,8 +158,10 @@ TEST_F(UsdLightStageFixture, Lights)
     if (validLight)
     {
       this->CheckLightIntensity(lightUsd, lightSdf);
-      sdf::usd::testing::CheckPrimPose(lightUsd,
-          sdf::usd::PoseWrtParent(lightSdf));
+      ignition::math::Pose3d pose;
+      const auto poseErrors = sdf::usd::PoseWrtParent(lightSdf, pose);
+      EXPECT_TRUE(poseErrors.empty());
+      sdf::usd::testing::CheckPrimPose(lightUsd, pose);
     }
   }
   EXPECT_EQ(1, numPointLights);
