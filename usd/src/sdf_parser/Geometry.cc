@@ -28,7 +28,7 @@
 
 #include <ignition/math/Vector3.hh>
 
-// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -384,10 +384,10 @@ namespace usd
     return true;
   }
 
-  sdf::Errors ParseSdfGeometry(const sdf::Geometry &_geometry,
+  UsdErrors ParseSdfGeometry(const sdf::Geometry &_geometry,
     pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     bool typeParsed = false;
     switch (_geometry.Type())
     {
@@ -414,8 +414,9 @@ namespace usd
         break;
       case sdf::GeometryType::HEIGHTMAP:
       default:
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-          "Geometry type is either invalid or not supported"));
+        errors.push_back(UsdError(
+              sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+                "Geometry type is either invalid or not supported")));
     }
 
     // Set the collision for this geometry.
@@ -437,7 +438,7 @@ namespace usd
       auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
       if (!geomPrim)
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
           "Internal error: unable to get prim at path ["
           + _path + "], but a geom prim should exist at this path"));
         return errors;
@@ -445,16 +446,11 @@ namespace usd
 
       if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
           "Internal error: unable to apply a collision to the prim at path ["
           + _path + "]"));
         return errors;
       }
-    }
-    else
-    {
-      errors.emplace_back(
-          Error(ErrorCode::FILE_READ, "Failed to load sdf geometry"));
     }
 
     return errors;

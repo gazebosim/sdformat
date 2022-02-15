@@ -119,6 +119,10 @@ namespace sdf
       const auto &visual = link->VisualByIndex(0u);
       return visual->Geom()->Type() == sdf::GeometryType::PLANE;
     }
+
+    /// \brief Pre-defined USD plane thickness. This is a temporary variable
+    /// that will no longer be needed once USD supports their own plane class
+    static const double kPlaneThickness = 0.25;
   }
   }
 }

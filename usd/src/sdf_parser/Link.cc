@@ -106,10 +106,11 @@ namespace usd
       const auto visual = *(_link.VisualByIndex(i));
       const auto visualPath = std::string(_path + "/" + visual.Name());
       auto errorsLink = ParseSdfVisual(visual, _stage, visualPath);
-      if (errorsLink.size() > 0)
+      if (!errorsLink.empty())
       {
-        errors.insert(errors.end(), errorsLink.begin(), errorsLink.end() );
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.insert(errors.end(), errorsLink.begin(), errorsLink.end());
+        errors.push_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
           "Error parsing visual [" + visual.Name() + "]"));
         return errors;
       }

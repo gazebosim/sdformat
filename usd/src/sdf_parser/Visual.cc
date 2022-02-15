@@ -44,27 +44,28 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfVisual(const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path)
+  UsdErrors ParseSdfVisual(const sdf::Visual &_visual,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     const pxr::SdfPath sdfVisualPath(_path);
     auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
     if (!usdVisualXform)
     {
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-        "Not able to create the Geom Xform [" + _path + "]"));
+      errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_USD_DEFINITION,
+        "Not able to define a Geom Xform at path [" + _path + "]"));
       return errors;
     }
     usd::SetPose(usd::PoseWrtParent(_visual), _stage, sdfVisualPath);
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
-    sdf::Errors geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
-    if (geomErrors.size() > 0)
+    auto geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
+    if (!geomErrors.empty())
     {
       errors.insert(errors.end(), geomErrors.begin(), geomErrors.end() );
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+      errors.push_back(UsdError(
+        sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
         "Error parsing geometry attached to visual [" + _visual.Name() + "]"));
       return errors;
     }
