@@ -36,7 +36,7 @@
 
 #include "sdf/Model.hh"
 #include "sdf/usd/sdf_parser/Link.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -72,12 +72,40 @@ namespace usd
           _model.RawPose().X(),
           _model.RawPose().Y(),
           _model.RawPose().Z() - (0.5 * kPlaneThickness));
-      usd::SetPose(ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
+      const auto poseErrors = usd::SetPose(
+          ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
           _stage, sdfModelPath);
+      if (!poseErrors.empty())
+      {
+        for (const auto &e : poseErrors)
+          errors.push_back(e);
+        errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Unable to set the pose of the USD ground plane prim named ["
+              + _model.Name() + "]"));
+        return errors;
+      }
     }
     else
     {
-      usd::SetPose(usd::PoseWrtParent(_model), _stage, sdfModelPath);
+      ignition::math::Pose3d pose;
+      auto poseErrors = usd::PoseWrtParent(_model, pose);
+      if (!poseErrors.empty())
+      {
+        for (const auto &e : poseErrors)
+          errors.push_back(e);
+        return errors;
+      }
+
+      poseErrors = usd::SetPose(pose, _stage, sdfModelPath);
+      if (!poseErrors.empty())
+      {
+        for (const auto &e : poseErrors)
+          errors.push_back(e);
+        errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Unable to set the pose of the model prim corresponding to the "
+              "SDF model named [" + _model.Name() + "]"));
+        return errors;
+      }
     }
 
     // Parse all of the model's links and convert them to USD.

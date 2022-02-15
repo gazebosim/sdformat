@@ -23,7 +23,7 @@
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
 
-// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -34,6 +34,7 @@
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -41,6 +42,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/system_util.hh"
 #include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
@@ -51,23 +53,28 @@ namespace sdf
   {
     /// \brief Get an object's pose w.r.t. its parent.
     /// \param[in] _obj The object whose pose should be computed/retrieved.
+    /// \param[out] _pose The pose of _obj w.r.t. its parent.
     /// \tparam T An object that has the following method signatures:
     ///   sdf::SemanticPose SemanticPose();
-    /// \return _obj's pose w.r.t. its parent. If there was an error computing
-    /// this pose, the pose's position will be NaNs.
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no error.
     template <typename T>
-    inline ignition::math::Pose3d IGNITION_SDFORMAT_USD_VISIBLE
-    PoseWrtParent(const T &_obj)
+    inline UsdErrors IGNITION_SDFORMAT_USD_VISIBLE
+    PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
     {
-      ignition::math::Pose3d pose(ignition::math::Vector3d::NaN,
-          ignition::math::Quaterniond::Identity);
-      auto errors = _obj.SemanticPose().Resolve(pose, "");
-      if (!errors.empty())
+      UsdErrors errors;
+      const auto poseResolutionErrors = _obj.SemanticPose().Resolve(_pose, "");
+      if (!poseResolutionErrors.empty())
       {
-        std::cerr << "Errors occurred when resolving the pose of ["
-                  << _obj.Name() << "] w.r.t its parent:\n\t" << errors;
+        for (const auto &e : poseResolutionErrors)
+          errors.push_back(UsdError(e));
+
+        sdf::Error poseError(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
+            "Unable to resolve the pose of [" + _obj.Name()
+            + "] w.r.t its parent");
+        errors.push_back(UsdError(poseError));
       }
-      return pose;
+      return errors;
     }
 
     inline std::string removeDash(const std::string &_str)
@@ -82,12 +89,31 @@ namespace sdf
     /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
     /// \param[in] _usdPath The path to the USD prim that should have its
     /// pose modified to match _pose.
-    inline void IGNITION_SDFORMAT_USD_VISIBLE SetPose(
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no error.
+    inline UsdErrors IGNITION_SDFORMAT_USD_VISIBLE SetPose(
         const ignition::math::Pose3d &_pose,
         pxr::UsdStageRefPtr &_stage,
         const pxr::SdfPath &_usdPath)
     {
+      UsdErrors errors;
+
+      const auto prim = _stage->GetPrimAtPath(_usdPath);
+      if (!prim)
+      {
+        errors.push_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
+              "No USD prim exists at path [" + _usdPath.GetString() + "]"));
+        return errors;
+      }
+
       pxr::UsdGeomXformCommonAPI geomXformAPI(_stage->GetPrimAtPath(_usdPath));
+      if (!geomXformAPI)
+      {
+        errors.push_back(UsdError(UsdErrorCode::FAILED_PRIM_API_APPLY,
+              "Unable to apply apxr::UsdGeomXformCommonAPI to prim at path ["
+              + _usdPath.GetString() + "]"));
+        return errors;
+      }
 
       const auto &position = _pose.Pos();
       geomXformAPI.SetTranslate(pxr::GfVec3d(
@@ -100,6 +126,8 @@ namespace sdf
             ignition::math::Angle(rotation.Roll()).Degree(),
             ignition::math::Angle(rotation.Pitch()).Degree(),
             ignition::math::Angle(rotation.Yaw()).Degree()));
+
+      return errors;
     }
 
     /// \brief Check if an sdf model is a plane.

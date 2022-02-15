@@ -18,6 +18,9 @@
 #include "sdf/usd/sdf_parser/Link.hh"
 
 #include <string>
+
+#include <ignition/math/Pose3.hh>
+
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
@@ -33,8 +36,8 @@
 
 #include "sdf/Link.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
 #include "sdf/usd/sdf_parser/Visual.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -50,7 +53,26 @@ namespace usd
     UsdErrors errors;
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
-    usd::SetPose(usd::PoseWrtParent(_link), _stage, sdfLinkPath);
+
+    ignition::math::Pose3d pose;
+    auto poseErrors = sdf::usd::PoseWrtParent(_link, pose);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      return errors;
+    }
+
+    poseErrors = usd::SetPose(pose, _stage, sdfLinkPath);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to set the pose of the link prim corresponding to the "
+            "SDF link named [" + _link.Name() + "]"));
+      return errors;
+    }
 
     if (_rigidBody)
     {

@@ -59,7 +59,7 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {

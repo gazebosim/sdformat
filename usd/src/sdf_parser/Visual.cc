@@ -20,6 +20,8 @@
 #include <iostream>
 #include <string>
 
+#include <ignition/math/Pose3.hh>
+
 // TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
@@ -35,7 +37,7 @@
 
 #include "sdf/Visual.hh"
 #include "sdf/usd/sdf_parser/Geometry.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -56,7 +58,26 @@ namespace usd
         "Not able to define a Geom Xform at path [" + _path + "]"));
       return errors;
     }
-    usd::SetPose(usd::PoseWrtParent(_visual), _stage, sdfVisualPath);
+
+    ignition::math::Pose3d pose;
+    auto poseErrors = usd::PoseWrtParent(_visual, pose);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      return errors;
+    }
+
+    poseErrors = usd::SetPose(pose, _stage, sdfVisualPath);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to set the pose of the link prim corresponding to the "
+            "SDF visual named [" + _visual.Name() + "]"));
+      return errors;
+    }
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
