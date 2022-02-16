@@ -445,18 +445,6 @@ void Root::ClearWorlds()
 }
 
 /////////////////////////////////////////////////
-/*void Root::Clone(const sdf::Root &_root)
-{
-  this->dataPtr->version = _root.dataPtr->version;
-
-  this->dataPtr->worlds = _root.dataPtr->worlds;
-
-  this->dataPtr->modelLightOrActor = _root.dataPtr->modelLightOrActor;
-
-  this->UpdateGraphs();
-}*/
-
-/////////////////////////////////////////////////
 sdf::Root Root::Clone() const
 {
   sdf::Root r;
