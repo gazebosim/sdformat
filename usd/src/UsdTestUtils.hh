@@ -23,6 +23,7 @@
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/tf/token.h>
+#include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/prim.h>
 
 #include "sdf/system_util.hh"
