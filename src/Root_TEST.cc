@@ -111,8 +111,7 @@ TEST(DOMRoot, StringModelSdfParse)
   EXPECT_EQ(0u, root.WorldCount());
 
   // Test cloning
-  sdf::Root root2;
-  root2.Clone(root);
+  sdf::Root root2 = root.Clone();
 
   const sdf::Model *model2 = root2.Model();
   ASSERT_NE(nullptr, model2);
@@ -307,12 +306,9 @@ TEST(DOMRoot, AddWorld)
   world.SetName("world1");
   sdf::Errors errors = root.AddWorld(world);
   EXPECT_TRUE(errors.empty());
-  std::cout << "+++\n";
-  for (const auto &e : errors)
-    std::cout << e.Message() << std::endl;
-  std::cout << "---\n";
   EXPECT_EQ(1u, root.WorldCount());
   EXPECT_FALSE(root.AddWorld(world).empty());
+  ASSERT_FALSE(root.AddWorld(world).empty());
   EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, root.AddWorld(world)[0].Code());
   EXPECT_EQ(1u, root.WorldCount());
 

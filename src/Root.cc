@@ -445,7 +445,7 @@ void Root::ClearWorlds()
 }
 
 /////////////////////////////////////////////////
-void Root::Clone(const sdf::Root &_root)
+/*void Root::Clone(const sdf::Root &_root)
 {
   this->dataPtr->version = _root.dataPtr->version;
 
@@ -454,6 +454,17 @@ void Root::Clone(const sdf::Root &_root)
   this->dataPtr->modelLightOrActor = _root.dataPtr->modelLightOrActor;
 
   this->UpdateGraphs();
+}*/
+
+/////////////////////////////////////////////////
+sdf::Root Root::Clone() const
+{
+  sdf::Root r;
+  r.dataPtr->version = this->dataPtr->version;
+  r.dataPtr->worlds = this->dataPtr->worlds;
+  r.dataPtr->modelLightOrActor = this->dataPtr->modelLightOrActor;
+  r.UpdateGraphs();
+  return r;
 }
 
 /////////////////////////////////////////////////

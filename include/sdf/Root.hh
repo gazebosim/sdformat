@@ -169,14 +169,16 @@ namespace sdf
     /// \brief Remove all worlds.
     public: void ClearWorlds();
 
-    /// \brief Deep copy the provided Root object into this Root object.
-    /// \param[in] _root The Root object to copy.
+    /// \brief Deep copy this Root object and return the new Root object.
+    /// \return A clone of this Root object.
     /// Deprecate this function in SDF version 13, and use
     /// IGN_UTILS_IMPL_PTR instead.
-    public: void Clone(const sdf::Root &_root);
+    public: sdf::Root Clone() const;
 
     /// \brief Recreate the frame and pose graphs for the worlds and model
-    /// that are children of this Root object.
+    /// that are children of this Root object. You can call this function
+    /// to build new graphs when the DOM was created programmatically, or
+    /// if you want to regenerate the graphs after editing the DOM.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors UpdateGraphs();
