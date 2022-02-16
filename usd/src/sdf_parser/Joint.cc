@@ -309,7 +309,7 @@ namespace usd
   UsdErrors ParseSdfJoint(const sdf::Joint &_joint,
       pxr::UsdStageRefPtr &_stage, const std::string &_path,
       const sdf::Model &_parentModel,
-      const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath,
+      const std::unordered_map<std::string, pxr::SdfPath> &_linkToUsdPath,
       const pxr::SdfPath &_worldPath)
   {
     UsdErrors errors;
@@ -319,8 +319,8 @@ namespace usd
     auto parentLinkPath = _worldPath;
     if (_joint.ParentLinkName() != "world")
     {
-      const auto it = _linkToUSDPath.find(_joint.ParentLinkName());
-      if (it == _linkToUSDPath.end())
+      const auto it = _linkToUsdPath.find(_joint.ParentLinkName());
+      if (it == _linkToUsdPath.end())
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
               "Unable to find a USD path for link [" + _joint.ParentLinkName() +
@@ -330,8 +330,8 @@ namespace usd
       parentLinkPath = it->second;
     }
 
-    const auto it = _linkToUSDPath.find(_joint.ChildLinkName());
-    if (it == _linkToUSDPath.end())
+    const auto it = _linkToUsdPath.find(_joint.ChildLinkName());
+    if (it == _linkToUsdPath.end())
     {
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
             "Unable to find a USD path for link [" + _joint.ParentLinkName() +

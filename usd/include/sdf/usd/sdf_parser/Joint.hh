@@ -51,7 +51,7 @@ namespace sdf
     /// \param[in] _path The USD path of the parsed joint in _stage, which must
     /// be a valid USD path.
     /// \param[in] _parentModel The model that is the parent of _joint
-    /// \param[in] _linkToUSDPath a map of a link's SDF name to the link's USD
+    /// \param[in] _linkToUsdPath a map of a link's SDF name to the link's USD
     /// path. This is used to determine which USD prims should be assigned as
     /// the USD joint's relative links.
     /// \param[in] _worldPath The USD path of the world prim. This is needed if
@@ -63,7 +63,7 @@ namespace sdf
         const sdf::Joint &_joint,
         pxr::UsdStageRefPtr &_stage, const std::string &_path,
         const sdf::Model &_parentModel,
-        const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath,
+        const std::unordered_map<std::string, pxr::SdfPath> &_linkToUsdPath,
         const pxr::SdfPath &_worldPath);
   }
   }
