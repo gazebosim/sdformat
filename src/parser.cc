@@ -508,7 +508,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelFile(filename, &doc);
+    u2g.InitModelFile(filename, _config, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -585,7 +585,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, &doc);
+    u2g.InitModelString(_xmlString, _config, &doc);
 
     if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                     _config, _errors))
@@ -2256,7 +2256,10 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       auto joint = _model->JointByIndex(j);
 
       const std::string &parentName = joint->ParentLinkName();
-      if (parentName != "world" && !_model->LinkNameExists(parentName) &&
+      const std::string parentLocalName = sdf::SplitName(parentName).second;
+
+      if (parentName != "world" && parentLocalName != "__model__" &&
+          !_model->LinkNameExists(parentName) &&
           !_model->JointNameExists(parentName) &&
           !_model->FrameNameExists(parentName))
       {
@@ -2267,6 +2270,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       }
 
       const std::string &childName = joint->ChildLinkName();
+      const std::string childLocalName = sdf::SplitName(childName).second;
       if (childName == "world")
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
@@ -2274,7 +2278,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
-      if (!_model->LinkNameExists(childName) &&
+      if (childLocalName != "__model__" && !_model->LinkNameExists(childName) &&
           !_model->JointNameExists(childName) &&
           !_model->FrameNameExists(childName) &&
           !_model->ModelNameExists(childName))
