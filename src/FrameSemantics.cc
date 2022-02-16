@@ -960,11 +960,6 @@ Errors buildFrameAttachedToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
-  else if (!_model->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
-  }
   return wrapperBuildFrameAttachedToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
 
@@ -1011,11 +1006,6 @@ Errors buildFrameAttachedToGraph(
   if (!_world)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
-  }
-  else if (!_world->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
   }
 
   return buildFrameAttachedToGraph(_out, WorldWrapper(*_world));
@@ -1133,11 +1123,6 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
   }
-  else if (!_model->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
-  }
 
   return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
@@ -1197,11 +1182,7 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
   }
-  else if (!_world->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
-  }
+
   return wrapperBuildPoseRelativeToGraph(_out, WorldWrapper(*_world));
 }
 
