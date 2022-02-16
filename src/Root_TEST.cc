@@ -307,7 +307,6 @@ TEST(DOMRoot, AddWorld)
   sdf::Errors errors = root.AddWorld(world);
   EXPECT_TRUE(errors.empty());
   EXPECT_EQ(1u, root.WorldCount());
-  EXPECT_FALSE(root.AddWorld(world).empty());
   ASSERT_FALSE(root.AddWorld(world).empty());
   EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, root.AddWorld(world)[0].Code());
   EXPECT_EQ(1u, root.WorldCount());
