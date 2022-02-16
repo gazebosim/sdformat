@@ -30,6 +30,8 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Link.hh"
+#include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
@@ -47,10 +49,10 @@ namespace sdf
     /// be a valid USD path.
     /// \param[in] _rigidBody Whether the link is a rigid body (i.e.,
     /// non-static) or not. True for rigid body, false otherwise
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no errors occurred
-    /// when parsing _link to its USD representation.
-    sdf::Errors SDFORMAT_VISIBLE ParseSdfLink(const sdf::Link &_link,
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no errors
+    /// occurred when parsing _link to its USD representation.
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLink(const sdf::Link &_link,
         pxr::UsdStageRefPtr &_stage, const std::string &_path,
         bool _rigidBody);
   }

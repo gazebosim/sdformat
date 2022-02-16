@@ -33,7 +33,9 @@
 
 #include "sdf/Joint.hh"
 #include "sdf/Model.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
+#include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
@@ -54,10 +56,11 @@ namespace sdf
     /// the USD joint's relative links.
     /// \param[in] _worldPath The USD path of the world prim. This is needed if
     /// _joint's parent is the world.
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no errors occurred
-    /// when parsing _joint to its USD representation.
-    sdf::Errors SDFORMAT_VISIBLE ParseSdfJoint(const sdf::Joint &_joint,
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no errors
+    /// occurred when parsing _joint to its USD representation.
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfJoint(
+        const sdf::Joint &_joint,
         pxr::UsdStageRefPtr &_stage, const std::string &_path,
         const sdf::Model &_parentModel,
         const std::unordered_map<std::string, pxr::SdfPath> &_linkToUSDPath,

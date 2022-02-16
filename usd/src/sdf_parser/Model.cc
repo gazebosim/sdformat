@@ -23,7 +23,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -37,7 +37,7 @@
 #include "sdf/Model.hh"
 #include "sdf/usd/sdf_parser/Joint.hh"
 #include "sdf/usd/sdf_parser/Link.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -46,15 +46,16 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
+  UsdErrors ParseSdfModel(const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
       const std::string &_path, const pxr::SdfPath &_worldPath)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
 
     if (_model.ModelCount())
     {
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-            "Nested models currently aren't supported."));
+      errors.push_back(UsdError(
+            sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+              "Nested models currently aren't supported.")));
       return errors;
     }
 
@@ -73,12 +74,40 @@ namespace usd
           _model.RawPose().X(),
           _model.RawPose().Y(),
           _model.RawPose().Z() - (0.5 * kPlaneThickness));
-      usd::SetPose(ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
+      const auto poseErrors = usd::SetPose(
+          ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
           _stage, sdfModelPath);
+      if (!poseErrors.empty())
+      {
+        for (const auto &e : poseErrors)
+          errors.push_back(e);
+        errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Unable to set the pose of the USD ground plane prim named ["
+              + _model.Name() + "]"));
+        return errors;
+      }
     }
     else
     {
-      usd::SetPose(usd::PoseWrtParent(_model), _stage, sdfModelPath);
+      ignition::math::Pose3d pose;
+      auto poseErrors = usd::PoseWrtParent(_model, pose);
+      if (!poseErrors.empty())
+      {
+        for (const auto &e : poseErrors)
+          errors.push_back(e);
+        return errors;
+      }
+
+      poseErrors = usd::SetPose(pose, _stage, sdfModelPath);
+      if (!poseErrors.empty())
+      {
+        for (const auto &e : poseErrors)
+          errors.push_back(e);
+        errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Unable to set the pose of the model prim corresponding to the "
+              "SDF model named [" + _model.Name() + "]"));
+        return errors;
+      }
     }
 
     // Parse all of the model's links and convert them to USD.
@@ -90,11 +119,13 @@ namespace usd
       const auto link = *(_model.LinkByIndex(i));
       const auto linkPath = std::string(_path + "/" + link.Name());
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
-      sdf::Errors linkErrors = ParseSdfLink(link, _stage, linkPath, !_model.Static());
-      if (linkErrors.size() > 0)
+      UsdErrors linkErrors = ParseSdfLink(
+        link, _stage, linkPath, !_model.Static());
+      if (!linkErrors.empty())
       {
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-              "Error parsing link [" + link.Name() + "]"));
+        errors.push_back(
+          UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Error parsing link [" + link.Name() + "]"));
         errors.insert(errors.end(), linkErrors.begin(), linkErrors.end());
         return errors;
       }
@@ -109,9 +140,8 @@ namespace usd
             sdfLinkToUSDPath, _worldPath);
       if (!jointErrors.empty())
       {
-        // TODO(adlarkin) change error code to USD-specific error code once
-        // USD-specific error codes are supported
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+        errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
               "Error parsing joint [" + joint.Name() + "]."));
         errors.insert(errors.end(), jointErrors.begin(), jointErrors.end());
         return errors;
