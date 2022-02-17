@@ -560,6 +560,13 @@ const Frame *Model::FrameByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Frame *Model::FrameByIndex(uint64_t _index)
+{
+  return const_cast<Frame*>(
+      static_cast<const Model*>(this)->FrameByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Model::FrameNameExists(const std::string &_name) const
 {
   return nullptr != this->FrameByName(_name);
@@ -592,6 +599,13 @@ const Frame *Model::FrameByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Frame *Model::FrameByName(const std::string &_name)
+{
+  return const_cast<Frame*>(
+      static_cast<const Model*>(this)->FrameByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -1032,4 +1046,19 @@ void Model::ClearJoints()
 void Model::ClearModels()
 {
   this->dataPtr->models.clear();
+}
+
+//////////////////////////////////////////////////
+bool Model::AddFrame(const Frame &_frame)
+{
+  if (this->FrameNameExists(_frame.Name()))
+    return false;
+  this->dataPtr->frames.push_back(_frame);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Model::ClearFrames()
+{
+  this->dataPtr->frames.clear();
 }

@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -283,6 +284,40 @@ TEST(DOMModel, AddModel)
   const sdf::Model *modelFromModel = model.ModelByIndex(0);
   ASSERT_NE(nullptr, modelFromModel);
   EXPECT_EQ(modelFromModel->Name(), nestedModel.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, AddModifyFrame)
+{
+  sdf::Model model;
+  EXPECT_EQ(0u, model.FrameCount());
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+  EXPECT_FALSE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+
+  model.ClearFrames();
+  EXPECT_EQ(0u, model.FrameCount());
+
+  EXPECT_TRUE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+
+  const sdf::Frame *frameFromModel = model.FrameByIndex(0);
+  ASSERT_NE(nullptr, frameFromModel);
+  EXPECT_EQ(frameFromModel->Name(), frame.Name());
+
+  sdf::Frame *mutableFrame = model.FrameByIndex(0);
+  mutableFrame->SetName("newName1");
+  EXPECT_EQ(mutableFrame->Name(), model.FrameByIndex(0)->Name());
+
+  sdf::Frame *mutableFrameByName = model.FrameByName("frame1");
+  EXPECT_EQ(nullptr, mutableFrameByName);
+  mutableFrameByName = model.FrameByName("newName1");
+  ASSERT_NE(nullptr, mutableFrameByName);
+  EXPECT_EQ(mutableFrameByName->Name(), model.FrameByName("newName1")->Name());
 }
 
 /////////////////////////////////////////////////
