@@ -77,13 +77,6 @@ namespace sdf
       return errors;
     }
 
-    inline std::string removeDash(const std::string &_str)
-    {
-      std::string result = _str;
-      std::replace(result.begin(), result.end(), '-', '_');
-      return result;
-    }
-
     /// \brief Set the pose of a USD prim.
     /// \param[in] _pose The pose to set.
     /// \param[in] _stage The stage that contains the USD prim at path _usdPath.

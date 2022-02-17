@@ -17,12 +17,11 @@
 
 #include "sdf/usd/sdf_parser/Visual.hh"
 
-#include <iostream>
 #include <string>
 
 #include <ignition/math/Pose3.hh>
 
-// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -84,7 +83,7 @@ namespace usd
     auto geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
     if (!geomErrors.empty())
     {
-      errors.insert(errors.end(), geomErrors.begin(), geomErrors.end() );
+      errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
       errors.push_back(UsdError(
         sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
         "Error parsing geometry attached to visual [" + _visual.Name() + "]"));

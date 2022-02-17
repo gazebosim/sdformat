@@ -117,11 +117,6 @@ namespace usd
         centerOfMass.Pos().Z()));
     }
 
-    // TODO(adlarkin) finish parsing link. It will look something like this
-    // (this does not cover all elements of a link that need to be parsed):
-    //  * ParseSdfVisual
-    //  * ParseSdfCollision
-
     // parse all of the link's visuals and convert them to USD
     for (uint64_t i = 0; i < _link.VisualCount(); ++i)
     {
