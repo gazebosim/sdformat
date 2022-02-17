@@ -55,6 +55,10 @@ TEST(DOMLight, DefaultConstruction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
+  EXPECT_TRUE(light.LightOn());
+  light.SetLightOn(false);
+  EXPECT_FALSE(light.LightOn());
+
   EXPECT_FALSE(light.CastShadows());
   light.SetCastShadows(true);
   EXPECT_TRUE(light.CastShadows());
@@ -113,6 +117,7 @@ TEST(DOMLight, CopyConstructor)
   light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
+  light.SetLightOn(false);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
@@ -131,6 +136,7 @@ TEST(DOMLight, CopyConstructor)
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
+  EXPECT_FALSE(light2.LightOn());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
@@ -153,6 +159,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
+  light.SetLightOn(false);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
@@ -172,6 +179,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
+  EXPECT_FALSE(light2.LightOn());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
@@ -194,6 +202,7 @@ TEST(DOMLight, MoveConstructor)
   light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
+  light.SetLightOn(false);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
@@ -212,6 +221,7 @@ TEST(DOMLight, MoveConstructor)
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
+  EXPECT_FALSE(light2.LightOn());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
@@ -234,6 +244,7 @@ TEST(DOMLight, MoveAssignment)
   light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
+  light.SetLightOn(false);
   light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
   light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
@@ -253,6 +264,7 @@ TEST(DOMLight, MoveAssignment)
   EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
+  EXPECT_FALSE(light2.LightOn());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
