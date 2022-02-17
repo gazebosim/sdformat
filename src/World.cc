@@ -513,6 +513,13 @@ const Frame *World::FrameByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Frame *World::FrameByIndex(uint64_t _index)
+{
+  return const_cast<Frame*>(
+      static_cast<const World*>(this)->FrameByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool World::FrameNameExists(const std::string &_name) const
 {
   return nullptr != this->FrameByName(_name);
@@ -545,6 +552,13 @@ const Frame *World::FrameByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Frame *World::FrameByName(const std::string &_name)
+{
+  return const_cast<Frame*>(
+      static_cast<const World*>(this)->FrameByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -924,6 +938,12 @@ void World::ClearPhysics()
 }
 
 /////////////////////////////////////////////////
+void World::ClearFrames()
+{
+  this->dataPtr->frames.clear();
+}
+
+/////////////////////////////////////////////////
 bool World::AddModel(const Model &_model)
 {
   if (this->ModelNameExists(_model.Name()))
@@ -958,6 +978,16 @@ bool World::AddPhysics(const Physics &_physics)
   if (this->PhysicsNameExists(_physics.Name()))
     return false;
   this->dataPtr->physics.push_back(_physics);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddFrame(const Frame &_frame)
+{
+  if (this->FrameNameExists(_frame.Name()))
+    return false;
+  this->dataPtr->frames.push_back(_frame);
 
   return true;
 }

@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
+#include "sdf/Frame.hh"
 #include "sdf/Light.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Model.hh"
@@ -374,6 +375,39 @@ TEST(DOMWorld, AddModel)
   const sdf::Model *modelFromWorld = world.ModelByIndex(0);
   ASSERT_NE(nullptr, modelFromWorld);
   EXPECT_EQ(modelFromWorld->Name(), model.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, AddModifyFrame)
+{
+  sdf::World world;
+  EXPECT_EQ(0u, world.FrameCount());
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(world.AddFrame(frame));
+  EXPECT_EQ(1u, world.FrameCount());
+  EXPECT_FALSE(world.AddFrame(frame));
+  EXPECT_EQ(1u, world.FrameCount());
+
+  world.ClearFrames();
+  EXPECT_EQ(0u, world.FrameCount());
+
+  EXPECT_TRUE(world.AddFrame(frame));
+  EXPECT_EQ(1u, world.FrameCount());
+  const sdf::Frame *frameFromWorld = world.FrameByIndex(0);
+  ASSERT_NE(nullptr, frameFromWorld);
+  EXPECT_EQ(frameFromWorld->Name(), frame.Name());
+
+  sdf::Frame *mutableFrame = world.FrameByIndex(0);
+  mutableFrame->SetName("newName1");
+  EXPECT_EQ(mutableFrame->Name(), world.FrameByIndex(0)->Name());
+
+  sdf::Frame *mutableFrameByName = world.FrameByName("frame1");
+  EXPECT_EQ(nullptr, mutableFrameByName);
+  mutableFrameByName = world.FrameByName("newName1");
+  ASSERT_NE(nullptr, mutableFrameByName);
+  EXPECT_EQ(mutableFrameByName->Name(), world.FrameByName("newName1")->Name());
 }
 
 /////////////////////////////////////////////////
