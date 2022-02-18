@@ -27,6 +27,7 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/base/gf/quatf.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
@@ -103,9 +104,17 @@ namespace usd
           static_cast<float>(_link.Inertial().MassMatrix().Mass()));
 
       const auto diagonalInertial =
-        _link.Inertial().MassMatrix().DiagonalMoments();
+        _link.Inertial().MassMatrix().PrincipalMoments();
       massAPI.CreateDiagonalInertiaAttr().Set(pxr::GfVec3f(
         diagonalInertial[0], diagonalInertial[1], diagonalInertial[2]));
+
+      const auto principalAxes =
+        _link.Inertial().MassMatrix().PrincipalAxesOffset();
+      massAPI.CreatePrincipalAxesAttr().Set(pxr::GfQuatf(
+            principalAxes.W(),
+            principalAxes.X(),
+            principalAxes.Y(),
+            principalAxes.Z()));
 
       const auto centerOfMass = _link.Inertial().Pose();
       massAPI.CreateCenterOfMassAttr().Set(pxr::GfVec3f(
