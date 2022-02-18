@@ -239,7 +239,7 @@ namespace sdf
     /// \brief Remove all physics.
     public: void ClearPhysics();
 
-    /// \brief Remove all frame.
+    /// \brief Remove all frames.
     public: void ClearFrames();
 
     /// \brief Get the number of actors.
