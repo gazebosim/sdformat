@@ -109,8 +109,18 @@ if (BUILD_SDF)
   ign_find_package(ignition-utils1 VERSION REQUIRED)
   set(IGN_UTILS_VER ${ignition-utils1_VERSION_MAJOR})
 
+  ########################################
+  # Find ignition common
+  ign_find_package(ignition-common5 COMPONENTS graphics REQUIRED_BY usd)
+  set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
 
-  ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
+  ########################################
+  # Find PXR
+  ign_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
+
+  ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
+    COMPONENTS usd)
+
   ign_create_packages()
 
   add_subdirectory(sdf)

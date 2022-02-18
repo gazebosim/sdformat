@@ -21,7 +21,10 @@ using namespace sdf;
 
 class sdf::NestedInclude::Implementation
 {
-
+  /// \brief Whether the included model should be merged as specified in
+  /// //include/[@merge]
+  /// This is nullopt if `//include/[@merge]` is is not set.
+  public: std::optional<bool> isMerge;
 };
 
 SDF_SUPPRESS_DEPRECATED_BEGIN
@@ -144,3 +147,15 @@ void NestedInclude::SetIncludeElement(sdf::ElementPtr _includeElement)
   this->includeElement = _includeElement;
 }
 SDF_SUPPRESS_DEPRECATED_END
+
+/////////////////////////////////////////////////
+void NestedInclude::SetIsMerge(bool _isMerge)
+{
+  this->dataPtr->isMerge = _isMerge;
+}
+
+/////////////////////////////////////////////////
+const std::optional<bool> &NestedInclude::IsMerge() const
+{
+  return this->dataPtr->isMerge;
+}

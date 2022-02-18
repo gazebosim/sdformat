@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="joint_child_model_frame">
+    <link name="base_link">
+      <pose>0 0 1 0 0 0</pose>
+    </link>
+
+    <link name="parent_link">
+      <pose>1 0 0 0 0 0</pose>
+    </link>
+
+    <joint name="joint" type="fixed">
+      <parent>parent_link</parent>
+      <child>__model__</child>
+    </joint>
+  </model>
+</sdf>

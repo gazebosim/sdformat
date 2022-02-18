@@ -145,7 +145,7 @@ namespace sdf
     VERSION_DEPRECATED,
 
     /// \brief Merge include is unspported for the type of entity being
-    /// included.
+    /// included, or the custom parser does not support merge includes.
     MERGE_INCLUDE_UNSUPPORTED,
   };
 

@@ -52,6 +52,9 @@ class InterfaceModel::Implementation
 
   /// \brief Collection of child interface links
   public: std::vector<sdf::InterfaceLink> links;
+
+  /// \brief Whether the custom parser supports merge-includes
+  public: bool parserSupportsMergeInclude {false};
 };
 
 InterfaceModel::InterfaceModel(const std::string &_name,
@@ -143,19 +146,34 @@ const std::vector<sdf::InterfaceLink> &InterfaceModel::Links() const
 }
 
 /////////////////////////////////////////////////
-void InterfaceModel::InvokeRespostureFunction(
-    sdf::ScopedGraph<PoseRelativeToGraph> _graph) const
+bool InterfaceModel::ParserSupportsMergeInclude() const
 {
+  return this->dataPtr->parserSupportsMergeInclude;
+}
+
+/////////////////////////////////////////////////
+void InterfaceModel::SetParserSupportsMergeInclude(bool _val)
+{
+  this->dataPtr->parserSupportsMergeInclude = _val;
+}
+
+/////////////////////////////////////////////////
+void InterfaceModel::InvokeRepostureFunction(
+    sdf::ScopedGraph<PoseRelativeToGraph> _graph,
+    const std::optional<std::string> &_name) const
+{
+  const auto name = _name.value_or(this->Name());
+
   if (this->dataPtr->repostureFunction)
   {
     this->dataPtr->repostureFunction(
-        sdf::InterfaceModelPoseGraph(this->dataPtr->name, _graph));
+        sdf::InterfaceModelPoseGraph(name, _graph));
   }
 
   for (const auto &nestedIfaceModel : this->dataPtr->nestedModels)
   {
-    nestedIfaceModel->InvokeRespostureFunction(
-        _graph.ChildModelScope(this->Name()));
+    nestedIfaceModel->InvokeRepostureFunction(
+        _graph.ChildModelScope(name), {});
   }
 }
 }
