@@ -31,11 +31,13 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/base/gf/quatf.h>
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/prim.h>
+#include <pxr/usd/usdPhysics/massAPI.h>
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -159,11 +161,13 @@ void HasScaleXFormOp(const pxr::UsdPrim &_usdPrim)
 /// \param[in] _usdPrim The USD prim
 /// \param[in] _targetMass Mass of the link that _usdPrim should have
 /// \param[in] _targetDiagonalInertia Diagonal Inertia that _usdPrim should have
+/// \param[in] _targetPrincipalAxes The principal axes that _usdPrim should have
 /// \param[in] _targetCenterOfMass Center of mass that _usdPrim should have
 /// \param[in] _isRigid True if _usdPrim should be a rigid body, False otherwise
 void CheckInertial(const pxr::UsdPrim &_usdPrim,
     float _targetMass,
     const pxr::GfVec3f &_targetDiagonalInertia,
+    const pxr::GfQuatf &_targetPrincipalAxes,
     const pxr::GfVec3f &_targetCenterOfMass,
     bool _isRigid)
 {
@@ -191,6 +195,22 @@ void CheckInertial(const pxr::UsdPrim &_usdPrim,
   }
   EXPECT_TRUE(checkedDiagInertia);
 
+  bool checkedPrincipalAxes = false;
+  if (auto principalAxesAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:principalAxes")))
+  {
+    pxr::GfQuatf principalAxesUSD;
+    principalAxesAttr.Get(&principalAxesUSD);
+    EXPECT_FLOAT_EQ(principalAxesUSD.GetReal(), _targetPrincipalAxes.GetReal());
+    const auto &usdImaginary = principalAxesUSD.GetImaginary();
+    const auto &targetImaginary = _targetPrincipalAxes.GetImaginary();
+    EXPECT_FLOAT_EQ(usdImaginary[0], targetImaginary[0]);
+    EXPECT_FLOAT_EQ(usdImaginary[1], targetImaginary[1]);
+    EXPECT_FLOAT_EQ(usdImaginary[2], targetImaginary[2]);
+    checkedPrincipalAxes = true;
+  }
+  EXPECT_TRUE(checkedPrincipalAxes);
+
   bool checkedCOM = false;
   if (auto comAttr =
       _usdPrim.GetAttribute(pxr::TfToken("physics:centerOfMass")))
@@ -205,6 +225,7 @@ void CheckInertial(const pxr::UsdPrim &_usdPrim,
   EXPECT_TRUE(checkedCOM);
 
   EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+  EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsMassAPI>());
 }
 } // namespace testing
 } // namespace usd
