@@ -57,5 +57,19 @@
       <parent>L1</parent>
       <child>M1::M2</child>
     </joint>
+
+    <!-- Joint with a nested model frame as a parent  -->
+    <joint name="J6" type="fixed">
+      <pose>0 0 1 0 0 0</pose>
+      <parent>M1::__model__</parent>
+      <child>L1</child>
+    </joint>
+
+    <!-- Joint with a nested model frame as a child  -->
+    <joint name="J7" type="fixed">
+      <pose>0 0 1 0 0 0</pose>
+      <parent>L1</parent>
+      <child>M1::__model__</child>
+    </joint>
   </model>
 </sdf>

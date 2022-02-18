@@ -246,7 +246,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 
   ElementPtr proxyModelFrame = _parent->AddElement("frame");
   const std::string proxyModelFrameName =
-      "_merged__" + model->Name() + "__model__";
+      computeMergedModelProxyFrameName(model->Name());
 
   proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
 
@@ -324,6 +324,18 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     {
       setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
                                false);
+
+      auto parent = elem->FindElement("parent");
+      if (nullptr != parent && parent->Get<std::string>() == "__model__")
+      {
+        parent->Set(proxyModelFrameName);
+      }
+      auto child = elem->FindElement("child");
+      if (nullptr != child && child->Get<std::string>() == "__model__")
+      {
+        child->Set(proxyModelFrameName);
+      }
+
       // cppcheck-suppress syntaxError
       // cppcheck-suppress unmatchedSuppression
       if (auto axis = elem->GetElementImpl("axis"); axis)
@@ -728,7 +740,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelFile(filename, &doc);
+    u2g.InitModelFile(filename, _config, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -805,7 +817,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, &doc);
+    u2g.InitModelString(_xmlString, _config, &doc);
 
     if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                     _config, _errors))
@@ -1573,7 +1585,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           SDFPtr includeSDF(new SDF);
           includeSDF->Root(includeSDFTemplate->Root()->Clone());
 
-          if (!readFile(filename, includeSDF))
+          if (!readFile(filename, _config, includeSDF, _errors))
           {
             Error err(
                 ErrorCode::FILE_READ,
@@ -2534,7 +2546,10 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       auto joint = _model->JointByIndex(j);
 
       const std::string &parentName = joint->ParentLinkName();
-      if (parentName != "world" && !_model->LinkNameExists(parentName) &&
+      const std::string parentLocalName = sdf::SplitName(parentName).second;
+
+      if (parentName != "world" && parentLocalName != "__model__" &&
+          !_model->LinkNameExists(parentName) &&
           !_model->JointNameExists(parentName) &&
           !_model->FrameNameExists(parentName))
       {
@@ -2545,6 +2560,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       }
 
       const std::string &childName = joint->ChildLinkName();
+      const std::string childLocalName = sdf::SplitName(childName).second;
       if (childName == "world")
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
@@ -2552,7 +2568,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
-      if (!_model->LinkNameExists(childName) &&
+      if (childLocalName != "__model__" && !_model->LinkNameExists(childName) &&
           !_model->JointNameExists(childName) &&
           !_model->FrameNameExists(childName) &&
           !_model->ModelNameExists(childName))
