@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+
+  <model name="top_nested">
+    <include>
+      <uri>sub_nested</uri>
+    </include>
+  </model>
+
+</sdf>

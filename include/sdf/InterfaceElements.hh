@@ -154,6 +154,17 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \param[in] _includeElement The include element
   public: void SetIncludeElement(sdf::ElementPtr _includeElement);
 
+
+  /// \brief Set whether the interface model is to be merge-included (i.e
+  /// set the value of `//include/[@merge]`)
+  /// \param[in] _isMerge True if the interface model is to be merge included
+  public: void SetIsMerge(bool _isMerge);
+
+  /// \brief Whether the interface model is to be merge-included
+  /// \return If `//include/[@merge]` is set, this returns the value of the
+  /// attribute, otherwise, nullopt.
+  public: const std::optional<bool> &IsMerge() const;
+
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
   /// not end with a file extension (it will not end with an extension if it
   /// refers to a model package).
