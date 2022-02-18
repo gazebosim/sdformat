@@ -85,7 +85,7 @@ class CustomTomlParser
 {
   /// \brief Constructor
   /// \param[in] _supportsMergeInclude Whether the parser supports merge include
-  /// \param[in] _overridePoseInParser Whether the parser should apply pose 
+  /// \param[in] _overridePoseInParser Whether the parser should apply pose
   /// overrides from //include/pose
   public: CustomTomlParser(bool _supportsMergeInclude = true,
                            bool _overridePoseInParser = true)
