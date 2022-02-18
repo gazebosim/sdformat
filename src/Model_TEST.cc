@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -286,6 +287,40 @@ TEST(DOMModel, AddModel)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMModel, AddModifyFrame)
+{
+  sdf::Model model;
+  EXPECT_EQ(0u, model.FrameCount());
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+  EXPECT_FALSE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+
+  model.ClearFrames();
+  EXPECT_EQ(0u, model.FrameCount());
+
+  EXPECT_TRUE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+
+  const sdf::Frame *frameFromModel = model.FrameByIndex(0);
+  ASSERT_NE(nullptr, frameFromModel);
+  EXPECT_EQ(frameFromModel->Name(), frame.Name());
+
+  sdf::Frame *mutableFrame = model.FrameByIndex(0);
+  mutableFrame->SetName("newName1");
+  EXPECT_EQ(mutableFrame->Name(), model.FrameByIndex(0)->Name());
+
+  sdf::Frame *mutableFrameByName = model.FrameByName("frame1");
+  EXPECT_EQ(nullptr, mutableFrameByName);
+  mutableFrameByName = model.FrameByName("newName1");
+  ASSERT_NE(nullptr, mutableFrameByName);
+  EXPECT_EQ("newName1", model.FrameByName("newName1")->Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMModel, ToElement)
 {
   sdf::Model model;
@@ -477,4 +512,101 @@ TEST(DOMModel, ToElementNestedHasUri)
   sdf::ElementPtr modelElem = elem->FindElement("model");
   ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ("child2", modelElem->GetAttribute("name")->GetAsString());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MutableByIndex)
+{
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+
+  // Modify the link
+  sdf::Link *l = model.LinkByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("link1", l->Name());
+  l->SetName("link2");
+  EXPECT_EQ("link2", model.LinkByIndex(0)->Name());
+
+  // Modify the joint
+  sdf::Joint *j = model.JointByIndex(0);
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_EQ("joint2", model.JointByIndex(0)->Name());
+
+  // Modify the nested model
+  sdf::Model *m = model.ModelByIndex(0);
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("child1", m->Name());
+  m->SetName("child2");
+  EXPECT_EQ("child2", model.ModelByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MutableByName)
+{
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(model.AddFrame(frame));
+
+  // Modify the link
+  sdf::Link *l = model.LinkByName("link1");
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("link1", l->Name());
+  l->SetName("link2");
+  EXPECT_FALSE(model.LinkNameExists("link1"));
+  EXPECT_TRUE(model.LinkNameExists("link2"));
+
+  // Modify the joint
+  sdf::Joint *j = model.JointByName("joint1");
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_FALSE(model.JointNameExists("joint1"));
+  EXPECT_TRUE(model.JointNameExists("joint2"));
+
+  // Modify the nested model
+  sdf::Model *m = model.ModelByName("child1");
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("child1", m->Name());
+  m->SetName("child2");
+  EXPECT_FALSE(model.ModelNameExists("child1"));
+  EXPECT_TRUE(model.ModelNameExists("child2"));
+
+  // Modify the frame
+  sdf::Frame *f = model.FrameByName("frame1");
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_FALSE(model.FrameNameExists("frame1"));
+  EXPECT_TRUE(model.FrameNameExists("frame2"));
 }
