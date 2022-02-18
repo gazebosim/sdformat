@@ -407,7 +407,7 @@ TEST(DOMWorld, AddModifyFrame)
   EXPECT_EQ(nullptr, mutableFrameByName);
   mutableFrameByName = world.FrameByName("newName1");
   ASSERT_NE(nullptr, mutableFrameByName);
-  EXPECT_EQ(mutableFrameByName->Name(), world.FrameByName("newName1")->Name());
+  EXPECT_EQ("newName1", world.FrameByName("newName1")->Name());
 }
 
 /////////////////////////////////////////////////
@@ -589,6 +589,10 @@ TEST(DOMWorld, MutableByIndex)
   physics.SetName("physics1");
   EXPECT_TRUE(world.AddPhysics(physics));
 
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(world.AddFrame(frame));
+
   // Modify the model
   sdf::Model *m = world.ModelByIndex(0);
   ASSERT_NE(nullptr, m);
@@ -616,6 +620,13 @@ TEST(DOMWorld, MutableByIndex)
   EXPECT_EQ("physics1", p->Name());
   p->SetName("physics2");
   EXPECT_EQ("physics2", world.PhysicsByIndex(1)->Name());
+
+  // Modify the frame
+  sdf::Frame *f = world.FrameByIndex(0);
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_EQ("frame2", world.FrameByIndex(0)->Name());
 }
 
 /////////////////////////////////////////////////
@@ -627,6 +638,10 @@ TEST(DOMWorld, MutableByName)
   model.SetName("model1");
   EXPECT_TRUE(world.AddModel(model));
 
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(world.AddFrame(frame));
+
   // Modify the model
   sdf::Model *m = world.ModelByName("model1");
   ASSERT_NE(nullptr, m);
@@ -634,4 +649,12 @@ TEST(DOMWorld, MutableByName)
   m->SetName("model2");
   EXPECT_FALSE(world.ModelByName("model1"));
   EXPECT_TRUE(world.ModelByName("model2"));
+
+  // Modify the frame
+  sdf::Frame *f = world.FrameByName("frame1");
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_FALSE(world.FrameByName("frame1"));
+  EXPECT_TRUE(world.FrameByName("frame2"));
 }
