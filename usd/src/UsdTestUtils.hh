@@ -32,6 +32,7 @@
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/prim.h>
+#include <pxr/usd/usdPhysics/massAPI.h>
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -154,6 +155,7 @@ void CheckInertial(const pxr::UsdPrim &_usdPrim,
   EXPECT_TRUE(checkedCOM);
 
   EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+  EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsMassAPI>());
 }
 } // namespace testing
 } // namespace usd
