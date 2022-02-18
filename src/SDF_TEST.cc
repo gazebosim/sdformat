@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <any>
 #include <ignition/math.hh>
+#include <ignition/utils/Environment.hh>
 
 #include "sdf/sdf.hh"
 
@@ -643,14 +644,9 @@ TEST(SDF, ToStringAndParse)
 bool create_new_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  const char *tmp = getenv("TMPDIR");
-  if (tmp)
+  if(!ignition::utils::env("TMPDIR", tmppath))
   {
-    tmppath = std::string(tmp);
-  }
-  else
-  {
-    tmppath = std::string("/tmp");
+    tmppath = "/tmp";
   }
 
   tmppath += "/XXXXXX";

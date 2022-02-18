@@ -25,6 +25,8 @@
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 
+#include <ignition/utils/Environment.hh>
+
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
 {
@@ -75,12 +77,13 @@ TEST(Parser, CustomUnknownElements)
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
 #ifndef _WIN32
-  char *homeDir = getenv("HOME");
+  std::string homeVarName = "HOME";
 #else
-  char *homeDir;
-  size_t sz = 0;
-  _dupenv_s(&homeDir, &sz, "HOMEPATH");
+  std::string homeVarName = "HOMEPATH";
 #endif
+
+  std::string homeDir;
+  ASSERT_TRUE(ignition::utils::env(homeVarName, homeDir));
 
   std::string pathLog =
     sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
