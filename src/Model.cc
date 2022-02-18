@@ -790,3 +790,13 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
     return &this->dataPtr->interfaceModels[_index].first;
   return nullptr;
 }
+
+/////////////////////////////////////////////////
+bool Model::NameExistsInFrameAttachedToGraph(const std::string &_name) const
+{
+  if (!this->dataPtr->frameAttachedToGraph)
+    return false;
+
+  return this->dataPtr->frameAttachedToGraph.VertexIdByName(sdf::JoinName(
+             this->Name(), _name)) != ignition::math::graph::kNullId;
+}

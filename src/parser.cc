@@ -2259,9 +2259,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       const std::string parentLocalName = sdf::SplitName(parentName).second;
 
       if (parentName != "world" && parentLocalName != "__model__" &&
-          !_model->LinkNameExists(parentName) &&
-          !_model->JointNameExists(parentName) &&
-          !_model->FrameNameExists(parentName))
+          !_model->NameExistsInFrameAttachedToGraph(parentName))
       {
         errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
           "parent frame with name[" + parentName +
@@ -2278,10 +2276,8 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
-      if (childLocalName != "__model__" && !_model->LinkNameExists(childName) &&
-          !_model->JointNameExists(childName) &&
-          !_model->FrameNameExists(childName) &&
-          !_model->ModelNameExists(childName))
+      if (childLocalName != "__model__" &&
+          !_model->NameExistsInFrameAttachedToGraph(childName))
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
           "child frame with name[" + childName +

@@ -309,6 +309,23 @@ TEST(DOMRoot, MultiNestedModel)
   EXPECT_EQ(innerModel->FrameByIndex(0),
             outerModel->FrameByName(innerFrameNestedName));
   EXPECT_NE(nullptr, outerModel->FrameByName(innerFrameNestedName));
+
+
+  // Check that each implicit/explicit frame is in the frame attached to graph
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("outer_link"));
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("outer_joint"));
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("outer_frame"));
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("mid_model"));
+
+  // Check that mid_link does not exist directly under outer_model, but can be
+  // accessed via its scoped name
+  EXPECT_FALSE(outerModel->NameExistsInFrameAttachedToGraph("mid_link"));
+  EXPECT_TRUE(
+      outerModel->NameExistsInFrameAttachedToGraph("mid_model::mid_link"));
+
+  // Check multiple levels of nesting
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph(
+      "mid_model::inner_model::inner_joint"));
 }
 
 /////////////////////////////////////////////////
