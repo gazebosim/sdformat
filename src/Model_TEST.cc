@@ -317,7 +317,7 @@ TEST(DOMModel, AddModifyFrame)
   EXPECT_EQ(nullptr, mutableFrameByName);
   mutableFrameByName = model.FrameByName("newName1");
   ASSERT_NE(nullptr, mutableFrameByName);
-  EXPECT_EQ(mutableFrameByName->Name(), model.FrameByName("newName1")->Name());
+  EXPECT_EQ("newName1", model.FrameByName("newName1")->Name());
 }
 
 /////////////////////////////////////////////////
@@ -574,6 +574,10 @@ TEST(DOMModel, MutableByName)
   nestedModel.SetName("child1");
   EXPECT_TRUE(model.AddModel(nestedModel));
 
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(model.AddFrame(frame));
+
   // Modify the link
   sdf::Link *l = model.LinkByName("link1");
   ASSERT_NE(nullptr, l);
@@ -597,4 +601,12 @@ TEST(DOMModel, MutableByName)
   m->SetName("child2");
   EXPECT_FALSE(model.ModelNameExists("child1"));
   EXPECT_TRUE(model.ModelNameExists("child2"));
+
+  // Modify the frame
+  sdf::Frame *f = model.FrameByName("frame1");
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_FALSE(model.FrameNameExists("frame1"));
+  EXPECT_TRUE(model.FrameNameExists("frame2"));
 }
