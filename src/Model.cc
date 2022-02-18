@@ -469,6 +469,13 @@ const Link *Model::LinkByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Link *Model::LinkByIndex(uint64_t _index)
+{
+  return const_cast<Link*>(
+      static_cast<const Model*>(this)->LinkByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Model::LinkNameExists(const std::string &_name) const
 {
   return nullptr != this->LinkByName(_name);
@@ -486,6 +493,13 @@ const Joint *Model::JointByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->joints.size())
     return &this->dataPtr->joints[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Joint *Model::JointByIndex(uint64_t _index)
+{
+  return const_cast<Joint*>(
+      static_cast<const Model*>(this)->JointByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -521,6 +535,14 @@ const Joint *Model::JointByName(const std::string &_name) const
     }
   }
   return nullptr;
+
+}
+
+/////////////////////////////////////////////////
+Joint *Model::JointByName(const std::string &_name)
+{
+  return const_cast<Joint*>(
+      static_cast<const Model*>(this)->JointByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -535,6 +557,13 @@ const Frame *Model::FrameByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->frames.size())
     return &this->dataPtr->frames[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Frame *Model::FrameByIndex(uint64_t _index)
+{
+  return const_cast<Frame*>(
+      static_cast<const Model*>(this)->FrameByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -573,6 +602,13 @@ const Frame *Model::FrameByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Frame *Model::FrameByName(const std::string &_name)
+{
+  return const_cast<Frame*>(
+      static_cast<const Model*>(this)->FrameByName(_name));
+}
+
+/////////////////////////////////////////////////
 uint64_t Model::ModelCount() const
 {
   return this->dataPtr->models.size();
@@ -584,6 +620,13 @@ const Model *Model::ModelByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->models.size())
     return &this->dataPtr->models[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Model *Model::ModelByIndex(uint64_t _index)
+{
+  return const_cast<Model*>(
+      static_cast<const Model*>(this)->ModelByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -613,6 +656,14 @@ const Model *Model::ModelByName(const std::string &_name) const
     return nextModel->ModelByName(_name.substr(index + 2));
   }
   return nextModel;
+
+}
+
+/////////////////////////////////////////////////
+Model *Model::ModelByName(const std::string &_name)
+{
+  return const_cast<Model*>(
+      static_cast<const Model*>(this)->ModelByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -825,6 +876,14 @@ const Link *Model::LinkByName(const std::string &_name) const
     }
   }
   return nullptr;
+
+}
+
+/////////////////////////////////////////////////
+Link *Model::LinkByName(const std::string &_name)
+{
+  return const_cast<Link*>(
+      static_cast<const Model*>(this)->LinkByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -987,4 +1046,19 @@ void Model::ClearJoints()
 void Model::ClearModels()
 {
   this->dataPtr->models.clear();
+}
+
+//////////////////////////////////////////////////
+bool Model::AddFrame(const Frame &_frame)
+{
+  if (this->FrameNameExists(_frame.Name()))
+    return false;
+  this->dataPtr->frames.push_back(_frame);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Model::ClearFrames()
+{
+  this->dataPtr->frames.clear();
 }
