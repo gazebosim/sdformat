@@ -38,6 +38,7 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
+#include "sdf/usd/sdf_parser/Model.hh"
 #include "test_config.h"
 #include "test_utils.hh"
 #include "../UsdTestUtils.hh"
@@ -102,8 +103,6 @@ TEST_F(UsdLightStageFixture, Lights)
   auto world = root.WorldByIndex(0u);
 
   // convert all lights attached directly to the world to USD
-  // TODO(adlarkin) convert and test lights attached to models once parsing
-  // functionality is added for sdf::Model to USD
   std::unordered_map<std::string, sdf::Light> lightPathToSdf;
   for (unsigned int i = 0; i < world->LightCount(); ++i)
   {
@@ -115,13 +114,47 @@ TEST_F(UsdLightStageFixture, Lights)
   }
   EXPECT_EQ(world->LightCount(), lightPathToSdf.size());
 
+  // parse all of the world's models and convert them to USD.
+  // Models can have lights attached to their links
+  for (uint64_t i = 0; i < world->ModelCount(); ++i)
+  {
+    // create a dummy world path so that we can call the sdf::usd::ParseSdfModel
+    // API
+    const auto worldPath = pxr::SdfPath("/" + world->Name());
+
+    const auto model = *(world->ModelByIndex(i));
+    const auto modelPath = std::string("/" + model.Name());
+    const auto errors =
+      sdf::usd::ParseSdfModel(model, this->stage, modelPath, worldPath);
+    EXPECT_TRUE(errors.empty());
+
+    // save the model's USD light paths so that they can be verified later
+    for (uint64_t j = 0; j < model.LinkCount(); ++j)
+    {
+      const auto link = *(model.LinkByIndex(j));
+      auto lightPathPrefix = modelPath + "/" + link.Name();
+
+      for (uint64_t k = 0; k < link.LightCount(); ++k)
+      {
+        const auto light = *(link.LightByIndex(k));
+        const auto lightPath = lightPathPrefix + "/" + light.Name();
+        lightPathToSdf[lightPath] = light;
+      }
+    }
+  }
+
   // check that the lights were parsed correctly
   int numPointLights = 0;
   int numSpotLights = 0;
   int numDirectionalLights = 0;
   for (const auto &prim : this->stage->Traverse())
   {
-    auto iter = lightPathToSdf.find(prim.GetPath().GetString());
+    if (!(prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
+          prim.IsA<pxr::UsdLuxNonboundableLightBase>()))
+    {
+      continue;
+    }
+    auto iter = lightPathToSdf.find(pxr::TfStringify(prim.GetPath()));
     ASSERT_NE(lightPathToSdf.end(), iter);
     const auto lightUsd = this->stage->GetPrimAtPath(pxr::SdfPath(iter->first));
     const auto lightSdf = iter->second;
@@ -164,7 +197,7 @@ TEST_F(UsdLightStageFixture, Lights)
       sdf::usd::testing::CheckPrimPose(lightUsd, pose);
     }
   }
-  EXPECT_EQ(1, numPointLights);
-  EXPECT_EQ(1, numSpotLights);
-  EXPECT_EQ(1, numDirectionalLights);
+  EXPECT_EQ(2, numPointLights);
+  EXPECT_EQ(2, numSpotLights);
+  EXPECT_EQ(2, numDirectionalLights);
 }
