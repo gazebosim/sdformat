@@ -20,7 +20,9 @@
 #include <iostream>
 #include <string>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+#include <ignition/common/Util.hh>
+
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -35,6 +37,8 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/World.hh"
+#include "sdf/usd/sdf_parser/Light.hh"
+#include "sdf/usd/sdf_parser/Model.hh"
 
 namespace sdf
 {
@@ -43,8 +47,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  UsdErrors ParseSdfWorld(const sdf::World &_world, pxr::UsdStageRefPtr &_stage,
-      const std::string &_path)
+  UsdErrors ParseSdfWorld(const sdf::World &_world,
+    pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     UsdErrors errors;
     _stage->SetMetadata(pxr::UsdGeomTokens->upAxis, pxr::UsdGeomTokens->z);
@@ -65,10 +69,37 @@ namespace usd
     usdPhysics.CreateGravityMagnitudeAttr().Set(
         static_cast<float>(sdfWorldGravity.Length()));
 
-    // TODO(ahcorde) Add parser
-    std::cerr << "Parser for a sdf world only parses physics information at "
-              << "the moment. Models and lights that are children of the world "
-              << "are currently being ignored.\n";
+    // parse all of the world's models and convert them to USD
+    for (uint64_t i = 0; i < _world.ModelCount(); ++i)
+    {
+      const auto model = *(_world.ModelByIndex(i));
+      auto modelPath = std::string(_path + "/" + model.Name());
+      modelPath = ignition::common::replaceAll(modelPath, " ", "");
+      UsdErrors modelErrors =
+        ParseSdfModel(model, _stage, modelPath, worldPrimPath);
+      if (!modelErrors.empty())
+      {
+        errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Error parsing model [" + model.Name() + "]"));
+        errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
+      }
+    }
+
+    for (uint64_t i = 0; i < _world.LightCount(); ++i)
+    {
+      const auto light = *(_world.LightByIndex(i));
+      auto lightPath = std::string(_path + "/" + light.Name());
+      lightPath = ignition::common::replaceAll(lightPath, " ", "");
+      UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
+      if (!lightErrors.empty())
+      {
+        errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Error parsing light [" + light.Name() + "]"));
+        errors.insert(errors.end(), lightErrors.begin(), lightErrors.end());
+      }
+    }
 
     return errors;
   }
