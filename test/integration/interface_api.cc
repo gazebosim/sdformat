@@ -83,8 +83,14 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
 
 class CustomTomlParser
 {
-  public: CustomTomlParser(bool _supportsMergeInclude = true)
-      : supportsMergeInclude(_supportsMergeInclude)
+  /// \brief Constructor
+  /// \param[in] _supportsMergeInclude Whether the parser supports merge include
+  /// \param[in] _overridePoseInParser Whether the parser should apply pose 
+  /// overrides from //include/pose
+  public: CustomTomlParser(bool _supportsMergeInclude = true,
+                           bool _overridePoseInParser = true)
+      : supportsMergeInclude(_supportsMergeInclude),
+        overridePoseInParser(_overridePoseInParser)
   {
   }
 
@@ -104,7 +110,7 @@ class CustomTomlParser
         param.Set(*_include.IsStatic());
         doc["static"] = {param};
       }
-      if (_include.IncludeRawPose().has_value())
+      if (this->overridePoseInParser && _include.IncludeRawPose().has_value())
       {
         // if //include/static is set, override the value in the inluded model
         sdf::Param poseParam("pose", "pose", "", false);
@@ -120,6 +126,7 @@ class CustomTomlParser
   }
 
   public: bool supportsMergeInclude;
+  public: bool overridePoseInParser{true};
 };
 
 bool endsWith(const std::string &_str, const std::string &_suffix)
@@ -552,16 +559,34 @@ TEST_F(InterfaceAPI, FrameSemantics)
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "include_with_interface_api_frame_semantics.sdf");
   this->config.RegisterCustomModelParser(this->customTomlParser);
-  sdf::Root root;
-  sdf::Errors errors = root.Load(testFile, config);
-  EXPECT_TRUE(errors.empty()) << errors;
+  {
+    sdf::Root root;
+    sdf::Errors errors = root.Load(testFile, config);
+    EXPECT_TRUE(errors.empty()) << errors;
 
-  const sdf::World *world = root.WorldByIndex(0);
-  ASSERT_NE(nullptr, world);
-  EXPECT_EQ(1u, world->InterfaceModelCount());
+    const sdf::World *world = root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    EXPECT_EQ(1u, world->InterfaceModelCount());
 
-  SCOPED_TRACE("InterfaceAPI.FrameSemantics");
-  this->CheckFrameSemantics(world);
+    SCOPED_TRACE("InterfaceAPI.FrameSemantics");
+    this->CheckFrameSemantics(world);
+  }
+  {
+    // Check without //include/pose override applied in parser.
+    sdf::Root root;
+    sdf::ParserConfig newConfig = this->config;
+    CustomTomlParser parserWithoutPoseOverride(true, false);
+    newConfig.RegisterCustomModelParser(parserWithoutPoseOverride);
+    sdf::Errors errors = root.Load(testFile, newConfig);
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    const sdf::World *world = root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    EXPECT_EQ(1u, world->InterfaceModelCount());
+
+    SCOPED_TRACE("InterfaceAPI.FrameSemantics_NoPoseOverrideInParser");
+    this->CheckFrameSemantics(world);
+  }
 }
 
 /////////////////////////////////////////////////
