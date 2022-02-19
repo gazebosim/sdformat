@@ -304,6 +304,11 @@ TEST(DOMVisual, ToElement)
   sdf::Material mat;
   visual.SetMaterial(mat);
 
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+  visual.AddPlugin(plugin);
+
   sdf::ElementPtr elem = visual.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -319,4 +324,32 @@ TEST(DOMVisual, ToElement)
   EXPECT_DOUBLE_EQ(visual.LaserRetro(), visual2.LaserRetro());
   EXPECT_NE(nullptr, visual2.Geom());
   EXPECT_NE(nullptr, visual2.Material());
+
+  ASSERT_EQ(1u, visual2.Plugins().size());
+  EXPECT_EQ("name1", visual2.Plugins()[0].Name());
+  EXPECT_EQ("filename1", visual2.Plugins()[0].Filename());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMVisual, Plugins)
+{
+  sdf::Visual visual;
+  EXPECT_TRUE(visual.Plugins().empty());
+
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+
+  visual.AddPlugin(plugin);
+  ASSERT_EQ(1u, visual.Plugins().size());
+
+  plugin.SetName("name2");
+  visual.AddPlugin(plugin);
+  ASSERT_EQ(2u, visual.Plugins().size());
+
+  EXPECT_EQ("name1", visual.Plugins()[0].Name());
+  EXPECT_EQ("name2", visual.Plugins()[1].Name());
+
+  visual.ClearPlugins();
+  EXPECT_TRUE(visual.Plugins().empty());
 }
