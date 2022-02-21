@@ -15,10 +15,13 @@
  *
  */
 
+#include <gtest/gtest.h>
+
 #include <string>
 #include <unordered_map>
 
-#include <gtest/gtest.h>
+#include <ignition/math/Pose3.hh>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/base/tf/token.h>
@@ -35,10 +38,11 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "sdf/usd/sdf_parser/Model.hh"
 #include "test_config.h"
 #include "test_utils.hh"
-#include "UsdTestUtils.hh"
+#include "../UsdTestUtils.hh"
+#include "../UsdUtils.hh"
 
 /////////////////////////////////////////////////
 // Fixture that creates a USD stage for each test case.
@@ -110,25 +114,31 @@ TEST_F(UsdLightStageFixture, Lights)
   }
   EXPECT_EQ(world->LightCount(), lightPathToSdf.size());
 
-  // parse all of the world's models and convert them to USD
+  // parse all of the world's models and convert them to USD.
+  // Models can have lights attached to their links
   for (uint64_t i = 0; i < world->ModelCount(); ++i)
   {
-    std::string pathTmp = std::string("/") + world->Name();
+    // create a dummy world path so that we can call the sdf::usd::ParseSdfModel
+    // API
+    const auto worldPath = pxr::SdfPath("/" + world->Name());
+
     const auto model = *(world->ModelByIndex(i));
+    const auto modelPath = std::string("/" + model.Name());
+    const auto errors =
+      sdf::usd::ParseSdfModel(model, this->stage, modelPath, worldPath);
+    EXPECT_TRUE(errors.empty());
+
+    // save the model's USD light paths so that they can be verified later
     for (uint64_t j = 0; j < model.LinkCount(); ++j)
     {
-      pathTmp += std::string("/") + model.Name();
       const auto link = *(model.LinkByIndex(j));
+      auto lightPathPrefix = modelPath + "/" + link.Name();
 
       for (uint64_t k = 0; k < link.LightCount(); ++k)
       {
         const auto light = *(link.LightByIndex(k));
-        std::string lightPath = pathTmp + "/" + link.Name()
-          + std::string("/") + light.Name();
+        const auto lightPath = lightPathPrefix + "/" + light.Name();
         lightPathToSdf[lightPath] = light;
-        const auto errors =
-          sdf::usd::ParseSdfLight(light, this->stage, lightPath);
-        EXPECT_TRUE(errors.empty());
       }
     }
   }
@@ -181,8 +191,10 @@ TEST_F(UsdLightStageFixture, Lights)
     if (validLight)
     {
       this->CheckLightIntensity(lightUsd, lightSdf);
-      sdf::usd::testing::CheckPrimPose(lightUsd,
-          sdf::usd::PoseWrtParent(lightSdf));
+      ignition::math::Pose3d pose;
+      const auto poseErrors = sdf::usd::PoseWrtParent(lightSdf, pose);
+      EXPECT_TRUE(poseErrors.empty());
+      sdf::usd::testing::CheckPrimPose(lightUsd, pose);
     }
   }
   EXPECT_EQ(2, numPointLights);

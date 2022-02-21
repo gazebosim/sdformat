@@ -289,6 +289,20 @@
       <child>caster</child>
     </joint>
 
+
+    <link name="test_child_link"/>
+    <link name="test_parent_link"/>
+
+    <joint name="test_model_parent" type="fixed">
+      <parent>__model__</parent>
+      <child>test_child_link</child>
+    </joint>
+
+    <joint name="test_model_child" type="fixed">
+      <parent>test_parent_link</parent>
+      <child>__model__</child>
+    </joint>
+
     <frame name="sensor_frame" attached_to="top">
       <pose relative_to="__model__" degrees="true">0 1 0  0 45 0</pose>
     </frame>

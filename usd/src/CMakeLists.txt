@@ -1,4 +1,5 @@
 set(sources
+  UsdError.cc
   sdf_parser/Conversions.cc
   sdf_parser/Geometry.cc
   sdf_parser/Light.cc
@@ -32,6 +33,8 @@ set(gtest_sources
   sdf_parser/Material_Sdf2Usd_TEST.cc
   sdf_parser/Visual_Sdf2Usd_TEST.cc
   sdf_parser/World_Sdf2Usd_TEST.cc
+  UsdError_TEST.cc
+  UsdUtils_TEST.cc
 )
 
 # Build the unit tests

@@ -29,6 +29,7 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Material.hh"
+#include "sdf/usd/Export.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
@@ -43,7 +44,7 @@ namespace sdf
   /// \param[in] _stage The stage that should contain the USD representation
   /// of _material.
   /// \return The parsed usd material (invalid material if parsing failed)
-  pxr::UsdShadeMaterial SDFORMAT_VISIBLE
+  pxr::UsdShadeMaterial IGNITION_SDFORMAT_USD_VISIBLE
     ParseSdfMaterial(const sdf::Material *_material,
       pxr::UsdStageRefPtr &_stage);
   }

@@ -249,8 +249,8 @@ void runCommand(const Options &_opt)
   if (!usdErrors.empty())
   {
     std::cerr << "The following errors occurred when parsing world ["
-              << world->Name() << "]\n:";
-    for (const auto &e : errors)
+              << world->Name() << "]:" << std::endl;
+    for (const auto &e : usdErrors)
       std::cout << e << "\n";
     exit(-5);
   }

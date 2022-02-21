@@ -17,10 +17,11 @@
 
 #include "sdf/usd/sdf_parser/Visual.hh"
 
-#include <iostream>
 #include <string>
 
-// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+#include <ignition/math/Pose3.hh>
+
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -36,7 +37,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/usd/sdf_parser/Geometry.hh"
 #include "sdf/usd/sdf_parser/Material.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -45,27 +46,47 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  sdf::Errors ParseSdfVisual(const sdf::Visual &_visual,
-    pxr::UsdStageRefPtr &_stage, const std::string &_path)
+  UsdErrors ParseSdfVisual(const sdf::Visual &_visual,
+      pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     const pxr::SdfPath sdfVisualPath(_path);
     auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
     if (!usdVisualXform)
     {
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-        "Not able to create the Geom Xform [" + _path + "]"));
+      errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_USD_DEFINITION,
+        "Not able to define a Geom Xform at path [" + _path + "]"));
       return errors;
     }
-    usd::SetPose(usd::PoseWrtParent(_visual), _stage, sdfVisualPath);
+
+    ignition::math::Pose3d pose;
+    auto poseErrors = usd::PoseWrtParent(_visual, pose);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      return errors;
+    }
+
+    poseErrors = usd::SetPose(pose, _stage, sdfVisualPath);
+    if (!poseErrors.empty())
+    {
+      for (const auto &e : poseErrors)
+        errors.push_back(e);
+      errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to set the pose of the link prim corresponding to the "
+            "SDF visual named [" + _visual.Name() + "]"));
+      return errors;
+    }
 
     const auto geometry = *(_visual.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
-    sdf::Errors geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
-    if (geomErrors.size() > 0)
+    auto geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
+    if (!geomErrors.empty())
     {
-      errors.insert(errors.end(), geomErrors.begin(), geomErrors.end() );
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+      errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
+      errors.push_back(UsdError(
+        sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
         "Error parsing geometry attached to visual [" + _visual.Name() + "]"));
       return errors;
     }
@@ -81,8 +102,8 @@ namespace usd
           materialUSD = usd::ParseSdfMaterial(material, _stage);
           if (!materialUSD)
           {
-            errors.push_back(sdf::Error(
-              sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+            errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
               "Error parsing material attached to visual ["
               + _visual.Name() + "]"));
             return errors;
@@ -92,7 +113,8 @@ namespace usd
     }
     else
     {
-      errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+      errors.push_back(UsdError(
+        sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
         "Internal error: no geometry prim exists at path ["
         + geometryPath + "]"));
       return errors;
