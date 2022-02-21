@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <ignition/utils/Environment.hh>
+
 #ifndef _WIN32
 #include <fcntl.h>
 #include <limits.h>
@@ -34,14 +36,9 @@
 bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  const char *tmp = getenv("TMPDIR");
-  if (tmp)
+  if(!ignition::utils::env("TMPDIR", tmppath))
   {
-    tmppath = std::string(tmp);
-  }
-  else
-  {
-    tmppath = std::string("/tmp");
+    tmppath = "/tmp";
   }
 
   tmppath += "/XXXXXX";

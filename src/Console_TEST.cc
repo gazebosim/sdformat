@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 
+#include <ignition/utils/Environment.hh>
+
 #ifndef _WIN32
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,14 +32,9 @@
 bool create_new_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  const char *tmp = getenv("TMPDIR");
-  if (tmp)
+  if(!ignition::utils::env("TMPDIR", tmppath))
   {
-    tmppath = std::string(tmp);
-  }
-  else
-  {
-    tmppath = std::string("/tmp");
+    tmppath = "/tmp";
   }
 
   tmppath += "/XXXXXX";
@@ -57,7 +54,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
 TEST(Console, nohome)
 {
   sdf::Console::Clear();
-  unsetenv("HOME");
+  ignition::utils::unsetenv("HOME");
 
   sdferr << "Error.\n";
 }
@@ -69,7 +66,7 @@ TEST(Console, logdir_is_file)
 
   std::string temp_dir;
   ASSERT_TRUE(create_new_temp_dir(temp_dir));
-  ASSERT_EQ(setenv("HOME", temp_dir.c_str(), 1), 0);
+  ASSERT_TRUE(ignition::utils::setenv("HOME", temp_dir));
 
   std::string sdf_file = temp_dir + "/.sdformat";
 
@@ -89,7 +86,7 @@ TEST(Console, logdir_doesnt_exist)
   std::string temp_dir;
   ASSERT_TRUE(create_new_temp_dir(temp_dir));
   temp_dir += "/foobarbaz";
-  ASSERT_EQ(setenv("HOME", temp_dir.c_str(), 1), 0);
+  ASSERT_TRUE(ignition::utils::setenv("HOME", temp_dir));
 
   sdferr << "Error.\n";
 }

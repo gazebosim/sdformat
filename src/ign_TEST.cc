@@ -789,7 +789,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF world file with an invalid usage of __root__
   {
     // Set SDF_PATH so that included models can be found
-    sdf::testing::setenv(
+    ignition::utils::setenv(
       "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
     std::string path = pathBase + "/world_invalid_root_reference.sdf";
 
@@ -1160,7 +1160,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  sdf::testing::setenv(
+  ignition::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const std::string path =
       sdf::testing::TestFile("sdf", "includes_rotations_in_degrees.sdf");
@@ -1230,7 +1230,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  sdf::testing::setenv(
+  ignition::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const std::string path =
       sdf::testing::TestFile("sdf", "includes_rotations_in_radians.sdf");
@@ -1301,7 +1301,7 @@ TEST(print_includes_rotations_in_quaternions,
      IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  sdf::testing::setenv(
+  ignition::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const auto path = sdf::testing::TestFile(
       "sdf", "includes_rotations_in_quaternions.sdf");
@@ -1801,7 +1801,7 @@ int main(int argc, char **argv)
 {
   // Set IGN_CONFIG_PATH to the directory where the .yaml configuration file
   // is located.
-  sdf::testing::setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH);
+  ignition::utils::setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH);
 
   // Make sure that we load the library recently built and not the one installed
   // in your system. This is done by placing the the current build directory
@@ -1813,12 +1813,12 @@ int main(int argc, char **argv)
   std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
 
   std::string currentLibraryPath;
-  if (sdf::testing::env("LD_LIBRARY_PATH", currentLibraryPath))
+  if (ignition::utils::env("LD_LIBRARY_PATH", currentLibraryPath))
   {
     testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
   }
 
-  sdf::testing::setenv("LD_LIBRARY_PATH", testLibraryPath);
+  ignition::utils::setenv("LD_LIBRARY_PATH", testLibraryPath);
 #endif
 
   ::testing::InitGoogleTest(&argc, argv);
