@@ -39,7 +39,7 @@
 #include "sdf/Camera.hh"
 #include "sdf/Lidar.hh"
 #include "sdf/Sensor.hh"
-#include "sdf/usd/sdf_parser/Utils.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -142,10 +142,10 @@ namespace usd
     return true;
   }
 
-  sdf::Errors ParseSdfSensor(const sdf::Sensor &_sensor,
+  UsdErrors ParseSdfSensor(const sdf::Sensor &_sensor,
     pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     pxr::SdfPath sdfSensorPath(_path);
 
     bool typeParsed = false;
@@ -166,23 +166,32 @@ namespace usd
         // following docs, but they seem to require isaac sim specific packages:
         //  https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.contact_sensor/docs/index.html
       default:
-        errors.push_back(sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
-          "Sensor type is either invalid or not supported"));
+        errors.push_back(
+          UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "This type of sensor is not supported"));
     }
 
     if (typeParsed)
     {
+      ignition::math::Pose3d pose;
+      auto poseErrors = sdf::usd::PoseWrtParent(_sensor, pose);
+      if (!poseErrors.empty())
+      {
+        errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
+        return errors;
+      }
+
       if (_sensor.Type() == sdf::SensorType::CAMERA)
       {
         // Camera sensors are upAxis equal to "Y", we need to rotate the camera
         // properly.
         ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
         usd::SetPose(
-          usd::PoseWrtParent(_sensor) * poseCamera, _stage, sdfSensorPath);
+          pose * poseCamera, _stage, sdfSensorPath);
       }
       else
       {
-        usd::SetPose(usd::PoseWrtParent(_sensor), _stage, sdfSensorPath);
+        usd::SetPose(pose, _stage, sdfSensorPath);
       }
     }
     return errors;
