@@ -30,9 +30,11 @@
 #include <pxr/usd/usdGeom/xform.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
+#include "sdf/World.hh"
 #include "test_config.h"
 #include "test_utils.hh"
 #include "UsdTestUtils.hh"
@@ -86,4 +88,27 @@ TEST(UsdUtils, SetPose)
   EXPECT_TRUE(errors.empty());
 
   sdf::usd::testing::CheckPrimPose(prim, pose);
+}
+
+//////////////////////////////////////////////////
+TEST(UsdUtils, IsPlane)
+{
+  const auto path = sdf::testing::TestFile("sdf", "empty.sdf");
+  sdf::Root root;
+
+  ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
+  ASSERT_EQ(1u, root.WorldCount());
+  const auto world = root.WorldByIndex(0u);
+  ASSERT_NE(nullptr, world);
+
+  ASSERT_EQ(1u, world->ModelCount());
+  const auto model = world->ModelByIndex(0u);
+  ASSERT_NE(nullptr, model);
+  EXPECT_TRUE(sdf::usd::IsPlane(*model));
+
+  // make the model non-static to verify it's no longer considered a plane
+  auto mutableModel = const_cast<sdf::Model *>(model);
+  ASSERT_NE(nullptr, mutableModel);
+  mutableModel->SetStatic(false);
+  EXPECT_FALSE(sdf::usd::IsPlane(*mutableModel));
 }

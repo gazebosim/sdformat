@@ -27,6 +27,7 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/base/gf/quatf.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
@@ -40,7 +41,7 @@
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -57,16 +58,14 @@ namespace usd
     auto poseErrors = sdf::usd::PoseWrtParent(_link, pose);
     if (!poseErrors.empty())
     {
-      for (const auto &e : poseErrors)
-        errors.push_back(e);
+      errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
       return errors;
     }
 
     poseErrors = usd::SetPose(pose, _stage, sdfLinkPath);
     if (!poseErrors.empty())
     {
-      for (const auto &e : poseErrors)
-        errors.push_back(e);
+      errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
       errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
             "Unable to set the pose of the link prim corresponding to the "
             "SDF link named [" + _link.Name() + "]"));
@@ -105,9 +104,17 @@ namespace usd
           static_cast<float>(_link.Inertial().MassMatrix().Mass()));
 
       const auto diagonalInertial =
-        _link.Inertial().MassMatrix().DiagonalMoments();
+        _link.Inertial().MassMatrix().PrincipalMoments();
       massAPI.CreateDiagonalInertiaAttr().Set(pxr::GfVec3f(
         diagonalInertial[0], diagonalInertial[1], diagonalInertial[2]));
+
+      const auto principalAxes =
+        _link.Inertial().MassMatrix().PrincipalAxesOffset();
+      massAPI.CreatePrincipalAxesAttr().Set(pxr::GfQuatf(
+            principalAxes.W(),
+            principalAxes.X(),
+            principalAxes.Y(),
+            principalAxes.Z()));
 
       const auto centerOfMass = _link.Inertial().Pose();
       massAPI.CreateCenterOfMassAttr().Set(pxr::GfVec3f(

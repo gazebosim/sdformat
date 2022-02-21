@@ -54,7 +54,7 @@ namespace usd
     if (_model.ModelCount())
     {
       errors.push_back(UsdError(
-            sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
+            sdf::Error(sdf::ErrorCode::NESTED_MODELS_UNSUPPORTED,
               "Nested models currently aren't supported.")));
       return errors;
     }

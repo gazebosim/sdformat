@@ -34,6 +34,7 @@
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
@@ -41,7 +42,6 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Visual.hh"
 #include "sdf/system_util.hh"
-#include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
@@ -59,8 +59,7 @@ namespace sdf
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
     template <typename T>
-    inline UsdErrors IGNITION_SDFORMAT_USD_VISIBLE
-    PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
+    inline UsdErrors PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
     {
       UsdErrors errors;
       const auto poseResolutionErrors = _obj.SemanticPose().Resolve(_pose, "");
@@ -84,8 +83,7 @@ namespace sdf
     /// pose modified to match _pose.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    inline UsdErrors IGNITION_SDFORMAT_USD_VISIBLE SetPose(
-        const ignition::math::Pose3d &_pose,
+    inline UsdErrors SetPose(const ignition::math::Pose3d &_pose,
         pxr::UsdStageRefPtr &_stage,
         const pxr::SdfPath &_usdPath)
     {
@@ -123,22 +121,29 @@ namespace sdf
       return errors;
     }
 
-    /// \brief Check if an sdf model is a plane.
+    /// \brief Check if an sdf model is static and contains a single link that
+    /// contains a single visual and single collision that both have a plane
+    /// geometry.
     /// \param[in] _model The sdf model to check
-    /// \return True if _model is a plane. False otherwise
+    /// \return True if _model is static and has only one link with one visual
+    /// and one collision that have a plane geometry. False otherwise
     /// \note This method will no longer be needed when a pxr::USDGeomPlane
     /// class is created
-    inline bool SDFORMAT_VISIBLE IsPlane(const sdf::Model &_model)
+    inline bool IsPlane(const sdf::Model &_model)
     {
-      if (_model.LinkCount() != 1u)
+      if (!_model.Static() || _model.LinkCount() != 1u)
         return false;
 
       const auto &link = _model.LinkByIndex(0u);
-      if (link->VisualCount() != 1u)
+      if ((link->VisualCount() != 1u) || (link->CollisionCount() != 1u))
         return false;
 
       const auto &visual = link->VisualByIndex(0u);
-      return visual->Geom()->Type() == sdf::GeometryType::PLANE;
+      if (visual->Geom()->Type() != sdf::GeometryType::PLANE)
+        return false;
+
+      const auto &collision = link->CollisionByIndex(0u);
+      return collision->Geom()->Type() == sdf::GeometryType::PLANE;
     }
   }
   }
