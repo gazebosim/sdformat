@@ -19,28 +19,24 @@
 
 #include <gtest/gtest.h>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+#include <ignition/common/Util.hh>
+
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/base/gf/vec3f.h>
-#include <pxr/base/tf/token.h>
 #include <pxr/usd/usd/prim.h>
-#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usd/stage.h>
-#include <pxr/usd/usdGeom/tokens.h>
-#include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
-
-#include <ignition/common/Util.hh>
 
 #include "sdf/usd/sdf_parser/World.hh"
 #include "sdf/Root.hh"
 #include "test_config.h"
 #include "test_utils.hh"
-#include "UsdTestUtils.hh"
+#include "../UsdTestUtils.hh"
 
 /////////////////////////////////////////////////
 // Fixture that creates a USD stage for each test case.
@@ -69,103 +65,93 @@ TEST_F(UsdStageFixture, Visual)
 
   ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
   ASSERT_EQ(1u, root.WorldCount());
-  auto world = root.WorldByIndex(0u);
+  const auto world = root.WorldByIndex(0u);
 
   const auto worldPath = std::string("/" + world->Name());
-  auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
+  const auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
   EXPECT_TRUE(usdErrors.empty());
 
-  auto worldPrim = this->stage->GetPrimAtPath(pxr::SdfPath(worldPath));
+  const auto worldPrim = this->stage->GetPrimAtPath(pxr::SdfPath(worldPath));
   ASSERT_TRUE(worldPrim);
 
-  std::string groundPlanePath = worldPath + "/" + "ground_plane";
-  auto groundPlane = this->stage->GetPrimAtPath(pxr::SdfPath(groundPlanePath));
+  const auto targetPose = ignition::math::Pose3d(
+      ignition::math::Vector3d(0, 0, 0),
+      ignition::math::Quaterniond(0, 0, 0));
+
+  const std::string groundPlanePath = worldPath + "/ground_plane";
+  const auto groundPlane =
+    this->stage->GetPrimAtPath(pxr::SdfPath(groundPlanePath));
   ASSERT_TRUE(groundPlane);
-  std::string groundPlaneLinkPath = groundPlanePath + "/" + "link";
-  auto groundPlaneLink = this->stage->GetPrimAtPath(
+  const std::string groundPlaneLinkPath = groundPlanePath + "/link";
+  const auto groundPlaneLink = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneLinkPath));
   ASSERT_TRUE(groundPlaneLink);
-  std::string groundPlaneVisualPath = groundPlaneLinkPath + "/" + "visual";
-  auto groundPlaneVisual = this->stage->GetPrimAtPath(
+  const std::string groundPlaneVisualPath = groundPlaneLinkPath + "/visual";
+  const auto groundPlaneVisual = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneVisualPath));
   ASSERT_TRUE(groundPlaneVisual);
-  sdf::usd::testing::CheckPrimPose(groundPlaneVisual,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond(0, 0, 0)));
+  sdf::usd::testing::CheckPrimPose(groundPlaneVisual, targetPose);
 
-  std::string boxPath = worldPath + "/" + "box";
-  auto box = this->stage->GetPrimAtPath(pxr::SdfPath(boxPath));
+  const std::string boxPath = worldPath + "/box";
+  const auto box = this->stage->GetPrimAtPath(pxr::SdfPath(boxPath));
   ASSERT_TRUE(box);
-  std::string boxLinkPath = boxPath + "/" + "link";
-  auto boxLink = this->stage->GetPrimAtPath(pxr::SdfPath(boxLinkPath));
+  const std::string boxLinkPath = boxPath + "/link";
+  const auto boxLink = this->stage->GetPrimAtPath(pxr::SdfPath(boxLinkPath));
   ASSERT_TRUE(boxLink);
-  std::string boxVisualPath = boxLinkPath + "/" + "box_vis";
-  auto boxVisual = this->stage->GetPrimAtPath(
+  const std::string boxVisualPath = boxLinkPath + "/box_vis";
+  const auto boxVisual = this->stage->GetPrimAtPath(
     pxr::SdfPath(boxVisualPath));
   ASSERT_TRUE(boxVisual);
-  sdf::usd::testing::CheckPrimPose(boxVisual,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond(0, 0, 0)));
+  sdf::usd::testing::CheckPrimPose(boxVisual, targetPose);
 
-  std::string cylinderPath = worldPath + "/" + "cylinder";
+  const std::string cylinderPath = worldPath + "/cylinder";
   auto cylinder = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderPath));
   ASSERT_TRUE(cylinder);
-  std::string cylinderLinkPath = cylinderPath + "/" + "link";
-  auto cylinderLink = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
+  std::string cylinderLinkPath = cylinderPath + "/link";
+  const auto cylinderLink =
+    this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
   ASSERT_TRUE(cylinderLink);
-  std::string cylinderVisualPath = cylinderLinkPath + "/" + "visual";
-  auto cylinderVisual = this->stage->GetPrimAtPath(
+  const std::string cylinderVisualPath = cylinderLinkPath + "/visual";
+  const auto cylinderVisual = this->stage->GetPrimAtPath(
     pxr::SdfPath(cylinderVisualPath));
   ASSERT_TRUE(cylinderVisual);
-  sdf::usd::testing::CheckPrimPose(cylinderVisual,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond(0, 0, 0)));
+  sdf::usd::testing::CheckPrimPose(cylinderVisual, targetPose);
 
-  std::string spherePath = worldPath + "/" + "sphere";
-  auto sphere = this->stage->GetPrimAtPath(pxr::SdfPath(spherePath));
+  const std::string spherePath = worldPath + "/sphere";
+  const auto sphere = this->stage->GetPrimAtPath(pxr::SdfPath(spherePath));
   ASSERT_TRUE(sphere);
-  std::string sphereLinkPath = spherePath + "/" + "link";
-  auto sphereLink = this->stage->GetPrimAtPath(pxr::SdfPath(sphereLinkPath));
+  const std::string sphereLinkPath = spherePath + "/link";
+  const auto sphereLink =
+    this->stage->GetPrimAtPath(pxr::SdfPath(sphereLinkPath));
   ASSERT_TRUE(sphereLink);
-  std::string sphereVisualPath = sphereLinkPath + "/" + "sphere_vis";
-  auto sphereVisual = this->stage->GetPrimAtPath(
+  const std::string sphereVisualPath = sphereLinkPath + "/sphere_vis";
+  const auto sphereVisual = this->stage->GetPrimAtPath(
     pxr::SdfPath(sphereVisualPath));
   ASSERT_TRUE(sphereVisual);
-  sdf::usd::testing::CheckPrimPose(sphereVisual,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond(0, 0, 0)));
+  sdf::usd::testing::CheckPrimPose(sphereVisual, targetPose);
 
-  std::string capsulePath = worldPath + "/" + "capsule";
-  auto capsule = this->stage->GetPrimAtPath(pxr::SdfPath(capsulePath));
+  const std::string capsulePath = worldPath + "/capsule";
+  const auto capsule = this->stage->GetPrimAtPath(pxr::SdfPath(capsulePath));
   ASSERT_TRUE(capsule);
-  std::string capsuleLinkPath = capsulePath + "/" + "link";
-  auto capsuleLink = this->stage->GetPrimAtPath(pxr::SdfPath(capsuleLinkPath));
+  const std::string capsuleLinkPath = capsulePath + "/link";
+  const auto capsuleLink =
+    this->stage->GetPrimAtPath(pxr::SdfPath(capsuleLinkPath));
   ASSERT_TRUE(capsuleLink);
-  std::string capsuleVisualPath = capsuleLinkPath + "/" + "visual";
-  auto capsuleVisual = this->stage->GetPrimAtPath(
+  const std::string capsuleVisualPath = capsuleLinkPath + "/visual";
+  const auto capsuleVisual = this->stage->GetPrimAtPath(
     pxr::SdfPath(capsuleVisualPath));
   ASSERT_TRUE(capsuleVisual);
-  sdf::usd::testing::CheckPrimPose(capsuleVisual,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond(0, 0, 0)));
+  sdf::usd::testing::CheckPrimPose(capsuleVisual, targetPose);
 
-  std::string meshPath = worldPath + "/" + "mesh";
-  auto mesh = this->stage->GetPrimAtPath(pxr::SdfPath(meshPath));
+  const std::string meshPath = worldPath + "/mesh";
+  const auto mesh = this->stage->GetPrimAtPath(pxr::SdfPath(meshPath));
   ASSERT_TRUE(mesh);
-  std::string meshLinkPath = meshPath + "/" + "link";
-  auto meshLink = this->stage->GetPrimAtPath(pxr::SdfPath(meshLinkPath));
+  const std::string meshLinkPath = meshPath + "/link";
+  const auto meshLink = this->stage->GetPrimAtPath(pxr::SdfPath(meshLinkPath));
   ASSERT_TRUE(meshLink);
-  std::string meshVisualPath = meshLinkPath + "/" + "visual";
-  auto meshVisual = this->stage->GetPrimAtPath(
+  const std::string meshVisualPath = meshLinkPath + "/visual";
+  const auto meshVisual = this->stage->GetPrimAtPath(
     pxr::SdfPath(meshVisualPath));
   ASSERT_TRUE(meshVisual);
-  sdf::usd::testing::CheckPrimPose(meshVisual,
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond(0, 0, 0)));
+  sdf::usd::testing::CheckPrimPose(meshVisual, targetPose);
 }

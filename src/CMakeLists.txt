@@ -68,7 +68,7 @@ if (BUILD_TESTING)
   endif()
 
   if (TARGET UNIT_FrameSemantics_TEST)
-    target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc)
+    target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc Utils.cc)
   endif()
 
   if (TARGET UNIT_ParamPassing_TEST)

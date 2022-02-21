@@ -18,22 +18,26 @@
 #define SDF_PARSER_USDTESTUTILS_HH_
 
 #include <string>
+
 #include <gtest/gtest.h>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/URI.hh>
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/base/gf/quatf.h>
 #include <pxr/base/gf/vec3d.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/tf/token.h>
+#include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/prim.h>
+#include <pxr/usd/usdPhysics/massAPI.h>
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -48,14 +52,17 @@ namespace usd
 {
 namespace testing
 {
+/// \brief Callback for finding a file in the `test/sdf` directory
+/// \param[in] _input The path to the file. This path should be relative to the
+/// `test/sdf` directory
+/// \return The full path to the requested file
 std::string findFileCb(const std::string &_input)
 {
   return sdf::testing::TestFile("sdf", _input);
 }
 
-//////////////////////////////////////////////////
-/// \brief This functions is used by sdf::addFindFileURICallback to find
-/// the resources defined in the URI
+/// \brief This function is used by ignition::common::addFindFileURICallback to
+/// find the resources defined in the URI
 /// \param[in] _uri URI of the file to find
 /// \return The full path to the uri. Empty
 /// string is returned if the file could not be found.
@@ -118,10 +125,6 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
   {
     pxr::VtArray<pxr::TfToken> opNames;
     opOrderAttr.Get(&opNames);
-    // TODO(adlarkin) handle things like scale in the opOrder
-    // (checking for scale should be done elsehwere since prims aren't always
-    // scaled, but maybe what I can do here is make sure the opNames size is
-    // at least 2 and then make sure translate occurs before rotate)
     ASSERT_EQ(2u, opNames.size());
     EXPECT_EQ(pxr::TfToken("xformOp:translate"), opNames[0]);
     EXPECT_EQ(pxr::TfToken("xformOp:rotateXYZ"), opNames[1]);
@@ -130,31 +133,99 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
   EXPECT_TRUE(checkedOpOrder);
 }
 
+/// \brief Make sure a USD prim has a scale xFormOp applied to it
+/// \param[in] _usdPrim The USD prim
+void HasScaleXFormOp(const pxr::UsdPrim &_usdPrim)
+{
+  bool checkedScaleOp = false;
+  if (auto xFormOps = _usdPrim.GetAttribute(pxr::TfToken("xformOpOrder")))
+  {
+    pxr::VtArray<pxr::TfToken> opNames;
+    xFormOps.Get(&opNames);
+    bool hasScaleOp = false;
+    for (const auto &tokenName : opNames)
+    {
+      if (tokenName == pxr::TfToken("xformOp:scale"))
+      {
+        hasScaleOp = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(hasScaleOp);
+    checkedScaleOp = true;
+  }
+  EXPECT_TRUE(checkedScaleOp);
+}
+
 /// \brief Compare the Inertial of a USD prim to the desired values
 /// \param[in] _usdPrim The USD prim
-/// \param[in] _mass Mass of the link
-/// \param[in] _diagonalInertia Diagonal Inertia
-/// \param[in] _centerOfMass Center of mass
-/// \param[in] isRigid True if it's a rigid body, False otherwise
+/// \param[in] _targetMass Mass of the link that _usdPrim should have
+/// \param[in] _targetDiagonalInertia Diagonal Inertia that _usdPrim should have
+/// \param[in] _targetPrincipalAxes The principal axes that _usdPrim should have
+/// \param[in] _targetCenterOfMass Center of mass that _usdPrim should have
+/// \param[in] _isRigid True if _usdPrim should be a rigid body, False otherwise
 void CheckInertial(const pxr::UsdPrim &_usdPrim,
-    float _mass,
-    const pxr::GfVec3f &_diagonalInertia,
-    const pxr::GfVec3f &_centerOfMass,
-    bool isRigid)
+    float _targetMass,
+    const pxr::GfVec3f &_targetDiagonalInertia,
+    const pxr::GfQuatf &_targetPrincipalAxes,
+    const pxr::GfVec3f &_targetCenterOfMass,
+    bool _isRigid)
 {
-  float massUSD;
-  pxr::GfVec3f centerOfMassUSD;
-  pxr::GfVec3f diagonalInertiaUSD;
+  bool checkedMass = false;
+  if (auto massAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:mass")))
+  {
+    float massUSD;
+    massAttr.Get(&massUSD);
+    EXPECT_FLOAT_EQ(_targetMass, massUSD);
+    checkedMass = true;
+  }
+  EXPECT_TRUE(checkedMass);
 
-  EXPECT_EQ(isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
-  _usdPrim.GetAttribute(pxr::TfToken("physics:mass")).Get(&massUSD);
-  EXPECT_FLOAT_EQ(_mass, massUSD);
-  _usdPrim.GetAttribute(pxr::TfToken("physics:centerOfMass")).
-    Get(&centerOfMassUSD);
-  EXPECT_EQ(_centerOfMass, centerOfMassUSD);
-  _usdPrim.GetAttribute(pxr::TfToken("physics:diagonalInertia")).
-    Get(&diagonalInertiaUSD);
-  EXPECT_EQ(_diagonalInertia, diagonalInertiaUSD);
+  bool checkedDiagInertia = false;
+  if (auto diagInertiaAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:diagonalInertia")))
+  {
+    pxr::GfVec3f diagonalInertiaUSD;
+    diagInertiaAttr.Get(&diagonalInertiaUSD);
+    EXPECT_FLOAT_EQ(_targetDiagonalInertia[0], diagonalInertiaUSD[0]);
+    EXPECT_FLOAT_EQ(_targetDiagonalInertia[1], diagonalInertiaUSD[1]);
+    EXPECT_FLOAT_EQ(_targetDiagonalInertia[2], diagonalInertiaUSD[2]);
+    checkedDiagInertia = true;
+  }
+  EXPECT_TRUE(checkedDiagInertia);
+
+  bool checkedPrincipalAxes = false;
+  if (auto principalAxesAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:principalAxes")))
+  {
+    pxr::GfQuatf principalAxesUSD;
+    principalAxesAttr.Get(&principalAxesUSD);
+    EXPECT_FLOAT_EQ(principalAxesUSD.GetReal(), _targetPrincipalAxes.GetReal());
+    const auto &usdImaginary = principalAxesUSD.GetImaginary();
+    const auto &targetImaginary = _targetPrincipalAxes.GetImaginary();
+    EXPECT_FLOAT_EQ(usdImaginary[0], targetImaginary[0]);
+    EXPECT_FLOAT_EQ(usdImaginary[1], targetImaginary[1]);
+    EXPECT_FLOAT_EQ(usdImaginary[2], targetImaginary[2]);
+    checkedPrincipalAxes = true;
+  }
+  EXPECT_TRUE(checkedPrincipalAxes);
+
+  bool checkedCOM = false;
+  if (auto comAttr =
+      _usdPrim.GetAttribute(pxr::TfToken("physics:centerOfMass")))
+  {
+    pxr::GfVec3f centerOfMassUSD;
+    comAttr.Get(&centerOfMassUSD);
+    EXPECT_FLOAT_EQ(_targetCenterOfMass[0], centerOfMassUSD[0]);
+    EXPECT_FLOAT_EQ(_targetCenterOfMass[1], centerOfMassUSD[1]);
+    EXPECT_FLOAT_EQ(_targetCenterOfMass[2], centerOfMassUSD[2]);
+    checkedCOM = true;
+  }
+  EXPECT_TRUE(checkedCOM);
+
+  EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+  EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsMassAPI>());
 }
 } // namespace testing
 } // namespace usd

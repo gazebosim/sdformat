@@ -23,7 +23,7 @@
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
 
-// TODO(adlarkin):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -34,13 +34,15 @@
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/Collision.hh"
+#include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Visual.hh"
-#include "sdf/config.hh"
 #include "sdf/system_util.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
@@ -51,29 +53,27 @@ namespace sdf
   {
     /// \brief Get an object's pose w.r.t. its parent.
     /// \param[in] _obj The object whose pose should be computed/retrieved.
+    /// \param[out] _pose The pose of _obj w.r.t. its parent.
     /// \tparam T An object that has the following method signatures:
     ///   sdf::SemanticPose SemanticPose();
-    /// \return _obj's pose w.r.t. its parent. If there was an error computing
-    /// this pose, the pose's position will be NaNs.
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no error.
     template <typename T>
-    inline ignition::math::Pose3d SDFORMAT_VISIBLE PoseWrtParent(const T &_obj)
+    inline UsdErrors PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
     {
-      ignition::math::Pose3d pose(ignition::math::Vector3d::NaN,
-          ignition::math::Quaterniond::Identity);
-      auto errors = _obj.SemanticPose().Resolve(pose, "");
-      if (!errors.empty())
+      UsdErrors errors;
+      const auto poseResolutionErrors = _obj.SemanticPose().Resolve(_pose, "");
+      if (!poseResolutionErrors.empty())
       {
-        std::cerr << "Errors occurred when resolving the pose of ["
-                  << _obj.Name() << "] w.r.t its parent:\n\t" << errors;
-      }
-      return pose;
-    }
+        for (const auto &e : poseResolutionErrors)
+          errors.push_back(UsdError(e));
 
-    inline std::string removeDash(const std::string &_str)
-    {
-      std::string result = _str;
-      std::replace(result.begin(), result.end(), '-', '_');
-      return result;
+        sdf::Error poseError(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
+            "Unable to resolve the pose of [" + _obj.Name()
+            + "] w.r.t its parent");
+        errors.push_back(UsdError(poseError));
+      }
+      return errors;
     }
 
     /// \brief Set the pose of a USD prim.
@@ -81,10 +81,30 @@ namespace sdf
     /// \param[in] _stage The stage that contains the USD prim at path _usdPath.
     /// \param[in] _usdPath The path to the USD prim that should have its
     /// pose modified to match _pose.
-    inline void SDFORMAT_VISIBLE SetPose(const ignition::math::Pose3d &_pose,
-        pxr::UsdStageRefPtr &_stage, const pxr::SdfPath &_usdPath)
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no error.
+    inline UsdErrors SetPose(const ignition::math::Pose3d &_pose,
+        pxr::UsdStageRefPtr &_stage,
+        const pxr::SdfPath &_usdPath)
     {
+      UsdErrors errors;
+
+      const auto prim = _stage->GetPrimAtPath(_usdPath);
+      if (!prim)
+      {
+        errors.push_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
+              "No USD prim exists at path [" + _usdPath.GetString() + "]"));
+        return errors;
+      }
+
       pxr::UsdGeomXformCommonAPI geomXformAPI(_stage->GetPrimAtPath(_usdPath));
+      if (!geomXformAPI)
+      {
+        errors.push_back(UsdError(UsdErrorCode::FAILED_PRIM_API_APPLY,
+              "Unable to apply apxr::UsdGeomXformCommonAPI to prim at path ["
+              + _usdPath.GetString() + "]"));
+        return errors;
+      }
 
       const auto &position = _pose.Pos();
       geomXformAPI.SetTranslate(pxr::GfVec3d(
@@ -97,32 +117,38 @@ namespace sdf
             ignition::math::Angle(rotation.Roll()).Degree(),
             ignition::math::Angle(rotation.Pitch()).Degree(),
             ignition::math::Angle(rotation.Yaw()).Degree()));
+
+      return errors;
     }
 
-    /// \brief Thickness of an sdf plane
-    /// \note This will no longer be needed when a pxr::USDGeomPlane class
-    /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
-    /// the geometry.cc file for more information)
-    static const double kPlaneThickness = 0.25;
-
-    /// \brief Check if an sdf model is a plane.
+    /// \brief Check if an sdf model is static and contains a single link that
+    /// contains a single visual and single collision that both have a plane
+    /// geometry.
     /// \param[in] _model The sdf model to check
-    /// \return True if _model is a plane. False otherwise
-    /// \note This method will no longer be needed when a pxr::USDGeomPlane class
-    /// is created (see the notes in the usd::ParseSdfPlaneGeometry method in
-    /// the geometry.cc file for more information)
-    inline bool SDFORMAT_VISIBLE IsPlane(const sdf::Model &_model)
+    /// \return True if _model is static and has only one link with one visual
+    /// and one collision that have a plane geometry. False otherwise
+    /// \note This method will no longer be needed when a pxr::USDGeomPlane
+    /// class is created
+    inline bool IsPlane(const sdf::Model &_model)
     {
-      if (_model.LinkCount() != 1u)
+      if (!_model.Static() || _model.LinkCount() != 1u)
         return false;
 
       const auto &link = _model.LinkByIndex(0u);
-      if (link->VisualCount() != 1u)
+      if ((link->VisualCount() != 1u) || (link->CollisionCount() != 1u))
         return false;
 
       const auto &visual = link->VisualByIndex(0u);
-      return visual->Geom()->Type() == sdf::GeometryType::PLANE;
+      if (visual->Geom()->Type() != sdf::GeometryType::PLANE)
+        return false;
+
+      const auto &collision = link->CollisionByIndex(0u);
+      return collision->Geom()->Type() == sdf::GeometryType::PLANE;
     }
+
+    /// \brief Pre-defined USD plane thickness. This is a temporary variable
+    /// that will no longer be needed once USD supports their own plane class
+    static const double kPlaneThickness = 0.25;
   }
   }
 }
