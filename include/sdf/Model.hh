@@ -346,6 +346,19 @@ namespace sdf
     public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
+
+    /// \brief Check if a given name exists in the FrameAttachedTo graph at the
+    /// scope of the model.
+    /// \param[in] _name Name of the implicit or explicit frame to check.
+    /// To check for a frame in a nested model, prefix the frame name with
+    /// the sequence of nested models containing this frame, delimited by "::".
+    /// \return True if the frame name is found in the FrameAttachedTo graph.
+    /// False otherwise, or if the frame graph is invalid.
+    /// \note This function assumes the model has a valid FrameAttachedTo graph.
+    /// It will return false if the graph is invalid.
+    public: bool NameExistsInFrameAttachedToGraph(
+                const std::string &_name) const;
+
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
     /// World::SetPoseRelativeToGraph if this is a standalone model and

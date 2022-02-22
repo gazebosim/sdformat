@@ -858,3 +858,35 @@ TEST_F(InterfaceAPI, NameCollision)
     EXPECT_EQ(sdf::ErrorCode::DUPLICATE_NAME, errors[0].Code());
   }
 }
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPI, JointParentOrChildInNestedModel)
+{
+  this->config.RegisterCustomModelParser(customTomlParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.8">
+    <model name="parent_model">
+      <link name="L1"/>
+
+      <joint name="J1" type="fixed">
+        <parent>L1</parent>
+        <child>double_pendulum::base</child>
+      </joint>
+      <include>
+        <uri>double_pendulum.toml</uri>
+        <name>double_pendulum</name>
+      </include>
+
+      <joint name="J2" type="fixed">
+        <parent>double_pendulum::child_dp::base</parent>
+        <child>L2</child>
+      </joint>
+      <link name="L2"/>
+
+    </model>
+  </sdf>)";
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+}
