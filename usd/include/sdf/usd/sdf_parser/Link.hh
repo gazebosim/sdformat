@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_SDF_PARSER_WORLD_HH_
-#define SDF_USD_SDF_PARSER_WORLD_HH_
+#ifndef SDF_USD_SDF_PARSER_LINK_HH_
+#define SDF_USD_SDF_PARSER_LINK_HH_
 
 #include <string>
 
@@ -29,10 +29,10 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/config.hh"
+#include "sdf/Link.hh"
 #include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
-#include "sdf/World.hh"
+#include "sdf/sdf_config.h"
 
 namespace sdf
 {
@@ -41,18 +41,20 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Parse an SDF world into a USD stage.
-    /// \param[in] _world The SDF world to parse.
+    /// \brief Parse an SDF link into a USD stage.
+    /// \param[in] _link The SDF link to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _world. It must be initialized first
-    /// \param[in] _path The USD path of the parsed world in _stage, which must
+    /// of _link. This must be a valid, initialized stage.
+    /// \param[in] _path The USD path of the parsed link in _stage, which must
     /// be a valid USD path.
+    /// \param[in] _rigidBody Whether the link is a rigid body (i.e.,
+    /// non-static) or not. True for rigid body, false otherwise
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
-    /// includes an error code and message. An empty vector indicates no error.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfWorld(
-        const sdf::World &_world,
-        pxr::UsdStageRefPtr &_stage,
-        const std::string &_path);
+    /// includes an error code and message. An empty vector indicates no errors
+    /// occurred when parsing _link to its USD representation.
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLink(const sdf::Link &_link,
+        pxr::UsdStageRefPtr &_stage, const std::string &_path,
+        bool _rigidBody);
   }
   }
 }
