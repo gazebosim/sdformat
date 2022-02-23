@@ -58,6 +58,9 @@ class sdf::Camera::Implementation
   /// \brief True if the camera is triggered by a topic.
   public: bool triggered{false};
 
+  /// \brief Camera trigger topic.
+  public: std::string triggerTopic = "";
+
   /// \brief Horizontal fied of view.
   public: ignition::math::Angle hfov{1.047};
 
@@ -221,6 +224,9 @@ Errors Camera::Load(ElementPtr _sdf)
 
   this->dataPtr->triggered = _sdf->Get<bool>("triggered",
       this->dataPtr->triggered).first;
+
+  this->dataPtr->triggerTopic = _sdf->Get<std::string>("trigger_topic",
+      this->dataPtr->triggerTopic).first;
 
   this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
@@ -419,6 +425,19 @@ bool Camera::Triggered() const
 void Camera::SetTriggered(bool _triggered)
 {
   this->dataPtr->triggered = _triggered;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::TriggerTopic() const
+{
+  return this->dataPtr->triggerTopic;
+}
+
+
+/////////////////////////////////////////////////
+void Camera::SetTriggerTopic(const std::string &_triggerTopic)
+{
+  this->dataPtr->triggerTopic = _triggerTopic;
 }
 
 /////////////////////////////////////////////////

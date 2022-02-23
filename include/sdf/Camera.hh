@@ -103,6 +103,14 @@ namespace sdf
     /// \param[in] _triggered True if the camera should be triggered by a topic.
     public: void SetTriggered(bool _triggered);
 
+    /// \brief Get the topic that will trigger the camera.
+    /// \return Topic for the camera trigger.
+    public: std::string TriggerTopic() const;
+
+    /// \brief Set the topic that will trigger the camera.
+    /// \param[in] _triggerTopic Topic for the camera trigger.
+    public: void SetTriggerTopic(const std::string &_triggerTopic);
+
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
     public: ignition::math::Angle HorizontalFov() const;

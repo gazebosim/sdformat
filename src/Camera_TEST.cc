@@ -30,6 +30,10 @@ TEST(DOMCamera, Construction)
   cam.SetTriggered(true);
   EXPECT_TRUE(cam.Triggered());
 
+  EXPECT_TRUE(cam.TriggerTopic().empty());
+  cam.SetTriggerTopic("my_camera/trigger");
+  EXPECT_EQ("my_camera/trigger", cam.TriggerTopic());
+
   EXPECT_DOUBLE_EQ(1.047, cam.HorizontalFov().Radian());
   cam.SetHorizontalFov(1.45);
   EXPECT_DOUBLE_EQ(1.45, cam.HorizontalFov().Radian());
