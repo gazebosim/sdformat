@@ -57,6 +57,15 @@ namespace sdf
 
     /// \brief A pxr API was not able to be applied to a USD prim.
     FAILED_PRIM_API_APPLY,
+
+    /// \brief Attempt to define a USD prim or prim schema failed.
+    FAILED_USD_DEFINITION,
+
+    /// \brief Failure to load a mesh and/or submesh
+    MESH_LOAD_FAILURE,
+
+    /// \brief Invalid submesh primitive type
+    INVALID_SUBMESH_PRIMITIVE_TYPE,
   };
 
   class IGNITION_SDFORMAT_USD_VISIBLE UsdError

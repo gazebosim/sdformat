@@ -69,7 +69,6 @@ namespace usd
     // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html#plane-shapes
     if (usd::IsPlane(_model))
     {
-      static const double kPlaneThickness = 0.25;
       ignition::math::Vector3d planePosition(
           _model.RawPose().X(),
           _model.RawPose().Y(),
