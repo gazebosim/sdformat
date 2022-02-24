@@ -198,7 +198,7 @@
       <axis>
         <xyz>1.0 0 0</xyz>
         <dynamics>
-          <damping>35.000000</damping>
+          <damping>35</damping>
         </dynamics>
         <limit>
           <stiffness>350</stiffness>
@@ -212,7 +212,7 @@
       <axis>
         <xyz>1.0 0 0</xyz>
         <dynamics>
-          <damping>35.000000</damping>
+          <damping>35</damping>
         </dynamics>
         <limit>
           <stiffness>350</stiffness>

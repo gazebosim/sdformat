@@ -309,10 +309,8 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
     ASSERT_TRUE(dampingAttr);
     float usdDamping;
     EXPECT_TRUE(dampingAttr.Get(&usdDamping));
-    const auto sdfDamping =
-      ignition::math::equal(0.0, sdfJoint->Axis()->Damping()) ?
-      35.0f : static_cast<float>(sdfJoint->Axis()->Damping());
-    EXPECT_FLOAT_EQ(usdDamping, sdfDamping);
+    EXPECT_FLOAT_EQ(usdDamping,
+        static_cast<float>(sdfJoint->Axis()->Damping()));
 
     // check stiffness
     const auto stiffnessAttr =
@@ -320,10 +318,8 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
     ASSERT_TRUE(stiffnessAttr);
     float usdStiffness;
     EXPECT_TRUE(stiffnessAttr.Get(&usdStiffness));
-    const auto sdfStiffness =
-      ignition::math::equal(1e8, sdfJoint->Axis()->Stiffness()) ?
-      350 : static_cast<float>(sdfJoint->Axis()->Stiffness());
-    EXPECT_FLOAT_EQ(usdStiffness, sdfStiffness);
+    EXPECT_FLOAT_EQ(usdStiffness,
+        static_cast<float>(sdfJoint->Axis()->Stiffness()));
 
     // check max force/effort
     const auto maxForceAttr =

@@ -17,6 +17,8 @@
 
 #include "sdf/usd/sdf_parser/Joint.hh"
 
+#include <sstream>
+
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
@@ -89,21 +91,14 @@ namespace usd
     {
       auto poseResolutionErrors =
         _joint.SemanticPose().Resolve(parentToJoint, _joint.ParentLinkName());
-      std::vector<UsdError> poseResolutionUSDErrors;
-      for (const auto & error : poseResolutionErrors)
-      {
-        poseResolutionUSDErrors.emplace_back(error);
-      }
       if (!poseResolutionErrors.empty())
       {
         errors.push_back(UsdError(
               sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
               "Unable to get the pose of joint [" + _joint.Name() +
               "] w.r.t. its parent link [" + _joint.ParentLinkName() + "].")));
-        errors.insert(
-          errors.end(),
-          poseResolutionUSDErrors.begin(),
-          poseResolutionUSDErrors.end());
+        for (const auto &e : poseResolutionErrors)
+          errors.push_back(UsdError(e));
         return errors;
       }
     }
@@ -111,21 +106,14 @@ namespace usd
     ignition::math::Pose3d childToJoint;
     auto poseResolutionErrors = _joint.SemanticPose().Resolve(childToJoint,
         _joint.ChildLinkName());
-    std::vector<UsdError> poseResolutionUSDErrors;
-    for (const auto & error : poseResolutionErrors)
-    {
-      poseResolutionUSDErrors.emplace_back(error);
-    }
     if (!poseResolutionErrors.empty())
     {
       errors.push_back(UsdError(
           sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
             "Unable to get the pose of joint [" + _joint.Name() +
             "] w.r.t. its child [" + _joint.ChildLinkName() + "].")));
-      errors.insert(
-        errors.end(),
-        poseResolutionUSDErrors.begin(),
-        poseResolutionUSDErrors.end());
+      for (const auto &e : poseResolutionErrors)
+        errors.push_back(UsdError(e));
       return errors;
     }
 
@@ -142,7 +130,7 @@ namespace usd
           childToJoint.Rot().Z());
 
     const auto axis = _joint.Axis();
-    // TODO(anyone): Review this logic which convert a Y axis into a X axis.
+    // TODO(anyone) Review this logic which converts a Y axis into a X axis.
     if (axis && (axis->Xyz() == ignition::math::Vector3d::UnitY))
     {
       if (auto jointRevolute = pxr::UsdPhysicsRevoluteJoint(_jointPrim))
@@ -229,10 +217,12 @@ namespace usd
     }
     else
     {
+      std::stringstream axisStr;
+      axisStr << axis->Xyz();
       errors.push_back(UsdError(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-        "Revolute joint [" + _joint.Name() + "] has specified an axis "
-        "[x y z], but USD only supports integer values of [0, 1] when"
-        "specifying joint axis unit vectors.")));
+        "Revolute joint [" + _joint.Name() + "] has specified an axis ["
+        + axisStr.str() + "], but USD only supports integer values of [0, 1] "
+        "when specifying joint axis unit vectors.")));
       return errors;
     }
 
@@ -256,10 +246,8 @@ namespace usd
     }
 
     // TODO(ahcorde) Review damping and stiffness values
-    double damping = axis->Damping();
-    drive.CreateDampingAttr().Set(static_cast<float>(damping));
-    double stiffness = axis->Stiffness();
-    drive.CreateStiffnessAttr().Set(static_cast<float>(stiffness));
+    drive.CreateDampingAttr().Set(static_cast<float>(axis->Damping()));
+    drive.CreateStiffnessAttr().Set(static_cast<float>(axis->Stiffness()));
     drive.CreateMaxForceAttr().Set(static_cast<float>(axis->Effort()));
 
     return errors;
@@ -302,10 +290,12 @@ namespace usd
     }
     else
     {
+      std::stringstream axisStr;
+      axisStr << axis->Xyz();
       errors.push_back(UsdError(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-        "Prismatic joint [" + _joint.Name() + "] has specified an axis "
-        "[x y z], but USD only supports integer values of [0, 1] when"
-        "specifying joint axis unit vectors.")));
+        "Prismatic joint [" + _joint.Name() + "] has specified an axis ["
+        + axisStr.str() + "], but USD only supports integer values of [0, 1] "
+        "when specifying joint axis unit vectors.")));
       return errors;
     }
 
