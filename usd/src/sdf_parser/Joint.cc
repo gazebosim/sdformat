@@ -76,7 +76,8 @@ namespace usd
       if (!poseErrors.empty())
         return poseErrors;
 
-      // it is assumed the _parentModel's parent is the world
+      // it is assumed the _parentModel's parent is the world because nested
+      // models are not yet supported (see issue #845)
       ignition::math::Pose3d worldToModel;
       poseErrors = usd::PoseWrtParent(_parentModel, worldToModel);
       if (!poseErrors.empty())
@@ -94,8 +95,8 @@ namespace usd
               sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
               "Unable to get the pose of joint [" + _joint.Name() +
               "] w.r.t. its parent link [" + _joint.ParentLinkName() + "].")));
-        for (const auto &e : poseResolutionErrors)
-          errors.push_back(UsdError(e));
+        errors.insert(
+          errors.end(), poseResolutionErrors.begin(), poseResolutionErrors.end());
         return errors;
       }
     }
@@ -109,8 +110,8 @@ namespace usd
           sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
             "Unable to get the pose of joint [" + _joint.Name() +
             "] w.r.t. its child [" + _joint.ChildLinkName() + "].")));
-      for (const auto &e : poseResolutionErrors)
-        errors.push_back(UsdError(e));
+      errors.insert(
+        errors.end(), poseResolutionErrors.begin(), poseResolutionErrors.end());
       return errors;
     }
 
@@ -127,6 +128,7 @@ namespace usd
           childToJoint.Rot().Z());
 
     const auto axis = _joint.Axis();
+    // TODO(anyone): Review this logic which convert a Y axis into a X axis.
     if (axis && (axis->Xyz() == ignition::math::Vector3d::UnitY))
     {
       if (auto jointRevolute = pxr::UsdPhysicsRevoluteJoint(_jointPrim))
@@ -214,7 +216,9 @@ namespace usd
     else
     {
       errors.push_back(UsdError(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-            "Revolute joint [" + _joint.Name() + "] has an invalid axis.")));
+        "Revolute joint [" << _joint.Name() << "] has specified an axis "
+        "[x y z], but USD only supports integer values of [0, 1] when"
+        "specifying joint axis unit vectors.")));
       return errors;
     }
 
@@ -238,18 +242,9 @@ namespace usd
     }
 
     // TODO(ahcorde) Review damping and stiffness values
-    // I added these values as a proof of concept.
     double damping = axis->Damping();
-    if (ignition::math::equal(damping, 0.0))
-    {
-      damping = 35;
-    }
     drive.CreateDampingAttr().Set(static_cast<float>(damping));
     double stiffness = axis->Stiffness();
-    if (ignition::math::equal(stiffness, 1e8))
-    {
-      stiffness = 350;
-    }
     drive.CreateStiffnessAttr().Set(static_cast<float>(stiffness));
     drive.CreateMaxForceAttr().Set(static_cast<float>(axis->Effort()));
 
@@ -294,7 +289,9 @@ namespace usd
     else
     {
       errors.push_back(UsdError(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-            "Prismatic joint [" + _joint.Name() + "] has an invalid axis.")));
+        "Prismatic joint [" << _joint.Name() << "] has specified an axis "
+        "[x y z], but USD only supports integer values of [0, 1] when"
+        "specifying joint axis unit vectors.")));
       return errors;
     }
 
@@ -351,6 +348,7 @@ namespace usd
         // range, SDF does not have limits for a ball joint. So, there's
         // nothing to do after creating a UsdPhysicsSphericalJoint, since this
         // joint by default has no limits (i.e., allows for circular motion)
+        // related issue https://github.com/ignitionrobotics/sdformat/issues/860
         pxr::UsdPhysicsSphericalJoint::Define(_stage, pxr::SdfPath(_path));
         break;
       case sdf::JointType::FIXED:
@@ -392,8 +390,7 @@ namespace usd
 
     const auto poseErrors =
       SetUSDJointPose(jointPrim, _joint, _parentModel);
-    if (!poseErrors.empty())
-      errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
+    errors.insert(errors.end(), poseErrors.begin(), poseErrors.end());
 
     return errors;
   }
