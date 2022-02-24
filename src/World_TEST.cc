@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
+#include "sdf/Frame.hh"
 #include "sdf/Light.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Model.hh"
@@ -377,6 +378,39 @@ TEST(DOMWorld, AddModel)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMWorld, AddModifyFrame)
+{
+  sdf::World world;
+  EXPECT_EQ(0u, world.FrameCount());
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(world.AddFrame(frame));
+  EXPECT_EQ(1u, world.FrameCount());
+  EXPECT_FALSE(world.AddFrame(frame));
+  EXPECT_EQ(1u, world.FrameCount());
+
+  world.ClearFrames();
+  EXPECT_EQ(0u, world.FrameCount());
+
+  EXPECT_TRUE(world.AddFrame(frame));
+  EXPECT_EQ(1u, world.FrameCount());
+  const sdf::Frame *frameFromWorld = world.FrameByIndex(0);
+  ASSERT_NE(nullptr, frameFromWorld);
+  EXPECT_EQ(frameFromWorld->Name(), frame.Name());
+
+  sdf::Frame *mutableFrame = world.FrameByIndex(0);
+  mutableFrame->SetName("newName1");
+  EXPECT_EQ(mutableFrame->Name(), world.FrameByIndex(0)->Name());
+
+  sdf::Frame *mutableFrameByName = world.FrameByName("frame1");
+  EXPECT_EQ(nullptr, mutableFrameByName);
+  mutableFrameByName = world.FrameByName("newName1");
+  ASSERT_NE(nullptr, mutableFrameByName);
+  EXPECT_EQ("newName1", world.FrameByName("newName1")->Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMWorld, AddActor)
 {
   sdf::World world;
@@ -532,4 +566,95 @@ TEST(DOMWorld, ToElement)
   EXPECT_EQ(world.PhysicsCount(), world2.PhysicsCount());
   for (uint64_t i = 0; i < world2.PhysicsCount(); ++i)
     EXPECT_NE(nullptr, world2.PhysicsByIndex(i));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, MutableByIndex)
+{
+  sdf::World world;
+
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_TRUE(world.AddModel(model));
+
+  sdf::Actor actor;
+  actor.SetName("actor1");
+  EXPECT_TRUE(world.AddActor(actor));
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(world.AddLight(light));
+
+  sdf::Physics physics;
+  physics.SetName("physics1");
+  EXPECT_TRUE(world.AddPhysics(physics));
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(world.AddFrame(frame));
+
+  // Modify the model
+  sdf::Model *m = world.ModelByIndex(0);
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("model1", m->Name());
+  m->SetName("model2");
+  EXPECT_EQ("model2", world.ModelByIndex(0)->Name());
+
+  // Modify the actor
+  sdf::Actor *a = world.ActorByIndex(0);
+  ASSERT_NE(nullptr, a);
+  EXPECT_EQ("actor1", a->Name());
+  a->SetName("actor2");
+  EXPECT_EQ("actor2", world.ActorByIndex(0)->Name());
+
+  // Modify the light
+  sdf::Light *l = world.LightByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("light1", l->Name());
+  l->SetName("light2");
+  EXPECT_EQ("light2", world.LightByIndex(0)->Name());
+
+  // Modify the physics
+  sdf::Physics *p = world.PhysicsByIndex(1);
+  ASSERT_NE(nullptr, p);
+  EXPECT_EQ("physics1", p->Name());
+  p->SetName("physics2");
+  EXPECT_EQ("physics2", world.PhysicsByIndex(1)->Name());
+
+  // Modify the frame
+  sdf::Frame *f = world.FrameByIndex(0);
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_EQ("frame2", world.FrameByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, MutableByName)
+{
+  sdf::World world;
+
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_TRUE(world.AddModel(model));
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(world.AddFrame(frame));
+
+  // Modify the model
+  sdf::Model *m = world.ModelByName("model1");
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("model1", m->Name());
+  m->SetName("model2");
+  EXPECT_FALSE(world.ModelByName("model1"));
+  EXPECT_TRUE(world.ModelByName("model2"));
+
+  // Modify the frame
+  sdf::Frame *f = world.FrameByName("frame1");
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_FALSE(world.FrameByName("frame1"));
+  EXPECT_TRUE(world.FrameByName("frame2"));
 }

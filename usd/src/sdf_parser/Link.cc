@@ -37,6 +37,7 @@
 
 #include "sdf/Link.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
+#include "sdf/usd/sdf_parser/Visual.hh"
 #include "../UsdUtils.hh"
 
 namespace sdf
@@ -121,6 +122,22 @@ namespace usd
         centerOfMass.Pos().X(),
         centerOfMass.Pos().Y(),
         centerOfMass.Pos().Z()));
+    }
+
+    // parse all of the link's visuals and convert them to USD
+    for (uint64_t i = 0; i < _link.VisualCount(); ++i)
+    {
+      const auto visual = *(_link.VisualByIndex(i));
+      const auto visualPath = std::string(_path + "/" + visual.Name());
+      auto errorsLink = ParseSdfVisual(visual, _stage, visualPath);
+      if (!errorsLink.empty())
+      {
+        errors.insert(errors.end(), errorsLink.begin(), errorsLink.end());
+        errors.push_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Error parsing visual [" + visual.Name() + "]"));
+        return errors;
+      }
     }
 
     // links can have lights attached to them
