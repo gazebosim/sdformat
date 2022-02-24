@@ -60,6 +60,7 @@
 #include "sdf/Sphere.hh"
 #include "sdf/usd/sdf_parser/Conversions.hh"
 #include "sdf/usd/sdf_parser/Material.hh"
+
 #include "../UsdUtils.hh"
 
 namespace sdf
