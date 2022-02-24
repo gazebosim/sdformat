@@ -197,6 +197,12 @@
       <child>upper_link</child>
       <axis>
         <xyz>1.0 0 0</xyz>
+        <dynamics>
+          <damping>35.000000</damping>
+        </dynamics>
+        <limit>
+          <stiffness>350</stiffness>
+        </limit>
       </axis>
     </joint>
     <!-- pin joint for lower link, at origin of child link -->
@@ -205,6 +211,12 @@
       <child>lower_link</child>
       <axis>
         <xyz>1.0 0 0</xyz>
+        <dynamics>
+          <damping>35.000000</damping>
+        </dynamics>
+        <limit>
+          <stiffness>350</stiffness>
+        </limit>
       </axis>
     </joint>
   </model>

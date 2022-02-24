@@ -89,6 +89,11 @@ namespace usd
     {
       auto poseResolutionErrors =
         _joint.SemanticPose().Resolve(parentToJoint, _joint.ParentLinkName());
+      std::vector<UsdError> poseResolutionUSDErrors;
+      for (const auto & error : poseResolutionErrors)
+      {
+        poseResolutionUSDErrors.emplace_back(error);
+      }
       if (!poseResolutionErrors.empty())
       {
         errors.push_back(UsdError(
@@ -96,7 +101,9 @@ namespace usd
               "Unable to get the pose of joint [" + _joint.Name() +
               "] w.r.t. its parent link [" + _joint.ParentLinkName() + "].")));
         errors.insert(
-          errors.end(), poseResolutionErrors.begin(), poseResolutionErrors.end());
+          errors.end(),
+          poseResolutionUSDErrors.begin(),
+          poseResolutionUSDErrors.end());
         return errors;
       }
     }
@@ -104,6 +111,11 @@ namespace usd
     ignition::math::Pose3d childToJoint;
     auto poseResolutionErrors = _joint.SemanticPose().Resolve(childToJoint,
         _joint.ChildLinkName());
+    std::vector<UsdError> poseResolutionUSDErrors;
+    for (const auto & error : poseResolutionErrors)
+    {
+      poseResolutionUSDErrors.emplace_back(error);
+    }
     if (!poseResolutionErrors.empty())
     {
       errors.push_back(UsdError(
@@ -111,7 +123,9 @@ namespace usd
             "Unable to get the pose of joint [" + _joint.Name() +
             "] w.r.t. its child [" + _joint.ChildLinkName() + "].")));
       errors.insert(
-        errors.end(), poseResolutionErrors.begin(), poseResolutionErrors.end());
+        errors.end(),
+        poseResolutionUSDErrors.begin(),
+        poseResolutionUSDErrors.end());
       return errors;
     }
 
@@ -216,7 +230,7 @@ namespace usd
     else
     {
       errors.push_back(UsdError(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-        "Revolute joint [" << _joint.Name() << "] has specified an axis "
+        "Revolute joint [" + _joint.Name() + "] has specified an axis "
         "[x y z], but USD only supports integer values of [0, 1] when"
         "specifying joint axis unit vectors.")));
       return errors;
@@ -289,7 +303,7 @@ namespace usd
     else
     {
       errors.push_back(UsdError(sdf::Error(sdf::ErrorCode::ELEMENT_INVALID,
-        "Prismatic joint [" << _joint.Name() << "] has specified an axis "
+        "Prismatic joint [" + _joint.Name() + "] has specified an axis "
         "[x y z], but USD only supports integer values of [0, 1] when"
         "specifying joint axis unit vectors.")));
       return errors;
