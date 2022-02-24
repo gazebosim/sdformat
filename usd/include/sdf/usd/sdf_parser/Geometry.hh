@@ -15,12 +15,12 @@
  *
 */
 
-#ifndef SDF_USD_SDF_PARSER_LINK_HH_
-#define SDF_USD_SDF_PARSER_LINK_HH_
+#ifndef SDF_USD_SDF_PARSER_GEOMETRY_HH_
+#define SDF_USD_SDF_PARSER_GEOMETRY_HH_
 
 #include <string>
 
-// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -29,10 +29,10 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Link.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/config.hh"
 #include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
-#include "sdf/sdf_config.h"
 
 namespace sdf
 {
@@ -41,20 +41,17 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Parse an SDF link into a USD stage.
-    /// \param[in] _link The SDF link to parse.
+    /// \brief Parse an SDF geometry into a USD stage.
+    /// \param[in] _geometry The SDF geometry to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _link. This must be a valid, initialized stage.
-    /// \param[in] _path The USD path of the parsed link in _stage, which must
-    /// be a valid USD path.
-    /// \param[in] _rigidBody Whether the link is a rigid body (i.e.,
-    /// non-static) or not. True for rigid body, false otherwise
+    /// of _geometry.
+    /// \param[in] _path The USD path of the parsed geometry in _stage, which
+    /// must be a valid USD path.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
-    /// includes an error code and message. An empty vector indicates no errors
-    /// occurred when parsing _link to its USD representation.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLink(const sdf::Link &_link,
-        pxr::UsdStageRefPtr &_stage, const std::string &_path,
-        bool _rigidBody);
+    /// includes an error code and message. An empty vector indicates no error.
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfGeometry(
+        const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
+        const std::string &_path);
   }
   }
 }
