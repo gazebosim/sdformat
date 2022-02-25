@@ -73,8 +73,6 @@ namespace usd
 
     const auto sdfCamera = _sensor.CameraSensor();
 
-    // TODO(adlarkin) check units to make sure they match (no documented
-    // units for SDF)
     // When then focal length is not defined in SDF, the default value is 1
     if (!ignition::math::equal(sdfCamera->LensFocalLength(), 1.0))
     {
