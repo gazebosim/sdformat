@@ -211,7 +211,8 @@ namespace usd
       default:
         errors.push_back(
           UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "This type of sensor is not supported"));
+            "This type of sensor [" + _sensor.TypeStr() +
+            "] is not supported"));
     }
 
     if (errors.empty())
@@ -228,7 +229,8 @@ namespace usd
       {
         // Camera sensors are upAxis equal to "Y", we need to rotate the camera
         // properly.
-        const ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
+        const ignition::math::Pose3d poseCamera(
+          0, 0, 0, IGN_PI_2, 0, -IGN_PI_2);
         usd::SetPose(
           pose * poseCamera, _stage, sdfSensorPath);
       }
