@@ -37,6 +37,7 @@
 
 #include "sdf/Link.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
+#include "sdf/usd/sdf_parser/Sensor.hh"
 #include "sdf/usd/sdf_parser/Visual.hh"
 #include "../UsdUtils.hh"
 
@@ -136,6 +137,22 @@ namespace usd
         errors.push_back(UsdError(
           sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
           "Error parsing visual [" + visual.Name() + "]"));
+        return errors;
+      }
+    }
+
+    // convert the link's sensors
+    for (uint64_t i = 0; i < _link.SensorCount(); ++i)
+    {
+      const auto sensor = *(_link.SensorByIndex(i));
+      const auto sensorPath = std::string(_path + "/" + sensor.Name());
+      UsdErrors errorsSensor = ParseSdfSensor(sensor, _stage, sensorPath);
+      if (!errorsSensor.empty())
+      {
+        errors.push_back(
+            UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Error parsing sensor [" + sensor.Name() + "]"));
+        errors.insert(errors.end(), errorsSensor.begin(), errorsSensor.end());
         return errors;
       }
     }
