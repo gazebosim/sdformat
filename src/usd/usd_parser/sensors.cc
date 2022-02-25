@@ -57,7 +57,8 @@ namespace usd
       camera.SetName(_prim.GetPath().GetName());
       camera.SetHorizontalFov(horizontalAperture);
       camera.SetLensFocalLength(focalLength);
-      camera.SetRawPose(pose);
+      ignition::math::Pose3d poseCamera(0, 0, 0, 1.57, 0, -1.57);
+      camera.SetRawPose(pose * -poseCamera);
       camera.SetNearClip(clippingRange[0]);
       camera.SetFarClip(clippingRange[1]);
       camera.SetImageWidth(640);

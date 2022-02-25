@@ -45,7 +45,6 @@ inline namespace SDF_VERSION_NAMESPACE {
   typedef std::map<std::string, std::vector<SDFExtensionPtr> >
     StringSDFExtensionPtrMap;
 
-
   USD2SDF::USD2SDF()
   {
     g_fixedJointsTransformedInRevoluteJoints.clear();
@@ -308,14 +307,14 @@ inline namespace SDF_VERSION_NAMESPACE {
         _oldLinkName.empty())
     {
       // std::cerr << "/* visual name " << _oldLinkName.c_str() << '\n';
-      sdfVisual->SetAttribute("name", _oldLinkName.c_str());
+      sdfVisual->SetAttribute("name", ignition::common::basename(_oldLinkName).c_str());
     }
     else
     {
       // std::cerr << "/* visual name " << _link->name + kLumpPrefix + _oldLinkName << '\n';
 
       sdfVisual->SetAttribute("name",
-          (_link->name + kLumpPrefix + _oldLinkName).c_str());
+          ignition::common::basename(_link->name + kLumpPrefix + _oldLinkName).c_str());
     }
 
     // add the visualisation transfrom
@@ -702,11 +701,11 @@ inline namespace SDF_VERSION_NAMESPACE {
     if (_oldLinkName.compare(0, _link->name.size(), _link->name) == 0 ||
         _oldLinkName.empty())
     {
-      sdfCollision->SetAttribute("name", _oldLinkName.c_str());
+      sdfCollision->SetAttribute("name", ignition::common::basename(_oldLinkName).c_str());
     }
     else
     {
-      sdfCollision->SetAttribute("name", (_link->name
+      sdfCollision->SetAttribute("name", ignition::common::basename(_link->name
           + kLumpPrefix + _oldLinkName).c_str());
     }
 
@@ -902,7 +901,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       {
         joint->SetAttribute("type", jtype.c_str());
       }
-      joint->SetAttribute("name", _link->parent_joint->Name().c_str());
+      joint->SetAttribute("name", ignition::common::basename(_link->parent_joint->Name()).c_str());
       // Add joint pose relative to parent link
       AddTransform(
           joint, _link->parent_joint->RawPose());
@@ -912,10 +911,10 @@ inline namespace SDF_VERSION_NAMESPACE {
       {
         relativeToAttr = "__model__";
       }
-      pose->SetAttribute("relative_to", relativeToAttr.c_str());
+      pose->SetAttribute("relative_to", ignition::common::basename(relativeToAttr).c_str());
 
-      AddKeyValue(joint, "parent", _link->getParent()->name);
-      AddKeyValue(joint, "child", _link->name);
+      AddKeyValue(joint, "parent", ignition::common::basename(_link->getParent()->name));
+      AddKeyValue(joint, "child", ignition::common::basename(_link->name));
 
       tinyxml2::XMLElement *jointAxis = doc->NewElement("axis");
       tinyxml2::XMLElement *jointAxisLimit = doc->NewElement("limit");
@@ -1024,7 +1023,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("link");
 
     // set body name
-    elem->SetAttribute("name", _link->name.c_str());
+    elem->SetAttribute("name", ignition::common::basename(_link->name).c_str());
 
     // compute global transform
     ignition::math::Pose3d localTransform;
@@ -1171,7 +1170,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       if (sdfSensor->Type() == sdf::SensorType::CAMERA)
       {
         const sdf::Camera * camera = sdfSensor->CameraSensor();
-        sensorXML->SetAttribute("name", camera->Name().c_str());
+        sensorXML->SetAttribute("name", ignition::common::basename(camera->Name()).c_str());
 
         double pose_value[6];
         pose_value[0] = camera->RawPose().Pos().X();
@@ -1222,7 +1221,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       else if (sdfSensor->Type() == sdf::SensorType::LIDAR)
       {
         const sdf::Lidar * lidar = sdfSensor->LidarSensor();
-        sensorXML->SetAttribute("name", sensor.second->Name().c_str());
+        sensorXML->SetAttribute("name", ignition::common::basename(sensor.second->Name()).c_str());
         double pose_value[6];
         pose_value[0] = sdfSensor->RawPose().Pos().X();
         pose_value[1] = sdfSensor->RawPose().Pos().Y();
@@ -1296,7 +1295,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     {
       std::shared_ptr<sdf::Light> sdfLight = light.second;
       tinyxml2::XMLElement *lightXML = attach->GetDocument()->NewElement("light");
-      lightXML->SetAttribute("name", sdfLight->Name().c_str());
+      lightXML->SetAttribute("name", ignition::common::basename(sdfLight->Name()).c_str());
 
       std::string lightType;
       switch (sdfLight->Type()) {
@@ -1395,8 +1394,8 @@ inline namespace SDF_VERSION_NAMESPACE {
             attach->GetDocument()->NewElement("plugin");
           pluginXML->SetAttribute("name", "ignition::gazebo::systems::DiffDrive");
           pluginXML->SetAttribute("filename", "ignition-gazebo-diff-drive-system");
-          AddKeyValue(pluginXML, "left_joint", pluginDiff->leftWheelJointName_);
-          AddKeyValue(pluginXML, "right_joint", pluginDiff->rightWheelJointName_);
+          AddKeyValue(pluginXML, "left_joint", ignition::common::basename(pluginDiff->leftWheelJointName_));
+          AddKeyValue(pluginXML, "right_joint", ignition::common::basename(pluginDiff->rightWheelJointName_));
           double wheelBase = pluginDiff->wheelBase_;
           double wheelRadius = pluginDiff->wheelRadius_;
           AddKeyValue(pluginXML, "wheel_separation", Values2str(1, &wheelBase));
@@ -1430,7 +1429,7 @@ inline namespace SDF_VERSION_NAMESPACE {
           controllerPluginXML->SetAttribute("name", "ignition::gazebo::systems::JointPositionController");
           controllerPluginXML->SetAttribute("filename", "ignition-gazebo-joint-position-controller-system");
 
-          AddKeyValue(controllerPluginXML, "joint_name", joint_name);
+          AddKeyValue(controllerPluginXML, "joint_name", ignition::common::basename(joint_name));
           attach->LinkEndChild(controllerPluginXML);
         }
       }
@@ -1463,7 +1462,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     {
       worldName = "world_name";
     }
-    world->SetAttribute("name", worldName.c_str());
+    world->SetAttribute("name", (worldName + "_world").c_str());
 
     sdf = _sdfXmlOut->NewElement("sdf");
     sdf->SetAttribute("version", "1.7");
@@ -1487,7 +1486,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       AddPlugins(robotModel->plugins_, robotModel->joints_, robot);
 
       // set model name to urdf robot name if not specified
-      robot->SetAttribute("name", robotModel->getName().c_str());
+      robot->SetAttribute("name", ignition::common::basename(robotModel->getName()).c_str());
 
       usd::LinkConstSharedPtr rootLink = robotModel->getRoot();
 

@@ -129,8 +129,8 @@ WorldInterfaceSharedPtr parseUSD(const std::string &xml_string)
       wheelRadiusAttr.Get<float>(&wheelRadius);
       leftWheelAttr.Get<std::string>(&leftWheelName);
       rightWheelAttr.Get<std::string>(&rightWheelName);
-      plugin->leftWheelJointName_ = "/" + model->name_ + "/chassis_link/" + leftWheelName + "_joint";
-      plugin->rightWheelJointName_ = "/" + model->name_ + "/chassis_link/" + leftWheelName + "_joint";
+      plugin->leftWheelJointName_ = "/" + model->name_ + "/chassis_link/" + leftWheelName;
+      plugin->rightWheelJointName_ = "/" + model->name_ + "/chassis_link/" + rightWheelName;
       plugin->wheelBase_ = wheelBase;
       plugin->wheelRadius_ = wheelRadius;
 
