@@ -16,20 +16,19 @@
  */
 
 #include <memory>
+
 #include <gtest/gtest.h>
 
 #include <ignition/common/Material.hh>
 #include <ignition/common/Pbr.hh>
-
 #include <ignition/math/Color.hh>
 
-#include <sdf/Material.hh>
-#include <sdf/Pbr.hh>
-
-#include <sdf/usd/sdf_parser/Conversions.hh>
+#include "sdf/Material.hh"
+#include "sdf/Pbr.hh"
+#include "sdf/usd/Conversions.hh"
 
 /////////////////////////////////////////////////
-TEST(Conversions, Conversions_sdf_to_common)
+TEST(Conversions, SdfToCommonMaterial)
 {
   sdf::Material material;
   material.SetEmissive(ignition::math::Color(1, 0.2, 0.2, 0.7));
@@ -47,6 +46,7 @@ TEST(Conversions, Conversions_sdf_to_common)
   pbrWorkflow.SetMetalnessMap("MetalnessMap");
   pbrWorkflow.SetEmissiveMap("EmissiveMap");
   pbrWorkflow.SetRoughnessMap("RoughnessMap");
+  pbrWorkflow.SetSpecularMap("SpecularMap");
   pbrWorkflow.SetEnvironmentMap("EnvironmentMap");
   pbrWorkflow.SetAmbientOcclusionMap("AmbientOcclusionMap");
   pbrWorkflow.SetLightMap("LightMap");
@@ -59,10 +59,11 @@ TEST(Conversions, Conversions_sdf_to_common)
   pbrSDF.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
   material.SetPbrMaterial(pbrSDF);
 
-  std::shared_ptr<ignition::common::Material> materialCommon =
+  const std::shared_ptr<ignition::common::Material> materialCommon =
     sdf::usd::convert(material);
+  ASSERT_NE(nullptr, materialCommon);
   const ignition::common::Pbr * pbrCommon = materialCommon->PbrMaterial();
-  EXPECT_TRUE(pbrCommon);
+  ASSERT_NE(nullptr, pbrCommon);
 
   EXPECT_EQ(material.Emissive(), materialCommon->Emissive());
   EXPECT_EQ(material.Diffuse(), materialCommon->Diffuse());
@@ -77,7 +78,7 @@ TEST(Conversions, Conversions_sdf_to_common)
   EXPECT_EQ(pbrWorkflow.MetalnessMap(), pbrCommon->MetalnessMap());
   EXPECT_EQ(pbrWorkflow.EmissiveMap(), pbrCommon->EmissiveMap());
   EXPECT_EQ(pbrWorkflow.RoughnessMap(), pbrCommon->RoughnessMap());
-
+  EXPECT_EQ(pbrWorkflow.SpecularMap(), pbrCommon->SpecularMap());
   EXPECT_EQ(pbrWorkflow.EnvironmentMap(), pbrCommon->EnvironmentMap());
   EXPECT_EQ(pbrWorkflow.AmbientOcclusionMap(),
     pbrCommon->AmbientOcclusionMap());
@@ -93,7 +94,7 @@ TEST(Conversions, Conversions_sdf_to_common)
   EXPECT_DOUBLE_EQ(pbrWorkflow.Metalness(), pbrCommon->Metalness());
 }
 
-TEST(Conversions, Conversions_common_to_sdf)
+TEST(Conversions, CommonToSdfMaterial)
 {
   std::shared_ptr<ignition::common::Material> materialCommon =
     std::make_shared<ignition::common::Material>();
@@ -112,6 +113,7 @@ TEST(Conversions, Conversions_common_to_sdf)
   pbrCommon.SetMetalnessMap("MetalnessMap");
   pbrCommon.SetEmissiveMap("EmissiveMap");
   pbrCommon.SetRoughnessMap("RoughnessMap");
+  pbrCommon.SetSpecularMap("SpecularMap");
   pbrCommon.SetEnvironmentMap("EnvironmentMap");
   pbrCommon.SetAmbientOcclusionMap("AmbientOcclusionMap");
   pbrCommon.SetLightMap("LightMap");
@@ -123,11 +125,13 @@ TEST(Conversions, Conversions_common_to_sdf)
 
   materialCommon->SetPbrMaterial(pbrCommon);
 
-  sdf::Material material = sdf::usd::convert(materialCommon);
+  const sdf::Material material = sdf::usd::convert(materialCommon);
 
   const sdf::Pbr * pbr = material.PbrMaterial();
+  ASSERT_NE(nullptr, pbr);
   const sdf::PbrWorkflow * pbrWorkflow =
     pbr->Workflow(sdf::PbrWorkflowType::METAL);
+  ASSERT_NE(nullptr, pbrWorkflow);
 
   EXPECT_EQ(material.Emissive(), materialCommon->Emissive());
   EXPECT_EQ(material.Diffuse(), materialCommon->Diffuse());
@@ -142,7 +146,7 @@ TEST(Conversions, Conversions_common_to_sdf)
   EXPECT_EQ(pbrWorkflow->MetalnessMap(), pbrCommon.MetalnessMap());
   EXPECT_EQ(pbrWorkflow->EmissiveMap(), pbrCommon.EmissiveMap());
   EXPECT_EQ(pbrWorkflow->RoughnessMap(), pbrCommon.RoughnessMap());
-
+  EXPECT_EQ(pbrWorkflow->SpecularMap(), pbrCommon.SpecularMap());
   EXPECT_EQ(pbrWorkflow->EnvironmentMap(), pbrCommon.EnvironmentMap());
   EXPECT_EQ(pbrWorkflow->AmbientOcclusionMap(),
     pbrCommon.AmbientOcclusionMap());

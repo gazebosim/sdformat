@@ -15,7 +15,7 @@
  *
  */
 
-#include "sdf/usd/sdf_parser/Conversions.hh"
+#include "sdf/usd/Conversions.hh"
 
 #include <ignition/common/Pbr.hh>
 
@@ -47,10 +47,13 @@ namespace sdf
       pbrWorkflow.SetMetalnessMap(pbr->MetalnessMap());
       pbrWorkflow.SetEmissiveMap(pbr->EmissiveMap());
       pbrWorkflow.SetRoughnessMap(pbr->RoughnessMap());
-
+      pbrWorkflow.SetSpecularMap(pbr->SpecularMap());
       pbrWorkflow.SetEnvironmentMap(pbr->EnvironmentMap());
       pbrWorkflow.SetAmbientOcclusionMap(pbr->AmbientOcclusionMap());
       pbrWorkflow.SetLightMap(pbr->LightMap());
+      pbrWorkflow.SetRoughness(pbr->Roughness());
+      pbrWorkflow.SetGlossiness(pbr->Glossiness());
+      pbrWorkflow.SetMetalness(pbr->Metalness());
 
       if (pbr->NormalMapType() == ignition::common::NormalMapSpace::TANGENT)
       {
@@ -63,10 +66,6 @@ namespace sdf
           pbr->NormalMap(), sdf::NormalMapSpace::OBJECT);
       }
 
-      pbrWorkflow.SetRoughness(pbr->Roughness());
-      pbrWorkflow.SetGlossiness(pbr->Glossiness());
-      pbrWorkflow.SetMetalness(pbr->Metalness());
-
       if (pbr->Type() == ignition::common::PbrType::METAL)
       {
         pbrOut.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
@@ -77,16 +76,13 @@ namespace sdf
       }
       out.SetPbrMaterial(pbrOut);
     }
-    else
+    else if (!_in->TextureImage().empty())
     {
-      if (!_in->TextureImage().empty())
-      {
-        sdf::Pbr pbrOut;
-        sdf::PbrWorkflow pbrWorkflow;
-        pbrWorkflow.SetAlbedoMap(_in->TextureImage());
-        pbrOut.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, pbrWorkflow);
-        out.SetPbrMaterial(pbrOut);
-      }
+      sdf::Pbr pbrOut;
+      sdf::PbrWorkflow pbrWorkflow;
+      pbrWorkflow.SetAlbedoMap(_in->TextureImage());
+      pbrOut.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, pbrWorkflow);
+      out.SetPbrMaterial(pbrOut);
     }
 
     return out;
@@ -94,8 +90,7 @@ namespace sdf
 
   std::shared_ptr<ignition::common::Material> convert(const sdf::Material &_in)
   {
-    std::shared_ptr<ignition::common::Material> out =
-      std::make_shared<ignition::common::Material>();
+    auto out = std::make_shared<ignition::common::Material>();
     out->SetEmissive(_in.Emissive());
     out->SetDiffuse(_in.Diffuse());
     out->SetSpecular(_in.Specular());
@@ -129,6 +124,7 @@ namespace sdf
         pbrOut.SetMetalnessMap(pbrWorkflow->MetalnessMap());
         pbrOut.SetEmissiveMap(pbrWorkflow->EmissiveMap());
         pbrOut.SetRoughnessMap(pbrWorkflow->RoughnessMap());
+        pbrOut.SetSpecularMap(pbrWorkflow->SpecularMap());
         pbrOut.SetEnvironmentMap(pbrWorkflow->EnvironmentMap());
         pbrOut.SetAmbientOcclusionMap(pbrWorkflow->AmbientOcclusionMap());
         pbrOut.SetLightMap(pbrWorkflow->LightMap());
@@ -142,7 +138,7 @@ namespace sdf
             pbrWorkflow->NormalMap(),
             ignition::common::NormalMapSpace::TANGENT);
         }
-        else if(pbrWorkflow->NormalMapType() == sdf::NormalMapSpace::OBJECT)
+        else if (pbrWorkflow->NormalMapType() == sdf::NormalMapSpace::OBJECT)
         {
           pbrOut.SetNormalMap(
             pbrWorkflow->NormalMap(),

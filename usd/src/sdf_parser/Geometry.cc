@@ -58,7 +58,7 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
-#include "sdf/usd/sdf_parser/Conversions.hh"
+#include "sdf/usd/Conversions.hh"
 #include "sdf/usd/sdf_parser/Material.hh"
 
 #include "../UsdUtils.hh"

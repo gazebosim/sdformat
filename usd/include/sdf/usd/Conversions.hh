@@ -16,8 +16,8 @@
  */
 
 
-#ifndef SDF_USD_SDF_PARSER_CONVERSIONS_HH_
-#define SDF_USD_SDF_PARSER_CONVERSIONS_HH_
+#ifndef SDF_USD_CONVERSIONS_HH_
+#define SDF_USD_CONVERSIONS_HH_
 
 #include <memory>
 
@@ -25,6 +25,7 @@
 
 #include "sdf/Material.hh"
 #include "sdf/sdf_config.h"
+#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
@@ -33,20 +34,21 @@ namespace sdf
   //
   namespace usd
   {
-  //
-  /// \brief Specialized conversion from an Ignition Common Material
-  /// to a SDF material
-  /// \param[in] _in Ignition Common Material.
-  /// \return SDF material.
-  SDFORMAT_VISIBLE
-  sdf::Material convert(const std::shared_ptr<ignition::common::Material> &_in);
+    /// \brief Specialized conversion from an Ignition Common Material
+    /// to a SDF material
+    /// \param[in] _in Ignition Common Material.
+    /// \return SDF material.
+    IGNITION_SDFORMAT_USD_VISIBLE
+    sdf::Material convert(
+        const std::shared_ptr<ignition::common::Material> &_in);
 
-  /// \brief Specialized conversion from an SDF material to a Ignition Common
-  /// material.
-  /// \param[in] _in SDF material.
-  /// \return Ignition Common Material.
-  SDFORMAT_VISIBLE
-  std::shared_ptr<ignition::common::Material> convert(const sdf::Material &_in);
+    /// \brief Specialized conversion from an SDF material to a Ignition Common
+    /// material.
+    /// \param[in] _in SDF material.
+    /// \return Ignition Common Material.
+    IGNITION_SDFORMAT_USD_VISIBLE
+    std::shared_ptr<ignition::common::Material> convert(
+        const sdf::Material &_in);
   }
   }
 }
