@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
   <model name="joint_parent_world">
+    <pose>1 0 0 0 0 0</pose>
     <link name="link">
       <pose>0 0 1 0 0 0</pose>
     </link>
