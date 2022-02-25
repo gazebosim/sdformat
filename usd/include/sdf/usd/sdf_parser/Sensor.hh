@@ -15,12 +15,12 @@
  *
 */
 
-#ifndef SDF_PARSER_SENSOR_HH_
-#define SDF_PARSER_SENSOR_HH_
+#ifndef SDF_USD_SDF_PARSER_SENSOR_HH_
+#define SDF_USD_SDF_PARSER_SENSOR_HH_
 
 #include <string>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -36,23 +36,23 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-  /// \brief Parse an SDF sensor into a USD stage.
-  /// \param[in] _sensor The SDF sensor to parse.
-  /// \param[in] _stage The stage that should contain the USD representation
-  /// of _sensor.
-  /// \param[in] _path The USD path of the parsed sensor in _stage, which must be
-  /// a valid USD path.
-  /// \return Errors, which is a vector of Error objects. Each Error includes
-  /// an error code and message. An empty vector indicates no error.
-  UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfSensor(
-    const sdf::Sensor &_sensor,
-    pxr::UsdStageRefPtr &_stage,
-    const std::string &_path);
+    /// \brief Parse an SDF sensor into a USD stage.
+    /// \param[in] _sensor The SDF sensor to parse.
+    /// \param[in] _stage The stage that should contain the USD representation
+    /// of _sensor.
+    /// \param[in] _path The USD path of the parsed sensor in _stage, which must
+    /// be a valid USD path.
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no error.
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfSensor(
+      const sdf::Sensor &_sensor,
+      pxr::UsdStageRefPtr &_stage,
+      const std::string &_path);
   }
   }
 }

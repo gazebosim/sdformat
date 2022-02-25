@@ -1,17 +1,7 @@
 <?xml version="1.0" ?>
-<!--
-  Ignition Gazebo sensor demo for sensors that do not require rendering.
-
-  Listen to sensor readings:
-
-    Altimeter: ign topic -e -t /altimeter
-    Imu: ign topic -e -t /imu
-    Magnetometer: ign topic -e -t /magnetometer
-    Air pressure: ign topic -e -t /air_pressure
--->
 <sdf version="1.6">
   <world name="sensors">
-    <model name="sensors_box">
+    <model name="model_with_imu">
       <pose>4 0 3.0 0 0.0 3.14</pose>
       <link name="link">
         <pose>0.05 0.05 0.05 0 0 0</pose>
@@ -46,7 +36,8 @@
         </sensor>
       </link>
     </model>
-    <model name="camera">
+
+    <model name="model_with_camera">
       <pose>4 0 1.0 0 0.0 3.14</pose>
       <link name="link">
         <pose>0.05 0.05 0.05 0 0 0</pose>
@@ -93,6 +84,7 @@
     </model>
 
     <model name="model_with_lidar">
+      <static>true</static>
       <pose>4 0 0.5 0 0.0 3.14</pose>
       <link name="link">
         <pose>0.05 0.05 0.05 0 0 0</pose>
@@ -147,7 +139,6 @@
           <visualize>true</visualize>
         </sensor>
       </link>
-      <static>true</static>
     </model>
   </world>
 </sdf>

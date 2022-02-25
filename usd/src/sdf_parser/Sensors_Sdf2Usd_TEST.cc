@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -62,7 +62,7 @@ TEST_F(UsdStageFixture, Sensors)
   ignition::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
 
-  const auto path = sdf::testing::TestFile("sdf", "camera_lidar_sensor.sdf");
+  const auto path = sdf::testing::TestFile("sdf", "usd_sensors.sdf");
   sdf::Root root;
 
   ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
@@ -76,13 +76,10 @@ TEST_F(UsdStageFixture, Sensors)
   auto worldPrim = this->stage->GetPrimAtPath(pxr::SdfPath(worldPath));
   ASSERT_TRUE(worldPrim);
 
-  std::string cameraPath = worldPath + "/" + "camera";
-  std::string cameraLinkPath = cameraPath + "/" + "link";
-  std::string cameraSensorPath = cameraLinkPath + "/" + "camera";
-  auto cameraSensor = this->stage->GetPrimAtPath(
-    pxr::SdfPath(cameraSensorPath));
-  ASSERT_TRUE(cameraSensor);
-  auto usdCamera = pxr::UsdGeomCamera(cameraSensor);
+  const std::string cameraPath = worldPath + "/model_with_camera";
+  const std::string cameraLinkPath = cameraPath + "/link";
+  const pxr::SdfPath cameraSensorPath(cameraLinkPath + "/camera");
+  const auto usdCamera = pxr::UsdGeomCamera::Get(this->stage, cameraSensorPath);
   ASSERT_TRUE(usdCamera);
 
   float focalLength;
@@ -91,14 +88,14 @@ TEST_F(UsdStageFixture, Sensors)
   usdCamera.GetFocalLengthAttr().Get(&focalLength);
   usdCamera.GetClippingRangeAttr().Get(&clippingRange);
   usdCamera.GetHorizontalApertureAttr().Get(&horizontalAperture);
-  EXPECT_FLOAT_EQ(40, focalLength);
+  EXPECT_FLOAT_EQ(40.0f, focalLength);
   EXPECT_EQ(pxr::GfVec2f(0.1, 100), clippingRange);
   EXPECT_FLOAT_EQ(59.98868, horizontalAperture);
 
-  std::string lidarPath = worldPath + "/" + "model_with_lidar";
-  std::string lidarLinkPath = lidarPath + "/" + "link";
-  std::string lidarSensorPath = lidarLinkPath + "/gpu_lidar/sensor";
-  auto lidarSensor = this->stage->GetPrimAtPath(
+  const std::string lidarPath = worldPath + "/model_with_lidar";
+  const std::string lidarLinkPath = lidarPath + "/link";
+  const std::string lidarSensorPath = lidarLinkPath + "/gpu_lidar";
+  const auto lidarSensor = this->stage->GetPrimAtPath(
     pxr::SdfPath(lidarSensorPath));
   ASSERT_TRUE(lidarSensor);
   float hFOV;
@@ -113,19 +110,19 @@ TEST_F(UsdStageFixture, Sensors)
   lidarSensor.GetAttribute(pxr::TfToken("horizontalResolution")).Get(&hResolution);
   lidarSensor.GetAttribute(pxr::TfToken("verticalFov")).Get(&vFOV);
   lidarSensor.GetAttribute(pxr::TfToken("verticalResolution")).Get(&vResolution);
-  EXPECT_FLOAT_EQ(10, maxRange);
-  EXPECT_FLOAT_EQ(0.08, minRange);
-  EXPECT_FLOAT_EQ(159.99995, hFOV);
-  EXPECT_FLOAT_EQ(1, hResolution);
-  EXPECT_FLOAT_EQ(29.999956, vFOV);
-  EXPECT_FLOAT_EQ(1, vResolution);
+  EXPECT_FLOAT_EQ(10.0f, maxRange);
+  EXPECT_FLOAT_EQ(0.08f, minRange);
+  EXPECT_FLOAT_EQ(159.99995f, hFOV);
+  EXPECT_FLOAT_EQ(1.0f, hResolution);
+  EXPECT_FLOAT_EQ(29.999956f, vFOV);
+  EXPECT_FLOAT_EQ(1.0f, vResolution);
 
-  std::string imuPath = worldPath + "/" + "sensors_box";
-  std::string imuLinkPath = imuPath + "/" + "link";
-  std::string imuSensorPath = imuLinkPath + "/" + "imu";
-  auto imuSensor = this->stage->GetPrimAtPath(
-    pxr::SdfPath(imuSensorPath));
-  ASSERT_TRUE(imuSensor);
-  auto usdIMUCube = pxr::UsdGeomCube(imuSensor);
+  const std::string imuPath = worldPath + "/model_with_imu";
+  const std::string imuLinkPath = imuPath + "/link";
+  const pxr::SdfPath imuSensorPath(imuLinkPath + "/imu");
+  const auto usdIMUCube = pxr::UsdGeomCube::Get(this->stage, imuSensorPath);
   ASSERT_TRUE(usdIMUCube);
+  double imuSize;
+  usdIMUCube.GetSizeAttr().Get(&imuSize);
+  EXPECT_DOUBLE_EQ(0.001, imuSize);
 }
