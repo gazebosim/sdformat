@@ -176,7 +176,7 @@ TEST(DOMJoint, LoadJointParentWorld)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("link"));
