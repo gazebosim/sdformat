@@ -1,6 +1,7 @@
 set(sources
   UsdError.cc
   sdf_parser/Geometry.cc
+  sdf_parser/Joint.cc
   sdf_parser/Light.cc
   sdf_parser/Link.cc
   sdf_parser/Model.cc
@@ -25,6 +26,7 @@ target_link_libraries(${usd_target}
 set(gtest_sources
   sdf_parser/sdf2usd_TEST.cc
   sdf_parser/Geometry_Sdf2Usd_TEST.cc
+  sdf_parser/Joint_Sdf2Usd_TEST.cc
   sdf_parser/Light_Sdf2Usd_TEST.cc
   sdf_parser/Link_Sdf2Usd_TEST.cc
   # TODO(adlarkin) add a test for SDF -> USD models once model parsing
