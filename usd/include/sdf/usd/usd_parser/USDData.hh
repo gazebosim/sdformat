@@ -72,11 +72,11 @@ namespace sdf
         Materials() const;
 
       /// \brief Get all sdformat models inside the stage
-      public: const std::set<std::string> &GetModels() const;
+      public: const std::set<std::string> &Models() const;
 
       /// \brief Get all stages (the main one and all the referenced).
       public: const std::unordered_map<std::string, std::shared_ptr<USDStage>> &
-        GetAllReferences() const;
+        AllReferences() const;
 
       /// \brief Find a path and get the data
       /// \param[in] _name Name of the path to find
@@ -88,19 +88,19 @@ namespace sdf
         std::ostream& os, const USDData& data)
       {
         os << "References:" << "\n";
-        for (auto &ref : data.GetAllReferences())
+        for (auto &ref : data.AllReferences())
         {
           os << "\t" << ref.first << "\n";
           // os << "\t\t" << ref.second->_referenceName << "\n";
-          os << "\t\t" << ref.second->GetUpAxis() << "\n";
-          os << "\t\t" << ref.second->GetMetersPerUnit() << "\n";
-          for (auto &path : ref.second->GetUSDPaths())
+          os << "\t\t" << ref.second->UpAxis() << "\n";
+          os << "\t\t" << ref.second->MetersPerUnit() << "\n";
+          for (auto &path : ref.second->USDPaths())
           {
             std::cerr << "\t\tPath " << path << '\n';
           }
         }
         os << "Models:" << "\n";
-        auto models = data.GetModels();
+        auto models = data.Models();
         for (const auto &model : models)
         {
           os << "\t" << model << "\n";

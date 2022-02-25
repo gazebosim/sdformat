@@ -119,19 +119,19 @@ namespace usd
   }
 
   /////////////////////////////////////////////////
-  const std::string &USDStage::GetUpAxis() const
+  const std::string &USDStage::UpAxis() const
   {
     return this->dataPtr->upAxis;
   }
 
   /////////////////////////////////////////////////
-  double USDStage::GetMetersPerUnit() const
+  double USDStage::MetersPerUnit() const
   {
     return this->dataPtr->metersPerUnit;
   }
 
   /////////////////////////////////////////////////
-  const std::set<std::string> &USDStage::GetUSDPaths() const
+  const std::set<std::string> &USDStage::USDPaths() const
   {
     return this->dataPtr->paths;
   }

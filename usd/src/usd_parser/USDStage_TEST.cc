@@ -37,9 +37,9 @@ TEST(USDStage, Constructor)
     sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(0u, errors.size());
 
-    EXPECT_EQ("Z", stage.GetUpAxis());
-    EXPECT_DOUBLE_EQ(0.01, stage.GetMetersPerUnit());
-    EXPECT_EQ(23u, stage.GetUSDPaths().size());
+    EXPECT_EQ("Z", stage.UpAxis());
+    EXPECT_DOUBLE_EQ(0.01, stage.MetersPerUnit());
+    EXPECT_EQ(23u, stage.USDPaths().size());
   }
 
   // Check up Axis equal to Y and metersPerUnit
@@ -49,9 +49,9 @@ TEST(USDStage, Constructor)
     sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(0u, errors.size());
 
-    EXPECT_EQ("Y", stage.GetUpAxis());
-    EXPECT_DOUBLE_EQ(1.0, stage.GetMetersPerUnit());
-    EXPECT_EQ(10u, stage.GetUSDPaths().size());
+    EXPECT_EQ("Y", stage.UpAxis());
+    EXPECT_DOUBLE_EQ(1.0, stage.MetersPerUnit());
+    EXPECT_EQ(10u, stage.USDPaths().size());
   }
 
   // Wrong upaxis

@@ -99,14 +99,14 @@ namespace usd {
   }
 
   /////////////////////////////////////////////////
-  const std::set<std::string> &USDData::GetModels() const
+  const std::set<std::string> &USDData::Models() const
   {
     return this->dataPtr->models;
   }
 
   /////////////////////////////////////////////////
   const std::unordered_map<std::string, std::shared_ptr<USDStage>> &
-    USDData::GetAllReferences() const
+    USDData::AllReferences() const
   {
     return this->dataPtr->references;
   }
@@ -244,7 +244,7 @@ namespace usd {
     {
       if (ref.second != nullptr)
       {
-        for (auto &path : ref.second->GetUSDPaths())
+        for (auto &path : ref.second->USDPaths())
         {
           if (path == _name)
           {

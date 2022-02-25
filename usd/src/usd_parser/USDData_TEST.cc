@@ -41,14 +41,14 @@ TEST(USDData, Constructor)
     sdf::usd::USDData usdData(filename);
     EXPECT_EQ(0u, usdData.Init().size());
     EXPECT_EQ(0u, usdData.ParseMaterials().size());
-    EXPECT_EQ(1u, usdData.GetAllReferences().size());
-    EXPECT_EQ(2u, usdData.GetModels().size());
+    EXPECT_EQ(1u, usdData.AllReferences().size());
+    EXPECT_EQ(2u, usdData.Models().size());
 
     // Find a path inside the stage
     auto boxStage = usdData.FindStage("box");
     EXPECT_EQ(filename, boxStage.first);
-    EXPECT_EQ("Z", boxStage.second->GetUpAxis());
-    EXPECT_DOUBLE_EQ(0.01, boxStage.second->GetMetersPerUnit());
+    EXPECT_EQ("Z", boxStage.second->UpAxis());
+    EXPECT_DOUBLE_EQ(0.01, boxStage.second->MetersPerUnit());
 
     // Try to find a invalid path in the stage data
     auto invalidStage = usdData.FindStage("invalid");

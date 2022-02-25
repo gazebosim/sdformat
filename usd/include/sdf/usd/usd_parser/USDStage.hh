@@ -52,13 +52,13 @@ namespace sdf
       public: UsdErrors Init();
 
       /// \brief Get stage up axis
-      public: const std::string &GetUpAxis() const;
+      public: const std::string &UpAxis() const;
 
       /// \brief Get stage meter per unit
-      public: double GetMetersPerUnit() const;
+      public: double MetersPerUnit() const;
 
       /// \brief Get USD paths available in the stage
-      public: const std::set<std::string> &GetUSDPaths() const;
+      public: const std::set<std::string> &USDPaths() const;
 
       /// \brief Private data pointer.
       IGN_UTILS_IMPL_PTR(dataPtr)
