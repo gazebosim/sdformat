@@ -17,6 +17,8 @@
 
 #include "sdf/usd/usd_parser/utils.hh"
 
+#include "utils_internal.hh"
+
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 #include <pxr/usd/usdShade/input.h>
@@ -34,7 +36,7 @@ namespace sdf
   namespace usd
   {
   /////////////////////////////////////////////////
-  std::string removeSubStr(const std::string &_str, const std::string &_substr)
+  std::string RemoveSubStr(const std::string &_str, const std::string &_substr)
   {
     std::string result = _str;
     size_t pos = std::string::npos;
@@ -46,13 +48,13 @@ namespace sdf
   }
 
   /////////////////////////////////////////////////
-  sdf::Errors copyFile(const std::string &_ori, const std::string &_dest)
+  UsdErrors copyFile(const std::string &_ori, const std::string &_dest)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     if (ignition::common::exists(_ori))
     {
       std::string baseName = ignition::common::basename(_dest);
-      std::string pathDest = removeSubStr(_dest, baseName);
+      std::string pathDest = RemoveSubStr(_dest, baseName);
       ignition::common::createDirectories(pathDest);
       if (!ignition::common::copyFile(_ori, _dest))
       {
@@ -70,9 +72,9 @@ namespace sdf
   }
 
   /////////////////////////////////////////////////
-  sdf::Errors ParseMaterial(const pxr::UsdPrim &_prim, sdf::Material &_material)
+  UsdErrors ParseMaterial(const pxr::UsdPrim &_prim, sdf::Material &_material)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     // if the prim is a Geom then get the color values
     if(_prim.IsA<pxr::UsdGeomGprim>())
     {
@@ -138,7 +140,7 @@ namespace sdf
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
                 ignition::common::findFile(materialPath.GetAssetPath());
-              sdf::Errors errorCopy = copyFile(
+              UsdErrors errorCopy = copyFile(
                 fullAlbedoName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
               {

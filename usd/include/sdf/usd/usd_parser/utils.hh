@@ -30,6 +30,10 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Material.hh"
+#include "sdf/sdf_config.h"
+#include "sdf/system_util.hh"
+#include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
@@ -38,13 +42,6 @@ namespace sdf
   //
   namespace usd
   {
-    /// Remove substring appearance in the input string
-    /// \param[in] _str Original string where the substring will be removed
-    /// \param[in] _substr Substring to use to find and remove in the original
-    /// \return A new string without the substring
-    std::string SDFORMAT_VISIBLE removeSubStr(const std::string &_str,
-        const std::string &_substr);
-
     /// brief Parse the material in a usdprim
     /// If the prim is a Geom then get the color values, or
     /// if the prim is a shade Material then get the texture values
@@ -52,7 +49,8 @@ namespace sdf
     /// \param[out] _material Material of the prim
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    sdf::Errors ParseMaterial(const pxr::UsdPrim &_prim,
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseMaterial(
+      const pxr::UsdPrim &_prim,
       sdf::Material &_material);
 }
 }

@@ -31,6 +31,8 @@
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
+#include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
@@ -41,9 +43,9 @@ namespace sdf
   {
     /// \brief this class will handle the data of a stage
     /// It will parse the materials in the stage
-    /// If the stage has some references to another stages, this class
+    /// If the stage has some references to other stages, this class
     /// will read them and make this data available here too.
-    class SDFORMAT_VISIBLE USDData
+    class IGNITION_SDFORMAT_USD_VISIBLE USDData
     {
       /// \brief Constructor
       public: USDData(const std::string &_filename);
@@ -52,22 +54,22 @@ namespace sdf
       /// defined in the constructor
       /// \return Errors, which is a vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
-      public: sdf::Errors Init();
+      public: UsdErrors Init();
 
       /// \brief If a stage contains substages, this will allow to include
       /// them.
       /// \return Errors, which is a vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
-      public: sdf::Errors AddStage(const std::string &_ref);
+      public: UsdErrors AddStage(const std::string &_ref);
 
       /// \brief Read materials
       /// \return Errors, which is a vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
-      public: sdf::Errors ParseMaterials();
+      public: UsdErrors ParseMaterials();
 
       /// \brief Get all materials readed in the stage
       public: const std::unordered_map<std::string, sdf::Material> &
-        GetMaterials() const;
+        Materials() const;
 
       /// \brief Get all sdformat models inside the stage
       public: const std::set<std::string> &GetModels() const;
@@ -78,11 +80,12 @@ namespace sdf
 
       /// \brief Find a path and get the data
       /// \param[in] _name Name of the path to find
-      /// \return A paair with the name of the stage and the data
+      /// \return A pair with the name of the stage and the data
       public: const std::pair<std::string, std::shared_ptr<sdf::usd::USDStage>>
-          findStage(const std::string &_name);
+          FindStage(const std::string &_name);
 
-      friend std::ostream& operator<<(std::ostream& os, const USDData& data)
+      public: friend std::ostream& operator<<(
+        std::ostream& os, const USDData& data)
       {
         os << "References:" << "\n";
         for (auto &ref : data.GetAllReferences())

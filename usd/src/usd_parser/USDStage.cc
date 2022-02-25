@@ -64,16 +64,17 @@ namespace usd
   }
 
   /////////////////////////////////////////////////
-  sdf::Errors USDStage::Init()
+  UsdErrors USDStage::Init()
   {
-    sdf::Errors errors;
+    UsdErrors errors;
 
     // Open the stage
     auto referencee = pxr::UsdStage::Open(this->dataPtr->refFileName);
     if (!referencee)
     {
-      errors.emplace_back(
-        Error(ErrorCode::FILE_READ, "Failed to load usd file"));
+      errors.emplace_back(UsdError(
+        sdf::usd::UsdErrorCode::INVALID_USD_FILE,
+        "Failed to load usd file"));
       return errors;
     }
 
@@ -92,7 +93,9 @@ namespace usd
       if (this->dataPtr->upAxis != "Y" && this->dataPtr->upAxis != "Z")
       {
         errors.emplace_back(
-          Error(ErrorCode::ELEMENT_INVALID, "Up axis should be 'Y' or 'Z'"));
+          UsdError(
+            sdf::usd::UsdErrorCode::INVALID_UP_AXIS,
+            "Up axis should be 'Y' or 'Z'"));
         return errors;
       }
     }

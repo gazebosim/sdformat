@@ -66,6 +66,12 @@ namespace sdf
 
     /// \brief Invalid submesh primitive type
     INVALID_SUBMESH_PRIMITIVE_TYPE,
+
+    /// \brief Invalid usd file
+    INVALID_USD_FILE,
+
+    /// \brief Invalid up axis
+    INVALID_UP_AXIS,
   };
 
   class IGNITION_SDFORMAT_USD_VISIBLE UsdError

@@ -26,6 +26,8 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+#include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
@@ -38,10 +40,7 @@ namespace sdf
     /// - UpAxis
     /// - MetersPerUnit
     /// - All USD paths
-    /// This class throws exception if:
-    /// - The file name is invalid
-    /// - Or the upAxis is not 'Y' or 'Z'
-    class SDFORMAT_VISIBLE USDStage
+    class IGNITION_SDFORMAT_USD_VISIBLE USDStage
     {
       /// \brief Default constructor
       /// \param[in] _refFileName File name of the stage in the disk
@@ -50,7 +49,7 @@ namespace sdf
       /// \brief Initialize the data structure
       /// \return Errors, which is a vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
-      public: sdf::Errors Init();
+      public: UsdErrors Init();
 
       /// \brief Get stage up axis
       public: const std::string &GetUpAxis() const;

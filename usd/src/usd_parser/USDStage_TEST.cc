@@ -22,6 +22,7 @@
 #include <ignition/utilities/ExtraTestMacros.hh>
 
 #include <sdf/usd/usd_parser/USDStage.hh>
+#include <sdf/usd/UsdError.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -29,15 +30,11 @@
 /////////////////////////////////////////////////
 TEST(USDStage, Constructor)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase = ignition::common::joinPaths(pathBase, "test", "usd");
-
   // Check up Axis equal to Z and metersPerUnit
   {
-    std::string filename = ignition::common::joinPaths(pathBase,
-      "/upAxisZ.usda");
+    std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
     sdf::usd::USDStage stage(filename);
-    sdf::Errors errors = stage.Init();
+    sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(0u, errors.size());
 
     EXPECT_EQ("Z", stage.GetUpAxis());
@@ -47,10 +44,9 @@ TEST(USDStage, Constructor)
 
   // Check up Axis equal to Y and metersPerUnit
   {
-    std::string filename = ignition::common::joinPaths(pathBase,
-      "/upAxisY.usda");
+    std::string filename = sdf::testing::TestFile("usd", "upAxisY.usda");
     sdf::usd::USDStage stage(filename);
-    sdf::Errors errors = stage.Init();
+    sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(0u, errors.size());
 
     EXPECT_EQ("Y", stage.GetUpAxis());
@@ -60,17 +56,16 @@ TEST(USDStage, Constructor)
 
   // Wrong upaxis
   {
-    sdf::usd::USDStage stage(ignition::common::joinPaths(pathBase,
-      "/upAxis_wrong.usda"));
-    sdf::Errors errors = stage.Init();
+    sdf::usd::USDStage stage(
+      sdf::testing::TestFile("usd", "/upAxis_wrong.usda"));
+    sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(1u, errors.size());
   }
 
   // Invalid file
   {
-    sdf::usd::USDStage stage(ignition::common::joinPaths(pathBase,
-      "/invalid_name"));
-    sdf::Errors errors = stage.Init();
+    sdf::usd::USDStage stage(sdf::testing::TestFile("usd", "/invalid_name"));
+    sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(1u, errors.size());
   }
 }

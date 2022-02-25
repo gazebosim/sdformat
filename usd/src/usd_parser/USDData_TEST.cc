@@ -22,6 +22,7 @@
 #include <ignition/utilities/ExtraTestMacros.hh>
 
 #include <sdf/usd/usd_parser/USDData.hh>
+#include <sdf/usd/UsdError.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -29,19 +30,14 @@
 /////////////////////////////////////////////////
 TEST(USDData, Constructor)
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase = ignition::common::joinPaths(pathBase, "test", "usd");
-
   // Open a invalid USD file
-  sdf::usd::USDData data(ignition::common::joinPaths(pathBase,
-    "/invalid_name"));
-  sdf::Errors errors = data.Init();
+  sdf::usd::USDData data(sdf::testing::TestFile("usd", "invalid_name"));
+  sdf::usd::UsdErrors errors = data.Init();
   EXPECT_EQ(1u, errors.size());
 
   // Open a valid USD file
   {
-    std::string filename = ignition::common::joinPaths(pathBase,
-      "/upAxisZ.usda");
+    std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
     sdf::usd::USDData usdData(filename);
     EXPECT_EQ(0u, usdData.Init().size());
     EXPECT_EQ(0u, usdData.ParseMaterials().size());
@@ -49,13 +45,13 @@ TEST(USDData, Constructor)
     EXPECT_EQ(2u, usdData.GetModels().size());
 
     // Find a path inside the stage
-    auto boxStage = usdData.findStage("box");
+    auto boxStage = usdData.FindStage("box");
     EXPECT_EQ(filename, boxStage.first);
     EXPECT_EQ("Z", boxStage.second->GetUpAxis());
     EXPECT_DOUBLE_EQ(0.01, boxStage.second->GetMetersPerUnit());
 
     // Try to find a invalid path in the stage data
-    auto invalidStage = usdData.findStage("invalid");
+    auto invalidStage = usdData.FindStage("invalid");
     EXPECT_EQ("", invalidStage.first);
     EXPECT_EQ(nullptr, invalidStage.second);
   }

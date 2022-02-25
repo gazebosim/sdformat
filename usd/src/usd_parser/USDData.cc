@@ -38,6 +38,8 @@
 #include "sdf/Material.hh"
 #include "sdf/usd/usd_parser/utils.hh"
 
+#include "utils_internal.hh"
+
 namespace sdf {
 // Inline bracke to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
@@ -91,7 +93,7 @@ namespace usd {
 
   /////////////////////////////////////////////////
   const std::unordered_map<std::string, sdf::Material> &
-    USDData::GetMaterials() const
+    USDData::Materials() const
   {
     return this->dataPtr->materials;
   }
@@ -110,12 +112,12 @@ namespace usd {
   }
 
   /////////////////////////////////////////////////
-  sdf::Errors USDData::Init()
+  UsdErrors USDData::Init()
   {
-    sdf::Errors errors;
+    UsdErrors errors;
 
     auto usdStage = std::make_shared<USDStage>(this->dataPtr->filename);
-    sdf::Errors errorsInit = usdStage->Init();
+    UsdErrors errorsInit = usdStage->Init();
     if(!errorsInit.empty())
     {
       errors.insert(errors.end(), errorsInit.begin(), errorsInit.end());
@@ -132,8 +134,9 @@ namespace usd {
     auto referencee = pxr::UsdStage::Open(this->dataPtr->filename);
     if (!referencee)
     {
-      errors.emplace_back(
-        Error(ErrorCode::FILE_READ, "Failed to load usd file"));
+      errors.emplace_back(UsdError(
+        sdf::usd::UsdErrorCode::INVALID_USD_FILE,
+        "Failed to load usd file"));
       return errors;
     }
 
@@ -142,7 +145,7 @@ namespace usd {
 
     std::string basename = ignition::common::basename(
       this->dataPtr->directoryPath);
-    this->dataPtr->directoryPath = removeSubStr(
+    this->dataPtr->directoryPath = RemoveSubStr(
       this->dataPtr->directoryPath, basename);
 
     this->dataPtr->AddSubdirectories(this->dataPtr->directoryPath);
@@ -188,14 +191,15 @@ namespace usd {
   }
 
   /////////////////////////////////////////////////
-  sdf::Errors USDData::ParseMaterials()
+  UsdErrors USDData::ParseMaterials()
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     auto referencee = pxr::UsdStage::Open(this->dataPtr->filename);
     if (!referencee)
     {
-      errors.emplace_back(
-        Error(ErrorCode::FILE_READ, "Failed to load usd file"));
+      errors.emplace_back(UsdError(
+        sdf::usd::UsdErrorCode::INVALID_USD_FILE,
+        "Failed to load usd file"));
       return errors;
     }
 
@@ -215,11 +219,12 @@ namespace usd {
         }
 
         sdf::Material material;
-        sdf::Errors errrosMaterial = ParseMaterial(prim, material);
+        UsdErrors errrosMaterial = ParseMaterial(prim, material);
         if (!errrosMaterial.empty())
         {
-          errors.emplace_back(
-            Error(ErrorCode::ELEMENT_INVALID, "Error parsing material"));
+          errors.emplace_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing material"));
           errors.insert(
             errors.end(), errrosMaterial.begin(), errrosMaterial.end());
           return errors;
@@ -233,7 +238,7 @@ namespace usd {
 
   /////////////////////////////////////////////////
   const std::pair<std::string, std::shared_ptr<USDStage>>
-    USDData::findStage(const std::string &_name)
+    USDData::FindStage(const std::string &_name)
   {
     for (auto &ref : this->dataPtr->references)
     {
@@ -252,16 +257,16 @@ namespace usd {
   }
 
   /////////////////////////////////////////////////
-  sdf::Errors USDData::AddStage(const std::string &_ref)
+  UsdErrors USDData::AddStage(const std::string &_ref)
   {
-    sdf::Errors errors;
+    UsdErrors errors;
     std::string key = _ref;
 
     auto search = this->dataPtr->references.find(_ref);
     if (search == this->dataPtr->references.end())
     {
       std::string basename = ignition::common::basename(key);
-      std::string subDirectory = removeSubStr(key, basename);
+      std::string subDirectory = RemoveSubStr(key, basename);
 
       auto systemPaths = ignition::common::systemPaths();
       systemPaths->AddFilePaths(ignition::common::joinPaths(
@@ -273,14 +278,14 @@ namespace usd {
       std::string fileNameRef = ignition::common::findFile(basename);
       if (fileNameRef.empty())
       {
-        errors.emplace_back(
-          Error(ErrorCode::ELEMENT_INVALID, "Not able to find asset ["
-            + _ref + "]"));
+        errors.emplace_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Not able to find asset [" + _ref + "]"));
         return errors;
       }
 
       auto usdStage = std::make_shared<USDStage>(fileNameRef);
-      sdf::Errors errorsInit = usdStage->Init();
+      UsdErrors errorsInit = usdStage->Init();
       if(!errorsInit.empty())
       {
         errors.insert(errors.end(), errorsInit.begin(), errorsInit.end());
@@ -295,8 +300,9 @@ namespace usd {
     }
     else
     {
-      errors.emplace_back(
-        Error(ErrorCode::ELEMENT_INVALID, "Element already exists"));
+      errors.emplace_back(UsdError(
+        sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+        "Element already exists"));
       return errors;
     }
   }
