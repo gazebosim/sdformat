@@ -104,7 +104,7 @@ TEST(Conversions, CommonToSdfMaterial)
   materialCommon->SetAmbient(ignition::math::Color(0.25, 0.21, 0.28, 0.5));
   materialCommon->SetRenderOrder(5);
   materialCommon->SetLighting(true);
-  materialCommon->SetAlphaFromTexture(false, false, true);
+  materialCommon->SetAlphaFromTexture(false, 0.5, true);
 
   ignition::common::Pbr pbrCommon;
   pbrCommon.SetType(ignition::common::PbrType::METAL);

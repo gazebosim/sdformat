@@ -97,7 +97,7 @@ namespace sdf
     out->SetAmbient(_in.Ambient());
     out->SetRenderOrder(_in.RenderOrder());
     out->SetLighting(_in.Lighting());
-    out->SetAlphaFromTexture(false, false, _in.DoubleSided());
+    out->SetAlphaFromTexture(false, 0.5, _in.DoubleSided());
 
     const sdf::Pbr * pbr = _in.PbrMaterial();
     if (pbr != nullptr)
