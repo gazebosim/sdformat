@@ -71,6 +71,16 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
+    /// \brief Load the model based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors LoadSdfString(const std::string &_sdfString);
+
+    public: Errors LoadSdfFile(const std::string &_sdfFile);
+
     /// \brief Check that the FrameAttachedToGraph and PoseRelativeToGraph
     /// are valid.
     /// \return Errors, which is a vector of Error objects. Each Error includes

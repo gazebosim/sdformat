@@ -118,6 +118,38 @@ Model::Model()
 }
 
 /////////////////////////////////////////////////
+Errors Model::LoadSdfFile(const std::string &_file)
+{
+  sdf::SDFPtr sdfPtr = sdf::readFile(_file);
+
+  if (sdfPtr)
+  {
+    if (sdfPtr->Root()->GetName() == "sdf")
+    {
+      return this->Load(sdfPtr->Root()->GetElement("model"),
+          ParserConfig::GlobalConfig());
+    }
+    else
+    {
+      return this->Load(sdfPtr->Root(), ParserConfig::GlobalConfig());
+    }
+  }
+
+  return {sdf::Error({ErrorCode::FILE_READ,
+    "Unable to load model from file[" + _file + "]"})};
+}
+
+/////////////////////////////////////////////////
+Errors Model::LoadSdfString(const std::string &_sdfString)
+{
+  auto elem = std::make_shared<sdf::Element>();
+  sdf::initFile("model.sdf", elem);
+  sdf::readString(_sdfString, elem);
+
+  return this->Load(elem, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
 Errors Model::Load(ElementPtr _sdf)
 {
   return this->Load(_sdf, ParserConfig::GlobalConfig());
