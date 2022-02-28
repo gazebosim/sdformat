@@ -42,7 +42,6 @@
 #include "sdf/SemanticPose.hh"
 #include "sdf/Visual.hh"
 #include "sdf/system_util.hh"
-#include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
@@ -60,8 +59,7 @@ namespace sdf
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
     template <typename T>
-    inline UsdErrors IGNITION_SDFORMAT_USD_VISIBLE
-    PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
+    inline UsdErrors PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
     {
       UsdErrors errors;
       const auto poseResolutionErrors = _obj.SemanticPose().Resolve(_pose, "");
@@ -85,8 +83,7 @@ namespace sdf
     /// pose modified to match _pose.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    inline UsdErrors IGNITION_SDFORMAT_USD_VISIBLE SetPose(
-        const ignition::math::Pose3d &_pose,
+    inline UsdErrors SetPose(const ignition::math::Pose3d &_pose,
         pxr::UsdStageRefPtr &_stage,
         const pxr::SdfPath &_usdPath)
     {
@@ -132,7 +129,7 @@ namespace sdf
     /// and one collision that have a plane geometry. False otherwise
     /// \note This method will no longer be needed when a pxr::USDGeomPlane
     /// class is created
-    inline bool SDFORMAT_VISIBLE IsPlane(const sdf::Model &_model)
+    inline bool IsPlane(const sdf::Model &_model)
     {
       if (!_model.Static() || _model.LinkCount() != 1u)
         return false;
@@ -148,6 +145,10 @@ namespace sdf
       const auto &collision = link->CollisionByIndex(0u);
       return collision->Geom()->Type() == sdf::GeometryType::PLANE;
     }
+
+    /// \brief Pre-defined USD plane thickness. This is a temporary variable
+    /// that will no longer be needed once USD supports their own plane class
+    static const double kPlaneThickness = 0.25;
   }
   }
 }

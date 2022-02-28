@@ -1075,6 +1075,16 @@ void Model::ClearFrames()
 }
 
 /////////////////////////////////////////////////
+bool Model::NameExistsInFrameAttachedToGraph(const std::string &_name) const
+{
+  if (!this->dataPtr->frameAttachedToGraph)
+    return false;
+
+  return this->dataPtr->frameAttachedToGraph.VertexIdByName(sdf::JoinName(
+             this->Name(), _name)) != ignition::math::graph::kNullId;
+}
+
+/////////////////////////////////////////////////
 const sdf::Plugins &Model::Plugins() const
 {
   return this->dataPtr->plugins;
