@@ -5,6 +5,7 @@ set(sources
   sdf_parser/Light.cc
   sdf_parser/Link.cc
   sdf_parser/Model.cc
+  sdf_parser/Sensor.cc
   sdf_parser/Visual.cc
   sdf_parser/World.cc
   usd_parser/USDData.cc
@@ -32,6 +33,7 @@ set(gtest_sources
   sdf_parser/Joint_Sdf2Usd_TEST.cc
   sdf_parser/Light_Sdf2Usd_TEST.cc
   sdf_parser/Link_Sdf2Usd_TEST.cc
+  sdf_parser/Sensors_Sdf2Usd_TEST.cc
   sdf_parser/Visual_Sdf2Usd_TEST.cc
   sdf_parser/World_Sdf2Usd_TEST.cc
   usd_parser/USDData_TEST.cc
