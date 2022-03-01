@@ -386,18 +386,25 @@ namespace usd
       int materialIndex = subMesh->MaterialIndex();
       if (materialIndex != -1)
       {
-        auto material = ignMesh->MaterialByIndex(materialIndex);
-        sdf::Material materialSdf = sdf::usd::convert(material);
+        const auto material = ignMesh->MaterialByIndex(materialIndex);
+        const sdf::Material materialSdf = sdf::usd::convert(material);
         auto materialUSD = ParseSdfMaterial(&materialSdf, _stage);
 
-        if(materialSdf.Emissive() != ignition::math::Color(0, 0, 0, 1)
-            || materialSdf.Specular() != ignition::math::Color(0, 0, 0, 1)
-            || materialSdf.PbrMaterial())
+        if (materialUSD &&
+            (materialSdf.Emissive() != ignition::math::Color(0, 0, 0, 1)
+             || materialSdf.Specular() != ignition::math::Color(0, 0, 0, 1)
+             || materialSdf.PbrMaterial()))
         {
-          if (materialUSD)
-          {
-            pxr::UsdShadeMaterialBindingAPI(usdMesh).Bind(materialUSD);
-          }
+          pxr::UsdShadeMaterialBindingAPI(usdMesh).Bind(materialUSD);
+        }
+        else if (!materialUSD)
+        {
+          errors.push_back(UsdError(
+              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Unable to convert material [" + std::to_string(materialIndex)
+              + "] of submesh named [" + subMesh->Name()
+              + "] to a USD material."));
+          return errors;
         }
       }
 

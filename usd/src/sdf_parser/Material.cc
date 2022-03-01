@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@
 #include "sdf/usd/sdf_parser/Material.hh"
 
 #include <map>
+#include <string>
 
-#include <ignition/common/URI.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
+#include <ignition/common/URI.hh>
 
 #include <ignition/math/Color.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -42,7 +43,7 @@
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -50,11 +51,11 @@ namespace usd
   /// \brief Copy a file in a directory
   /// \param[in] _path path where the copy will be located
   /// \param[in] _fullPath name of the file to copy
+  /// \return True if the file at _fullPath was copied to _path. False otherwise
   bool copyMaterial(const std::string &_path, const std::string &_fullPath)
   {
     if (!_path.empty() && !_fullPath.empty())
     {
-      ///
       auto fileName = ignition::common::basename(_path);
       auto filePathIndex = _path.rfind(fileName);
       auto filePath = _path.substr(0, filePathIndex);
@@ -67,9 +68,9 @@ namespace usd
     return false;
   }
 
-  /// \brief Create the path to copy the material
+  /// \brief Get the path to copy the material to
   /// \param[in] _uri full path of the file to copy
-  /// \return A relative path to save the material, the path looks like:
+  /// \return A relative path to save the material. The path looks like:
   /// materials/textures/<filename with extension>
   std::string getMaterialCopyPath(const std::string &_uri)
   {
@@ -89,61 +90,59 @@ namespace usd
   /// \param[in] _displayGroup Display group
   /// \param[in] _doc Documentation of the field
   /// \param[in] _colorSpace if the material is a texture, we can specify the
-  /// colorSpace of the image
+  /// color space of the image
   template<typename T>
   void CreateMaterialInput(
     const pxr::UsdPrim &_prim,
     const std::string &_name,
     const pxr::SdfValueTypeName &_vType,
-    T _value,
+    const T &_value,
     const std::map<pxr::TfToken, pxr::VtValue> &_customData,
-    const pxr::TfToken &_displayName = pxr::TfToken(""),
-    const pxr::TfToken &_displayGroup = pxr::TfToken(""),
-    const std::string &_doc = "",
+    const pxr::TfToken &_displayName,
+    const pxr::TfToken &_displayGroup,
+    const std::string &_doc,
     const pxr::TfToken &_colorSpace = pxr::TfToken(""))
   {
     auto shader = pxr::UsdShadeShader(_prim);
-    if (shader)
-    {
-      auto existingInput = shader.GetInput(pxr::TfToken(_name));
-      pxr::SdfValueTypeName vTypeName;
-      if (_vType.IsScalar())
-      {
-        vTypeName = _vType.GetScalarType();
-      }
-      else if (_vType.IsArray())
-      {
-        vTypeName = _vType.GetArrayType();
-      }
-      auto surfaceInput = shader.CreateInput(
-        pxr::TfToken(_name), vTypeName);
-      surfaceInput.Set(_value);
-      auto attr = surfaceInput.GetAttr();
-
-      for (const auto &[key, customValue] : _customData)
-      {
-        attr.SetCustomDataByKey(key, customValue);
-      }
-      if (!_displayName.GetString().empty())
-      {
-        attr.SetDisplayName(_displayName);
-      }
-      if (!_displayGroup.GetString().empty())
-      {
-        attr.SetDisplayGroup(_displayGroup);
-      }
-      if (!_doc.empty())
-      {
-        attr.SetDocumentation(_doc);
-      }
-      if (!_colorSpace.GetString().empty())
-      {
-        attr.SetColorSpace(_colorSpace);
-      }
-    }
-    else
+    if (!shader)
     {
       std::cerr << "Not able to convert the prim to a UsdShadeShader\n";
+    }
+
+    auto existingInput = shader.GetInput(pxr::TfToken(_name));
+    pxr::SdfValueTypeName vTypeName;
+    if (_vType.IsScalar())
+    {
+      vTypeName = _vType.GetScalarType();
+    }
+    else if (_vType.IsArray())
+    {
+      vTypeName = _vType.GetArrayType();
+    }
+    auto surfaceInput = shader.CreateInput(
+      pxr::TfToken(_name), vTypeName);
+    surfaceInput.Set(_value);
+    auto attr = surfaceInput.GetAttr();
+
+    for (const auto &[key, customValue] : _customData)
+    {
+      attr.SetCustomDataByKey(key, customValue);
+    }
+    if (!_displayName.GetString().empty())
+    {
+      attr.SetDisplayName(_displayName);
+    }
+    if (!_displayGroup.GetString().empty())
+    {
+      attr.SetDisplayGroup(_displayGroup);
+    }
+    if (!_doc.empty())
+    {
+      attr.SetDocumentation(_doc);
+    }
+    if (!_colorSpace.GetString().empty())
+    {
+      attr.SetColorSpace(_colorSpace);
     }
   }
 

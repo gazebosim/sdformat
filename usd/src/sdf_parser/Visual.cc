@@ -91,30 +91,26 @@ namespace usd
       return errors;
     }
 
-    auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
-    if (geomPrim)
+    if (auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath)))
     {
-        const auto material = _visual.Material();
-        pxr::UsdShadeMaterial materialUSD;
-
-        if (material)
+      if (_visual.Material())
+      {
+        pxr::UsdShadeMaterial materialUSD =
+          usd::ParseSdfMaterial(_visual.Material(), _stage);
+        if (!materialUSD)
         {
-          materialUSD = usd::ParseSdfMaterial(material, _stage);
-          if (!materialUSD)
-          {
-            errors.push_back(UsdError(
-              sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              "Error parsing material attached to visual ["
-              + _visual.Name() + "]"));
-            return errors;
-          }
-          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+          errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing material attached to visual ["
+            + _visual.Name() + "]"));
+          return errors;
         }
+        pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+      }
     }
     else
     {
-      errors.push_back(UsdError(
-        sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
+      errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
         "Internal error: no geometry prim exists at path ["
         + geometryPath + "]"));
       return errors;

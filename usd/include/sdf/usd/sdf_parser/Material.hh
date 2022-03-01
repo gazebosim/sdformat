@@ -18,7 +18,7 @@
 #ifndef SDF_USD_SDF_PARSER_MATERIALS_HH_
 #define SDF_USD_SDF_PARSER_MATERIALS_HH_
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -34,19 +34,19 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-  /// \brief Parse an SDF material into a USD stage.
-  /// \param[in] _material The SDF material to parse.
-  /// \param[in] _stage The stage that should contain the USD representation
-  /// of _material.
-  /// \return The parsed usd material (invalid material if parsing failed)
-  pxr::UsdShadeMaterial IGNITION_SDFORMAT_USD_VISIBLE
-    ParseSdfMaterial(const sdf::Material *_material,
-      pxr::UsdStageRefPtr &_stage);
+    /// \brief Parse an SDF material into a USD stage.
+    /// \param[in] _material The SDF material to parse.
+    /// \param[in] _stage The stage that should contain the USD representation
+    /// of _material.
+    /// \return The parsed usd material (invalid material if parsing failed)
+    pxr::UsdShadeMaterial IGNITION_SDFORMAT_USD_VISIBLE
+      ParseSdfMaterial(const sdf::Material *_material,
+        pxr::UsdStageRefPtr &_stage);
   }
   }
 }

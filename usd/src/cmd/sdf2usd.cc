@@ -22,7 +22,7 @@
 
 #include <ignition/utils/cli/CLI.hpp>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -57,7 +57,7 @@ struct Options
 
 //////////////////////////////////////////////////
 /// \brief Get the full path of a file
-/// \param[in] _path Where to being searching for the file
+/// \param[in] _path Where to begin searching for the file
 /// \param[in] _name The name of the file to find
 /// \return The full path to the file named _name. Empty string is returned if
 /// the file could not be found.
@@ -75,10 +75,7 @@ std::string findFileByName(const std::string &_path, const std::string &_name)
       {
         continue;
       }
-      else
-      {
-        return result;
-      }
+      return result;
     }
 
     if (!ignition::common::isFile(current))
@@ -96,8 +93,8 @@ std::string findFileByName(const std::string &_path, const std::string &_name)
 
 //////////////////////////////////////////////////
 /// \brief Get the full path of a file based on the extension
-/// \param[in] _path Where to being searching for the file
-/// \param[in] _extension Where to being searching for the file
+/// \param[in] _path Where to begin searching for the file
+/// \param[in] _extension The extension of the file
 /// \return The full path to the file with an extension _extension. Empty
 /// string is returned if the file could not be found.
 std::string findFileByExtension(
@@ -131,10 +128,7 @@ std::string findFileByExtension(
       {
         continue;
       }
-      else
-      {
-        return result;
-      }
+      return result;
     }
 
     if (!ignition::common::isFile(current))
@@ -173,11 +167,11 @@ std::string FindResources(const std::string &_uri)
   {
     std::vector<std::string> tokens =
       ignition::common::split(uri.Path().Str(), "/");
-    std::string server = tokens[0];
-    std::string versionServer = tokens[1];
-    std::string owner = ignition::common::lowercase(tokens[2]);
-    std::string type = ignition::common::lowercase(tokens[3]);
-    std::string modelName = ignition::common::lowercase(tokens[4]);
+    const std::string server = tokens[0];
+    const std::string versionServer = tokens[1];
+    const std::string owner = ignition::common::lowercase(tokens[2]);
+    const std::string type = ignition::common::lowercase(tokens[3]);
+    const std::string modelName = ignition::common::lowercase(tokens[4]);
     path = ignition::common::joinPaths(
       home, ".ignition", "fuel", server, owner, type, modelName);
   }
@@ -200,8 +194,8 @@ std::string FindResources(const std::string &_uri)
 }
 
 //////////////////////////////////////////////////
-/// \brief This functions is used by sdf::addFindFileURICallback to find
-/// the resources defined in the URI
+/// \brief This function is used by ignition::common::addFindFileURICallback to
+/// find the resources defined in the URI
 /// \param[in] _uri URI of the file to find
 /// \return The full path to the uri. Empty
 /// string is returned if the file could not be found.
