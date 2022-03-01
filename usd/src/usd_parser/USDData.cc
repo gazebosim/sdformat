@@ -36,7 +36,7 @@
 #include <ignition/common/Util.hh>
 
 #include "sdf/Material.hh"
-#include "sdf/usd/usd_parser/utils.hh"
+#include "sdf/usd/usd_parser/USDMaterial.hh"
 
 #include "utils_internal.hh"
 
