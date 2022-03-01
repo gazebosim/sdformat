@@ -395,7 +395,7 @@ namespace usd
         {
           errors.push_back(UsdError(
             sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Unable to parsematerial"));
+            "Unable to parse material"));
           return errors;
         }
 

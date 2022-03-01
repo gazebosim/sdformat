@@ -44,8 +44,7 @@ namespace sdf
     /// \param[in] _materialSdf The SDF material to parse.
     /// \param[in] _stage The stage that should contain the USD representation
     /// of _material.
-    /// \param[out] _materialUsd The parsed USD material representation of
-    /// _materialSdf (invalid material if parsing failed)
+    /// \param[out] _materialPath Material usd path
     /// \return UsdErrors, which is a list of UsdError objects. This list is
     /// empty if no errors occurred when parsing _materialSdf to _materialUsd
     UsdErrors IGNITION_SDFORMAT_USD_VISIBLE
