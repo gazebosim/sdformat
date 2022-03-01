@@ -95,8 +95,19 @@ namespace usd
     {
       if (_visual.Material())
       {
-        pxr::UsdShadeMaterial materialUSD =
-          usd::ParseSdfMaterial(_visual.Material(), _stage);
+        std::string materialPath;
+        UsdErrors materialErrors = ParseSdfMaterial(
+          _visual.Material(), _stage, materialPath);
+        if (!materialErrors.empty())
+        {
+          errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to parsematerial"));
+          return errors;
+        }
+        auto materialUSD = pxr::UsdShadeMaterial(_stage->GetPrimAtPath(
+          pxr::SdfPath(materialPath)));
+
         if (!materialUSD)
         {
           errors.push_back(UsdError(

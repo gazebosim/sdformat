@@ -91,8 +91,10 @@ namespace usd
   /// \param[in] _doc Documentation of the field
   /// \param[in] _colorSpace if the material is a texture, we can specify the
   /// color space of the image
+  /// \return UsdErrors, which is a list of UsdError objects. This list is empty
+  /// if no errors occurred when creating the material input.
   template<typename T>
-  void CreateMaterialInput(
+  UsdErrors CreateMaterialInput(
     const pxr::UsdPrim &_prim,
     const std::string &_name,
     const pxr::SdfValueTypeName &_vType,
@@ -103,10 +105,14 @@ namespace usd
     const std::string &_doc,
     const pxr::TfToken &_colorSpace = pxr::TfToken(""))
   {
+    UsdErrors errors;
     auto shader = pxr::UsdShadeShader(_prim);
     if (!shader)
     {
-      std::cerr << "Not able to convert the prim to a UsdShadeShader\n";
+      errors.emplace_back(UsdError(
+        sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
+        "Not able to convert the prim to a UsdShadeShader"));
+      return errors;
     }
 
     auto existingInput = shader.GetInput(pxr::TfToken(_name));
@@ -144,11 +150,16 @@ namespace usd
     {
       attr.SetColorSpace(_colorSpace);
     }
+    return errors;
   }
 
-  pxr::UsdShadeMaterial ParseSdfMaterial(
-    const sdf::Material *_material, pxr::UsdStageRefPtr &_stage)
+  UsdErrors
+    ParseSdfMaterial(
+      const sdf::Material *_materialSdf,
+      pxr::UsdStageRefPtr &_stage,
+      std::string &_materialPath)
   {
+    UsdErrors errors;
     auto looksPrim = _stage->GetPrimAtPath(pxr::SdfPath("/Looks"));
     if (!looksPrim)
     {
@@ -160,36 +171,39 @@ namespace usd
     // with the names of the materials
     static int i = 0;
 
-    const std::string mtl_path = "/Looks/Material_" + std::to_string(i);
+    _materialPath = "/Looks/Material_" + std::to_string(i);
 
-    auto usdMaterialPrim = _stage->GetPrimAtPath(pxr::SdfPath(mtl_path));
-    pxr::UsdShadeMaterial material;
+    pxr::UsdShadeMaterial materialUsd;
+    auto usdMaterialPrim = _stage->GetPrimAtPath(pxr::SdfPath(_materialPath));
     if (!usdMaterialPrim)
     {
-      material = pxr::UsdShadeMaterial::Define(_stage, pxr::SdfPath(mtl_path));
+      materialUsd = pxr::UsdShadeMaterial::Define(
+        _stage, pxr::SdfPath(_materialPath));
     }
     else
     {
-      material = pxr::UsdShadeMaterial(usdMaterialPrim);
+      materialUsd = pxr::UsdShadeMaterial(usdMaterialPrim);
     }
 
     auto usdShader = pxr::UsdShadeShader::Define(
       _stage,
-      pxr::SdfPath(mtl_path + "/Shader"));
-    auto shaderPrim = _stage->GetPrimAtPath(pxr::SdfPath(mtl_path + "/Shader"));
+      pxr::SdfPath(_materialPath + "/Shader"));
+    auto shaderPrim = _stage->GetPrimAtPath(
+      pxr::SdfPath(_materialPath + "/Shader"));
     if (!shaderPrim)
     {
-      std::cerr << "Not able to cast the UsdShadeShader to a Prim" << '\n';
-      return material;
+      errors.emplace_back(UsdError(
+        sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
+        "Not able to cast the UsdShadeShader to a Prim"));
     }
 
     auto shader_out = pxr::UsdShadeConnectableAPI(shaderPrim).CreateOutput(
       pxr::TfToken("out"), pxr::SdfValueTypeNames->Token);
-    material.CreateSurfaceOutput(
+    materialUsd.CreateSurfaceOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
-    material.CreateVolumeOutput(
+    materialUsd.CreateVolumeOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
-    material.CreateDisplacementOutput(
+    materialUsd.CreateDisplacementOutput(
       pxr::TfToken("mdl")).ConnectToSource(shader_out);
     usdShader.GetImplementationSourceAttr().Set(
       pxr::UsdShadeTokens->sourceAsset);
@@ -205,8 +219,8 @@ namespace usd
        pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
-    ignition::math::Color diffuse = _material->Diffuse();
-    CreateMaterialInput<pxr::GfVec3f>(
+    ignition::math::Color diffuse = _materialSdf->Diffuse();
+    auto errorsMaterialDiffuseColorConstant = CreateMaterialInput<pxr::GfVec3f>(
       shaderPrim,
       "diffuse_color_constant",
       pxr::SdfValueTypeNames->Color3f,
@@ -216,6 +230,16 @@ namespace usd
       pxr::TfToken("Albedo"),
       "This is the base color");
 
+    if (!errorsMaterialDiffuseColorConstant.empty())
+    {
+      errors.insert(
+        errors.end(),
+        errorsMaterialDiffuseColorConstant.begin(),
+        errorsMaterialDiffuseColorConstant.end());
+      errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+            "Unable to get the material"));
+    }
+
     std::map<pxr::TfToken, pxr::VtValue> customDataEmissive =
     {
       {pxr::TfToken("default"), pxr::VtValue(pxr::GfVec3f(1, 0.1, 0.1))},
@@ -223,8 +247,8 @@ namespace usd
        pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
-    ignition::math::Color emissive = _material->Emissive();
-    CreateMaterialInput<pxr::GfVec3f>(
+    ignition::math::Color emissive = _materialSdf->Emissive();
+    auto errorsMaterialEmissiveColor = CreateMaterialInput<pxr::GfVec3f>(
       shaderPrim,
       "emissive_color",
       pxr::SdfValueTypeNames->Color3f,
@@ -234,12 +258,23 @@ namespace usd
       pxr::TfToken("Emissive"),
       "The emission color");
 
+    if (!errorsMaterialEmissiveColor.empty())
+    {
+      errors.insert(
+        errors.end(),
+        errorsMaterialEmissiveColor.begin(),
+        errorsMaterialEmissiveColor.end());
+      errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+            "Unable to get the material"));
+      return errors;
+    }
+
     std::map<pxr::TfToken, pxr::VtValue> customDataEnableEmission =
     {
       {pxr::TfToken("default"), pxr::VtValue(0)}
     };
 
-    CreateMaterialInput<bool>(
+    auto errorsMaterialEnableEmission = CreateMaterialInput<bool>(
       shaderPrim,
       "enable_emission",
       pxr::SdfValueTypeNames->Bool,
@@ -249,13 +284,24 @@ namespace usd
       pxr::TfToken("Emissive"),
       "Enables the emission of light from the material");
 
+    if (!errorsMaterialEnableEmission.empty())
+    {
+      errors.insert(
+        errors.end(),
+        errorsMaterialEnableEmission.begin(),
+        errorsMaterialEnableEmission.end());
+      errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+            "Unable to get the material"));
+      return errors;
+    }
+
     std::map<pxr::TfToken, pxr::VtValue> customDataIntensity =
     {
       {pxr::TfToken("default"), pxr::VtValue(40)},
       {pxr::TfToken("range:max"), pxr::VtValue(100000)},
       {pxr::TfToken("range:min"), pxr::VtValue(0)}
     };
-    CreateMaterialInput<float>(
+    auto errorsMaterialEmissiveIntensity = CreateMaterialInput<float>(
       shaderPrim,
       "emissive_intensity",
       pxr::SdfValueTypeNames->Float,
@@ -265,7 +311,18 @@ namespace usd
       pxr::TfToken("Emissive"),
       "Intensity of the emission");
 
-    const sdf::Pbr * pbr = _material->PbrMaterial();
+    if (!errorsMaterialEmissiveIntensity.empty())
+    {
+      errors.insert(
+        errors.end(),
+        errorsMaterialEmissiveIntensity.begin(),
+        errorsMaterialEmissiveIntensity.end());
+      errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+            "Unable to get the material"));
+      return errors;
+    }
+
+    const sdf::Pbr * pbr = _materialSdf->PbrMaterial();
     if (pbr)
     {
       const sdf::PbrWorkflow * pbrWorkflow =
@@ -283,7 +340,7 @@ namespace usd
           {pxr::TfToken("range:max"), pxr::VtValue(1)},
           {pxr::TfToken("range:min"), pxr::VtValue(0)}
         };
-        CreateMaterialInput<float>(
+        auto errorsMaterialMetallicConstant = CreateMaterialInput<float>(
           shaderPrim,
           "metallic_constant",
           pxr::SdfValueTypeNames->Float,
@@ -292,21 +349,43 @@ namespace usd
           pxr::TfToken("Metallic Amount"),
           pxr::TfToken("Reflectivity"),
           "Metallic Material");
+        if (!errorsMaterialMetallicConstant.empty())
+        {
+          errors.insert(
+            errors.end(),
+            errorsMaterialMetallicConstant.begin(),
+            errorsMaterialMetallicConstant.end());
+          errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                "Unable to get the material"));
+          return errors;
+        }
         std::map<pxr::TfToken, pxr::VtValue> customDataRoughnessConstant =
         {
           {pxr::TfToken("default"), pxr::VtValue(0.5)},
           {pxr::TfToken("range:max"), pxr::VtValue(1)},
           {pxr::TfToken("range:min"), pxr::VtValue(0)}
         };
-        CreateMaterialInput<float>(
-          shaderPrim,
-          "reflection_roughness_constant",
-          pxr::SdfValueTypeNames->Float,
-          pbrWorkflow->Roughness(),
-          customDataRoughnessConstant,
-          pxr::TfToken("Roughness Amount"),
-          pxr::TfToken("Reflectivity"),
-          "Higher roughness values lead to more blurry reflections");
+        auto errorsMaterialReflectionRoughnessConstant =
+          CreateMaterialInput<float>(
+            shaderPrim,
+            "reflection_roughness_constant",
+            pxr::SdfValueTypeNames->Float,
+            pbrWorkflow->Roughness(),
+            customDataRoughnessConstant,
+            pxr::TfToken("Roughness Amount"),
+            pxr::TfToken("Reflectivity"),
+            "Higher roughness values lead to more blurry reflections");
+        if (!errorsMaterialReflectionRoughnessConstant.empty())
+        {
+          errors.insert(
+            errors.end(),
+            errorsMaterialReflectionRoughnessConstant.begin(),
+            errorsMaterialReflectionRoughnessConstant.end());
+          errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                "Unable to get the material"));
+          return errors;
+        }
+
         if (!pbrWorkflow->AlbedoMap().empty())
         {
           std::map<pxr::TfToken, pxr::VtValue> customDataDiffuseTexture =
@@ -327,7 +406,7 @@ namespace usd
 
           copyMaterial(copyPath, fullnameAlbedoMap);
 
-          CreateMaterialInput<pxr::SdfAssetPath>(
+          auto errorsMaterialDiffuseTexture = CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "diffuse_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -337,6 +416,16 @@ namespace usd
             pxr::TfToken("Albedo"),
             "",
             pxr::TfToken("auto"));
+          if (!errorsMaterialDiffuseTexture.empty())
+          {
+            errors.insert(
+              errors.end(),
+              errorsMaterialDiffuseTexture.begin(),
+              errorsMaterialDiffuseTexture.end());
+            errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                  "Unable to get the material"));
+            return errors;
+          }
         }
         if (!pbrWorkflow->MetalnessMap().empty())
         {
@@ -358,7 +447,7 @@ namespace usd
 
           copyMaterial(copyPath, fullnameMetallnessMap);
 
-          CreateMaterialInput<pxr::SdfAssetPath>(
+          auto errorsMaterialMetallicTexture = CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "metallic_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -368,6 +457,16 @@ namespace usd
             pxr::TfToken("Reflectivity"),
             "",
             pxr::TfToken("raw"));
+          if (!errorsMaterialMetallicTexture.empty())
+          {
+            errors.insert(
+              errors.end(),
+              errorsMaterialMetallicTexture.begin(),
+              errorsMaterialMetallicTexture.end());
+            errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                  "Unable to get the material"));
+            return errors;
+          }
         }
         if (!pbrWorkflow->NormalMap().empty())
         {
@@ -389,7 +488,7 @@ namespace usd
 
           copyMaterial(copyPath, fullnameNormalMap);
 
-          CreateMaterialInput<pxr::SdfAssetPath>(
+          auto errorsMaterialNormalMapTexture = CreateMaterialInput<pxr::SdfAssetPath>(
             shaderPrim,
             "normalmap_texture",
             pxr::SdfValueTypeNames->Asset,
@@ -399,6 +498,16 @@ namespace usd
             pxr::TfToken("Normal"),
             "",
             pxr::TfToken("raw"));
+          if (!errorsMaterialNormalMapTexture.empty())
+          {
+            errors.insert(
+              errors.end(),
+              errorsMaterialNormalMapTexture.begin(),
+              errorsMaterialNormalMapTexture.end());
+            errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                  "Unable to get the material"));
+            return errors;
+          }
         }
         if (!pbrWorkflow->RoughnessMap().empty())
         {
@@ -420,16 +529,27 @@ namespace usd
 
           copyMaterial(copyPath, fullnameRoughnessMap);
 
-          CreateMaterialInput<pxr::SdfAssetPath>(
-            shaderPrim,
-            "reflectionroughness_texture",
-            pxr::SdfValueTypeNames->Asset,
-            pxr::SdfAssetPath(copyPath),
-            customDataRoughnessTexture,
-            pxr::TfToken("RoughnessMap Map"),
-            pxr::TfToken("RoughnessMap"),
-            "",
-            pxr::TfToken("raw"));
+          auto errorsMaterialReflectionRoughnessTexture =
+            CreateMaterialInput<pxr::SdfAssetPath>(
+              shaderPrim,
+              "reflectionroughness_texture",
+              pxr::SdfValueTypeNames->Asset,
+              pxr::SdfAssetPath(copyPath),
+              customDataRoughnessTexture,
+              pxr::TfToken("RoughnessMap Map"),
+              pxr::TfToken("RoughnessMap"),
+              "",
+              pxr::TfToken("raw"));
+          if (!errorsMaterialReflectionRoughnessTexture.empty())
+          {
+            errors.insert(
+              errors.end(),
+              errorsMaterialReflectionRoughnessTexture.begin(),
+              errorsMaterialReflectionRoughnessTexture.end());
+            errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                  "Unable to get the material"));
+            return errors;
+          }
 
           std::map<pxr::TfToken, pxr::VtValue>
             customDataRoughnessTextureInfluence =
@@ -439,23 +559,33 @@ namespace usd
             {pxr::TfToken("range:min"), pxr::VtValue(0)}
           };
 
-          CreateMaterialInput<bool>(
-            shaderPrim,
-            "reflection_roughness_texture_influence",
-            pxr::SdfValueTypeNames->Bool,
-            true,
-            customDataRoughnessTextureInfluence,
-            pxr::TfToken("Roughness Map Influence"),
-            pxr::TfToken("Reflectivity"),
-            "",
-            pxr::TfToken("raw"));
+          auto errorsMaterialReflectionRoughnessTextureInfluence =
+            CreateMaterialInput<bool>(
+              shaderPrim,
+              "reflection_roughness_texture_influence",
+              pxr::SdfValueTypeNames->Bool,
+              true,
+              customDataRoughnessTextureInfluence,
+              pxr::TfToken("Roughness Map Influence"),
+              pxr::TfToken("Reflectivity"),
+              "",
+              pxr::TfToken("raw"));
+          if (!errorsMaterialReflectionRoughnessTextureInfluence.empty())
+          {
+            errors.insert(
+              errors.end(),
+              errorsMaterialReflectionRoughnessTextureInfluence.begin(),
+              errorsMaterialReflectionRoughnessTextureInfluence.end());
+            errors.push_back(UsdError(UsdErrorCode::INVALID_MATERIAL,
+                  "Unable to get the material"));
+            return errors;
+          }
         }
       }
     }
 
     i++;
-
-    return material;
+    return errors;
   }
 }
 }

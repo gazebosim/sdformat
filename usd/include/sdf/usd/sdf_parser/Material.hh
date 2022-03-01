@@ -30,6 +30,7 @@
 
 #include "sdf/Material.hh"
 #include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
@@ -40,13 +41,18 @@ namespace sdf
   namespace usd
   {
     /// \brief Parse an SDF material into a USD stage.
-    /// \param[in] _material The SDF material to parse.
+    /// \param[in] _materialSdf The SDF material to parse.
     /// \param[in] _stage The stage that should contain the USD representation
     /// of _material.
-    /// \return The parsed usd material (invalid material if parsing failed)
-    pxr::UsdShadeMaterial IGNITION_SDFORMAT_USD_VISIBLE
-      ParseSdfMaterial(const sdf::Material *_material,
-        pxr::UsdStageRefPtr &_stage);
+    /// \param[out] _materialUsd The parsed USD material representation of
+    /// _materialSdf (invalid material if parsing failed)
+    /// \return UsdErrors, which is a list of UsdError objects. This list is
+    /// empty if no errors occurred when parsing _materialSdf to _materialUsd
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE
+      ParseSdfMaterial(
+        const sdf::Material *_materialSdf,
+        pxr::UsdStageRefPtr &_stage,
+        std::string &_materialPath);
   }
   }
 }

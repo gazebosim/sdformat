@@ -388,7 +388,19 @@ namespace usd
       {
         const auto material = ignMesh->MaterialByIndex(materialIndex);
         const sdf::Material materialSdf = sdf::usd::convert(material);
-        auto materialUSD = ParseSdfMaterial(&materialSdf, _stage);
+        std::string materialPath;
+        UsdErrors materialErrors = ParseSdfMaterial(
+          &materialSdf, _stage, materialPath);
+        if (!materialErrors.empty())
+        {
+          errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to parsematerial"));
+          return errors;
+        }
+
+        auto materialUSD = pxr::UsdShadeMaterial(_stage->GetPrimAtPath(
+          pxr::SdfPath(materialPath)));
 
         if (materialUSD &&
             (materialSdf.Emissive() != ignition::math::Color(0, 0, 0, 1)
