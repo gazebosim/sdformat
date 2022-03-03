@@ -2,7 +2,7 @@
 # very limited toml parser that is not capable of parsing the full toml syntax.
 # Specifically, arrays are not supported.
 name = "double_pendulum"
-pose = "1 0 0 0 0 0"
+pose = "1 2 3 0 0 0"
 canonical_link = "base"
 
 [links.base]

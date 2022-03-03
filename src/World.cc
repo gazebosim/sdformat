@@ -400,6 +400,13 @@ const Model *World::ModelByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Model *World::ModelByIndex(uint64_t _index)
+{
+  return const_cast<Model*>(
+      static_cast<const World*>(this)->ModelByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool World::ModelNameExists(const std::string &_name) const
 {
   return nullptr != this->ModelByName(_name);
@@ -426,6 +433,13 @@ const Model *World::ModelByName(const std::string &_name) const
     return nextModel->ModelByName(_name.substr(index + 2));
   }
   return nextModel;
+}
+
+/////////////////////////////////////////////////
+Model *World::ModelByName(const std::string &_name)
+{
+  return const_cast<Model*>(
+      static_cast<const World*>(this)->ModelByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -499,6 +513,13 @@ const Frame *World::FrameByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Frame *World::FrameByIndex(uint64_t _index)
+{
+  return const_cast<Frame*>(
+      static_cast<const World*>(this)->FrameByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool World::FrameNameExists(const std::string &_name) const
 {
   return nullptr != this->FrameByName(_name);
@@ -534,6 +555,13 @@ const Frame *World::FrameByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Frame *World::FrameByName(const std::string &_name)
+{
+  return const_cast<Frame*>(
+      static_cast<const World*>(this)->FrameByName(_name));
+}
+
+/////////////////////////////////////////////////
 uint64_t World::LightCount() const
 {
   return this->dataPtr->lights.size();
@@ -545,6 +573,13 @@ const Light *World::LightByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->lights.size())
     return &this->dataPtr->lights[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Light *World::LightByIndex(uint64_t _index)
+{
+  return const_cast<Light*>(
+      static_cast<const World*>(this)->LightByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -575,6 +610,13 @@ const Actor *World::ActorByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Actor *World::ActorByIndex(uint64_t _index)
+{
+  return const_cast<Actor*>(
+      static_cast<const World*>(this)->ActorByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool World::ActorNameExists(const std::string &_name) const
 {
   for (auto const &a : this->dataPtr->actors)
@@ -599,6 +641,13 @@ const Physics *World::PhysicsByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->physics.size())
     return &this->dataPtr->physics[_index];
   return nullptr;
+}
+
+//////////////////////////////////////////////////
+Physics *World::PhysicsByIndex(uint64_t _index)
+{
+  return const_cast<Physics*>(
+      static_cast<const World*>(this)->PhysicsByIndex(_index));
 }
 
 //////////////////////////////////////////////////
@@ -667,8 +716,8 @@ void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   }
   for (auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    ifaceModelPair.second->InvokeRespostureFunction(
-        this->dataPtr->poseRelativeToGraph);
+    ifaceModelPair.second->InvokeRepostureFunction(
+        this->dataPtr->poseRelativeToGraph, {});
   }
   for (auto &frame : this->dataPtr->frames)
   {
@@ -889,6 +938,12 @@ void World::ClearPhysics()
 }
 
 /////////////////////////////////////////////////
+void World::ClearFrames()
+{
+  this->dataPtr->frames.clear();
+}
+
+/////////////////////////////////////////////////
 bool World::AddModel(const Model &_model)
 {
   if (this->ModelNameExists(_model.Name()))
@@ -921,11 +976,18 @@ bool World::AddLight(const Light &_light)
 bool World::AddPhysics(const Physics &_physics)
 {
   if (this->PhysicsNameExists(_physics.Name()))
-  {
-    std::cout << "Not adding physics, it exists\n";
     return false;
-  }
   this->dataPtr->physics.push_back(_physics);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddFrame(const Frame &_frame)
+{
+  if (this->FrameNameExists(_frame.Name()))
+    return false;
+  this->dataPtr->frames.push_back(_frame);
 
   return true;
 }

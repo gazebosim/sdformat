@@ -164,6 +164,14 @@ namespace sdf
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not recursively nested) mutable child model
+    /// based on an index.
+    /// \param[in] _index Index of the model. The index should be in the range
+    /// [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: Model *ModelByIndex(uint64_t _index);
+
     /// \brief Get a model based on a name.
     /// \param[in] _name Name of the model.
     /// To get a model nested in other models, prefix the model name
@@ -172,6 +180,15 @@ namespace sdf
     /// does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
+
+    /// \brief Get a mutable model based on a name.
+    /// \param[in] _name Name of the model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    /// does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
+    public: Model *ModelByName(const std::string &_name);
 
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
@@ -204,6 +221,12 @@ namespace sdf
     /// already exists.
     public: bool AddPhysics(const Physics &_physics);
 
+    /// \brief Add a frame object to the world.
+    /// \param[in] _frame Frame to add.
+    /// \return True if successful, false if a frames object with the name
+    /// already exists.
+    public: bool AddFrame(const Frame &_frame);
+
     /// \brief Remove all models.
     public: void ClearModels();
 
@@ -216,6 +239,9 @@ namespace sdf
     /// \brief Remove all physics.
     public: void ClearPhysics();
 
+    /// \brief Remove all frames.
+    public: void ClearFrames();
+
     /// \brief Get the number of actors.
     /// \return Number of actors contained in this World object.
     public: uint64_t ActorCount() const;
@@ -226,6 +252,13 @@ namespace sdf
     /// \return Pointer to the actor. Nullptr if the index does not exist.
     /// \sa uint64_t ActorCount() const
     public: const Actor *ActorByIndex(const uint64_t _index) const;
+
+    /// \brief Get a mutable actor based on an index.
+    /// \param[in] _index Index of the actor. The index should be in the
+    /// range [0..ActorCount()).
+    /// \return Pointer to the actor. Nullptr if the index does not exist.
+    /// \sa uint64_t ActorCount() const
+    public: Actor *ActorByIndex(uint64_t _index);
 
     /// \brief Get whether an actor name exists.
     /// \param[in] _name Name of the actor to check.
@@ -248,6 +281,15 @@ namespace sdf
     /// \sa uint64_t FrameCount() const
     public: const Frame *FrameByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable immediate (not nested) child explicit frame based
+    /// on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: Frame *FrameByIndex(uint64_t _index);
+
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
     /// To get a frame in a nested model, prefix the frame name with the
@@ -255,6 +297,14 @@ namespace sdf
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get a mutable explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: Frame *FrameByName(const std::string &_name);
 
     /// \brief Get whether an explicit frame name exists.
     /// \param[in] _name Name of the explicit frame to check.
@@ -273,6 +323,13 @@ namespace sdf
     /// \return Pointer to the light. Nullptr if the index does not exist.
     /// \sa uint64_t LightCount() const
     public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get a mutable light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: Light *LightByIndex(uint64_t _index);
 
     /// \brief Get whether a light name exists.
     /// \param[in] _name Name of the light to check.
@@ -326,6 +383,14 @@ namespace sdf
     /// exist.
     ///// \sa uint64_t PhysicsCount() const
     public: const Physics *PhysicsByIndex(const uint64_t _index) const;
+
+    /// \brief Get a mutable physics profile based on an index.
+    /// \param[in] _index Index of the physics profile.
+    /// The index should be in the range [0..PhysicsCount()).
+    /// \return Pointer to the physics profile. Nullptr if the index does not
+    /// exist.
+    ///// \sa uint64_t PhysicsCount() const
+    public: Physics *PhysicsByIndex(uint64_t _index);
 
     /// \brief Get the default physics profile.
     /// \return Pointer to the default physics profile.

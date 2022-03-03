@@ -219,6 +219,13 @@ const Visual *Link::VisualByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Visual *Link::VisualByIndex(uint64_t _index)
+{
+  return const_cast<Visual*>(
+      static_cast<const Link*>(this)->VisualByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Link::VisualNameExists(const std::string &_name) const
 {
   for (auto const &v : this->dataPtr->visuals)
@@ -243,6 +250,13 @@ const Collision *Link::CollisionByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->collisions.size())
     return &this->dataPtr->collisions[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Collision *Link::CollisionByIndex(uint64_t _index)
+{
+  return const_cast<Collision*>(
+      static_cast<const Link*>(this)->CollisionByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -273,6 +287,13 @@ const Light *Link::LightByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Light *Link::LightByIndex(uint64_t _index)
+{
+  return const_cast<Light*>(
+      static_cast<const Link*>(this)->LightByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Link::LightNameExists(const std::string &_name) const
 {
   return this->LightByName(_name) != nullptr;
@@ -290,6 +311,13 @@ const Sensor *Link::SensorByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->sensors.size())
     return &this->dataPtr->sensors[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Sensor *Link::SensorByIndex(uint64_t _index)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Link*>(this)->SensorByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -319,6 +347,13 @@ const Sensor *Link::SensorByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Sensor *Link::SensorByName(const std::string &_name)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Link*>(this)->SensorByName(_name));
+}
+
+/////////////////////////////////////////////////
 uint64_t Link::ParticleEmitterCount() const
 {
   return this->dataPtr->emitters.size();
@@ -330,6 +365,13 @@ const ParticleEmitter *Link::ParticleEmitterByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->emitters.size())
     return &this->dataPtr->emitters[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+ParticleEmitter *Link::ParticleEmitterByIndex(uint64_t _index)
+{
+  return const_cast<ParticleEmitter*>(
+      static_cast<const Link*>(this)->ParticleEmitterByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -359,6 +401,12 @@ const ParticleEmitter *Link::ParticleEmitterByName(
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+ParticleEmitter *Link::ParticleEmitterByName(const std::string &_name)
+{
+  return const_cast<ParticleEmitter *>(
+      static_cast<const Link*>(this)->ParticleEmitterByName(_name));
+}
 
 /////////////////////////////////////////////////
 const ignition::math::Inertiald &Link::Inertial() const
@@ -456,9 +504,16 @@ const Visual *Link::VisualByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Visual *Link::VisualByName(const std::string &_name)
+{
+  return const_cast<Visual *>(
+      static_cast<const Link*>(this)->VisualByName(_name));
+}
+
+/////////////////////////////////////////////////
 const Collision *Link::CollisionByName(const std::string &_name) const
 {
-  for (auto const &c : this->dataPtr->collisions)
+  for (auto &c : this->dataPtr->collisions)
   {
     if (c.Name() == _name)
     {
@@ -466,6 +521,13 @@ const Collision *Link::CollisionByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Collision *Link::CollisionByName(const std::string &_name)
+{
+  return const_cast<Collision *>(
+      static_cast<const Link*>(this)->CollisionByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -479,6 +541,14 @@ const Light *Link::LightByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Light *Link::LightByName(const std::string &_name)
+{
+  return const_cast<Light *>(
+      static_cast<const Link*>(this)->LightByName(_name));
+
 }
 
 /////////////////////////////////////////////////
