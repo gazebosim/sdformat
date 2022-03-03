@@ -262,3 +262,59 @@ TEST(DOMPlugin, ToElement)
   EXPECT_EQ(1u, plugin2.Contents().size());
   EXPECT_EQ("an-element", plugin2.Contents()[0]->GetName());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, OutputStreamOperator)
+{
+  sdf::Plugin plugin;
+  plugin.SetName("my-plugin");
+  EXPECT_EQ("my-plugin", plugin.Name());
+
+  plugin.SetFilename("filename.so");
+  EXPECT_EQ("filename.so", plugin.Filename());
+
+  sdf::ElementPtr content(new sdf::Element);
+  content->SetName("an-element");
+  plugin.InsertContent(content);
+  EXPECT_EQ(1u, plugin.Contents().size());
+
+  sdf::ElementPtr elem = plugin.ToElement();
+  ASSERT_NE(nullptr, elem);
+  std::string elemString = elem->ToString("");
+
+  std::ostringstream stream;
+  stream << plugin;
+
+  EXPECT_EQ(elemString, stream.str());
+
+  // The expected plugin output string.
+  std::string expected = R"foo(<plugin name='my-plugin' filename='filename.so'>
+  <an-element/>
+</plugin>
+)foo";
+
+  EXPECT_EQ(expected, stream.str());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, InputStreamOperator)
+{
+  // The provided plugin input string.
+  std::string input = R"foo(<plugin name='my-plugin' filename='filename.so'>
+  <an-element/>
+</plugin>
+)foo";
+  std::istringstream stream(input);
+
+  sdf::Plugin plugin;
+  stream >> plugin;
+
+  EXPECT_EQ("my-plugin", plugin.Name());
+  EXPECT_EQ("filename.so", plugin.Filename());
+  EXPECT_EQ(1u, plugin.Contents().size());
+
+  sdf::ElementPtr elem = plugin.ToElement();
+  ASSERT_NE(nullptr, elem);
+  std::string elemString = elem->ToString("");
+  EXPECT_EQ(input, elemString);
+}
