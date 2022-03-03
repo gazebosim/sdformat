@@ -59,20 +59,19 @@ TEST(Conversions, SdfToCommonMaterial)
   pbrSDF.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
   material.SetPbrMaterial(pbrSDF);
 
-  const std::shared_ptr<ignition::common::Material> materialCommon =
-    sdf::usd::convert(material);
-  ASSERT_NE(nullptr, materialCommon);
-  const ignition::common::Pbr * pbrCommon = materialCommon->PbrMaterial();
+  ignition::common::Material materialCommon;
+  sdf::usd::convert(material, materialCommon);
+  const ignition::common::Pbr * pbrCommon = materialCommon.PbrMaterial();
   ASSERT_NE(nullptr, pbrCommon);
 
-  EXPECT_EQ(material.Emissive(), materialCommon->Emissive());
-  EXPECT_EQ(material.Diffuse(), materialCommon->Diffuse());
-  EXPECT_EQ(material.Specular(), materialCommon->Specular());
-  EXPECT_EQ(material.Ambient(), materialCommon->Ambient());
+  EXPECT_EQ(material.Emissive(), materialCommon.Emissive());
+  EXPECT_EQ(material.Diffuse(), materialCommon.Diffuse());
+  EXPECT_EQ(material.Specular(), materialCommon.Specular());
+  EXPECT_EQ(material.Ambient(), materialCommon.Ambient());
   EXPECT_FLOAT_EQ(material.RenderOrder(),
-    static_cast<float>(materialCommon->RenderOrder()));
-  EXPECT_EQ(material.Lighting(), materialCommon->Lighting());
-  EXPECT_EQ(material.DoubleSided(), materialCommon->TwoSidedEnabled());
+    static_cast<float>(materialCommon.RenderOrder()));
+  EXPECT_EQ(material.Lighting(), materialCommon.Lighting());
+  EXPECT_EQ(material.DoubleSided(), materialCommon.TwoSidedEnabled());
 
   EXPECT_EQ(pbrWorkflow.AlbedoMap(), pbrCommon->AlbedoMap());
   EXPECT_EQ(pbrWorkflow.MetalnessMap(), pbrCommon->MetalnessMap());

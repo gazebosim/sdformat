@@ -88,16 +88,15 @@ namespace sdf
     return out;
   }
 
-  std::shared_ptr<ignition::common::Material> convert(const sdf::Material &_in)
+  void convert(const sdf::Material &_in, ignition::common::Material &_out)
   {
-    auto out = std::make_shared<ignition::common::Material>();
-    out->SetEmissive(_in.Emissive());
-    out->SetDiffuse(_in.Diffuse());
-    out->SetSpecular(_in.Specular());
-    out->SetAmbient(_in.Ambient());
-    out->SetRenderOrder(_in.RenderOrder());
-    out->SetLighting(_in.Lighting());
-    out->SetAlphaFromTexture(false, 0.5, _in.DoubleSided());
+    _out.SetEmissive(_in.Emissive());
+    _out.SetDiffuse(_in.Diffuse());
+    _out.SetSpecular(_in.Specular());
+    _out.SetAmbient(_in.Ambient());
+    _out.SetRenderOrder(_in.RenderOrder());
+    _out.SetLighting(_in.Lighting());
+    _out.SetAlphaFromTexture(false, 0.5, _in.DoubleSided());
 
     const sdf::Pbr * pbr = _in.PbrMaterial();
     if (pbr != nullptr)
@@ -145,9 +144,8 @@ namespace sdf
             ignition::common::NormalMapSpace::OBJECT);
         }
       }
-      out->SetPbrMaterial(pbrOut);
+      _out.SetPbrMaterial(pbrOut);
     }
-    return out;
   }
   }
   }
