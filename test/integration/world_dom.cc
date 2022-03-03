@@ -358,3 +358,25 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
     EXPECT_TRUE(buffer.str().empty()) << buffer.str();
   }
 }
+
+//////////////////////////////////////////////////
+TEST(DOMWorld, WorldPlugins)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  ASSERT_EQ(2u, world->Plugins().size());
+  EXPECT_EQ("world_plugin1", world->Plugins()[0].Name());
+  EXPECT_EQ("test/file/world1", world->Plugins()[0].Filename());
+  EXPECT_EQ("world_plugin2", world->Plugins()[1].Name());
+  EXPECT_EQ("test/file/world2", world->Plugins()[1].Filename());
+}
