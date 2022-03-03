@@ -29,6 +29,7 @@
 #include "sdf/Model.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Physics.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "FrameSemantics.hh"
@@ -105,8 +106,10 @@ class sdf::World::Implementation
   /// \brief Scoped Pose Relative-To graph that points to a graph owned by this
   /// world.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
-};
 
+  /// \brief World plugins.
+  public: sdf::Plugins plugins;
+};
 
 /////////////////////////////////////////////////
 World::World()
@@ -310,6 +313,11 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         this->dataPtr->scene->Load(_sdf->GetElement("scene"));
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
+
+  // Load the world plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   return errors;
 }
@@ -910,6 +918,10 @@ sdf::ElementPtr World::ToElement() const
   if (this->dataPtr->audioDevice != "default")
     elem->GetElement("audio")->GetElement("device")->Set(this->AudioDevice());
 
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
 }
 
@@ -990,4 +1002,28 @@ bool World::AddFrame(const Frame &_frame)
   this->dataPtr->frames.push_back(_frame);
 
   return true;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &World::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &World::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void World::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void World::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }
