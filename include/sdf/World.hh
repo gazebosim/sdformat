@@ -27,6 +27,7 @@
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
 #include "sdf/Gui.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/Scene.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -432,6 +433,23 @@ namespace sdf
     /// Model::ToElement function.
     /// \return SDF element pointer with updated world values.
     public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be

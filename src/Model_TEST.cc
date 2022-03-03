@@ -373,6 +373,11 @@ TEST(DOMModel, ToElement)
       model.ClearModels();
   }
 
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+  model.AddPlugin(plugin);
+
   sdf::ElementPtr elem = model.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -399,6 +404,10 @@ TEST(DOMModel, ToElement)
   EXPECT_EQ(model.ModelCount(), model2.ModelCount());
   for (uint64_t i = 0; i < model2.ModelCount(); ++i)
     EXPECT_NE(nullptr, model2.ModelByIndex(i));
+
+  ASSERT_EQ(1u, model2.Plugins().size());
+  EXPECT_EQ("name1", model2.Plugins()[0].Name());
+  EXPECT_EQ("filename1", model2.Plugins()[0].Filename());
 }
 
 /////////////////////////////////////////////////
@@ -609,4 +618,28 @@ TEST(DOMModel, MutableByName)
   f->SetName("frame2");
   EXPECT_FALSE(model.FrameNameExists("frame1"));
   EXPECT_TRUE(model.FrameNameExists("frame2"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, Plugins)
+{
+  sdf::Model model;
+  EXPECT_TRUE(model.Plugins().empty());
+
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+
+  model.AddPlugin(plugin);
+  ASSERT_EQ(1u, model.Plugins().size());
+
+  plugin.SetName("name2");
+  model.AddPlugin(plugin);
+  ASSERT_EQ(2u, model.Plugins().size());
+
+  EXPECT_EQ("name1", model.Plugins()[0].Name());
+  EXPECT_EQ("name2", model.Plugins()[1].Name());
+
+  model.ClearPlugins();
+  EXPECT_TRUE(model.Plugins().empty());
 }

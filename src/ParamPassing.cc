@@ -466,8 +466,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
 
     if (actionStr == "add")
     {
-      _elem->InsertElement(elemChild);
-      elemChild->SetParent(_elem);
+      _elem->InsertElement(elemChild->Clone(), true);
     }
     else if (actionStr == "replace")
     {
@@ -511,8 +510,7 @@ void add(const ParserConfig &_config, const std::string &_source,
 
   if (xmlToSdf(_config, _source, _childXml, newElem, _errors))
   {
-    _elem->InsertElement(newElem);
-    newElem->SetParent(_elem);
+    _elem->InsertElement(newElem, true);
   }
   else
   {

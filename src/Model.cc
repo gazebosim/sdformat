@@ -106,6 +106,9 @@ class sdf::Model::Implementation
   /// \brief Optional URI string that specifies where this model was or
   /// can be loaded from.
   public: std::string uri = "";
+
+  /// \brief Model plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
@@ -379,6 +382,10 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     frameNames.insert(frameName);
   }
 
+  // Load the model plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   return errors;
 }
@@ -1004,6 +1011,10 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
   for (const sdf::Model &model : this->dataPtr->models)
     elem->InsertElement(model.ToElement(_useIncludeTag), true);
 
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
 }
 
@@ -1075,4 +1086,28 @@ bool Model::NameExistsInFrameAttachedToGraph(const std::string &_name) const
 
   return this->dataPtr->frameAttachedToGraph.VertexIdByName(sdf::JoinName(
              this->Name(), _name)) != ignition::math::graph::kNullId;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Model::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Model::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Model::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Model::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }
