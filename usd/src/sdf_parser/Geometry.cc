@@ -386,7 +386,7 @@ namespace usd
       int materialIndex = subMesh->MaterialIndex();
       if (materialIndex != -1)
       {
-        const auto material = ignMesh->MaterialByIndex(materialIndex);
+        auto material = ignMesh->MaterialByIndex(materialIndex);
         const sdf::Material materialSdf = sdf::usd::convert(material);
         std::string materialPath;
         UsdErrors materialErrors = ParseSdfMaterial(

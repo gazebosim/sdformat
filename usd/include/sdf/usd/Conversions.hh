@@ -40,7 +40,7 @@ namespace sdf
     /// \return SDF material.
     IGNITION_SDFORMAT_USD_VISIBLE
     sdf::Material convert(
-        const std::shared_ptr<ignition::common::Material> &_in);
+        std::shared_ptr<ignition::common::Material> &_in);
 
     /// \brief Specialized conversion from an SDF material to a Ignition Common
     /// material.
