@@ -96,15 +96,14 @@ TEST(Conversions, SdfToCommonMaterial)
 
 TEST(Conversions, CommonToSdfMaterial)
 {
-  std::shared_ptr<ignition::common::Material> materialCommon =
-    std::make_shared<ignition::common::Material>();
-  materialCommon->SetEmissive(ignition::math::Color(1, 0.2, 0.2, 0.7));
-  materialCommon->SetDiffuse(ignition::math::Color(0.1, 0.3, 0.4, 0.5));
-  materialCommon->SetSpecular(ignition::math::Color(0.11, 0.22, 0.23, 0.77));
-  materialCommon->SetAmbient(ignition::math::Color(0.25, 0.21, 0.28, 0.5));
-  materialCommon->SetRenderOrder(5);
-  materialCommon->SetLighting(true);
-  materialCommon->SetAlphaFromTexture(false, 0.5, true);
+  ignition::common::Material materialCommon;
+  materialCommon.SetEmissive(ignition::math::Color(1, 0.2, 0.2, 0.7));
+  materialCommon.SetDiffuse(ignition::math::Color(0.1, 0.3, 0.4, 0.5));
+  materialCommon.SetSpecular(ignition::math::Color(0.11, 0.22, 0.23, 0.77));
+  materialCommon.SetAmbient(ignition::math::Color(0.25, 0.21, 0.28, 0.5));
+  materialCommon.SetRenderOrder(5);
+  materialCommon.SetLighting(true);
+  materialCommon.SetAlphaFromTexture(false, 0.5, true);
 
   ignition::common::Pbr pbrCommon;
   pbrCommon.SetType(ignition::common::PbrType::METAL);
@@ -123,9 +122,9 @@ TEST(Conversions, CommonToSdfMaterial)
   pbrCommon.SetGlossiness(0.3);
   pbrCommon.SetMetalness(0.55);
 
-  materialCommon->SetPbrMaterial(pbrCommon);
+  materialCommon.SetPbrMaterial(pbrCommon);
 
-  const sdf::Material material = sdf::usd::convert(materialCommon);
+  const sdf::Material material = sdf::usd::convert(&materialCommon);
 
   const sdf::Pbr * pbr = material.PbrMaterial();
   ASSERT_NE(nullptr, pbr);
@@ -133,14 +132,14 @@ TEST(Conversions, CommonToSdfMaterial)
     pbr->Workflow(sdf::PbrWorkflowType::METAL);
   ASSERT_NE(nullptr, pbrWorkflow);
 
-  EXPECT_EQ(material.Emissive(), materialCommon->Emissive());
-  EXPECT_EQ(material.Diffuse(), materialCommon->Diffuse());
-  EXPECT_EQ(material.Specular(), materialCommon->Specular());
-  EXPECT_EQ(material.Ambient(), materialCommon->Ambient());
+  EXPECT_EQ(material.Emissive(), materialCommon.Emissive());
+  EXPECT_EQ(material.Diffuse(), materialCommon.Diffuse());
+  EXPECT_EQ(material.Specular(), materialCommon.Specular());
+  EXPECT_EQ(material.Ambient(), materialCommon.Ambient());
   EXPECT_FLOAT_EQ(material.RenderOrder(),
-    static_cast<float>(materialCommon->RenderOrder()));
-  EXPECT_EQ(material.Lighting(), materialCommon->Lighting());
-  EXPECT_EQ(material.DoubleSided(), materialCommon->TwoSidedEnabled());
+    static_cast<float>(materialCommon.RenderOrder()));
+  EXPECT_EQ(material.Lighting(), materialCommon.Lighting());
+  EXPECT_EQ(material.DoubleSided(), materialCommon.TwoSidedEnabled());
 
   EXPECT_EQ(pbrWorkflow->AlbedoMap(), pbrCommon.AlbedoMap());
   EXPECT_EQ(pbrWorkflow->MetalnessMap(), pbrCommon.MetalnessMap());

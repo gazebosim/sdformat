@@ -27,7 +27,7 @@ namespace sdf
   //
   namespace usd
   {
-  sdf::Material convert(std::shared_ptr<ignition::common::Material> &_in)
+  sdf::Material convert(const ignition::common::Material *_in)
   {
     sdf::Material out;
     out.SetEmissive(_in->Emissive());
