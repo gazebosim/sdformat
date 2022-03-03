@@ -24,6 +24,7 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -44,14 +45,14 @@ namespace sdf
     /// \param[in] _materialSdf The SDF material to parse.
     /// \param[in] _stage The stage that should contain the USD representation
     /// of _material.
-    /// \param[out] _materialPath Material usd path
+    /// \param[out] _materialPath USD Material path
     /// \return UsdErrors, which is a list of UsdError objects. This list is
-    /// empty if no errors occurred when parsing _materialSdf to _materialUsd
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE
-      ParseSdfMaterial(
+    /// empty if no errors occurred when parsing _materialSdf its USD
+    /// representation
+    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfMaterial(
         const sdf::Material *_materialSdf,
         pxr::UsdStageRefPtr &_stage,
-        std::string &_materialPath);
+        pxr::SdfPath &_materialPath);
   }
   }
 }

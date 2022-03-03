@@ -19,7 +19,7 @@
 
 #include <ignition/common/Util.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -36,42 +36,54 @@
 #include "../UsdTestUtils.hh"
 
 void CheckMaterial(
-  const pxr::UsdPrim _prim,
-  const pxr::GfVec3f _diffuseColor,
-  const pxr::GfVec3f _emissiveColor,
-  const std::string &_albedoName,
-  const std::string &_normalName,
-  const std::string &_roughnessName,
-  const std::string &_metallicName,
-  float _metallicConstant = 0.5,
-  bool _enableEmission = true)
+  const pxr::UsdPrim &_prim,
+  const pxr::GfVec3f &_diffuseColor,
+  const pxr::GfVec3f &_emissiveColor,
+  bool _hasPbr,
+  const std::string &_albedoName = "",
+  const std::string &_normalName = "",
+  const std::string &_roughnessName = "",
+  const std::string &_metallicName = "")
 {
   auto variantshader = pxr::UsdShadeShader(_prim);
-  EXPECT_TRUE(variantshader);
+  ASSERT_TRUE(variantshader);
 
   std::vector<pxr::UsdShadeInput> inputs = variantshader.GetInputs();
   pxr::GfVec3f diffuseColor {0, 0, 0};
   pxr::GfVec3f emissiveColor {0, 0, 0};
 
+  // PBR-specific values
+  const float _metallicConstant = 0.5;
+  const bool _enableEmission = true;
+
+  bool checkedDiffuse = false;
+  bool checkedEmissive = false;
+  bool checkedAlbedo = false;
+  bool checkedNormal = false;
+  bool checkedRoughness = false;
+  bool checkedMetallicName = false;
+  bool checkedMetallicConstant = false;
+  bool checkedEnableEmission = false;
   for (auto &input : inputs)
   {
-    if (input.GetBaseName() == "diffuse_texture")
+    if (_hasPbr && input.GetBaseName() == "diffuse_texture")
     {
       pxr::SdfAssetPath materialPathUSD;
       pxr::UsdShadeInput diffuseTextureShaderInput =
         variantshader.GetInput(pxr::TfToken("diffuse_texture"));
-      auto source = diffuseTextureShaderInput.GetConnectedSources();
       diffuseTextureShaderInput.Get(&materialPathUSD);
       EXPECT_EQ(_albedoName,
         materialPathUSD.GetAssetPath());
+      checkedAlbedo = true;
     }
-    else if (input.GetBaseName() == "metallic_constant")
+    else if (_hasPbr && input.GetBaseName() == "metallic_constant")
     {
       pxr::UsdShadeInput metallicConstantShaderInput =
         variantshader.GetInput(pxr::TfToken("metallic_constant"));
       float metallicConstant;
       metallicConstantShaderInput.Get(&metallicConstant);
       EXPECT_FLOAT_EQ(_metallicConstant, metallicConstant);
+      checkedMetallicConstant = true;
     }
     else if (input.GetBaseName() == "enable_emission")
     {
@@ -80,33 +92,34 @@ void CheckMaterial(
         variantshader.GetInput(pxr::TfToken("enable_emission"));
       enableEmissiveShaderInput.Get(&enableEmission);
       EXPECT_EQ(_enableEmission, enableEmission);
+      checkedEnableEmission = true;
     }
-    else if (input.GetBaseName() == "normalmap_texture")
+    else if (_hasPbr && input.GetBaseName() == "normalmap_texture")
     {
       pxr::SdfAssetPath materialPath;
       pxr::UsdShadeInput normalTextureShaderInput =
         variantshader.GetInput(pxr::TfToken("normalmap_texture"));
-      auto source = normalTextureShaderInput.GetConnectedSources();
       normalTextureShaderInput.Get(&materialPath);
       EXPECT_EQ(_normalName, materialPath.GetAssetPath());
+      checkedNormal = true;
     }
-    else if (input.GetBaseName() == "reflectionroughness_texture")
+    else if (_hasPbr && input.GetBaseName() == "reflectionroughness_texture")
     {
       pxr::SdfAssetPath materialPath;
       pxr::UsdShadeInput roughnessTextureShaderInput =
         variantshader.GetInput(pxr::TfToken("reflectionroughness_texture"));
-      auto source = roughnessTextureShaderInput.GetConnectedSources();
       roughnessTextureShaderInput.Get(&materialPath);
       EXPECT_EQ(_roughnessName, materialPath.GetAssetPath());
+      checkedRoughness = true;
     }
-    else if (input.GetBaseName() == "metallic_texture")
+    else if (_hasPbr && input.GetBaseName() == "metallic_texture")
     {
       pxr::SdfAssetPath materialPath;
       pxr::UsdShadeInput metallicTextureShaderInput =
         variantshader.GetInput(pxr::TfToken("metallic_texture"));
-      auto source = metallicTextureShaderInput.GetConnectedSources();
       metallicTextureShaderInput.Get(&materialPath);
       EXPECT_EQ(_metallicName, materialPath.GetAssetPath());
+      checkedMetallicName = true;
     }
     else if (input.GetBaseName() == "emissive_color")
     {
@@ -116,6 +129,7 @@ void CheckMaterial(
       {
         EXPECT_EQ(_emissiveColor, emissiveColor);
       }
+      checkedEmissive = true;
     }
     else if (input.GetBaseName() == "diffuse_color_constant")
     {
@@ -128,18 +142,30 @@ void CheckMaterial(
         const pxr::SdfPath& thisAttrPath = connectedInput.GetAttr().GetPath();
         auto connectedPrim = _prim.GetStage()->GetPrimAtPath(
           thisAttrPath.GetPrimPath());
-        if(connectedPrim)
+        if (connectedPrim)
+        {
           connectedPrim.GetAttribute(
             pxr::TfToken("inputs:diffuse_color_constant")).Get(&diffuseColor);
+        }
       }
+      else
       {
         pxr::UsdShadeInput diffuseShaderInput =
           variantshader.GetInput(pxr::TfToken("diffuse_color_constant"));
         diffuseShaderInput.Get(&diffuseColor);
       }
       EXPECT_EQ(_diffuseColor, diffuseColor);
+      checkedDiffuse = true;
     }
   }
+  EXPECT_TRUE(checkedDiffuse);
+  EXPECT_TRUE(checkedEmissive);
+  EXPECT_TRUE(checkedEnableEmission);
+  EXPECT_EQ(_hasPbr, checkedAlbedo);
+  EXPECT_EQ(_hasPbr, checkedNormal);
+  EXPECT_EQ(_hasPbr, checkedRoughness);
+  EXPECT_EQ(_hasPbr, checkedMetallicName);
+  EXPECT_EQ(_hasPbr, checkedMetallicConstant);
 }
 
 /////////////////////////////////////////////////
@@ -178,54 +204,40 @@ TEST_F(UsdStageFixture, Material)
   auto worldPrim = this->stage->GetPrimAtPath(pxr::SdfPath(worldPath));
   ASSERT_TRUE(worldPrim);
 
-  std::string meshPath = worldPath + "/" + "mesh";
-  std::string meshLinkPath = meshPath + "/" + "link";
-  std::string meshVisualPath = meshLinkPath + "/" + "visual";
-  std::string meshGeometryPath =
-    meshVisualPath + "/" + "geometry";
-  auto meshGeometry = this->stage->GetPrimAtPath(
-    pxr::SdfPath(meshGeometryPath));
-  ASSERT_TRUE(meshGeometry);
+  const std::string meshGeometryPath = worldPath + "/mesh/link/visual/geometry";
+  ASSERT_TRUE(this->stage->GetPrimAtPath(pxr::SdfPath(meshGeometryPath)));
 
   {
-    std::string materialPath = "/Looks/Material_2";
-    auto materialPrim = this->stage->GetPrimAtPath(
-      pxr::SdfPath(materialPath));
-    EXPECT_TRUE(materialPrim);
+    const std::string materialPath = "/Looks/Material_2";
+    ASSERT_TRUE(this->stage->GetPrimAtPath(pxr::SdfPath(materialPath)));
 
-    std::string materialshaderPath = materialPath + "/Shader";
-    auto materialShaderPrim = this->stage->GetPrimAtPath(
+    const std::string materialshaderPath = materialPath + "/Shader";
+    const auto materialShaderPrim = this->stage->GetPrimAtPath(
       pxr::SdfPath(materialshaderPath));
-    EXPECT_TRUE(materialShaderPrim);
+    ASSERT_TRUE(materialShaderPrim);
 
     CheckMaterial(materialShaderPrim,
       pxr::GfVec3f(0.2, 0.5, 0.1),
       pxr::GfVec3f(0, 0, 0),
+      true,
       "materials/textures/albedo_map.png",
       "materials/textures/normal_map.png",
       "materials/textures/roughness_map.png",
-      "materials/textures/metallic_map.png"
-    );
+      "materials/textures/metalness_map.png");
   }
 
   {
-    std::string materialPath = "/Looks/Material_0";
-    auto materialPrim = this->stage->GetPrimAtPath(
-      pxr::SdfPath(materialPath));
-    EXPECT_TRUE(materialPrim);
+    const std::string materialPath = "/Looks/Material_0";
+    ASSERT_TRUE(this->stage->GetPrimAtPath(pxr::SdfPath(materialPath)));
 
-    std::string materialshaderPath = materialPath + "/Shader";
-    auto materialShaderPrim = this->stage->GetPrimAtPath(
+    const std::string materialshaderPath = materialPath + "/Shader";
+    const auto materialShaderPrim = this->stage->GetPrimAtPath(
       pxr::SdfPath(materialshaderPath));
-    EXPECT_TRUE(materialShaderPrim);
+    ASSERT_TRUE(materialShaderPrim);
 
     CheckMaterial(materialShaderPrim,
       pxr::GfVec3f(0, 0.1, 0.2),
       pxr::GfVec3f(0.12, 0.23, 0.34),
-      "",
-      "",
-      "",
-      ""
-    );
+      false);
   }
 }

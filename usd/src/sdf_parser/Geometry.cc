@@ -383,25 +383,39 @@ namespace usd
         pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
       usdMesh.CreateExtentAttr().Set(extentBounds);
 
+      // TODO(adlarkin) update this call in sdf13 to avoid casting the index to
+      // an int:
+      // https://github.com/ignitionrobotics/ign-common/pull/319
       int materialIndex = subMesh->MaterialIndex();
       if (materialIndex != -1)
       {
         auto material = ignMesh->MaterialByIndex(materialIndex);
         const sdf::Material materialSdf = sdf::usd::convert(material);
-        std::string materialPath;
+        pxr::SdfPath materialPath;
         UsdErrors materialErrors = ParseSdfMaterial(
           &materialSdf, _stage, materialPath);
         if (!materialErrors.empty())
         {
           errors.push_back(UsdError(
             sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Unable to parse material"));
+            "Unable to convert material [" + std::to_string(materialIndex)
+            + "] of submesh named [" + subMesh->Name()
+            + "] to a USD material."));
           return errors;
         }
 
-        auto materialUSD = pxr::UsdShadeMaterial(_stage->GetPrimAtPath(
-          pxr::SdfPath(materialPath)));
+        auto materialPrim = _stage->GetPrimAtPath(materialPath);
+        if (!materialPrim)
+        {
+          errors.push_back(UsdError(
+                sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
+                "Unable to get material prim at path ["
+                + materialPath.GetString()
+                + "], but a prim should exist at this path."));
+          return errors;
+        }
 
+        auto materialUSD = pxr::UsdShadeMaterial(materialPrim);
         if (materialUSD &&
             (materialSdf.Emissive() != ignition::math::Color(0, 0, 0, 1)
              || materialSdf.Specular() != ignition::math::Color(0, 0, 0, 1)
@@ -413,9 +427,8 @@ namespace usd
         {
           errors.push_back(UsdError(
               sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              "Unable to convert material [" + std::to_string(materialIndex)
-              + "] of submesh named [" + subMesh->Name()
-              + "] to a USD material."));
+              "The prim at path [" + materialPath.GetString()
+              + "] is not a pxr::UsdShadeMaterial object."));
           return errors;
         }
       }

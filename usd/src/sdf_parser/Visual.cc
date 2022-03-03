@@ -95,25 +95,28 @@ namespace usd
     {
       if (_visual.Material())
       {
-        std::string materialPath;
+        pxr::SdfPath materialPath;
         UsdErrors materialErrors = ParseSdfMaterial(
           _visual.Material(), _stage, materialPath);
         if (!materialErrors.empty())
         {
-          errors.push_back(UsdError(
-            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Unable to parse material"));
-          return errors;
-        }
-        auto materialUSD = pxr::UsdShadeMaterial(_stage->GetPrimAtPath(
-          pxr::SdfPath(materialPath)));
-
-        if (!materialUSD)
-        {
+          errors.insert(errors.end(), materialErrors.begin(),
+              materialErrors.end());
           errors.push_back(UsdError(
             sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
             "Error parsing material attached to visual ["
             + _visual.Name() + "]"));
+          return errors;
+        }
+
+        auto materialUSD =
+          pxr::UsdShadeMaterial(_stage->GetPrimAtPath(materialPath));
+        if (!materialUSD)
+        {
+          errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to convert prim at path [" + materialPath.GetString()
+            + "] to a pxr::UsdShadeMaterial."));
           return errors;
         }
         pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);

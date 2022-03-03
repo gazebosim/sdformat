@@ -95,13 +95,15 @@ std::string findFileByName(const std::string &_path, const std::string &_name)
 /// \brief Get the full path of a file based on the extension
 /// \param[in] _path Where to begin searching for the file
 /// \param[in] _extension The extension of the file
+/// \param[in] _insertDirectories Whether subdirectories should be inserted as
+/// needed when looking for the file (true) or not (false)
 /// \return The full path to the file with an extension _extension. Empty
 /// string is returned if the file could not be found.
 std::string findFileByExtension(
   const std::string &_path, const std::string &_extension,
-  bool insertDirectories = false)
+  bool _insertDirectories = false)
 {
-  if (insertDirectories)
+  if (_insertDirectories)
   {
     for (ignition::common::DirIter file(_path);
       file != ignition::common::DirIter(); ++file)
