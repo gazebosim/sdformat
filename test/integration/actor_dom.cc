@@ -159,3 +159,28 @@ TEST(DOMActor, CopySdfLoadedProperties)
   EXPECT_EQ(actor1.LinkCount(), actor2->LinkCount());
   EXPECT_EQ(actor1.JointCount(), actor2->JointCount());
 }
+
+//////////////////////////////////////////////////
+TEST(DOMActor, ActorPlugins)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Actor *actor = world->ActorByIndex(0);
+  ASSERT_NE(nullptr, actor);
+
+  ASSERT_EQ(2u, actor->Plugins().size());
+  EXPECT_EQ("actor_plugin1", actor->Plugins()[0].Name());
+  EXPECT_EQ("test/file/actor1", actor->Plugins()[0].Filename());
+  EXPECT_EQ("actor_plugin2", actor->Plugins()[1].Name());
+  EXPECT_EQ("test/file/actor2", actor->Plugins()[1].Filename());
+}
