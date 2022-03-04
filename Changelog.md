@@ -1,6 +1,6 @@
 ## libsdformat 12.X
 
-### libsdformat 12.4.0 (2022-01-xx)
+### libsdformat 12.4.0 (2022-03-xx)
 
 1. SDF -> USD:
     * [Pull request #818](https://github.com/ignitionrobotics/sdformat/pull/818)
