@@ -364,6 +364,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// link.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated link values.
     public: sdf::ElementPtr ToElement() const;
 

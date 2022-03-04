@@ -200,6 +200,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// root.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \param[in] _useIncludeTag This will pass the _useIncludeTag to
     /// sdf::Model::ToElement.
     /// \return SDF element pointer with updated root values.
