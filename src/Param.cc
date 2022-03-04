@@ -339,7 +339,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
   sdferr << "Unable to get string from default value, "
          << "using ParamStreamer instead.\n";
   StringStreamClassicLocale ss;
-  ss << ParamStreamer{ this->dataPtr->defaultValue };
+  ss << ParamStreamer{ this->dataPtr->defaultValue, _config.OutPrecision() };
   return ss.str();
 }
 
@@ -808,7 +808,13 @@ bool PoseStringFromValue(const PrintConfig &_config,
                          const std::optional<std::string> &_originalStr,
                          std::string &_valueStr)
 {
+  // TODO(jenn) remove unused param _originalStr
   StringStreamClassicLocale ss;
+
+  if (_config.OutPrecision() == std::numeric_limits<int>::max())
+    ss << std::setprecision(std::numeric_limits<double>::max_digits10);
+  else
+    ss << std::setprecision(_config.OutPrecision());
 
   const ignition::math::Pose3d *pose =
       std::get_if<ignition::math::Pose3d>(&_value);
@@ -878,7 +884,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   }
 
   // Helper function that sanitizes zero values like '-0'
-  auto sanitizeZero = [](double _number)
+  auto sanitizeZero = [&_config](double _number)
   {
     StringStreamClassicLocale stream;
     if (std::fpclassify(_number) == FP_ZERO)
@@ -887,6 +893,11 @@ bool PoseStringFromValue(const PrintConfig &_config,
     }
     else
     {
+      if (_config.OutPrecision() == std::numeric_limits<int>::max())
+        stream << std::setprecision(std::numeric_limits<double>::max_digits10);
+      else
+        stream << std::setprecision(_config.OutPrecision());
+
       stream << _number;
     }
     return stream.str();
@@ -949,17 +960,6 @@ bool PoseStringFromValue(const PrintConfig &_config,
     return true;
   }
 
-  // If no modification to the value is needed, the original string is returned.
-  if (!_config.RotationInDegrees() &&
-      !_config.RotationSnapToDegrees().has_value() &&
-      !_config.RotationSnapTolerance().has_value() &&
-      _originalStr.has_value() &&
-      !_originalStr->empty())
-  {
-    _valueStr = _originalStr.value();
-    return true;
-  }
-
   ss << pose->Pos() << posRotDelimiter
      << sanitizeZero(pose->Rot().Roll()) << " "
      << sanitizeZero(pose->Rot().Pitch()) << " "
@@ -1018,7 +1018,7 @@ bool ParamPrivate::StringFromValueImpl(
   }
 
   StringStreamClassicLocale ss;
-  ss << ParamStreamer{ _value };
+  ss << ParamStreamer{ _value, _config.OutPrecision() };
   _valueStr = ss.str();
   return true;
 }

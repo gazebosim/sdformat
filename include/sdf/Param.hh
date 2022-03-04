@@ -75,28 +75,38 @@ namespace sdf
   struct ParamStreamer
   {
     const T &val;
+    const int precision;  // Used to set std::ostream's std::setprecision
   };
 
   template<class T> ParamStreamer(T) -> ParamStreamer<T>;
+  template<class T> ParamStreamer(T, bool) -> ParamStreamer<T>;
 
   template<class T>
   std::ostream& operator<<(std::ostream &os, ParamStreamer<T> s)
   {
+    if (s.precision == std::numeric_limits<int>::max())
+    {
+      if constexpr (std::is_same_v<T, double>
+                    || std::is_same_v<T, ignition::math::Angle>
+                    || std::is_same_v<T, ignition::math::Vector2d>
+                    || std::is_same_v<T, ignition::math::Vector3d>
+                    || std::is_same_v<T, ignition::math::Quaterniond>
+                    || std::is_same_v<T, ignition::math::Pose3d>)
+      {
+        os << std::setprecision(std::numeric_limits<double>::max_digits10);
+      }
+      else if constexpr (std::is_same_v<T, float>
+                         || std::is_same_v<T, ignition::math::Color>)
+      {
+        os << std::setprecision(std::numeric_limits<float>::max_digits10);
+      }
+    }
+    else
+    {
+      os << std::setprecision(s.precision);
+    }
+
     os << s.val;
-    return os;
-  }
-
-  template<>
-  inline std::ostream& operator<<(std::ostream &os, ParamStreamer<double> s)
-  {
-    os << std::setprecision(std::numeric_limits<double>::max_digits10) << s.val;
-    return os;
-  }
-
-  template<>
-  inline std::ostream& operator<<(std::ostream &os, ParamStreamer<float> s)
-  {
-    os << std::setprecision(std::numeric_limits<float>::max_digits10) << s.val;
     return os;
   }
 
@@ -104,9 +114,9 @@ namespace sdf
   std::ostream& operator<<(std::ostream& os,
                            ParamStreamer<std::variant<Ts...>> sv)
   {
-    std::visit([&os](auto const &v)
+    std::visit([&os, &sv](auto const &v)
       {
-        os << ParamStreamer{v};
+        os << ParamStreamer{v, sv.precision};
       }, sv.val);
     return os;
   }
@@ -357,7 +367,8 @@ namespace sdf
     /// \def ParamVariant
     /// \brief Variant type def.
     /// Note: When a new variant is added, add variant to functions
-    /// ParamPrivate::TypeToString and ParamPrivate::ValueFromStringImpl
+    /// ParamPrivate::TypeToString, ParamPrivate::ValueFromStringImpl,
+    /// and template std::ostream operator if new variant is floating point
     public: typedef std::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
                                    ignition::math::Angle,
