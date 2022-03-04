@@ -24,6 +24,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -483,6 +484,23 @@ namespace sdf
     /// \brief Set the URI associated with this model.
     /// \param[in] _uri The model's URI.
     public: void SetUri(const std::string &_uri);
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or

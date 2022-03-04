@@ -529,6 +529,11 @@ TEST(DOMWorld, ToElement)
       world.ClearPhysics();
   }
 
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+  world.AddPlugin(plugin);
+
   sdf::ElementPtr elem = world.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -566,6 +571,10 @@ TEST(DOMWorld, ToElement)
   EXPECT_EQ(world.PhysicsCount(), world2.PhysicsCount());
   for (uint64_t i = 0; i < world2.PhysicsCount(); ++i)
     EXPECT_NE(nullptr, world2.PhysicsByIndex(i));
+
+  ASSERT_EQ(1u, world2.Plugins().size());
+  EXPECT_EQ("name1", world2.Plugins()[0].Name());
+  EXPECT_EQ("filename1", world2.Plugins()[0].Filename());
 }
 
 /////////////////////////////////////////////////
@@ -657,4 +666,28 @@ TEST(DOMWorld, MutableByName)
   f->SetName("frame2");
   EXPECT_FALSE(world.FrameByName("frame1"));
   EXPECT_TRUE(world.FrameByName("frame2"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, Plugins)
+{
+  sdf::World world;
+  EXPECT_TRUE(world.Plugins().empty());
+
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+
+  world.AddPlugin(plugin);
+  ASSERT_EQ(1u, world.Plugins().size());
+
+  plugin.SetName("name2");
+  world.AddPlugin(plugin);
+  ASSERT_EQ(2u, world.Plugins().size());
+
+  EXPECT_EQ("name1", world.Plugins()[0].Name());
+  EXPECT_EQ("name2", world.Plugins()[1].Name());
+
+  world.ClearPlugins();
+  EXPECT_TRUE(world.Plugins().empty());
 }

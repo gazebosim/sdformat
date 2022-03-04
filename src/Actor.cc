@@ -20,6 +20,7 @@
 #include "sdf/Actor.hh"
 #include "sdf/Error.hh"
 #include "sdf/parser.hh"
+#include "sdf/Plugin.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -113,6 +114,9 @@ class sdf::Actor::Implementation
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
+
+  /// \brief Actor plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
@@ -454,6 +458,11 @@ Errors Actor::Load(ElementPtr _sdf)
   errors.insert(errors.end(), jointLoadErrors.begin(),
                     jointLoadErrors.end());
 
+  // Load the actor plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
+
   return errors;
 }
 
@@ -780,5 +789,33 @@ sdf::ElementPtr Actor::ToElement() const
   for (const sdf::Link &link : this->dataPtr->links)
     elem->InsertElement(link.ToElement(), true);
 
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Actor::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Actor::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Actor::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Actor::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

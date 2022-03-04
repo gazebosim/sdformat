@@ -67,6 +67,9 @@ namespace sdf
     /// \brief Invalid submesh primitive type
     INVALID_SUBMESH_PRIMITIVE_TYPE,
 
+    /// \brief Invalid material
+    INVALID_MATERIAL,
+
     /// \brief Invalid usd file
     INVALID_USD_FILE,
 
