@@ -1,34 +1,48 @@
 ## libsdformat 12.X
 
 ### libsdformat 12.4.0 (2022-01-xx)
+
+1. SDF -> USD:
+    * [Pull request #818](https://github.com/ignitionrobotics/sdformat/pull/818)
+    * [Pull request #828](https://github.com/ignitionrobotics/sdformat/pull/828)
+    * [Pull request #829](https://github.com/ignitionrobotics/sdformat/pull/829)
+    * [Pull request #830](https://github.com/ignitionrobotics/sdformat/pull/830)
+    * [Pull request #831](https://github.com/ignitionrobotics/sdformat/pull/831)
+    * [Pull request #837](https://github.com/ignitionrobotics/sdformat/pull/837)
+
+1. ToElement
+    * [Pull request #771](https://github.com/ignitionrobotics/sdformat/pull/771)
+    * [Pull request #772](https://github.com/ignitionrobotics/sdformat/pull/772)
+    * [Pull request #775](https://github.com/ignitionrobotics/sdformat/pull/775)
+    * [Pull request #776](https://github.com/ignitionrobotics/sdformat/pull/776)
+    * [Pull request #777](https://github.com/ignitionrobotics/sdformat/pull/777)
+    * [Pull request #781](https://github.com/ignitionrobotics/sdformat/pull/781)
+    * [Pull request #782](https://github.com/ignitionrobotics/sdformat/pull/782)
+    * [Pull request #783](https://github.com/ignitionrobotics/sdformat/pull/783)
+
+1. Fix compiler warnings
+    * [Pull request #808](https://github.com/ignitionrobotics/sdformat/pull/808)
+    * [Pull request #810](https://github.com/ignitionrobotics/sdformat/pull/810)
+
+1. Infrastructure and Documentation
+    * [Pull request #861](https://github.com/ignitionrobotics/sdformat/pull/861)
+    * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
+    * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
+    * [Pull request #713](https://github.com/ignitionrobotics/sdformat/pull/713)
+
+1. Use the Plugin DOM in other DOM objects
+    * [Pull request #858](https://github.com/ignitionrobotics/sdformat/pull/858)
+
 1. Add SDFormat tags for Triggered Cameras
     * [Pull request #846](https://github.com/ignitionrobotics/sdformat/pull/846)
-
-1. sdf -> usd: Added sensor
-    * [Pull request #830](https://github.com/ignitionrobotics/sdformat/pull/830)
-
-1. Coverage build on focal
-    * [Pull request #861](https://github.com/ignitionrobotics/sdformat/pull/861)
-
-1. sdf -> usd converter: add joints
-    * [Pull request #837](https://github.com/ignitionrobotics/sdformat/pull/837)
 
 1. Fix bug where //include/pose was ignored when using the Interface API 
     * [Pull request #853](https://github.com/ignitionrobotics/sdformat/pull/853)
 
-1. sdf -> usd: Added Visual and geometries
-    * [Pull request #829](https://github.com/ignitionrobotics/sdformat/pull/829)
-
-1. Merge pull request #859 from ignitionrobotics/azeey/11_to_12_20220222
-    * [Pull request #859 from ignitionrobotics/azeey/11_to_12_20220222](https://github.com/ignitionrobotics/sdformat/pull/859 from ignitionrobotics/azeey/11_to_12_20220222)
-
-1. Merge 11 into 12
-    * [Pull request #Merge 11 into 12](https://github.com/ignitionrobotics/sdformat/pull/Merge 11 into 12)
-
 1. Fix joint parent/child frame existence checks to include interface elements
     * [Pull request #855](https://github.com/ignitionrobotics/sdformat/pull/855)
 
-1. remove USD visibility macro from internal APIs
+1. Remove USD visibility macro from internal APIs
     * [Pull request #857](https://github.com/ignitionrobotics/sdformat/pull/857)
 
 1. Added non-const mutable accessors for world child objects
@@ -36,9 +50,6 @@
 
 1. Added non-const accessors for Model child objects
     * [Pull request #839](https://github.com/ignitionrobotics/sdformat/pull/839)
-
-1. sdf -> usd Parse links and ground planes
-    * [Pull request #828](https://github.com/ignitionrobotics/sdformat/pull/828)
 
 1. Added to light if the light is on or off
     * [Pull request #851](https://github.com/ignitionrobotics/sdformat/pull/851)
@@ -64,29 +75,14 @@
 1. Handle `__model__` in joint parent or child when using merge-include
     * [Pull request #835](https://github.com/ignitionrobotics/sdformat/pull/835)
 
-1. Merge pull request #834 from ignitionrobotics/azeey/11_to_12_20220126
-    * [Pull request #834 from ignitionrobotics/azeey/11_to_12_20220126](https://github.com/ignitionrobotics/sdformat/pull/834 from ignitionrobotics/azeey/11_to_12_20220126)
-
-1. Merge sdf11 into sdf12
-    * [Pull request #Merge sdf11 into sdf12](https://github.com/ignitionrobotics/sdformat/pull/Merge sdf11 into sdf12)
-
 1. Allow model frames (__model__) to be used as joint parent or child
     * [Pull request #833](https://github.com/ignitionrobotics/sdformat/pull/833)
-
-1. Add sdf -> usd light functionality to usd component
-    * [Pull request #818](https://github.com/ignitionrobotics/sdformat/pull/818)
 
 1. Fix bug where a sdf::ParserConfig object was not passed to all sdf::readFile calls
     * [Pull request #824](https://github.com/ignitionrobotics/sdformat/pull/824)
 
-1. make SDF to USD a separate component of sdformat
+1. Make SDF to USD a separate component of sdformat
     * [Pull request #817](https://github.com/ignitionrobotics/sdformat/pull/817)
-
-1. Merge pull request #823 from ignitionrobotics/azeey/11_to_12_20220118
-    * [Pull request #823 from ignitionrobotics/azeey/11_to_12_20220118](https://github.com/ignitionrobotics/sdformat/pull/823 from ignitionrobotics/azeey/11_to_12_20220118)
-
-1. Merge 11 into 12
-    * [Pull request #Merge 11 into 12](https://github.com/ignitionrobotics/sdformat/pull/Merge 11 into 12)
 
 1. Add ParserConfig flag for preserveFixedJoint
     * [Pull request #815](https://github.com/ignitionrobotics/sdformat/pull/815)
@@ -94,56 +90,14 @@
 1. Fix parsing 'type' attibutes in plugins
     * [Pull request #809](https://github.com/ignitionrobotics/sdformat/pull/809)
 
-1. Merge pull request #810 from scpeters/merge_11_to_12
-    * [Pull request #810 from scpeters/merge_11_to_12](https://github.com/ignitionrobotics/sdformat/pull/810 from scpeters/merge_11_to_12)
-
-1. Fix compiler warnings
-    * [Pull request #810](https://github.com/ignitionrobotics/sdformat/pull/810)
-
-1. Merge branch 'sdf11' into merge_11_to_12
-    * [Pull request #Merge branch 'sdf11' into merge_11_to_12](https://github.com/ignitionrobotics/sdformat/pull/Merge branch 'sdf11' into merge_11_to_12)
-
-1. Merge pull request #808 from scpeters/merge_10_11
-    * [Pull request #808 from scpeters/merge_10_11](https://github.com/ignitionrobotics/sdformat/pull/808 from scpeters/merge_10_11)
-
-1. Fix compiler warnings
-    * [Pull request #808](https://github.com/ignitionrobotics/sdformat/pull/808)
-
-1. Merge branch 'sdf10' into merge_10_11
-    * [Pull request #Merge branch 'sdf10' into merge_10_11](https://github.com/ignitionrobotics/sdformat/pull/Merge branch 'sdf10' into merge_10_11)
-
-1. Merge pull request #807 from scpeters/merge_9_to_11
-    * [Pull request #807 from scpeters/merge_9_to_11](https://github.com/ignitionrobotics/sdformat/pull/807 from scpeters/merge_9_to_11)
-
 1. sdf_custom: fix nested model expectations
     * [Pull request #807](https://github.com/ignitionrobotics/sdformat/pull/807)
-
-1. Merge commit '6b53f954b8b74d0bdba33982d59c25da8b280ee4' into merge_9_to_11
-    * [Pull request #Merge commit '6b53f954b8b74d0bdba33982d59c25da8b280ee4' into merge_9_to_11](https://github.com/ignitionrobotics/sdformat/pull/Merge commit '6b53f954b8b74d0bdba33982d59c25da8b280ee4' into merge_9_to_11)
-
-1. Prepare for 10.7.0, final Dome release
-    * [Pull request #804](https://github.com/ignitionrobotics/sdformat/pull/804)
-
-1. Prepare for 10.7.0~pre2
-    * [Pull request #802](https://github.com/ignitionrobotics/sdformat/pull/802)
-
-1. Fix test compilation with USE_INTERNAL_URDF
-    * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
-
-1. Prepare for 10.7.0~pre1
-    * [Pull request #799](https://github.com/ignitionrobotics/sdformat/pull/799)
 
 1. Replace custom cmake code with ign-cmake2
     * [Pull request #780](https://github.com/ignitionrobotics/sdformat/pull/780)
 
-1. 9 ➡️ 10
-    * [Pull request #795](https://github.com/ignitionrobotics/sdformat/pull/795)
-
 1. Support printing sdf poses in degrees and allow snapping to commonly used angles
     * [Pull request #689](https://github.com/ignitionrobotics/sdformat/pull/689)
-
-1. 9 ➡️  10
-    * [Pull request #9 ➡️  10](https://github.com/ignitionrobotics/sdformat/pull/9 ➡️  10)
 
 1. Refactor FrameSemantics.cc
     * [Pull request #764](https://github.com/ignitionrobotics/sdformat/pull/764)
@@ -160,47 +114,8 @@
 1. Support adding and clearing sensors from a joint
     * [Pull request #785](https://github.com/ignitionrobotics/sdformat/pull/785)
 
-1. More to element
-    * [Pull request #783](https://github.com/ignitionrobotics/sdformat/pull/783)
-
-1. Documentation: Clarify behavior of //model/model/static
-    * [Pull request #713](https://github.com/ignitionrobotics/sdformat/pull/713)
-
-1. Model actor toelement functions
-    * [Pull request #782](https://github.com/ignitionrobotics/sdformat/pull/782)
-
-1. Added ToElement for ParticleEmitter and Link
-    * [Pull request #781](https://github.com/ignitionrobotics/sdformat/pull/781)
-
 1. PrintConfig option to preserve includes when converting to string
     * [Pull request #749](https://github.com/ignitionrobotics/sdformat/pull/749)
-
-1. Added ToElement conversion for Collision, Surface, and Visual
-    * [Pull request #777](https://github.com/ignitionrobotics/sdformat/pull/777)
-
-1. Added Geometry ToElement function
-    * [Pull request #776](https://github.com/ignitionrobotics/sdformat/pull/776)
-
-1. Material toelement
-    * [Pull request #775](https://github.com/ignitionrobotics/sdformat/pull/775)
-
-1. Merge pull request #774 from scpeters/merge_6_9
-    * [Pull request #774 from scpeters/merge_6_9](https://github.com/ignitionrobotics/sdformat/pull/774 from scpeters/merge_6_9)
-
-1. Merge branch 'sdf6' into sdf9
-    * [Pull request #Merge branch 'sdf6' into sdf9](https://github.com/ignitionrobotics/sdformat/pull/Merge branch 'sdf6' into sdf9)
-
-1. Aded ToElement conversion for shapes
-    * [Pull request #772](https://github.com/ignitionrobotics/sdformat/pull/772)
-
-1. Added ToElement conversion for physics and atmosphere
-    * [Pull request #771](https://github.com/ignitionrobotics/sdformat/pull/771)
-
-1. Backport cmake/test fixes to sdf6
-    * [Pull request #761](https://github.com/ignitionrobotics/sdformat/pull/761)
-
-1. add enable_orientation to 1.6 spec
-    * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
 
 ### libsdformat 12.3.0 (2021-12-01)
 
