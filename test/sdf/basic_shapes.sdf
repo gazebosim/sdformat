@@ -113,6 +113,10 @@
               <length>0.1</length>
             </capsule>
           </geometry>
+          <material>
+            <diffuse>0 0.1 0.2</diffuse>
+            <emissive>0.12 0.23 0.34 0.56</emissive>
+          </material>
         </visual>
       </link>
     </model>
@@ -136,6 +140,18 @@
               <scale>1.2 2.3 3.4</scale>
             </mesh>
           </geometry>
+          <material>
+            <diffuse>0.2 0.5 0.1 1.0</diffuse>
+            <specular>0.7 0.3 0.5 0.9</specular>
+            <pbr>
+              <metal>
+                <albedo_map>albedo_map.png</albedo_map>
+                <normal_map>normal_map.png</normal_map>
+                <roughness_map>roughness_map.png</roughness_map>
+                <metalness_map>metalness_map.png</metalness_map>
+              </metal>
+            </pbr>
+          </material>
         </visual>
       </link>
     </model>
