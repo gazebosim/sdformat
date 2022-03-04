@@ -408,7 +408,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // the URI and capture the plugins.
   if (_sdf->GetIncludeElement() && _sdf->GetIncludeElement()->HasElement("uri"))
   {
-    sdf::ElementPtr includeElem =_sdf->GetIncludeElement();
+    sdf::ElementPtr includeElem = _sdf->GetIncludeElement();
     this->SetUri(includeElem->Get<std::string>("uri"));
 
     Errors includePluginErrors = loadRepeated<Plugin>(includeElem, "plugin",
