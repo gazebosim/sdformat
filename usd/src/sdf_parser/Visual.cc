@@ -36,6 +36,7 @@
 
 #include "sdf/Visual.hh"
 #include "sdf/usd/sdf_parser/Geometry.hh"
+#include "sdf/usd/sdf_parser/Material.hh"
 #include "../UsdUtils.hh"
 
 namespace sdf
@@ -87,6 +88,45 @@ namespace usd
       errors.push_back(UsdError(
         sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
         "Error parsing geometry attached to visual [" + _visual.Name() + "]"));
+      return errors;
+    }
+
+    if (auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath)))
+    {
+      if (_visual.Material())
+      {
+        pxr::SdfPath materialPath;
+        UsdErrors materialErrors = ParseSdfMaterial(
+          _visual.Material(), _stage, materialPath);
+        if (!materialErrors.empty())
+        {
+          errors.insert(errors.end(), materialErrors.begin(),
+              materialErrors.end());
+          errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing material attached to visual ["
+            + _visual.Name() + "]"));
+          return errors;
+        }
+
+        auto materialUSD =
+          pxr::UsdShadeMaterial(_stage->GetPrimAtPath(materialPath));
+        if (!materialUSD)
+        {
+          errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Unable to convert prim at path [" + materialPath.GetString()
+            + "] to a pxr::UsdShadeMaterial."));
+          return errors;
+        }
+        pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+      }
+    }
+    else
+    {
+      errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
+        "Internal error: no geometry prim exists at path ["
+        + geometryPath + "]"));
       return errors;
     }
 
