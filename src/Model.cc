@@ -107,8 +107,25 @@ class sdf::Model::Implementation
   /// can be loaded from.
   public: std::string uri = "";
 
-  /// \brief Model plugins.
+  /// \brief All of the model plugins.
   public: std::vector<Plugin> plugins;
+
+  /// \brief The model plugins that were specified only in an <include> tag.
+  /// This data structure is used by the ToElement() function to accurately
+  /// reproduce the <include> tag.
+  ///
+  /// For example, a world could be:
+  ///  <world name="default">
+  ///    <include>
+  ///       <uri>test_model_with_plugin</uri>
+  ///       <plugin name="plugin_name" filename="plugin_filename"/>
+  ///    </include>
+  /// </world>
+  ///
+  /// and the included model could also have a plugin. We want the
+  /// ToElement(true) function to output only the plugin specified in the
+  /// <include> tag.
+  public: std::vector<Plugin> includePlugins;
 };
 
 /////////////////////////////////////////////////
@@ -386,6 +403,19 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
     this->dataPtr->plugins);
   errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
+
+  // Check whether the model was loaded from an <include> tag. If so, set
+  // the URI and capture the plugins.
+  if (_sdf->GetIncludeElement() && _sdf->GetIncludeElement()->HasElement("uri"))
+  {
+    sdf::ElementPtr includeElem =_sdf->GetIncludeElement();
+    this->SetUri(includeElem->Get<std::string>("uri"));
+
+    Errors includePluginErrors = loadRepeated<Plugin>(includeElem, "plugin",
+        this->dataPtr->includePlugins);
+    errors.insert(errors.end(), includePluginErrors.begin(),
+        includePluginErrors.end());
+  }
 
   return errors;
 }
@@ -966,6 +996,10 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
       includeElem->GetElement("placement_frame")->Set(
           this->PlacementFrameName());
     }
+
+    // Output the plugins
+    for (const Plugin &plugin : this->dataPtr->includePlugins)
+      includeElem->InsertElement(plugin.ToElement(), true);
 
     return includeElem;
   }
