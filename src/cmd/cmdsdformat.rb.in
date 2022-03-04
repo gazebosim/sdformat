@@ -50,6 +50,8 @@ COMMANDS = {  'sdf' =>
                        "      --snap-tolerance arg          Used in conjunction with --snap-to-degrees, specifies the tolerance at which snapping\n" +
                        "                                    occurs. This value must be larger than 0, less than 360, and less than the defined\n" +
                        "                                    degrees value to snap to. If unspecified, its default value is 0.01.\n" +
+                       "      --precision arg               Set the output stream precision for floating point numbers. The arg must be an integer.\n" +
+
                        COMMON_OPTIONS
             }
 
@@ -65,6 +67,7 @@ class Cmd
     options = {}
     options['degrees'] = 0
     options['snap_tolerance'] = 0.01
+    options['preserve_includes'] = 0
 
     usage = COMMANDS[args[0]]
 
@@ -109,6 +112,10 @@ class Cmd
         end
         options['snap_tolerance'] = arg
       end
+      opts.on('--precision arg', Integer,
+              'Set the output stream precision for floating point numbers.') do |arg|
+        options['precision'] = arg
+      end
       opts.on('-g arg', '--graph type', String,
               'Print PoseRelativeTo or FrameAttachedTo graph') do |graph_type|
         options['graph'] = {:type => graph_type}
@@ -131,7 +138,8 @@ class Cmd
 
     options['command'] = ARGV[0]
 
-    if options['preserve_includes'] and not options['print']
+    if (options['preserve_includes'] and not options['print']) ||
+        (options['precision'] and not options['print'])
       puts usage
       exit(-1)
     end
@@ -206,21 +214,25 @@ class Cmd
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
           snap_to_degrees = 0
-          if options['preserve_includes']
-            Importer.extern 'int cmdPrintPreserveIncludes(const char *)'
-            exit(Importer.cmdPrintPreserveIncludes(File.expand_path(options['print'])))
-          elsif options.key?('snap_to_degrees')
+          precision = -9999
+
+          if options.key?('snap_to_degrees')
             if options['snap_to_degrees'] < options['snap_tolerance']
               puts "Rotation snapping tolerance must be larger than the snapping tolerance."
               exit(-1)
             end
             snap_to_degrees = options['snap_to_degrees']
           end
-          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance)'
+          if options.key?('precision')
+            precision = options['precision']
+          end
+          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance, int, int)'
           exit(Importer.cmdPrint(File.expand_path(options['print']),
                                  options['degrees'],
                                  snap_to_degrees,
-                                 options['snap_tolerance']))
+                                 options['snap_tolerance'],
+                                 options['preserve_includes'],
+                                 precision))
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))
