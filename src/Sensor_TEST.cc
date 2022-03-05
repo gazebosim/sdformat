@@ -520,6 +520,11 @@ TEST(DOMSensor, ToElement)
   mag.SetXNoise(noise);
   sensor.SetMagnetometerSensor(mag);
 
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+  sensor.AddPlugin(plugin);
+
   sdf::ElementPtr sensorElem = sensor.ToElement();
   EXPECT_NE(nullptr, sensorElem);
   EXPECT_EQ(nullptr, sensor.Element());
@@ -537,6 +542,10 @@ TEST(DOMSensor, ToElement)
                    sensor2.MagnetometerSensor()->XNoise().Mean());
   EXPECT_DOUBLE_EQ(0.123, sensor2.UpdateRate());
 
+  ASSERT_EQ(1u, sensor2.Plugins().size());
+  EXPECT_EQ("name1", sensor2.Plugins()[0].Name());
+  EXPECT_EQ("filename1", sensor2.Plugins()[0].Filename());
+
   // make changes to DOM and verify ToElement produces updated values
   sensor2.SetUpdateRate(1.23);
   sdf::ElementPtr sensor2Elem = sensor2.ToElement();
@@ -544,4 +553,28 @@ TEST(DOMSensor, ToElement)
   sdf::Sensor sensor3;
   sensor3.Load(sensor2Elem);
   EXPECT_DOUBLE_EQ(1.23, sensor3.UpdateRate());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSensor, Plugins)
+{
+  sdf::Sensor sensor;
+  EXPECT_TRUE(sensor.Plugins().empty());
+
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+
+  sensor.AddPlugin(plugin);
+  ASSERT_EQ(1u, sensor.Plugins().size());
+
+  plugin.SetName("name2");
+  sensor.AddPlugin(plugin);
+  ASSERT_EQ(2u, sensor.Plugins().size());
+
+  EXPECT_EQ("name1", sensor.Plugins()[0].Name());
+  EXPECT_EQ("name2", sensor.Plugins()[1].Name());
+
+  sensor.ClearPlugins();
+  EXPECT_TRUE(sensor.Plugins().empty());
 }

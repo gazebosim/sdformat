@@ -115,6 +115,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// sky.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated sky values.
     public: sdf::ElementPtr ToElement() const;
 
