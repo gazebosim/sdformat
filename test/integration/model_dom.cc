@@ -31,6 +31,12 @@
 #include "test_config.h"
 #include "test_utils.hh"
 
+/////////////////////////////////////////////////
+std::string findFileCb(const std::string &_input)
+{
+  return sdf::testing::TestFile("integration", "model", _input);
+}
+
 //////////////////////////////////////////////////
 TEST(DOMModel, NotAModel)
 {
@@ -669,4 +675,77 @@ TEST(DOMModel, ModelPlugins)
   EXPECT_EQ("test/file/model1", model->Plugins()[0].Filename());
   EXPECT_EQ("model_plugin2", model->Plugins()[1].Name());
   EXPECT_EQ("test/file/model2", model->Plugins()[1].Filename());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMModel, IncludeModelWithPlugin)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "include_model_with_plugin.sdf");
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  // Test ToElement with useInclude == true
+  {
+    sdf::ElementPtr elem = model->ToElement(true);
+
+    // There should be a uri
+    ASSERT_TRUE(elem->HasElement("uri"));
+    EXPECT_EQ("test_model_with_plugin", elem->Get<std::string>("uri"));
+
+    // There should be a plugin
+    ASSERT_TRUE(elem->HasElement("plugin"));
+    sdf::ElementPtr pluginElem = elem->GetElement("plugin");
+    EXPECT_EQ("test_model_include_plugin",
+        pluginElem->Get<std::string>("name"));
+
+    EXPECT_EQ("include/test/model/plugin",
+        pluginElem->Get<std::string>("filename"));
+
+    // There should be only one plugin
+    ASSERT_EQ(nullptr, pluginElem->GetNextElement("plugin"));
+  }
+
+  // Test ToElement with useInclude == false. This will result in the full
+  // model SDF which would have two plugins, one from the <include> tag and
+  // one from the included model
+  {
+    sdf::ElementPtr elem = model->ToElement(false);
+
+    // There should NOT be a uri
+    ASSERT_FALSE(elem->HasElement("uri"));
+
+    // There should be a plugin
+    ASSERT_TRUE(elem->HasElement("plugin"));
+    sdf::ElementPtr pluginElem = elem->GetElement("plugin");
+    EXPECT_EQ("test_model_plugin",
+        pluginElem->Get<std::string>("name"));
+
+    EXPECT_EQ("test/model/plugin",
+        pluginElem->Get<std::string>("filename"));
+
+    // There should be a second plugin with different information
+    pluginElem = pluginElem->GetNextElement("plugin");
+    ASSERT_NE(nullptr, pluginElem);
+    EXPECT_EQ("test_model_include_plugin",
+        pluginElem->Get<std::string>("name"));
+    EXPECT_EQ("include/test/model/plugin",
+        pluginElem->Get<std::string>("filename"));
+
+    // THere should not be third plugin.
+    ASSERT_EQ(nullptr, pluginElem->GetNextElement("plugin"));
+  }
 }
