@@ -7,12 +7,16 @@ BUILD_DIR=`pwd`
 cd /tmp
 
 # check that we can compile USD from sources (only Focal)
+return_code=0
+if [ "$(lsb_release -r -s)" != "20.04" ]; then
+  return_code=$(($return_code + 1))
+fi
+
 mkdir cmake_test
 cd cmake_test
 
 echo "cmake_minimum_required(VERSION 3.12)" > CMakeLists.txt
 
-return_code=0
 cmake . || return_code=$(($return_code + $?))
 if [ $return_code -eq 0 ]
 then
