@@ -304,11 +304,5 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
 
   return allErrors;
 }
-
-/////////////////////////////////////////////////
-std::string computeMergedModelProxyFrameName(const std::string &_modelName)
-{
-  return "_merged__" + _modelName + "__model__";
-}
 }
 }
