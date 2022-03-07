@@ -223,6 +223,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// joint axis.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \param[in] _index Index of this joint axis
     /// \return SDF element pointer with updated joint values.
     public: sdf::ElementPtr ToElement(unsigned int _index = 0u) const;

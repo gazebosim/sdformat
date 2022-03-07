@@ -142,15 +142,30 @@ namespace sdf
     /// \return A pointer to the model, nullptr if it doesn't exist
     public: const sdf::Model *Model() const;
 
+    /// \brief Set the model object. This will override any existing model,
+    /// actor, and light object.
+    /// \param[in] _model The model to use.
+    public: void SetModel(const sdf::Model &_model);
+
     /// \brief Get a pointer to the light object if it exists.
     ///
     /// \return A pointer to the light, nullptr if it doesn't exist
     public: const sdf::Light *Light() const;
 
+    /// \brief Set the light object. This will override any existing model,
+    /// actor, and light object.
+    /// \param[in] _light The light to use.
+    public: void SetLight(const sdf::Light &_light);
+
     /// \brief Get a pointer to the actor object if it exists.
     ///
     /// \return A pointer to the actor, nullptr if it doesn't exist
     public: const sdf::Actor *Actor() const;
+
+    /// \brief Set the actor object. This will override any existing model,
+    /// actor, and light object.
+    /// \param[in] _actor The actor to use.
+    public: void SetActor(const sdf::Actor &_actor);
 
     /// \brief Get a pointer to the SDF element that was generated during
     /// load.
@@ -182,6 +197,15 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors UpdateGraphs();
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// root.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[in] _useIncludeTag This will pass the _useIncludeTag to
+    /// sdf::Model::ToElement.
+    /// \return SDF element pointer with updated root values.
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
 
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)

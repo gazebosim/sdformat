@@ -418,6 +418,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// model.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \param[in] _useIncludeTag When true, the model's URI is used to create
     /// an SDF `<include>` rather than a `<model>`. The model's URI must be
     /// first set using the `Model::SetUri` function. If the model's URI is
