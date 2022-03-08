@@ -95,11 +95,14 @@ TEST_F(UsdStageFixture, Ellipsoid)
   const auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
   EXPECT_TRUE(usdErrors.empty());
 
-  const auto usdSphere = pxr::UsdGeomSphere::Define(this->stage, pxr::SdfPath("/ellipsoid_world/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
+  const auto usdSphere = pxr::UsdGeomSphere::Define(
+    this->stage,
+    pxr::SdfPath("/ellipsoid_world/ellipsoid/ellipsoid_link/"
+                 "ellipsoid_visual/geometry"));
   ASSERT_TRUE(usdSphere);
   bool resetXformStack;
   const auto xformOps = usdSphere.GetOrderedXformOps(&resetXformStack);
-  ASSERT_EQ(xformOps.size(), 1);
+  ASSERT_EQ(xformOps.size(), 1u);
   EXPECT_FALSE(resetXformStack);
   const auto scaleOp = xformOps[0];
   EXPECT_EQ(scaleOp.GetOpType(), pxr::UsdGeomXformOp::TypeScale);
@@ -115,7 +118,7 @@ TEST_F(UsdStageFixture, Ellipsoid)
 
   pxr::VtArray<pxr::GfVec3f> extent;
   usdSphere.GetExtentAttr().Get(&extent);
-  ASSERT_EQ(extent.size(), 2);
+  ASSERT_EQ(extent.size(), 2u);
   EXPECT_FLOAT_EQ(extent[0][0], -1.0f);
   EXPECT_FLOAT_EQ(extent[0][1], -1.0f);
   EXPECT_FLOAT_EQ(extent[0][2], -1.0f);
