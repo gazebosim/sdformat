@@ -64,16 +64,8 @@ TEST(USDStage, Constructor)
 
   // Invalid file
   {
-    sdf::usd::USDStage stage(sdf::testing::TestFile("usd", "/invalid_name"));
+    sdf::usd::USDStage stage(sdf::testing::TestFile("usd", "invalid_name"));
     sdf::usd::UsdErrors errors = stage.Init();
     EXPECT_EQ(1u, errors.size());
   }
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

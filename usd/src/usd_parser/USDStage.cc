@@ -32,7 +32,6 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/usd/usd_parser/USDStage.hh"
-#include "sdf/usd/usd_parser/USDMaterial.hh"
 
 namespace sdf {
 // Inline bracke to help doxygen filtering.

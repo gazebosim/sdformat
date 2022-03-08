@@ -29,7 +29,6 @@
 
 #include "sdf/Material.hh"
 #include "sdf/config.hh"
-#include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
@@ -47,8 +46,8 @@ namespace sdf
     /// material
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseMaterial(
-      const pxr::UsdPrim &_prim, sdf::Material &_material);
+    UsdErrors ParseMaterial(const pxr::UsdPrim &_prim,
+        sdf::Material &_material);
 }
 }
 }

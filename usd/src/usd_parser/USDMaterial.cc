@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/usd_parser/USDMaterial.hh"
+#include "USDMaterial.hh"
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>

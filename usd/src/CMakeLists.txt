@@ -11,8 +11,8 @@ set(sources
   sdf_parser/Visual.cc
   sdf_parser/World.cc
   usd_parser/USDData.cc
-  usd_parser/USDStage.cc
   usd_parser/USDMaterial.cc
+  usd_parser/USDStage.cc
 )
 
 ign_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
