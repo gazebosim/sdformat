@@ -82,6 +82,52 @@ class UsdStageFixture : public::testing::Test
 };
 
 /////////////////////////////////////////////////
+TEST_F(UsdStageFixture, Ellipsoid)
+{
+  const auto testFile = sdf::testing::TestFile("sdf", "ellipsoid.sdf");
+
+  sdf::Root root;
+  ASSERT_TRUE(sdf::testing::LoadSdfFile(testFile, root));
+  ASSERT_EQ(1u, root.WorldCount());
+  const auto world = root.WorldByIndex(0u);
+
+  const auto worldPath = std::string("/" + world->Name());
+  const auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
+  EXPECT_TRUE(usdErrors.empty());
+
+  const auto usdSphere = pxr::UsdGeomSphere::Define(
+    this->stage,
+    pxr::SdfPath("/ellipsoid_world/ellipsoid/ellipsoid_link/"
+                 "ellipsoid_visual/geometry"));
+  ASSERT_TRUE(usdSphere);
+  bool resetXformStack;
+  const auto xformOps = usdSphere.GetOrderedXformOps(&resetXformStack);
+  ASSERT_EQ(xformOps.size(), 1u);
+  EXPECT_FALSE(resetXformStack);
+  const auto scaleOp = xformOps[0];
+  EXPECT_EQ(scaleOp.GetOpType(), pxr::UsdGeomXformOp::TypeScale);
+  pxr::GfVec3f scaleValue;
+  scaleOp.Get(&scaleValue);
+  EXPECT_FLOAT_EQ(scaleValue[0], 0.2);
+  EXPECT_FLOAT_EQ(scaleValue[1], 0.3);
+  EXPECT_FLOAT_EQ(scaleValue[2], 0.5);
+
+  double radius;
+  EXPECT_TRUE(usdSphere.GetRadiusAttr().Get(&radius));
+  EXPECT_DOUBLE_EQ(radius, 1);
+
+  pxr::VtArray<pxr::GfVec3f> extent;
+  usdSphere.GetExtentAttr().Get(&extent);
+  ASSERT_EQ(extent.size(), 2u);
+  EXPECT_FLOAT_EQ(extent[0][0], -1.0f);
+  EXPECT_FLOAT_EQ(extent[0][1], -1.0f);
+  EXPECT_FLOAT_EQ(extent[0][2], -1.0f);
+  EXPECT_FLOAT_EQ(extent[1][0], 1.0f);
+  EXPECT_FLOAT_EQ(extent[1][1], 1.0f);
+  EXPECT_FLOAT_EQ(extent[1][2], 1.0f);
+}
+
+/////////////////////////////////////////////////
 TEST_F(UsdStageFixture, Geometry)
 {
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
