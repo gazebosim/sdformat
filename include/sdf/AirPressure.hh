@@ -86,6 +86,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// air pressure sensor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated sensor values.
     public: sdf::ElementPtr ToElement() const;
 

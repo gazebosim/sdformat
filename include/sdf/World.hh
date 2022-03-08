@@ -429,8 +429,12 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// world.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[in] _useIncludeTag This parameter is passed through to the
+    /// Model::ToElement function.
     /// \return SDF element pointer with updated world values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
 
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

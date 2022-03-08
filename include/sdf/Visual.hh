@@ -163,6 +163,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// visual.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated visual values.
     public: sdf::ElementPtr ToElement() const;
 
