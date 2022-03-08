@@ -38,8 +38,6 @@
 #include "sdf/Material.hh"
 #include "sdf/usd/usd_parser/USDMaterial.hh"
 
-#include "utils_internal.hh"
-
 namespace sdf {
 // Inline bracke to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
@@ -145,8 +143,8 @@ namespace usd {
 
     std::string basename = ignition::common::basename(
       this->dataPtr->directoryPath);
-    this->dataPtr->directoryPath = RemoveSubStr(
-      this->dataPtr->directoryPath, basename);
+    this->dataPtr->directoryPath = ignition::common::replaceAll(
+        this->dataPtr->directoryPath, basename, "");
 
     this->dataPtr->AddSubdirectories(this->dataPtr->directoryPath);
 
@@ -266,7 +264,7 @@ namespace usd {
     if (search == this->dataPtr->references.end())
     {
       std::string basename = ignition::common::basename(key);
-      std::string subDirectory = RemoveSubStr(key, basename);
+      auto subDirectory = ignition::common::replaceAll(key, basename, "");
 
       auto systemPaths = ignition::common::systemPaths();
       systemPaths->AddFilePaths(ignition::common::joinPaths(

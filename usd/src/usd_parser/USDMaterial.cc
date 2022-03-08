@@ -17,8 +17,6 @@
 
 #include "sdf/usd/usd_parser/USDMaterial.hh"
 
-#include "utils_internal.hh"
-
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 #include <pxr/usd/usdShade/input.h>
@@ -36,25 +34,13 @@ namespace sdf
   namespace usd
   {
   /////////////////////////////////////////////////
-  std::string RemoveSubStr(const std::string &_str, const std::string &_substr)
-  {
-    std::string result = _str;
-    size_t pos = std::string::npos;
-    if ((pos = result.find(_substr) )!= std::string::npos)
-    {
-      result.erase(pos, _substr.length());
-    }
-    return result;
-  }
-
-  /////////////////////////////////////////////////
   UsdErrors copyFile(const std::string &_ori, const std::string &_dest)
   {
     UsdErrors errors;
     if (ignition::common::exists(_ori))
     {
       std::string baseName = ignition::common::basename(_dest);
-      std::string pathDest = RemoveSubStr(_dest, baseName);
+      std::string pathDest = ignition::common::replaceAll(_dest, baseName, "");
       ignition::common::createDirectories(pathDest);
       if (!ignition::common::copyFile(_ori, _dest))
       {
