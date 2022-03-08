@@ -20,7 +20,6 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 #include <pxr/usd/usdShade/input.h>
-
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/shader.h>
 
@@ -28,12 +27,17 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
   /////////////////////////////////////////////////
+  /// \brief Copy a file from one destination to another
+  /// \param[in] _ori The original file to copy
+  /// \param[in] _dest The destination for the copy of _ori
+  /// \return A list of UsdErrors. An empty list means no errors occurred when
+  /// copying _ori to _dest
   UsdErrors copyFile(const std::string &_ori, const std::string &_dest)
   {
     UsdErrors errors;
@@ -45,16 +49,30 @@ namespace sdf
       if (!ignition::common::copyFile(_ori, _dest))
       {
         errors.emplace_back(
-            Error(ErrorCode::FILE_READ, "No able to copy the file " + _ori +
-                  " in " + _dest));
+            Error(ErrorCode::FILE_READ, "Unable to copy the file [" + _ori +
+                  "] to [" + _dest + "]"));
       }
     }
     else
     {
       errors.emplace_back(
-          Error(ErrorCode::FILE_READ, "File does not exists"));
+          Error(ErrorCode::FILE_READ, "File [" + _ori + "] does not exist"));
     }
     return errors;
+  }
+
+  /// \brief Helper method for getting an asset path
+  /// \param[in] _tokenName Name of the asset
+  /// \param[in] _shader Shader that holds the desired asset
+  /// \return The pxr::SdfAssetPath object that contains the asset identified by
+  /// _tokenName in _shader
+  pxr::SdfAssetPath assetPath(const pxr::TfToken &_tokenName,
+      const pxr::UsdShadeShader &_shader)
+  {
+    pxr::SdfAssetPath assetPath;
+    pxr::UsdShadeInput shadeInput = _shader.GetInput(_tokenName);
+    shadeInput.Get(&assetPath);
+    return assetPath;
   }
 
   /////////////////////////////////////////////////
@@ -62,19 +80,26 @@ namespace sdf
   {
     UsdErrors errors;
     // if the prim is a Geom then get the color values
-    if(_prim.IsA<pxr::UsdGeomGprim>())
+    if (_prim.IsA<pxr::UsdGeomGprim>())
     {
-      auto variant_geom = pxr::UsdGeomGprim(_prim);
+      auto variantGeom = pxr::UsdGeomGprim(_prim);
 
-      pxr::VtArray<pxr::GfVec3f> color {{0, 0, 0}};
-
-      variant_geom.GetDisplayColorAttr().Get(&color);
+      pxr::VtArray<pxr::GfVec3f> color(0, 0, 0);
+      variantGeom.GetDisplayColorAttr().Get(&color);
 
       pxr::VtFloatArray displayOpacity;
-      _prim.GetAttribute(
-        pxr::TfToken("primvars:displayOpacity")).Get(&displayOpacity);
+      const std::string displayOpacityToken = "primvars:displayOpacity";
+      auto opacityAttr = _prim.GetAttribute(pxr::TfToken(displayOpacityToken));
+      if (!opacityAttr)
+      {
+        errors.push_back(UsdError(UsdErrorCode::PRIM_MISSING_ATTRIBUTE,
+              "Prim at path [" + _prim.GetPath().GetString()
+              + "] does not have an attribute with a pxr::TfToken of ["
+              + displayOpacityToken + "]"));
+        return errors;
+      }
+      opacityAttr.Get(&displayOpacity);
 
-      variant_geom.GetDisplayColorAttr().Get(&color);
       double alpha = 1.0;
       if (displayOpacity.size() > 0)
       {
@@ -99,30 +124,23 @@ namespace sdf
     else if (_prim.IsA<pxr::UsdShadeMaterial>())
     {
       auto variantMaterial = pxr::UsdShadeMaterial(_prim);
-      for (const auto & child : _prim.GetChildren())
+      for (const auto &child : _prim.GetChildren())
       {
         if (child.IsA<pxr::UsdShadeShader>())
         {
-          auto variantshader = pxr::UsdShadeShader(child);
+          auto variantShader = pxr::UsdShadeShader(child);
 
-          pxr::GfVec3f diffuseColor {0, 0, 0};
-          pxr::GfVec3f emissiveColor {0, 0, 0};
           bool enableEmission = false;
-
           bool isPBR = false;
           sdf::PbrWorkflow pbrWorkflow;
           ignition::math::Color emissiveColorCommon;
 
-          std::vector<pxr::UsdShadeInput> inputs = variantshader.GetInputs();
-          for (auto &input : inputs)
+          for (const auto &input : variantShader.GetInputs())
           {
             if (input.GetBaseName() == "diffuse_texture")
             {
-              pxr::SdfAssetPath materialPath;
-              pxr::UsdShadeInput diffuseTextureShaderInput =
-                variantshader.GetInput(pxr::TfToken("diffuse_texture"));
-              auto source = diffuseTextureShaderInput.GetConnectedSources();
-              diffuseTextureShaderInput.Get(&materialPath);
+              pxr::SdfAssetPath materialPath =
+                assetPath(pxr::TfToken("diffuse_texture"), variantShader);
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
                 ignition::common::findFile(materialPath.GetAssetPath());
@@ -130,8 +148,6 @@ namespace sdf
                 fullAlbedoName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
               {
-                errors.emplace_back(
-                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
@@ -139,11 +155,8 @@ namespace sdf
             }
             else if (input.GetBaseName() == "normalmap_texture")
             {
-              pxr::SdfAssetPath materialPath;
-              pxr::UsdShadeInput normalTextureShaderInput =
-                variantshader.GetInput(pxr::TfToken("normalmap_texture"));
-              auto source = normalTextureShaderInput.GetConnectedSources();
-              normalTextureShaderInput.Get(&materialPath);
+              pxr::SdfAssetPath materialPath =
+                assetPath(pxr::TfToken("normalmap_texture"), variantShader);
               pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
               std::string fullNormalName =
                 ignition::common::findFile(materialPath.GetAssetPath());
@@ -151,8 +164,6 @@ namespace sdf
                 materialPath.GetAssetPath());
               if (!errorCopy.empty())
               {
-                errors.emplace_back(
-                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
@@ -160,12 +171,8 @@ namespace sdf
             }
             else if (input.GetBaseName() == "reflectionroughness_texture")
             {
-              pxr::SdfAssetPath materialPath;
-              pxr::UsdShadeInput roughnessTextureShaderInput =
-                variantshader.GetInput(
-                  pxr::TfToken("reflectionroughness_texture"));
-              auto source = roughnessTextureShaderInput.GetConnectedSources();
-              roughnessTextureShaderInput.Get(&materialPath);
+              pxr::SdfAssetPath materialPath = assetPath(
+                  pxr::TfToken("reflectionroughness_texture"), variantShader);
               pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
               std::string fullRoughnessName =
                 ignition::common::findFile(materialPath.GetAssetPath());
@@ -173,8 +180,6 @@ namespace sdf
                 fullRoughnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
               {
-                errors.emplace_back(
-                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
@@ -182,11 +187,8 @@ namespace sdf
             }
             else if (input.GetBaseName() == "metallic_texture")
             {
-              pxr::SdfAssetPath materialPath;
-              pxr::UsdShadeInput metallicTextureShaderInput =
-                variantshader.GetInput(pxr::TfToken("metallic_texture"));
-              auto source = metallicTextureShaderInput.GetConnectedSources();
-              metallicTextureShaderInput.Get(&materialPath);
+              pxr::SdfAssetPath materialPath = assetPath(
+                  pxr::TfToken("metallic_texture"), variantShader);
               pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
               std::string fullMetalnessName =
                 ignition::common::findFile(materialPath.GetAssetPath());
@@ -194,8 +196,6 @@ namespace sdf
                 fullMetalnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
               {
-                errors.emplace_back(
-                  Error(ErrorCode::FILE_READ, "Failed to copy file"));
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
@@ -203,6 +203,7 @@ namespace sdf
             }
             else if (input.GetBaseName() == "diffuse_color_constant")
             {
+              pxr::GfVec3f diffuseColor(0, 0, 0);
               auto sourceInfoV = input.GetConnectedSources();
               if (sourceInfoV.size() > 0)
               {
@@ -213,15 +214,16 @@ namespace sdf
                   connectedInput.GetAttr().GetPath();
                 auto connectedPrim =
                   _prim.GetStage()->GetPrimAtPath(thisAttrPath.GetPrimPath());
-                if(connectedPrim)
+                if (connectedPrim)
+                {
                   connectedPrim.GetAttribute(
                     pxr::TfToken("inputs:diffuse_color_constant")).
                       Get(&diffuseColor);
+                }
               }
               else
               {
-                pxr::UsdShadeInput diffuseShaderInput =
-                  variantshader.GetInput(
+                pxr::UsdShadeInput diffuseShaderInput = variantShader.GetInput(
                     pxr::TfToken("diffuse_color_constant"));
                 diffuseShaderInput.Get(&diffuseColor);
               }
@@ -234,7 +236,7 @@ namespace sdf
             else if (input.GetBaseName() == "metallic_constant")
             {
               pxr::UsdShadeInput metallicConstantShaderInput =
-                variantshader.GetInput(pxr::TfToken("metallic_constant"));
+                variantShader.GetInput(pxr::TfToken("metallic_constant"));
               float metallicConstant;
               metallicConstantShaderInput.Get(&metallicConstant);
               pbrWorkflow.SetMetalness(metallicConstant);
@@ -265,7 +267,7 @@ namespace sdf
               else
               {
                 pxr::UsdShadeInput reflectionRoughnessConstantShaderInput =
-                  variantshader.GetInput(
+                  variantShader.GetInput(
                     pxr::TfToken("reflection_roughness_constant"));
                 float reflectionRoughnessConstant;
                 reflectionRoughnessConstantShaderInput.
@@ -277,20 +279,21 @@ namespace sdf
             else if (input.GetBaseName() == "enable_emission")
             {
               pxr::UsdShadeInput enableEmissiveShaderInput =
-                variantshader.GetInput(pxr::TfToken("enable_emission"));
+                variantShader.GetInput(pxr::TfToken("enable_emission"));
               enableEmissiveShaderInput.Get(&enableEmission);
             }
             else if (input.GetBaseName() == "emissive_color")
             {
-                pxr::UsdShadeInput emissiveColorShaderInput =
-                  variantshader.GetInput(pxr::TfToken("emissive_color"));
-                if (emissiveColorShaderInput.Get(&emissiveColor))
-                {
-                  emissiveColorCommon = ignition::math::Color(
-                    emissiveColor[0],
-                    emissiveColor[1],
-                    emissiveColor[2]);
-                }
+              pxr::GfVec3f emissiveColor(0, 0, 0);
+              pxr::UsdShadeInput emissiveColorShaderInput =
+                variantShader.GetInput(pxr::TfToken("emissive_color"));
+              if (emissiveColorShaderInput.Get(&emissiveColor))
+              {
+                emissiveColorCommon = ignition::math::Color(
+                  emissiveColor[0],
+                  emissiveColor[1],
+                  emissiveColor[2]);
+              }
             }
           }
 
@@ -308,6 +311,13 @@ namespace sdf
         }
       }
     }
+    else
+    {
+      errors.push_back(UsdError(UsdErrorCode::PRIM_INCORRECT_SCHEMA_TYPE,
+            "Prim at path [" + _prim.GetPath().GetString()
+            + "is not a pxr::UsdGeomGprim or a pxr::UsdShadeMaterial."));
+    }
+
     return errors;
   }
 }

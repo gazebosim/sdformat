@@ -18,9 +18,7 @@
 #ifndef SDF_USD_USD_PARSER_UTILS_HH_
 #define SDF_USD_USD_PARSER_UTILS_HH_
 
-#include <string>
-
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -30,28 +28,27 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Material.hh"
-#include "sdf/sdf_config.h"
-#include "sdf/system_util.hh"
+#include "sdf/config.hh"
 #include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// brief Parse the material in a usdprim
-    /// If the prim is a Geom then get the color values, or
-    /// if the prim is a shade Material then get the texture values
+    /// brief Parse the material in a USD prim to a sdf::Material
+    /// If the prim is a pxr::UsdGeomGprim, get the color values. Otherwise,
+    /// if the prim is a pxr::UsdShadeMaterial, get the texture values
     /// \param[in] _prim USD prim where the material is extracted
-    /// \param[out] _material Material of the prim
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no error.
+    /// \param[out] _material The sdf::Material representation of _prim's
+    /// material
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no error.
     UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseMaterial(
-      const pxr::UsdPrim &_prim,
-      sdf::Material &_material);
+      const pxr::UsdPrim &_prim, sdf::Material &_material);
 }
 }
 }
