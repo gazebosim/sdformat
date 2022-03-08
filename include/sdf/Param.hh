@@ -425,22 +425,6 @@ namespace sdf
                 const ParamVariant &_value,
                 std::string &_valueStr) const;
 
-    /// \brief Method used to get the string representation from a ParamVariant,
-    /// or the string that was used to set it.
-    /// \param[in] _config Print configuration for the string output
-    /// \param[in] _typeName The data type of the value
-    /// \param[in] _value The value
-    /// \param[in] _orignalStr The original string that was used to set the
-    /// value. A nullopt can be passed in if it is not available.
-    /// \param[out] _valueStr The output string.
-    /// \return True if the string was successfully retrieved, false otherwise.
-    public: bool StringFromValueImpl(
-                const PrintConfig &_config,
-                const std::string &_typeName,
-                const ParamVariant &_value,
-                const std::optional<std::string> &_originalStr,
-                std::string &_valueStr) const;
-
     /// \brief Data type to string mapping
     /// \return The type as a string, empty string if unknown type
     public: template<typename T>

@@ -313,7 +313,6 @@ std::string Param::GetAsString(const PrintConfig &_config) const
       this->dataPtr->StringFromValueImpl(_config,
                                          this->dataPtr->typeName,
                                          this->dataPtr->value,
-                                         this->dataPtr->strValue,
                                          valueStr))
   {
     return valueStr;
@@ -330,7 +329,6 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
         _config,
         this->dataPtr->typeName,
         this->dataPtr->defaultValue,
-        this->dataPtr->defaultStrValue,
         defaultStr))
   {
     return defaultStr;
@@ -797,7 +795,6 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 /// \param[in] _config Printing configuration for the output string.
 /// \param[in] _parentAttributes Parent Element Attributes.
 /// \param[in] _value The variant value of this pose.
-/// \param[in] _originalStr The original string used to set this pose value.
 /// \param[out] _valueStr The pose as a string.
 /// \return True if the string was successfully retrieved from the pose, false
 /// otherwise.
@@ -805,10 +802,8 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 bool PoseStringFromValue(const PrintConfig &_config,
                          const Param_V &_parentAttributes,
                          const ParamPrivate::ParamVariant &_value,
-                         const std::optional<std::string> &_originalStr,
                          std::string &_valueStr)
 {
-  // TODO(jenn) remove unused param _originalStr
   StringStreamClassicLocale ss;
 
   if (_config.OutPrecision() == std::numeric_limits<int>::max())
@@ -975,22 +970,6 @@ bool ParamPrivate::StringFromValueImpl(
     const ParamVariant &_value,
     std::string &_valueStr) const
 {
-  return this->StringFromValueImpl(
-      _config,
-      _typeName,
-      _value,
-      std::nullopt,
-      _valueStr);
-}
-
-/////////////////////////////////////////////////
-bool ParamPrivate::StringFromValueImpl(
-    const PrintConfig &_config,
-    const std::string &_typeName,
-    const ParamVariant &_value,
-    const std::optional<std::string> &_originalStr,
-    std::string &_valueStr) const
-{
   // This will be handled in a type specific manner
   if (_typeName == "bool")
   {
@@ -1012,9 +991,9 @@ bool ParamPrivate::StringFromValueImpl(
     if (!this->ignoreParentAttributes && p)
     {
       return PoseStringFromValue(
-          _config, p->GetAttributes(), _value, _originalStr, _valueStr);
+          _config, p->GetAttributes(), _value, _valueStr);
     }
-    return PoseStringFromValue(_config, {}, _value, _originalStr, _valueStr);
+    return PoseStringFromValue(_config, {}, _value, _valueStr);
   }
 
   StringStreamClassicLocale ss;
