@@ -138,6 +138,7 @@ R"(<model name='test2'>
 )";
 
   sdf::PrintConfig config;
+  config.SetOutPrecision(6);
   // by default, included model should be expanded
   EXPECT_EQ(includedModel->Element()->ToString("", config), expandedIncludeStr);
   EXPECT_EQ(modelWithInclude->Element()->ToString("", config),

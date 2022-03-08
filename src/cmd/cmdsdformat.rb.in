@@ -42,7 +42,7 @@ COMMANDS = {  'sdf' =>
                        "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                    use only and the output may change without any promise of stability)\n" +
-                       "  -p [ --print ] arg                Print converted arg.\n" +
+                       "  -p [ --print ] arg                Print converted arg. Note poses and unit vectors will be normalized.\n" +
                        "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
                        "      --degrees                     Pose rotation angles are printed in degrees.\n" +
                        "      --snap-to-degrees arg         Snap pose rotation angles to this specified interval in degrees. This value must be\n" +
@@ -138,7 +138,7 @@ class Cmd
 
     options['command'] = ARGV[0]
 
-    if (options['preserve_includes'] and not options['print']) ||
+    if (options['preserve_includes'] != 0 and not options['print']) ||
         (options['precision'] and not options['print'])
       puts usage
       exit(-1)

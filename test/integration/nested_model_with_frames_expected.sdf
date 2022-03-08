@@ -4,10 +4,10 @@
     <model name='ParentModel'>
       <model name='M1'>
         <frame name='F1'>
-          <pose>0 0 0 1.570796 0 0</pose>
+          <pose>0 0 0 1.5707959999999999 0 0</pose>
         </frame>
         <frame name='F2'>
-          <pose relative_to='F1'>0 0 0 0 0.785398 0</pose>
+          <pose relative_to='F1'>0 0 0 0 0.78539799999999993 0</pose>
         </frame>
         <link name='L1'>
           <pose relative_to='F1'>0 0 0 0 0 0</pose>

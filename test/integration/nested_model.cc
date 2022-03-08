@@ -609,6 +609,8 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   prepareForDirectComparison(worldElem);
 
   // Compare with expected output
+  // There is a small loss of precision (~2e-16) in poses, which is related to:
+  // https://github.com/ignitionrobotics/ign-math/issues/212
   const std::string expectedSdfPath =
     sdf::testing::TestFile(
         "integration", "nested_model_with_frames_expected.sdf");
@@ -765,6 +767,8 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
   prepareForDirectComparison(worldElem);
 
   // Compare with expected output
+  // There is a small loss of precision (~2e-16) in poses, which is related to:
+  // https://github.com/ignitionrobotics/ign-math/issues/212
   const std::string expectedSdfPath =
       sdf::testing::TestFile(
           "integration", "two_level_nested_model_with_frames_expected.sdf");

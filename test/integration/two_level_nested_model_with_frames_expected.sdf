@@ -5,10 +5,10 @@
       <model name='M1'>
         <model name='test_model_with_frames'>
           <frame name='F1'>
-            <pose>0 0 0 1.570796 0 0</pose>
+            <pose>0 0 0 1.5707959999999999 0 0</pose>
           </frame>
           <frame name='F2'>
-            <pose relative_to='F1'>0 0 0 0 0.785398 0</pose>
+            <pose relative_to='F1'>0 0 0 0 0.78539799999999993 0</pose>
           </frame>
           <link name='L1'>
             <pose relative_to='F1'>0 0 0 0 0 0</pose>
@@ -68,7 +68,7 @@
               <pose>1 0 0 0 0 0</pose>
             </link>
           </model>
-          <pose>0 10 0 1.570796326794895 0 0</pose>
+          <pose>0 10 0 1.5707963267948948 0 0</pose>
         </model>
         <pose>10 0 0 0 0 1.5708</pose>
       </model>
