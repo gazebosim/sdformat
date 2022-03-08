@@ -550,18 +550,17 @@ namespace usd
       return errors;
     }
 
-    const float maxRadii = sdfEllipsoid->Radii().Max();
-    usdEllipsoid.CreateRadiusAttr().Set(maxRadii);
+    usdEllipsoid.CreateRadiusAttr().Set(1.0);
     pxr::UsdGeomXformCommonAPI xform(usdEllipsoid);
     xform.SetScale(pxr::GfVec3f{
-      static_cast<float>(sdfEllipsoid->Radii().X() / maxRadii),
-      static_cast<float>(sdfEllipsoid->Radii().Y() / maxRadii),
-      static_cast<float>(sdfEllipsoid->Radii().Z() / maxRadii),
+      static_cast<float>(sdfEllipsoid->Radii().X()),
+      static_cast<float>(sdfEllipsoid->Radii().Y()),
+      static_cast<float>(sdfEllipsoid->Radii().Z()),
     });
     // extents is the bounds before any transformation
     pxr::VtArray<pxr::GfVec3f> extentBounds;
-    extentBounds.push_back(pxr::GfVec3f{-maxRadii});
-    extentBounds.push_back(pxr::GfVec3f{maxRadii});
+    extentBounds.push_back(pxr::GfVec3f{-1.0f});
+    extentBounds.push_back(pxr::GfVec3f{1.0f});
     usdEllipsoid.CreateExtentAttr().Set(extentBounds);
 
     return errors;
