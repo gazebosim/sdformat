@@ -591,4 +591,131 @@ def Scope "Looks"
             token outputs:out
         }
     }
+
+    def Material "Material_textures"
+    {
+        token outputs:mdl:displacement.connect = </Looks/Material_36/Shader.outputs:out>
+        token outputs:mdl:surface.connect = </Looks/Material_36/Shader.outputs:out>
+        token outputs:mdl:volume.connect = </Looks/Material_36/Shader.outputs:out>
+
+        def Shader "Shader"
+        {
+            uniform token info:implementationSource = "sourceAsset"
+            uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+            uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+            color3f inputs:diffuse_color_constant = (1, 1, 1) (
+                customData = {
+                    float3 default = (0.2, 0.2, 0.2)
+                    dictionary range = {
+                        float3 max = (100000, 100000, 100000)
+                        float3 min = (0, 0, 0)
+                    }
+                }
+                displayGroup = "Albedo"
+                displayName = "Base Color"
+                doc = "This is the base color"
+            )
+            asset inputs:diffuse_texture = @materials/textures/FANS_Albedo.png@ (
+                colorSpace = "auto"
+                customData = {
+                    asset default = @@
+                }
+                displayGroup = "Albedo"
+                displayName = "Base Map"
+            )
+            color3f inputs:emissive_color = (0, 0, 0) (
+                customData = {
+                    float3 default = (1, 0.1, 0.1)
+                    dictionary range = {
+                        float3 max = (100000, 100000, 100000)
+                        float3 min = (0, 0, 0)
+                    }
+                }
+                displayGroup = "Emissive"
+                displayName = "Emissive Color"
+                doc = "The emission color"
+            )
+            float inputs:emissive_intensity = 1 (
+                customData = {
+                    int default = 40
+                    dictionary range = {
+                        int max = 100000
+                        int min = 0
+                    }
+                }
+                displayGroup = "Emissive"
+                displayName = "Emissive Intensity"
+                doc = "Intensity of the emission"
+            )
+            bool inputs:enable_emission = 1 (
+                customData = {
+                    int default = 0
+                }
+                displayGroup = "Emissive"
+                displayName = "Enable Emissive"
+                doc = "Enables the emission of light from the material"
+            )
+            float inputs:metallic_constant = 0.5 (
+                customData = {
+                    double default = 0.5
+                    dictionary range = {
+                        int max = 1
+                        int min = 0
+                    }
+                }
+                displayGroup = "Reflectivity"
+                displayName = "Metallic Amount"
+                doc = "Metallic Material"
+            )
+            asset inputs:metallic_texture = @materials/textures/FANS_Metalness.png@ (
+                colorSpace = "raw"
+                customData = {
+                    asset default = @@
+                }
+                displayGroup = "Reflectivity"
+                displayName = "Metallic Map"
+            )
+            asset inputs:normalmap_texture = @materials/textures/FANS_Normal.png@ (
+                colorSpace = "raw"
+                customData = {
+                    asset default = @@
+                }
+                displayGroup = "Normal"
+                displayName = "Normal Map"
+            )
+            float inputs:reflection_roughness_constant = 0.5 (
+                customData = {
+                    double default = 0.5
+                    dictionary range = {
+                        int max = 1
+                        int min = 0
+                    }
+                }
+                displayGroup = "Reflectivity"
+                displayName = "Roughness Amount"
+                doc = "Higher roughness values lead to more blurry reflections"
+            )
+            bool inputs:reflection_roughness_texture_influence = 1 (
+                colorSpace = "raw"
+                customData = {
+                    int default = 0
+                    dictionary range = {
+                        int max = 1
+                        int min = 0
+                    }
+                }
+                displayGroup = "Reflectivity"
+                displayName = "Roughness Map Influence"
+            )
+            asset inputs:reflectionroughness_texture = @materials/textures/FANS_Roughness.png@ (
+                colorSpace = "raw"
+                customData = {
+                    asset default = @@
+                }
+                displayGroup = "RoughnessMap"
+                displayName = "RoughnessMap Map"
+            )
+            token outputs:out
+        }
+    }
 }
