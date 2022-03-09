@@ -45,6 +45,13 @@ TEST(USDData, Constructor)
 
   // Open a valid USD file
   {
+    sdf::testing::ScopeExit removeCopiedMaterials(
+        []
+        {
+          ignition::common::removeAll(
+            ignition::common::joinPaths(ignition::common::cwd(), "materials"));
+        });
+
     std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
     sdf::usd::USDData usdData(filename);
     EXPECT_EQ(0u, usdData.Init().size());
@@ -112,9 +119,5 @@ TEST(USDData, Constructor)
     auto invalidStage = usdData.FindStage("invalid");
     EXPECT_EQ("", invalidStage.first);
     EXPECT_EQ(nullptr, invalidStage.second);
-
-    // Remove copied materials
-    ignition::common::removeAll(
-      ignition::common::joinPaths(ignition::common::cwd(), "materials"));
   }
 }

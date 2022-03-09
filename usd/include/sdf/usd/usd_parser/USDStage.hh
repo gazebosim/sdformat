@@ -31,7 +31,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
@@ -44,7 +44,7 @@ namespace sdf
     {
       /// \brief Default constructor
       /// \param[in] _refFileName File name of the stage in the disk
-      public: USDStage(const std::string &_refFileName);
+      public: explicit USDStage(const std::string &_refFileName);
 
       /// \brief Initialize the data structure
       /// \return Errors, which is a vector of Error objects. Each Error includes

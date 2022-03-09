@@ -36,7 +36,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
@@ -48,7 +48,7 @@ namespace sdf
     class IGNITION_SDFORMAT_USD_VISIBLE USDData
     {
       /// \brief Constructor
-      public: USDData(const std::string &_filename);
+      public: explicit USDData(const std::string &_filename);
 
       /// \brief Initialize the data inside the class with the stage
       /// defined in the constructor
@@ -96,7 +96,7 @@ namespace sdf
           os << "\t\t" << ref.second->MetersPerUnit() << "\n";
           for (auto &path : ref.second->USDPaths())
           {
-            std::cerr << "\t\tPath " << path << '\n';
+            os << "\t\tPath " << path << '\n';
           }
         }
         os << "Models:" << "\n";
