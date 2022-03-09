@@ -28,6 +28,7 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
+#include "sdf/World.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////
@@ -435,4 +436,35 @@ TEST(DOMVisual, VisibilityFlags)
   ASSERT_NE(nullptr, vis1);
 
   EXPECT_EQ(0x00000001u, vis1->VisibilityFlags());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMVisual, VisualPlugins)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+
+  const sdf::Visual *visual = link->VisualByIndex(0);
+  ASSERT_NE(nullptr, visual);
+
+  ASSERT_EQ(2u, visual->Plugins().size());
+  EXPECT_EQ("visual_plugin1", visual->Plugins()[0].Name());
+  EXPECT_EQ("test/file/visual1", visual->Plugins()[0].Filename());
+  EXPECT_EQ("visual_plugin2", visual->Plugins()[1].Name());
+  EXPECT_EQ("test/file/visual2", visual->Plugins()[1].Filename());
 }

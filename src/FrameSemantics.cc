@@ -514,7 +514,8 @@ struct ModelWrapper : public WrapperBase
       : WrapperBase{_ifaceModel.Name(), "Interface Model",
                     _ifaceModel.Static() ? FrameType::STATIC_MODEL
                                          : FrameType::MODEL},
-        rawPose(_ifaceModel.ModelFramePoseInParentFrame()),
+        rawPose(_nestedInclude.IncludeRawPose().value_or(
+            _ifaceModel.ModelFramePoseInParentFrame())),
         rawRelativeTo(_nestedInclude.IncludePoseRelativeTo().value_or("")),
         relativeTo(rawRelativeTo),
         canonicalLinkName(_ifaceModel.CanonicalLinkName()),

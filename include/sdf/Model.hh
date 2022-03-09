@@ -24,6 +24,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -417,6 +418,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// model.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \param[in] _useIncludeTag When true, the model's URI is used to create
     /// an SDF `<include>` rather than a `<model>`. The model's URI must be
     /// first set using the `Model::SetUri` function. If the model's URI is
@@ -427,6 +430,18 @@ namespace sdf
     /// automatically expand an `<include>` element to a `<model>` element.
     /// \return SDF element pointer with updated model values.
     public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+
+    /// \brief Check if a given name exists in the FrameAttachedTo graph at the
+    /// scope of the model.
+    /// \param[in] _name Name of the implicit or explicit frame to check.
+    /// To check for a frame in a nested model, prefix the frame name with
+    /// the sequence of nested models containing this frame, delimited by "::".
+    /// \return True if the frame name is found in the FrameAttachedTo graph.
+    /// False otherwise, or if the frame graph is invalid.
+    /// \note This function assumes the model has a valid FrameAttachedTo graph.
+    /// It will return false if the graph is invalid.
+    public: bool NameExistsInFrameAttachedToGraph(
+                const std::string &_name) const;
 
     /// \brief Add a link to the model.
     /// \param[in] _link Link to add.
@@ -471,6 +486,23 @@ namespace sdf
     /// \brief Set the URI associated with this model.
     /// \param[in] _uri The model's URI.
     public: void SetUri(const std::string &_uri);
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or

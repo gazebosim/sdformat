@@ -1,0 +1,159 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="shapes_world">
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>1.4 6.3</size>
+            </plane>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>2 4</size>
+            </plane>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="box">
+      <pose relative_to="ground_plane">0 0 2.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 2 3</size>
+            </box>
+          </geometry>
+          <surface>
+            <contact>
+              <collide_bitmask>0xAB</collide_bitmask>
+            </contact>
+          </surface>
+        </collision>
+
+        <visual name="box_vis">
+          <geometry>
+            <box>
+              <size>1 2 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="cylinder">
+      <pose relative_to="box">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="sphere">
+      <pose relative_to="cylinder">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>1.23</radius>
+            </sphere>
+          </geometry>
+        </collision>
+
+        <visual name="sphere_vis">
+          <geometry>
+            <sphere>
+              <radius>1.23</radius>
+            </sphere>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="capsule">
+      <pose relative_to="sphere">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <capsule>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </capsule>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <capsule>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </capsule>
+          </geometry>
+          <material>
+            <diffuse>0 0.1 0.2</diffuse>
+            <emissive>0.12 0.23 0.34 0.56</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="mesh">
+      <pose relative_to="capsule">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file://box.dae</uri>
+              <scale>0.1 0.2 0.3</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file://box.dae</uri>
+              <scale>1.2 2.3 3.4</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>0.2 0.5 0.1 1.0</diffuse>
+            <specular>0.7 0.3 0.5 0.9</specular>
+            <pbr>
+              <metal>
+                <albedo_map>albedo_map.png</albedo_map>
+                <normal_map>normal_map.png</normal_map>
+                <roughness_map>roughness_map.png</roughness_map>
+                <metalness_map>metalness_map.png</metalness_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>

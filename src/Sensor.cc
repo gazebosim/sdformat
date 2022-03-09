@@ -129,6 +129,9 @@ class sdf::Sensor::Implementation
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
   public: double updateRate = 0.0;
+
+  /// \brief Sensor plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
@@ -397,6 +400,11 @@ Errors Sensor::Load(ElementPtr _sdf)
 
   // Load the pose. Ignore the return value since the sensor pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
+
+  // Load the sensor plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   return errors;
 }
@@ -755,5 +763,34 @@ sdf::ElementPtr Sensor::ToElement() const
     std::cout << "Conversion of sensor type: [" << this->TypeStr() << "] from "
       << "SDF DOM to Element is not supported yet." << std::endl;
   }
+
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Sensor::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Sensor::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Sensor::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Sensor::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

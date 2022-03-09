@@ -27,6 +27,7 @@
 #include "sdf/Types.hh"
 #include "sdf/Link.hh"
 #include "sdf/Joint.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
@@ -380,8 +381,27 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// actor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated actor values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

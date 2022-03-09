@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Actor.hh"
+#include "sdf/Plugin.hh"
 
 /////////////////////////////////////////////////
 sdf::Animation CreateDummyAnimation()
@@ -561,6 +562,11 @@ TEST(DOMActor, ToElement)
   animation.SetScale(1.2);
   animation.SetInterpolateX(true);
 
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+  actor.AddPlugin(plugin);
+
   sdf::ElementPtr elem = actor.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -598,4 +604,32 @@ TEST(DOMActor, ToElement)
   ASSERT_NE(nullptr, waypointB2);
   EXPECT_DOUBLE_EQ(waypointB.Time(), waypointB2->Time());
   EXPECT_EQ(waypointB.Pose(), waypointB2->Pose());
+
+  ASSERT_EQ(1u, actor2.Plugins().size());
+  EXPECT_EQ("name1", actor2.Plugins()[0].Name());
+  EXPECT_EQ("filename1", actor2.Plugins()[0].Filename());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMActor, Plugins)
+{
+  sdf::Actor actor;
+  EXPECT_TRUE(actor.Plugins().empty());
+
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+
+  actor.AddPlugin(plugin);
+  ASSERT_EQ(1u, actor.Plugins().size());
+
+  plugin.SetName("name2");
+  actor.AddPlugin(plugin);
+  ASSERT_EQ(2u, actor.Plugins().size());
+
+  EXPECT_EQ("name1", actor.Plugins()[0].Name());
+  EXPECT_EQ("name2", actor.Plugins()[1].Name());
+
+  actor.ClearPlugins();
+  EXPECT_TRUE(actor.Plugins().empty());
 }
