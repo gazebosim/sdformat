@@ -15,35 +15,36 @@
  *
 */
 
-#include "Physics.hh"
+#ifndef USD_PARSER_PHYSYCS_HH
+#define USD_PARSER_PHYSYCS_HH
+
+#include "usd_model/WorldInterface.hh"
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/base/gf/vec3d.h>
-#include <pxr/usd/usdPhysics/scene.h>
+#include <pxr/usd/usd/primRange.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Console.hh"
+#include "sdf/config.hh"
+#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
-inline namespace SDF_VERSION_NAMESPACE {
-namespace usd
-{
-  void ParsePhysicsScene(
-    const pxr::UsdPrim &_prim,
-    std::shared_ptr<WorldInterface> &_world,
-    double _metersPerUnit)
+  // Inline bracke to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
+  namespace usd
   {
-    auto variant_physics_scene = pxr::UsdPhysicsScene(_prim);
-    pxr::GfVec3f gravity;
-    variant_physics_scene.GetGravityDirectionAttr().Get(&gravity);
-    _world->gravity[0] = gravity[0];
-    _world->gravity[1] = gravity[1];
-    _world->gravity[2] = gravity[2];
-    variant_physics_scene.GetGravityMagnitudeAttr().Get(&_world->magnitude);
-    _world->magnitude *= _metersPerUnit;
+    /// \brief It parses the physics attributes of the USD file
+    /// \param[in] _prim Prim to extract the physics attributes
+    /// \param[out] _world World interface where the data is placed
+    /// \param[in] _metersPerUnit meter per unit in the USD
+    void IGNITION_SDFORMAT_USD_VISIBLE ParseUSDPhysicsScene(
+      const pxr::UsdPrim &_prim,
+      std::shared_ptr<WorldInterface> &_world,
+      double _metersPerUnit);
+  }
   }
 }
-}
-}
+
+#endif

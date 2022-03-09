@@ -18,7 +18,7 @@
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
-#include "Physics.hh"
+#include "USDPhysics.hh"
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -60,7 +60,7 @@ namespace usd
         std::pair<std::string, std::shared_ptr<USDStage>> data =
           usdData.FindStage(prim.GetPath().GetName());
 
-        ParsePhysicsScene(prim, _world, data.second->MetersPerUnit());
+        ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
         continue;
       }
     }
