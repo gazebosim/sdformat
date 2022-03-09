@@ -15,11 +15,12 @@
  *
  */
 
-#include <string.h>
+#include <iostream>
+#include <string>
 
 #include <ignition/utils/cli/CLI.hpp>
 
-#include "sdf/sdf.hh"
+#include "sdf/config.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
@@ -44,7 +45,8 @@ struct Options
 
 void runCommand(const Options &/*_opt*/)
 {
-  // TODO(ahcorde): Call here the USD to SDF conversor code
+  // TODO(ahcorde): Call here the USD to SDF converter code
+  std::cerr << "USD to SDF conversion is not implemented yet.\n";
 }
 
 void addFlags(CLI::App &_app)

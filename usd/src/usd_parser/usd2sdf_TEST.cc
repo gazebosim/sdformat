@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Filesystem.hh>
-#include <ignition/common/TempDirectory.hh>
 #include <ignition/utilities/ExtraTestMacros.hh>
 
 #include "test_config.h"
