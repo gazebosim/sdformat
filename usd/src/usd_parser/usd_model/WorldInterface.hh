@@ -46,6 +46,9 @@ namespace sdf
         /// \brief Gravity (X, Y, Z)
         ignition::math::Vector3d gravity;
 
+        /// \brief World's lights 
+        std::map<std::string, std::shared_ptr<sdf::Light>> lights;
+
         friend std::ostream& operator<<(
           std::ostream& os, const WorldInterface& _world)
         {

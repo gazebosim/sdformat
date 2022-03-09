@@ -21,6 +21,10 @@
 
 #include "USD.hh"
 
+#include <ignition/common/Filesystem.hh>
+
+#include "sdf/Light.hh"
+
 namespace sdf {
 namespace usd {
 /////////////////////////////////////////////////
@@ -66,12 +70,104 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
   }
   world->SetAttribute("name", (worldName + "_world").c_str());
 
+  AddLights(worldInterface->lights, world);
+
   AddKeyValue(world, "gravity", Vector32Str(
     worldInterface->gravity * worldInterface->magnitude));
 
   sdf->LinkEndChild(world);
   _sdfXmlOut->LinkEndChild(sdf);
   return errors;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void USD2SDF::AddLights(
+  const std::map<std::string, std::shared_ptr<sdf::Light>> &_lights,
+  tinyxml2::XMLElement *attach)
+{
+  for (auto & light : _lights)
+  {
+    std::shared_ptr<sdf::Light> sdfLight = light.second;
+    tinyxml2::XMLElement *lightXML = attach->GetDocument()->NewElement("light");
+    lightXML->SetAttribute("name", ignition::common::basename(sdfLight->Name()).c_str());
+
+    std::string lightType;
+    switch (sdfLight->Type()) {
+      case sdf::LightType::DIRECTIONAL:
+        lightType = "directional";
+        break;
+      case sdf::LightType::POINT:
+        lightType = "point";
+        break;
+      case sdf::LightType::SPOT:
+        lightType = "spot";
+        break;
+      default:
+        lightType = "invalid";
+    }
+    lightXML->SetAttribute("type", lightType.c_str());
+
+    double pose_value[6];
+    pose_value[0] = sdfLight->RawPose().Pos().X();
+    pose_value[1] = sdfLight->RawPose().Pos().Y();
+    pose_value[2] = sdfLight->RawPose().Pos().Z();
+    pose_value[3] = sdfLight->RawPose().Rot().Euler()[0];
+    pose_value[4] = sdfLight->RawPose().Rot().Euler()[1];
+    pose_value[5] = sdfLight->RawPose().Rot().Euler()[2];
+    AddKeyValue(lightXML, "pose", Values2str(6, pose_value));
+
+    double color_diffuse[4];
+    color_diffuse[0] = sdfLight->Diffuse().R();
+    color_diffuse[1] = sdfLight->Diffuse().G();
+    color_diffuse[2] = sdfLight->Diffuse().B();
+    color_diffuse[3] = sdfLight->Diffuse().A();
+    AddKeyValue(lightXML, "diffuse", Values2str(4, color_diffuse));
+
+    double color_specular[4];
+    color_specular[0] = sdfLight->Specular().R();
+    color_specular[1] = sdfLight->Specular().G();
+    color_specular[2] = sdfLight->Specular().B();
+    color_specular[3] = sdfLight->Specular().A();
+    AddKeyValue(lightXML, "specular", Values2str(4, color_specular));
+
+    double intensity = sdfLight->Intensity();
+    AddKeyValue(lightXML, "intensity", Values2str(1, &intensity));
+
+    tinyxml2::XMLElement *attenuationXML =
+      lightXML->GetDocument()->NewElement("attenuation");
+
+    double range = sdfLight->AttenuationRange();
+    double constant = sdfLight->ConstantAttenuationFactor();
+    double linear = sdfLight->LinearAttenuationFactor();
+    double quadratic = sdfLight->QuadraticAttenuationFactor();
+    AddKeyValue(attenuationXML, "range", Values2str(1, &range));
+    AddKeyValue(attenuationXML, "constant", Values2str(1, &constant));
+    AddKeyValue(attenuationXML, "linear", Values2str(1, &linear));
+    AddKeyValue(attenuationXML, "quadratic", Values2str(1, &quadratic));
+
+    double direction[3];
+    direction[0] = sdfLight->Direction().X();
+    direction[1] = sdfLight->Direction().Y();
+    direction[2] = sdfLight->Direction().Z();
+    AddKeyValue(lightXML, "direction", Values2str(3, direction));
+
+    if (sdfLight->Type() == sdf::LightType::SPOT)
+    {
+      tinyxml2::XMLElement *spotXML =
+        lightXML->GetDocument()->NewElement("spot");
+
+      double innerAngle = sdfLight->SpotInnerAngle().Radian();
+      double outerAngle = sdfLight->SpotOuterAngle().Radian();
+      double falloff = sdfLight->SpotFalloff();
+      AddKeyValue(spotXML, "inner_angle", Values2str(1, &innerAngle));
+      AddKeyValue(spotXML, "outer_angle", Values2str(1, &outerAngle));
+      AddKeyValue(spotXML, "falloff", Values2str(1, &falloff));
+      lightXML->LinkEndChild(spotXML);
+    }
+
+    lightXML->LinkEndChild(attenuationXML);
+    attach->LinkEndChild(lightXML);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +224,25 @@ void USD2SDF::AddKeyValue(
   tinyxml2::XMLText *textEkey = doc->NewText(_value.c_str());
   ekey->LinkEndChild(textEkey);
   _elem->LinkEndChild(ekey);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string USD2SDF::Values2str(unsigned int _count, const double *_values)
+{
+  std::stringstream ss;
+  ss.precision(16);
+  for (unsigned int i = 0 ; i < _count ; ++i)
+  {
+    if (i > 0)
+    {
+      ss << " ";
+    }
+    if (std::fpclassify(_values[i]) == FP_ZERO)
+      ss << 0;
+    else
+      ss << _values[i];
+  }
+  return ss.str();
 }
 
 /////////////////////////////////////////////////

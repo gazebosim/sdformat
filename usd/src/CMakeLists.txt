@@ -10,6 +10,7 @@ set(sources
   sdf_parser/Sensor.cc
   sdf_parser/Visual.cc
   sdf_parser/World.cc
+  usd_parser/Lights.cc
   usd_parser/ParseUSD.cc
   usd_parser/Physics.cc
   usd_parser/USD.cc

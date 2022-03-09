@@ -18,11 +18,19 @@
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
+
+#include "Lights.hh"
 #include "Physics.hh"
+
+#include <ignition/common/Util.hh>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usdGeom/gprim.h>
+#include <pxr/usd/usdLux/boundableLightBase.h>
+#include <pxr/usd/usdLux/nonboundableLightBase.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include <string>
@@ -53,8 +61,65 @@ namespace usd
 
     _world->_worldName = referencee->GetDefaultPrim().GetName().GetText();
 
+    std::string linkName;
+
     for (auto const &prim : range)
     {
+      // Skip materials, the data is already available in the USDData class
+      if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
+      {
+        continue;
+      }
+
+      std::string primName = prim.GetPath().GetName();
+      std::string primPath = pxr::TfStringify(prim.GetPath());
+      std::string primType = pxr::TfStringify(prim.GetPath());
+
+      std::vector<std::string> primPathTokens =
+        ignition::common::split(primPath, "/");
+
+      // In general USD models used in Issac Sim define the model path
+      // under a root path for example:
+      //  -> /robot_name/robot_name_link0
+      // But sometimes for enviroments it uses just a simple path:
+      //  -> /ground_plan
+      //  -> /wall_0
+      // the shortName variable defines if this is the first case when it's
+      // False or when it's true then it's the second case.
+      if (primPathTokens.size() >= 2)
+      {
+        bool shortName = false;
+        if (primPathTokens.size() == 2)
+        {
+          if (prim.IsA<pxr::UsdGeomGprim>() || (primType == "Plane"))
+          {
+            if (primName != "imu")
+            {
+              linkName = "/" + primPathTokens[0];
+              shortName = true;
+            }
+          }
+        }
+        if(!shortName)
+        {
+          linkName = "/" + primPathTokens[0] + "/" + primPathTokens[1];
+        }
+      }
+
+      if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
+          prim.IsA<pxr::UsdLuxNonboundableLightBase>())
+      {
+        auto light = ParseLights(prim, linkName);
+        if (light)
+        {
+          _world->lights.insert(
+            std::pair<std::string, std::shared_ptr<sdf::Light>>
+              (primName, light));
+          // TODO(ahcorde): Include lights which are inside links
+        }
+        continue;
+      }
+
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
         std::pair<std::string, std::shared_ptr<USDStage>> data =
@@ -64,6 +129,13 @@ namespace usd
         continue;
       }
     }
+
+    for (auto & light : _world->lights)
+    {
+      std::cout << "-------------Lights--------------" << std::endl;
+      std::cout << light.second->Name() << std::endl;
+    }
+
     return errors;
   }
 }

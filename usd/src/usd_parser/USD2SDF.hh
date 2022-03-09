@@ -26,6 +26,8 @@
 
 #include <sdf/sdf_config.h>
 
+#include "sdf/Light.hh"
+
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
@@ -51,6 +53,14 @@ namespace sdf
         const std::string &_filename,
         tinyxml2::XMLDocument* _sdfXmlOut);
 
+      /// \brief Add light to the xml
+      /// \param[in] _lights Map with the name of the light and sdf Light class
+      /// with the light properties
+      /// \param[inout] _attach Xml element to attach the light
+      void AddLights(
+        const std::map<std::string, std::shared_ptr<sdf::Light>> &_lights,
+        tinyxml2::XMLElement *_attach);
+
       /// \brief get value from <key value="..."/> pair and return it as string
       /// \param[in] _elem pointer to xml element
       /// return a string with the key
@@ -64,6 +74,12 @@ namespace sdf
         tinyxml2::XMLElement *_elem,
         const std::string &_key,
         const std::string &_value);
+
+      /// \brief Convert double array to string
+      /// \param[in] _count Number of elements
+      /// \param[in] _values Double array
+      /// \return Vector representation as an array
+      std::string Values2str(unsigned int _count, const double *_values);
 
       /// \brief convert Vector3 to string
       /// \param[in] _vector a ignition::math::Vector3d
