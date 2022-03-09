@@ -2648,5 +2648,11 @@ bool shouldValidateElement(sdf::ElementPtr _elem)
 
   return true;
 }
+
+/////////////////////////////////////////////////
+std::string computeMergedModelProxyFrameName(const std::string &_modelName)
+{
+  return "_merged__" + _modelName + "__model__";
+}
 }
 }
