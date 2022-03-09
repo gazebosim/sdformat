@@ -19,6 +19,7 @@
 
 #include <ignition/utils/cli/CLI.hpp>
 
+#include "sdf/usd/usd_parser/ParseUSD.hh"
 #include "sdf/sdf.hh"
 
 //////////////////////////////////////////////////
@@ -42,9 +43,9 @@ struct Options
   std::string outputFilename{"output.sdf"};
 };
 
-void runCommand(const Options &/*_opt*/)
+void runCommand(const Options &_opt)
 {
-  // TODO(ahcorde): Call here the USD to SDF conversor code
+  sdf::usd::parseUSDFile(_opt.inputFilename, _opt.outputFilename);
 }
 
 void addFlags(CLI::App &_app)
