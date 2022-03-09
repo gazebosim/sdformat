@@ -19,7 +19,7 @@
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
 
-#include "Lights.hh"
+#include "USDLights.hh"
 #include "Physics.hh"
 
 #include <ignition/common/Util.hh>
@@ -109,7 +109,7 @@ namespace usd
       if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
           prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
-        auto light = ParseLights(prim, linkName);
+        auto light = ParseUSDLights(prim, usdData, linkName);
         if (light)
         {
           _world->lights.insert(

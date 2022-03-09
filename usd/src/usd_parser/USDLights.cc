@@ -15,7 +15,7 @@
  *
 */
 
-#include "Lights.hh"
+#include "USDLights.hh"
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -35,8 +35,9 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  std::shared_ptr<sdf::Light> ParseLights(
+  std::shared_ptr<sdf::Light> ParseUSDLights(
     const pxr::UsdPrim &_prim,
+    USDData &_usdData,
     const std::string &_linkName)
   {
     std::shared_ptr<sdf::Light> light;

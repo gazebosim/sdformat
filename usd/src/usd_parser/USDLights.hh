@@ -18,13 +18,17 @@
 #ifndef USD_USD_PARSER_LIGHTS_HH
 #define USD_USD_PARSER_LIGHTS_HH
 
+#include <string>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/usd/usd/prim.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Light.hh"
-#include "sdf/system_util.hh"
+
+#include "sdf/config.hh"
+#include "sdf/usd/Export.hh"
 
 #include "sdf/usd/usd_parser/USDData.hh"
 
@@ -40,11 +44,13 @@ namespace sdf
     /// - UsdLuxDistantLight
     /// - UsdLuxDiskLight
     /// \param[in] _prim Prim to extract the light data
+    /// \param[in] _usdData Object to get transform data
     /// \param[in] _linkName Name of the link to find the transform
     /// \return Shared point with the sdf Light object or null if the light
     /// is not supported.
-    std::shared_ptr<sdf::Light> ParseLights(
+    std::shared_ptr<sdf::Light> IGNITION_SDFORMAT_USD_VISIBLE ParseUSDLights(
       const pxr::UsdPrim &_prim,
+      USDData &_usdData,
       const std::string &_linkName);
   }
 }

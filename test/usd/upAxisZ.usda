@@ -13,6 +13,23 @@ def "shapes"
         float physics:gravityMagnitude = 9.8
     }
 
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+        kind = "model"
+    )
+    {
+        float angle = 1
+        float intensity = 3000
+        float shaping:cone:angle = 180
+        float shaping:cone:softness
+        float shaping:focus
+        color3f shaping:focusTint
+        asset shaping:ies:file
+        float3 xformOp:rotateZYX = (0, 45, 0)
+        float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
     def Xform "ground_plane"
     {
         float3 xformOp:rotateXYZ = (0, 0, 0)
