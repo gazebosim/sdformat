@@ -31,6 +31,7 @@ target_link_libraries(${usd_target}
 
 set(gtest_sources
   sdf_parser/sdf2usd_TEST.cc
+  usd_parser/usd2sdf_TEST.cc
   sdf_parser/Geometry_Sdf2Usd_TEST.cc
   sdf_parser/Joint_Sdf2Usd_TEST.cc
   sdf_parser/Light_Sdf2Usd_TEST.cc
