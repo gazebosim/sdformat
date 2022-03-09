@@ -17,6 +17,7 @@ set(sources
   usd_parser/USDData.cc
   usd_parser/USDMaterial.cc
   usd_parser/USDStage.cc
+  usd_parser/USDTransforms.cc
 )
 
 ign_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
@@ -46,6 +47,7 @@ set(gtest_sources
   sdf_parser/World_Sdf2Usd_TEST.cc
   usd_parser/USDData_TEST.cc
   usd_parser/USDStage_TEST.cc
+  usd_parser/USDTransforms_TEST.cc
   Conversions_TEST.cc
   UsdError_TEST.cc
   UsdUtils_TEST.cc
