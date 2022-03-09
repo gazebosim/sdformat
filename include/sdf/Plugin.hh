@@ -23,6 +23,7 @@
 
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
+#include <sdf/parser.hh>
 #include <sdf/Types.hh>
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -109,6 +110,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// plugin.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated plugin values.
     public: sdf::ElementPtr ToElement() const;
 
@@ -122,9 +125,44 @@ namespace sdf
     /// \return A reference to this plugin
     public: Plugin &operator=(Plugin &&_plugin) noexcept;
 
+    /// \brief Output stream operator for a Plugin.
+    /// \param[in] _out The output stream
+    /// \param[in] _plugin Plugin to output
+    public: friend std::ostream &operator<<(std::ostream& _out,
+                                            const sdf::Plugin &_plugin)
+    {
+      return _out << _plugin.ToElement()->ToString("");
+    }
+
+    /// \brief Input stream operator for a Plugin.
+    /// \param[in] _out The output stream
+    /// \param[in] _plugin Plugin to output
+    public: friend std::istream &operator>>(std::istream &_in,
+                                            sdf::Plugin &_plugin)
+    {
+      std::ostringstream stream;
+      stream << "<sdf version='" << SDF_VERSION << "'>";
+      stream << std::string(std::istreambuf_iterator<char>(_in), {});
+      stream << "</sdf>";
+
+      sdf::SDFPtr sdfParsed(new sdf::SDF());
+      sdf::init(sdfParsed);
+      bool result = sdf::readString(stream.str(), sdfParsed);
+      if (!result)
+        return _in;
+
+      _plugin.ClearContents();
+      _plugin.Load(sdfParsed->Root()->GetFirstElement());
+
+      return _in;
+    }
+
     /// \brief Private data pointer.
     std::unique_ptr<sdf::PluginPrivate> dataPtr;
   };
+
+  /// \brief A vector of Plugin.
+  using Plugins = std::vector<Plugin>;
 }
 }
 

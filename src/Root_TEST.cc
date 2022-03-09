@@ -32,7 +32,7 @@ TEST(DOMRoot, Construction)
 {
   sdf::Root root;
   EXPECT_EQ(nullptr, root.Element());
-  EXPECT_EQ("", root.Version());
+  EXPECT_EQ(SDF_VERSION, root.Version());
   EXPECT_FALSE(root.WorldNameExists("default"));
   EXPECT_FALSE(root.WorldNameExists(""));
   EXPECT_EQ(0u, root.WorldCount());
@@ -203,7 +203,7 @@ TEST(DOMRoot, StringActorSdfParse)
 TEST(DOMRoot, Set)
 {
   sdf::Root root;
-  EXPECT_STREQ("", root.Version().c_str());
+  EXPECT_STREQ(SDF_VERSION, root.Version().c_str());
   root.SetVersion(SDF_PROTOCOL_VERSION);
   EXPECT_STREQ(SDF_PROTOCOL_VERSION, root.Version().c_str());
 }
@@ -338,4 +338,167 @@ TEST(DOMRoot, MutableByIndex)
   EXPECT_EQ("world1", w->Name());
   w->SetName("world2");
   EXPECT_EQ("world2", root.WorldByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElementEmpty)
+{
+  sdf::Root root;
+
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElementModel)
+{
+  sdf::Root root;
+
+  sdf::Actor actor1;
+  actor1.SetName("actor1");
+  root.SetActor(actor1);
+
+  sdf::Light light1;
+  light1.SetName("light1");
+  root.SetLight(light1);
+
+  sdf::Model model1;
+  model1.SetName("model1");
+  root.SetModel(model1);
+
+  ASSERT_NE(nullptr, root.Model());
+  ASSERT_EQ(nullptr, root.Light());
+  ASSERT_EQ(nullptr, root.Actor());
+  EXPECT_EQ(0u, root.WorldCount());
+
+  // Convert to sdf::ElementPtr
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+
+  ASSERT_NE(nullptr, root2.Model());
+  EXPECT_EQ("model1", root2.Model()->Name());
+
+  ASSERT_EQ(nullptr, root2.Actor());
+  ASSERT_EQ(nullptr, root2.Light());
+  EXPECT_EQ(0u, root2.WorldCount());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElementLight)
+{
+  sdf::Root root;
+
+  sdf::Model model1;
+  model1.SetName("model1");
+  root.SetModel(model1);
+
+  sdf::Actor actor1;
+  actor1.SetName("actor1");
+  root.SetActor(actor1);
+
+  sdf::Light light1;
+  light1.SetName("light1");
+  root.SetLight(light1);
+
+  ASSERT_NE(nullptr, root.Light());
+  ASSERT_EQ(nullptr, root.Model());
+  ASSERT_EQ(nullptr, root.Actor());
+  EXPECT_EQ(0u, root.WorldCount());
+
+  // Convert to sdf::ElementPtr
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+
+  ASSERT_NE(nullptr, root2.Light());
+  EXPECT_EQ("light1", root2.Light()->Name());
+
+  ASSERT_EQ(nullptr, root2.Model());
+  ASSERT_EQ(nullptr, root2.Actor());
+  EXPECT_EQ(0u, root2.WorldCount());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElementActor)
+{
+  sdf::Root root;
+
+  sdf::Model model1;
+  model1.SetName("model1");
+  root.SetModel(model1);
+
+  sdf::Light light1;
+  light1.SetName("light1");
+  root.SetLight(light1);
+
+  sdf::Actor actor1;
+  actor1.SetName("actor1");
+  root.SetActor(actor1);
+
+  ASSERT_NE(nullptr, root.Actor());
+  ASSERT_EQ(nullptr, root.Light());
+  ASSERT_EQ(nullptr, root.Model());
+  EXPECT_EQ(0u, root.WorldCount());
+
+  // Convert to sdf::ElementPtr
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+
+  ASSERT_NE(nullptr, root2.Actor());
+  EXPECT_EQ("actor1", root2.Actor()->Name());
+
+  ASSERT_EQ(nullptr, root2.Model());
+  ASSERT_EQ(nullptr, root2.Light());
+  EXPECT_EQ(0u, root2.WorldCount());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ToElementWorld)
+{
+  sdf::Root root;
+
+  sdf::World world1;
+  world1.SetName("world1");
+  root.AddWorld(world1);
+
+  sdf::World world2;
+  world2.SetName("world2");
+  root.AddWorld(world2);
+
+  EXPECT_EQ(2u, root.WorldCount());
+
+  // Convert to sdf::ElementPtr
+  sdf::ElementPtr elem = root.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Root root2;
+  root2.LoadSdfString(elem->ToString(""));
+
+  EXPECT_EQ(SDF_VERSION, root2.Version());
+  EXPECT_EQ(2u, root2.WorldCount());
+
+  ASSERT_NE(nullptr, root2.WorldByIndex(0));
+  EXPECT_EQ("world1", root2.WorldByIndex(0)->Name());
+
+  ASSERT_NE(nullptr, root2.WorldByIndex(1));
+  EXPECT_EQ("world2", root2.WorldByIndex(1)->Name());
 }

@@ -89,6 +89,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// surface.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated surface values.
     public: sdf::ElementPtr ToElement() const;
 

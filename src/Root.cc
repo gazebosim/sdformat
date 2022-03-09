@@ -48,7 +48,7 @@ class sdf::Root::Implementation
   public: void UpdateGraphs(sdf::Model &_model, sdf::Errors &_errors);
 
   /// \brief Version string
-  public: std::string version = "";
+  public: std::string version = SDF_VERSION;
 
   /// \brief The worlds specified under the root SDF element
   public: std::vector<World> worlds;
@@ -210,7 +210,7 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
   // Get the SDF version.
   std::pair<std::string, bool> versionPair =
-    this->dataPtr->sdf->Get<std::string>("version", SDF_VERSION);
+    this->dataPtr->sdf->Get<std::string>("version", this->dataPtr->version);
 
   // Check that the version exists. Exit if the version is missing.
   // readFile will fail if the version is missing, so this
@@ -403,15 +403,34 @@ const Model *Root::Model() const
 }
 
 /////////////////////////////////////////////////
+void Root::SetModel(const sdf::Model &_model)
+{
+  this->dataPtr->modelLightOrActor = _model;
+}
+
+/////////////////////////////////////////////////
 const Light *Root::Light() const
 {
   return std::get_if<sdf::Light>(&this->dataPtr->modelLightOrActor);
+}
+
+
+/////////////////////////////////////////////////
+void Root::SetLight(const sdf::Light &_light)
+{
+  this->dataPtr->modelLightOrActor = _light;
 }
 
 /////////////////////////////////////////////////
 const Actor *Root::Actor() const
 {
   return std::get_if<sdf::Actor>(&this->dataPtr->modelLightOrActor);
+}
+
+/////////////////////////////////////////////////
+void Root::SetActor(const sdf::Actor &_actor)
+{
+  this->dataPtr->modelLightOrActor = _actor;
 }
 
 /////////////////////////////////////////////////
@@ -503,4 +522,34 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 
   this->modelPoseRelativeToGraph = createPoseRelativeToGraph(_model, _errors);
   _model.SetPoseRelativeToGraph(this->modelPoseRelativeToGraph);
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("root.sdf", elem);
+
+  elem->GetAttribute("version")->Set(this->Version());
+
+  if (this->Model() != nullptr)
+  {
+    elem->InsertElement(this->Model()->ToElement(_useIncludeTag), true);
+  }
+  else if (this->Light() != nullptr)
+  {
+    elem->InsertElement(this->Light()->ToElement(), true);
+  }
+  else if (this->Actor() != nullptr)
+  {
+    elem->InsertElement(this->Actor()->ToElement(), true);
+  }
+  else
+  {
+    // Worlds
+    for (const sdf::World &world : this->dataPtr->worlds)
+      elem->InsertElement(world.ToElement(_useIncludeTag), true);
+  }
+
+  return elem;
 }
