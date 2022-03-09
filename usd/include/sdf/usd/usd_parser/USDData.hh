@@ -91,7 +91,6 @@ namespace sdf
         for (auto &ref : data.AllReferences())
         {
           os << "\t" << ref.first << "\n";
-          // os << "\t\t" << ref.second->_referenceName << "\n";
           os << "\t\t" << ref.second->UpAxis() << "\n";
           os << "\t\t" << ref.second->MetersPerUnit() << "\n";
           for (auto &path : ref.second->USDPaths())
