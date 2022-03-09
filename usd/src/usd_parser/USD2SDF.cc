@@ -59,7 +59,7 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
   sdf->SetAttribute("version", "1.7");
 
   world = _sdfXmlOut->NewElement("world");
-  std::string worldName = worldInterface->_worldName;
+  std::string worldName = worldInterface->worldName;
   if (worldName.empty())
   {
     worldName = "world_name";

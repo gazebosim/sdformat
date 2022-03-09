@@ -51,7 +51,7 @@ namespace usd
     }
     auto range = pxr::UsdPrimRange::Stage(referencee);
 
-    _world->_worldName = referencee->GetDefaultPrim().GetName().GetText();
+    _world->worldName = referencee->GetDefaultPrim().GetName().GetText();
 
     for (auto const &prim : range)
     {
