@@ -68,6 +68,9 @@ class sdf::Visual::Implementation
 
   /// \brief Lidar reflective intensity
   public: double laserRetro = 0;
+
+  /// \brief Visual plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
@@ -148,6 +151,11 @@ Errors Visual::Load(ElementPtr _sdf)
   {
     this->SetLaserRetro(_sdf->Get<double>("laser_retro"));
   }
+
+  // Load the visual plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   return errors;
 }
@@ -332,5 +340,33 @@ sdf::ElementPtr Visual::ToElement() const
     elem->InsertElement(this->dataPtr->material->ToElement(), true);
   }
 
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Visual::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Visual::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Visual::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Visual::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

@@ -126,6 +126,14 @@ namespace sdf
     /// \param[in] _cast True to indicate that the light casts shadows.
     public: void SetCastShadows(const bool _cast);
 
+    /// \brief Get if the light is on
+    /// \return True if the light is on.
+    public: bool LightOn() const;
+
+    /// \brief Set if the light is ON/OFF
+    /// \param[in] _cast True to indicate that the light is on, False otherwise.
+    public: void SetLightOn(const bool _isLightOn);
+
     /// \brief Get the light intensity
     /// \return The light intensity
     public: double Intensity() const;
@@ -270,6 +278,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// light object.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated light values.
     public: sdf::ElementPtr ToElement() const;
 

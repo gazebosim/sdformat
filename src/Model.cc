@@ -106,6 +106,26 @@ class sdf::Model::Implementation
   /// \brief Optional URI string that specifies where this model was or
   /// can be loaded from.
   public: std::string uri = "";
+
+  /// \brief All of the model plugins.
+  public: std::vector<Plugin> plugins;
+
+  /// \brief The model plugins that were specified only in an <include> tag.
+  /// This data structure is used by the ToElement() function to accurately
+  /// reproduce the <include> tag.
+  ///
+  /// For example, a world could be:
+  ///  <world name="default">
+  ///    <include>
+  ///       <uri>test_model_with_plugin</uri>
+  ///       <plugin name="plugin_name" filename="plugin_filename"/>
+  ///    </include>
+  /// </world>
+  ///
+  /// and the included model could also have a plugin. We want the
+  /// ToElement(true) function to output only the plugin specified in the
+  /// <include> tag.
+  public: std::vector<Plugin> includePlugins;
 };
 
 /////////////////////////////////////////////////
@@ -379,6 +399,23 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     frameNames.insert(frameName);
   }
 
+  // Load the model plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
+
+  // Check whether the model was loaded from an <include> tag. If so, set
+  // the URI and capture the plugins.
+  if (_sdf->GetIncludeElement() && _sdf->GetIncludeElement()->HasElement("uri"))
+  {
+    sdf::ElementPtr includeElem = _sdf->GetIncludeElement();
+    this->SetUri(includeElem->Get<std::string>("uri"));
+
+    Errors includePluginErrors = loadRepeated<Plugin>(includeElem, "plugin",
+        this->dataPtr->includePlugins);
+    errors.insert(errors.end(), includePluginErrors.begin(),
+        includePluginErrors.end());
+  }
 
   return errors;
 }
@@ -954,7 +991,15 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
           "relative_to")->Set<std::string>(this->dataPtr->poseRelativeTo);
     }
     includeElem->GetElement("static")->Set(this->Static());
-    includeElem->GetElement("placement_frame")->Set(this->PlacementFrameName());
+    if (!this->dataPtr->placementFrameName.empty())
+    {
+      includeElem->GetElement("placement_frame")->Set(
+          this->PlacementFrameName());
+    }
+
+    // Output the plugins
+    for (const Plugin &plugin : this->dataPtr->includePlugins)
+      includeElem->InsertElement(plugin.ToElement(), true);
 
     return includeElem;
   }
@@ -999,6 +1044,10 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
     elem->InsertElement(model.ToElement(_useIncludeTag), true);
+
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
 
   return elem;
 }
@@ -1061,4 +1110,38 @@ bool Model::AddFrame(const Frame &_frame)
 void Model::ClearFrames()
 {
   this->dataPtr->frames.clear();
+}
+
+/////////////////////////////////////////////////
+bool Model::NameExistsInFrameAttachedToGraph(const std::string &_name) const
+{
+  if (!this->dataPtr->frameAttachedToGraph)
+    return false;
+
+  return this->dataPtr->frameAttachedToGraph.VertexIdByName(sdf::JoinName(
+             this->Name(), _name)) != ignition::math::graph::kNullId;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Model::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Model::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Model::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Model::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

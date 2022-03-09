@@ -15,6 +15,7 @@ set(tests
   force_torque_sensor.cc
   frame.cc
   geometry_dom.cc
+  gui_dom.cc
   include.cc
   includes.cc
   interface_api.cc
@@ -47,6 +48,7 @@ set(tests
   sdf_basic.cc
   sdf_custom.cc
   sdf_dom_conversion.cc
+  sensor_dom.cc
   surface_dom.cc
   unknown.cc
   urdf_gazebo_extensions.cc

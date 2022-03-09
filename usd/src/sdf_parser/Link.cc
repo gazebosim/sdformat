@@ -37,6 +37,8 @@
 
 #include "sdf/Link.hh"
 #include "sdf/usd/sdf_parser/Light.hh"
+#include "sdf/usd/sdf_parser/Sensor.hh"
+#include "sdf/usd/sdf_parser/Visual.hh"
 #include "../UsdUtils.hh"
 
 namespace sdf
@@ -121,6 +123,38 @@ namespace usd
         centerOfMass.Pos().X(),
         centerOfMass.Pos().Y(),
         centerOfMass.Pos().Z()));
+    }
+
+    // parse all of the link's visuals and convert them to USD
+    for (uint64_t i = 0; i < _link.VisualCount(); ++i)
+    {
+      const auto visual = *(_link.VisualByIndex(i));
+      const auto visualPath = std::string(_path + "/" + visual.Name());
+      auto errorsLink = ParseSdfVisual(visual, _stage, visualPath);
+      if (!errorsLink.empty())
+      {
+        errors.insert(errors.end(), errorsLink.begin(), errorsLink.end());
+        errors.push_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Error parsing visual [" + visual.Name() + "]"));
+        return errors;
+      }
+    }
+
+    // convert the link's sensors
+    for (uint64_t i = 0; i < _link.SensorCount(); ++i)
+    {
+      const auto sensor = *(_link.SensorByIndex(i));
+      const auto sensorPath = std::string(_path + "/" + sensor.Name());
+      UsdErrors errorsSensor = ParseSdfSensor(sensor, _stage, sensorPath);
+      if (!errorsSensor.empty())
+      {
+        errors.push_back(
+            UsdError(sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              "Error parsing sensor [" + sensor.Name() + "]"));
+        errors.insert(errors.end(), errorsSensor.begin(), errorsSensor.end());
+        return errors;
+      }
     }
 
     // links can have lights attached to them

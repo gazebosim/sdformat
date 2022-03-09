@@ -444,6 +444,13 @@ namespace sdf
   /// \return True if the element should be validated
   SDFORMAT_VISIBLE
   bool shouldValidateElement(sdf::ElementPtr _elem);
+
+  /// \brief Function to compute a merged model's proxy frame name
+  ///
+  /// \param [in] _modelName The merged model's name
+  /// \return The computed frame name
+  SDFORMAT_VISIBLE
+  std::string computeMergedModelProxyFrameName(const std::string &_modelName);
   }
 }
 #endif
