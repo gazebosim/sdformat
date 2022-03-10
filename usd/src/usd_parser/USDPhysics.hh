@@ -15,15 +15,18 @@
  *
 */
 
-#ifndef USD_PARSER_USD_HH
-#define USD_PARSER_USD_HH
-
-#include <string>
-
-#include "sdf/sdf_config.h"
-#include "sdf/usd/UsdError.hh"
+#ifndef USD_PARSER_PHYSYCS_HH
+#define USD_PARSER_PHYSYCS_HH
 
 #include "usd_model/WorldInterface.hh"
+
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
+#include <pxr/usd/usd/primRange.h>
+#pragma pop_macro ("__DEPRECATED")
+
+#include "sdf/config.hh"
+#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
@@ -32,16 +35,16 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief it parses the USD file
-    /// \param[in] _inputFilename Path where the USD is located
-    /// \param[out] _world World interface where all USD data is placed
-    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
-    /// includes an error code and message. An empty vector indicates no error
-    /// occurred when parsing to its SDF representation.
-    UsdErrors parseUSDWorld(
-      const std::string &_inputFilename,
-      std::shared_ptr<WorldInterface> &_world);
+    /// \brief It parses the physics attributes of the USD file
+    /// \param[in] _prim Prim to extract the physics attributes
+    /// \param[out] _world World interface where the data is placed
+    /// \param[in] _metersPerUnit meter per unit in the USD
+    void IGNITION_SDFORMAT_USD_VISIBLE ParseUSDPhysicsScene(
+      const pxr::UsdPrim &_prim,
+      std::shared_ptr<WorldInterface> &_world,
+      double _metersPerUnit);
   }
   }
 }
+
 #endif

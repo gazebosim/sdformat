@@ -15,32 +15,31 @@
  *
 */
 
-#ifndef SDF_USD_USD_PARSER_PARSE_USD_HH
-#define SDF_USD_USD_PARSER_PARSE_USD_HH
+#ifndef SDF_USD_USD_PARSER_PARSER_HH
+#define SDF_USD_USD_PARSER_PARSER_HH
 
 #include <string>
 
-#include "sdf/sdf_config.h"
-#include "sdf/system_util.hh"
+#include "sdf/config.hh"
 #include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// \brief It parses a USD file and it converted to SDF
-    /// \param[in] _inputFilename Path of the USD file to parse
-    /// \param[in] _outputFilename_sdf Path where the SDF file will be located
+    /// \brief Parse a USD file and convert it to a SDF file
+    /// \param[in] _inputFilenameUsd Path of the USD file to parse
+    /// \param[in] _outputFilenameSdf Path where the SDF file will be located
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error
-    /// occurred when parsing to its SDF representation.
+    /// occurred when parsing the USD file to its SDF representation.
     UsdErrors IGNITION_SDFORMAT_USD_VISIBLE parseUSDFile(
-      const std::string &_inputFilename,
-      const std::string &_outputFilename_sdf);
+      const std::string &_inputFilenameUsd,
+      const std::string &_outputFilenameSdf);
   }
   }
 }

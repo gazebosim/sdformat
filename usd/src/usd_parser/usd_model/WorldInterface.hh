@@ -38,7 +38,7 @@ namespace sdf
     class WorldInterface {
       public:
         /// \brief World name
-        std::string _worldName;
+        std::string worldName;
 
         /// \brief Magnitude of the gravity
         float magnitude;
@@ -52,7 +52,7 @@ namespace sdf
         friend std::ostream& operator<<(
           std::ostream& os, const WorldInterface& _world)
         {
-          os << "World name: " << _world._worldName;
+          os << "World name: " << _world.worldName;
           os << "Gravity: " << _world.gravity * _world.magnitude << "\n";
           return os;
         }

@@ -19,13 +19,14 @@
 
 #include "usd_model/WorldInterface.hh"
 
-#include "USD.hh"
+#include "USDWorld.hh"
 
 #include <ignition/common/Filesystem.hh>
 
 #include "sdf/Light.hh"
 
 namespace sdf {
+inline namespace SDF_VERSION_NAMESPACE {
 namespace usd {
 /////////////////////////////////////////////////
 USD2SDF::USD2SDF()
@@ -63,7 +64,7 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
   sdf->SetAttribute("version", "1.7");
 
   world = _sdfXmlOut->NewElement("world");
-  std::string worldName = worldInterface->_worldName;
+  std::string worldName = worldInterface->worldName;
   if (worldName.empty())
   {
     worldName = "world_name";
@@ -255,6 +256,7 @@ std::string USD2SDF::Vector32Str(const ignition::math::Vector3d _vector)
   ss << " ";
   ss << _vector.Z();
   return ss.str();
+}
 }
 }
 }

@@ -15,7 +15,7 @@
  *
 */
 
-#include "Physics.hh"
+#include "USDPhysics.hh"
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -30,7 +30,7 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
-  void ParsePhysicsScene(
+  void ParseUSDPhysicsScene(
     const pxr::UsdPrim &_prim,
     std::shared_ptr<WorldInterface> &_world,
     double _metersPerUnit)
