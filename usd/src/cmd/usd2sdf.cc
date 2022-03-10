@@ -19,7 +19,7 @@
 
 #include <ignition/utils/cli/CLI.hpp>
 
-#include "sdf/usd/usd_parser/ParseUSD.hh"
+#include "sdf/usd/usd_parser/Parser.hh"
 #include "sdf/sdf.hh"
 
 //////////////////////////////////////////////////

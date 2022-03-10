@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/usd_parser/ParseUSD.hh"
+#include "sdf/usd/usd_parser/Parser.hh"
 #include "USD2SDF.hh"
 
 namespace sdf
@@ -24,18 +24,19 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDFile(
-      const std::string &_inputFilename, const std::string &_outputFilename)
+      const std::string &_inputFilenameUsd,
+      const std::string &_outputFilenameSdf)
   {
     UsdErrors errors;
     USD2SDF usd2sdf;
     auto doc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
-    auto readErrors = usd2sdf.Read(_inputFilename, &doc);
+    auto readErrors = usd2sdf.Read(_inputFilenameUsd, &doc);
     if (!readErrors.empty())
     {
       errors.insert(errors.end(), readErrors.begin(), readErrors.end());
       return errors;
     }
-    doc.SaveFile(_outputFilename.c_str());
+    doc.SaveFile(_outputFilenameSdf.c_str());
     return errors;
   }
 }

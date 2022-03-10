@@ -22,6 +22,7 @@
 #include "USD.hh"
 
 namespace sdf {
+inline namespace SDF_VERSION_NAMESPACE {
 namespace usd {
 /////////////////////////////////////////////////
 USD2SDF::USD2SDF()
@@ -140,6 +141,7 @@ std::string USD2SDF::Vector32Str(const ignition::math::Vector3d _vector)
   ss << " ";
   ss << _vector.Z();
   return ss.str();
+}
 }
 }
 }

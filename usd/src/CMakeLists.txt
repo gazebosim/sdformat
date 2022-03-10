@@ -10,7 +10,7 @@ set(sources
   sdf_parser/Sensor.cc
   sdf_parser/Visual.cc
   sdf_parser/World.cc
-  usd_parser/ParseUSD.cc
+  usd_parser/Parser.cc
   usd_parser/USD.cc
   usd_parser/USD2SDF.cc
   usd_parser/USDData.cc
