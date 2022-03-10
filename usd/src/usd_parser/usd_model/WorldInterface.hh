@@ -41,10 +41,10 @@ namespace sdf
         std::string worldName;
 
         /// \brief Magnitude of the gravity
-        float magnitude;
+        float magnitude {9.8f};
 
         /// \brief Gravity (X, Y, Z)
-        ignition::math::Vector3d gravity;
+        ignition::math::Vector3d gravity {0.0, 0.0, -1.0};
 
         friend std::ostream& operator<<(
           std::ostream& os, const WorldInterface& _world)

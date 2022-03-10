@@ -37,7 +37,7 @@
 #include "usd_model/WorldInterface.hh"
 
 /////////////////////////////////////////////////
-TEST(USDLightsTest, DistanceLight)
+TEST(USDPhysicsTest, AvailablePhysics)
 {
   std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
   auto stage = pxr::UsdStage::Open(filename);
@@ -52,6 +52,20 @@ TEST(USDLightsTest, DistanceLight)
 
   sdf::usd::ParseUSDPhysicsScene(
     prim, worldInterface, metersPerUnit);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface->gravity);
+  EXPECT_NEAR(9.8, worldInterface->magnitude, 0.0001);
+}
+
+/////////////////////////////////////////////////
+TEST(USDPhysicsTest, UnavailablePhysics)
+{
+  std::string filename = sdf::testing::TestFile("usd", "upAxisY.usda");
+  auto stage = pxr::UsdStage::Open(filename);
+  ASSERT_TRUE(stage);
+
+  std::shared_ptr<sdf::usd::WorldInterface> worldInterface =
+    std::make_shared<sdf::usd::WorldInterface>();
+
   EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface->gravity);
   EXPECT_NEAR(9.8, worldInterface->magnitude, 0.0001);
 }
