@@ -21,6 +21,7 @@
 #include <string>
 
 #include <ignition/math/Vector3.hh>
+#include <ignition/math/Pose3.hh>
 
 #include <tinyxml2.h>
 
@@ -29,6 +30,8 @@
 #include "sdf/Light.hh"
 
 #include "sdf/usd/UsdError.hh"
+
+#include "usd_model/LinkInterface.hh"
 
 namespace sdf
 {
@@ -60,6 +63,17 @@ namespace sdf
       void AddLights(
         const std::map<std::string, std::shared_ptr<sdf::Light>> &_lights,
         tinyxml2::XMLElement *_attach);
+
+      void AddTransform(tinyxml2::XMLElement *_elem,
+                        const ignition::math::Pose3d &_transform);
+
+      void CreateSDF(tinyxml2::XMLElement *_root,
+                     std::shared_ptr<sdf::usd::LinkInterface> _link,
+                     const ignition::math::Pose3d &_transform);
+
+      void CreateLink(tinyxml2::XMLElement *_root,
+                      std::shared_ptr<sdf::usd::LinkInterface> _link,
+                      ignition::math::Pose3d &_currentTransform);
 
       /// \brief get value from <key value="..."/> pair and return it as string
       /// \param[in] _elem pointer to xml element

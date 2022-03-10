@@ -17,11 +17,15 @@
 
 #include "USD2SDF.hh"
 
+#include "usd_model/LinkInterface.hh"
 #include "usd_model/WorldInterface.hh"
 
 #include "USDWorld.hh"
 
 #include <ignition/common/Filesystem.hh>
+
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Pose3.hh>
 
 #include "sdf/Light.hh"
 
@@ -51,6 +55,7 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
     parseUSDWorld(_filename, worldInterface);
   if (!errorsParseUSD.empty())
   {
+    errors.insert(errors.end(), errorsParseUSD.begin(), errorsParseUSD.end());
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
       "Error parsing the usd file"));
@@ -95,12 +100,152 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
     // Set model name to sdf robot name
     robot->SetAttribute("name", robotModel->Name().c_str());
 
+    auto rootLink = robotModel->Root();
+    ignition::math::Pose3d transform = robotModel->pose;
+
+    if (rootLink->name == "world")
+    {
+      // convert all children link
+      for (std::vector<std::shared_ptr<sdf::usd::LinkInterface>>::const_iterator
+          child = rootLink->childLinks.begin();
+          child != rootLink->childLinks.end(); ++child)
+      {
+        CreateSDF(robot, (*child), transform);
+      }
+    }
+    else
+    {
+      // convert, starting from root link
+      CreateSDF(robot, rootLink, transform);
+    }
+
     world->LinkEndChild(robot);
   }
 
   sdf->LinkEndChild(world);
   _sdfXmlOut->LinkEndChild(sdf);
   return errors;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void USD2SDF::CreateSDF(tinyxml2::XMLElement *_root,
+  std::shared_ptr<sdf::usd::LinkInterface> _link,
+  const ignition::math::Pose3d &_transform)
+{
+  ignition::math::Pose3d _currentTransform = _transform;
+
+  // must have an <inertial> block and cannot have zero mass.
+  //  allow det(I) == zero, in the case of point mass geoms.
+  if (_link->name != "world" &&
+      ((!_link->inertial) ||
+        ignition::math::equal(_link->inertial->MassMatrix().Mass(), 0.0)))
+  {
+    // if (!_link->childLinks.empty())
+    // {
+    //   sdferr << "usd2sdf: link[" << _link->name
+    //          << "] has no inertia, ["
+    //          << static_cast<int>(_link->childLinks.size())
+    //          << "] children links ignored.\n";
+    // }
+    //
+    // if (!_link->childJoints.empty())
+    // {
+    //   sdferr << "usd2sdf: link[" << _link->name
+    //          << "] has no inertia, ["
+    //          << static_cast<int>(_link->childLinks.size())
+    //          << "] children joints ignored.\n";
+    // }
+    //
+    // if (_link->parentJoint)
+    // {
+    //   sdferr << "usd2sdf: link[" << _link->name
+    //          << "] has no inertia, "
+    //          << "parent joint [" << _link->parentJoint->Name()
+    //          << "] ignored.\n";
+    // }
+    //
+    // sdferr << "usd2sdf: link[" << _link->name
+    //        << "] has no inertia, not modeled in sdf\n";
+    // return;
+  }
+
+  // create <body:...> block for non fixed joint attached bodies
+  if ((_link->Parent() && _link->Parent()->name == "world") ||
+      !_link->parentJoint)
+  {
+    CreateLink(_root, _link, _currentTransform);
+  }
+
+  // recurse into children
+  for (unsigned int i = 0 ; i < _link->childLinks.size() ; ++i)
+  {
+    CreateSDF(_root, _link->childLinks[i], _currentTransform);
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+void USD2SDF::CreateLink(tinyxml2::XMLElement *_root,
+  std::shared_ptr<sdf::usd::LinkInterface> _link,
+  ignition::math::Pose3d &_currentTransform)
+{
+  // create new body
+  tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("link");
+
+  // set body name
+  elem->SetAttribute("name", ignition::common::basename(_link->name).c_str());
+
+  // compute global transform
+  ignition::math::Pose3d localTransform;
+  // this is the transform from parent link to current _link
+  // this transform does not exist for the root link
+  if (_link->parentJoint)
+  {
+    AddTransform(_root, _link->pose);
+    tinyxml2::XMLElement * pose = _root->FirstChildElement("pose");
+    elem->LinkEndChild(pose);
+  }
+  else
+  {
+    sdferr << "[" << _link->name << "] has no parent joint\n";
+
+    if (_currentTransform != ignition::math::Pose3d::Zero)
+    {
+      // create origin tag for this element
+      AddTransform(elem, _currentTransform);
+    }
+  }
+  //
+  // // create new inerial block
+  // CreateInertial(elem, _link);
+  //
+  // // create new collision block
+  // CreateCollisions(elem, _link);
+  //
+  // // create new visual block
+  // CreateVisuals(elem, _link);
+  //
+  // // make a <joint:...> block
+  // CreateJoint(_root, _link, _currentTransform);
+
+  AddLights(_link->lights, elem);
+
+  // AddSensors(_link->sensors_, elem);
+
+  // add body to document
+  _root->LinkEndChild(elem);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void USD2SDF::AddTransform(tinyxml2::XMLElement *_elem,
+  const ignition::math::Pose3d &_transform)
+{
+  ignition::math::Vector3d e = _transform.Rot().Euler();
+  double cpose[6] = { _transform.Pos().X(), _transform.Pos().Y(),
+                      _transform.Pos().Z(), e.X(), e.Y(), e.Z() };
+
+  // set geometry transform
+  AddKeyValue(_elem, "pose", Values2str(6, cpose));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

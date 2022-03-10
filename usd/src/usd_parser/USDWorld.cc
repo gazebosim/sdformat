@@ -40,7 +40,9 @@
 #include "sdf/usd/usd_parser/USDStage.hh"
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 #include "USDPhysics.hh"
+#include "USDLinks.hh"
 
+#include "usd_model/LinkInterface.hh"
 #include "usd_model/ModelInterface.hh"
 #include "usd_model/WorldInterface.hh"
 
@@ -71,9 +73,17 @@ namespace usd
 
     std::string linkName;
 
+    int skipPrims = 0;
+
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
     {
+      if (skipPrims)
+      {
+        --skipPrims;
+        continue;
+      }
+
       // Skip materials, the data is already available in the USDData class
       if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
       {
@@ -165,18 +175,123 @@ namespace usd
         _world->models.pop_back();
         continue;
       }
+
+      if (!prim.IsA<pxr::UsdGeomGprim>() && !(primType == "Plane"))
+      {
+        continue;
+      }
+
+      std::shared_ptr<LinkInterface> link = nullptr;
+      auto it = model->links.find(linkName);
+      if (it != model->links.end())
+      {
+        sdf::usd::ParseUSDLinks(prim, linkName, it->second, usdData, skipPrims);
+      }
+      else
+      {
+        sdf::usd::ParseUSDLinks(prim, linkName, link, usdData, skipPrims);
+
+        if (link)
+        {
+          model->links.insert(make_pair(linkName, link));
+        }
+      }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
 
     std::cout << "-------------Lights--------------" << std::endl;
     for (auto & light : _world->lights)
     {
       std::cout << light.second->Name() << std::endl;
     }
+    std::cout << "---------------------------" << std::endl;
 
     std::cout << "-------------Models--------------" << std::endl;
     for (auto & m : _world->models)
     {
       std::cout << m->Name() << std::endl;
+      for (auto & link : m->links)
+      {
+        std::cout << "\t" << link.second->name << std::endl;
+      }
+    }
+    std::cout << "---------------------------" << std::endl;
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    for (auto & m : _world->models)
+    {
+      std::cout << m->Name() << std::endl;
+      for (auto & link : m->links)
+      {
+        std::shared_ptr<sdf::Joint> joint = nullptr;
+        joint = std::make_shared<sdf::Joint>();
+        std::string joint_name = link.second->name;
+        joint->SetName(joint_name);
+
+        joint->SetType(sdf::JointType::FIXED);
+        joint->SetParentLinkName("world");
+        joint->SetChildLinkName(link.second->name);
+        m->joints.insert(make_pair(joint->Name(), joint));
+      }
+
+      for (auto & joint : m->joints)
+      {
+        if (joint.second->ParentLinkName() == "world")
+        {
+          // insert <link name="world"/>
+          std::shared_ptr<LinkInterface> worldLink =
+            std::make_shared<LinkInterface>();
+          worldLink->Clear();
+          worldLink->name = "world";
+          m->links.insert(make_pair(worldLink->name, worldLink));
+        }
+      }
+    }
+
+    for(auto iteratorModel = _world->models.begin();
+        iteratorModel != _world->models.end();)
+    {
+      auto & m = *iteratorModel;
+
+      if (m->links.size() == 0)
+      {
+         _world->models.erase(iteratorModel);
+         continue;
+      }
+
+      // every link has children links and joints, but no parents, so we create a
+      // local convenience data structure for keeping child->parent relations
+      std::map<std::string, std::string> parent_link_tree;
+      parent_link_tree.clear();
+
+      UsdErrors initTreeError = m->InitTree(parent_link_tree);
+      if (!initTreeError.empty())
+      {
+        errors.insert(errors.end(), initTreeError.begin(), initTreeError.end());
+        errors.emplace_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
+              "Error initializing the tree [" + m->Name() + "]"));
+        m.reset();
+      }
+      else
+      {
+        UsdErrors initRootError = m->InitRoot(parent_link_tree);
+        if (!initRootError.empty())
+        {
+          errors.insert(errors.end(), initRootError.begin(), initRootError.end());
+          errors.emplace_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
+                "Error initializing the root [" + m->Name() + "]"));
+          m.reset();
+        }
+      }
+
+      ++iteratorModel;
+    }
+
+    if (!errors.empty())
+    {
+      return errors;
     }
 
     return errors;

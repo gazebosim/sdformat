@@ -15,11 +15,13 @@
  *
  */
 
+#include <iostream>
 #include <string>
 
 #include <ignition/utils/cli/CLI.hpp>
 
 #include "sdf/usd/usd_parser/Parser.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/config.hh"
 
 //////////////////////////////////////////////////
@@ -45,7 +47,12 @@ struct Options
 
 void runCommand(const Options &_opt)
 {
-  sdf::usd::parseUSDFile(_opt.inputFilename, _opt.outputFilename);
+  sdf::usd::UsdErrors errors = sdf::usd::parseUSDFile(
+    _opt.inputFilename, _opt.outputFilename);
+  for (auto & error : errors)
+  {
+    std::cout << error.Message() << '\n';
+  }
 }
 
 void addFlags(CLI::App &_app)
