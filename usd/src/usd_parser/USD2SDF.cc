@@ -19,7 +19,7 @@
 
 #include "usd_model/WorldInterface.hh"
 
-#include "USD.hh"
+#include "USDWorld.hh"
 
 namespace sdf {
 inline namespace SDF_VERSION_NAMESPACE {

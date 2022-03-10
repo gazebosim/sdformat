@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef USD_PARSER_USD_HH
-#define USD_PARSER_USD_HH
+#ifndef USD_PARSER_USDWORLD_HH
+#define USD_PARSER_USDWORLD_HH
 
 #include <string>
 
@@ -27,19 +27,19 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// \brief it parses the USD file
-    /// \param[in] _inputFilename Path where the USD is located
-    /// \param[out] _world World interface where all USD data is placed
+    /// \brief Parse the world information of a USD file
+    /// \param[in] _inputFileNameUsd Path where the USD is located
+    /// \param[out] _world World interface where all USD world data is placed
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error
-    /// occurred when parsing to its SDF representation.
+    /// occurred when parsing the world information of _inputFileNameUsd
     UsdErrors parseUSDWorld(
-      const std::string &_inputFilename,
+      const std::string &_inputFileNameUsd,
       std::shared_ptr<WorldInterface> &_world);
   }
   }

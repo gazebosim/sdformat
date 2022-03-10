@@ -14,51 +14,56 @@
  * limitations under the License.
  *
 */
-#include "USD.hh"
+#include "USDWorld.hh"
 
-#include "sdf/usd/usd_parser/USDData.hh"
-#include "sdf/usd/usd_parser/USDStage.hh"
-#include "USDPhysics.hh"
+#include <string>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <string>
+#include "sdf/usd/usd_parser/USDData.hh"
+#include "sdf/usd/usd_parser/USDStage.hh"
+#include "USDPhysics.hh"
 
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
-  UsdErrors parseUSDWorld(
-    const std::string &_inputFilename,
+  UsdErrors parseUSDWorld(const std::string &_inputFileName,
     std::shared_ptr<WorldInterface> &_world)
   {
     UsdErrors errors;
-    USDData usdData(_inputFilename);
+    USDData usdData(_inputFileName);
     usdData.Init();
     usdData.ParseMaterials();
 
-    auto referencee = pxr::UsdStage::Open(_inputFilename);
-    if (!referencee)
+    auto reference = pxr::UsdStage::Open(_inputFileName);
+    if (!reference)
     {
       errors.emplace_back(UsdError(
         UsdErrorCode::INVALID_USD_FILE,
-        "Unable to open [" + _inputFilename + "]"));
+        "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    auto range = pxr::UsdPrimRange::Stage(referencee);
+    _world->worldName = reference->GetDefaultPrim().GetName().GetText();
 
-    _world->worldName = referencee->GetDefaultPrim().GetName().GetText();
-
+    auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
     {
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
         std::pair<std::string, std::shared_ptr<USDStage>> data =
           usdData.FindStage(prim.GetPath().GetName());
+        if (!data.second)
+        {
+          errors.push_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
+                "Unable to retrieve the pxr::UsdPhysicsScene named ["
+                + prim.GetPath().GetName() + "]"));
+          return errors;
+        }
 
         ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
         continue;
