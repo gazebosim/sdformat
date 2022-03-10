@@ -76,6 +76,28 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
   AddKeyValue(world, "gravity", Vector32Str(
     worldInterface->gravity * worldInterface->magnitude));
 
+  std::vector<std::shared_ptr<sdf::usd::ModelInterface>> robotModels =
+    worldInterface->models;
+
+  for(auto & robotModel: robotModels)
+  {
+    if (!robotModel)
+    {
+      errors.emplace_back(UsdError(
+        UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+        "Unable to call parse USD model"));
+      return errors;
+    }
+
+    // create model element
+    tinyxml2::XMLElement *robot = _sdfXmlOut->NewElement("model");
+
+    // Set model name to sdf robot name
+    robot->SetAttribute("name", robotModel->Name().c_str());
+
+    world->LinkEndChild(robot);
+  }
+
   sdf->LinkEndChild(world);
   _sdfXmlOut->LinkEndChild(sdf);
   return errors;

@@ -28,6 +28,7 @@
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usdGeom/camera.h>
 #include <pxr/usd/usdGeom/gprim.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
@@ -37,7 +38,11 @@
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
+#include "sdf/usd/usd_parser/USDTransforms.hh"
 #include "USDPhysics.hh"
+
+#include "usd_model/ModelInterface.hh"
+#include "usd_model/WorldInterface.hh"
 
 namespace sdf
 {
@@ -51,6 +56,8 @@ namespace usd
     USDData usdData(_inputFileName);
     usdData.Init();
     usdData.ParseMaterials();
+
+    std::shared_ptr<ModelInterface> model;
 
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
@@ -79,6 +86,25 @@ namespace usd
 
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
+
+      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>())
+      {
+        model = std::make_shared<ModelInterface>();
+        model->Clear();
+        model->name = primPathTokens[0];
+        _world->models.push_back(model);
+
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale{1, 1, 1};
+
+        GetTransform(
+          prim,
+          usdData,
+          pose,
+          scale,
+          model->name);
+        model->pose = pose;
+      }
 
       // In general USD models used in Issac Sim define the model path
       // under a root path for example:
@@ -117,6 +143,7 @@ namespace usd
           _world->lights.insert(
             std::pair<std::string, std::shared_ptr<sdf::Light>>
               (primName, light));
+          _world->models.pop_back();
           // TODO(ahcorde): Include lights which are inside links
         }
         continue;
@@ -135,14 +162,21 @@ namespace usd
         }
 
         ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
+        _world->models.pop_back();
         continue;
       }
     }
 
+    std::cout << "-------------Lights--------------" << std::endl;
     for (auto & light : _world->lights)
     {
-      std::cout << "-------------Lights--------------" << std::endl;
       std::cout << light.second->Name() << std::endl;
+    }
+
+    std::cout << "-------------Models--------------" << std::endl;
+    for (auto & m : _world->models)
+    {
+      std::cout << m->Name() << std::endl;
     }
 
     return errors;

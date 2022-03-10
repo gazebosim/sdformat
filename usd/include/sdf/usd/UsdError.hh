@@ -52,6 +52,9 @@ namespace sdf
     /// \brief Parsing of SDF object to a USD object failed.
     SDF_TO_USD_PARSING_ERROR,
 
+    /// \brief Parsing of USD object to a SDF object failed.
+    USD_TO_SDF_PARSING_ERROR,
+
     /// \brief The pxr::SdfPath does not point to a valid USD prim.
     INVALID_PRIM_PATH,
 

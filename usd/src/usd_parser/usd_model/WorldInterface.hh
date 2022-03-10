@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef USD_PARSER_USD_MODEL_WORLD_INTERFACE_HH_
-#define USD_PARSER_USD_MODEL_WORLD_INTERFACE_HH_
+#ifndef SDF_USD_USD_PARSER_USD_MODEL_WORLD_INTERFACE_HH_
+#define SDF_USD_USD_PARSER_USD_MODEL_WORLD_INTERFACE_HH_
 
 #include <ostream>
 #include <string>
@@ -26,6 +26,8 @@
 
 #include <sdf/Light.hh>
 #include <sdf/sdf_config.h>
+
+#include "ModelInterface.hh"
 
 namespace sdf
 {
@@ -46,8 +48,11 @@ namespace sdf
         /// \brief Gravity (X, Y, Z)
         ignition::math::Vector3d gravity;
 
-        /// \brief World's lights 
+        /// \brief World's lights
         std::map<std::string, std::shared_ptr<sdf::Light>> lights;
+
+        /// \brief World model
+        std::vector<std::shared_ptr<ModelInterface>> models;
 
         friend std::ostream& operator<<(
           std::ostream& os, const WorldInterface& _world)
