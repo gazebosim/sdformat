@@ -53,15 +53,17 @@ namespace usd
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
     {
+      std::string primName = prim.GetName();
+
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
         std::pair<std::string, std::shared_ptr<USDStage>> data =
-          usdData.FindStage(prim.GetPath().GetName());
+          usdData.FindStage(primName);
         if (!data.second)
         {
           errors.push_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
                 "Unable to retrieve the pxr::UsdPhysicsScene named ["
-                + prim.GetPath().GetName() + "]"));
+                + primName + "]"));
           return errors;
         }
 
