@@ -15,12 +15,12 @@
  *
  */
 
-#include <string.h>
+#include <string>
 
 #include <ignition/utils/cli/CLI.hpp>
 
 #include "sdf/usd/usd_parser/Parser.hh"
-#include "sdf/sdf.hh"
+#include "sdf/config.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
