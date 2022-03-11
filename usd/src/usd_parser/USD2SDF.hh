@@ -37,10 +37,7 @@ inline namespace SDF_VERSION_NAMESPACE {
     class USD2SDF
     {
       /// \brief constructor
-      public: USD2SDF();
-
-      /// \brief destructor
-      public: ~USD2SDF();
+      public: USD2SDF() = default;
 
       /// \brief convert USD file to sdf xml document
       /// \param[in] _fileMame string containing USD filename.

@@ -25,17 +25,7 @@
 namespace sdf {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd {
-/////////////////////////////////////////////////
-USD2SDF::USD2SDF()
-{
-}
-
-/////////////////////////////////////////////////
-USD2SDF::~USD2SDF()
-{
-}
-
-/////////////////////////////////////////////////
+////////////////////////////////////////////////
 UsdErrors USD2SDF::Read(const std::string &_fileName,
   tinyxml2::XMLDocument *_sdfXmlOut)
 {
@@ -55,7 +45,7 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
 
   tinyxml2::XMLElement *sdf = nullptr;
   sdf = _sdfXmlOut->NewElement("sdf");
-  sdf->SetAttribute("version", "1.7");
+  sdf->SetAttribute("version", SDF_PROTOCOL_VERSION);
 
   tinyxml2::XMLElement *world = nullptr;
   world = _sdfXmlOut->NewElement("world");

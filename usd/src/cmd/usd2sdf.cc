@@ -15,6 +15,7 @@
  *
  */
 
+#include <iostream>
 #include <string>
 
 #include <ignition/utils/cli/CLI.hpp>

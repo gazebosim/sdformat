@@ -30,10 +30,9 @@ namespace usd
     UsdErrors errors;
     USD2SDF usd2sdf;
     auto doc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
-    auto readErrors = usd2sdf.Read(_inputFilenameUsd, &doc);
-    if (!readErrors.empty())
+    errors = usd2sdf.Read(_inputFilenameUsd, &doc);
+    if (!errors.empty())
     {
-      errors.insert(errors.end(), readErrors.begin(), readErrors.end());
       return errors;
     }
     doc.SaveFile(_outputFilenameSdf.c_str());
