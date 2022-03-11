@@ -17,8 +17,9 @@
 
 #include "USD2SDF.hh"
 
+#include "sdf/Console.hh"
+#include "sdf/Types.hh"
 #include "usd_model/WorldInterface.hh"
-
 #include "USDWorld.hh"
 
 namespace sdf {
@@ -35,30 +36,28 @@ USD2SDF::~USD2SDF()
 }
 
 /////////////////////////////////////////////////
-UsdErrors USD2SDF::Read(const std::string &_filename,
-  tinyxml2::XMLDocument* _sdfXmlOut)
+UsdErrors USD2SDF::Read(const std::string &_fileName,
+  tinyxml2::XMLDocument *_sdfXmlOut)
 {
   UsdErrors errors;
 
   std::shared_ptr<WorldInterface> worldInterface =
     std::make_shared<WorldInterface>();
 
-  auto errorsParseUSD =
-    parseUSDWorld(_filename, worldInterface);
+  const auto errorsParseUSD = parseUSDWorld(_fileName, worldInterface);
   if (!errorsParseUSD.empty())
   {
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-      "Error parsing the usd file"));
+      "Error parsing usd file [" + _fileName + "]"));
     return errors;
   }
 
   tinyxml2::XMLElement *sdf = nullptr;
-  tinyxml2::XMLElement *world = nullptr;
-
   sdf = _sdfXmlOut->NewElement("sdf");
   sdf->SetAttribute("version", "1.7");
 
+  tinyxml2::XMLElement *world = nullptr;
   world = _sdfXmlOut->NewElement("world");
   std::string worldName = worldInterface->worldName;
   if (worldName.empty())
@@ -67,7 +66,7 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
   }
   world->SetAttribute("name", (worldName + "_world").c_str());
 
-  AddKeyValue(world, "gravity", Vector32Str(
+  this->AddKeyValue(world, "gravity", Vector32Str(
     worldInterface->gravity * worldInterface->magnitude));
 
   sdf->LinkEndChild(world);
@@ -75,8 +74,9 @@ UsdErrors USD2SDF::Read(const std::string &_filename,
   return errors;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-std::string USD2SDF::GetKeyValueAsString(tinyxml2::XMLElement* _elem)
+/////////////////////////////////////////////////
+std::string USD2SDF::GetKeyValueAsString(
+    const tinyxml2::XMLElement *_elem) const
 {
   std::string valueStr;
   if (_elem->Attribute("value"))
@@ -98,7 +98,7 @@ std::string USD2SDF::GetKeyValueAsString(tinyxml2::XMLElement* _elem)
   return trim(valueStr);
 }
 
-////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////
 void USD2SDF::AddKeyValue(
   tinyxml2::XMLElement *_elem,
   const std::string &_key,
@@ -107,7 +107,7 @@ void USD2SDF::AddKeyValue(
   tinyxml2::XMLElement *childElem = _elem->FirstChildElement(_key.c_str());
   if (childElem)
   {
-    std::string oldValue = GetKeyValueAsString(childElem);
+    std::string oldValue = this->GetKeyValueAsString(childElem);
     if (oldValue != _value)
     {
       sdferr << "multiple inconsistent <" << _key
@@ -121,7 +121,8 @@ void USD2SDF::AddKeyValue(
               << "> exists with [" << _value
               << "] due to fixed joint reduction.\n";
     }
-    _elem->DeleteChild(childElem);  // remove old _elem
+    // remove old _elem
+    _elem->DeleteChild(childElem);
   }
 
   auto *doc = _elem->GetDocument();
@@ -132,14 +133,10 @@ void USD2SDF::AddKeyValue(
 }
 
 /////////////////////////////////////////////////
-std::string USD2SDF::Vector32Str(const ignition::math::Vector3d _vector)
+std::string USD2SDF::Vector32Str(const ignition::math::Vector3d &_vector) const
 {
   std::stringstream ss;
-  ss << _vector.X();
-  ss << " ";
-  ss << _vector.Y();
-  ss << " ";
-  ss << _vector.Z();
+  ss << _vector;
   return ss.str();
 }
 }

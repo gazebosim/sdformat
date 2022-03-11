@@ -20,6 +20,7 @@
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -67,7 +68,8 @@ namespace usd
           return errors;
         }
 
-        ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
+        ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
+            data.second->MetersPerUnit());
         continue;
       }
     }

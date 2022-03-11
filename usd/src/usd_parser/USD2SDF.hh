@@ -15,27 +15,25 @@
  *
 */
 
-#ifndef SDF_USD_USD_PARSER_USD2SDF_HH
-#define SDF_USD_USD_PARSER_USD2SDF_HH
+#ifndef USD_PARSER_USD2SDF_HH_
+#define USD_PARSER_USD2SDF_HH_
 
 #include <string>
 
 #include <ignition/math/Vector3.hh>
-
 #include <tinyxml2.h>
 
-#include <sdf/sdf_config.h>
-
+#include "sdf/sdf_config.h"
 #include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
-  // Inline bracket to help doxygen filtering.
-  inline namespace SDF_VERSION_NAMESPACE {
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+  namespace usd
+  {
     /// \brief USD to SDF converter
-    /// This class helps to generate the SDF file
-    namespace usd
-    {
+    /// This class helps generate the SDF file
     class USD2SDF
     {
       /// \brief constructor
@@ -45,16 +43,20 @@ namespace sdf
       public: ~USD2SDF();
 
       /// \brief convert USD file to sdf xml document
-      /// \param[in] _filename string containing filename of the urdf model.
-      /// \param[inout] _sdfXmlDoc Document to populate with the sdf model.
+      /// \param[in] _fileMame string containing USD filename.
+      /// \param[out] _sdfXmlDoc Document to populate with the sdf model.
+      /// \return UsdErrors, which is a list of UsdError objects. An empty list
+      /// means no errors occurred when populating _sdfXmlOut with the contents
+      /// of _fileName
       public: UsdErrors Read(
-        const std::string &_filename,
-        tinyxml2::XMLDocument* _sdfXmlOut);
+        const std::string &_fileName,
+        tinyxml2::XMLDocument *_sdfXmlOut);
 
       /// \brief get value from <key value="..."/> pair and return it as string
       /// \param[in] _elem pointer to xml element
       /// return a string with the key
-      private: std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem);
+      private: std::string GetKeyValueAsString(
+                   const tinyxml2::XMLElement *_elem) const;
 
       /// \brief append key value pair to the end of the xml element
       /// \param[in] _elem pointer to xml element
@@ -67,11 +69,12 @@ namespace sdf
 
       /// \brief convert Vector3 to string
       /// \param[in] _vector a ignition::math::Vector3d
-      /// \return a string
-      private: std::string Vector32Str(const ignition::math::Vector3d _vector);
+      /// \return string representation of Vector3
+      private: std::string Vector32Str(
+                   const ignition::math::Vector3d &_vector) const;
     };
   }
-  }
+}
 }
 
 #endif

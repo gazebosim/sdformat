@@ -24,17 +24,16 @@
 
 #include <ignition/math/Vector3.hh>
 
-#include <sdf/Light.hh>
-#include <sdf/sdf_config.h>
+#include "sdf/sdf_config.h"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// \brief This class store data about the world
+    /// \brief This class stores data about the world
     class WorldInterface {
       public:
         /// \brief World name
@@ -49,8 +48,8 @@ namespace sdf
         friend std::ostream& operator<<(
           std::ostream& os, const WorldInterface& _world)
         {
-          os << "World name: " << _world.worldName;
-          os << "Gravity: " << _world.gravity * _world.magnitude << "\n";
+          os << "World name: " << _world.worldName
+             << ", Gravity: " << _world.gravity * _world.magnitude;
           return os;
         }
     };
