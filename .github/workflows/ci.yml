@@ -19,3 +19,5 @@ jobs:
         uses: ignition-tooling/action-ignition-ci@focal
         with:
           codecov-enabled: true
+          cppcheck-enabled: true
+          cpplint-enabled: true
