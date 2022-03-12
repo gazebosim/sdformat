@@ -134,12 +134,12 @@ namespace sdf
     /// \param[in] _cast True to indicate that the light is on, False otherwise.
     public: void SetLightOn(const bool _isLightOn);
 
-    /// \brief Get if the visual light is enabled
-    /// \return True if the visual light is enabled.
+    /// \brief Whether light visualization in the GUI is enabled.
+    /// \return True if visualization is enabled.
     public: bool Visualize() const;
 
-    /// \brief Set if the visual light is enabled
-    /// \param[in] _cast True to set that the light is enabled, False otherwise.
+    /// \brief Set whether light visualization in the GUI is enabled.
+    /// \param[in] _visualize True to view the light on the GUI.
     public: void SetVisualize(const bool _visualize);
 
     /// \brief Get the light intensity
