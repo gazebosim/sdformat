@@ -41,7 +41,7 @@ namespace sdf
     /// \param[in] _metersPerUnit meters per unit in the USD
     void IGNITION_SDFORMAT_USD_VISIBLE ParseUSDPhysicsScene(
       const pxr::UsdPhysicsScene &_scene,
-      std::shared_ptr<WorldInterface> &_world,
+      WorldInterface &_world,
       double _metersPerUnit);
   }
   }

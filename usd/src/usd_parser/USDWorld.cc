@@ -34,7 +34,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    std::shared_ptr<WorldInterface> &_world)
+    WorldInterface &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
@@ -49,7 +49,7 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world->worldName = reference->GetDefaultPrim().GetName().GetText();
+    _world.worldName = reference->GetDefaultPrim().GetName().GetText();
 
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
