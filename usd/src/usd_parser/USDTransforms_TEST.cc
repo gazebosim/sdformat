@@ -49,9 +49,6 @@ void checkTransforms(
     sdf::usd::ParseUSDTransform(prim);
 
   EXPECT_EQ(_translation, usdTransforms.translate);
-  EXPECT_EQ(
-    _translation != ignition::math::Vector3d(0, 0, 0),
-    usdTransforms.isTranslate);
   EXPECT_EQ(_scale, usdTransforms.scale);
   EXPECT_EQ(_rotation.size(), usdTransforms.q.size());
   for (unsigned int i = 0; i < _rotation.size(); ++i)
@@ -121,6 +118,18 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(1, 0, 0, 0),
       ignition::math::Quaterniond(1, 0, 0, 0),
       ignition::math::Quaterniond(1, 0, 0, 0)
+    },
+    ignition::math::Vector3d(1, 1, 1)
+  );
+
+  checkTransforms(
+    "/shapes/capsule/capsule_link/capsule_visual",
+    stage,
+    ignition::math::Vector3d(0, 0, 0),
+    {
+      ignition::math::Quaterniond(1, 0, 0, 0),
+      ignition::math::Quaterniond(1, 0, 0, 0),
+      ignition::math::Quaterniond(0, 0, M_PI_2)
     },
     ignition::math::Vector3d(1, 1, 1)
   );

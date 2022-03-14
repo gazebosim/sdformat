@@ -47,11 +47,14 @@ struct Options
 
 void runCommand(const Options &_opt)
 {
-  sdf::usd::UsdErrors errors = sdf::usd::parseUSDFile(
-    _opt.inputFilename, _opt.outputFilename);
-  for (auto & error : errors)
+  const auto errors =
+    sdf::usd::parseUSDFile(_opt.inputFilename, _opt.outputFilename);
+  if (!errors.empty())
   {
-    std::cout << error.Message() << '\n';
+    std::cerr << "Errors occurred when generating [" << _opt.outputFilename
+              << "] from [" << _opt.inputFilename << "]:\n";
+    for (const auto &e : errors)
+      std::cerr << "\t" << e << "\n";
   }
 }
 

@@ -17,7 +17,6 @@
 
 #include "USDLinks.hh"
 
-#include <memory>
 #include <string>
 
 #pragma push_macro ("__DEPRECATED")
@@ -29,7 +28,10 @@
 #include <pxr/usd/usdGeom/sphere.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "usd_model/LinkInterface.hh"
+#include <ignition/common/Filesystem.hh>
+
+#include "sdf/Geometry.hh"
+#include "sdf/Link.hh"
 
 namespace sdf
 {
@@ -41,7 +43,7 @@ namespace usd
 std::string ParseUSDLinks(
   const pxr::UsdPrim &_prim,
   const std::string &_nameLink,
-  std::shared_ptr<LinkInterface> &link,
+  sdf::Link &_link,
   USDData &_usdData,
   int &_skipPrim)
 {
@@ -54,33 +56,23 @@ std::string ParseUSDLinks(
 
   double metersPerUnit = data.second->MetersPerUnit();
 
-  bool newlink = false;
-
-  if (link == nullptr)
+  if (_link.Name().empty())
   {
-    link.reset(new LinkInterface);
-    link->Clear();
-    newlink = true;
-  }
-
-  if (link->name.empty())
-  {
-    link->name = _nameLink;
+    _link.SetName(ignition::common::basename(_nameLink));
   }
 
   sdf::Geometry geom;
-      if (_prim.IsA<pxr::UsdGeomSphere>() ||
-          _prim.IsA<pxr::UsdGeomCylinder>() ||
-          _prim.IsA<pxr::UsdGeomCube>() ||
-          _prim.IsA<pxr::UsdGeomMesh>() ||
-          primType == "Plane")
+  if (_prim.IsA<pxr::UsdGeomSphere>() ||
+      _prim.IsA<pxr::UsdGeomCylinder>() ||
+      _prim.IsA<pxr::UsdGeomCube>() ||
+      _prim.IsA<pxr::UsdGeomMesh>() ||
+      primType == "Plane")
   {
-    std::shared_ptr<sdf::Visual> vis;
-    vis = std::make_shared<sdf::Visual>();
-
+    // std::shared_ptr<sdf::Visual> vis;
+    // vis = std::make_shared<sdf::Visual>();
   }
 
-  return link->name;
+  return _link.Name();
 }
 }
 }

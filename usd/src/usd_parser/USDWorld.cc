@@ -32,6 +32,7 @@
 #include <pxr/usd/usdGeom/gprim.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
+#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdPhysics/scene.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -42,9 +43,10 @@
 #include "USDPhysics.hh"
 #include "USDLinks.hh"
 
-#include "usd_model/LinkInterface.hh"
-#include "usd_model/ModelInterface.hh"
-#include "usd_model/WorldInterface.hh"
+#include "sdf/Model.hh"
+#include "sdf/Light.hh"
+#include "sdf/Link.hh"
+#include "sdf/World.hh"
 
 namespace sdf
 {
@@ -52,14 +54,15 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    std::shared_ptr<WorldInterface> &_world)
+    sdf::World &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
     usdData.Init();
     usdData.ParseMaterials();
 
-    std::shared_ptr<ModelInterface> model;
+    sdf::Model model;
+    sdf::Model * modelPtr;
 
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
@@ -69,7 +72,15 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world->worldName = reference->GetDefaultPrim().GetName().GetText();
+    std::string worldName = reference->GetDefaultPrim().GetName().GetText();
+    if (!worldName.empty())
+    {
+      _world.SetName("world_name");
+    }
+    else
+    {
+      _world.SetName(worldName + "_world");
+    }
 
     std::string linkName;
 
@@ -92,17 +103,20 @@ namespace usd
 
       std::string primName = prim.GetName();
       std::string primPath = pxr::TfStringify(prim.GetPath());
-      std::string primType = pxr::TfStringify(prim.GetPath());
+      std::string primType = prim.GetPrimTypeInfo().GetTypeName().GetText();
 
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
 
-      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>())
+      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
+          && !prim.IsA<pxr::UsdPhysicsScene>()
+          && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
+          && !prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
-        model = std::make_shared<ModelInterface>();
-        model->Clear();
-        model->name = primPathTokens[0];
-        _world->models.push_back(model);
+        model = sdf::Model();
+        model.SetName(primPathTokens[0]);
+        _world.AddModel(model);
+        modelPtr = _world.ModelByName(primPathTokens[0]);
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale{1, 1, 1};
@@ -112,8 +126,8 @@ namespace usd
           usdData,
           pose,
           scale,
-          model->name);
-        model->pose = pose;
+          model.Name());
+        modelPtr->SetRawPose(pose);
       }
 
       // In general USD models used in Issac Sim define the model path
@@ -148,12 +162,10 @@ namespace usd
           prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
         auto light = ParseUSDLights(prim, usdData, linkName);
+        light->SetName(primName);
         if (light)
         {
-          _world->lights.insert(
-            std::pair<std::string, std::shared_ptr<sdf::Light>>
-              (primName, light));
-          _world->models.pop_back();
+          _world.AddLight(*light.get());
           // TODO(ahcorde): Include lights which are inside links
         }
         continue;
@@ -171,8 +183,9 @@ namespace usd
           return errors;
         }
 
-        ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
-        _world->models.pop_back();
+        ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
+            data.second->MetersPerUnit());
+        // _world->models.pop_back();
         continue;
       }
 
@@ -181,117 +194,35 @@ namespace usd
         continue;
       }
 
-      std::shared_ptr<LinkInterface> link = nullptr;
-      auto it = model->links.find(linkName);
-      if (it != model->links.end())
+      auto linkInserted = modelPtr->LinkByName(linkName);
+      if (linkInserted)
       {
-        sdf::usd::ParseUSDLinks(prim, linkName, it->second, usdData, skipPrims);
+        sdf::usd::ParseUSDLinks(prim, linkName, *linkInserted, usdData, skipPrims);
       }
       else
       {
+        sdf::Link link;
         sdf::usd::ParseUSDLinks(prim, linkName, link, usdData, skipPrims);
 
-        if (link)
+        if (!link.Name().empty())
         {
-          model->links.insert(make_pair(linkName, link));
+          modelPtr->AddLink(link);
         }
       }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-
-    std::cout << "-------------Lights--------------" << std::endl;
-    for (auto & light : _world->lights)
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
     {
-      std::cout << light.second->Name() << std::endl;
+      std::cout << "-------------Lights--------------" << std::endl;
+      std::cout << _world.LightByIndex(i)->Name() << std::endl;
     }
     std::cout << "---------------------------" << std::endl;
 
     std::cout << "-------------Models--------------" << std::endl;
-    for (auto & m : _world->models)
+    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
     {
+      const auto m = _world.ModelByIndex(i);
       std::cout << m->Name() << std::endl;
-      for (auto & link : m->links)
-      {
-        std::cout << "\t" << link.second->name << std::endl;
-      }
-    }
-    std::cout << "---------------------------" << std::endl;
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    for (auto & m : _world->models)
-    {
-      std::cout << m->Name() << std::endl;
-      for (auto & link : m->links)
-      {
-        std::shared_ptr<sdf::Joint> joint = nullptr;
-        joint = std::make_shared<sdf::Joint>();
-        std::string joint_name = link.second->name;
-        joint->SetName(joint_name);
-
-        joint->SetType(sdf::JointType::FIXED);
-        joint->SetParentLinkName("world");
-        joint->SetChildLinkName(link.second->name);
-        m->joints.insert(make_pair(joint->Name(), joint));
-      }
-
-      for (auto & joint : m->joints)
-      {
-        if (joint.second->ParentLinkName() == "world")
-        {
-          // insert <link name="world"/>
-          std::shared_ptr<LinkInterface> worldLink =
-            std::make_shared<LinkInterface>();
-          worldLink->Clear();
-          worldLink->name = "world";
-          m->links.insert(make_pair(worldLink->name, worldLink));
-        }
-      }
-    }
-
-    for(auto iteratorModel = _world->models.begin();
-        iteratorModel != _world->models.end();)
-    {
-      auto & m = *iteratorModel;
-
-      if (m->links.size() == 0)
-      {
-         _world->models.erase(iteratorModel);
-         continue;
-      }
-
-      // every link has children links and joints, but no parents, so we create a
-      // local convenience data structure for keeping child->parent relations
-      std::map<std::string, std::string> parent_link_tree;
-      parent_link_tree.clear();
-
-      UsdErrors initTreeError = m->InitTree(parent_link_tree);
-      if (!initTreeError.empty())
-      {
-        errors.insert(errors.end(), initTreeError.begin(), initTreeError.end());
-        errors.emplace_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
-              "Error initializing the tree [" + m->Name() + "]"));
-        m.reset();
-      }
-      else
-      {
-        UsdErrors initRootError = m->InitRoot(parent_link_tree);
-        if (!initRootError.empty())
-        {
-          errors.insert(errors.end(), initRootError.begin(), initRootError.end());
-          errors.emplace_back(UsdError(UsdErrorCode::INVALID_PRIM_PATH,
-                "Error initializing the root [" + m->Name() + "]"));
-          m.reset();
-        }
-      }
-
-      ++iteratorModel;
-    }
-
-    if (!errors.empty())
-    {
-      return errors;
     }
 
     return errors;

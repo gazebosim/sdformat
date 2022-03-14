@@ -18,7 +18,6 @@
 #ifndef SDF_USD_USD_PARSER_USD_LINKS_HH
 #define SDF_USD_USD_PARSER_USD_LINKS_HH
 
-#include <memory>
 #include <string>
 
 #pragma push_macro ("__DEPRECATED")
@@ -30,7 +29,7 @@
 
 #include "sdf/usd/usd_parser/USDData.hh"
 
-#include "usd_model/LinkInterface.hh"
+#include "sdf/Link.hh"
 
 namespace sdf
 {
@@ -42,7 +41,7 @@ namespace sdf
   std::string ParseUSDLinks(
     const pxr::UsdPrim &_prim,
     const std::string &_nameLink,
-    std::shared_ptr<LinkInterface> &_link,
+    sdf::Link &_link,
     USDData &_usdData,
     int &_skipPrim);
   }
