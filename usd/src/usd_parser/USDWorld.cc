@@ -86,7 +86,7 @@ namespace usd
 
       std::string primName = prim.GetName();
       std::string primPath = pxr::TfStringify(prim.GetPath());
-      std::string primType = pxr::TfStringify(prim.GetPath());
+      std::string primType = prim.GetPrimTypeInfo().GetTypeName().GetText();
 
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
