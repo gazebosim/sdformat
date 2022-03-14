@@ -33,7 +33,6 @@
 #include "test_utils.hh"
 
 #include "USDPhysics.hh"
-#include "usd_model/WorldInterface.hh"
 
 /////////////////////////////////////////////////
 TEST(USDPhysicsTest, AvailablePhysics)
@@ -46,14 +45,13 @@ TEST(USDPhysicsTest, AvailablePhysics)
     pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics")));
   EXPECT_TRUE(physicsScene);
 
-  sdf::usd::WorldInterface worldInterface;
+  sdf::World world;
 
   const double metersPerUnit = 1.0;
 
   sdf::usd::ParseUSDPhysicsScene(
-    physicsScene, worldInterface, metersPerUnit);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface.gravity);
-  EXPECT_FLOAT_EQ(9.8f, worldInterface.magnitude);
+    physicsScene, world, metersPerUnit);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.8), world.Gravity());
 }
 
 /////////////////////////////////////////////////
@@ -67,12 +65,11 @@ TEST(USDPhysicsTest, UnavailablePhysics)
     pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics")));
   EXPECT_FALSE(physicsScene);
 
-  sdf::usd::WorldInterface worldInterface;
+  sdf::World world;
 
   const double metersPerUnit = 1.0;
 
   sdf::usd::ParseUSDPhysicsScene(
-    physicsScene, worldInterface, metersPerUnit);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface.gravity);
-  EXPECT_FLOAT_EQ(9.8f, worldInterface.magnitude);
+    physicsScene, world, metersPerUnit);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.8), world.Gravity());
 }

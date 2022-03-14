@@ -18,8 +18,6 @@
 #ifndef USD_PARSER_PHYSYCS_HH
 #define USD_PARSER_PHYSYCS_HH
 
-#include "usd_model/WorldInterface.hh"
-
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/usd/usdPhysics/scene.h>
@@ -28,6 +26,7 @@
 #include "sdf/config.hh"
 #include "sdf/usd/Export.hh"
 
+#include "sdf/World.hh"
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
@@ -41,7 +40,7 @@ namespace sdf
     /// \param[in] _metersPerUnit meters per unit in the USD
     void IGNITION_SDFORMAT_USD_VISIBLE ParseUSDPhysicsScene(
       const pxr::UsdPhysicsScene &_scene,
-      WorldInterface &_world,
+      sdf::World &_world,
       double _metersPerUnit);
   }
   }
