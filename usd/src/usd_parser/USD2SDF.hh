@@ -38,11 +38,12 @@ inline namespace SDF_VERSION_NAMESPACE {
       /// \brief constructor
       public: USD2SDF() = default;
 
-      /// \brief convert USD file to sdf xml document
-      /// \param[in] _fileMame string containing USD filename.
-      /// \param[out] _sdfXmlDoc Document to populate with the sdf model.
+      /// \brief convert USD file to a sdf::Root object
+      /// \param[in] _fileName string containing USD filename.
+      /// \param[out] _root Root element to populate with the equivalent sdf
+      /// information from _fileName.
       /// \return UsdErrors, which is a list of UsdError objects. An empty list
-      /// means no errors occurred when populating _sdfXmlOut with the contents
+      /// means no errors occurred when populating _root with the contents
       /// of _fileName
       public: UsdErrors Read(
         const std::string &_fileName,
