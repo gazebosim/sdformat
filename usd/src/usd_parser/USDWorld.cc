@@ -28,13 +28,15 @@
 #include "sdf/usd/usd_parser/USDStage.hh"
 #include "USDPhysics.hh"
 
+#include "sdf/World.hh"
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    WorldInterface &_world)
+    sdf::World &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
@@ -49,7 +51,7 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world.worldName = reference->GetDefaultPrim().GetName().GetText();
+    _world.SetName(reference->GetDefaultPrim().GetName().GetText());
 
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
