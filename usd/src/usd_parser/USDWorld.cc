@@ -32,6 +32,7 @@
 #include <pxr/usd/usdGeom/gprim.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
+#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdPhysics/scene.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -41,8 +42,10 @@
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 #include "USDPhysics.hh"
 
-#include "usd_model/ModelInterface.hh"
-#include "usd_model/WorldInterface.hh"
+#include "sdf/Model.hh"
+#include "sdf/Light.hh"
+#include "sdf/Link.hh"
+#include "sdf/World.hh"
 
 namespace sdf
 {
@@ -50,14 +53,15 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    std::shared_ptr<WorldInterface> &_world)
+    sdf::World &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
     usdData.Init();
     usdData.ParseMaterials();
 
-    std::shared_ptr<ModelInterface> model;
+    sdf::Model model;
+    sdf::Model * modelPtr;
 
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
@@ -67,7 +71,15 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world->worldName = reference->GetDefaultPrim().GetName().GetText();
+    std::string worldName = reference->GetDefaultPrim().GetName().GetText();
+    if (!worldName.empty())
+    {
+      _world.SetName("world_name");
+    }
+    else
+    {
+      _world.SetName(worldName + "_world");
+    }
 
     std::string linkName;
 
@@ -87,12 +99,15 @@ namespace usd
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
 
-      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>())
+      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
+          && !prim.IsA<pxr::UsdPhysicsScene>()
+          && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
+          && !prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
-        model = std::make_shared<ModelInterface>();
-        model->Clear();
-        model->name = primPathTokens[0];
-        _world->models.push_back(model);
+        model = sdf::Model();
+        model.SetName(primPathTokens[0]);
+        _world.AddModel(model);
+        modelPtr = _world.ModelByName(primPathTokens[0]);
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale{1, 1, 1};
@@ -102,8 +117,8 @@ namespace usd
           usdData,
           pose,
           scale,
-          model->name);
-        model->pose = pose;
+          model.Name());
+        modelPtr->SetRawPose(pose);
       }
 
       // In general USD models used in Issac Sim define the model path
@@ -138,12 +153,10 @@ namespace usd
           prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
         auto light = ParseUSDLights(prim, usdData, linkName);
+        light->SetName(primName);
         if (light)
         {
-          _world->lights.insert(
-            std::pair<std::string, std::shared_ptr<sdf::Light>>
-              (primName, light));
-          _world->models.pop_back();
+          _world.AddLight(*light.get());
           // TODO(ahcorde): Include lights which are inside links
         }
         continue;
@@ -161,22 +174,30 @@ namespace usd
           return errors;
         }
 
-        ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
-        _world->models.pop_back();
+        ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
+            data.second->MetersPerUnit());
+        // _world->models.pop_back();
         continue;
       }
     }
 
-    std::cout << "-------------Lights--------------" << std::endl;
-    for (auto & light : _world->lights)
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
     {
-      std::cout << light.second->Name() << std::endl;
+      std::cout << "-------------Lights--------------" << std::endl;
+      std::cout << _world.LightByIndex(i)->Name() << std::endl;
     }
 
     std::cout << "-------------Models--------------" << std::endl;
-    for (auto & m : _world->models)
+    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
     {
+      auto m = _world.ModelByIndex(i);
       std::cout << m->Name() << std::endl;
+
+      // TODO(ahcorde): Remove this link here, I added this here to avoid
+      // errors. convert `m` in const.
+      sdf::Link link;
+      link.SetName("empty_link");
+      m->AddLink(link);
     }
 
     return errors;

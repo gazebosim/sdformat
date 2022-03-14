@@ -18,30 +18,29 @@
 #ifndef USD_PARSER_PHYSYCS_HH
 #define USD_PARSER_PHYSYCS_HH
 
-#include "usd_model/WorldInterface.hh"
-
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/usd/usd/primRange.h>
+#include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/config.hh"
 #include "sdf/usd/Export.hh"
 
+#include "sdf/World.hh"
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// \brief It parses the physics attributes of the USD file
-    /// \param[in] _prim Prim to extract the physics attributes
+    /// \brief Parse the physics attributes of a USD file
+    /// \param[in] _scene USD physics scene to extract attributes from
     /// \param[out] _world World interface where the data is placed
-    /// \param[in] _metersPerUnit meter per unit in the USD
+    /// \param[in] _metersPerUnit meters per unit in the USD
     void IGNITION_SDFORMAT_USD_VISIBLE ParseUSDPhysicsScene(
-      const pxr::UsdPrim &_prim,
-      std::shared_ptr<WorldInterface> &_world,
+      const pxr::UsdPhysicsScene &_scene,
+      sdf::World &_world,
       double _metersPerUnit);
   }
   }

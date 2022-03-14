@@ -53,27 +53,26 @@ namespace sdf
     /// in the schema
     /// Rotation is splitted in a vector because this might be defined
     /// as a rotation of 3 angles (ZYX, XYZ, etc).
-    class IGNITION_SDFORMAT_USD_VISIBLE UDSTransforms
+    struct IGNITION_SDFORMAT_USD_VISIBLE UDSTransforms
     {
-      public:
-        /// \brief Scale of the schema
-        ignition::math::Vector3d scale{1, 1, 1};
+      /// \brief Scale of the schema
+      ignition::math::Vector3d scale{1, 1, 1};
 
-        /// \brief Rotation of the schema
-        std::vector<ignition::math::Quaterniond> q;
+      /// \brief Rotation of the schema
+      std::vector<ignition::math::Quaterniond> q;
 
-        /// \brief Translatio of the schema
-        ignition::math::Vector3d translate{0, 0, 0};
+      /// \brief Translatio of the schema
+      ignition::math::Vector3d translate{0, 0, 0};
 
-        /// \brief True if there is a rotation ZYX definedor false otherwise
-        bool isRotationZYX = false;
+      /// \brief True if there is a rotation ZYX defined or false otherwise
+      bool isRotationZYX = false;
 
-        /// \brief True if there is a rotation (as a quaterion) defined
-        /// or false otherwise
-        bool isRotation = false;
+      /// \brief True if there is a rotation XYZ defined or false otherwise
+      bool isRotationXYZ = false;
 
-        /// \brief True if there is a translation defined or false otherwise
-        bool isTranslate = false;
+      /// \brief True if there is a rotation (as a quaterion) defined
+      /// or false otherwise
+      bool isRotation = false;
     };
 
     /// \brief This function will parse all the parents transforms of a prim
