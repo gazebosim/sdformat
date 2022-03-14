@@ -6,12 +6,6 @@
 
 def "shapes"
 {
-    def PhysicsScene "physics"
-    {
-        vector3f physics:gravityDirection = (0, 0, -1)
-        float physics:gravityMagnitude = 9.8
-    }
-
     def Xform "ground_plane"
     {
         float3 xformOp:rotateXYZ = (0, 0, 0)

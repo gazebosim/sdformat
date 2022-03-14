@@ -23,26 +23,41 @@
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Console.hh"
-
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   void ParseUSDPhysicsScene(
-    const pxr::UsdPrim &_prim,
-    std::shared_ptr<WorldInterface> &_world,
+    const pxr::UsdPhysicsScene &_scene,
+    WorldInterface &_world,
     double _metersPerUnit)
   {
-    auto variant_physics_scene = pxr::UsdPhysicsScene(_prim);
-    pxr::GfVec3f gravity;
-    variant_physics_scene.GetGravityDirectionAttr().Get(&gravity);
-    _world->gravity[0] = gravity[0];
-    _world->gravity[1] = gravity[1];
-    _world->gravity[2] = gravity[2];
-    variant_physics_scene.GetGravityMagnitudeAttr().Get(&_world->magnitude);
-    _world->magnitude *= _metersPerUnit;
+    const auto gravityAttr = _scene.GetGravityDirectionAttr();
+    if (gravityAttr)
+    {
+      pxr::GfVec3f gravity;
+      gravityAttr.Get(&gravity);
+      if (!ignition::math::equal(0.0f, gravity[0]) &&
+          !ignition::math::equal(0.0f, gravity[1]) &&
+          !ignition::math::equal(0.0f, gravity[2]))
+      {
+        _world.gravity[0] = gravity[0];
+        _world.gravity[1] = gravity[1];
+        _world.gravity[2] = gravity[2];
+      }
+    }
+
+    const auto magnitudeAttr = _scene.GetGravityMagnitudeAttr();
+    if (magnitudeAttr)
+    {
+      float magnitude;
+      magnitudeAttr.Get(&magnitude);
+      if (!std::isnan(magnitude) && !std::isinf(magnitude))
+      {
+        _world.magnitude = magnitude * _metersPerUnit;
+      }
+    }
   }
 }
 }

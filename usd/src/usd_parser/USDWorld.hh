@@ -40,7 +40,7 @@ namespace sdf
     /// occurred when parsing the world information of _inputFileNameUsd
     UsdErrors parseUSDWorld(
       const std::string &_inputFileNameUsd,
-      std::shared_ptr<WorldInterface> &_world);
+      WorldInterface &_world);
   }
   }
 }

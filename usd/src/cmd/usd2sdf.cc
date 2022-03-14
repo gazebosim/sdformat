@@ -15,6 +15,7 @@
  *
  */
 
+#include <iostream>
 #include <string>
 
 #include <ignition/utils/cli/CLI.hpp>
@@ -45,7 +46,15 @@ struct Options
 
 void runCommand(const Options &_opt)
 {
-  sdf::usd::parseUSDFile(_opt.inputFilename, _opt.outputFilename);
+  const auto errors =
+    sdf::usd::parseUSDFile(_opt.inputFilename, _opt.outputFilename);
+  if (!errors.empty())
+  {
+    std::cerr << "Errors occurred when generating [" << _opt.outputFilename
+              << "] from [" << _opt.inputFilename << "]:\n";
+    for (const auto &e : errors)
+      std::cerr << "\t" << e << "\n";
+  }
 }
 
 void addFlags(CLI::App &_app)

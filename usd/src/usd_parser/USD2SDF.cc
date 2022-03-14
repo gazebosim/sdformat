@@ -17,130 +17,56 @@
 
 #include "USD2SDF.hh"
 
+#include "sdf/Console.hh"
+#include "sdf/Types.hh"
 #include "usd_model/WorldInterface.hh"
-
 #include "USDWorld.hh"
+
+#include "sdf/Root.hh"
+#include "sdf/World.hh"
 
 namespace sdf {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd {
-/////////////////////////////////////////////////
-USD2SDF::USD2SDF()
-{
-}
-
-/////////////////////////////////////////////////
-USD2SDF::~USD2SDF()
-{
-}
-
-/////////////////////////////////////////////////
-UsdErrors USD2SDF::Read(const std::string &_filename,
-  tinyxml2::XMLDocument* _sdfXmlOut)
+////////////////////////////////////////////////
+UsdErrors USD2SDF::Read(const std::string &_fileName,
+  sdf::Root &_root)
 {
   UsdErrors errors;
 
-  std::shared_ptr<WorldInterface> worldInterface =
-    std::make_shared<WorldInterface>();
+  WorldInterface worldInterface;
 
-  auto errorsParseUSD =
-    parseUSDWorld(_filename, worldInterface);
+  const auto errorsParseUSD = parseUSDWorld(_fileName, worldInterface);
   if (!errorsParseUSD.empty())
   {
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-      "Error parsing the usd file"));
+      "Error parsing usd file [" + _fileName + "]"));
     return errors;
   }
 
-  tinyxml2::XMLElement *sdf = nullptr;
-  tinyxml2::XMLElement *world = nullptr;
+  sdf::World world;
 
-  sdf = _sdfXmlOut->NewElement("sdf");
-  sdf->SetAttribute("version", "1.7");
-
-  world = _sdfXmlOut->NewElement("world");
-  std::string worldName = worldInterface->worldName;
+  std::string worldName = worldInterface.worldName;
   if (worldName.empty())
   {
-    worldName = "world_name";
+    world.SetName("world_name");
   }
-  world->SetAttribute("name", (worldName + "_world").c_str());
+  else
+  {
+    world.SetName(worldName + "_world");
+  }
+  auto addWorldErrors = _root.AddWorld(world);
+  if (!addWorldErrors.empty())
+  {
+    errors.emplace_back(UsdError(
+      UsdErrorCode::SDF_ERROR,
+      "Error adding the world [" + worldName + "]"));
+    return errors;
+  }
+  world.SetGravity(worldInterface.gravity * worldInterface.magnitude);
 
-  AddKeyValue(world, "gravity", Vector32Str(
-    worldInterface->gravity * worldInterface->magnitude));
-
-  sdf->LinkEndChild(world);
-  _sdfXmlOut->LinkEndChild(sdf);
   return errors;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string USD2SDF::GetKeyValueAsString(tinyxml2::XMLElement* _elem)
-{
-  std::string valueStr;
-  if (_elem->Attribute("value"))
-  {
-    valueStr = _elem->Attribute("value");
-  }
-  else if (_elem->FirstChild())
-  {
-    // Check that this node is a XMLText
-    if (_elem->FirstChild()->ToText())
-    {
-      valueStr = _elem->FirstChild()->Value();
-    }
-    else
-    {
-      sdfwarn << "Attribute value string not set\n";
-    }
-  }
-  return trim(valueStr);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void USD2SDF::AddKeyValue(
-  tinyxml2::XMLElement *_elem,
-  const std::string &_key,
-  const std::string &_value)
-{
-  tinyxml2::XMLElement *childElem = _elem->FirstChildElement(_key.c_str());
-  if (childElem)
-  {
-    std::string oldValue = GetKeyValueAsString(childElem);
-    if (oldValue != _value)
-    {
-      sdferr << "multiple inconsistent <" << _key
-              << "> exists due to fixed joint reduction"
-              << " overwriting previous value [" << oldValue
-              << "] with [" << _value << "].\n";
-    }
-    else
-    {
-       sdferr << "multiple consistent <" << _key
-              << "> exists with [" << _value
-              << "] due to fixed joint reduction.\n";
-    }
-    _elem->DeleteChild(childElem);  // remove old _elem
-  }
-
-  auto *doc = _elem->GetDocument();
-  tinyxml2::XMLElement *ekey = doc->NewElement(_key.c_str());
-  tinyxml2::XMLText *textEkey = doc->NewText(_value.c_str());
-  ekey->LinkEndChild(textEkey);
-  _elem->LinkEndChild(ekey);
-}
-
-/////////////////////////////////////////////////
-std::string USD2SDF::Vector32Str(const ignition::math::Vector3d _vector)
-{
-  std::stringstream ss;
-  ss << _vector.X();
-  ss << " ";
-  ss << _vector.Y();
-  ss << " ";
-  ss << _vector.Z();
-  return ss.str();
 }
 }
 }

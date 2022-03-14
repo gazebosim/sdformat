@@ -18,6 +18,8 @@
 #include "sdf/usd/usd_parser/Parser.hh"
 #include "USD2SDF.hh"
 
+#include "sdf/Root.hh"
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
@@ -29,14 +31,24 @@ namespace usd
   {
     UsdErrors errors;
     USD2SDF usd2sdf;
-    auto doc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
-    auto readErrors = usd2sdf.Read(_inputFilenameUsd, &doc);
-    if (!readErrors.empty())
+    sdf::Root root;
+    errors = usd2sdf.Read(_inputFilenameUsd, root);
+    if (!errors.empty())
     {
-      errors.insert(errors.end(), readErrors.begin(), readErrors.end());
       return errors;
     }
-    doc.SaveFile(_outputFilenameSdf.c_str());
+
+    std::ofstream out(_outputFilenameSdf.c_str(), std::ios::out);
+    std::string string = root.ToElement()->ToString("");
+    if (!out)
+    {
+      errors.emplace_back(UsdError(
+        UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+        "Unable to open file [" + _outputFilenameSdf + "] for writing"));
+      return errors;
+    }
+    out << string;
+    out.close();
     return errors;
   }
 }

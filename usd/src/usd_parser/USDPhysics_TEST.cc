@@ -20,13 +20,12 @@
 #include <memory>
 #include <string>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -37,21 +36,43 @@
 #include "usd_model/WorldInterface.hh"
 
 /////////////////////////////////////////////////
-TEST(USDLightsTest, DistanceLight)
+TEST(USDPhysicsTest, AvailablePhysics)
 {
-  std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
-  auto stage = pxr::UsdStage::Open(filename);
+  const std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
+  const auto stage = pxr::UsdStage::Open(filename);
   ASSERT_TRUE(stage);
 
-  pxr::UsdPrim prim = stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics"));
+  const auto physicsScene =
+    pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics")));
+  EXPECT_TRUE(physicsScene);
 
-  std::shared_ptr<sdf::usd::WorldInterface> worldInterface =
-    std::make_shared<sdf::usd::WorldInterface>();
+  sdf::usd::WorldInterface worldInterface;
 
-  double metersPerUnit = 1.0;
+  const double metersPerUnit = 1.0;
 
   sdf::usd::ParseUSDPhysicsScene(
-    prim, worldInterface, metersPerUnit);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface->gravity);
-  EXPECT_NEAR(9.8, worldInterface->magnitude, 0.0001);
+    physicsScene, worldInterface, metersPerUnit);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface.gravity);
+  EXPECT_FLOAT_EQ(9.8f, worldInterface.magnitude);
+}
+
+/////////////////////////////////////////////////
+TEST(USDPhysicsTest, UnavailablePhysics)
+{
+  const std::string filename = sdf::testing::TestFile("usd", "upAxisY.usda");
+  const auto stage = pxr::UsdStage::Open(filename);
+  ASSERT_TRUE(stage);
+
+  const auto physicsScene =
+    pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics")));
+  EXPECT_FALSE(physicsScene);
+
+  sdf::usd::WorldInterface worldInterface;
+
+  const double metersPerUnit = 1.0;
+
+  sdf::usd::ParseUSDPhysicsScene(
+    physicsScene, worldInterface, metersPerUnit);
+  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), worldInterface.gravity);
+  EXPECT_FLOAT_EQ(9.8f, worldInterface.magnitude);
 }
