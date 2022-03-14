@@ -33,25 +33,24 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief This class stores data about the world
-    class WorldInterface {
-      public:
-        /// \brief World name
-        std::string worldName;
+    /// \brief This struct stores data about the world
+    struct WorldInterface {
+      /// \brief World name
+      std::string worldName;
 
-        /// \brief Magnitude of the gravity
-        float magnitude {9.8f};
+      /// \brief Magnitude of the gravity
+      float magnitude {9.8f};
 
-        /// \brief Gravity (X, Y, Z)
-        ignition::math::Vector3d gravity {0.0, 0.0, -1.0};
+      /// \brief Gravity (X, Y, Z)
+      ignition::math::Vector3d gravity {0.0, 0.0, -1.0};
 
-        friend std::ostream& operator<<(
-          std::ostream& os, const WorldInterface& _world)
-        {
-          os << "World name: " << _world.worldName
-             << ", Gravity: " << _world.gravity * _world.magnitude;
-          return os;
-        }
+      friend std::ostream& operator<<(
+        std::ostream& os, const WorldInterface& _world)
+      {
+        os << "World name: " << _world.worldName
+           << ", Gravity: " << _world.gravity * _world.magnitude;
+        return os;
+      }
     };
   }
   }
