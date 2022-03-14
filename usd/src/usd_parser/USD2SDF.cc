@@ -19,7 +19,6 @@
 
 #include "sdf/Console.hh"
 #include "sdf/Types.hh"
-#include "usd_model/WorldInterface.hh"
 #include "USDWorld.hh"
 
 #include "sdf/Root.hh"
@@ -34,9 +33,9 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
 {
   UsdErrors errors;
 
-  WorldInterface worldInterface;
+  sdf::World sdfWorld;
 
-  const auto errorsParseUSD = parseUSDWorld(_fileName, worldInterface);
+  const auto errorsParseUSD = parseUSDWorld(_fileName, sdfWorld);
   if (!errorsParseUSD.empty())
   {
     errors.emplace_back(UsdError(
@@ -45,37 +44,14 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
     return errors;
   }
 
-  sdf::World world;
-
-  std::string worldName = worldInterface.worldName;
-  if (worldName.empty())
-  {
-    world.SetName("world_name");
-  }
-  else
-  {
-    world.SetName(worldName + "_world");
-  }
-  // Add lights
-  for (auto & light : worldInterface.lights)
-  {
-    if (!world.AddLight(*light.second.get()))
-    {
-      errors.emplace_back(UsdError(
-        UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-        "Error parsing usd file [" + _fileName + "]"));
-    }
-  }
-
-  auto addWorldErrors = _root.AddWorld(world);
+  auto addWorldErrors = _root.AddWorld(sdfWorld);
   if (!addWorldErrors.empty())
   {
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_ERROR,
-      "Error adding the world [" + worldName + "]"));
+      "Error adding the world [" + sdfWorld.Name() + "]"));
     return errors;
   }
-  world.SetGravity(worldInterface.gravity * worldInterface.magnitude);
 
   return errors;
 }

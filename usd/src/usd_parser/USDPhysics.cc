@@ -23,6 +23,8 @@
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/World.hh"
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
@@ -30,9 +32,11 @@ namespace usd
 {
   void ParseUSDPhysicsScene(
     const pxr::UsdPhysicsScene &_scene,
-    WorldInterface &_world,
+    sdf::World &_world,
     double _metersPerUnit)
   {
+    ignition::math::Vector3d worldGravity{0, 0, -1};
+    float magnitude {9.8f};
     const auto gravityAttr = _scene.GetGravityDirectionAttr();
     if (gravityAttr)
     {
@@ -42,22 +46,22 @@ namespace usd
           !ignition::math::equal(0.0f, gravity[1]) &&
           !ignition::math::equal(0.0f, gravity[2]))
       {
-        _world.gravity[0] = gravity[0];
-        _world.gravity[1] = gravity[1];
-        _world.gravity[2] = gravity[2];
+        worldGravity[0] = gravity[0];
+        worldGravity[1] = gravity[1];
+        worldGravity[2] = gravity[2];
       }
     }
 
     const auto magnitudeAttr = _scene.GetGravityMagnitudeAttr();
     if (magnitudeAttr)
     {
-      float magnitude;
       magnitudeAttr.Get(&magnitude);
       if (!std::isnan(magnitude) && !std::isinf(magnitude))
       {
-        _world.magnitude = magnitude * _metersPerUnit;
+        magnitude = magnitude * _metersPerUnit;
       }
     }
+    _world.SetGravity(worldGravity * magnitude);
   }
 }
 }

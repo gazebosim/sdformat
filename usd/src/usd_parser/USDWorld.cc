@@ -40,13 +40,15 @@
 #include "sdf/usd/usd_parser/USDStage.hh"
 #include "USDPhysics.hh"
 
+#include "sdf/World.hh"
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    WorldInterface &_world)
+    sdf::World &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
@@ -61,7 +63,7 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world.worldName = reference->GetDefaultPrim().GetName().GetText();
+    _world.SetName(reference->GetDefaultPrim().GetName().GetText());
 
     std::string linkName;
 
@@ -113,11 +115,10 @@ namespace usd
           prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
         auto light = ParseUSDLights(prim, usdData, linkName);
+        light->SetName(primName);
         if (light)
         {
-          _world.lights.insert(
-            std::pair<std::string, std::shared_ptr<sdf::Light>>
-              (primName, light));
+          _world.AddLight(*light.get());
           // TODO(ahcorde): Include lights which are inside links
         }
         continue;
@@ -141,10 +142,10 @@ namespace usd
       }
     }
 
-    for (auto & light : _world.lights)
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
     {
       std::cout << "-------------Lights--------------" << std::endl;
-      std::cout << light.second->Name() << std::endl;
+      std::cout << _world.LightByIndex(i)->Name() << std::endl;
     }
 
     return errors;

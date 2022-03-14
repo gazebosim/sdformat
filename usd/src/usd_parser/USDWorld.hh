@@ -23,7 +23,7 @@
 #include "sdf/sdf_config.h"
 #include "sdf/usd/UsdError.hh"
 
-#include "usd_model/WorldInterface.hh"
+#include "sdf/World.hh"
 
 namespace sdf
 {
@@ -40,7 +40,7 @@ namespace sdf
     /// occurred when parsing the world information of _inputFileNameUsd
     UsdErrors parseUSDWorld(
       const std::string &_inputFileNameUsd,
-      WorldInterface &_world);
+      sdf::World &_world);
   }
   }
 }
