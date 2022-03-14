@@ -107,9 +107,11 @@ TEST_F(UsdStageFixture, Sensors)
   lidarSensor.GetAttribute(pxr::TfToken("minRange")).Get(&minRange);
   lidarSensor.GetAttribute(pxr::TfToken("maxRange")).Get(&maxRange);
   lidarSensor.GetAttribute(pxr::TfToken("horizontalFov")).Get(&hFOV);
-  lidarSensor.GetAttribute(pxr::TfToken("horizontalResolution")).Get(&hResolution);
+  lidarSensor.GetAttribute(
+      pxr::TfToken("horizontalResolution")).Get(&hResolution);
   lidarSensor.GetAttribute(pxr::TfToken("verticalFov")).Get(&vFOV);
-  lidarSensor.GetAttribute(pxr::TfToken("verticalResolution")).Get(&vResolution);
+  lidarSensor.GetAttribute(
+      pxr::TfToken("verticalResolution")).Get(&vResolution);
   EXPECT_FLOAT_EQ(10.0f, maxRange);
   EXPECT_FLOAT_EQ(0.08f, minRange);
   EXPECT_FLOAT_EQ(159.99995f, hFOV);
