@@ -189,9 +189,9 @@ def "shapes"
 
             def Xform "capsule_visual"
             {
-                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:rotateZYX = (0, 0, 90)
                 double3 xformOp:translate = (0, 0, 0)
-                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
 
                 def Capsule "geometry" (
                     prepend apiSchemas = ["PhysicsCollisionAPI"]

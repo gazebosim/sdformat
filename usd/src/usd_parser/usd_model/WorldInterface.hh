@@ -18,44 +18,46 @@
 #ifndef USD_PARSER_USD_MODEL_WORLD_INTERFACE_HH_
 #define USD_PARSER_USD_MODEL_WORLD_INTERFACE_HH_
 
+#include <map>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include <ignition/math/Vector3.hh>
 
-#include <sdf/Light.hh>
-#include <sdf/sdf_config.h>
+#include "sdf/sdf_config.h"
+
+#include "sdf/Light.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// \brief This class store data about the world
-    class WorldInterface {
-      public:
-        /// \brief World name
-        std::string worldName;
+    /// \brief This struct stores data about the world
+    struct WorldInterface {
+      /// \brief World name
+      std::string worldName;
 
-        /// \brief Magnitude of the gravity
-        float magnitude;
+      /// \brief Magnitude of the gravity
+      float magnitude {9.8f};
 
-        /// \brief Gravity (X, Y, Z)
-        ignition::math::Vector3d gravity;
+      /// \brief Gravity (X, Y, Z)
+      ignition::math::Vector3d gravity {0.0, 0.0, -1.0};
 
-        /// \brief World's lights 
-        std::map<std::string, std::shared_ptr<sdf::Light>> lights;
+      /// \brief World's lights
+      std::map<std::string, std::shared_ptr<sdf::Light>> lights;
 
-        friend std::ostream& operator<<(
-          std::ostream& os, const WorldInterface& _world)
-        {
-          os << "World name: " << _world.worldName;
-          os << "Gravity: " << _world.gravity * _world.magnitude << "\n";
-          return os;
-        }
+      friend std::ostream& operator<<(
+        std::ostream& os, const WorldInterface& _world)
+      {
+        os << "World name: " << _world.worldName
+           << ", Gravity: " << _world.gravity * _world.magnitude;
+        return os;
+      }
     };
   }
   }

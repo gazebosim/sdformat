@@ -31,6 +31,7 @@
 #include <pxr/usd/usdGeom/gprim.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
+#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdPhysics/scene.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -45,7 +46,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    std::shared_ptr<WorldInterface> &_world)
+    WorldInterface &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
@@ -60,7 +61,7 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world->worldName = reference->GetDefaultPrim().GetName().GetText();
+    _world.worldName = reference->GetDefaultPrim().GetName().GetText();
 
     std::string linkName;
 
@@ -114,7 +115,7 @@ namespace usd
         auto light = ParseUSDLights(prim, usdData, linkName);
         if (light)
         {
-          _world->lights.insert(
+          _world.lights.insert(
             std::pair<std::string, std::shared_ptr<sdf::Light>>
               (primName, light));
           // TODO(ahcorde): Include lights which are inside links
@@ -134,12 +135,13 @@ namespace usd
           return errors;
         }
 
-        ParseUSDPhysicsScene(prim, _world, data.second->MetersPerUnit());
+        ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
+            data.second->MetersPerUnit());
         continue;
       }
     }
 
-    for (auto & light : _world->lights)
+    for (auto & light : _world.lights)
     {
       std::cout << "-------------Lights--------------" << std::endl;
       std::cout << light.second->Name() << std::endl;

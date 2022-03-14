@@ -70,7 +70,7 @@ namespace sdf
           child.Pos().Z() * t.scale[2]);
       }
 
-      if (!t.isRotationZYX)
+      if (!t.isRotationZYX && !t.isRotationXYZ)
       {
         if (t.isRotation)
         {
@@ -158,7 +158,17 @@ namespace sdf
       else if (op == "xformOp:rotateZYX" || op == "xformOp:rotateXYZ")
       {
         pxr::GfVec3f rotationEuler(0, 0, 0);
-        auto attribute = _prim.GetAttribute(pxr::TfToken("xformOp:rotateZYX"));
+        pxr::UsdAttribute attribute;
+        if (op == "xformOp:rotateZYX")
+        {
+          attribute = _prim.GetAttribute(pxr::TfToken("xformOp:rotateZYX"));
+          t.isRotationZYX = true;
+        }
+        else
+        {
+          attribute = _prim.GetAttribute(pxr::TfToken("xformOp:rotateXYZ"));
+          t.isRotationXYZ = true;
+        }
         if (attribute.GetTypeName().GetCPPTypeName() == "GfVec3f")
         {
           attribute.Get(&rotationEuler);
@@ -182,7 +192,6 @@ namespace sdf
         t.q.push_back(qX);
         t.q.push_back(qY);
         t.q.push_back(qZ);
-        t.isRotationZYX = true;
         t.isRotation = true;
       }
       else if (op == "xformOp:translate")
@@ -201,7 +210,6 @@ namespace sdf
           translate[2] = translateTmp[2];
         }
         t.translate = ignition::math::Vector3d(translate[0], translate[1], translate[2]);
-        t.isTranslate = true;
       }
       else if (op == "xformOp:orient")
       {
@@ -250,7 +258,6 @@ namespace sdf
           rotQuat.GetImaginary()[2]
         );
         t.q.push_back(q);
-        t.isTranslate = true;
         t.isRotation = true;
       }
     }
