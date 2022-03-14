@@ -63,7 +63,15 @@ namespace usd
         "Unable to open [" + _inputFileName + "]"));
       return errors;
     }
-    _world.SetName(reference->GetDefaultPrim().GetName().GetText());
+    std::string worldName = reference->GetDefaultPrim().GetName().GetText();
+    if (!worldName.empty())
+    {
+      _world.SetName("world_name");
+    }
+    else
+    {
+      _world.SetName(worldName + "_world");
+    }
 
     std::string linkName;
 
