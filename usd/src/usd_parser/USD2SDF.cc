@@ -47,6 +47,10 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
   auto addWorldErrors = _root.AddWorld(sdfWorld);
   if (!addWorldErrors.empty())
   {
+    for (auto & error: addWorldErrors)
+    {
+      errors.emplace_back(error);
+    }
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_ERROR,
       "Error adding the world [" + sdfWorld.Name() + "]"));
