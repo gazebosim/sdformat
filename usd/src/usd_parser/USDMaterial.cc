@@ -15,6 +15,7 @@
  *
 */
 
+#include <string>
 #include "USDMaterial.hh"
 
 #include <ignition/common/Filesystem.hh>

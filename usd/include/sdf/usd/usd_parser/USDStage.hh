@@ -47,7 +47,7 @@ namespace sdf
       public: explicit USDStage(const std::string &_refFileName);
 
       /// \brief Initialize the data structure
-      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// \return A vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
       public: UsdErrors Init();
 
