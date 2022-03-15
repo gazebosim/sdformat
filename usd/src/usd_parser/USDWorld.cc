@@ -52,7 +52,7 @@ namespace usd
       return errors;
     }
     std::string worldName = reference->GetDefaultPrim().GetName().GetText();
-    if (!worldName.empty())
+    if (worldName.empty())
     {
       _world.SetName("world_name");
     }
