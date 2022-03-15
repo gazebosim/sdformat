@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -121,7 +121,8 @@ TEST_F(UsdStageFixture, Link)
         ignition::math::Vector3d(2, 0, 2.5),
         ignition::math::Quaterniond(0, 0, 0)));
   std::string cylinderLinkPath = cylinderPath + "/" + "link";
-  auto cylinderLink = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
+  auto cylinderLink =
+      this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
   ASSERT_TRUE(cylinderLink);
   sdf::usd::testing::CheckInertial(
     cylinderLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfQuatf(1, 0, 0, 0),

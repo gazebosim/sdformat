@@ -251,7 +251,7 @@ namespace usd {
         }
       }
     }
-    return std::make_pair<std::string, std::shared_ptr<USDStage>>("", nullptr);
+    return std::make_pair("", nullptr);
   }
 
   /////////////////////////////////////////////////
