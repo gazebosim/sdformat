@@ -270,7 +270,7 @@ void addFlags(CLI::App &_app)
     opt->outputFilename,
     "Output filename. Defaults to output.usd unless otherwise specified.");
 
-  _app.callback([&_app, opt](){
+  _app.callback([opt](){
     runCommand(*opt);
   });
 }

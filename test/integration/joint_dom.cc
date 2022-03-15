@@ -978,8 +978,6 @@ TEST(DOMJoint, Sensors)
   EXPECT_EQ("joint", joint->Name());
   EXPECT_EQ(1u, joint->SensorCount());
 
-  ignition::math::Pose3d pose;
-
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =
     joint->SensorByName("force_torque_sensor");
