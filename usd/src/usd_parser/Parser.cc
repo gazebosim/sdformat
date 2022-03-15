@@ -39,7 +39,6 @@ namespace usd
     }
 
     std::ofstream out(_outputFilenameSdf.c_str(), std::ios::out);
-    std::string string = root.ToElement()->ToString("");
     if (!out)
     {
       errors.emplace_back(UsdError(
@@ -47,7 +46,7 @@ namespace usd
         "Unable to open file [" + _outputFilenameSdf + "] for writing"));
       return errors;
     }
-    out << string;
+    out << root.ToElement()->ToString("");
     out.close();
     return errors;
   }

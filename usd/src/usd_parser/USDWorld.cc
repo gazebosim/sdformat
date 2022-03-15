@@ -46,13 +46,12 @@ namespace usd
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
     {
-      errors.emplace_back(UsdError(
-        UsdErrorCode::INVALID_USD_FILE,
-        "Unable to open [" + _inputFileName + "]"));
+      errors.emplace_back(UsdErrorCode::INVALID_USD_FILE,
+        "Unable to open [" + _inputFileName + "]");
       return errors;
     }
     std::string worldName = reference->GetDefaultPrim().GetName().GetText();
-    if (!worldName.empty())
+    if (worldName.empty())
     {
       _world.SetName("world_name");
     }
