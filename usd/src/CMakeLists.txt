@@ -10,9 +10,13 @@ set(sources
   sdf_parser/Sensor.cc
   sdf_parser/Visual.cc
   sdf_parser/World.cc
+  usd_parser/Parser.cc
+  usd_parser/USD2SDF.cc
   usd_parser/USDData.cc
   usd_parser/USDMaterial.cc
+  usd_parser/USDPhysics.cc
   usd_parser/USDStage.cc
+  usd_parser/USDWorld.cc
 )
 
 ign_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
@@ -41,6 +45,7 @@ set(gtest_sources
   sdf_parser/Visual_Sdf2Usd_TEST.cc
   sdf_parser/World_Sdf2Usd_TEST.cc
   usd_parser/USDData_TEST.cc
+  usd_parser/USDPhysics_TEST.cc
   usd_parser/USDStage_TEST.cc
   Conversions_TEST.cc
   UsdError_TEST.cc
@@ -54,5 +59,10 @@ ign_build_tests(
   LIB_DEPS ${usd_target} ignition-cmake${IGN_CMAKE_VER}::utilities
   INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
 )
+
+if (TARGET UNIT_USDPhysics_TEST)
+  target_sources(UNIT_USDPhysics_TEST PRIVATE
+  usd_parser/USDPhysics.cc)
+endif()
 
 add_subdirectory(cmd)

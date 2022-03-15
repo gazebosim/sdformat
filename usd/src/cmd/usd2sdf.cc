@@ -20,6 +20,7 @@
 
 #include <ignition/utils/cli/CLI.hpp>
 
+#include "sdf/usd/usd_parser/Parser.hh"
 #include "sdf/config.hh"
 
 //////////////////////////////////////////////////
@@ -43,10 +44,17 @@ struct Options
   std::string outputFilename{"output.sdf"};
 };
 
-void runCommand(const Options &/*_opt*/)
+void runCommand(const Options &_opt)
 {
-  // TODO(ahcorde): Call here the USD to SDF converter code
-  std::cerr << "USD to SDF conversion is not implemented yet.\n";
+  const auto errors =
+    sdf::usd::parseUSDFile(_opt.inputFilename, _opt.outputFilename);
+  if (!errors.empty())
+  {
+    std::cerr << "Errors occurred when generating [" << _opt.outputFilename
+              << "] from [" << _opt.inputFilename << "]:\n";
+    for (const auto &e : errors)
+      std::cerr << "\t" << e << "\n";
+  }
 }
 
 void addFlags(CLI::App &_app)
