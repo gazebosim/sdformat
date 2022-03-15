@@ -32,6 +32,7 @@
 #include "test_config.h"
 #include "test_utils.hh"
 
+#include "sdf/World.hh"
 #include "USDPhysics.hh"
 
 /////////////////////////////////////////////////

@@ -35,8 +35,8 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
 
   sdf::World sdfWorld;
 
-  const auto errorsParseUSD = parseUSDWorld(_fileName, sdfWorld);
-  if (!errorsParseUSD.empty())
+  errors = parseUSDWorld(_fileName, sdfWorld);
+  if (!errors.empty())
   {
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
@@ -44,17 +44,16 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
     return errors;
   }
 
-  auto addWorldErrors = _root.AddWorld(sdfWorld);
+  const auto addWorldErrors = _root.AddWorld(sdfWorld);
   if (!addWorldErrors.empty())
   {
-    for (auto & error: addWorldErrors)
+    for (const auto & error: addWorldErrors)
     {
       errors.emplace_back(error);
     }
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_ERROR,
       "Error adding the world [" + sdfWorld.Name() + "]"));
-    return errors;
   }
 
   return errors;
