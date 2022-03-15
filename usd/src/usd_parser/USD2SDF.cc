@@ -50,7 +50,7 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
   const auto addWorldErrors = _root.AddWorld(sdfWorld);
   if (!addWorldErrors.empty())
   {
-    for (const auto & error: addWorldErrors)
+    for (const auto & error : addWorldErrors)
     {
       errors.emplace_back(error);
     }
