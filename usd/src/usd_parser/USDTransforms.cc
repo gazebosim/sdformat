@@ -199,11 +199,11 @@ void GetAllTransforms(
     else
     {
       ignition::math::Pose3d poseZ = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0 ,0), t.Rotations()[2]);
+        ignition::math::Vector3d(0, 0, 0), t.Rotations()[2]);
       ignition::math::Pose3d poseY = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0 ,0), t.Rotations()[1]);
+        ignition::math::Vector3d(0, 0, 0), t.Rotations()[1]);
       ignition::math::Pose3d poseX = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0 ,0), t.Rotations()[0]);
+        ignition::math::Vector3d(0, 0, 0), t.Rotations()[0]);
 
       ignition::math::Pose3d poseT = ignition::math::Pose3d(
         t.Translate() * metersPerUnit,
@@ -220,7 +220,7 @@ void GetAllTransforms(
   if (upAxis == "Y")
   {
     ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
-      ignition::math::Vector3d(0, 0 ,0),
+      ignition::math::Vector3d(0, 0, 0),
       ignition::math::Quaterniond(IGN_PI_2, 0, 0));
     _tfs.push_back(poseUpAxis);
   }
