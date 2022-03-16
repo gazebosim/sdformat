@@ -51,7 +51,8 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool initFile(const std::string &_filename, SDFPtr _sdf);
+  bool initFile(const std::string &_filename, SDFPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Initialize the SDF interface using a file
   /// \param[in] _filename Name of the SDF file
@@ -67,7 +68,8 @@ namespace sdf
   /// \param[in] _sdf Pointer to an SDF Element object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool initFile(const std::string &_filename, ElementPtr _sdf);
+  bool initFile(const std::string &_filename, ElementPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Initialize an SDFElement interface using a file
   /// \param[in] _filename Name of the SDF file
@@ -83,7 +85,8 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool initString(const std::string &_xmlString, SDFPtr _sdf);
+  bool initString(const std::string &_xmlString, SDFPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Initialize the SDF interface using a string
   /// \param[in] _xmlString XML string to be parsed.
@@ -102,7 +105,8 @@ namespace sdf
   /// \param[in] _filename Name of the SDF file
   /// \return Populated SDF pointer.
   SDFORMAT_VISIBLE
-  sdf::SDFPtr readFile(const std::string &_filename);
+  sdf::SDFPtr readFile(const std::string &_filename)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a file
   ///
@@ -113,7 +117,8 @@ namespace sdf
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return Populated SDF pointer.
   SDFORMAT_VISIBLE
-  sdf::SDFPtr readFile(const std::string &_filename, Errors &_errors);
+  sdf::SDFPtr readFile(const std::string &_filename, Errors &_errors)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a file
   ///
@@ -138,7 +143,8 @@ namespace sdf
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors);
+  bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a file
   ///
@@ -167,7 +173,8 @@ namespace sdf
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readFileWithoutConversion(
-      const std::string &_filename, SDFPtr _sdf, Errors &_errors);
+      const std::string &_filename, SDFPtr _sdf, Errors &_errors)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a file without converting to the
   /// latest SDF version
@@ -194,7 +201,8 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool readFile(const std::string &_filename, SDFPtr _sdf);
+  bool readFile(const std::string &_filename, SDFPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a string
   ///
@@ -206,7 +214,8 @@ namespace sdf
   /// \param[out] _errors Parsing errors will be appended to this variable.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors);
+  bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a string
   ///
@@ -231,7 +240,8 @@ namespace sdf
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool readString(const std::string &_xmlString, SDFPtr _sdf);
+  bool readString(const std::string &_xmlString, SDFPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a string
   ///
@@ -244,7 +254,8 @@ namespace sdf
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readString(const std::string &_xmlString, ElementPtr _sdf,
-      Errors &_errors);
+      Errors &_errors)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a string
   ///
@@ -273,7 +284,8 @@ namespace sdf
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool readStringWithoutConversion(
-      const std::string &_xmlString, SDFPtr _sdf, Errors &_errors);
+      const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Populate the SDF values from a string
   ///
@@ -298,7 +310,8 @@ namespace sdf
   /// \param[in] _sdf Pointer to an SDF Element object.
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool readString(const std::string &_xmlString, ElementPtr _sdf);
+  bool readString(const std::string &_xmlString, ElementPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Get the file path to the model file
   /// \param[in] _modelDirPath directory system path of the model
@@ -315,7 +328,8 @@ namespace sdf
   /// \return True on success.
   SDFORMAT_VISIBLE
   bool convertFile(const std::string &_filename, const std::string &_version,
-                   SDFPtr _sdf);
+                   SDFPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Convert an SDF file to a specific SDF version.
   /// \param[in] _filename Name of the SDF file to convert.
@@ -334,7 +348,8 @@ namespace sdf
   /// \return True on success.
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString,
-                     const std::string &_version, SDFPtr _sdf);
+                     const std::string &_version, SDFPtr _sdf)
+  SDF_DEPRECATED(12.0);
 
   /// \brief Convert an SDF string to a specific SDF version.
   /// \param[in] _sdfString The SDF string to convert.
