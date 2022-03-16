@@ -100,6 +100,7 @@ namespace usd
       //  -> /wall_0
       // the shortName variable defines if this is the first case when it's
       // False or when it's true then it's the second case.
+      // This conversion might only work with Issac Sim USDs
       if (primPathTokens.size() >= 2)
       {
         bool shortName = false;
@@ -149,12 +150,6 @@ namespace usd
             data.second->MetersPerUnit());
         continue;
       }
-    }
-
-    for (unsigned int i = 0; i < _world.LightCount(); ++i)
-    {
-      std::cout << "-------------Lights--------------" << std::endl;
-      std::cout << _world.LightByIndex(i)->Name() << std::endl;
     }
 
     return errors;
