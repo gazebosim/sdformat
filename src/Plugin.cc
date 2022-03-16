@@ -151,7 +151,7 @@ sdf::ElementPtr Plugin::ToElement() const
   elem->GetAttribute("filename")->Set(this->Filename());
 
   // Insert plugin content
-  for (const sdf::ElementPtr content : this->dataPtr->contents)
+  for (const sdf::ElementPtr &content : this->dataPtr->contents)
     elem->InsertElement(content, true);
 
   return elem;
@@ -188,7 +188,7 @@ Plugin &Plugin::operator=(const Plugin &_plugin)
 
   this->dataPtr->contents.clear();
   // Copy the contents of the plugin
-  for (const sdf::ElementPtr content : _plugin.Contents())
+  for (const sdf::ElementPtr &content : _plugin.Contents())
   {
     this->dataPtr->contents.push_back(content->Clone());
   }
