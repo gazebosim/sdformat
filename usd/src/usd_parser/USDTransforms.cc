@@ -29,17 +29,17 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
 
-const std::string kXFormOpTranslate = {"xformOp:translate"};
-const std::string kXFormOpOrient = {"xformOp:orient"};
-const std::string kXFormOpTransform = {"xformOp:transform"};
-const std::string kXFormOpScale = {"xformOp:scale"};
-const std::string kXFormOpRotateXYZ = {"xformOp:rotateXYZ"};
-const std::string kXFormOpRotateZYX = {"xformOp:rotateZYX"};
+const char kXFormOpTranslate[] = {"xformOp:translate"};
+const char kXFormOpOrient[] = {"xformOp:orient"};
+const char kXFormOpTransform[] = {"xformOp:transform"};
+const char kXFormOpScale[] = {"xformOp:scale"};
+const char kXFormOpRotateXYZ[] = {"xformOp:rotateXYZ"};
+const char kXFormOpRotateZYX[] = {"xformOp:rotateZYX"};
 
-const std::string kGfVec3fString = {"GfVec3f"};
-const std::string kGfVec3dString = {"GfVec3d"};
-const std::string kGfQuatfString = {"GfQuatf"};
-const std::string kGfQuatdString = {"GfQuatd"};
+const char kGfVec3fString[] = {"GfVec3f"};
+const char kGfVec3dString[] = {"GfVec3d"};
+const char kGfQuatfString[] = {"GfQuatf"};
+const char kGfQuatdString[] = {"GfQuatd"};
 
 /// \brief Private altimeter data.
 class UDSTransforms::Implementation
@@ -199,11 +199,11 @@ void GetAllTransforms(
     else
     {
       ignition::math::Pose3d poseZ = ignition::math::Pose3d(
-        ignition::math::Vector3d(0 ,0 ,0), t.Rotations()[2]);
+        ignition::math::Vector3d(0, 0 ,0), t.Rotations()[2]);
       ignition::math::Pose3d poseY = ignition::math::Pose3d(
-        ignition::math::Vector3d(0 ,0 ,0), t.Rotations()[1]);
+        ignition::math::Vector3d(0, 0 ,0), t.Rotations()[1]);
       ignition::math::Pose3d poseX = ignition::math::Pose3d(
-        ignition::math::Vector3d(0 ,0 ,0), t.Rotations()[0]);
+        ignition::math::Vector3d(0, 0 ,0), t.Rotations()[0]);
 
       ignition::math::Pose3d poseT = ignition::math::Pose3d(
         t.Translate() * metersPerUnit,
@@ -220,7 +220,7 @@ void GetAllTransforms(
   if (upAxis == "Y")
   {
     ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
-      ignition::math::Vector3d(0 ,0 ,0),
+      ignition::math::Vector3d(0, 0 ,0),
       ignition::math::Quaterniond(IGN_PI_2, 0, 0));
     _tfs.push_back(poseUpAxis);
   }
@@ -256,7 +256,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
 
   pxr::VtTokenArray xformOpOrder;
   transforms.Get(&xformOpOrder);
-  for (auto & op: xformOpOrder)
+  for (auto & op : xformOpOrder)
   {
     if (op == kXFormOpScale)
     {
