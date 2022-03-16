@@ -100,6 +100,8 @@ namespace usd
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
 
+      // This assumption on the scene graph it wouldn't hold if the usd does
+      // not come from Isaac Sim
       if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
           && !prim.IsA<pxr::UsdPhysicsScene>()
           && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
@@ -126,7 +128,7 @@ namespace usd
       // under a root path for example:
       //  -> /robot_name/robot_name_link0
       // But sometimes for enviroments it uses just a simple path:
-      //  -> /ground_plan
+      //  -> /ground_plane
       //  -> /wall_0
       // the shortName variable defines if this is the first case when it's
       // False or when it's true then it's the second case.
@@ -178,28 +180,8 @@ namespace usd
 
         ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
             data.second->MetersPerUnit());
-        // _world->models.pop_back();
         continue;
       }
-    }
-
-    for (unsigned int i = 0; i < _world.LightCount(); ++i)
-    {
-      std::cout << "-------------Lights--------------" << std::endl;
-      std::cout << _world.LightByIndex(i)->Name() << std::endl;
-    }
-
-    std::cout << "-------------Models--------------" << std::endl;
-    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
-    {
-      auto m = _world.ModelByIndex(i);
-      std::cout << m->Name() << std::endl;
-
-      // TODO(ahcorde): Remove this link here, I added this here to avoid
-      // errors. convert `m` in const.
-      sdf::Link link;
-      link.SetName("empty_link");
-      m->AddLink(link);
     }
 
     return errors;
