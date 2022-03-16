@@ -184,6 +184,25 @@ namespace usd
       }
     }
 
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
+    {
+      std::cout << "-------------Lights--------------" << std::endl;
+      std::cout << _world.LightByIndex(i)->Name() << std::endl;
+    }
+
+    std::cout << "-------------Models--------------" << std::endl;
+    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
+    {
+      auto m = _world.ModelByIndex(i);
+      std::cout << m->Name() << std::endl;
+
+      // TODO(ahcorde): Remove this link here, I added this here to avoid
+      // errors. convert `m` in const.
+      sdf::Link link;
+      link.SetName("empty_link");
+      m->AddLink(link);
+    }
+
     return errors;
   }
 }
