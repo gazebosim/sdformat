@@ -2835,7 +2835,6 @@ void CreateLink(tinyxml2::XMLElement *_root,
   elem->SetAttribute("name", _link->name.c_str());
 
   // compute global transform
-  gz::math::Pose3d localTransform;
   // this is the transform from parent link to current _link
   // this transform does not exist for the root link
   if (_link->parent_joint)
