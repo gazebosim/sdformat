@@ -52,18 +52,18 @@ namespace sdf
 
       /// \brief Initialize the data inside the class with the stage
       /// defined in the constructor
-      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// \return A vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
       public: UsdErrors Init();
 
       /// \brief If a stage contains substages, this will allow to include
       /// them.
-      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// \return A vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
       public: UsdErrors AddStage(const std::string &_ref);
 
       /// \brief Read materials
-      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// \return A vector of Error objects. Each Error includes
       /// an error code and message. An empty vector indicates no error.
       public: UsdErrors ParseMaterials();
 

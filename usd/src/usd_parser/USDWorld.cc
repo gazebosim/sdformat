@@ -16,7 +16,9 @@
 */
 #include "USDWorld.hh"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
@@ -66,13 +68,12 @@ namespace usd
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
     {
-      errors.emplace_back(UsdError(
-        UsdErrorCode::INVALID_USD_FILE,
-        "Unable to open [" + _inputFileName + "]"));
+      errors.emplace_back(UsdErrorCode::INVALID_USD_FILE,
+        "Unable to open [" + _inputFileName + "]");
       return errors;
     }
     std::string worldName = reference->GetDefaultPrim().GetName().GetText();
-    if (!worldName.empty())
+    if (worldName.empty())
     {
       _world.SetName("world_name");
     }
@@ -94,7 +95,7 @@ namespace usd
 
       std::string primName = prim.GetName();
       std::string primPath = pxr::TfStringify(prim.GetPath());
-      std::string primType = pxr::TfStringify(prim.GetPath());
+      std::string primType = prim.GetPrimTypeInfo().GetTypeName().GetText();
 
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
@@ -129,6 +130,7 @@ namespace usd
       //  -> /wall_0
       // the shortName variable defines if this is the first case when it's
       // False or when it's true then it's the second case.
+      // This conversion might only work with Issac Sim USDs
       if (primPathTokens.size() >= 2)
       {
         bool shortName = false;
