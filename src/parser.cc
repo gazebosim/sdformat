@@ -181,7 +181,9 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 /// \param[out] _errors Captures errors encountered during parsing.
 static void insertIncludedElement(sdf::SDFPtr _includeSDF,
                                   const SourceLocation &_sourceLoc, bool _merge,
-                                  sdf::ElementPtr _parent, sdf::Errors &_errors)
+                                  sdf::ElementPtr _parent,
+                                  const ParserConfig &_config,
+                                  sdf::Errors &_errors)
 {
   Error invalidFileError(ErrorCode::FILE_READ,
                          "Included model is invalid. Skipping model.");
@@ -230,7 +232,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   // We create a throwaway sdf::Root object in order to validate the
   // included entity.
   sdf::Root includedRoot;
-  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
+  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF, _config);
   _errors.insert(_errors.end(), includeDOMerrors.begin(),
                  includeDOMerrors.end());
 
@@ -1510,7 +1512,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, refSDF);
+    initFile(refFilename, _config, refSDF);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 
@@ -1803,7 +1805,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           SourceLocation sourceLoc{includeXmlPath, _source,
                                    elemXml->GetLineNum()};
 
-          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _errors);
+          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _config,
+                                _errors);
           continue;
         }
       }
