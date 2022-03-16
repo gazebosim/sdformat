@@ -24,7 +24,7 @@
 #include "test_config.h"
 #include "test_utils.hh"
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -48,15 +48,15 @@ void checkTransforms(
   sdf::usd::UDSTransforms usdTransforms =
     sdf::usd::ParseUSDTransform(prim);
 
-  EXPECT_EQ(_translation, usdTransforms.translate);
-  EXPECT_EQ(_scale, usdTransforms.scale);
-  EXPECT_EQ(_rotation.size(), usdTransforms.q.size());
+  EXPECT_EQ(_translation, usdTransforms.Translate());
+  EXPECT_EQ(_scale, usdTransforms.Scale());
+  EXPECT_EQ(_rotation.size(), usdTransforms.Rotations().size());
   for (unsigned int i = 0; i < _rotation.size(); ++i)
   {
-    EXPECT_EQ(_rotation[i], usdTransforms.q[i]);
+    EXPECT_EQ(_rotation[i], usdTransforms.Rotations()[i]);
   }
 
-  EXPECT_EQ(!_rotation.empty(), usdTransforms.isRotation);
+  EXPECT_EQ(!_rotation.empty(), usdTransforms.Rotation());
 }
 
 /////////////////////////////////////////////////
@@ -192,12 +192,4 @@ TEST(Utils, GetAllTransform)
       ignition::math::Vector3d(0, 0.03, 0.005),
       ignition::math::Quaterniond(1, 0, 0, 0)),
     pose);
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }
