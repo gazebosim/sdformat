@@ -580,6 +580,26 @@ TEST(SDF, EmbeddedSpec)
   EXPECT_NE(result.find("name=\"version\" type=\"string\""), std::string::npos);
 }
 
+TEST(SDF, EmbeddedSpecNonExistent)
+{
+  std::string result;
+  std::string output;
+
+  testing::internal::CaptureStderr();
+  result = sdf::SDF::EmbeddedSpec("unavailable.sdf", false);
+  output = testing::internal::GetCapturedStderr();
+  EXPECT_NE(output.find("Unable to find SDF filename"), std::string::npos);
+  EXPECT_NE(output.find("with version"), std::string::npos);
+  EXPECT_TRUE(result.empty());
+
+  output = "";
+  testing::internal::CaptureStderr();
+  result = sdf::SDF::EmbeddedSpec("unavailable.sdf", true);
+  output = testing::internal::GetCapturedStderr();
+  EXPECT_TRUE(output.empty());
+  EXPECT_TRUE(result.empty());
+}
+
 /////////////////////////////////////////////////
 TEST(SDF, FilePath)
 {
