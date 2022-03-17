@@ -560,6 +560,27 @@ TEST(SDF, Version)
 }
 
 /////////////////////////////////////////////////
+TEST(SDF, EmbeddedSpec)
+{
+  std::string result;
+  std::string output;
+
+  result = sdf::SDF::EmbeddedSpec("actor.sdf", false);
+  EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
+  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"), std::string::npos);
+  result = sdf::SDF::EmbeddedSpec("actor.sdf", true);
+  EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
+  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"), std::string::npos);
+
+  result = sdf::SDF::EmbeddedSpec("root.sdf", false);
+  EXPECT_NE(result.find("SDFormat base element"), std::string::npos);
+  EXPECT_NE(result.find("name=\"version\" type=\"string\""), std::string::npos);
+  result = sdf::SDF::EmbeddedSpec("root.sdf", true);
+  EXPECT_NE(result.find("SDFormat base element"), std::string::npos);
+  EXPECT_NE(result.find("name=\"version\" type=\"string\""), std::string::npos);
+}
+
+/////////////////////////////////////////////////
 TEST(SDF, FilePath)
 {
   sdf::SDF sdf;
