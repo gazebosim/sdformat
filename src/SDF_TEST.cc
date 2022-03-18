@@ -563,7 +563,6 @@ TEST(SDF, Version)
 TEST(SDF, EmbeddedSpec)
 {
   std::string result;
-  std::string output;
 
   result = sdf::SDF::EmbeddedSpec("actor.sdf", false);
   EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
@@ -583,21 +582,32 @@ TEST(SDF, EmbeddedSpec)
 TEST(SDF, EmbeddedSpecNonExistent)
 {
   std::string result;
-  std::string output;
 
-  testing::internal::CaptureStderr();
+  // Capture sdferr output
+  std::stringstream stderr_buffer;
+  auto old = std::cerr.rdbuf(stderr_buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
   result = sdf::SDF::EmbeddedSpec("unavailable.sdf", false);
-  output = testing::internal::GetCapturedStderr();
-  EXPECT_NE(output.find("Unable to find SDF filename"), std::string::npos);
-  EXPECT_NE(output.find("with version"), std::string::npos);
+  EXPECT_NE(stderr_buffer.str().find("Unable to find SDF filename"), std::string::npos);
+  EXPECT_NE(stderr_buffer.str().find("with version"), std::string::npos);
   EXPECT_TRUE(result.empty());
 
-  output = "";
-  testing::internal::CaptureStderr();
+  // clear the contents of the buffer
+  stderr_buffer.str("");
+
   result = sdf::SDF::EmbeddedSpec("unavailable.sdf", true);
-  output = testing::internal::GetCapturedStderr();
-  EXPECT_TRUE(output.empty());
+  EXPECT_TRUE(stderr_buffer.str().empty());
   EXPECT_TRUE(result.empty());
+
+  // Revert cerr rdbuf to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
 }
 
 /////////////////////////////////////////////////
