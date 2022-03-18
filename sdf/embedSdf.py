@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 """"Script for generating a C++ file that contains the content from all SDF files"""
 
@@ -94,7 +94,9 @@ def get_map_content(arg_pathlist: Path) -> str:
     map_str = ''
     files = []
     for path in pathlist:
-        files.append(str(path))
+        # dir separator is hardcoded to '/' in C++ mapping
+        posix_path = PurePosixPath(path)
+        files.append(str(posix_path))
     # get ascending order
     files.sort()
     for file in files:
