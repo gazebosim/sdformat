@@ -179,7 +179,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 {
   Errors errors;
   SDFPtr sdfParsed(new SDF());
-  init(sdfParsed);
+  init(sdfParsed, _config);
 
   // Read an SDF string, and store the result in sdfParsed.
   if (!readString(_sdf, _config, sdfParsed, errors))
