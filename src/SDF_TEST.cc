@@ -588,7 +588,7 @@ TEST(SDF, EmbeddedSpecNonExistent)
   testing::internal::CaptureStderr();
   result = sdf::SDF::EmbeddedSpec("unavailable.sdf", false);
   output = testing::internal::GetCapturedStderr();
-  EXPECT_NE(output.find("Unable to find SDF filename"), std::string::npos);
+  EXPECT_NE(output.find("Unable to find SDF filename"), std::string::npos) << output;
   EXPECT_NE(output.find("with version"), std::string::npos);
   EXPECT_TRUE(result.empty());
 
