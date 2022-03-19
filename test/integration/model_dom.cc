@@ -700,7 +700,6 @@ TEST(DOMModel, IncludeModelWithPlugin)
 
   // Test ToElement with useInclude == true
   {
-    sdf::ParserConfig config = sdf::ParserConfig::GlobalConfig();
     config.SetToElementUseIncludeTag(true);
     sdf::ElementPtr elem = model->ToElement(config);
 
@@ -725,7 +724,6 @@ TEST(DOMModel, IncludeModelWithPlugin)
   // model SDF which would have two plugins, one from the <include> tag and
   // one from the included model
   {
-    sdf::ParserConfig config = sdf::ParserConfig::GlobalConfig();
     config.SetToElementUseIncludeTag(false);
     sdf::ElementPtr elem = model->ToElement(config);
 
