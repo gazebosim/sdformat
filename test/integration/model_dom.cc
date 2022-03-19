@@ -700,7 +700,9 @@ TEST(DOMModel, IncludeModelWithPlugin)
 
   // Test ToElement with useInclude == true
   {
-    sdf::ElementPtr elem = model->ToElement(true);
+    sdf::ParserConfig config = sdf::ParserConfig::GlobalConfig();
+    config.SetToElementUseIncludeTag(true);
+    sdf::ElementPtr elem = model->ToElement(config);
 
     // There should be a uri
     ASSERT_TRUE(elem->HasElement("uri"));
@@ -723,7 +725,9 @@ TEST(DOMModel, IncludeModelWithPlugin)
   // model SDF which would have two plugins, one from the <include> tag and
   // one from the included model
   {
-    sdf::ElementPtr elem = model->ToElement(false);
+    sdf::ParserConfig config = sdf::ParserConfig::GlobalConfig();
+    config.SetToElementUseIncludeTag(false);
+    sdf::ElementPtr elem = model->ToElement(config);
 
     // There should NOT be a uri
     ASSERT_FALSE(elem->HasElement("uri"));
