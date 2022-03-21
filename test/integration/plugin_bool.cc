@@ -46,7 +46,9 @@ std::string get_sdf_string()
 TEST(PluginBool, ParseBoolValue)
 {
   sdf::SDFPtr model(new sdf::SDF());
-  sdf::init(model);
+  sdf::Errors errors;
+  sdf::init(model, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(get_sdf_string(), model));
 
   sdf::ElementPtr plugin =

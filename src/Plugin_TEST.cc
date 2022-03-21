@@ -24,6 +24,7 @@
 TEST(DOMPlugin, Construction)
 {
   sdf::Plugin plugin;
+  sdf::Errors errors;
   EXPECT_EQ(nullptr, plugin.Element());
 
   EXPECT_TRUE(plugin.Name().empty());
@@ -41,7 +42,8 @@ TEST(DOMPlugin, Construction)
   plugin.InsertContent(content);
   EXPECT_EQ(1u, plugin.Contents().size());
 
-  sdf::ElementPtr elem = plugin.ToElement();
+  sdf::ElementPtr elem = plugin.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   ASSERT_NE(nullptr, elem->GetAttribute("name"));
@@ -164,7 +166,9 @@ TEST(DOMPlugin, Load)
   EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
   EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[1].Code());
 
-  sdf->AddAttribute("name", "string", "__default__", true);
+  errors.clear();
+  sdf->AddAttribute("name", "string", "__default__", true, errors);
+  ASSERT_TRUE(errors.empty());
   sdf->GetAttribute("name")->Set<std::string>("my-plugin-name");
 
   // Now just missing filename
@@ -172,7 +176,9 @@ TEST(DOMPlugin, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
 
-  sdf->AddAttribute("filename", "string", "__default__", true);
+  errors.clear();
+  sdf->AddAttribute("filename", "string", "__default__", true, errors);
+  ASSERT_TRUE(errors.empty());
   sdf->GetAttribute("filename")->Set<std::string>("filename.so");
 
   // No errors.
@@ -201,11 +207,12 @@ TEST(DOMPlugin, LoadWithChildren)
   std::string pluginStrWithSdf = std::string("<sdf version='1.9'>") +
     pluginStr + "</sdf>";
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("plugin.sdf", elem);
+  sdf::Errors errors;
+  sdf::initFile("plugin.sdf", elem, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(pluginStrWithSdf, elem));
 
   sdf::Plugin plugin;
-  sdf::Errors errors;
   errors = plugin.Load(elem);
   ASSERT_EQ(0u, errors.size());
 
@@ -215,7 +222,8 @@ TEST(DOMPlugin, LoadWithChildren)
   // The elements should be the same
   EXPECT_EQ(elem->ToString(""), plugin.Element()->ToString(""));
 
-  sdf::ElementPtr toElem = plugin.ToElement();
+  sdf::ElementPtr toElem = plugin.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
 
   // The elements should be the same
   EXPECT_EQ(elem->ToString(""), toElem->ToString(""));
@@ -227,11 +235,13 @@ TEST(DOMPlugin, LoadWithChildren)
   plugin.ClearContents();
   sdf::Plugin plugin4(plugin3);
 
-  toElem = plugin3.ToElement();
+  toElem = plugin3.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_EQ(6u, plugin3.Contents().size());
   EXPECT_EQ(pluginStr, toElem->ToString(""));
 
-  toElem = plugin4.ToElement();
+  toElem = plugin4.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_EQ(6u, plugin4.Contents().size());
   EXPECT_EQ(pluginStr, toElem->ToString(""));
 }
@@ -251,7 +261,9 @@ TEST(DOMPlugin, ToElement)
   plugin.InsertContent(content);
   EXPECT_EQ(1u, plugin.Contents().size());
 
-  sdf::ElementPtr elem = plugin.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = plugin.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Plugin plugin2;
@@ -278,7 +290,9 @@ TEST(DOMPlugin, OutputStreamOperator)
   plugin.InsertContent(content);
   EXPECT_EQ(1u, plugin.Contents().size());
 
-  sdf::ElementPtr elem = plugin.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = plugin.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
   std::string elemString = elem->ToString("");
 
@@ -313,7 +327,9 @@ TEST(DOMPlugin, InputStreamOperator)
   EXPECT_EQ("filename.so", plugin.Filename());
   EXPECT_EQ(1u, plugin.Contents().size());
 
-  sdf::ElementPtr elem = plugin.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = plugin.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
   std::string elemString = elem->ToString("");
   EXPECT_EQ(input, elemString);

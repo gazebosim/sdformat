@@ -420,6 +420,7 @@ namespace sdf
     /// model.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \param[in] _useIncludeTag When true, the model's URI is used to create
     /// an SDF `<include>` rather than a `<model>`. The model's URI must be
     /// first set using the `Model::SetUri` function. If the model's URI is
@@ -429,7 +430,7 @@ namespace sdf
     /// is loaded from an `<include>` tag since the parser will
     /// automatically expand an `<include>` element to a `<model>` element.
     /// \return SDF element pointer with updated model values.
-    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors, bool _useIncludeTag = true) const;
 
     /// \brief Check if a given name exists in the FrameAttachedTo graph at the
     /// scope of the model.

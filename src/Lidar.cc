@@ -369,10 +369,10 @@ bool Lidar::operator!=(const Lidar &_lidar) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Lidar::ToElement() const
+sdf::ElementPtr Lidar::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("lidar.sdf", elem);
+  sdf::initFile("lidar.sdf", elem, _errors);
 
   sdf::ElementPtr scanElem = elem->GetElement("scan");
   sdf::ElementPtr horElem = scanElem->GetElement("horizontal");

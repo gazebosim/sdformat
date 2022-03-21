@@ -137,10 +137,10 @@ ignition::math::Cylinderd &Cylinder::Shape()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Cylinder::ToElement() const
+sdf::ElementPtr Cylinder::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("cylinder_shape.sdf", elem);
+  sdf::initFile("cylinder_shape.sdf", elem, _errors);
 
   sdf::ElementPtr radiusElem = elem->GetElement("radius");
   radiusElem->Set<double>(this->Radius());

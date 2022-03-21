@@ -34,7 +34,9 @@ TEST(ConverterIntegration, ParserFileConverter)
   const auto filename = sdf::testing::TestFile("integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   EXPECT_TRUE(sdf::convertFile(filename, "1.6", sdf));
 
@@ -76,7 +78,9 @@ TEST(ConverterIntegration, convertFileToNotLatestVersion)
       "integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   EXPECT_TRUE(sdf::convertFile(filename, "1.5", sdf));
 
@@ -114,7 +118,9 @@ void ParserStringConverter(const std::string &_version)
 </sdf>)";
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   EXPECT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
   ASSERT_NE(nullptr, sdf->Root());
@@ -160,7 +166,9 @@ TEST(ConverterIntegration, UnflattenConversion)
                           "flattened_test_nested_model_with_frames.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_TRUE(sdf::convertFile(filename, "1.8", sdf));
 

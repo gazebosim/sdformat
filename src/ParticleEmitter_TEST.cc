@@ -142,7 +142,9 @@ TEST(DOMParticleEmitter, ToElement)
   sdf::Material material;
   emitter.SetMaterial(material);
 
-  sdf::ElementPtr elem = emitter.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = emitter.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::ParticleEmitter emitter2;

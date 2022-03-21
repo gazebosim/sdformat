@@ -119,7 +119,9 @@ TEST(DOMAltimeter, ToElement)
   alt.SetVerticalPositionNoise(noise);
   alt.SetVerticalVelocityNoise(noise);
 
-  sdf::ElementPtr altElem = alt.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr altElem = alt.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, altElem);
   EXPECT_EQ(nullptr, alt.Element());
 
@@ -133,7 +135,8 @@ TEST(DOMAltimeter, ToElement)
   // make changes to DOM and verify ToElement produces updated values
   noise.SetMean(2.3);
   alt2.SetVerticalPositionNoise(noise);
-  sdf::ElementPtr alt2Elem = alt2.ToElement();
+  sdf::ElementPtr alt2Elem = alt2.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, alt2Elem);
   sdf::Altimeter alt3;
   alt3.Load(alt2Elem);

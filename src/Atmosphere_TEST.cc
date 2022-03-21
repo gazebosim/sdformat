@@ -141,7 +141,9 @@ TEST(DOMAtmosphere, ToElement)
   atmosphere.SetTemperatureGradient(1.34);
   atmosphere.SetPressure(2.65);
 
-  sdf::ElementPtr elem = atmosphere.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = atmosphere.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Atmosphere atmosphere2;

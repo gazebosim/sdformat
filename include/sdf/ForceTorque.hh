@@ -158,8 +158,9 @@ namespace sdf
     /// force torque sensor.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _error Vector of possible errors.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_error) const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

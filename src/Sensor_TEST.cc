@@ -329,7 +329,9 @@ TEST(DOMSensor, EnableMetrics)
          << "  </model>"
          << "</sdf>";
   sdf::SDF sdfParsed;
-  sdfParsed.SetFromString(stream.str());
+  sdf::Errors errors;
+  sdfParsed.SetFromString(stream.str(), errors);
+  ASSERT_TRUE(errors.empty());
 
   const sdf::ElementPtr sensorElem = sdfParsed.Root()->
     GetElement("model")->GetElement("sensor");
@@ -525,7 +527,9 @@ TEST(DOMSensor, ToElement)
   plugin.SetFilename("filename1");
   sensor.AddPlugin(plugin);
 
-  sdf::ElementPtr sensorElem = sensor.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr sensorElem = sensor.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, sensorElem);
   EXPECT_EQ(nullptr, sensor.Element());
 
@@ -548,7 +552,8 @@ TEST(DOMSensor, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   sensor2.SetUpdateRate(1.23);
-  sdf::ElementPtr sensor2Elem = sensor2.ToElement();
+  sdf::ElementPtr sensor2Elem = sensor2.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, sensor2Elem);
   sdf::Sensor sensor3;
   sensor3.Load(sensor2Elem);

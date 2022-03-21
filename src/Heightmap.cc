@@ -462,10 +462,10 @@ void Heightmap::AddBlend(const HeightmapBlend &_blend)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Heightmap::ToElement() const
+sdf::ElementPtr Heightmap::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("heightmap_shape.sdf", elem);
+  sdf::initFile("heightmap_shape.sdf", elem, _errors);
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri");

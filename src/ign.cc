@@ -81,7 +81,8 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 
   sdf::SDFPtr sdf(new sdf::SDF());
 
-  if (!sdf::init(sdf))
+  //TODO:marcoag change this check and probably init behavior
+  if (!sdf::init(sdf, errors))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";
     return -1;
@@ -121,7 +122,9 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
   {
     sdf->Version(_version);
   }
-  if (!sdf::init(sdf))
+  //TODO:marcoag change way to handle errors here
+  sdf::Errors errors;
+  if (!sdf::init(sdf, errors))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";
     return -1;
@@ -144,7 +147,9 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
 
   sdf::SDFPtr sdf(new sdf::SDF());
 
-  if (!sdf::init(sdf))
+  //TODO:marcoag change way to handle errors here
+  sdf::Errors errors;
+  if (!sdf::init(sdf, errors))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";
     return -1;
@@ -182,7 +187,9 @@ extern "C" SDFORMAT_VISIBLE int cmdPrintPreserveIncludes(const char *_path)
 
   sdf::SDFPtr sdf(new sdf::SDF());
 
-  if (!sdf::init(sdf))
+  //TODO:marcoag change the way the errors are handled
+  sdf::Errors errors;
+  if (!sdf::init(sdf, errors))
   {
     std::cerr << "Error: SDF schema initialization failed.\n";
     return -1;

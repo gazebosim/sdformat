@@ -186,7 +186,9 @@ TEST(DOMCollision, ToElement)
   surface.SetContact(contact);
   collision.SetSurface(surface);
 
-  sdf::ElementPtr elem = collision.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = collision.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Collision collision2;

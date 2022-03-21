@@ -280,10 +280,10 @@ void ForceTorque::SetMeasureDirection(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr ForceTorque::ToElement() const
+sdf::ElementPtr ForceTorque::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("forcetorque.sdf", elem);
+  sdf::initFile("forcetorque.sdf", elem, _errors);
 
   std::string frame;
   switch (this->Frame())
@@ -325,28 +325,28 @@ sdf::ElementPtr ForceTorque::ToElement() const
   sdf::ElementPtr forceElem = elem->GetElement("force");
   sdf::ElementPtr forceXElem = forceElem->GetElement("x");
   sdf::ElementPtr forceXNoiseElem = forceXElem->GetElement("noise");
-  forceXNoiseElem->Copy(this->dataPtr->forceXNoise.ToElement());
+  forceXNoiseElem->Copy(this->dataPtr->forceXNoise.ToElement(_errors));
 
   sdf::ElementPtr forceYElem = forceElem->GetElement("y");
   sdf::ElementPtr forceYNoiseElem = forceYElem->GetElement("noise");
-  forceYNoiseElem->Copy(this->dataPtr->forceYNoise.ToElement());
+  forceYNoiseElem->Copy(this->dataPtr->forceYNoise.ToElement(_errors));
 
   sdf::ElementPtr forceZElem = forceElem->GetElement("z");
   sdf::ElementPtr forceZNoiseElem = forceZElem->GetElement("noise");
-  forceZNoiseElem->Copy(this->dataPtr->forceZNoise.ToElement());
+  forceZNoiseElem->Copy(this->dataPtr->forceZNoise.ToElement(_errors));
 
   sdf::ElementPtr torqueElem = elem->GetElement("torque");
   sdf::ElementPtr torqueXElem = torqueElem->GetElement("x");
   sdf::ElementPtr torqueXNoiseElem = torqueXElem->GetElement("noise");
-  torqueXNoiseElem->Copy(this->dataPtr->torqueXNoise.ToElement());
+  torqueXNoiseElem->Copy(this->dataPtr->torqueXNoise.ToElement(_errors));
 
   sdf::ElementPtr torqueYElem = torqueElem->GetElement("y");
   sdf::ElementPtr torqueYNoiseElem = torqueYElem->GetElement("noise");
-  torqueYNoiseElem->Copy(this->dataPtr->torqueYNoise.ToElement());
+  torqueYNoiseElem->Copy(this->dataPtr->torqueYNoise.ToElement(_errors));
 
   sdf::ElementPtr torqueZElem = torqueElem->GetElement("z");
   sdf::ElementPtr torqueZNoiseElem = torqueZElem->GetElement("noise");
-  torqueZNoiseElem->Copy(this->dataPtr->torqueZNoise.ToElement());
+  torqueZNoiseElem->Copy(this->dataPtr->torqueZNoise.ToElement(_errors));
 
   return elem;
 }

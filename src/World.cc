@@ -856,10 +856,10 @@ Errors World::Implementation::LoadSphericalCoordinates(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr World::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr World::ToElement(sdf::Errors &_errors, bool _useIncludeTag) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("world.sdf", elem);
+  sdf::initFile("world.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetElement("gravity")->Set(this->Gravity());
@@ -870,19 +870,19 @@ sdf::ElementPtr World::ToElement(bool _useIncludeTag) const
 
   // Physics
   for (const sdf::Physics &physics : this->dataPtr->physics)
-    elem->InsertElement(physics.ToElement(), true);
+    elem->InsertElement(physics.ToElement(_errors), true);
 
   // Models
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(_useIncludeTag), true);
+    elem->InsertElement(model.ToElement(_errors, _useIncludeTag), true);
 
   // Actors
   for (const sdf::Actor &actor : this->dataPtr->actors)
-    elem->InsertElement(actor.ToElement(), true);
+    elem->InsertElement(actor.ToElement(_errors), true);
 
   // Lights
   for (const sdf::Light &light : this->dataPtr->lights)
-    elem->InsertElement(light.ToElement(), true);
+    elem->InsertElement(light.ToElement(_errors), true);
 
   // Spherical coordinates.
   if (this->dataPtr->sphericalCoordinates)
@@ -904,15 +904,15 @@ sdf::ElementPtr World::ToElement(bool _useIncludeTag) const
 
   // Atmosphere
   if (this->dataPtr->atmosphere)
-    elem->InsertElement(this->dataPtr->atmosphere->ToElement(), true);
+    elem->InsertElement(this->dataPtr->atmosphere->ToElement(_errors), true);
 
   // Gui
   if (this->dataPtr->gui)
-    elem->InsertElement(this->dataPtr->gui->ToElement(), true);
+    elem->InsertElement(this->dataPtr->gui->ToElement(_errors), true);
 
   // Scene
   if (this->dataPtr->scene)
-    elem->InsertElement(this->dataPtr->scene->ToElement(), true);
+    elem->InsertElement(this->dataPtr->scene->ToElement(_errors), true);
 
   // Audio
   if (this->dataPtr->audioDevice != "default")
@@ -920,7 +920,7 @@ sdf::ElementPtr World::ToElement(bool _useIncludeTag) const
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

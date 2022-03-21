@@ -54,7 +54,9 @@ TEST(Frame, ModelFrame)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Verify correct parsing
@@ -115,7 +117,9 @@ TEST(Frame, FrameDefaultPose)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Verify correct parsing
@@ -161,7 +165,9 @@ TEST(Frame, NoFrame)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Verify correct parsing
@@ -230,7 +236,9 @@ TEST(Frame, StateFrame)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(sdfStr.str(), sdfParsed));
 
   // load the state sdf
@@ -326,7 +334,9 @@ TEST(Frame, IncludeRelativeTo)
 
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Verify correct parsing
@@ -377,7 +387,9 @@ TEST(Frame, IncludeRelativeToEmptyPose)
 
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Verify correct parsing
@@ -523,7 +535,9 @@ TEST(DOMFrame, LoadModelFramesInvalidAttachedTo)
 
   // Try loading sdf::Model object
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  errors.clear();
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(testFile, sdfParsed));
 
   auto rootElem = sdfParsed->Root();
@@ -783,7 +797,9 @@ TEST(DOMFrame, LoadWorldFramesInvalidAttachedTo)
 
   // Try loading sdf::World object
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  errors.clear();
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(testFile, sdfParsed));
 
   auto rootElem = sdfParsed->Root();

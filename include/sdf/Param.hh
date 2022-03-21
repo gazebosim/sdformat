@@ -125,6 +125,7 @@ namespace sdf
     /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: Param(const std::string &_key, const std::string &_typeName,
                   const std::string &_default, bool _required,
+                  sdf::Errors &_errors,
                   const std::string &_description = "");
 
     /// \brief Constructor with min and max values.
@@ -140,6 +141,7 @@ namespace sdf
     public: Param(const std::string &_key, const std::string &_typeName,
                   const std::string &_default, bool _required,
                   const std::string &_minValue, const std::string &_maxValue,
+                  sdf::Errors &_errors,
                   const std::string &_description = "");
 
     /// \brief Copy constructor

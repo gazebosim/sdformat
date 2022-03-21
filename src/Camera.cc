@@ -1024,10 +1024,10 @@ bool Camera::HasLensIntrinsics() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Camera::ToElement() const
+sdf::ElementPtr Camera::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("camera.sdf", elem);
+  sdf::initFile("camera.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set<std::string>(this->Name());
   sdf::ElementPtr poseElem = elem->GetElement("pose");

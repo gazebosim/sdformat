@@ -179,10 +179,10 @@ void Mesh::SetCenterSubmesh(const bool _center)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Mesh::ToElement() const
+sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("mesh_shape.sdf", elem);
+  sdf::initFile("mesh_shape.sdf", elem, _errors);
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri");

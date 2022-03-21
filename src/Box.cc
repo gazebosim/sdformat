@@ -115,10 +115,10 @@ ignition::math::Boxd &Box::Shape()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Box::ToElement() const
+sdf::ElementPtr Box::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("box_shape.sdf", elem);
+  sdf::initFile("box_shape.sdf", elem, _errors);
 
   sdf::ElementPtr sizeElem = elem->GetElement("size");
   sizeElem->Set(this->Size());

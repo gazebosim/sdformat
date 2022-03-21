@@ -30,7 +30,9 @@ TEST(DeprecatedSpecs, Spec1_0)
   const std::string filename =
     sdf::testing::TestFile("integration", "deprecated_sdf_1-0.sdf");
   sdf::SDFPtr sdf(new sdf::SDF());
-  EXPECT_FALSE(sdf::initFile(filename, sdf));
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::initFile(filename, sdf, errors));
+  ASSERT_TRUE(errors.empty());
 }
 
 ////////////////////////////////////////////////////
@@ -39,14 +41,18 @@ TEST(DeprecatedSpecs, Spec1_2)
   const std::string filename =
     sdf::testing::TestFile("integration", "deprecated_sdf_1-2.sdf");
   sdf::SDFPtr sdf(new sdf::SDF());
-  EXPECT_FALSE(sdf::initFile(filename, sdf));
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::initFile(filename, sdf, errors));
+  ASSERT_TRUE(errors.empty());
 }
 
 ////////////////////////////////////////////////////
 TEST(DeprecatedElements, CanEmitErrors)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
   auto elem = std::make_shared<sdf::Element>();
   elem->SetRequired("-1");
   elem->SetName("testElem");
@@ -54,7 +60,6 @@ TEST(DeprecatedElements, CanEmitErrors)
   sdf->Root(elem);
   auto config = sdf::ParserConfig::GlobalConfig();
   config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
-  sdf::Errors errors;
   EXPECT_TRUE(sdf::readString(
       "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
   ASSERT_FALSE(errors.empty());
@@ -84,7 +89,9 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 #endif
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
   auto elem = std::make_shared<sdf::Element>();
   elem->SetRequired("-1");
   elem->SetName("testElem");
@@ -94,7 +101,6 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     auto config = sdf::ParserConfig::GlobalConfig();
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
     config.SetDeprecatedElementsPolicy(sdf::EnforcementPolicy::WARN);
-    sdf::Errors errors;
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     EXPECT_TRUE(errors.empty());
@@ -108,7 +114,6 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     auto config = sdf::ParserConfig::GlobalConfig();
     config.SetDeprecatedElementsPolicy(sdf::EnforcementPolicy::WARN);
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
-    sdf::Errors errors;
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     EXPECT_TRUE(errors.empty());
@@ -120,7 +125,6 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     config.SetDeprecatedElementsPolicy(sdf::EnforcementPolicy::WARN);
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
     config.ResetDeprecatedElementsPolicy();
-    sdf::Errors errors;
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     ASSERT_FALSE(errors.empty());

@@ -431,10 +431,11 @@ namespace sdf
     /// world.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \param[in] _useIncludeTag This parameter is passed through to the
     /// Model::ToElement function.
     /// \return SDF element pointer with updated world values.
-    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors, bool _useIncludeTag = true) const;
 
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

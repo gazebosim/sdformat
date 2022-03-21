@@ -48,7 +48,8 @@ TEST(Unknown, CopyUnknownElement)
 
   // Read an SDF file, and store the result in sdfParsed.
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::readString(xmlString, sdfParsed, errors);
 
   sdf::ElementPtr elem = sdfParsed->Root();

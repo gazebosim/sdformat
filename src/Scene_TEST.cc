@@ -185,7 +185,9 @@ TEST(DOMScene, ToElement)
   sdf::Sky sky;
   scene.SetSky(sky);
 
-  sdf::ElementPtr elem = scene.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = scene.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Scene scene2;

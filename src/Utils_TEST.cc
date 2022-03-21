@@ -26,8 +26,11 @@ TEST(DOMUtils, PoseDefaultValues)
 {
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
-  element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("relative_to", "string", "", false);
+  sdf::Errors errors;
+  element->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  element->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -42,7 +45,9 @@ TEST(DOMUtils, PoseNoFrame)
 {
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
-  element->AddValue("pose", "0 0 0 0 0 0", true);
+  sdf::Errors errors;
+  element->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -57,7 +62,9 @@ TEST(DOMUtils, PoseNoValue)
 {
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
-  element->AddValue("pose", "", true);
+  sdf::Errors errors;
+  element->AddValue("pose", "", true, errors);
+  ASSERT_TRUE(errors.empty());
 
   ignition::math::Pose3d pose;
   std::string frame;
@@ -72,8 +79,11 @@ TEST(DOMUtils, PoseWithFrame)
 {
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
-  element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("relative_to", "string", "", false);
+  sdf::Errors errors;
+  element->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  element->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
   element->GetAttribute("relative_to")->SetFromString("frame_name");
 
   ignition::math::Pose3d pose;
@@ -89,8 +99,11 @@ TEST(DOMUtils, PoseWithValue)
 {
   sdf::ElementPtr element(new sdf::Element);
   element->SetName("pose");
-  element->AddValue("pose", "0 0 0 0 0 0", true);
-  element->AddAttribute("relative_to", "string", "", false);
+  sdf::Errors errors;
+  element->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  element->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
   element->GetAttribute("relative_to")->SetFromString("another frame");
   element->GetValue()->SetFromString("1 2 3 0.1 0.2 0.3");
 

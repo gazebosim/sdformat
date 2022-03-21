@@ -204,10 +204,10 @@ sdf::ElementPtr Sky::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Sky::ToElement() const
+sdf::ElementPtr Sky::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr sceneElem(new sdf::Element);
-  sdf::initFile("scene.sdf", sceneElem);
+  sdf::initFile("scene.sdf", sceneElem, _errors);
   sdf::ElementPtr elem = sceneElem->GetElement("sky");
 
   elem->GetElement("time")->Set(this->Time());

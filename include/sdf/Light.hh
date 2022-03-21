@@ -280,8 +280,9 @@ namespace sdf
     /// light object.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \return SDF element pointer with updated light values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,

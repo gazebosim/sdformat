@@ -137,10 +137,11 @@ ignition::math::Capsuled &Capsule::Shape()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Capsule::ToElement() const
+sdf::ElementPtr Capsule::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("capsule_shape.sdf", elem);
+  sdf::Errors errors;
+  sdf::initFile("capsule_shape.sdf", elem, errors);
 
   sdf::ElementPtr radiusElem = elem->GetElement("radius");
   radiusElem->Set(this->Radius());

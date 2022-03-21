@@ -184,13 +184,15 @@ TEST(DOMMesh, Load)
 TEST(DOMMesh, ToElement)
 {
   sdf::Mesh mesh;
+  sdf::Errors errors;
 
   mesh.SetUri("mesh-uri");
   mesh.SetScale(ignition::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
   mesh.SetCenterSubmesh(false);
 
-  sdf::ElementPtr elem = mesh.ToElement();
+  sdf::ElementPtr elem = mesh.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Mesh mesh2;

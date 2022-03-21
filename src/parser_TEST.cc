@@ -40,7 +40,9 @@ TEST(Parser, initStringTrim)
          << "  </attribute>"
          << "</element>";
 
-  EXPECT_TRUE(sdf::initString(stream.str(), sdf));
+  sdf::Errors errors;
+  EXPECT_TRUE(sdf::initString(stream.str(), sdf, errors));
+  EXPECT_TRUE(errors.empty());
   sdf::ElementPtr root = sdf->Root();
   EXPECT_TRUE(root != nullptr);
 
@@ -59,10 +61,10 @@ TEST(Parser, initStringTrim)
 /////////////////////////////////////////////////
 /// Tests whether the input sdf string satisfies the unique name criteria among
 /// same types
-sdf::SDFPtr InitSDF()
+sdf::SDFPtr InitSDF(sdf::Errors &_errors)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::init(sdf, _errors);
   return sdf;
 }
 
@@ -73,7 +75,9 @@ TEST(Parser, CustomUnknownElements)
   const auto path = sdf::testing::TestFile(
       "sdf", "custom_and_unknown_elements.sdf");
 
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
 #ifndef _WIN32
@@ -107,7 +111,9 @@ TEST(Parser, ReusedSDFVersion)
   const auto path16 = sdf::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Call readFile API that always converts
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(sdf::readFile(path17, sdf));
   EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
   EXPECT_EQ("1.7", sdf->OriginalVersion());
@@ -128,7 +134,9 @@ TEST(Parser, readFileConversions)
 
   // Call readFile API that always converts
   {
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_EQ(SDF_PROTOCOL_VERSION, sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ("1.6", sdf->OriginalVersion());
@@ -138,7 +146,8 @@ TEST(Parser, readFileConversions)
   // Call readFile API that does not convert
   {
     sdf::Errors errors;
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFileWithoutConversion(path, sdf, errors));
     EXPECT_EQ("1.6", sdf->Root()->Get<std::string>("version"));
     EXPECT_EQ("1.6", sdf->OriginalVersion());
@@ -156,7 +165,9 @@ TEST(Parser, NameUniqueness)
   // that have duplicate names.
   {
     const auto path = sdf::testing::TestFile("sdf", "world_duplicate.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -170,7 +181,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "world_sibling_same_names.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -184,7 +197,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "model_duplicate_links.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -198,7 +213,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "model_duplicate_joints.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -212,7 +229,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "model_link_joint_same_name.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -226,7 +245,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "link_duplicate_sibling_collisions.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -240,7 +261,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "link_duplicate_sibling_visuals.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
     EXPECT_EQ(path, sdf->FilePath());
@@ -254,7 +277,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "link_duplicate_cousin_collisions.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
@@ -269,7 +294,9 @@ TEST(Parser, NameUniqueness)
   {
     const auto path = sdf::testing::TestFile("sdf",
         "link_duplicate_cousin_visuals.sdf");
-    sdf::SDFPtr sdf = InitSDF();
+    sdf::Errors errors;
+    sdf::SDFPtr sdf = InitSDF(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_TRUE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
     EXPECT_TRUE(sdf::recursiveSiblingUniqueNames(sdf->Root()));
@@ -301,7 +328,9 @@ TEST(Parser, SyntaxErrorInValues)
   {
     const auto path = sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    EXPECT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -315,7 +344,9 @@ TEST(Parser, SyntaxErrorInValues)
     buffer.str("");
     const auto path = sdf::testing::TestFile("sdf", "bad_syntax_double.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    EXPECT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -330,7 +361,9 @@ TEST(Parser, SyntaxErrorInValues)
     buffer.str("");
     const auto path = sdf::testing::TestFile("sdf", "bad_syntax_vector.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    EXPECT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -363,7 +396,9 @@ TEST(Parser, MissingRequiredAttributesErrors)
 
     const auto path = sdf::testing::TestFile("sdf", "box_bad_test.world");
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    ASSERT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -401,7 +436,9 @@ TEST(Parser, IncludesErrors)
 
     const auto path = sdf::testing::TestFile("sdf", "includes_missing_uri.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    ASSERT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -421,7 +458,9 @@ TEST(Parser, IncludesErrors)
     const auto path =
         sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    ASSERT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -446,7 +485,9 @@ TEST(Parser, IncludesErrors)
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    EXPECT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -472,7 +513,9 @@ TEST(Parser, IncludesErrors)
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
-    sdf::init(sdf);
+    sdf::Errors errors;
+    sdf::init(sdf, errors);
+    EXPECT_TRUE(errors.empty());
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
@@ -503,8 +546,9 @@ TEST(Parser, PlacementFrameMissingPose)
       {
         return sdf::testing::TestFile("integration", "model", _file);
       });
-  sdf::SDFPtr sdf = InitSDF();
   sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_FALSE(sdf::readFile(testModelPath, sdf, errors));
   ASSERT_GE(errors.size(), 0u);
   EXPECT_EQ(sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID, errors[0].Code());
@@ -514,7 +558,9 @@ TEST(Parser, PlacementFrameMissingPose)
 // Delimiter '::' in name should error in SDFormat 1.8 but not in 1.7
 TEST(Parser, DoubleColonNameAttrError)
 {
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   std::ostringstream stream;
   stream << "<?xml version=\"1.0\"?>"
          << "<sdf version='1.8'>"
@@ -523,12 +569,12 @@ TEST(Parser, DoubleColonNameAttrError)
          << "  </model>"
          << "</sdf>";
 
-  sdf::Errors errors;
   EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::RESERVED_NAME);
 
-  sdf = InitSDF();
+  sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   stream.str("");
   stream << "<?xml version=\"1.0\"?>"
          << "<sdf version='1.7'>"
@@ -575,13 +621,16 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 {
   const auto sdfDescPath =
     sdf::testing::TestFile("sdf", "stricter_semantics_desc.sdf");
+  sdf::Errors errors;
 
   auto sdfTest = std::make_shared<sdf::SDF>();
-  sdf::initFile(sdfDescPath, sdfTest);
+  sdf::initFile(sdfDescPath, sdfTest, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Initialize the root.sdf description and add our test description as one of
   // its children
-  auto sdf = InitSDF();
+  auto sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   sdf->Root()->AddElementDescription(sdfTest->Root());
 
   auto wrapInSdf = [](const std::string &_xml) -> std::string
@@ -594,7 +643,6 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 
   {
     auto elem = sdf->Root()->Clone();
-    sdf::Errors errors;
     EXPECT_TRUE(sdf::readString(
         wrapInSdf("<int_t>0</int_t><double_t>0</double_t>"), elem, errors));
     EXPECT_TRUE(errors.empty()) << errors[0];
@@ -645,7 +693,9 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 /// Check for parsing errors while reading strings
 TEST(Parser, ReadSingleLineStringError)
 {
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   std::ostringstream stream;
   stream
     << "<sdf version='1.8'>"
@@ -666,7 +716,6 @@ TEST(Parser, ReadSingleLineStringError)
     << "  </link>"
     << "</model>"
     << "</sdf>";
-  sdf::Errors errors;
   EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
   ASSERT_NE(errors.size(), 0u);
 
@@ -683,7 +732,9 @@ TEST(Parser, ReadSingleLineStringError)
 /// Check for parsing errors while reading strings
 TEST(Parser, ReadMultiLineStringError)
 {
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   std::ostringstream stream;
   stream
     << "<sdf version='1.8'>\n"
@@ -704,7 +755,6 @@ TEST(Parser, ReadMultiLineStringError)
     << "  </link>\n"
     << "</model>\n"
     << "</sdf>\n";
-  sdf::Errors errors;
   EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
   ASSERT_NE(errors.size(), 0u);
 
@@ -744,7 +794,8 @@ TEST(Parser, ElementFilePath)
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);
   sdf::Errors errors;
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(testString, config, sdf, errors));
   ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, sdf);
@@ -791,7 +842,8 @@ TEST(Parser, MissingRequiredElement)
     </sdf>)";
 
   sdf::Errors errors;
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_FALSE(sdf::readString(testString, sdf, errors));
 
   ASSERT_NE(errors.size(), 0u);
@@ -823,7 +875,8 @@ TEST(Parser, ElementRemovedAfterDeprecation)
     </sdf>)";
 
   sdf::Errors errors;
-  sdf::SDFPtr sdf = InitSDF();
+  sdf::SDFPtr sdf = InitSDF(errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ParserConfig config;
   config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::readString(testString, config, sdf, errors);

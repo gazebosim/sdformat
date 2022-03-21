@@ -179,10 +179,10 @@ sdf::ElementPtr Scene::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Scene::ToElement() const
+sdf::ElementPtr Scene::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("scene.sdf", elem);
+  sdf::initFile("scene.sdf", elem, _errors);
 
   elem->GetElement("ambient")->Set(this->Ambient());
   elem->GetElement("background")->Set(this->Background());
@@ -191,7 +191,7 @@ sdf::ElementPtr Scene::ToElement() const
   elem->GetElement("shadows")->Set(this->Shadows());
 
   if (this->dataPtr->sky)
-    elem->InsertElement(this->dataPtr->sky->ToElement(), true);
+    elem->InsertElement(this->dataPtr->sky->ToElement(_errors), true);
 
   return elem;
 }

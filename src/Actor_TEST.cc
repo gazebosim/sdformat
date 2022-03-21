@@ -567,7 +567,9 @@ TEST(DOMActor, ToElement)
   plugin.SetFilename("filename1");
   actor.AddPlugin(plugin);
 
-  sdf::ElementPtr elem = actor.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = actor.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Actor actor2;

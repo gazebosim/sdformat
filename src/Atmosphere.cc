@@ -147,10 +147,10 @@ bool Atmosphere::operator==(const Atmosphere &_atmosphere)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Atmosphere::ToElement() const
+sdf::ElementPtr Atmosphere::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("atmosphere.sdf", elem);
+  sdf::initFile("atmosphere.sdf", elem, _errors);
 
   elem->GetAttribute("type")->Set("adiabatic");
   elem->GetElement("temperature")->Set(this->Temperature().Kelvin());

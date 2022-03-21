@@ -135,10 +135,11 @@ std::string Element::ReferenceSDF() const
 void Element::AddValue(const std::string &_type,
                        const std::string &_defaultValue,
                        bool _required,
+                       sdf::Errors &_errors,
                        const std::string &_description)
 {
   this->dataPtr->value = this->CreateParam(this->dataPtr->name,
-      _type, _defaultValue, _required, _description);
+      _type, _defaultValue, _required, _errors, _description);
 }
 
 /////////////////////////////////////////////////
@@ -147,13 +148,18 @@ void Element::AddValue(const std::string &_type,
                        bool _required,
                        const std::string &_minValue,
                        const std::string &_maxValue,
+                       sdf::Errors &_errors,
                        const std::string &_description)
 {
   this->dataPtr->value =
       std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
-                              _required, _minValue, _maxValue, _description);
-  SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
-      "Cannot set parent Element of value to itself.");
+                              _required, _minValue, _maxValue, _errors,
+                              _description);
+  if (!(this->dataPtr->value->SetParentElement(shared_from_this())))
+  {
+    _errors.push_back({ErrorCode::ELEMENT_INVALID,
+        "Cannot set parent Element of value to itself."});
+  }
 }
 
 /////////////////////////////////////////////////
@@ -161,12 +167,17 @@ ParamPtr Element::CreateParam(const std::string &_key,
                               const std::string &_type,
                               const std::string &_defaultValue,
                               bool _required,
+                              sdf::Errors &_errors,
                               const std::string &_description)
 {
   ParamPtr param = std::make_shared<Param>(
-      _key, _type, _defaultValue, _required, _description);
-  SDF_ASSERT(param->SetParentElement(shared_from_this()),
-      "Cannot set parent Element of created Param to itself.");
+      _key, _type, _defaultValue, _required, _errors, _description);
+  if (!(param->SetParentElement(shared_from_this())))
+  {
+    _errors.push_back({ErrorCode::PARAMETER_INVALID,
+                      "Cannot set parent Element of created Param to itself."});
+    return nullptr;
+  }
   return param;
 }
 
@@ -175,10 +186,11 @@ void Element::AddAttribute(const std::string &_key,
                            const std::string &_type,
                            const std::string &_defaultValue,
                            bool _required,
+                           sdf::Errors &_errors,
                            const std::string &_description)
 {
   this->dataPtr->attributes.push_back(
-      this->CreateParam(_key, _type, _defaultValue, _required, _description));
+      this->CreateParam(_key, _type, _defaultValue, _required, _errors, _description));
 }
 
 /////////////////////////////////////////////////

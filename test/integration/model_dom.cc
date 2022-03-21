@@ -700,7 +700,8 @@ TEST(DOMModel, IncludeModelWithPlugin)
 
   // Test ToElement with useInclude == true
   {
-    sdf::ElementPtr elem = model->ToElement(true);
+    sdf::ElementPtr elem = model->ToElement(errors, true);
+    ASSERT_TRUE(errors.empty());
 
     // There should be a uri
     ASSERT_TRUE(elem->HasElement("uri"));
@@ -723,7 +724,8 @@ TEST(DOMModel, IncludeModelWithPlugin)
   // model SDF which would have two plugins, one from the <include> tag and
   // one from the included model
   {
-    sdf::ElementPtr elem = model->ToElement(false);
+    sdf::ElementPtr elem = model->ToElement(errors, false);
+    ASSERT_TRUE(errors.empty());
 
     // There should NOT be a uri
     ASSERT_FALSE(elem->HasElement("uri"));

@@ -251,10 +251,10 @@ bool Noise::operator==(const Noise &_noise) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Noise::ToElement() const
+sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("noise.sdf", elem);
+  sdf::initFile("noise.sdf", elem, _errors);
 
   std::string noiseType;
   switch (this->Type())

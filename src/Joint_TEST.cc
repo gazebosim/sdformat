@@ -283,7 +283,9 @@ TEST(DOMJoint, ToElement)
       joint.ClearSensors();
   }
 
-  sdf::ElementPtr jointElem = joint.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr jointElem = joint.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, jointElem);
   EXPECT_EQ(nullptr, joint.Element());
 
@@ -309,7 +311,8 @@ TEST(DOMJoint, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   joint2.SetParentLinkName("new_parent");
-  sdf::ElementPtr joint2Elem = joint2.ToElement();
+  sdf::ElementPtr joint2Elem = joint2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, joint2Elem);
   sdf::Joint joint3;
   joint3.Load(joint2Elem);

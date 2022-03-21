@@ -116,7 +116,9 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
 
   // load sdf
   sdf::SDFPtr sdfRobot(new sdf::SDF());
-  sdf::init(sdfRobot);
+  sdf::Errors errors;
+  sdf::init(sdfRobot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(_sdfFile, sdfRobot));
 
   // check two loaded files, make sure they are the same
@@ -380,12 +382,15 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
 
   // load urdf
   sdf::SDFPtr urdfRobot(new sdf::SDF());
-  sdf::init(urdfRobot);
+  sdf::Errors errors;
+  sdf::init(urdfRobot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(_urdfFile, urdfRobot));
 
   // load sdf
   sdf::SDFPtr sdfRobot(new sdf::SDF());
-  sdf::init(sdfRobot);
+  sdf::init(sdfRobot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(_sdfFile, sdfRobot));
 
   // check two loaded files, make sure they are the same
@@ -504,7 +509,9 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
 void FixedJointReductionEquivalence(const std::string &_file)
 {
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(_file, robot));
 
   std::map<std::string, double> linkMasses;
@@ -638,7 +645,9 @@ void FixedJointReductionEquivalence(const std::string &_file)
 TEST(SDFParser, FixedJointReductionSimple)
 {
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(GetFullTestFilePath(SDF_TEST_FILE_SIMPLE), robot));
 
   std::map<std::string, double> linkMasses;
@@ -745,7 +754,9 @@ TEST(SDFParser, FixedJointReductionSimple)
 TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
 {
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(
       GetFullTestFilePath(SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION), robot));
 

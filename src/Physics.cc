@@ -202,10 +202,10 @@ void Physics::SetMaxContacts(int _maxContacts)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Physics::ToElement() const
+sdf::ElementPtr Physics::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("physics.sdf", elem);
+  sdf::initFile("physics.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetAttribute("default")->Set(this->IsDefault());

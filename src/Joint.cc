@@ -448,10 +448,10 @@ const Sensor *Joint::SensorByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Joint::ToElement() const
+sdf::ElementPtr Joint::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("joint.sdf", elem);
+  sdf::initFile("joint.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set<std::string>(this->Name());
   sdf::ElementPtr poseElem = elem->GetElement("pose");
@@ -509,7 +509,7 @@ sdf::ElementPtr Joint::ToElement() const
     if (i > 0u)
       axisElemName += std::to_string(i+1);
     sdf::ElementPtr axisElem = elem->GetElement(axisElemName);
-    axisElem->Copy(axis->ToElement(i));
+    axisElem->Copy(axis->ToElement(_errors, i));
   }
 
   for (uint64_t i = 0u; i < this->SensorCount(); ++i)
@@ -518,7 +518,7 @@ sdf::ElementPtr Joint::ToElement() const
     if (!sensor)
       continue;
     sdf::ElementPtr sensorElem = elem->GetElement("sensor");
-    sensorElem->Copy(sensor->ToElement());
+    sensorElem->Copy(sensor->ToElement(_errors));
   }
 
   if (this->Type() == JointType::SCREW)

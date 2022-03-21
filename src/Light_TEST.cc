@@ -354,7 +354,9 @@ TEST(DOMLight, ToElement)
   light.SetSpotFalloff(0.9);
   light.SetIntensity(1.7);
 
-  sdf::ElementPtr lightElem = light.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr lightElem = light.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, lightElem);
   EXPECT_EQ(nullptr, light.Element());
 
@@ -382,7 +384,8 @@ TEST(DOMLight, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   light2.SetCastShadows(false);
-  sdf::ElementPtr light2Elem = light2.ToElement();
+  sdf::ElementPtr light2Elem = light2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, light2Elem);
   sdf::Light light3;
   light3.Load(light2Elem);

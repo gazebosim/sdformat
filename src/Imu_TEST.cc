@@ -152,7 +152,9 @@ TEST(DOMImu, ToElement)
   imu.SetLocalization("NED");
   imu.SetOrientationEnabled(false);
 
-  sdf::ElementPtr imuElem = imu.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr imuElem = imu.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, imuElem);
   EXPECT_EQ(nullptr, imu.Element());
 
@@ -174,8 +176,9 @@ TEST(DOMImu, ToElement)
   EXPECT_FALSE(imu2.OrientationEnabled());
 
   // make changes to DOM and verify ToElement produces updated values
-  imu2.SetGravityDirX(ignition::math::Vector3d(1, 2, 3));;
-  sdf::ElementPtr imu2Elem = imu2.ToElement();
+  imu2.SetGravityDirX(ignition::math::Vector3d(1, 2, 3));
+  sdf::ElementPtr imu2Elem = imu2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, imu2Elem);
   sdf::Imu imu3;
   imu3.Load(imu2Elem);

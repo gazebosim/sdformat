@@ -52,11 +52,15 @@ TEST(SDFParser, DisableFixedJointReductionTest)
       "integration", "fixed_joint_reduction_disabled.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(sdfFixedJntFile, robot));
 
   sdf::SDFPtr robot_disable_lumping(new sdf::SDF());
-  sdf::init(robot_disable_lumping);
+  sdf::init(robot_disable_lumping, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(sdfFixedJntNoLumpingFile, robot_disable_lumping));
 
   ASSERT_FALSE(findJointInModel("joint12a", robot));

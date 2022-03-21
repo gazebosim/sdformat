@@ -149,7 +149,9 @@ TEST(DOMCylinder, Load)
   // Add a radius element
   sdf::ElementPtr radiusDesc(new sdf::Element());
   radiusDesc->SetName("radius");
-  radiusDesc->AddValue("double", "1.0", "1", "radius");
+  errors.clear();
+  radiusDesc->AddValue("double", "1.0", "1", errors, "radius");
+  ASSERT_TRUE(errors.empty());
   sdf->AddElementDescription(radiusDesc);
   sdf::ElementPtr radiusElem = sdf->AddElement("radius");
   radiusElem->Set<double>(2.0);
@@ -184,7 +186,9 @@ TEST(DOMCylinder, ToElement)
   cylinder.SetRadius(1.2);
   cylinder.SetLength(0.5);
 
-  sdf::ElementPtr elem = cylinder.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = cylinder.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Cylinder cylinder2;

@@ -30,7 +30,9 @@ TEST(SDFParser, CFMDampingSDFTest)
   const std::string sdfTestFile = sdf::testing::TestFile(
       "integration", "cfm_damping_implicit_spring_damper.sdf");
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(sdfTestFile, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
@@ -110,7 +112,9 @@ TEST(SDFParser, CFMDampingURDFTest)
       "integration", "cfm_damping_implicit_spring_damper.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(urdfTestFile, robot));
 
   sdf::ElementPtr root = robot->Root();

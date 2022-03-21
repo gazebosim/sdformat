@@ -376,10 +376,10 @@ sdf::ElementPtr JointAxis::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
+sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors, unsigned int _index) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("joint.sdf", elem);
+  sdf::initFile("joint.sdf", elem, _errors);
 
   std::string axisElemName = "axis";
   if (_index > 0u)

@@ -28,7 +28,9 @@ TEST(BasicTest, RootWrapper)
   sdf::ElementPtr testElem(new sdf::Element());
   testElem->SetName(testName);
   // wrap it in the sdf root
-  sdf::ElementPtr wrappedElem = sdf::SDF::WrapInRoot(testElem);
+  sdf::Errors errors;
+  sdf::ElementPtr wrappedElem = sdf::SDF::WrapInRoot(testElem, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(wrappedElem, nullptr);
 
   // only one top-level element expected, which is "sdf"

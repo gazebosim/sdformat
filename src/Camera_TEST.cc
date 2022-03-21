@@ -237,7 +237,9 @@ TEST(DOMCamera, ToElement)
   cam.SetSaveFrames(true);
   cam.SetSaveFramesPath("/tmp");
 
-  sdf::ElementPtr camElem = cam.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr camElem = cam.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, camElem);
   EXPECT_EQ(nullptr, cam.Element());
 
@@ -258,7 +260,8 @@ TEST(DOMCamera, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   cam2.SetNearClip(0.33);
-  sdf::ElementPtr cam2Elem = cam2.ToElement();
+  sdf::ElementPtr cam2Elem = cam2.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, cam2Elem);
   sdf::Camera cam3;
   cam3.Load(cam2Elem);

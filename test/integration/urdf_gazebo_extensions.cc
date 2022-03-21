@@ -30,7 +30,9 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(urdfTestFile, robot));
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");

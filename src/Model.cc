@@ -974,12 +974,12 @@ void Model::SetUri(const std::string &_uri)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr Model::ToElement(sdf::Errors &_errors, bool _useIncludeTag) const
 {
   if (_useIncludeTag && !this->dataPtr->uri.empty())
   {
     sdf::ElementPtr worldElem(new sdf::Element);
-    sdf::initFile("world.sdf", worldElem);
+    sdf::initFile("world.sdf", worldElem, _errors);
 
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
@@ -999,13 +999,13 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
 
     // Output the plugins
     for (const Plugin &plugin : this->dataPtr->includePlugins)
-      includeElem->InsertElement(plugin.ToElement(), true);
+      includeElem->InsertElement(plugin.ToElement(_errors), true);
 
     return includeElem;
   }
 
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("model.sdf", elem);
+  sdf::initFile("model.sdf", elem, _errors);
   elem->GetAttribute("name")->Set(this->Name());
 
   if (!this->dataPtr->canonicalLink.empty())
@@ -1035,19 +1035,19 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
 
   // Links
   for (const sdf::Link &link : this->dataPtr->links)
-    elem->InsertElement(link.ToElement(), true);
+    elem->InsertElement(link.ToElement(_errors), true);
 
   // Joints
   for (const sdf::Joint &joint : this->dataPtr->joints)
-    elem->InsertElement(joint.ToElement(), true);
+    elem->InsertElement(joint.ToElement(_errors), true);
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(_useIncludeTag), true);
+    elem->InsertElement(model.ToElement(_errors, _useIncludeTag), true);
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

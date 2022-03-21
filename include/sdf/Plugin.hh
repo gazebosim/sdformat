@@ -112,8 +112,9 @@ namespace sdf
     /// plugin.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \return SDF element pointer with updated plugin values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Copy assignment operator
     /// \param[in] _plugin Plugin to copy
@@ -131,7 +132,11 @@ namespace sdf
     public: friend std::ostream &operator<<(std::ostream& _out,
                                             const sdf::Plugin &_plugin)
     {
-      return _out << _plugin.ToElement()->ToString("");
+      sdf::Errors errors;
+      std::string output = _plugin.ToElement(errors)->ToString("");
+      if (!errors.empty())
+        _out.setstate(std::ios_base::failbit);
+      return _out << output;
     }
 
     /// \brief Input stream operator for a Plugin.
@@ -146,7 +151,9 @@ namespace sdf
       stream << "</sdf>";
 
       sdf::SDFPtr sdfParsed(new sdf::SDF());
-      sdf::init(sdfParsed);
+      //TODO:marcoag figure what to do with this error
+      sdf::Errors errors;
+      sdf::init(sdfParsed, errors);
       bool result = sdf::readString(stream.str(), sdfParsed);
       if (!result)
         return _in;

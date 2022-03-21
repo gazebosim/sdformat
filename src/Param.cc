@@ -62,6 +62,7 @@ namespace sdf
 //////////////////////////////////////////////////
 Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
+             sdf::Errors &_errors,
              const std::string &_description)
   : dataPtr(new ParamPrivate)
 {
@@ -73,12 +74,15 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   this->dataPtr->ignoreParentAttributes = false;
   this->dataPtr->defaultStrValue = _default;
 
-  SDF_ASSERT(
-      this->dataPtr->ValueFromStringImpl(
+  if(!(this->dataPtr->ValueFromStringImpl(
           this->dataPtr->typeName,
           _default,
-          this->dataPtr->defaultValue),
-      "Invalid parameter");
+          this->dataPtr->defaultValue)))
+  {
+    _errors.push_back({ErrorCode::PARAMETER_INVALID,
+                     "Invalid parameter"});
+    return;
+  }
   this->dataPtr->value = this->dataPtr->defaultValue;
   this->dataPtr->strValue = std::nullopt;
 }
@@ -87,29 +91,33 @@ Param::Param(const std::string &_key, const std::string &_typeName,
 Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
              const std::string &_minValue, const std::string &_maxValue,
+             sdf::Errors &_errors,
              const std::string &_description)
-    : Param(_key, _typeName, _default, _required, _description)
+    : Param(_key, _typeName, _default, _required, _errors, _description)
 {
   if (!_minValue.empty())
   {
-    SDF_ASSERT(
-        this->dataPtr->ValueFromStringImpl(
+    if (!(this->dataPtr->ValueFromStringImpl(
             this->dataPtr->typeName,
             _minValue,
-            this->dataPtr->minValue.emplace()),
-        std::string("Invalid [min] parameter in SDFormat description of [") +
-            _key + "]");
+            this->dataPtr->minValue.emplace())))
+    {
+      _errors.push_back({ErrorCode::PARAMETER_INVALID, "Invalid [min] parameter in "
+            "SDFormat description of [" + _key + "]"});
+    }
   }
 
   if (!_maxValue.empty())
   {
-    SDF_ASSERT(
-        this->dataPtr->ValueFromStringImpl(
+    if(!(this->dataPtr->ValueFromStringImpl(
             this->dataPtr->typeName,
             _maxValue,
-            this->dataPtr->maxValue.emplace()),
-        std::string("Invalid [max] parameter in SDFormat description of [") +
-            _key + "]");
+            this->dataPtr->maxValue.emplace())))
+
+    {
+      _errors.push_back({ErrorCode::PARAMETER_INVALID, "Invalid [max] parameter in SDFormat description of [" +
+            _key + "]"});
+    }
   }
 }
 

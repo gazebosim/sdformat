@@ -645,10 +645,10 @@ void Link::ClearParticleEmitters()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Link::ToElement() const
+sdf::ElementPtr Link::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("link.sdf", elem);
+  sdf::initFile("link.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
 
@@ -682,31 +682,31 @@ sdf::ElementPtr Link::ToElement() const
   // Collisions
   for (const sdf::Collision &collision : this->dataPtr->collisions)
   {
-    elem->InsertElement(collision.ToElement(), true);
+    elem->InsertElement(collision.ToElement(_errors), true);
   }
 
   // Light
   for (const sdf::Light &light : this->dataPtr->lights)
   {
-    elem->InsertElement(light.ToElement(), true);
+    elem->InsertElement(light.ToElement(_errors), true);
   }
 
   // Particle emitters
   for (const sdf::ParticleEmitter &emitter : this->dataPtr->emitters)
   {
-    elem->InsertElement(emitter.ToElement(), true);
+    elem->InsertElement(emitter.ToElement(_errors), true);
   }
 
   // Sensors
   for (const sdf::Sensor &sensor : this->dataPtr->sensors)
   {
-    elem->InsertElement(sensor.ToElement(), true);
+    elem->InsertElement(sensor.ToElement(_errors), true);
   }
 
   // Visuals
   for (const sdf::Visual &visual : this->dataPtr->visuals)
   {
-    elem->InsertElement(visual.ToElement(), true);
+    elem->InsertElement(visual.ToElement(_errors), true);
   }
 
   return elem;

@@ -147,7 +147,9 @@ TEST(DOMEllipsoid, ToElement)
 
   ellipsoid.SetRadii(ignition::math::Vector3d(0.1, 1.2, 3.4));
 
-  sdf::ElementPtr elem = ellipsoid.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = ellipsoid.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Ellipsoid ellipsoid2;

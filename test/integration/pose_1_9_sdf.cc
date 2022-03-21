@@ -181,8 +181,9 @@ TEST(Pose1_9, PoseStringOutput)
       << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
   sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
   ASSERT_TRUE(errors.empty()) << errors;
 
@@ -241,8 +242,9 @@ TEST(Pose1_9, BadModelPoses)
         << "</sdf>";
 
     sdf::SDFPtr sdfParsed(new sdf::SDF());
-    sdf::init(sdfParsed);
     sdf::Errors errors;
+    sdf::init(sdfParsed, errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
@@ -264,8 +266,9 @@ TEST(Pose1_9, BadModelPoses)
         << "</sdf>";
 
     sdf::SDFPtr sdfParsed(new sdf::SDF());
-    sdf::init(sdfParsed);
     sdf::Errors errors;
+    sdf::init(sdfParsed, errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
@@ -288,8 +291,9 @@ TEST(Pose1_9, BadModelPoses)
         << "</sdf>";
 
     sdf::SDFPtr sdfParsed(new sdf::SDF());
-    sdf::init(sdfParsed);
     sdf::Errors errors;
+    sdf::init(sdfParsed, errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
@@ -312,8 +316,9 @@ TEST(Pose1_9, BadModelPoses)
         << "</sdf>";
 
     sdf::SDFPtr sdfParsed(new sdf::SDF());
-    sdf::init(sdfParsed);
     sdf::Errors errors;
+    sdf::init(sdfParsed, errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
@@ -343,10 +348,16 @@ TEST(Pose1_9, PoseSet8ValuesFail)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "quat_xyzw", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "quat_xyzw", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -364,10 +375,16 @@ TEST(Pose1_9, PoseElementSetAndGet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
   poseElem->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
 
   Pose elemVal;
@@ -382,10 +399,16 @@ TEST(Pose1_9, PoseElementSetAndParamGet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
   poseElem->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6));
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
@@ -403,10 +426,16 @@ TEST(Pose1_9, PoseParamSetAndGet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -425,10 +454,16 @@ TEST(Pose1_9, PoseParamSetFromStringAndGet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -447,10 +482,16 @@ TEST(Pose1_9, PoseParamSetAndElemGet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -469,10 +510,16 @@ TEST(Pose1_9, PoseParamSetAndParentElemGet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -498,35 +545,52 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(poseElem->Set<Pose>(Pose(1, 2, 3, 0.4, 0.5, 0.6)));
 
   sdf::ElementPtr degreesPoseElem(new sdf::Element);
   degreesPoseElem->SetName("pose");
-  degreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  degreesPoseElem->AddAttribute("relative_to", "string", "", false);
-  degreesPoseElem->AddAttribute("degrees", "bool", "true", false);
+  degreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  degreesPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  degreesPoseElem->AddAttribute("degrees", "bool", "true", false, errors);
+  ASSERT_TRUE(errors.empty());
   degreesPoseElem->AddAttribute(
-      "rotation_format", "string", "euler_rpy", false);
+      "rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ElementPtr radiansPoseElem(new sdf::Element);
   radiansPoseElem->SetName("pose");
-  radiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  radiansPoseElem->AddAttribute("relative_to", "string", "", false);
-  radiansPoseElem->AddAttribute("degrees", "bool", "false", false);
+  radiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  radiansPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  radiansPoseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
   radiansPoseElem->AddAttribute(
-      "rotation_format", "string", "euler_rpy", false);
+      "rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ElementPtr quatPoseElem(new sdf::Element);
   quatPoseElem->SetName("pose");
-  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  quatPoseElem->AddAttribute("relative_to", "string", "", false);
-  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_xyzw", false);
+      "rotation_format", "string", "quat_xyzw", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -567,34 +631,51 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ElementPtr degreesPoseElem(new sdf::Element);
   degreesPoseElem->SetName("pose");
-  degreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  degreesPoseElem->AddAttribute("relative_to", "string", "", false);
-  degreesPoseElem->AddAttribute("degrees", "bool", "true", false);
+  degreesPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  degreesPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  degreesPoseElem->AddAttribute("degrees", "bool", "true", false, errors);
+  ASSERT_TRUE(errors.empty());
   degreesPoseElem->AddAttribute(
-      "rotation_format", "string", "euler_rpy", false);
+      "rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ElementPtr radiansPoseElem(new sdf::Element);
   radiansPoseElem->SetName("pose");
-  radiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  radiansPoseElem->AddAttribute("relative_to", "string", "", false);
-  radiansPoseElem->AddAttribute("degrees", "bool", "false", false);
+  radiansPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  radiansPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  radiansPoseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
   radiansPoseElem->AddAttribute(
-      "rotation_format", "string", "euler_rpy", false);
+      "rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ElementPtr quatPoseElem(new sdf::Element);
   quatPoseElem->SetName("pose");
-  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  quatPoseElem->AddAttribute("relative_to", "string", "", false);
-  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_xyzw", false);
+      "rotation_format", "string", "quat_xyzw", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -639,10 +720,15 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Param value in radians
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -716,10 +802,15 @@ TEST(Pose1_9, QuatXYZWSetDegreesTrueFail)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0 0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -755,10 +846,15 @@ TEST(Pose1_9, ToStringWithoutAttrib)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr poseValueParam = poseElem->GetValue();
   ASSERT_NE(nullptr, poseValueParam);
@@ -773,10 +869,15 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -796,10 +897,15 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -819,10 +925,15 @@ TEST(Pose1_9, ToStringWithEulerRPY)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr rotationFormatAttrib =
       poseElem->GetAttribute("rotation_format");
@@ -843,10 +954,15 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -872,10 +988,15 @@ TEST(Pose1_9, ToStringWithQuatXYZ)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr rotationFormatAttrib =
       poseElem->GetAttribute("rotation_format");
@@ -898,10 +1019,15 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -929,10 +1055,15 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
 {
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Param value in radians
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -986,8 +1117,9 @@ TEST(Pose1_9, IncludePoseInModelString)
       << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
   sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
   ASSERT_TRUE(errors.empty()) << errors;
 
@@ -1025,8 +1157,9 @@ TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
       << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
   sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
   ASSERT_TRUE(errors.empty()) << errors;
 
@@ -1064,8 +1197,9 @@ TEST(Pose1_9, IncludeQuatXYZWPoseIn)
       << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
   sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
   ASSERT_TRUE(errors.empty()) << errors;
 

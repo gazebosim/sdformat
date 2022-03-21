@@ -185,7 +185,8 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
     {
       sdf::Errors errors;
       sdf::SDFPtr sdf = std::make_shared<sdf::SDF>();
-      sdf::init(sdf);
+      sdf::init(sdf, errors);
+      ASSERT_TRUE(errors.empty());
       sdf::readString(testSdfString, sdf, errors);
       ASSERT_NE(nullptr, sdf);
       ASSERT_NE(nullptr, sdf->Root());
@@ -219,7 +220,8 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
     {
       sdf::Errors errors;
       sdf::SDFPtr sdf = std::make_shared<sdf::SDF>();
-      sdf::init(sdf);
+      sdf::init(sdf, errors);
+      ASSERT_TRUE(errors.empty());
       sdf::readString(testSdfString, config, sdf, errors);
       ASSERT_NE(nullptr, sdf);
       ASSERT_NE(nullptr, sdf->Root());

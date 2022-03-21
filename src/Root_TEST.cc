@@ -345,7 +345,9 @@ TEST(DOMRoot, ToElementEmpty)
 {
   sdf::Root root;
 
-  sdf::ElementPtr elem = root.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = root.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Root root2;
@@ -377,7 +379,9 @@ TEST(DOMRoot, ToElementModel)
   EXPECT_EQ(0u, root.WorldCount());
 
   // Convert to sdf::ElementPtr
-  sdf::ElementPtr elem = root.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = root.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Root root2;
@@ -416,7 +420,9 @@ TEST(DOMRoot, ToElementLight)
   EXPECT_EQ(0u, root.WorldCount());
 
   // Convert to sdf::ElementPtr
-  sdf::ElementPtr elem = root.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = root.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Root root2;
@@ -455,7 +461,9 @@ TEST(DOMRoot, ToElementActor)
   EXPECT_EQ(0u, root.WorldCount());
 
   // Convert to sdf::ElementPtr
-  sdf::ElementPtr elem = root.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = root.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Root root2;
@@ -487,7 +495,9 @@ TEST(DOMRoot, ToElementWorld)
   EXPECT_EQ(2u, root.WorldCount());
 
   // Convert to sdf::ElementPtr
-  sdf::ElementPtr elem = root.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = root.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Root root2;

@@ -44,7 +44,9 @@ TEST(CategoryBitmask, WasSpecified)
 </sdf>)";
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
   ASSERT_NE(nullptr, sdf->Root());
@@ -88,7 +90,9 @@ TEST(CategoryBitmask, WasNotSpecified)
 </sdf>)";
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_TRUE(sdf::convertString(xmlString, "1.6", sdf));
   ASSERT_NE(nullptr, sdf->Root());

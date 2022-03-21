@@ -30,6 +30,8 @@ TEST(SDFParser, AudioSDF_FullParameters_noThrow)
     sdf::testing::TestFile("integration", "audio.sdf");
 
   sdf::SDFPtr p(new sdf::SDF());
-  sdf::init(p);
+  sdf::Errors errors;
+  sdf::init(p, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(sdfTestFile, p));
 }

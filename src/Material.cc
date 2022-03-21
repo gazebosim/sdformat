@@ -361,10 +361,10 @@ void Material::SetFilePath(const std::string &_filePath)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Material::ToElement() const
+sdf::ElementPtr Material::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("material.sdf", elem);
+  sdf::initFile("material.sdf", elem, _errors);
 
   elem->GetElement("ambient")->Set(this->Ambient());
   elem->GetElement("diffuse")->Set(this->Diffuse());

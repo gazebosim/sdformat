@@ -130,18 +130,18 @@ bool Altimeter::operator==(const Altimeter &_alt) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Altimeter::ToElement() const
+sdf::ElementPtr Altimeter::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("altimeter.sdf", elem);
+  sdf::initFile("altimeter.sdf", elem, _errors);
 
   sdf::ElementPtr verticalPosElem = elem->GetElement("vertical_position");
   sdf::ElementPtr verticalPosNoiseElem = verticalPosElem->GetElement("noise");
-  verticalPosNoiseElem->Copy(this->dataPtr->verticalPositionNoise.ToElement());
+  verticalPosNoiseElem->Copy(this->dataPtr->verticalPositionNoise.ToElement(_errors));
 
   sdf::ElementPtr verticalVelElem = elem->GetElement("vertical_velocity");
   sdf::ElementPtr verticalVelNoiseElem = verticalVelElem->GetElement("noise");
-  verticalVelNoiseElem->Copy(this->dataPtr->verticalVelocityNoise.ToElement());
+  verticalVelNoiseElem->Copy(this->dataPtr->verticalVelocityNoise.ToElement(_errors));
 
   return elem;
 }

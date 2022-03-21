@@ -108,7 +108,9 @@ TEST(DOMAirPressure, ToElement)
   noise.SetPrecision(8.9);
   air.SetPressureNoise(noise);
 
-  sdf::ElementPtr airElem = air.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr airElem = air.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, airElem);
   EXPECT_EQ(nullptr, air.Element());
 
@@ -125,7 +127,8 @@ TEST(DOMAirPressure, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   air2.SetReferenceAltitude(111);
-  sdf::ElementPtr air2Elem = air2.ToElement();
+  sdf::ElementPtr air2Elem = air2.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   EXPECT_NE(nullptr, air2Elem);
   sdf::AirPressure air3;
   air3.Load(air2Elem);

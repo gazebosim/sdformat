@@ -36,8 +36,10 @@ TEST(CheckFixForLocal, CheckFixForCxxLocal)
   std::locale originalGlobalLocale = std::locale::global(newLocale);
 
   // Create param with vector2d default value
+  sdf::Errors errors;
   sdf::Param param = sdf::Param("dummyVec2DParam", "vector2d",
-                                "1.5 2.5", true);
+                                "1.5 2.5", true, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Verify that the default value is correctly parsed
   ignition::math::Vector2d vectmp;

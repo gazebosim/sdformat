@@ -192,7 +192,9 @@ TEST(Element, AddValue)
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
 
   elem->SetName("test");
-  elem->AddValue("string", "foo", false, "foo description");
+  sdf::Errors errors;
+  elem->AddValue("string", "foo", false, errors, "foo description");
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr param = elem->GetValue();
   ASSERT_TRUE(param->IsType<std::string>());
@@ -211,10 +213,15 @@ TEST(Element, AddAttribute)
 
   ASSERT_EQ(elem->GetAttributeCount(), 0UL);
 
-  elem->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  elem->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(elem->GetAttributeCount(), 1UL);
 
-  elem->AddAttribute("attr", "float", "0.0", false, "float description");
+  elem->AddAttribute("attr", "float", "0.0", false, errors,
+      "float description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(elem->GetAttributeCount(), 2UL);
 
   sdf::ParamPtr param = elem->GetAttribute("test");
@@ -237,7 +244,10 @@ TEST(Element, GetAttributeSet)
 {
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
   ASSERT_EQ(elem->GetAttributeCount(), 0UL);
-  elem->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  elem->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(elem->GetAttributeCount(), 1UL);
 
   EXPECT_FALSE(elem->GetAttributeSet("test"));
@@ -251,8 +261,13 @@ TEST(Element, RemoveAttribute)
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
   ASSERT_EQ(elem->GetAttributeCount(), 0UL);
 
-  elem->AddAttribute("test", "string", "foo", false, "foo description");
-  elem->AddAttribute("attr", "float", "0.0", false, "float description");
+  sdf::Errors errors;
+  elem->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
+  elem->AddAttribute("attr", "float", "0.0", false, errors,
+      "float description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(elem->GetAttributeCount(), 2UL);
 
   elem->RemoveAttribute("test");
@@ -267,9 +282,16 @@ TEST(Element, RemoveAllAttributes)
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
   ASSERT_EQ(elem->GetAttributeCount(), 0UL);
 
-  elem->AddAttribute("test", "string", "foo", false, "foo description");
-  elem->AddAttribute("test2", "string", "foo", false, "foo description");
-  elem->AddAttribute("attr", "float", "0.0", false, "float description");
+  sdf::Errors errors;
+  elem->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
+  elem->AddAttribute("test2", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
+  elem->AddAttribute("attr", "float", "0.0", false, errors,
+      "float description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(elem->GetAttributeCount(), 3UL);
 
   elem->RemoveAllAttributes();
@@ -288,7 +310,9 @@ TEST(Element, Include)
   includeElemToStore->SetName("include");
   auto uriDesc = std::make_shared<sdf::Element>();
   uriDesc->SetName("uri");
-  uriDesc->AddValue("string", "", true);
+  sdf::Errors errors;
+  uriDesc->AddValue("string", "", true, errors);
+  ASSERT_TRUE(errors.empty());
   includeElemToStore->AddElementDescription(uriDesc);
 
   includeElemToStore->GetElement("uri")->Set("foo.txt");
@@ -376,7 +400,10 @@ TEST(Element, GetTemplates)
 {
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
 
-  elem->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  elem->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
 
   std::string out = elem->Get<std::string>("test");
   ASSERT_EQ(out, "foo");
@@ -406,10 +433,14 @@ TEST(Element, Clone)
   parent->AddElementDescription(desc);
   ASSERT_EQ(parent->GetElementDescriptionCount(), 1UL);
 
-  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  parent->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
-  parent->AddValue("string", "foo", false, "foo description");
+  parent->AddValue("string", "foo", false, errors, "foo description");
+  ASSERT_TRUE(errors.empty());
 
   parent->SetFilePath("/path/to/file.sdf");
   parent->SetLineNumber(12);
@@ -518,7 +549,10 @@ TEST(Element, ToStringElements)
   parent->InsertElement(child);
   ASSERT_NE(parent->GetFirstElement(), nullptr);
 
-  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  parent->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
   // attribute won't print unless it has been set
@@ -545,7 +579,10 @@ TEST(Element, ToStringElements)
 TEST(Element, ToStringRequiredAttributes)
 {
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
-  parent->AddAttribute("test", "string", "foo", true, "foo description");
+  sdf::Errors errors;
+  parent->AddAttribute("test", "string", "foo", true, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
   // A required attribute should print even if it has not been set
@@ -567,11 +604,14 @@ TEST(Element, ToStringValue)
 {
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
 
-  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  parent->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
-  parent->AddValue("string", "val", false, "val description");
-
+  parent->AddValue("string", "val", false, errors, "val description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_FALSE(parent->GetAttributeSet("test"));
   EXPECT_EQ(parent->ToString("myprefix"),
             "myprefix<>val</>\n");
@@ -591,7 +631,10 @@ TEST(Element, ToStringClonedElement)
 {
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
 
-  parent->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  parent->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
   sdf::ParamPtr test = parent->GetAttribute("test");
@@ -654,8 +697,13 @@ TEST(Element, ToStringDefaultAttributes)
 {
   sdf::ElementPtr element = std::make_shared<sdf::Element>();
   element->SetName("foo");
-  element->AddAttribute("test", "string", "foo", false, "foo description");
-  element->AddAttribute("test2", "string", "bar", true, "bar description");
+  sdf::Errors errors;
+  element->AddAttribute("test", "string", "foo", false, errors,
+      "foo description");
+  ASSERT_TRUE(errors.empty());
+  element->AddAttribute("test2", "string", "bar", true, errors,
+      "bar description");
+  ASSERT_TRUE(errors.empty());
 
   EXPECT_EQ(element->ToString(""), element->ToString("", true, false));
   EXPECT_EQ(element->ToString(""), element->ToString("", false, false));
@@ -698,8 +746,11 @@ TEST(Element, DocRightPane)
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
 
   elem->SetDescription("Element description");
-  elem->AddAttribute("test", "string", "foo", false, "foo description");
-  elem->AddValue("string", "val", false, "val description");
+  sdf::Errors errors;
+  elem->AddAttribute("test", "string", "foo", false, errors, "foo description");
+  ASSERT_TRUE(errors.empty());
+  elem->AddValue("string", "val", false, errors, "val description");
+  ASSERT_TRUE(errors.empty());
   elem->AddElementDescription(std::make_shared<sdf::Element>());
 
   std::string html;
@@ -755,7 +806,9 @@ TEST(Element, Set)
 {
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
 
-  elem->AddValue("string", "val", false, "val description");
+  sdf::Errors errors;
+  elem->AddValue("string", "val", false, errors, "val description");
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_TRUE(elem->Set<std::string>("hello"));
 }
@@ -771,8 +824,11 @@ TEST(Element, Copy)
   src->SetLineNumber(12);
   src->SetXmlPath("/sdf/world[@name=\"default\"]");
   src->SetOriginalVersion("1.5");
-  src->AddValue("string", "val", false, "val description");
-  src->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  src->AddValue("string", "val", false, errors, "val description");
+  ASSERT_TRUE(errors.empty());
+  src->AddAttribute("test", "string", "foo", false, errors, "foo description");
+  ASSERT_TRUE(errors.empty());
   src->InsertElement(std::make_shared<sdf::Element>());
 
   auto includeElemToStore = std::make_shared<sdf::Element>();
@@ -818,11 +874,15 @@ TEST(Element, CopyDestValue)
   sdf::ElementPtr src = std::make_shared<sdf::Element>();
   sdf::ElementPtr dest = std::make_shared<sdf::Element>();
 
-  src->AddValue("string", "val", false, "val description");
-  src->AddAttribute("test", "string", "foo", false, "foo description");
+  sdf::Errors errors;
+  src->AddValue("string", "val", false, errors, "val description");
+  ASSERT_TRUE(errors.empty());
+  src->AddAttribute("test", "string", "foo", false, errors, "foo description");
+  ASSERT_TRUE(errors.empty());
   src->InsertElement(std::make_shared<sdf::Element>());
 
-  dest->AddValue("string", "val", false, "val description");
+  dest->AddValue("string", "val", false, errors, "val description");
+  ASSERT_TRUE(errors.empty());
   dest->Copy(src);
 
   sdf::ParamPtr param = dest->GetValue();
@@ -880,7 +940,8 @@ TEST(Element, GetNextElementMultiple)
 sdf::ElementPtr addChildElement(sdf::ElementPtr _parent,
                                 const std::string &_elementName,
                                 const bool _addNameAttribute,
-                                const std::string &_childName)
+                                const std::string &_childName,
+                                sdf::Errors &_errors)
 {
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
   child->SetParent(_parent);
@@ -889,7 +950,8 @@ sdf::ElementPtr addChildElement(sdf::ElementPtr _parent,
 
   if (_addNameAttribute)
   {
-    child->AddAttribute("name", "string", _childName, false, "description");
+    child->AddAttribute("name", "string", _childName, false, _errors,
+        "description");
   }
   return child;
 }
@@ -914,11 +976,17 @@ TEST(Element, CountNamedElements)
   // <element name="child2"/>
   // <element name="child3"/>
   // <element />
-  addChildElement(parent, "child", true, "child1");
-  addChildElement(parent, "child", true, "child2");
-  addChildElement(parent, "element", true, "child2");
-  addChildElement(parent, "element", true, "child3");
-  addChildElement(parent, "element", false, "unset");
+  sdf::Errors errors;
+  addChildElement(parent, "child", true, "child1", errors);
+  ASSERT_TRUE(errors.empty());
+  addChildElement(parent, "child", true, "child2", errors);
+  ASSERT_TRUE(errors.empty());
+  addChildElement(parent, "element", true, "child2", errors);
+  ASSERT_TRUE(errors.empty());
+  addChildElement(parent, "element", true, "child3", errors);
+  ASSERT_TRUE(errors.empty());
+  addChildElement(parent, "element", false, "unset", errors);
+  ASSERT_TRUE(errors.empty());
 
   // test GetElementTypeNames
   auto typeNames = parent->GetElementTypeNames();
@@ -984,14 +1052,20 @@ TEST(Element, FindElement)
 
   // Create elements
   {
-    auto elemA = addChildElement(root, "elem_A", false, "");
-    addChildElement(elemA, "child_elem_A", false, "");
+    sdf::Errors errors;
+    auto elemA = addChildElement(root, "elem_A", false, "", errors);
+    ASSERT_TRUE(errors.empty());
+    addChildElement(elemA, "child_elem_A", false, "", errors);
+    ASSERT_TRUE(errors.empty());
 
-    auto elemB = addChildElement(root, "elem_B", false, "");
+    auto elemB = addChildElement(root, "elem_B", false, "", errors);
+    ASSERT_TRUE(errors.empty());
     auto firstChildElemB =
-        addChildElement(elemB, "child_elem_B", true, "first_child");
+        addChildElement(elemB, "child_elem_B", true, "first_child", errors);
+    ASSERT_TRUE(errors.empty());
 
-    addChildElement(elemB, "child_elem_B", false, "");
+    addChildElement(elemB, "child_elem_B", false, "", errors);
+    ASSERT_TRUE(errors.empty());
   }
 
   {

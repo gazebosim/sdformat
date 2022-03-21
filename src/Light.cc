@@ -469,10 +469,10 @@ void Light::SetType(const LightType _type)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Light::ToElement() const
+sdf::ElementPtr Light::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("light.sdf", elem);
+  sdf::initFile("light.sdf", elem, _errors);
 
   std::string lightTypeStr = "point";
   switch (this->Type())

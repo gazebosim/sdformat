@@ -153,7 +153,9 @@ TEST(DOMGui, ToElement)
 
 
   EXPECT_EQ(6u, gui.PluginCount());
-  sdf::ElementPtr elem = gui.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = gui.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Gui gui2;

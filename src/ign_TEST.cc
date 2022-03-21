@@ -928,7 +928,9 @@ TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   {
     std::string path = pathBase +"/box_plane_low_friction_test.world";
     sdf::SDFPtr sdf(new sdf::SDF());
-    EXPECT_TRUE(sdf::init(sdf));
+    sdf::Errors errors;
+    EXPECT_TRUE(sdf::init(sdf, errors));
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(sdf::readFile(path, sdf));
 
     // Check box_plane_low_friction_test.world

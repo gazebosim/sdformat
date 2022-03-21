@@ -135,7 +135,10 @@ namespace sdf
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Set SDF values from a string
-    public: void SetFromString(const std::string &_sdfData);
+    /// \param[in] _sdfData String used to se the values.
+    /// \param[out] _errors Vector of possible errors.
+    public: void SetFromString(
+        const std::string &_sdfData, sdf::Errors &_errors);
 
     /// \brief Clear the data in this object.
     public: void Clear();
@@ -175,7 +178,8 @@ namespace sdf
     /// \brief wraps the SDF element into a root element with the version info.
     /// \param[in] _sdf the sdf element. Will be cloned by this function.
     /// \return a wrapped clone of the SDF element
-    public: static ElementPtr WrapInRoot(const ElementPtr &_sdf);
+    public: static ElementPtr WrapInRoot(
+                const ElementPtr &_sdf, sdf::Errors &_errors);
 
     /// \brief Get a string representation of an SDF specification file.
     /// This function uses a built-in version of a .sdf file located in

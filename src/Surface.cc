@@ -161,10 +161,10 @@ void Surface::SetContact(const sdf::Contact &_contact)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Surface::ToElement() const
+sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("surface.sdf", elem);
+  sdf::initFile("surface.sdf", elem, _errors);
 
   sdf::ElementPtr contactElem = elem->GetElement("contact");
   contactElem->GetElement("collide_bitmask")->Set(

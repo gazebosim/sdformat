@@ -57,7 +57,9 @@ TEST(CheckFixForLocal, MakeTestToFail)
 
   // fix to allow make test without make install
   sdf::SDFPtr p(new sdf::SDF());
-  sdf::init(p);
+  sdf::Errors errors;
+  sdf::init(p, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(sdfTestFile, p));
 
   sdf::ElementPtr elem = p->Root()->GetElement("world")
@@ -74,7 +76,8 @@ TEST(CheckFixForLocal, MakeTestToFail)
 
   // Verify that the locale is not affecting the Param constructor
   sdf::Param param = sdf::Param("dummyDoubleParam", "double",
-                                "1.5", true);
+                                "1.5", true, errors);
+  ASSERT_TRUE(errors.empty());
   double tmp = 0.0;
   ASSERT_TRUE(param.Get<double>(tmp));
   ASSERT_DOUBLE_EQ(1.5, tmp);

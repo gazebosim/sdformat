@@ -153,7 +153,9 @@ TEST(DOMCapsule, Load)
   // Add a radius element
   sdf::ElementPtr radiusDesc(new sdf::Element());
   radiusDesc->SetName("radius");
-  radiusDesc->AddValue("double", "1.0", "1", "radius");
+  errors.clear();
+  radiusDesc->AddValue("double", "1.0", "1", errors, "radius");
+  ASSERT_TRUE(errors.empty());
   sdf->AddElementDescription(radiusDesc);
   sdf::ElementPtr radiusElem = sdf->AddElement("radius");
   radiusElem->Set<double>(2.0);
@@ -188,7 +190,9 @@ TEST(DOMCapsule, ToElement)
   capsule.SetRadius(1.2);
   capsule.SetLength(0.5);
 
-  sdf::ElementPtr elem = capsule.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = capsule.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Capsule capsule2;

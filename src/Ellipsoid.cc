@@ -116,10 +116,10 @@ ignition::math::Ellipsoidd &Ellipsoid::Shape()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Ellipsoid::ToElement() const
+sdf::ElementPtr Ellipsoid::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("ellipsoid_shape.sdf", elem);
+  sdf::initFile("ellipsoid_shape.sdf", elem, _errors);
 
   sdf::ElementPtr radiiElem = elem->GetElement("radii");
   radiiElem->Set(this->Radii());

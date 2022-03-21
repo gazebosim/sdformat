@@ -518,10 +518,10 @@ void ParticleEmitter::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr ParticleEmitter::ToElement() const
+sdf::ElementPtr ParticleEmitter::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("particle_emitter.sdf", elem);
+  sdf::initFile("particle_emitter.sdf", elem, _errors);
 
   // Set pose
   sdf::ElementPtr poseElem = elem->GetElement("pose");
@@ -551,7 +551,7 @@ sdf::ElementPtr ParticleEmitter::ToElement() const
 
   if (this->dataPtr->material)
   {
-    elem->InsertElement(this->dataPtr->material->ToElement(), true);
+    elem->InsertElement(this->dataPtr->material->ToElement(_errors), true);
   }
 
   return elem;

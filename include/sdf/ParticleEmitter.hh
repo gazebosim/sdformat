@@ -320,8 +320,9 @@ namespace sdf
     /// particle emitter.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \return SDF element pointer with updated particle emitter values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Set the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by

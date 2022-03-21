@@ -69,8 +69,9 @@ namespace sdf
     /// sphere.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \return SDF element pointer with updated sphere values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

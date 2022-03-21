@@ -329,7 +329,9 @@ TEST(DOMMaterial, ToElement)
     pbr.SetWorkflow(sdf::PbrWorkflowType::METAL, workflow);
     material.SetPbrMaterial(pbr);
 
-    sdf::ElementPtr elem = material.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = material.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Material material2;
@@ -370,7 +372,9 @@ TEST(DOMMaterial, ToElement)
     pbr.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, workflow);
     material.SetPbrMaterial(pbr);
 
-    sdf::ElementPtr elem = material.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = material.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Material material2;

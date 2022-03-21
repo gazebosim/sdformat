@@ -47,10 +47,10 @@ std::string convertUrdfStrToSdfStr(
 
 /////////////////////////////////////////////////
 void convertUrdfStrToSdf(
-    const std::string &_urdf, sdf::SDF &_sdf,
+    const std::string &_urdf, sdf::SDF &_sdf, sdf::Errors &_errors,
     const sdf::ParserConfig &_config = sdf::ParserConfig::GlobalConfig())
 {
-  _sdf.SetFromString(convertUrdfStrToSdfStr(_urdf, _config));
+  _sdf.SetFromString(convertUrdfStrToSdfStr(_urdf, _config), _errors);
 }
 
 /////////////////////////////////////////////////
@@ -496,7 +496,10 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption)
 
   // Check that there are no joints in the converted SDF
   sdf::SDF fixedJointNoOptionsSDF;
-  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  sdf::Errors errors;
+  convertUrdfStrToSdf(fixedJointNoOptions.str(),
+      fixedJointNoOptionsSDF, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -539,8 +542,10 @@ TEST(URDFParser, CheckFixedJointOptions_disableJointLumping)
 
   // Check that there is a revolute joint in the converted SDF
   sdf::SDF fixedJointDisableJointLumpingSDF;
+  sdf::Errors errors;
   convertUrdfStrToSdf(fixedJointDisableJointLumping.str(),
-      fixedJointDisableJointLumpingSDF);
+      fixedJointDisableJointLumpingSDF, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ElementPtr elem = fixedJointDisableJointLumpingSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -586,8 +591,10 @@ TEST(URDFParser, CheckFixedJointOptions_preserveFixedJoint)
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
+  sdf::Errors errors;
   convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
-      fixedJointPreserveFixedJointSDF);
+      fixedJointPreserveFixedJointSDF, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -635,8 +642,10 @@ TEST(URDFParser, CheckParserConfig_preserveFixedJoint)
   sdf::ParserConfig config;
   config.URDFSetPreserveFixedJoint(true);
 
+  sdf::Errors errors;
   convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
-      fixedJointPreserveFixedJointSDF, config);
+      fixedJointPreserveFixedJointSDF, errors, config);
+  ASSERT_TRUE(errors.empty());
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -686,8 +695,10 @@ TEST(URDFParser,
 
   // Check that there is a fixed joint in the converted SDF
   sdf::SDF fixedJointPreserveFixedJointSDF;
+  sdf::Errors errors;
   convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
-      fixedJointPreserveFixedJointSDF);
+      fixedJointPreserveFixedJointSDF, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));
@@ -731,7 +742,10 @@ TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
 
   // Check that there are no joints in the converted SDF
   sdf::SDF fixedJointNoOptionsSDF;
-  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF);
+  sdf::Errors errors;
+  convertUrdfStrToSdf(fixedJointNoOptions.str(), fixedJointNoOptionsSDF,
+      errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ElementPtr elem = fixedJointNoOptionsSDF.Root();
   ASSERT_NE(nullptr, elem);
   ASSERT_TRUE(elem->HasElement("model"));

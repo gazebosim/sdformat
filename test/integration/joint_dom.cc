@@ -641,12 +641,14 @@ TEST(DOMJoint, LoadLinkJointSameName17Invalid)
 
   // Read with sdf::readFile, which converts from 1.6 to latest
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::readFile(testFile, sdf);
 
   // Load the SDF file from the converted string and expect errors
   sdf::Root root;
-  auto errors = root.LoadSdfString(sdf->Root()->ToString(""));
+  errors = root.LoadSdfString(sdf->Root()->ToString(""));
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());

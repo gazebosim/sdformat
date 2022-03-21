@@ -148,10 +148,12 @@ TEST(DOMBox, Shape)
 TEST(DOMBox, ToElement)
 {
   sdf::Box box;
+  sdf::Errors errors;
 
   box.SetSize(ignition::math::Vector3d(1, 2, 3));
 
-  sdf::ElementPtr elem = box.ToElement();
+  sdf::ElementPtr elem = box.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Box box2;

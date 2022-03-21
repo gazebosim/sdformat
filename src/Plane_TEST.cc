@@ -144,7 +144,9 @@ TEST(DOMPlane, Load)
   // Add a normal element
   sdf::ElementPtr normalDesc(new sdf::Element());
   normalDesc->SetName("normal");
-  normalDesc->AddValue("vector3", "0 0 1", "1", "normal");
+  errors.clear();
+  normalDesc->AddValue("vector3", "0 0 1", "1", errors, "normal");
+  ASSERT_TRUE(errors.empty());
   sdf->AddElementDescription(normalDesc);
   sdf::ElementPtr normalElem = sdf->AddElement("normal");
   normalElem->Set<ignition::math::Vector3d>({1, 0, 0});
@@ -172,11 +174,13 @@ TEST(DOMPlane, Shape)
 TEST(DOMPlane, ToElement)
 {
   sdf::Plane plane;
+  sdf::Errors errors;
 
   plane.SetNormal(ignition::math::Vector3d(0, 1, 0));
   plane.SetSize(ignition::math::Vector2d(2, 4));
 
-  sdf::ElementPtr elem = plane.ToElement();
+  sdf::ElementPtr elem = plane.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Plane plane2;

@@ -94,16 +94,16 @@ sdf::ElementPtr Gui::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Gui::ToElement() const
+sdf::ElementPtr Gui::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("gui.sdf", elem);
+  sdf::initFile("gui.sdf", elem, _errors);
 
   elem->GetAttribute("fullscreen")->Set(this->dataPtr->fullscreen);
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

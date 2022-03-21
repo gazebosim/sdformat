@@ -723,10 +723,10 @@ void Actor::ClearJoints()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Actor::ToElement() const
+sdf::ElementPtr Actor::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("actor.sdf", elem);
+  sdf::initFile("actor.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
   // Set pose
@@ -783,15 +783,15 @@ sdf::ElementPtr Actor::ToElement() const
 
   // Joints
   for (const sdf::Joint &joint : this->dataPtr->joints)
-    elem->InsertElement(joint.ToElement(), true);
+    elem->InsertElement(joint.ToElement(_errors), true);
 
   // Link
   for (const sdf::Link &link : this->dataPtr->links)
-    elem->InsertElement(link.ToElement(), true);
+    elem->InsertElement(link.ToElement(_errors), true);
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

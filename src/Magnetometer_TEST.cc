@@ -128,7 +128,9 @@ TEST(DOMMagnetometer, ToElement)
   mag.SetYNoise(noise);
   mag.SetZNoise(noise);
 
-  sdf::ElementPtr magElem = mag.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr magElem = mag.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, magElem);
   EXPECT_EQ(nullptr, mag.Element());
 
@@ -143,7 +145,8 @@ TEST(DOMMagnetometer, ToElement)
   // make changes to DOM and verify ToElement produces updated values
   noise.SetBiasMean(11.22);
   mag2.SetXNoise(noise);
-  sdf::ElementPtr mag2Elem = mag2.ToElement();
+  sdf::ElementPtr mag2Elem = mag2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, mag2Elem);
   sdf::Magnetometer mag3;
   mag3.Load(mag2Elem);

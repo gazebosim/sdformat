@@ -229,8 +229,9 @@ namespace sdf
     /// joint.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \return SDF element pointer with updated joint values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Add a sensors to the joint.
     /// \param[in] _sensor Sensor to add.

@@ -273,36 +273,36 @@ sdf::ElementPtr Geometry::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Geometry::ToElement() const
+sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("geometry.sdf", elem);
+  sdf::initFile("geometry.sdf", elem, _errors);
 
   switch (this->dataPtr->type)
   {
     case GeometryType::BOX:
-      elem->InsertElement(this->dataPtr->box->ToElement(), true);
+      elem->InsertElement(this->dataPtr->box->ToElement(_errors), true);
       break;
     case GeometryType::CYLINDER:
-      elem->InsertElement(this->dataPtr->cylinder->ToElement(), true);
+      elem->InsertElement(this->dataPtr->cylinder->ToElement(_errors), true);
       break;
     case GeometryType::PLANE:
-      elem->InsertElement(this->dataPtr->plane->ToElement(), true);
+      elem->InsertElement(this->dataPtr->plane->ToElement(_errors), true);
       break;
     case GeometryType::SPHERE:
-      elem->InsertElement(this->dataPtr->sphere->ToElement(), true);
+      elem->InsertElement(this->dataPtr->sphere->ToElement(_errors), true);
       break;
     case GeometryType::MESH:
-      elem->InsertElement(this->dataPtr->mesh->ToElement(), true);
+      elem->InsertElement(this->dataPtr->mesh->ToElement(_errors), true);
       break;
     case GeometryType::HEIGHTMAP:
-      elem->InsertElement(this->dataPtr->heightmap->ToElement(), true);
+      elem->InsertElement(this->dataPtr->heightmap->ToElement(_errors), true);
       break;
     case GeometryType::CAPSULE:
-      elem->InsertElement(this->dataPtr->capsule->ToElement(), true);
+      elem->InsertElement(this->dataPtr->capsule->ToElement(_errors), true);
       break;
     case GeometryType::ELLIPSOID:
-      elem->InsertElement(this->dataPtr->ellipsoid->ToElement(), true);
+      elem->InsertElement(this->dataPtr->ellipsoid->ToElement(_errors), true);
       break;
     case GeometryType::EMPTY:
     default:

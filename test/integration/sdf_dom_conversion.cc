@@ -65,7 +65,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByIndex(0);
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto altimeterSensor = std::make_unique<sdf::Sensor>();
     altimeterSensor->Load(sensorElem);
 
@@ -87,7 +88,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("camera_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto cameraSensor = std::make_unique<sdf::Sensor>();
     cameraSensor->Load(sensorElem);
 
@@ -139,7 +141,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("depth_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto depthSensor = std::make_unique<sdf::Sensor>();
     depthSensor->Load(sensorElem);
 
@@ -157,7 +160,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("rgbd_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto rgbdSensor = std::make_unique<sdf::Sensor>();
     rgbdSensor->Load(sensorElem);
 
@@ -176,7 +180,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("thermal_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto thermalSensor = std::make_unique<sdf::Sensor>();
     thermalSensor->Load(sensorElem);
 
@@ -195,7 +200,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("segmentation_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto segmentationSensor = std::make_unique<sdf::Sensor>();
     segmentationSensor->Load(sensorElem);
 
@@ -216,7 +222,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("force_torque_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto forceTorqueSensor = std::make_unique<sdf::Sensor>();
     forceTorqueSensor->Load(sensorElem);
 
@@ -232,7 +239,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("gpu_lidar_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto gpuLidarSensor = std::make_unique<sdf::Sensor>();
     gpuLidarSensor->Load(sensorElem);
 
@@ -264,7 +272,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("imu_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto imuSensor = std::make_unique<sdf::Sensor>();
     imuSensor->Load(sensorElem);
 
@@ -331,7 +340,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("magnetometer_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto magnetometerSensor = std::make_unique<sdf::Sensor>();
     magnetometerSensor->Load(sensorElem);
 
@@ -356,7 +366,8 @@ TEST(SDFDomConversion, Sensors)
   {
     const sdf::Sensor *sensor = link->SensorByName("air_pressure_sensor");
     // convert to sdf element and load it back
-    sdf::ElementPtr sensorElem = sensor->ToElement();
+    sdf::ElementPtr sensorElem = sensor->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto airPressureSensor = std::make_unique<sdf::Sensor>();
     airPressureSensor->Load(sensorElem);
 
@@ -398,7 +409,8 @@ TEST(SDFDomConversion, Lights)
   // point
   {
     const sdf::Light *light = world->LightByIndex(0);
-    sdf::ElementPtr lightElem = light->ToElement();
+    sdf::ElementPtr lightElem = light->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto pointLight = std::make_unique<sdf::Light>();
     pointLight->Load(lightElem);
     ASSERT_NE(nullptr, pointLight);
@@ -421,7 +433,8 @@ TEST(SDFDomConversion, Lights)
   // spot
   {
     const sdf::Light *light = world->LightByIndex(1u);
-    sdf::ElementPtr lightElem = light->ToElement();
+    sdf::ElementPtr lightElem = light->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto spotLight = std::make_unique<sdf::Light>();
     spotLight->Load(lightElem);
     ASSERT_NE(nullptr, spotLight);
@@ -444,7 +457,8 @@ TEST(SDFDomConversion, Lights)
   // directional
   {
     const sdf::Light *light = world->LightByIndex(2u);
-    sdf::ElementPtr lightElem = light->ToElement();
+    sdf::ElementPtr lightElem = light->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto dirLight = std::make_unique<sdf::Light>();
     dirLight->Load(lightElem);
     ASSERT_NE(nullptr, dirLight);
@@ -471,7 +485,8 @@ TEST(SDFDomConversion, Lights)
   // spot
   {
     const sdf::Light *light = link->LightByName("link_spot_light");
-    sdf::ElementPtr lightElem = light->ToElement();
+    sdf::ElementPtr lightElem = light->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto spotLight = std::make_unique<sdf::Light>();
     spotLight->Load(lightElem);
     ASSERT_NE(nullptr, spotLight);
@@ -494,7 +509,8 @@ TEST(SDFDomConversion, Lights)
   // point
   {
     const sdf::Light *light = link->LightByName("link_point_light");
-    sdf::ElementPtr lightElem = light->ToElement();
+    sdf::ElementPtr lightElem = light->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto pointLight = std::make_unique<sdf::Light>();
     pointLight->Load(lightElem);
     ASSERT_NE(nullptr, pointLight);
@@ -517,7 +533,8 @@ TEST(SDFDomConversion, Lights)
   // directional
   {
     const sdf::Light *light = link->LightByName("link_directional_light");
-    sdf::ElementPtr lightElem = light->ToElement();
+    sdf::ElementPtr lightElem = light->ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     auto dirLight = std::make_unique<sdf::Light>();
     dirLight->Load(lightElem);
     ASSERT_NE(nullptr, dirLight);
@@ -561,7 +578,8 @@ TEST(SDFDomConversion, Joints)
   ASSERT_NE(nullptr, j);
 
   // convert to sdf element and load it back
-  sdf::ElementPtr jointElem = j->ToElement();
+  sdf::ElementPtr jointElem = j->ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   auto joint = std::make_unique<sdf::Joint>();
   joint->Load(jointElem);
   ASSERT_NE(nullptr, joint);

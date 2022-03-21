@@ -116,16 +116,16 @@ void AirPressure::SetPressureNoise(const Noise &_noise)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr AirPressure::ToElement() const
+sdf::ElementPtr AirPressure::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("air_pressure.sdf", elem);
+  sdf::initFile("air_pressure.sdf", elem, _errors);
 
   elem->GetElement("reference_altitude")->Set<double>(
       this->ReferenceAltitude());
   sdf::ElementPtr pressureElem = elem->GetElement("pressure");
   sdf::ElementPtr noiseElem = pressureElem->GetElement("noise");
-  noiseElem->Copy(this->dataPtr->noise.ToElement());
+  noiseElem->Copy(this->dataPtr->noise.ToElement(_errors));
 
   return elem;
 }

@@ -411,6 +411,7 @@ TEST(DOMHeightmap, LoadErrors)
 TEST(DOMHeightmap, ToElement)
 {
   sdf::Heightmap heightmap;
+  sdf::Errors errors;
 
   heightmap.SetUri("https://test-uri.org");
   heightmap.SetSize(ignition::math::Vector3d(1, 2, 3));
@@ -429,7 +430,8 @@ TEST(DOMHeightmap, ToElement)
   blend.SetFadeDistance(3.4);
   heightmap.AddBlend(blend);
 
-  sdf::ElementPtr elem = heightmap.ToElement();
+  sdf::ElementPtr elem = heightmap.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Heightmap heightmap2;

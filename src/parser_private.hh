@@ -47,7 +47,8 @@ namespace sdf
   /// \param[in] _xmlDoc TinyXML2 document containing the SDFormat description
   /// file that corresponds with the input SDFPtr
   /// \param[out] _sdf SDF interface to be initialized
-  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf);
+  bool initDoc(
+      tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf, sdf::Errors &_errors);
 
   /// \brief Initialize the SDF Element using a TinyXML2 document
   ///
@@ -55,7 +56,8 @@ namespace sdf
   /// \param[in] _xmlDoc TinyXML2 document containing the SDFormat description
   /// file that corresponds with the input ElementPtr
   /// \param[out] _sdf SDF Element to be initialized
-  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf);
+  bool initDoc(
+      tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf, sdf::Errors &_errors);
 
   /// \brief Initialize the SDF Element by parsing the SDFormat description in
   /// the input TinyXML2 element. This is where SDFormat spec/description files
@@ -64,7 +66,8 @@ namespace sdf
   /// \param[in] _xml TinyXML2 element containing the SDFormat description
   /// file that corresponds with the input ElementPtr
   /// \param[out] _sdf SDF ElementPtr to be initialized
-  bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
+  bool initXml(
+      tinyxml2::XMLElement *_xml, ElementPtr _sdf, sdf::Errors &_errors);
 
   /// \brief Populate the SDF values from a TinyXML document
   bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
@@ -107,7 +110,7 @@ namespace sdf
   /// \param[in] _onlyUnknown True to copy only elements that are NOT part of
   /// the SDF spec. Set this to false to copy everything.
   void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
-                    const bool _onlyUnknown);
+                    const bool _onlyUnknown, sdf::Errors &_errors);
   }
 }
 #endif

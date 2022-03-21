@@ -339,7 +339,7 @@ ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
   ElementPtr elemDesc = std::make_shared<Element>();
   std::string filename = std::string(_xml->Name()) + ".sdf";
 
-  if (!initFile(filename, elemDesc))
+  if (!initFile(filename, elemDesc, _errors))
   {
     // TODO(jenn) not sure if we should load the element anyway
     // (e.g., user created their own element), maybe future implementation
@@ -541,7 +541,7 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
       // TODO(jenn) add attributes for namespaced elements
       if (attrName.find(":") != std::string::npos)
       {
-        _elem->AddAttribute(attrName, "string", "", 1, "");
+        _elem->AddAttribute(attrName, "string", "", 1, _errors, "");
       }
       // invalid
       else

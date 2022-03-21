@@ -289,7 +289,9 @@ TEST(IncludesTest, Includes_15_convert)
   const auto worldFile = sdf::testing::TestFile("sdf", "includes_1.5.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
 
   EXPECT_TRUE(sdf::convertFile(worldFile, "1.7", sdf));
 
@@ -345,8 +347,9 @@ TEST(IncludesTest, IncludeModelMissingConfig)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
   sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
 
   ASSERT_GE(1u, errors.size());

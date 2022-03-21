@@ -48,7 +48,9 @@ std::string get_sdf_string(const std::string &_version)
 TEST(JointAxisFrame, Version_1_4_missing)
 {
   sdf::SDFPtr model(new sdf::SDF());
-  sdf::init(model);
+  sdf::Errors errors;
+  sdf::init(model, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(get_sdf_string("1.4"), model));
 
   sdf::ElementPtr joint = model->Root()->GetElement(
@@ -66,7 +68,7 @@ TEST(JointAxisFrame, Version_1_4_missing)
 
   // Try to load DOM object and expect it to succeed with no errors
   sdf::Root root;
-  auto errors = root.Load(model);
+  errors = root.Load(model);
   EXPECT_EQ(0u, errors.size());
 }
 
@@ -77,7 +79,8 @@ TEST(JointAxisFrame, Version_1_4_no_convert)
 {
   sdf::Errors errors;
   sdf::SDFPtr model(new sdf::SDF());
-  sdf::init(model);
+  sdf::init(model, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(
       sdf::readStringWithoutConversion(get_sdf_string("1.4"), model, errors));
 
@@ -110,7 +113,8 @@ TEST(JointAxisFrame, Version_1_4_to_1_5)
 {
   sdf::Errors errors;
   sdf::SDFPtr model(new sdf::SDF());
-  sdf::init(model);
+  sdf::init(model, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::convertString(get_sdf_string("1.4"), "1.5", model));
 
   EXPECT_EQ("1.5", model->Root()->Get<std::string>("version"));
@@ -142,7 +146,9 @@ TEST(JointAxisFrame, Version_1_4_to_1_5)
 TEST(JointAxisFrame, Version_1_5_missing)
 {
   sdf::SDFPtr model(new sdf::SDF());
-  sdf::init(model);
+  sdf::Errors errors;
+  sdf::init(model, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(get_sdf_string("1.5"), model));
 
   sdf::ElementPtr joint = model->Root()->GetElement(
@@ -152,6 +158,6 @@ TEST(JointAxisFrame, Version_1_5_missing)
 
   // Try to load DOM object and expect it to succeed with no errors
   sdf::Root root;
-  auto errors = root.Load(model);
+  errors = root.Load(model);
   EXPECT_EQ(0u, errors.size());
 }

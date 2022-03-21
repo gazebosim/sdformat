@@ -110,6 +110,7 @@ TEST(DOMPhysics, CopyAssignmentAfterMove)
 TEST(DOMPhysics, ToElement)
 {
   sdf::Physics physics;
+  sdf::Errors errors;
   physics.SetName("my-bullet-engine");
   physics.SetDefault(true);
   physics.SetEngineType("bullet");
@@ -117,7 +118,8 @@ TEST(DOMPhysics, ToElement)
   physics.SetRealTimeFactor(20.4);
   physics.SetMaxContacts(42);
 
-  sdf::ElementPtr elem = physics.ToElement();
+  sdf::ElementPtr elem = physics.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Physics physics2;

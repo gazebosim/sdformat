@@ -42,7 +42,9 @@ TEST(PluginInclude, PluginChildElements)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Plugin attributes
@@ -93,6 +95,8 @@ TEST(PluginInclude, PluginMissingFilename)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(sdf::readString(stream.str(), sdfParsed));
 }

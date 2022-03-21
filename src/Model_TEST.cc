@@ -324,6 +324,7 @@ TEST(DOMModel, AddModifyFrame)
 TEST(DOMModel, ToElement)
 {
   sdf::Model model;
+  sdf::Errors errors;
 
   model.SetName("my-model");
   model.SetStatic(true);
@@ -378,7 +379,8 @@ TEST(DOMModel, ToElement)
   plugin.SetFilename("filename1");
   model.AddPlugin(plugin);
 
-  sdf::ElementPtr elem = model.ToElement();
+  sdf::ElementPtr elem = model.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Model model2;
@@ -429,7 +431,9 @@ TEST(DOMModel, Uri)
 
   // ToElement using the URI, which should result in an <include>
   {
-    sdf::ElementPtr elem = model.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = model.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     EXPECT_EQ("include", elem->GetName());
 
     sdf::ElementPtr uriElem = elem->FindElement("uri");
@@ -455,7 +459,9 @@ TEST(DOMModel, Uri)
 
   // ToElement NOT using the URI, which should result in a <model>
   {
-    sdf::ElementPtr elem = model.ToElement(false);
+    sdf::Errors errors;
+    sdf::ElementPtr elem = model.ToElement(errors, false);
+    ASSERT_TRUE(errors.empty());
     elem->PrintValues("  ");
 
     // Should be a <model>
@@ -502,7 +508,9 @@ TEST(DOMModel, ToElementNestedHasUri)
   EXPECT_TRUE(model.AddModel(nestedModel2));
   EXPECT_EQ(2u, model.ModelCount());
 
-  sdf::ElementPtr elem = model.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = model.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
 
   // The parent model does not have a URI, so the element name should be
   // "model".

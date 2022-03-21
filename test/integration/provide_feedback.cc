@@ -30,7 +30,9 @@ TEST(SDFParser, ProvideFeedbackTest)
       sdf::testing::TestFile("integration", "provide_feedback.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
+  sdf::Errors errors;
+  sdf::init(robot, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readFile(sdfTestFile, robot));
 
   sdf::ElementPtr root = robot->Root();

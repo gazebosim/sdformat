@@ -384,7 +384,9 @@ TEST(DOMLink, ToElement)
       link.ClearParticleEmitters();
   }
 
-  sdf::ElementPtr elem = link.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = link.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Link link2;

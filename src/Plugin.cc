@@ -142,10 +142,10 @@ sdf::ElementPtr Plugin::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Plugin::ToElement() const
+sdf::ElementPtr Plugin::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("plugin.sdf", elem);
+  sdf::initFile("plugin.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetAttribute("filename")->Set(this->Filename());

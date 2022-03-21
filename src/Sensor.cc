@@ -690,10 +690,10 @@ Imu *Sensor::ImuSensor()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Sensor::ToElement() const
+sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("sensor.sdf", elem);
+  sdf::initFile("sensor.sdf", elem, _errors);
 
   elem->GetAttribute("type")->Set<std::string>(this->TypeStr());
   elem->GetAttribute("name")->Set<std::string>(this->Name());
@@ -714,33 +714,33 @@ sdf::ElementPtr Sensor::ToElement() const
       this->dataPtr->airPressure)
   {
     sdf::ElementPtr airPressureElem = elem->GetElement("air_pressure");
-    airPressureElem->Copy(this->dataPtr->airPressure->ToElement());
+    airPressureElem->Copy(this->dataPtr->airPressure->ToElement(_errors));
   }
   // altimeter
   else if (this->Type() == sdf::SensorType::ALTIMETER &&
       this->dataPtr->altimeter)
   {
     sdf::ElementPtr altimeterElem = elem->GetElement("altimeter");
-    altimeterElem->Copy(this->dataPtr->altimeter->ToElement());
+    altimeterElem->Copy(this->dataPtr->altimeter->ToElement(_errors));
   }
   // camera, depth, thermal, segmentation
   else if (this->CameraSensor())
   {
     sdf::ElementPtr cameraElem = elem->GetElement("camera");
-    cameraElem->Copy(this->dataPtr->camera->ToElement());
+    cameraElem->Copy(this->dataPtr->camera->ToElement(_errors));
   }
   // force torque
   else if (this->Type() == sdf::SensorType::FORCE_TORQUE  &&
       this->dataPtr->forceTorque)
   {
     sdf::ElementPtr forceTorqueElem = elem->GetElement("force_torque");
-    forceTorqueElem->Copy(this->dataPtr->forceTorque->ToElement());
+    forceTorqueElem->Copy(this->dataPtr->forceTorque->ToElement(_errors));
   }
   // imu
   else if (this->Type() == sdf::SensorType::IMU && this->dataPtr->imu)
   {
     sdf::ElementPtr imuElem = elem->GetElement("imu");
-    imuElem->Copy(this->dataPtr->imu->ToElement());
+    imuElem->Copy(this->dataPtr->imu->ToElement(_errors));
   }
   // lidar, gpu_lidar
   else if ((this->Type() == sdf::SensorType::GPU_LIDAR ||
@@ -749,14 +749,14 @@ sdf::ElementPtr Sensor::ToElement() const
   {
     sdf::ElementPtr rayElem = (elem->HasElement("ray")) ?
         elem->GetElement("ray") : elem->GetElement("lidar");
-    rayElem->Copy(this->dataPtr->lidar->ToElement());
+    rayElem->Copy(this->dataPtr->lidar->ToElement(_errors));
   }
   // magnetometer
   else if (this->Type() == sdf::SensorType::MAGNETOMETER &&
       this->dataPtr->magnetometer)
   {
     sdf::ElementPtr magnetometerElem = elem->GetElement("magnetometer");
-    magnetometerElem->Copy(this->dataPtr->magnetometer->ToElement());
+    magnetometerElem->Copy(this->dataPtr->magnetometer->ToElement(_errors));
   }
   else
   {
@@ -766,7 +766,7 @@ sdf::ElementPtr Sensor::ToElement() const
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

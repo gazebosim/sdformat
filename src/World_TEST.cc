@@ -534,7 +534,9 @@ TEST(DOMWorld, ToElement)
   plugin.SetFilename("filename1");
   world.AddPlugin(plugin);
 
-  sdf::ElementPtr elem = world.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = world.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::World world2;

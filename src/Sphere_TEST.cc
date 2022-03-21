@@ -141,7 +141,9 @@ TEST(DOMSphere, ToElement)
 
   sphere.SetRadius(1.2);
 
-  sdf::ElementPtr elem = sphere.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = sphere.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Sphere sphere2;

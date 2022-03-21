@@ -155,7 +155,8 @@ static bool isSdfFile(const std::string &_fileName)
 
 //////////////////////////////////////////////////
 template <typename TPtr>
-static inline bool _initFile(const std::string &_filename, TPtr _sdf)
+static inline bool _initFile(
+    const std::string &_filename, TPtr _sdf, sdf::Errors &_errors)
 {
   auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
@@ -165,7 +166,7 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
     return false;
   }
 
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -364,57 +365,64 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 }
 
 //////////////////////////////////////////////////
-bool init(SDFPtr _sdf)
+bool init(SDFPtr _sdf, sdf::Errors &_errors)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool initFile(const std::string &_filename, SDFPtr _sdf)
+bool initFile(const std::string &_filename, SDFPtr _sdf, sdf::Errors &_errors)
 {
-  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf);
+  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
 bool initFile(
-    const std::string &_filename, const ParserConfig &_config, SDFPtr _sdf)
+    const std::string &_filename,
+    const ParserConfig &_config,
+    SDFPtr _sdf, sdf::Errors &_errors)
 {
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
+    return initDoc(&xmlDoc, _sdf, _errors);
   }
-  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config),
+                   _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool initFile(const std::string &_filename, ElementPtr _sdf)
+bool initFile(const std::string &_filename,
+              ElementPtr _sdf, sdf::Errors &_errors)
 {
-  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf);
+  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
 bool initFile(
-    const std::string &_filename, const ParserConfig &_config, ElementPtr _sdf)
+    const std::string &_filename, const ParserConfig &_config,
+    ElementPtr _sdf, sdf::Errors &_errors)
 {
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
+    return initDoc(&xmlDoc, _sdf, _errors);
   }
-  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config),
+                   _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
 bool initString(
-    const std::string &_xmlString, const ParserConfig &, SDFPtr _sdf)
+    const std::string &_xmlString, const ParserConfig &,
+    SDFPtr _sdf, sdf::Errors &_errors)
 {
   auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
@@ -423,13 +431,13 @@ bool initString(
     return false;
   }
 
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool initString(const std::string &_xmlString, SDFPtr _sdf)
+bool initString(const std::string &_xmlString, SDFPtr _sdf, sdf::Errors &_errors)
 {
-  return initString(_xmlString, ParserConfig::GlobalConfig(), _sdf);
+  return initString(_xmlString, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -452,7 +460,9 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+             SDFPtr _sdf,
+             sdf::Errors &_errors)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -460,11 +470,13 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
     return false;
   }
 
-  return initXml(element, _sdf->Root());
+  return initXml(element, _sdf->Root(), _errors);
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+             ElementPtr _sdf,
+             sdf::Errors &_errors)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -472,11 +484,11 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
     return false;
   }
 
-  return initXml(element, _sdf);
+  return initXml(element, _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
+bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, sdf::Errors &_errors)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -527,7 +539,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
     }
 
     _sdf->AddValue(elemTypeString, elemDefaultValue, required, minValue,
-                   maxValue, description);
+                   maxValue, _errors, description);
   }
 
   // Get all attributes
@@ -570,7 +582,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
       description = descriptionChild->GetText();
     }
 
-    _sdf->AddAttribute(name, type, defaultValue, required, description);
+    _sdf->AddAttribute(name, type, defaultValue, required, _errors, description);
   }
 
   // Read the element description
@@ -594,7 +606,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
     else
     {
       ElementPtr element(new Element);
-      initXml(child, element);
+      initXml(child, element, _errors);
       _sdf->AddElementDescription(element);
     }
   }
@@ -607,7 +619,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 
     ElementPtr element(new Element);
 
-    initFile(filename, element);
+    initFile(filename, element, _errors);
 
     // override description for include elements
     tinyxml2::XMLElement *description = child->FirstChildElement("description");
@@ -634,7 +646,7 @@ SDFPtr readFile(
 {
   // Create and initialize the data structure that will hold the parsed SDF data
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::init(sdfParsed, _errors);
 
   // Read an SDF file, and store the result in sdfParsed.
   if (!sdf::readFile(_filename, _config, sdfParsed, _errors))
@@ -1274,7 +1286,7 @@ static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     // attribute is found
     if (std::strchr(attribute->Name(), ':') != nullptr)
     {
-      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
+      _sdf->AddAttribute(attribute->Name(), "string", "", 1, _errors, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(attribute->Value());
       attribute = attribute->Next();
       continue;
@@ -1510,7 +1522,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, refSDF);
+    initFile(refFilename, refSDF, _errors);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 
@@ -1538,7 +1550,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
   if (_sdf->GetCopyChildren())
   {
-    copyChildren(_sdf, _xml, false);
+    copyChildren(_sdf, _xml, false, _errors);
   }
   else
   {
@@ -1580,7 +1592,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           if (!includeSDFTemplate)
           {
             includeSDFTemplate.reset(new SDF);
-            init(includeSDFTemplate);
+            init(includeSDFTemplate, _errors);
           }
           SDFPtr includeSDF(new SDF);
           includeSDF->Root(includeSDFTemplate->Root()->Clone());
@@ -1796,7 +1808,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             // Store the contents of the <include> tag as the includeElement of
             // the entity that was loaded from the included URI.
             auto includeInfo = includeDesc->Clone();
-            copyChildren(includeInfo, elemXml, false);
+            copyChildren(includeInfo, elemXml, false, _errors);
             includeSDFFirstElem->SetIncludeElement(includeInfo);
           }
           bool toMerge = elemXml->BoolAttribute("merge", false);
@@ -1873,7 +1885,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     }
 
     // Copy unknown elements outside the loop so it only happens one time
-    copyChildren(_sdf, _xml, true);
+    copyChildren(_sdf, _xml, true, _errors);
 
     // Check that all required elements have been set
     for (unsigned int descCounter = 0;
@@ -1917,7 +1929,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 /////////////////////////////////////////////////
 void copyChildren(ElementPtr _sdf,
                   tinyxml2::XMLElement *_xml,
-                  const bool _onlyUnknown)
+                  const bool _onlyUnknown,
+                  sdf::Errors &_errors)
 {
   // Iterate over all the child elements
   tinyxml2::XMLElement *elemXml = nullptr;
@@ -1946,7 +1959,7 @@ void copyChildren(ElementPtr _sdf,
         {
           element->GetValue()->SetFromString(value);
         }
-        copyChildren(element, elemXml, _onlyUnknown);
+        copyChildren(element, elemXml, _onlyUnknown, _errors);
       }
     }
     else
@@ -1957,17 +1970,17 @@ void copyChildren(ElementPtr _sdf,
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
-        element->AddAttribute(attribute->Name(), "string", "", 1, "");
+        element->AddAttribute(attribute->Name(), "string", "", 1, _errors, "");
         element->GetAttribute(attribute->Name())->SetFromString(
             attribute->Value());
       }
 
       if (elemXml->GetText() != nullptr)
       {
-        element->AddValue("string", elemXml->GetText(), true);
+        element->AddValue("string", elemXml->GetText(), true, _errors);
       }
 
-      copyChildren(element, elemXml, _onlyUnknown);
+      copyChildren(element, elemXml, _onlyUnknown, _errors);
       _sdf->InsertElement(element);
     }
   }

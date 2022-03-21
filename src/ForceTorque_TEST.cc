@@ -132,7 +132,9 @@ TEST(DOMForceTorque, ToElement)
   ft.SetFrame(sdf::ForceTorqueFrame::PARENT);
   ft.SetMeasureDirection(sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD);
 
-  sdf::ElementPtr ftElem = ft.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr ftElem = ft.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, ftElem);
   EXPECT_EQ(nullptr, ft.Element());
 
@@ -152,7 +154,8 @@ TEST(DOMForceTorque, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   ft2.SetMeasureDirection(sdf::ForceTorqueMeasureDirection::CHILD_TO_PARENT);
-  sdf::ElementPtr ft2Elem = ft2.ToElement();
+  sdf::ElementPtr ft2Elem = ft2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, ft2Elem);
   sdf::ForceTorque ft3;
   ft3.Load(ft2Elem);

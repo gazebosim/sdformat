@@ -272,7 +272,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Box box;
     geom.SetBoxShape(box);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -297,7 +299,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Capsule capsule;
     geom.SetCapsuleShape(capsule);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -322,7 +326,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Cylinder cylinder;
     geom.SetCylinderShape(cylinder);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -347,7 +353,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Ellipsoid ellipsoid;
     geom.SetEllipsoidShape(ellipsoid);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -372,7 +380,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Sphere sphere;
     geom.SetSphereShape(sphere);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -397,7 +407,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Plane plane;
     geom.SetPlaneShape(plane);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -422,7 +434,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Mesh mesh;
     geom.SetMeshShape(mesh);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;
@@ -447,7 +461,9 @@ TEST(DOMGeometry, ToElement)
     sdf::Heightmap heightmap;
     geom.SetHeightmapShape(heightmap);
 
-    sdf::ElementPtr elem = geom.ToElement();
+    sdf::Errors errors;
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    ASSERT_TRUE(errors.empty());
     ASSERT_NE(nullptr, elem);
 
     sdf::Geometry geom2;

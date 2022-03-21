@@ -179,7 +179,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 {
   Errors errors;
   SDFPtr sdfParsed(new SDF());
-  init(sdfParsed);
+  init(sdfParsed, errors);
 
   // Read an SDF string, and store the result in sdfParsed.
   if (!readString(_sdf, _config, sdfParsed, errors))
@@ -525,30 +525,30 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr Root::ToElement(sdf::Errors &_errors, bool _useIncludeTag) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("root.sdf", elem);
+  sdf::initFile("root.sdf", elem, _errors);
 
   elem->GetAttribute("version")->Set(this->Version());
 
   if (this->Model() != nullptr)
   {
-    elem->InsertElement(this->Model()->ToElement(_useIncludeTag), true);
+    elem->InsertElement(this->Model()->ToElement(_errors, _useIncludeTag), true);
   }
   else if (this->Light() != nullptr)
   {
-    elem->InsertElement(this->Light()->ToElement(), true);
+    elem->InsertElement(this->Light()->ToElement(_errors), true);
   }
   else if (this->Actor() != nullptr)
   {
-    elem->InsertElement(this->Actor()->ToElement(), true);
+    elem->InsertElement(this->Actor()->ToElement(_errors), true);
   }
   else
   {
     // Worlds
     for (const sdf::World &world : this->dataPtr->worlds)
-      elem->InsertElement(world.ToElement(_useIncludeTag), true);
+      elem->InsertElement(world.ToElement(_errors, _useIncludeTag), true);
   }
 
   return elem;

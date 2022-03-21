@@ -52,7 +52,9 @@ TEST(ParamPassing, GetElement)
          << "</sdf>";
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
+  sdf::Errors errors;
+  sdf::init(sdf, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdf));
 
   // checking element ptrs to <link name='test_link'> are equal

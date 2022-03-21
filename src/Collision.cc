@@ -200,10 +200,10 @@ sdf::ElementPtr Collision::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Collision::ToElement() const
+sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("collision.sdf", elem);
+  sdf::initFile("collision.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
 
@@ -217,10 +217,10 @@ sdf::ElementPtr Collision::ToElement() const
   poseElem->Set<ignition::math::Pose3d>(this->RawPose());
 
   // Set the geometry
-  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
+  elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);
 
   // Set the surface
-  elem->InsertElement(this->dataPtr->surface.ToElement(), true);
+  elem->InsertElement(this->dataPtr->surface.ToElement(_errors), true);
 
   return elem;
 }

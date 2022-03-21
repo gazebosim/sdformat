@@ -66,8 +66,9 @@ namespace sdf
     /// gui.
     /// Note that parameter passing functionality is not captured with this
     /// function.
+    /// \param[out] _errors Vector of possible errors.
     /// \return SDF element pointer with updated gui values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Get the number of plugins.
     /// \return Number of plugins contained in this Gui object.

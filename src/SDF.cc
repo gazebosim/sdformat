@@ -343,9 +343,9 @@ std::string SDF::ToString(const PrintConfig &_config) const
 }
 
 /////////////////////////////////////////////////
-void SDF::SetFromString(const std::string &_sdfData)
+void SDF::SetFromString(const std::string &_sdfData, sdf::Errors &_errors)
 {
-  sdf::initFile("root.sdf", this->Root());
+  sdf::initFile("root.sdf", this->Root(), _errors);
   if (!sdf::readString(_sdfData, this->Root()))
   {
     sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
@@ -411,13 +411,13 @@ void SDF::Version(const std::string &_version)
 }
 
 /////////////////////////////////////////////////
-ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
+ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf, sdf::Errors &_errors)
 {
   ElementPtr root(new Element);
   root->SetName("sdf");
   std::stringstream v;
   v << Version();
-  root->AddAttribute("version", "string", v.str(), true, "version");
+  root->AddAttribute("version", "string", v.str(), true, _errors, "version");
   root->InsertElement(_sdf->Clone());
   return root;
 }

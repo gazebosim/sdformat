@@ -107,7 +107,9 @@ TEST(DOMNoise, Load)
       != std::string::npos);
 
   // Add the type attribute
-  sdf->AddAttribute("type", "string", "none", true);
+  errors.clear();
+  sdf->AddAttribute("type", "string", "none", true, errors);
+  ASSERT_TRUE(errors.empty());
   sdf::ParamPtr param = sdf->GetAttribute("type");
 
   // Bad attribute value.
@@ -134,7 +136,8 @@ TEST(DOMNoise, Load)
   // Add the <mean> child element.
   sdf::ElementPtr meanSdf(std::make_shared<sdf::Element>());
   meanSdf->SetName("mean");
-  meanSdf->AddValue("double", "0.0", 0, "mean");
+  meanSdf->AddValue("double", "0.0", 0, errors, "mean");
+  EXPECT_TRUE(errors.empty());
   meanSdf->GetValue()->Set(1.2);
   sdf->InsertElement(meanSdf);
 
@@ -146,7 +149,8 @@ TEST(DOMNoise, Load)
   // Add the <stddev> child element.
   sdf::ElementPtr stdDevSdf(std::make_shared<sdf::Element>());
   stdDevSdf->SetName("stddev");
-  stdDevSdf->AddValue("double", "0.0", 0, "stddev");
+  stdDevSdf->AddValue("double", "0.0", 0, errors,"stddev");
+  EXPECT_TRUE(errors.empty());
   stdDevSdf->GetValue()->Set(2.3);
   sdf->InsertElement(stdDevSdf);
 
@@ -158,7 +162,8 @@ TEST(DOMNoise, Load)
   // Add the <bias_mean> child element.
   sdf::ElementPtr biasMeanSdf(std::make_shared<sdf::Element>());
   biasMeanSdf->SetName("bias_mean");
-  biasMeanSdf->AddValue("double", "0.0", 0, "bias_mean");
+  biasMeanSdf->AddValue("double", "0.0", 0, errors, "bias_mean");
+  EXPECT_TRUE(errors.empty());
   biasMeanSdf->GetValue()->Set(3.4);
   sdf->InsertElement(biasMeanSdf);
 
@@ -170,7 +175,8 @@ TEST(DOMNoise, Load)
   // Add the <bias_stddev> child element.
   sdf::ElementPtr biasStdDevSdf(std::make_shared<sdf::Element>());
   biasStdDevSdf->SetName("bias_stddev");
-  biasStdDevSdf->AddValue("double", "0.0", 0, "bias_stddev");
+  biasStdDevSdf->AddValue("double", "0.0", 0, errors, "bias_stddev");
+  EXPECT_TRUE(errors.empty());
   biasStdDevSdf->GetValue()->Set(5.6);
   sdf->InsertElement(biasStdDevSdf);
 
@@ -182,7 +188,8 @@ TEST(DOMNoise, Load)
   // Add the <precision> child element.
   sdf::ElementPtr precisionSdf(std::make_shared<sdf::Element>());
   precisionSdf->SetName("precision");
-  precisionSdf->AddValue("double", "0.0", 0, "precision");
+  precisionSdf->AddValue("double", "0.0", 0, errors, "precision");
+  EXPECT_TRUE(errors.empty());
   precisionSdf->GetValue()->Set(7.8);
   sdf->InsertElement(precisionSdf);
 
@@ -197,7 +204,9 @@ TEST(DOMNoise, Load)
   // Add the <dynamic_bias_stddev> child element.
   sdf::ElementPtr dynamicBiasStdDevSdf(std::make_shared<sdf::Element>());
   dynamicBiasStdDevSdf->SetName("dynamic_bias_stddev");
-  dynamicBiasStdDevSdf->AddValue("double", "0.0", 0, "dynamic_bias_stddev");
+  dynamicBiasStdDevSdf->AddValue("double", "0.0", 0, errors,
+      "dynamic_bias_stddev");
+  EXPECT_TRUE(errors.empty());
   dynamicBiasStdDevSdf->GetValue()->Set(8.9);
   sdf->InsertElement(dynamicBiasStdDevSdf);
 
@@ -209,8 +218,9 @@ TEST(DOMNoise, Load)
   // Add the <dynamic_bias_correlation_time> child element.
   sdf::ElementPtr dynamicBiasCTimeSdf(std::make_shared<sdf::Element>());
   dynamicBiasCTimeSdf->SetName("dynamic_bias_correlation_time");
-  dynamicBiasCTimeSdf->AddValue("double", "0.0", 0,
+  dynamicBiasCTimeSdf->AddValue("double", "0.0", 0, errors,
       "dynamic_bias_correlation_time");
+  EXPECT_TRUE(errors.empty());
   dynamicBiasCTimeSdf->GetValue()->Set(10.2);
   sdf->InsertElement(dynamicBiasCTimeSdf);
 
@@ -234,7 +244,9 @@ TEST(DOMNoise, ToElement)
   noise.SetDynamicBiasStdDev(9.1);
   noise.SetDynamicBiasCorrelationTime(19.12);
 
-  sdf::ElementPtr noiseElem = noise.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr noiseElem = noise.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, noiseElem);
   EXPECT_EQ(nullptr, noise.Element());
 
@@ -253,7 +265,8 @@ TEST(DOMNoise, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   noise2.SetPrecision(0.1234);
-  sdf::ElementPtr noise2Elem = noise2.ToElement();
+  sdf::ElementPtr noise2Elem = noise2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, noise2Elem);
   sdf::Noise noise3;
   noise3.Load(noise2Elem);

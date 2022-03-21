@@ -180,7 +180,7 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
         const std::string key = sdf::trim(line.substr(0, eqInd));
         const std::string value = readValue(line.substr(eqInd + 1));
 
-        sdf::Param param(key, keyType(key), "", true);
+        sdf::Param param(key, keyType(key), "", true, _errors);
         param.SetFromString(value);
 
         doc[appendPrefix(curPrefix, key)] = {param};

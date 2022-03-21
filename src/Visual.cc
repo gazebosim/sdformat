@@ -311,10 +311,10 @@ void Visual::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Visual::ToElement() const
+sdf::ElementPtr Visual::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("visual.sdf", elem);
+  sdf::initFile("visual.sdf", elem, _errors);
 
   elem->GetAttribute("name")->Set(this->Name());
 
@@ -328,7 +328,7 @@ sdf::ElementPtr Visual::ToElement() const
   poseElem->Set<ignition::math::Pose3d>(this->RawPose());
 
   // Set the geometry
-  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
+  elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);
 
   elem->GetElement("cast_shadows")->Set(this->CastShadows());
   elem->GetElement("laser_retro")->Set(this->LaserRetro());
@@ -337,12 +337,12 @@ sdf::ElementPtr Visual::ToElement() const
 
   if (this->dataPtr->material)
   {
-    elem->InsertElement(this->dataPtr->material->ToElement(), true);
+    elem->InsertElement(this->dataPtr->material->ToElement(_errors), true);
   }
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

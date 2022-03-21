@@ -90,7 +90,9 @@ TEST(ElementMemoryLeak, SDFCreateDestroy)
   for (unsigned int i = 0; i < 50; ++i)
   {
     sdf::SDF modelSDF;
-    modelSDF.SetFromString(sdfString);
+    sdf::Errors errors;
+    modelSDF.SetFromString(sdfString, errors);
+    ASSERT_TRUE(errors.empty());
 
     int memoryUsage = getMemoryUsage();
     EXPECT_LT(memoryUsage, memoryLimit);

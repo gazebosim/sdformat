@@ -153,10 +153,10 @@ ignition::math::Planed &Plane::Shape()
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Plane::ToElement() const
+sdf::ElementPtr Plane::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("plane_shape.sdf", elem);
+  sdf::initFile("plane_shape.sdf", elem, _errors);
 
   sdf::ElementPtr normalElem = elem->GetElement("normal");
   normalElem->Set(this->Normal());

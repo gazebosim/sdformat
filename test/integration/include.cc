@@ -41,7 +41,9 @@ TEST(Include, IncludeDescription)
   std::string filename = SDF_DESCRIPTION_PATH;
 
   sdf::SDFPtr sdf(new sdf::SDF());
-  EXPECT_TRUE(sdf::initFile(filename, sdf));
+  sdf::Errors errors;
+  EXPECT_TRUE(sdf::initFile(filename, sdf, errors));
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_TRUE(sdf::readString(stream.str(), sdf));
 

@@ -133,25 +133,25 @@ bool Magnetometer::operator==(const Magnetometer &_mag) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Magnetometer::ToElement() const
+sdf::ElementPtr Magnetometer::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("magnetometer.sdf", elem);
+  sdf::initFile("magnetometer.sdf", elem, _errors);
 
   sdf::ElementPtr magnetometerXElem = elem->GetElement("x");
   sdf::ElementPtr magnetometerXNoiseElem =
     magnetometerXElem->GetElement("noise");
-  magnetometerXNoiseElem->Copy(this->dataPtr->noise[0].ToElement());
+  magnetometerXNoiseElem->Copy(this->dataPtr->noise[0].ToElement(_errors));
 
   sdf::ElementPtr magnetometerYElem = elem->GetElement("y");
   sdf::ElementPtr magnetometerYNoiseElem =
     magnetometerYElem->GetElement("noise");
-  magnetometerYNoiseElem->Copy(this->dataPtr->noise[1].ToElement());
+  magnetometerYNoiseElem->Copy(this->dataPtr->noise[1].ToElement(_errors));
 
   sdf::ElementPtr magnetometerZElem = elem->GetElement("z");
   sdf::ElementPtr magnetometerZNoiseElem =
     magnetometerZElem->GetElement("noise");
-  magnetometerZNoiseElem->Copy(this->dataPtr->noise[2].ToElement());
+  magnetometerZNoiseElem->Copy(this->dataPtr->noise[2].ToElement(_errors));
 
   return elem;
 }

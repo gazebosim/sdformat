@@ -309,7 +309,9 @@ TEST(DOMVisual, ToElement)
   plugin.SetFilename("filename1");
   visual.AddPlugin(plugin);
 
-  sdf::ElementPtr elem = visual.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = visual.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Visual visual2;

@@ -52,7 +52,9 @@ TEST(NestedModel, NestedModel)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   // Verify correct parsing
@@ -146,7 +148,9 @@ TEST(NestedModel, State)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(sdfStr.str(), sdfParsed));
 
   // load the state sdf
@@ -292,11 +296,13 @@ TEST(NestedModel, NestedInclude)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(sdfParsed);
+  errors = root.Load(sdfParsed);
   EXPECT_TRUE(errors.empty());
 
   const sdf::World *world = root.WorldByIndex(0);
@@ -427,11 +433,13 @@ TEST(NestedModel, NestedModelWithFrames)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(sdfParsed);
+  errors = root.Load(sdfParsed);
   for (auto e : errors)
     std::cout << e.Message() << std::endl;
   EXPECT_TRUE(errors.empty());
@@ -600,8 +608,9 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
   sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(
       sdf::readStringWithoutConversion(stream.str(), sdfParsed, errors));
 
@@ -749,7 +758,9 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::setFindCallback(
       [&](const std::string &_file)
@@ -757,7 +768,6 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
         return sdf::testing::TestFile("integration", "model", _file);
       });
 
-  sdf::Errors errors;
   ASSERT_TRUE(
       sdf::readStringWithoutConversion(stream.str(), sdfParsed, errors));
 
@@ -808,11 +818,13 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(sdfParsed);
+  errors = root.Load(sdfParsed);
   for (auto e : errors)
     std::cout << e.Message() << std::endl;
   EXPECT_TRUE(errors.empty());
@@ -907,11 +919,13 @@ TEST(NestedModel, NestedFrameOnlyModel)
     << "</sdf>";
 
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  sdf::init(sdfParsed, errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
 
   sdf::Root root;
-  sdf::Errors errors = root.Load(sdfParsed);
+  errors = root.Load(sdfParsed);
   EXPECT_TRUE(errors.empty()) << errors;
 
   const sdf::World *world = root.WorldByIndex(0);

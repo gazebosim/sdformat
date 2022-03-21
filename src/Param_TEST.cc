@@ -30,13 +30,13 @@
 #include "sdf/Param.hh"
 #include "sdf/parser.hh"
 
-bool check_double(const std::string &num)
+bool check_double(const std::string &num, sdf::Errors &_errors)
 {
   const std::string name = "number";
   const std::string type = "double";
   const std::string def = "0.0";
 
-  sdf::Param param(name, type, def, true);
+  sdf::Param param(name, type, def, true, _errors);
   return param.SetFromString(num);
 }
 
@@ -44,7 +44,9 @@ bool check_double(const std::string &num)
 /// Test getting a bool using true/false and 1/0.
 TEST(Param, Bool)
 {
-  sdf::Param boolParam("key", "bool", "true", false, "description");
+  sdf::Errors errors;
+  sdf::Param boolParam("key", "bool", "true", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   bool value = true;
   boolParam.Get<bool>(value);
   EXPECT_TRUE(value);
@@ -54,7 +56,8 @@ TEST(Param, Bool)
   EXPECT_FALSE(value);
 
   // String parameter that represents a boolean.
-  sdf::Param strParam("key", "string", "true", false, "description");
+  sdf::Param strParam("key", "string", "true", false, errors, "description");
+  EXPECT_TRUE(errors.empty());
 
   strParam.Get<bool>(value);
   EXPECT_TRUE(value);
@@ -102,14 +105,18 @@ TEST(Param, Bool)
 /// Test decimal number
 TEST(SetFromString, Decimals)
 {
-  ASSERT_TRUE(check_double("0.2345"));
+  sdf::Errors errors;
+  ASSERT_TRUE(check_double("0.2345", errors));
+  ASSERT_TRUE(errors.empty());
 }
 
 ////////////////////////////////////////////////////
 /// Test setting param as a string but getting it as different type
 TEST(Param, StringTypeGet)
 {
-  sdf::Param stringParam("key", "string", "", false, "description");
+  sdf::Errors errors;
+  sdf::Param stringParam("key", "string", "", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   // pose type
   ignition::math::Pose3d pose;
@@ -135,13 +142,16 @@ TEST(SetFromString, DoublePositiveInf)
     "inf", "Inf", "INF", "+inf", "+Inf", "+INF"};
   for (const auto &infString : positiveInfStrings)
   {
-    sdf::Param doubleParam("key", "double", "0", false, "description");
+    sdf::Errors errors;
+    sdf::Param doubleParam("key", "double", "0", false, errors, "description");
+    ASSERT_TRUE(errors.empty());
     double value = 0.;
     EXPECT_TRUE(doubleParam.SetFromString(infString));
     doubleParam.Get<double>(value);
     EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), value);
 
-    sdf::Param stringParam("key", "string", "0", false, "description");
+    sdf::Param stringParam("key", "string", "0", false, errors, "description");
+    ASSERT_TRUE(errors.empty());
     value = 0;
     EXPECT_TRUE(stringParam.SetFromString(infString));
     EXPECT_TRUE(stringParam.Get<double>(value));
@@ -158,13 +168,16 @@ TEST(SetFromString, DoubleNegativeInf)
     "-inf", "-Inf", "-INF"};
   for (const auto &infString : negativeInfStrings)
   {
-    sdf::Param doubleParam("key", "double", "0", false, "description");
+    sdf::Errors errors;
+    sdf::Param doubleParam("key", "double", "0", false, errors, "description");
+    ASSERT_TRUE(errors.empty());
     double value = 0.;
     EXPECT_TRUE(doubleParam.SetFromString(infString));
     doubleParam.Get<double>(value);
     EXPECT_DOUBLE_EQ(-std::numeric_limits<double>::infinity(), value);
 
-    sdf::Param stringParam("key", "string", "0", false, "description");
+    sdf::Param stringParam("key", "string", "0", false, errors, "description");
+    ASSERT_TRUE(errors.empty());
     value = 0;
     EXPECT_TRUE(stringParam.SetFromString(infString));
     EXPECT_TRUE(stringParam.Get<double>(value));
@@ -176,7 +189,9 @@ TEST(SetFromString, DoubleNegativeInf)
 /// Test setting and reading hex int values.
 TEST(Param, HexInt)
 {
-  sdf::Param intParam("key", "int", "0", false, "description");
+  sdf::Errors errors;
+  sdf::Param intParam("key", "int", "0", false, errors,  "description");
+  ASSERT_TRUE(errors.empty());
   int value;
   EXPECT_TRUE(intParam.Get<int>(value));
   EXPECT_EQ(value, 0);
@@ -202,7 +217,10 @@ TEST(Param, HexInt)
 /// Test setting and reading hex unsigned int values.
 TEST(Param, HexUInt)
 {
-  sdf::Param uintParam("key", "unsigned int", "0", false, "description");
+  sdf::Errors errors;
+  sdf::Param uintParam("key", "unsigned int", "0", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   unsigned int value;
   EXPECT_TRUE(uintParam.Get<unsigned int>(value));
   EXPECT_EQ(value, 0u);
@@ -231,7 +249,9 @@ TEST(Param, HexFloat)
 // Microsoft does not parse hex values properly.
 // https://github.com/osrf/sdformat/issues/114
 #ifndef _MSC_VER
-  sdf::Param floatParam("key", "float", "0", false, "description");
+  sdf::Errors errors;
+  sdf::Param floatParam("key", "float", "0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   float value;
   EXPECT_TRUE(floatParam.Get<float>(value));
   EXPECT_FLOAT_EQ(value, 0.0f);
@@ -258,7 +278,9 @@ TEST(Param, HexFloat)
 /// Test setting and reading hex and non-hex double values.
 TEST(Param, HexDouble)
 {
-  sdf::Param doubleParam("key", "double", "0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
   EXPECT_DOUBLE_EQ(value, 0.0);
@@ -287,7 +309,10 @@ TEST(Param, HexDouble)
 /// Test setting and reading uint64_t values.
 TEST(Param, uint64t)
 {
-  sdf::Param uint64tParam("key", "uint64_t", "1", false, "description");
+  sdf::Errors errors;
+  sdf::Param uint64tParam("key", "uint64_t", "1", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   std::uint64_t value;
   EXPECT_TRUE(uint64tParam.Get<std::uint64_t>(value));
   EXPECT_EQ(value, 1u);
@@ -302,7 +327,9 @@ TEST(Param, uint64t)
 /// Unknown type, should fall back to stream operators
 TEST(Param, UnknownType)
 {
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   ignition::math::Angle value;
   EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
@@ -311,7 +338,10 @@ TEST(Param, UnknownType)
 ////////////////////////////////////////////////////
 TEST(Param, Vector2i)
 {
-  sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
+  sdf::Errors errors;
+  sdf::Param vect2iParam("key", "vector2i", "0 0", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   ignition::math::Vector2i value;
 
   EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
@@ -321,21 +351,27 @@ TEST(Param, Vector2i)
 ////////////////////////////////////////////////////
 TEST(Param, InvalidConstructor)
 {
-  ASSERT_THROW(sdf::Param badParam("key", "badtype", "0", false, "description"),
-               sdf::AssertionInternalError);
+  sdf::Errors errors;
+  ASSERT_THROW(sdf::Param badParam("key", "badtype", "0", false, errors,
+      "description"), sdf::AssertionInternalError);
+  ASSERT_TRUE(errors.empty());
 }
 
 ////////////////////////////////////////////////////
 TEST(Param, InvalidColorConstructor)
 {
-  ASSERT_THROW(sdf::Param("key", "color", "8 20 67 23", false, "description"),
-               sdf::AssertionInternalError);
+  sdf::Errors errors;
+  ASSERT_THROW(sdf::Param("key", "color", "8 20 67 23", false, errors,
+      "description"), sdf::AssertionInternalError);
+  ASSERT_TRUE(errors.empty());
 }
 
 ////////////////////////////////////////////////////
 TEST(Param, SetDescription)
 {
-  sdf::Param uint64Param("key", "uint64_t", "1", false, "description");
+  sdf::Errors errors;
+  sdf::Param uint64Param("key", "uint64_t", "1", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   uint64Param.SetDescription("new desc");
 
@@ -345,7 +381,9 @@ TEST(Param, SetDescription)
 ////////////////////////////////////////////////////
 TEST(Param, Reset)
 {
-  sdf::Param uint64Param("key", "uint64_t", "1", false, "description");
+  sdf::Errors errors;
+  sdf::Param uint64Param("key", "uint64_t", "1", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   uint64_t val;
 
   uint64Param.SetFromString("89");
@@ -362,7 +400,9 @@ TEST(Param, Reset)
 ////////////////////////////////////////////////////
 TEST(Param, EmptyRequiredSetFromString)
 {
-  sdf::Param uint64Param("key", "uint64_t", "1", true, "description");
+  sdf::Errors errors;
+  sdf::Param uint64Param("key", "uint64_t", "1", true, errors, "description");
+  ASSERT_TRUE(errors.empty());
   uint64_t val;
 
   ASSERT_FALSE(uint64Param.SetFromString(""));
@@ -374,7 +414,9 @@ TEST(Param, EmptyRequiredSetFromString)
 ////////////////////////////////////////////////////
 TEST(Param, EmptySetFromString)
 {
-  sdf::Param uint64Param("key", "uint64_t", "1", false, "description");
+  sdf::Errors errors;
+  sdf::Param uint64Param("key", "uint64_t", "1", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   uint64_t val;
 
@@ -389,7 +431,9 @@ TEST(Param, EmptySetFromString)
 ////////////////////////////////////////////////////
 TEST(Param, InvalidBool)
 {
-  sdf::Param boolParam("key", "bool", "true", false, "description");
+  sdf::Errors errors;
+  sdf::Param boolParam("key", "bool", "true", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_FALSE(boolParam.SetFromString("false1"));
 }
@@ -397,7 +441,9 @@ TEST(Param, InvalidBool)
 ////////////////////////////////////////////////////
 TEST(Param, InvalidInt)
 {
-  sdf::Param intParam("key", "int", "1", false, "description");
+  sdf::Errors errors;
+  sdf::Param intParam("key", "int", "1", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   ASSERT_FALSE(intParam.SetFromString("abc"));
 }
@@ -406,59 +452,81 @@ TEST(Param, InvalidInt)
 TEST(Param, GetAny)
 {
   std::any anyValue;
+  sdf::Errors errors;
 
-  sdf::Param intParam("key", "int", "true", false, "description");
+  sdf::Param intParam("key", "int", "true", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(intParam.GetAny(anyValue));
 
-  sdf::Param uint64Param("key", "uint64_t", "1", false, "description");
+  sdf::Param uint64Param("key", "uint64_t", "1", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(uint64Param.GetAny(anyValue));
 
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(doubleParam.GetAny(anyValue));
 
-  sdf::Param floatParam("key", "float", "1.0", false, "description");
+  sdf::Param floatParam("key", "float", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(floatParam.GetAny(anyValue));
 
-  sdf::Param boolParam("key", "bool", "true", false, "description");
+  sdf::Param boolParam("key", "bool", "true", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(boolParam.GetAny(anyValue));
 
-  sdf::Param stringParam("key", "string", "hello", false, "description");
+  sdf::Param stringParam("key", "string", "hello", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(stringParam.GetAny(anyValue));
 
-  sdf::Param unsignedParam("key", "unsigned int", "1", false, "description");
+  sdf::Param unsignedParam("key", "unsigned int", "1", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(unsignedParam.GetAny(anyValue));
 
-  sdf::Param charParam("key", "char", "a", false, "description");
+  sdf::Param charParam("key", "char", "a", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(charParam.GetAny(anyValue));
 
-  sdf::Param timeParam("key", "time", "8 20", false, "description");
+  sdf::Param timeParam("key", "time", "8 20", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(timeParam.GetAny(anyValue));
 
-  sdf::Param colorParam("key", "color", "0 0.1 0.2 0.3", false, "description");
+  sdf::Param colorParam("key", "color", "0 0.1 0.2 0.3", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(colorParam.GetAny(anyValue));
 
-  sdf::Param vector3Param("key", "vector3", "8.1 20.24 67.7", false,
+  sdf::Param vector3Param("key", "vector3", "8.1 20.24 67.7", false, errors,
                           "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(vector3Param.GetAny(anyValue));
 
-  sdf::Param vector2iParam("key", "vector2i", "8 20", false, "description");
+  sdf::Param vector2iParam("key", "vector2i", "8 20", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(vector2iParam.GetAny(anyValue));
 
-  sdf::Param vector2dParam("key", "vector2d", "8.1 20.24", false,
+  sdf::Param vector2dParam("key", "vector2d", "8.1 20.24", false, errors,
                            "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(vector2dParam.GetAny(anyValue));
 
-  sdf::Param poseParam("key", "pose", "1 2 3 4 5 6", false, "description");
+  sdf::Param poseParam("key", "pose", "1 2 3 4 5 6", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(poseParam.GetAny(anyValue));
 
-  sdf::Param quatParam("key", "quaternion", "1 2 3 4", false, "description");
+  sdf::Param quatParam("key", "quaternion", "1 2 3 4", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(quatParam.GetAny(anyValue));
 }
 
 ////////////////////////////////////////////////////
 TEST(Param, SetTemplate)
 {
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   double value;
 
   EXPECT_TRUE(doubleParam.Get<double>(value));
@@ -473,8 +541,10 @@ TEST(Param, SetTemplate)
 ////////////////////////////////////////////////////
 TEST(Param, MinMaxViolation)
 {
+  sdf::Errors errors;
   sdf::Param doubleParam("key", "double", "1.0", false, "0", "10.0",
-                         "description");
+                         errors, "description");
+  ASSERT_TRUE(errors.empty());
   {
     double value;
     EXPECT_TRUE(doubleParam.Get<double>(value));
@@ -497,7 +567,9 @@ TEST(Param, SettingParentElement)
 {
   sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
 
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
@@ -520,7 +592,9 @@ TEST(Param, CopyConstructor)
 {
   sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
 
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
@@ -536,7 +610,9 @@ TEST(Param, EqualOperator)
 {
   sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
   ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
 
   ASSERT_NE(nullptr, doubleParam.GetParentElement());
@@ -555,8 +631,10 @@ TEST(Param, DestroyParentElementAfterConstruct)
   {
     sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
 
+    sdf::Errors errors;
     param = std::make_shared<sdf::Param>(
-        "key", "double", "1.0", false, "description");
+        "key", "double", "1.0", false, errors, "description");
+    ASSERT_TRUE(errors.empty());
     ASSERT_TRUE(param->SetParentElement(parentElement));
   }
 
@@ -567,7 +645,9 @@ TEST(Param, DestroyParentElementAfterConstruct)
 //////////////////////////////////////////////////
 TEST(Param, ReparsingAfterSetDouble)
 {
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
@@ -589,7 +669,9 @@ TEST(Param, ReparsingAfterSetDouble)
 //////////////////////////////////////////////////
 TEST(Param, ReparsingAfterSetFromStringDouble)
 {
-  sdf::Param doubleParam("key", "double", "1.0", false, "description");
+  sdf::Errors errors;
+  sdf::Param doubleParam("key", "double", "1.0", false, errors, "description");
+  ASSERT_TRUE(errors.empty());
 
   double value;
   EXPECT_TRUE(doubleParam.Get<double>(value));
@@ -612,7 +694,10 @@ TEST(Param, ReparsingAfterSetPose)
 {
   using Pose = ignition::math::Pose3d;
 
-  sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
+  sdf::Errors errors;
+  sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   Pose value;
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
@@ -626,10 +711,14 @@ TEST(Param, ReparsingAfterSetPose)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false, errors);
+  ASSERT_TRUE(errors.empty());
+
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -680,7 +769,10 @@ TEST(Param, ReparsingAfterSetFromStringPose)
 {
   using Pose = ignition::math::Pose3d;
 
-  sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
+  sdf::Errors errors;
+  sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   Pose value;
   EXPECT_TRUE(poseParam.Get<Pose>(value));
   EXPECT_EQ(Pose(1, 2, 3, 0.4, 0.5, 0.6), value);
@@ -693,10 +785,15 @@ TEST(Param, ReparsingAfterSetFromStringPose)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  poseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   sdf::ParamPtr degreesAttrib = poseElem->GetAttribute("degrees");
   ASSERT_NE(nullptr, degreesAttrib);
@@ -746,13 +843,19 @@ TEST(Param, IgnoresParentElementAttribute)
 {
   {
     // Without parent
-    sdf::Param doubleParam("key", "double", "1.0", false, "description");
+    sdf::Errors errors;
+    sdf::Param doubleParam("key", "double", "1.0", false, errors,
+        "description");
+    ASSERT_TRUE(errors.empty());
     EXPECT_TRUE(doubleParam.IgnoresParentElementAttribute());
   }
 
   {
     // With parent
-    sdf::Param doubleParam("key", "double", "1.0", false, "description");
+    sdf::Errors errors;
+    sdf::Param doubleParam("key", "double", "1.0", false, errors,
+        "description");
+    ASSERT_TRUE(errors.empty());
     sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
     ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
     EXPECT_FALSE(doubleParam.IgnoresParentElementAttribute());
@@ -762,7 +865,9 @@ TEST(Param, IgnoresParentElementAttribute)
     // Param from parent element
     sdf::ElementPtr elem(new sdf::Element);
     elem->SetName("double");
-    elem->AddValue("double", "0", true);
+    sdf::Errors errors;
+    elem->AddValue("double", "0", true, errors);
+    ASSERT_TRUE(errors.empty());
 
     sdf::ParamPtr valParam = elem->GetValue();
     ASSERT_NE(nullptr, valParam);
@@ -771,7 +876,10 @@ TEST(Param, IgnoresParentElementAttribute)
 
   {
     // With parent using Set and SetFromString
-    sdf::Param doubleParam("key", "double", "1.0", false, "description");
+    sdf::Errors errors;
+    sdf::Param doubleParam("key", "double", "1.0", false, errors,
+        "description");
+    ASSERT_TRUE(errors.empty());
     sdf::ElementPtr parentElement = std::make_shared<sdf::Element>();
     ASSERT_TRUE(doubleParam.SetParentElement(parentElement));
     ASSERT_TRUE(doubleParam.Set<double>(23.4));
@@ -796,7 +904,10 @@ TEST(Param, WithoutParentElementSetParentElementFail)
 {
   using Pose = ignition::math::Pose3d;
 
-  sdf::Param poseParam("", "pose", "0 0 0 0 0 0", false, "description");
+  sdf::Errors errors;
+  sdf::Param poseParam("", "pose", "0 0 0 0 0 0", false, errors,
+      "description");
+  ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
 
   Pose val;
@@ -805,11 +916,15 @@ TEST(Param, WithoutParentElementSetParentElementFail)
 
   sdf::ElementPtr quatPoseElem(new sdf::Element);
   quatPoseElem->SetName("pose");
-  quatPoseElem->AddValue("pose", "0 0 0 0 0 0", true);
-  quatPoseElem->AddAttribute("relative_to", "string", "", false);
-  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_xyzw", false);
+      "rotation_format", "string", "quat_xyzw", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Set parent to Element with degrees attribute false, in quat_xyzw, will
   // fail, as the string that was previously set was only 6 values. The value
@@ -830,10 +945,16 @@ TEST(Param, ChangeParentElementFail)
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "0 0 0 0 0 0", true);
-  poseElem->AddAttribute("relative_to", "string", "", false);
-  poseElem->AddAttribute("degrees", "bool", "false", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "0 0 0 0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false,
+      errors);
+  ASSERT_TRUE(errors.empty());
 
   // Param from original default attibute
   sdf::ParamPtr valParam = poseElem->GetValue();
@@ -846,11 +967,15 @@ TEST(Param, ChangeParentElementFail)
 
   sdf::ElementPtr quatPoseElem(new sdf::Element);
   quatPoseElem->SetName("pose");
-  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true);
-  quatPoseElem->AddAttribute("relative_to", "string", "", false);
-  quatPoseElem->AddAttribute("degrees", "bool", "false", false);
+  quatPoseElem->AddValue("pose", "0 0 0   0 0 0", true, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("relative_to", "string", "", false, errors);
+  ASSERT_TRUE(errors.empty());
+  quatPoseElem->AddAttribute("degrees", "bool", "false", false, errors);
+  ASSERT_TRUE(errors.empty());
   quatPoseElem->AddAttribute(
-      "rotation_format", "string", "quat_xyzw", false);
+      "rotation_format", "string", "quat_xyzw", false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Set parent to Element with degrees attribute false, in quat_xyzw, will
   // fail, as the string that was previously set was only 6 values. The value
@@ -871,8 +996,12 @@ TEST(Param, PoseWithDefaultValue)
 
   auto poseElem = std::make_shared<sdf::Element>();
   poseElem->SetName("pose");
-  poseElem->AddValue("pose", "1 0 0 0 0 0", false);
-  poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
+  sdf::Errors errors;
+  poseElem->AddValue("pose", "1 0 0 0 0 0", false, errors);
+  ASSERT_TRUE(errors.empty());
+  poseElem->AddAttribute("rotation_format", "string", "euler_rpy",
+      false, errors);
+  ASSERT_TRUE(errors.empty());
 
   // Clone poseElem for testing Parm::SetFromString
   auto poseElemClone = poseElem->Clone();
@@ -882,7 +1011,6 @@ TEST(Param, PoseWithDefaultValue)
     <pose rotation_format="quat_xyzw"/>
   </sdf>)";
 
-  sdf::Errors errors;
   EXPECT_TRUE(sdf::readString(testString, poseElem, errors));
   EXPECT_TRUE(errors.empty()) << errors;
 

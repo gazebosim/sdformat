@@ -141,7 +141,9 @@ TEST(DOMLidar, ToElement)
   noise.SetStdDev(3.79);
   lidar.SetLidarNoise(noise);
 
-  sdf::ElementPtr lidarElem = lidar.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr lidarElem = lidar.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, lidarElem);
   EXPECT_EQ(nullptr, lidar.Element());
 
@@ -164,7 +166,8 @@ TEST(DOMLidar, ToElement)
 
   // make changes to DOM and verify ToElement produces updated values
   lidar2.SetHorizontalScanSamples(111u);
-  sdf::ElementPtr lidar2Elem = lidar2.ToElement();
+  sdf::ElementPtr lidar2Elem = lidar2.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   EXPECT_NE(nullptr, lidar2Elem);
   sdf::Lidar lidar3;
   lidar3.Load(lidar2Elem);

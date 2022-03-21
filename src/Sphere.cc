@@ -114,10 +114,10 @@ sdf::ElementPtr Sphere::Element() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Sphere::ToElement() const
+sdf::ElementPtr Sphere::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("sphere_shape.sdf", elem);
+  sdf::initFile("sphere_shape.sdf", elem, _errors);
 
   sdf::ElementPtr radiusElem = elem->GetElement("radius");
   radiusElem->Set<double>(this->Radius());

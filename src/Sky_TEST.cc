@@ -201,7 +201,9 @@ TEST(DOMSky, ToElement)
   sky.SetCloudMeanSize(0.5);
   sky.SetCloudAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
 
-  sdf::ElementPtr elem = sky.ToElement();
+  sdf::Errors errors;
+  sdf::ElementPtr elem = sky.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
   ASSERT_NE(nullptr, elem);
 
   sdf::Sky sky2;
