@@ -46,16 +46,24 @@ namespace sdf
   /// This actually forwards to initXml after converting the inputs
   /// \param[in] _xmlDoc TinyXML2 document containing the SDFormat description
   /// file that corresponds with the input SDFPtr
+  /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf SDF interface to be initialized
-  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf);
+  /// \return True on success, false on error.
+  bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+               const ParserConfig &_config,
+               SDFPtr _sdf);
 
   /// \brief Initialize the SDF Element using a TinyXML2 document
   ///
   /// This actually forwards to initXml after converting the inputs
   /// \param[in] _xmlDoc TinyXML2 document containing the SDFormat description
   /// file that corresponds with the input ElementPtr
+  /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf SDF Element to be initialized
-  bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf);
+  /// \return True on success, false on error.
+  bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+               const ParserConfig &_config,
+               ElementPtr _sdf);
 
   /// \brief Initialize the SDF Element by parsing the SDFormat description in
   /// the input TinyXML2 element. This is where SDFormat spec/description files
@@ -63,8 +71,12 @@ namespace sdf
   /// \remark For internal use only. Do not use this function.
   /// \param[in] _xml TinyXML2 element containing the SDFormat description
   /// file that corresponds with the input ElementPtr
+  /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf SDF ElementPtr to be initialized
-  bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf);
+  /// \return True on success, false on error.
+  bool initXml(tinyxml2::XMLElement *_xml,
+               const ParserConfig &_config,
+               ElementPtr _sdf);
 
   /// \brief Populate the SDF values from a TinyXML document
   bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
@@ -83,6 +95,7 @@ namespace sdf
   /// \param[in] _xmlRoot Pointer to the root level TinyXML element.
   /// \param[in] _source Source of the XML document.
   /// \param[in] _errors Captures errors found during the checks.
+  /// \return True on success, false on error.
   bool checkXmlFromRoot(tinyxml2::XMLElement *_xmlRoot,
       const std::string &_source, Errors &_errors);
 
