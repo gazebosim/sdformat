@@ -53,7 +53,8 @@ TEST(USDLightsTest, DistanceLight)
   auto stage = pxr::UsdStage::Open(filename);
   ASSERT_TRUE(stage);
 
-  pxr::UsdPrim prim = stage->GetPrimAtPath(pxr::SdfPath("/shapes/defaultLight"));
+  pxr::UsdPrim prim = stage->GetPrimAtPath(
+    pxr::SdfPath("/shapes/defaultLight"));
   ASSERT_TRUE(prim);
 
   auto light = sdf::usd::ParseUSDLights(

@@ -19,12 +19,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-
-#include "sdf/usd/usd_parser/USDData.hh"
-#include "sdf/usd/usd_parser/USDStage.hh"
-
-#include "USDLights.hh"
-#include "USDPhysics.hh"
+#include <vector>
 
 #include <ignition/common/Util.hh>
 
@@ -40,6 +35,8 @@
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
+
+#include "USDLights.hh"
 #include "USDPhysics.hh"
 
 #include "sdf/World.hh"
