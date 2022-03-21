@@ -197,17 +197,51 @@ namespace usd
       auto linkInserted = modelPtr->LinkByName(linkName);
       if (linkInserted)
       {
-        sdf::usd::ParseUSDLinks(prim, linkName, *linkInserted, usdData, skipPrims);
+        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData, skipPrims);
       }
       else
       {
-        sdf::Link link;
-        sdf::usd::ParseUSDLinks(prim, linkName, link, usdData, skipPrims);
+        sdf::Link * link = nullptr;
+        link = sdf::usd::ParseUSDLinks(prim, linkName, link, usdData, skipPrims);
 
-        if (!link.Name().empty())
+        if (link != nullptr && !link->Name().empty())
         {
-          modelPtr->AddLink(link);
+          const auto l = modelPtr->LinkByName(link->Name());
+          if (l == nullptr)
+          {
+            std::cerr << "Added "<< link->Name() << '\n';
+            modelPtr->AddLink(*link);
+          }
         }
+        if (link == nullptr)
+          delete link;
+      }
+    }
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
+    {
+      auto light = _world.LightByIndex(i);
+      light->SetName(ignition::common::basename(light->Name()));
+    }
+    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
+    {
+      const auto m = _world.ModelByIndex(i);
+
+      // We might include some empty models
+      // for example: same models create a world path to set up physics
+      // but there is no model data inside
+      // TODO(ahcorde) Add a RemoveModelByName() method in sdf::World
+      if (m->LinkCount() == 0)
+      {
+        sdf::Link emptyLink;
+        emptyLink.SetName("emptyLink");
+        m->AddLink(emptyLink);
+      }
+
+      m->SetName(ignition::common::basename(m->Name()));
+      for (unsigned int j = 0; j < m->LinkCount(); ++j)
+      {
+        auto link = m->LinkByIndex(j);
+        link->SetName(ignition::common::basename(link->Name()));
       }
     }
 
@@ -222,7 +256,12 @@ namespace usd
     for (unsigned int i = 0; i < _world.ModelCount(); ++i)
     {
       const auto m = _world.ModelByIndex(i);
-      std::cout << m->Name() << std::endl;
+      std::cout << m->Name() << "\t\t Links: " << m->LinkCount() << std::endl;
+      for (unsigned int j = 0; j < m->LinkCount(); ++j)
+      {
+        const auto l = m->LinkByIndex(j);
+        std::cout << "\t" << l->Name() << std::endl;
+      }
     }
 
     return errors;

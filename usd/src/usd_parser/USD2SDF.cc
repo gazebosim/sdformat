@@ -42,7 +42,6 @@ UsdErrors USD2SDF::Read(const std::string &_fileName,
   errors = parseUSDWorld(_fileName, sdfWorld);
   if (!errors.empty())
   {
-    errors.insert(errors.end(), errorsParseUSD.begin(), errorsParseUSD.end());
     errors.emplace_back(UsdError(
       UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
       "Error parsing usd file [" + _fileName + "]"));

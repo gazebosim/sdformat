@@ -60,6 +60,10 @@ namespace usd
       {
         magnitude = magnitude * _metersPerUnit;
       }
+      else
+      {
+        magnitude = 9.8;
+      }
     }
     _world.SetGravity(worldGravity * magnitude);
   }

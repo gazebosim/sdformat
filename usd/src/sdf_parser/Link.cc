@@ -85,7 +85,7 @@ namespace usd
         return errors;
       }
 
-      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim.GetParent()))
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
               "Internal error: unable to mark link at path [" + _path
