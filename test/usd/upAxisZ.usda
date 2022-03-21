@@ -19,14 +19,21 @@ def "shapes"
     )
     {
         float angle = 1
-        float intensity = 3000
+        float inputs:intensity = 5000
         float shaping:cone:angle = 180
-        float shaping:cone:softness
-        float shaping:focus
-        color3f shaping:focusTint
-        asset shaping:ies:file
         float3 xformOp:rotateZYX = (0, 45, 0)
         float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
+    def DiskLight "diskLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+        kind = "model"
+    )
+    {
+        float inputs:intensity = 3000
+        float3 xformOp:rotateZYX = (0, 0, 45)
+        float3 xformOp:translate = (0, 0, 1000)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
     }
 

@@ -16,13 +16,10 @@
 */
 #include "USDWorld.hh"
 
+#include <memory>
 #include <string>
-
-#include "sdf/usd/usd_parser/USDData.hh"
-#include "sdf/usd/usd_parser/USDStage.hh"
-
-#include "USDLights.hh"
-#include "USDPhysics.hh"
+#include <utility>
+#include <vector>
 
 #include <ignition/common/Util.hh>
 
@@ -40,6 +37,8 @@
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
 #include "sdf/usd/usd_parser/USDTransforms.hh"
+
+#include "USDLights.hh"
 #include "USDPhysics.hh"
 #include "USDLinks.hh"
 
@@ -67,13 +66,12 @@ namespace usd
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
     {
-      errors.emplace_back(UsdError(
-        UsdErrorCode::INVALID_USD_FILE,
-        "Unable to open [" + _inputFileName + "]"));
+      errors.emplace_back(UsdErrorCode::INVALID_USD_FILE,
+        "Unable to open [" + _inputFileName + "]");
       return errors;
     }
     std::string worldName = reference->GetDefaultPrim().GetName().GetText();
-    if (!worldName.empty())
+    if (worldName.empty())
     {
       _world.SetName("world_name");
     }
@@ -108,6 +106,8 @@ namespace usd
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
 
+      // This assumption on the scene graph it wouldn't hold if the usd does
+      // not come from Isaac Sim
       if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
           && !prim.IsA<pxr::UsdPhysicsScene>()
           && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
@@ -134,10 +134,11 @@ namespace usd
       // under a root path for example:
       //  -> /robot_name/robot_name_link0
       // But sometimes for enviroments it uses just a simple path:
-      //  -> /ground_plan
+      //  -> /ground_plane
       //  -> /wall_0
       // the shortName variable defines if this is the first case when it's
       // False or when it's true then it's the second case.
+      // This conversion might only work with Issac Sim USDs
       if (primPathTokens.size() >= 2)
       {
         bool shortName = false;
@@ -185,7 +186,6 @@ namespace usd
 
         ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
             data.second->MetersPerUnit());
-        // _world->models.pop_back();
         continue;
       }
 

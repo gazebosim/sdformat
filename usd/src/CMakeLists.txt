@@ -65,4 +65,9 @@ ign_build_tests(
   INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test usd_parser
 )
 
+if (TARGET UNIT_USDPhysics_TEST)
+  target_sources(UNIT_USDPhysics_TEST PRIVATE
+  usd_parser/USDPhysics.cc)
+endif()
+
 add_subdirectory(cmd)

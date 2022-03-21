@@ -17,6 +17,12 @@
 
 #include "USDLights.hh"
 
+#include <memory>
+
+// TODO(ahcorde) This is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include "pxr/usd/usdLux/lightAPI.h"
@@ -45,6 +51,23 @@ namespace usd
 
     auto variantLight = pxr::UsdLuxBoundableLightBase(_prim);
 
+    ignition::math::Pose3d pose;
+    ignition::math::Vector3d scale(1, 1, 1);
+    GetTransform(_prim, _usdData, pose, scale, _linkName);
+
+    light->SetName(_prim.GetPath().GetName());
+    float intensity;
+    variantLight.GetIntensityAttr().Get(&intensity);
+    std::cerr << "intensity " << intensity << '\n';
+    light->SetIntensity(intensity/100);
+    float diffuse;
+    variantLight.GetDiffuseAttr().Get(&diffuse);
+    light->SetDiffuse(ignition::math::Color(diffuse, diffuse, diffuse, 1));
+    float specular;
+    variantLight.GetSpecularAttr().Get(&specular);
+    light->SetSpecular(ignition::math::Color(specular, specular, specular, 1));
+    light->SetCastShadows(true);
+
     if (_prim.IsA<pxr::UsdLuxDistantLight>())
     {
       light->SetType(sdf::LightType::DIRECTIONAL);
@@ -52,6 +75,7 @@ namespace usd
     else if (_prim.IsA<pxr::UsdLuxDiskLight>())
     {
       light->SetType(sdf::LightType::SPOT);
+      // These parameters are not defined in USD. Added some generic values.
       light->SetSpotInnerAngle(0.1);
       light->SetSpotOuterAngle(0.5);
       light->SetSpotFalloff(0.8);
@@ -59,37 +83,21 @@ namespace usd
     if (_prim.IsA<pxr::UsdLuxDistantLight>() ||
         _prim.IsA<pxr::UsdLuxDiskLight>())
     {
-      float intensity;
-      variantLight.GetIntensityAttr().Get(&intensity);
-
-      ignition::math::Pose3d pose;
-      ignition::math::Vector3d scale(1, 1, 1);
-      GetTransform(_prim, _usdData, pose, scale, _linkName);
-
-      if(_prim.IsA<pxr::UsdLuxDistantLight>() &&
-        pose == ignition::math::Pose3d(0, 0, 0, IGN_PI_2, 0, 0))
+      if(_prim.IsA<pxr::UsdLuxDistantLight>())
       {
-        pose = ignition::math::Pose3d(0, 0, 10, 0, 0, 0);
-        light->SetDirection(ignition::math::Vector3d(-0.5, 0.1, -0.9));
+        // DistantLight in USD does no define height. Added some height to the
+        // light. The default sun light in ign-gazebo sdf world is 10.
+        pose += ignition::math::Pose3d(0, 0, 10, 0, 0, 0);
+        // Light emitted from a distant source along the -Z axis
+        // The pose should set the direction
+        light->SetDirection(ignition::math::Vector3d(0, 0, -1));
       }
-
-      light->SetName(_prim.GetPath().GetName());
-      light->SetRawPose(pose);
-      light->SetCastShadows(true);
-      // TODO(anyone): review this
-      light->SetIntensity(intensity/100000);
-      light->SetDiffuse(ignition::math::Color(0.8, 0.8, 0.8, 1));
-      light->SetSpecular(ignition::math::Color(0.2, 0.2, 0.2, 1));
-      light->SetAttenuationRange(1000);
-      light->SetLinearAttenuationFactor(0.01);
-      light->SetConstantAttenuationFactor(0.9);
-      light->SetQuadraticAttenuationFactor(0.001);
-      // light->SetDirection(ignition::math::Vector3d(-0.5, 0.1, -0.9));
     }
     else
     {
       return nullptr;
     }
+    light->SetRawPose(pose);
     return light;
   }
 }
