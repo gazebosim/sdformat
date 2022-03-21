@@ -58,7 +58,6 @@ namespace usd
     light->SetName(_prim.GetPath().GetName());
     float intensity;
     variantLight.GetIntensityAttr().Get(&intensity);
-    std::cerr << "intensity " << intensity << '\n';
     light->SetIntensity(intensity/100);
     float diffuse;
     variantLight.GetDiffuseAttr().Get(&diffuse);
