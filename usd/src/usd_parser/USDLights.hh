@@ -18,6 +18,7 @@
 #ifndef USD_USD_PARSER_LIGHTS_HH
 #define USD_USD_PARSER_LIGHTS_HH
 
+#include <memory>
 #include <string>
 
 #pragma push_macro ("__DEPRECATED")
