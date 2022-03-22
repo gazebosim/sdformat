@@ -167,11 +167,18 @@ namespace usd
           prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
         auto light = ParseUSDLights(prim, usdData, linkName);
+        auto link = modelPtr->LinkByName(linkName);
         light->SetName(primName);
         if (light)
         {
-          _world.AddLight(*light.get());
-          // TODO(ahcorde): Include lights which are inside links
+          if (link == nullptr)
+          {
+            _world.AddLight(*light.get());
+          }
+          else
+          {
+            link->AddLight(*light.get());
+          }
         }
         continue;
       }
