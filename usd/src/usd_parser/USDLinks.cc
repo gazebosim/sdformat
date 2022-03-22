@@ -73,6 +73,12 @@ void GetInertial(
         diagonalInertiaAttribute.Get(&diagonalInertia);
       }
 
+      // Added a diagonal inertia to avoid crash with the physics engine
+      if (diagonalInertia == pxr::GfVec3f(0, 0, 0))
+      {
+        diagonalInertia = pxr::GfVec3f(0.0001, 0.0001, 0.0001);
+      }
+
       if (mass < 0.0001)
       {
         mass = 0.1;
