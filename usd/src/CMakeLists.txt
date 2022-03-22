@@ -14,6 +14,7 @@ set(sources
   usd_parser/polygon_helper.cc
   usd_parser/USD2SDF.cc
   usd_parser/USDData.cc
+  usd_parser/USDJoints.cc
   usd_parser/USDLights.cc
   usd_parser/USDLinks.cc
   usd_parser/USDMaterial.cc

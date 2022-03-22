@@ -25,12 +25,13 @@
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/camera.h>
 #include <pxr/usd/usdGeom/gprim.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
-#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -38,13 +39,16 @@
 #include "sdf/usd/usd_parser/USDStage.hh"
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 
+#include "USDJoints.hh"
 #include "USDLights.hh"
 #include "USDPhysics.hh"
 #include "USDLinks.hh"
 
+#include "sdf/Collision.hh"
 #include "sdf/Model.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
+#include "sdf/Visual.hh"
 #include "sdf/World.hh"
 
 namespace sdf
@@ -171,6 +175,14 @@ namespace usd
         continue;
       }
 
+      if (prim.IsA<pxr::UsdPhysicsJoint>())
+      {
+        sdf::Joint joint =
+          ParseJoints(prim, primName, usdData);
+        modelPtr->AddJoint(joint);
+        continue;
+      }
+
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
         std::pair<std::string, std::shared_ptr<USDStage>> data =
@@ -265,6 +277,24 @@ namespace usd
       {
         const auto l = m->LinkByIndex(j);
         std::cout << "\t" << l->Name() << std::endl;
+        std::cout << "\t\tVisuals: " << l->VisualCount() << std::endl;
+        for (unsigned int k = 0; k < l->VisualCount(); ++k)
+        {
+          const auto v = l->VisualByIndex(k);
+          std::cout << "\t\t\t" << v->Name() << std::endl;
+        }
+        std::cout << "\t\tCollision: " << l->CollisionCount() << std::endl;
+        for (unsigned int k = 0; k < l->CollisionCount(); ++k)
+        {
+          const auto c = l->CollisionByIndex(k);
+          std::cout << "\t\t\t" << c->Name() << std::endl;
+        }
+      }
+      std::cout << m->Name() << "\t\t Joints: " << m->JointCount() << std::endl;
+      for (unsigned int j = 0; j < m->JointCount(); ++j)
+      {
+        const auto joint = m->JointByIndex(j);
+        std::cout << "\t\t\t" << joint->Name() << std::endl;
       }
     }
 
