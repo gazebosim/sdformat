@@ -19,6 +19,7 @@ set(sources
   usd_parser/USDLinks.cc
   usd_parser/USDMaterial.cc
   usd_parser/USDPhysics.cc
+  usd_parser/USDSensors.cc
   usd_parser/USDStage.cc
   usd_parser/USDTransforms.cc
   usd_parser/USDWorld.cc
