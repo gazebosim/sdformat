@@ -11,6 +11,7 @@ set(sources
   sdf_parser/Visual.cc
   sdf_parser/World.cc
   usd_parser/Parser.cc
+  usd_parser/polygon_helper.cc
   usd_parser/USD2SDF.cc
   usd_parser/USDData.cc
   usd_parser/USDLights.cc

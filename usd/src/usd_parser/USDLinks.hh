@@ -38,12 +38,19 @@ namespace sdf
   //
   namespace usd
   {
-  sdf::Link * ParseUSDLinks(
-    const pxr::UsdPrim &_prim,
-    const std::string &_nameLink,
-    sdf::Link *_link,
-    USDData &_usdData,
-    int &_skipPrim);
+    /// \brief Parse USD link
+    /// \param[in] _prim USD prim
+    /// \param[in] _nameLink Name of the link
+    /// \param[in] _link Current link
+    /// \param[in] _usdData metadata of the USD file
+    /// \param[in] _scale scale mesh
+    /// \return A pointer with the link data
+    sdf::Link * ParseUSDLinks(
+      const pxr::UsdPrim &_prim,
+      const std::string &_nameLink,
+      sdf::Link *_link,
+      USDData &_usdData,
+      ignition::math::Vector3d &_scale);
   }
   }
 }

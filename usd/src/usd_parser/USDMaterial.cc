@@ -44,6 +44,11 @@ namespace sdf
     UsdErrors errors;
     if (ignition::common::exists(_ori))
     {
+      if (ignition::common::exists(_dest))
+      {
+        ignition::common::removeFile(_dest);
+      }
+
       std::string baseName = ignition::common::basename(_dest);
       std::string pathDest = ignition::common::replaceAll(_dest, baseName, "");
       ignition::common::createDirectories(pathDest);
@@ -144,7 +149,7 @@ namespace sdf
                 assetPath(pxr::TfToken("diffuse_texture"), variantShader);
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
-                ignition::common::findFile(materialPath.GetAssetPath());
+                ignition::common::findFile(materialPath.GetAssetPath(), false);
               UsdErrors errorCopy = copyFile(
                 fullAlbedoName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -160,7 +165,7 @@ namespace sdf
                 assetPath(pxr::TfToken("normalmap_texture"), variantShader);
               pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
               std::string fullNormalName =
-                ignition::common::findFile(materialPath.GetAssetPath());
+                ignition::common::findFile(materialPath.GetAssetPath(), false);
               auto errorCopy = copyFile(fullNormalName,
                 materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -176,7 +181,7 @@ namespace sdf
                   pxr::TfToken("reflectionroughness_texture"), variantShader);
               pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
               std::string fullRoughnessName =
-                ignition::common::findFile(materialPath.GetAssetPath());
+                ignition::common::findFile(materialPath.GetAssetPath(), false);
               auto errorCopy = copyFile(
                 fullRoughnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -184,6 +189,10 @@ namespace sdf
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
+
+              _material.SetDiffuse(ignition::math::Color(1, 1, 1));
+              _material.SetSpecular(ignition::math::Color(1, 1, 1));
+
               isPBR = true;
             }
             else if (input.GetBaseName() == "metallic_texture")
@@ -192,7 +201,7 @@ namespace sdf
                   pxr::TfToken("metallic_texture"), variantShader);
               pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
               std::string fullMetalnessName =
-                ignition::common::findFile(materialPath.GetAssetPath());
+                ignition::common::findFile(materialPath.GetAssetPath(), false);
               auto errorCopy = copyFile(
                 fullMetalnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -306,6 +315,7 @@ namespace sdf
           if (isPBR)
           {
             sdf::Pbr pbr;
+            pbrWorkflow.SetType(sdf::PbrWorkflowType::METAL);
             pbr.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
             _material.SetPbrMaterial(pbr);
           }

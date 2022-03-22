@@ -57,8 +57,12 @@ namespace usd
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
-    usdData.Init();
-    usdData.ParseMaterials();
+    errors = usdData.Init();
+    if (!errors.empty())
+      return errors;
+    errors = usdData.ParseMaterials();
+    if (!errors.empty())
+      return errors;
 
     sdf::Model model;
     sdf::Model * modelPtr;
@@ -82,17 +86,12 @@ namespace usd
 
     std::string linkName;
 
-    int skipPrims = 0;
+    // USD link may have scale, store this value to apply this to the sdf visual
+    std::map<std::string, ignition::math::Vector3d> linkScaleVector;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
     {
-      if (skipPrims)
-      {
-        --skipPrims;
-        continue;
-      }
-
       // Skip materials, the data is already available in the USDData class
       if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
       {
@@ -197,19 +196,24 @@ namespace usd
       auto linkInserted = modelPtr->LinkByName(linkName);
       if (linkInserted)
       {
-        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData, skipPrims);
+        auto scale = linkScaleVector.find(linkName);
+
+        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData, scale->second);
       }
       else
       {
         sdf::Link * link = nullptr;
-        link = sdf::usd::ParseUSDLinks(prim, linkName, link, usdData, skipPrims);
+        ignition::math::Vector3d scale{1, 1, 1};
+        link = sdf::usd::ParseUSDLinks(
+          prim, linkName, link, usdData, scale);
+
+        linkScaleVector[linkName] = scale;
 
         if (link != nullptr && !link->Name().empty())
         {
           const auto l = modelPtr->LinkByName(link->Name());
           if (l == nullptr)
           {
-            std::cerr << "Added "<< link->Name() << '\n';
             modelPtr->AddLink(*link);
           }
         }
