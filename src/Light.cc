@@ -87,6 +87,9 @@ class sdf::Light::Implementation
 
   /// \brief Is light on ?
   public: bool isLightOn = true;
+
+  /// \brief is visual light enabled ?
+  public: bool visualize = true;
 };
 
 /////////////////////////////////////////////////
@@ -147,6 +150,9 @@ Errors Light::Load(ElementPtr _sdf)
 
   this->dataPtr->isLightOn = _sdf->Get<bool>("light_on",
       this->dataPtr->isLightOn).first;
+
+  this->dataPtr->visualize = _sdf->Get<bool>("visualize",
+      this->dataPtr->visualize).first;
 
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
@@ -333,6 +339,18 @@ bool Light::LightOn() const
 void Light::SetLightOn(const bool _isLightOn)
 {
   this->dataPtr->isLightOn = _isLightOn;
+}
+
+/////////////////////////////////////////////////
+bool Light::Visualize() const
+{
+  return this->dataPtr->visualize;
+}
+
+/////////////////////////////////////////////////
+void Light::SetVisualize(const bool _visualize)
+{
+  this->dataPtr->visualize = _visualize;
 }
 
 /////////////////////////////////////////////////
