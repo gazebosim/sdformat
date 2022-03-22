@@ -1,5 +1,10 @@
 ## libsdformat 11.X
 
+### libsdformat 11.4.1 (2022-03-21)
+
+1. Install sdf/1.8 to versioned path
+    * [Pull request #898](https://github.com/ignitionrobotics/sdformat/pull/898)
+
 ### libsdformat 11.4.0 (2022-03-14)
 
 1. Added option to visualize light on the GUI
