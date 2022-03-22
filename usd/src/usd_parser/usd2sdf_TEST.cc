@@ -99,6 +99,7 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_DOUBLE_EQ(0.0, world->Gravity()[1]);
     EXPECT_DOUBLE_EQ(-0.098, world->Gravity()[2]);
 
+    EXPECT_EQ(4u, world->Plugins().size());
     // TODO(anyone) Check the remaining contents of outputUsdFilePath
     // when the parser is implemented
   }
