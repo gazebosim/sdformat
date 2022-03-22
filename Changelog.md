@@ -3,7 +3,7 @@
 ### libsdformat 11.4.1 (2022-03-21)
 
 1. Install sdf/1.8 to versioned path
-    * [Pull request #898](https://github.com/ignitionrobotics/sdformat/pull/898)
+    * [Pull request #890](https://github.com/ignitionrobotics/sdformat/pull/890)
 
 ### libsdformat 11.4.0 (2022-03-14)
 
