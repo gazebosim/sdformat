@@ -45,6 +45,7 @@
 #include <ignition/math/Inertial.hh>
 
 #include "sdf/Box.hh"
+#include "sdf/Collision.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
@@ -287,7 +288,7 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _usdData metadata of the USD file
-void ParseMesh(
+ignition::math::Pose3d ParseMesh(
   const pxr::UsdPrim &_prim,
   sdf::Link *_link,
   sdf::Visual &_vis,
@@ -409,6 +410,7 @@ void ParseMesh(
       exporter.Export(&mesh, directoryMesh, false);
     }
   }
+  return pose;
 }
 
 //////////////////////////////////////////////////
@@ -593,29 +595,96 @@ sdf::Link * ParseUSDLinks(
       || !collisionEnabled)
     {
       if (_prim.IsA<pxr::UsdGeomSphere>())
-        {
-          ParseSphere(_prim, geom, _scale, metersPerUnit);
-          vis.SetName("visual_sphere");
-          vis.SetGeom(geom);
-        }
-        else if (_prim.IsA<pxr::UsdGeomCylinder>())
-        {
-          ParseCylinder(_prim, geom, _scale, metersPerUnit);
-          vis.SetName("visual_cylinder");
-          vis.SetGeom(geom);
-        }
-        else if (_prim.IsA<pxr::UsdGeomCube>())
-        {
-          ParseCube(_prim, geom, _scale, metersPerUnit);
-          vis.SetName("visual_box");
-          vis.SetGeom(geom);
-        }
-        else if (_prim.IsA<pxr::UsdGeomMesh>())
-        {
-          ParseMesh(
-            _prim, _link, vis, geom, _scale, _usdData);
-        }
+      {
+        ParseSphere(_prim, geom, _scale, metersPerUnit);
+        vis.SetName("visual_sphere");
+        vis.SetGeom(geom);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCylinder>())
+      {
+        ParseCylinder(_prim, geom, _scale, metersPerUnit);
+        vis.SetName("visual_cylinder");
+        vis.SetGeom(geom);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCube>())
+      {
+        ParseCube(_prim, geom, _scale, metersPerUnit);
+        vis.SetName("visual_box");
+        vis.SetGeom(geom);
+      }
+      else if (_prim.IsA<pxr::UsdGeomMesh>())
+      {
+        ParseMesh(
+          _prim, _link, vis, geom, _scale, _usdData);
+      }
     }
+
+    pxr::TfTokenVector schemasCollision = _prim.GetAppliedSchemas();
+    bool physxCollisionAPIenable = false;
+    for (auto & token : schemasCollision)
+    {
+      if (std::string(token.GetText()) == "PhysxCollisionAPI")
+      {
+        physxCollisionAPIenable = true;
+      }
+    }
+
+    if (collisionEnabled || physxCollisionAPIenable)
+    {
+      sdf::Collision col;
+
+      // add _collision extension
+      std::string collisionName = _prim.GetPath().GetName() + "_collision";
+      col.SetName(collisionName);
+      sdf::Geometry colGeom;
+
+      ignition::math::Pose3d poseCol;
+      ignition::math::Vector3d scaleCol(1, 1, 1);
+      GetTransform(_prim, _usdData, poseCol, scaleCol, _link->Name());
+
+      if (_prim.IsA<pxr::UsdGeomSphere>())
+      {
+        ParseSphere(_prim, colGeom, scaleCol, metersPerUnit);
+        col.SetGeom(colGeom);
+        col.SetRawPose(poseCol);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCylinder>())
+      {
+        ParseCylinder(_prim, colGeom, scaleCol, metersPerUnit);
+        col.SetGeom(colGeom);
+        col.SetRawPose(poseCol);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCube>())
+      {
+        ParseCube(_prim, colGeom, scaleCol, metersPerUnit);
+        col.SetGeom(colGeom);
+        col.SetRawPose(poseCol);
+      }
+      else if (_prim.IsA<pxr::UsdGeomMesh>())
+      {
+        sdf::Visual visTmp;
+        ignition::math::Pose3d pose = ParseMesh(
+          _prim, _link, visTmp, colGeom, scaleCol, _usdData);
+        col.SetRawPose(pose);
+        col.SetGeom(colGeom);
+      }
+      else if (primType == "Plane")
+      {
+        sdf::Plane plane;
+        colGeom.SetType(sdf::GeometryType::PLANE);
+        plane.SetSize(ignition::math::Vector2d(100, 100));
+        colGeom.SetPlaneShape(plane);
+
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale(1, 1, 1);
+        GetTransform(_prim, _usdData, pose, scale, pxr::TfStringify(_prim.GetPath()));
+        col.SetRawPose(pose);
+        col.SetGeom(colGeom);
+      }
+
+      _link->AddCollision(col);
+    }
+
   }
 
   return _link;
