@@ -163,6 +163,56 @@ namespace usd
         }
       }
 
+      if (primType == "RosDifferentialBase")
+      {
+        auto leftWheelAttr = prim.GetAttribute(
+          pxr::TfToken("leftWheelJointName"));
+        auto rightWheelAttr = prim.GetAttribute(
+          pxr::TfToken("rightWheelJointName"));
+        auto wheelBaseAttr = prim.GetAttribute(
+          pxr::TfToken("wheelBase"));
+        auto wheelRadiusAttr = prim.GetAttribute(
+          pxr::TfToken("wheelRadius"));
+
+        sdf::Plugin diffDrivePlugin;
+        diffDrivePlugin.SetName("ignition::gazebo::systems::DiffDrive");
+        diffDrivePlugin.SetFilename("ignition-gazebo-diff-drive-system");
+
+        std::string leftWheelName;
+        std::string rightWheelName;
+        float wheelBase;
+        float wheelRadius;
+        wheelBaseAttr.Get<float>(&wheelBase);
+        wheelRadiusAttr.Get<float>(&wheelRadius);
+        leftWheelAttr.Get<std::string>(&leftWheelName);
+        rightWheelAttr.Get<std::string>(&rightWheelName);
+
+        sdf::ElementPtr leftJointContent(new sdf::Element);
+        leftJointContent->SetName("left_joint");
+        leftJointContent->AddValue("string", "", false);
+        leftJointContent->Set(leftWheelName + "_joint");
+        diffDrivePlugin.InsertContent(leftJointContent);
+
+        sdf::ElementPtr rightJointContent(new sdf::Element);
+        rightJointContent->SetName("right_joint");
+        rightJointContent->AddValue("string", "", false);
+        rightJointContent->Set(rightWheelName + "_joint");
+        diffDrivePlugin.InsertContent(rightJointContent);
+
+        sdf::ElementPtr wheelSeparationContent(new sdf::Element);
+        wheelSeparationContent->SetName("wheel_separation");
+        wheelSeparationContent->AddValue("float", "0.0", false);
+        wheelSeparationContent->Set(wheelBase);
+        diffDrivePlugin.InsertContent(wheelSeparationContent);
+
+        sdf::ElementPtr wheelRadiusContent(new sdf::Element);
+        wheelRadiusContent->SetName("wheel_radius");
+        wheelRadiusContent->AddValue("float", "0.0", false);
+        wheelRadiusContent->Set(wheelRadius);
+        diffDrivePlugin.InsertContent(wheelRadiusContent);
+
+        modelPtr->AddPlugin(diffDrivePlugin);
+      }
       if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
           prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
