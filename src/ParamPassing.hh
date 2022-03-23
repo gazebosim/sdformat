@@ -96,10 +96,12 @@ namespace sdf
 
     /// \brief Initialize an sdf element description from the xml element
     /// \param[in] _xml Pointer to xml element
+    /// \param[in] _config Custom parser configuration
     /// \param[out] _errors Captures errors found during parsing
     /// \return ElementPtr to the initialized element description,
     /// nullptr if undefined/unknown sdf element
     ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
+                                      const ParserConfig &_config,
                                       Errors &_errors);
 
     /// \brief Handles individual actions of children in _childrenXml
