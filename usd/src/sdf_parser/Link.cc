@@ -88,8 +88,9 @@ namespace usd
       if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim.GetParent()))
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
-              "Internal error: unable to mark link at path [" + _path
-              + "] as a rigid body, so mass properties won't be attached"));
+              "Internal error: unable to mark model at path [" +
+              linkPrim.GetParent().GetPath().GetString() + "] as a rigid body, "
+              "so mass properties won't be attached"));
         return errors;
       }
 
