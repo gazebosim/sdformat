@@ -20,6 +20,7 @@
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/TempDirectory.hh>
+#include <ignition/common/Util.hh>
 
 #include <ignition/utilities/ExtraTestMacros.hh>
 
@@ -74,6 +75,10 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto tmp = ignition::common::createTempDirectory("usd",
       ignition::common::tempDirectoryPath());
+
+  auto systemPaths = ignition::common::systemPaths();
+  systemPaths->AddFilePaths(ignition::common::joinPaths(
+    sdf::testing::TestFile("usd"), "materials", "textures"));
   // Check a good SDF file
   {
     const std::string path = sdf::testing::TestFile("usd", "upAxisZ.usda");
