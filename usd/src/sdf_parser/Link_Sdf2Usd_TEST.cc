@@ -82,6 +82,7 @@ TEST_F(UsdStageFixture, Link)
   std::string groundPlanePath = worldPath + "/" + "ground_plane";
   auto groundPlane = this->stage->GetPrimAtPath(pxr::SdfPath(groundPlanePath));
   ASSERT_TRUE(groundPlane);
+  EXPECT_FALSE(groundPlane.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(groundPlane,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, -0.125),
@@ -97,8 +98,8 @@ TEST_F(UsdStageFixture, Link)
 
   std::string boxPath = worldPath + "/" + "box";
   auto box = this->stage->GetPrimAtPath(pxr::SdfPath(boxPath));
-  EXPECT_TRUE(box.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   ASSERT_TRUE(box);
+  EXPECT_TRUE(box.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(box,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 2.5),
