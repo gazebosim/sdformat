@@ -71,33 +71,33 @@ UDSTransforms::UDSTransforms()
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d UDSTransforms::Translate()
+const ignition::math::Vector3d UDSTransforms::Translate() const
 {
   return this->dataPtr->translate;
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d UDSTransforms::Scale()
+const ignition::math::Vector3d UDSTransforms::Scale() const
 {
   return this->dataPtr->scale;
 }
 
 //////////////////////////////////////////////////
-std::vector<ignition::math::Quaterniond>
-  UDSTransforms::Rotations()
+const std::vector<ignition::math::Quaterniond>
+  UDSTransforms::Rotations() const
 {
   return this->dataPtr->q;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::SetTranslate(
+void UDSTransforms::Translate(
   const ignition::math::Vector3d &_translate)
 {
   this->dataPtr->translate = _translate;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::SetScale(
+void UDSTransforms::Scale(
   const ignition::math::Vector3d &_scale)
 {
   this->dataPtr->scale = _scale;
@@ -111,37 +111,37 @@ void UDSTransforms::AddRotation(
 }
 
 //////////////////////////////////////////////////
-bool UDSTransforms::RotationZYX()
+bool UDSTransforms::RotationZYX() const
 {
   return this->dataPtr->isRotationZYX;
 }
 
 //////////////////////////////////////////////////
-bool UDSTransforms::RotationXYZ()
+bool UDSTransforms::RotationXYZ() const
 {
   return this->dataPtr->isRotationXYZ;
 }
 
 //////////////////////////////////////////////////
-bool UDSTransforms::Rotation()
+bool UDSTransforms::Rotation() const
 {
   return this->dataPtr->isRotation;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::SetRotationZYX(bool _rotationZYX)
+void UDSTransforms::RotationZYX(bool _rotationZYX)
 {
   this->dataPtr->isRotationZYX = _rotationZYX;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::SetRotationXYZ(bool _rotationXYZ)
+void UDSTransforms::RotationXYZ(bool _rotationXYZ)
 {
   this->dataPtr->isRotationXYZ = _rotationXYZ;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::SetRotation(bool _rotation)
+void UDSTransforms::Rotation(bool _rotation)
 {
   this->dataPtr->isRotation = _rotation;
 }
@@ -149,7 +149,7 @@ void UDSTransforms::SetRotation(bool _rotation)
 //////////////////////////////////////////////////
 void GetAllTransforms(
   const pxr::UsdPrim &_prim,
-  USDData &_usdData,
+  const USDData &_usdData,
   std::vector<ignition::math::Pose3d> &_tfs,
   ignition::math::Vector3d &_scale,
   const std::string &_schemaToStop)
@@ -159,7 +159,7 @@ void GetAllTransforms(
   std::string upAxis = "Y";
 
   // this assumes that there can only be one stage
-  auto stageData = _usdData.FindStage(parent.GetPath().GetName());
+  const auto stageData = _usdData.FindStage(parent.GetPath().GetName());
   if (stageData.second != nullptr) {
     metersPerUnit = stageData.second->MetersPerUnit();
     upAxis = stageData.second->UpAxis();
@@ -229,7 +229,7 @@ void GetAllTransforms(
 //////////////////////////////////////////////////
 void GetTransform(
   const pxr::UsdPrim &_prim,
-  USDData &_usdData,
+  const USDData &_usdData,
   ignition::math::Pose3d &_pose,
   ignition::math::Vector3d &_scale,
   const std::string &_schemaToStop)
@@ -273,7 +273,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         scale[1] = scaleTmp[1];
         scale[2] = scaleTmp[2];
       }
-      t.SetScale(ignition::math::Vector3d(scale[0], scale[1], scale[2]));
+      t.Scale(ignition::math::Vector3d(scale[0], scale[1], scale[2]));
     }
     else if (op == kXFormOpRotateZYX || op == kXFormOpRotateXYZ)
     {
@@ -282,12 +282,12 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       if (op == kXFormOpRotateZYX)
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateZYX));
-        t.SetRotationZYX(true);
+        t.RotationZYX(true);
       }
       else
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateXYZ));
-        t.SetRotationXYZ(true);
+        t.RotationXYZ(true);
       }
       if (attribute.GetTypeName().GetCPPTypeName() == kGfVec3fString)
       {
@@ -312,7 +312,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       t.AddRotation(qX);
       t.AddRotation(qY);
       t.AddRotation(qZ);
-      t.SetRotation(true);
+      t.Rotation(true);
     }
     else if (op == kXFormOpTranslate)
     {
@@ -329,7 +329,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         translate[1] = translateTmp[1];
         translate[2] = translateTmp[2];
       }
-      t.SetTranslate(ignition::math::Vector3d(
+      t.Translate(ignition::math::Vector3d(
         translate[0],
         translate[1],
         translate[2]));
@@ -357,7 +357,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotationQuad.GetImaginary()[1],
         rotationQuad.GetImaginary()[2]);
       t.AddRotation(q);
-      t.SetRotation(true);
+      t.Rotation(true);
     }
 
     if (op == kXFormOpTransform)
@@ -368,13 +368,13 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       const auto rot = transform.RemoveScaleShear();
       const auto scaleShear = transform * rot.GetInverse();
 
-      t.SetScale(ignition::math::Vector3d(
+      t.Scale(ignition::math::Vector3d(
         scaleShear[0][0],
         scaleShear[1][1],
         scaleShear[2][2]));
 
       const auto rotQuat = rot.ExtractRotationQuat();
-      t.SetTranslate(ignition::math::Vector3d(
+      t.Translate(ignition::math::Vector3d(
         transform[3][0],
         transform[3][1],
         transform[3][2]));
@@ -385,7 +385,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotQuat.GetImaginary()[2]
       );
       t.AddRotation(q);
-      t.SetRotation(true);
+      t.Rotation(true);
     }
   }
   return t;
