@@ -36,9 +36,9 @@ namespace sdf
   /////////////////////////////////////////////////
   /// \brief Copy a file from one destination to another
   /// \param[in] _ori The original file to copy
-  /// \param[inout] _dest The destination for the copy of _ori. If _dest represents
-  /// a file that already exists, a unique numeric suffix in the form of
-  /// _<number> will be appended to the end of the file name.
+  /// \param[inout] _dest The destination for the copy of _ori. If _dest
+  /// represents a file that already exists, a unique numeric suffix in the
+  /// form of _<number> will be appended to the end of the file name.
   /// \return A list of UsdErrors. An empty list means no errors occurred when
   /// copying _ori to _dest
   UsdErrors copyFile(const std::string &_ori, std::string &_dest)
