@@ -99,7 +99,19 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_DOUBLE_EQ(0.0, world->Gravity()[1]);
     EXPECT_DOUBLE_EQ(-0.098, world->Gravity()[2]);
 
-    EXPECT_EQ(4u, world->Plugins().size());
+    auto plugins = world->Plugins();
+    EXPECT_EQ(4u, plugins.size());
+    EXPECT_EQ("ignition::gazebo::systems::Physics", plugins[0].Name());
+    EXPECT_EQ("ignition-gazebo-physics-system", plugins[0].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::Sensors", plugins[1].Name());
+    EXPECT_EQ("ignition-gazebo-sensors-system", plugins[1].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::UserCommands", plugins[2].Name());
+    EXPECT_EQ("ignition-gazebo-user-commands-system", plugins[2].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::SceneBroadcaster", plugins[3].Name());
+    EXPECT_EQ("ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
     // TODO(anyone) Check the remaining contents of outputUsdFilePath
     // when the parser is implemented
   }

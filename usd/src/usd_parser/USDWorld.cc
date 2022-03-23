@@ -86,7 +86,7 @@ namespace usd
       }
     }
 
-    /// Added some plugins to run the Ignition Gazebo simulation
+    /// Add some plugins to run the Ignition Gazebo simulation
     sdf::Plugin physicsPlugin;
     physicsPlugin.SetName("ignition::gazebo::systems::Physics");
     physicsPlugin.SetFilename("ignition-gazebo-physics-system");
