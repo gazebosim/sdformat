@@ -116,7 +116,8 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_EQ("ignition-gazebo-user-commands-system", plugins[2].Filename());
 
     EXPECT_EQ("ignition::gazebo::systems::SceneBroadcaster", plugins[3].Name());
-    EXPECT_EQ("ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
+    EXPECT_EQ(
+      "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
     // TODO(anyone) Check the remaining contents of outputUsdFilePath
     // when the parser is implemented
   }
