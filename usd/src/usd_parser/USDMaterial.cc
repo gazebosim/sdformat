@@ -39,17 +39,40 @@ namespace sdf
   /// \param[in] _dest The destination for the copy of _ori
   /// \return A list of UsdErrors. An empty list means no errors occurred when
   /// copying _ori to _dest
-  UsdErrors copyFile(const std::string &_ori, const std::string &_dest)
+  UsdErrors copyFile(const std::string &_ori, std::string &_dest)
   {
     UsdErrors errors;
     if (ignition::common::exists(_ori))
     {
-      // If the file exists then we should remove it and we will copy the
-      // file below
-      if (ignition::common::exists(_dest))
+      // If the file exists then we append a number suffix to the destination
+      // file
+      // For example:
+      // /bar/foo.extension
+      // /bar/foo_X.extension
+
+      std::string tmpDest = _dest;
+      std::string parentPath = ignition::common::parentPath(_dest);
+      std::string::size_type fileExtensionIndex = tmpDest.rfind(".");
+
+      std::string fileExtension = "." + tmpDest.substr(fileExtensionIndex + 1);
+      std::string fileNameWithoutExtension = ignition::common::basename(_dest);
+      size_t pos = fileNameWithoutExtension.find(fileExtension);
+      if (pos != std::string::npos)
       {
-        ignition::common::removeFile(_dest);
+        // If found then erase it from string
+        fileNameWithoutExtension.erase(pos, fileExtension.length());
       }
+      int index = 0;
+      while (ignition::common::exists(tmpDest))
+      {
+        tmpDest = ignition::common::joinPaths(
+          parentPath,
+          fileNameWithoutExtension + "_" + std::to_string(index) +
+          fileExtension);
+        ++index;
+      }
+
+      _dest = tmpDest;
 
       std::string baseName = ignition::common::basename(_dest);
       std::string pathDest = ignition::common::replaceAll(_dest, baseName, "");
@@ -149,17 +172,18 @@ namespace sdf
             {
               pxr::SdfAssetPath materialPath =
                 assetPath(pxr::TfToken("diffuse_texture"), variantShader);
-              pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
                 ignition::common::findFile(ignition::common::basename(
                   materialPath.GetAssetPath()), false);
+              std::string dest = materialPath.GetAssetPath();
               UsdErrors errorCopy = copyFile(
-                fullAlbedoName, materialPath.GetAssetPath());
+                fullAlbedoName, dest);
               if (!errorCopy.empty())
               {
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
+              pbrWorkflow.SetAlbedoMap(dest);
 
               // We need to set diffuse and specular to (1, 1, 1) otherwise
               // the texture is completely black
@@ -172,51 +196,53 @@ namespace sdf
             {
               pxr::SdfAssetPath materialPath =
                 assetPath(pxr::TfToken("normalmap_texture"), variantShader);
-              pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
               std::string fullNormalName =
                 ignition::common::findFile(ignition::common::basename(
                   materialPath.GetAssetPath()), false);
-              auto errorCopy = copyFile(fullNormalName,
-                materialPath.GetAssetPath());
+              std::string dest = materialPath.GetAssetPath();
+              auto errorCopy = copyFile(fullNormalName, dest);
               if (!errorCopy.empty())
               {
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
+              pbrWorkflow.SetNormalMap(dest);
               isPBR = true;
             }
             else if (input.GetBaseName() == "reflectionroughness_texture")
             {
               pxr::SdfAssetPath materialPath = assetPath(
                   pxr::TfToken("reflectionroughness_texture"), variantShader);
-              pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
               std::string fullRoughnessName =
                 ignition::common::findFile(ignition::common::basename(
                   materialPath.GetAssetPath()), false);
-              auto errorCopy = copyFile(
-                fullRoughnessName, materialPath.GetAssetPath());
+              std::string dest = materialPath.GetAssetPath();
+              auto errorCopy = copyFile(fullRoughnessName, dest);
               if (!errorCopy.empty())
               {
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
+              pbrWorkflow.SetRoughnessMap(dest);
+
               isPBR = true;
             }
             else if (input.GetBaseName() == "metallic_texture")
             {
               pxr::SdfAssetPath materialPath = assetPath(
                   pxr::TfToken("metallic_texture"), variantShader);
-              pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
               std::string fullMetalnessName =
                 ignition::common::findFile(ignition::common::basename(
                   materialPath.GetAssetPath()), false);
-              auto errorCopy = copyFile(
-                fullMetalnessName, materialPath.GetAssetPath());
+              std::string dest = materialPath.GetAssetPath();
+              auto errorCopy = copyFile(fullMetalnessName, dest);
               if (!errorCopy.empty())
               {
                 errors.insert(errors.end(), errorCopy.begin(), errorCopy.end());
                 return errors;
               }
+              pbrWorkflow.SetMetalnessMap(dest);
+
               isPBR = true;
             }
             else if (input.GetBaseName() == "diffuse_color_constant")
