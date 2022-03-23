@@ -455,7 +455,9 @@ TEST(DOMModel, Uri)
 
   // ToElement NOT using the URI, which should result in a <model>
   {
-    sdf::ElementPtr elem = model.ToElement(false);
+    sdf::ParserConfig config = sdf::ParserConfig::GlobalConfig();
+    config.SetToElementUseIncludeTag(false);
+    sdf::ElementPtr elem = model.ToElement(config);
     elem->PrintValues("  ");
 
     // Should be a <model>
