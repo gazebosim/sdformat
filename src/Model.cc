@@ -123,8 +123,8 @@ class sdf::Model::Implementation
   /// </world>
   ///
   /// and the included model could also have a plugin. We want the
-  /// ToElement(true) function to output only the plugin specified in the
-  /// <include> tag.
+  /// ToElement() function to output only the plugin specified in the
+  /// <include> tag when the ToElementUseIncludeTag policy is true..
   public: std::vector<Plugin> includePlugins;
 };
 
@@ -974,12 +974,12 @@ void Model::SetUri(const std::string &_uri)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr Model::ToElement(const ParserConfig &_config) const
 {
-  if (_useIncludeTag && !this->dataPtr->uri.empty())
+  if (_config.ToElementUseIncludeTag() && !this->dataPtr->uri.empty())
   {
     sdf::ElementPtr worldElem(new sdf::Element);
-    sdf::initFile("world.sdf", worldElem);
+    sdf::initFile("world.sdf", _config, worldElem);
 
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
@@ -1005,7 +1005,7 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
   }
 
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("model.sdf", elem);
+  sdf::initFile("model.sdf", _config, elem);
   elem->GetAttribute("name")->Set(this->Name());
 
   if (!this->dataPtr->canonicalLink.empty())
@@ -1043,7 +1043,7 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(_useIncludeTag), true);
+    elem->InsertElement(model.ToElement(_config), true);
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
