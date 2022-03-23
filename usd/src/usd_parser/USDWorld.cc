@@ -43,8 +43,12 @@ namespace usd
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
-    usdData.Init();
-    usdData.ParseMaterials();
+    errors = usdData.Init();
+    if (!errors.empty())
+      return errors;
+    errors = usdData.ParseMaterials();
+    if (!errors.empty())
+      return errors;
 
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
