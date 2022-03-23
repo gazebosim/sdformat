@@ -150,7 +150,8 @@ namespace sdf
     /// \brief Read the usd prim transforms. Scale, rotation or transform might
     /// be defined as float or doubles
     /// \param[in] _prim Prim where the transforms are read
-    /// \return A USDTransforms class with all the transform related to the prim 
+    /// \return A USDTransforms class with all the transforms related to
+    /// the prim
     UDSTransforms IGNITION_SDFORMAT_USD_VISIBLE ParseUSDTransform(
       const pxr::UsdPrim &_prim);
 }
