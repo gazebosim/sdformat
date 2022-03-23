@@ -82,6 +82,7 @@ TEST_F(UsdStageFixture, Link)
   std::string groundPlanePath = worldPath + "/" + "ground_plane";
   auto groundPlane = this->stage->GetPrimAtPath(pxr::SdfPath(groundPlanePath));
   ASSERT_TRUE(groundPlane);
+  EXPECT_FALSE(groundPlane.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(groundPlane,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, -0.125),
@@ -98,6 +99,7 @@ TEST_F(UsdStageFixture, Link)
   std::string boxPath = worldPath + "/" + "box";
   auto box = this->stage->GetPrimAtPath(pxr::SdfPath(boxPath));
   ASSERT_TRUE(box);
+  EXPECT_TRUE(box.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(box,
       ignition::math::Pose3d(
         ignition::math::Vector3d(0, 0, 2.5),
@@ -116,6 +118,7 @@ TEST_F(UsdStageFixture, Link)
   std::string cylinderPath = worldPath + "/" + "cylinder";
   auto cylinder = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderPath));
   ASSERT_TRUE(cylinder);
+  EXPECT_TRUE(cylinder.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(cylinder,
       ignition::math::Pose3d(
         ignition::math::Vector3d(2, 0, 2.5),
@@ -135,6 +138,7 @@ TEST_F(UsdStageFixture, Link)
   std::string spherePath = worldPath + "/" + "sphere";
   auto sphere = this->stage->GetPrimAtPath(pxr::SdfPath(spherePath));
   ASSERT_TRUE(sphere);
+  EXPECT_TRUE(sphere.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(sphere,
       ignition::math::Pose3d(
         ignition::math::Vector3d(4, 0, 2.5),
@@ -153,6 +157,7 @@ TEST_F(UsdStageFixture, Link)
   std::string capsulePath = worldPath + "/" + "capsule";
   auto capsule = this->stage->GetPrimAtPath(pxr::SdfPath(capsulePath));
   ASSERT_TRUE(capsule);
+  EXPECT_TRUE(capsule.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(capsule,
       ignition::math::Pose3d(
         ignition::math::Vector3d(6, 0, 2.5),
@@ -171,6 +176,7 @@ TEST_F(UsdStageFixture, Link)
   std::string meshPath = worldPath + "/" + "mesh";
   auto mesh = this->stage->GetPrimAtPath(pxr::SdfPath(meshPath));
   ASSERT_TRUE(mesh);
+  EXPECT_TRUE(mesh.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   sdf::usd::testing::CheckPrimPose(mesh,
       ignition::math::Pose3d(
         ignition::math::Vector3d(8, 0, 2.5),
