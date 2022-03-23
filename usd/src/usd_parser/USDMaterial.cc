@@ -152,7 +152,7 @@ namespace sdf
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
                 ignition::common::findFile(ignition::common::basename(
-                  materialPath.GetAssetPath(), false);
+                  materialPath.GetAssetPath()), false);
               UsdErrors errorCopy = copyFile(
                 fullAlbedoName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -175,7 +175,7 @@ namespace sdf
               pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
               std::string fullNormalName =
                 ignition::common::findFile(ignition::common::basename(
-                  materialPath.GetAssetPath(), false);
+                  materialPath.GetAssetPath()), false);
               auto errorCopy = copyFile(fullNormalName,
                 materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -192,7 +192,7 @@ namespace sdf
               pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
               std::string fullRoughnessName =
                 ignition::common::findFile(ignition::common::basename(
-                  materialPath.GetAssetPath(), false);
+                  materialPath.GetAssetPath()), false);
               auto errorCopy = copyFile(
                 fullRoughnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -209,7 +209,7 @@ namespace sdf
               pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
               std::string fullMetalnessName =
                 ignition::common::findFile(ignition::common::basename(
-                  materialPath.GetAssetPath(), false);
+                  materialPath.GetAssetPath()), false);
               auto errorCopy = copyFile(
                 fullMetalnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
