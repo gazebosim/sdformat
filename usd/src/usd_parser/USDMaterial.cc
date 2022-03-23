@@ -151,7 +151,8 @@ namespace sdf
                 assetPath(pxr::TfToken("diffuse_texture"), variantShader);
               pbrWorkflow.SetAlbedoMap(materialPath.GetAssetPath());
               std::string fullAlbedoName =
-                ignition::common::findFile(materialPath.GetAssetPath(), false);
+                ignition::common::findFile(ignition::common::basename(
+                  materialPath.GetAssetPath(), false);
               UsdErrors errorCopy = copyFile(
                 fullAlbedoName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -173,7 +174,8 @@ namespace sdf
                 assetPath(pxr::TfToken("normalmap_texture"), variantShader);
               pbrWorkflow.SetNormalMap(materialPath.GetAssetPath());
               std::string fullNormalName =
-                ignition::common::findFile(materialPath.GetAssetPath(), false);
+                ignition::common::findFile(ignition::common::basename(
+                  materialPath.GetAssetPath(), false);
               auto errorCopy = copyFile(fullNormalName,
                 materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -189,7 +191,8 @@ namespace sdf
                   pxr::TfToken("reflectionroughness_texture"), variantShader);
               pbrWorkflow.SetRoughnessMap(materialPath.GetAssetPath());
               std::string fullRoughnessName =
-                ignition::common::findFile(materialPath.GetAssetPath(), false);
+                ignition::common::findFile(ignition::common::basename(
+                  materialPath.GetAssetPath(), false);
               auto errorCopy = copyFile(
                 fullRoughnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())
@@ -205,7 +208,8 @@ namespace sdf
                   pxr::TfToken("metallic_texture"), variantShader);
               pbrWorkflow.SetMetalnessMap(materialPath.GetAssetPath());
               std::string fullMetalnessName =
-                ignition::common::findFile(materialPath.GetAssetPath(), false);
+                ignition::common::findFile(ignition::common::basename(
+                  materialPath.GetAssetPath(), false);
               auto errorCopy = copyFile(
                 fullMetalnessName, materialPath.GetAssetPath());
               if (!errorCopy.empty())

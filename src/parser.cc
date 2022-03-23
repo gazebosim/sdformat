@@ -370,10 +370,16 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
+  return init(_sdf, ParserConfig::GlobalConfig());
+}
+
+//////////////////////////////////////////////////
+bool init(SDFPtr _sdf, const ParserConfig &_config)
+{
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, ParserConfig::GlobalConfig(), _sdf);
+  return initDoc(&xmlDoc, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -646,7 +652,7 @@ SDFPtr readFile(
 {
   // Create and initialize the data structure that will hold the parsed SDF data
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::init(sdfParsed, _config);
 
   // Read an SDF file, and store the result in sdfParsed.
   if (!sdf::readFile(_filename, _config, sdfParsed, _errors))
@@ -1587,12 +1593,12 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           // a new sdf pointer is created here by cloning a fresh sdf template
           // pointer instead of calling init every iteration.
           // SDFPtr includeSDF(new SDF);
-          // init(includeSDF);
+          // init(includeSDF, _config);
           static SDFPtr includeSDFTemplate;
           if (!includeSDFTemplate)
           {
             includeSDFTemplate.reset(new SDF);
-            init(includeSDFTemplate);
+            init(includeSDFTemplate, _config);
           }
           SDFPtr includeSDF(new SDF);
           includeSDF->Root(includeSDFTemplate->Root()->Clone());
