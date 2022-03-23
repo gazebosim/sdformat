@@ -49,6 +49,10 @@ class sdf::ParserConfig::Implementation
   /// \brief Flag to explicitly preserve fixed joints when
   /// reading the SDF/URDF file.
   public: bool preserveFixedJoint = false;
+
+  /// \brief Flag to use <include> tags within ToElement methods instead of
+  /// the fully included model.
+  public: bool toElementUseIncludeTag = true;
 };
 
 
@@ -168,4 +172,16 @@ void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
 bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetToElementUseIncludeTag(bool _useIncludeTag)
+{
+  this->dataPtr->toElementUseIncludeTag = _useIncludeTag;
+}
+
+/////////////////////////////////////////////////
+bool ParserConfig::ToElementUseIncludeTag() const
+{
+  return this->dataPtr->toElementUseIncludeTag;
 }
