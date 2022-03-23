@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_USD_PARSER_USDMATERIAL_HH_
-#define SDF_USD_USD_PARSER_USDMATERIAL_HH_
+#ifndef USD_PARSER_USDMATERIAL_HH_
+#define USD_PARSER_USDMATERIAL_HH_
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
