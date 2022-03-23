@@ -36,7 +36,9 @@ namespace sdf
   /////////////////////////////////////////////////
   /// \brief Copy a file from one destination to another
   /// \param[in] _ori The original file to copy
-  /// \param[in] _dest The destination for the copy of _ori
+  /// \param[in] _dest The destination for the copy of _ori. If _dest represents
+  /// a file that already exists, a unique numeric suffix in the form of
+  /// _<number> will be appended to the end of the file name.
   /// \return A list of UsdErrors. An empty list means no errors occurred when
   /// copying _ori to _dest
   UsdErrors copyFile(const std::string &_ori, std::string &_dest)
@@ -49,31 +51,37 @@ namespace sdf
       // For example:
       // /bar/foo.extension
       // /bar/foo_X.extension
-
-      std::string tmpDest = _dest;
-      std::string parentPath = ignition::common::parentPath(_dest);
-      std::string::size_type fileExtensionIndex = tmpDest.rfind(".");
-
-      std::string fileExtension = "." + tmpDest.substr(fileExtensionIndex + 1);
-      std::string fileNameWithoutExtension = ignition::common::basename(_dest);
-      size_t pos = fileNameWithoutExtension.find(fileExtension);
-      if (pos != std::string::npos)
+      if (ignition::common::exists(_dest))
       {
-        // If found then erase it from string
-        fileNameWithoutExtension.erase(pos, fileExtension.length());
-      }
-      int index = 0;
-      while (ignition::common::exists(tmpDest))
-      {
-        tmpDest = ignition::common::joinPaths(
-          parentPath,
-          fileNameWithoutExtension + "_" + std::to_string(index) +
-          fileExtension);
-        ++index;
-      }
+        const std::string parentPath = ignition::common::parentPath(_dest);
+        std::string::size_type fileExtensionIndex = _dest.rfind(".");
+        if (fileExtensionIndex == std::string::npos)
+        {
+          errors.emplace_back(
+              Error(ErrorCode::FILE_READ, "Unable to find the extension of the "
+                "file [" + _dest + "] which should be copied"));
+          return errors;
+        }
 
-      _dest = tmpDest;
-
+        const std::string fileExtension = _dest.substr(fileExtensionIndex);
+        std::string fileNameWithoutExtension =
+          ignition::common::basename(_dest);
+        size_t pos = fileNameWithoutExtension.find(fileExtension);
+        if (pos != std::string::npos)
+        {
+          // If found then erase it from string
+          fileNameWithoutExtension.erase(pos, fileExtension.length());
+        }
+        int index = 0;
+        while (ignition::common::exists(_dest))
+        {
+          _dest = ignition::common::joinPaths(
+            parentPath,
+            fileNameWithoutExtension + "_" + std::to_string(index) +
+            fileExtension);
+          ++index;
+        }
+      }
       std::string baseName = ignition::common::basename(_dest);
       std::string pathDest = ignition::common::replaceAll(_dest, baseName, "");
       ignition::common::createDirectories(pathDest);
