@@ -859,7 +859,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
 sdf::ElementPtr World::ToElement(const ParserConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("world.sdf", _config, elem);
+  sdf::initFile("world.sdf", elem);
 
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetElement("gravity")->Set(this->Gravity());
