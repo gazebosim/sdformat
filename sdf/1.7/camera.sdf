@@ -20,11 +20,8 @@
     <element name="format" type="string" default="R8G8B8" required="0">
       <description>(L8|R8G8B8|B8G8R8|BAYER_RGGB8|BAYER_BGGR8|BAYER_GBRG8|BAYER_GRBG8)</description>
     </element>
-    <element name="anti_aliasing" type="string" default="MSAA" required="0">
-      <description>(MSAA)</description>
-    </element>
-    <element name="anti_aliasing_value" type="int" default="4" required="0">
-      <description>Anti-aliasing filter size</description>
+    <element name="anti_aliasing" type="int" default="4" required="0">
+      <description>Value used for anti-aliasing</description>
     </element>
   </element> <!-- End Image -->
 

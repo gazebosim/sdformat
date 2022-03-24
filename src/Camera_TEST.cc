@@ -42,10 +42,6 @@ TEST(DOMCamera, Construction)
   cam.SetPixelFormat(sdf::PixelFormatType::L_INT8);
   EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam.PixelFormat());
 
-  EXPECT_EQ(sdf::AntiAliasingType::MSAA, cam.AntiAliasing());
-  cam.SetAntiAliasing(sdf::AntiAliasingType::SSAA);
-  EXPECT_EQ(sdf::AntiAliasingType::SSAA, cam.AntiAliasing());
-
   EXPECT_EQ(4u, cam.AntiAliasingValue());
   cam.SetAntiAliasingValue(8);
   EXPECT_EQ(8u, cam.AntiAliasingValue());

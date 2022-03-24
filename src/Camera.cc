@@ -45,13 +45,6 @@ static std::array<std::string, 19> kPixelFormatNames =
   "BAYER_GRBG8"
 };
 
-static std::array<std::string, 3> kAntiAliasingTypeNames =
-{
-  "UNKNOWN_ANTI_ALIASING",
-  "MSAA",
-  "SSAA",
-};
-
 // Private data class
 class sdf::CameraPrivate
 {
@@ -72,9 +65,6 @@ class sdf::CameraPrivate
 
   /// \brief Image format.
   public: PixelFormatType pixelFormat{PixelFormatType::RGB_INT8};
-
-  /// \brief Anti-aliasing.
-  public: AntiAliasingType antiAliasing{AntiAliasingType::MSAA};
 
   /// \brief Anti-aliasing value.
   public: uint32_t antiAliasingValue{4};
@@ -284,16 +274,6 @@ Errors Camera::Load(ElementPtr _sdf)
         "Camera sensor <image><format> has invalid value of " + format});
     }
 
-    std::string antiAliasingType =
-        elem->Get<std::string>("anti_aliasing", "MSAA").first;
-    this->dataPtr->antiAliasing = ConvertAntiAliasing(antiAliasingType);
-    if (this->dataPtr->antiAliasing == AntiAliasingType::UNKNOWN_ANTI_ALIASING)
-    {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Camera sensor <image><anti_aliasing> has invalid value of " +
-          antiAliasingType});
-    }
-
     this->dataPtr->antiAliasingValue =
         elem->Get<uint32_t>("anti_aliasing_value",
             this->dataPtr->antiAliasingValue).first;
@@ -492,30 +472,6 @@ std::string Camera::PixelFormatStr() const
 void Camera::SetPixelFormatStr(const std::string &_fmt)
 {
   this->dataPtr->pixelFormat = ConvertPixelFormat(_fmt);
-}
-
-//////////////////////////////////////////////////
-AntiAliasingType Camera::AntiAliasing() const
-{
-  return this->dataPtr->antiAliasing;
-}
-
-//////////////////////////////////////////////////
-void Camera::SetAntiAliasing(AntiAliasingType _antiAliasing)
-{
-  this->dataPtr->antiAliasing = _antiAliasing;
-}
-
-//////////////////////////////////////////////////
-std::string Camera::AntiAliasingStr() const
-{
-  return ConvertAntiAliasing(this->dataPtr->antiAliasing);
-}
-
-//////////////////////////////////////////////////
-void Camera::SetAntiAliasingStr(const std::string &_antiAliasing)
-{
-  this->dataPtr->antiAliasing = ConvertAntiAliasing(_antiAliasing);
 }
 
 //////////////////////////////////////////////////
@@ -1001,30 +957,6 @@ PixelFormatType Camera::ConvertPixelFormat(const std::string &_format)
     return PixelFormatType::BAYER_GRBG8;
 
   return PixelFormatType::UNKNOWN_PIXEL_FORMAT;
-}
-
-/////////////////////////////////////////////////
-std::string Camera::ConvertAntiAliasing(AntiAliasingType _type)
-{
-  unsigned int index = static_cast<int>(_type);
-  if (index < kAntiAliasingTypeNames.size())
-    return kAntiAliasingTypeNames[static_cast<int>(_type)];
-
-  return kAntiAliasingTypeNames[0];
-}
-
-/////////////////////////////////////////////////
-AntiAliasingType Camera::ConvertAntiAliasing(const std::string &_antiAliasing)
-{
-  for (unsigned int i = 0; i < kAntiAliasingTypeNames.size(); ++i)
-  {
-    if (kAntiAliasingTypeNames[i] == _antiAliasing)
-    {
-      return static_cast<AntiAliasingType>(i);
-    }
-  }
-
-  return AntiAliasingType::UNKNOWN_ANTI_ALIASING;
 }
 
 /////////////////////////////////////////////////
