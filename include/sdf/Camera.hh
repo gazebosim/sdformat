@@ -59,6 +59,13 @@ namespace sdf
     BAYER_GRBG8,
   };
 
+  enum class AntiAliasingType
+  {
+    UNKNOWN_ANTI_ALIASING = 0,
+    MSAA,
+    SSAA,
+  };
+
   /// \brief Information about a monocular camera sensor.
   class SDFORMAT_VISIBLE Camera
   {
@@ -159,6 +166,31 @@ namespace sdf
     /// \brief Set the pixel format from a string.
     /// \param[in] _fmt The pixel format string.
     public: void SetPixelFormatStr(const std::string &_fmt);
+
+    /// \brief Get the anti-aliasing type. This value is set from the
+    /// <anti_aliasing> element that is the child of <image>.
+    /// \return The anti-aliasing type.
+    public: AntiAliasingType AntiAliasing() const;
+
+    /// \brief Set the anti-aliasing type.
+    /// \param[in] _antiAliasing The anti-aliasing type.
+    public: void SetAntiAliasing(AntiAliasingType _antiAliasing);
+
+    /// \brief Get the anti-aliasing type as a string.
+    /// \return The anti-aliasing type string.
+    public: std::string AntiAliasingStr() const;
+
+    /// \brief Set the anti-aliasing type from a string.
+    /// \param[in] _antiAliasing The anti-aliasing type string.
+    public: void SetAntiAliasingStr(const std::string &_antiAliasing);
+
+    /// \brief Get the anti-aliasing value.
+    /// \return The anti-aliasing value.
+    public: uint32_t AntiAliasingValue() const;
+
+    /// \brief Set the anti-aliasing value.
+    /// \param[in] _antiAliasingValue The anti-aliasing value.
+    public: void SetAntiAliasingValue(uint32_t _antiAliasingValue);
 
     /// \brief Get the near clip distance for the depth camera.
     /// \return The near clip depth distance.
@@ -480,6 +512,17 @@ namespace sdf
     /// \param[in] _type Pixel format type to convert.
     /// \return String equivalent of _type.
     public: static std::string ConvertPixelFormat(PixelFormatType _type);
+
+    /// \brief Convert a string to a AntiAliasingType.
+    /// \param[in] _format String equivalent of a anti-aliasing type to convert.
+    /// \return The matching AntiAliasingType.
+    public: static AntiAliasingType ConvertAntiAliasing(
+                const std::string &_antiAliasing);
+
+    /// \brief Convert a AntiAliasingType to a string.
+    /// \param[in] _type Anti-aliasing type to convert.
+    /// \return String equivalent of _type.
+    public: static std::string ConvertAntiAliasing(AntiAliasingType _type);
 
     /// \brief Get the visibility mask of a camera
     /// \return visibility mask
