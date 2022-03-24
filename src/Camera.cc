@@ -275,7 +275,7 @@ Errors Camera::Load(ElementPtr _sdf)
     }
 
     this->dataPtr->antiAliasingValue =
-        elem->Get<uint32_t>("anti_aliasing_value",
+        elem->Get<uint32_t>("anti_aliasing",
             this->dataPtr->antiAliasingValue).first;
   }
   else
