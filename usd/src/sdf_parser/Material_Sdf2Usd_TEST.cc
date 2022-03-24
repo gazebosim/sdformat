@@ -186,6 +186,13 @@ class UsdStageFixture : public::testing::Test
 /////////////////////////////////////////////////
 TEST_F(UsdStageFixture, Material)
 {
+  sdf::testing::ScopeExit removeCopiedMaterials(
+      []
+      {
+        ignition::common::removeAll(
+          ignition::common::joinPaths(ignition::common::cwd(), "materials"));
+      });
+
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
   ignition::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
