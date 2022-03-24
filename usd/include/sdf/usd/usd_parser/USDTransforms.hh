@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_USD_PARSER_TRANSFORMS_HH_
-#define SDF_USD_USD_PARSER_TRANSFORMS_HH_
+#ifndef SDF_USD_USD_PARSER_USDTRANSFORMS_HH_
+#define SDF_USD_USD_PARSER_USDTRANSFORMS_HH_
 
 #include <string>
 #include <vector>
@@ -70,6 +70,10 @@ namespace sdf
 
       /// \brief Rotation
       /// \return Return a vector with all the rotations
+      /// If RotationXYZ or RotationZYY is true, this method will return a
+      /// vector of 3 quaternions, Rotation<axis1><axis2><axis3> with the first
+      /// quaternion being rotation <axis1>, the second being rotation about
+      /// <axis2>, and the third being rotation about <axis3>
       public: const std::vector<ignition::math::Quaterniond> Rotations() const;
 
       /// \brief Set translate
@@ -81,7 +85,7 @@ namespace sdf
       public: void Scale(const ignition::math::Vector3d &_scale);
 
       /// \brief Add rotation
-      /// \param[in] _q Add quaterion to the rotation vector
+      /// \param[in] _q Quaternion to add to the list of rotations
       public: void AddRotation(const ignition::math::Quaterniond &_q);
 
       /// \brief True if there is a rotation ZYX defined or false otherwise
@@ -90,46 +94,32 @@ namespace sdf
       /// \brief True if there is a rotation XYZ defined or false otherwise
       public: bool RotationXYZ() const;
 
-      /// \brief True if there is a rotation (as a quaterion) defined
+      /// \brief True if there is a rotation (as a quaternion) defined
       /// or false otherwise
       public: bool Rotation() const;
 
       /// \brief Set if there is any rotation ZYX defined
       /// RotationZYX is used to determine the order of stored rotations
-      /// If rotationZYX is true then Rotation should be True too
-      /// If Rotation is false then rotationZYX could no be true
-      /// \param[in] _rotationZYX Set if the rotation is ZYX
+      /// If RotationZYX is true, then Rotation should be True too
+      /// If Rotation is false, then RotationZYX cannot be true
+      /// \param[in] _rotationZYX If the rotation is ZYX (true) or not (false)
       public: void RotationZYX(bool _rotationZYX);
 
       /// \brief Set if there is any rotation XYZ defined
       /// RotationXYZ is used to determine the order of stored rotations
-      /// If rotationXYZ is true then Rotation should be True too
-      /// If Rotation is false then rotationXYZ could no be true
-      /// \param[in] _rotationXYZ Set if the rotation is XYZ
+      /// If RotationXYZ is true, then Rotation should be True too
+      /// If Rotation is false, then RotationXYZ cannot be true
+      /// \param[in] _rotationXYZ If the rotation is XYZ (true) or not (false)
       public: void RotationXYZ(bool _rotationXYZ);
 
       /// \brief Set if there is any rotation defined
-      /// \param[in] _rotation Set if there is any rotation
+      /// \param[in] _rotation If there is any rotation defined (true)
+      /// or not (false)
       public: void Rotation(bool _rotation);
 
       /// \brief Private data pointer.
       IGN_UTILS_IMPL_PTR(dataPtr)
     };
-
-    /// \brief This function will parse all the parent transforms of a prim.
-    /// \param[in] _prim Initial prim to read the transform
-    /// \param[in] _usdData USDData structure to get info about the prim, for
-    /// example: metersperunit
-    /// \param[out] _tfs A vector with all the transforms
-    /// \param[out] _scale The scale of the prims
-    /// \param[in] _schemaToStop Name of the prim where the loop will stop
-    /// reading transforms
-    void GetAllTransforms(
-      const pxr::UsdPrim &_prim,
-      const USDData &_usdData,
-      std::vector<ignition::math::Pose3d> &_tfs,
-      ignition::math::Vector3d &_scale,
-      const std::string &_schemaToStop);
 
     /// \brief This function gets the transform from a prim to the specified
     /// _schemaToStop variable
@@ -142,7 +132,7 @@ namespace sdf
     /// reading transforms
     void IGNITION_SDFORMAT_USD_VISIBLE GetTransform(
       const pxr::UsdPrim &_prim,
-      const USDData &_usdData,
+      USDData &_usdData,
       ignition::math::Pose3d &_pose,
       ignition::math::Vector3d &_scale,
       const std::string &_schemaToStop);

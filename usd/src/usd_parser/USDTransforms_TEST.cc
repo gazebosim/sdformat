@@ -51,12 +51,17 @@ void checkTransforms(
   EXPECT_EQ(_translation, usdTransforms.Translate());
   EXPECT_EQ(_scale, usdTransforms.Scale());
   EXPECT_EQ(_rotation.size(), usdTransforms.Rotations().size());
+  ASSERT_EQ(_rotation.size(), usdTransforms.Rotations().size());
   for (unsigned int i = 0; i < _rotation.size(); ++i)
   {
     EXPECT_EQ(_rotation[i], usdTransforms.Rotations()[i]);
   }
 
   EXPECT_EQ(!_rotation.empty(), usdTransforms.Rotation());
+  if (usdTransforms.RotationXYZ() || usdTransforms.RotationZYX())
+  {
+    EXPECT_TRUE(usdTransforms.Rotation());
+  }
 }
 
 /////////////////////////////////////////////////
@@ -174,7 +179,7 @@ TEST(Utils, GetAllTransform)
   auto stage = pxr::UsdStage::Open(filename);
   ASSERT_TRUE(stage);
 
-  sdf::usd::USDData usdData(sdf::testing::TestFile("usd", "upAxisZ.usda"));
+  sdf::usd::USDData usdData(filename);
   usdData.Init();
 
   pxr::UsdPrim prim = stage->GetPrimAtPath(

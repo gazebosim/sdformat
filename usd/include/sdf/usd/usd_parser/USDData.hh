@@ -82,7 +82,7 @@ namespace sdf
       /// \param[in] _name Name of the path to find
       /// \return A pair with the name of the stage and the data
       public: const std::pair<std::string, std::shared_ptr<sdf::usd::USDStage>>
-          FindStage(const std::string &_name) const;
+          FindStage(const std::string &_name);
 
       public: friend std::ostream& operator<<(
         std::ostream& os, const USDData& data)
