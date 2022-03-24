@@ -44,10 +44,6 @@ TEST(USDData, Constructor)
   systemPaths->AddFilePaths(sdf::testing::TestFile("usd"));
 
   {
-    // Remove the material folder if there is already one created
-    ignition::common::removeAll(
-      ignition::common::joinPaths(ignition::common::cwd(), "materials"));
-
     sdf::testing::ScopeExit removeCopiedMaterials(
         []
         {
