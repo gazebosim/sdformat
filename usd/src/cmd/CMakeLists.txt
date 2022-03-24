@@ -6,6 +6,7 @@ if(TARGET ${usd_target})
   target_link_libraries(sdf2usd
     PUBLIC
       ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+      ignition-utils${IGN_UTILS_VER}::cli
       ${usd_target}
   )
 
@@ -16,6 +17,7 @@ if(TARGET ${usd_target})
   target_link_libraries(usd2sdf
     PUBLIC
       ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+      ignition-utils${IGN_UTILS_VER}::cli
       ${usd_target}
   )
 
