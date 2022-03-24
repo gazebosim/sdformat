@@ -62,7 +62,7 @@ namespace sdf
 
       /// \brief Translate
       /// \return A 3D vector with the translation
-      public: const ignition::math::Vector3d Translate() const;
+      public: const ignition::math::Vector3d Translation() const;
 
       /// \brief Scale
       /// \return A 3D vector with the scale
@@ -78,11 +78,11 @@ namespace sdf
 
       /// \brief Set translate
       /// \param[in] _translate Translate to set
-      public: void Translate(const ignition::math::Vector3d &_translate);
+      public: void SetTranslation(const ignition::math::Vector3d &_translate);
 
       /// \brief Set scale
       /// \param[in] _scale Scale to set
-      public: void Scale(const ignition::math::Vector3d &_scale);
+      public: void SetScale(const ignition::math::Vector3d &_scale);
 
       /// \brief Add rotation
       /// \param[in] _q Quaternion to add to the list of rotations
@@ -103,19 +103,14 @@ namespace sdf
       /// If RotationZYX is true, then Rotation should be True too
       /// If Rotation is false, then RotationZYX cannot be true
       /// \param[in] _rotationZYX If the rotation is ZYX (true) or not (false)
-      public: void RotationZYX(bool _rotationZYX);
+      public: void SetRotationZYX(bool _rotationZYX);
 
       /// \brief Set if there is any rotation XYZ defined
       /// RotationXYZ is used to determine the order of stored rotations
       /// If RotationXYZ is true, then Rotation should be True too
       /// If Rotation is false, then RotationXYZ cannot be true
       /// \param[in] _rotationXYZ If the rotation is XYZ (true) or not (false)
-      public: void RotationXYZ(bool _rotationXYZ);
-
-      /// \brief Set if there is any rotation defined
-      /// \param[in] _rotation If there is any rotation defined (true)
-      /// or not (false)
-      public: void Rotation(bool _rotation);
+      public: void SetRotationXYZ(bool _rotationXYZ);
 
       /// \brief Private data pointer.
       IGN_UTILS_IMPL_PTR(dataPtr)

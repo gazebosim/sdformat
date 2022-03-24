@@ -59,10 +59,6 @@ class UDSTransforms::Implementation
 
   /// \brief True if there is a rotation XYZ defined or false otherwise
   public: bool isRotationXYZ = false;
-
-  /// \brief True if there is a rotation (as a quaterion) defined
-  /// or false otherwise
-  public: bool isRotation = false;
 };
 
 /////////////////////////////////////////////////
@@ -72,7 +68,7 @@ UDSTransforms::UDSTransforms()
 }
 
 //////////////////////////////////////////////////
-const ignition::math::Vector3d UDSTransforms::Translate() const
+const ignition::math::Vector3d UDSTransforms::Translation() const
 {
   return this->dataPtr->translate;
 }
@@ -91,14 +87,14 @@ const std::vector<ignition::math::Quaterniond>
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::Translate(
+void UDSTransforms::SetTranslation(
   const ignition::math::Vector3d &_translate)
 {
   this->dataPtr->translate = _translate;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::Scale(
+void UDSTransforms::SetScale(
   const ignition::math::Vector3d &_scale)
 {
   this->dataPtr->scale = _scale;
@@ -126,29 +122,19 @@ bool UDSTransforms::RotationXYZ() const
 //////////////////////////////////////////////////
 bool UDSTransforms::Rotation() const
 {
-  return this->dataPtr->isRotation;
+  return !this->dataPtr->q.empty();
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::RotationZYX(bool _rotationZYX)
+void UDSTransforms::SetRotationZYX(bool _rotationZYX)
 {
   this->dataPtr->isRotationZYX = _rotationZYX;
-  if (this->dataPtr->isRotationZYX)
-    this->dataPtr->isRotation = true;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::RotationXYZ(bool _rotationXYZ)
+void UDSTransforms::SetRotationXYZ(bool _rotationXYZ)
 {
   this->dataPtr->isRotationXYZ = _rotationXYZ;
-  if (this->dataPtr->isRotationXYZ)
-    this->dataPtr->isRotation = true;
-}
-
-//////////////////////////////////////////////////
-void UDSTransforms::Rotation(bool _rotation)
-{
-  this->dataPtr->isRotation = _rotation;
 }
 
 //////////////////////////////////////////////////
@@ -190,7 +176,7 @@ void GetAllTransforms(
     ignition::math::Pose3d pose;
     _scale *= t.Scale();
 
-    pose.Pos() = t.Translate() * metersPerUnit;
+    pose.Pos() = t.Translation() * metersPerUnit;
     // scaling is lost when we convert to pose, so we pre-scale the
     // translation to make them match the scaled values.
     if (!_tfs.empty()) {
@@ -219,20 +205,29 @@ void GetAllTransforms(
         ignition::math::Vector3d(0, 0, 0), t.Rotations()[0]);
 
       ignition::math::Pose3d poseT = ignition::math::Pose3d(
-        t.Translate() * metersPerUnit,
+        t.Translation() * metersPerUnit,
         ignition::math::Quaterniond(1, 0, 0, 0));
 
-      _tfs.push_back(poseZ);
-      _tfs.push_back(poseY);
-      _tfs.push_back(poseX);
+      if (t.RotationZYX())
+      {
+        _tfs.push_back(poseZ);
+        _tfs.push_back(poseY);
+        _tfs.push_back(poseX);
+      }
+      else if (t.RotationXYZ())
+      {
+        _tfs.push_back(poseX);
+        _tfs.push_back(poseY);
+        _tfs.push_back(poseZ);
+      }
       _tfs.push_back(poseT);
     }
     parent = parent.GetParent();
   }
 
-  // Add additional rotation to match with Z up Axis
   if (upAxis == "Y")
   {
+    // Add additional rotation to match with Z up Axis
     ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
       ignition::math::Vector3d(0, 0, 0),
       ignition::math::Quaterniond(IGN_PI_2, 0, 0));
@@ -287,7 +282,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         scale[1] = static_cast<float>(scaleTmp[1]);
         scale[2] = static_cast<float>(scaleTmp[2]);
       }
-      t.Scale(ignition::math::Vector3d(scale[0], scale[1], scale[2]));
+      t.SetScale(ignition::math::Vector3d(scale[0], scale[1], scale[2]));
     }
     else if (op == kXFormOpRotateZYX || op == kXFormOpRotateXYZ)
     {
@@ -296,12 +291,12 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       if (op == kXFormOpRotateZYX)
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateZYX));
-        t.RotationZYX(true);
+        t.SetRotationZYX(true);
       }
       else
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateXYZ));
-        t.RotationXYZ(true);
+        t.SetRotationXYZ(true);
       }
       if (attribute.GetTypeName().GetCPPTypeName() == kGfVec3fString)
       {
@@ -326,7 +321,6 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       t.AddRotation(qX);
       t.AddRotation(qY);
       t.AddRotation(qZ);
-      t.Rotation(true);
     }
     else if (op == kXFormOpTranslate)
     {
@@ -343,7 +337,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         translate[1] = static_cast<float>(translateTmp[1]);
         translate[2] = static_cast<float>(translateTmp[2]);
       }
-      t.Translate(ignition::math::Vector3d(
+      t.SetTranslation(ignition::math::Vector3d(
         translate[0],
         translate[1],
         translate[2]));
@@ -371,7 +365,6 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotationQuad.GetImaginary()[1],
         rotationQuad.GetImaginary()[2]);
       t.AddRotation(q);
-      t.Rotation(true);
     }
 
     if (op == kXFormOpTransform)
@@ -382,13 +375,13 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       const auto rot = transform.RemoveScaleShear();
       const auto scaleShear = transform * rot.GetInverse();
 
-      t.Scale(ignition::math::Vector3d(
+      t.SetScale(ignition::math::Vector3d(
         scaleShear[0][0],
         scaleShear[1][1],
         scaleShear[2][2]));
 
       const auto rotQuat = rot.ExtractRotationQuat();
-      t.Translate(ignition::math::Vector3d(
+      t.SetTranslation(ignition::math::Vector3d(
         transform[3][0],
         transform[3][1],
         transform[3][2]));
@@ -399,7 +392,6 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotQuat.GetImaginary()[2]
       );
       t.AddRotation(q);
-      t.Rotation(true);
     }
   }
   return t;

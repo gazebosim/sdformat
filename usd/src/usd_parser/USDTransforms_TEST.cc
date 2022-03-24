@@ -48,7 +48,7 @@ void checkTransforms(
   sdf::usd::UDSTransforms usdTransforms =
     sdf::usd::ParseUSDTransform(prim);
 
-  EXPECT_EQ(_translation, usdTransforms.Translate());
+  EXPECT_EQ(_translation, usdTransforms.Translation());
   EXPECT_EQ(_scale, usdTransforms.Scale());
   EXPECT_EQ(_rotation.size(), usdTransforms.Rotations().size());
   ASSERT_EQ(_rotation.size(), usdTransforms.Rotations().size());
@@ -144,9 +144,9 @@ TEST(Utils, GetTransform)
     stage,
     ignition::math::Vector3d(0, 3.0, 0.5),
     {
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
+      ignition::math::Quaterniond(IGN_DTOR(15), 0, 0),
+      ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
+      ignition::math::Quaterniond(0, 0, IGN_DTOR(-55))
     },
     ignition::math::Vector3d(1, 1, 1)
   );
@@ -165,7 +165,7 @@ TEST(Utils, GetTransform)
     ignition::math::Vector3d(0, 0, 10),
     {
       ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
+      ignition::math::Quaterniond(0, IGN_DTOR(-35), 0),
       ignition::math::Quaterniond(1, 0, 0, 0)
     },
     ignition::math::Vector3d(1, 1, 1)
@@ -195,6 +195,6 @@ TEST(Utils, GetAllTransform)
   EXPECT_EQ(
     ignition::math::Pose3d(
       ignition::math::Vector3d(0, 0.03, 0.005),
-      ignition::math::Quaterniond(1, 0, 0, 0)),
+      ignition::math::Quaterniond(IGN_DTOR(15), IGN_DTOR(80), IGN_DTOR(-55))),
     pose);
 }

@@ -191,7 +191,7 @@ def "shapes"
 
     def Xform "ellipsoid"
     {
-        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:rotateXYZ = (15, 80, -55)
         double3 xformOp:translate = (0, 3, 0.5)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
@@ -230,7 +230,7 @@ def "shapes"
     {
         float inputs:intensity = 1000
         float intensity = 100
-        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:rotateXYZ = (0, -35, 0)
         double3 xformOp:translate = (0, 0, 10)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
     }
