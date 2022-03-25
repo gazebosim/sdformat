@@ -15,7 +15,7 @@
  *
  */
 
-#include "sdf/usd/Conversions.hh"
+#include "Conversions.hh"
 
 #include <ignition/common/Pbr.hh>
 
