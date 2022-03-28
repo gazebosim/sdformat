@@ -41,9 +41,10 @@
 #include "USDLights.hh"
 #include "USDPhysics.hh"
 
-#include "sdf/Model.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/World.hh"
 
 namespace sdf
@@ -56,8 +57,12 @@ namespace usd
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
-    usdData.Init();
-    usdData.ParseMaterials();
+    errors = usdData.Init();
+    if (!errors.empty())
+      return errors;
+    errors = usdData.ParseMaterials();
+    if (!errors.empty())
+      return errors;
 
     sdf::Model model;
     sdf::Model * modelPtr;
@@ -181,24 +186,41 @@ namespace usd
       }
     }
 
-    for (unsigned int i = 0; i < _world.LightCount(); ++i)
-    {
-      std::cout << "-------------Lights--------------" << std::endl;
-      std::cout << _world.LightByIndex(i)->Name() << std::endl;
-    }
-
-    std::cout << "-------------Models--------------" << std::endl;
+    // TODO(ahcorde): Remove this loop here, I added this here to avoid
+    // errors, a model should have link. This will be added in a follow up PR.
     for (unsigned int i = 0; i < _world.ModelCount(); ++i)
     {
       auto m = _world.ModelByIndex(i);
-      std::cout << m->Name() << std::endl;
-
-      // TODO(ahcorde): Remove this link here, I added this here to avoid
-      // errors. convert `m` in const.
-      sdf::Link link;
-      link.SetName("empty_link");
-      m->AddLink(link);
+      if (m->LinkCount() == 0)
+      {
+        sdf::Link link;
+        link.SetName("empty_link");
+        m->AddLink(link);
+      }
     }
+
+    // Add some plugins to run the Ignition Gazebo simulation
+    sdf::Plugin physicsPlugin;
+    physicsPlugin.SetName("ignition::gazebo::systems::Physics");
+    physicsPlugin.SetFilename("ignition-gazebo-physics-system");
+    _world.AddPlugin(physicsPlugin);
+
+    sdf::Plugin sensorsPlugin;
+    sensorsPlugin.SetName("ignition::gazebo::systems::Sensors");
+    sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
+    _world.AddPlugin(sensorsPlugin);
+
+    sdf::Plugin userCommandsPlugin;
+    userCommandsPlugin.SetName("ignition::gazebo::systems::UserCommands");
+    userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
+    _world.AddPlugin(userCommandsPlugin);
+
+    sdf::Plugin sceneBroadcasterPlugin;
+    sceneBroadcasterPlugin.SetName(
+      "ignition::gazebo::systems::SceneBroadcaster");
+    sceneBroadcasterPlugin.SetFilename(
+      "ignition-gazebo-scene-broadcaster-system");
+    _world.AddPlugin(sceneBroadcasterPlugin);
 
     return errors;
   }

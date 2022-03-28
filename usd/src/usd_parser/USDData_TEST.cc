@@ -43,7 +43,6 @@ TEST(USDData, Constructor)
   auto systemPaths = ignition::common::systemPaths();
   systemPaths->AddFilePaths(sdf::testing::TestFile("usd"));
 
-  // Open a valid USD file
   {
     sdf::testing::ScopeExit removeCopiedMaterials(
         []
@@ -52,6 +51,7 @@ TEST(USDData, Constructor)
             ignition::common::joinPaths(ignition::common::cwd(), "materials"));
         });
 
+    // Open a valid USD file
     std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
     sdf::usd::USDData usdData(filename);
     EXPECT_EQ(0u, usdData.Init().size());

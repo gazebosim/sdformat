@@ -236,7 +236,7 @@ namespace usd {
 
   /////////////////////////////////////////////////
   const std::pair<std::string, std::shared_ptr<USDStage>>
-    USDData::FindStage(const std::string &_name)
+    USDData::FindStage(const std::string &_name) const
   {
     for (auto &ref : this->dataPtr->references)
     {

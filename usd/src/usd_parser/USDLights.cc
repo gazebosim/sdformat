@@ -58,8 +58,7 @@ namespace usd
     light->SetName(_prim.GetPath().GetName());
     float intensity;
     variantLight.GetIntensityAttr().Get(&intensity);
-    std::cerr << "intensity " << intensity << '\n';
-    light->SetIntensity(intensity/100);
+    light->SetIntensity(intensity/10000);
     float diffuse;
     variantLight.GetDiffuseAttr().Get(&diffuse);
     light->SetDiffuse(ignition::math::Color(diffuse, diffuse, diffuse, 1));
