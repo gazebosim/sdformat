@@ -65,7 +65,7 @@ TEST(USDLightsTest, DistanceLight)
   EXPECT_TRUE(light->CastShadows());
   EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), light->Diffuse());
   EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), light->Specular());
-  EXPECT_DOUBLE_EQ(50, light->Intensity());
+  EXPECT_FLOAT_EQ(0.5, light->Intensity());
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 10, 0, 0.785398, 0), light->RawPose());
 
   prim = stage->GetPrimAtPath(pxr::SdfPath("/shapes/diskLight"));
@@ -79,7 +79,7 @@ TEST(USDLightsTest, DistanceLight)
   EXPECT_TRUE(disklight->CastShadows());
   EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), disklight->Diffuse());
   EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), disklight->Specular());
-  EXPECT_DOUBLE_EQ(30, disklight->Intensity());
+  EXPECT_FLOAT_EQ(0.3, disklight->Intensity());
   EXPECT_EQ(
     ignition::math::Pose3d(0, 0, 10, 0, 0, 0.785398), disklight->RawPose());
 }
