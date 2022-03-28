@@ -36,7 +36,6 @@
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Joint.hh"
 #include "sdf/World.hh"
 #include "Light.hh"
 #include "Model.hh"
