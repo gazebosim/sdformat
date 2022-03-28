@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include <ignition/common/Material.hh>
 #include <ignition/common/Util.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
@@ -29,11 +30,16 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "Material.hh"
+
+#include "sdf/usd/UsdError.hh"
 #include "sdf/usd/sdf_parser/World.hh"
+#include "sdf/Material.hh"
 #include "sdf/Root.hh"
 #include "test_config.h"
 #include "test_utils.hh"
 #include "../UsdTestUtils.hh"
+#include "../Conversions.hh"
 
 void CheckMaterial(
   const pxr::UsdPrim &_prim,
@@ -182,6 +188,60 @@ class UsdStageFixture : public::testing::Test
 
   public: pxr::UsdStageRefPtr stage;
 };
+
+TEST_F(UsdStageFixture, MaterialTextureName)
+{
+  sdf::testing::ScopeExit removeCopiedMaterials(
+      []
+      {
+        ignition::common::removeAll(
+          ignition::common::joinPaths(ignition::common::cwd(), "materials"));
+      });
+
+  sdf::setFindCallback(sdf::usd::testing::findFileCb);
+  ignition::common::addFindFileURICallback(
+    std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
+  const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
+
+  ignition::common::Material materialCommon;
+  materialCommon.SetTextureImage("materials/textures/albedo_map.png");
+
+  const sdf::Material materialSdf = sdf::usd::convert(&materialCommon);
+
+  const auto materialPathStr = std::string("/Looks/Material_0");
+  auto materialPath = pxr::SdfPath(materialPathStr);
+
+  sdf::usd::UsdErrors errors = sdf::usd::ParseSdfMaterial(&materialSdf,
+      stage, materialPath);
+  EXPECT_TRUE(errors.empty());
+
+  {
+    ASSERT_TRUE(this->stage->GetPrimAtPath(pxr::SdfPath(materialPathStr)));
+
+    const std::string materialshaderPath = materialPathStr + "/Shader";
+    const auto materialShaderPrim = this->stage->GetPrimAtPath(
+      pxr::SdfPath(materialshaderPath));
+    ASSERT_TRUE(materialShaderPrim);
+
+    auto variantshader = pxr::UsdShadeShader(materialShaderPrim);
+    ASSERT_TRUE(variantshader);
+
+    std::vector<pxr::UsdShadeInput> inputs = variantshader.GetInputs();
+
+    for (auto &input : inputs)
+    {
+      if (input.GetBaseName() == "diffuse_texture")
+      {
+        pxr::SdfAssetPath materialPathUSD;
+        pxr::UsdShadeInput diffuseTextureShaderInput =
+          variantshader.GetInput(pxr::TfToken("diffuse_texture"));
+        diffuseTextureShaderInput.Get(&materialPathUSD);
+        EXPECT_EQ("materials/textures/albedo_map.png",
+          materialPathUSD.GetAssetPath());
+      }
+    }
+  }
+}
 
 /////////////////////////////////////////////////
 TEST_F(UsdStageFixture, Material)
