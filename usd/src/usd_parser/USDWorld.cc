@@ -39,6 +39,7 @@
 #include "USDLights.hh"
 #include "USDPhysics.hh"
 
+#include "sdf/Plugin.hh"
 #include "sdf/World.hh"
 
 namespace sdf
@@ -51,8 +52,12 @@ namespace usd
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
-    usdData.Init();
-    usdData.ParseMaterials();
+    errors = usdData.Init();
+    if (!errors.empty())
+      return errors;
+    errors = usdData.ParseMaterials();
+    if (!errors.empty())
+      return errors;
 
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
@@ -148,6 +153,29 @@ namespace usd
         continue;
       }
     }
+
+    // Add some plugins to run the Ignition Gazebo simulation
+    sdf::Plugin physicsPlugin;
+    physicsPlugin.SetName("ignition::gazebo::systems::Physics");
+    physicsPlugin.SetFilename("ignition-gazebo-physics-system");
+    _world.AddPlugin(physicsPlugin);
+
+    sdf::Plugin sensorsPlugin;
+    sensorsPlugin.SetName("ignition::gazebo::systems::Sensors");
+    sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
+    _world.AddPlugin(sensorsPlugin);
+
+    sdf::Plugin userCommandsPlugin;
+    userCommandsPlugin.SetName("ignition::gazebo::systems::UserCommands");
+    userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
+    _world.AddPlugin(userCommandsPlugin);
+
+    sdf::Plugin sceneBroadcasterPlugin;
+    sceneBroadcasterPlugin.SetName(
+      "ignition::gazebo::systems::SceneBroadcaster");
+    sceneBroadcasterPlugin.SetFilename(
+      "ignition-gazebo-scene-broadcaster-system");
+    _world.AddPlugin(sceneBroadcasterPlugin);
 
     return errors;
   }

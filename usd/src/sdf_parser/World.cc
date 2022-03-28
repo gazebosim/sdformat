@@ -37,8 +37,8 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/World.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Model.hh"
+#include "Light.hh"
+#include "Model.hh"
 
 namespace sdf
 {
