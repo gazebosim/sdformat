@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Material.hh"
+#include "Material.hh"
 
 #include <map>
 #include <string>
