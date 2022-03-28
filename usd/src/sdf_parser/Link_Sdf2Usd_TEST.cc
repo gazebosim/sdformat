@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -34,6 +34,8 @@
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
+
+#include <ignition/common/Util.hh>
 
 #include "sdf/usd/sdf_parser/World.hh"
 #include "sdf/Root.hh"
@@ -59,7 +61,11 @@ class UsdStageFixture : public::testing::Test
 /////////////////////////////////////////////////
 TEST_F(UsdStageFixture, Link)
 {
-  const auto path = sdf::testing::TestFile("sdf", "shapes_world.sdf");
+  sdf::setFindCallback(sdf::usd::testing::findFileCb);
+  ignition::common::addFindFileURICallback(
+    std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
+
+  const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
   sdf::Root root;
 
   ASSERT_TRUE(sdf::testing::LoadSdfFile(path, root));
@@ -115,7 +121,8 @@ TEST_F(UsdStageFixture, Link)
         ignition::math::Vector3d(2, 0, 2.5),
         ignition::math::Quaterniond(0, 0, 0)));
   std::string cylinderLinkPath = cylinderPath + "/" + "link";
-  auto cylinderLink = this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
+  auto cylinderLink =
+      this->stage->GetPrimAtPath(pxr::SdfPath(cylinderLinkPath));
   ASSERT_TRUE(cylinderLink);
   sdf::usd::testing::CheckInertial(
     cylinderLink, 1, pxr::GfVec3f(1, 1, 1), pxr::GfQuatf(1, 0, 0, 0),

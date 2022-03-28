@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+
+  <model name="test_model_with_plugin">
+
+    <link name="link">
+
+      <collision name="mesh_col">
+        <geometry>
+          <mesh>
+            <uri>meshes/mesh.dae</uri>
+            <submesh>
+              <name>my_submesh</name>
+              <center>true</center>
+            </submesh>
+            <scale>0.1 0.2 0.3</scale>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <visual name="mesh_vis">
+        <geometry>
+          <mesh>
+            <uri>meshes/mesh.dae</uri>
+            <submesh>
+              <name>another_submesh</name>
+              <center>false</center>
+            </submesh>
+            <scale>1.2 2.3 3.4</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
+    </link>
+    <plugin name="test_model_plugin" filename="test/model/plugin"/>
+  </model>
+
+</sdf>

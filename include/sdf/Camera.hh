@@ -95,6 +95,22 @@ namespace sdf
     /// \param[in] _name Name of the sensor.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get whether the camera is triggered by a topic.
+    /// \return True if the camera is triggered by a topic.
+    public: bool Triggered() const;
+
+    /// \brief Set whether the camera should be triggered by a topic.
+    /// \param[in] _triggered True if the camera should be triggered by a topic.
+    public: void SetTriggered(bool _triggered);
+
+    /// \brief Get the topic that will trigger the camera.
+    /// \return Topic for the camera trigger.
+    public: std::string TriggerTopic() const;
+
+    /// \brief Set the topic that will trigger the camera.
+    /// \param[in] _triggerTopic Topic for the camera trigger.
+    public: void SetTriggerTopic(const std::string &_triggerTopic);
+
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
     public: ignition::math::Angle HorizontalFov() const;
@@ -474,6 +490,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// camera.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated camera values.
     public: sdf::ElementPtr ToElement() const;
 

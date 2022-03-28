@@ -5,6 +5,123 @@
 
 ## libsdformat 12.X
 
+### libsdformat 12.4.0 (2022-03-xx)
+
+1. SDF -> USD:
+    * [Pull request #818](https://github.com/ignitionrobotics/sdformat/pull/818)
+    * [Pull request #828](https://github.com/ignitionrobotics/sdformat/pull/828)
+    * [Pull request #829](https://github.com/ignitionrobotics/sdformat/pull/829)
+    * [Pull request #830](https://github.com/ignitionrobotics/sdformat/pull/830)
+    * [Pull request #831](https://github.com/ignitionrobotics/sdformat/pull/831)
+    * [Pull request #837](https://github.com/ignitionrobotics/sdformat/pull/837)
+
+1. ToElement
+    * [Pull request #771](https://github.com/ignitionrobotics/sdformat/pull/771)
+    * [Pull request #772](https://github.com/ignitionrobotics/sdformat/pull/772)
+    * [Pull request #775](https://github.com/ignitionrobotics/sdformat/pull/775)
+    * [Pull request #776](https://github.com/ignitionrobotics/sdformat/pull/776)
+    * [Pull request #777](https://github.com/ignitionrobotics/sdformat/pull/777)
+    * [Pull request #781](https://github.com/ignitionrobotics/sdformat/pull/781)
+    * [Pull request #782](https://github.com/ignitionrobotics/sdformat/pull/782)
+    * [Pull request #783](https://github.com/ignitionrobotics/sdformat/pull/783)
+
+1. Fix compiler warnings
+    * [Pull request #808](https://github.com/ignitionrobotics/sdformat/pull/808)
+    * [Pull request #810](https://github.com/ignitionrobotics/sdformat/pull/810)
+
+1. Infrastructure and Documentation
+    * [Pull request #861](https://github.com/ignitionrobotics/sdformat/pull/861)
+    * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
+    * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
+    * [Pull request #713](https://github.com/ignitionrobotics/sdformat/pull/713)
+
+1. Use the Plugin DOM in other DOM objects
+    * [Pull request #858](https://github.com/ignitionrobotics/sdformat/pull/858)
+
+1. Add SDFormat tags for Triggered Cameras
+    * [Pull request #846](https://github.com/ignitionrobotics/sdformat/pull/846)
+
+1. Fix bug where //include/pose was ignored when using the Interface API 
+    * [Pull request #853](https://github.com/ignitionrobotics/sdformat/pull/853)
+
+1. Fix joint parent/child frame existence checks to include interface elements
+    * [Pull request #855](https://github.com/ignitionrobotics/sdformat/pull/855)
+
+1. Remove USD visibility macro from internal APIs
+    * [Pull request #857](https://github.com/ignitionrobotics/sdformat/pull/857)
+
+1. Added non-const mutable accessors for world child objects
+    * [Pull request #840](https://github.com/ignitionrobotics/sdformat/pull/840)
+
+1. Added non-const accessors for Model child objects
+    * [Pull request #839](https://github.com/ignitionrobotics/sdformat/pull/839)
+
+1. Added to light if the light is on or off
+    * [Pull request #851](https://github.com/ignitionrobotics/sdformat/pull/851)
+
+1. Added Root mutable accessors, and Root::Clone function
+    * [Pull request #841](https://github.com/ignitionrobotics/sdformat/pull/841)
+
+1. Hide USDUtils.hh file from public API
+    * [Pull request #850](https://github.com/ignitionrobotics/sdformat/pull/850)
+
+1. Added non-const accessors for Link child objects
+    * [Pull request #838](https://github.com/ignitionrobotics/sdformat/pull/838)
+
+1. Add USDError class
+    * [Pull request #836](https://github.com/ignitionrobotics/sdformat/pull/836)
+
+1. Use USD component visibility macro
+    * [Pull request #849](https://github.com/ignitionrobotics/sdformat/pull/849)
+
+1. Add support for merge-include in the Interface API 
+    * [Pull request #768](https://github.com/ignitionrobotics/sdformat/pull/768)
+
+1. Handle `__model__` in joint parent or child when using merge-include
+    * [Pull request #835](https://github.com/ignitionrobotics/sdformat/pull/835)
+
+1. Allow model frames (__model__) to be used as joint parent or child
+    * [Pull request #833](https://github.com/ignitionrobotics/sdformat/pull/833)
+
+1. Fix bug where a sdf::ParserConfig object was not passed to all sdf::readFile calls
+    * [Pull request #824](https://github.com/ignitionrobotics/sdformat/pull/824)
+
+1. Make SDF to USD a separate component of sdformat
+    * [Pull request #817](https://github.com/ignitionrobotics/sdformat/pull/817)
+
+1. Add ParserConfig flag for preserveFixedJoint
+    * [Pull request #815](https://github.com/ignitionrobotics/sdformat/pull/815)
+
+1. Fix parsing 'type' attibutes in plugins
+    * [Pull request #809](https://github.com/ignitionrobotics/sdformat/pull/809)
+
+1. sdf_custom: fix nested model expectations
+    * [Pull request #807](https://github.com/ignitionrobotics/sdformat/pull/807)
+
+1. Replace custom cmake code with ign-cmake2
+    * [Pull request #780](https://github.com/ignitionrobotics/sdformat/pull/780)
+
+1. Support printing sdf poses in degrees and allow snapping to commonly used angles
+    * [Pull request #689](https://github.com/ignitionrobotics/sdformat/pull/689)
+
+1. Refactor FrameSemantics.cc
+    * [Pull request #764](https://github.com/ignitionrobotics/sdformat/pull/764)
+
+1. Fix loading nested include with custom attributes
+    * [Pull request #789](https://github.com/ignitionrobotics/sdformat/pull/789)
+
+1. Added plugin to SDF DOM
+    * [Pull request #788](https://github.com/ignitionrobotics/sdformat/pull/788)
+
+1. Support URI in the Model DOM
+    * [Pull request #786](https://github.com/ignitionrobotics/sdformat/pull/786)
+
+1. Support adding and clearing sensors from a joint
+    * [Pull request #785](https://github.com/ignitionrobotics/sdformat/pull/785)
+
+1. PrintConfig option to preserve includes when converting to string
+    * [Pull request #749](https://github.com/ignitionrobotics/sdformat/pull/749)
+
 ### libsdformat 12.3.0 (2021-12-01)
 
 1. Fix empty pose parsing fail for rotation_format='quat_xyzw' 
@@ -171,6 +288,100 @@
     * [Pull request #564](https://github.com/ignitionrobotics/sdformat/pull/564)
 
 ## libsdformat 11.X
+
+### libsdformat 11.4.1 (2022-03-21)
+
+1. Install sdf/1.8 to versioned path
+    * [Pull request #898](https://github.com/ignitionrobotics/sdformat/pull/898)
+
+### libsdformat 11.4.0 (2022-03-14)
+
+1. Added option to visualize light on the GUI
+    * [Pull request #877](https://github.com/ignitionrobotics/sdformat/pull/877)
+
+1. Fix joint parent/child frame existence checks to include interface elements
+    * [Pull request #855](https://github.com/ignitionrobotics/sdformat/pull/855)
+
+1. Added to light whether it is on or off
+    * [Pull request #851](https://github.com/ignitionrobotics/sdformat/pull/851)
+
+1. Allow model frames (__model__) to be used as joint parent or child
+    * [Pull request #833](https://github.com/ignitionrobotics/sdformat/pull/833)
+
+1. Add ParserConfig flag for preserveFixedJoint
+    * [Pull request #815](https://github.com/ignitionrobotics/sdformat/pull/815)
+
+1. Fix compiler warnings
+    * [Pull request #808](https://github.com/ignitionrobotics/sdformat/pull/808)
+
+1. `sdf_custom`: fix nested model expectations
+    * [Pull request #807](https://github.com/ignitionrobotics/sdformat/pull/807)
+
+1. Fix test compilation with `USE_INTERNAL_URDF`
+    * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
+
+1. Replace custom CMake code with `ign-cmake2`
+    * [Pull request #780](https://github.com/ignitionrobotics/sdformat/pull/780)
+
+1. Fix loading nested include with custom attributes
+    * [Pull request #789](https://github.com/ignitionrobotics/sdformat/pull/789)
+
+1. Documentation
+    1. Clarify behavior of `//model/model/static`
+        * [Pull request #713](https://github.com/ignitionrobotics/sdformat/pull/713)
+    1. Only allow one `canonical_link` attribute for model
+        * [Pull request #716](https://github.com/ignitionrobotics/sdformat/pull/716)
+    1. Don't mention elements that can't be included
+        * [Pull request #715](https://github.com/ignitionrobotics/sdformat/pull/715)
+    1. Clarify documentation on `//pose/@relative_to` in the spec
+        * [Pull request #666](https://github.com/ignitionrobotics/sdformat/pull/666)
+    1. Remove duplicate link documentation
+        * [Pull request #702](https://github.com/ignitionrobotics/sdformat/pull/702)
+
+1. Fix URDF fixed joint reduction of plugins
+    * [Pull request #745](https://github.com/ignitionrobotics/sdformat/pull/745)
+
+1. Add `enable_orientation` to 1.6 spec
+    * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
+
+1. Remove outdated deprecation note from `parser_urdf.hh`
+    * [Pull request #740](https://github.com/ignitionrobotics/sdformat/pull/740)
+
+1. Add Joint DOM API to access joint sensors
+    * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
+
+1. Add force torque sensor
+    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
+    * [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+
+1. Check joint parent link names in `Model::Load`
+    * [Pull request #726](https://github.com/ignitionrobotics/sdformat/pull/726)
+
+1. Check joint parent/child names in `Root::Load`
+    * [Pull request #727](https://github.com/ignitionrobotics/sdformat/pull/727)
+
+1. Remove empty `//inertial/pose/@relative_to` during 1_7->1.8 conversion
+    * [Pull request #720](https://github.com/ignitionrobotics/sdformat/pull/720)
+
+1. Fix `xyz` and `rpy` offsets in fixed joint reduction
+    * [Pull request #500](https://github.com/ignitionrobotics/sdformat/pull/500)
+
+1. Infrastructure updates
+    * [Pull request #674](https://github.com/ignitionrobotics/sdformat/pull/674)
+    * [Pull request #650](https://github.com/ignitionrobotics/sdformat/pull/650)
+    * [Pull request #626](https://github.com/ignitionrobotics/sdformat/pull/626)
+    * [Pull request #258](https://github.com/ignitionrobotics/sdformat/pull/258)
+    * [Pull request #237](https://github.com/ignitionrobotics/sdformat/pull/237)
+    * [Pull request #730](https://github.com/ignitionrobotics/sdformat/pull/730)
+
+1. Translate poses of nested models inside other nested models
+    * [Pull request #596](https://github.com/ignitionrobotics/sdformat/pull/596)
+
+1. Fix flattening logic for nested model names
+    * [Pull request #597](https://github.com/ignitionrobotics/sdformat/pull/597)
+
+1. Parse `rpyOffset` as radians
+    * [Pull request #497](https://github.com/ignitionrobotics/sdformat/pull/497)
 
 ### libsdformat 11.3.0 (2021-09-10)
 

@@ -84,6 +84,12 @@ class sdf::Light::Implementation
 
   /// \brief Spot light falloff.
   public: double spotFalloff = 0.0;
+
+  /// \brief Is light on ?
+  public: bool isLightOn = true;
+
+  /// \brief is visual light enabled ?
+  public: bool visualize = true;
 };
 
 /////////////////////////////////////////////////
@@ -141,6 +147,12 @@ Errors Light::Load(ElementPtr _sdf)
 
   // Load the pose. Ignore the return value since the light pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
+
+  this->dataPtr->isLightOn = _sdf->Get<bool>("light_on",
+      this->dataPtr->isLightOn).first;
+
+  this->dataPtr->visualize = _sdf->Get<bool>("visualize",
+      this->dataPtr->visualize).first;
 
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
@@ -315,6 +327,30 @@ bool Light::CastShadows() const
 void Light::SetCastShadows(const bool _cast)
 {
   this->dataPtr->castShadows = _cast;
+}
+
+/////////////////////////////////////////////////
+bool Light::LightOn() const
+{
+  return this->dataPtr->isLightOn;
+}
+
+/////////////////////////////////////////////////
+void Light::SetLightOn(const bool _isLightOn)
+{
+  this->dataPtr->isLightOn = _isLightOn;
+}
+
+/////////////////////////////////////////////////
+bool Light::Visualize() const
+{
+  return this->dataPtr->visualize;
+}
+
+/////////////////////////////////////////////////
+void Light::SetVisualize(const bool _visualize)
+{
+  this->dataPtr->visualize = _visualize;
 }
 
 /////////////////////////////////////////////////

@@ -3,17 +3,6 @@ name: Ubuntu
 on: [push, pull_request]
 
 jobs:
-  bionic-ci:
-    runs-on: ubuntu-latest
-    name: Ubuntu Bionic CI
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Compile and test
-        id: ci
-        uses: ignition-tooling/action-ignition-ci@bionic
-        with:
-          codecov-enabled: true
   focal-ci:
     runs-on: ubuntu-latest
     name: Ubuntu Focal CI
@@ -28,3 +17,16 @@ jobs:
       - name: Compile and test
         id: ci
         uses: ignition-tooling/action-ignition-ci@focal
+        with:
+          codecov-enabled: true
+          cppcheck-enabled: true
+          cpplint-enabled: true
+  jammy-ci:
+    runs-on: ubuntu-latest
+    name: Ubuntu Jammy CI
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Compile and test
+        id: ci
+        uses: ignition-tooling/action-ignition-ci@jammy

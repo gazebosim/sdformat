@@ -117,6 +117,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// collision.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated collision values.
     public: sdf::ElementPtr ToElement() const;
 

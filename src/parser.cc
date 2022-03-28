@@ -155,7 +155,9 @@ static bool isSdfFile(const std::string &_fileName)
 
 //////////////////////////////////////////////////
 template <typename TPtr>
-static inline bool _initFile(const std::string &_filename, TPtr _sdf)
+static inline bool _initFile(const std::string &_filename,
+                             const ParserConfig &_config,
+                             TPtr _sdf)
 {
   auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
@@ -165,7 +167,7 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
     return false;
   }
 
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -181,7 +183,9 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 /// \param[out] _errors Captures errors encountered during parsing.
 static void insertIncludedElement(sdf::SDFPtr _includeSDF,
                                   const SourceLocation &_sourceLoc, bool _merge,
-                                  sdf::ElementPtr _parent, sdf::Errors &_errors)
+                                  sdf::ElementPtr _parent,
+                                  const ParserConfig &_config,
+                                  sdf::Errors &_errors)
 {
   Error invalidFileError(ErrorCode::FILE_READ,
                          "Included model is invalid. Skipping model.");
@@ -230,7 +234,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   // We create a throwaway sdf::Root object in order to validate the
   // included entity.
   sdf::Root includedRoot;
-  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
+  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF, _config);
   _errors.insert(_errors.end(), includeDOMerrors.begin(),
                  includeDOMerrors.end());
 
@@ -369,7 +373,7 @@ bool init(SDFPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, ParserConfig::GlobalConfig(), _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -387,9 +391,10 @@ bool initFile(
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
+    return initDoc(&xmlDoc, _config, _sdf);
   }
-  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config), _config,
+                   _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -407,14 +412,15 @@ bool initFile(
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
+    return initDoc(&xmlDoc, _config, _sdf);
   }
-  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config), _config,
+                   _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initString(
-    const std::string &_xmlString, const ParserConfig &, SDFPtr _sdf)
+    const std::string &_xmlString, const ParserConfig &_config, SDFPtr _sdf)
 {
   auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
@@ -423,7 +429,7 @@ bool initString(
     return false;
   }
 
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -452,7 +458,9 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config,
+             SDFPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -460,11 +468,13 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
     return false;
   }
 
-  return initXml(element, _sdf->Root());
+  return initXml(element, _config, _sdf->Root());
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config,
+             ElementPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -472,11 +482,13 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
     return false;
   }
 
-  return initXml(element, _sdf);
+  return initXml(element, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
-bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
+bool initXml(tinyxml2::XMLElement *_xml,
+             const ParserConfig &_config,
+             ElementPtr _sdf)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -594,7 +606,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
     else
     {
       ElementPtr element(new Element);
-      initXml(child, element);
+      initXml(child, _config, element);
       _sdf->AddElementDescription(element);
     }
   }
@@ -607,7 +619,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 
     ElementPtr element(new Element);
 
-    initFile(filename, element);
+    initFile(filename, _config, element);
 
     // override description for include elements
     tinyxml2::XMLElement *description = child->FirstChildElement("description");
@@ -1510,7 +1522,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, refSDF);
+    initFile(refFilename, _config, refSDF);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 
@@ -1803,7 +1815,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           SourceLocation sourceLoc{includeXmlPath, _source,
                                    elemXml->GetLineNum()};
 
-          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _errors);
+          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _config,
+                                _errors);
           continue;
         }
       }
@@ -2549,9 +2562,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       const std::string parentLocalName = sdf::SplitName(parentName).second;
 
       if (parentName != "world" && parentLocalName != "__model__" &&
-          !_model->LinkNameExists(parentName) &&
-          !_model->JointNameExists(parentName) &&
-          !_model->FrameNameExists(parentName))
+          !_model->NameExistsInFrameAttachedToGraph(parentName))
       {
         errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
           "parent frame with name[" + parentName +
@@ -2568,10 +2579,8 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
-      if (childLocalName != "__model__" && !_model->LinkNameExists(childName) &&
-          !_model->JointNameExists(childName) &&
-          !_model->FrameNameExists(childName) &&
-          !_model->ModelNameExists(childName))
+      if (childLocalName != "__model__" &&
+          !_model->NameExistsInFrameAttachedToGraph(childName))
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
           "child frame with name[" + childName +
@@ -2651,6 +2660,12 @@ bool shouldValidateElement(sdf::ElementPtr _elem)
   }
 
   return true;
+}
+
+/////////////////////////////////////////////////
+std::string computeMergedModelProxyFrameName(const std::string &_modelName)
+{
+  return "_merged__" + _modelName + "__model__";
 }
 }
 }

@@ -17,11 +17,15 @@
 #ifndef SDF_PARSER_USDTESTUTILS_HH_
 #define SDF_PARSER_USDTESTUTILS_HH_
 
+#include <string>
+
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/URI.hh>
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 
-// TODO(ahcorde):this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
@@ -48,6 +52,33 @@ namespace usd
 {
 namespace testing
 {
+/// \brief Callback for finding a file in the `test/sdf` directory
+/// \param[in] _input The path to the file. This path should be relative to the
+/// `test/sdf` directory
+/// \return The full path to the requested file
+std::string findFileCb(const std::string &_input)
+{
+  return sdf::testing::TestFile("sdf", _input);
+}
+
+/// \brief This function is used by ignition::common::addFindFileURICallback to
+/// find the resources defined in the URI
+/// \param[in] _uri URI of the file to find
+/// \return The full path to the uri. Empty
+/// string is returned if the file could not be found.
+std::string FindResourceUri(const ignition::common::URI &_uri)
+{
+  std::string prefix = _uri.Scheme();
+  std::string suffix;
+  // Strip /
+  if (_uri.Path().IsAbsolute() && prefix != "file")
+    suffix += _uri.Path().Str().substr(1);
+  else
+    suffix += _uri.Path().Str();
+  suffix += _uri.Query().Str();
+
+  return findFileCb(ignition::common::copyFromUnixPath(suffix));
+}
 
 /// \brief Compare the pose of a USD prim to a desired pose
 /// \param[in] _usdPrim The USD prim
@@ -94,16 +125,36 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
   {
     pxr::VtArray<pxr::TfToken> opNames;
     opOrderAttr.Get(&opNames);
-    // TODO(adlarkin) handle things like scale in the opOrder
-    // (checking for scale should be done elsehwere since prims aren't always
-    // scaled, but maybe what I can do here is make sure the opNames size is
-    // at least 2 and then make sure translate occurs before rotate)
     ASSERT_EQ(2u, opNames.size());
     EXPECT_EQ(pxr::TfToken("xformOp:translate"), opNames[0]);
     EXPECT_EQ(pxr::TfToken("xformOp:rotateXYZ"), opNames[1]);
     checkedOpOrder = true;
   }
   EXPECT_TRUE(checkedOpOrder);
+}
+
+/// \brief Make sure a USD prim has a scale xFormOp applied to it
+/// \param[in] _usdPrim The USD prim
+void HasScaleXFormOp(const pxr::UsdPrim &_usdPrim)
+{
+  bool checkedScaleOp = false;
+  if (auto xFormOps = _usdPrim.GetAttribute(pxr::TfToken("xformOpOrder")))
+  {
+    pxr::VtArray<pxr::TfToken> opNames;
+    xFormOps.Get(&opNames);
+    bool hasScaleOp = false;
+    for (const auto &tokenName : opNames)
+    {
+      if (tokenName == pxr::TfToken("xformOp:scale"))
+      {
+        hasScaleOp = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(hasScaleOp);
+    checkedScaleOp = true;
+  }
+  EXPECT_TRUE(checkedScaleOp);
 }
 
 /// \brief Compare the Inertial of a USD prim to the desired values
@@ -176,9 +227,9 @@ void CheckInertial(const pxr::UsdPrim &_usdPrim,
   EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsMassAPI>());
 }
-} // namespace testing
-} // namespace usd
+}  // namespace testing
+}  // namespace usd
 }
-} // namespace sdf
+}  // namespace sdf
 
 #endif

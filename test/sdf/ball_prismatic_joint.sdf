@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="test">
+    <link name="link1">
+    </link>
+    <link name="link2">
+    </link>
+    <link name="link3">
+    </link>
+    <link name="link4">
+    </link>
+
+    <joint name="ball_joint" type="ball">
+      <pose>0 1 0 0 0 0</pose>
+      <child>link1</child>
+      <parent>link2</parent>
+    </joint>
+    <joint name="prismatic_joint" type="prismatic">
+      <pose>0 0 0 0 0 1</pose>
+      <child>link3</child>
+      <parent>link4</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+  </model>
+</sdf>

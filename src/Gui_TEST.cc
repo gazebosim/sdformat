@@ -144,8 +144,10 @@ TEST(DOMGui, ToElement)
     if (j == 0)
     {
       EXPECT_EQ(6u, gui.PluginCount());
+      EXPECT_EQ(6u, gui.Plugins().size());
       gui.ClearPlugins();
       EXPECT_EQ(0u, gui.PluginCount());
+      EXPECT_TRUE(gui.Plugins().empty());
     }
   }
 
