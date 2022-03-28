@@ -391,6 +391,13 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
     checkedJoints++;
   }
   EXPECT_EQ(checkedJoints, 1);
+
+  // the model prim doesn't have revolute joints, so it shouldn't be marked as a
+  // pxr::UsdPhysicsAtriculationRootAPI
+  const auto modelPrim =
+    this->stage->GetPrimAtPath(pxr::SdfPath(this->modelPath));
+  ASSERT_TRUE(modelPrim);
+  EXPECT_FALSE(modelPrim.HasAPI<pxr::UsdPhysicsArticulationRootAPI>());
 }
 
 /////////////////////////////////////////////////
