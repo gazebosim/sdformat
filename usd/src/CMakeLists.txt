@@ -67,11 +67,6 @@ if (TARGET UNIT_USDPhysics_TEST)
   usd_parser/USDPhysics.cc)
 endif()
 
-if (TARGET UNIT_USDTransport_TEST)
-  target_sources(UNIT_USDTransport_TEST PRIVATE
-  usd_parser/USDTransforms.cc)
-endif()
-
 if (TARGET UNIT_Conversions_TEST)
   target_sources(UNIT_Conversions_TEST PRIVATE
     Conversions.cc)
