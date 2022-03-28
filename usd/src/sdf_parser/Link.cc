@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Link.hh"
+#include "Link.hh"
 
 #include <string>
 
@@ -36,10 +36,10 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Link.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Sensor.hh"
-#include "sdf/usd/sdf_parser/Visual.hh"
 #include "../UsdUtils.hh"
+#include "Light.hh"
+#include "Sensor.hh"
+#include "Visual.hh"
 
 namespace sdf
 {

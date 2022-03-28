@@ -49,9 +49,9 @@
 #include "sdf/JointAxis.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
-#include "sdf/usd/sdf_parser/Model.hh"
 #include "test_config.h"
 #include "test_utils.hh"
+#include "Model.hh"
 
 /////////////////////////////////////////////////
 // Fixture that creates a USD stage for each test case.
