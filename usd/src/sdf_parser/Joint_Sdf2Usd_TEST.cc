@@ -37,6 +37,7 @@
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdPhysics/articulationRootAPI.h>
 #include <pxr/usd/usdPhysics/driveAPI.h>
 #include <pxr/usd/usdPhysics/fixedJoint.h>
 #include <pxr/usd/usdPhysics/joint.h>
@@ -332,6 +333,13 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
     checkedJoints++;
   }
   EXPECT_EQ(checkedJoints, 2);
+
+  // the model prim that has revolute joints should be marked as a
+  // pxr::UsdPhysicsAtriculationRootAPI
+  const auto modelPrim =
+    this->stage->GetPrimAtPath(pxr::SdfPath(this->modelPath));
+  ASSERT_TRUE(modelPrim);
+  EXPECT_TRUE(modelPrim.HasAPI<pxr::UsdPhysicsArticulationRootAPI>());
 }
 
 /////////////////////////////////////////////////
