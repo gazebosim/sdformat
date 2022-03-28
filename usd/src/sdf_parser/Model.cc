@@ -181,8 +181,7 @@ namespace usd
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
               "Internal error: unable to mark model at path [" +
-              modelPrim.GetPath().GetString() + "] as a rigid body, "
-              "so mass properties won't be attached"));
+              modelPrim.GetPath().GetString() + "] as a rigid body."));
         return errors;
       }
     }
