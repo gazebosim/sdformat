@@ -51,7 +51,7 @@ class UDSTransforms::Implementation
   /// \brief Rotation of the schema
   public: std::vector<ignition::math::Quaterniond> q;
 
-  /// \brief Translatio of the schema
+  /// \brief Translation of the schema
   public: ignition::math::Vector3d translate{0, 0, 0};
 
   /// \brief True if there is a rotation ZYX defined or false otherwise
@@ -129,12 +129,16 @@ bool UDSTransforms::Rotation() const
 void UDSTransforms::SetRotationZYX(bool _rotationZYX)
 {
   this->dataPtr->isRotationZYX = _rotationZYX;
+  if (_rotationZYX)
+    this->dataPtr->isRotationXYZ = false;
 }
 
 //////////////////////////////////////////////////
 void UDSTransforms::SetRotationXYZ(bool _rotationXYZ)
 {
   this->dataPtr->isRotationXYZ = _rotationXYZ;
+  if (_rotationXYZ)
+    this->dataPtr->isRotationZYX = false;
 }
 
 //////////////////////////////////////////////////
@@ -227,7 +231,9 @@ void GetAllTransforms(
 
   if (upAxis == "Y")
   {
-    // Add additional rotation to match with Z up Axis
+    // Add additional rotation to match with Z up Axis.
+    // TODO(anyone) handle upAxis == "X". This is a case that is rarely
+    // used by other renderers
     ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
       ignition::math::Vector3d(0, 0, 0),
       ignition::math::Quaterniond(IGN_PI_2, 0, 0));

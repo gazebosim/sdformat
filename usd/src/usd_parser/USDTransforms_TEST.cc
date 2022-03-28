@@ -50,18 +50,21 @@ void checkTransforms(
 
   EXPECT_EQ(_translation, usdTransforms.Translation());
   EXPECT_EQ(_scale, usdTransforms.Scale());
-  EXPECT_EQ(_rotation.size(), usdTransforms.Rotations().size());
   ASSERT_EQ(_rotation.size(), usdTransforms.Rotations().size());
   for (unsigned int i = 0; i < _rotation.size(); ++i)
   {
     EXPECT_EQ(_rotation[i], usdTransforms.Rotations()[i]);
   }
 
+  bool checkedXYZorZXY = false;
   EXPECT_EQ(!_rotation.empty(), usdTransforms.Rotation());
   if (usdTransforms.RotationXYZ() || usdTransforms.RotationZYX())
   {
     EXPECT_TRUE(usdTransforms.Rotation());
+    EXPECT_NE(usdTransforms.RotationXYZ(), usdTransforms.RotationZYX());
+    checkedXYZorZXY = true;
   }
+  EXPECT_EQ(!_rotation.empty(), checkedXYZorZXY);
 }
 
 /////////////////////////////////////////////////
