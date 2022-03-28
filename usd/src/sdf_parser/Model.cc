@@ -32,6 +32,7 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdPhysics/articulationRootAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Model.hh"
@@ -131,6 +132,16 @@ namespace usd
     }
 
     // Parse all of the model's joints and convert them to USD.
+    auto modelPrim = _stage->GetPrimAtPath(sdfModelPath);
+    if (!modelPrim)
+    {
+      errors.push_back(UsdError(
+            sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
+            "Internal error: unable to find prim at path [" + _path
+            + "], but a prim should exist at this path."));
+      return errors;
+    }
+    bool markedArticulationRoot = false;
     for (uint64_t i = 0; i < _model.JointCount(); ++i)
     {
       const auto joint = *(_model.JointByIndex(i));
@@ -145,9 +156,23 @@ namespace usd
         errors.insert(errors.end(), jointErrors.begin(), jointErrors.end());
         return errors;
       }
-    }
 
-    // TODO(adlarkin) finish parsing model
+      if (!markedArticulationRoot && joint.Type() == sdf::JointType::REVOLUTE)
+      {
+        if (!pxr::UsdPhysicsArticulationRootAPI::Apply(modelPrim))
+        {
+          errors.push_back(UsdError(
+                sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
+                "Unable to mark Xform at path [" + _path +
+                "] as a pxr::UsdPhysicsArticulationRootAPI. "
+                "Some features might not work."));
+        }
+        else
+        {
+          markedArticulationRoot = true;
+        }
+      }
+    }
 
     return errors;
   }
