@@ -33,6 +33,7 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdPhysics/articulationRootAPI.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Model.hh"
@@ -171,6 +172,18 @@ namespace usd
         {
           markedArticulationRoot = true;
         }
+      }
+    }
+
+    if (!markedArticulationRoot && !_model.Static())
+    {
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(modelPrim))
+      {
+        errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
+              "Internal error: unable to mark model at path [" +
+              modelPrim.GetPath().GetString() + "] as a rigid body, "
+              "so mass properties won't be attached"));
+        return errors;
       }
     }
 
