@@ -108,9 +108,9 @@ TEST(Utils, GetTransform)
     stage,
     ignition::math::Vector3d(0, 1.5, 0.5),
     {
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
+      ignition::math::Quaterniond(IGN_DTOR(-69), 0, 0),
+      ignition::math::Quaterniond(0, IGN_DTOR(31), 0),
+      ignition::math::Quaterniond(0, 0, IGN_DTOR(-62))
     },
     ignition::math::Vector3d(1, 1, 1)
   );
@@ -120,9 +120,9 @@ TEST(Utils, GetTransform)
     stage,
     ignition::math::Vector3d(0, -3.0, 0.5),
     {
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
+      ignition::math::Quaterniond(IGN_DTOR(15), 0, 0),
+      ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
+      ignition::math::Quaterniond(0, 0, IGN_DTOR(-55))
     },
     ignition::math::Vector3d(1, 1, 1)
   );
