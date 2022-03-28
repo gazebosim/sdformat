@@ -148,7 +148,7 @@ void UDSTransforms::SetRotationXYZ(bool _rotationXYZ)
 /// reading transforms
 void GetAllTransforms(
   const pxr::UsdPrim &_prim,
-  USDData &_usdData,
+  const USDData &_usdData,
   std::vector<ignition::math::Pose3d> &_tfs,
   ignition::math::Vector3d &_scale,
   const std::string &_schemaToStop)
@@ -158,7 +158,7 @@ void GetAllTransforms(
   std::string upAxis = "Y";
 
   // this assumes that there can only be one stage
-  auto stageData = _usdData.FindStage(parent.GetPath().GetName());
+  const auto stageData = _usdData.FindStage(parent.GetPath().GetName());
   if (stageData.second) {
     metersPerUnit = stageData.second->MetersPerUnit();
     upAxis = stageData.second->UpAxis();
@@ -238,7 +238,7 @@ void GetAllTransforms(
 //////////////////////////////////////////////////
 void GetTransform(
   const pxr::UsdPrim &_prim,
-  USDData &_usdData,
+  const USDData &_usdData,
   ignition::math::Pose3d &_pose,
   ignition::math::Vector3d &_scale,
   const std::string &_schemaToStop)

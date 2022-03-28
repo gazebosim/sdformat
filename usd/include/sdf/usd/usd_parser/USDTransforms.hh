@@ -127,7 +127,7 @@ namespace sdf
     /// reading transforms
     void IGNITION_SDFORMAT_USD_VISIBLE GetTransform(
       const pxr::UsdPrim &_prim,
-      USDData &_usdData,
+      const USDData &_usdData,
       ignition::math::Pose3d &_pose,
       ignition::math::Vector3d &_scale,
       const std::string &_schemaToStop);
