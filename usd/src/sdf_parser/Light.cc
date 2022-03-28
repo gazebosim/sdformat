@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Light.hh"
+#include "Light.hh"
 
 #include <string>
 

@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Model.hh"
+#include "Model.hh"
 
 #include <string>
 #include <unordered_map>
@@ -35,9 +35,9 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Model.hh"
-#include "sdf/usd/sdf_parser/Joint.hh"
-#include "sdf/usd/sdf_parser/Link.hh"
 #include "../UsdUtils.hh"
+#include "Joint.hh"
+#include "Link.hh"
 
 namespace sdf
 {
