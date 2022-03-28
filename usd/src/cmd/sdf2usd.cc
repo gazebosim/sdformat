@@ -33,6 +33,7 @@
 
 #include "sdf/sdf.hh"
 #include "sdf/usd/sdf_parser/World.hh"
+#include "../sdf_parser/Model.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
@@ -226,8 +227,67 @@ void runCommand(const Options &_opt)
   // only support SDF files with exactly 1 world for now
   if (root.WorldCount() != 1u)
   {
-    std::cerr << _opt.inputFilename << " does not have exactly 1 world\n";
-    exit(-3);
+    auto model = root.Model();
+    if (model != nullptr)
+    {
+      std::string pathInputFile =
+        ignition::common::parentPath(_opt.inputFilename);
+      if (pathInputFile.empty() || pathInputFile == _opt.inputFilename)
+      {
+        pathInputFile = ignition::common::cwd();
+      }
+      auto systemPaths = ignition::common::systemPaths();
+      systemPaths->AddFilePaths(pathInputFile);
+
+      std::vector<std::string> pathList = {pathInputFile};
+
+      while (!pathList.empty())
+      {
+        std::string pathToAdd = pathList.back();
+        pathList.pop_back();
+        for (ignition::common::DirIter file(pathToAdd);
+          file != ignition::common::DirIter(); ++file)
+        {
+          std::string current(*file);
+          if (ignition::common::isDirectory(current))
+          {
+            systemPaths->AddFilePaths(current);
+            pathList.push_back(current);
+          }
+        }
+      }
+
+      auto stage = pxr::UsdStage::CreateInMemory();
+      std::string modelName = model->Name();
+      modelName = ignition::common::replaceAll(modelName, " ", "");
+      auto modelPath = std::string("/" + modelName);
+      auto usdErrors = sdf::usd::ParseSdfModel(
+        *model,
+        stage,
+        modelPath,
+        pxr::SdfPath("/" + modelName));
+      if (!usdErrors.empty())
+      {
+        std::cerr << "The following errors occurred when parsing model ["
+                  << modelName << "]:" << std::endl;
+        for (const auto &e : usdErrors)
+          std::cout << e << "\n";
+        exit(-5);
+      }
+
+      if (!stage->GetRootLayer()->Export(_opt.outputFilename))
+      {
+        std::cerr << "Issue saving USD to " << _opt.outputFilename << "\n";
+        exit(-6);
+      }
+      return;
+    }
+    else
+    {
+      std::cerr << _opt.inputFilename << " does not have exactly 1 world "
+                << "or 1 model\n";
+      exit(-3);
+    }
   }
 
   auto world = root.WorldByIndex(0u);
