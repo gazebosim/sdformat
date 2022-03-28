@@ -15,7 +15,8 @@
  *
  */
 
-#include <string.h>
+#include <cctype>
+#include <string>
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
@@ -260,6 +261,10 @@ void runCommand(const Options &_opt)
       auto stage = pxr::UsdStage::CreateInMemory();
       std::string modelName = model->Name();
       modelName = ignition::common::replaceAll(modelName, " ", "");
+      if (isdigit(modelName[0]))
+      {
+        modelName = "_" + modelName;
+      }
       auto modelPath = std::string("/" + modelName);
       auto usdErrors = sdf::usd::ParseSdfModel(
         *model,

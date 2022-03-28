@@ -17,6 +17,7 @@
 
 #include "sdf/usd/sdf_parser/World.hh"
 
+#include <cctype>
 #include <iostream>
 #include <string>
 
@@ -75,6 +76,10 @@ namespace usd
       const auto model = *(_world.ModelByIndex(i));
       auto modelPath = std::string(_path + "/" + model.Name());
       modelPath = ignition::common::replaceAll(modelPath, " ", "");
+      if (isdigit(modelPath[0]))
+      {
+        modelPath = "_" + modelPath;
+      }
       UsdErrors modelErrors =
         ParseSdfModel(model, _stage, modelPath, worldPrimPath);
       if (!modelErrors.empty())
