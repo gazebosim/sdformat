@@ -216,7 +216,7 @@ TEST_F(UsdStageFixture, MaterialTextureName)
   EXPECT_TRUE(errors.empty());
 
   {
-    ASSERT_TRUE(this->stage->GetPrimAtPath(pxr::SdfPath(materialPathStr)));
+    ASSERT_TRUE(this->stage->GetPrimAtPath(materialPath));
 
     const std::string materialshaderPath = materialPathStr + "/Shader";
     const auto materialShaderPrim = this->stage->GetPrimAtPath(
@@ -228,7 +228,8 @@ TEST_F(UsdStageFixture, MaterialTextureName)
 
     std::vector<pxr::UsdShadeInput> inputs = variantshader.GetInputs();
 
-    for (auto &input : inputs)
+    bool checkedTextureInput = false;
+    for (const auto &input : inputs)
     {
       if (input.GetBaseName() == "diffuse_texture")
       {
@@ -238,8 +239,11 @@ TEST_F(UsdStageFixture, MaterialTextureName)
         diffuseTextureShaderInput.Get(&materialPathUSD);
         EXPECT_EQ("materials/textures/albedo_map.png",
           materialPathUSD.GetAssetPath());
+        checkedTextureInput = true;
+        break;
       }
     }
+    EXPECT_TRUE(checkedTextureInput);
   }
 }
 
