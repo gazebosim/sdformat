@@ -15,7 +15,7 @@
 1. Make `computeMergedModelProxyFrameName` public
     * [Pull request #868](https://github.com/ignitionrobotics/sdformat/pull/868)
 
-1. SDF -> USD:
+1. SDFormat to USD conversion
     * [Pull request #818](https://github.com/ignitionrobotics/sdformat/pull/818)
     * [Pull request #827](https://github.com/ignitionrobotics/sdformat/pull/827)
     * [Pull request #828](https://github.com/ignitionrobotics/sdformat/pull/828)
@@ -36,7 +36,7 @@
     * [Pull request #913](https://github.com/ignitionrobotics/sdformat/pull/913)
     * [Pull request #915](https://github.com/ignitionrobotics/sdformat/pull/915)
 
-1. ToElement
+1. Add ToElement conversions for various classes
     * [Pull request #771](https://github.com/ignitionrobotics/sdformat/pull/771)
     * [Pull request #772](https://github.com/ignitionrobotics/sdformat/pull/772)
     * [Pull request #775](https://github.com/ignitionrobotics/sdformat/pull/775)
