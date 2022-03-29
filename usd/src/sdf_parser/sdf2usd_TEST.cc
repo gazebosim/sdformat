@@ -25,6 +25,16 @@
 #include "test_config.h"
 #include "test_utils.hh"
 
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
+#include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/gprim.h>
+#pragma pop_macro ("__DEPRECATED")
+
 #ifdef _WIN32
   #define popen  _popen
   #define pclose _pclose
@@ -88,10 +98,47 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 }
 
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
+TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase = ignition::common::joinPaths(pathBase, "test", "sdf");
+
+  auto tmpDir = ignition::common::tempDirectoryPath();
+  auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
+  // Check a good SDF file
+  {
+    std::string path = ignition::common::joinPaths(pathBase,
+      "ellipsoid_model.sdf");
+    const auto outputUsdFilePath =
+      ignition::common::joinPaths(tmp, "ellipsoid.usd");
+    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
+    std::string output =
+      custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
+    // TODO(adlarkin) make sure 'output' (i.e., the result of running the
+    // sdf2usd executable) is an empty string once the usd2sdf parser is fully
+    // implemented (right now, running the parser outputs an error indicating
+    // that functionality isn't complete)
+
+    // make sure that a shapes.usd file was generated
+    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
+
+    const auto stage = pxr::UsdStage::Open(outputUsdFilePath);
+
+    auto modelUSD = stage->GetPrimAtPath(pxr::SdfPath("/ellipsoid"));
+    ASSERT_TRUE(modelUSD);
+
+    modelUSD = stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link"));
+    ASSERT_TRUE(modelUSD);
+
+    modelUSD = stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual"));
+    ASSERT_TRUE(modelUSD);
+
+    modelUSD = stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
+    ASSERT_TRUE(modelUSD);
+    // TODO(ahcorde): Check the contents of outputUsdFilePath when the parser
+    // is implemented
+  }
 }
