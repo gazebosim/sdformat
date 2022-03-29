@@ -1,14 +1,40 @@
 ## libsdformat 12.X
 
-### libsdformat 12.4.0 (2022-03-xx)
+### libsdformat 12.X.X (2022-03-xx)
+
+### libsdformat 12.4.0 (2022-03-29)
+
+1. Use ParserConfig more in parser.cc
+    * [Pull request #883](https://github.com/ignitionrobotics/sdformat/pull/883)
+    * [Pull request #885](https://github.com/ignitionrobotics/sdformat/pull/885)
+    * [Pull request #910](https://github.com/ignitionrobotics/sdformat/pull/910)
+
+1. Added option to visualize light in GUI
+    * [Pull request #877](https://github.com/ignitionrobotics/sdformat/pull/877)
+
+1. Make `computeMergedModelProxyFrameName` public
+    * [Pull request #868](https://github.com/ignitionrobotics/sdformat/pull/868)
 
 1. SDF -> USD:
     * [Pull request #818](https://github.com/ignitionrobotics/sdformat/pull/818)
+    * [Pull request #827](https://github.com/ignitionrobotics/sdformat/pull/827)
     * [Pull request #828](https://github.com/ignitionrobotics/sdformat/pull/828)
     * [Pull request #829](https://github.com/ignitionrobotics/sdformat/pull/829)
     * [Pull request #830](https://github.com/ignitionrobotics/sdformat/pull/830)
     * [Pull request #831](https://github.com/ignitionrobotics/sdformat/pull/831)
     * [Pull request #837](https://github.com/ignitionrobotics/sdformat/pull/837)
+    * [Pull request #862](https://github.com/ignitionrobotics/sdformat/pull/862)
+    * [Pull request #863](https://github.com/ignitionrobotics/sdformat/pull/863)
+    * [Pull request #870](https://github.com/ignitionrobotics/sdformat/pull/870)
+    * [Pull request #888](https://github.com/ignitionrobotics/sdformat/pull/888)
+    * [Pull request #889](https://github.com/ignitionrobotics/sdformat/pull/889)
+    * [Pull request #895](https://github.com/ignitionrobotics/sdformat/pull/895)
+    * [Pull request #896](https://github.com/ignitionrobotics/sdformat/pull/896)
+    * [Pull request #901](https://github.com/ignitionrobotics/sdformat/pull/901)
+    * [Pull request #906](https://github.com/ignitionrobotics/sdformat/pull/906)
+    * [Pull request #908](https://github.com/ignitionrobotics/sdformat/pull/908)
+    * [Pull request #913](https://github.com/ignitionrobotics/sdformat/pull/913)
+    * [Pull request #915](https://github.com/ignitionrobotics/sdformat/pull/915)
 
 1. ToElement
     * [Pull request #771](https://github.com/ignitionrobotics/sdformat/pull/771)
@@ -19,6 +45,9 @@
     * [Pull request #781](https://github.com/ignitionrobotics/sdformat/pull/781)
     * [Pull request #782](https://github.com/ignitionrobotics/sdformat/pull/782)
     * [Pull request #783](https://github.com/ignitionrobotics/sdformat/pull/783)
+    * [Pull request #842](https://github.com/ignitionrobotics/sdformat/pull/842)
+    * [Pull request #887](https://github.com/ignitionrobotics/sdformat/pull/887)
+    * [Pull request #918](https://github.com/ignitionrobotics/sdformat/pull/918)
 
 1. Fix compiler warnings
     * [Pull request #808](https://github.com/ignitionrobotics/sdformat/pull/808)
@@ -29,6 +58,10 @@
     * [Pull request #800](https://github.com/ignitionrobotics/sdformat/pull/800)
     * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
     * [Pull request #713](https://github.com/ignitionrobotics/sdformat/pull/713)
+    * [Pull request #864](https://github.com/ignitionrobotics/sdformat/pull/864)
+    * [Pull request #880](https://github.com/ignitionrobotics/sdformat/pull/880)
+    * [Pull request #890](https://github.com/ignitionrobotics/sdformat/pull/890)
+    * [Pull request #891](https://github.com/ignitionrobotics/sdformat/pull/891)
 
 1. Use the Plugin DOM in other DOM objects
     * [Pull request #858](https://github.com/ignitionrobotics/sdformat/pull/858)
