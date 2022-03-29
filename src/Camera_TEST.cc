@@ -42,6 +42,10 @@ TEST(DOMCamera, Construction)
   cam.SetPixelFormat(sdf::PixelFormatType::L_INT8);
   EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam.PixelFormat());
 
+  EXPECT_EQ(4u, cam.AntiAliasingValue());
+  cam.SetAntiAliasingValue(8);
+  EXPECT_EQ(8u, cam.AntiAliasingValue());
+
   EXPECT_DOUBLE_EQ(0.1, cam.DepthNearClip());
   EXPECT_FALSE(cam.HasDepthNearClip());
   cam.SetDepthNearClip(0.2);
