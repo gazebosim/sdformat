@@ -74,19 +74,20 @@ namespace usd
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {
       const auto model = *(_world.ModelByIndex(i));
-      auto modelPath = std::string(_path + "/" + model.Name());
-      modelPath = ignition::common::replaceAll(modelPath, " ", "");
-      if (isdigit(modelPath[0]))
+      std::string modelName = model.Name();
+      if (!modelName.empty() && isdigit(modelName[0]))
       {
-        modelPath = "_" + modelPath;
+        modelName = "_" + modelName;
       }
+      auto modelPath = std::string(_path + "/" + modelName);
+      modelPath = ignition::common::replaceAll(modelPath, " ", "");
       UsdErrors modelErrors =
         ParseSdfModel(model, _stage, modelPath, worldPrimPath);
       if (!modelErrors.empty())
       {
         errors.push_back(UsdError(
               sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              "Error parsing model [" + model.Name() + "]"));
+              "Error parsing model [" + modelName + "]"));
         errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
       }
     }

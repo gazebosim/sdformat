@@ -225,7 +225,7 @@ void runCommand(const Options &_opt)
     exit(-2);
   }
 
-  // only support SDF files with exactly 1 world for now
+  // only support SDF files with exactly 1 world or 1 model for now
   if (root.WorldCount() != 1u)
   {
     auto model = root.Model();
@@ -240,8 +240,12 @@ void runCommand(const Options &_opt)
       auto systemPaths = ignition::common::systemPaths();
       systemPaths->AddFilePaths(pathInputFile);
 
+      // This loop here will add all the directories inside the sdf file.
+      // For example: If we download a model from fuel, textures might live in
+      // in the same path but in a different folder: materials/textures,
+      // this loop will add these two folders to the systempaths allowing the
+      // cmd to find the resources.
       std::vector<std::string> pathList = {pathInputFile};
-
       while (!pathList.empty())
       {
         std::string pathToAdd = pathList.back();
@@ -261,7 +265,7 @@ void runCommand(const Options &_opt)
       auto stage = pxr::UsdStage::CreateInMemory();
       std::string modelName = model->Name();
       modelName = ignition::common::replaceAll(modelName, " ", "");
-      if (isdigit(modelName[0]))
+      if (!modelName.empty() && isdigit(modelName[0]))
       {
         modelName = "_" + modelName;
       }
@@ -329,7 +333,8 @@ void addFlags(CLI::App &_app)
 
   _app.add_option("input",
     opt->inputFilename,
-    "Input filename. Defaults to input.sdf unless otherwise specified.");
+    "Input filename. Defaults to input.sdf unless otherwise specified."
+    "Input file might be a world or a model");
 
   _app.add_option("output",
     opt->outputFilename,
