@@ -112,7 +112,7 @@ if (BUILD_SDF)
 
   ########################################
   # Find ignition common
-  ign_find_package(ignition-common4 COMPONENTS graphics REQUIRED_BY usd)
+  ign_find_package(ignition-common4 COMPONENTS graphics REQUIRED)
   set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
 
   ########################################
