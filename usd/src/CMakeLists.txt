@@ -92,4 +92,9 @@ if (TARGET UNIT_Light_Sdf2Usd_TEST)
     ${sdf2usd_test_sources})
 endif()
 
+if (TARGET UNIT_Material_Sdf2Usd_TEST)
+  target_sources(UNIT_Material_Sdf2Usd_TEST PRIVATE
+    ${sdf2usd_test_sources})
+endif()
+
 add_subdirectory(cmd)
