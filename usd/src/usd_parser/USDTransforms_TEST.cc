@@ -15,6 +15,7 @@
  *
 */
 
+#include <functional>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -119,9 +120,9 @@ TEST(USDTransformsTest, ParseUSDTransform)
     stage,
     ignition::math::Vector3d(0, 1.5, 0.5),
     {
-      ignition::math::Quaterniond(IGN_DTOR(-69), 0, 0),
+      ignition::math::Quaterniond(IGN_DTOR(-62), 0, 0),
       ignition::math::Quaterniond(0, IGN_DTOR(31), 0),
-      ignition::math::Quaterniond(0, 0, IGN_DTOR(-62))
+      ignition::math::Quaterniond(0, 0, IGN_DTOR(-69))
     },
     ignition::math::Vector3d(1, 1, 1),
     false,
@@ -133,9 +134,9 @@ TEST(USDTransformsTest, ParseUSDTransform)
     stage,
     ignition::math::Vector3d(0, -3.0, 0.5),
     {
-      ignition::math::Quaterniond(IGN_DTOR(15), 0, 0),
+      ignition::math::Quaterniond(IGN_DTOR(-55), 0, 0),
       ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
-      ignition::math::Quaterniond(0, 0, IGN_DTOR(-55))
+      ignition::math::Quaterniond(0, 0, IGN_DTOR(15))
     },
     ignition::math::Vector3d(1, 1, 1),
     false,
@@ -147,9 +148,9 @@ TEST(USDTransformsTest, ParseUSDTransform)
     stage,
     ignition::math::Vector3d(0, 0, 0),
     {
+      ignition::math::Quaterniond(M_PI_2, 0, 0),
       ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(0, 0, M_PI_2)
+      ignition::math::Quaterniond(1, 0, 0, 0)
     },
     ignition::math::Vector3d(1, 1, 1),
     false,
@@ -233,20 +234,26 @@ TEST(USDTransformsTest, GetAllTransform)
     sdf::usd::USDData usdData(filename);
     usdData.Init();
 
-    const pxr::UsdPrim prim = stage->GetPrimAtPath(
-        pxr::SdfPath("/transforms/nested_transforms_XYZ/child_transform"));
-    ASSERT_TRUE(prim);
+    std::function<void(const std::string &)> verifyNestedTf =
+      [&](const std::string &_path)
+      {
+        pxr::UsdPrim prim = stage->GetPrimAtPath(pxr::SdfPath(_path));
+        ASSERT_TRUE(prim);
 
-    ignition::math::Pose3d pose;
-    ignition::math::Vector3d scale{1, 1, 1};
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale{1, 1, 1};
 
-    sdf::usd::GetTransform(prim, usdData, pose, scale, "/transforms");
+        sdf::usd::GetTransform(prim, usdData, pose, scale, "/transforms");
 
-    EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), scale);
-    EXPECT_EQ(
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(.01, .01, 0),
-        ignition::math::Quaterniond(0, 0, IGN_DTOR(90))),
-      pose);
+        EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), scale);
+        EXPECT_EQ(
+          ignition::math::Pose3d(
+            ignition::math::Vector3d(.01, .01, 0),
+            ignition::math::Quaterniond(0, 0, IGN_DTOR(90))),
+          pose);
+      };
+
+    verifyNestedTf("/transforms/nested_transforms_XYZ/child_transform");
+    verifyNestedTf("/transforms/nested_transforms_ZYX/child_transform");
   }
 }

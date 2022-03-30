@@ -17,6 +17,8 @@
 
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 
+#include <utility>
+
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
@@ -212,18 +214,9 @@ void GetAllTransforms(
         t.Translation() * metersPerUnit,
         ignition::math::Quaterniond(1, 0, 0, 0));
 
-      if (t.RotationZYX())
-      {
-        _tfs.push_back(poseZ);
-        _tfs.push_back(poseY);
-        _tfs.push_back(poseX);
-      }
-      else if (t.RotationXYZ())
-      {
-        _tfs.push_back(poseX);
-        _tfs.push_back(poseY);
-        _tfs.push_back(poseZ);
-      }
+      _tfs.push_back(poseX);
+      _tfs.push_back(poseY);
+      _tfs.push_back(poseZ);
       _tfs.push_back(poseT);
     }
     parent = parent.GetParent();
@@ -320,6 +313,10 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       ignition::math::Angle angleX(IGN_DTOR(rotationEuler[0]));
       ignition::math::Angle angleY(IGN_DTOR(rotationEuler[1]));
       ignition::math::Angle angleZ(IGN_DTOR(rotationEuler[2]));
+      if (t.RotationZYX())
+      {
+        std::swap(angleX, angleZ);
+      }
       qX = ignition::math::Quaterniond(angleX.Normalized().Radian(), 0, 0);
       qY = ignition::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
       qZ = ignition::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
