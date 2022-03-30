@@ -1062,6 +1062,9 @@ sdf::ElementPtr Camera::ToElement() const
   imageElem->GetElement("width")->Set<double>(this->ImageWidth());
   imageElem->GetElement("height")->Set<double>(this->ImageHeight());
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
+  imageElem->GetElement("anti_aliasing")->Set<uint32_t>(
+      this->AntiAliasingValue());
+
   sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
   clipElem->GetElement("far")->Set<double>(this->FarClip());
