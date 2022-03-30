@@ -24,6 +24,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 
+SDF_SUPPRESS_DEPRECATED_BEGIN
 /////////////////////////////////////////////////
 TEST(Types, split_nothing)
 {
@@ -100,6 +101,7 @@ TEST(Types, trim_nothing)
   out = sdf::trim("\n    xyz    \n");
   EXPECT_EQ(out, "xyz");
 }
+SDF_SUPPRESS_DEPRECATED_END
 
 /////////////////////////////////////////////////
 TEST(Types, ErrorsOutputStream)

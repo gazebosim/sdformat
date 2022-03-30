@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include <ignition/math/Helpers.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
@@ -170,7 +171,7 @@ ignition::math::Vector3d JointAxis::Xyz() const
 /////////////////////////////////////////////////
 sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
 {
-  if (sdf::equal(_xyz.Length(), 0.0))
+  if (ignition::math::equal(_xyz.Length(), 0.0))
   {
     return {Error(ErrorCode::ELEMENT_INVALID,
                   "The norm of the xyz vector cannot be zero")};
@@ -185,6 +186,7 @@ double JointAxis::Damping() const
 {
   return this->dataPtr->damping;
 }
+
 /////////////////////////////////////////////////
 void JointAxis::SetDamping(const double _damping)
 {

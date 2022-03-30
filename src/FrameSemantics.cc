@@ -20,6 +20,8 @@
 #include <utility>
 #include <vector>
 
+#include <ignition/common/Util.hh>
+
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
@@ -639,7 +641,7 @@ void addVerticesToGraph(ScopedGraph<GraphT> &_out,
     {
       _errors.emplace_back(ErrorCode::DUPLICATE_NAME, item.elementType +
           " with non-unique name [" + item.name + "] detected in " +
-          lowercase(_parent.elementType) + " with name [" +
+          ignition::common::lowercase(_parent.elementType) + " with name [" +
           _parent.name + "].");
       continue;
     }
@@ -703,8 +705,8 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
       {
         std::stringstream errMsg;
         errMsg << typeForErrorMsg << " name[" << relativeTo << "] specified by "
-               << lowercase(item.elementType) << " with name[" << item.name
-               << "] does not match a";
+               << ignition::common::lowercase(item.elementType)
+               << " with name[" << item.name << "] does not match a";
         if (_parent.frameType == FrameType::WORLD)
         {
           errMsg << " model or frame name ";
@@ -713,8 +715,8 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
         {
           errMsg << " nested model, link, joint, or frame name ";
         }
-        errMsg << "in " + lowercase(_parent.elementType) + " with name[" +
-                      _parent.name + "].";
+        errMsg << "in " + ignition::common::lowercase(_parent.elementType) +
+          " with name[" + _parent.name + "].";
 
         _errors.push_back({errorCode, errMsg.str()});
         continue;
@@ -725,9 +727,10 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
       {
         _errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
             "relative_to name[" + relativeTo +
-            "] is identical to " + lowercase(item.elementType) + " name[" +
+            "] is identical to " +
+            ignition::common::lowercase(item.elementType) + " name[" +
             item.name + "], causing a graph cycle in " +
-            lowercase(_parent.elementType) + " with name[" +
+            ignition::common::lowercase(_parent.elementType) + " with name[" +
             _parent.name + "]."});
       }
     }
@@ -770,7 +773,8 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
       _errors.push_back(
           {ErrorCode::JOINT_CHILD_LINK_INVALID,
            "Child frame with name[" + joint.childName + "] specified by " +
-               lowercase(joint.elementType) + " with name[" + joint.name +
+               ignition::common::lowercase(joint.elementType) +
+               " with name[" + joint.name +
                "] not found in model with name[" + _model.name + "]."});
       continue;
     }
@@ -805,7 +809,8 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
     {
       std::stringstream errMsg;
       errMsg << "attached_to name[" << attachedTo << "] specified by "
-             << lowercase(frame.elementType) << " with name[" << frame.name
+             << ignition::common::lowercase(frame.elementType)
+             << " with name[" << frame.name
              << "] does not match a";
       if (_parent.frameType == FrameType::WORLD)
       {
@@ -815,8 +820,8 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
       {
         errMsg << " nested model, link, joint, or frame name ";
       }
-      errMsg << "in " + lowercase(_parent.elementType) + " with name[" +
-                    _parent.name + "].";
+      errMsg << "in " + ignition::common::lowercase(_parent.elementType) +
+        " with name[" + _parent.name + "].";
 
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID, errMsg.str()});
       continue;
@@ -831,7 +836,8 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
           "attached_to name[" + attachedTo +
           "] is identical to frame name[" + frame.attachedTo +
-          "], causing a graph cycle in " + lowercase(_parent.elementType) +
+          "], causing a graph cycle in " +
+          ignition::common::lowercase(_parent.elementType) +
           " with name[" + _parent.name + "]."});
     }
     _out.AddEdge({frameId, attachedToId}, edgeData);

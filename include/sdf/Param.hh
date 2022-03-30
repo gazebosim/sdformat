@@ -33,6 +33,7 @@
 #include <variant>
 #include <vector>
 
+#include <ignition/common/Util.hh>
 #include <ignition/math.hh>
 
 #include "sdf/Console.hh"
@@ -535,7 +536,7 @@ namespace sdf
         // this section for handling bool types is to keep backward behavior
         // TODO(anyone) remove for Fortress. For more details:
         // https://github.com/ignitionrobotics/sdformat/pull/638
-        valueStr = lowercase(valueStr);
+        valueStr = ignition::common::lowercase(valueStr);
 
         std::stringstream tmp;
         if (valueStr == "true" || valueStr == "1")

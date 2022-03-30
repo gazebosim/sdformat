@@ -75,28 +75,32 @@ namespace sdf
   /// \param[in] str       The string to split.
   /// \param[in] splitter  The delimiter to use.
   /// \return A vector of strings containing the split tokens.
+  /// \deprecated Use the trim function found in Ignition Common.
   SDFORMAT_VISIBLE
-  std::vector<std::string> split(const std::string &_str,
+  std::vector<std::string> SDF_DEPRECATED(13) split(const std::string &_str,
                                  const std::string &_splitter);
 
   /// \brief Trim leading and trailing whitespace from a string.
   /// \param[in] _in The string to trim.
   /// \return A string containing the trimmed value.
+  /// \deprecated Use the trim function found in Ignition Common.
   SDFORMAT_VISIBLE
-  std::string trim(const char *_in);
+  std::string SDF_DEPRECATED(13) trim(const char *_in);
 
   /// \brief Trim leading and trailing whitespace from a string.
   /// \param[in] _in The string to trim.
   /// \return A string containing the trimmed value.
+  /// \deprecated Use the trim function found in Ignition Common.
   SDFORMAT_VISIBLE
-  std::string trim(const std::string &_in);
+  std::string SDF_DEPRECATED(13) trim(const std::string &_in);
 
   /// \brief check if two values are equal, within a tolerance
   /// \param[in] _a the first value
   /// \param[in] _b the second value
   /// \param[in] _epsilon the tolerance
+  /// \deprecated Use ignition::math::equal
   template<typename T>
-  inline bool equal(const T &_a, const T &_b,
+  inline bool SDF_DEPRECATED(13) equal(const T &_a, const T &_b,
                     const T &_epsilon = 1e-6f)
   {
     return std::fabs(_a - _b) <= _epsilon;
@@ -178,7 +182,9 @@ namespace sdf
   /// \brief Transforms a string to its lowercase equivalent
   /// \param[in] _in String to convert to lowercase
   /// \return Lowercase equilvalent of _in.
-  std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
+  /// \deprecated Use ignition::common::lowercase
+  std::string SDFORMAT_VISIBLE SDF_DEPRECATED(13) lowercase(
+      const std::string &_in);
 
   /// \brief Split a name into a two strings based on the '::' delimeter
   /// \param[in] _absoluteName The fully qualified absolute name

@@ -768,11 +768,24 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   std::string fromStr = fromNameStr;
   std::string toStr = toNameStr;
 
-  std::vector<std::string> fromTokens = split(fromStr, "/");
-  std::vector<std::string> toTokens = split(toStr, "/");
+  std::vector<std::string> fromTokens = ignition::common::split(fromStr, "/");
+  std::vector<std::string> toTokens = ignition::common::split(toStr, "/");
 
-  // split() always returns at least one element, even with the
-  // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
+  // Return if empty.
+  if (fromTokens.empty() || toTokens.empty())
+    return;
+
+  // The logic in the rest of this function assumes that an empty string is
+  // present in the toTokens and fromTokens if the corresponding strings
+  // started or ended with a forward slash.
+  if (fromStr.front() == '/')
+    fromTokens.insert(fromTokens.begin(), "");
+  if (fromStr.back() == '/')
+    fromTokens.push_back("");
+  if (toStr.front() == '/')
+    toTokens.insert(toTokens.begin(), "");
+  if (toStr.back() == '/')
+    toTokens.push_back("");
 
   // get value of the 'from' element/attribute
   tinyxml2::XMLElement *fromElem = _elem;
@@ -791,7 +804,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   if (fromLeaf[0] == '\0' ||
       (fromLeaf[0] == '@' && fromLeaf[1] == '\0'))
   {
-    sdferr << "Map: <from> has invalid name attribute\n";
+    sdferr << "Map: <from>[" << fromLeaf << "] has invalid name attribute\n";
     return;
   }
   const char *fromValue = nullptr;
@@ -812,7 +825,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
     return;
   }
   const char *toValue = valueMap[std::string(fromValue)].c_str();
-  // sdfdbg << "Map from [" << fromValue << "] to [" << toValue << "]\n";
+  sdfdbg << "Map from [" << fromValue << "] to [" << toValue << "]\n";
 
   // check if destination elements before leaf exist and create if necessary
   unsigned int newDirIndex = 0;
@@ -834,7 +847,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   if (toLeaf[0] == '\0' ||
       (toLeaf[0] == '@' && toLeaf[1] == '\0'))
   {
-    sdferr << "Map: <to> has invalid name attribute\n";
+    sdferr << "Map: <to> [" << toLeaf << "] has invalid name attribute\n";
     return;
   }
   bool toAttribute = toLeaf[0] == '@';
@@ -909,11 +922,25 @@ void Converter::Move(tinyxml2::XMLElement *_elem,
     toStr = toAttrStr;
   }
 
-  std::vector<std::string> fromTokens = split(fromStr, "::");
-  std::vector<std::string> toTokens = split(toStr, "::");
+  std::vector<std::string> fromTokens = ignition::common::split(fromStr, "::");
+  std::vector<std::string> toTokens = ignition::common::split(toStr, "::");
 
   // split() always returns at least one element, even with the
   // empty string.  Thus we don't check if the fromTokens or toTokens are empty.
+  if (fromTokens.empty() || toTokens.empty())
+    return;
+
+  // The logic in the rest of this function assumes that an empty string is
+  // present in the toTokens and fromTokens if the corresponding strings
+  // started or ended with a forward slash.
+  if (fromStr.find("::") == 0)
+    fromTokens.insert(fromTokens.begin(), "");
+  if (fromStr.find("::") == fromStr.size()-2)
+    fromTokens.push_back("");
+  if (toStr.find("::") == '/')
+    toTokens.insert(toTokens.begin(), "");
+  if (toStr.find("::") == toStr.size()-2)
+    toTokens.push_back("");
 
   // get value of the 'from' element/attribute
   tinyxml2::XMLElement *fromElem = _elem;
@@ -1069,7 +1096,7 @@ void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem,
        deprecatedElem = deprecatedElem->NextSiblingElement("deprecated"))
   {
     std::string value = deprecatedElem->GetText();
-    std::vector<std::string> valueSplit = split(value, "/");
+    std::vector<std::string> valueSplit = ignition::common::split(value, "/");
 
     bool found = false;
     tinyxml2::XMLElement *e = _elem;

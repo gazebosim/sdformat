@@ -97,7 +97,7 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
   constexpr char multiplePathSeparator[] = ":";
 #endif
 
-  for (const auto &part : sdf::split(_path, multiplePathSeparator))
+  for (const auto &part : ignition::common::split(_path, multiplePathSeparator))
   {
     // Only add valid paths
     if (!part.empty() && sdf::filesystem::is_directory(part))

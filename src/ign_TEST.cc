@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string>
 
+#include <ignition/common/Util.hh>
 #include <ignition/utilities/ExtraTestMacros.hh>
 
 #include "sdf/parser.hh"
@@ -1621,7 +1622,8 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
     << "  8 -> 15 [label=1];\n"
     << "  10 -> 16 [label=1];\n"
     << "}";
-  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+  EXPECT_EQ(ignition::common::trimmed(expected.str()),
+            ignition::common::trimmed(output));
 }
 
 /////////////////////////////////////////////////
@@ -1697,7 +1699,8 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
     << "  0 -> 1 [label=1];\n"
     << "}";
 
-  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+  EXPECT_EQ(ignition::common::trimmed(expected.str()),
+            ignition::common::trimmed(output));
 }
 
 /////////////////////////////////////////////////
@@ -1743,7 +1746,8 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
            << "  15 -> 5 [label=1];\n"
            << "  16 -> 4 [label=1];\n"
            << "}";
-  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+  EXPECT_EQ(ignition::common::trimmed(expected.str()),
+            ignition::common::trimmed(output));
 }
 
 /////////////////////////////////////////////////
@@ -1792,7 +1796,8 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
       << "  2 -> 3 [label=1];\n"
       << "}";
 
-  EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+  EXPECT_EQ(ignition::common::trimmed(expected.str()),
+            ignition::common::trimmed(output));
 }
 
 /////////////////////////////////////////////////

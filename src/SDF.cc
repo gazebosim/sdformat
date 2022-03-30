@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include <ignition/common/Util.hh>
+
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
@@ -123,7 +125,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   std::string sdfPathEnv;
   if(ignition::utils::env("SDF_PATH", sdfPathEnv))
   {
-    std::vector<std::string> paths = sdf::split(sdfPathEnv, ":");
+    std::vector<std::string> paths = ignition::common::split(sdfPathEnv, ":");
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {

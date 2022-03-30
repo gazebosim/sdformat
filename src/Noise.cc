@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <ignition/common/Util.hh>
 #include "sdf/Noise.hh"
 #include "sdf/parser.hh"
 #include "sdf/Types.hh"
@@ -85,7 +86,7 @@ Errors Noise::Load(ElementPtr _sdf)
         "Noise is missing the type attribute. Defaulting to 'none'."});
   }
 
-  std::string typeLower = lowercase(type.first);
+  std::string typeLower = ignition::common::lowercase(type.first);
 
   if (typeLower == "none")
     this->dataPtr->type = NoiseType::NONE;

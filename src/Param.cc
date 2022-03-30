@@ -27,6 +27,8 @@
 #include <locale.h>
 #include <math.h>
 
+#include <ignition/common/Util.hh>
+
 #include "sdf/Assert.hh"
 #include "sdf/Param.hh"
 #include "sdf/Types.hh"
@@ -636,9 +638,9 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
   // comma for decimal position instead of a dot, making the conversion
   // to fail. See bug #60 for more information. Force to use always C
   setlocale(LC_NUMERIC, "C");
-  std::string trimmed = sdf::trim(_valueStr);
+  std::string trimmed = ignition::common::trimmed(_valueStr);
   std::string tmp(trimmed);
-  std::string lowerTmp = lowercase(trimmed);
+  std::string lowerTmp = ignition::common::lowercase(trimmed);
 
   // "true" and "false" doesn't work properly (except for string)
   if (_typeName != "string" && _typeName != "std::string")
@@ -1028,7 +1030,7 @@ bool Param::SetFromString(const std::string &_value,
                           bool _ignoreParentAttributes)
 {
   this->dataPtr->ignoreParentAttributes = _ignoreParentAttributes;
-  std::string str = sdf::trim(_value.c_str());
+  std::string str = ignition::common::trimmed(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
   {

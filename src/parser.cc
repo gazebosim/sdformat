@@ -573,7 +573,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
       sdferr << "Attribute is missing a required string\n";
       return false;
     }
-    std::string requiredStr = sdf::trim(requiredString);
+    std::string requiredStr = ignition::common::trimmed(requiredString);
     bool required = requiredStr == "1" ? true : false;
     std::string description;
 

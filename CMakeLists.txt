@@ -111,7 +111,7 @@ if (BUILD_SDF)
 
   ########################################
   # Find ignition common
-  ign_find_package(ignition-common5 COMPONENTS graphics REQUIRED_BY usd)
+  ign_find_package(ignition-common5 COMPONENTS graphics REQUIRED)
   set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
 
   ########################################

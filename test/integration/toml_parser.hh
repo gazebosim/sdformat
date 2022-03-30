@@ -22,6 +22,8 @@
 #include <string>
 #include <variant>
 
+#include <ignition/common/Util.hh>
+
 #include "sdf/Param.hh"
 // This is a very basic toml parser for use in the interface_api integration
 // test and is not capable of parsing the full toml syntax. Specifically, this
@@ -78,7 +80,7 @@ struct Value
 
   public: Value &operator[](const std::string &_key)
   {
-    auto keys = sdf::split(_key, ".");
+    auto keys = ignition::common::split(_key, ".");
     Value *curValue = &(this->Map()[keys[0]]);
 
     for (std::size_t i = 1; i < keys.size(); ++i)
@@ -148,7 +150,7 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
 
   auto readValue = [](const std::string &_inp)
   {
-    const std::string trimmed = sdf::trim(_inp);
+    const std::string trimmed = ignition::common::trimmed(_inp);
     // Find the quotes
     auto begInd = trimmed.find('"');
     auto endInd = trimmed.rfind('"');
@@ -156,7 +158,7 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
   };
   auto readTableName = [](const std::string &_inp)
   {
-    const std::string trimmed = sdf::trim(_inp);
+    const std::string trimmed = ignition::common::trimmed(_inp);
     // Find the quotes
     auto begInd = trimmed.find('[');
     auto endInd = trimmed.rfind(']');
@@ -167,7 +169,7 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
   std::string line;
   while (std::getline(fs, line))
   {
-    sdf::trim(line);
+    ignition::common::trimmed(line);
     if (line.empty() || line[0] == '#' )
     {
       continue;
@@ -177,7 +179,8 @@ Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
       std::size_t eqInd = line.find('=');
       if (eqInd != std::string::npos)
       {
-        const std::string key = sdf::trim(line.substr(0, eqInd));
+        const std::string key =
+          ignition::common::trimmed(line.substr(0, eqInd));
         const std::string value = readValue(line.substr(eqInd + 1));
 
         sdf::Param param(key, keyType(key), "", true);

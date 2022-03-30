@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <ignition/common/Util.hh>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
@@ -185,7 +186,7 @@ Errors Joint::Load(ElementPtr _sdf)
   std::pair<std::string, bool> typePair = _sdf->Get<std::string>("type", "");
   if (typePair.second)
   {
-    typePair.first = lowercase(typePair.first);
+    typePair.first = ignition::common::lowercase(typePair.first);
     if (typePair.first == "ball")
       this->dataPtr->type = JointType::BALL;
     else if (typePair.first == "continuous")

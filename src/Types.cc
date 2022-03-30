@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include <ignition/common/Util.hh>
+
 #include "sdf/Types.hh"
 
 namespace sdf
@@ -53,7 +55,7 @@ std::vector<std::string> split(const std::string &_str,
 //////////////////////////////////////////////////
 std::string trim(const char *_in)
 {
-  return sdf::trim(std::string(_in));
+  return ignition::common::trimmed(std::string(_in));
 }
 
 //////////////////////////////////////////////////
