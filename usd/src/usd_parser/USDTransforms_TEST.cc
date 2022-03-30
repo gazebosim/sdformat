@@ -40,7 +40,9 @@ void checkTransforms(
   pxr::UsdStageRefPtr &_stage,
   const ignition::math::Vector3d &_translation,
   const std::vector<ignition::math::Quaterniond> &_rotation,
-  const ignition::math::Vector3d &_scale)
+  const ignition::math::Vector3d &_scale,
+  bool isXYZRotation,
+  bool isZYXRotation)
 {
   pxr::UsdPrim prim = _stage->GetPrimAtPath(pxr::SdfPath(_primName));
   ASSERT_TRUE(prim);
@@ -56,19 +58,19 @@ void checkTransforms(
     EXPECT_EQ(_rotation[i], usdTransforms.Rotations()[i]);
   }
 
-  bool checkedXYZorZXY = false;
   EXPECT_EQ(!_rotation.empty(), usdTransforms.Rotation());
-  if (usdTransforms.RotationXYZ() || usdTransforms.RotationZYX())
+  EXPECT_EQ(isXYZRotation, usdTransforms.RotationXYZ());
+  EXPECT_EQ(isZYXRotation, usdTransforms.RotationZYX());
+  const bool hasRotation = isXYZRotation || isZYXRotation;
+  if (hasRotation)
   {
-    EXPECT_TRUE(usdTransforms.Rotation());
     EXPECT_NE(usdTransforms.RotationXYZ(), usdTransforms.RotationZYX());
-    checkedXYZorZXY = true;
   }
-  EXPECT_EQ(!_rotation.empty(), checkedXYZorZXY);
+  EXPECT_EQ(hasRotation, usdTransforms.Rotation());
 }
 
 /////////////////////////////////////////////////
-TEST(Utils, GetTransform)
+TEST(USDTransformsTest, ParseUSDTransform)
 {
   std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
   auto stage = pxr::UsdStage::Open(filename);
@@ -83,7 +85,9 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(1, 0, 0, 0),
       ignition::math::Quaterniond(1, 0, 0, 0)
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    true,
+    false
   );
 
   checkTransforms(
@@ -91,7 +95,9 @@ TEST(Utils, GetTransform)
     stage,
     ignition::math::Vector3d(0, 0, 0),
     {},
-    ignition::math::Vector3d(100, 100, 0.25)
+    ignition::math::Vector3d(100, 100, 0.25),
+    false,
+    false
   );
 
   checkTransforms(
@@ -103,7 +109,9 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(1, 0, 0, 0),
       ignition::math::Quaterniond(1, 0, 0, 0)
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    true,
+    false
   );
 
   checkTransforms(
@@ -115,7 +123,9 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(0, IGN_DTOR(31), 0),
       ignition::math::Quaterniond(0, 0, IGN_DTOR(-62))
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    false,
+    true
   );
 
   checkTransforms(
@@ -127,7 +137,9 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
       ignition::math::Quaterniond(0, 0, IGN_DTOR(-55))
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    false,
+    true
   );
 
   checkTransforms(
@@ -139,7 +151,9 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(1, 0, 0, 0),
       ignition::math::Quaterniond(0, 0, M_PI_2)
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    false,
+    true
   );
 
   checkTransforms(
@@ -151,7 +165,9 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
       ignition::math::Quaterniond(0, 0, IGN_DTOR(-55))
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    true,
+    false
   );
 
   checkTransforms(
@@ -159,7 +175,9 @@ TEST(Utils, GetTransform)
     stage,
     ignition::math::Vector3d(0, 0, 0),
     {},
-    ignition::math::Vector3d(0.4, 0.6, 1)
+    ignition::math::Vector3d(0.4, 0.6, 1),
+    false,
+    false
   );
 
   checkTransforms(
@@ -171,12 +189,14 @@ TEST(Utils, GetTransform)
       ignition::math::Quaterniond(0, IGN_DTOR(-35), 0),
       ignition::math::Quaterniond(1, 0, 0, 0)
     },
-    ignition::math::Vector3d(1, 1, 1)
+    ignition::math::Vector3d(1, 1, 1),
+    true,
+    false
   );
 }
 
 /////////////////////////////////////////////////
-TEST(Utils, GetAllTransform)
+TEST(USDTransformsTest, GetAllTransform)
 {
   std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
   auto stage = pxr::UsdStage::Open(filename);
