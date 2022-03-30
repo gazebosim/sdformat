@@ -174,28 +174,6 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
 
-  /// \brief Several DOM classes have ToElement() methods that return an
-  /// XML Element populated from the contents of the DOM object. When
-  /// populating the details of a model that was included using the
-  /// <include> tag, one may wish to retain the exact include tag and
-  /// URI instead of copying the full details of the included model.
-  /// This method lets you set this behavior.
-  /// \param[in] _useIncludeTag When true, the model's URI is used to create
-  /// an SDF `<include>` rather than a `<model>`. The model's URI must be
-  /// first set using the `Model::SetUri` function. If the model's URI is
-  /// empty, then a `<model>` element will be generated. The default is true
-  /// so that URI values are used when ToElement is called from a
-  /// World object. Make sure to use `Model::SetUri` even when the model
-  /// is loaded from an `<include>` tag since the parser will
-  /// automatically expand an `<include>` element to a `<model>` element.
-  public: void SetToElementUseIncludeTag(bool _useIncludeTag);
-
-  /// \brief Get the policy value about whether <include> tags are
-  /// reconstituted in ToElement() invocations.
-  /// \return True if include tags are reconstituted, or false
-  /// if the fully populated model is returned instead.
-  public: bool ToElementUseIncludeTag() const;
-
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };

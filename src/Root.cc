@@ -525,7 +525,7 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Root::ToElement(const ParserConfig &_config) const
+sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("root.sdf", elem);
