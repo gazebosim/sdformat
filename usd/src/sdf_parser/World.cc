@@ -75,7 +75,7 @@ namespace usd
     {
       const auto model = *(_world.ModelByIndex(i));
       std::string modelName = model.Name();
-      if (!modelName.empty() && isdigit(modelName[0]))
+      if (!modelName.empty() && std::isdigit(modelName[0]))
       {
         modelName = "_" + modelName;
       }

@@ -114,31 +114,20 @@ TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
     std::string output =
       custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
-    // TODO(adlarkin) make sure 'output' (i.e., the result of running the
-    // sdf2usd executable) is an empty string once the usd2sdf parser is fully
-    // implemented (right now, running the parser outputs an error indicating
-    // that functionality isn't complete)
+    EXPECT_TRUE(output.empty());
 
-    // make sure that a shapes.usd file was generated
+    // make sure that a ellipsoid.usd file was generated
     EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
 
     const auto stage = pxr::UsdStage::Open(outputUsdFilePath);
+    ASSERT_TRUE(stage);
 
-    auto modelUSD = stage->GetPrimAtPath(pxr::SdfPath("/ellipsoid"));
-    ASSERT_TRUE(modelUSD);
-
-    modelUSD = stage->GetPrimAtPath(
-      pxr::SdfPath("/ellipsoid/ellipsoid_link"));
-    ASSERT_TRUE(modelUSD);
-
-    modelUSD = stage->GetPrimAtPath(
-      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual"));
-    ASSERT_TRUE(modelUSD);
-
-    modelUSD = stage->GetPrimAtPath(
-      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
-    ASSERT_TRUE(modelUSD);
-    // TODO(ahcorde): Check the contents of outputUsdFilePath when the parser
-    // is implemented
+    ASSERT_TRUE(stage->GetPrimAtPath(pxr::SdfPath("/ellipsoid")));
+    ASSERT_TRUE(stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link")));
+    ASSERT_TRUE(stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual")));
+    ASSERT_TRUE(stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry")));
   }
 }

@@ -265,7 +265,7 @@ void runCommand(const Options &_opt)
       auto stage = pxr::UsdStage::CreateInMemory();
       std::string modelName = model->Name();
       modelName = ignition::common::replaceAll(modelName, " ", "");
-      if (!modelName.empty() && isdigit(modelName[0]))
+      if (!modelName.empty() && std::isdigit(modelName[0]))
       {
         modelName = "_" + modelName;
       }
@@ -274,7 +274,7 @@ void runCommand(const Options &_opt)
         *model,
         stage,
         modelPath,
-        pxr::SdfPath("/" + modelName));
+        pxr::SdfPath(modelPath));
       if (!usdErrors.empty())
       {
         std::cerr << "The following errors occurred when parsing model ["
