@@ -27,6 +27,7 @@
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
 #include "sdf/Gui.hh"
+#include "sdf/OutputConfig.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Plugin.hh"
 #include "sdf/Scene.hh"
@@ -435,7 +436,7 @@ namespace sdf
     /// \param[in] _config Custom parser configuration
     /// \return SDF element pointer with updated world values.
     public: sdf::ElementPtr ToElement(
-        const ParserConfig &_config = ParserConfig::GlobalConfig()) const;
+        const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

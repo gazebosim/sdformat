@@ -24,6 +24,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/OutputConfig.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Plugin.hh"
 #include "sdf/SemanticPose.hh"
@@ -421,7 +422,7 @@ namespace sdf
     /// model.
     /// Note that parameter passing functionality is not captured with this
     /// function.
-    /// \param[in] _config Parser configuration. When the ToElementUseIncludeTag
+    /// \param[in] _config Output configuration. When the ToElementUseIncludeTag
     /// policy is true, the model's URI is used to create
     /// an SDF `<include>` rather than a `<model>`. The model's URI must be
     /// first set using the `Model::SetUri` function. If the model's URI is
@@ -432,7 +433,7 @@ namespace sdf
     /// automatically expand an `<include>` element to a `<model>` element.
     /// \return SDF element pointer with updated model values.
     public: sdf::ElementPtr ToElement(
-        const ParserConfig &_config = ParserConfig::GlobalConfig()) const;
+        const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Check if a given name exists in the FrameAttachedTo graph at the
     /// scope of the model.
