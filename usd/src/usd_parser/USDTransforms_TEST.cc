@@ -207,7 +207,8 @@ TEST(USDTransformsTest, GetAllTransform)
     usdData.Init();
 
     pxr::UsdPrim prim = stage->GetPrimAtPath(
-      pxr::SdfPath("/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
+      pxr::SdfPath(
+        "/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
     ASSERT_TRUE(prim);
 
     ignition::math::Pose3d pose;
@@ -224,7 +225,8 @@ TEST(USDTransformsTest, GetAllTransform)
   }
 
   {
-    std::string filename = sdf::testing::TestFile("usd", "nested_transforms.usda");
+    std::string filename =
+      sdf::testing::TestFile("usd", "nested_transforms.usda");
     auto stage = pxr::UsdStage::Open(filename);
     ASSERT_TRUE(stage);
 
