@@ -120,7 +120,6 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
   PRIVATE
-    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
     TINYXML2::TINYXML2
     using_parser_urdf)
 

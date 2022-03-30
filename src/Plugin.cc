@@ -15,7 +15,7 @@
  *
 */
 
-#include <ignition/common/Util.hh>
+#include "sdf/Types.hh"
 #include "sdf/Plugin.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -50,7 +50,7 @@ Plugin::Plugin(const std::string &_filename, const std::string &_name,
 {
   this->SetFilename(_filename);
   this->SetName(_name);
-  std::string trimmed = ignition::common::trimmed(_xmlContent);
+  std::string trimmed = sdf::trim(_xmlContent);
   if (!trimmed.empty())
     this->InsertContent(trimmed);
 }
