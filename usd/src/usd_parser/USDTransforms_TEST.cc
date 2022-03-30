@@ -198,26 +198,53 @@ TEST(USDTransformsTest, ParseUSDTransform)
 /////////////////////////////////////////////////
 TEST(USDTransformsTest, GetAllTransform)
 {
-  std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
-  auto stage = pxr::UsdStage::Open(filename);
-  ASSERT_TRUE(stage);
+  {
+    std::string filename = sdf::testing::TestFile("usd", "upAxisZ.usda");
+    auto stage = pxr::UsdStage::Open(filename);
+    ASSERT_TRUE(stage);
 
-  sdf::usd::USDData usdData(filename);
-  usdData.Init();
+    sdf::usd::USDData usdData(filename);
+    usdData.Init();
 
-  pxr::UsdPrim prim = stage->GetPrimAtPath(
-    pxr::SdfPath("/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
-  ASSERT_TRUE(prim);
+    pxr::UsdPrim prim = stage->GetPrimAtPath(
+      pxr::SdfPath("/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
+    ASSERT_TRUE(prim);
 
-  ignition::math::Pose3d pose;
-  ignition::math::Vector3d scale{1, 1, 1};
+    ignition::math::Pose3d pose;
+    ignition::math::Vector3d scale{1, 1, 1};
 
-  sdf::usd::GetTransform(prim, usdData, pose, scale, "/shapes");
+    sdf::usd::GetTransform(prim, usdData, pose, scale, "/shapes");
 
-  EXPECT_EQ(ignition::math::Vector3d(0.4, 0.6, 1), scale);
-  EXPECT_EQ(
-    ignition::math::Pose3d(
-      ignition::math::Vector3d(0, 0.03, 0.005),
-      ignition::math::Quaterniond(IGN_DTOR(15), IGN_DTOR(80), IGN_DTOR(-55))),
-    pose);
+    EXPECT_EQ(ignition::math::Vector3d(0.4, 0.6, 1), scale);
+    EXPECT_EQ(
+      ignition::math::Pose3d(
+        ignition::math::Vector3d(0, 0.03, 0.005),
+        ignition::math::Quaterniond(IGN_DTOR(15), IGN_DTOR(80), IGN_DTOR(-55))),
+      pose);
+  }
+
+  {
+    std::string filename = sdf::testing::TestFile("usd", "nested_transforms.usda");
+    auto stage = pxr::UsdStage::Open(filename);
+    ASSERT_TRUE(stage);
+
+    sdf::usd::USDData usdData(filename);
+    usdData.Init();
+
+    const pxr::UsdPrim prim = stage->GetPrimAtPath(
+        pxr::SdfPath("/transforms/nested_transforms_XYZ/child_transform"));
+    ASSERT_TRUE(prim);
+
+    ignition::math::Pose3d pose;
+    ignition::math::Vector3d scale{1, 1, 1};
+
+    sdf::usd::GetTransform(prim, usdData, pose, scale, "/transforms");
+
+    EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), scale);
+    EXPECT_EQ(
+      ignition::math::Pose3d(
+        ignition::math::Vector3d(.01, .01, 0),
+        ignition::math::Quaterniond(0, 0, IGN_DTOR(90))),
+      pose);
+  }
 }
