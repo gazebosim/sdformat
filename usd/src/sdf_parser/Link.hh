@@ -15,8 +15,10 @@
  *
 */
 
-#ifndef SDF_USD_SDF_PARSER_MATERIALS_HH_
-#define SDF_USD_SDF_PARSER_MATERIALS_HH_
+#ifndef SDF_USD_SDF_PARSER_LINK_HH_
+#define SDF_USD_SDF_PARSER_LINK_HH_
+
+#include <string>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -24,35 +26,34 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
-#include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Material.hh"
-#include "sdf/usd/Export.hh"
+#include "sdf/Link.hh"
 #include "sdf/usd/UsdError.hh"
 #include "sdf/sdf_config.h"
 
 namespace sdf
 {
-  // Inline bracket to help doxygen filtering.
+  // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    /// \brief Parse an SDF material into a USD stage.
-    /// \param[in] _materialSdf The SDF material to parse.
+    /// \brief Parse an SDF link into a USD stage.
+    /// \param[in] _link The SDF link to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _material.
-    /// \param[out] _materialPath USD Material path
-    /// \return UsdErrors, which is a list of UsdError objects. This list is
-    /// empty if no errors occurred when parsing _materialSdf its USD
-    /// representation
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfMaterial(
-        const sdf::Material *_materialSdf,
-        pxr::UsdStageRefPtr &_stage,
-        pxr::SdfPath &_materialPath);
+    /// of _link. This must be a valid, initialized stage.
+    /// \param[in] _path The USD path of the parsed link in _stage, which must
+    /// be a valid USD path.
+    /// \param[in] _rigidBody Whether the link is a rigid body (i.e.,
+    /// non-static) or not. True for rigid body, false otherwise
+    /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+    /// includes an error code and message. An empty vector indicates no errors
+    /// occurred when parsing _link to its USD representation.
+    UsdErrors ParseSdfLink(const sdf::Link &_link,
+        pxr::UsdStageRefPtr &_stage, const std::string &_path,
+        bool _rigidBody);
   }
   }
 }

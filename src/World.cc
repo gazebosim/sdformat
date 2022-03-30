@@ -856,7 +856,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr World::ToElement(const ParserConfig &_config) const
+sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("world.sdf", elem);

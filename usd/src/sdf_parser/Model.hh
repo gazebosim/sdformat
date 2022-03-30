@@ -15,24 +15,24 @@
  *
 */
 
-#ifndef SDF_USD_SDF_PARSER_GEOMETRY_HH_
-#define SDF_USD_SDF_PARSER_GEOMETRY_HH_
+#ifndef SDF_USD_SDF_PARSER_MODEL_HH_
+#define SDF_USD_SDF_PARSER_MODEL_HH_
 
 #include <string>
 
-// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Geometry.hh"
-#include "sdf/config.hh"
-#include "sdf/usd/Export.hh"
+#include "sdf/Model.hh"
 #include "sdf/usd/UsdError.hh"
+#include "sdf/sdf_config.h"
 
 namespace sdf
 {
@@ -41,17 +41,20 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Parse an SDF geometry into a USD stage.
-    /// \param[in] _geometry The SDF geometry to parse.
+    /// \brief Parse an SDF model into a USD stage.
+    /// \param[in] _model The SDF model to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _geometry.
-    /// \param[in] _path The USD path of the parsed geometry in _stage, which
-    /// must be a valid USD path.
+    /// of _model. This must be a valid, initialized stage.
+    /// \param[in] _path The USD path of the parsed model in _stage, which must
+    /// be a valid USD path.
+    /// \param[in] _worldPath The path to the USD world prim. This is needed if
+    /// the model has any joints with the world as its parent.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
-    /// includes an error code and message. An empty vector indicates no error.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfGeometry(
-        const sdf::Geometry &_geometry, pxr::UsdStageRefPtr &_stage,
-        const std::string &_path);
+    /// includes an error code and message. An empty vector indicates no error
+    /// occurred when parsing _model to its USD representation.
+    UsdErrors ParseSdfModel(
+        const sdf::Model &_model, pxr::UsdStageRefPtr &_stage,
+        const std::string &_path, const pxr::SdfPath &_worldPath);
   }
   }
 }
