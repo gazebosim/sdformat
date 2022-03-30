@@ -17,6 +17,7 @@
 
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 
+#include <optional>
 #include <utility>
 
 #include <ignition/math/Pose3.hh>
@@ -51,16 +52,10 @@ class UDSTransforms::Implementation
   public: ignition::math::Vector3d scale{1, 1, 1};
 
   /// \brief Rotation of the schema
-  public: std::vector<ignition::math::Quaterniond> q;
+  public: std::optional<ignition::math::Quaterniond> q = std::nullopt;
 
   /// \brief Translation of the schema
   public: ignition::math::Vector3d translate{0, 0, 0};
-
-  /// \brief True if there is a rotation ZYX defined or false otherwise
-  public: bool isRotationZYX = false;
-
-  /// \brief True if there is a rotation XYZ defined or false otherwise
-  public: bool isRotationXYZ = false;
 };
 
 /////////////////////////////////////////////////
@@ -82,8 +77,7 @@ const ignition::math::Vector3d UDSTransforms::Scale() const
 }
 
 //////////////////////////////////////////////////
-const std::vector<ignition::math::Quaterniond>
-  UDSTransforms::Rotations() const
+const std::optional<ignition::math::Quaterniond> UDSTransforms::Rotation() const
 {
   return this->dataPtr->q;
 }
@@ -103,44 +97,10 @@ void UDSTransforms::SetScale(
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::AddRotation(
+void UDSTransforms::SetRotation(
   const ignition::math::Quaterniond &_q)
 {
-  this->dataPtr->q.push_back(_q);
-}
-
-//////////////////////////////////////////////////
-bool UDSTransforms::RotationZYX() const
-{
-  return this->dataPtr->isRotationZYX;
-}
-
-//////////////////////////////////////////////////
-bool UDSTransforms::RotationXYZ() const
-{
-  return this->dataPtr->isRotationXYZ;
-}
-
-//////////////////////////////////////////////////
-bool UDSTransforms::Rotation() const
-{
-  return !this->dataPtr->q.empty();
-}
-
-//////////////////////////////////////////////////
-void UDSTransforms::SetRotationZYX(bool _rotationZYX)
-{
-  this->dataPtr->isRotationZYX = _rotationZYX;
-  if (_rotationZYX)
-    this->dataPtr->isRotationXYZ = false;
-}
-
-//////////////////////////////////////////////////
-void UDSTransforms::SetRotationXYZ(bool _rotationXYZ)
-{
-  this->dataPtr->isRotationXYZ = _rotationXYZ;
-  if (_rotationXYZ)
-    this->dataPtr->isRotationZYX = false;
+  this->dataPtr->q = _q;
 }
 
 //////////////////////////////////////////////////
@@ -193,32 +153,11 @@ void GetAllTransforms(
         child.Pos().Z() * t.Scale()[2]);
     }
 
-    if (!t.RotationZYX() && !t.RotationXYZ())
+    if (t.Rotation())
     {
-      if (t.Rotation())
-      {
-        pose.Rot() = t.Rotations()[0];
-      }
-      _tfs.push_back(pose);
+      pose.Rot() = t.Rotation().value();
     }
-    else
-    {
-      ignition::math::Pose3d poseZ = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0), t.Rotations()[2]);
-      ignition::math::Pose3d poseY = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0), t.Rotations()[1]);
-      ignition::math::Pose3d poseX = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0), t.Rotations()[0]);
-
-      ignition::math::Pose3d poseT = ignition::math::Pose3d(
-        t.Translation() * metersPerUnit,
-        ignition::math::Quaterniond(1, 0, 0, 0));
-
-      _tfs.push_back(poseX);
-      _tfs.push_back(poseY);
-      _tfs.push_back(poseZ);
-      _tfs.push_back(poseT);
-    }
+    _tfs.push_back(pose);
     parent = parent.GetParent();
   }
 
@@ -290,12 +229,10 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       if (op == kXFormOpRotateZYX)
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateZYX));
-        t.SetRotationZYX(true);
       }
       else
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateXYZ));
-        t.SetRotationXYZ(true);
       }
       if (attribute.GetTypeName().GetCPPTypeName() == kGfVec3fString)
       {
@@ -313,17 +250,14 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       ignition::math::Angle angleX(IGN_DTOR(rotationEuler[0]));
       ignition::math::Angle angleY(IGN_DTOR(rotationEuler[1]));
       ignition::math::Angle angleZ(IGN_DTOR(rotationEuler[2]));
-      if (t.RotationZYX())
+      if (op == kXFormOpRotateZYX)
       {
         std::swap(angleX, angleZ);
       }
-      qX = ignition::math::Quaterniond(angleX.Normalized().Radian(), 0, 0);
-      qY = ignition::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
-      qZ = ignition::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
-
-      t.AddRotation(qX);
-      t.AddRotation(qY);
-      t.AddRotation(qZ);
+      t.SetRotation(ignition::math::Quaterniond(
+            angleX.Normalized().Radian(),
+            angleY.Normalized().Radian(),
+            angleZ.Normalized().Radian()));
     }
     else if (op == kXFormOpTranslate)
     {
@@ -367,7 +301,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotationQuad.GetImaginary()[0],
         rotationQuad.GetImaginary()[1],
         rotationQuad.GetImaginary()[2]);
-      t.AddRotation(q);
+      t.SetRotation(q);
     }
 
     if (op == kXFormOpTransform)
@@ -394,7 +328,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotQuat.GetImaginary()[1],
         rotQuat.GetImaginary()[2]
       );
-      t.AddRotation(q);
+      t.SetRotation(q);
     }
   }
   return t;

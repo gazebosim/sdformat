@@ -16,6 +16,7 @@
 */
 
 #include <functional>
+#include <optional>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -40,10 +41,8 @@ void checkTransforms(
   const std::string &_primName,
   pxr::UsdStageRefPtr &_stage,
   const ignition::math::Vector3d &_translation,
-  const std::vector<ignition::math::Quaterniond> &_rotation,
-  const ignition::math::Vector3d &_scale,
-  bool isXYZRotation,
-  bool isZYXRotation)
+  const std::optional<ignition::math::Quaterniond> &_rotation,
+  const ignition::math::Vector3d &_scale)
 {
   pxr::UsdPrim prim = _stage->GetPrimAtPath(pxr::SdfPath(_primName));
   ASSERT_TRUE(prim);
@@ -53,21 +52,11 @@ void checkTransforms(
 
   EXPECT_EQ(_translation, usdTransforms.Translation());
   EXPECT_EQ(_scale, usdTransforms.Scale());
-  ASSERT_EQ(_rotation.size(), usdTransforms.Rotations().size());
-  for (unsigned int i = 0; i < _rotation.size(); ++i)
+  if (_rotation)
   {
-    EXPECT_EQ(_rotation[i], usdTransforms.Rotations()[i]);
+    ASSERT_TRUE(usdTransforms.Rotation());
+    EXPECT_EQ(_rotation, usdTransforms.Rotation());
   }
-
-  EXPECT_EQ(!_rotation.empty(), usdTransforms.Rotation());
-  EXPECT_EQ(isXYZRotation, usdTransforms.RotationXYZ());
-  EXPECT_EQ(isZYXRotation, usdTransforms.RotationZYX());
-  const bool hasRotation = isXYZRotation || isZYXRotation;
-  if (hasRotation)
-  {
-    EXPECT_NE(usdTransforms.RotationXYZ(), usdTransforms.RotationZYX());
-  }
-  EXPECT_EQ(hasRotation, usdTransforms.Rotation());
 }
 
 /////////////////////////////////////////////////
@@ -81,118 +70,72 @@ TEST(USDTransformsTest, ParseUSDTransform)
     "/shapes/ground_plane",
     stage,
     ignition::math::Vector3d(0, 0, -0.125),
-    {
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    true,
-    false
+    ignition::math::Quaterniond(1, 0, 0, 0),
+    ignition::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/shapes/ground_plane/link/visual/geometry",
     stage,
     ignition::math::Vector3d(0, 0, 0),
-    {},
-    ignition::math::Vector3d(100, 100, 0.25),
-    false,
-    false
+    std::nullopt,
+    ignition::math::Vector3d(100, 100, 0.25)
   );
 
   checkTransforms(
     "/shapes/cylinder",
     stage,
     ignition::math::Vector3d(0, -1.5, 0.5),
-    {
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    true,
-    false
+    ignition::math::Quaterniond(1, 0, 0, 0),
+    ignition::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/shapes/sphere",
     stage,
     ignition::math::Vector3d(0, 1.5, 0.5),
-    {
-      ignition::math::Quaterniond(IGN_DTOR(-62), 0, 0),
-      ignition::math::Quaterniond(0, IGN_DTOR(31), 0),
-      ignition::math::Quaterniond(0, 0, IGN_DTOR(-69))
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    false,
-    true
+      ignition::math::Quaterniond(IGN_DTOR(-62), IGN_DTOR(31), IGN_DTOR(-69)),
+    ignition::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/shapes/capsule",
     stage,
     ignition::math::Vector3d(0, -3.0, 0.5),
-    {
-      ignition::math::Quaterniond(IGN_DTOR(-55), 0, 0),
-      ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
-      ignition::math::Quaterniond(0, 0, IGN_DTOR(15))
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    false,
-    true
+    ignition::math::Quaterniond(IGN_DTOR(-55), IGN_DTOR(80), IGN_DTOR(15)),
+    ignition::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/shapes/capsule/capsule_link/capsule_visual",
     stage,
     ignition::math::Vector3d(0, 0, 0),
-    {
-      ignition::math::Quaterniond(M_PI_2, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    false,
-    true
+    ignition::math::Quaterniond(M_PI_2, 0, 0),
+    ignition::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/shapes/ellipsoid",
     stage,
     ignition::math::Vector3d(0, 3.0, 0.5),
-    {
-      ignition::math::Quaterniond(IGN_DTOR(15), 0, 0),
-      ignition::math::Quaterniond(0, IGN_DTOR(80), 0),
-      ignition::math::Quaterniond(0, 0, IGN_DTOR(-55))
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    true,
-    false
+    ignition::math::Quaterniond(IGN_DTOR(15), IGN_DTOR(80), IGN_DTOR(-55)),
+    ignition::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry",
     stage,
     ignition::math::Vector3d(0, 0, 0),
-    {},
-    ignition::math::Vector3d(0.4, 0.6, 1),
-    false,
-    false
+    std::nullopt,
+    ignition::math::Vector3d(0.4, 0.6, 1)
   );
 
   checkTransforms(
     "/shapes/sun",
     stage,
     ignition::math::Vector3d(0, 0, 10),
-    {
-      ignition::math::Quaterniond(1, 0, 0, 0),
       ignition::math::Quaterniond(0, IGN_DTOR(-35), 0),
-      ignition::math::Quaterniond(1, 0, 0, 0)
-    },
-    ignition::math::Vector3d(1, 1, 1),
-    true,
-    false
+    ignition::math::Vector3d(1, 1, 1)
   );
 }
 
