@@ -16,6 +16,7 @@ set(sources
   usd_parser/USDMaterial.cc
   usd_parser/USDPhysics.cc
   usd_parser/USDStage.cc
+  usd_parser/USDTransforms.cc
   usd_parser/USDWorld.cc
 )
 
@@ -47,6 +48,7 @@ set(gtest_sources
   usd_parser/USDData_TEST.cc
   usd_parser/USDPhysics_TEST.cc
   usd_parser/USDStage_TEST.cc
+  usd_parser/USDTransforms_TEST.cc
   Conversions_TEST.cc
   UsdError_TEST.cc
   UsdUtils_TEST.cc
