@@ -58,6 +58,10 @@ namespace usd
     light->SetName(_prim.GetPath().GetName());
     float intensity;
     variantLight.GetIntensityAttr().Get(&intensity);
+    // This value was found trying to find a similar light intensity
+    // in both simulators. Might be wrong
+    // TODO(ahcorde): Convert the light intensity with a equation or unit
+    // conversions
     light->SetIntensity(intensity / 10000);
     float diffuse;
     variantLight.GetDiffuseAttr().Get(&diffuse);
