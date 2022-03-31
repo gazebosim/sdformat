@@ -16,9 +16,9 @@
 */
 #include <algorithm>
 
-#include "XmlUtils.hh"
+#include <ignition/common/Console.hh>
 
-#include "sdf/Console.hh"
+#include "XmlUtils.hh"
 
 namespace sdf
 {
@@ -30,14 +30,14 @@ tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
 {
   if (_src == nullptr)
   {
-    sdferr << "Pointer to XML node _src is NULL\n";
+    ignerr << "Pointer to XML node _src is NULL\n";
     return nullptr;
   }
 
   tinyxml2::XMLNode *copy = _src->ShallowClone(_doc);
   if (copy == nullptr)
   {
-    sdferr << "Failed to clone node " << _src->Value() << "\n";
+    ignerr << "Failed to clone node " << _src->Value() << "\n";
     return nullptr;
   }
 
@@ -47,7 +47,7 @@ tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
     auto *childCopy = DeepClone(_doc, node);
     if (childCopy == nullptr)
     {
-      sdferr << "Failed to clone child " << node->Value() << "\n";
+      ignerr << "Failed to clone child " << node->Value() << "\n";
       return nullptr;
     }
     copy->InsertEndChild(childCopy);
@@ -61,7 +61,7 @@ std::string ElementToString(const tinyxml2::XMLElement *_elem)
 {
   if (_elem == nullptr)
   {
-    sdferr << "Pointer to XML Element _elem is nullptr\n";
+    ignerr << "Pointer to XML Element _elem is nullptr\n";
     return "";
   }
 

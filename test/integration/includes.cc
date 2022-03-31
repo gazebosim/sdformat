@@ -678,19 +678,7 @@ TEST(IncludesTest, InvalidMergeInclude)
 
   // Syntax error in included file
   {
-    // Redirect sdferr output
-    std::stringstream buffer;
-    sdf::testing::RedirectConsoleStream redir(
-        sdf::Console::Instance()->GetMsgStream(), &buffer);
-#ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-    sdf::testing::ScopeExit revertSetQuiet(
-        []
-        {
-        sdf::Console::Instance()->SetQuiet(true);
-        });
-#endif
-
+    std::string logFile = sdf::testing::InitConsoleLogFile();
 
     const std::string sdfString = R"(
     <sdf version="1.9">
@@ -706,7 +694,8 @@ TEST(IncludesTest, InvalidMergeInclude)
     EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
     EXPECT_EQ(0u, errors[0].Message().find("Unable to read file"));
     EXPECT_EQ(5, *errors[0].LineNumber());
-    EXPECT_TRUE(buffer.str().find("Error parsing XML in file") !=
-                std::string::npos) << buffer.str();
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_TRUE(buffer.find("Error parsing XML in file") !=
+                std::string::npos) << buffer;
   }
 }

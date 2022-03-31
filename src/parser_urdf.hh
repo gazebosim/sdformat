@@ -22,7 +22,8 @@
 
 #include <string>
 
-#include "sdf/Console.hh"
+#include <ignition/common/Console.hh>
+
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 #include "sdf/system_util.hh"

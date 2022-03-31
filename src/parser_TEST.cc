@@ -19,11 +19,12 @@
 #include <fstream>
 #include <cstdlib>
 #include <gtest/gtest.h>
+#include <ignition/common/Console.hh>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
-#include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 #include <ignition/utils/Environment.hh>
 
@@ -70,6 +71,7 @@ sdf::SDFPtr InitSDF()
 /// Checks emitted warnings for custom/unknown elements in log file
 TEST(Parser, CustomUnknownElements)
 {
+  std::string pathLog = sdf::testing::InitConsoleLogFile();
   const auto path = sdf::testing::TestFile(
       "sdf", "custom_and_unknown_elements.sdf");
 
@@ -85,8 +87,6 @@ TEST(Parser, CustomUnknownElements)
   std::string homeDir;
   ASSERT_TRUE(ignition::utils::env(homeVarName, homeDir));
 
-  std::string pathLog =
-    sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
 
   std::fstream fs;
   fs.open(pathLog);
@@ -290,7 +290,7 @@ static bool contains(const std::string &_a, const std::string &_b)
 /////////////////////////////////////////////////
 TEST(Parser, SyntaxErrorInValues)
 {
-  // Capture sdferr output
+  // Capture ignerr output
   std::stringstream buffer;
   auto old = std::cerr.rdbuf(buffer.rdbuf());
 
@@ -299,18 +299,21 @@ TEST(Parser, SyntaxErrorInValues)
 #endif
 
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     const auto path = sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string consoleBuffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, consoleBuffer,
                  "Unable to set value [bad 0 0 0 0 0] for key [pose]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_pose.sdf:L5");
     EXPECT_PRED2(contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/pose:");
   }
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     // clear the contents of the buffer
     buffer.str("");
     const auto path = sdf::testing::TestFile("sdf", "bad_syntax_double.sdf");
@@ -318,7 +321,8 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string consoleBuffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, consoleBuffer,
                  "Unable to set value [bad ] for key[linear]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_double.sdf:L7");
     EXPECT_PRED2(contains, buffer.str(),
@@ -326,6 +330,7 @@ TEST(Parser, SyntaxErrorInValues)
                  "link[@name=\"link\"]/velocity_decay/linear:");
   }
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     // clear the contents of the buffer
     buffer.str("");
     const auto path = sdf::testing::TestFile("sdf", "bad_syntax_vector.sdf");
@@ -333,7 +338,8 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string consoleBuffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, consoleBuffer,
                  "Unable to set value [0 1 bad ] for key[gravity]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_vector.sdf:L4");
     EXPECT_PRED2(contains, buffer.str(),
@@ -349,7 +355,7 @@ TEST(Parser, SyntaxErrorInValues)
 
 TEST(Parser, MissingRequiredAttributesErrors)
 {
-  // Capture sdferr output
+  // Capture ignerr output
   std::stringstream buffer;
   auto old = std::cerr.rdbuf(buffer.rdbuf());
 
@@ -387,7 +393,7 @@ TEST(Parser, MissingRequiredAttributesErrors)
 
 TEST(Parser, IncludesErrors)
 {
-  // Capture sdferr output
+  // Capture ignerr output
   std::stringstream buffer;
   auto old = std::cerr.rdbuf(buffer.rdbuf());
 
@@ -607,37 +613,43 @@ TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
   };
 
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     this->ClearErrorBuffer();
     auto elem = sdf->Root()->Clone();
     EXPECT_FALSE(sdf::readString(
         wrapInSdf("<int_t>-1</int_t>"), elem));
+    std::string consoleBuffer = sdf::testing::ReadConsoleLogFile(logFile);
     EXPECT_PRED2(errorContains,
                  "The value [-1] is less than the minimum allowed value of [0] "
                  "for key [int_t]",
-                 this->errBuffer.str());
+                 consoleBuffer);
   }
 
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     this->ClearErrorBuffer();
     auto elem = sdf->Root()->Clone();
     EXPECT_FALSE(sdf::readString(
         wrapInSdf("<double_t>-1.0</double_t>"), elem));
 
+    std::string consoleBuffer = sdf::testing::ReadConsoleLogFile(logFile);
     EXPECT_PRED2(
         errorContains,
         "The value [-1] is less than the minimum allowed value of [0] for key "
         "[double_t]",
-        this->errBuffer.str());
+        consoleBuffer);
   }
 
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     this->ClearErrorBuffer();
     auto elem = sdf->Root()->Clone();
     EXPECT_FALSE(sdf::readString(wrapInSdf("<int_t>20</int_t>"), elem));
+    std::string consoleBuffer = sdf::testing::ReadConsoleLogFile(logFile);
     EXPECT_PRED2(
         errorContains,
         "The value [20] is greater than the maximum allowed value of [10]",
-        this->errBuffer.str());
+        consoleBuffer);
   }
 }
 

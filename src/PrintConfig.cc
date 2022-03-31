@@ -16,7 +16,7 @@
 */
 
 #include "sdf/PrintConfig.hh"
-#include "sdf/Console.hh"
+#include <ignition/common/Console.hh>
 
 using namespace sdf;
 
@@ -74,7 +74,7 @@ bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
 {
   if (_interval == 0 || _interval > 360)
   {
-    sdferr << "Interval value to snap to must be larger than 0, and less than "
+    ignerr << "Interval value to snap to must be larger than 0, and less than "
            << "or equal to 360.\n";
     return false;
   }
@@ -82,7 +82,7 @@ bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
   if (_tolerance <= 0 || _tolerance > 360 ||
       _tolerance >= static_cast<double>(_interval))
   {
-    sdferr << "Tolerance must be larger than 0, less than or equal to "
+    ignerr << "Tolerance must be larger than 0, less than or equal to "
            << "360, and less than the provided interval.\n";
     return false;
   }

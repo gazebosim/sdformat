@@ -27,6 +27,7 @@
 #include <locale.h>
 #include <math.h>
 
+#include <ignition/common/Console.hh>
 #include <ignition/common/Util.hh>
 
 #include "sdf/Assert.hh"
@@ -279,7 +280,7 @@ bool Param::GetAny(std::any &_anyVal) const
   }
   else
   {
-    sdferr << "Type of parameter not known: [" << this->GetTypeName() << "]\n";
+    ignerr << "Type of parameter not known: [" << this->GetTypeName() << "]\n";
     return false;
   }
   return true;
@@ -301,7 +302,7 @@ void Param::Update()
     }
     catch(...)
     {
-      sdferr << "Unable to set value using Update for key["
+      ignerr << "Unable to set value using Update for key["
              << this->dataPtr->key << "]\n";
     }
   }
@@ -338,7 +339,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
     return defaultStr;
   }
 
-  sdferr << "Unable to get string from default value, "
+  ignerr << "Unable to get string from default value, "
          << "using ParamStreamer instead.\n";
   StringStreamClassicLocale ss;
   ss << ParamStreamer{ this->dataPtr->defaultValue };
@@ -357,7 +358,7 @@ std::optional<std::string> Param::GetMinValueAsString(
                                             this->dataPtr->minValue.value(),
                                             valueStr))
     {
-      sdferr << "Unable to get min value as string.\n";
+      ignerr << "Unable to get min value as string.\n";
       return std::nullopt;
     }
 
@@ -378,7 +379,7 @@ std::optional<std::string> Param::GetMaxValueAsString(
                                             this->dataPtr->maxValue.value(),
                                             valueStr))
     {
-      sdferr << "Unable to get max value as string.\n";
+      ignerr << "Unable to get max value as string.\n";
       return std::nullopt;
     }
 
@@ -402,7 +403,7 @@ bool ParseUsingStringStream(const std::string &_input, const std::string &_key,
   ss >> _val;
   if (ss.fail())
   {
-    sdferr << "Unknown error. Unable to set value [" << _input << " ] for key["
+    ignerr << "Unknown error. Unable to set value [" << _input << " ] for key["
            << _key << "]\n";
     return false;
   }
@@ -437,7 +438,7 @@ bool ParseColorUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stof
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< token
+      ignerr << "Invalid argument. Unable to set value ["<< token
              << "] for key [" << _key << "].\n";
       isValidColor = false;
       break;
@@ -445,7 +446,7 @@ bool ParseColorUsingStringStream(const std::string &_input,
     // Catch out of range exception from std::stof
     catch(std::out_of_range &)
     {
-      sdferr << "Out of range. Unable to set value [" << token
+      ignerr << "Out of range. Unable to set value [" << token
              << "] for key [" << _key << "].\n";
       isValidColor = false;
       break;
@@ -470,7 +471,7 @@ bool ParseColorUsingStringStream(const std::string &_input,
   }
   else
   {
-    sdferr << "The value <" << _key <<
+    ignerr << "The value <" << _key <<
         ">" << _input << "</" << _key << "> is invalid.\n";
   }
 
@@ -508,7 +509,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     {
       if (!p->Get<bool>(parseAsDegrees))
       {
-        sdferr << "Invalid boolean value found for attribute "
+        ignerr << "Invalid boolean value found for attribute "
             "//pose[@degrees].\n";
         return false;
       }
@@ -527,7 +528,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       }
       else
       {
-        sdferr << "Undefined attribute //pose[@rotation_format='"
+        ignerr << "Undefined attribute //pose[@rotation_format='"
             << rotationFormat << "'], only 'euler_rpy' and 'quat_xyzw'"
             << " is supported.\n";
         return false;
@@ -537,7 +538,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
   if (rotationFormat == "quat_xyzw" && parseAsDegrees)
   {
-    sdferr << "The attribute //pose[@degrees='true'] does not apply when "
+    ignerr << "The attribute //pose[@degrees='true'] does not apply when "
         << "parsing quaternions, //pose[@rotation_format='quat_xyzw'].\n";
     return false;
   }
@@ -563,7 +564,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stod
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< _input
+      ignerr << "Invalid argument. Unable to set value ["<< _input
              << "] for key [" << _key << "].\n";
       isValidPose = false;
       break;
@@ -571,7 +572,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch out of range exception from std::stod
     catch(std::out_of_range &)
     {
-      sdferr << "Out of range. Unable to set value [" << token
+      ignerr << "Out of range. Unable to set value [" << token
              << "] for key [" << _key << "].\n";
       isValidPose = false;
       break;
@@ -579,14 +580,14 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
     if (!std::isfinite(v))
     {
-      sdferr << "Pose values must be finite.\n";
+      ignerr << "Pose values must be finite.\n";
       isValidPose = false;
       break;
     }
 
     if (valueIndex >= desiredSize)
     {
-      sdferr << "The value for //pose[@rotation_format='" << rotationFormat
+      ignerr << "The value for //pose[@rotation_format='" << rotationFormat
           << "'] must have " << desiredSize
           << " values, but more than that were found in '" << _input << "'.\n";
       isValidPose = false;
@@ -601,7 +602,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
   if (valueIndex != desiredSize)
   {
-    sdferr << "The value for //pose[@rotation_format='" << rotationFormat
+    ignerr << "The value for //pose[@rotation_format='" << rotationFormat
         << "'] must have " << desiredSize << " values, but " << valueIndex
         << " were found instead in '" << _input << "'.\n";
     return false;
@@ -679,7 +680,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
       }
       else
       {
-        sdferr << "Invalid boolean value\n";
+        ignerr << "Invalid boolean value\n";
         return false;
       }
     }
@@ -770,14 +771,14 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
     }
     else
     {
-      sdferr << "Unknown parameter type[" << _typeName << "]\n";
+      ignerr << "Unknown parameter type[" << _typeName << "]\n";
       return false;
     }
   }
   // Catch invalid argument exception from std::stoi/stoul/stod/stof
   catch(std::invalid_argument &)
   {
-    sdferr << "Invalid argument. Unable to set value ["
+    ignerr << "Invalid argument. Unable to set value ["
            << _valueStr << " ] for key["
            << this->key << "].\n";
     return false;
@@ -785,7 +786,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
   // Catch out of range exception from std::stoi/stoul/stod/stof
   catch(std::out_of_range &)
   {
-    sdferr << "Out of range. Unable to set value ["
+    ignerr << "Out of range. Unable to set value ["
            << _valueStr << " ] for key["
            << this->key << "].\n";
     return false;
@@ -816,7 +817,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
       std::get_if<ignition::math::Pose3d>(&_value);
   if (!pose)
   {
-    sdferr << "Unable to get pose value from variant.\n";
+    ignerr << "Unable to get pose value from variant.\n";
     return false;
   }
 
@@ -844,7 +845,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
     {
       if (!p->Get<bool>(inDegrees))
       {
-        sdferr << "Unable to get //pose[@degrees] attribute as bool.\n";
+        ignerr << "Unable to get //pose[@degrees] attribute as bool.\n";
         return false;
       }
       if (p->GetSet())
@@ -897,7 +898,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   // Returning pose string representations based on desired configurations.
   if (rotationFormat == "quat_xyzw" && inDegrees)
   {
-    sdferr << "Invalid pose with //pose[@degrees='true'] and "
+    ignerr << "Invalid pose with //pose[@degrees='true'] and "
            << "//pose[@rotation_format='quat_xyzw'].\n";
     return false;
   }
@@ -999,7 +1000,7 @@ bool ParamPrivate::StringFromValueImpl(
     const bool *val = std::get_if<bool>(&_value);
     if (!val)
     {
-      sdferr << "Unable to get bool value from variant.\n";
+      ignerr << "Unable to get bool value from variant.\n";
       return false;
     }
 
@@ -1034,7 +1035,7 @@ bool Param::SetFromString(const std::string &_value,
 
   if (str.empty() && this->dataPtr->required)
   {
-    sdferr << "Empty string used when setting a required parameter. Key["
+    ignerr << "Empty string used when setting a required parameter. Key["
            << this->GetKey() << "]\n";
     return false;
   }
@@ -1115,7 +1116,7 @@ bool Param::Reparse()
                                                this->dataPtr->defaultValue,
                                                strToReparse))
   {
-    sdferr << "Failed to obtain string from default value during reparsing.\n";
+    ignerr << "Failed to obtain string from default value during reparsing.\n";
     return false;
   }
 
@@ -1124,7 +1125,7 @@ bool Param::Reparse()
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {
-      sdferr << "Failed to set value '" << strToReparse
+      ignerr << "Failed to set value '" << strToReparse
           << "' to key [" << this->GetKey()
           << "] for new parent element of name '" << parentElement->GetName()
           << "', reverting to previous value '"
@@ -1132,7 +1133,7 @@ bool Param::Reparse()
     }
     else
     {
-      sdferr << "Failed to set value '" << strToReparse
+      ignerr << "Failed to set value '" << strToReparse
           << "' to key [" << this->GetKey() << "] without a parent element, "
           << "reverting to previous value '" << this->GetAsString() << "'.\n";
     }
@@ -1211,7 +1212,7 @@ bool Param::ValidateValue() const
           {
             if (_val < std::get<T>(*this->dataPtr->minValue))
             {
-              sdferr << "The value [" << _val
+              ignerr << "The value [" << _val
                      << "] is less than the minimum allowed value of ["
                      << *this->GetMinValueAsString() << "] for key ["
                      << this->GetKey() << "]\n";
@@ -1222,7 +1223,7 @@ bool Param::ValidateValue() const
           {
             if (_val > std::get<T>(*this->dataPtr->maxValue))
             {
-              sdferr << "The value [" << _val
+              ignerr << "The value [" << _val
                      << "] is greater than the maximum allowed value of ["
                      << *this->GetMaxValueAsString() << "] for key ["
                      << this->GetKey() << "]\n";

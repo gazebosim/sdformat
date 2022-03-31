@@ -23,8 +23,9 @@
 #include <utility>
 #include <vector>
 
+#include <ignition/common/Console.hh>
+
 #include "sdf/Assert.hh"
-#include "sdf/Console.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 
@@ -84,13 +85,13 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
   // Check that the <sdf> element exists
   if (!elem)
   {
-    sdferr << "<sdf> element does not exist.\n";
+    ignerr << "<sdf> element does not exist.\n";
     return false;
   }
 
   if (!elem->Attribute("version"))
   {
-    sdferr << "  Unable to determine original SDF version\n";
+    ignerr << "  Unable to determine original SDF version\n";
     return false;
   }
 
@@ -103,7 +104,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
 
   if (!_quiet)
   {
-    sdfdbg << "Version[" << origVersion << "] to Version[" << _toVersion
+    igndbg << "Version[" << origVersion << "] to Version[" << _toVersion
            << "]\n"
            << "  Please use the gz sdf tool to update your SDF files.\n"
            << "    $ gz sdf -c [sdf_file]\n";
@@ -143,7 +144,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
     xmlDoc.Parse(convertXml);
     if (xmlDoc.Error())
     {
-      sdferr << "Error parsing XML from string: "
+      ignerr << "Error parsing XML from string: "
              << xmlDoc.ErrorStr() << '\n';
       return false;
     }
@@ -153,7 +154,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
   // Check that we actually converted to the desired final version.
   if (curVersion != _toVersion)
   {
-    sdferr << "Unable to convert from SDF version " << origVersion
+    ignerr << "Unable to convert from SDF version " << origVersion
            << " to " << _toVersion << "\n";
     return false;
   }
@@ -269,7 +270,7 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     }
     else if (name != "convert")
     {
-      sdferr << "Unknown convert element[" << name << "]\n";
+      ignerr << "Unknown convert element[" << name << "]\n";
     }
   }
 }
@@ -571,7 +572,7 @@ void Converter::Rename(tinyxml2::XMLElement *_elem,
 
   if (!toElemName)
   {
-    sdferr << "No 'to' element name specified\n";
+    ignerr << "No 'to' element name specified\n";
     return;
   }
 
@@ -612,7 +613,7 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 
   if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
-    sdferr << "Exactly one 'element' or 'attribute'"
+    ignerr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <add>\n";
     return;
   }
@@ -625,7 +626,7 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
     }
     else
     {
-      sdferr << "No 'value' specified in <add>\n";
+      ignerr << "No 'value' specified in <add>\n";
       return;
     }
   }
@@ -655,7 +656,7 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
 
   if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
-    sdferr << "Exactly one 'element' or 'attribute'"
+    ignerr << "Exactly one 'element' or 'attribute'"
            << " must be specified in <remove>\n";
     return;
   }
@@ -696,12 +697,12 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 
   if (!fromConvertElem)
   {
-    sdferr << "<map> element requires a <from> child element.\n";
+    ignerr << "<map> element requires a <from> child element.\n";
     return;
   }
   if (!toConvertElem)
   {
-    sdferr << "<map> element requires a <to> child element.\n";
+    ignerr << "<map> element requires a <to> child element.\n";
     return;
   }
 
@@ -710,12 +711,12 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 
   if (!fromNameStr || strlen(fromNameStr) == 0)
   {
-    sdferr << "Map: <from> element requires a non-empty name attribute.\n";
+    ignerr << "Map: <from> element requires a non-empty name attribute.\n";
     return;
   }
   if (!toNameStr || strlen(toNameStr) == 0)
   {
-    sdferr << "Map: <to> element requires a non-empty name attribute.\n";
+    ignerr << "Map: <to> element requires a non-empty name attribute.\n";
     return;
   }
 
@@ -725,22 +726,22 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   auto *toValueElem = toConvertElem->FirstChildElement("value");
   if (!fromValueElem)
   {
-    sdferr << "Map: <from> element requires at least one <value> element.\n";
+    ignerr << "Map: <from> element requires at least one <value> element.\n";
     return;
   }
   if (!toValueElem)
   {
-    sdferr << "Map: <to> element requires at least one <value> element.\n";
+    ignerr << "Map: <to> element requires at least one <value> element.\n";
     return;
   }
   if (!fromValueElem->GetText())
   {
-    sdferr << "Map: from value must not be empty.\n";
+    ignerr << "Map: from value must not be empty.\n";
     return;
   }
   if (!toValueElem->GetText())
   {
-    sdferr << "Map: to value must not be empty.\n";
+    ignerr << "Map: to value must not be empty.\n";
     return;
   }
   valueMap[fromValueElem->GetText()] = toValueElem->GetText();
@@ -753,12 +754,12 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
     }
     if (!fromValueElem->GetText())
     {
-      sdferr << "Map: from value must not be empty.\n";
+      ignerr << "Map: from value must not be empty.\n";
       return;
     }
     if (!toValueElem->GetText())
     {
-      sdferr << "Map: to value must not be empty.\n";
+      ignerr << "Map: to value must not be empty.\n";
       return;
     }
     valueMap[fromValueElem->GetText()] = toValueElem->GetText();
@@ -804,7 +805,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   if (fromLeaf[0] == '\0' ||
       (fromLeaf[0] == '@' && fromLeaf[1] == '\0'))
   {
-    sdferr << "Map: <from>[" << fromLeaf << "] has invalid name attribute\n";
+    ignerr << "Map: <from>[" << fromLeaf << "] has invalid name attribute\n";
     return;
   }
   const char *fromValue = nullptr;
@@ -825,7 +826,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
     return;
   }
   const char *toValue = valueMap[std::string(fromValue)].c_str();
-  sdfdbg << "Map from [" << fromValue << "] to [" << toValue << "]\n";
+  igndbg << "Map from [" << fromValue << "] to [" << toValue << "]\n";
 
   // check if destination elements before leaf exist and create if necessary
   unsigned int newDirIndex = 0;
@@ -847,7 +848,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   if (toLeaf[0] == '\0' ||
       (toLeaf[0] == '@' && toLeaf[1] == '\0'))
   {
-    sdferr << "Map: <to> [" << toLeaf << "] has invalid name attribute\n";
+    ignerr << "Map: <to> [" << toLeaf << "] has invalid name attribute\n";
     return;
   }
   bool toAttribute = toLeaf[0] == '@';
@@ -863,7 +864,7 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
     {
       if (toTokens[newDirIndex].empty())
       {
-        sdferr << "Map: <to> has invalid name attribute\n";
+        ignerr << "Map: <to> has invalid name attribute\n";
         return;
       }
 
@@ -1124,7 +1125,7 @@ void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem,
       }
     }
 
-    sdfwarn << "Deprecated SDF Values in original file:\n"
+    ignwarn << "Deprecated SDF Values in original file:\n"
             << stream.str() << "\n\n";
   }
 }

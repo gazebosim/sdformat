@@ -18,6 +18,8 @@
 #include <memory>
 #include <vector>
 
+#include <ignition/common/Console.hh>
+
 #include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"
@@ -323,7 +325,7 @@ ElementPtr getElementByName(const ElementPtr _elem,
   else if (elem->HasAttribute("name")
             && elem->GetAttribute("name")->GetRequired())
   {
-    sdfwarn << "The original element [" << elemName << "] contains the "
+    ignwarn << "The original element [" << elemName << "] contains the "
             << "attribute 'name' but none was provided in the element modifier."
             << " The assumed element to be modified is: <" << elemName
             << " name='" << elem->Get<std::string>("name") << "'>\n";
@@ -607,7 +609,7 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
       else
       {
         // sdf has child elements but no children were specified in xml
-        sdfwarn << "No modifications for element "
+        ignwarn << "No modifications for element "
                 << ElementToString(xmlChild)
                 << " provided, skipping modification for:\n"
                 << ElementToString(_xml) << "\n";

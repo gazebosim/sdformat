@@ -25,6 +25,7 @@
 
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
+#include "sdf/Types.hh"
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -65,7 +66,8 @@ namespace sdf
   typedef std::shared_ptr<Console> ConsolePtr;
 
   /// \brief Message, error, warning, and logging functionality
-  class SDFORMAT_VISIBLE Console
+  /// \deprecated Use ignition::common::Console
+  class SDF_DEPRECATED(13) SDFORMAT_VISIBLE Console
   {
     /// \brief An ostream-like class that we'll use for logging.
     public: class SDFORMAT_VISIBLE ConsoleStream
@@ -160,7 +162,7 @@ namespace sdf
 
   /// \internal
   /// \brief Private data for Console
-  class ConsolePrivate
+  class SDF_DEPRECATED(13) ConsolePrivate
   {
     /// \brief Constructor
     public: ConsolePrivate() : msgStream(&std::cerr), logStream(nullptr) {}

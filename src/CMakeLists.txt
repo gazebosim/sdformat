@@ -116,8 +116,8 @@ ign_create_core_library(SOURCES ${sources}
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
-    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
     ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
   PRIVATE
     TINYXML2::TINYXML2
     using_parser_urdf)

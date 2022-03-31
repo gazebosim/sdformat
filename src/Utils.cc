@@ -17,6 +17,7 @@
 #include <limits>
 #include <string>
 #include <utility>
+#include <ignition/common/Console.hh>
 #include "sdf/SDFImpl.hh"
 #include "Utils.hh"
 
@@ -109,24 +110,24 @@ void enforceConfigurablePolicyCondition(
     case EnforcementPolicy::WARN:
       if (!_error.XmlPath().has_value())
       {
-        sdfwarn << _error.Message();
+        ignwarn << _error.Message();
       }
       else if (!_error.FilePath().has_value())
       {
-        sdfwarn
+        ignwarn
             << "[" << _error.XmlPath().value()
             << "]: " << _error.Message();
       }
       else if (!_error.LineNumber().has_value())
       {
-        sdfwarn
+        ignwarn
             << "[" << _error.XmlPath().value()
             << ":" << _error.FilePath().value()
             << "]: " << _error.Message();
       }
       else
       {
-        sdfwarn
+        ignwarn
             << "[" << _error.XmlPath().value()
             << ":" << _error.FilePath().value()
             << ":L" << _error.LineNumber().value()
@@ -136,24 +137,24 @@ void enforceConfigurablePolicyCondition(
     case EnforcementPolicy::LOG:
       if (!_error.XmlPath().has_value())
       {
-        sdfdbg << _error.Message();
+        igndbg << _error.Message();
       }
       else if (!_error.FilePath().has_value())
       {
-        sdfdbg
+        igndbg
             << "[" << _error.XmlPath().value()
             << "]: " << _error.Message();
       }
       else if (!_error.LineNumber().has_value())
       {
-        sdfdbg
+        igndbg
             << "[" << _error.XmlPath().value()
             << ":" << _error.FilePath().value()
             << "]: " << _error.Message();
       }
       else
       {
-        sdfdbg
+        igndbg
             << "[" << _error.XmlPath().value()
             << ":" << _error.FilePath().value()
             << ":L" << _error.LineNumber().value()

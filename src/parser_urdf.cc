@@ -285,7 +285,7 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
       }
       catch(std::invalid_argument &)
       {
-        sdferr << "xml key [" << _str
+        ignerr << "xml key [" << _str
                << "][" << i << "] value [" << pieces[i]
                << "] is not a valid double from a 3-tuple\n";
         return urdf::Vector3(0, 0, 0);
@@ -313,11 +313,11 @@ urdf::Vector3 ParseVector3(tinyxml2::XMLNode *_key, double _scale)
     {
       return ParseVector3(GetKeyValueAsString(key), _scale);
     }
-    sdferr << "key[" << _key->Value() << "] does not contain a Vector3\n";
+    ignerr << "key[" << _key->Value() << "] does not contain a Vector3\n";
   }
   else
   {
-    sdferr << "Pointer to XML node _key is nullptr\n";
+    ignerr << "Pointer to XML node _key is nullptr\n";
   }
 
   return urdf::Vector3(0, 0, 0);
@@ -359,7 +359,7 @@ void ReduceCollisionToParent(urdf::LinkSharedPtr _parentLink,
          _collision);
   if (collisionIt != _parentLink->collision_array.end())
   {
-    sdfwarn << "attempted to add collision [" << _collision->name
+    ignwarn << "attempted to add collision [" << _collision->name
             << "] to link ["
             << _parentLink->name
             << "], but it already exists in collision_array under name ["
@@ -392,7 +392,7 @@ void ReduceVisualToParent(urdf::LinkSharedPtr _parentLink,
          _visual);
   if (visualIt != _parentLink->visual_array.end())
   {
-    sdfwarn << "attempted to add visual [" << _visual->name
+    ignwarn << "attempted to add visual [" << _visual->name
             << "] to link ["
             << _parentLink->name
             << "], but it already exists in visual_array under name ["
@@ -424,7 +424,7 @@ void ReduceFixedJoints(tinyxml2::XMLElement *_root, urdf::LinkSharedPtr _link)
   if (_link->getParent() && _link->getParent()->name != "world" &&
       _link->parent_joint && FixedJointShouldBeReduced(_link->parent_joint) )
   {
-    sdfdbg << "Fixed Joint Reduction: extension lumping from ["
+    igndbg << "Fixed Joint Reduction: extension lumping from ["
            << _link->name << "] to [" << _link->getParent()->name << "]\n";
 
     // lump sdf extensions to parent, (give them new reference _link names)
@@ -723,15 +723,15 @@ void dMassAdd(dMass *a, const dMass *b)
 /// print mass for link for debugging
 void PrintMass(const std::string &_linkName, const dMass &_mass)
 {
-  sdfdbg << "LINK NAME: [" << _linkName << "] from dMass\n";
-  sdfdbg << "     MASS: [" << _mass.mass << "]\n";
-  sdfdbg << "       CG: [" << _mass.c[0] << ", " << _mass.c[1] << ", "
+  igndbg << "LINK NAME: [" << _linkName << "] from dMass\n";
+  igndbg << "     MASS: [" << _mass.mass << "]\n";
+  igndbg << "       CG: [" << _mass.c[0] << ", " << _mass.c[1] << ", "
          << _mass.c[2] << "]\n";
-  sdfdbg << "        I: [" << _mass.I[0] << ", " << _mass.I[1] << ", "
+  igndbg << "        I: [" << _mass.I[0] << ", " << _mass.I[1] << ", "
          << _mass.I[2] << "]\n";
-  sdfdbg << "           [" << _mass.I[4] << ", " << _mass.I[5] << ", "
+  igndbg << "           [" << _mass.I[4] << ", " << _mass.I[5] << ", "
          << _mass.I[6] << "]\n";
-  sdfdbg << "           [" << _mass.I[8] << ", " << _mass.I[9] << ", "
+  igndbg << "           [" << _mass.I[8] << ", " << _mass.I[9] << ", "
          << _mass.I[10] << "]\n";
 }
 
@@ -739,18 +739,18 @@ void PrintMass(const std::string &_linkName, const dMass &_mass)
 /// print mass for link for debugging
 void PrintMass(const urdf::LinkSharedPtr _link)
 {
-  sdfdbg << "LINK NAME: [" << _link->name << "] from dMass\n";
-  sdfdbg << "     MASS: [" << _link->inertial->mass << "]\n";
-  sdfdbg << "       CG: [" << _link->inertial->origin.position.x << ", "
+  igndbg << "LINK NAME: [" << _link->name << "] from dMass\n";
+  igndbg << "     MASS: [" << _link->inertial->mass << "]\n";
+  igndbg << "       CG: [" << _link->inertial->origin.position.x << ", "
          << _link->inertial->origin.position.y << ", "
          << _link->inertial->origin.position.z << "]\n";
-  sdfdbg << "        I: [" << _link->inertial->ixx << ", "
+  igndbg << "        I: [" << _link->inertial->ixx << ", "
          << _link->inertial->ixy << ", "
          << _link->inertial->ixz << "]\n";
-  sdfdbg << "           [" << _link->inertial->ixy << ", "
+  igndbg << "           [" << _link->inertial->ixy << ", "
          << _link->inertial->iyy << ", "
          << _link->inertial->iyz << "]\n";
-  sdfdbg << "           [" << _link->inertial->ixz << ", "
+  igndbg << "           [" << _link->inertial->ixz << ", "
          << _link->inertial->iyz << ", "
          << _link->inertial->izz << "]\n";
 }
@@ -935,7 +935,7 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link)
     if (lumpIndex != std::string::npos)
     {
       newVisualName = (*visualIt)->name;
-      sdfdbg << "re-lumping visual [" << (*visualIt)->name
+      igndbg << "re-lumping visual [" << (*visualIt)->name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newVisualName << "]\n";
@@ -950,7 +950,7 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link)
       {
         newVisualName = (*visualIt)->name;
       }
-      sdfdbg << "lumping visual [" << (*visualIt)->name
+      igndbg << "lumping visual [" << (*visualIt)->name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newVisualName << "]\n";
@@ -994,7 +994,7 @@ void ReduceCollisionsToParent(urdf::LinkSharedPtr _link)
     if (lumpIndex != std::string::npos)
     {
       newCollisionName = (*collisionIt)->name;
-      sdfdbg << "re-lumping collision [" << (*collisionIt)->name
+      igndbg << "re-lumping collision [" << (*collisionIt)->name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newCollisionName << "]\n";
@@ -1009,7 +1009,7 @@ void ReduceCollisionsToParent(urdf::LinkSharedPtr _link)
       {
         newCollisionName = (*collisionIt)->name;
       }
-      sdfdbg << "lumping collision [" << (*collisionIt)->name
+      igndbg << "lumping collision [" << (*collisionIt)->name
              << "] for link [" << _link->name
              << "] to parent [" << _link->getParent()->name
              << "] with name [" << newCollisionName << "]\n";
@@ -1136,14 +1136,14 @@ void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
     std::string oldValue = GetKeyValueAsString(childElem);
     if (oldValue != _value)
     {
-      sdfwarn << "multiple inconsistent <" << _key
+      ignwarn << "multiple inconsistent <" << _key
               << "> exists due to fixed joint reduction"
               << " overwriting previous value [" << oldValue
               << "] with [" << _value << "].\n";
     }
     else
     {
-       sdfdbg << "multiple consistent <" << _key
+       igndbg << "multiple consistent <" << _key
               << "> exists with [" << _value
               << "] due to fixed joint reduction.\n";
     }
@@ -1186,7 +1186,7 @@ std::string GetKeyValueAsString(tinyxml2::XMLElement* _elem)
     }
     else
     {
-      sdfwarn << "Attribute value string not set\n";
+      ignwarn << "Attribute value string not set\n";
     }
   }
   return ignition::common::trimmed(valueStr);
@@ -1470,14 +1470,14 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
       }
       else if (strcmp(childElem->Name(), "canonicalBody") == 0)
       {
-        sdfdbg << "do nothing with canonicalBody\n";
+        igndbg << "do nothing with canonicalBody\n";
       }
       else if (strcmp(childElem->Name(), "cfmDamping") == 0 ||
                  strcmp(childElem->Name(), "implicitSpringDamper") == 0)
       {
         if (strcmp(childElem->Name(), "cfmDamping") == 0)
         {
-          sdfwarn << "Note that cfmDamping is being deprecated by "
+          ignwarn << "Note that cfmDamping is being deprecated by "
                   << "implicitSpringDamper, please replace instances "
                   << "of cfmDamping with implicitSpringDamper in your model.\n";
         }
@@ -1523,7 +1523,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
         childElem->Accept(&printer);
         xmlNewDoc->Parse(printer.CStr());
 
-        sdfdbg << "extension [" << printer.CStr() <<
+        igndbg << "extension [" << printer.CStr() <<
           "] not converted from URDF, probably already in SDF format.\n";
 
         // save all unknown stuff in a vector of blobs
@@ -1553,14 +1553,14 @@ void CopyBlob(tinyxml2::XMLElement *_src, tinyxml2::XMLElement *_blob_parent)
 {
   if (_blob_parent == nullptr)
   {
-    sdferr << "blob parent is null\n";
+    ignerr << "blob parent is null\n";
     return;
   }
 
   tinyxml2::XMLNode *clone = DeepClone(_blob_parent->GetDocument(), _src);
   if (clone == nullptr)
   {
-    sdferr << "Unable to deep copy blob\n";
+    ignerr << "Unable to deep copy blob\n";
   }
   else
   {
@@ -1603,7 +1603,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
 
         if (!_elem->Attribute("name"))
         {
-          sdferr << "ERROR: collision _elem has no name,"
+          ignerr << "ERROR: collision _elem has no name,"
                  << " something is wrong" << "\n";
         }
 
@@ -1630,7 +1630,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
 
         if (!collisionNameContainsLinkname)
         {
-          sdferr << "collision name does not contain link name,"
+          ignerr << "collision name does not contain link name,"
                  << " file an issue.\n";
         }
 
@@ -1742,7 +1742,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
             if (!surface)
             {
               // Memory allocation error
-              sdferr << "Memory allocation error while"
+              ignerr << "Memory allocation error while"
                      << " processing <surface>.\n";
             }
             _elem->LinkEndChild(surface);
@@ -1757,7 +1757,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
               if (!contact)
               {
                 // Memory allocation error
-                sdferr << "Memory allocation error while"
+                ignerr << "Memory allocation error while"
                        << " processing <contact>.\n";
               }
               surface->LinkEndChild(contact);
@@ -1776,7 +1776,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
               if (!contactOde)
               {
                 // Memory allocation error
-                sdferr << "Memory allocation error while"
+                ignerr << "Memory allocation error while"
                        << " processing <contact><ode>.\n";
               }
               contact->LinkEndChild(contactOde);
@@ -1795,7 +1795,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
               if (!friction)
               {
                 // Memory allocation error
-                sdferr << "Memory allocation error while"
+                ignerr << "Memory allocation error while"
                        << " processing <friction>.\n";
               }
               surface->LinkEndChild(friction);
@@ -1814,7 +1814,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
               if (!frictionOde)
               {
                 // Memory allocation error
-                sdferr << "Memory allocation error while"
+                ignerr << "Memory allocation error while"
                        << " processing <friction><ode>.\n";
               }
               friction->LinkEndChild(frictionOde);
@@ -1910,7 +1910,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
 
         if (!_elem->Attribute("name"))
         {
-          sdferr << "ERROR: visual _elem has no name,"
+          ignerr << "ERROR: visual _elem has no name,"
                  << " something is wrong" << "\n";
         }
 
@@ -1937,7 +1937,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
 
         if (!visualNameContainsLinkname)
         {
-          sdferr << "visual name does not contain link name,"
+          ignerr << "visual name does not contain link name,"
                  << " file an issue.\n";
         }
 
@@ -2036,7 +2036,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
               if (!material)
               {
                 // Memory allocation error
-                sdferr << "Memory allocation error while"
+                ignerr << "Memory allocation error while"
                        << " processing <material>.\n";
               }
               _elem->LinkEndChild(material);
@@ -2050,7 +2050,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
                 if (!script)
                 {
                   // Memory allocation error
-                  sdferr << "Memory allocation error while"
+                  ignerr << "Memory allocation error while"
                          << " processing <script>.\n";
                 }
                 material->LinkEndChild(script);
@@ -2082,7 +2082,7 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
   {
     if (sdfIt->first == _linkName)
     {
-      sdfdbg << "inserting extension with reference ["
+      igndbg << "inserting extension with reference ["
              << _linkName << "] into link.\n";
       for (std::vector<SDFExtensionPtr>::iterator ge =
           sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
@@ -2361,7 +2361,7 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
           // set mesh file
           if (mesh->filename.empty())
           {
-            sdferr << "urdf2sdf: mesh geometry with no filename given.\n";
+            ignerr << "urdf2sdf: mesh geometry with no filename given.\n";
           }
 
           // give some warning if file does not exist.
@@ -2371,7 +2371,7 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
           // fin.open(mesh->filename.c_str(), std::ios::in);
           // fin.close();
           // if (fin.fail())
-          //   sdfwarn << "filename referred by mesh ["
+          //   ignwarn << "filename referred by mesh ["
           //          << mesh->filename << "] does not appear to exist.\n";
 
           // Convert package:// to model://,
@@ -2386,7 +2386,7 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
           {
             size_t repLen = packagePrefix.size();
             modelFilename.replace(pos1, repLen, modelPrefix);
-            // sdfwarn << "ros style uri [package://] is"
+            // ignwarn << "ros style uri [package://] is"
             //   << "automatically converted: [" << modelFilename
             //   << "], make sure your ros package is in GAZEBO_MODEL_PATH"
             //   << " and switch your manifest to conform to sdf's"
@@ -2401,7 +2401,7 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
       }
       break;
     default:
-      sdfwarn << "Unknown body type: [" << static_cast<int>(_geometry->type)
+      ignwarn << "Unknown body type: [" << static_cast<int>(_geometry->type)
               << "] skipped in geometry\n";
       break;
   }
@@ -2471,7 +2471,7 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
   StringSDFExtensionPtrMap::iterator ext = g_extensions.find(linkName);
   if (ext != g_extensions.end())
   {
-    sdfdbg << "  REDUCE EXTENSION: moving reference from ["
+    igndbg << "  REDUCE EXTENSION: moving reference from ["
            << linkName << "] to [" << _link->getParent()->name << "]\n";
 
     // update reduction transform (for rays, cameras for now).
@@ -2538,14 +2538,14 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
   //         <collision>base_link_collision</collision>
   //         and it needs to be reparented to
   //         <collision>base_footprint_collision</collision>
-  sdfdbg << "  STRING REPLACE: instances of _link name ["
+  igndbg << "  STRING REPLACE: instances of _link name ["
         << linkName << "] with [" << parentLinkName << "]\n";
   for (auto blobIt = _ge->blobs.begin();
          blobIt != _ge->blobs.end(); ++blobIt)
   {
     tinyxml2::XMLPrinter debugStreamIn;
     (*blobIt)->Print(&debugStreamIn);
-    sdfdbg << "        INITIAL STRING link ["
+    igndbg << "        INITIAL STRING link ["
            << linkName << "]-->[" << parentLinkName << "]: ["
            << debugStreamIn.CStr() << "]\n";
 
@@ -2589,7 +2589,7 @@ void URDF2SDF::ListSDFExtensions()
     {
       if (!(*ge)->blobs.empty())
       {
-        sdfdbg <<  "  PRINTING [" << static_cast<int>((*ge)->blobs.size())
+        igndbg <<  "  PRINTING [" << static_cast<int>((*ge)->blobs.size())
                << "] BLOBS for extension [" << ++extCount
                << "] referencing [" << sdfIt->first << "]\n";
         for (auto blobIt = (*ge)->blobs.begin();
@@ -2597,7 +2597,7 @@ void URDF2SDF::ListSDFExtensions()
         {
           tinyxml2::XMLPrinter streamIn;
           (*blobIt)->Print(&streamIn);
-          sdfdbg << "    BLOB: [" << streamIn.CStr() << "]\n";
+          igndbg << "    BLOB: [" << streamIn.CStr() << "]\n";
         }
       }
     }
@@ -2613,7 +2613,7 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
   {
     if (sdfIt->first == _reference)
     {
-      sdfdbg <<  "  PRINTING [" << static_cast<int>(sdfIt->second.size())
+      igndbg <<  "  PRINTING [" << static_cast<int>(sdfIt->second.size())
              << "] extensions referencing [" << _reference << "]\n";
       for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
@@ -2623,7 +2623,7 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
         {
           tinyxml2::XMLPrinter streamIn;
           (*blobIt)->Print(&streamIn);
-          sdfdbg << "    BLOB: [" << streamIn.CStr() << "]\n";
+          igndbg << "    BLOB: [" << streamIn.CStr() << "]\n";
         }
       }
     }
@@ -2645,7 +2645,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   {
     if (!_link->child_links.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
+      igndbg << "urdf2sdf: link[" << _link->name
              << "] has no inertia, ["
              << static_cast<int>(_link->child_links.size())
              << "] children links ignored.\n";
@@ -2653,7 +2653,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 
     if (!_link->child_joints.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
+      igndbg << "urdf2sdf: link[" << _link->name
              << "] has no inertia, ["
              << static_cast<int>(_link->child_links.size())
              << "] children joints ignored.\n";
@@ -2661,13 +2661,13 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 
     if (_link->parent_joint)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
+      igndbg << "urdf2sdf: link[" << _link->name
              << "] has no inertia, "
              << "parent joint [" << _link->parent_joint->name
              << "] ignored.\n";
     }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
+    igndbg << "urdf2sdf: link[" << _link->name
            << "] has no inertia, not modeled in sdf\n";
     return;
   }
@@ -2738,7 +2738,7 @@ void CreateLink(tinyxml2::XMLElement *_root,
   }
   else
   {
-    sdfdbg << "[" << _link->name << "] has no parent joint\n";
+    igndbg << "[" << _link->name << "] has no parent joint\n";
 
     if (_currentTransform != ignition::math::Pose3d::Zero)
     {
@@ -2782,7 +2782,7 @@ void CreateCollisions(tinyxml2::XMLElement* _elem,
       collision != _link->collision_array.end();
       ++collision)
   {
-    sdfdbg << "creating collision for link [" << _link->name
+    igndbg << "creating collision for link [" << _link->name
            << "] collision [" << (*collision)->name << "]\n";
 
     // collision sdf has a name if it was lumped/reduced
@@ -2827,7 +2827,7 @@ void CreateVisuals(tinyxml2::XMLElement* _elem,
       visual != _link->visual_array.end();
       ++visual)
   {
-    sdfdbg << "creating visual for link [" << _link->name
+    igndbg << "creating visual for link [" << _link->name
            << "] visual [" << (*visual)->name << "]\n";
 
     // visual sdf has a name if it was lumped/reduced
@@ -2921,7 +2921,7 @@ void CreateJoint(tinyxml2::XMLElement *_root,
         jtype = "fixed";
         break;
       default:
-        sdfwarn << "Unknown joint type: ["
+        ignwarn << "Unknown joint type: ["
                 << static_cast<int>(_link->parent_joint->type)
                 << "] in link [" << _link->name << "]\n";
         break;
@@ -3019,7 +3019,7 @@ void CreateJoint(tinyxml2::XMLElement *_root,
           // enforce ode bounds, this will need to be fixed
           if (*lowstop > *highstop)
           {
-            sdfwarn << "urdf2sdf: revolute joint ["
+            ignwarn << "urdf2sdf: revolute joint ["
                     << _link->parent_joint->name
                     << "] with limits: lowStop[" << *lowstop
                     << "] > highStop[" << *highstop
@@ -3104,7 +3104,7 @@ void CreateCollision(tinyxml2::XMLElement* _elem,
   // add geometry block
   if (!_collision || !_collision->geometry)
   {
-    sdfdbg << "urdf2sdf: collision of link [" << _link->name
+    igndbg << "urdf2sdf: collision of link [" << _link->name
            << "] has no <geometry>.\n";
   }
   else
@@ -3150,7 +3150,7 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
   // insert geometry
   if (!_visual || !_visual->geometry)
   {
-    sdfdbg << "urdf2sdf: visual of link [" << _link->name
+    igndbg << "urdf2sdf: visual of link [" << _link->name
            << "] has no <geometry>.\n";
   }
   else
@@ -3223,7 +3223,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   if (!robotModel)
   {
-    sdferr << "Unable to call parseURDF on robot model\n";
+    ignerr << "Unable to call parseURDF on robot model\n";
     return;
   }
 
@@ -3241,7 +3241,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   tinyxml2::XMLDocument urdfXml;
   if (urdfXml.Parse(_urdfStr.c_str()))
   {
-    sdferr << "Unable to parse URDF string: " << urdfXml.ErrorStr() << "\n";
+    ignerr << "Unable to parse URDF string: " << urdfXml.ErrorStr() << "\n";
     return;
   }
 
@@ -3344,7 +3344,7 @@ void URDF2SDF::InitModelFile(const std::string &_filename,
   }
   else
   {
-    sdferr << "Unable to load file["
+    ignerr << "Unable to load file["
       << _filename << "]:" << xmlDoc.ErrorStr() << "\n";
   }
 }
@@ -3379,7 +3379,7 @@ void ReduceSDFExtensionSensorTransformReduction(
     // {
     //   tinyxml2::XMLPrinter streamIn;
     //   elIt->Accept(&streamIn);
-    //   sdfdbg << "    " << streamIn.CStr() << "\n";
+    //   igndbg << "    " << streamIn.CStr() << "\n";
     // }
 
     auto sensorPose {ignition::math::Pose3d::Zero};
@@ -3401,7 +3401,7 @@ void ReduceSDFExtensionSensorTransformReduction(
           sensorPosText = sibling->ToElement()->GetText();
         else
         {
-          sdferr << "Unexpected case in sensor pose computation\n";
+          ignerr << "Unexpected case in sensor pose computation\n";
           return;
         }
 
@@ -3416,7 +3416,7 @@ void ReduceSDFExtensionSensorTransformReduction(
       ss >> sensorPose;
       if (ss.fail())
       {
-        sdferr << "Could not parse <sensor><pose>: [" << sensorPosText << "]\n";
+        ignerr << "Could not parse <sensor><pose>: [" << sensorPosText << "]\n";
         return;
       }
 
@@ -3478,7 +3478,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
     // {
     //   std::ostringstream streamIn;
     //   streamIn << *elIt;
-    //   sdfdbg << "    " << streamIn << "\n";
+    //   igndbg << "    " << streamIn << "\n";
     // }
 
     auto projectorPose {ignition::math::Pose3d::Zero};
@@ -3500,7 +3500,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
           projectorPosText = sibling->ToElement()->GetText();
         else
         {
-          sdferr << "Unexpected case in projector pose computation\n";
+          ignerr << "Unexpected case in projector pose computation\n";
           return;
         }
 
@@ -3515,7 +3515,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
       ss >> projectorPose;
       if (ss.fail())
       {
-        sdferr << "Could not parse <projector><pose>: ["
+        ignerr << "Could not parse <projector><pose>: ["
                << projectorPosText << "]\n";
         return;
       }
@@ -3722,7 +3722,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
       size_t pos = projectorName.find("/");
       if (pos == std::string::npos)
       {
-        sdferr << "no slash in projector reference tag [" << projectorName
+        ignerr << "no slash in projector reference tag [" << projectorName
                << "], expecting linkName/projector_name.\n";
       }
       else

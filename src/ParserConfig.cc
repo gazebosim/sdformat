@@ -29,7 +29,7 @@ class sdf::ParserConfig::Implementation
   public: std::function<std::string(const std::string &)> findFileCB;
 
   /// \brief Indicates how warnings and errors are tolerated.
-  /// Default is for warnings to be streamed via sdfwarn
+  /// Default is for warnings to be streamed via ignwarn
   public: EnforcementPolicy warningsPolicy = EnforcementPolicy::WARN;
 
   /// \brief Policy indicating how unrecognized elements without an xmlns are

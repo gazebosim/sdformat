@@ -19,6 +19,8 @@
 #include <sstream>
 #include <string>
 
+#include <ignition/common/Console.hh>
+
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
@@ -1015,7 +1017,7 @@ ElementPtr Element::AddElement(const std::string &_name)
     }
   }
 
-  sdferr << "Missing element description for [" << _name << "]\n";
+  ignerr << "Missing element description for [" << _name << "]\n";
   return ElementPtr();
 }
 
@@ -1212,7 +1214,7 @@ std::any Element::GetAny(const std::string &_key) const
   {
     if (!this->dataPtr->value->GetAny(result))
     {
-      sdferr << "Couldn't get element [" << this->GetName()
+      ignerr << "Couldn't get element [" << this->GetName()
              << "] as std::any\n";
     }
   }
@@ -1223,7 +1225,7 @@ std::any Element::GetAny(const std::string &_key) const
     {
       if (!this->GetAttribute(_key)->GetAny(result))
       {
-        sdferr << "Couldn't get attribute [" << _key << "] as std::any\n";
+        ignerr << "Couldn't get attribute [" << _key << "] as std::any\n";
       }
     }
     else
@@ -1242,7 +1244,7 @@ std::any Element::GetAny(const std::string &_key) const
         }
         else
         {
-          sdferr << "Unable to find value for key [" << _key << "]\n";
+          ignerr << "Unable to find value for key [" << _key << "]\n";
         }
       }
     }

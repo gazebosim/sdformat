@@ -18,6 +18,7 @@
 #include <unordered_set>
 #include <vector>
 #include <optional>
+#include <ignition/common/Console.hh>
 #include <ignition/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
@@ -206,7 +207,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     if (size > 1)
     {
-      sdfwarn << "Non-unique name[" << name << "] detected " << size
+      ignwarn << "Non-unique name[" << name << "] detected " << size
               << " times in XML children of world with name[" << this->Name()
               << "].\n";
     }
@@ -217,7 +218,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     if (size > 1)
     {
-      sdfwarn << "Non-unique name[" << name << "] detected " << size
+      ignwarn << "Non-unique name[" << name << "] detected " << size
               << " times in XML children of world with name[" << this->Name()
               << "].\n";
     }
@@ -288,7 +289,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       {
         frameName = frame.Name() + "_frame" + std::to_string(i++);
       }
-      sdfwarn << "Frame with name [" << frame.Name() << "] "
+      ignwarn << "Frame with name [" << frame.Name() << "] "
               << "in world with name [" << this->Name() << "] "
               << "has a name collision, changing frame name to ["
               << frameName << "].\n";

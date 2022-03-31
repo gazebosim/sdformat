@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
+#include <ignition/common/Console.hh>
 #include <ignition/common/Util.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
-#include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
@@ -153,7 +153,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   {
     if (!_config.FindFileCallback())
     {
-      sdferr << "Tried to use callback in sdf::findFile(), but the callback "
+      ignerr << "Tried to use callback in sdf::findFile(), but the callback "
         "is empty.  Did you call sdf::setFindCallback()?\n";
       return std::string();
     }
@@ -316,7 +316,7 @@ void SDF::Write(const std::string &_filename)
 
   if (!out)
   {
-    sdferr << "Unable to open file[" << _filename << "] for writing\n";
+    ignerr << "Unable to open file[" << _filename << "] for writing\n";
     return;
   }
   out << string;
@@ -350,7 +350,7 @@ void SDF::SetFromString(const std::string &_sdfData)
   sdf::initFile("root.sdf", this->Root());
   if (!sdf::readString(_sdfData, this->Root()))
   {
-    sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
+    ignerr << "Unable to parse sdf string[" << _sdfData << "]\n";
   }
 }
 
@@ -436,7 +436,7 @@ const std::string &SDF::EmbeddedSpec(
   catch(const std::out_of_range &)
   {
     if (!_quiet)
-      sdferr << "Unable to find SDF filename[" << _filename << "] with "
+      ignerr << "Unable to find SDF filename[" << _filename << "] with "
         << "version " << SDF::Version() << "\n";
   }
 

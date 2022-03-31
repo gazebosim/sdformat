@@ -20,6 +20,9 @@
 #include <ostream>
 #include <string>
 
+#include <ignition/common/Console.hh>
+#include <ignition/common/Util.hh>
+
 #include "sdf/Console.hh"
 #include "sdf/Root.hh"
 
@@ -49,63 +52,35 @@ struct ScopeExit
   private: Callable callable;
 };
 
-/// \brief A class used for redirecting the output of sdferr, sdfwarn, etc to a
-/// more convenient stream object like a std::stringstream for testing purposes.
-/// The class reverts to the original stream object when it goes out of scope.
-///
-/// Usage example:
-///
-/// Redirect console output to a std::stringstream object:
-///
-/// ```
-///   std::stringstream buffer;
-///   sdf::testing::RedirectConsoleStream redir(
-///       sdf::Console::Instance()->GetMsgStream(), &buffer);
-///
-///   sdfwarn << "Test message";
-///
-/// ```
-/// `buffer` will now contain "Test message" with additional information,
-/// such as the file and line number where sdfwarn was called from.
-///
-/// sdfdbg uses a log file as its output, so to redirect that, we can do
-///
-/// ```
-///   std::stringstream buffer;
-///   sdf::testing::RedirectConsoleStream redir(
-///       sdf::Console::Instance()->GetLogStream(), &buffer);
-///
-///   sdfdbg << "Test message";
-/// ```
-class RedirectConsoleStream
+/// \brief Initialize ignition console logging to a file. The full path to
+/// the log file is returned.
+/// \return Path to the console log file.
+std::string InitConsoleLogFile()
 {
-  /// \brief Constructor
-  /// \param[in] _consoleStream Mutable reference to a console stream.
-  /// \param[in] _newSink Pointer to any object derived from std::ostream
-  public: RedirectConsoleStream(sdf::Console::ConsoleStream &_consoleStream,
-              std::ostream *_newSink)
-      : consoleStreamRef(_consoleStream)
-      , oldStream(_consoleStream)
+  std::string logsDir = ignition::common::joinPaths(PROJECT_BINARY_DIR, "test",
+      "test_logs");
+  std::string logFilename = "console.log";
+  std::string logFile = ignition::common::joinPaths(logsDir, logFilename);
+  ignLogInit(logsDir, logFilename);
+  return logFile;
+}
+
+/// \brief Read the contents of a log file.
+/// \param[in] _file Filename to read.
+/// \return Contents of the log file, or empty string if the file doesn't
+/// exist.
+std::string ReadConsoleLogFile(const std::string &_file)
+{
+  if (ignition::common::exists(_file))
   {
-    this->consoleStreamRef = sdf::Console::ConsoleStream(_newSink);
+    std::ifstream stream(_file);
+    std::string buffer((std::istreambuf_iterator<char>(stream)),
+        std::istreambuf_iterator<char>());
+    return buffer;
   }
 
-  /// \brief Destructor. Restores the console to the original ConsoleStream
-  /// object.
-  public: ~RedirectConsoleStream()
-  {
-    this->consoleStreamRef = this->oldStream;
-  }
-
-  /// \brief Reference to the console stream object. This is usually obtained
-  /// from the singleton sdf::Console object by calling either
-  /// sdf::Console::GetMsgStream() or sdf::Console::GetLogStream()
-  private: sdf::Console::ConsoleStream &consoleStreamRef;
-
-  /// \brief Copy of the original console stream object. This will be used to
-  /// restore the console stream when this object goes out of scope.
-  private: sdf::Console::ConsoleStream oldStream;
-};
+  return "";
+}
 
 /// \brief Load an SDF file into a sdf::Root object
 /// \param[in] _fileName The name of the file to load

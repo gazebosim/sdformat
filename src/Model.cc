@@ -18,6 +18,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <ignition/common/Console.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
@@ -203,7 +204,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     if (size > 1)
     {
-      sdfwarn << "Non-unique name[" << name << "] detected " << size
+      ignwarn << "Non-unique name[" << name << "] detected " << size
               << " times in XML children of model with name[" << this->Name()
               << "].\n";
     }
@@ -298,7 +299,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         {
           linkName = link.Name() + "_link" + std::to_string(i++);
         }
-        sdfwarn << "Link with name [" << link.Name() << "] "
+        ignwarn << "Link with name [" << link.Name() << "] "
                 << "in model with name [" << this->Name() << "] "
                 << "has a name collision, changing link name to ["
                 << linkName << "].\n";
@@ -306,7 +307,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       }
       else
       {
-        sdferr << "Link with name [" << link.Name() << "] "
+        ignerr << "Link with name [" << link.Name() << "] "
                << "in model with name [" << this->Name() << "] "
                << "has a name collision. Please rename this link.\n";
       }
@@ -346,7 +347,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         {
           jointName = joint.Name() + "_joint" + std::to_string(i++);
         }
-        sdfwarn << "Joint with name [" << joint.Name() << "] "
+        ignwarn << "Joint with name [" << joint.Name() << "] "
                 << "in model with name [" << this->Name() << "] "
                 << "has a name collision, changing joint name to ["
                 << jointName << "].\n";
@@ -354,7 +355,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       }
       else
       {
-        sdferr << "Joint with name [" << joint.Name() << "] "
+        ignerr << "Joint with name [" << joint.Name() << "] "
                << "in model with name [" << this->Name() << "] "
                << "has a name collision. Please rename this joint.\n";
       }
@@ -383,7 +384,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         {
           frameName = frame.Name() + "_frame" + std::to_string(i++);
         }
-        sdfwarn << "Frame with name [" << frame.Name() << "] "
+        ignwarn << "Frame with name [" << frame.Name() << "] "
                 << "in model with name [" << this->Name() << "] "
                 << "has a name collision, changing frame name to ["
                 << frameName << "].\n";
@@ -391,7 +392,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       }
       else
       {
-        sdferr << "Frame with name [" << frame.Name() << "] "
+        ignerr << "Frame with name [" << frame.Name() << "] "
                << "in model with name [" << this->Name() << "] "
                << "has a name collision. Please rename this frame.\n";
       }

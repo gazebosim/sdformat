@@ -23,6 +23,7 @@
 
 using namespace sdf;
 
+SDF_SUPPRESS_DEPRECATED_BEGIN
 class sdf::Exception::Implementation
 {
   /// \brief The error function
@@ -106,3 +107,4 @@ AssertionInternalError::AssertionInternalError(
 AssertionInternalError::~AssertionInternalError()
 {
 }
+SDF_SUPPRESS_DEPRECATED_END

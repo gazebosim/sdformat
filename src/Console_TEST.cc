@@ -50,6 +50,8 @@ bool create_new_temp_dir(std::string &_new_temp_path)
   return true;
 }
 
+SDF_SUPPRESS_DEPRECATED_BEGIN
+
 ////////////////////////////////////////////////////
 TEST(Console, nohome)
 {
@@ -117,6 +119,7 @@ TEST(Console, quiet)
 
   con->SetQuiet(false);
 }
+SDF_SUPPRESS_DEPRECATED_END
 
 /////////////////////////////////////////////////
 /// Main

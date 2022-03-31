@@ -16,7 +16,6 @@
  */
 
 #include <gtest/gtest.h>
-
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/ParserConfig.hh"
@@ -66,23 +65,9 @@ bool contains(const std::string &_a, const std::string &_b)
   return _a.find(_b) != std::string::npos;
 }
 
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////
 TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 {
-  // Redirect sdfwarn output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
   auto elem = std::make_shared<sdf::Element>();
@@ -91,6 +76,7 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
   // Change the root of sdf so we can test "testElem" in isolation
   sdf->Root(elem);
   {
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     auto config = sdf::ParserConfig::GlobalConfig();
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
     config.SetDeprecatedElementsPolicy(sdf::EnforcementPolicy::WARN);
@@ -98,13 +84,15 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_PRED2(contains, buffer.str(), "SDF Element[testElem] is deprecated");
+
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, buffer, "SDF Element[testElem] is deprecated");
   }
   // Flip the order of calling SetDeprecatedElementsPolicy and
   // SetWarningsPolicy.
   {
-    // clear the contents of the buffer
-    buffer.str("");
+    // clear the contents of the logfile
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     auto config = sdf::ParserConfig::GlobalConfig();
     config.SetDeprecatedElementsPolicy(sdf::EnforcementPolicy::WARN);
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -112,7 +100,9 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_PRED2(contains, buffer.str(), "SDF Element[testElem] is deprecated");
+
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, buffer, "SDF Element[testElem] is deprecated");
   }
   // Test ResetDeprecatedElementsPolicy
   {

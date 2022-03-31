@@ -606,22 +606,8 @@ TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
 /////////////////////////////////////////////////
 TEST(DOMModel, LoadModelWithDuplicateChildNames)
 {
-  // Redirect sdfwarn output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
   {
-    buffer.str("");
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     const std::string testFile =
       sdf::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
 
@@ -630,17 +616,18 @@ TEST(DOMModel, LoadModelWithDuplicateChildNames)
     auto errors = root.Load(testFile);
     EXPECT_TRUE(errors.empty()) << errors;
 
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
     // Check warning message
     EXPECT_NE(
         std::string::npos,
-        buffer.str().find("Non-unique name[attachment] detected 2 times in XML "
+        buffer.find("Non-unique name[attachment] detected 2 times in XML "
                           "children of model with name[link_joint_same_name]"))
-        << buffer.str();
+        << buffer;
   }
 
   // Check that there's an exception for "plugin" elements
   {
-    buffer.str("");
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     const std::string testFile =
       sdf::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
 
@@ -648,7 +635,8 @@ TEST(DOMModel, LoadModelWithDuplicateChildNames)
     sdf::Root root;
     auto errors = root.Load(testFile);
     EXPECT_TRUE(errors.empty()) << errors;
-    EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_TRUE(buffer.find("Err") == std::string::npos) << buffer;
   }
 }
 

@@ -22,9 +22,9 @@
 #include <string>
 #include <unordered_set>
 
+#include <ignition/common/Console.hh>
 #include <ignition/math/SemanticVersion.hh>
 
-#include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
@@ -162,7 +162,7 @@ static inline bool _initFile(const std::string &_filename,
   auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
-    sdferr << "Unable to load file["
+    ignerr << "Unable to load file["
            << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
     return false;
   }
@@ -425,7 +425,7 @@ bool initString(
   auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
   {
-    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
+    ignerr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
 
@@ -443,14 +443,14 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 {
   if (!_xmlDoc)
   {
-    sdferr << "Could not parse the xml\n";
+    ignerr << "Could not parse the xml\n";
     return nullptr;
   }
 
   tinyxml2::XMLElement *element = _xmlDoc->FirstChildElement("element");
   if (!element)
   {
-    sdferr << "Could not find the 'element' element in the xml file\n";
+    ignerr << "Could not find the 'element' element in the xml file\n";
     return nullptr;
   }
 
@@ -499,7 +499,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
   const char *nameString = _xml->Attribute("name");
   if (!nameString)
   {
-    sdferr << "Element is missing the name attribute\n";
+    ignerr << "Element is missing the name attribute\n";
     return false;
   }
   _sdf->SetName(std::string(nameString));
@@ -507,7 +507,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
   const char *requiredString = _xml->Attribute("required");
   if (!requiredString)
   {
-    sdferr << "Element is missing the required attributed\n";
+    ignerr << "Element is missing the required attributed\n";
     return false;
   }
   _sdf->SetRequired(requiredString);
@@ -555,22 +555,22 @@ bool initXml(tinyxml2::XMLElement *_xml,
 
     if (!name)
     {
-      sdferr << "Attribute is missing a name\n";
+      ignerr << "Attribute is missing a name\n";
       return false;
     }
     if (!type)
     {
-      sdferr << "Attribute is missing a type\n";
+      ignerr << "Attribute is missing a type\n";
       return false;
     }
     if (!defaultValue)
     {
-      sdferr << "Attribute[" << name << "] is missing a default\n";
+      ignerr << "Attribute[" << name << "] is missing a default\n";
       return false;
     }
     if (!requiredString)
     {
-      sdferr << "Attribute is missing a required string\n";
+      ignerr << "Attribute is missing a required string\n";
       return false;
     }
     std::string requiredStr = ignition::common::trimmed(requiredString);
@@ -720,7 +720,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
 
   if (filename.empty())
   {
-    sdferr << "Error finding file [" << _filename << "].\n";
+    ignerr << "Error finding file [" << _filename << "].\n";
     return false;
   }
 
@@ -731,14 +731,14 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
 
   if (!filesystem::exists(filename))
   {
-    sdferr << "File [" << filename << "] doesn't exist.\n";
+    ignerr << "File [" << filename << "] doesn't exist.\n";
     return false;
   }
 
   auto error_code = xmlDoc.LoadFile(filename.c_str());
   if (error_code)
   {
-    sdferr << "Error parsing XML in file [" << filename << "]: "
+    ignerr << "Error parsing XML in file [" << filename << "]: "
            << xmlDoc.ErrorStr() << '\n';
     return false;
   }
@@ -755,12 +755,12 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     u2g.InitModelFile(filename, _config, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
     {
-      sdfdbg << "parse from urdf file [" << _filename << "].\n";
+      igndbg << "parse from urdf file [" << _filename << "].\n";
       return true;
     }
     else
     {
-      sdferr << "parse as old deprecated model file failed.\n";
+      ignerr << "parse as old deprecated model file failed.\n";
       return false;
     }
   }
@@ -817,7 +817,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
+    ignerr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert, _config,
@@ -834,12 +834,12 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                     _config, _errors))
     {
-      sdfdbg << "Parsing from urdf.\n";
+      igndbg << "Parsing from urdf.\n";
       return true;
     }
     else
     {
-      sdferr << "parse as old deprecated model file failed.\n";
+      ignerr << "parse as old deprecated model file failed.\n";
       return false;
     }
   }
@@ -874,7 +874,7 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
+    ignerr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), true, _config,
@@ -884,7 +884,7 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
   }
   else
   {
-    sdferr << "parse as sdf version " << SDF::Version() << " failed, "
+    ignerr << "parse as sdf version " << SDF::Version() << " failed, "
            << "should try to parse as old deprecated format\n";
     return false;
   }
@@ -897,7 +897,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 {
   if (!_xmlDoc)
   {
-    sdfwarn << "Could not parse the xml from source[" << _source << "]\n";
+    ignwarn << "Could not parse the xml from source[" << _source << "]\n";
     return false;
   }
 
@@ -905,13 +905,13 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
   tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdfdbg << "No <sdf> element in file[" << _source << "]\n";
+    igndbg << "No <sdf> element in file[" << _source << "]\n";
     return false;
   }
 
   if (nullptr == _sdf || nullptr == _sdf->Root())
   {
-    sdferr << "SDF pointer or its Root is null.\n";
+    ignerr << "SDF pointer or its Root is null.\n";
     return false;
   }
 
@@ -945,7 +945,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
-      sdfdbg << "Converting a deprecated source[" << _source << "].\n";
+      igndbg << "Converting a deprecated source[" << _source << "].\n";
       Converter::Convert(_xmlDoc, SDF::Version());
     }
 
@@ -982,7 +982,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
   }
   else
   {
-    sdfdbg << "SDF <sdf> element has no version in file["
+    igndbg << "SDF <sdf> element has no version in file["
            << _source << "]\n";
     return false;
   }
@@ -997,7 +997,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
 {
   if (!_xmlDoc)
   {
-    sdfwarn << "Could not parse the xml\n";
+    ignwarn << "Could not parse the xml\n";
     return false;
   }
 
@@ -1005,7 +1005,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
   tinyxml2::XMLElement *sdfNode = _xmlDoc->FirstChildElement("sdf");
   if (!sdfNode)
   {
-    sdfdbg << "SDF has no <sdf> element\n";
+    igndbg << "SDF has no <sdf> element\n";
     return false;
   }
 
@@ -1034,7 +1034,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     if (_convert
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
-      sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
+      igndbg << "Converting a deprecated SDF source[" << _source << "].\n";
 
       Converter::Convert(_xmlDoc, SDF::Version());
     }
@@ -1077,7 +1077,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
   }
   else
   {
-    sdfdbg << "<sdf> element has no version\n";
+    igndbg << "<sdf> element has no version\n";
     return false;
   }
 
@@ -1162,7 +1162,7 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
         }
         else
         {
-          sdfwarn << "Ignoring version " << version
+          ignwarn << "Ignoring version " << version
                   << " for model " << nameSearch->GetText()
                   << " because is newer than this sdf parser"
                   << " (version " << SDF_VERSION << ")\n";
@@ -1174,7 +1174,7 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   if (!sdfXML || !sdfXML->GetText())
   {
-    sdferr << "Failure to detect an sdf tag in the model config file"
+    ignerr << "Failure to detect an sdf tag in the model config file"
            << " for model: " << nameSearch->GetText() << "\n";
 
     _modelFileName = "";
@@ -1183,7 +1183,7 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   if (!sdfXML->Attribute("version"))
   {
-    sdfwarn << "Can not find the XML attribute 'version'"
+    ignwarn << "Can not find the XML attribute 'version'"
             << " in sdf XML tag for model: " << nameSearch->GetText() << "."
             << " Please specify the SDF protocol supported in the model"
             << " configuration file. The first sdf tag in the config file"
@@ -1209,14 +1209,14 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      sdferr << "Could not find model.config or manifest.xml in ["
+      ignerr << "Could not find model.config or manifest.xml in ["
              << _modelDirPath << "]\n";
       return std::string();
     }
     else
     {
       // We found manifest.xml, but since it is deprecated print a warning.
-      sdfwarn << "The manifest.xml for a model is deprecated. "
+      ignwarn << "The manifest.xml for a model is deprecated. "
               << "Please rename manifest.xml to "
               << "model.config" << ".\n";
     }
@@ -1225,7 +1225,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
   auto configFileDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
-    sdferr << "Error parsing XML in file ["
+    ignerr << "Error parsing XML in file ["
            << configFilePath << "]: "
            << configFileDoc.ErrorStr() << '\n';
     return std::string();
@@ -1235,7 +1235,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   if (!modelXML)
   {
-    sdferr << "No <model> element in configFile[" << configFilePath << "]\n";
+    ignerr << "No <model> element in configFile[" << configFilePath << "]\n";
     return std::string();
   }
 
@@ -2001,13 +2001,13 @@ bool convertFile(const std::string &_filename, const std::string &_version,
 
   if (filename.empty())
   {
-    sdferr << "Error finding file [" << _filename << "].\n";
+    ignerr << "Error finding file [" << _filename << "].\n";
     return false;
   }
 
   if (nullptr == _sdf || nullptr == _sdf->Root())
   {
-    sdferr << "SDF pointer or its Root is null.\n";
+    ignerr << "SDF pointer or its Root is null.\n";
     return false;
   }
 
@@ -2041,7 +2041,7 @@ bool convertFile(const std::string &_filename, const std::string &_version,
   }
   else
   {
-    sdferr << "Error parsing file[" << filename << "]\n";
+    ignerr << "Error parsing file[" << filename << "]\n";
   }
 
   return false;
@@ -2061,7 +2061,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 {
   if (_sdfString.empty())
   {
-    sdferr << "SDF string is empty.\n";
+    ignerr << "SDF string is empty.\n";
     return false;
   }
 
@@ -2097,7 +2097,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
   }
   else
   {
-    sdferr << "Error parsing XML from string[" << _sdfString << "]\n";
+    ignerr << "Error parsing XML from string[" << _sdfString << "]\n";
   }
 
   return false;

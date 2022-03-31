@@ -215,22 +215,8 @@ static bool contains(const std::string &_a, const std::string &_b)
 //////////////////////////////////////////////////
 TEST(Pose1_9, BadModelPoses)
 {
-  // Redirect sdferr output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
   {
-    buffer.str("");
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     std::ostringstream stream;
     stream
         << "<sdf version='1.9'>"
@@ -246,12 +232,13 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, buffer,
         "Undefined attribute //pose[@rotation_format='bad_rotation_format']");
   }
 
   {
-    buffer.str("");
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     std::ostringstream stream;
     stream
         << "<sdf version='1.9'>"
@@ -269,13 +256,14 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, buffer,
         "//pose[@rotation_format='euler_rpy'] must have 6 values, "
         "but 3 were found");
   }
 
   {
-    buffer.str("");
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     std::ostringstream stream;
     stream
         << "<sdf version='1.9'>"
@@ -293,13 +281,14 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, buffer,
         "//pose[@rotation_format='quat_xyzw'] must have 7 values, "
         "but 4 were found");
   }
 
   {
-    buffer.str("");
+    std::string logFile = sdf::testing::InitConsoleLogFile();
     std::ostringstream stream;
     stream
         << "<sdf version='1.9'>"
@@ -317,7 +306,8 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+    EXPECT_PRED2(contains, buffer,
         "//pose[@degrees='true'] does not apply when parsing quaternions");
   }
 }
@@ -325,22 +315,7 @@ TEST(Pose1_9, BadModelPoses)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseSet8ValuesFail)
 {
-  // Redirect sdferr output
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(false);
-  sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-#endif
-
-  buffer.str("");
-
+  std::string logFile = sdf::testing::InitConsoleLogFile();
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
   poseElem->AddValue("pose", "0 0 0   0 0 0", true);
@@ -352,7 +327,8 @@ TEST(Pose1_9, PoseSet8ValuesFail)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_FALSE(poseValueParam->SetFromString(
       "1 2 3   0.7071068 0.7071068 0 0   0"));
-  EXPECT_PRED2(contains, buffer.str(),
+  std::string buffer = sdf::testing::ReadConsoleLogFile(logFile);
+  EXPECT_PRED2(contains, buffer,
       "The value for //pose[@rotation_format='quat_xyzw'] must have 7 values, "
       "but more than that were found in '1 2 3   0.7071068 0.7071068 0 0   0'");
 }

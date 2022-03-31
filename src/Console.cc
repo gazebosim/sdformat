@@ -31,6 +31,7 @@
 using namespace sdf;
 
 /// Static pointer to the console.
+SDF_SUPPRESS_DEPRECATED_BEGIN
 static std::shared_ptr<Console> myself;
 static std::mutex g_instance_mutex;
 
@@ -185,3 +186,4 @@ std::ostream *Console::ConsoleStream::GetStream()
 {
   return this->stream;
 }
+SDF_SUPPRESS_DEPRECATED_END

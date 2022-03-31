@@ -27,6 +27,7 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
+#include "sdf/Types.hh"
 
 namespace sdf
 {
@@ -45,7 +46,8 @@ namespace sdf
 
   /// \class Exception Exception.hh common/common.hh
   /// \brief Class for generating exceptions
-  class SDFORMAT_VISIBLE Exception
+  /// \deprecated Use standard exceptions, if needed.
+  class SDF_DEPRECATED(13) SDFORMAT_VISIBLE Exception
   {
     /// \brief Constructor
     public: Exception();

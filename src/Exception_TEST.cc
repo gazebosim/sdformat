@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/Exception.hh"
 
+SDF_SUPPRESS_DEPRECATED_BEGIN
 ////////////////////////////////////////////////////
 /// Test exception throwing
 TEST(Exception, Throwing)
@@ -59,6 +60,7 @@ TEST(Exception, Throwing)
   EXPECT_ANY_THROW(throw sdf::InternalError());
   EXPECT_THROW(throw sdf::InternalError(), sdf::InternalError);
 }
+SDF_SUPPRESS_DEPRECATED_END
 
 /////////////////////////////////////////////////
 /// Main

@@ -75,7 +75,7 @@ namespace sdf
   /// \brief Handle a condition which can be treated as an error, warning or
   /// ignored entirely.
   /// Based on the policy, this will either add it to an errors vector, stream
-  /// it to sdfwarn, or sdfdbg.
+  /// it to ignwarn, or igndbg.
   /// \param[in] _policy The enforcement policy to follow
   /// \param[in] _error An error object to use if the policy is ERR
   /// \param[out] _errors The errors to append to if the policy is ERR
