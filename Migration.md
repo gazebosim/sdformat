@@ -16,6 +16,9 @@ but with improved human-readability..
 
 ### Deprecations
 
+1. **sdf/Console.hh**: Pleas use the Console logging features in Ignition
+   Common. All console logging in libsdformat now use the `ignerr`,
+   `ignwarn`, `igndbg`, and `ignmsg` output operators.
 1. **sdf/Types.hh**: The `split`, `trim`, `lowercase`, and `equal` functions
    are deprecated. These functions are replaced by equivalent functions in
    `ignition::common' and `ignition::math. The replacements are
