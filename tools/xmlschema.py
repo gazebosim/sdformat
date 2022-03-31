@@ -14,6 +14,7 @@ cmd_arg_parser.add_argument(
     "-i",
     "--in",
     dest="source",
+    metavar='FILE',
     required=True,
     type=str,
     help="SDF file inside of directory to compile.",
@@ -32,7 +33,7 @@ cmd_arg_parser.add_argument(
     dest="target",
     default=".",
     type=str,
-    help="Output directory for xsd file. Will be created if it doesn't exit.",
+    help="Output directory for XSD file. Will be created if it doesn't exist.",
 )
 cmd_arg_parser.add_argument(
     "--ns-prefix",
@@ -52,6 +53,13 @@ declared["imports"] = set()
 
 
 def _to_simple_type(in_type: str) -> str:
+"""
+Converts the input SDF type string to a XSD type string
+
+:param arg_type: input type
+:raise: RuntimeError if no mapping exists
+:returns: converted XSD string
+"""
     known_types = {
         "unsigned int": "xs:unsignedInt",
         "unsigned long": "xs:unsignedLong",
