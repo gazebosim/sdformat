@@ -71,7 +71,9 @@ def "shapes"
         }
     }
 
-    def Xform "box"
+    def Xform "box" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI"]
+    )
     {
         float3 xformOp:rotateXYZ = (0, 0, 0)
         double3 xformOp:translate = (0, 0, 0.5)

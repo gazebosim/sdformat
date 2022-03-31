@@ -30,6 +30,7 @@
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
 #include <pxr/usd/usd/primRange.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #include <pxr/usd/usdPhysics/scene.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -120,6 +121,8 @@ namespace usd
           scale,
           model.Name());
         model.SetRawPose(pose);
+
+        model.SetStatic(!prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
 
         _world.AddModel(model);
       }

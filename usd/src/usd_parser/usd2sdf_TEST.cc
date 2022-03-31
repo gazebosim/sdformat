@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <set>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -24,6 +25,7 @@
 
 #include <ignition/utilities/ExtraTestMacros.hh>
 
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
@@ -118,7 +120,21 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_EQ("ignition::gazebo::systems::SceneBroadcaster", plugins[3].Name());
     EXPECT_EQ(
       "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
-    // TODO(anyone) Check the remaining contents of outputUsdFilePath
-    // when the parser is implemented
+
+    // make sure all models in the USD file were correctly parsed to SDF
+    std::set<std::string> savedModelNames;
+    for (unsigned int i = 0; i < world->ModelCount(); ++i)
+      savedModelNames.insert(world->ModelByIndex(i)->Name());
+    EXPECT_EQ(6u, savedModelNames.size());
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("ground_plane"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("box"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("cylinder"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("sphere"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("capsule"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("ellipsoid"));
+
+    // check for static/non-static models
+    EXPECT_TRUE(world->ModelByName("ground_plane")->Static());
+    EXPECT_FALSE(world->ModelByName("box")->Static());
   }
 }
