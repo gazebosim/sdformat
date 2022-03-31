@@ -13,6 +13,7 @@ set(sources
   usd_parser/Parser.cc
   usd_parser/USD2SDF.cc
   usd_parser/USDData.cc
+  usd_parser/USDLights.cc
   usd_parser/USDMaterial.cc
   usd_parser/USDPhysics.cc
   usd_parser/USDStage.cc
@@ -47,6 +48,7 @@ set(gtest_sources
   sdf_parser/World_Sdf2Usd_TEST.cc
   usd_parser/USDData_TEST.cc
   usd_parser/USDPhysics_TEST.cc
+  usd_parser/USDLight_TEST.cc
   usd_parser/USDStage_TEST.cc
   usd_parser/USDTransforms_TEST.cc
   Conversions_TEST.cc
@@ -59,12 +61,17 @@ ign_build_tests(
   TYPE UNIT
   SOURCES ${gtest_sources}
   LIB_DEPS ${usd_target} ignition-cmake${IGN_CMAKE_VER}::utilities
-  INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+  INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test usd_parser
 )
 
 if (TARGET UNIT_USDPhysics_TEST)
   target_sources(UNIT_USDPhysics_TEST PRIVATE
   usd_parser/USDPhysics.cc)
+endif()
+
+if (TARGET UNIT_USDTransport_TEST)
+  target_sources(UNIT_USDTransport_TEST PRIVATE
+  usd_parser/USDTransforms.cc)
 endif()
 
 if (TARGET UNIT_Conversions_TEST)

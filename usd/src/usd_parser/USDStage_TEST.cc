@@ -39,7 +39,7 @@ TEST(USDStage, Constructor)
 
     EXPECT_EQ("Z", stage.UpAxis());
     EXPECT_DOUBLE_EQ(0.01, stage.MetersPerUnit());
-    EXPECT_EQ(23u, stage.USDPaths().size());
+    EXPECT_EQ(25u, stage.USDPaths().size());
   }
 
   // Check up Axis equal to Y and metersPerUnit
