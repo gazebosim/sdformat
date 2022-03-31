@@ -44,8 +44,8 @@ namespace sdf
     /// \param[in] _collision The SDF collision to parse.
     /// \param[in] _stage The stage that should contain the USD representation
     /// of _collision.
-    /// \param[in] _path The USD path of the parsed collision in _stage, which must
-    /// be a valid USD path.
+    /// \param[in] _path The USD path of the parsed collision in _stage,
+    /// which must be a valid USD path.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
     UsdErrors ParseSdfCollision(

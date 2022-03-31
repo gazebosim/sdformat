@@ -153,7 +153,8 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string groundPlaneVisualPath = groundPlaneLinkPath + "/visual";
   const std::string groundPlaneGeometryPath =
     groundPlaneVisualPath + "/geometry";
-  const std::string groundPlaneCollisionPath = groundPlaneLinkPath + "/collision";
+  const std::string groundPlaneCollisionPath =
+    groundPlaneLinkPath + "/collision";
   const std::string groundPlaneCollisionGeometryPath =
     groundPlaneCollisionPath + "/geometry";
 
@@ -163,7 +164,8 @@ TEST_F(UsdStageFixture, Geometry)
 
   const auto groundPlaneCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneCollisionGeometryPath));
-  EXPECT_TRUE(groundPlaneCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
+  EXPECT_TRUE(
+    groundPlaneCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto groundPlaneGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneGeometryPath));
   ASSERT_TRUE(groundPlaneGeometry);
@@ -212,7 +214,8 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string cylinderVisualPath = cylinderLinkPath + "/visual";
   const std::string cylinderGeometryPath = cylinderVisualPath + "/geometry";
   const std::string cylinderCollisionPath = cylinderLinkPath + "/collision";
-  const std::string cylinderCollisionGeometryPath = cylinderCollisionPath + "/geometry";
+  const std::string cylinderCollisionGeometryPath =
+    cylinderCollisionPath + "/geometry";
   const auto cylinderCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(cylinderCollisionGeometryPath));
   EXPECT_TRUE(cylinderCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
@@ -235,7 +238,8 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string sphereVisualPath = sphereLinkPath + "/sphere_vis";
   const std::string sphereGeometryPath = sphereVisualPath + "/geometry";
   const std::string sphereCollisionPath = sphereLinkPath + "/collision";
-  const std::string sphereCollisionGeometryPath = sphereCollisionPath + "/geometry";
+  const std::string sphereCollisionGeometryPath =
+    sphereCollisionPath + "/geometry";
   const auto sphereCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(sphereCollisionGeometryPath));
   EXPECT_TRUE(sphereCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
@@ -274,7 +278,8 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string meshGeometryPath = meshVisualPath + "/geometry";
   const std::string meshGeometryMeshPath = meshGeometryPath + "/Cube";
   const std::string capsuleCollisionPath = capsuleLinkPath + "/collision";
-  const std::string capsuleCollisionGeometryPath = capsuleCollisionPath + "/geometry";
+  const std::string capsuleCollisionGeometryPath =
+    capsuleCollisionPath + "/geometry";
   const auto capsuleCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(capsuleCollisionGeometryPath));
   EXPECT_TRUE(capsuleCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());

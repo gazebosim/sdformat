@@ -49,7 +49,8 @@ namespace usd
   {
     UsdErrors errors;
     const pxr::SdfPath sdfCollisionPath(_path);
-    auto usdCollisionXform = pxr::UsdGeomXform::Define(_stage, sdfCollisionPath);
+    auto usdCollisionXform = pxr::UsdGeomXform::Define(
+      _stage, sdfCollisionPath);
     if (!usdCollisionXform)
     {
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_USD_DEFINITION,
@@ -57,14 +58,9 @@ namespace usd
       return errors;
     }
 
-    auto primlol = _stage->GetPrimAtPath(pxr::SdfPath(sdfCollisionPath));
-    primlol.CreateAttribute(pxr::TfToken("purpose"),
+    auto collisionPrim = _stage->GetPrimAtPath(pxr::SdfPath(sdfCollisionPath));
+    collisionPrim.CreateAttribute(pxr::TfToken("purpose"),
         pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("guide"));
-    // auto visibilityProp = primlol.HasProperty(pxr::TfToken("visibility"));
-    // auto property = primlol.GetProperty(pxr::TfToken("visibility"));
-    // auto extentAttr = primlol.GetAttribute(pxr::TfToken("visibility"));
-    // extentAttr.Set(pxr::TfToken("guide"));
-    // std::cerr << "visibilityProp " << visibilityProp << '\n';
 
     ignition::math::Pose3d pose;
     auto poseErrors = usd::PoseWrtParent(_collision, pose);
@@ -94,7 +90,8 @@ namespace usd
       errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
       errors.push_back(UsdError(
         sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-        "Error parsing geometry attached to _collision [" + _collision.Name() + "]"));
+        "Error parsing geometry attached to _collision [" +
+        _collision.Name() + "]"));
       return errors;
     }
 
