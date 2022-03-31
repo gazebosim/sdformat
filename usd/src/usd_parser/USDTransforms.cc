@@ -254,10 +254,13 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       qY = ignition::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
       qZ = ignition::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
 
-      if (op == kXFormOpRotateZYX)
-      {
-        std::swap(angleX, angleZ);
-      }
+      // TODO(ahcorde) This part should be reviewed, revisit how rotateXYZ
+      // and rotateZYX are handle.
+      // Related issue https://github.com/ignitionrobotics/sdformat/issues/926
+      // if (op == kXFormOpRotateZYX)
+      // {
+      //   std::swap(angleX, angleZ);
+      // }
       t.SetRotation((qX * qY) * qZ);
     }
     else if (op == kXFormOpTranslate)
