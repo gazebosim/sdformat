@@ -103,6 +103,9 @@ namespace usd
       // the shortName variable defines if this is the first case when it's
       // False or when it's true then it's the second case.
       // This conversion might only work with Issac Sim USDs
+      // TODO(adlarkin) find a better way to get root model prims/parent prims
+      // of lights attached to the stage: see
+      // https://github.com/ignitionrobotics/sdformat/issues/927
       if (primPathTokens.size() >= 2)
       {
         bool shortName = false;

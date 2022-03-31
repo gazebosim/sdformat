@@ -59,8 +59,8 @@ namespace usd
     float intensity;
     variantLight.GetIntensityAttr().Get(&intensity);
     // This value was found trying to find a similar light intensity
-    // in both simulators. Might be wrong
-    // TODO(ahcorde): Convert the light intensity with a equation or unit
+    // between isaac sim and gazebo. Might be wrong
+    // TODO(ahcorde): Convert the light intensity with an equation or unit
     // conversions
     light->SetIntensity(intensity / 10000);
     float diffuse;
