@@ -39,7 +39,7 @@
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -58,7 +58,7 @@ namespace usd
       return errors;
     }
 
-    auto collisionPrim = _stage->GetPrimAtPath(pxr::SdfPath(sdfCollisionPath));
+    auto collisionPrim = _stage->GetPrimAtPath(sdfCollisionPath);
     collisionPrim.CreateAttribute(pxr::TfToken("purpose"),
         pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("guide"));
 
@@ -77,7 +77,7 @@ namespace usd
       for (const auto &e : poseErrors)
         errors.push_back(e);
       errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Unable to set the pose of the link prim corresponding to the "
+            "Unable to set the pose of the prim corresponding to the "
             "SDF collision named [" + _collision.Name() + "]"));
       return errors;
     }
@@ -108,8 +108,7 @@ namespace usd
     {
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
         "Internal error: unable to apply a collision to the prim at path ["
-        + _path + "]"));
-      return errors;
+        + geometryPath + "]"));
     }
 
     return errors;

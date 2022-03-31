@@ -143,18 +143,21 @@ namespace usd
       }
     }
 
-    // parse all of the link's collision and convert them to USD
+    // parse all of the link's collisions and convert them to USD
     for (uint64_t i = 0; i < _link.CollisionCount(); ++i)
     {
       const auto collision = *(_link.CollisionByIndex(i));
       const auto collisionPath = std::string(_path + "/" + collision.Name());
-      auto errorsLink = ParseSdfCollision(collision, _stage, collisionPath);
-      if (!errorsLink.empty())
+      auto errorsCollision = ParseSdfCollision(collision, _stage,
+          collisionPath);
+      if (!errorsCollision.empty())
       {
-        errors.insert(errors.end(), errorsLink.begin(), errorsLink.end());
+        errors.insert(errors.end(), errorsCollision.begin(),
+            errorsCollision.end());
         errors.push_back(UsdError(
           sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-          "Error parsing collision [" + collision.Name() + "]"));
+          "Error parsing collision [" + collision.Name()
+          + "] attached to link [" + _link.Name() + "]"));
         return errors;
       }
     }

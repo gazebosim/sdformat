@@ -164,6 +164,7 @@ TEST_F(UsdStageFixture, Geometry)
 
   const auto groundPlaneCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneCollisionGeometryPath));
+  ASSERT_TRUE(groundPlaneCollisionGeometry);
   EXPECT_TRUE(
     groundPlaneCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto groundPlaneGeometry = this->stage->GetPrimAtPath(
@@ -193,6 +194,7 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string boxCollisionGeometryPath = boxCollisionPath + "/geometry";
   const auto boxCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(boxCollisionGeometryPath));
+  ASSERT_TRUE(boxCollisionGeometry);
   EXPECT_TRUE(boxCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
 
   ASSERT_TRUE(boxGeometry);
@@ -218,6 +220,7 @@ TEST_F(UsdStageFixture, Geometry)
     cylinderCollisionPath + "/geometry";
   const auto cylinderCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(cylinderCollisionGeometryPath));
+  ASSERT_TRUE(cylinderCollisionGeometry);
   EXPECT_TRUE(cylinderCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto cylinderGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(cylinderGeometryPath));
@@ -242,6 +245,7 @@ TEST_F(UsdStageFixture, Geometry)
     sphereCollisionPath + "/geometry";
   const auto sphereCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(sphereCollisionGeometryPath));
+  ASSERT_TRUE(sphereCollisionGeometry);
   EXPECT_TRUE(sphereCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto sphereGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(sphereGeometryPath));
@@ -282,6 +286,7 @@ TEST_F(UsdStageFixture, Geometry)
     capsuleCollisionPath + "/geometry";
   const auto capsuleCollisionGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(capsuleCollisionGeometryPath));
+  ASSERT_TRUE(capsuleCollisionGeometry);
   EXPECT_TRUE(capsuleCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto meshGeometryParentPrim = this->stage->GetPrimAtPath(
       pxr::SdfPath(meshGeometryPath));
