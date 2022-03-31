@@ -64,9 +64,6 @@ namespace usd
     if (!errors.empty())
       return errors;
 
-    sdf::Model model;
-    sdf::Model * modelPtr;
-
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
     {
@@ -102,17 +99,16 @@ namespace usd
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
 
-      // This assumption on the scene graph it wouldn't hold if the usd does
+      // This assumption on the scene graph wouldn't hold if the usd does
       // not come from Isaac Sim
-      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
+      if (primPathTokens.size() == 2 && !prim.IsA<pxr::UsdGeomCamera>()
           && !prim.IsA<pxr::UsdPhysicsScene>()
           && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
           && !prim.IsA<pxr::UsdLuxNonboundableLightBase>())
       {
-        model = sdf::Model();
-        model.SetName(primPathTokens[0]);
-        _world.AddModel(model);
-        modelPtr = _world.ModelByName(primPathTokens[0]);
+        std::cerr << "processing a model at " << primPathTokens[1] << "\n";
+        sdf::Model model;
+        model.SetName(primPathTokens[1]);
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale{1, 1, 1};
@@ -123,7 +119,9 @@ namespace usd
           pose,
           scale,
           model.Name());
-        modelPtr->SetRawPose(pose);
+        model.SetRawPose(pose);
+
+        _world.AddModel(model);
       }
 
       // In general USD models used in Issac Sim define the model path
