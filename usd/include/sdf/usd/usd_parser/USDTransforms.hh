@@ -53,8 +53,6 @@ namespace sdf
     /// This might contain scale, translate or rotation operations
     /// The booleans are used to check if there is a transform defined
     /// in the schema
-    /// Rotation is splitted in a vector because this might be defined
-    /// as a rotation of 3 angles (ZYX, XYZ, etc).
     class IGNITION_SDFORMAT_USD_VISIBLE UDSTransforms
     {
       /// \brief Default constructor
@@ -68,13 +66,10 @@ namespace sdf
       /// \return A 3D vector with the scale
       public: const ignition::math::Vector3d Scale() const;
 
-      /// \brief Rotation
-      /// \return Return a vector with all the rotations
-      /// If RotationXYZ or RotationZYY is true, this method will return a
-      /// vector of 3 quaternions, Rotation<axis1><axis2><axis3> with the first
-      /// quaternion being rotation <axis1>, the second being rotation about
-      /// <axis2>, and the third being rotation about <axis3>
-      public: const std::vector<ignition::math::Quaterniond> Rotations() const;
+      /// \brief Get the Rotation
+      /// \return Return The rotation, if one exists. If no rotation exists,
+      /// std::nullopt is returned
+      public: const std::optional<ignition::math::Quaterniond> Rotation() const;
 
       /// \brief Set translate
       /// \param[in] _translate Translate to set
@@ -84,33 +79,9 @@ namespace sdf
       /// \param[in] _scale Scale to set
       public: void SetScale(const ignition::math::Vector3d &_scale);
 
-      /// \brief Add rotation
-      /// \param[in] _q Quaternion to add to the list of rotations
-      public: void AddRotation(const ignition::math::Quaterniond &_q);
-
-      /// \brief True if there is a rotation ZYX defined or false otherwise
-      public: bool RotationZYX() const;
-
-      /// \brief True if there is a rotation XYZ defined or false otherwise
-      public: bool RotationXYZ() const;
-
-      /// \brief True if there is a rotation (as a quaternion) defined
-      /// or false otherwise
-      public: bool Rotation() const;
-
-      /// \brief Set if there is any rotation ZYX defined
-      /// RotationZYX is used to determine the order of stored rotations
-      /// If RotationZYX is true, then Rotation should be True too
-      /// If Rotation is false, then RotationZYX cannot be true
-      /// \param[in] _rotationZYX If the rotation is ZYX (true) or not (false)
-      public: void SetRotationZYX(bool _rotationZYX);
-
-      /// \brief Set if there is any rotation XYZ defined
-      /// RotationXYZ is used to determine the order of stored rotations
-      /// If RotationXYZ is true, then Rotation should be True too
-      /// If Rotation is false, then RotationXYZ cannot be true
-      /// \param[in] _rotationXYZ If the rotation is XYZ (true) or not (false)
-      public: void SetRotationXYZ(bool _rotationXYZ);
+      /// \brief Set rotation
+      /// \param[in] _q Quaternion that defines the rotation
+      public: void SetRotation(const ignition::math::Quaterniond &_q);
 
       /// \brief Private data pointer.
       IGN_UTILS_IMPL_PTR(dataPtr)
