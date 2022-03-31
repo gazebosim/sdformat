@@ -16,7 +16,9 @@ but with improved human-readability..
 
 ### Deprecations
 
-1. **sdf/Console.hh**: Pleas use the Console logging features in Ignition
+1. **sdf/Exception.hh**: The Exception class within libsdformat is
+   deprecated, and was not used by libsdformat. If you need exception
+   handling, please consider std::exception.
    Common. All console logging in libsdformat now use the `ignerr`,
    `ignwarn`, `igndbg`, and `ignmsg` output operators.
 1. **sdf/Types.hh**: The `split`, `trim`, `lowercase`, and `equal` functions
