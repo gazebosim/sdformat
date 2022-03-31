@@ -98,7 +98,7 @@ namespace usd
       // under a root path for example:
       //  -> /robot_name/robot_name_link0
       // But sometimes for enviroments it uses just a simple path:
-      //  -> /ground_plan
+      //  -> /ground_plane
       //  -> /wall_0
       // the shortName variable defines if this is the first case when it's
       // False or when it's true then it's the second case.
@@ -117,7 +117,7 @@ namespace usd
             }
           }
         }
-        if(!shortName)
+        if (!shortName)
         {
           linkName = "/" + primPathTokens[0] + "/" + primPathTokens[1];
         }
@@ -130,11 +130,12 @@ namespace usd
         light->SetName(primName);
         if (light)
         {
-          _world.AddLight(*light.get());
-          // TODO(ahcorde): Include lights which are inside links
+          _world.AddLight(light.value());
+          // TODO(ahcorde) Include lights which are inside links
         }
         continue;
       }
+      // TODO(anyone) support converting other USD light types
 
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {

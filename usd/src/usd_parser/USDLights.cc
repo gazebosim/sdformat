@@ -36,18 +36,18 @@
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  std::shared_ptr<sdf::Light> ParseUSDLights(
+  std::optional<sdf::Light> ParseUSDLights(
     const pxr::UsdPrim &_prim,
-    USDData &_usdData,
+    const USDData &_usdData,
     const std::string &_linkName)
   {
-    std::shared_ptr<sdf::Light> light;
-    light = std::make_shared<sdf::Light>();
+    sdf::Light lightSdf;
+    std::optional<sdf::Light> light = lightSdf;
 
     auto variantLight = pxr::UsdLuxBoundableLightBase(_prim);
 
@@ -58,7 +58,7 @@ namespace usd
     light->SetName(_prim.GetPath().GetName());
     float intensity;
     variantLight.GetIntensityAttr().Get(&intensity);
-    light->SetIntensity(intensity/10000);
+    light->SetIntensity(intensity / 10000);
     float diffuse;
     variantLight.GetDiffuseAttr().Get(&diffuse);
     light->SetDiffuse(ignition::math::Color(diffuse, diffuse, diffuse, 1));
@@ -70,6 +70,13 @@ namespace usd
     if (_prim.IsA<pxr::UsdLuxDistantLight>())
     {
       light->SetType(sdf::LightType::DIRECTIONAL);
+
+      // DistantLight in USD does not define height. Added some height to the
+      // light. The default sun light in ign-gazebo sdf world is 10.
+      pose += ignition::math::Pose3d(0, 0, 10, 0, 0, 0);
+      // Light emitted from a distant source along the -Z axis
+      // The pose should set the direction
+      light->SetDirection(ignition::math::Vector3d(0, 0, -1));
     }
     else if (_prim.IsA<pxr::UsdLuxDiskLight>())
     {
@@ -79,22 +86,9 @@ namespace usd
       light->SetSpotOuterAngle(0.5);
       light->SetSpotFalloff(0.8);
     }
-    if (_prim.IsA<pxr::UsdLuxDistantLight>() ||
-        _prim.IsA<pxr::UsdLuxDiskLight>())
-    {
-      if(_prim.IsA<pxr::UsdLuxDistantLight>())
-      {
-        // DistantLight in USD does no define height. Added some height to the
-        // light. The default sun light in ign-gazebo sdf world is 10.
-        pose += ignition::math::Pose3d(0, 0, 10, 0, 0, 0);
-        // Light emitted from a distant source along the -Z axis
-        // The pose should set the direction
-        light->SetDirection(ignition::math::Vector3d(0, 0, -1));
-      }
-    }
     else
     {
-      return nullptr;
+      return std::nullopt;
     }
     light->SetRawPose(pose);
     return light;
