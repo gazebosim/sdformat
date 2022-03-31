@@ -250,14 +250,15 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       ignition::math::Angle angleX(IGN_DTOR(rotationEuler[0]));
       ignition::math::Angle angleY(IGN_DTOR(rotationEuler[1]));
       ignition::math::Angle angleZ(IGN_DTOR(rotationEuler[2]));
+      qX = ignition::math::Quaterniond(angleX.Normalized().Radian(), 0, 0);
+      qY = ignition::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
+      qZ = ignition::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
+
       if (op == kXFormOpRotateZYX)
       {
         std::swap(angleX, angleZ);
       }
-      t.SetRotation(ignition::math::Quaterniond(
-            angleX.Normalized().Radian(),
-            angleY.Normalized().Radian(),
-            angleZ.Normalized().Radian()));
+      t.SetRotation((qX * qY) * qZ);
     }
     else if (op == kXFormOpTranslate)
     {
