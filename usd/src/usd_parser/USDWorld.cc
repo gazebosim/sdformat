@@ -149,7 +149,7 @@ namespace usd
             }
           }
         }
-        if(!shortName)
+        if (!shortName)
         {
           linkName = "/" + primPathTokens[0] + "/" + primPathTokens[1];
         }
@@ -162,11 +162,12 @@ namespace usd
         light->SetName(primName);
         if (light)
         {
-          _world.AddLight(*light.get());
-          // TODO(ahcorde): Include lights which are inside links
+          _world.AddLight(light.value());
+          // TODO(ahcorde) Include lights which are inside links
         }
         continue;
       }
+      // TODO(anyone) support converting other USD light types
 
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {

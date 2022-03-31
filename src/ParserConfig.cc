@@ -173,15 +173,3 @@ bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
 }
-
-/////////////////////////////////////////////////
-void ParserConfig::SetToElementUseIncludeTag(bool _useIncludeTag)
-{
-  this->dataPtr->toElementUseIncludeTag = _useIncludeTag;
-}
-
-/////////////////////////////////////////////////
-bool ParserConfig::ToElementUseIncludeTag() const
-{
-  return this->dataPtr->toElementUseIncludeTag;
-}

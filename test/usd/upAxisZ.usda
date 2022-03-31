@@ -19,6 +19,7 @@ def "shapes"
     )
     {
         float angle = 1
+        float inputs:diffuse = 0.5
         float inputs:intensity = 5000
         float shaping:cone:angle = 180
         float3 xformOp:rotateZYX = (0, 45, 0)
@@ -32,6 +33,7 @@ def "shapes"
     )
     {
         float inputs:intensity = 3000
+        float inputs:specular = 0.5
         float3 xformOp:rotateZYX = (0, 0, 45)
         float3 xformOp:translate = (0, 0, 1000)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]

@@ -974,7 +974,7 @@ void Model::SetUri(const std::string &_uri)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement(const ParserConfig &_config) const
+sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
 {
   if (_config.ToElementUseIncludeTag() && !this->dataPtr->uri.empty())
   {

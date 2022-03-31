@@ -58,28 +58,34 @@ TEST(USDLightsTest, DistanceLight)
   ASSERT_TRUE(prim);
 
   auto light = sdf::usd::ParseUSDLights(
-    prim, usdData, "/World/defaultLight");
+    prim, usdData, "/shapes");
   ASSERT_TRUE(light);
 
   EXPECT_EQ("defaultLight", light->Name());
+  EXPECT_EQ(sdf::LightType::DIRECTIONAL, light->Type());
   EXPECT_TRUE(light->CastShadows());
-  EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), light->Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.5, 0.5, 0.5, 1), light->Diffuse());
   EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), light->Specular());
   EXPECT_FLOAT_EQ(0.5, light->Intensity());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 10, 0, 0.785398, 0), light->RawPose());
+  EXPECT_EQ(ignition::math::Pose3d(0, 0, 10, 0, IGN_DTOR(45), 0),
+      light->RawPose());
 
   prim = stage->GetPrimAtPath(pxr::SdfPath("/shapes/diskLight"));
   ASSERT_TRUE(prim);
 
-  auto disklight = sdf::usd::ParseUSDLights(
-    prim, usdData, "/World/diskLight");
-  ASSERT_TRUE(disklight);
+  auto diskLight = sdf::usd::ParseUSDLights(
+    prim, usdData, "/shapes");
+  ASSERT_TRUE(diskLight);
 
-  EXPECT_EQ("diskLight", disklight->Name());
-  EXPECT_TRUE(disklight->CastShadows());
-  EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), disklight->Diffuse());
-  EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), disklight->Specular());
-  EXPECT_FLOAT_EQ(0.3, disklight->Intensity());
+  EXPECT_EQ("diskLight", diskLight->Name());
+  EXPECT_EQ(sdf::LightType::SPOT, diskLight->Type());
+  EXPECT_TRUE(diskLight->CastShadows());
+  EXPECT_EQ(ignition::math::Color(1, 1, 1, 1), diskLight->Diffuse());
+  EXPECT_EQ(ignition::math::Color(0.5, 0.5, 0.5, 1), diskLight->Specular());
+  EXPECT_FLOAT_EQ(0.3, diskLight->Intensity());
   EXPECT_EQ(
-    ignition::math::Pose3d(0, 0, 10, 0, 0, 0.785398), disklight->RawPose());
+    ignition::math::Pose3d(0, 0, 10, 0, 0, IGN_DTOR(45)), diskLight->RawPose());
+  EXPECT_DOUBLE_EQ(0.1, diskLight->SpotInnerAngle().Radian());
+  EXPECT_DOUBLE_EQ(0.5, diskLight->SpotOuterAngle().Radian());
+  EXPECT_DOUBLE_EQ(0.8, diskLight->SpotFalloff());
 }
