@@ -1,6 +1,7 @@
 if(TARGET ${usd_target})
   add_executable(sdf2usd
     sdf2usd.cc
+    ../sdf_parser/Collision.cc
     ../sdf_parser/Model.cc
     ../sdf_parser/Joint.cc
     ../sdf_parser/Link.cc
