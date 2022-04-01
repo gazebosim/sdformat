@@ -33,17 +33,17 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-  sdf::Link * ParseUSDLinks(
-    const pxr::UsdPrim &_prim,
-    const std::string &_nameLink,
-    sdf::Link *_link,
-    USDData &_usdData,
-    int &_skipPrim);
+    sdf::Link * ParseUSDLinks(
+      const pxr::UsdPrim &_prim,
+      const std::string &_nameLink,
+      sdf::Link *_link,
+      USDData &_usdData,
+      int &_skipPrim);
   }
   }
 }

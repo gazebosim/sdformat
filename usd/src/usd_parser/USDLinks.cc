@@ -123,8 +123,6 @@ sdf::Link * ParseUSDLinks(
   std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(primNameStr);
 
-  double metersPerUnit = data.second->MetersPerUnit();
-
   // Is this a new link ?
   if (_link == nullptr)
   {
