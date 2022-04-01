@@ -23,9 +23,9 @@
 #include <unordered_set>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/SemanticVersion.hh>
 
-#include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
@@ -724,12 +724,12 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     return false;
   }
 
-  if (filesystem::is_directory(filename))
+  if (ignition::common::isDirectory(filename))
   {
     filename = getModelFilePath(filename);
   }
 
-  if (!filesystem::exists(filename))
+  if (!ignition::common::exists(filename))
   {
     ignerr << "File [" << filename << "] doesn't exist.\n";
     return false;
@@ -1201,12 +1201,12 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   /// \todo This hardcoded bit is very Gazebo centric. It should
   /// be abstracted away, possibly through a plugin to SDF.
-  configFilePath = sdf::filesystem::append(_modelDirPath, "model.config");
-  if (!sdf::filesystem::exists(configFilePath))
+  configFilePath = ignition::common::joinPaths(_modelDirPath, "model.config");
+  if (!ignition::common::exists(configFilePath))
   {
     // We didn't find model.config, look for manifest.xml instead
-    configFilePath = sdf::filesystem::append(_modelDirPath, "manifest.xml");
-    if (!sdf::filesystem::exists(configFilePath))
+    configFilePath = ignition::common::joinPaths(_modelDirPath, "manifest.xml");
+    if (!ignition::common::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
       ignerr << "Could not find model.config or manifest.xml in ["
@@ -1245,7 +1245,7 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     return std::string();
   }
 
-  return sdf::filesystem::append(_modelDirPath, modelFileName);
+  return ignition::common::joinPaths(_modelDirPath, modelFileName);
 }
 
 //////////////////////////////////////////////////
@@ -1403,7 +1403,7 @@ static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
     }
     else
     {
-      if (sdf::filesystem::is_directory(modelPath))
+      if (ignition::common::isDirectory(modelPath))
       {
         // Get the model.config filename
         _fileName = getModelFilePath(modelPath);

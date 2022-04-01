@@ -18,6 +18,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/sdf.hh"
 
@@ -156,7 +157,7 @@ TEST(SDFParser, ReloadIncludedCustomElements)
   sdf::setFindCallback(
     [&](const std::string &_file)
     {
-      return sdf::filesystem::append(modelPath, _file);
+      return ignition::common::joinPaths(modelPath, _file);
     });
 
   const std::string sdfStr =
@@ -258,7 +259,7 @@ TEST(SDFParser, ReloadNestedIncludedCustomElements)
   sdf::setFindCallback(
     [&](const std::string &_file)
     {
-      return sdf::filesystem::append(modelPath, _file);
+      return ignition::common::joinPaths(modelPath, _file);
     });
 
   const std::string sdfStr =

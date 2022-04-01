@@ -18,8 +18,8 @@
 #include <gtest/gtest.h>
 #include <array>
 #include <sstream>
+#include <ignition/common/Filesystem.hh>
 #include "sdf/Exception.hh"
-#include "sdf/Filesystem.hh"
 
 #include "Converter.hh"
 #include "XmlUtils.hh"

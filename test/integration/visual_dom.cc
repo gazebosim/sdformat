@@ -17,10 +17,10 @@
 
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"

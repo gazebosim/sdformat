@@ -16,7 +16,7 @@
  */
 #include <string>
 #include <gtest/gtest.h>
-#include "sdf/Filesystem.hh"
+#include <ignition/common/Filesystem.hh>
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
@@ -38,7 +38,7 @@ TEST(ParamPassingTest, ExperimentalParamsTag)
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
-        return sdf::filesystem::append(modelRootPath, _file);
+        return ignition::common::joinPaths(modelRootPath, _file);
       });
 
   // checks normal <include> (w/o <experimental:params>)
@@ -141,7 +141,7 @@ TEST(ParamPassingTest, NestedInclude)
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
-        return sdf::filesystem::append(modelRootPath, _file);
+        return ignition::common::joinPaths(modelRootPath, _file);
       });
 
   // checks correctly specified elements in <experimental:params>
@@ -176,7 +176,7 @@ TEST(ParamPassingTest, CheckPluginClone)
   sdf::setFindCallback(
       [&](const std::string &_file)
       {
-        return sdf::filesystem::append(modelRootPath, _file);
+        return ignition::common::joinPaths(modelRootPath, _file);
       });
 
   // checks <include> containing <experimental:params> w/ correctly specified

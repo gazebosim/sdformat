@@ -19,10 +19,10 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Frame.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -1260,7 +1260,7 @@ TEST(DOMFrame, WorldIncludeModel)
 TEST(Frame, IncludeFrameWithSubmodel)
 {
   const std::string MODEL_PATH =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
+    ignition::common::joinPaths(PROJECT_SOURCE_PATH, "test", "integration",
                             "model", "box_with_submodel");
 
   std::ostringstream stream;

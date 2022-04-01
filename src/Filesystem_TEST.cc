@@ -180,6 +180,7 @@ bool create_new_file_hardlink(const std::string &_hardlink,
 
 #include "sdf/Filesystem.hh"
 
+SDF_SUPPRESS_DEPRECATED_BEGIN
 /////////////////////////////////////////////////
 TEST(Filesystem, exists)
 {
@@ -358,6 +359,7 @@ TEST(Filesystem, directory_iterator)
 
   EXPECT_EQ(found_items.size(), 0UL);
 }
+SDF_SUPPRESS_DEPRECATED_END
 
 /////////////////////////////////////////////////
 /// Main

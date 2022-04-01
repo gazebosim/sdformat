@@ -21,8 +21,9 @@
 #include <string>
 #include <string.h>
 
+#include <ignition/common/Filesystem.hh>
+
 #include "sdf/sdf_config.h"
-#include "sdf/Filesystem.hh"
 #include "sdf/Root.hh"
 #include "sdf/parser.hh"
 #include "sdf/PrintConfig.hh"
@@ -73,7 +74,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
-  if (!sdf::filesystem::exists(_path))
+  if (!ignition::common::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
     return -1;
@@ -136,7 +137,7 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
     int inDegrees, int snapToDegrees, float snapTolerance)
 {
-  if (!sdf::filesystem::exists(_path))
+  if (!ignition::common::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
     return -1;
@@ -174,7 +175,7 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdPrintPreserveIncludes(const char *_path)
 {
-  if (!sdf::filesystem::exists(_path))
+  if (!ignition::common::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
     return -1;
@@ -206,7 +207,7 @@ extern "C" SDFORMAT_VISIBLE int cmdPrintPreserveIncludes(const char *_path)
 extern "C" SDFORMAT_VISIBLE int cmdGraph(
     const char *_graphType, const char *_path)
 {
-  if (!sdf::filesystem::exists(_path))
+  if (!ignition::common::exists(_path))
   {
     std::cerr << "Error: File [" << _path << "] does not exist.\n";
     return -1;

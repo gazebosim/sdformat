@@ -19,9 +19,9 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <ignition/common/Filesystem.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Collision.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"

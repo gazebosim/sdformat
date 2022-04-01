@@ -20,9 +20,9 @@
 #include <cstdlib>
 #include <gtest/gtest.h>
 #include <ignition/common/Console.hh>
+#include <ignition/common/Filesystem.hh>
 #include "sdf/parser.hh"
 #include "sdf/Element.hh"
-#include "sdf/Filesystem.hh"
 #include "test_config.h"
 #include "test_utils.hh"
 
@@ -768,7 +768,7 @@ TEST(Parser, ElementFilePath)
   // path.
   auto includedModel = root->GetElement("world")->GetElement("model");
   EXPECT_EQ("included_model", includedModel->Get<std::string>("name"));
-  EXPECT_EQ(findFileCb(sdf::filesystem::append("test_model", "model.sdf")),
+  EXPECT_EQ(findFileCb(ignition::common::joinPaths("test_model", "model.sdf")),
       includedModel->FilePath());
 
   // direct_model is loaded from a string along with the containing world, so

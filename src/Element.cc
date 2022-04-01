@@ -23,7 +23,6 @@
 
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
-#include "sdf/Filesystem.hh"
 
 using namespace sdf;
 

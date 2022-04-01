@@ -25,11 +25,11 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
@@ -81,8 +81,8 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
       for (const auto &path : paths)
       {
         // Return the path string if the path + suffix exists.
-        std::string pathSuffix = sdf::filesystem::append(path, suffix);
-        if (sdf::filesystem::exists(pathSuffix))
+        std::string pathSuffix = ignition::common::joinPaths(path, suffix);
+        if (ignition::common::exists(pathSuffix))
         {
           return pathSuffix;
         }
@@ -100,24 +100,24 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   }
 
   // Next check the install path.
-  std::string path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
-  if (sdf::filesystem::exists(path))
+  std::string path = ignition::common::joinPaths(SDF_SHARE_PATH, filename);
+  if (ignition::common::exists(path))
   {
     return path;
   }
 
   // Next check the versioned install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH,
+  path = ignition::common::joinPaths(SDF_SHARE_PATH,
                                  "sdformat" SDF_MAJOR_VERSION_STR,
                                  sdf::SDF::Version(), filename);
-  if (sdf::filesystem::exists(path))
+  if (ignition::common::exists(path))
   {
     return path;
   }
 
   // Next check to see if the given file exists.
   path = filename;
-  if (sdf::filesystem::exists(path))
+  if (ignition::common::exists(path))
   {
     return path;
   }
@@ -129,8 +129,8 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
-      path = sdf::filesystem::append(*iter, filename);
-      if (sdf::filesystem::exists(path))
+      path = ignition::common::joinPaths(*iter, filename);
+      if (ignition::common::exists(path))
       {
         return path;
       }
@@ -140,8 +140,9 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // Finally check the local path, if the flag is set.
   if (_searchLocalPath)
   {
-    path = sdf::filesystem::append(sdf::filesystem::current_path(), filename);
-    if (sdf::filesystem::exists(path))
+    path = ignition::common::joinPaths(ignition::common::cwd(),
+        filename);
+    if (ignition::common::exists(path))
     {
       return path;
     }

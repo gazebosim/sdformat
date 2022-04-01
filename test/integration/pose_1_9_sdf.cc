@@ -20,6 +20,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
@@ -30,7 +31,6 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "sdf/Filesystem.hh"
 #include "test_config.h"
 #include "test_utils.hh"
 

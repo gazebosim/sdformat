@@ -20,7 +20,6 @@
 
 #include <ignition/common/Console.hh>
 
-#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"
 

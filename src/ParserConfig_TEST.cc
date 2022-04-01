@@ -17,7 +17,6 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/Filesystem.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/SDFImpl.hh"
 #include "test_config.h"

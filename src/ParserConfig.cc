@@ -16,9 +16,9 @@
  */
 
 #include <optional>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/ParserConfig.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
 
 using namespace sdf;
@@ -100,7 +100,7 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
   for (const auto &part : ignition::common::split(_path, multiplePathSeparator))
   {
     // Only add valid paths
-    if (!part.empty() && sdf::filesystem::is_directory(part))
+    if (!part.empty() && ignition::common::isDirectory(part))
     {
       this->dataPtr->uriPathMap[_uri].push_back(part);
     }

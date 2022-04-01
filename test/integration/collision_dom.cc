@@ -17,12 +17,12 @@
 
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Collision.hh"
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"

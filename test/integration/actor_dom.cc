@@ -18,9 +18,9 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Actor.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"

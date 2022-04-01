@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/Filesystem.hh"
+#include <ignition/common/Filesystem.hh>
 #include "sdf/Model.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Root.hh"

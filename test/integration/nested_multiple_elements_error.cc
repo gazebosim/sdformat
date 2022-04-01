@@ -18,9 +18,9 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Actor.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
@@ -30,13 +30,13 @@
 
 const auto g_testPath = sdf::testing::TestFile();
 const auto g_modelsPath =
-    sdf::filesystem::append(g_testPath, "integration", "model");
-const auto g_sdfPath = sdf::filesystem::append(g_testPath, "sdf");
+    ignition::common::joinPaths(g_testPath, "integration", "model");
+const auto g_sdfPath = ignition::common::joinPaths(g_testPath, "sdf");
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::filesystem::append(g_testPath, "integration", "model", _input);
+  return ignition::common::joinPaths(g_testPath, "integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
@@ -47,7 +47,7 @@ TEST(IncludesTest, NestedMultipleModelsError)
   sdf::setFindCallback(findFileCb);
 
   const auto sdfFile =
-    sdf::filesystem::append(g_modelsPath, "nested_multiple_models_error");
+    ignition::common::joinPaths(g_modelsPath, "nested_multiple_models_error");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
@@ -74,7 +74,7 @@ TEST(IncludesTest, NestedMultipleActorsError)
   sdf::setFindCallback(findFileCb);
 
   const auto sdfFile =
-    sdf::filesystem::append(g_modelsPath, "nested_multiple_actors_error");
+    ignition::common::joinPaths(g_modelsPath, "nested_multiple_actors_error");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
@@ -100,7 +100,7 @@ TEST(IncludesTest, NestedMultipleLightsError)
   sdf::setFindCallback(findFileCb);
 
   const auto sdfFile =
-    sdf::filesystem::append(g_modelsPath, "nested_multiple_lights_error");
+    ignition::common::joinPaths(g_modelsPath, "nested_multiple_lights_error");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
@@ -126,7 +126,7 @@ TEST(IncludesTest, NestedMultipleElementsError)
   sdf::setFindCallback(findFileCb);
 
   const auto sdfFile =
-    sdf::filesystem::append(g_modelsPath, "nested_multiple_elements_error");
+    ignition::common::joinPaths(g_modelsPath, "nested_multiple_elements_error");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(sdfFile);
@@ -151,7 +151,7 @@ TEST(IncludesTest, NestedMultipleElementsErrorWorld)
   sdf::setFindCallback(findFileCb);
 
   const auto sdfFile =
-    sdf::filesystem::append(
+    ignition::common::joinPaths(
       g_sdfPath, "nested_multiple_elements_error_world.sdf");
 
   sdf::Root root;

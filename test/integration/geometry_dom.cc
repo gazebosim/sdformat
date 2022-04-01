@@ -17,6 +17,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -24,7 +25,6 @@
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/Ellipsoid.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Heightmap.hh"
 #include "sdf/Link.hh"

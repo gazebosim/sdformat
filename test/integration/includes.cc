@@ -17,13 +17,13 @@
 
 #include <gtest/gtest.h>
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/Pose3.hh>
 #include <iostream>
 #include <string>
 
 #include "sdf/Actor.hh"
 #include "sdf/Collision.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Joint.hh"

@@ -23,7 +23,6 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Frame.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"

@@ -29,7 +29,7 @@
 
 #include <ignition/utils/Environment.hh>
 
-#include <sdf/Filesystem.hh>
+#include <ignition/common/Filesystem.hh>
 namespace sdf
 {
   namespace testing
@@ -44,7 +44,7 @@ namespace sdf
       // Bazel builds set TEST_SRCDIR
       if(ignition::utils::env("TEST_SRCDIR", _sourceDir))
       {
-        _sourceDir = sdf::filesystem::append(
+        _sourceDir = ignition::common::joinPaths(
             _sourceDir, "__main__", "sdformat");
         return true;
       }
@@ -71,7 +71,7 @@ namespace sdf
       }
       else
       {
-        _tmpDir = sdf::filesystem::append(PROJECT_BINARY_DIR, SDF_TMP_DIR);
+        _tmpDir = ignition::common::joinPaths(PROJECT_BINARY_DIR, SDF_TMP_DIR);
         return true;
       }
     }
@@ -95,7 +95,7 @@ namespace sdf
       {
         _homeDir = PROJECT_BINARY_DIR;
         // Set both for linux and windows
-        return ignition::utils::setenv("HOME", _homeDir) && 
+        return ignition::utils::setenv("HOME", _homeDir) &&
                ignition::utils::setenv("HOMEPATH", _homeDir);
       }
     }
@@ -109,7 +109,7 @@ namespace sdf
     {
       std::string dataDir;
       ProjectSourcePath(dataDir);
-      return sdf::filesystem::append(dataDir, args...);
+      return ignition::common::joinPaths(dataDir, args...);
     }
 
     /// \brief Retrieve a file from the test directory

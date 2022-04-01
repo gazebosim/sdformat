@@ -16,6 +16,9 @@ but with improved human-readability..
 
 ### Deprecations
 
+1. **sdf/Filesystem.hh**: The functions within the Filesystem.hh file have
+   been deprecated. Please use the equivalent functions found in Ignition
+   Common.
 1. **sdf/Exception.hh**: The Exception class within libsdformat is
    deprecated, and was not used by libsdformat. If you need exception
    handling, please consider std::exception.

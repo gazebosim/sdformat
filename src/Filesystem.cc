@@ -61,6 +61,7 @@
 #define PATH_MAX 4096
 #endif
 
+SDF_SUPPRESS_DEPRECATED_BEGIN
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE {
@@ -588,3 +589,4 @@ DirIter::~DirIter()
 }
 }  // namespace filesystem
 }  // namespace sdf
+SDF_SUPPRESS_DEPRECATED_END

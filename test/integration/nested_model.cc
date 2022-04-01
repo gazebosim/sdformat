@@ -20,6 +20,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
@@ -952,7 +953,7 @@ class PlacementFrame: public ::testing::Test
     sdf::setFindCallback(
         [&](const std::string &_file)
         {
-          return sdf::filesystem::append(modelRootPath, _file);
+          return ignition::common::joinPaths(modelRootPath, _file);
         });
     sdf::Errors errors = this->root.Load(testModelPath);
     for (const auto &e : errors)
@@ -1270,7 +1271,7 @@ TEST(NestedReference, PlacementFrameElement)
 
   sdf::setFindCallback([&](const std::string &_file)
   {
-    return sdf::filesystem::append(modelRootPath, _file);
+    return ignition::common::joinPaths(modelRootPath, _file);
   });
 
   // Test with //world/include without overriding the placement_frame
@@ -1406,7 +1407,7 @@ TEST(NestedModel, IncludeElements)
   config.SetFindCallback(
       [&](const std::string &_file)
       {
-        return sdf::filesystem::append(modelRootPath, _file);
+        return ignition::common::joinPaths(modelRootPath, _file);
       });
 
   auto checkIncludeElem = [](sdf::ElementPtr _includeElem,

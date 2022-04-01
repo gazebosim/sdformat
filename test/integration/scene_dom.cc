@@ -19,9 +19,9 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/Color.hh>
 
-#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/Root.hh"
 #include "sdf/Scene.hh"

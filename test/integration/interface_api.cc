@@ -25,8 +25,8 @@
 #include <string>
 #include <unordered_map>
 #include <variant>
+#include <ignition/common/Filesystem.hh>
 
-#include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceModel.hh"
@@ -148,7 +148,7 @@ class InterfaceAPI : public ::testing::Test
     this->config.SetFindCallback(
         [=](const std::string &_file)
         {
-          return sdf::filesystem::append(modelDir, _file);
+          return ignition::common::joinPaths(modelDir, _file);
         });
   }
   public: void CheckFrameSemantics(const sdf::World *world);
@@ -189,7 +189,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
 
     const std::string fileName = "file_wont_be_parsed.nonce_1";
     EXPECT_EQ(fileName, _include.Uri());
-    EXPECT_EQ(sdf::filesystem::append(this->modelDir, fileName),
+    EXPECT_EQ(ignition::common::joinPaths(this->modelDir, fileName),
               _include.ResolvedFileName());
     EXPECT_EQ("box", *_include.LocalModelName());
     EXPECT_TRUE(_include.IsStatic().has_value());
@@ -222,7 +222,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
       return nullptr;
     const std::string fileName = "file_wont_be_parsed.nonce_2";
     EXPECT_EQ(fileName, _include.Uri());
-    EXPECT_EQ(sdf::filesystem::append(modelDir, fileName),
+    EXPECT_EQ(ignition::common::joinPaths(modelDir, fileName),
               _include.ResolvedFileName());
     EXPECT_FALSE(_include.LocalModelName().has_value());
     EXPECT_FALSE(_include.IsStatic());

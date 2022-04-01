@@ -20,6 +20,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/sdf.hh"
 
@@ -31,7 +32,7 @@ class SDFSchemaGenerator : public testing::Test
   public:
     void runXMLlint(const std::string & model)
     {
-      const std::string sdfRootSchema = sdf::filesystem::append(
+      const std::string sdfRootSchema = ignition::common::joinPaths(
           PROJECT_BINARY_DIR, "sdf", SDF_PROTOCOL_VERSION, "root.xsd");
 
       std::string xmllintCmd = "xmllint --noout --schema " +

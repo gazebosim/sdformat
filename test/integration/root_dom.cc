@@ -17,9 +17,9 @@
 
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Error.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"

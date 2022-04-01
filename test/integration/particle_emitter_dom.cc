@@ -19,6 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/Vector3.hh>
 
 #include "sdf/SDFImpl.hh"
@@ -31,7 +32,6 @@
 #include "sdf/Model.hh"
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Pbr.hh"
-#include "sdf/Filesystem.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////

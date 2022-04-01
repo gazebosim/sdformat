@@ -19,6 +19,7 @@
 
 #include <sstream>
 #include <string>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/sdf.hh"
 
@@ -33,7 +34,7 @@ TEST(PrintConfig, PreserveIncludes)
   parserConfig.SetFindCallback(
     [&](const std::string &_file)
     {
-      return sdf::filesystem::append(modelPath, _file);
+      return ignition::common::joinPaths(modelPath, _file);
     });
 
   const std::string includeStr =
@@ -159,7 +160,7 @@ TEST(PrintConfig, PreserveIncludesWithMerge)
   parserConfig.SetFindCallback(
     [&](const std::string &_file)
     {
-      return sdf::filesystem::append(modelPath, _file);
+      return ignition::common::joinPaths(modelPath, _file);
     });
 
   const std::string includeMergeStr =

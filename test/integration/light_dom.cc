@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"
@@ -26,7 +27,6 @@
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
-#include "sdf/Filesystem.hh"
 #include "test_config.h"
 
 //////////////////////////////////////////////////

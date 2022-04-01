@@ -19,9 +19,9 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
+#include <ignition/common/Filesystem.hh>
 
 #include "sdf/Element.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"

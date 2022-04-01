@@ -24,6 +24,7 @@
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
+#include "sdf/Types.hh"
 
 namespace sdf
 {
@@ -37,20 +38,20 @@ namespace sdf
     /// \param[in] _path  The path to check for existence
     /// \return True if the path exists on the filesystem, false otherwise.
     SDFORMAT_VISIBLE
-    bool exists(const std::string &_path);
+    bool SDF_DEPRECATED(13) exists(const std::string &_path);
 
     /// \brief Determine whether the given path is a directory.
     /// \param[in] _path  The path to check
     /// \return True if given path exists and is a directory, false otherwise.
     SDFORMAT_VISIBLE
-    bool is_directory(const std::string &_path);
+    bool SDF_DEPRECATED(13) is_directory(const std::string &_path);
 
     /// \brief Create a new directory on the filesystem.  Intermediate
     ///        directories must already exist.
     /// \param[in] _path  The new directory path to create
     /// \return True if directory creation was successful, false otherwise.
     SDFORMAT_VISIBLE
-    bool create_directory(const std::string &_path);
+    bool SDF_DEPRECATED(13) create_directory(const std::string &_path);
 
     // The below is C++ variadic template magic to allow an append
     // method that takes 1-n number of arguments to append together.
@@ -60,36 +61,38 @@ namespace sdf
     /// \param[in] _s  The path to start with.
     /// \return The original path with the platform path separator appended.
     SDFORMAT_VISIBLE
-    std::string const separator(std::string const &_s);
+    std::string const SDF_DEPRECATED(13) separator(std::string const &_s);
 
     /// \brief Append one or more additional path elements to the first
     ///        passed in argument.
     /// \param[in] args  The paths to append together
     /// \return A new string with the paths appended together.
     template<typename... Args>
-    std::string append(Args const &... args)
+    std::string SDF_DEPRECATED(13) append(Args const &... args)
     {
+      SDF_SUPPRESS_DEPRECATED_BEGIN
       std::string result;
       int unpack[] {
         0, (result += separator(args), 0)...};
       static_cast<void>(unpack);
       return result.substr(0, result.length() - 1);
+      SDF_SUPPRESS_DEPRECATED_END
     }
 
     /// \brief Get the current working path.
     /// \return Current working path if successful, the empty path on error.
     SDFORMAT_VISIBLE
-    std::string current_path();
+    std::string SDF_DEPRECATED(13) current_path();
 
     /// \brief Given a path, get just the basename portion.
     /// \param[in] _path  The full path.
     /// \return A new string with just the basename portion of the path.
     SDFORMAT_VISIBLE
-    std::string basename(const std::string &_path);
+    std::string SDF_DEPRECATED(13) basename(const std::string &_path);
 
     /// \class DirIter Filesystem.hh
     /// \brief A class for iterating over all items in a directory.
-    class SDFORMAT_VISIBLE DirIter
+    class SDFORMAT_VISIBLE SDF_DEPRECATED(13) DirIter
     {
       /// \brief Constructor.
       /// \param[in] _in  Directory to iterate over.

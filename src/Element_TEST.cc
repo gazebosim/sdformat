@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 
 #include "sdf/Element.hh"
-#include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
 
 /////////////////////////////////////////////////
