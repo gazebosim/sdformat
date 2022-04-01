@@ -29,6 +29,8 @@ but with improved human-readability..
    `ignition::common' and `ignition::math. The replacements are
    `ignition::common::split`,  `ignition::common::trimmed`,
    `ignition::common::lowercase`, and `ignition::math::equal`.
+1. **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the 
+   `Inertial` class in the `ign-math` library.
 
 ## libsdformat 11.x to 12.0
 
