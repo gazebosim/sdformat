@@ -126,6 +126,7 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     for (unsigned int i = 0; i < world->ModelCount(); ++i)
       savedModelNames.insert(world->ModelByIndex(i)->Name());
     EXPECT_EQ(6u, savedModelNames.size());
+
     EXPECT_NE(savedModelNames.end(), savedModelNames.find("ground_plane"));
     EXPECT_NE(savedModelNames.end(), savedModelNames.find("box"));
     EXPECT_NE(savedModelNames.end(), savedModelNames.find("cylinder"));
