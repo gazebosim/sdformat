@@ -36,7 +36,8 @@ const auto g_sdfPath = ignition::common::joinPaths(g_testPath, "sdf");
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return ignition::common::joinPaths(g_testPath, "integration", "model", _input);
+  return ignition::common::joinPaths(g_testPath, "integration",
+      "model", _input);
 }
 
 //////////////////////////////////////////////////

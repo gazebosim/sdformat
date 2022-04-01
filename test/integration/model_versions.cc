@@ -58,7 +58,8 @@ TEST(ModelVersionsTest, NoVersionTag_ModelFilePath)
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
-  EXPECT_EQ(modelPath, ignition::common::joinPaths(MODEL_PATH, "model-1_2.sdf"));
+  EXPECT_EQ(modelPath,
+      ignition::common::joinPaths(MODEL_PATH, "model-1_2.sdf"));
 }
 
 TEST(ModelVersionsTest, Correct_ModelFilePath)
@@ -68,7 +69,8 @@ TEST(ModelVersionsTest, Correct_ModelFilePath)
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
-  EXPECT_EQ(modelPath, ignition::common::joinPaths(MODEL_PATH, "model-1_4.sdf"));
+  EXPECT_EQ(modelPath,
+      ignition::common::joinPaths(MODEL_PATH, "model-1_4.sdf"));
 }
 
 /////////////////////////////////////////////////
