@@ -91,7 +91,7 @@ namespace usd
     int skipPrims = 0;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
-    for (auto const &prim : range)
+    for (const auto &prim : range)
     {
       if (skipPrims)
       {
@@ -204,7 +204,7 @@ namespace usd
         continue;
       }
 
-      if (!prim.IsA<pxr::UsdGeomGprim>() && !(primType == "Plane"))
+      if (!prim.IsA<pxr::UsdGeomGprim>() && (primType != "Plane"))
       {
         continue;
       }
@@ -224,7 +224,6 @@ namespace usd
           const auto l = modelPtr->LinkByName(link->Name());
           if (l == nullptr)
           {
-            std::cerr << "Added "<< link->Name() << '\n';
             modelPtr->AddLink(*link);
           }
         }

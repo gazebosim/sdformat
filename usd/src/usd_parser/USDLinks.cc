@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,27 +21,18 @@
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/usd/usdGeom/cube.h>
-#include <pxr/usd/usdGeom/cylinder.h>
-#include <pxr/usd/usdGeom/gprim.h>
-#include <pxr/usd/usdGeom/mesh.h>
-#include <pxr/usd/usdGeom/sphere.h>
 #include "pxr/usd/usdPhysics/rigidBodyAPI.h"
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
-
 #include <ignition/math/Inertial.hh>
 
-#include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
 
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -64,12 +55,14 @@ void GetInertial(
       massAttribute.Get(&mass);
 
       if (pxr::UsdAttribute centerOfMassAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass")))
+      {
         centerOfMassAttribute.Get(&centerOfMass);
-
       }
+
       if (pxr::UsdAttribute diagonalInertiaAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia")))
+      {
         diagonalInertiaAttribute.Get(&diagonalInertia);
       }
 
@@ -116,23 +109,15 @@ sdf::Link * ParseUSDLinks(
   USDData &_usdData,
   int &/*_skipPrim*/)
 {
-  std::string primNameStr = _prim.GetPath().GetName();
-  std::string primPathStr = pxr::TfStringify(_prim.GetPath());
-  std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
-
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
-    _usdData.FindStage(primNameStr);
-
-  // Is this a new link ?
+  // Is this a new link?
   if (_link == nullptr)
   {
     _link = new sdf::Link();
     _link->SetName(_nameLink);
 
-    pxr::UsdPrim tmpPrim = _prim;
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
-    GetTransform(tmpPrim, _usdData, pose, scale, "");
+    GetTransform(_prim, _usdData, pose, scale, "");
     size_t nSlash = std::count(_nameLink.begin(), _nameLink.end(), '/');
     if (nSlash > 1)
       _link->SetRawPose(pose);
@@ -142,7 +127,7 @@ sdf::Link * ParseUSDLinks(
   // If the schema is a rigid body use this name instead.
   if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
   {
-    _link->SetName(primPathStr);
+    _link->SetName(pxr::TfStringify(_prim.GetPath()));
   }
 
   ignition::math::Inertiald noneInertial = {{1.0,
