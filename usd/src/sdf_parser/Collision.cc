@@ -58,6 +58,17 @@ namespace usd
       return errors;
     }
 
+    // Purpose is a builtin attribute with 4 posible values.
+    // - *default* indicates that a prim has “no special purpose” and should
+    //   generally be included in all traversals
+    // - *render* should generally only be included when performing a
+    //   “final quality” render
+    // - *proxy* should generally only be included when performing a lightweight
+    //    proxy render (such as OpenGL)
+    // - *guide* should generally only be included when an interactive
+    //    application has been explicitly asked to “show guides”
+    // For collisions we need to define this as guide because we don't need
+    // to render anything
     auto collisionPrim = _stage->GetPrimAtPath(sdfCollisionPath);
     collisionPrim.CreateAttribute(pxr::TfToken("purpose"),
         pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("guide"));
