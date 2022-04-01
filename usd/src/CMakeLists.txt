@@ -70,4 +70,41 @@ if (TARGET UNIT_USDPhysics_TEST)
   usd_parser/USDPhysics.cc)
 endif()
 
+if (TARGET UNIT_USDTransport_TEST)
+  target_sources(UNIT_USDTransport_TEST PRIVATE
+  usd_parser/USDTransforms.cc)
+endif()
+
+if (TARGET UNIT_Conversions_TEST)
+  target_sources(UNIT_Conversions_TEST PRIVATE
+    Conversions.cc)
+endif()
+
+set(sdf2usd_test_sources
+  Conversions.cc
+  sdf_parser/Geometry.cc
+  sdf_parser/Joint.cc
+  sdf_parser/Light.cc
+  sdf_parser/Link.cc
+  sdf_parser/Material.cc
+  sdf_parser/Model.cc
+  sdf_parser/Sensor.cc
+  sdf_parser/Visual.cc
+)
+
+if (TARGET UNIT_Joint_Sdf2Usd_TEST)
+  target_sources(UNIT_Joint_Sdf2Usd_TEST PRIVATE
+    ${sdf2usd_test_sources})
+endif()
+
+if (TARGET UNIT_Light_Sdf2Usd_TEST)
+  target_sources(UNIT_Light_Sdf2Usd_TEST PRIVATE
+    ${sdf2usd_test_sources})
+endif()
+
+if (TARGET UNIT_Material_Sdf2Usd_TEST)
+  target_sources(UNIT_Material_Sdf2Usd_TEST PRIVATE
+    ${sdf2usd_test_sources})
+endif()
+
 add_subdirectory(cmd)

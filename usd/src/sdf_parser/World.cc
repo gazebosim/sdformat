@@ -17,6 +17,7 @@
 
 #include "sdf/usd/sdf_parser/World.hh"
 
+#include <cctype>
 #include <iostream>
 #include <string>
 
@@ -39,8 +40,8 @@
 
 #include "sdf/Joint.hh"
 #include "sdf/World.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Model.hh"
+#include "Light.hh"
+#include "Model.hh"
 
 namespace sdf
 {
@@ -75,7 +76,12 @@ namespace usd
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {
       const auto model = *(_world.ModelByIndex(i));
-      auto modelPath = std::string(_path + "/" + model.Name());
+      std::string modelName = model.Name();
+      if (!modelName.empty() && std::isdigit(modelName[0]))
+      {
+        modelName = "_" + modelName;
+      }
+      auto modelPath = std::string(_path + "/" + modelName);
       modelPath = ignition::common::replaceAll(modelPath, " ", "");
       UsdErrors modelErrors =
         ParseSdfModel(model, _stage, modelPath, worldPrimPath);
@@ -83,7 +89,7 @@ namespace usd
       {
         errors.push_back(UsdError(
               sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              "Error parsing model [" + model.Name() + "]"));
+              "Error parsing model [" + modelName + "]"));
         errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
       }
 

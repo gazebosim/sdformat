@@ -14,15 +14,18 @@
  * limitations under the License.
  *
 */
+#include <set>
 #include <string>
 
 #include <gtest/gtest.h>
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/TempDirectory.hh>
+#include <ignition/common/Util.hh>
 
 #include <ignition/utilities/ExtraTestMacros.hh>
 
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
@@ -74,6 +77,10 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto tmp = ignition::common::createTempDirectory("usd",
       ignition::common::tempDirectoryPath());
+
+  auto systemPaths = ignition::common::systemPaths();
+  systemPaths->AddFilePaths(ignition::common::joinPaths(
+    sdf::testing::TestFile("usd"), "materials", "textures"));
   // Check a good SDF file
   {
     const std::string path = sdf::testing::TestFile("usd", "upAxisZ.usda");
@@ -99,7 +106,36 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_DOUBLE_EQ(0.0, world->Gravity()[1]);
     EXPECT_DOUBLE_EQ(-0.098, world->Gravity()[2]);
 
-    // TODO(anyone) Check the remaining contents of outputUsdFilePath
-    // when the parser is implemented
+    auto plugins = world->Plugins();
+    EXPECT_EQ(4u, plugins.size());
+    EXPECT_EQ("ignition::gazebo::systems::Physics", plugins[0].Name());
+    EXPECT_EQ("ignition-gazebo-physics-system", plugins[0].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::Sensors", plugins[1].Name());
+    EXPECT_EQ("ignition-gazebo-sensors-system", plugins[1].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::UserCommands", plugins[2].Name());
+    EXPECT_EQ("ignition-gazebo-user-commands-system", plugins[2].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::SceneBroadcaster", plugins[3].Name());
+    EXPECT_EQ(
+      "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
+
+    // make sure all models in the USD file were correctly parsed to SDF
+    std::set<std::string> savedModelNames;
+    for (unsigned int i = 0; i < world->ModelCount(); ++i)
+      savedModelNames.insert(world->ModelByIndex(i)->Name());
+    EXPECT_EQ(6u, savedModelNames.size());
+
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("ground_plane"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("box"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("cylinder"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("sphere"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("capsule"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("ellipsoid"));
+
+    // check for static/non-static models
+    EXPECT_TRUE(world->ModelByName("ground_plane")->Static());
+    EXPECT_FALSE(world->ModelByName("box")->Static());
   }
 }

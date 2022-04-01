@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Geometry.hh"
+#include "Geometry.hh"
 
 #include <string>
 
@@ -58,9 +58,9 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
-#include "sdf/usd/Conversions.hh"
-#include "sdf/usd/sdf_parser/Material.hh"
 
+#include "Material.hh"
+#include "../Conversions.hh"
 #include "../UsdUtils.hh"
 
 namespace sdf
