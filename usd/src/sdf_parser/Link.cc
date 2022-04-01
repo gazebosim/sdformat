@@ -85,7 +85,7 @@ namespace usd
         return errors;
       }
 
-      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim.GetParent()))
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
               "Internal error: unable to mark model at path [" +

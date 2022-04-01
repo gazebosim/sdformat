@@ -35,10 +35,8 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdPhysics/scene.h>
-#include <pxr/usd/usdPhysics/articulationRootAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Joint.hh"
 #include "sdf/World.hh"
 #include "Light.hh"
 #include "Model.hh"
@@ -91,32 +89,6 @@ namespace usd
               sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
               "Error parsing model [" + modelName + "]"));
         errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
-      }
-
-      if (model.JointCount() > 0)
-      {
-        for (uint64_t j = 0; j < model.JointCount(); j++)
-        {
-          const auto joint = *(model.JointByIndex(j));
-          if (joint.Type() == sdf::JointType::REVOLUTE)
-          {
-            auto prim = _stage->GetPrimAtPath(pxr::SdfPath(modelPath));
-            if (prim)
-            {
-              if (!pxr::UsdPhysicsArticulationRootAPI::Apply(prim))
-              {
-                errors.push_back(UsdError(
-                  sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
-                  "Internal error: unable to mark Xform at path [" +
-                  modelPath + "] as ArticulationRootAPI some feature might not"
-                  "work"));
-                errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
-                return errors;
-              }
-            }
-            break;
-          }
-        }
       }
     }
 
