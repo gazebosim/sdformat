@@ -7,5 +7,7 @@ libignition-utils1-cli-dev
 libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils
+python3-distutils
 python3-psutil
+python3-pybind11
 ruby-dev

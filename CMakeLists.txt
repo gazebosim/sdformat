@@ -129,6 +129,39 @@ if (BUILD_SDF)
 endif(BUILD_SDF)
 
 ########################################
+# Python interfaces
+option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
+      "Install python modules in standard system paths in the system"
+      OFF)
+
+option(USE_DIST_PACKAGES_FOR_PYTHON
+      "Use dist-packages instead of site-package to install python modules"
+      OFF)
+
+include(IgnPython)
+find_package(PythonLibs QUIET)
+if (NOT PYTHONLIBS_FOUND)
+  IGN_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
+  message (STATUS "Searching for Python - not found.")
+else()
+  message (STATUS "Searching for Python - found version ${PYTHONLIBS_VERSION_STRING}.")
+
+  set(PYBIND11_PYTHON_VERSION 3)
+  find_package(pybind11 2.2 QUIET)
+
+  if (${pybind11_FOUND})
+    message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
+	else()
+		IGN_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
+		message (STATUS "Searching for pybind11 - not found.")
+	endif()
+endif()
+
+if (${pybind11_FOUND})
+	add_subdirectory(python)
+endif()
+
+########################################
 # Setup Codecheck
 
 # Ignore vendored directories.
