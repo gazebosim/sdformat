@@ -38,6 +38,7 @@ endfunction()
 
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
+  src/sdf/Error.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -48,6 +49,7 @@ configure_build_install_location(sdformat)
 
 if (BUILD_TESTING)
   set(python_tests
+    Error_TEST
   )
 
   foreach (test ${python_tests})
