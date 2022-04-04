@@ -974,12 +974,12 @@ void Model::SetUri(const std::string &_uri)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement(const ParserConfig &_config) const
+sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
 {
   if (_config.ToElementUseIncludeTag() && !this->dataPtr->uri.empty())
   {
     sdf::ElementPtr worldElem(new sdf::Element);
-    sdf::initFile("world.sdf", _config, worldElem);
+    sdf::initFile("world.sdf", worldElem);
 
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
@@ -1005,7 +1005,7 @@ sdf::ElementPtr Model::ToElement(const ParserConfig &_config) const
   }
 
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("model.sdf", _config, elem);
+  sdf::initFile("model.sdf", elem);
   elem->GetAttribute("name")->Set(this->Name());
 
   if (!this->dataPtr->canonicalLink.empty())

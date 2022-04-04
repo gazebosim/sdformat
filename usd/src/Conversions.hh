@@ -25,7 +25,6 @@
 
 #include "sdf/Material.hh"
 #include "sdf/sdf_config.h"
-#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
@@ -38,14 +37,12 @@ namespace sdf
     /// to a SDF material
     /// \param[in] _in Ignition Common Material.
     /// \return SDF material.
-    IGNITION_SDFORMAT_USD_VISIBLE
     sdf::Material convert(const ignition::common::Material *_in);
 
     /// \brief Specialized conversion from an SDF material to a Ignition Common
     /// material.
     /// \param[in] _in SDF material.
     /// \param[out] _out The Ignition Common Material.
-    IGNITION_SDFORMAT_USD_VISIBLE
     void convert(const sdf::Material &_in, ignition::common::Material &_out);
   }
   }

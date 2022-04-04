@@ -179,7 +179,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 {
   Errors errors;
   SDFPtr sdfParsed(new SDF());
-  init(sdfParsed, _config);
+  init(sdfParsed);
 
   // Read an SDF string, and store the result in sdfParsed.
   if (!readString(_sdf, _config, sdfParsed, errors))
@@ -525,10 +525,10 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Root::ToElement(const ParserConfig &_config) const
+sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("root.sdf", _config, elem);
+  sdf::initFile("root.sdf", elem);
 
   elem->GetAttribute("version")->Set(this->Version());
 

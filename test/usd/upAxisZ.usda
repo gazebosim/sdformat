@@ -13,6 +13,32 @@ def "shapes"
         float physics:gravityMagnitude = 9.8
     }
 
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+        kind = "model"
+    )
+    {
+        float angle = 1
+        float inputs:diffuse = 0.5
+        float inputs:intensity = 5000
+        float shaping:cone:angle = 180
+        float3 xformOp:rotateZYX = (0, 45, 0)
+        float3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
+    def DiskLight "diskLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+        kind = "model"
+    )
+    {
+        float inputs:intensity = 3000
+        float inputs:specular = 0.5
+        float3 xformOp:rotateZYX = (0, 0, 45)
+        float3 xformOp:translate = (0, 0, 1000)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+    }
+
     def Xform "ground_plane"
     {
         float3 xformOp:rotateXYZ = (0, 0, 0)
@@ -120,9 +146,9 @@ def "shapes"
 
     def Xform "sphere"
     {
-        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:rotateZYX = (-69, 31, -62)
         double3 xformOp:translate = (0, 1.5, 0.5)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
 
         def Xform "sphere_link" (
             prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
@@ -155,9 +181,9 @@ def "shapes"
 
     def Xform "capsule"
     {
-        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:rotateZYX = (15, 80, -55)
         double3 xformOp:translate = (0, -3, 0.5)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
 
         def Xform "capsule_link" (
             prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
@@ -172,9 +198,9 @@ def "shapes"
 
             def Xform "capsule_visual"
             {
-                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:rotateZYX = (0, 0, 90)
                 double3 xformOp:translate = (0, 0, 0)
-                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
 
                 def Capsule "geometry" (
                     prepend apiSchemas = ["PhysicsCollisionAPI"]
@@ -191,7 +217,7 @@ def "shapes"
 
     def Xform "ellipsoid"
     {
-        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:rotateXYZ = (15, 80, -55)
         double3 xformOp:translate = (0, 3, 0.5)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
@@ -230,7 +256,7 @@ def "shapes"
     {
         float inputs:intensity = 1000
         float intensity = 100
-        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:rotateXYZ = (0, -35, 0)
         double3 xformOp:translate = (0, 0, 10)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
     }

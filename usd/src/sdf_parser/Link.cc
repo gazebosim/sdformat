@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Link.hh"
+#include "Link.hh"
 
 #include <string>
 
@@ -36,10 +36,11 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Link.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Sensor.hh"
-#include "sdf/usd/sdf_parser/Visual.hh"
 #include "../UsdUtils.hh"
+#include "Collision.hh"
+#include "Light.hh"
+#include "Sensor.hh"
+#include "Visual.hh"
 
 namespace sdf
 {
@@ -85,11 +86,11 @@ namespace usd
         return errors;
       }
 
-      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim.GetParent()))
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
               "Internal error: unable to mark model at path [" +
-              linkPrim.GetParent().GetPath().GetString() + "] as a rigid body, "
+              linkPrim.GetPath().GetString() + "] as a rigid body, "
               "so mass properties won't be attached"));
         return errors;
       }
@@ -138,6 +139,25 @@ namespace usd
         errors.push_back(UsdError(
           sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
           "Error parsing visual [" + visual.Name() + "]"));
+        return errors;
+      }
+    }
+
+    // parse all of the link's collisions and convert them to USD
+    for (uint64_t i = 0; i < _link.CollisionCount(); ++i)
+    {
+      const auto collision = *(_link.CollisionByIndex(i));
+      const auto collisionPath = std::string(_path + "/" + collision.Name());
+      auto errorsCollision = ParseSdfCollision(collision, _stage,
+          collisionPath);
+      if (!errorsCollision.empty())
+      {
+        errors.insert(errors.end(), errorsCollision.begin(),
+            errorsCollision.end());
+        errors.push_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Error parsing collision [" + collision.Name()
+          + "] attached to link [" + _link.Name() + "]"));
         return errors;
       }
     }
