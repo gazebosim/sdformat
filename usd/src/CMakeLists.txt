@@ -1,6 +1,7 @@
 set(sources
   Conversions.cc
   UsdError.cc
+  sdf_parser/Collision.cc
   sdf_parser/Geometry.cc
   sdf_parser/Joint.cc
   sdf_parser/Light.cc
@@ -81,6 +82,7 @@ endif()
 
 set(sdf2usd_test_sources
   Conversions.cc
+  sdf_parser/Collision.cc
   sdf_parser/Geometry.cc
   sdf_parser/Joint.cc
   sdf_parser/Light.cc
