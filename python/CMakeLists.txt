@@ -48,7 +48,6 @@ configure_build_install_location(sdformat)
 
 if (BUILD_TESTING)
   set(python_tests
-    testFixture_TEST
   )
 
   foreach (test ${python_tests})
