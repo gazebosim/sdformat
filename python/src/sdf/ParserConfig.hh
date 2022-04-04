@@ -14,12 +14,29 @@
  * limitations under the License.
  */
 
+#ifndef IGNITION_GAZEBO_PYTHON__PARSERCONFIG_HH_
+#define IGNITION_GAZEBO_PYTHON__PARSERCONFIG_HH_
+
 #include <pybind11/pybind11.h>
 
-#include "ParserConfig.hh"
+#include "sdf/ParserConfig.hh"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+#include "sdf/config.hh"
 
-  sdf::python::defineParserConfig(m);
-}
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::ParserConfig
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void
+defineParserConfig(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+
+#endif  // IGNITION_GAZEBO_PYTHON__PARSERCONFIG_HH_
