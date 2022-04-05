@@ -122,8 +122,6 @@ namespace usd
           scale,
           model.Name());
 
-          std::cerr << primPathTokens[0] << " - " << !prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>() << '\n';
-
         model.SetRawPose(pose);
         model.SetStatic(!prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
 
