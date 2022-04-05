@@ -1934,65 +1934,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 }
 
 /////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf,
-                  tinyxml2::XMLElement *_xml,
-                  const bool _onlyUnknown)
-{
-  // Iterate over all the child elements
-  tinyxml2::XMLElement *elemXml = nullptr;
-  for (elemXml = _xml->FirstChildElement(); elemXml;
-       elemXml = elemXml->NextSiblingElement())
-  {
-    std::string elemName = elemXml->Name();
-
-    if (_sdf->HasElementDescription(elemName))
-    {
-      if (!_onlyUnknown)
-      {
-        sdf::ElementPtr element = _sdf->AddElement(elemName);
-
-        // FIXME: copy attributes
-        for (const auto *attribute = elemXml->FirstAttribute();
-             attribute; attribute = attribute->Next())
-        {
-          element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->Value());
-        }
-
-        // copy value
-        const char *value = elemXml->GetText();
-        if (value)
-        {
-          element->GetValue()->SetFromString(value);
-        }
-        copyChildren(element, elemXml, _onlyUnknown);
-      }
-    }
-    else
-    {
-      ElementPtr element(new Element);
-      element->SetParent(_sdf);
-      element->SetName(elemName);
-      for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
-           attribute; attribute = attribute->Next())
-      {
-        element->AddAttribute(attribute->Name(), "string", "", 1, "");
-        element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->Value());
-      }
-
-      if (elemXml->GetText() != nullptr)
-      {
-        element->AddValue("string", elemXml->GetText(), true);
-      }
-
-      copyChildren(element, elemXml, _onlyUnknown);
-      _sdf->InsertElement(element);
-    }
-  }
-}
-
-/////////////////////////////////////////////////
 bool convertFile(const std::string &_filename, const std::string &_version,
                  SDFPtr _sdf)
 {
