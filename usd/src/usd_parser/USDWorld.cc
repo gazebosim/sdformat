@@ -66,8 +66,6 @@ namespace usd
     if (!errors.empty())
       return errors;
 
-    sdf::Model * modelPtr;
-
     auto reference = pxr::UsdStage::Open(_inputFileName);
     if (!reference)
     {
@@ -113,8 +111,6 @@ namespace usd
       {
         sdf::Model model = sdf::Model();
         model.SetName(primPathTokens[0]);
-        _world.AddModel(model);
-        modelPtr = _world.ModelByName(primPathTokens[0]);
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale{1, 1, 1};
@@ -125,9 +121,11 @@ namespace usd
           pose,
           scale,
           model.Name());
-        modelPtr->SetRawPose(pose);
 
-        modelPtr->SetStatic(!prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+          std::cerr << primPathTokens[0] << " - " << !prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>() << '\n';
+
+        model.SetRawPose(pose);
+        model.SetStatic(!prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
 
         _world.AddModel(model);
       }

@@ -58,7 +58,7 @@ TEST(USDLightsTest, DistanceLight)
   ASSERT_TRUE(prim);
 
   auto light = sdf::usd::ParseUSDLights(
-    prim, usdData, "/shapes");
+    prim, usdData, "");
   ASSERT_TRUE(light);
 
   EXPECT_EQ("defaultLight", light->Name());
@@ -74,7 +74,7 @@ TEST(USDLightsTest, DistanceLight)
   ASSERT_TRUE(prim);
 
   auto diskLight = sdf::usd::ParseUSDLights(
-    prim, usdData, "/shapes");
+    prim, usdData, "");
   ASSERT_TRUE(diskLight);
 
   EXPECT_EQ("diskLight", diskLight->Name());
