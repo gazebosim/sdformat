@@ -256,7 +256,10 @@ R"(<?xml version='1.0' ?>
     <model name="M1">
       <link name="L1">
         <visual name="v1">
-          <pose>1 1.0 -1.5707963267948966 3.14159265358979323846 0 1.57079632679489667</pose>
+          <pose rotation_format='quat_xyzw'>
+            1 1.0 -1.5707963267948966
+            0.707106781 0 0 0.707106781
+          </pose>
           <geometry>
             <sphere>
               <radius>1.23456789123456789</radius>
@@ -269,7 +272,6 @@ R"(<?xml version='1.0' ?>
           <transparency>0.15</transparency>
         </visual>
         <sensor name='camera' type='camera'>
-          <pose>-1.06 0.090912 0 0 1.5707963267948966 3.14</pose>
           <camera>
             <horizontal_fov>1.4</horizontal_fov>
             <clip>
@@ -327,9 +329,10 @@ R"(<?xml version='1.0' ?>
     SCOPED_TRACE("PrecisionTest: Pose3d");
     elem = visual->Element()->FindElement("pose");
     expected["default"] =
-        "1 1 -1.5707963267948966 3.1415926535897931 0 1.5707963267948968";
-    expected["6"] = "1 1 -1.5708 3.14159 0 1.5708";
-    expected["2"] = "1 1 -1.6 3.1 0 1.6";
+        "1 1 -1.5707963267948966   "
+        "0.70710678100000002 0 0 0.70710678100000002";
+    expected["6"] = "1 1 -1.5708   0.707107 0 0 0.707107";
+    expected["2"] = "1 1 -1.6   0.71 0 0 0.71";
 
     PrecisionTest(elem, expected);
   }
