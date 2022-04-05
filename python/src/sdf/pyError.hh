@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef IGNITION_GAZEBO_PYTHON__ERROR_HH_
-#define IGNITION_GAZEBO_PYTHON__ERROR_HH_
+#ifndef SDFORMAT_PYTHON_ERROR_HH_
+#define SDFORMAT_PYTHON_ERROR_HH_
 
 #include <pybind11/pybind11.h>
 
@@ -33,10 +33,9 @@ namespace python
 /**
  * \param[in] module a pybind11 module to add the definition to
  */
-void
-defineError(pybind11::object module);
+void defineError(pybind11::object module);
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
 }  // namespace sdf
 
-#endif  // IGNITION_GAZEBO_PYTHON__ERROR_HH_
+#endif  // SDFORMAT_PYTHON_ERROR_HH_

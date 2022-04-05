@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "Error.hh"
+#include "pyError.hh"
 
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
@@ -129,8 +129,7 @@ void defineError(pybind11::object module)
            sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID)
     .value("VERSION_DEPRECATED", sdf::ErrorCode::VERSION_DEPRECATED)
     .value("MERGE_INCLUDE_UNSUPPORTED",
-           sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED)
-    .export_values();
+           sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

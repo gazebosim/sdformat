@@ -16,7 +16,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "Error.hh"
+#include "pyError.hh"
 
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";

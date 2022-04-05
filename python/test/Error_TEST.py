@@ -21,7 +21,7 @@ class ErrorColor(unittest.TestCase):
     error = Error()
 
     self.assertEqual(error.is_valid(), False)
-    self.assertEqual(error.code(), Error.NONE)
+    self.assertEqual(error.code(), Error.ErrorCode.NONE)
     self.assertFalse(error.message())
     self.assertFalse(error.xml_path())
     self.assertFalse(error.file_path())
@@ -42,9 +42,9 @@ class ErrorColor(unittest.TestCase):
 
 
   def test_value_construction_without_file(self):
-    error = Error(Error.FILE_READ, "Unable to read a file")
+    error = Error(Error.ErrorCode.FILE_READ, "Unable to read a file")
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), error.FILE_READ)
+    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertFalse(error.xml_path())
     self.assertFalse(error.file_path())
@@ -54,11 +54,11 @@ class ErrorColor(unittest.TestCase):
   def test_value_construction_with_file(self):
     emptyfile_path = "Empty/file/path";
     error = Error(
-        Error.FILE_READ,
+        Error.ErrorCode.FILE_READ,
         "Unable to read a file",
         emptyfile_path)
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), error.FILE_READ)
+    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertFalse(error.xml_path())
     self.assertTrue(error.file_path())
@@ -70,12 +70,12 @@ class ErrorColor(unittest.TestCase):
     emptyfile_path = "Empty/file/path";
     line_number = 10;
     error = Error(
-        Error.FILE_READ,
+        Error.ErrorCode.FILE_READ,
         "Unable to read a file",
         emptyfile_path,
         line_number)
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), Error.FILE_READ)
+    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertFalse(error.xml_path())
     self.assertTrue(error.file_path())
@@ -88,12 +88,12 @@ class ErrorColor(unittest.TestCase):
     emptyfile_path = "Empty/file/path";
     line_number = 10;
     error = Error(
-        Error.FILE_READ,
+        Error.ErrorCode.FILE_READ,
         "Unable to read a file",
         emptyfile_path,
         line_number)
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), Error.FILE_READ)
+    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertTrue(error.file_path())
     self.assertEqual(error.file_path(), emptyfile_path)
