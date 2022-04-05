@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
@@ -20,6 +20,16 @@ set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 # Find ign-cmake
 find_package(ignition-cmake2 2.10 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+
+########################################
+# Python interfaces vars
+option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
+      "Install python modules in standard system paths in the system"
+      OFF)
+
+option(USE_DIST_PACKAGES_FOR_PYTHON
+      "Use dist-packages instead of site-package to install python modules"
+      OFF)
 
 if (BUILD_SDF)
   ign_configure_project(
@@ -70,7 +80,7 @@ if (BUILD_SDF)
       # A module's location is usually a directory, but for
       # binary modules
       # it's a .so file.
-      execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
+      execute_process(COMMAND "${Python3_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
         RESULT_VARIABLE _${module}_status
         OUTPUT_VARIABLE _${module}_location
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -115,6 +125,26 @@ if (BUILD_SDF)
   set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
 
   ########################################
+  # Python interfaces
+  if (NOT PYTHON3_FOUND)
+    IGN_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
+    message (STATUS "Searching for Python - not found.")
+  else()
+    message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
+
+    set(PYBIND11_PYTHON_VERSION 3)
+    find_package(pybind11 2.4 QUIET)
+
+    if (${pybind11_FOUND})
+      find_package(Python3 ${IGN_PYTHON_VERSION} REQUIRED COMPONENTS Development)
+      message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
+  	else()
+  		IGN_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
+  		message (STATUS "Searching for pybind11 - not found.")
+  	endif()
+  endif()
+
+  ########################################
   # Find PXR
   ign_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
 
@@ -126,41 +156,10 @@ if (BUILD_SDF)
   add_subdirectory(sdf)
   add_subdirectory(conf)
   add_subdirectory(doc)
-endif(BUILD_SDF)
-
-########################################
-# Python interfaces
-option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
-      "Install python modules in standard system paths in the system"
-      OFF)
-
-option(USE_DIST_PACKAGES_FOR_PYTHON
-      "Use dist-packages instead of site-package to install python modules"
-      OFF)
-
-include(IgnPython)
-find_package(PythonLibs QUIET)
-if (NOT PYTHONLIBS_FOUND)
-  IGN_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
-  message (STATUS "Searching for Python - not found.")
-else()
-  message (STATUS "Searching for Python - found version ${PYTHONLIBS_VERSION_STRING}.")
-
-  set(PYBIND11_PYTHON_VERSION 3)
-  find_package(pybind11 2.2 QUIET)
-  find_package (Python3 COMPONENTS Development)
-
   if (${pybind11_FOUND})
-    message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
-	else()
-		IGN_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
-		message (STATUS "Searching for pybind11 - not found.")
-	endif()
-endif()
-
-if (${pybind11_FOUND})
-	add_subdirectory(python)
-endif()
+  	add_subdirectory(python)
+  endif()
+endif(BUILD_SDF)
 
 ########################################
 # Setup Codecheck
