@@ -88,7 +88,7 @@ namespace usd
     std::string currentModelName;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
-    for (auto const &prim : range)
+    for (const auto &prim : range)
     {
       // Skip materials, the data is already available in the USDData class
       if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
@@ -194,7 +194,7 @@ namespace usd
         continue;
       }
 
-      if (!prim.IsA<pxr::UsdGeomGprim>() && !(primType == "Plane"))
+      if (!prim.IsA<pxr::UsdGeomGprim>() && (primType != "Plane"))
       {
         continue;
       }
