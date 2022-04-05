@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
@@ -80,7 +80,7 @@ if (BUILD_SDF)
       # A module's location is usually a directory, but for
       # binary modules
       # it's a .so file.
-      execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
+      execute_process(COMMAND "${Python3_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
         RESULT_VARIABLE _${module}_status
         OUTPUT_VARIABLE _${module}_location
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -126,18 +126,17 @@ if (BUILD_SDF)
 
   ########################################
   # Python interfaces
-  find_package(PythonLibs QUIET)
-  if (NOT PYTHONLIBS_FOUND)
+  if (NOT PYTHON3_FOUND)
     IGN_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
     message (STATUS "Searching for Python - not found.")
   else()
-    message (STATUS "Searching for Python - found version ${PYTHONLIBS_VERSION_STRING}.")
+    message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
 
     set(PYBIND11_PYTHON_VERSION 3)
-    find_package(pybind11 2.2 QUIET)
-    find_package (Python3 COMPONENTS Development)
+    find_package(pybind11 2.4 QUIET)
 
     if (${pybind11_FOUND})
+      find_package(Python3 REQUIRED COMPONENTS Development)
       message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
   	else()
   		IGN_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")

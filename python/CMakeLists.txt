@@ -52,7 +52,7 @@ if (BUILD_TESTING)
 
   foreach (test ${python_tests})
     add_test(NAME ${test}.py COMMAND
-      "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
+    "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
 
     set(_env_vars)
     list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/")
