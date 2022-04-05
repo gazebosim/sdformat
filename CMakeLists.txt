@@ -136,7 +136,7 @@ if (BUILD_SDF)
     find_package(pybind11 2.4 QUIET)
 
     if (${pybind11_FOUND})
-      find_package(Python3 REQUIRED COMPONENTS Development)
+      find_package(Python3 ${IGN_PYTHON_VERSION} REQUIRED COMPONENTS Development)
       message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
   	else()
   		IGN_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
