@@ -58,7 +58,7 @@ if (BUILD_TESTING)
   )
 
   set(python_tests
-    ParserConfig_TEST
+    pyParserConfig_TEST
   )
 
   foreach (test ${python_tests})
