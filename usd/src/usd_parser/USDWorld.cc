@@ -85,18 +85,11 @@ namespace usd
     }
 
     std::string linkName;
-
-    int skipPrims = 0;
+    std::string currentModelName;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
     {
-      if (skipPrims)
-      {
-        --skipPrims;
-        continue;
-      }
-
       // Skip materials, the data is already available in the USDData class
       if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
       {
@@ -120,6 +113,7 @@ namespace usd
       {
         sdf::Model model = sdf::Model();
         model.SetName(primPathTokens[0]);
+        currentModelName = primPathTokens[0];
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale{1, 1, 1};
@@ -205,22 +199,22 @@ namespace usd
         continue;
       }
 
+      auto modelPtr = _world.ModelByName(currentModelName);
       auto linkInserted = modelPtr->LinkByName(linkName);
       if (linkInserted)
       {
-        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData, skipPrims);
+        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData);
       }
       else
       {
         sdf::Link * link = nullptr;
-        link = sdf::usd::ParseUSDLinks(prim, linkName, link, usdData, skipPrims);
+        sdf::usd::ParseUSDLinks(prim, linkName, link, usdData);
 
         if (link != nullptr && !link->Name().empty())
         {
           const auto l = modelPtr->LinkByName(link->Name());
           if (l == nullptr)
           {
-            std::cerr << "Added "<< link->Name() << '\n';
             modelPtr->AddLink(*link);
           }
         }
@@ -246,26 +240,6 @@ namespace usd
         sdf::Link emptyLink;
         emptyLink.SetName("emptyLink");
         m->AddLink(emptyLink);
-      }
-
-      m->SetName(ignition::common::basename(m->Name()));
-      for (unsigned int j = 0; j < m->LinkCount(); ++j)
-      {
-        auto link = m->LinkByIndex(j);
-        link->SetName(ignition::common::basename(link->Name()));
-      }
-    }
-
-    // TODO(ahcorde): Remove this loop here, I added this here to avoid
-    // errors, a model should have link. This will be added in a follow up PR.
-    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
-    {
-      auto m = _world.ModelByIndex(i);
-      if (m->LinkCount() == 0)
-      {
-        sdf::Link link;
-        link.SetName("empty_link");
-        m->AddLink(link);
       }
     }
 

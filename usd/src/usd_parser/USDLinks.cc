@@ -53,6 +53,7 @@ void GetInertial(
   float mass;
   pxr::GfVec3f centerOfMass;
   pxr::GfVec3f diagonalInertia;
+  pxr::GfQuatf principalAxes;
 
   ignition::math::MassMatrix3d massMatrix;
 
@@ -73,12 +74,18 @@ void GetInertial(
         diagonalInertiaAttribute.Get(&diagonalInertia);
       }
 
+      if (pxr::UsdAttribute principalAxesAttribute =
+        _prim.GetAttribute(pxr::TfToken("physics:principalAxes"))) {
+        principalAxesAttribute.Get(&principalAxes);
+      }
+
       // Added a diagonal inertia to avoid crash with the physics engine
       if (diagonalInertia == pxr::GfVec3f(0, 0, 0))
       {
         diagonalInertia = pxr::GfVec3f(0.0001, 0.0001, 0.0001);
       }
 
+      // Added a massto avoid crash with the physics engine
       if (mass < 0.0001)
       {
         mass = 0.1;
@@ -109,12 +116,11 @@ void GetInertial(
   }
 }
 
-sdf::Link * ParseUSDLinks(
+void ParseUSDLinks(
   const pxr::UsdPrim &_prim,
   const std::string &_nameLink,
   sdf::Link *_link,
-  USDData &_usdData,
-  int &/*_skipPrim*/)
+  USDData &_usdData)
 {
   std::string primNameStr = _prim.GetPath().GetName();
   std::string primPathStr = pxr::TfStringify(_prim.GetPath());
@@ -123,13 +129,11 @@ sdf::Link * ParseUSDLinks(
   std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(primNameStr);
 
-  double metersPerUnit = data.second->MetersPerUnit();
-
   // Is this a new link ?
   if (_link == nullptr)
   {
     _link = new sdf::Link();
-    _link->SetName(_nameLink);
+    _link->SetName(ignition::common::basename(_nameLink));
 
     pxr::UsdPrim tmpPrim = _prim;
     ignition::math::Pose3d pose;
@@ -138,13 +142,12 @@ sdf::Link * ParseUSDLinks(
     size_t nSlash = std::count(_nameLink.begin(), _nameLink.end(), '/');
     if (nSlash > 1)
       _link->SetRawPose(pose);
-    // _link->SetScale(scale);
   }
 
   // If the schema is a rigid body use this name instead.
   if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
   {
-    _link->SetName(primPathStr);
+    _link->SetName(ignition::common::basename(primPathStr));
   }
 
   ignition::math::Inertiald noneInertial = {{1.0,
@@ -157,8 +160,6 @@ sdf::Link * ParseUSDLinks(
     GetInertial(_prim, newInertial);
     _link->SetInertial(newInertial);
   }
-
-  return _link;
 }
 }
 }

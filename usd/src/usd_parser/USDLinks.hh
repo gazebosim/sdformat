@@ -38,12 +38,11 @@ namespace sdf
   //
   namespace usd
   {
-  sdf::Link * ParseUSDLinks(
+  void ParseUSDLinks(
     const pxr::UsdPrim &_prim,
     const std::string &_nameLink,
     sdf::Link *_link,
-    USDData &_usdData,
-    int &_skipPrim);
+    USDData &_usdData);
   }
   }
 }
