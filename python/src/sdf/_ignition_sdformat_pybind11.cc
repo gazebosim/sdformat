@@ -16,7 +16,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "ParserConfig.hh"
+#include "pyParserConfig.hh"
 
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";

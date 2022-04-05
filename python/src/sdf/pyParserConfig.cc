@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "ParserConfig.hh"
+#include "pyParserConfig.hh"
 
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
@@ -95,8 +95,7 @@ void defineParserConfig(pybind11::object module)
     parseConfigModule, "EnforcementPolicy")
     .value("ERR", sdf::EnforcementPolicy::ERR)
     .value("WARN", sdf::EnforcementPolicy::WARN)
-    .value("LOG", sdf::EnforcementPolicy::LOG)
-    .export_values();
+    .value("LOG", sdf::EnforcementPolicy::LOG);
 
 }
 }  // namespace python

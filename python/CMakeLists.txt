@@ -38,7 +38,7 @@ endfunction()
 
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
-  src/sdf/ParserConfig.cc
+  src/sdf/pyParserConfig.cc
 )
 
 target_link_libraries(sdformat PRIVATE
