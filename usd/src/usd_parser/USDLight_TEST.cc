@@ -54,11 +54,11 @@ TEST(USDLightsTest, DistanceLight)
   ASSERT_TRUE(stage);
 
   pxr::UsdPrim prim = stage->GetPrimAtPath(
-    pxr::SdfPath("/shapes/defaultLight"));
+    pxr::SdfPath("/defaultLight"));
   ASSERT_TRUE(prim);
 
   auto light = sdf::usd::ParseUSDLights(
-    prim, usdData, "/shapes");
+    prim, usdData, "");
   ASSERT_TRUE(light);
 
   EXPECT_EQ("defaultLight", light->Name());
@@ -70,11 +70,11 @@ TEST(USDLightsTest, DistanceLight)
   EXPECT_EQ(ignition::math::Pose3d(0, 0, 10, 0, IGN_DTOR(45), 0),
       light->RawPose());
 
-  prim = stage->GetPrimAtPath(pxr::SdfPath("/shapes/diskLight"));
+  prim = stage->GetPrimAtPath(pxr::SdfPath("/diskLight"));
   ASSERT_TRUE(prim);
 
   auto diskLight = sdf::usd::ParseUSDLights(
-    prim, usdData, "/shapes");
+    prim, usdData, "");
   ASSERT_TRUE(diskLight);
 
   EXPECT_EQ("diskLight", diskLight->Name());
