@@ -17,7 +17,9 @@
 
 #include "USDLinks.hh"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
