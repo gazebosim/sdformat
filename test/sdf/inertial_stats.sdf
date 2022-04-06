@@ -26,7 +26,7 @@ in the XY plane. This model is used to verity the
       <link name="link_1">
         <pose>5 0 0 0 0 0</pose>
         <inertial>
-          <mass>1.0</mass>
+          <mass>6.0</mass>
           <inertia>
             <ixx>1</ixx>
             <iyy>1</iyy>
@@ -48,7 +48,7 @@ in the XY plane. This model is used to verity the
       <link name="link_2">
         <pose>-5 0 0 0 0 0</pose>
         <inertial>
-          <mass>1.0</mass>
+          <mass>6.0</mass>
           <inertia>
             <ixx>1</ixx>
             <iyy>1</iyy>
@@ -70,7 +70,7 @@ in the XY plane. This model is used to verity the
       <link name="link_3">
         <pose>0 5 0 0 0 0</pose>
         <inertial>
-          <mass>1.0</mass>
+          <mass>6.0</mass>
           <inertia>
             <ixx>1</ixx>
             <iyy>1</iyy>
@@ -92,7 +92,7 @@ in the XY plane. This model is used to verity the
       <link name="link_4">
         <pose>0 -5 0 0 0 0</pose>
         <inertial>
-          <mass>1.0</mass>
+          <mass>6.0</mass>
           <inertia>
             <ixx>1</ixx>
             <iyy>1</iyy>

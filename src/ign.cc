@@ -329,7 +329,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   ss << totalInertial.Moi();
 
   std::string s;
-  auto maxLength = 0;
+  auto maxLength = 0u;
   std::vector<std::string> moiVector;
   while ( std::getline(ss, s, ' ' ) ) {
     moiVector.push_back(s);

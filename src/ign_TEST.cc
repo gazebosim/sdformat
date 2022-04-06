@@ -1804,7 +1804,7 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   auto expectedOutput =
     std::string("Inertial statistics for model: test_model\n") +
     std::string("---\n") +
-    std::string("Total mass of the model: 4\n") +
+    std::string("Total mass of the model: 24\n") +
     std::string("---\n") +
     std::string("Centre of mass in model frame: \n") +
     std::string("X: 0\n") +
@@ -1812,9 +1812,9 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string("Z: 0\n") +
     std::string("---\n") +
     std::string("Moment of inertia matrix: \n") +
-    std::string("54   0    0    \n") +
-    std::string("0    54   0    \n") +
-    std::string("0    0    104  \n") +
+    std::string("304  0    0    \n") +
+    std::string("0    304  0    \n") +
+    std::string("0    0    604  \n") +
     std::string("---\n");
 
   // Check a good SDF file by passing the absolute path
