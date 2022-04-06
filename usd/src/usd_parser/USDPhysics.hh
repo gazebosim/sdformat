@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef USD_PARSER_PHYSYCS_HH
-#define USD_PARSER_PHYSYCS_HH
+#ifndef USD_PARSER_USDPHYSICS_HH_
+#define USD_PARSER_USDPHYSICS_HH_
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED

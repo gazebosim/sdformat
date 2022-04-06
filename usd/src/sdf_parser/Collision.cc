@@ -15,7 +15,7 @@
  *
 */
 
-#include "Visual.hh"
+#include "Collision.hh"
 
 #include <string>
 
@@ -30,37 +30,51 @@
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
-#include <pxr/usd/usdShade/material.h>
-#include <pxr/usd/usdShade/materialBindingAPI.h>
+#include <pxr/usd/usdPhysics/collisionAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Visual.hh"
+#include "sdf/Collision.hh"
 #include "../UsdUtils.hh"
 #include "Geometry.hh"
-#include "Material.hh"
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  UsdErrors ParseSdfVisual(const sdf::Visual &_visual,
+  UsdErrors ParseSdfCollision(const sdf::Collision &_collision,
       pxr::UsdStageRefPtr &_stage, const std::string &_path)
   {
     UsdErrors errors;
-    const pxr::SdfPath sdfVisualPath(_path);
-    auto usdVisualXform = pxr::UsdGeomXform::Define(_stage, sdfVisualPath);
-    if (!usdVisualXform)
+    const pxr::SdfPath sdfCollisionPath(_path);
+    auto usdCollisionXform = pxr::UsdGeomXform::Define(
+      _stage, sdfCollisionPath);
+    if (!usdCollisionXform)
     {
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_USD_DEFINITION,
         "Not able to define a Geom Xform at path [" + _path + "]"));
       return errors;
     }
 
+    // Purpose is a builtin attribute with 4 posible values.
+    // - *default* indicates that a prim has “no special purpose” and should
+    //   generally be included in all traversals
+    // - *render* should generally only be included when performing a
+    //   “final quality” render
+    // - *proxy* should generally only be included when performing a lightweight
+    //    proxy render (such as OpenGL)
+    // - *guide* should generally only be included when an interactive
+    //    application has been explicitly asked to “show guides”
+    // For collisions we need to define this as guide because we don't need
+    // to render anything
+    auto collisionPrim = _stage->GetPrimAtPath(sdfCollisionPath);
+    collisionPrim.CreateAttribute(pxr::TfToken("purpose"),
+        pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("guide"));
+
     ignition::math::Pose3d pose;
-    auto poseErrors = usd::PoseWrtParent(_visual, pose);
+    auto poseErrors = usd::PoseWrtParent(_collision, pose);
     if (!poseErrors.empty())
     {
       for (const auto &e : poseErrors)
@@ -68,18 +82,18 @@ namespace usd
       return errors;
     }
 
-    poseErrors = usd::SetPose(pose, _stage, sdfVisualPath);
+    poseErrors = usd::SetPose(pose, _stage, sdfCollisionPath);
     if (!poseErrors.empty())
     {
       for (const auto &e : poseErrors)
         errors.push_back(e);
       errors.push_back(UsdError(UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Unable to set the pose of the link prim corresponding to the "
-            "SDF visual named [" + _visual.Name() + "]"));
+            "Unable to set the pose of the prim corresponding to the "
+            "SDF collision named [" + _collision.Name() + "]"));
       return errors;
     }
 
-    const auto geometry = *(_visual.Geom());
+    const auto geometry = *(_collision.Geom());
     const auto geometryPath = std::string(_path + "/geometry");
     auto geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
     if (!geomErrors.empty())
@@ -87,47 +101,25 @@ namespace usd
       errors.insert(errors.end(), geomErrors.begin(), geomErrors.end());
       errors.push_back(UsdError(
         sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-        "Error parsing geometry attached to visual [" + _visual.Name() + "]"));
+        "Error parsing geometry attached to _collision [" +
+        _collision.Name() + "]"));
       return errors;
     }
 
-    if (auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath)))
-    {
-      if (_visual.Material())
-      {
-        pxr::SdfPath materialPath;
-        UsdErrors materialErrors = ParseSdfMaterial(
-          _visual.Material(), _stage, materialPath);
-        if (!materialErrors.empty())
-        {
-          errors.insert(errors.end(), materialErrors.begin(),
-              materialErrors.end());
-          errors.push_back(UsdError(
-            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Error parsing material attached to visual ["
-            + _visual.Name() + "]"));
-          return errors;
-        }
-
-        auto materialUSD =
-          pxr::UsdShadeMaterial(_stage->GetPrimAtPath(materialPath));
-        if (!materialUSD)
-        {
-          errors.push_back(UsdError(
-            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-            "Unable to convert prim at path [" + materialPath.GetString()
-            + "] to a pxr::UsdShadeMaterial."));
-          return errors;
-        }
-        pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
-      }
-    }
-    else
+    auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(geometryPath));
+    if (!geomPrim)
     {
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
-        "Internal error: no geometry prim exists at path ["
-        + geometryPath + "]"));
+        "Internal error: unable to get prim at path ["
+        + geometryPath + "], but a geom prim should exist at this path"));
       return errors;
+    }
+
+    if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
+    {
+      errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
+        "Internal error: unable to apply a collision to the prim at path ["
+        + geometryPath + "]"));
     }
 
     return errors;

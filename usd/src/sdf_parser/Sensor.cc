@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Sensor.hh"
+#include "Sensor.hh"
 
 #include <string>
 

@@ -29,8 +29,7 @@ namespace usd
 {
   std::vector<unsigned int> PolygonToTriangles(
       pxr::VtIntArray &_faceVertexIndices,
-      pxr::VtIntArray &_faceVertexCounts,
-      pxr::VtArray<pxr::GfVec3f> &_points)
+      pxr::VtIntArray &_faceVertexCounts)
   {
     // TODO: Use more robust algorithms.
     // For reference, blender supports "ear-clipping", and "Beauty".

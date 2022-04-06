@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
@@ -45,7 +45,7 @@ namespace sdf
     /// \param[in] _usdData metadata of the USD file
     /// \param[in] _scale scale mesh
     /// \return A pointer with the link data
-    sdf::Link * ParseUSDLinks(
+    void ParseUSDLinks(
       const pxr::UsdPrim &_prim,
       const std::string &_nameLink,
       sdf::Link *_link,

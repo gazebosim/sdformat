@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 
 #include "USDLinks.hh"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -35,7 +37,7 @@
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "ignition/common/ColladaExporter.hh"
+#include <ignition/common/ColladaExporter.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Material.hh>
 #include <ignition/common/Mesh.hh>
@@ -55,11 +57,11 @@
 #include "polygon_helper.hh"
 
 #include "sdf/usd/usd_parser/USDTransforms.hh"
-#include "sdf/usd/Conversions.hh"
+#include "../Conversions.hh"
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -72,6 +74,7 @@ void GetInertial(
   float mass;
   pxr::GfVec3f centerOfMass;
   pxr::GfVec3f diagonalInertia;
+  pxr::GfQuatf principalAxes;
 
   ignition::math::MassMatrix3d massMatrix;
 
@@ -83,15 +86,29 @@ void GetInertial(
       massAttribute.Get(&mass);
 
       if (pxr::UsdAttribute centerOfMassAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass")))
+      {
         centerOfMassAttribute.Get(&centerOfMass);
-
       }
+
       if (pxr::UsdAttribute diagonalInertiaAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia")))
+      {
         diagonalInertiaAttribute.Get(&diagonalInertia);
       }
 
+      if (pxr::UsdAttribute principalAxesAttribute =
+        _prim.GetAttribute(pxr::TfToken("physics:principalAxes"))) {
+        principalAxesAttribute.Get(&principalAxes);
+      }
+
+      // Added a diagonal inertia to avoid crash with the physics engine
+      if (diagonalInertia == pxr::GfVec3f(0, 0, 0))
+      {
+        diagonalInertia = pxr::GfVec3f(0.0001, 0.0001, 0.0001);
+      }
+
+      // Added a massto avoid crash with the physics engine
       if (mass < 0.0001)
       {
         mass = 0.1;
@@ -320,7 +337,7 @@ void ParseMesh(
   }
 
   std::vector<unsigned int> indexes = PolygonToTriangles(
-    faceVertexIndices, faceVertexCounts, points);
+    faceVertexIndices, faceVertexCounts);
   for (unsigned int i = 0; i < indexes.size(); ++i)
   {
     subMesh.AddIndex(indexes[i]);
@@ -487,7 +504,7 @@ void ParseCylinder(
 }
 
 //////////////////////////////////////////////////
-sdf::Link * ParseUSDLinks(
+void ParseUSDLinks(
   const pxr::UsdPrim &_prim,
   const std::string &_nameLink,
   sdf::Link *_link,
@@ -501,13 +518,11 @@ sdf::Link * ParseUSDLinks(
   std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(primNameStr);
 
-  double metersPerUnit = data.second->MetersPerUnit();
-
   // Is this a new link ?
   if (_link == nullptr)
   {
     _link = new sdf::Link();
-    _link->SetName(_nameLink);
+    _link->SetName(ignition::common::basename(_nameLink));
 
     // USD define visual inside other visuals or links
     // This loop allow to find the link for a specific visual
@@ -539,7 +554,7 @@ sdf::Link * ParseUSDLinks(
 
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
-    GetTransform(tmpPrim, _usdData, pose, scale, "");
+    GetTransform(_prim, _usdData, pose, scale, "");
     size_t nSlash = std::count(_nameLink.begin(), _nameLink.end(), '/');
     if (nSlash > 1)
       _link->SetRawPose(pose);
@@ -549,7 +564,7 @@ sdf::Link * ParseUSDLinks(
   // If the schema is a rigid body use this name instead.
   if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
   {
-    _link->SetName(primPathStr);
+    _link->SetName(ignition::common::basename(primPathStr));
   }
 
   ignition::math::Inertiald noneInertial = {{1.0,
@@ -592,6 +607,8 @@ sdf::Link * ParseUSDLinks(
       || pxr::KindRegistry::IsA(kindOfSchema, pxr::KindTokens->model)
       || !collisionEnabled)
     {
+      double metersPerUnit = data.second->MetersPerUnit();
+
       if (_prim.IsA<pxr::UsdGeomSphere>())
         {
           ParseSphere(_prim, geom, _scale, metersPerUnit);
@@ -617,8 +634,6 @@ sdf::Link * ParseUSDLinks(
         }
     }
   }
-
-  return _link;
 }
 }
 }

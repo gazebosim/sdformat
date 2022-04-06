@@ -41,12 +41,10 @@ namespace sdf
   /// in the mesh are convex.
   ///\param _faceVertexIndices A flat list of vertex indicies of a polygon mesh.
   ///\param _faceVertexCounts A list containing the number of vertices for each face of the mesh.
-  ///\param _points A list of vertices.
   ///\return A flat list of vertex indicies, with each face converted to one or more triangles.
   std::vector<unsigned int> PolygonToTriangles(
     pxr::VtIntArray &_faceVertexIndices,
-    pxr::VtIntArray &_faceVertexCounts,
-    pxr::VtArray<pxr::GfVec3f> &_points);
+    pxr::VtIntArray &_faceVertexCounts);
 }
 }
 }

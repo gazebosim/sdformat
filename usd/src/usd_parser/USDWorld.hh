@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef USD_PARSER_USDWORLD_HH
-#define USD_PARSER_USDWORLD_HH
+#ifndef USD_PARSER_USDWORLD_HH_
+#define USD_PARSER_USDWORLD_HH_
 
 #include <string>
 
