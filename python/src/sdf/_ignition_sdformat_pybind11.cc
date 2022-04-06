@@ -17,9 +17,12 @@
 #include <pybind11/pybind11.h>
 
 #include "pyError.hh"
+#include "pySurface.hh"
 
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  sdf::python::defineContact(m);
   sdf::python::defineError(m);
+  sdf::python::defineSurface(m);
 }
