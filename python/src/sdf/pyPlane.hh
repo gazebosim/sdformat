@@ -14,14 +14,28 @@
  * limitations under the License.
  */
 
+#ifndef SDFORMAT_PYTHON_PLANE_HH_
+#define SDFORMAT_PYTHON_PLANE_HH_
+
 #include <pybind11/pybind11.h>
 
-#include "pyError.hh"
-#include "pyPlane.hh"
+#include "sdf/Plane.hh"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+#include "sdf/config.hh"
 
-  sdf::python::defineError(m);
-  sdf::python::definePlane(m);
-}
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::Plane
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void definePlane(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+
+#endif  // SDFORMAT_PYTHON_PLANE_HH_
