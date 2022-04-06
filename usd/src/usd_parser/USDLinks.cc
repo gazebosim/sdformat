@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -175,7 +176,7 @@ std::string ParseMaterialName(const pxr::UsdPrim &_prim)
 
   pxr::SdfPathVector paths;
   directBindingRel.GetTargets(&paths);
-  for (auto p: paths)
+  for (auto p : paths)
   {
     std::vector<std::string> tokensMaterial =
       ignition::common::split(pxr::TfStringify(p), "/");
@@ -343,19 +344,19 @@ void ParseMesh(
     subMesh.AddIndex(indexes[i]);
   }
 
-  for (auto & textCoord: textCoords)
+  for (auto & textCoord : textCoords)
   {
     subMesh.AddTexCoord(textCoord[0], (1 - textCoord[1]));
   }
 
-  for (auto & point: points)
+  for (auto & point : points)
   {
     ignition::math::Vector3d v =
       ignition::math::Vector3d(point[0], point[1], point[2]) * metersPerUnit;
     subMesh.AddVertex(v);
   }
 
-  for (auto & normal: normals)
+  for (auto & normal : normals)
   {
     subMesh.AddNormal(normal[0], normal[1], normal[2]);
   }

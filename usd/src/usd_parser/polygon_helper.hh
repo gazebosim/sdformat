@@ -36,12 +36,15 @@ namespace sdf
   //
   namespace usd
   {
-  ///\brief Converts a vertex indicies of a polygon mesh to a vertex indicies of a triangle mesh.
-  ///\details This uses the fan-triangulating algorithm, so it only works if all polygons in
-  /// in the mesh are convex.
-  ///\param _faceVertexIndices A flat list of vertex indicies of a polygon mesh.
-  ///\param _faceVertexCounts A list containing the number of vertices for each face of the mesh.
-  ///\return A flat list of vertex indicies, with each face converted to one or more triangles.
+  /// \brief Converts a vertex indicies of a polygon mesh to a vertex indicies
+  /// of a triangle mesh.
+  /// \details This uses the fan-triangulating algorithm, so it only works if
+  /// all polygons in the mesh are convex.
+  /// \param _faceVertexIndices A flat list of vertex indicies of a polygon mesh.
+  /// \param _faceVertexCounts A list containing the number of vertices for each
+  /// face of the mesh.
+  /// \return A flat list of vertex indicies, with each face converted to one or
+  /// more triangles.
   std::vector<unsigned int> PolygonToTriangles(
     pxr::VtIntArray &_faceVertexIndices,
     pxr::VtIntArray &_faceVertexCounts);

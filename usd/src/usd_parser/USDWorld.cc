@@ -16,6 +16,7 @@
 */
 #include "USDWorld.hh"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -207,8 +208,8 @@ namespace usd
       if (linkInserted)
       {
         auto scale = linkScaleVector.find(linkName);
-
-        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData, scale->second);
+        sdf::usd::ParseUSDLinks(
+          prim, linkName, linkInserted, usdData, scale->second);
       }
       else
       {

@@ -31,9 +31,9 @@ namespace usd
       pxr::VtIntArray &_faceVertexIndices,
       pxr::VtIntArray &_faceVertexCounts)
   {
-    // TODO: Use more robust algorithms.
+    // TODO(koon peng) Use more robust algorithms.
     // For reference, blender supports "ear-clipping", and "Beauty".
-    // ref: https://blender.stackexchange.com/questions/215553/what-algorithm-is-used-for-beauty-triangulation
+    // https://blender.stackexchange.com/questions/215553/what-algorithm-is-used-for-beauty-triangulation
     // ref: https://en.wikipedia.org/wiki/Polygon_triangulation
     size_t count = 0;
     for (const auto &vCount : _faceVertexCounts)
