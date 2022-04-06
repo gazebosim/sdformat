@@ -54,7 +54,15 @@ def Xform "ground_plane"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Cube "geometry" (
+            def Cube "geometry"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_0>
+                double size = 1
+                float3 xformOp:scale = (100, 100, 0.25)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+            def Cube "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
             )
             {
@@ -93,7 +101,15 @@ def Xform "box" (
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Cube "geometry" (
+            def Cube "geometry"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_1>
+                double size = 1
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+            def Cube "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
             )
             {
@@ -130,7 +146,14 @@ def Xform "cylinder"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Cylinder "geometry" (
+            def Cylinder "geometry"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                double height = 1
+                rel material:binding = </Looks/Material_2>
+                double radius = 0.5
+            }
+            def Cylinder "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
             )
             {
@@ -166,7 +189,13 @@ def Xform "sphere"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Sphere "geometry" (
+            def Sphere "geometry"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_3>
+                double radius = 0.5
+            }
+            def Sphere "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
             )
             {
@@ -201,7 +230,14 @@ def Xform "capsule"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
 
-            def Capsule "geometry" (
+            def Capsule "geometry"
+            {
+                float3[] extent = [(-0.2, -0.2, -0.5), (0.2, 0.2, 0.5)]
+                double height = 0.6
+                rel material:binding = </Looks/Material_4>
+                double radius = 0.2
+            }
+            def Capsule "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
             )
             {
@@ -237,7 +273,15 @@ def Xform "ellipsoid"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Sphere "geometry" (
+            def Sphere "geometry"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_5>
+                double radius = 0.5
+                float3 xformOp:scale = (0.4, 0.6, 1)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+            def Sphere "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
             )
             {

@@ -614,18 +614,21 @@ void ParseUSDLinks(
           ParseSphere(_prim, geom, _scale, metersPerUnit);
           vis.SetName("visual_sphere");
           vis.SetGeom(geom);
+          _link->AddVisual(vis);
         }
         else if (_prim.IsA<pxr::UsdGeomCylinder>())
         {
           ParseCylinder(_prim, geom, _scale, metersPerUnit);
           vis.SetName("visual_cylinder");
           vis.SetGeom(geom);
+          _link->AddVisual(vis);
         }
         else if (_prim.IsA<pxr::UsdGeomCube>())
         {
           ParseCube(_prim, geom, _scale, metersPerUnit);
           vis.SetName("visual_box");
           vis.SetGeom(geom);
+          _link->AddVisual(vis);
         }
         else if (_prim.IsA<pxr::UsdGeomMesh>())
         {
