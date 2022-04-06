@@ -59,7 +59,7 @@ void defineParserConfig(pybind11::object module)
     .def("warnings_policy",
          &sdf::ParserConfig::WarningsPolicy,
          "Get the current warning enforcement policy")
-    .def("add_uri_set_unrecognized_elements_policy_path",
+    .def("set_unrecognized_elements_policy",
          &sdf::ParserConfig::SetUnrecognizedElementsPolicy,
          "Set the policy for unrecogonized elements without an xmlns")
     .def("unrecognized_elements_policy",
@@ -68,26 +68,20 @@ void defineParserConfig(pybind11::object module)
     .def("set_deprecated_elements_policy",
          &sdf::ParserConfig::SetDeprecatedElementsPolicy,
          "Set the policy for deprecated elements.")
-    .def("resetde_precated_elements_policy",
+    .def("reset_deprecated_elements_policy",
          &sdf::ParserConfig::ResetDeprecatedElementsPolicy,
          "Resets the policy for deprecated elements so that it follows "
          "WarningsPolicy.")
     .def("deprecated_elements_policy",
          &sdf::ParserConfig::DeprecatedElementsPolicy,
          "Get the current deprecated elements policy")
-    .def("register_custom_model_parser",
-         &sdf::ParserConfig::RegisterCustomModelParser,
-         "Registers a custom model parser.")
-    .def("register_custom_model_parser",
-         &sdf::ParserConfig::RegisterCustomModelParser,
-         "Registers a custom model parser.")
     .def("custom_model_parsers",
          &sdf::ParserConfig::CustomModelParsers,
          "Get the registered custom model parsers")
     .def("urdf_set_preserve_fixed_joint",
          &sdf::ParserConfig::URDFSetPreserveFixedJoint,
          "Set the preserveFixedJoint flag.")
-    .def("urdfpreserve_fixed_joint",
+    .def("urdf_preserve_fixed_joint",
          &sdf::ParserConfig::URDFPreserveFixedJoint,
          "Get the preserveFixedJoint flag value.");
 

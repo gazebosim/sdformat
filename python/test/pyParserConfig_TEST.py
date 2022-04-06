@@ -68,7 +68,7 @@ class ParserConfigColor(unittest.TestCase):
         self.assertEqual(1, len(it))
         self.assertEqual(it[0], testDir1)
 
-    def test_move_assignment_construction(self):
+    def test_copy(self):
         # The directory used in add_uri_path must exist in the filesystem,
         # so we'll use the source path
         testDir1 = source_file()
