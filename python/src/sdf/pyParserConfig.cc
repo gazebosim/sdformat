@@ -75,9 +75,6 @@ void defineParserConfig(pybind11::object module)
     .def("deprecated_elements_policy",
          &sdf::ParserConfig::DeprecatedElementsPolicy,
          "Get the current deprecated elements policy")
-    .def("custom_model_parsers",
-         &sdf::ParserConfig::CustomModelParsers,
-         "Get the registered custom model parsers")
     .def("urdf_set_preserve_fixed_joint",
          &sdf::ParserConfig::URDFSetPreserveFixedJoint,
          "Set the preserveFixedJoint flag.")
