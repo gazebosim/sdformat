@@ -38,6 +38,7 @@ endfunction()
 
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
+  src/sdf/pyError.cc
   src/sdf/pyParserConfig.cc
 )
 
@@ -58,13 +59,13 @@ if (BUILD_TESTING)
   )
 
   set(python_tests
+    pyError_TEST
     pyParserConfig_TEST
   )
 
   foreach (test ${python_tests})
     add_test(NAME ${test}.py COMMAND
       "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
-
     set(_env_vars)
     list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib")
     list(APPEND _env_vars "LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}:$ENV{LD_LIBRARY_PATH}")
