@@ -1796,6 +1796,48 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 }
 
 /////////////////////////////////////////////////
+TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  auto expectedOutput =
+    std::string("Inertial statistics for model: test_model\n") +
+    std::string("---\n") +
+    std::string("Total mass of the model: 4\n") +
+    std::string("---\n") +
+    std::string("Centre of mass in model frame: \n") +
+    std::string("X: 0\n") +
+    std::string("Y: 0\n") +
+    std::string("Z: 0\n") +
+    std::string("---\n") +
+    std::string("Moment of inertia matrix: \n") +
+    std::string("54   0    0    \n") +
+    std::string("0    54   0    \n") +
+    std::string("0    0    104  \n") +
+    std::string("---\n");
+
+  // Check a good SDF file by passing the absolute path
+  {
+    std::string path = pathBase +"/inertial_stats.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " + path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  // Check a good SDF file from the same folder by passing a relative path
+  {
+    std::string path = "inertial_stats.sdf";
+
+    std::string output =
+      custom_exec_str("cd " + pathBase + " && " +
+                      IgnCommand() + " sdf --inertial-stats " + path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
