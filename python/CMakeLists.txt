@@ -39,6 +39,7 @@ endfunction()
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyError.cc
+  src/sdf/pyMaterial.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -50,13 +51,14 @@ configure_build_install_location(sdformat)
 if (BUILD_TESTING)
   set(python_tests
     pyError_TEST
+    pyMaterial_TEST
   )
 
   foreach (test ${python_tests})
     add_test(NAME ${test}.py COMMAND
       "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
     set(_env_vars)
-    list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib")
+    list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib$ENV{PYTHONPATH}")
     list(APPEND _env_vars "LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}:$ENV{LD_LIBRARY_PATH}")
     set_tests_properties(${test}.py PROPERTIES
       ENVIRONMENT "${_env_vars}")

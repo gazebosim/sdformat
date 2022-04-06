@@ -14,14 +14,28 @@
  * limitations under the License.
  */
 
+#ifndef SDFORMAT_PYTHON_MATERIAL_HH_
+#define SDFORMAT_PYTHON_MATERIAL_HH_
+
 #include <pybind11/pybind11.h>
 
-#include "pyError.hh"
-#include "pyMaterial.hh"
+#include "sdf/Material.hh"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+#include "sdf/config.hh"
 
-  sdf::python::defineError(m);
-  sdf::python::defineMaterial(m);
-}
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::Material
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineMaterial(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+
+#endif  // SDFORMAT_PYTHON_MATERIAL_HH_
