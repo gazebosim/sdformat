@@ -1822,7 +1822,8 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/inertial_stats.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf --inertial-stats " + path + SdfVersion());
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
 
@@ -1832,7 +1833,8 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
-                      IgnCommand() + " sdf --inertial-stats " + path + SdfVersion());
+                      IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
 }

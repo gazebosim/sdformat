@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <string.h>
+#include <vector>
 
 #include "sdf/sdf_config.h"
 #include "sdf/Filesystem.hh"
@@ -296,10 +297,12 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
 
   for (uint64_t i = 0; i < model->LinkCount(); i++) {
     ignition::math::Pose3d linkPoseRelativeToModel;
-    auto errors = model->LinkByIndex(i)->SemanticPose().Resolve(linkPoseRelativeToModel, "__model__");
+    auto errors = model->LinkByIndex(i)->SemanticPose().
+      Resolve(linkPoseRelativeToModel, "__model__");
 
     auto currentLinkInertial = model->LinkByIndex(i)->Inertial();
-    currentLinkInertial.SetPose(linkPoseRelativeToModel * currentLinkInertial.Pose());
+    currentLinkInertial.SetPose(linkPoseRelativeToModel *
+      currentLinkInertial.Pose());
     totalInertial += currentLinkInertial;
   }
 
@@ -326,7 +329,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   ss << totalInertial.Moi();
 
   std::string s;
-  long unsigned int maxLength = 0;
+  auto maxLength = 0;
   std::vector<std::string> moiVector;
   while ( std::getline(ss, s, ' ' ) ) {
     moiVector.push_back(s);
