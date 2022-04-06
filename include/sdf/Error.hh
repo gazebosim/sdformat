@@ -147,6 +147,9 @@ namespace sdf
     /// \brief Merge include is unspported for the type of entity being
     /// included, or the custom parser does not support merge includes.
     MERGE_INCLUDE_UNSUPPORTED,
+
+    /// \brief Generic error type for parameters.
+    PARAMETER_ERROR
   };
 
   class SDFORMAT_VISIBLE Error

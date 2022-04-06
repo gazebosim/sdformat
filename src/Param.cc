@@ -65,22 +65,30 @@ Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_description)
   : dataPtr(new ParamPrivate)
 {
-  this->dataPtr->key = _key;
-  this->dataPtr->required = _required;
-  this->dataPtr->typeName = _typeName;
-  this->dataPtr->description = _description;
-  this->dataPtr->set = false;
-  this->dataPtr->ignoreParentAttributes = false;
-  this->dataPtr->defaultStrValue = _default;
+  sdf::Errors errors;
+  this->dataPtr->Init(_key, _typeName, _default, _required,
+                      errors, _description);
 
-  SDF_ASSERT(
-      this->dataPtr->ValueFromStringImpl(
-          this->dataPtr->typeName,
-          _default,
-          this->dataPtr->defaultValue),
-      "Invalid parameter");
-  this->dataPtr->value = this->dataPtr->defaultValue;
-  this->dataPtr->strValue = std::nullopt;
+  if(!errors.empty())
+  {
+    for (unsigned int i = 0; i < errors.size() - 1; ++i)
+    {
+      sdferr << errors[i].Message() + "\n";
+    }
+
+    SDF_ASSERT(false, errors[errors.size() - 1].Message());
+  }
+}
+
+//////////////////////////////////////////////////
+Param::Param(const std::string &_key, const std::string &_typeName,
+             const std::string &_default, bool _required,
+             sdf::Errors &_errors,
+             const std::string &_description)
+  : dataPtr(new ParamPrivate)
+{
+  this->dataPtr->Init(_key, _typeName, _default, _required,
+                      _errors, _description);
 }
 
 //////////////////////////////////////////////////
@@ -88,29 +96,33 @@ Param::Param(const std::string &_key, const std::string &_typeName,
              const std::string &_default, bool _required,
              const std::string &_minValue, const std::string &_maxValue,
              const std::string &_description)
-    : Param(_key, _typeName, _default, _required, _description)
+  : dataPtr(new ParamPrivate)
 {
-  if (!_minValue.empty())
-  {
-    SDF_ASSERT(
-        this->dataPtr->ValueFromStringImpl(
-            this->dataPtr->typeName,
-            _minValue,
-            this->dataPtr->minValue.emplace()),
-        std::string("Invalid [min] parameter in SDFormat description of [") +
-            _key + "]");
-  }
+  sdf::Errors errors;
+  this->dataPtr->Init(_key, _typeName, _default, _required, _minValue,
+                      _maxValue, errors, _description);
 
-  if (!_maxValue.empty())
+  if(!errors.empty())
   {
-    SDF_ASSERT(
-        this->dataPtr->ValueFromStringImpl(
-            this->dataPtr->typeName,
-            _maxValue,
-            this->dataPtr->maxValue.emplace()),
-        std::string("Invalid [max] parameter in SDFormat description of [") +
-            _key + "]");
+    for (unsigned int i = 0; i < errors.size() - 1; ++i)
+    {
+      sdferr << errors[i].Message() + "\n";
+    }
+
+    SDF_ASSERT(false, errors[errors.size() - 1].Message());
   }
+}
+
+//////////////////////////////////////////////////
+Param::Param(const std::string &_key, const std::string &_typeName,
+             const std::string &_default, bool _required,
+             const std::string &_minValue, const std::string &_maxValue,
+             sdf::Errors &_errors,
+             const std::string &_description)
+  : dataPtr(new ParamPrivate)
+{
+  this->dataPtr->Init(_key, _typeName, _default, _required, _minValue,
+                      _maxValue, _errors, _description);
 }
 
 //////////////////////////////////////////////////
@@ -140,11 +152,29 @@ Param &Param::operator=(const Param &_param)
 //////////////////////////////////////////////////
 bool Param::GetAny(std::any &_anyVal) const
 {
+  sdf::Errors errors;
+  this->GetAny(_anyVal, errors);
+  if(!errors.empty())
+  {
+    for (const auto &e : errors)
+    {
+      sdferr << e.Message() + "\n";
+    }
+    return false;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Param::GetAny(std::any &_anyVal, sdf::Errors &_errors) const
+{
   if (this->IsType<int>())
   {
     int ret = 0;
-    if (!this->Get<int>(ret))
+    if (!this->Get<int>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [int]"});
       return false;
     }
     _anyVal = ret;
@@ -152,8 +182,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<std::uint64_t>())
   {
     uint64_t ret = 0;
-    if (!this->Get<std::uint64_t>(ret))
+    if (!this->Get<std::uint64_t>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [uint64_t]"});
       return false;
     }
     _anyVal = ret;
@@ -161,8 +193,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<double>())
   {
     double ret = 0;
-    if (!this->Get<double>(ret))
+    if (!this->Get<double>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [double]"});
       return false;
     }
     _anyVal = ret;
@@ -170,8 +204,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<float>())
   {
     float ret = 0;
-    if (!this->Get<float>(ret))
+    if (!this->Get<float>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [float]"});
       return false;
     }
     _anyVal = ret;
@@ -179,8 +215,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<bool>())
   {
     bool ret = false;
-    if (!this->Get<bool>(ret))
+    if (!this->Get<bool>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [bool]"});
       return false;
     }
     _anyVal = ret;
@@ -188,8 +226,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<std::string>())
   {
     std::string ret;
-    if (!this->Get<std::string>(ret))
+    if (!this->Get<std::string>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [std::string]"});
       return false;
     }
     _anyVal = ret;
@@ -197,8 +237,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<unsigned int>())
   {
     unsigned int ret = 0;
-    if (!this->Get<unsigned int>(ret))
+    if (!this->Get<unsigned int>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [unsigned int]"});
       return false;
     }
     _anyVal = ret;
@@ -206,8 +248,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<char>())
   {
     char ret = 0;
-    if (!this->Get<char>(ret))
+    if (!this->Get<char>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [char]"});
       return false;
     }
     _anyVal = ret;
@@ -215,8 +259,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<sdf::Time>())
   {
     sdf::Time ret;
-    if (!this->Get<sdf::Time>(ret))
+    if (!this->Get<sdf::Time>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [char]"});
       return false;
     }
     _anyVal = ret;
@@ -224,8 +270,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<ignition::math::Color>())
   {
     ignition::math::Color ret;
-    if (!this->Get<ignition::math::Color>(ret))
+    if (!this->Get<ignition::math::Color>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [ignition::math::Color]"});
       return false;
     }
     _anyVal = ret;
@@ -233,8 +281,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<ignition::math::Vector3d>())
   {
     ignition::math::Vector3d ret;
-    if (!this->Get<ignition::math::Vector3d>(ret))
+    if (!this->Get<ignition::math::Vector3d>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [ignition::math::Vector3d]"});
       return false;
     }
     _anyVal = ret;
@@ -242,8 +292,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<ignition::math::Vector2i>())
   {
     ignition::math::Vector2i ret;
-    if (!this->Get<ignition::math::Vector2i>(ret))
+    if (!this->Get<ignition::math::Vector2i>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [ignition::math::Vector2i]"});
       return false;
     }
     _anyVal = ret;
@@ -251,8 +303,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<ignition::math::Vector2d>())
   {
     ignition::math::Vector2d ret;
-    if (!this->Get<ignition::math::Vector2d>(ret))
+    if (!this->Get<ignition::math::Vector2d>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [ignition::math::Vector2d]"});
       return false;
     }
     _anyVal = ret;
@@ -260,8 +314,10 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<ignition::math::Pose3d>())
   {
     ignition::math::Pose3d ret;
-    if (!this->Get<ignition::math::Pose3d>(ret))
+    if (!this->Get<ignition::math::Pose3d>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [ignition::math::Pose3d]"});
       return false;
     }
     _anyVal = ret;
@@ -269,15 +325,18 @@ bool Param::GetAny(std::any &_anyVal) const
   else if (this->IsType<ignition::math::Quaterniond>())
   {
     ignition::math::Quaterniond ret;
-    if (!this->Get<ignition::math::Quaterniond>(ret))
+    if (!this->Get<ignition::math::Quaterniond>(ret, _errors))
     {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Could not get a parameter of type [ignition::math::Quaterniond]"});
       return false;
     }
     _anyVal = ret;
   }
   else
   {
-    sdferr << "Type of parameter not known: [" << this->GetTypeName() << "]\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Type of parameter not known: [" + this->GetTypeName() + "]"});
     return false;
   }
   return true;
@@ -285,6 +344,17 @@ bool Param::GetAny(std::any &_anyVal) const
 
 //////////////////////////////////////////////////
 void Param::Update()
+{
+  sdf::Errors errors;
+  this->Update(errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+}
+
+//////////////////////////////////////////////////
+void Param::Update(sdf::Errors &_errors)
 {
   if (this->dataPtr->updateFunc)
   {
@@ -299,14 +369,33 @@ void Param::Update()
     }
     catch(...)
     {
-      sdferr << "Unable to set value using Update for key["
-             << this->dataPtr->key << "]\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Unable to set value using Update for key["
+          + this->dataPtr->key + "]"});
     }
+  }
+  else
+  {
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "[updateFunc] is not set."});
   }
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetAsString(const PrintConfig &_config) const
+{
+  sdf::Errors errors;
+  std::string result = GetAsString(errors, _config);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+std::string Param::GetAsString(sdf::Errors &_errors,
+                               const PrintConfig &_config) const
 {
   std::string valueStr;
   if (this->GetSet() &&
@@ -314,16 +403,30 @@ std::string Param::GetAsString(const PrintConfig &_config) const
                                          this->dataPtr->typeName,
                                          this->dataPtr->value,
                                          this->dataPtr->strValue,
-                                         valueStr))
+                                         valueStr,
+                                         _errors))
   {
     return valueStr;
   }
 
-  return this->GetDefaultAsString(_config);
+  return this->GetDefaultAsString(_errors, _config);
 }
 
 //////////////////////////////////////////////////
 std::string Param::GetDefaultAsString(const PrintConfig &_config) const
+{
+  sdf::Errors errors;
+  std::string result = this->GetDefaultAsString(errors, _config);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+std::string Param::GetDefaultAsString(sdf::Errors &_errors,
+                                      const PrintConfig &_config) const
 {
   std::string defaultStr;
   if (this->dataPtr->StringFromValueImpl(
@@ -331,13 +434,16 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
         this->dataPtr->typeName,
         this->dataPtr->defaultValue,
         this->dataPtr->defaultStrValue,
-        defaultStr))
+        defaultStr,
+        _errors))
   {
     return defaultStr;
   }
 
-  sdferr << "Unable to get string from default value, "
-         << "using ParamStreamer instead.\n";
+  _errors.push_back({ErrorCode::PARAMETER_ERROR,
+      "Unable to get string from default value, "
+      "using ParamStreamer instead."});
+
   StringStreamClassicLocale ss;
   ss << ParamStreamer{ this->dataPtr->defaultValue };
   return ss.str();
@@ -347,15 +453,31 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 std::optional<std::string> Param::GetMinValueAsString(
     const PrintConfig &_config) const
 {
+  sdf::Errors errors;
+  auto result = GetMinValueAsString(errors, _config);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+std::optional<std::string> Param::GetMinValueAsString(
+    sdf::Errors &_errors,
+    const PrintConfig &_config) const
+{
   if (this->dataPtr->minValue.has_value())
   {
     std::string valueStr;
     if (!this->dataPtr->StringFromValueImpl(_config,
                                             this->dataPtr->typeName,
                                             this->dataPtr->minValue.value(),
-                                            valueStr))
+                                            valueStr,
+                                            _errors))
     {
-      sdferr << "Unable to get min value as string.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Unable to get min value as string."});
       return std::nullopt;
     }
 
@@ -368,15 +490,31 @@ std::optional<std::string> Param::GetMinValueAsString(
 std::optional<std::string> Param::GetMaxValueAsString(
     const PrintConfig &_config) const
 {
+  sdf::Errors errors;
+  auto result = GetMaxValueAsString(errors, _config);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+std::optional<std::string> Param::GetMaxValueAsString(
+    sdf::Errors &_errors,
+    const PrintConfig &_config) const
+{
   if (this->dataPtr->maxValue.has_value())
   {
     std::string valueStr;
     if (!this->dataPtr->StringFromValueImpl(_config,
                                             this->dataPtr->typeName,
                                             this->dataPtr->maxValue.value(),
-                                            valueStr))
+                                            valueStr,
+                                            _errors))
     {
-      sdferr << "Unable to get max value as string.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Unable to get max value as string."});
       return std::nullopt;
     }
 
@@ -390,18 +528,21 @@ std::optional<std::string> Param::GetMaxValueAsString(
 /// \param[in] _input Input string.
 /// \param[in] _key Key of the parameter, used for error message.
 /// \param[out] _value This will be set with the parsed value.
+/// \param[out] _errors Vector of errors.
 /// \return True if parsing succeeded.
 template <typename T>
 bool ParseUsingStringStream(const std::string &_input, const std::string &_key,
-                            ParamPrivate::ParamVariant &_value)
+                            ParamPrivate::ParamVariant &_value,
+                            sdf::Errors &_errors)
 {
   StringStreamClassicLocale ss(_input);
   T _val;
   ss >> _val;
   if (ss.fail())
   {
-    sdferr << "Unknown error. Unable to set value [" << _input << " ] for key["
-           << _key << "]\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Unknown error. Unable to set value [" + _input + " ] for key["
+           + _key + "]"});
     return false;
   }
   _value = _val;
@@ -416,9 +557,11 @@ bool ParseUsingStringStream(const std::string &_input, const std::string &_key,
 /// \param[in] _input Input string.
 /// \param[in] _key Key of the parameter, used for error message.
 /// \param[out] _value This will be set with the parsed value.
+/// \param[out] _errors Vector of errors.
 /// \return True if parsing colors succeeded.
 bool ParseColorUsingStringStream(const std::string &_input,
-    const std::string &_key, ParamPrivate::ParamVariant &_value)
+    const std::string &_key, ParamPrivate::ParamVariant &_value,
+    sdf::Errors &_errors)
 {
   StringStreamClassicLocale ss(_input);
   std::string token;
@@ -435,16 +578,18 @@ bool ParseColorUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stof
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< token
-             << "] for key [" << _key << "].\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Invalid argument. Unable to set value [" + token
+          + "] for key [" + _key + "]."});
       isValidColor = false;
       break;
     }
     // Catch out of range exception from std::stof
     catch(std::out_of_range &)
     {
-      sdferr << "Out of range. Unable to set value [" << token
-             << "] for key [" << _key << "].\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Out of range. Unable to set value [" + token
+          + "] for key [" + _key + "]."});
       isValidColor = false;
       break;
     }
@@ -468,8 +613,8 @@ bool ParseColorUsingStringStream(const std::string &_input,
   }
   else
   {
-    sdferr << "The value <" << _key <<
-        ">" << _input << "</" << _key << "> is invalid.\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "The value <" + _key + ">" + _input + "</" + _key + "> is invalid."});
   }
 
   return isValidColor;
@@ -484,10 +629,12 @@ bool ParseColorUsingStringStream(const std::string &_input,
 /// \param[in] _key Key of the parameter, used for error message.
 /// \param[in] _attributes Attributes associated to this pose.
 /// \param[out] _value This will be set with the parsed value.
+/// \param[out] _errors Vector of errors.
 /// \return True if parsing pose succeeded.
 bool ParsePoseUsingStringStream(const std::string &_input,
     const std::string &_key, const Param_V &_attributes,
-    ParamPrivate::ParamVariant &_value)
+    ParamPrivate::ParamVariant &_value,
+    sdf::Errors &_errors)
 {
   const bool defaultParseAsDegrees = false;
   bool parseAsDegrees = defaultParseAsDegrees;
@@ -504,16 +651,17 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
     if (key == "degrees")
     {
-      if (!p->Get<bool>(parseAsDegrees))
+      if (!p->Get<bool>(parseAsDegrees, _errors))
       {
-        sdferr << "Invalid boolean value found for attribute "
-            "//pose[@degrees].\n";
+        _errors.push_back({ErrorCode::PARAMETER_ERROR,
+            "Invalid boolean value found for attribute "
+            "//pose[@degrees]."});
         return false;
       }
     }
     else if (key == "rotation_format")
     {
-      rotationFormat = p->GetAsString();
+      rotationFormat = p->GetAsString(_errors);
 
       if (rotationFormat == "euler_rpy")
       {
@@ -525,9 +673,10 @@ bool ParsePoseUsingStringStream(const std::string &_input,
       }
       else
       {
-        sdferr << "Undefined attribute //pose[@rotation_format='"
-            << rotationFormat << "'], only 'euler_rpy' and 'quat_xyzw'"
-            << " is supported.\n";
+        _errors.push_back({ErrorCode::PARAMETER_ERROR,
+            "Undefined attribute //pose[@rotation_format='"
+            + rotationFormat + "'], only 'euler_rpy' and 'quat_xyzw'"
+            + " is supported."});
         return false;
       }
     }
@@ -535,8 +684,9 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
   if (rotationFormat == "quat_xyzw" && parseAsDegrees)
   {
-    sdferr << "The attribute //pose[@degrees='true'] does not apply when "
-        << "parsing quaternions, //pose[@rotation_format='quat_xyzw'].\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "The attribute //pose[@degrees='true'] does not apply when "
+        "parsing quaternions, //pose[@rotation_format='quat_xyzw']."});
     return false;
   }
 
@@ -561,32 +711,36 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     // Catch invalid argument exception from std::stod
     catch(std::invalid_argument &)
     {
-      sdferr << "Invalid argument. Unable to set value ["<< _input
-             << "] for key [" << _key << "].\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Invalid argument. Unable to set value [" + _input
+          + "] for key [" + _key + "]."});
       isValidPose = false;
       break;
     }
     // Catch out of range exception from std::stod
     catch(std::out_of_range &)
     {
-      sdferr << "Out of range. Unable to set value [" << token
-             << "] for key [" << _key << "].\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Out of range. Unable to set value [" + token
+          + "] for key [" + _key + "]."});
       isValidPose = false;
       break;
     }
 
     if (!std::isfinite(v))
     {
-      sdferr << "Pose values must be finite.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Pose values must be finite."});
       isValidPose = false;
       break;
     }
 
     if (valueIndex >= desiredSize)
     {
-      sdferr << "The value for //pose[@rotation_format='" << rotationFormat
-          << "'] must have " << desiredSize
-          << " values, but more than that were found in '" << _input << "'.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "The value for //pose[@rotation_format='" + rotationFormat
+          + "'] must have " + std::to_string(desiredSize)
+          + " values, but more than that were found in '" + _input + "'."});
       isValidPose = false;
       break;
     }
@@ -599,9 +753,11 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
   if (valueIndex != desiredSize)
   {
-    sdferr << "The value for //pose[@rotation_format='" << rotationFormat
-        << "'] must have " << desiredSize << " values, but " << valueIndex
-        << " were found instead in '" << _input << "'.\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "The value for //pose[@rotation_format='" + rotationFormat
+        + "'] must have " + std::to_string(desiredSize) + " values, but "
+        + std::to_string(valueIndex) + " were found instead in '"
+        + _input + "'."});
     return false;
   }
 
@@ -628,9 +784,91 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 }
 
 //////////////////////////////////////////////////
+void ParamPrivate::Init(const std::string &_key, const std::string &_typeName,
+             const std::string &_default, bool _required,
+             sdf::Errors &_errors,
+             const std::string &_description)
+{
+  this->key = _key;
+  this->required = _required;
+  this->typeName = _typeName;
+  this->description = _description;
+  this->set = false;
+  this->ignoreParentAttributes = false;
+  this->defaultStrValue = _default;
+
+  if(!(this->ValueFromStringImpl(
+          this->typeName,
+          _default,
+          this->defaultValue,
+          _errors)))
+  {
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+                     "Invalid parameter"});
+    return;
+  }
+  this->value = this->defaultValue;
+  this->strValue = std::nullopt;
+}
+
+//////////////////////////////////////////////////
+void ParamPrivate::Init(const std::string &_key, const std::string &_typeName,
+             const std::string &_default, bool _required,
+             const std::string &_minValue, const std::string &_maxValue,
+             sdf::Errors &_errors,
+             const std::string &_description)
+{
+  this->Init(_key, _typeName, _default, _required, _errors, _description);
+  if (!_minValue.empty())
+  {
+    if (!(this->ValueFromStringImpl(
+            this->typeName,
+            _minValue,
+            this->minValue.emplace(),
+            _errors)))
+    {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Invalid [min] parameter in "
+          "SDFormat description of [" + _key + "]"});
+    }
+  }
+
+  if (!_maxValue.empty())
+  {
+    if(!(this->ValueFromStringImpl(
+            this->typeName,
+            _maxValue,
+            this->maxValue.emplace(),
+            _errors)))
+
+    {
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Invalid [max] parameter in SDFormat description of [" +
+          _key + "]"});
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
                                        const std::string &_valueStr,
                                        ParamVariant &_valueToSet) const
+{
+  sdf::Errors errors;
+  bool result = this->ValueFromStringImpl(
+      _typeName, _valueStr, _valueToSet, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
+                                       const std::string &_valueStr,
+                                       ParamVariant &_valueToSet,
+                                       sdf::Errors &_errors) const
 {
   // Under some circumstances, latin locales (es_ES or pt_BR) will return a
   // comma for decimal position instead of a dot, making the conversion
@@ -677,7 +915,8 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
       }
       else
       {
-        sdferr << "Invalid boolean value\n";
+        _errors.push_back({ErrorCode::PARAMETER_ERROR,
+            "Invalid boolean value"});
         return false;
       }
     }
@@ -697,7 +936,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
     else if (_typeName == "uint64_t")
     {
       return ParseUsingStringStream<std::uint64_t>(tmp, this->key,
-                                                   _valueToSet);
+                                                   _valueToSet, _errors);
     }
     else if (_typeName == "unsigned int")
     {
@@ -716,36 +955,36 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
              _typeName == "time")
     {
       return ParseUsingStringStream<sdf::Time>(tmp, this->key,
-                                               _valueToSet);
+                                               _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Angle" ||
              _typeName == "angle")
     {
       return ParseUsingStringStream<ignition::math::Angle>(
-          tmp, this->key, _valueToSet);
+          tmp, this->key, _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Color" ||
              _typeName == "color")
     {
-      return ParseColorUsingStringStream(tmp, this->key, _valueToSet);
+      return ParseColorUsingStringStream(tmp, this->key, _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Vector2i" ||
              _typeName == "vector2i")
     {
       return ParseUsingStringStream<ignition::math::Vector2i>(
-          tmp, this->key, _valueToSet);
+          tmp, this->key, _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Vector2d" ||
              _typeName == "vector2d")
     {
       return ParseUsingStringStream<ignition::math::Vector2d>(
-          tmp, this->key, _valueToSet);
+          tmp, this->key, _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Vector3d" ||
              _typeName == "vector3")
     {
       return ParseUsingStringStream<ignition::math::Vector3d>(
-          tmp, this->key, _valueToSet);
+          tmp, this->key, _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Pose3d" ||
              _typeName == "pose" ||
@@ -755,37 +994,40 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
       if (!this->ignoreParentAttributes && p)
       {
         return ParsePoseUsingStringStream(
-            tmp, this->key, p->GetAttributes(), _valueToSet);
+            tmp, this->key, p->GetAttributes(), _valueToSet, _errors);
       }
       return ParsePoseUsingStringStream(
-          tmp, this->key, {}, _valueToSet);
+          tmp, this->key, {}, _valueToSet, _errors);
     }
     else if (_typeName == "ignition::math::Quaterniond" ||
              _typeName == "quaternion")
     {
       return ParseUsingStringStream<ignition::math::Quaterniond>(
-          tmp, this->key, _valueToSet);
+          tmp, this->key, _valueToSet, _errors);
     }
     else
     {
-      sdferr << "Unknown parameter type[" << _typeName << "]\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Unknown parameter type[" + _typeName + "]"});
       return false;
     }
   }
   // Catch invalid argument exception from std::stoi/stoul/stod/stof
   catch(std::invalid_argument &)
   {
-    sdferr << "Invalid argument. Unable to set value ["
-           << _valueStr << " ] for key["
-           << this->key << "].\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Invalid argument. Unable to set value ["
+        + _valueStr + " ] for key["
+        + this->key + "]."});
     return false;
   }
   // Catch out of range exception from std::stoi/stoul/stod/stof
   catch(std::out_of_range &)
   {
-    sdferr << "Out of range. Unable to set value ["
-           << _valueStr << " ] for key["
-           << this->key << "].\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Out of range. Unable to set value ["
+        + _valueStr + " ] for key["
+        + this->key + "]."});
     return false;
   }
 
@@ -799,6 +1041,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 /// \param[in] _value The variant value of this pose.
 /// \param[in] _originalStr The original string used to set this pose value.
 /// \param[out] _valueStr The pose as a string.
+/// \param[out] _errors Vector of errors.
 /// \return True if the string was successfully retrieved from the pose, false
 /// otherwise.
 /////////////////////////////////////////////////
@@ -806,7 +1049,8 @@ bool PoseStringFromValue(const PrintConfig &_config,
                          const Param_V &_parentAttributes,
                          const ParamPrivate::ParamVariant &_value,
                          const std::optional<std::string> &_originalStr,
-                         std::string &_valueStr)
+                         std::string &_valueStr,
+                         sdf::Errors &_errors)
 {
   StringStreamClassicLocale ss;
 
@@ -814,7 +1058,8 @@ bool PoseStringFromValue(const PrintConfig &_config,
       std::get_if<ignition::math::Pose3d>(&_value);
   if (!pose)
   {
-    sdferr << "Unable to get pose value from variant.\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Unable to get pose value from variant."});
     return false;
   }
 
@@ -840,9 +1085,10 @@ bool PoseStringFromValue(const PrintConfig &_config,
 
     if (key == "degrees")
     {
-      if (!p->Get<bool>(inDegrees))
+      if (!p->Get<bool>(inDegrees, _errors))
       {
-        sdferr << "Unable to get //pose[@degrees] attribute as bool.\n";
+        _errors.push_back({ErrorCode::PARAMETER_ERROR,
+            "Unable to get //pose[@degrees] attribute as bool."});
         return false;
       }
       if (p->GetSet())
@@ -852,7 +1098,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
     }
     else if (key == "rotation_format")
     {
-      rotationFormat = p->GetAsString();
+      rotationFormat = p->GetAsString(_errors);
       if (p->GetSet())
       {
         posRotDelimiter = threeSpacedDelimiter;
@@ -895,8 +1141,9 @@ bool PoseStringFromValue(const PrintConfig &_config,
   // Returning pose string representations based on desired configurations.
   if (rotationFormat == "quat_xyzw" && inDegrees)
   {
-    sdferr << "Invalid pose with //pose[@degrees='true'] and "
-           << "//pose[@rotation_format='quat_xyzw'].\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Invalid pose with //pose[@degrees='true'] and "
+        "//pose[@rotation_format='quat_xyzw']."});
     return false;
   }
   else if (rotationFormat == "quat_xyzw")
@@ -975,12 +1222,35 @@ bool ParamPrivate::StringFromValueImpl(
     const ParamVariant &_value,
     std::string &_valueStr) const
 {
+  sdf::Errors errors;
+  bool result = this->StringFromValueImpl(
+      _config,
+      _typeName,
+      _value,
+      _valueStr,
+      errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool ParamPrivate::StringFromValueImpl(
+    const PrintConfig &_config,
+    const std::string &_typeName,
+    const ParamVariant &_value,
+    std::string &_valueStr,
+    sdf::Errors &_errors) const
+{
   return this->StringFromValueImpl(
       _config,
       _typeName,
       _value,
       std::nullopt,
-      _valueStr);
+      _valueStr,
+      _errors);
 }
 
 /////////////////////////////////////////////////
@@ -991,13 +1261,38 @@ bool ParamPrivate::StringFromValueImpl(
     const std::optional<std::string> &_originalStr,
     std::string &_valueStr) const
 {
+  sdf::Errors errors;
+  bool result = this->StringFromValueImpl(
+      _config,
+      _typeName,
+      _value,
+      _originalStr,
+      _valueStr,
+      errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool ParamPrivate::StringFromValueImpl(
+    const PrintConfig &_config,
+    const std::string &_typeName,
+    const ParamVariant &_value,
+    const std::optional<std::string> &_originalStr,
+    std::string &_valueStr,
+    sdf::Errors &_errors) const
+{
   // This will be handled in a type specific manner
   if (_typeName == "bool")
   {
     const bool *val = std::get_if<bool>(&_value);
     if (!val)
     {
-      sdferr << "Unable to get bool value from variant.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Unable to get bool value from variant."});
       return false;
     }
 
@@ -1011,10 +1306,11 @@ bool ParamPrivate::StringFromValueImpl(
     const ElementPtr p = this->parentElement.lock();
     if (!this->ignoreParentAttributes && p)
     {
-      return PoseStringFromValue(
-          _config, p->GetAttributes(), _value, _originalStr, _valueStr);
+      return PoseStringFromValue(_config, p->GetAttributes(), _value,
+                                 _originalStr, _valueStr, _errors);
     }
-    return PoseStringFromValue(_config, {}, _value, _originalStr, _valueStr);
+    return PoseStringFromValue(_config, {}, _value,
+                               _originalStr, _valueStr, _errors);
   }
 
   StringStreamClassicLocale ss;
@@ -1027,13 +1323,30 @@ bool ParamPrivate::StringFromValueImpl(
 bool Param::SetFromString(const std::string &_value,
                           bool _ignoreParentAttributes)
 {
+  sdf::Errors errors;
+  bool result = this->SetFromString(_value,
+                          _ignoreParentAttributes,
+                          errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool Param::SetFromString(const std::string &_value,
+                          bool _ignoreParentAttributes,
+                          sdf::Errors &_errors)
+{
   this->dataPtr->ignoreParentAttributes = _ignoreParentAttributes;
   std::string str = sdf::trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
   {
-    sdferr << "Empty string used when setting a required parameter. Key["
-           << this->GetKey() << "]\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Empty string used when setting a required parameter. Key["
+        + this->GetKey() + "]"});
     return false;
   }
   else if (str.empty())
@@ -1046,7 +1359,8 @@ bool Param::SetFromString(const std::string &_value,
   auto oldValue = this->dataPtr->value;
   if (!this->dataPtr->ValueFromStringImpl(this->dataPtr->typeName,
                                           str,
-                                          this->dataPtr->value))
+                                          this->dataPtr->value,
+                                          _errors))
   {
     return false;
   }
@@ -1066,7 +1380,19 @@ bool Param::SetFromString(const std::string &_value,
 //////////////////////////////////////////////////
 bool Param::SetFromString(const std::string &_value)
 {
-  return this->SetFromString(_value, false);
+  sdf::Errors errors;
+  bool result = this->SetFromString(_value, false, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool Param::SetFromString(const std::string &_value, sdf::Errors &_errors)
+{
+  return this->SetFromString(_value, false, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -1078,10 +1404,22 @@ ElementPtr Param::GetParentElement() const
 //////////////////////////////////////////////////
 bool Param::SetParentElement(ElementPtr _parentElement)
 {
+  sdf::Errors errors;
+  bool result = this->SetParentElement(_parentElement, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool Param::SetParentElement(ElementPtr _parentElement, sdf::Errors &_errors)
+{
   auto prevParentElement = this->dataPtr->parentElement;
 
   this->dataPtr->parentElement = _parentElement;
-  if (!this->Reparse())
+  if (!this->Reparse(_errors))
   {
     this->dataPtr->parentElement = prevParentElement;
     return false;
@@ -1101,6 +1439,18 @@ void Param::Reset()
 //////////////////////////////////////////////////
 bool Param::Reparse()
 {
+  sdf::Errors errors;
+  bool result = this->Reparse(errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool Param::Reparse(sdf::Errors &_errors)
+{
   std::string strToReparse;
   if (this->dataPtr->strValue.has_value())
   {
@@ -1111,28 +1461,33 @@ bool Param::Reparse()
   else if (!this->dataPtr->StringFromValueImpl(PrintConfig(),
                                                this->dataPtr->typeName,
                                                this->dataPtr->defaultValue,
-                                               strToReparse))
+                                               strToReparse,
+                                               _errors))
   {
-    sdferr << "Failed to obtain string from default value during reparsing.\n";
+    _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        "Failed to obtain string from default value during reparsing."});
     return false;
   }
 
   if (!this->dataPtr->ValueFromStringImpl(
-      this->dataPtr->typeName, strToReparse, this->dataPtr->value))
+      this->dataPtr->typeName, strToReparse, this->dataPtr->value, _errors))
   {
     if (const auto parentElement = this->dataPtr->parentElement.lock())
     {
-      sdferr << "Failed to set value '" << strToReparse
-          << "' to key [" << this->GetKey()
-          << "] for new parent element of name '" << parentElement->GetName()
-          << "', reverting to previous value '"
-          << this->GetAsString() << "'.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Failed to set value '" + strToReparse
+          + "' to key [" + this->GetKey()
+          + "] for new parent element of name '" + parentElement->GetName()
+          + "', reverting to previous value '"
+          + this->GetAsString(_errors) + "'."});
     }
     else
     {
-      sdferr << "Failed to set value '" << strToReparse
-          << "' to key [" << this->GetKey() << "] without a parent element, "
-          << "reverting to previous value '" << this->GetAsString() << "'.\n";
+      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+          "Failed to set value '" + strToReparse
+          + "' to key [" + this->GetKey() + "] without a parent element, "
+          + "reverting to previous value '" +
+          this->GetAsString(_errors) + "'."});
     }
     return false;
   }
@@ -1197,8 +1552,20 @@ bool Param::IgnoresParentElementAttribute() const
 /////////////////////////////////////////////////
 bool Param::ValidateValue() const
 {
+  sdf::Errors errors;
+  bool result = this->ValidateValue(errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e.Message() + "\n";
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool Param::ValidateValue(sdf::Errors &_errors) const
+{
   return std::visit(
-      [this](const auto &_val) -> bool
+      [this, &_errors](const auto &_val) -> bool
       {
         using T = std::decay_t<decltype(_val)>;
         // cppcheck-suppress syntaxError
@@ -1209,10 +1576,14 @@ bool Param::ValidateValue() const
           {
             if (_val < std::get<T>(*this->dataPtr->minValue))
             {
-              sdferr << "The value [" << _val
-                     << "] is less than the minimum allowed value of ["
-                     << *this->GetMinValueAsString() << "] for key ["
-                     << this->GetKey() << "]\n";
+              std::ostringstream oss;
+              oss << _val;
+              std::string val_str = oss.str();
+              _errors.push_back({ErrorCode::PARAMETER_ERROR,
+                  "The value [" + val_str
+                  + "] is less than the minimum allowed value of ["
+                  + *this->GetMinValueAsString() + "] for key ["
+                  + this->GetKey() + "]"});
               return false;
             }
           }
@@ -1220,10 +1591,14 @@ bool Param::ValidateValue() const
           {
             if (_val > std::get<T>(*this->dataPtr->maxValue))
             {
-              sdferr << "The value [" << _val
-                     << "] is greater than the maximum allowed value of ["
-                     << *this->GetMaxValueAsString() << "] for key ["
-                     << this->GetKey() << "]\n";
+              std::ostringstream oss;
+              oss << _val;
+              std::string val_str = oss.str();
+              _errors.push_back({ErrorCode::PARAMETER_ERROR,
+                  "The value [" + val_str
+                  + "] is greater than the maximum allowed value of ["
+                  + *this->GetMaxValueAsString() + "] for key ["
+                  + this->GetKey() + "]"});
               return false;
             }
           }
