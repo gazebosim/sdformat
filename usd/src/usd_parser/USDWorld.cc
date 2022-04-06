@@ -19,17 +19,33 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
+
+#include <ignition/common/Util.hh>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usdGeom/camera.h>
+#include <pxr/usd/usdGeom/gprim.h>
+#include <pxr/usd/usdGeom/scope.h>
+#include <pxr/usd/usdLux/boundableLightBase.h>
+#include <pxr/usd/usdLux/nonboundableLightBase.h>
 #include <pxr/usd/usd/primRange.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
+#include "sdf/usd/usd_parser/USDTransforms.hh"
+
+#include "USDLights.hh"
 #include "USDPhysics.hh"
 
+#include "sdf/Light.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/Plugin.hh"
 #include "sdf/World.hh"
 
@@ -67,10 +83,96 @@ namespace usd
       _world.SetName(worldName + "_world");
     }
 
+    std::string linkName;
+
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (auto const &prim : range)
     {
+      // Skip materials, the data is already available in the USDData class
+      if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
+      {
+        continue;
+      }
+
       std::string primName = prim.GetName();
+      std::string primPath = pxr::TfStringify(prim.GetPath());
+      std::string primType = prim.GetPrimTypeInfo().GetTypeName().GetText();
+
+      std::vector<std::string> primPathTokens =
+        ignition::common::split(primPath, "/");
+
+      // This assumption on the scene graph wouldn't hold if the usd does
+      // not come from Isaac Sim
+      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
+          && !prim.IsA<pxr::UsdGeomScope>()
+          && !prim.IsA<pxr::UsdPhysicsScene>()
+          && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
+          && !prim.IsA<pxr::UsdLuxNonboundableLightBase>())
+      {
+        sdf::Model model = sdf::Model();
+        model.SetName(primPathTokens[0]);
+
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale{1, 1, 1};
+
+        GetTransform(
+          prim,
+          usdData,
+          pose,
+          scale,
+          model.Name());
+
+        model.SetRawPose(pose);
+        model.SetStatic(!prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+
+        _world.AddModel(model);
+      }
+
+      // In general USD models used in Issac Sim define the model path
+      // under a root path for example:
+      //  -> /robot_name/robot_name_link0
+      // But sometimes for enviroments it uses just a simple path:
+      //  -> /ground_plane
+      //  -> /wall_0
+      // the shortName variable defines if this is the first case when it's
+      // False or when it's true then it's the second case.
+      // This conversion might only work with Issac Sim USDs
+      // TODO(adlarkin) find a better way to get root model prims/parent prims
+      // of lights attached to the stage: see
+      // https://github.com/ignitionrobotics/sdformat/issues/927
+      if (primPathTokens.size() >= 2)
+      {
+        bool shortName = false;
+        if (primPathTokens.size() == 2)
+        {
+          if (prim.IsA<pxr::UsdGeomGprim>() || (primType == "Plane"))
+          {
+            if (primName != "imu")
+            {
+              linkName = "/" + primPathTokens[0];
+              shortName = true;
+            }
+          }
+        }
+        if (!shortName)
+        {
+          linkName = "/" + primPathTokens[0] + "/" + primPathTokens[1];
+        }
+      }
+
+      if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
+          prim.IsA<pxr::UsdLuxNonboundableLightBase>())
+      {
+        auto light = ParseUSDLights(prim, usdData, linkName);
+        light->SetName(primName);
+        if (light)
+        {
+          _world.AddLight(light.value());
+          // TODO(ahcorde) Include lights which are inside links
+        }
+        continue;
+      }
+      // TODO(anyone) support converting other USD light types
 
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
@@ -87,6 +189,19 @@ namespace usd
         ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
             data.second->MetersPerUnit());
         continue;
+      }
+    }
+
+    // TODO(ahcorde): Remove this loop here, I added this here to avoid
+    // errors, a model should have link. This will be added in a follow up PR.
+    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
+    {
+      auto m = _world.ModelByIndex(i);
+      if (m->LinkCount() == 0)
+      {
+        sdf::Link link;
+        link.SetName("empty_link");
+        m->AddLink(link);
       }
     }
 

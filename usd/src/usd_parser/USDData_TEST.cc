@@ -58,7 +58,7 @@ TEST(USDData, Constructor)
     EXPECT_EQ(0u, usdData.ParseMaterials().size());
 
     EXPECT_EQ(1u, usdData.AllReferences().size());
-    EXPECT_EQ(2u, usdData.Models().size());
+    EXPECT_EQ(0u, usdData.Models().size());
     EXPECT_EQ(7u, usdData.Materials().size());
 
     auto materials = usdData.Materials();
