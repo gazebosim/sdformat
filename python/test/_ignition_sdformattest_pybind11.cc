@@ -16,14 +16,24 @@
 
 #include <pybind11/pybind11.h>
 
-#include "pyError.hh"
-#include "pyMesh.hh"
-#include "pyParserConfig.hh"
+#include "test_config.h"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+PYBIND11_MODULE(sdformattest, m) {
+  m.doc() = "sdformat test Python Library.";
 
-  sdf::python::defineError(m);
-  sdf::python::defineMesh(m);
-  sdf::python::defineParserConfig(m);
+  m.def(
+    "source_file",
+    []()
+    {
+      return sdf::testing::SourceFile();
+    },
+    "Retrieve a file from the project source directory");
+
+  m.def(
+    "test_file",
+    []()
+    {
+      return sdf::testing::TestFile();
+    },
+    "Retrieve a file from the project source directory");
 }
