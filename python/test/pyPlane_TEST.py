@@ -36,7 +36,7 @@ class PlaneTEST(unittest.TestCase):
     self.assertEqual(Vector2d(1.2, 3.4), plane.size())
 
 
-  def test_move_construction(self):
+  def test_assigment(self):
     plane = Plane()
     plane.set_normal(Vector3d(1, 0, 0))
     plane.set_size(Vector2d(1.2, 3.4))
@@ -49,7 +49,7 @@ class PlaneTEST(unittest.TestCase):
     self.assertEqual(Vector2d(1.2, 3.4), plane2.shape().size())
 
 
-  def test_copy_construction(self):
+  def test_deepcopy_construction(self):
     plane = Plane()
     plane.set_normal(Vector3d(1, 0, 0))
     plane.set_size(Vector2d(1.2, 3.4))
@@ -59,7 +59,7 @@ class PlaneTEST(unittest.TestCase):
     self.assertEqual(Vector2d(1.2, 3.4), plane2.size())
 
 
-  def test_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
     plane1 = Plane()
     plane1.set_normal(Vector3d.UNIT_X)
 
