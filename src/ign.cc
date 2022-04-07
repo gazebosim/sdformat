@@ -308,6 +308,12 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
     return -1;
   }
 
+  if (model->ModelCount() > 0)
+  {
+    std::cout << "Warning: Inertial properties of links in nested"
+            " models will not be included." << std::endl;
+  }
+
   ignition::math::Inertiald totalInertial;
 
   for (uint64_t i = 0; i < model->LinkCount(); i++)
