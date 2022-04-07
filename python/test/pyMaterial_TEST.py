@@ -33,11 +33,12 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual("", material.script_name())
     self.assertEqual(Material.ShaderType.PIXEL, material.shader())
     self.assertEqual("", material.normal_map())
+    # TODO(ahcorde) Add Pbr python interface
     # self.assertEqual(nullptr, material.PbrMaterial())
     self.assertEqual("", material.file_path())
 
 
-  def test_move_assignment(self):
+  def test_assignment(self):
     material = Material()
     material.set_ambient(Color(0.1, 0.2, 0.3, 0.5))
     material.set_diffuse(Color(0.2, 0.3, 0.4, 0.6))
@@ -66,6 +67,7 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
+    # TODO(ahcorde) Add Pbr python interface
     # self.assertEqual(nullptr, material2.PbrMaterial())
     self.assertEqual("/tmp/path", material2.file_path())
 
@@ -99,11 +101,12 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
+    # TODO(ahcorde) Add Pbr python interface
     # self.assertEqual(nullptr, material2.PbrMaterial())
     self.assertEqual("/tmp/other", material2.file_path())
 
 
-  def test_copy_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
     material1 = Material()
     material1.set_script_uri("material1")
 
@@ -170,6 +173,7 @@ class GeometryTEST(unittest.TestCase):
     material.set_file_path("/my/path")
     self.assertEqual("/my/path", material.file_path())
 
+    # TODO(ahcorde) Add Pbr python interface
     # set pbr material
     # sdf::Pbr pbr
     # sdf::PbrWorkflow workflow
@@ -193,6 +197,7 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual("name", moved.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, moved.shader())
     self.assertEqual("map", moved.normal_map())
+    # TODO(ahcorde) Add Pbr python interface
     # self.assertEqual(workflow,
     #   *moved.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL))
     self.assertEqual("/my/path", moved.file_path())
