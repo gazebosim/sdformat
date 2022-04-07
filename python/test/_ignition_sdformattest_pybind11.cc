@@ -16,15 +16,24 @@
 
 #include <pybind11/pybind11.h>
 
-#include "pyError.hh"
-#include "pyParserConfig.hh"
-#include "pySurface.hh"
+#include "test_config.h"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+PYBIND11_MODULE(sdformattest, m) {
+  m.doc() = "sdformat test Python Library.";
 
-  sdf::python::defineContact(m);
-  sdf::python::defineError(m);
-  sdf::python::defineParserConfig(m);
-  sdf::python::defineSurface(m);
+  m.def(
+    "source_file",
+    []()
+    {
+      return sdf::testing::SourceFile();
+    },
+    "Retrieve a file from the project source directory");
+
+  m.def(
+    "test_file",
+    []()
+    {
+      return sdf::testing::TestFile();
+    },
+    "Retrieve a file from the project source directory");
 }
