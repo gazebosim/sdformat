@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import copy
-from sdformat import Sphere
 from ignition.math import Sphered
+import math
+from sdformat import Sphere
 import unittest
-
 
 class SphereTEST(unittest.TestCase):
 
