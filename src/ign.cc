@@ -284,20 +284,36 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   }
 
   sdf::Root root;
-  if (!root.Load(_path).empty()) {
+  sdf::Errors errors = root.Load(_path);
+  if (!errors.empty())
+  {
+    for (auto &error : errors)
+    {
+      std::cerr << error << std::endl;
+    }
+    return -1;
+  }
+
+  if (root.WorldCount() > 0)
+  {
+    std::cerr << "Error: Expected a model file but received a world file"
+            << std::endl;
     return -1;
   }
 
   const sdf::Model * model = root.Model();
-  if (!model){
+  if (!model)
+  {
+    std::cerr << "Error: Could not find the model." << std::endl;
     return -1;
   }
 
   ignition::math::Inertiald totalInertial;
 
-  for (uint64_t i = 0; i < model->LinkCount(); i++) {
+  for (uint64_t i = 0; i < model->LinkCount(); i++)
+  {
     ignition::math::Pose3d linkPoseRelativeToModel;
-    auto errors = model->LinkByIndex(i)->SemanticPose().
+    errors = model->LinkByIndex(i)->SemanticPose().
       Resolve(linkPoseRelativeToModel, "__model__");
 
     auto currentLinkInertial = model->LinkByIndex(i)->Inertial();
@@ -331,24 +347,29 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   std::string s;
   auto maxLength = 0u;
   std::vector<std::string> moiVector;
-  while ( std::getline(ss, s, ' ' ) ) {
+  while ( std::getline(ss, s, ' ' ) )
+  {
     moiVector.push_back(s);
-    if (s.size() > maxLength) {
+    if (s.size() > maxLength)
+    {
       maxLength = s.size();
     }
   }
 
-  for (int i = 0; i < 9; i++) {
+  for (int i = 0; i < 9; i++)
+  {
     int spacePadding = maxLength - moiVector[i].size();
     // Print the matrix element
     std::cout << moiVector[i];
-    for (int j = 0; j < spacePadding; j++) {
+    for (int j = 0; j < spacePadding; j++)
+    {
       std::cout << " ";
     }
     // Add space for the next element
     std::cout << "  ";
     // Add '\n' if the next row is about to start
-    if ((i+1)%3 == 0) {
+    if ((i+1)%3 == 0)
+    {
       std::cout << "\n";
     }
   }
