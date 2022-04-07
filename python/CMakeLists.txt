@@ -41,6 +41,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyBox.cc
   src/sdf/pyError.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyVisual.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -63,6 +64,7 @@ if (BUILD_TESTING)
     pyBox_TEST
     pyError_TEST
     pyParserConfig_TEST
+    pyVisual_TEST
   )
 
   foreach (test ${python_tests})
