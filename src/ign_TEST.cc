@@ -1802,20 +1802,20 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   pathBase += "/test/sdf";
 
   auto expectedOutput =
-    std::string("Inertial statistics for model: test_model\n") +
-    std::string("---\n") +
-    std::string("Total mass of the model: 24\n") +
-    std::string("---\n") +
-    std::string("Centre of mass in model frame: \n") +
-    std::string("X: 0\n") +
-    std::string("Y: 0\n") +
-    std::string("Z: 0\n") +
-    std::string("---\n") +
-    std::string("Moment of inertia matrix: \n") +
-    std::string("304  0    0    \n") +
-    std::string("0    304  0    \n") +
-    std::string("0    0    604  \n") +
-    std::string("---\n");
+    "Inertial statistics for model: test_model\n"
+    "---\n"
+    "Total mass of the model: 24\n"
+    "---\n"
+    "Centre of mass in model frame: \n"
+    "X: 0\n"
+    "Y: 0\n"
+    "Z: 0\n"
+    "---\n"
+    "Moment of inertia matrix: \n"
+    "304  0    0    \n"
+    "0    304  0    \n"
+    "0    0    604  \n"
+    "---\n";
 
   // Check a good SDF file by passing the absolute path
   {
@@ -1834,6 +1834,31 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
                       IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  expectedOutput =
+          "Error Code 18: Msg: A link named link has invalid inertia.\n";
+
+  // Check an invalid SDF file by passing the absolute path
+  {
+    std::string path = pathBase +"/inertial_invalid.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  expectedOutput =
+          "Error: Expected a model file but received a world file.\n";
+  // Check a valid world file.
+  {
+    std::string path = pathBase +"/box_plane_low_friction_test.world";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }

@@ -296,7 +296,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
 
   if (root.WorldCount() > 0)
   {
-    std::cerr << "Error: Expected a model file but received a world file"
+    std::cerr << "Error: Expected a model file but received a world file."
             << std::endl;
     return -1;
   }
