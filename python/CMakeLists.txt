@@ -39,6 +39,7 @@ endfunction()
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyBox.cc
+  src/sdf/pyCollision.cc
   src/sdf/pyError.cc
   src/sdf/pyParserConfig.cc
 )
@@ -61,6 +62,7 @@ if (BUILD_TESTING)
 
   set(python_tests
     pyBox_TEST
+    pyCollision_TEST
     pyError_TEST
     pyParserConfig_TEST
   )
