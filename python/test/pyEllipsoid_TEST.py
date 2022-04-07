@@ -32,7 +32,7 @@ class BoxTEST(unittest.TestCase):
     self.assertEqual(expectedradii, ellipsoid.shape().radii())
 
 
-  def test_move_construction(self):
+  def test_assignment(self):
     ellipsoid = Ellipsoid()
     expectedradii = Vector3d(1.0, 2.0, 3.0)
     ellipsoid.set_radii(expectedradii)
@@ -41,7 +41,7 @@ class BoxTEST(unittest.TestCase):
     self.assertEqual(expectedradii, ellipsoid2.shape().radii())
 
 
-  def test_copy_construction(self):
+  def test_deepcopy(self):
     ellipsoid = Ellipsoid()
     expectedradii = Vector3d(1.0, 2.0, 3.0)
     ellipsoid.set_radii(expectedradii)
@@ -50,7 +50,7 @@ class BoxTEST(unittest.TestCase):
     self.assertEqual(expectedradii, ellipsoid2.shape().radii())
 
 
-  def test_copy_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
       ellipsoid1 = Ellipsoid();
       expectedradii1 = Vector3d(1.0, 2.0, 3.0)
       ellipsoid1.set_radii(expectedradii1)
