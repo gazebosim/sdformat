@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
+#ifndef SDFORMAT_PYTHON_LINK_HH_
+#define SDFORMAT_PYTHON_LINK_HH_
+
 #include <pybind11/pybind11.h>
 
-#include "pyBox.hh"
-#include "pyError.hh"
-#include "pyLink.hh"
-#include "pyParserConfig.hh"
+#include "sdf/Link.hh"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+#include "sdf/config.hh"
 
-  sdf::python::defineBox(m);
-  sdf::python::defineError(m);
-  sdf::python::defineLink(m);
-  sdf::python::defineParserConfig(m);
-}
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::Link
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineLink(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+
+#endif  // SDFORMAT_PYTHON_LINK_HH_
