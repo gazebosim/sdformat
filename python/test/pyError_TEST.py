@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 from sdformat import Error
 import unittest
 
@@ -49,6 +50,18 @@ class ErrorColor(unittest.TestCase):
     self.assertFalse(error.xml_path())
     self.assertFalse(error.file_path())
     self.assertFalse(error.line_number())
+
+
+  def test_deepcopy(self):
+    error = Error(Error.ErrorCode.FILE_READ, "Unable to read a file")
+
+    error2 = copy.deepcopy(error)
+    self.assertEqual(error.is_valid(), error2.is_valid())
+    self.assertEqual(error.code(), error2.code())
+    self.assertEqual(error.message(), error2.message())
+    self.assertEqual(error.xml_path(), error2.xml_path())
+    self.assertEqual(error.file_path(), error2.file_path())
+    self.assertEqual(error.line_number(), error2.line_number())
 
 
   def test_value_construction_with_file(self):
