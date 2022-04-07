@@ -33,14 +33,247 @@ class sdf::Contact::Implementation
   public: sdf::ElementPtr sdf{nullptr};
 };
 
+class sdf::ODE::Implementation
+{
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf{nullptr};
+
+  /// \brief Coefficient of friction in first friction pyramid direction,
+  /// the unitless maximum ratio of force in first friction pyramid
+  /// direction to normal force.
+  public: double mu = 1.0;
+
+  /// \brief Coefficient of friction in second friction pyramid direction,
+  /// the unitless maximum ratio of force in second friction pyramid
+  /// direction to normal force.
+  public: double mu2 = 1.0;
+
+  /// \brief Unit vector specifying first friction pyramid direction in
+  /// collision-fixed reference frame.
+  public: ignition::math::Vector3d fdir1 = {0, 0, 0};
+
+  /// \brief Force dependent slip in first friction pyramid direction,
+  /// equivalent to inverse of viscous damping coefficient
+  /// with units of m/s/N.
+  public: double slip1 = 0.0;
+
+  /// \brief Force dependent slip in second friction pyramid direction,
+  /// equivalent to inverse of viscous damping coefficient
+  /// with units of m/s/N.
+  public: double slip2 = 0.0;
+};
+
+class sdf::Friction::Implementation
+{
+  /// \brief The object storing contact parameters
+  public: sdf::ODE ode;
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf{nullptr};
+};
+
 class sdf::Surface::Implementation
 {
+  /// \brief The object storing contact parameters
+  public: sdf::Friction friction;
+
   /// \brief The object storing contact parameters
   public: sdf::Contact contact;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
 };
+
+
+/////////////////////////////////////////////////
+ODE::ODE()
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+{
+}
+
+/////////////////////////////////////////////////
+Errors ODE::Load(ElementPtr _sdf)
+{
+  Errors errors;
+
+  this->dataPtr->sdf = _sdf;
+
+  // Check that sdf is a valid pointer
+  if (!_sdf)
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load a ODE, but the provided SDF "
+        "element is null."});
+    return errors;
+  }
+
+  // Check that the provided SDF element is a <contact>
+  // This is an error that cannot be recovered, so return an error.
+  if (_sdf->GetName() != "ode")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
+        "Attempting to load a ODE, but the provided SDF element is not a "
+        "<ode>."});
+    return errors;
+  }
+
+  if (_sdf->HasElement("mu"))
+  {
+    this->dataPtr->mu =
+        static_cast<double>(_sdf->Get<double>("mu"));
+  }
+
+  if (_sdf->HasElement("mu2"))
+  {
+    this->dataPtr->mu2 =
+        static_cast<double>(_sdf->Get<double>("mu2"));
+  }
+
+  if (_sdf->HasElement("slip1"))
+  {
+    this->dataPtr->slip1 =
+        static_cast<double>(_sdf->Get<double>("slip1"));
+  }
+
+  if (_sdf->HasElement("slip2"))
+  {
+    this->dataPtr->slip2 =
+        static_cast<double>(_sdf->Get<double>("slip2"));
+  }
+
+  // Read fdir1.
+  this->dataPtr->fdir1 = _sdf->Get<ignition::math::Vector3d>("fdir1",
+        this->dataPtr->fdir1).first;
+
+  // \todo(nkoenig) Parse the remaining collide properties.
+  return errors;
+}
+
+/////////////////////////////////////////////////
+double ODE::Mu() const
+{
+  return this->dataPtr->mu;
+}
+
+/////////////////////////////////////////////////
+void ODE::SetMu(double _mu)
+{
+  this->dataPtr->mu = _mu;
+}
+
+/////////////////////////////////////////////////
+double ODE::Mu2() const
+{
+  return this->dataPtr->mu2;
+}
+
+/////////////////////////////////////////////////
+void ODE::SetMu2(double _mu2)
+{
+  this->dataPtr->mu2 = _mu2;
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Vector3d ODE::Fdir1() const
+{
+  return this->dataPtr->fdir1;
+}
+
+/////////////////////////////////////////////////
+void ODE::SetFdir1(ignition::math::Vector3d _fdir)
+{
+  this->dataPtr->fdir1 = _fdir;
+}
+
+/////////////////////////////////////////////////
+double ODE::Slip1() const
+{
+  return this->dataPtr->slip1;
+}
+
+/////////////////////////////////////////////////
+void ODE::SetSlip1(double _slip1)
+{
+  this->dataPtr->slip1 = _slip1;
+}
+
+/////////////////////////////////////////////////
+double ODE::Slip2() const
+{
+  return this->dataPtr->slip2;
+}
+
+/////////////////////////////////////////////////
+void ODE::SetSlip2(double _slip2)
+{
+  this->dataPtr->slip2 = _slip2;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr ODE::Element() const
+{
+  return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+Friction::Friction()
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+{
+}
+
+/////////////////////////////////////////////////
+Errors Friction::Load(ElementPtr _sdf)
+{
+  Errors errors;
+
+  this->dataPtr->sdf = _sdf;
+
+  // Check that sdf is a valid pointer
+  if (!_sdf)
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load a Friction, but the provided SDF "
+        "element is null."});
+    return errors;
+  }
+
+  // Check that the provided SDF element is a <contact>
+  // This is an error that cannot be recovered, so return an error.
+  if (_sdf->GetName() != "friction")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
+        "Attempting to load a Friction, but the provided SDF element is not a "
+        "<friction>."});
+    return errors;
+  }
+
+  if (_sdf->HasElement("ode"))
+  {
+    Errors err = this->dataPtr->ode.Load(_sdf->GetElement("ode"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+
+  // \todo(nkoenig) Parse the remaining collide properties.
+  return errors;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Friction::Element() const
+{
+  return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+void Friction::SetODE(const sdf::ODE &_ode)
+{
+  this->dataPtr->ode = _ode;
+}
+
+/////////////////////////////////////////////////
+const sdf::ODE *Friction::ODE() const
+{
+  return &this->dataPtr->ode;
+}
 
 /////////////////////////////////////////////////
 Contact::Contact()
@@ -83,6 +316,7 @@ Errors Contact::Load(ElementPtr _sdf)
   // \todo(nkoenig) Parse the remaining collide properties.
   return errors;
 }
+
 /////////////////////////////////////////////////
 sdf::ElementPtr Contact::Element() const
 {
@@ -139,6 +373,12 @@ Errors Surface::Load(ElementPtr _sdf)
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
+  if (_sdf->HasElement("friction"))
+  {
+    Errors err = this->dataPtr->friction.Load(_sdf->GetElement("friction"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+
   // \todo(nkoenig) Parse the remaining surface properties.
   return errors;
 }
@@ -152,6 +392,18 @@ sdf::ElementPtr Surface::Element() const
 const sdf::Contact *Surface::Contact() const
 {
   return &this->dataPtr->contact;
+}
+
+/////////////////////////////////////////////////
+void Surface::SetFriction(const sdf::Friction &_friction)
+{
+  this->dataPtr->friction = _friction;
+}
+
+/////////////////////////////////////////////////
+const sdf::Friction *Surface::Friction() const
+{
+  return &this->dataPtr->friction;
 }
 
 /////////////////////////////////////////////////
