@@ -17,6 +17,7 @@
 #include "USDWorld.hh"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -200,39 +201,45 @@ namespace usd
       }
 
       auto modelPtr = _world.ModelByName(currentModelName);
-      auto linkInserted = modelPtr->LinkByName(linkName);
-      if (linkInserted)
+      if (!modelPtr)
       {
-        sdf::usd::ParseUSDLinks(prim, linkName, linkInserted, usdData);
+        errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+              "Unable to find a sdf::Model named [" + currentModelName +
+              "] in world named [" + _world.Name() +
+              "], but a sdf::Model with this name should exist."));
+        return errors;
+      }
+
+      std::optional<sdf::Link> optionalLink;
+      if (auto linkInserted = modelPtr->LinkByName(linkName))
+      {
+        optionalLink = *linkInserted;
+        sdf::usd::ParseUSDLinks(prim, linkName, optionalLink, usdData);
       }
       else
       {
-        sdf::Link * link = nullptr;
-        sdf::usd::ParseUSDLinks(prim, linkName, link, usdData);
+        sdf::usd::ParseUSDLinks(prim, linkName, optionalLink, usdData);
 
-        if (link != nullptr && !link->Name().empty())
+        if (optionalLink && !optionalLink->Name().empty() &&
+            !modelPtr->LinkByName(optionalLink->Name()))
         {
-          const auto l = modelPtr->LinkByName(link->Name());
-          if (l == nullptr)
-          {
-            modelPtr->AddLink(*link);
-          }
+          modelPtr->AddLink(optionalLink.value());
         }
-        if (link == nullptr)
-          delete link;
       }
     }
+
     for (unsigned int i = 0; i < _world.LightCount(); ++i)
     {
       auto light = _world.LightByIndex(i);
       light->SetName(ignition::common::basename(light->Name()));
     }
+
     for (unsigned int i = 0; i < _world.ModelCount(); ++i)
     {
       const auto m = _world.ModelByIndex(i);
 
       // We might include some empty models
-      // for example: same models create a world path to set up physics
+      // for example: some models create a world path to set up physics
       // but there is no model data inside
       // TODO(ahcorde) Add a RemoveModelByName() method in sdf::World
       if (m->LinkCount() == 0)

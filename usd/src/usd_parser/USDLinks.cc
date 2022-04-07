@@ -18,6 +18,7 @@
 #include "USDLinks.hh"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,11 +28,9 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include <ignition/common/Filesystem.hh>
-
 #include <ignition/math/Inertial.hh>
 
 #include "sdf/Link.hh"
-
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 
 namespace sdf
@@ -72,7 +71,8 @@ void GetInertial(
       }
 
       if (pxr::UsdAttribute principalAxesAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:principalAxes"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:principalAxes")))
+      {
         principalAxesAttribute.Get(&principalAxes);
       }
 
@@ -82,13 +82,17 @@ void GetInertial(
         diagonalInertia = pxr::GfVec3f(0.0001, 0.0001, 0.0001);
       }
 
-      // Added a massto avoid crash with the physics engine
+      // Added a mass to avoid crash with the physics engine
       if (mass < 0.0001)
       {
         mass = 0.1;
       }
 
       massMatrix.SetMass(mass);
+
+      // TODO(ahcorde) Figure out how to use PrincipalMoments and
+      // PrincipalAxesOffset: see
+      // https://github.com/ignitionrobotics/sdformat/pull/902#discussion_r840905534
       massMatrix.SetDiagonalMoments(
         ignition::math::Vector3d(
           diagonalInertia[0],
@@ -116,20 +120,20 @@ void GetInertial(
 void ParseUSDLinks(
   const pxr::UsdPrim &_prim,
   const std::string &_nameLink,
-  sdf::Link *_link,
-  USDData &_usdData)
+  std::optional<sdf::Link> &_link,
+  const USDData &_usdData)
 {
-  std::string primNameStr = _prim.GetPath().GetName();
-  std::string primPathStr = pxr::TfStringify(_prim.GetPath());
-  std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
+  const std::string primNameStr = _prim.GetPath().GetName();
+  const std::string primPathStr = pxr::TfStringify(_prim.GetPath());
+  const std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
 
   std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(primNameStr);
 
   // Is this a new link ?
-  if (_link == nullptr)
+  if (!_link)
   {
-    _link = new sdf::Link();
+    _link = sdf::Link();
     _link->SetName(ignition::common::basename(_nameLink));
 
     ignition::math::Pose3d pose;

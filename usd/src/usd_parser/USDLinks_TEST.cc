@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include <optional>
 #include <string>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
@@ -42,9 +43,6 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
 
   sdf::usd::USDData usdData(filename);
 
-  const auto boxLink = stage->GetPrimAtPath(pxr::SdfPath("/box/box_link"));
-  EXPECT_TRUE(boxLink);
-
   auto checkLink =
     [](const sdf::Link &_link,
        const std::string &_name,
@@ -58,54 +56,62 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
         _link.Inertial().MassMatrix().PrincipalMoments());
     };
 
-  sdf::Link linkSDF;
-  sdf::usd::ParseUSDLinks(
-    boxLink, "/box/box_link", &linkSDF, usdData);
+  const auto boxLink = stage->GetPrimAtPath(pxr::SdfPath("/box/box_link"));
+  ASSERT_TRUE(boxLink);
 
-  checkLink(linkSDF, "box_link", 1.0,
+  std::optional<sdf::Link> linkSDF;
+  sdf::usd::ParseUSDLinks(
+    boxLink, "/box/box_link", linkSDF, usdData);
+
+  ASSERT_TRUE(linkSDF);
+  checkLink(linkSDF.value(), "box_link", 1.0,
             ignition::math::Vector3d(0.1666, 0.1666, 0.1666));
 
   const auto cylinderLink = stage->GetPrimAtPath(
     pxr::SdfPath("/cylinder/cylinder_link"));
-  EXPECT_TRUE(cylinderLink);
+  ASSERT_TRUE(cylinderLink);
 
-  sdf::Link linkCylinderSDF;
+  std::optional<sdf::Link> linkCylinderSDF;
   sdf::usd::ParseUSDLinks(
-    cylinderLink, "/cylinder/cylinder_link", &linkCylinderSDF, usdData);
+    cylinderLink, "/cylinder/cylinder_link", linkCylinderSDF, usdData);
 
-  checkLink(linkCylinderSDF, "cylinder_link", 1.7,
+  ASSERT_TRUE(linkCylinderSDF);
+  checkLink(linkCylinderSDF.value(), "cylinder_link", 1.7,
             ignition::math::Vector3d(0.1458, 0.1458, 0.125));
 
   const auto sphereLink = stage->GetPrimAtPath(
     pxr::SdfPath("/sphere/sphere_link"));
-  EXPECT_TRUE(sphereLink);
+  ASSERT_TRUE(sphereLink);
 
-  sdf::Link linkSphereSDF;
+  std::optional<sdf::Link> linkSphereSDF;
   sdf::usd::ParseUSDLinks(
-    sphereLink, "/sphere/sphere_link", &linkSphereSDF, usdData);
+    sphereLink, "/sphere/sphere_link", linkSphereSDF, usdData);
 
-  checkLink(linkSphereSDF, "sphere_link", 2,
+  ASSERT_TRUE(linkSphereSDF);
+  checkLink(linkSphereSDF.value(), "sphere_link", 2,
             ignition::math::Vector3d(0.1, 0.1, 0.1));
 
   const auto capsuleLink = stage->GetPrimAtPath(
     pxr::SdfPath("/capsule/capsule_link"));
-  EXPECT_TRUE(capsuleLink);
+  ASSERT_TRUE(capsuleLink);
 
-  sdf::Link linkCapsuleSDF;
+  std::optional<sdf::Link> linkCapsuleSDF;
   sdf::usd::ParseUSDLinks(
-    capsuleLink, "/capsule/capsule_link", &linkCapsuleSDF, usdData);
+    capsuleLink, "/capsule/capsule_link", linkCapsuleSDF, usdData);
 
-  checkLink(linkCapsuleSDF, "capsule_link", 1,
+  ASSERT_TRUE(linkCapsuleSDF);
+  checkLink(linkCapsuleSDF.value(), "capsule_link", 1,
             ignition::math::Vector3d(0.074154, 0.074154, 0.018769));
 
   const auto ellipsoidLink = stage->GetPrimAtPath(
     pxr::SdfPath("/ellipsoid/ellipsoid_link"));
-  EXPECT_TRUE(ellipsoidLink);
+  ASSERT_TRUE(ellipsoidLink);
 
-  sdf::Link linkEllipsoidSDF;
+  std::optional<sdf::Link> linkEllipsoidSDF;
   sdf::usd::ParseUSDLinks(
-    ellipsoidLink, "/ellipsoid/ellipsoid_link", &linkEllipsoidSDF, usdData);
+    ellipsoidLink, "/ellipsoid/ellipsoid_link", linkEllipsoidSDF, usdData);
 
-  checkLink(linkEllipsoidSDF, "ellipsoid_link", 1,
+  ASSERT_TRUE(linkEllipsoidSDF);
+  checkLink(linkEllipsoidSDF.value(), "ellipsoid_link", 1,
             ignition::math::Vector3d(0.068, 0.058, 0.026));
 }
