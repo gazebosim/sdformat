@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
+#ifndef SDFORMAT_PYTHON_BOX_HH_
+#define SDFORMAT_PYTHON_BOX_HH_
+
 #include <pybind11/pybind11.h>
 
-#include "pyBox.hh"
-#include "pyError.hh"
-#include "pyGeometry.hh"
-#include "pyParserConfig.hh"
+#include "sdf/Box.hh"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+#include "sdf/config.hh"
 
-  sdf::python::defineBox(m);
-  sdf::python::defineError(m);
-  sdf::python::defineGeometry(m);
-  sdf::python::defineParserConfig(m);
-}
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::Box
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineBox(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+
+#endif  // SDFORMAT_PYTHON_BOX_HH_
