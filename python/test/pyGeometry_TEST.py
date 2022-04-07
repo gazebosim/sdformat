@@ -43,7 +43,7 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(Geometry.GeometryType.SPHERE, geom.type())
 
 
-  def test_move_construction(self):
+  def test_assignment(self):
     geometry = Geometry()
     geometry.set_type(Geometry.GeometryType.BOX)
 
@@ -51,7 +51,7 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(Geometry.GeometryType.BOX, geometry2.type())
 
 
-  def test_copy_construction(self):
+  def test_deepcopy_construction(self):
     geometry = Geometry()
     geometry.set_type(Geometry.GeometryType.BOX)
     boxShape = Box()
@@ -62,8 +62,7 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(Geometry.GeometryType.BOX, geometry2.type())
 
 
-  def test_copy_assignment_after_move(self):
-
+  def test_deepcopy_after_assignment(self):
     geometry1 = Geometry()
     geometry1.set_type(Geometry.GeometryType.BOX)
 
