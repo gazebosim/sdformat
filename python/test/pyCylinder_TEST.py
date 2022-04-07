@@ -40,7 +40,7 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(0.5, cylinder.radius())
     self.assertEqual(2.3, cylinder.length())
 
-  def test_move_construction(self):
+  def test_assignment(self):
     cylinder = Cylinder()
     cylinder.set_radius(0.2)
     cylinder.set_length(3.0)
@@ -66,7 +66,7 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(0.2, cylinder2.radius())
     self.assertEqual(3.0, cylinder2.length())
 
-  def test_copy_construction(self):
+  def test_deepcopy(self):
     cylinder = Cylinder();
     cylinder.set_radius(0.2)
     cylinder.set_length(3.0)
@@ -76,7 +76,7 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(3.0, cylinder2.length())
 
 
-  def test_assignment_after_move(self):
+  def test_assignment_after_assignment(self):
     cylinder1 = Cylinder();
     cylinder1.set_radius(0.2)
     cylinder1.set_length(3.0)
