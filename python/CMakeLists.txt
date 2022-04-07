@@ -39,6 +39,7 @@ endfunction()
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyError.cc
+  src/sdf/pyParserConfig.cc
   src/sdf/pySphere.cc
 )
 
@@ -49,8 +50,18 @@ target_link_libraries(sdformat PRIVATE
 configure_build_install_location(sdformat)
 
 if (BUILD_TESTING)
+  pybind11_add_module(sdformattest SHARED
+    test/_ignition_sdformattest_pybind11.cc
+  )
+
+  target_link_libraries(sdformattest PRIVATE
+    ${PROJECT_LIBRARY_TARGET_NAME}
+    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+  )
+
   set(python_tests
     pyError_TEST
+    pyParserConfig_TEST
     pySphere_TEST
   )
 
