@@ -18,16 +18,8 @@
 
 #include <pybind11/pybind11.h>
 
-#include "sdf/ParserConfig.hh"
-
-#include "sdf/Box.hh"
-#include "sdf/Capsule.hh"
-#include "sdf/Cylinder.hh"
-#include "sdf/Ellipsoid.hh"
 #include "sdf/Material.hh"
-#include "sdf/Mesh.hh"
-#include "sdf/Plane.hh"
-#include "sdf/Sphere.hh"
+
 
 using namespace pybind11::literals;
 
