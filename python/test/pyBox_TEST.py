@@ -27,7 +27,7 @@ class BoxTEST(unittest.TestCase):
     self.assertEqual(Vector3d.ZERO, box.size())
 
 
-  def test_move_construction(self):
+  def test_assignment(self):
     size = Vector3d(1, 2, 3)
 
     box = Box()
