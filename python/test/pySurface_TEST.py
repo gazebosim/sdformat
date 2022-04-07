@@ -34,7 +34,7 @@ class SurfaceTEST(unittest.TestCase):
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
 
 
-  def test_copy_assignment(self):
+  def test_deepcopy(self):
     surface1 = Surface()
     contact = Contact()
     contact.set_collide_bitmask(0x12)
@@ -43,7 +43,7 @@ class SurfaceTEST(unittest.TestCase):
     surface2 = copy.deepcopy(surface1)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
 
-  def test_copy_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
     surface1 = Surface()
     surface2 = Surface()
 
@@ -75,7 +75,7 @@ class SurfaceTEST(unittest.TestCase):
     self.assertEqual(contact2.collide_bitmask(), 0x12)
 
 
-  def test_copy_assignment(self):
+  def test_copy_constructor(self):
     contact1 = Contact()
     contact1.set_collide_bitmask(0x12)
 
@@ -83,7 +83,7 @@ class SurfaceTEST(unittest.TestCase):
     self.assertEqual(contact2.collide_bitmask(), 0x12)
 
 
-  def test_copy_contact_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
     contact1 = Contact()
     contact2 = Contact()
 
