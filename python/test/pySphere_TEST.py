@@ -27,7 +27,7 @@ class SphereTEST(unittest.TestCase):
     self.assertEqual(0.5, sphere.radius());
 
 
-  def test_move_construction(self):
+  def test_assignment(self):
     sphere = Sphere();
     sphere.set_radius(0.2);
 
@@ -46,7 +46,7 @@ class SphereTEST(unittest.TestCase):
     self.assertEqual(0.2, sphere2.shape().radius());
 
 
-  def test_copy_construction(self):
+  def test_deepcopy_construction(self):
     sphere = Sphere();
     sphere.set_radius(0.2);
 
@@ -54,15 +54,14 @@ class SphereTEST(unittest.TestCase):
     self.assertEqual(0.2, sphere2.radius());
 
 
-  def test_copy_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
     sphere1 = Sphere();
     sphere1.set_radius(0.1);
 
     sphere2 = Sphere();
     sphere2.set_radius(0.2);
 
-    # This is similar to what std::swap does except it uses std::move for each
-    # assignment
+    # This is similar to what swap does
     tmp = copy.deepcopy(sphere1);
     sphere1 = sphere2;
     sphere2 = tmp;
