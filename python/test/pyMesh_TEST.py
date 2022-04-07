@@ -30,7 +30,7 @@ class MeshTEST(unittest.TestCase):
     self.assertFalse(mesh.center_submesh())
 
 
-  def test_move_construction(self):
+  def test_assigment(self):
     mesh = Mesh()
     mesh.set_uri("banana")
     mesh.set_submesh("watermelon")
@@ -46,7 +46,7 @@ class MeshTEST(unittest.TestCase):
     self.assertEqual("/pear", mesh2.file_path())
 
 
-  def test_copy_construction(self):
+  def test_deepcopy_construction(self):
     mesh = Mesh()
     mesh.set_uri("banana")
     mesh.set_submesh("watermelon")
@@ -62,7 +62,7 @@ class MeshTEST(unittest.TestCase):
     self.assertEqual("/pear", mesh2.file_path())
 
 
-  def test_copy_assignment_after_move(self):
+  def test_deepcopy_after_assignment(self):
 
     mesh1 = Mesh()
     mesh1.set_uri("banana")
