@@ -48,6 +48,14 @@ class PlaneTEST(unittest.TestCase):
     self.assertEqual(Vector3d.UNIT_X, plane2.shape().normal())
     self.assertEqual(Vector2d(1.2, 3.4), plane2.shape().size())
 
+    plane.set_normal(Vector3d(0, 1, 0))
+    plane.set_size(Vector2d(3.3, 2.4))
+
+    self.assertEqual(Vector3d(0, 1, 0), plane2.normal())
+    self.assertEqual(Vector2d(3.3, 2.4), plane2.size())
+
+    self.assertEqual(Vector3d(0, 1, 0), plane.normal())
+    self.assertEqual(Vector2d(3.3, 2.4), plane.size())
 
   def test_deepcopy_construction(self):
     plane = Plane()
@@ -58,22 +66,13 @@ class PlaneTEST(unittest.TestCase):
     self.assertEqual(Vector3d.UNIT_X, plane2.normal())
     self.assertEqual(Vector2d(1.2, 3.4), plane2.size())
 
+    plane.set_normal(Vector3d(0, 1, 0))
+    plane.set_size(Vector2d(2.1, 4.3))
 
-  def test_deepcopy_after_assignment(self):
-    plane1 = Plane()
-    plane1.set_normal(Vector3d.UNIT_X)
-
-    plane2 = Plane()
-    plane2.set_normal(Vector3d.UNIT_Y)
-
-    # This is similar to what std::swap does except it uses std::move for each
-    # assignment
-    tmp = copy.deepcopy(plane1)
-    plane1 = plane2
-    plane2 = tmp
-
-    self.assertEqual(Vector3d.UNIT_Y, plane1.normal())
     self.assertEqual(Vector3d.UNIT_X, plane2.normal())
+    self.assertEqual(Vector2d(1.2, 3.4), plane2.size())
+    self.assertEqual(Vector2d(2.1, 4.3), plane.size())
+    self.assertEqual(Vector3d(0, 1, 0), plane.normal())
 
 
   def test_shape(self):
