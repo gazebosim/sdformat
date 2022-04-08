@@ -42,6 +42,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyError.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pySemanticPose.cc
+  src/sdf/pySphere.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -65,6 +66,7 @@ if (BUILD_TESTING)
     pyError_TEST
     pyParserConfig_TEST
     pySemanticPose_TEST
+    pySphere_TEST
   )
 
   foreach (test ${python_tests})

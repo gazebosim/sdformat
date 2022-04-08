@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 from ignition.math import Pose3d
 from sdformat import ParserConfig
 from sdformattest import source_file, test_file
@@ -55,6 +56,34 @@ class ParserConfigColor(unittest.TestCase):
         self.assertEqual(it[0], testDir1)
 
         config2 = ParserConfig(config1)
+        it = config2.uri_path_map().get("file://")
+        self.assertEqual(1, len(it))
+        self.assertEqual(it[0], testDir1)
+
+        config2.add_uri_path("file://", testDir2)
+        it = config2.uri_path_map().get("file://")
+        self.assertEqual(2, len(it))
+        self.assertEqual(it[1], testDir2)
+
+        # Updating config2 should not affect config1
+        it = config1.uri_path_map().get("file://")
+        self.assertEqual(1, len(it))
+        self.assertEqual(it[0], testDir1)
+
+
+    def test_deepcopy(self):
+        # The directory used in add_uri_path must exist in the filesystem
+        # so we'll use the source path
+        testDir1 = source_file()
+        testDir2 = test_file()
+
+        config1 = ParserConfig()
+        config1.add_uri_path("file://", testDir1)
+        it = config1.uri_path_map().get("file://")
+        self.assertEqual(1, len(it))
+        self.assertEqual(it[0], testDir1)
+
+        config2 = copy.deepcopy(config1)
         it = config2.uri_path_map().get("file://")
         self.assertEqual(1, len(it))
         self.assertEqual(it[0], testDir1)
