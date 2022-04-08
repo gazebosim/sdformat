@@ -40,7 +40,7 @@ jobs:
     - name: cmake
       working-directory: build
       run: |
-        export PYTHONPATH=$PYTHONPATH:`find /usr/local/Cellar -path '*ignition/math.cpython*' | rev | cut -d'/' -f3- | rev`
+        export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python
         cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local/Cellar/${PACKAGE}/HEAD
     - run: make
       working-directory: build
