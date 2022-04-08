@@ -45,6 +45,21 @@ class MeshTEST(unittest.TestCase):
     self.assertTrue(mesh2.center_submesh())
     self.assertEqual("/pear", mesh2.file_path())
 
+    mesh.set_file_path("/apple")
+    self.assertEqual("/apple", mesh2.file_path())
+
+    mesh.set_scale(Vector3d(0.3, 0.2, 0.4))
+    self.assertEqual(Vector3d(0.3, 0.2, 0.4), mesh2.scale())
+
+    mesh.set_center_submesh(False)
+    self.assertFalse(mesh2.center_submesh())
+
+    mesh.set_submesh("melon")
+    self.assertEqual("melon", mesh2.submesh())
+
+    mesh.set_uri("pineapple")
+    self.assertEqual("pineapple", mesh2.uri())
+
 
   def test_deepcopy_construction(self):
     mesh = Mesh()
@@ -61,23 +76,17 @@ class MeshTEST(unittest.TestCase):
     self.assertTrue(mesh2.center_submesh())
     self.assertEqual("/pear", mesh2.file_path())
 
+    mesh.set_file_path("/apple")
+    mesh.set_scale(Vector3d(0.3, 0.2, 0.4))
+    mesh.set_center_submesh(False)
+    mesh.set_submesh("melon")
+    mesh.set_uri("pineapple")
 
-  def test_deepcopy_after_assignment(self):
-
-    mesh1 = Mesh()
-    mesh1.set_uri("banana")
-
-    mesh2 = Mesh()
-    mesh2.set_uri("watermelon")
-
-    # This is similar to what std::swap does except it uses std::move for each
-    # assignment
-    tmp = copy.deepcopy(mesh1)
-    mesh1 = mesh2
-    mesh2 = tmp
-
-    self.assertEqual("watermelon", mesh1.uri())
     self.assertEqual("banana", mesh2.uri())
+    self.assertEqual("watermelon", mesh2.submesh())
+    self.assertEqual(Vector3d(0.5, 0.6, 0.7), mesh2.scale())
+    self.assertTrue(mesh2.center_submesh())
+    self.assertEqual("/pear", mesh2.file_path())
 
 
   def test_set(self):
