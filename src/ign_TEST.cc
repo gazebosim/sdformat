@@ -776,7 +776,21 @@ TEST(inertial_stats, SDF)
   }
 
   expectedOutput =
-          "Error: A link named link has invalid inertia.\n";
+          "Error: A link named link has invalid inertia.\n"
+          "Inertial statistics for model: model\n"
+          "---\n"
+          "Total mass of the model: 0\n"
+          "---\n"
+          "Centre of mass in model frame: \n"
+          "X: 0\n"
+          "Y: 0\n"
+          "Z: 0\n"
+          "---\n"
+          "Moment of inertia matrix: \n"
+          "0  0  0  \n"
+          "0  0  0  \n"
+          "0  0  0  \n"
+          "---\n";
 
   // Check an invalid SDF file by passing the absolute path
   {
