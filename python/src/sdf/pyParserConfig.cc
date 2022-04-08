@@ -23,6 +23,8 @@
 
 #include "sdf/ParserConfig.hh"
 
+using namespace pybind11::literals;
+
 namespace sdf
 {
 // Inline bracket to help doxygen filtering.
@@ -80,7 +82,13 @@ void defineParserConfig(pybind11::object module)
          "Set the preserveFixedJoint flag.")
     .def("urdf_preserve_fixed_joint",
          &sdf::ParserConfig::URDFPreserveFixedJoint,
-         "Get the preserveFixedJoint flag value.");
+         "Get the preserveFixedJoint flag value.")
+    .def("__copy__", [](const sdf::ParserConfig &self) {
+      return sdf::ParserConfig(self);
+    })
+    .def("__deepcopy__", [](const sdf::ParserConfig &self, pybind11::dict) {
+      return sdf::ParserConfig(self);
+    }, "memo"_a);
 
   pybind11::enum_<sdf::EnforcementPolicy>(
     parseConfigModule, "EnforcementPolicy")
