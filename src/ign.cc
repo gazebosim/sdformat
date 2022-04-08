@@ -178,7 +178,6 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
     {
       std::cerr << "Error: " << error.Message() << std::endl;
     }
-    return -1;
   }
 
   if (root.WorldCount() > 0)
