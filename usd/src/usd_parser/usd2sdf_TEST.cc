@@ -135,7 +135,9 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_NE(savedModelNames.end(), savedModelNames.find("ellipsoid"));
 
     // check for static/non-static models
+    ASSERT_NE(nullptr, world->ModelByName("ground_plane"));
     EXPECT_TRUE(world->ModelByName("ground_plane")->Static());
+    ASSERT_NE(nullptr, world->ModelByName("box"));
     EXPECT_FALSE(world->ModelByName("box")->Static());
   }
 }

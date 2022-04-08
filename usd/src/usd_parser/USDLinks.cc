@@ -18,6 +18,7 @@
 #include "USDLinks.hh"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -99,7 +100,8 @@ void GetInertial(
       }
 
       if (pxr::UsdAttribute principalAxesAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:principalAxes"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:principalAxes")))
+      {
         principalAxesAttribute.Get(&principalAxes);
       }
 
@@ -109,13 +111,17 @@ void GetInertial(
         diagonalInertia = pxr::GfVec3f(0.0001, 0.0001, 0.0001);
       }
 
-      // Added a massto avoid crash with the physics engine
+      // Added a mass to avoid crash with the physics engine
       if (mass < 0.0001)
       {
         mass = 0.1;
       }
 
       massMatrix.SetMass(mass);
+
+      // TODO(ahcorde) Figure out how to use PrincipalMoments and
+      // PrincipalAxesOffset: see
+      // https://github.com/ignitionrobotics/sdformat/pull/902#discussion_r840905534
       massMatrix.SetDiagonalMoments(
         ignition::math::Vector3d(
           diagonalInertia[0],
@@ -203,9 +209,9 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
   ignition::common::SubMesh &_subMesh,
   sdf::Mesh &_meshGeom,
   ignition::math::Vector3d &_scale,
-  USDData &_usdData)
+  const USDData &_usdData)
 {
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
+  const std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(_prim.GetPath().GetName());
 
   int numSubMeshes = 0;
@@ -311,9 +317,9 @@ void ParseMesh(
   sdf::Visual &_vis,
   sdf::Geometry &_geom,
   ignition::math::Vector3d &_scale,
-  USDData &_usdData)
+  const USDData &_usdData)
 {
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
+  const std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(_prim.GetPath().GetName());
 
   double metersPerUnit = data.second->MetersPerUnit();
@@ -508,21 +514,21 @@ void ParseCylinder(
 void ParseUSDLinks(
   const pxr::UsdPrim &_prim,
   const std::string &_nameLink,
-  sdf::Link *_link,
-  USDData &_usdData,
+  std::optional<sdf::Link> &_link,
+  const USDData &_usdData,
   ignition::math::Vector3d &_scale)
 {
-  std::string primNameStr = _prim.GetPath().GetName();
-  std::string primPathStr = pxr::TfStringify(_prim.GetPath());
-  std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
+  const std::string primNameStr = _prim.GetPath().GetName();
+  const std::string primPathStr = pxr::TfStringify(_prim.GetPath());
+  const std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
 
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
+  const std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(primNameStr);
 
   // Is this a new link ?
-  if (_link == nullptr)
+  if (!_link)
   {
-    _link = new sdf::Link();
+    _link = sdf::Link();
     _link->SetName(ignition::common::basename(_nameLink));
 
     // USD define visual inside other visuals or links
@@ -556,6 +562,10 @@ void ParseUSDLinks(
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
     GetTransform(_prim, _usdData, pose, scale, "");
+    // This is a special case when a geometry is defined in the higher level
+    // of the path. we should only set the position is the path at least has
+    // more than 1 level.
+    // TODO(ahcorde) Review this code and improve this logic
     size_t nSlash = std::count(_nameLink.begin(), _nameLink.end(), '/');
     if (nSlash > 1)
       _link->SetRawPose(pose);
@@ -634,7 +644,7 @@ void ParseUSDLinks(
         else if (_prim.IsA<pxr::UsdGeomMesh>())
         {
           ParseMesh(
-            _prim, _link, vis, geom, _scale, _usdData);
+            _prim, &_link.value(), vis, geom, _scale, _usdData);
         }
     }
   }
