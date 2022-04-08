@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from sdformat import Box
-from ignition.math import Vector3d
+from ignition.math import Vector3d, Pose3d
 import unittest
 
 class BoxTEST(unittest.TestCase):
