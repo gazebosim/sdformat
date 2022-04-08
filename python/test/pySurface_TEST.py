@@ -24,6 +24,21 @@ class SurfaceTEST(unittest.TestCase):
       self.assertEqual(surface.contact().collide_bitmask(), 0xFF)
 
 
+  def test_assigment_construction(self):
+    surface1 = Surface()
+    contact = Contact()
+    contact.set_collide_bitmask(0x12)
+    surface1.set_contact(contact)
+
+    surface2 = surface1
+    self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+
+    contact.set_collide_bitmask(0x21)
+    surface1.set_contact(contact)
+    self.assertEqual(surface1.contact().collide_bitmask(), 0x21)
+    self.assertEqual(surface2.contact().collide_bitmask(), 0x21)
+
+
   def test_copy_construction(self):
     surface1 = Surface()
     contact = Contact()
@@ -31,6 +46,11 @@ class SurfaceTEST(unittest.TestCase):
     surface1.set_contact(contact)
 
     surface2 = Surface(surface1)
+    self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+
+    contact.set_collide_bitmask(0x21)
+    surface1.set_contact(contact)
+    self.assertEqual(surface1.contact().collide_bitmask(), 0x21)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
 
 
@@ -43,23 +63,10 @@ class SurfaceTEST(unittest.TestCase):
     surface2 = copy.deepcopy(surface1)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
 
-  def test_deepcopy_after_assignment(self):
-    surface1 = Surface()
-    surface2 = Surface()
-
-    contact1 = Contact()
-    contact1.set_collide_bitmask(0x12)
-    surface1.set_contact(contact1)
-    contact2 = Contact()
-    contact2.set_collide_bitmask(0x34)
-    surface2.set_contact(contact2)
-
-    tmp = copy.deepcopy(surface1)
-    surface1 = surface2
-    surface2 = tmp
-
+    contact.set_collide_bitmask(0x21)
+    surface1.set_contact(contact)
+    self.assertEqual(surface1.contact().collide_bitmask(), 0x21)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
-    self.assertEqual(surface1.contact().collide_bitmask(), 0x34)
 
 
   def test_default_contact_construction(self):
@@ -73,35 +80,6 @@ class SurfaceTEST(unittest.TestCase):
 
     contact2 = Contact(contact1)
     self.assertEqual(contact2.collide_bitmask(), 0x12)
-
-
-  def test_copy_constructor(self):
-    contact1 = Contact()
-    contact1.set_collide_bitmask(0x12)
-
-    contact2 = Contact(contact1)
-    self.assertEqual(contact2.collide_bitmask(), 0x12)
-
-
-  def test_deepcopy_after_assignment(self):
-    contact1 = Contact()
-    contact2 = Contact()
-
-    contact1.set_collide_bitmask(0x12)
-    contact2.set_collide_bitmask(0x34)
-
-    tmp = copy.deepcopy(contact1)
-    contact1 = contact2
-    contact2 = tmp
-
-    self.assertEqual(contact2.collide_bitmask(), 0x12)
-    self.assertEqual(contact1.collide_bitmask(), 0x34)
-
-
-  def test_collide_bitmask(self):
-    contact = Contact()
-    contact.set_collide_bitmask(0x67)
-    self.assertEqual(contact.collide_bitmask(), 0x67)
 
 
 if __name__ == '__main__':
