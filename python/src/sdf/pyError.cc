@@ -24,6 +24,8 @@
 
 #include "sdf/Error.hh"
 
+using namespace pybind11::literals;
+
 namespace sdf
 {
 // Inline bracket to help doxygen filtering.
@@ -77,9 +79,16 @@ void defineError(pybind11::object module)
         {
           return self == true;
         },
-        "Sets the XML path that is associated with this error.")
+        "True if this Error's Code() != NONE. In otherwords, this is "
+        "true when there is an error, or false otherwise.")
     .def("__str__", toString)
-    .def("__repr__", toString);
+    .def("__repr__", toString)
+    .def("__copy__", [](const sdf::Error &self) {
+      return sdf::Error(self);
+    })
+    .def("__deepcopy__", [](const sdf::Error &self, pybind11::dict) {
+      return sdf::Error(self);
+    }, "memo"_a);
 
   pybind11::enum_<sdf::ErrorCode>(errorModule, "ErrorCode")
     .value("NONE", sdf::ErrorCode::NONE)
