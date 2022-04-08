@@ -63,6 +63,15 @@ class ErrorColor(unittest.TestCase):
     self.assertEqual(error.file_path(), error2.file_path())
     self.assertEqual(error.line_number(), error2.line_number())
 
+    error.set_file_path("file.sdf")
+    error.set_line_number(5)
+    error.set_xml_path("/sdf/mode")
+    self.assertEqual(error.file_path(), "file.sdf")
+    self.assertEqual(error2.file_path(), None)
+    self.assertEqual(error.line_number(), 5)
+    self.assertEqual(error2.line_number(), None)
+    self.assertEqual(error.xml_path(), "/sdf/mode")
+    self.assertEqual(error2.xml_path(), None)
 
   def test_value_construction_with_file(self):
     emptyfile_path = "Empty/file/path";

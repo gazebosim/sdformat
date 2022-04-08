@@ -79,7 +79,8 @@ void defineError(pybind11::object module)
         {
           return self == true;
         },
-        "Sets the XML path that is associated with this error.")
+        "True if this Error's Code() != NONE. In otherwords, this is "
+        "true when there is an error, or false otherwise.")
     .def("__str__", toString)
     .def("__repr__", toString)
     .def("__copy__", [](const sdf::Error &self) {
