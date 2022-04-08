@@ -1839,7 +1839,7 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 
   expectedOutput =
-          "Error Code 18: Msg: A link named link has invalid inertia.\n";
+          "Error Code 18: Msg: A link named link has invalid inertia.\n\n";
 
   // Check an invalid SDF file by passing the absolute path
   {

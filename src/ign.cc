@@ -287,10 +287,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   sdf::Errors errors = root.Load(_path);
   if (!errors.empty())
   {
-    for (auto &error : errors)
-    {
-      std::cerr << error << std::endl;
-    }
+    std::cerr << errors << std::endl;
     return -1;
   }
 
@@ -301,7 +298,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
     return -1;
   }
 
-  const sdf::Model * model = root.Model();
+  const sdf::Model *model = root.Model();
   if (!model)
   {
     std::cerr << "Error: Could not find the model." << std::endl;
