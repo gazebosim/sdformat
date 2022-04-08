@@ -776,7 +776,7 @@ TEST(inertial_stats, SDF)
   }
 
   expectedOutput =
-          "Error Code 18: Msg: A link named link has invalid inertia.\n\n";
+          "Error: A link named link has invalid inertia.\n";
 
   // Check an invalid SDF file by passing the absolute path
   {
