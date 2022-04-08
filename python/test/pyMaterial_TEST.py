@@ -56,10 +56,8 @@ class GeometryTEST(unittest.TestCase):
     material2 = material
     self.assertEqual(Color(0.1, 0.2, 0.3, 0.5), material2.ambient())
     self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
-    self.assertEqual(Color(0.3, 0.4, 0.5, 0.7),
-      material2.specular())
-    self.assertEqual(Color(0.4, 0.5, 0.6, 0.8),
-      material2.emissive())
+    self.assertEqual(Color(0.3, 0.4, 0.5, 0.7), material2.specular())
+    self.assertEqual(Color(0.4, 0.5, 0.6, 0.8), material2.emissive())
     self.assertFalse(material2.lighting())
     self.assertTrue(material2.double_sided())
     self.assertEqual(2.0, material2.render_order())
@@ -71,6 +69,33 @@ class GeometryTEST(unittest.TestCase):
     # self.assertEqual(nullptr, material2.PbrMaterial())
     self.assertEqual("/tmp/path", material2.file_path())
 
+    material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
+    material.set_diffuse(Color(0.4, 0.4, 0.5, 0.6))
+    material.set_specular(Color(0.5, 0.6, 0.7, 0.8))
+    material.set_emissive(Color(0.6, 0.7, 0.8, 0.9))
+    material.set_lighting(True)
+    material.set_render_order(2)
+    material.set_double_sided(False)
+    material.set_script_uri("apple")
+    material.set_script_name("melon")
+    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_normal_map("banana")
+    material.set_file_path("/tmp/foo")
+
+    self.assertEqual(Color(0.3, 0.1, 0.2, 0.3), material2.ambient())
+    self.assertEqual(Color(0.4, 0.4, 0.5, 0.6), material2.diffuse())
+    self.assertEqual(Color(0.5, 0.6, 0.7, 0.8), material2.specular())
+    self.assertEqual(Color(0.6, 0.7, 0.8, 0.9), material2.emissive())
+    self.assertTrue(material2.lighting())
+    self.assertFalse(material2.double_sided())
+    self.assertEqual(2, material2.render_order())
+    self.assertEqual("apple", material2.script_uri())
+    self.assertEqual("melon", material2.script_name())
+    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual("banana", material2.normal_map())
+    # TODO(ahcorde) Add Pbr python interface
+    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual("/tmp/foo", material2.file_path())
 
   def test_copy_construction(self):
     material = Material()
@@ -105,23 +130,35 @@ class GeometryTEST(unittest.TestCase):
     # self.assertEqual(nullptr, material2.PbrMaterial())
     self.assertEqual("/tmp/other", material2.file_path())
 
+    material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
+    material.set_diffuse(Color(0.4, 0.4, 0.5, 0.6))
+    material.set_specular(Color(0.5, 0.6, 0.7, 0.8))
+    material.set_emissive(Color(0.6, 0.7, 0.8, 0.9))
+    material.set_lighting(True)
+    material.set_render_order(2)
+    material.set_double_sided(False)
+    material.set_script_uri("apple")
+    material.set_script_name("melon")
+    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_normal_map("banana")
+    material.set_file_path("/tmp/foo")
 
-  def test_deepcopy_after_assignment(self):
-    material1 = Material()
-    material1.set_script_uri("material1")
-
-    material2 = Material()
-    material2.set_script_uri("material2")
-
-    # This is similar to what std::swap does except it uses std::move for each
-    # assignment
-    tmp = copy.deepcopy(material1)
-    material1 = material2
-    material2 = tmp
-
-    self.assertEqual("material2", material1.script_uri())
-    self.assertEqual("material1", material2.script_uri())
-
+    self.assertEqual(Color(0.1, 0.2, 0.3, 0.5), material2.ambient())
+    self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
+    self.assertEqual(Color(0.3, 0.4, 0.5, 0.7),
+      material2.specular())
+    self.assertEqual(Color(0.4, 0.5, 0.6, 0.8),
+      material2.emissive())
+    self.assertFalse(material2.lighting())
+    self.assertTrue(material2.double_sided())
+    self.assertEqual(4, material2.render_order())
+    self.assertEqual("banana", material2.script_uri())
+    self.assertEqual("orange", material2.script_name())
+    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual("blueberry", material2.normal_map())
+    # TODO(ahcorde) Add Pbr python interface
+    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual("/tmp/other", material2.file_path())
 
   def test_set(self):
     material = Material()
