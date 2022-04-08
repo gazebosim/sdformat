@@ -42,7 +42,9 @@ jobs:
       run: cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local/Cellar/${PACKAGE}/HEAD
     - run: make
       working-directory: build
-    - run: make test
+    - run: |
+        export PYTHONPATH=$PYTHONPATH:`find /usr/local/Cellar -path '*ignition/math.cpython*' | rev | cut -d'/' -f3- | rev`
+        make test
       working-directory: build
       env:
         CTEST_OUTPUT_ON_FAILURE: 1
