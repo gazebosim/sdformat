@@ -56,6 +56,14 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(0.2, cylinder2.shape().radius())
     self.assertEqual(3.0, cylinder2.shape().length())
 
+    cylinder.set_radius(2.0)
+    cylinder.set_length(0.3)
+
+    self.assertEqual(2.0, cylinder.radius())
+    self.assertEqual(0.3, cylinder.length())
+    self.assertEqual(2.0, cylinder2.radius())
+    self.assertEqual(0.3, cylinder2.length())
+
 
   def test_copy_construction(self):
     cylinder = Cylinder();
@@ -63,6 +71,14 @@ class CylinderTEST(unittest.TestCase):
     cylinder.set_length(3.0)
 
     cylinder2 = Cylinder(cylinder)
+    self.assertEqual(0.2, cylinder2.radius())
+    self.assertEqual(3.0, cylinder2.length())
+
+    cylinder.set_radius(2.)
+    cylinder.set_length(0.3)
+
+    self.assertEqual(2, cylinder.radius())
+    self.assertEqual(0.3, cylinder.length())
     self.assertEqual(0.2, cylinder2.radius())
     self.assertEqual(3.0, cylinder2.length())
 
@@ -75,28 +91,13 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(0.2, cylinder2.radius())
     self.assertEqual(3.0, cylinder2.length())
 
+    cylinder.set_radius(2.)
+    cylinder.set_length(0.3)
 
-  def test_assignment_after_assignment(self):
-    cylinder1 = Cylinder();
-    cylinder1.set_radius(0.2)
-    cylinder1.set_length(3.0)
-
-    cylinder2 = Cylinder();
-    cylinder2.set_radius(2)
-    cylinder2.set_length(30.0)
-
-    # This is similar to what std::swap does except it uses std::move for each
-    # assignment
-    tmp = cylinder1
-    cylinder1 = copy.deepcopy(cylinder2);
-    cylinder2 = tmp;
-
-    self.assertEqual(2, cylinder1.radius())
-    self.assertEqual(30, cylinder1.length())
-
+    self.assertEqual(2, cylinder.radius())
+    self.assertEqual(0.3, cylinder.length())
     self.assertEqual(0.2, cylinder2.radius())
     self.assertEqual(3.0, cylinder2.length())
-
 
   def test_shape(self):
     cylinder = Cylinder();
