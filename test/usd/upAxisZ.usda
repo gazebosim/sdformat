@@ -119,7 +119,7 @@ def Xform "cylinder"
     {
         point3f physics:centerOfMass = (0, 0, 0)
         float3 physics:diagonalInertia = (0.1458, 0.1458, 0.125)
-        float physics:mass = 1
+        float physics:mass = 1.7
         float3 xformOp:rotateXYZ = (0, 0, 0)
         double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
@@ -155,7 +155,7 @@ def Xform "sphere"
     {
         point3f physics:centerOfMass = (0, 0, 0)
         float3 physics:diagonalInertia = (0.1, 0.1, 0.1)
-        float physics:mass = 1
+        float physics:mass = 2
         float3 xformOp:rotateXYZ = (0, 0, 0)
         double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]

@@ -17,6 +17,7 @@
 #include "USDWorld.hh"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,6 +43,7 @@
 
 #include "USDLights.hh"
 #include "USDPhysics.hh"
+#include "USDLinks.hh"
 
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
@@ -84,9 +86,10 @@ namespace usd
     }
 
     std::string linkName;
+    std::string currentModelName;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
-    for (auto const &prim : range)
+    for (const auto &prim : range)
     {
       // Skip materials, the data is already available in the USDData class
       if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
@@ -111,6 +114,7 @@ namespace usd
       {
         sdf::Model model = sdf::Model();
         model.SetName(primPathTokens[0]);
+        currentModelName = primPathTokens[0];
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale{1, 1, 1};
@@ -190,18 +194,59 @@ namespace usd
             data.second->MetersPerUnit());
         continue;
       }
+
+      if (!prim.IsA<pxr::UsdGeomGprim>() && (primType != "Plane"))
+      {
+        continue;
+      }
+
+      auto modelPtr = _world.ModelByName(currentModelName);
+      if (!modelPtr)
+      {
+        errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+              "Unable to find a sdf::Model named [" + currentModelName +
+              "] in world named [" + _world.Name() +
+              "], but a sdf::Model with this name should exist."));
+        return errors;
+      }
+
+      std::optional<sdf::Link> optionalLink;
+      if (auto linkInserted = modelPtr->LinkByName(linkName))
+      {
+        optionalLink = *linkInserted;
+        sdf::usd::ParseUSDLinks(prim, linkName, optionalLink, usdData);
+      }
+      else
+      {
+        sdf::usd::ParseUSDLinks(prim, linkName, optionalLink, usdData);
+
+        if (optionalLink && !optionalLink->Name().empty() &&
+            !modelPtr->LinkByName(optionalLink->Name()))
+        {
+          modelPtr->AddLink(optionalLink.value());
+        }
+      }
     }
 
-    // TODO(ahcorde): Remove this loop here, I added this here to avoid
-    // errors, a model should have link. This will be added in a follow up PR.
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
+    {
+      auto light = _world.LightByIndex(i);
+      light->SetName(ignition::common::basename(light->Name()));
+    }
+
     for (unsigned int i = 0; i < _world.ModelCount(); ++i)
     {
-      auto m = _world.ModelByIndex(i);
+      const auto m = _world.ModelByIndex(i);
+
+      // We might include some empty models
+      // for example: some models create a world path to set up physics
+      // but there is no model data inside
+      // TODO(ahcorde) Add a RemoveModelByName() method in sdf::World
       if (m->LinkCount() == 0)
       {
-        sdf::Link link;
-        link.SetName("empty_link");
-        m->AddLink(link);
+        sdf::Link emptyLink;
+        emptyLink.SetName("emptyLink");
+        m->AddLink(emptyLink);
       }
     }
 
