@@ -41,6 +41,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyBox.cc
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
+  src/sdf/pyMesh.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pySphere.cc
 )
@@ -65,6 +66,7 @@ if (BUILD_TESTING)
     pyBox_TEST
     pyEllipsoid_TEST
     pyError_TEST
+    pyMesh_TEST
     pyParserConfig_TEST
     pySphere_TEST
   )
