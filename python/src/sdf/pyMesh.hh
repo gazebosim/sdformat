@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
+#ifndef SDFORMAT_PYTHON_MESH_HH_
+#define SDFORMAT_PYTHON_MESH_HH_
+
 #include <pybind11/pybind11.h>
 
-#include "pyBox.hh"
-#include "pyCylinder.hh"
-#include "pyError.hh"
-#include "pyMesh.hh"
-#include "pyParserConfig.hh"
-#include "pySphere.hh"
+#include "sdf/Mesh.hh"
 
-PYBIND11_MODULE(sdformat, m) {
-  m.doc() = "sdformat Python Library.";
+#include "sdf/config.hh"
 
-  sdf::python::defineBox(m);
-  sdf::python::defineCylinder(m);
-  sdf::python::defineError(m);
-  sdf::python::defineMesh(m);
-  sdf::python::defineParserConfig(m);
-  sdf::python::defineSphere(m);
-}
+namespace sdf
+{
+// Inline bracket to help doxygen filtering.
+inline namespace SDF_VERSION_NAMESPACE {
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::Mesh
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineMesh(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+
+#endif  // SDFORMAT_PYTHON_MESH_HH_
