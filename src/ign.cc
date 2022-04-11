@@ -253,7 +253,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
     size_t spacePadding = maxLength - moiVector[i].size();
     // Print the matrix element
     std::cout << moiVector[i];
-    for (int j = 0; j < spacePadding; j++)
+    for (size_t j = 0; j < spacePadding; j++)
     {
       std::cout << " ";
     }
