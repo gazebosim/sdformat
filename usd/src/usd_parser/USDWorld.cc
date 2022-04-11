@@ -87,10 +87,10 @@ namespace usd
     }
 
     std::string linkName;
+    std::string currentModelName;
 
     // USD link may have scale, store this value to apply this to the sdf visual
     std::map<std::string, ignition::math::Vector3d> linkScaleVector;
-    std::string currentModelName;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (const auto &prim : range)

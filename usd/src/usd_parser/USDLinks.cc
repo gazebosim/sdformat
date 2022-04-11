@@ -563,7 +563,7 @@ void ParseUSDLinks(
     ignition::math::Vector3d scale(1, 1, 1);
     GetTransform(_prim, _usdData, pose, scale, "");
     // This is a special case when a geometry is defined in the higher level
-    // of the path. we should only set the position is the path at least has
+    // of the path. we should only set the position if the path at least has
     // more than 1 level.
     // TODO(ahcorde) Review this code and improve this logic
     size_t nSlash = std::count(_nameLink.begin(), _nameLink.end(), '/');
