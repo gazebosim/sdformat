@@ -41,11 +41,13 @@ namespace sdf
   /// of a triangle mesh.
   /// \details This uses the fan-triangulating algorithm, so it only works if
   /// all polygons in the mesh are convex.
-  /// \param[in] _faceVertexIndices A flat list of vertex indices of a polygon mesh
-  /// \param[in] _faceVertexCounts A list containing the number of vertices for each
+  /// \param[in] _faceVertexIndices A flat list of vertex indices of a polygon
+  /// mesh
+  /// \param[in] _faceVertexCounts A list containing the number of vertices for
+  /// each
   /// face of the mesh.
-  /// \param[out] _triangles A flat list of vertex indices, with each face converted to one or
-  /// more triangles.
+  /// \param[out] _triangles A flat list of vertex indices, with each face
+  /// converted to one or more triangles.
   /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
   /// includes an error code and message. An empty vector indicates no error
   /// occurred when parsing the polygons.
