@@ -43,6 +43,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyMesh.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pySphere.cc
+  src/sdf/pyWorld.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -67,6 +68,7 @@ if (BUILD_TESTING)
     pyMesh_TEST
     pyParserConfig_TEST
     pySphere_TEST
+    pyWorld_TEST
   )
 
   foreach (test ${python_tests})
