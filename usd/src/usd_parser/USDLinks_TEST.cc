@@ -66,15 +66,9 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
       if (_nvisual)
       {
         auto visual = _link.VisualByIndex(0);
-        if (!visual)
-        {
-          FAIL();
-        }
+        ASSERT_NE(nullptr, visual);
         auto geom = visual->Geom();
-        if (!geom)
-        {
-          FAIL();
-        }
+        ASSERT_NE(nullptr, geom);
         EXPECT_EQ(_type, geom->Type());
       }
     };
@@ -92,6 +86,10 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
 
   sdf::usd::ParseUSDLinks(
     boxLinkGeometry, "/box/box_link", linkSDF, usdData, scale);
+
+  EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), scale)
+
+  scale = ignition::math::Vector3d(1, 0.1 * 0.1, 0.2);
 
   ASSERT_TRUE(linkSDF);
   checkLink(linkSDF.value(), "box_link", 1.0,

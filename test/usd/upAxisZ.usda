@@ -93,7 +93,8 @@ def Xform "box" (
         float physics:mass = 1
         float3 xformOp:rotateXYZ = (0, 0, 0)
         double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float3 xformOp:scale = (1, 0.1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 
         def Xform "box_visual"
         {
@@ -106,8 +107,8 @@ def Xform "box" (
                 float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
                 rel material:binding = </Looks/Material_1>
                 double size = 1
-                float3 xformOp:scale = (1, 1, 1)
-                uniform token[] xformOpOrder = ["xformOp:scale"]
+                float3 xformOp:scale = (1, 0.1, 0.2)
+                uniform token[] xformOpOrder = ["xformOp:scale", "xformOp:scale"]
             }
             def Cube "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]
