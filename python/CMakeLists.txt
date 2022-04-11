@@ -40,6 +40,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyBox.cc
   src/sdf/pyError.cc
+  src/sdf/pyJoint.cc
   src/sdf/pyMesh.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pySphere.cc
@@ -64,6 +65,7 @@ if (BUILD_TESTING)
   set(python_tests
     pyBox_TEST
     pyError_TEST
+    pyJoint_TEST
     pyMesh_TEST
     pyParserConfig_TEST
     pySphere_TEST
