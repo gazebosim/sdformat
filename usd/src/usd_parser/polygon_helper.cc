@@ -59,8 +59,7 @@ namespace usd
     if (_triangles.size() != count * 3)
     {
       errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_POLYGON_PARSING_ERROR,
-            "Unable to parse the polugon mesh"));
-      return errors;
+            "Unable to parse the polygon mesh"));
     }
 
     return errors;
