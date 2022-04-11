@@ -108,7 +108,7 @@ def Xform "box" (
                 rel material:binding = </Looks/Material_1>
                 double size = 1
                 float3 xformOp:scale = (1, 0.1, 0.2)
-                uniform token[] xformOpOrder = ["xformOp:scale", "xformOp:scale"]
+                uniform token[] xformOpOrder = ["xformOp:scale"]
             }
             def Cube "collision" (
                 prepend apiSchemas = ["PhysicsCollisionAPI"]

@@ -47,7 +47,7 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
   sdf::usd::USDData usdData(filename);
   usdData.Init();
 
-  ignition::math::Vector3d scale;
+  ignition::math::Vector3d scale(1, 1, 1);
 
   auto checkLink =
     [](const sdf::Link &_link,
@@ -76,20 +76,18 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
   const auto boxLink = stage->GetPrimAtPath(pxr::SdfPath("/box/box_link"));
   ASSERT_TRUE(boxLink);
 
-  const auto boxLinkGeometry = stage->GetPrimAtPath(
-    pxr::SdfPath("/box/box_link/box_visual/geometry"));
-  EXPECT_TRUE(boxLinkGeometry);
-
   std::optional<sdf::Link> linkSDF;
   sdf::usd::ParseUSDLinks(
     boxLink, "/box/box_link", linkSDF, usdData, scale);
 
+  EXPECT_EQ(ignition::math::Vector3d(1, 0.1, 1), scale);
+
+  const auto boxLinkGeometry = stage->GetPrimAtPath(
+    pxr::SdfPath("/box/box_link/box_visual/geometry"));
+  ASSERT_TRUE(boxLinkGeometry);
+
   sdf::usd::ParseUSDLinks(
     boxLinkGeometry, "/box/box_link", linkSDF, usdData, scale);
-
-  EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), scale)
-
-  scale = ignition::math::Vector3d(1, 0.1 * 0.1, 0.2);
 
   ASSERT_TRUE(linkSDF);
   checkLink(linkSDF.value(), "box_link", 1.0,
@@ -100,14 +98,14 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/cylinder/cylinder_link"));
   ASSERT_TRUE(cylinderLink);
 
-  const auto cylinderLinkGeometry = stage->GetPrimAtPath(
-    pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/geometry"));
-  EXPECT_TRUE(cylinderLinkGeometry);
-
   std::optional<sdf::Link> linkCylinderSDF;
   sdf::usd::ParseUSDLinks(
     cylinderLink, "/cylinder/cylinder_link",
     linkCylinderSDF, usdData, scale);
+
+  const auto cylinderLinkGeometry = stage->GetPrimAtPath(
+    pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/geometry"));
+  EXPECT_TRUE(cylinderLinkGeometry);
 
   sdf::usd::ParseUSDLinks(
     cylinderLinkGeometry, "/cylinder/cylinder_link",
@@ -121,13 +119,13 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/sphere/sphere_link"));
   ASSERT_TRUE(sphereLink);
 
-  const auto sphereLinkGeometry = stage->GetPrimAtPath(
-    pxr::SdfPath("/sphere/sphere_link/sphere_visual/geometry"));
-  EXPECT_TRUE(sphereLinkGeometry);
-
   std::optional<sdf::Link> linkSphereSDF;
   sdf::usd::ParseUSDLinks(
     sphereLink, "/sphere/sphere_link", linkSphereSDF, usdData, scale);
+
+  const auto sphereLinkGeometry = stage->GetPrimAtPath(
+    pxr::SdfPath("/sphere/sphere_link/sphere_visual/geometry"));
+  EXPECT_TRUE(sphereLinkGeometry);
 
   sdf::usd::ParseUSDLinks(
     sphereLinkGeometry, "/sphere/sphere_link",

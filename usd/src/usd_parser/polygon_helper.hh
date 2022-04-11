@@ -52,8 +52,8 @@ namespace sdf
   /// includes an error code and message. An empty vector indicates no error
   /// occurred when parsing the polygons.
   UsdErrors PolygonToTriangles(
-    pxr::VtIntArray &_faceVertexIndices,
-    pxr::VtIntArray &_faceVertexCounts,
+    const pxr::VtIntArray &_faceVertexIndices,
+    const pxr::VtIntArray &_faceVertexCounts,
     std::vector<unsigned int> &_triangles);
 }
 }

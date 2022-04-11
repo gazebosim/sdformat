@@ -309,6 +309,8 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _usdData metadata of the USD file
+/// \return UsdErrors, which is a list of UsdError objects. An empty list means
+/// that no errors occurred when parsing the USD mesh
 UsdErrors ParseMesh(
   const pxr::UsdPrim &_prim,
   sdf::Link *_link,
@@ -440,6 +442,8 @@ UsdErrors ParseMesh(
       exporter.Export(&mesh, directoryMesh, false);
     }
   }
+
+  return errors;
 }
 
 //////////////////////////////////////////////////
@@ -557,7 +561,7 @@ UsdErrors ParseUSDLinks(
     pxr::UsdPrim tmpPrim = _prim;
     if (!nameOfLink.empty())
     {
-      while(tmpPrim)
+      while (tmpPrim)
       {
         if (pxr::TfStringify(tmpPrim.GetPath()) == nameOfLink)
         {
