@@ -148,8 +148,13 @@ namespace sdf
     /// included, or the custom parser does not support merge includes.
     MERGE_INCLUDE_UNSUPPORTED,
 
-    /// \brief Generic error type for parameters.
-    PARAMETER_ERROR
+    /// \brief Generic error type for parameters (values of SDFormat elements
+    /// or attributes).
+    PARAMETER_ERROR,
+
+    /// \brief The specified parameter (values of SDFormat elements
+    /// or attributes) type is unknown.
+    UNKNOWN_PARAMETER_TYPE,
   };
 
   class SDFORMAT_VISIBLE Error

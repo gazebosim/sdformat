@@ -239,6 +239,7 @@ namespace sdf
     public: std::optional<std::string> GetMinValueAsString(
         sdf::Errors &_errors,
         const PrintConfig &_config = PrintConfig()) const;
+
     /// \brief Get the maximum allowed value as a string.
     /// \param[in] _config Configuration for conversion to string.
     /// \return Returns a string containing the maximum allowed value of the
@@ -571,16 +572,6 @@ namespace sdf
     /// \param[in] _typeName The data type of the value to set
     /// \param[in] _valueStr The value as a string
     /// \param[out] _valueToSet The value to set
-    /// \return True if the value was successfully set, false otherwise
-    public: bool SDFORMAT_VISIBLE ValueFromStringImpl(
-                                    const std::string &_typeName,
-                                    const std::string &_valueStr,
-                                    ParamVariant &_valueToSet) const;
-
-    /// \brief Method used to set the Param from a passed-in string
-    /// \param[in] _typeName The data type of the value to set
-    /// \param[in] _valueStr The value as a string
-    /// \param[out] _valueToSet The value to set
     /// \param[out] _errors Vector of errors.
     /// \return True if the value was successfully set, false otherwise
     public: bool SDFORMAT_VISIBLE ValueFromStringImpl(
@@ -588,19 +579,6 @@ namespace sdf
                                     const std::string &_valueStr,
                                     ParamVariant &_valueToSet,
                                     sdf::Errors &_errors) const;
-
-    /// \brief Method used to get the string representation from a ParamVariant,
-    /// or the string that was used to set it.
-    /// \param[in] _config Print configuration for the string output
-    /// \param[in] _typeName The data type of the value
-    /// \param[in] _value The value
-    /// \param[out] _valueStr The output string.
-    /// \return True if the string was successfully retrieved, false otherwise.
-    public: bool StringFromValueImpl(
-                const PrintConfig &_config,
-                const std::string &_typeName,
-                const ParamVariant &_value,
-                std::string &_valueStr) const;
 
     /// \brief Method used to get the string representation from a ParamVariant,
     /// or the string that was used to set it.
@@ -616,22 +594,6 @@ namespace sdf
                 const ParamVariant &_value,
                 std::string &_valueStr,
                 sdf::Errors &_errors) const;
-
-    /// \brief Method used to get the string representation from a ParamVariant,
-    /// or the string that was used to set it.
-    /// \param[in] _config Print configuration for the string output
-    /// \param[in] _typeName The data type of the value
-    /// \param[in] _value The value
-    /// \param[in] _orignalStr The original string that was used to set the
-    /// value. A nullopt can be passed in if it is not available.
-    /// \param[out] _valueStr The output string.
-    /// \return True if the string was successfully retrieved, false otherwise.
-    public: bool StringFromValueImpl(
-                const PrintConfig &_config,
-                const std::string &_typeName,
-                const ParamVariant &_value,
-                const std::optional<std::string> &_originalStr,
-                std::string &_valueStr) const;
 
     /// \brief Method used to get the string representation from a ParamVariant,
     /// or the string that was used to set it.
@@ -713,7 +675,7 @@ namespace sdf
     bool result = this->Set<T>(_value, errors);
     for (const auto &e : errors)
     {
-      sdferr << e.Message() + "\n";
+      sdferr << e.Message() << "\n";
     }
     return result;
   }
@@ -747,7 +709,7 @@ namespace sdf
     bool result = this->Get<T>(_value, errors);
     for (const auto &e : errors)
     {
-      sdferr << e.Message() + "\n";
+      sdferr << e.Message() << "\n";
     }
     return result;
   }
@@ -766,7 +728,7 @@ namespace sdf
       std::string typeStr = this->dataPtr->TypeToString<T>();
       if (typeStr.empty())
       {
-        _errors.push_back({ErrorCode::PARAMETER_ERROR,
+        _errors.push_back({ErrorCode::UNKNOWN_PARAMETER_TYPE,
             "Unknown parameter type[" + std::string(typeid(T).name()) + "]"});
         return false;
       }
@@ -811,7 +773,7 @@ namespace sdf
     bool result = this>GetDefault<T>(_value, errors);
     for (const auto &e : errors)
     {
-      sdferr << e.Message() + "\n";
+      sdferr << e.Message() << "\n";
     }
     return result;
   }

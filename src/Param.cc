@@ -76,7 +76,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
       sdferr << errors[i].Message() + "\n";
     }
 
-    SDF_ASSERT(false, errors[errors.size() - 1].Message());
+    SDF_ASSERT(false, errors.back().Message());
   }
 }
 
@@ -109,7 +109,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
       sdferr << errors[i].Message() + "\n";
     }
 
-    SDF_ASSERT(false, errors[errors.size() - 1].Message());
+    SDF_ASSERT(false, errors.back().Message());
   }
 }
 
@@ -158,7 +158,7 @@ bool Param::GetAny(std::any &_anyVal) const
   {
     for (const auto &e : errors)
     {
-      sdferr << e.Message() + "\n";
+      sdferr << e.Message() << "\n";
     }
     return false;
   }
@@ -349,7 +349,7 @@ void Param::Update()
   this->Update(errors);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
 }
 
@@ -388,7 +388,7 @@ std::string Param::GetAsString(const PrintConfig &_config) const
   std::string result = GetAsString(errors, _config);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -419,7 +419,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
   std::string result = this->GetDefaultAsString(errors, _config);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -457,7 +457,7 @@ std::optional<std::string> Param::GetMinValueAsString(
   auto result = GetMinValueAsString(errors, _config);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -494,7 +494,7 @@ std::optional<std::string> Param::GetMaxValueAsString(
   auto result = GetMaxValueAsString(errors, _config);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -852,21 +852,6 @@ void ParamPrivate::Init(const std::string &_key, const std::string &_typeName,
 //////////////////////////////////////////////////
 bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
                                        const std::string &_valueStr,
-                                       ParamVariant &_valueToSet) const
-{
-  sdf::Errors errors;
-  bool result = this->ValueFromStringImpl(
-      _typeName, _valueStr, _valueToSet, errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() + "\n";
-  }
-  return result;
-}
-
-//////////////////////////////////////////////////
-bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
-                                       const std::string &_valueStr,
                                        ParamVariant &_valueToSet,
                                        sdf::Errors &_errors) const
 {
@@ -1007,7 +992,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
     }
     else
     {
-      _errors.push_back({ErrorCode::PARAMETER_ERROR,
+      _errors.push_back({ErrorCode::UNKNOWN_PARAMETER_TYPE,
           "Unknown parameter type[" + _typeName + "]"});
       return false;
     }
@@ -1220,27 +1205,6 @@ bool ParamPrivate::StringFromValueImpl(
     const PrintConfig &_config,
     const std::string &_typeName,
     const ParamVariant &_value,
-    std::string &_valueStr) const
-{
-  sdf::Errors errors;
-  bool result = this->StringFromValueImpl(
-      _config,
-      _typeName,
-      _value,
-      _valueStr,
-      errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() + "\n";
-  }
-  return result;
-}
-
-/////////////////////////////////////////////////
-bool ParamPrivate::StringFromValueImpl(
-    const PrintConfig &_config,
-    const std::string &_typeName,
-    const ParamVariant &_value,
     std::string &_valueStr,
     sdf::Errors &_errors) const
 {
@@ -1251,29 +1215,6 @@ bool ParamPrivate::StringFromValueImpl(
       std::nullopt,
       _valueStr,
       _errors);
-}
-
-/////////////////////////////////////////////////
-bool ParamPrivate::StringFromValueImpl(
-    const PrintConfig &_config,
-    const std::string &_typeName,
-    const ParamVariant &_value,
-    const std::optional<std::string> &_originalStr,
-    std::string &_valueStr) const
-{
-  sdf::Errors errors;
-  bool result = this->StringFromValueImpl(
-      _config,
-      _typeName,
-      _value,
-      _originalStr,
-      _valueStr,
-      errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() + "\n";
-  }
-  return result;
 }
 
 /////////////////////////////////////////////////
@@ -1329,7 +1270,7 @@ bool Param::SetFromString(const std::string &_value,
                           errors);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -1384,7 +1325,7 @@ bool Param::SetFromString(const std::string &_value)
   bool result = this->SetFromString(_value, false, errors);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -1408,7 +1349,7 @@ bool Param::SetParentElement(ElementPtr _parentElement)
   bool result = this->SetParentElement(_parentElement, errors);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -1443,7 +1384,7 @@ bool Param::Reparse()
   bool result = this->Reparse(errors);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -1556,7 +1497,7 @@ bool Param::ValidateValue() const
   bool result = this->ValidateValue(errors);
   for (const auto &e : errors)
   {
-    sdferr << e.Message() + "\n";
+    sdferr << e.Message() << "\n";
   }
   return result;
 }
@@ -1577,13 +1518,11 @@ bool Param::ValidateValue(sdf::Errors &_errors) const
             if (_val < std::get<T>(*this->dataPtr->minValue))
             {
               std::ostringstream oss;
-              oss << _val;
-              std::string val_str = oss.str();
-              _errors.push_back({ErrorCode::PARAMETER_ERROR,
-                  "The value [" + val_str
-                  + "] is less than the minimum allowed value of ["
-                  + *this->GetMinValueAsString() + "] for key ["
-                  + this->GetKey() + "]"});
+              oss << "The value [" << _val
+                  << "] is less than the minimum allowed value of ["
+                  << *this->GetMinValueAsString() << "] for key ["
+                  << this->GetKey() << "]";
+              _errors.push_back({ErrorCode::PARAMETER_ERROR, oss.str()});
               return false;
             }
           }
@@ -1592,13 +1531,11 @@ bool Param::ValidateValue(sdf::Errors &_errors) const
             if (_val > std::get<T>(*this->dataPtr->maxValue))
             {
               std::ostringstream oss;
-              oss << _val;
-              std::string val_str = oss.str();
-              _errors.push_back({ErrorCode::PARAMETER_ERROR,
-                  "The value [" + val_str
-                  + "] is greater than the maximum allowed value of ["
-                  + *this->GetMaxValueAsString() + "] for key ["
-                  + this->GetKey() + "]"});
+              oss << "The value [" << _val
+                  << "] is greater than the maximum allowed value of ["
+                  << *this->GetMaxValueAsString() << "] for key ["
+                  << this->GetKey() << "]";
+              _errors.push_back({ErrorCode::PARAMETER_ERROR, oss.str()});
               return false;
             }
           }
