@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,25 +28,31 @@
 
 #include "sdf/config.hh"
 #include "sdf/usd/Export.hh"
+#include "sdf/usd/UsdError.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-  ///\brief Converts a vertex indicies of a polygon mesh to a vertex indicies of a triangle mesh.
-  ///\details This uses the fan-triangulating algorithm, so it only works if all polygons in
-  /// in the mesh are convex.
-  ///\param _faceVertexIndices A flat list of vertex indicies of a polygon mesh.
-  ///\param _faceVertexCounts A list containing the number of vertices for each face of the mesh.
-  ///\param _points A list of vertices.
-  ///\return A flat list of vertex indicies, with each face converted to one or more triangles.
-  std::vector<unsigned int> PolygonToTriangles(
+  /// \brief Converts vertex indices of a polygon mesh to vertex indices
+  /// of a triangle mesh.
+  /// \details This uses the fan-triangulating algorithm, so it only works if
+  /// all polygons in the mesh are convex.
+  /// \param[in] _faceVertexIndices A flat list of vertex indices of a polygon mesh
+  /// \param[in] _faceVertexCounts A list containing the number of vertices for each
+  /// face of the mesh.
+  /// \param[out] _triangles A flat list of vertex indices, with each face converted to one or
+  /// more triangles.
+  /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
+  /// includes an error code and message. An empty vector indicates no error
+  /// occurred when parsing the polygons.
+  UsdErrors PolygonToTriangles(
     pxr::VtIntArray &_faceVertexIndices,
     pxr::VtIntArray &_faceVertexCounts,
-    pxr::VtArray<pxr::GfVec3f> &_points);
+    std::vector<unsigned int> &_triangles);
 }
 }
 }

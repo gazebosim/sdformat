@@ -153,15 +153,23 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string groundPlaneVisualPath = groundPlaneLinkPath + "/visual";
   const std::string groundPlaneGeometryPath =
     groundPlaneVisualPath + "/geometry";
+  const std::string groundPlaneCollisionPath =
+    groundPlaneLinkPath + "/collision";
+  const std::string groundPlaneCollisionGeometryPath =
+    groundPlaneCollisionPath + "/geometry";
 
   pxr::GfVec3f scale;
   pxr::VtArray<pxr::GfVec3f> extent;
   double size, height, radius, length;
 
+  const auto groundPlaneCollisionGeometry = this->stage->GetPrimAtPath(
+    pxr::SdfPath(groundPlaneCollisionGeometryPath));
+  ASSERT_TRUE(groundPlaneCollisionGeometry);
+  EXPECT_TRUE(
+    groundPlaneCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto groundPlaneGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(groundPlaneGeometryPath));
   ASSERT_TRUE(groundPlaneGeometry);
-  EXPECT_TRUE(groundPlaneGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto usdGroundPlane = pxr::UsdGeomCube(groundPlaneGeometry);
   ASSERT_TRUE(usdGroundPlane);
   usdGroundPlane.GetSizeAttr().Get(&size);
@@ -182,8 +190,14 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string boxGeometryPath = boxVisualPath + "/geometry";
   const auto boxGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(boxGeometryPath));
+  const std::string boxCollisionPath = boxLinkPath + "/collision";
+  const std::string boxCollisionGeometryPath = boxCollisionPath + "/geometry";
+  const auto boxCollisionGeometry = this->stage->GetPrimAtPath(
+    pxr::SdfPath(boxCollisionGeometryPath));
+  ASSERT_TRUE(boxCollisionGeometry);
+  EXPECT_TRUE(boxCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
+
   ASSERT_TRUE(boxGeometry);
-  EXPECT_TRUE(boxGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto usdCube = pxr::UsdGeomCube(boxGeometry);
   ASSERT_TRUE(usdCube);
   usdCube.GetSizeAttr().Get(&size);
@@ -201,10 +215,16 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string cylinderLinkPath = cylinderPath + "/link";
   const std::string cylinderVisualPath = cylinderLinkPath + "/visual";
   const std::string cylinderGeometryPath = cylinderVisualPath + "/geometry";
+  const std::string cylinderCollisionPath = cylinderLinkPath + "/collision";
+  const std::string cylinderCollisionGeometryPath =
+    cylinderCollisionPath + "/geometry";
+  const auto cylinderCollisionGeometry = this->stage->GetPrimAtPath(
+    pxr::SdfPath(cylinderCollisionGeometryPath));
+  ASSERT_TRUE(cylinderCollisionGeometry);
+  EXPECT_TRUE(cylinderCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto cylinderGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(cylinderGeometryPath));
   ASSERT_TRUE(cylinderGeometry);
-  EXPECT_TRUE(cylinderGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto usdCylinder = pxr::UsdGeomCylinder(cylinderGeometry);
   ASSERT_TRUE(usdCylinder);
   usdCylinder.GetRadiusAttr().Get(&radius);
@@ -220,10 +240,16 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string sphereLinkPath = spherePath + "/link";
   const std::string sphereVisualPath = sphereLinkPath + "/sphere_vis";
   const std::string sphereGeometryPath = sphereVisualPath + "/geometry";
+  const std::string sphereCollisionPath = sphereLinkPath + "/collision";
+  const std::string sphereCollisionGeometryPath =
+    sphereCollisionPath + "/geometry";
+  const auto sphereCollisionGeometry = this->stage->GetPrimAtPath(
+    pxr::SdfPath(sphereCollisionGeometryPath));
+  ASSERT_TRUE(sphereCollisionGeometry);
+  EXPECT_TRUE(sphereCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto sphereGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(sphereGeometryPath));
   ASSERT_TRUE(sphereGeometry);
-  EXPECT_TRUE(sphereGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto usdSphere = pxr::UsdGeomSphere(sphereGeometry);
   ASSERT_TRUE(usdSphere);
   usdSphere.GetRadiusAttr().Get(&radius);
@@ -239,7 +265,6 @@ TEST_F(UsdStageFixture, Geometry)
   const auto capsuleGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(capsuleGeometryPath));
   ASSERT_TRUE(capsuleGeometry);
-  EXPECT_TRUE(capsuleGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto usdCapsule = pxr::UsdGeomCapsule(capsuleGeometry);
   ASSERT_TRUE(usdCapsule);
   usdCapsule.GetRadiusAttr().Get(&radius);
@@ -256,10 +281,16 @@ TEST_F(UsdStageFixture, Geometry)
   const std::string meshVisualPath = meshLinkPath + "/visual";
   const std::string meshGeometryPath = meshVisualPath + "/geometry";
   const std::string meshGeometryMeshPath = meshGeometryPath + "/Cube";
+  const std::string capsuleCollisionPath = capsuleLinkPath + "/collision";
+  const std::string capsuleCollisionGeometryPath =
+    capsuleCollisionPath + "/geometry";
+  const auto capsuleCollisionGeometry = this->stage->GetPrimAtPath(
+    pxr::SdfPath(capsuleCollisionGeometryPath));
+  ASSERT_TRUE(capsuleCollisionGeometry);
+  EXPECT_TRUE(capsuleCollisionGeometry.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto meshGeometryParentPrim = this->stage->GetPrimAtPath(
       pxr::SdfPath(meshGeometryPath));
   ASSERT_TRUE(meshGeometryParentPrim);
-  EXPECT_TRUE(meshGeometryParentPrim.HasAPI<pxr::UsdPhysicsCollisionAPI>());
   const auto meshGeometry = this->stage->GetPrimAtPath(
     pxr::SdfPath(meshGeometryMeshPath));
   ASSERT_TRUE(meshGeometry);

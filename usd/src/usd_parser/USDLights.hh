@@ -19,6 +19,7 @@
 #define USD_USD_PARSER_LIGHTS_HH
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #pragma push_macro ("__DEPRECATED")
@@ -35,7 +36,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
@@ -47,11 +48,11 @@ namespace sdf
     /// \param[in] _prim Prim to extract the light data
     /// \param[in] _usdData Object to get transform data
     /// \param[in] _linkName Name of the link to find the transform
-    /// \return Shared point with the sdf Light object or null if the light
-    /// is not supported.
-    std::shared_ptr<sdf::Light> IGNITION_SDFORMAT_USD_VISIBLE ParseUSDLights(
+    /// \return Shared point with the sdf Light object or std::nullopt if the
+    /// light is not supported.
+    std::optional<sdf::Light> IGNITION_SDFORMAT_USD_VISIBLE ParseUSDLights(
       const pxr::UsdPrim &_prim,
-      USDData &_usdData,
+      const USDData &_usdData,
       const std::string &_linkName);
   }
 }

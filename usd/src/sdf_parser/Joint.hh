@@ -15,9 +15,10 @@
  *
 */
 
-#ifndef SDF_USD_SDF_PARSER_LINK_HH_
-#define SDF_USD_SDF_PARSER_LINK_HH_
+#ifndef SDF_USD_SDF_PARSER_JOINT_HH_
+#define SDF_USD_SDF_PARSER_JOINT_HH_
 
+#include <unordered_map>
 #include <string>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
@@ -26,13 +27,14 @@
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/sdf/path.h>
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Link.hh"
-#include "sdf/usd/Export.hh"
+#include "sdf/Joint.hh"
+#include "sdf/Model.hh"
+#include "sdf/config.hh"
 #include "sdf/usd/UsdError.hh"
-#include "sdf/sdf_config.h"
 
 namespace sdf
 {
@@ -41,20 +43,27 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Parse an SDF link into a USD stage.
-    /// \param[in] _link The SDF link to parse.
+    /// \brief Parse a SDF joint into a USD stage.
+    /// \param[in] _joint The SDF joint to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _link. This must be a valid, initialized stage.
-    /// \param[in] _path The USD path of the parsed link in _stage, which must
+    /// of _joint. This must be a valid, initialized stage.
+    /// \param[in] _path The USD path of the parsed joint in _stage, which must
     /// be a valid USD path.
-    /// \param[in] _rigidBody Whether the link is a rigid body (i.e.,
-    /// non-static) or not. True for rigid body, false otherwise
+    /// \param[in] _parentModel The model that is the parent of _joint
+    /// \param[in] _linkToUsdPath a map of a link's SDF name to the link's USD
+    /// path. This is used to determine which USD prims should be assigned as
+    /// the USD joint's relative links.
+    /// \param[in] _worldPath The USD path of the world prim. This is needed if
+    /// _joint's parent is the world.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no errors
-    /// occurred when parsing _link to its USD representation.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLink(const sdf::Link &_link,
+    /// occurred when parsing _joint to its USD representation.
+    UsdErrors ParseSdfJoint(
+        const sdf::Joint &_joint,
         pxr::UsdStageRefPtr &_stage, const std::string &_path,
-        bool _rigidBody);
+        const sdf::Model &_parentModel,
+        const std::unordered_map<std::string, pxr::SdfPath> &_linkToUsdPath,
+        const pxr::SdfPath &_worldPath);
   }
   }
 }
