@@ -573,7 +573,7 @@ UsdErrors ParseUSDLinks(
 
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
-    GetTransform(_prim, _usdData, pose, scale, "");
+    GetTransform(tmpPrim, _usdData, pose, scale, "");
     // This is a special case when a geometry is defined in the higher level
     // of the path. we should only set the position if the path at least has
     // more than 1 level.
