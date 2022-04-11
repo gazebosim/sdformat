@@ -82,6 +82,7 @@ namespace sdf
           ++index;
         }
       }
+
       std::string baseName = ignition::common::basename(_dest);
       std::string pathDest = ignition::common::replaceAll(_dest, baseName, "");
       ignition::common::createDirectories(pathDest);
@@ -232,7 +233,6 @@ namespace sdf
                 return errors;
               }
               pbrWorkflow.SetRoughnessMap(dest);
-
               isPBR = true;
             }
             else if (input.GetBaseName() == "metallic_texture")

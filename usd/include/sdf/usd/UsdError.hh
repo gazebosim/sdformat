@@ -84,6 +84,9 @@ namespace sdf
 
     /// \brief Parsing of USD object to a SDF object failed.
     USD_TO_SDF_PARSING_ERROR,
+
+    /// \brief Parsing of USD polygin object to a SDF object failed.
+    USD_TO_SDF_POLYGON_PARSING_ERROR,
   };
 
   class IGNITION_SDFORMAT_USD_VISIBLE UsdError

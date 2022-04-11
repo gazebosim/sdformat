@@ -28,6 +28,7 @@
 
 #include "sdf/config.hh"
 #include "sdf/usd/usd_parser/USDData.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/Link.hh"
 
 namespace sdf
@@ -44,11 +45,16 @@ namespace sdf
     /// link will be created. If the optional does hold a value, the existing
     /// link will have additional information added to it
     /// \param[in] _usdData USDData object that holds data about the USD stage
-    void ParseUSDLinks(
+    /// \param[in] _scale scale of current Link, sdf::Link does not have a scale
+    /// attribute we need to keeep the scale in a extenal variable
+    /// \return UsdErrors, which is a list of UsdError objects. An empty list
+    /// means there were no errors parsing the USD link
+    UsdErrors ParseUSDLinks(
       const pxr::UsdPrim &_prim,
       const std::string &_nameLink,
       std::optional<sdf::Link> &_link,
-      const USDData &_usdData);
+      const USDData &_usdData,
+      ignition::math::Vector3d &_scale);
   }
   }
 }

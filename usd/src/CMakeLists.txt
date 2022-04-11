@@ -12,6 +12,7 @@ set(sources
   sdf_parser/Visual.cc
   sdf_parser/World.cc
   usd_parser/Parser.cc
+  usd_parser/polygon_helper.cc
   usd_parser/USD2SDF.cc
   usd_parser/USDData.cc
   usd_parser/USDLights.cc
@@ -69,7 +70,9 @@ ign_build_tests(
 
 if (TARGET UNIT_USDLinks_TEST)
   target_sources(UNIT_USDLinks_TEST PRIVATE
-  usd_parser/USDLinks.cc)
+    usd_parser/USDLinks.cc
+    Conversions.cc
+    usd_parser/polygon_helper.cc)
 endif()
 
 if (TARGET UNIT_USDPhysics_TEST)
