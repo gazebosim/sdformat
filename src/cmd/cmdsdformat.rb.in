@@ -41,6 +41,7 @@ COMMANDS = {  'sdf' =>
                        "  -k [ --check ] arg               Check if an SDFormat file is valid.\n" +
                        "  -d [ --describe ] [SPEC VERSION] Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -p [ --print ] arg               Print converted arg.\n" +
+                       "  --inertial-stats  arg             Prints moment of inertia, centre of mass, and total mass from a model sdf file.\n" +
                        COMMON_OPTIONS
             }
 
@@ -69,6 +70,10 @@ class Cmd
       opts.on('-k arg', '--check arg', String,
               'Check if an SDFormat file is valid.') do |arg|
         options['check'] = arg
+      end
+      opts.on('--inertial-stats arg', String,
+              'Prints moment of inertia, centre of mass, and total mass from a model sdf file.') do |arg|
+        options['inertial_stats'] = arg
       end
       opts.on('-d', '--describe [VERSION]', 'Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@)') do |v|
         options['describe'] = v
@@ -150,6 +155,9 @@ class Cmd
         if options.key?('check')
           Importer.extern 'int cmdCheck(const char *)'
           exit(Importer.cmdCheck(File.expand_path(options['check'])))
+        elsif options.key?('inertial_stats')
+          Importer.extern 'int cmdInertialStats(const char *)'
+          exit(Importer.cmdInertialStats(options['inertial_stats']))
         elsif options.key?('describe')
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
