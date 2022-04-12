@@ -288,7 +288,6 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   if (!errors.empty())
   {
     std::cerr << errors << std::endl;
-    return -1;
   }
 
   if (root.WorldCount() > 0)
@@ -348,7 +347,7 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
   ss << totalInertial.Moi();
 
   std::string s;
-  auto maxLength = 0u;
+  size_t maxLength = 0u;
   std::vector<std::string> moiVector;
   while ( std::getline(ss, s, ' ' ) )
   {
@@ -361,10 +360,10 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
 
   for (int i = 0; i < 9; i++)
   {
-    int spacePadding = maxLength - moiVector[i].size();
+    size_t spacePadding = maxLength - moiVector[i].size();
     // Print the matrix element
     std::cout << moiVector[i];
-    for (int j = 0; j < spacePadding; j++)
+    for (size_t j = 0; j < spacePadding; j++)
     {
       std::cout << " ";
     }
