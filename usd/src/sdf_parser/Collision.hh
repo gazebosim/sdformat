@@ -15,19 +15,21 @@
  *
 */
 
-#ifndef USD_PARSER_USDMATERIAL_HH_
-#define USD_PARSER_USDMATERIAL_HH_
+#ifndef SDF_USD_SDF_PARSER_COLLISION_HH_
+#define SDF_USD_SDF_PARSER_COLLISION_HH_
 
-// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
+#include <string>
+
+// TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
 // them. This workaround requires this block to be used whenever usd is
 // included.
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
-#include <pxr/usd/usdGeom/gprim.h>
+#include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "sdf/Material.hh"
+#include "sdf/Collision.hh"
 #include "sdf/config.hh"
 #include "sdf/usd/UsdError.hh"
 
@@ -38,17 +40,20 @@ namespace sdf
   //
   namespace usd
   {
-    /// brief Parse the material in a USD prim to a sdf::Material
-    /// If the prim is a pxr::UsdGeomGprim, get the color values. Otherwise,
-    /// if the prim is a pxr::UsdShadeMaterial, get the texture values
-    /// \param[in] _prim USD prim where the material is extracted
-    /// \param[out] _material The sdf::Material representation of _prim's
-    /// material
+    /// \brief Parse an SDF collision into a USD stage.
+    /// \param[in] _collision The SDF collision to parse.
+    /// \param[in] _stage The stage that should contain the USD representation
+    /// of _collision.
+    /// \param[in] _path The USD path of the parsed collision in _stage,
+    /// which must be a valid USD path.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    UsdErrors ParseMaterial(const pxr::UsdPrim &_prim,
-        sdf::Material &_material);
+    UsdErrors ParseSdfCollision(
+        const sdf::Collision &_collision,
+        pxr::UsdStageRefPtr &_stage,
+        const std::string &_path);
+  }
+  }
 }
-}
-}
+
 #endif

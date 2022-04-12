@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@
 
 #include "USDLinks.hh"
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -35,7 +39,7 @@
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "ignition/common/ColladaExporter.hh"
+#include <ignition/common/ColladaExporter.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Material.hh>
 #include <ignition/common/Mesh.hh>
@@ -56,11 +60,12 @@
 #include "polygon_helper.hh"
 
 #include "sdf/usd/usd_parser/USDTransforms.hh"
-#include "sdf/usd/Conversions.hh"
+#include "sdf/usd/UsdError.hh"
+#include "../Conversions.hh"
 
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -73,6 +78,7 @@ void GetInertial(
   float mass;
   pxr::GfVec3f centerOfMass;
   pxr::GfVec3f diagonalInertia;
+  pxr::GfQuatf principalAxes;
 
   ignition::math::MassMatrix3d massMatrix;
 
@@ -84,21 +90,40 @@ void GetInertial(
       massAttribute.Get(&mass);
 
       if (pxr::UsdAttribute centerOfMassAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:centerOfMass")))
+      {
         centerOfMassAttribute.Get(&centerOfMass);
-
       }
+
       if (pxr::UsdAttribute diagonalInertiaAttribute =
-        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia"))) {
+        _prim.GetAttribute(pxr::TfToken("physics:diagonalInertia")))
+      {
         diagonalInertiaAttribute.Get(&diagonalInertia);
       }
 
+      if (pxr::UsdAttribute principalAxesAttribute =
+        _prim.GetAttribute(pxr::TfToken("physics:principalAxes")))
+      {
+        principalAxesAttribute.Get(&principalAxes);
+      }
+
+      // Added a diagonal inertia to avoid crash with the physics engine
+      if (diagonalInertia == pxr::GfVec3f(0, 0, 0))
+      {
+        diagonalInertia = pxr::GfVec3f(0.0001, 0.0001, 0.0001);
+      }
+
+      // Added a mass to avoid crash with the physics engine
       if (mass < 0.0001)
       {
         mass = 0.1;
       }
 
       massMatrix.SetMass(mass);
+
+      // TODO(ahcorde) Figure out how to use PrincipalMoments and
+      // PrincipalAxesOffset: see
+      // https://github.com/ignitionrobotics/sdformat/pull/902#discussion_r840905534
       massMatrix.SetDiagonalMoments(
         ignition::math::Vector3d(
           diagonalInertia[0],
@@ -125,9 +150,9 @@ void GetInertial(
 
 //////////////////////////////////////////////////
 /// \brief Create the directory based on the USD path
-/// \param[in] _primPath Path of the prim
+/// \param[in] _primPath Reference to the USD prim
 /// \return A string with the path
-std::string directoryFromUSDPath(std::string &_primPath)
+std::string directoryFromUSDPath(const std::string &_primPath)
 {
   std::vector<std::string> tokensChild =
     ignition::common::split(_primPath, "/");
@@ -146,7 +171,7 @@ std::string directoryFromUSDPath(std::string &_primPath)
 
 //////////////////////////////////////////////////
 /// \brief Get the material name of the prim
-/// \param[in] _prim Path of the prim
+/// \param[in] _prim Reference to the USD prim
 /// \return A string with the material name
 std::string ParseMaterialName(const pxr::UsdPrim &_prim)
 {
@@ -159,7 +184,7 @@ std::string ParseMaterialName(const pxr::UsdPrim &_prim)
 
   pxr::SdfPathVector paths;
   directBindingRel.GetTargets(&paths);
-  for (auto p: paths)
+  for (const auto & p : paths)
   {
     std::vector<std::string> tokensMaterial =
       ignition::common::split(pxr::TfStringify(p), "/");
@@ -174,7 +199,7 @@ std::string ParseMaterialName(const pxr::UsdPrim &_prim)
 
 //////////////////////////////////////////////////
 /// \brief Parse USD mesh subsets
-/// \param[in] _prim Path of the prim
+/// \param[in] _prim Reference to the USD prim
 /// \param[in] _link Current link
 /// \param[in] _subMesh submesh to add the subsets
 /// \param[in] _meshGeom Mesh geom
@@ -186,11 +211,8 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
   ignition::common::SubMesh &_subMesh,
   sdf::Mesh &_meshGeom,
   ignition::math::Vector3d &_scale,
-  USDData &_usdData)
+  const USDData &_usdData)
 {
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
-    _usdData.FindStage(_prim.GetPath().GetName());
-
   int numSubMeshes = 0;
 
   for (const auto & child : _prim.GetChildren())
@@ -282,21 +304,26 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 
 //////////////////////////////////////////////////
 /// \brief Parse USD mesh
-/// \param[in] _prim Path of the prim
+/// \param[in] _prim Reference to the USD prim
 /// \param[in] _link Current link
 /// \param[in] _vis sdf visual
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _usdData metadata of the USD file
-ignition::math::Pose3d ParseMesh(
+/// \return UsdErrors, which is a list of UsdError objects. An empty list means
+/// that no errors occurred when parsing the USD mesh
+UsdErrors ParseMesh(
   const pxr::UsdPrim &_prim,
   sdf::Link *_link,
   sdf::Visual &_vis,
   sdf::Geometry &_geom,
   ignition::math::Vector3d &_scale,
-  USDData &_usdData)
+  const USDData &_usdData,
+  ignition::math::Pose3d &_pose)
 {
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
+  UsdErrors errors;
+
+  const std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(_prim.GetPath().GetName());
 
   double metersPerUnit = data.second->MetersPerUnit();
@@ -320,26 +347,35 @@ ignition::math::Pose3d ParseMesh(
     _prim.GetAttribute(pxr::TfToken("primvars:st_0")).Get(&textCoords);
   }
 
-  std::vector<unsigned int> indexes = PolygonToTriangles(
-    faceVertexIndices, faceVertexCounts, points);
+  std::vector<unsigned int> indexes;
+  errors = PolygonToTriangles(
+    faceVertexIndices, faceVertexCounts, indexes);
+  if (!errors.empty())
+  {
+    errors.emplace_back(UsdErrorCode::USD_TO_SDF_POLYGON_PARSING_ERROR,
+      "Unable to parse polygon in path [" + pxr::TfStringify(_prim.GetPath())
+      + "]");
+    return errors;
+  }
+
   for (unsigned int i = 0; i < indexes.size(); ++i)
   {
     subMesh.AddIndex(indexes[i]);
   }
 
-  for (auto & textCoord: textCoords)
+  for (const auto & textCoord : textCoords)
   {
     subMesh.AddTexCoord(textCoord[0], (1 - textCoord[1]));
   }
 
-  for (auto & point: points)
+  for (const auto & point : points)
   {
     ignition::math::Vector3d v =
       ignition::math::Vector3d(point[0], point[1], point[2]) * metersPerUnit;
     subMesh.AddVertex(v);
   }
 
-  for (auto & normal: normals)
+  for (const auto & normal : normals)
   {
     subMesh.AddNormal(normal[0], normal[1], normal[2]);
   }
@@ -359,6 +395,9 @@ ignition::math::Pose3d ParseMesh(
   {
     GetTransform(_prim, _usdData, pose, scale, _link->Name());
   }
+
+  _pose = pose;
+
   meshGeom.SetScale(scale * _scale);
 
   std::string primName = pxr::TfStringify(_prim.GetPath());
@@ -383,7 +422,6 @@ ignition::math::Pose3d ParseMesh(
     if (it != _usdData.Materials().end())
     {
       _vis.SetMaterial(it->second);
-      // link->visual_array_material.push_back(it->second);
       std::shared_ptr<ignition::common::Material> matCommon =
         std::make_shared<ignition::common::Material>();
       convert(it->second, *matCommon.get());
@@ -398,7 +436,6 @@ ignition::math::Pose3d ParseMesh(
 
     _link->AddVisual(_vis);
 
-    // link->visual_array_material_name.push_back(nameMaterial);
     mesh.AddSubMesh(subMesh);
 
     if (ignition::common::createDirectories(directoryMesh))
@@ -410,23 +447,24 @@ ignition::math::Pose3d ParseMesh(
       exporter.Export(&mesh, directoryMesh, false);
     }
   }
-  return pose;
+
+  return errors;
 }
 
 //////////////////////////////////////////////////
 /// \brief Parse USD cube
-/// \param[in] _prim Path of the prim
+/// \param[in] _prim Reference to the USD prim
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _metersPerUnit meter per unit of the stage
 void ParseCube(const pxr::UsdPrim &_prim,
   sdf::Geometry &_geom,
-  ignition::math::Vector3d &_scale,
-  const double _metersPerUnit)
+  const ignition::math::Vector3d &_scale,
+  double _metersPerUnit)
 {
   double size;
-  auto variant_cylinder = pxr::UsdGeomCube(_prim);
-  variant_cylinder.GetSizeAttr().Get(&size);
+  auto variant_cube = pxr::UsdGeomCube(_prim);
+  variant_cube.GetSizeAttr().Get(&size);
 
   size = size * _metersPerUnit;
 
@@ -442,14 +480,14 @@ void ParseCube(const pxr::UsdPrim &_prim,
 
 //////////////////////////////////////////////////
 /// \brief Parse USD sphere
-/// \param[in] _prim Path of the prim
+/// \param[in] _prim Reference to the USD prim
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _metersPerUnit meter per unit of the stage
 void ParseSphere(const pxr::UsdPrim &_prim,
   sdf::Geometry &_geom,
-  ignition::math::Vector3d &_scale,
-  const double _metersPerUnit)
+  const ignition::math::Vector3d &_scale,
+  double _metersPerUnit)
 {
   double radius;
   auto variant_sphere = pxr::UsdGeomSphere(_prim);
@@ -463,7 +501,7 @@ void ParseSphere(const pxr::UsdPrim &_prim,
 
 //////////////////////////////////////////////////
 /// \brief Parse USD cylinder
-/// \param[in] _prim Path of the prim
+/// \param[in] _prim Reference to the USD prim
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _metersPerUnit meter per unit of the stage
@@ -471,7 +509,7 @@ void ParseCylinder(
   const pxr::UsdPrim &_prim,
   sdf::Geometry &_geom,
   const ignition::math::Vector3d &_scale,
-  const double _metersPerUnit)
+  double _metersPerUnit)
 {
   auto variant_cylinder = pxr::UsdGeomCylinder(_prim);
   double radius;
@@ -489,27 +527,26 @@ void ParseCylinder(
 }
 
 //////////////////////////////////////////////////
-sdf::Link * ParseUSDLinks(
+UsdErrors ParseUSDLinks(
   const pxr::UsdPrim &_prim,
   const std::string &_nameLink,
-  sdf::Link *_link,
-  USDData &_usdData,
+  std::optional<sdf::Link> &_link,
+  const USDData &_usdData,
   ignition::math::Vector3d &_scale)
 {
-  std::string primNameStr = _prim.GetPath().GetName();
-  std::string primPathStr = pxr::TfStringify(_prim.GetPath());
-  std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
+  UsdErrors errors;
+  const std::string primNameStr = _prim.GetPath().GetName();
+  const std::string primPathStr = pxr::TfStringify(_prim.GetPath());
+  const std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
 
-  std::pair<std::string, std::shared_ptr<USDStage>> data =
+  const std::pair<std::string, std::shared_ptr<USDStage>> data =
     _usdData.FindStage(primNameStr);
 
-  double metersPerUnit = data.second->MetersPerUnit();
-
   // Is this a new link ?
-  if (_link == nullptr)
+  if (!_link)
   {
-    _link = new sdf::Link();
-    _link->SetName(_nameLink);
+    _link = sdf::Link();
+    _link->SetName(ignition::common::basename(_nameLink));
 
     // USD define visual inside other visuals or links
     // This loop allow to find the link for a specific visual
@@ -529,7 +566,7 @@ sdf::Link * ParseUSDLinks(
     pxr::UsdPrim tmpPrim = _prim;
     if (!nameOfLink.empty())
     {
-      while(tmpPrim)
+      while (tmpPrim)
       {
         if (pxr::TfStringify(tmpPrim.GetPath()) == nameOfLink)
         {
@@ -542,6 +579,10 @@ sdf::Link * ParseUSDLinks(
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
     GetTransform(tmpPrim, _usdData, pose, scale, "");
+    // This is a special case when a geometry is defined in the higher level
+    // of the path. we should only set the position if the path at least has
+    // more than 1 level.
+    // TODO(ahcorde) Review this code and improve this logic
     size_t nSlash = std::count(_nameLink.begin(), _nameLink.end(), '/');
     if (nSlash > 1)
       _link->SetRawPose(pose);
@@ -551,7 +592,7 @@ sdf::Link * ParseUSDLinks(
   // If the schema is a rigid body use this name instead.
   if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>())
   {
-    _link->SetName(primPathStr);
+    _link->SetName(ignition::common::basename(primPathStr));
   }
 
   ignition::math::Inertiald noneInertial = {{1.0,
@@ -594,38 +635,52 @@ sdf::Link * ParseUSDLinks(
       || pxr::KindRegistry::IsA(kindOfSchema, pxr::KindTokens->model)
       || !collisionEnabled)
     {
+      double metersPerUnit = data.second->MetersPerUnit();
+
       if (_prim.IsA<pxr::UsdGeomSphere>())
       {
         ParseSphere(_prim, geom, _scale, metersPerUnit);
         vis.SetName("visual_sphere");
         vis.SetGeom(geom);
+        _link->AddVisual(vis);
       }
       else if (_prim.IsA<pxr::UsdGeomCylinder>())
       {
         ParseCylinder(_prim, geom, _scale, metersPerUnit);
         vis.SetName("visual_cylinder");
         vis.SetGeom(geom);
+        _link->AddVisual(vis);
       }
       else if (_prim.IsA<pxr::UsdGeomCube>())
       {
         ParseCube(_prim, geom, _scale, metersPerUnit);
         vis.SetName("visual_box");
         vis.SetGeom(geom);
+        _link->AddVisual(vis);
       }
       else if (_prim.IsA<pxr::UsdGeomMesh>())
       {
-        ParseMesh(
-          _prim, _link, vis, geom, _scale, _usdData);
+        ignition::math::Pose3d poseTmp;
+        errors = ParseMesh(
+          _prim, &_link.value(), vis, geom, _scale, _usdData, poseTmp);
+        if (!errors.empty())
+        {
+          errors.emplace_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing mesh"));
+          return errors;
+        }
       }
     }
 
     pxr::TfTokenVector schemasCollision = _prim.GetAppliedSchemas();
     bool physxCollisionAPIenable = false;
-    for (auto & token : schemasCollision)
+    for (const auto & token : schemasCollision)
     {
       if (std::string(token.GetText()) == "PhysxCollisionAPI")
       {
         physxCollisionAPIenable = true;
+        break;
       }
     }
 
@@ -641,6 +696,8 @@ sdf::Link * ParseUSDLinks(
       ignition::math::Pose3d poseCol;
       ignition::math::Vector3d scaleCol(1, 1, 1);
       GetTransform(_prim, _usdData, poseCol, scaleCol, _link->Name());
+
+      double metersPerUnit = data.second->MetersPerUnit();
 
       if (_prim.IsA<pxr::UsdGeomSphere>())
       {
@@ -663,9 +720,17 @@ sdf::Link * ParseUSDLinks(
       else if (_prim.IsA<pxr::UsdGeomMesh>())
       {
         sdf::Visual visTmp;
-        ignition::math::Pose3d pose = ParseMesh(
-          _prim, _link, visTmp, colGeom, scaleCol, _usdData);
-        col.SetRawPose(pose);
+        ignition::math::Pose3d poseTmp;
+        errors = ParseMesh(
+          _prim, &_link.value(), visTmp, colGeom, scaleCol, _usdData, poseTmp);
+        if (!errors.empty())
+        {
+          errors.emplace_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing mesh"));
+          return errors;
+        }
+        col.SetRawPose(poseTmp);
         col.SetGeom(colGeom);
       }
       else if (primType == "Plane")
@@ -686,8 +751,7 @@ sdf::Link * ParseUSDLinks(
     }
 
   }
-
-  return _link;
+  return errors;
 }
 }
 }

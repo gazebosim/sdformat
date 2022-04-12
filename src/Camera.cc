@@ -73,6 +73,9 @@ class sdf::Camera::Implementation
   /// \brief Image format.
   public: PixelFormatType pixelFormat{PixelFormatType::RGB_INT8};
 
+  /// \brief Anti-aliasing value.
+  public: uint32_t antiAliasingValue{4};
+
   /// \brief Near clip distance.
   public: double nearClip{0.1};
 
@@ -266,6 +269,10 @@ Errors Camera::Load(ElementPtr _sdf)
       errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Camera sensor <image><format> has invalid value of " + format});
     }
+
+    this->dataPtr->antiAliasingValue =
+        elem->Get<uint32_t>("anti_aliasing",
+            this->dataPtr->antiAliasingValue).first;
   }
   else
   {
@@ -498,6 +505,18 @@ std::string Camera::PixelFormatStr() const
 void Camera::SetPixelFormatStr(const std::string &_fmt)
 {
   this->dataPtr->pixelFormat = ConvertPixelFormat(_fmt);
+}
+
+//////////////////////////////////////////////////
+uint32_t Camera::AntiAliasingValue() const
+{
+  return this->dataPtr->antiAliasingValue;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetAntiAliasingValue(uint32_t _antiAliasingValue)
+{
+  this->dataPtr->antiAliasingValue = _antiAliasingValue;
 }
 
 //////////////////////////////////////////////////
@@ -1043,6 +1062,9 @@ sdf::ElementPtr Camera::ToElement() const
   imageElem->GetElement("width")->Set<double>(this->ImageWidth());
   imageElem->GetElement("height")->Set<double>(this->ImageHeight());
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
+  imageElem->GetElement("anti_aliasing")->Set<uint32_t>(
+      this->AntiAliasingValue());
+
   sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
   clipElem->GetElement("far")->Set<double>(this->FarClip());

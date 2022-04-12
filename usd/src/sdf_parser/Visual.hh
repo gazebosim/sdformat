@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_SDF_PARSER_LIGHT_HH_
-#define SDF_USD_SDF_PARSER_LIGHT_HH_
+#ifndef SDF_USD_SDF_PARSER_VISUAL_HH_
+#define SDF_USD_SDF_PARSER_VISUAL_HH_
 
 #include <string>
 
@@ -29,10 +29,9 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include "sdf/Visual.hh"
 #include "sdf/config.hh"
-#include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
-#include "sdf/Light.hh"
 
 namespace sdf
 {
@@ -41,17 +40,16 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Parse an SDF light into a USD stage.
-    /// \param[in] _light The SDF light to parse.
+    /// \brief Parse an SDF visual into a USD stage.
+    /// \param[in] _visual The SDF visual to parse.
     /// \param[in] _stage The stage that should contain the USD representation
-    /// of _light.
-    /// \param[in] _path The USD path of the parsed light in _stage, which must
+    /// of _visual.
+    /// \param[in] _path The USD path of the parsed visual in _stage, which must
     /// be a valid USD path.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE ParseSdfLight(
-        const sdf::Light &_light,
-        pxr::UsdStageRefPtr &_stage,
+    UsdErrors ParseSdfVisual(
+        const sdf::Visual &_visual, pxr::UsdStageRefPtr &_stage,
         const std::string &_path);
   }
   }

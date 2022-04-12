@@ -62,7 +62,8 @@ namespace usd
       }
       else
       {
-        magnitude = 9.8;
+        // Use the default value for the gravity if it's not defined.
+        magnitude = 9.8f;
       }
     }
     _world.SetGravity(worldGravity * magnitude);
