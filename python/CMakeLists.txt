@@ -38,7 +38,11 @@ endfunction()
 
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
+  src/sdf/pyBox.cc
   src/sdf/pyError.cc
+  src/sdf/pyMesh.cc
+  src/sdf/pyParserConfig.cc
+  src/sdf/pySphere.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -48,15 +52,28 @@ target_link_libraries(sdformat PRIVATE
 configure_build_install_location(sdformat)
 
 if (BUILD_TESTING)
+  pybind11_add_module(sdformattest SHARED
+    test/_ignition_sdformattest_pybind11.cc
+  )
+
+  target_link_libraries(sdformattest PRIVATE
+    ${PROJECT_LIBRARY_TARGET_NAME}
+    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+  )
+
   set(python_tests
+    pyBox_TEST
     pyError_TEST
+    pyMesh_TEST
+    pyParserConfig_TEST
+    pySphere_TEST
   )
 
   foreach (test ${python_tests})
     add_test(NAME ${test}.py COMMAND
       "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
     set(_env_vars)
-    list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib")
+    list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib:$ENV{PYTHONPATH}")
     list(APPEND _env_vars "LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}:$ENV{LD_LIBRARY_PATH}")
     set_tests_properties(${test}.py PROPERTIES
       ENVIRONMENT "${_env_vars}")
