@@ -15,7 +15,7 @@
  *
  */
 
-#include "sdf/usd/Conversions.hh"
+#include "Conversions.hh"
 
 #include <ignition/common/Pbr.hh>
 
@@ -43,7 +43,14 @@ namespace sdf
       out.SetNormalMap(pbr->NormalMap());
       sdf::Pbr pbrOut;
       sdf::PbrWorkflow pbrWorkflow;
-      pbrWorkflow.SetAlbedoMap(pbr->AlbedoMap());
+      if (!pbr->AlbedoMap().empty())
+      {
+        pbrWorkflow.SetAlbedoMap(pbr->AlbedoMap());
+      }
+      else
+      {
+        pbrWorkflow.SetAlbedoMap(_in->TextureImage());
+      }
       pbrWorkflow.SetMetalnessMap(pbr->MetalnessMap());
       pbrWorkflow.SetEmissiveMap(pbr->EmissiveMap());
       pbrWorkflow.SetRoughnessMap(pbr->RoughnessMap());
@@ -66,13 +73,15 @@ namespace sdf
           pbr->NormalMap(), sdf::NormalMapSpace::OBJECT);
       }
 
-      if (pbr->Type() == ignition::common::PbrType::METAL)
+      if (pbr->Type() == ignition::common::PbrType::SPECULAR)
       {
-        pbrOut.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
-      }
-      else if (pbr->Type() == ignition::common::PbrType::SPECULAR)
-      {
+        pbrWorkflow.SetType(sdf::PbrWorkflowType::SPECULAR);
         pbrOut.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, pbrWorkflow);
+      }
+      else
+      {
+        pbrWorkflow.SetType(sdf::PbrWorkflowType::METAL);
+        pbrOut.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
       }
       out.SetPbrMaterial(pbrOut);
     }

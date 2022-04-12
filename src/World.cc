@@ -856,7 +856,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr World::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("world.sdf", elem);
@@ -874,7 +874,7 @@ sdf::ElementPtr World::ToElement(bool _useIncludeTag) const
 
   // Models
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(_useIncludeTag), true);
+    elem->InsertElement(model.ToElement(_config), true);
 
   // Actors
   for (const sdf::Actor &actor : this->dataPtr->actors)

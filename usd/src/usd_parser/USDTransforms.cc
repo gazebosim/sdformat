@@ -16,14 +16,18 @@
 */
 
 #include "sdf/usd/usd_parser/USDTransforms.hh"
-#include "sdf/usd/usd_parser/USDData.hh"
+
+#include <optional>
+#include <utility>
 
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 
+#include "sdf/usd/usd_parser/USDData.hh"
+
 namespace sdf
 {
-// Inline bracke to help doxygen filtering.
+// Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
@@ -48,20 +52,10 @@ class UDSTransforms::Implementation
   public: ignition::math::Vector3d scale{1, 1, 1};
 
   /// \brief Rotation of the schema
-  public: std::vector<ignition::math::Quaterniond> q;
+  public: std::optional<ignition::math::Quaterniond> q = std::nullopt;
 
-  /// \brief Translatio of the schema
+  /// \brief Translation of the schema
   public: ignition::math::Vector3d translate{0, 0, 0};
-
-  /// \brief True if there is a rotation ZYX defined or false otherwise
-  public: bool isRotationZYX = false;
-
-  /// \brief True if there is a rotation XYZ defined or false otherwise
-  public: bool isRotationXYZ = false;
-
-  /// \brief True if there is a rotation (as a quaterion) defined
-  /// or false otherwise
-  public: bool isRotation = false;
 };
 
 /////////////////////////////////////////////////
@@ -71,26 +65,25 @@ UDSTransforms::UDSTransforms()
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d UDSTransforms::Translate()
+const ignition::math::Vector3d UDSTransforms::Translation() const
 {
   return this->dataPtr->translate;
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d UDSTransforms::Scale()
+const ignition::math::Vector3d UDSTransforms::Scale() const
 {
   return this->dataPtr->scale;
 }
 
 //////////////////////////////////////////////////
-std::vector<ignition::math::Quaterniond>
-  UDSTransforms::Rotations()
+const std::optional<ignition::math::Quaterniond> UDSTransforms::Rotation() const
 {
   return this->dataPtr->q;
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::SetTranslate(
+void UDSTransforms::SetTranslation(
   const ignition::math::Vector3d &_translate)
 {
   this->dataPtr->translate = _translate;
@@ -104,52 +97,24 @@ void UDSTransforms::SetScale(
 }
 
 //////////////////////////////////////////////////
-void UDSTransforms::AddRotation(
+void UDSTransforms::SetRotation(
   const ignition::math::Quaterniond &_q)
 {
-  this->dataPtr->q.push_back(_q);
+  this->dataPtr->q = _q;
 }
 
 //////////////////////////////////////////////////
-bool UDSTransforms::RotationZYX()
-{
-  return this->dataPtr->isRotationZYX;
-}
-
-//////////////////////////////////////////////////
-bool UDSTransforms::RotationXYZ()
-{
-  return this->dataPtr->isRotationXYZ;
-}
-
-//////////////////////////////////////////////////
-bool UDSTransforms::Rotation()
-{
-  return this->dataPtr->isRotation;
-}
-
-//////////////////////////////////////////////////
-void UDSTransforms::SetRotationZYX(bool _rotationZYX)
-{
-  this->dataPtr->isRotationZYX = _rotationZYX;
-}
-
-//////////////////////////////////////////////////
-void UDSTransforms::SetRotationXYZ(bool _rotationXYZ)
-{
-  this->dataPtr->isRotationXYZ = _rotationXYZ;
-}
-
-//////////////////////////////////////////////////
-void UDSTransforms::SetRotation(bool _rotation)
-{
-  this->dataPtr->isRotation = _rotation;
-}
-
-//////////////////////////////////////////////////
+/// \brief This function will parse all the parent transforms of a prim.
+/// \param[in] _prim Initial prim to read the transform
+/// \param[in] _usdData USDData structure to get info about the prim, for
+/// example: metersperunit
+/// \param[out] _tfs A vector with all the transforms
+/// \param[out] _scale The scale of the prims
+/// \param[in] _schemaToStop Name of the prim where the loop will stop
+/// reading transforms
 void GetAllTransforms(
   const pxr::UsdPrim &_prim,
-  USDData &_usdData,
+  const USDData &_usdData,
   std::vector<ignition::math::Pose3d> &_tfs,
   ignition::math::Vector3d &_scale,
   const std::string &_schemaToStop)
@@ -159,8 +124,8 @@ void GetAllTransforms(
   std::string upAxis = "Y";
 
   // this assumes that there can only be one stage
-  auto stageData = _usdData.FindStage(parent.GetPath().GetName());
-  if (stageData.second != nullptr) {
+  const auto stageData = _usdData.FindStage(parent.GetPath().GetName());
+  if (stageData.second) {
     metersPerUnit = stageData.second->MetersPerUnit();
     upAxis = stageData.second->UpAxis();
   }
@@ -177,7 +142,7 @@ void GetAllTransforms(
     ignition::math::Pose3d pose;
     _scale *= t.Scale();
 
-    pose.Pos() = t.Translate() * metersPerUnit;
+    pose.Pos() = t.Translation() * metersPerUnit;
     // scaling is lost when we convert to pose, so we pre-scale the
     // translation to make them match the scaled values.
     if (!_tfs.empty()) {
@@ -188,37 +153,19 @@ void GetAllTransforms(
         child.Pos().Z() * t.Scale()[2]);
     }
 
-    if (!t.RotationZYX() && !t.RotationXYZ())
+    if (t.Rotation())
     {
-      if (t.Rotation())
-      {
-        pose.Rot() = t.Rotations()[0];
-      }
-      _tfs.push_back(pose);
+      pose.Rot() = t.Rotation().value();
     }
-    else
-    {
-      ignition::math::Pose3d poseZ = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0), t.Rotations()[2]);
-      ignition::math::Pose3d poseY = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0), t.Rotations()[1]);
-      ignition::math::Pose3d poseX = ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0, 0), t.Rotations()[0]);
-
-      ignition::math::Pose3d poseT = ignition::math::Pose3d(
-        t.Translate() * metersPerUnit,
-        ignition::math::Quaterniond(1, 0, 0, 0));
-
-      _tfs.push_back(poseZ);
-      _tfs.push_back(poseY);
-      _tfs.push_back(poseX);
-      _tfs.push_back(poseT);
-    }
+    _tfs.push_back(pose);
     parent = parent.GetParent();
   }
 
   if (upAxis == "Y")
   {
+    // Add additional rotation to match with Z up Axis.
+    // TODO(anyone) handle upAxis == "X". This is a case that is rarely
+    // used by other renderers
     ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
       ignition::math::Vector3d(0, 0, 0),
       ignition::math::Quaterniond(IGN_PI_2, 0, 0));
@@ -229,7 +176,7 @@ void GetAllTransforms(
 //////////////////////////////////////////////////
 void GetTransform(
   const pxr::UsdPrim &_prim,
-  USDData &_usdData,
+  const USDData &_usdData,
   ignition::math::Pose3d &_pose,
   ignition::math::Vector3d &_scale,
   const std::string &_schemaToStop)
@@ -256,7 +203,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
 
   pxr::VtTokenArray xformOpOrder;
   transforms.Get(&xformOpOrder);
-  for (auto & op : xformOpOrder)
+  for (const auto &op : xformOpOrder)
   {
     if (op == kXFormOpScale)
     {
@@ -269,9 +216,9 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       {
         pxr::GfVec3d scaleTmp(1, 1, 1);
         attribute.Get(&scaleTmp);
-        scale[0] = scaleTmp[0];
-        scale[1] = scaleTmp[1];
-        scale[2] = scaleTmp[2];
+        scale[0] = static_cast<float>(scaleTmp[0]);
+        scale[1] = static_cast<float>(scaleTmp[1]);
+        scale[2] = static_cast<float>(scaleTmp[2]);
       }
       t.SetScale(ignition::math::Vector3d(scale[0], scale[1], scale[2]));
     }
@@ -282,12 +229,10 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       if (op == kXFormOpRotateZYX)
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateZYX));
-        t.SetRotationZYX(true);
       }
       else
       {
         attribute = _prim.GetAttribute(pxr::TfToken(kXFormOpRotateXYZ));
-        t.SetRotationXYZ(true);
       }
       if (attribute.GetTypeName().GetCPPTypeName() == kGfVec3fString)
       {
@@ -297,9 +242,9 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       {
         pxr::GfVec3d rotationEulerTmp(0, 0, 0);
         attribute.Get(&rotationEulerTmp);
-        rotationEuler[0] = rotationEulerTmp[0];
-        rotationEuler[1] = rotationEulerTmp[1];
-        rotationEuler[2] = rotationEulerTmp[2];
+        rotationEuler[0] = static_cast<float>(rotationEulerTmp[0]);
+        rotationEuler[1] = static_cast<float>(rotationEulerTmp[1]);
+        rotationEuler[2] = static_cast<float>(rotationEulerTmp[2]);
       }
       ignition::math::Quaterniond qX, qY, qZ;
       ignition::math::Angle angleX(IGN_DTOR(rotationEuler[0]));
@@ -309,10 +254,14 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       qY = ignition::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
       qZ = ignition::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
 
-      t.AddRotation(qX);
-      t.AddRotation(qY);
-      t.AddRotation(qZ);
-      t.SetRotation(true);
+      // TODO(ahcorde) This part should be reviewed, revisit how rotateXYZ
+      // and rotateZYX are handle.
+      // Related issue https://github.com/ignitionrobotics/sdformat/issues/926
+      // if (op == kXFormOpRotateZYX)
+      // {
+      //   std::swap(angleX, angleZ);
+      // }
+      t.SetRotation((qX * qY) * qZ);
     }
     else if (op == kXFormOpTranslate)
     {
@@ -325,11 +274,11 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       {
         pxr::GfVec3d translateTmp(0, 0, 0);
         attribute.Get(&translateTmp);
-        translate[0] = translateTmp[0];
-        translate[1] = translateTmp[1];
-        translate[2] = translateTmp[2];
+        translate[0] = static_cast<float>(translateTmp[0]);
+        translate[1] = static_cast<float>(translateTmp[1]);
+        translate[2] = static_cast<float>(translateTmp[2]);
       }
-      t.SetTranslate(ignition::math::Vector3d(
+      t.SetTranslation(ignition::math::Vector3d(
         translate[0],
         translate[1],
         translate[2]));
@@ -341,7 +290,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       {
         attribute.Get(&rotationQuad);
       }
-      else if (attribute.GetTypeName().GetCPPTypeName() == kGfQuatfString)
+      else if (attribute.GetTypeName().GetCPPTypeName() == kGfQuatdString)
       {
         pxr::GfQuatd rotationQuadTmp;
         attribute.Get(&rotationQuadTmp);
@@ -356,13 +305,12 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotationQuad.GetImaginary()[0],
         rotationQuad.GetImaginary()[1],
         rotationQuad.GetImaginary()[2]);
-      t.AddRotation(q);
-      t.SetRotation(true);
+      t.SetRotation(q);
     }
 
     if (op == kXFormOpTransform)
     {
-      // FIXME: Shear is lost (does sdformat support it?).
+      // TODO(koonpeng) Shear is lost (does sdformat support it?).
       pxr::GfMatrix4d transform;
       _prim.GetAttribute(pxr::TfToken(kXFormOpTransform)).Get(&transform);
       const auto rot = transform.RemoveScaleShear();
@@ -374,7 +322,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         scaleShear[2][2]));
 
       const auto rotQuat = rot.ExtractRotationQuat();
-      t.SetTranslate(ignition::math::Vector3d(
+      t.SetTranslation(ignition::math::Vector3d(
         transform[3][0],
         transform[3][1],
         transform[3][2]));
@@ -384,8 +332,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotQuat.GetImaginary()[1],
         rotQuat.GetImaginary()[2]
       );
-      t.AddRotation(q);
-      t.SetRotation(true);
+      t.SetRotation(q);
     }
   }
   return t;

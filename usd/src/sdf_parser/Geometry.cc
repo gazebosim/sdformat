@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Geometry.hh"
+#include "Geometry.hh"
 
 #include <string>
 
@@ -45,7 +45,6 @@
 #include <pxr/usd/usdGeom/sphere.h>
 #include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
-#include <pxr/usd/usdPhysics/collisionAPI.h>
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 #pragma pop_macro ("__DEPRECATED")
@@ -58,9 +57,9 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
-#include "sdf/usd/Conversions.hh"
-#include "sdf/usd/sdf_parser/Material.hh"
 
+#include "Material.hh"
+#include "../Conversions.hh"
 #include "../UsdUtils.hh"
 
 namespace sdf
@@ -598,40 +597,6 @@ namespace usd
         errors.push_back(UsdError(
               sdf::Error(sdf::ErrorCode::ATTRIBUTE_INCORRECT_TYPE,
                 "Geometry type is either invalid or not supported")));
-    }
-
-    // Set the collision for this geometry.
-    // In SDF, the collisions of a link are defined separately from
-    // the link's visual geometries (in case a user wants to define a simpler
-    // collision, for example). In USD, the collision can be attached to the
-    // geometry so that the collision shape is the geometry shape.
-    // The current approach that's taken here (attaching a collision to the
-    // geometry) assumes that for every visual in a link, the visual should have
-    // a collision that matches its geometry. This approach currently ignores
-    // collisions defined in a link since it instead creates collisions for a
-    // link that match a link's visual geometries.
-    // TODO(adlarkin) support the option of a different collision shape (i.e.,
-    // don't ignore collisions defined in a link),
-    // especially for meshes - here's more information about how to do this:
-    // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html?highlight=collision#turning-meshes-into-shapes
-    if (errors.empty())
-    {
-      auto geomPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));
-      if (!geomPrim)
-      {
-        errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
-          "Internal error: unable to get prim at path ["
-          + _path + "], but a geom prim should exist at this path"));
-        return errors;
-      }
-
-      if (!pxr::UsdPhysicsCollisionAPI::Apply(geomPrim))
-      {
-        errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
-          "Internal error: unable to apply a collision to the prim at path ["
-          + _path + "]"));
-        return errors;
-      }
     }
 
     return errors;

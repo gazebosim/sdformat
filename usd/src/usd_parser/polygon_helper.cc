@@ -27,37 +27,42 @@ inline namespace SDF_VERSION_NAMESPACE {
 //
 namespace usd
 {
-  std::vector<unsigned int> PolygonToTriangles(
-      pxr::VtIntArray &_faceVertexIndices,
-      pxr::VtIntArray &_faceVertexCounts,
-      pxr::VtArray<pxr::GfVec3f> &_points)
+  UsdErrors PolygonToTriangles(
+      const pxr::VtIntArray &_faceVertexIndices,
+      const pxr::VtIntArray &_faceVertexCounts,
+      std::vector<unsigned int> &_triangles)
   {
-    // TODO: Use more robust algorithms.
+    UsdErrors errors;
+    // TODO(koon peng) Use more robust algorithms.
     // For reference, blender supports "ear-clipping", and "Beauty".
-    // ref: https://blender.stackexchange.com/questions/215553/what-algorithm-is-used-for-beauty-triangulation
+    // https://blender.stackexchange.com/questions/215553/what-algorithm-is-used-for-beauty-triangulation
     // ref: https://en.wikipedia.org/wiki/Polygon_triangulation
     size_t count = 0;
     for (const auto &vCount : _faceVertexCounts)
     {
       count += vCount - 2;
     }
-    std::vector<unsigned int> triangles;
-    triangles.reserve(count * 3);
+    _triangles.reserve(count * 3);
 
     size_t cur = 0;
     for (const auto &vCount : _faceVertexCounts)
     {
       for (size_t i = cur + 2; i < cur + vCount; i++)
       {
-        triangles.emplace_back(_faceVertexIndices[cur]);
-        triangles.emplace_back(_faceVertexIndices[i - 1]);
-        triangles.emplace_back(_faceVertexIndices[i]);
+        _triangles.emplace_back(_faceVertexIndices[cur]);
+        _triangles.emplace_back(_faceVertexIndices[i - 1]);
+        _triangles.emplace_back(_faceVertexIndices[i]);
       }
       cur += vCount;
     }
-    assert(triangles.size() == count * 3);
 
-    return triangles;
+    if (_triangles.size() != count * 3)
+    {
+      errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_POLYGON_PARSING_ERROR,
+            "Unable to parse the polygon mesh"));
+    }
+
+    return errors;
   }
 }
 }

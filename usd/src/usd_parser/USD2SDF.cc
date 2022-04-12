@@ -22,7 +22,6 @@
 #include "USDWorld.hh"
 
 #include "sdf/Error.hh"
-#include "sdf/Light.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 

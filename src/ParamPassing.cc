@@ -184,7 +184,8 @@ void updateParams(const ParserConfig &_config,
     }
     else if (actionStr == "replace")
     {
-      ElementPtr newElem = initElementDescription(childElemXml, _errors);
+      ElementPtr newElem =
+        initElementDescription(childElemXml, _config, _errors);
       if (!newElem)
         continue;
 
@@ -334,12 +335,13 @@ ElementPtr getElementByName(const ElementPtr _elem,
 
 //////////////////////////////////////////////////
 ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
+                                  const ParserConfig &_config,
                                   Errors &_errors)
 {
   ElementPtr elemDesc = std::make_shared<Element>();
   std::string filename = std::string(_xml->Name()) + ".sdf";
 
-  if (!initFile(filename, elemDesc))
+  if (!initFile(filename, _config, elemDesc))
   {
     // TODO(jenn) not sure if we should load the element anyway
     // (e.g., user created their own element), maybe future implementation
@@ -360,7 +362,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
                                   ElementPtr _elem,
                                   Errors &_errors)
 {
-  ElementPtr elemDesc = initElementDescription(_childrenXml, _errors);
+  ElementPtr elemDesc = initElementDescription(_childrenXml, _config, _errors);
   if (!elemDesc)
     return;
 
@@ -504,7 +506,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
 void add(const ParserConfig &_config, const std::string &_source,
          tinyxml2::XMLElement *_childXml, ElementPtr _elem, Errors &_errors)
 {
-  ElementPtr newElem = initElementDescription(_childXml, _errors);
+  ElementPtr newElem = initElementDescription(_childXml, _config, _errors);
   if (!newElem)
     return;
 

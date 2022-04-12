@@ -154,12 +154,24 @@ namespace sdf
           pxr::TfToken("physics:lowerLimit")).Get(&lowerLimit);
         _prim.GetAttribute(
           pxr::TfToken("physics:upperLimit")).Get(&upperLimit);
-        _prim.GetAttribute(
-          pxr::TfToken("drive:linear:physics:stiffness")).Get(&stiffness);
-        _prim.GetAttribute(
-          pxr::TfToken("drive:linear:physics:damping")).Get(&damping);
-        _prim.GetAttribute(
-          pxr::TfToken("drive:linear:physics:maxForce")).Get(&maxForce);
+        if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
+        {
+          _prim.GetAttribute(
+            pxr::TfToken("drive:linear:physics:stiffness")).Get(&stiffness);
+          _prim.GetAttribute(
+            pxr::TfToken("drive:linear:physics:damping")).Get(&damping);
+          _prim.GetAttribute(
+            pxr::TfToken("drive:linear:physics:maxForce")).Get(&maxForce);
+        }
+        else
+        {
+          _prim.GetAttribute(
+            pxr::TfToken("drive:angular:physics:stiffness")).Get(&stiffness);
+          _prim.GetAttribute(
+            pxr::TfToken("drive:angular:physics:damping")).Get(&damping);
+          _prim.GetAttribute(
+            pxr::TfToken("drive:angular:physics:maxForce")).Get(&maxForce);
+        }
         _prim.GetAttribute(
           pxr::TfToken("physxJoint:maxJointVelocity")).Get(&vel);
 
