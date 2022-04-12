@@ -42,6 +42,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyError.cc
   src/sdf/pyMesh.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyRoot.cc
   src/sdf/pySphere.cc
 )
 
@@ -66,6 +67,7 @@ if (BUILD_TESTING)
     pyError_TEST
     pyMesh_TEST
     pyParserConfig_TEST
+    pyRoot_TEST
     pySphere_TEST
   )
 
