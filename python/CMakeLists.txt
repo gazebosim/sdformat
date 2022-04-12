@@ -40,7 +40,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyBox.cc
   src/sdf/pyError.cc
-  src/sdf/pyMagnetometercc
+  src/sdf/pyMagnetometer.cc
   src/sdf/pyMesh.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pySphere.cc
