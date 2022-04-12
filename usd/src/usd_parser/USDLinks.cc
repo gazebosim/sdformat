@@ -318,7 +318,8 @@ UsdErrors ParseMesh(
   sdf::Visual &_vis,
   sdf::Geometry &_geom,
   ignition::math::Vector3d &_scale,
-  const USDData &_usdData)
+  const USDData &_usdData,
+  ignition::math::Pose3d &_pose)
 {
   UsdErrors errors;
 
@@ -394,6 +395,9 @@ UsdErrors ParseMesh(
   {
     GetTransform(_prim, _usdData, pose, scale, _link->Name());
   }
+
+  _pose = pose;
+
   meshGeom.SetScale(scale * _scale);
 
   std::string primName = pxr::TfStringify(_prim.GetPath());
@@ -656,8 +660,9 @@ UsdErrors ParseUSDLinks(
       }
       else if (_prim.IsA<pxr::UsdGeomMesh>())
       {
+        ignition::math::Pose3d poseTmp;
         errors = ParseMesh(
-          _prim, &_link.value(), vis, geom, _scale, _usdData);
+          _prim, &_link.value(), vis, geom, _scale, _usdData, poseTmp);
         if (!errors.empty())
         {
           errors.emplace_back(UsdError(
@@ -691,6 +696,8 @@ UsdErrors ParseUSDLinks(
       ignition::math::Vector3d scaleCol(1, 1, 1);
       GetTransform(_prim, _usdData, poseCol, scaleCol, _link->Name());
 
+      double metersPerUnit = data.second->MetersPerUnit();
+
       if (_prim.IsA<pxr::UsdGeomSphere>())
       {
         ParseSphere(_prim, colGeom, scaleCol, metersPerUnit);
@@ -712,9 +719,17 @@ UsdErrors ParseUSDLinks(
       else if (_prim.IsA<pxr::UsdGeomMesh>())
       {
         sdf::Visual visTmp;
-        ignition::math::Pose3d pose = ParseMesh(
-          _prim, _link, visTmp, colGeom, scaleCol, _usdData);
-        col.SetRawPose(pose);
+        ignition::math::Pose3d poseTmp;
+        errors = ParseMesh(
+          _prim, &_link.value(), visTmp, colGeom, scaleCol, _usdData, poseTmp);
+        if (!errors.empty())
+        {
+          errors.emplace_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing mesh"));
+          return errors;
+        }
+        col.SetRawPose(poseTmp);
         col.SetGeom(colGeom);
       }
       else if (primType == "Plane")

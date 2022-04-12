@@ -34,6 +34,7 @@
 
 #include "USDLinks.hh"
 
+#include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Visual.hh"
 
@@ -69,6 +70,10 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
         ASSERT_NE(nullptr, visual);
         auto geom = visual->Geom();
         ASSERT_NE(nullptr, geom);
+        auto collision = _link.CollisionByIndex(0);
+        ASSERT_NE(nullptr, collision);
+        auto geomCol = collision->Geom();
+        ASSERT_NE(nullptr, geomCol);
         EXPECT_EQ(_type, geom->Type());
       }
     };
@@ -89,6 +94,13 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
   sdf::usd::ParseUSDLinks(
     boxLinkGeometry, "/box/box_link", linkSDF, usdData, scale);
 
+  const auto boxLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/box/box_link/box_visual/collision"));
+  ASSERT_TRUE(boxLinkCollision);
+
+  sdf::usd::ParseUSDLinks(
+    boxLinkCollision, "/box/box_link", linkSDF, usdData, scale);
+
   ASSERT_TRUE(linkSDF);
   checkLink(linkSDF.value(), "box_link", 1.0,
             ignition::math::Vector3d(0.1666, 0.1666, 0.1666),
@@ -107,8 +119,16 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/geometry"));
   EXPECT_TRUE(cylinderLinkGeometry);
 
+  const auto cylinderLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/collision"));
+  EXPECT_TRUE(cylinderLinkCollision);
+
   sdf::usd::ParseUSDLinks(
     cylinderLinkGeometry, "/cylinder/cylinder_link",
+    linkCylinderSDF, usdData, scale);
+
+  sdf::usd::ParseUSDLinks(
+    cylinderLinkCollision, "/cylinder/cylinder_link",
     linkCylinderSDF, usdData, scale);
 
   checkLink(linkCylinderSDF.value(), "cylinder_link", 1.7,
@@ -127,8 +147,16 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/sphere/sphere_link/sphere_visual/geometry"));
   EXPECT_TRUE(sphereLinkGeometry);
 
+  const auto sphereLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/sphere/sphere_link/sphere_visual/collision"));
+  EXPECT_TRUE(sphereLinkCollision);
+
   sdf::usd::ParseUSDLinks(
     sphereLinkGeometry, "/sphere/sphere_link",
+    linkSphereSDF, usdData, scale);
+
+  sdf::usd::ParseUSDLinks(
+    sphereLinkCollision, "/sphere/sphere_link",
     linkSphereSDF, usdData, scale);
 
   ASSERT_TRUE(linkSphereSDF);
@@ -144,6 +172,14 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
   sdf::usd::ParseUSDLinks(
     capsuleLink, "/capsule/capsule_link", linkCapsuleSDF, usdData, scale);
 
+  const auto capsuleLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/capsule/capsule_link/capsule_visual/collision"));
+  EXPECT_TRUE(capsuleLinkCollision);
+
+  sdf::usd::ParseUSDLinks(
+    capsuleLinkCollision, "/capsule/capsule_link",
+    linkCapsuleSDF, usdData, scale);
+
   checkLink(linkCapsuleSDF.value(), "capsule_link", 1,
             ignition::math::Vector3d(0.074154, 0.074154, 0.018769),
             0u, sdf::GeometryType::EMPTY);
@@ -152,9 +188,17 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/ellipsoid/ellipsoid_link"));
   ASSERT_TRUE(ellipsoidLink);
 
+  const auto ellipsoidLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/collision"));
+  EXPECT_TRUE(ellipsoidLinkCollision);
+
   std::optional<sdf::Link> linkEllipsoidSDF;
   sdf::usd::ParseUSDLinks(
     ellipsoidLink, "/ellipsoid/ellipsoid_link",
+    linkEllipsoidSDF, usdData, scale);
+
+  sdf::usd::ParseUSDLinks(
+    ellipsoidLinkCollision, "/ellipsoid/ellipsoid_link",
     linkEllipsoidSDF, usdData, scale);
 
   checkLink(linkEllipsoidSDF.value(), "ellipsoid_link", 1,
