@@ -38,6 +38,7 @@ endfunction()
 
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
+  src/sdf/pyAltimeter.cc
   src/sdf/pyBox.cc
   src/sdf/pyError.cc
   src/sdf/pyMesh.cc
@@ -62,6 +63,7 @@ if (BUILD_TESTING)
   )
 
   set(python_tests
+    pyAltimeter_TEST
     pyBox_TEST
     pyError_TEST
     pyMesh_TEST
