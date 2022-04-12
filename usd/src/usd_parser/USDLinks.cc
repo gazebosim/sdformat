@@ -743,7 +743,8 @@ UsdErrors ParseUSDLinks(
 
         ignition::math::Pose3d pose;
         ignition::math::Vector3d scale(1, 1, 1);
-        GetTransform(_prim, _usdData, pose, scale, pxr::TfStringify(_prim.GetPath()));
+        GetTransform(
+          _prim, _usdData, pose, scale, pxr::TfStringify(_prim.GetPath()));
         col.SetRawPose(pose);
         col.SetGeom(colGeom);
       }
