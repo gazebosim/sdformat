@@ -69,6 +69,7 @@ if (BUILD_TESTING)
 
   if (TARGET UNIT_FrameSemantics_TEST)
     target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc Utils.cc)
+    target_link_libraries(UNIT_FrameSemantics_TEST TINYXML2::TINYXML2)
   endif()
 
   if (TARGET UNIT_ParamPassing_TEST)
@@ -89,6 +90,7 @@ if (BUILD_TESTING)
 
   if (TARGET UNIT_Utils_TEST)
     target_sources(UNIT_Utils_TEST PRIVATE Utils.cc)
+    target_link_libraries(UNIT_Utils_TEST TINYXML2::TINYXML2)
   endif()
 
   if (TARGET UNIT_XmlUtils_TEST)
