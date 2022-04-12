@@ -675,11 +675,12 @@ UsdErrors ParseUSDLinks(
 
     pxr::TfTokenVector schemasCollision = _prim.GetAppliedSchemas();
     bool physxCollisionAPIenable = false;
-    for (auto & token : schemasCollision)
+    for (const auto & token : schemasCollision)
     {
       if (std::string(token.GetText()) == "PhysxCollisionAPI")
       {
         physxCollisionAPIenable = true;
+        break;
       }
     }
 
