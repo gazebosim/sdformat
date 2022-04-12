@@ -135,7 +135,7 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
     int _inDegrees, int _snapToDegrees, float _snapTolerance,
-    bool _preserveIncludes, int _outPrecision)
+    int _preserveIncludes, int _outPrecision)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -169,9 +169,10 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
                                     static_cast<double>(_snapTolerance));
   }
 
-  config.SetPreserveIncludes(_preserveIncludes);
+  if (_preserveIncludes != 0)
+    config.SetPreserveIncludes(true);
 
-  if (_outPrecision != -9999)
+  if (_outPrecision > 0)
     config.SetOutPrecision(_outPrecision);
 
   sdf->PrintValues(config);

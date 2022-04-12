@@ -76,10 +76,9 @@ namespace sdf
   {
     const T &val;
     const int precision;  // Used to set std::ostream's std::setprecision
+    explicit ParamStreamer(const T &_val, int _precision = 0)
+       : val(_val), precision(_precision) {}
   };
-
-  template<class T> ParamStreamer(T) -> ParamStreamer<T>;
-  template<class T> ParamStreamer(T, bool) -> ParamStreamer<T>;
 
   template<class T>
   std::ostream& operator<<(std::ostream &os, ParamStreamer<T> s)
