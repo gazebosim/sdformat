@@ -187,6 +187,20 @@ namespace usd
       }
       // TODO(anyone) support converting other USD light types
 
+      sdf::Model *modelPtr = nullptr;
+      if (!currentModelName.empty())
+      {
+        modelPtr = _world.ModelByName(currentModelName);
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+                "Unable to find a sdf::Model named [" + currentModelName +
+                "] in world named [" + _world.Name() +
+                "], but a sdf::Model with this name should exist."));
+          return errors;
+        }
+      }
+
       if (prim.IsA<pxr::UsdPhysicsJoint>())
       {
         sdf::Joint joint =
@@ -217,13 +231,11 @@ namespace usd
         continue;
       }
 
-      auto modelPtr = _world.ModelByName(currentModelName);
       if (!modelPtr)
       {
         errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
-              "Unable to find a sdf::Model named [" + currentModelName +
-              "] in world named [" + _world.Name() +
-              "], but a sdf::Model with this name should exist."));
+              "Unable to parse link named [" + linkName +
+              "] because the corresponding sdf::Model object wasn't found."));
         return errors;
       }
 

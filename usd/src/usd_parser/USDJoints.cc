@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,13 @@
 #include <ignition/common/Util.hh>
 
 #include "sdf/usd/usd_parser/USDData.hh"
-
 #include "sdf/Console.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
@@ -44,14 +43,13 @@ namespace sdf
     sdf::Joint ParseJoints(
       const pxr::UsdPrim &_prim,
       const std::string &_path,
-      USDData &_usdData)
+      const USDData &_usdData)
     {
       sdf::Joint joint;
 
-      std::pair<std::string, std::shared_ptr<USDStage>> USDData =
+      std::pair<std::string, std::shared_ptr<USDStage>> usdData =
         _usdData.FindStage(_prim.GetPath().GetName());
-
-      double metersPerUnit = USDData.second->MetersPerUnit();
+      double metersPerUnit = usdData.second->MetersPerUnit();
 
       pxr::SdfPathVector body0, body1;
 
@@ -67,14 +65,11 @@ namespace sdf
         joint.SetChildLinkName(ignition::common::basename(
           body1[0].GetString()));
       }
-      else
+      else if (body0.size() > 0)
       {
-        if (body0.size() > 0)
-        {
-          joint.SetParentLinkName("world");
-          joint.SetChildLinkName(ignition::common::basename(
-            body0[0].GetString()));
-        }
+        joint.SetParentLinkName("world");
+        joint.SetChildLinkName(ignition::common::basename(
+          body0[0].GetString()));
       }
 
       if (body0.size() > 0 && joint.ParentLinkName().empty())
@@ -116,15 +111,16 @@ namespace sdf
         {
           pxr::UsdPhysicsRevoluteJoint(_prim).GetAxisAttr().Get(&axis);
         }
+
         if (axis == pxr::UsdGeomTokens->x)
         {
           axisVector = ignition::math::Vector3d(1, 0, 0);
         }
-        if (axis == pxr::UsdGeomTokens->y)
+        else if (axis == pxr::UsdGeomTokens->y)
         {
           axisVector = ignition::math::Vector3d(0, 1, 0);
         }
-        if (axis == pxr::UsdGeomTokens->z)
+        else if (axis == pxr::UsdGeomTokens->z)
         {
           axisVector = ignition::math::Vector3d(0, 0, 1);
         }
@@ -132,10 +128,11 @@ namespace sdf
         pxr::GfVec3f localPose0, localPose1;
         pxr::GfQuatf localRot0, localRot1;
 
-        pxr::UsdPhysicsJoint(_prim).GetLocalPos0Attr().Get(&localPose0);
-        pxr::UsdPhysicsJoint(_prim).GetLocalPos1Attr().Get(&localPose1);
-        pxr::UsdPhysicsJoint(_prim).GetLocalRot0Attr().Get(&localRot0);
-        pxr::UsdPhysicsJoint(_prim).GetLocalRot1Attr().Get(&localRot1);
+        const auto usdPhysicsJoint = pxr::UsdPhysicsJoint(_prim);
+        usdPhysicsJoint.GetLocalPos0Attr().Get(&localPose0);
+        usdPhysicsJoint.GetLocalPos1Attr().Get(&localPose1);
+        usdPhysicsJoint.GetLocalRot0Attr().Get(&localRot0);
+        usdPhysicsJoint.GetLocalRot1Attr().Get(&localRot1);
 
         trans = (localPose0 + localPose1) * metersPerUnit;
 
@@ -223,9 +220,9 @@ namespace sdf
             ignition::math::Vector3d(trans[0], trans[1], trans[2]),
             ignition::math::Quaterniond(q1 * q2)));
 
-        joint.SetAxis(0, jointAxis);
         jointAxis.SetLower(lowerLimit * metersPerUnit);
         jointAxis.SetUpper(upperLimit * metersPerUnit);
+        joint.SetAxis(0, jointAxis);
 
         return joint;
       }
@@ -244,14 +241,13 @@ namespace sdf
             std::cerr << e << "\n";
         }
 
-        joint.SetRawPose(
-          ignition::math::Pose3d(
+        joint.SetRawPose(ignition::math::Pose3d(
             ignition::math::Vector3d(trans[0], trans[1], trans[2]),
-            ignition::math::Quaterniond(q1)));
+            q1));
 
-        joint.SetAxis(0, jointAxis);
         jointAxis.SetLower(IGN_DTOR(lowerLimit));
         jointAxis.SetUpper(IGN_DTOR(upperLimit));
+        joint.SetAxis(0, jointAxis);
 
         return joint;
       }
