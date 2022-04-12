@@ -310,6 +310,7 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _usdData metadata of the USD file
+/// \param[out] _pose The pose of the parsed mesh
 /// \return UsdErrors, which is a list of UsdError objects. An empty list means
 /// that no errors occurred when parsing the USD mesh
 UsdErrors ParseMesh(
