@@ -49,6 +49,7 @@
 #include <ignition/math/Inertial.hh>
 
 #include "sdf/Box.hh"
+#include "sdf/Collision.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Link.hh"
@@ -309,6 +310,7 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 /// \param[in] _geom sdf geom
 /// \param[in] _scale scale mesh
 /// \param[in] _usdData metadata of the USD file
+/// \param[out] _pose The pose of the parsed mesh
 /// \return UsdErrors, which is a list of UsdError objects. An empty list means
 /// that no errors occurred when parsing the USD mesh
 UsdErrors ParseMesh(
@@ -317,7 +319,8 @@ UsdErrors ParseMesh(
   sdf::Visual &_vis,
   sdf::Geometry &_geom,
   ignition::math::Vector3d &_scale,
-  const USDData &_usdData)
+  const USDData &_usdData,
+  ignition::math::Pose3d &_pose)
 {
   UsdErrors errors;
 
@@ -393,6 +396,9 @@ UsdErrors ParseMesh(
   {
     GetTransform(_prim, _usdData, pose, scale, _link->Name());
   }
+
+  _pose = pose;
+
   meshGeom.SetScale(scale * _scale);
 
   std::string primName = pxr::TfStringify(_prim.GetPath());
@@ -633,39 +639,119 @@ UsdErrors ParseUSDLinks(
       double metersPerUnit = data.second->MetersPerUnit();
 
       if (_prim.IsA<pxr::UsdGeomSphere>())
+      {
+        ParseSphere(_prim, geom, _scale, metersPerUnit);
+        vis.SetName("visual_sphere");
+        vis.SetGeom(geom);
+        _link->AddVisual(vis);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCylinder>())
+      {
+        ParseCylinder(_prim, geom, _scale, metersPerUnit);
+        vis.SetName("visual_cylinder");
+        vis.SetGeom(geom);
+        _link->AddVisual(vis);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCube>())
+      {
+        ParseCube(_prim, geom, _scale, metersPerUnit);
+        vis.SetName("visual_box");
+        vis.SetGeom(geom);
+        _link->AddVisual(vis);
+      }
+      else if (_prim.IsA<pxr::UsdGeomMesh>())
+      {
+        ignition::math::Pose3d poseTmp;
+        errors = ParseMesh(
+          _prim, &_link.value(), vis, geom, _scale, _usdData, poseTmp);
+        if (!errors.empty())
         {
-          ParseSphere(_prim, geom, _scale, metersPerUnit);
-          vis.SetName("visual_sphere");
-          vis.SetGeom(geom);
-          _link->AddVisual(vis);
+          errors.emplace_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing mesh"));
+          return errors;
         }
-        else if (_prim.IsA<pxr::UsdGeomCylinder>())
-        {
-          ParseCylinder(_prim, geom, _scale, metersPerUnit);
-          vis.SetName("visual_cylinder");
-          vis.SetGeom(geom);
-          _link->AddVisual(vis);
-        }
-        else if (_prim.IsA<pxr::UsdGeomCube>())
-        {
-          ParseCube(_prim, geom, _scale, metersPerUnit);
-          vis.SetName("visual_box");
-          vis.SetGeom(geom);
-          _link->AddVisual(vis);
-        }
-        else if (_prim.IsA<pxr::UsdGeomMesh>())
-        {
-          errors = ParseMesh(
-            _prim, &_link.value(), vis, geom, _scale, _usdData);
-          if (!errors.empty())
-          {
-            errors.emplace_back(UsdError(
-            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              "Error parsing mesh"));
-            return errors;
-          }
-        }
+      }
     }
+
+    pxr::TfTokenVector schemasCollision = _prim.GetAppliedSchemas();
+    bool physxCollisionAPIenable = false;
+    for (const auto & token : schemasCollision)
+    {
+      if (std::string(token.GetText()) == "PhysxCollisionAPI")
+      {
+        physxCollisionAPIenable = true;
+        break;
+      }
+    }
+
+    if (collisionEnabled || physxCollisionAPIenable)
+    {
+      sdf::Collision col;
+
+      // add _collision extension
+      std::string collisionName = _prim.GetPath().GetName() + "_collision";
+      col.SetName(collisionName);
+      sdf::Geometry colGeom;
+
+      ignition::math::Pose3d poseCol;
+      ignition::math::Vector3d scaleCol(1, 1, 1);
+      GetTransform(_prim, _usdData, poseCol, scaleCol, _link->Name());
+
+      double metersPerUnit = data.second->MetersPerUnit();
+
+      if (_prim.IsA<pxr::UsdGeomSphere>())
+      {
+        ParseSphere(_prim, colGeom, scaleCol, metersPerUnit);
+        col.SetGeom(colGeom);
+        col.SetRawPose(poseCol);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCylinder>())
+      {
+        ParseCylinder(_prim, colGeom, scaleCol, metersPerUnit);
+        col.SetGeom(colGeom);
+        col.SetRawPose(poseCol);
+      }
+      else if (_prim.IsA<pxr::UsdGeomCube>())
+      {
+        ParseCube(_prim, colGeom, scaleCol, metersPerUnit);
+        col.SetGeom(colGeom);
+        col.SetRawPose(poseCol);
+      }
+      else if (_prim.IsA<pxr::UsdGeomMesh>())
+      {
+        sdf::Visual visTmp;
+        ignition::math::Pose3d poseTmp;
+        errors = ParseMesh(
+          _prim, &_link.value(), visTmp, colGeom, scaleCol, _usdData, poseTmp);
+        if (!errors.empty())
+        {
+          errors.emplace_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+            "Error parsing mesh"));
+          return errors;
+        }
+        col.SetRawPose(poseTmp);
+        col.SetGeom(colGeom);
+      }
+      else if (primType == "Plane")
+      {
+        sdf::Plane plane;
+        colGeom.SetType(sdf::GeometryType::PLANE);
+        plane.SetSize(ignition::math::Vector2d(100, 100));
+        colGeom.SetPlaneShape(plane);
+
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale(1, 1, 1);
+        GetTransform(
+          _prim, _usdData, pose, scale, pxr::TfStringify(_prim.GetPath()));
+        col.SetRawPose(pose);
+        col.SetGeom(colGeom);
+      }
+
+      _link->AddCollision(col);
+    }
+
   }
   return errors;
 }
