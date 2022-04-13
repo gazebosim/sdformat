@@ -247,7 +247,7 @@ namespace usd
       {
         if (!linkName.empty())
         {
-          auto sensor = ParseSensors(prim, usdData, linkName);
+          auto sensor = ParseSensors(prim, usdData);
           auto link = modelPtr->LinkByName(linkName);
           if (link != nullptr)
           {

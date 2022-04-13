@@ -39,8 +39,7 @@ namespace sdf
   {
     sdf::Sensor ParseSensors(
       const pxr::UsdPrim &_prim,
-      USDData &_usdData,
-      const std::string &_linkName);
+      USDData &_usdData);
   }
   }
 }

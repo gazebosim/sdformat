@@ -53,6 +53,7 @@ set(gtest_sources
   sdf_parser/World_Sdf2Usd_TEST.cc
   usd_parser/USDData_TEST.cc
   usd_parser/USDPhysics_TEST.cc
+  usd_parser/USDSensors_TEST.cc
   usd_parser/USDJoints_TEST.cc
   usd_parser/USDLinks_TEST.cc
   usd_parser/USDLight_TEST.cc
@@ -76,6 +77,11 @@ if (TARGET UNIT_USDLinks_TEST)
     usd_parser/USDLinks.cc
     Conversions.cc
     usd_parser/polygon_helper.cc)
+endif()
+
+if (TARGET UNIT_USDSensors_TEST)
+  target_sources(UNIT_USDSensors_TEST PRIVATE
+    usd_parser/USDSensors.cc)
 endif()
 
 if (TARGET UNIT_USDJoints_TEST)
