@@ -53,10 +53,10 @@ set(gtest_sources
   sdf_parser/World_Sdf2Usd_TEST.cc
   usd_parser/USDData_TEST.cc
   usd_parser/USDPhysics_TEST.cc
-  usd_parser/USDSensors_TEST.cc
   usd_parser/USDJoints_TEST.cc
   usd_parser/USDLinks_TEST.cc
   usd_parser/USDLight_TEST.cc
+  usd_parser/USDSensors_TEST.cc
   usd_parser/USDStage_TEST.cc
   usd_parser/USDTransforms_TEST.cc
   Conversions_TEST.cc
