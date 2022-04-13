@@ -124,7 +124,6 @@ Errors ODE::Load(ElementPtr _sdf)
   this->dataPtr->fdir1 = _sdf->Get<ignition::math::Vector3d>("fdir1",
         this->dataPtr->fdir1).first;
 
-  // \todo(nkoenig) Parse the remaining collide properties.
   return errors;
 }
 
