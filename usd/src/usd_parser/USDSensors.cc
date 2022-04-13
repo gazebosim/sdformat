@@ -17,6 +17,8 @@
 
 #include "USDSensors.hh"
 
+#include <string>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include "pxr/usd/usdGeom/camera.h"

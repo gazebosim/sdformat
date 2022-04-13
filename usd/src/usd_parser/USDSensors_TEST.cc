@@ -81,13 +81,17 @@ TEST(USDJointTest, JointTest)
   EXPECT_EQ(sdf::SensorType::GPU_LIDAR, sensorLidar.Type());
   auto lidarSDF = sensorLidar.LidarSensor();
   ASSERT_TRUE(lidarSDF);
-  EXPECT_DOUBLE_EQ(-180.00000500895632, lidarSDF->HorizontalScanMinAngle().Degree());
-  EXPECT_DOUBLE_EQ(180.00000500895632, lidarSDF->HorizontalScanMaxAngle().Degree());
+  EXPECT_DOUBLE_EQ(-180.00000500895632,
+                   lidarSDF->HorizontalScanMinAngle().Degree());
+  EXPECT_DOUBLE_EQ(180.00000500895632,
+                   lidarSDF->HorizontalScanMaxAngle().Degree());
   EXPECT_DOUBLE_EQ(1, lidarSDF->HorizontalScanResolution());
   EXPECT_DOUBLE_EQ(900, lidarSDF->HorizontalScanSamples());
 
-  EXPECT_DOUBLE_EQ(-15.000000417413029, lidarSDF->VerticalScanMinAngle().Degree());
-  EXPECT_DOUBLE_EQ(15.000000417413029, lidarSDF->VerticalScanMaxAngle().Degree());
+  EXPECT_DOUBLE_EQ(-15.000000417413029,
+                   lidarSDF->VerticalScanMinAngle().Degree());
+  EXPECT_DOUBLE_EQ(15.000000417413029,
+                   lidarSDF->VerticalScanMaxAngle().Degree());
   EXPECT_DOUBLE_EQ(1, lidarSDF->VerticalScanResolution());
   EXPECT_DOUBLE_EQ(7, lidarSDF->VerticalScanSamples());
 
