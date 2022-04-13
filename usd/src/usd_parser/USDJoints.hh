@@ -41,7 +41,6 @@ namespace sdf
     /// a joint
     ///
     /// \param[in] _prim The USD prim that holds the USD joint
-    /// \param[in] _path The path to _prim
     /// \param[in] _usdData Object that holds data about the USD stage
     /// \param[out] _joint SDF joint to return
     /// \return UsdErrors, which is a list of UsdError objects. An empty list

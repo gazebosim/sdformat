@@ -204,16 +204,15 @@ namespace usd
 
       if (prim.IsA<pxr::UsdPhysicsJoint>())
       {
-        sdf::Joint joint;
-        modelPtr = _world.ModelByName(currentModelName);
         if (!modelPtr)
         {
           errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
-            "Unable to find a sdf::Model named [" + currentModelName +
-            "] in world named [" + _world.Name() +
-            "], but a sdf::Model with this name should exist."));
+            "Unable to parse joint corresponding to USD prim [" +
+            std::string(prim.GetName()) +
+            "] because the corresponding sdf::Model object wasn't found."));
           return errors;
         }
+        sdf::Joint joint;
         auto errorsJoint = ParseJoints(prim, usdData, joint);
         if (!errorsJoint.empty())
         {

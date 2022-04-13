@@ -197,7 +197,7 @@ def "double_pendulum"
             float physics:upperLimit = 5.729578e17
         }
 
-        def PhysicsRevoluteJoint "lower_joint"
+        def PhysicsRevoluteJoint "lower"
         {
             uniform token physics:axis = "X"
             prepend rel physics:body0 = </double_pendulum/double_pendulum_with_base/upper_link>
@@ -686,4 +686,3 @@ def Scope "Looks"
         }
     }
 }
-

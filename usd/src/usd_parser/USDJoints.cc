@@ -17,6 +17,10 @@
 
 #include "USDJoints.hh"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/usd/usdGeom/gprim.h>
@@ -199,13 +203,7 @@ namespace sdf
         jointAxis.SetMaxVelocity(vel);
       }
 
-      if (_prim.IsA<pxr::UsdPhysicsFixedJoint>())
-      {
-        _joint.SetType(sdf::JointType::FIXED);
-
-        return errors;
-      }
-      else if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
+      if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
       {
         auto variant_physics_prismatic_joint =
           pxr::UsdPhysicsPrismaticJoint(_prim);
@@ -216,9 +214,9 @@ namespace sdf
         if (!errorsAxis.empty())
         {
           errors.emplace_back(UsdError(
-            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              std::string("Errors encountered when setting xyz of prismatic") +
-              "_joint axis: [" + std::string(_prim.GetName()) + "]"));
+            sdf::usd::UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+              "Errors encountered when setting xyz of prismatic "
+              "joint axis: [" + std::string(_prim.GetName()) + "]"));
           for (const auto & error : errorsAxis)
             errors.emplace_back(error);
           return errors;
@@ -237,7 +235,8 @@ namespace sdf
       }
       else if (_prim.IsA<pxr::UsdPhysicsRevoluteJoint>())
       {
-        auto variant_physics_revolute_joint = pxr::UsdPhysicsRevoluteJoint(_prim);
+        auto variant_physics_revolute_joint =
+          pxr::UsdPhysicsRevoluteJoint(_prim);
 
         _joint.SetType(sdf::JointType::REVOLUTE);
 
@@ -245,9 +244,9 @@ namespace sdf
         if (!errorsAxis.empty())
         {
           errors.emplace_back(UsdError(
-            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              std::string("Errors encountered when setting xyz of revolute") +
-              "_joint axis: [" + std::string(_prim.GetName()) + "]"));
+            sdf::usd::UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+              "Errors encountered when setting xyz of revolute "
+              "joint axis: [" + std::string(_prim.GetName()) + "]"));
           for (const auto & error : errorsAxis)
             errors.emplace_back(error);
           return errors;
@@ -263,10 +262,20 @@ namespace sdf
 
         return errors;
       }
-      else if (_prim.IsA<pxr::UsdPhysicsJoint>())
+      else if (_prim.IsA<pxr::UsdPhysicsFixedJoint>() ||
+          _prim.IsA<pxr::UsdPhysicsJoint>())
       {
         _joint.SetType(sdf::JointType::FIXED);
       }
+      else
+      {
+        errors.emplace_back(UsdError(
+              sdf::usd::UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+              "Unable to create a SDF joint from USD prim [" +
+              std::string(_prim.GetName()) +
+              "] because the prim is not a USD joint."));
+      }
+
       return errors;
     }
   }
