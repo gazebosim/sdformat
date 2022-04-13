@@ -173,14 +173,12 @@ namespace usd
             materialPath);
           pxr::SdfTokenListOp listOpMaterial;
           // Use ReplaceOperations to append in place.
-          if (!listOpMaterial.ReplaceOperations(
+          listOpMaterial.ReplaceOperations(
             pxr::SdfListOpTypeExplicit,
             0,
             0,
             {appliedSchemaNamePhysicsMaterialRootAPI,
-             appliedSchemaNamePhysxMaterialAPI}))
-             {
-             }
+             appliedSchemaNamePhysxMaterialAPI});
           primSpec->SetInfo(
             pxr::UsdTokens->apiSchemas, pxr::VtValue::Take(listOpMaterial));
 
