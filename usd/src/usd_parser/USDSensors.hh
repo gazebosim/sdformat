@@ -28,7 +28,6 @@
 #include "sdf/usd/usd_parser/USDData.hh"
 
 #include "sdf/config.hh"
-#include "sdf/usd/Export.hh"
 
 namespace sdf
 {
@@ -37,9 +36,14 @@ namespace sdf
   //
   namespace usd
   {
+    /// \brief Parse a USD sensor to its SDF representation.
+    /// Currently, camera and lidar sensors are the only types supported.
+    /// \param[in] _prim The USD sensor prim
+    /// \param[in] _usdData Object that holds data about the USD stage
+    /// \return The sdf::Sensor representation of the USD sensor (_prim)
     sdf::Sensor ParseSensors(
       const pxr::UsdPrim &_prim,
-      USDData &_usdData);
+      const USDData &_usdData);
   }
   }
 }
