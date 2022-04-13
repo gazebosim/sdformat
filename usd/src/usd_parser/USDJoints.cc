@@ -17,6 +17,10 @@
 
 #include "USDJoints.hh"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include <pxr/usd/usdGeom/gprim.h>
@@ -237,7 +241,8 @@ namespace sdf
       }
       else if (_prim.IsA<pxr::UsdPhysicsRevoluteJoint>())
       {
-        auto variant_physics_revolute_joint = pxr::UsdPhysicsRevoluteJoint(_prim);
+        auto variant_physics_revolute_joint =
+          pxr::UsdPhysicsRevoluteJoint(_prim);
 
         _joint.SetType(sdf::JointType::REVOLUTE);
 
