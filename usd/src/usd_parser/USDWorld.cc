@@ -248,7 +248,7 @@ namespace usd
         continue;
       }
 
-      if(prim.IsA<pxr::UsdGeomCamera>() || primType == "Lidar")
+      if (prim.IsA<pxr::UsdGeomCamera>() || primType == "Lidar")
       {
         if (!linkName.empty())
         {
