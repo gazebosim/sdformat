@@ -70,11 +70,11 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
         ASSERT_NE(nullptr, visual);
         auto geom = visual->Geom();
         ASSERT_NE(nullptr, geom);
+        EXPECT_EQ(_type, geom->Type());
         auto collision = _link.CollisionByIndex(0);
         ASSERT_NE(nullptr, collision);
         auto geomCol = collision->Geom();
         ASSERT_NE(nullptr, geomCol);
-        EXPECT_EQ(_type, geom->Type());
       }
     };
 
