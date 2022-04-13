@@ -75,6 +75,10 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
         auto geomCol = collision->Geom();
         ASSERT_NE(nullptr, geomCol);
         EXPECT_EQ(_type, geom->Type());
+        auto collision = _link.CollisionByIndex(0);
+        ASSERT_NE(nullptr, collision);
+        auto geomCol = collision->Geom();
+        ASSERT_NE(nullptr, geomCol);
       }
     };
 
@@ -127,6 +131,10 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     cylinderLinkGeometry, "/cylinder/cylinder_link",
     linkCylinderSDF, usdData, scale);
 
+  const auto cylinderLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/collision"));
+  EXPECT_TRUE(cylinderLinkCollision);
+
   sdf::usd::ParseUSDLinks(
     cylinderLinkCollision, "/cylinder/cylinder_link",
     linkCylinderSDF, usdData, scale);
@@ -154,6 +162,10 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
   sdf::usd::ParseUSDLinks(
     sphereLinkGeometry, "/sphere/sphere_link",
     linkSphereSDF, usdData, scale);
+
+  const auto sphereLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/sphere/sphere_link/sphere_visual/collision"));
+  EXPECT_TRUE(sphereLinkCollision);
 
   sdf::usd::ParseUSDLinks(
     sphereLinkCollision, "/sphere/sphere_link",
@@ -196,6 +208,10 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
   sdf::usd::ParseUSDLinks(
     ellipsoidLink, "/ellipsoid/ellipsoid_link",
     linkEllipsoidSDF, usdData, scale);
+
+  const auto ellipsoidLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/collision"));
+  EXPECT_TRUE(ellipsoidLinkCollision);
 
   sdf::usd::ParseUSDLinks(
     ellipsoidLinkCollision, "/ellipsoid/ellipsoid_link",
