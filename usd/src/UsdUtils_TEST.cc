@@ -127,6 +127,8 @@ TEST(UsdUtils, validPath)
 
   EXPECT_EQ("/has_period", sdf::usd::validPath("/has.period"));
 
-  EXPECT_EQ("_5/has_period/hasSpace",
-      sdf::usd::validPath("5/has.period/has Space"));
+  EXPECT_EQ("/has_dash", sdf::usd::validPath("/has-dash"));
+
+  EXPECT_EQ("_5/has_period/hasSpace/has_dash",
+      sdf::usd::validPath("5/has.period/has Space/has-dash"));
 }

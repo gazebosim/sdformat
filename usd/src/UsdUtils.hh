@@ -60,6 +60,7 @@ namespace sdf
     ///   - start with a digit
     ///   - Contain spaces
     ///   - Contain dots
+    ///   - Contain dashes
     /// \param[in] _path Path to check
     /// \return A valid path
     inline std::string validPath(const std::string &_path)
@@ -71,6 +72,7 @@ namespace sdf
       }
       result = ignition::common::replaceAll(_path, " ", "");
       result = ignition::common::replaceAll(result, ".", "_");
+      result = ignition::common::replaceAll(result, "-", "_");
       if (std::isdigit(result[0]))
       {
         result = "_" + result;
