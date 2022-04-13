@@ -135,7 +135,25 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_NE(savedModelNames.end(), savedModelNames.find("ellipsoid"));
 
     // check for static/non-static models
+    ASSERT_NE(nullptr, world->ModelByName("ground_plane"));
     EXPECT_TRUE(world->ModelByName("ground_plane")->Static());
+    ASSERT_NE(nullptr, world->ModelByName("box"));
     EXPECT_FALSE(world->ModelByName("box")->Static());
+
+    // check that models have the right links
+    std::function<void(const std::string &, const std::string &)> checkLink =
+      [&world](const std::string &_modelName, const std::string &_linkName)
+      {
+        const auto modelPtr = world->ModelByName(_modelName);
+        ASSERT_NE(nullptr, modelPtr);
+        EXPECT_EQ(1u, modelPtr->LinkCount());
+        EXPECT_NE(nullptr, modelPtr->LinkByName(_linkName));
+      };
+    checkLink("ground_plane", "link");
+    checkLink("box", "box_link");
+    checkLink("cylinder", "cylinder_link");
+    checkLink("sphere", "sphere_link");
+    checkLink("capsule", "capsule_link");
+    checkLink("ellipsoid", "ellipsoid_link");
   }
 }
