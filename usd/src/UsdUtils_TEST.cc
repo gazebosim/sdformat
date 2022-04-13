@@ -112,3 +112,21 @@ TEST(UsdUtils, IsPlane)
   mutableModel->SetStatic(false);
   EXPECT_FALSE(sdf::usd::IsPlane(*mutableModel));
 }
+
+//////////////////////////////////////////////////
+TEST(UsdUtils, validPath)
+{
+  const std::string alreadyValid = "/valid/path";
+  EXPECT_EQ(alreadyValid, sdf::usd::validPath(alreadyValid));
+
+  EXPECT_EQ("", sdf::usd::validPath(""));
+
+  EXPECT_EQ("_0/start/with/digit", sdf::usd::validPath("0/start/with/digit"));
+
+  EXPECT_EQ("/hasSpaces", sdf::usd::validPath("/has Spaces"));
+
+  EXPECT_EQ("/has_period", sdf::usd::validPath("/has.period"));
+
+  EXPECT_EQ("_5/has_period/hasSpace",
+      sdf::usd::validPath("5/has.period/has Space"));
+}

@@ -55,7 +55,7 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Return a valid path
+    /// \brief Return a valid USD path
     /// Path must not:
     ///   - start with a digit
     ///   - Contain spaces
@@ -77,7 +77,6 @@ namespace sdf
       }
       return result;
     }
-
 
     /// \brief Get an object's pose w.r.t. its parent.
     /// \param[in] _obj The object whose pose should be computed/retrieved.
