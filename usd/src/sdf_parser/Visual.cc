@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Visual.hh"
+#include "Visual.hh"
 
 #include <string>
 
@@ -35,9 +35,9 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Visual.hh"
-#include "sdf/usd/sdf_parser/Geometry.hh"
-#include "sdf/usd/sdf_parser/Material.hh"
 #include "../UsdUtils.hh"
+#include "Geometry.hh"
+#include "Material.hh"
 
 namespace sdf
 {

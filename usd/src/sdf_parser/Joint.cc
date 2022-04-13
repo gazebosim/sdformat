@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Joint.hh"
+#include "Joint.hh"
 
 #include <sstream>
 

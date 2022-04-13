@@ -37,8 +37,7 @@ namespace sdf
   {
   sdf::Sensor ParseSensors(
     const pxr::UsdPrim &_prim,
-    USDData &_usdData,
-    const std::string &_linkName)
+    USDData &_usdData)
   {
     sdf::Sensor sensor;
 
@@ -94,7 +93,8 @@ namespace sdf
       float vFOV;
       float vResolution;
       _prim.GetAttribute(pxr::TfToken("horizontalFov")).Get(&hFOV);
-      _prim.GetAttribute(pxr::TfToken("horizontalResolution")).Get(&hResolution);
+      _prim.GetAttribute(
+        pxr::TfToken("horizontalResolution")).Get(&hResolution);
       _prim.GetAttribute(pxr::TfToken("verticalFov")).Get(&vFOV);
       _prim.GetAttribute(pxr::TfToken("verticalResolution")).Get(&vResolution);
       hResolution = IGN_DTOR(hResolution);

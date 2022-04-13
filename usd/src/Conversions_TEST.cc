@@ -25,7 +25,7 @@
 
 #include "sdf/Material.hh"
 #include "sdf/Pbr.hh"
-#include "sdf/usd/Conversions.hh"
+#include "Conversions.hh"
 
 /////////////////////////////////////////////////
 TEST(Conversions, SdfToCommonMaterial)

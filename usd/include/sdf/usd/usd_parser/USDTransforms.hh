@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_USD_USD_PARSER_UTILS_HH_
-#define SDF_USD_USD_PARSER_UTILS_HH_
+#ifndef SDF_USD_USD_PARSER_USDTRANSFORMS_HH_
+#define SDF_USD_USD_PARSER_USDTRANSFORMS_HH_
 
 #include <string>
 #include <vector>
@@ -40,12 +40,11 @@
 #include "sdf/system_util.hh"
 #include "sdf/usd/Export.hh"
 #include "sdf/usd/UsdError.hh"
-
 #include "USDData.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
@@ -54,83 +53,52 @@ namespace sdf
     /// This might contain scale, translate or rotation operations
     /// The booleans are used to check if there is a transform defined
     /// in the schema
-    /// Rotation is splitted in a vector because this might be defined
-    /// as a rotation of 3 angles (ZYX, XYZ, etc).
     class IGNITION_SDFORMAT_USD_VISIBLE UDSTransforms
     {
       /// \brief Default constructor
       public: UDSTransforms();
 
       /// \brief Translate
-      public: ignition::math::Vector3d Translate();
+      /// \return A 3D vector with the translation
+      public: const ignition::math::Vector3d Translation() const;
 
       /// \brief Scale
-      public: ignition::math::Vector3d Scale();
+      /// \return A 3D vector with the scale
+      public: const ignition::math::Vector3d Scale() const;
 
-      /// \brief Rotation
-      public: std::vector<ignition::math::Quaterniond> Rotations();
+      /// \brief Get the Rotation
+      /// \return Return The rotation, if one exists. If no rotation exists,
+      /// std::nullopt is returned
+      public: const std::optional<ignition::math::Quaterniond> Rotation() const;
 
       /// \brief Set translate
-      public: void SetTranslate(const ignition::math::Vector3d &_translate);
+      /// \param[in] _translate Translate to set
+      public: void SetTranslation(const ignition::math::Vector3d &_translate);
 
       /// \brief Set scale
+      /// \param[in] _scale Scale to set
       public: void SetScale(const ignition::math::Vector3d &_scale);
 
-      /// \brief Add rotation
-      public: void AddRotation(const ignition::math::Quaterniond &_q);
-
-      /// \brief True if there is a rotation ZYX defined or false otherwise
-      bool RotationZYX();
-
-      /// \brief True if there is a rotation XYZ defined or false otherwise
-      bool RotationXYZ();
-
-      /// \brief True if there is a rotation (as a quaterion) defined
-      /// or false otherwise
-      bool Rotation();
-
-      /// \brief Set if there is any rotation ZYX defined
-      void SetRotationZYX(bool _rotationZYX);
-
-      /// \brief Set if there is any rotation XYZ defined
-      void SetRotationXYZ(bool _rotationXYZ);
-
-      /// \brief Set if there is any rotation defined
-      void SetRotation(bool _rotation);
+      /// \brief Set rotation
+      /// \param[in] _q Quaternion that defines the rotation
+      public: void SetRotation(const ignition::math::Quaterniond &_q);
 
       /// \brief Private data pointer.
       IGN_UTILS_IMPL_PTR(dataPtr)
     };
 
-    /// \brief This function will parse all the parents transforms of a prim
-    /// This will stop when the name of the parent is the same as _schemaToStop
+    /// \brief This function gets the transform from a prim to the specified
+    /// _schemaToStop variable
     /// \param[in] _prim Initial prim to read the transform
     /// \param[in] _usdData USDData structure to get info about the prim, for
     /// example: metersperunit
-    /// \param[out] _tfs A vector with all the transforms
-    /// \param[out] _scale The scale of the prims
-    /// \param[in] _schemaToStop Name of the prim where the loop will stop
-    /// reading transforms
-    void GetAllTransforms(
-      const pxr::UsdPrim &_prim,
-      USDData &_usdData,
-      std::vector<ignition::math::Pose3d> &_tfs,
-      ignition::math::Vector3d &_scale,
-      const std::string &_schemaToStop);
-
-    /// \brief This function get the transform from a prim to the specified
-    /// schemaToStop variable
-    /// This will stop when the name of the parent is the same as _schemaToStop
-    /// \param[in] _prim Initial prim to read the transform
-    /// \param[in] _usdData USDData structure to get info about the prim, for
-    /// example: metersperunit
-    /// \param[out] _pose Pose of the prim
+    /// \param[out] _pose Pose of the prim. From _prim to _schemaToStop.
     /// \param[out] _scale The scale of the prim
     /// \param[in] _schemaToStop Name of the prim where the loop will stop
     /// reading transforms
     void IGNITION_SDFORMAT_USD_VISIBLE GetTransform(
       const pxr::UsdPrim &_prim,
-      USDData &_usdData,
+      const USDData &_usdData,
       ignition::math::Pose3d &_pose,
       ignition::math::Vector3d &_scale,
       const std::string &_schemaToStop);
@@ -138,6 +106,8 @@ namespace sdf
     /// \brief Read the usd prim transforms. Scale, rotation or transform might
     /// be defined as float or doubles
     /// \param[in] _prim Prim where the transforms are read
+    /// \return A USDTransforms class with all the transforms related to
+    /// the prim
     UDSTransforms IGNITION_SDFORMAT_USD_VISIBLE ParseUSDTransform(
       const pxr::UsdPrim &_prim);
 }
