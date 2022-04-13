@@ -34,6 +34,8 @@
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
+#include <ignition/common/Util.hh>
+
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
@@ -51,6 +53,30 @@ namespace sdf
   //
   namespace usd
   {
+    /// \brief Return a valid path
+    /// Path must not:
+    ///   - start with a digit
+    ///   - Contain spaces
+    ///   - Contain dots
+    /// \param[in] _path Path to check
+    /// \return A valid path
+    inline std::string validPath(const std::string &_path)
+    {
+      std::string result;
+      if (_path.empty())
+      {
+        return result;
+      }
+      result = ignition::common::replaceAll(_path, " ", "");
+      result = ignition::common::replaceAll(result, ".", "_");
+      if (std::isdigit(result[0]))
+      {
+        result = "_" + result;
+      }
+      return result;
+    }
+
+
     /// \brief Get an object's pose w.r.t. its parent.
     /// \param[in] _obj The object whose pose should be computed/retrieved.
     /// \param[out] _pose The pose of _obj w.r.t. its parent.

@@ -118,7 +118,8 @@ namespace usd
     for (uint64_t i = 0; i < _model.LinkCount(); ++i)
     {
       const auto link = *(_model.LinkByIndex(i));
-      const auto linkPath = std::string(_path + "/" + link.Name());
+      auto linkPath = std::string(_path + "/" + link.Name());
+      linkPath = sdf::usd::validPath(linkPath);
       sdfLinkToUSDPath[link.Name()] = pxr::SdfPath(linkPath);
       UsdErrors linkErrors = ParseSdfLink(
         link, _stage, linkPath, !_model.Static());
