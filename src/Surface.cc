@@ -107,7 +107,7 @@ Errors ODE::Load(ElementPtr _sdf)
     return errors;
   }
 
-  // Check that the provided SDF element is a <contact>
+  // Check that the provided SDF element is a <ode>
   // This is an error that cannot be recovered, so return an error.
   if (_sdf->GetName() != "ode")
   {
@@ -117,31 +117,10 @@ Errors ODE::Load(ElementPtr _sdf)
     return errors;
   }
 
-  if (_sdf->HasElement("mu"))
-  {
-    this->dataPtr->mu =
-        static_cast<double>(_sdf->Get<double>("mu"));
-  }
-
-  if (_sdf->HasElement("mu2"))
-  {
-    this->dataPtr->mu2 =
-        static_cast<double>(_sdf->Get<double>("mu2"));
-  }
-
-  if (_sdf->HasElement("slip1"))
-  {
-    this->dataPtr->slip1 =
-        static_cast<double>(_sdf->Get<double>("slip1"));
-  }
-
-  if (_sdf->HasElement("slip2"))
-  {
-    this->dataPtr->slip2 =
-        static_cast<double>(_sdf->Get<double>("slip2"));
-  }
-
-  // Read fdir1.
+  this->dataPtr->mu = _sdf->Get<double>("mu", this->dataPtr->mu).first;
+  this->dataPtr->mu2 = _sdf->Get<double>("mu2", this->dataPtr->mu2).first;
+  this->dataPtr->slip1 = _sdf->Get<double>("slip1", this->dataPtr->slip1).first;
+  this->dataPtr->slip2 = _sdf->Get<double>("slip2", this->dataPtr->slip2).first;
   this->dataPtr->fdir1 = _sdf->Get<ignition::math::Vector3d>("fdir1",
         this->dataPtr->fdir1).first;
 
@@ -174,13 +153,13 @@ void ODE::SetMu2(double _mu2)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Vector3d ODE::Fdir1() const
+const ignition::math::Vector3d &ODE::Fdir1() const
 {
   return this->dataPtr->fdir1;
 }
 
 /////////////////////////////////////////////////
-void ODE::SetFdir1(ignition::math::Vector3d _fdir)
+void ODE::SetFdir1(const ignition::math::Vector3d &_fdir)
 {
   this->dataPtr->fdir1 = _fdir;
 }
@@ -237,7 +216,7 @@ Errors Friction::Load(ElementPtr _sdf)
     return errors;
   }
 
-  // Check that the provided SDF element is a <contact>
+  // Check that the provided SDF element is a <friction>
   // This is an error that cannot be recovered, so return an error.
   if (_sdf->GetName() != "friction")
   {
@@ -253,7 +232,6 @@ Errors Friction::Load(ElementPtr _sdf)
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
-  // \todo(nkoenig) Parse the remaining collide properties.
   return errors;
 }
 
