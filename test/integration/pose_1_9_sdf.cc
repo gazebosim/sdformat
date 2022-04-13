@@ -764,7 +764,9 @@ TEST(Pose1_9, ToStringWithoutAttrib)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -786,7 +788,9 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -809,7 +813,9 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -833,7 +839,9 @@ TEST(Pose1_9, ToStringWithEulerRPY)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -861,7 +869,9 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
@@ -886,9 +896,11 @@ TEST(Pose1_9, ToStringWithQuatXYZ)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
-  std::string elemStr = poseElem->ToString("");
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
   EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
@@ -916,9 +928,11 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
-  std::string elemStr = poseElem->ToString("");
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
   EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
@@ -939,7 +953,9 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   ASSERT_NE(nullptr, valParam);
   ASSERT_TRUE(valParam->SetFromString("1 2 3 0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing to attribute to degrees, however this does not modify the
@@ -950,13 +966,14 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   ASSERT_TRUE(degreesAttrib->Set<bool>(true));
   EXPECT_TRUE(valParam->Reparse());
 
-  elemStr = poseElem->ToString("");
+  elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
-  elemStr = poseElem->ToString("");
+  EXPECT_TRUE(valParam->Reparse());
+  elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
