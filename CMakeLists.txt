@@ -116,8 +116,8 @@ if (BUILD_SDF)
 
   ########################################
   # Find ignition utils
-  ign_find_package(ignition-utils1 VERSION REQUIRED)
-  set(IGN_UTILS_VER ${ignition-utils1_VERSION_MAJOR})
+  ign_find_package(ignition-utils2 VERSION REQUIRED)
+  set(IGN_UTILS_VER ${ignition-utils2_VERSION_MAJOR})
 
   ########################################
   # Find ignition common
