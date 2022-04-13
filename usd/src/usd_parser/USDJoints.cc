@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,30 +28,28 @@
 
 #include <ignition/common/Util.hh>
 
+#include "sdf/usd/UsdError.hh"
 #include "sdf/usd/usd_parser/USDData.hh"
-
-#include "sdf/Console.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
   namespace usd
   {
-    sdf::Joint ParseJoints(
+    UsdErrors ParseJoints(
       const pxr::UsdPrim &_prim,
-      const std::string &_path,
-      USDData &_usdData)
+      const USDData &_usdData,
+      sdf::Joint &_joint)
     {
-      sdf::Joint joint;
+      UsdErrors errors;
 
-      std::pair<std::string, std::shared_ptr<USDStage>> USDData =
+      std::pair<std::string, std::shared_ptr<USDStage>> usdData =
         _usdData.FindStage(_prim.GetPath().GetName());
-
-      double metersPerUnit = USDData.second->MetersPerUnit();
+      double metersPerUnit = usdData.second->MetersPerUnit();
 
       pxr::SdfPathVector body0, body1;
 
@@ -64,30 +62,35 @@ namespace sdf
 
       if (body1.size() > 0)
       {
-        joint.SetChildLinkName(ignition::common::basename(
+        _joint.SetChildLinkName(ignition::common::basename(
           body1[0].GetString()));
       }
-      else
+      else if (body0.size() > 0)
       {
-        if (body0.size() > 0)
-        {
-          joint.SetParentLinkName("world");
-          joint.SetChildLinkName(ignition::common::basename(
-            body0[0].GetString()));
-        }
+        _joint.SetParentLinkName("world");
+        _joint.SetChildLinkName(ignition::common::basename(
+          body0[0].GetString()));
       }
 
-      if (body0.size() > 0 && joint.ParentLinkName().empty())
+      if (body0.size() > 0 && _joint.ParentLinkName().empty())
       {
-        joint.SetParentLinkName(ignition::common::basename(
+        _joint.SetParentLinkName(ignition::common::basename(
           body0[0].GetString()));
       }
       else
       {
-        joint.SetParentLinkName("world");
+        _joint.SetParentLinkName("world");
       }
 
-      joint.SetName(ignition::common::basename(_path) + "_joint");
+      std::string primName = _prim.GetName();
+      if (primName.find("_joint") == std::string::npos)
+      {
+        _joint.SetName(std::string(_prim.GetName()) + "_joint");
+      }
+      else
+      {
+        _joint.SetName(std::string(_prim.GetName()));
+      }
 
       float lowerLimit;
       float upperLimit;
@@ -105,7 +108,7 @@ namespace sdf
       if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>() ||
           _prim.IsA<pxr::UsdPhysicsRevoluteJoint>())
       {
-        joint.SetPoseRelativeTo(joint.ParentLinkName());
+        _joint.SetPoseRelativeTo(_joint.ParentLinkName());
 
         pxr::TfToken axis;
         if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
@@ -116,15 +119,16 @@ namespace sdf
         {
           pxr::UsdPhysicsRevoluteJoint(_prim).GetAxisAttr().Get(&axis);
         }
+
         if (axis == pxr::UsdGeomTokens->x)
         {
           axisVector = ignition::math::Vector3d(1, 0, 0);
         }
-        if (axis == pxr::UsdGeomTokens->y)
+        else if (axis == pxr::UsdGeomTokens->y)
         {
           axisVector = ignition::math::Vector3d(0, 1, 0);
         }
-        if (axis == pxr::UsdGeomTokens->z)
+        else if (axis == pxr::UsdGeomTokens->z)
         {
           axisVector = ignition::math::Vector3d(0, 0, 1);
         }
@@ -132,10 +136,11 @@ namespace sdf
         pxr::GfVec3f localPose0, localPose1;
         pxr::GfQuatf localRot0, localRot1;
 
-        pxr::UsdPhysicsJoint(_prim).GetLocalPos0Attr().Get(&localPose0);
-        pxr::UsdPhysicsJoint(_prim).GetLocalPos1Attr().Get(&localPose1);
-        pxr::UsdPhysicsJoint(_prim).GetLocalRot0Attr().Get(&localRot0);
-        pxr::UsdPhysicsJoint(_prim).GetLocalRot1Attr().Get(&localRot1);
+        const auto usdPhysicsJoint = pxr::UsdPhysicsJoint(_prim);
+        usdPhysicsJoint.GetLocalPos0Attr().Get(&localPose0);
+        usdPhysicsJoint.GetLocalPos1Attr().Get(&localPose1);
+        usdPhysicsJoint.GetLocalRot0Attr().Get(&localRot0);
+        usdPhysicsJoint.GetLocalRot1Attr().Get(&localRot1);
 
         trans = (localPose0 + localPose1) * metersPerUnit;
 
@@ -196,84 +201,73 @@ namespace sdf
 
       if (_prim.IsA<pxr::UsdPhysicsFixedJoint>())
       {
-        auto variant_physics_fixed_joint = pxr::UsdPhysicsFixedJoint(_prim);
+        _joint.SetType(sdf::JointType::FIXED);
 
-        joint.SetType(sdf::JointType::FIXED);
-
-        return joint;
+        return errors;
       }
       else if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
       {
         auto variant_physics_prismatic_joint =
           pxr::UsdPhysicsPrismaticJoint(_prim);
 
-        joint.SetType(sdf::JointType::PRISMATIC);
+        _joint.SetType(sdf::JointType::PRISMATIC);
 
-        auto errors = jointAxis.SetXyz(-(q2 * axisVector).Round());
-        if (!errors.empty())
+        auto errorsAxis = jointAxis.SetXyz(-(q2 * axisVector).Round());
+        if (!errorsAxis.empty())
         {
-          std::cerr << "Errors encountered when setting xyz of prismatic "
-                    << "joint axis:\n";
-          for (const auto &e : errors)
-            std::cerr << e << "\n";
+          errors.emplace_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              std::string("Errors encountered when setting xyz of prismatic") +
+              "_joint axis: [" + std::string(_prim.GetName()) + "]"));
+          for (const auto & error : errorsAxis)
+            errors.emplace_back(error);
+          return errors;
         }
 
-        joint.SetRawPose(
+        _joint.SetRawPose(
           ignition::math::Pose3d(
             ignition::math::Vector3d(trans[0], trans[1], trans[2]),
             ignition::math::Quaterniond(q1 * q2)));
 
-        joint.SetAxis(0, jointAxis);
         jointAxis.SetLower(lowerLimit * metersPerUnit);
         jointAxis.SetUpper(upperLimit * metersPerUnit);
+        _joint.SetAxis(0, jointAxis);
 
-        return joint;
+        return errors;
       }
       else if (_prim.IsA<pxr::UsdPhysicsRevoluteJoint>())
       {
         auto variant_physics_revolute_joint = pxr::UsdPhysicsRevoluteJoint(_prim);
 
-        joint.SetType(sdf::JointType::REVOLUTE);
+        _joint.SetType(sdf::JointType::REVOLUTE);
 
-        auto errors = jointAxis.SetXyz(axisVector);
-        if (!errors.empty())
+        auto errorsAxis = jointAxis.SetXyz(axisVector);
+        if (!errorsAxis.empty())
         {
-          std::cerr << "Errors encountered when setting xyz of revolute "
-                    << "joint axis:\n";
-          for (const auto &e : errors)
-            std::cerr << e << "\n";
+          errors.emplace_back(UsdError(
+            sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+              std::string("Errors encountered when setting xyz of revolute") +
+              "_joint axis: [" + std::string(_prim.GetName()) + "]"));
+          for (const auto & error : errorsAxis)
+            errors.emplace_back(error);
+          return errors;
         }
 
-        joint.SetRawPose(
-          ignition::math::Pose3d(
+        _joint.SetRawPose(ignition::math::Pose3d(
             ignition::math::Vector3d(trans[0], trans[1], trans[2]),
-            ignition::math::Quaterniond(q1)));
+            q1));
 
-        joint.SetAxis(0, jointAxis);
         jointAxis.SetLower(IGN_DTOR(lowerLimit));
         jointAxis.SetUpper(IGN_DTOR(upperLimit));
+        _joint.SetAxis(0, jointAxis);
 
-        return joint;
+        return errors;
       }
       else if (_prim.IsA<pxr::UsdPhysicsJoint>())
       {
-        auto variant_physics_fixed_joint = pxr::UsdPhysicsJoint(_prim);
-
-        joint.SetType(sdf::JointType::FIXED);
-
-        return joint;
+        _joint.SetType(sdf::JointType::FIXED);
       }
-      //limtis
-
-      // Get safety
-
-      // Get Dynamics
-
-      // Get Mimics
-
-      // Get calibration
-
-      return joint;
+      return errors;
     }
   }
   }

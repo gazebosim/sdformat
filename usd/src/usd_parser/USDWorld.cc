@@ -188,10 +188,40 @@ namespace usd
       }
       // TODO(anyone) support converting other USD light types
 
+      sdf::Model *modelPtr = nullptr;
+      if (!currentModelName.empty())
+      {
+        modelPtr = _world.ModelByName(currentModelName);
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+                "Unable to find a sdf::Model named [" + currentModelName +
+                "] in world named [" + _world.Name() +
+                "], but a sdf::Model with this name should exist."));
+          return errors;
+        }
+      }
+
       if (prim.IsA<pxr::UsdPhysicsJoint>())
       {
-        sdf::Joint joint =
-          ParseJoints(prim, primName, usdData);
+        sdf::Joint joint;
+        modelPtr = _world.ModelByName(currentModelName);
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to find a sdf::Model named [" + currentModelName +
+            "] in world named [" + _world.Name() +
+            "], but a sdf::Model with this name should exist."));
+          return errors;
+        }
+        auto errorsJoint = ParseJoints(prim, usdData, joint);
+        if (!errorsJoint.empty())
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to find parse UsdPhysicsJoint [" +
+            std::string(prim.GetName()) + "]"));
+          return errors;
+        }
         modelPtr->AddJoint(joint);
         continue;
       }
@@ -232,13 +262,11 @@ namespace usd
         continue;
       }
 
-      auto modelPtr = _world.ModelByName(currentModelName);
       if (!modelPtr)
       {
         errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
-              "Unable to find a sdf::Model named [" + currentModelName +
-              "] in world named [" + _world.Name() +
-              "], but a sdf::Model with this name should exist."));
+              "Unable to parse link named [" + linkName +
+              "] because the corresponding sdf::Model object wasn't found."));
         return errors;
       }
 

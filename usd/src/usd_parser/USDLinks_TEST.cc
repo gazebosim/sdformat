@@ -119,13 +119,13 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/geometry"));
   EXPECT_TRUE(cylinderLinkGeometry);
 
-  const auto cylinderLinkCollision = stage->GetPrimAtPath(
-    pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/collision"));
-  EXPECT_TRUE(cylinderLinkCollision);
-
   sdf::usd::ParseUSDLinks(
     cylinderLinkGeometry, "/cylinder/cylinder_link",
     linkCylinderSDF, usdData, scale);
+
+  const auto cylinderLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/cylinder/cylinder_link/cylinder_visual/collision"));
+  EXPECT_TRUE(cylinderLinkCollision);
 
   sdf::usd::ParseUSDLinks(
     cylinderLinkCollision, "/cylinder/cylinder_link",
@@ -147,13 +147,13 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/sphere/sphere_link/sphere_visual/geometry"));
   EXPECT_TRUE(sphereLinkGeometry);
 
-  const auto sphereLinkCollision = stage->GetPrimAtPath(
-    pxr::SdfPath("/sphere/sphere_link/sphere_visual/collision"));
-  EXPECT_TRUE(sphereLinkCollision);
-
   sdf::usd::ParseUSDLinks(
     sphereLinkGeometry, "/sphere/sphere_link",
     linkSphereSDF, usdData, scale);
+
+  const auto sphereLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/sphere/sphere_link/sphere_visual/collision"));
+  EXPECT_TRUE(sphereLinkCollision);
 
   sdf::usd::ParseUSDLinks(
     sphereLinkCollision, "/sphere/sphere_link",
@@ -188,14 +188,14 @@ TEST(USDLinksTest, LinksNameMassAndDiagonalMoments)
     pxr::SdfPath("/ellipsoid/ellipsoid_link"));
   ASSERT_TRUE(ellipsoidLink);
 
-  const auto ellipsoidLinkCollision = stage->GetPrimAtPath(
-    pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/collision"));
-  EXPECT_TRUE(ellipsoidLinkCollision);
-
   std::optional<sdf::Link> linkEllipsoidSDF;
   sdf::usd::ParseUSDLinks(
     ellipsoidLink, "/ellipsoid/ellipsoid_link",
     linkEllipsoidSDF, usdData, scale);
+
+  const auto ellipsoidLinkCollision = stage->GetPrimAtPath(
+    pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/collision"));
+  EXPECT_TRUE(ellipsoidLinkCollision);
 
   sdf::usd::ParseUSDLinks(
     ellipsoidLinkCollision, "/ellipsoid/ellipsoid_link",
