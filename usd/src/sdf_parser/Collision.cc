@@ -141,11 +141,12 @@ namespace usd
             looksPrim = _stage->DefinePrim(looksPath, pxr::TfToken("Scope"));
           }
 
-          // This variable will increase with every new material to avoid collision
-          // with the names of the materials
+          // This variable will increase with every new material to avoid
+          // collision with the names of the materials
           static int i = 0;
 
-          auto materialPath = pxr::SdfPath("/Looks/MaterialPhysics_" + std::to_string(i));
+          auto materialPath =
+            pxr::SdfPath("/Looks/MaterialPhysics_" + std::to_string(i));
           i++;
 
           pxr::UsdShadeMaterial materialUsd;
@@ -177,7 +178,9 @@ namespace usd
             0,
             0,
             {appliedSchemaNamePhysicsMaterialRootAPI,
-             appliedSchemaNamePhysxMaterialAPI})) {}
+             appliedSchemaNamePhysxMaterialAPI}))
+             {
+             }
           primSpec->SetInfo(
             pxr::UsdTokens->apiSchemas, pxr::VtValue::Take(listOpMaterial));
 
