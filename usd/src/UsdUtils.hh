@@ -18,6 +18,8 @@
 #ifndef SDF_USD_SDF_PARSER_UTILS_HH_
 #define SDF_USD_SDF_PARSER_UTILS_HH_
 
+#include <string>
+
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
