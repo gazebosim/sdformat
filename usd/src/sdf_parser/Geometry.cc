@@ -350,7 +350,7 @@ namespace usd
       else
         primName = _path + "/submesh_" + std::to_string(i);
 
-      primName = ignition::common::replaceAll(primName, "-", "_");
+      primName = sdf::usd::validPath(primName);
 
       auto usdMesh = pxr::UsdGeomMesh::Define(_stage, pxr::SdfPath(primName));
       if (!usdMesh)
