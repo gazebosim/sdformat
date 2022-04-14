@@ -174,26 +174,6 @@ namespace usd
         }
       }
 
-      if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
-          prim.IsA<pxr::UsdLuxNonboundableLightBase>())
-      {
-        auto light = ParseUSDLights(prim, usdData, linkName);
-        auto link = modelPtr->LinkByName(linkName);
-        light->SetName(primName);
-        if (light.has_value())
-        {
-          if (!link.has_value())
-          {
-            _world.AddLight(light.value());
-          }
-          else
-          {
-            link->AddLight(light.value());
-          }
-        }
-        continue;
-      }
-
       sdf::Model *modelPtr = nullptr;
       if (!currentModelName.empty())
       {
@@ -206,6 +186,32 @@ namespace usd
                 "], but a sdf::Model with this name should exist."));
           return errors;
         }
+      }
+
+      if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
+          prim.IsA<pxr::UsdLuxNonboundableLightBase>())
+      {
+        auto light = ParseUSDLights(prim, usdData, linkName);
+        if (light)
+        {
+          light->SetName(primName);
+
+          bool worldLight = true;
+          if (modelPtr)
+          {
+            if (auto link = modelPtr->LinkByName(linkName))
+            {
+              link->AddLight(light.value());
+              worldLight = false;
+            }
+          }
+
+          if (worldLight)
+          {
+            _world.AddLight(light.value());
+          }
+        }
+        continue;
       }
 
       if (prim.IsA<pxr::UsdPhysicsJoint>())
