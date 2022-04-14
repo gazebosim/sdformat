@@ -66,6 +66,7 @@ set(gtest_sources
 ign_build_tests(
   TYPE UNIT
   SOURCES ${gtest_sources}
+  LIB_DEPS ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
   INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test usd_parser
 )
 
