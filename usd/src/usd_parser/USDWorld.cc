@@ -27,14 +27,15 @@
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/camera.h>
 #include <pxr/usd/usdGeom/gprim.h>
 #include <pxr/usd/usdGeom/scope.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
-#include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
@@ -42,14 +43,18 @@
 #include "sdf/usd/usd_parser/USDStage.hh"
 #include "sdf/usd/usd_parser/USDTransforms.hh"
 
+#include "USDJoints.hh"
 #include "USDLights.hh"
 #include "USDPhysics.hh"
+#include "USDSensors.hh"
 #include "USDLinks.hh"
 
+#include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Plugin.hh"
+#include "sdf/Visual.hh"
 #include "sdf/World.hh"
 
 namespace sdf
@@ -183,6 +188,43 @@ namespace usd
       }
       // TODO(anyone) support converting other USD light types
 
+      sdf::Model *modelPtr = nullptr;
+      if (!currentModelName.empty())
+      {
+        modelPtr = _world.ModelByName(currentModelName);
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+                "Unable to find a sdf::Model named [" + currentModelName +
+                "] in world named [" + _world.Name() +
+                "], but a sdf::Model with this name should exist."));
+          return errors;
+        }
+      }
+
+      if (prim.IsA<pxr::UsdPhysicsJoint>())
+      {
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to parse joint corresponding to USD prim [" +
+            std::string(prim.GetName()) +
+            "] because the corresponding sdf::Model object wasn't found."));
+          return errors;
+        }
+        sdf::Joint joint;
+        auto errorsJoint = ParseJoints(prim, usdData, joint);
+        if (!errorsJoint.empty())
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to find parse UsdPhysicsJoint [" +
+            std::string(prim.GetName()) + "]"));
+          return errors;
+        }
+        modelPtr->AddJoint(joint);
+        continue;
+      }
+
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
         std::pair<std::string, std::shared_ptr<USDStage>> data =
@@ -200,18 +242,30 @@ namespace usd
         continue;
       }
 
-      if (!prim.IsA<pxr::UsdGeomGprim>() && (primType != "Plane"))
+      if (prim.IsA<pxr::UsdGeomCamera>() || primType == "Lidar")
+      {
+        if (!linkName.empty())
+        {
+          auto sensor = ParseSensors(prim, usdData);
+          auto link = modelPtr->LinkByName(linkName);
+          if (link != nullptr)
+          {
+            link->AddSensor(sensor);
+          }
+        }
+        continue;
+      }
+
+      if (!prim.IsA<pxr::UsdGeomGprim>() && !(primType == "Plane"))
       {
         continue;
       }
 
-      auto modelPtr = _world.ModelByName(currentModelName);
       if (!modelPtr)
       {
         errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
-              "Unable to find a sdf::Model named [" + currentModelName +
-              "] in world named [" + _world.Name() +
-              "], but a sdf::Model with this name should exist."));
+              "Unable to parse link named [" + linkName +
+              "] because the corresponding sdf::Model object wasn't found."));
         return errors;
       }
 

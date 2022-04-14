@@ -35,6 +35,7 @@
 #include "sdf/sdf.hh"
 #include "sdf/usd/sdf_parser/World.hh"
 #include "../sdf_parser/Model.hh"
+#include "../UsdUtils.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
@@ -264,11 +265,7 @@ void runCommand(const Options &_opt)
 
       auto stage = pxr::UsdStage::CreateInMemory();
       std::string modelName = model->Name();
-      modelName = ignition::common::replaceAll(modelName, " ", "");
-      if (!modelName.empty() && std::isdigit(modelName[0]))
-      {
-        modelName = "_" + modelName;
-      }
+      modelName = sdf::usd::validPath(modelName);
       auto modelPath = std::string("/" + modelName);
       auto usdErrors = sdf::usd::ParseSdfModel(
         *model,
@@ -309,7 +306,8 @@ void runCommand(const Options &_opt)
 
   auto stage = pxr::UsdStage::CreateInMemory();
 
-  const auto worldPath = std::string("/" + world->Name());
+  auto worldPath = std::string("/" + world->Name());
+  worldPath = sdf::usd::validPath(worldPath);
   auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
   if (!usdErrors.empty())
   {
