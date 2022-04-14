@@ -44,6 +44,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyParserConfig.cc
   src/sdf/pyPlane.cc
   src/sdf/pySphere.cc
+  src/sdf/pySurface.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -69,6 +70,7 @@ if (BUILD_TESTING)
     pyParserConfig_TEST
     pyPlane_TEST
     pySphere_TEST
+    pySurface_TEST
   )
 
   foreach (test ${python_tests})
