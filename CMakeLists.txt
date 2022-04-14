@@ -18,8 +18,8 @@ set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
 # Find ign-cmake
-find_package(ignition-cmake2 2.10 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+find_package(ignition-cmake3 REQUIRED)
+set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
 
 ########################################
 # Python interfaces vars
