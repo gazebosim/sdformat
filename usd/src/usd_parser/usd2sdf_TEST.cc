@@ -162,14 +162,13 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
         const auto modelPtr = world->ModelByName(_modelName);
         ASSERT_NE(nullptr, modelPtr);
         EXPECT_EQ(1u, modelPtr->LinkCount());
-        EXPECT_NE(nullptr, modelPtr->LinkByName(_linkName));
+        const auto modelLink = modelPtr->LinkByName(_linkName);
+        ASSERT_NE(nullptr, modelLink);
 
         if (!_lightLinkName.empty())
-        {
-          auto modelLink = modelPtr->LinkByName(_linkName);
-          ASSERT_NE(nullptr, modelLink);
           EXPECT_NE(nullptr, modelLink->LightByName(_lightLinkName));
-        }
+        else
+          EXPECT_EQ(0u, modelLink->LightCount());
       };
     checkLink("ground_plane", "link", "");
     checkLink("box", "box_link", "boxModelLight");
