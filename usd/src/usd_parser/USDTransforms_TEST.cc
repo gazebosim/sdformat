@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -75,7 +75,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   ASSERT_TRUE(stage);
 
   checkTransforms(
-    "/shapes/ground_plane",
+    "/ground_plane",
     stage,
     ignition::math::Vector3d(0, 0, -0.125),
     ignition::math::Quaterniond(1, 0, 0, 0),
@@ -83,7 +83,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/ground_plane/link/visual/geometry",
+    "/ground_plane/link/visual/geometry",
     stage,
     ignition::math::Vector3d(0, 0, 0),
     std::nullopt,
@@ -91,7 +91,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/cylinder",
+    "/cylinder",
     stage,
     ignition::math::Vector3d(0, -1.5, 0.5),
     ignition::math::Quaterniond(1, 0, 0, 0),
@@ -99,7 +99,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/sphere",
+    "/sphere",
     stage,
     ignition::math::Vector3d(0, 1.5, 0.5),
       ignition::math::Quaterniond(
@@ -108,7 +108,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/capsule",
+    "/capsule",
     stage,
     ignition::math::Vector3d(0, -3.0, 0.5),
     ignition::math::Quaterniond(
@@ -117,7 +117,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/capsule/capsule_link/capsule_visual",
+    "/capsule/capsule_link/capsule_visual",
     stage,
     ignition::math::Vector3d(0, 0, 0),
     ignition::math::Quaterniond(0, 0, M_PI_2),
@@ -125,7 +125,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/ellipsoid",
+    "/ellipsoid",
     stage,
     ignition::math::Vector3d(0, 3.0, 0.5),
     ignition::math::Quaterniond(
@@ -134,7 +134,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry",
+    "/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry",
     stage,
     ignition::math::Vector3d(0, 0, 0),
     std::nullopt,
@@ -142,7 +142,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
   );
 
   checkTransforms(
-    "/shapes/sun",
+    "/sun",
     stage,
     ignition::math::Vector3d(0, 0, 10),
       ignition::math::Quaterniond(0, IGN_DTOR(-35), 0),
@@ -163,7 +163,7 @@ TEST(USDTransformsTest, GetAllTransform)
 
     pxr::UsdPrim prim = stage->GetPrimAtPath(
       pxr::SdfPath(
-        "/shapes/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
+        "/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
     ASSERT_TRUE(prim);
 
     ignition::math::Pose3d pose;

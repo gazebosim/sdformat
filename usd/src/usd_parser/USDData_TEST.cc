@@ -20,7 +20,7 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include <sdf/usd/usd_parser/USDData.hh>
 #include <sdf/usd/UsdError.hh>
@@ -58,7 +58,7 @@ TEST(USDData, Constructor)
     EXPECT_EQ(0u, usdData.ParseMaterials().size());
 
     EXPECT_EQ(1u, usdData.AllReferences().size());
-    EXPECT_EQ(2u, usdData.Models().size());
+    EXPECT_EQ(0u, usdData.Models().size());
     EXPECT_EQ(7u, usdData.Materials().size());
 
     auto materials = usdData.Materials();

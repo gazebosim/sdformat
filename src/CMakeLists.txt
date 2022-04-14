@@ -51,13 +51,6 @@ if (BUILD_TESTING)
       ${PROJECT_SOURCE_DIR}/test
   )
 
-  if (TARGET UNIT_ign_TEST)
-    # Link the libraries that we always need.
-    target_link_libraries("UNIT_ign_TEST"
-      ignition-cmake${IGN_CMAKE_VER}::utilities
-    )
-  endif()
-
   if (TARGET UNIT_Converter_TEST)
     target_link_libraries(UNIT_Converter_TEST
       TINYXML2::TINYXML2)

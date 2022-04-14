@@ -16,7 +16,9 @@
 */
 #include "USDWorld.hh"
 
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,21 +27,34 @@
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
+#include <pxr/usd/usd/primRange.h>
+#include <pxr/usd/usdGeom/camera.h>
 #include <pxr/usd/usdGeom/gprim.h>
+#include <pxr/usd/usdGeom/scope.h>
 #include <pxr/usd/usdLux/boundableLightBase.h>
 #include <pxr/usd/usdLux/nonboundableLightBase.h>
-#include <pxr/usd/usd/primRange.h>
+#include <pxr/usd/usdPhysics/rigidBodyAPI.h>
 #include <pxr/usd/usdPhysics/scene.h>
+#include <pxr/usd/usdPhysics/joint.h>
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/usd/usd_parser/USDData.hh"
 #include "sdf/usd/usd_parser/USDStage.hh"
+#include "sdf/usd/usd_parser/USDTransforms.hh"
 
+#include "USDJoints.hh"
 #include "USDLights.hh"
 #include "USDPhysics.hh"
+#include "USDSensors.hh"
+#include "USDLinks.hh"
 
+#include "sdf/Collision.hh"
+#include "sdf/Light.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/Plugin.hh"
+#include "sdf/Visual.hh"
 #include "sdf/World.hh"
 
 namespace sdf
@@ -77,9 +92,14 @@ namespace usd
     }
 
     std::string linkName;
+    std::string currentModelName;
+
+    // USD link may have scale, store this value to apply this to the sdf visual
+    // the key is the name of the link and the value is the scale value
+    std::map<std::string, ignition::math::Vector3d> linkScaleMap;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
-    for (auto const &prim : range)
+    for (const auto &prim : range)
     {
       // Skip materials, the data is already available in the USDData class
       if (prim.IsA<pxr::UsdShadeMaterial>() || prim.IsA<pxr::UsdShadeShader>())
@@ -93,6 +113,34 @@ namespace usd
 
       std::vector<std::string> primPathTokens =
         ignition::common::split(primPath, "/");
+
+      // This assumption on the scene graph wouldn't hold if the usd does
+      // not come from Isaac Sim
+      if (primPathTokens.size() == 1 && !prim.IsA<pxr::UsdGeomCamera>()
+          && !prim.IsA<pxr::UsdGeomScope>()
+          && !prim.IsA<pxr::UsdPhysicsScene>()
+          && !prim.IsA<pxr::UsdLuxBoundableLightBase>()
+          && !prim.IsA<pxr::UsdLuxNonboundableLightBase>())
+      {
+        sdf::Model model = sdf::Model();
+        model.SetName(primPathTokens[0]);
+        currentModelName = primPathTokens[0];
+
+        ignition::math::Pose3d pose;
+        ignition::math::Vector3d scale{1, 1, 1};
+
+        GetTransform(
+          prim,
+          usdData,
+          pose,
+          scale,
+          model.Name());
+
+        model.SetRawPose(pose);
+        model.SetStatic(!prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
+
+        _world.AddModel(model);
+      }
 
       // In general USD models used in Issac Sim define the model path
       // under a root path for example:
@@ -140,6 +188,43 @@ namespace usd
       }
       // TODO(anyone) support converting other USD light types
 
+      sdf::Model *modelPtr = nullptr;
+      if (!currentModelName.empty())
+      {
+        modelPtr = _world.ModelByName(currentModelName);
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+                "Unable to find a sdf::Model named [" + currentModelName +
+                "] in world named [" + _world.Name() +
+                "], but a sdf::Model with this name should exist."));
+          return errors;
+        }
+      }
+
+      if (prim.IsA<pxr::UsdPhysicsJoint>())
+      {
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to parse joint corresponding to USD prim [" +
+            std::string(prim.GetName()) +
+            "] because the corresponding sdf::Model object wasn't found."));
+          return errors;
+        }
+        sdf::Joint joint;
+        auto errorsJoint = ParseJoints(prim, usdData, joint);
+        if (!errorsJoint.empty())
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to find parse UsdPhysicsJoint [" +
+            std::string(prim.GetName()) + "]"));
+          return errors;
+        }
+        modelPtr->AddJoint(joint);
+        continue;
+      }
+
       if (prim.IsA<pxr::UsdPhysicsScene>())
       {
         std::pair<std::string, std::shared_ptr<USDStage>> data =
@@ -155,6 +240,82 @@ namespace usd
         ParseUSDPhysicsScene(pxr::UsdPhysicsScene(prim), _world,
             data.second->MetersPerUnit());
         continue;
+      }
+
+      if (prim.IsA<pxr::UsdGeomCamera>() || primType == "Lidar")
+      {
+        if (!linkName.empty())
+        {
+          auto sensor = ParseSensors(prim, usdData);
+          auto link = modelPtr->LinkByName(linkName);
+          if (link != nullptr)
+          {
+            link->AddSensor(sensor);
+          }
+        }
+        continue;
+      }
+
+      if (!prim.IsA<pxr::UsdGeomGprim>() && !(primType == "Plane"))
+      {
+        continue;
+      }
+
+      if (!modelPtr)
+      {
+        errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+              "Unable to parse link named [" + linkName +
+              "] because the corresponding sdf::Model object wasn't found."));
+        return errors;
+      }
+
+      std::optional<sdf::Link> optionalLink;
+      if (auto linkInserted = modelPtr->LinkByName(linkName))
+      {
+        optionalLink = *linkInserted;
+        auto scale = linkScaleMap.find(linkName);
+        if (scale == linkScaleMap.end())
+        {
+          scale = linkScaleMap.insert(
+              {linkName, ignition::math::Vector3d(1, 1, 1)}).first;
+        }
+        sdf::usd::ParseUSDLinks(
+          prim, linkName, optionalLink, usdData, scale->second);
+      }
+      else
+      {
+        ignition::math::Vector3d scale{1, 1, 1};
+
+        sdf::usd::ParseUSDLinks(prim, linkName, optionalLink, usdData, scale);
+        linkScaleMap[linkName] = scale;
+
+        if (optionalLink && !optionalLink->Name().empty() &&
+            !modelPtr->LinkByName(optionalLink->Name()))
+        {
+          modelPtr->AddLink(optionalLink.value());
+        }
+      }
+    }
+
+    for (unsigned int i = 0; i < _world.LightCount(); ++i)
+    {
+      auto light = _world.LightByIndex(i);
+      light->SetName(ignition::common::basename(light->Name()));
+    }
+
+    for (unsigned int i = 0; i < _world.ModelCount(); ++i)
+    {
+      const auto m = _world.ModelByIndex(i);
+
+      // We might include some empty models
+      // for example: some models create a world path to set up physics
+      // but there is no model data inside
+      // TODO(ahcorde) Add a RemoveModelByName() method in sdf::World
+      if (m->LinkCount() == 0)
+      {
+        sdf::Link emptyLink;
+        emptyLink.SetName("emptyLink");
+        m->AddLink(emptyLink);
       }
     }
 

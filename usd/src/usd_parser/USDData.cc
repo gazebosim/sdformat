@@ -162,13 +162,6 @@ namespace usd {
         continue;
       }
 
-      std::string primName = pxr::TfStringify(_prim.GetPath());
-      std::vector<std::string> tokens = ignition::common::split(primName, "/");
-      if (tokens.size() == 1)
-      {
-        this->dataPtr->models.insert(tokens[0]);
-      }
-
       pxr::UsdPrimCompositionQuery query =
         pxr::UsdPrimCompositionQuery::GetDirectReferences(_prim);
 
