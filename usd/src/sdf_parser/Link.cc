@@ -131,7 +131,8 @@ namespace usd
     for (uint64_t i = 0; i < _link.VisualCount(); ++i)
     {
       const auto visual = *(_link.VisualByIndex(i));
-      const auto visualPath = std::string(_path + "/" + visual.Name());
+      auto visualPath = std::string(_path + "/" + visual.Name());
+      visualPath = sdf::usd::validPath(visualPath);
       auto errorsLink = ParseSdfVisual(visual, _stage, visualPath);
       if (!errorsLink.empty())
       {
@@ -147,7 +148,8 @@ namespace usd
     for (uint64_t i = 0; i < _link.CollisionCount(); ++i)
     {
       const auto collision = *(_link.CollisionByIndex(i));
-      const auto collisionPath = std::string(_path + "/" + collision.Name());
+      auto collisionPath = std::string(_path + "/" + collision.Name());
+      collisionPath = sdf::usd::validPath(collisionPath);
       auto errorsCollision = ParseSdfCollision(collision, _stage,
           collisionPath);
       if (!errorsCollision.empty())
@@ -166,7 +168,8 @@ namespace usd
     for (uint64_t i = 0; i < _link.SensorCount(); ++i)
     {
       const auto sensor = *(_link.SensorByIndex(i));
-      const auto sensorPath = std::string(_path + "/" + sensor.Name());
+      auto sensorPath = std::string(_path + "/" + sensor.Name());
+      sensorPath = sdf::usd::validPath(sensorPath);
       UsdErrors errorsSensor = ParseSdfSensor(sensor, _stage, sensorPath);
       if (!errorsSensor.empty())
       {
@@ -183,6 +186,7 @@ namespace usd
     {
       const auto light = *(_link.LightByIndex(i));
       auto lightPath = std::string(_path + "/" + light.Name());
+      lightPath = sdf::usd::validPath(lightPath);
       UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
       if (!lightErrors.empty())
       {
