@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
 #pragma push_macro ("__DEPRECATED")
@@ -196,10 +197,18 @@ namespace usd
         {
           light->SetName(primName);
 
+          // assume this light belongs to the world unless the corresponding
+          // model/link for this light are found
           bool worldLight = true;
-          if (modelPtr)
+
+          // if the light prim we are parsing has no parent (or if its parent
+          // is the root prim), this means the light belongs to the world
+          const bool noModelAncestor = !prim.GetParent() ||
+            (prim.GetParent().GetName().GetString() == "/");
+          if (!noModelAncestor && modelPtr)
           {
-            if (auto link = modelPtr->LinkByName(linkName))
+            if (auto link =
+                modelPtr->LinkByName(ignition::common::basename(linkName)))
             {
               link->AddLight(light.value());
               worldLight = false;
