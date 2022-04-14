@@ -191,7 +191,7 @@ TEST(DOMcontact, CollideBitmask)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMfriction, DefaultConstruction)
+TEST(DOMfriction, SetFriction)
 {
   sdf::ODE ode1;
   ode1.SetMu(0.1);
@@ -320,7 +320,7 @@ TEST(DOMfriction, Set)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMode, DefaultConstruction)
+TEST(DOMode, DefaultValues)
 {
   sdf::ODE ode;
   EXPECT_EQ(nullptr, ode.Element());
