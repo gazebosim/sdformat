@@ -20,7 +20,7 @@
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/TempDirectory.hh>
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"

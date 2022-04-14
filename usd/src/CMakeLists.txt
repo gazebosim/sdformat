@@ -68,7 +68,7 @@ set(gtest_sources
 ign_build_tests(
   TYPE UNIT
   SOURCES ${gtest_sources}
-  LIB_DEPS ${usd_target} ignition-cmake${IGN_CMAKE_VER}::utilities
+  LIB_DEPS ${usd_target}
   INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test usd_parser
 )
 
