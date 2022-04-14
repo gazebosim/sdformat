@@ -134,7 +134,8 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
-    int inDegrees, int snapToDegrees, float snapTolerance)
+    int _inDegrees, int _snapToDegrees, float _snapTolerance,
+    int _preserveIncludes, int _outPrecision)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -157,47 +158,24 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
   }
 
   sdf::PrintConfig config;
-  if (inDegrees!= 0)
+  if (_inDegrees != 0)
   {
     config.SetRotationInDegrees(true);
   }
-  if (snapToDegrees > 0)
+
+  if (_snapToDegrees > 0)
   {
-    config.SetRotationSnapToDegrees(static_cast<unsigned int>(snapToDegrees),
-                                    static_cast<double>(snapTolerance));
+    config.SetRotationSnapToDegrees(static_cast<unsigned int>(_snapToDegrees),
+                                    static_cast<double>(_snapTolerance));
   }
+
+  if (_preserveIncludes != 0)
+    config.SetPreserveIncludes(true);
+
+  if (_outPrecision > 0)
+    config.SetOutPrecision(_outPrecision);
 
   sdf->PrintValues(config);
-  return 0;
-}
-
-//////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE int cmdPrintPreserveIncludes(const char *_path)
-{
-  if (!sdf::filesystem::exists(_path))
-  {
-    std::cerr << "Error: File [" << _path << "] does not exist.\n";
-    return -1;
-  }
-
-  sdf::SDFPtr sdf(new sdf::SDF());
-
-  if (!sdf::init(sdf))
-  {
-    std::cerr << "Error: SDF schema initialization failed.\n";
-    return -1;
-  }
-
-  if (!sdf::readFile(_path, sdf))
-  {
-    std::cerr << "Error: SDF parsing the xml failed.\n";
-    return -1;
-  }
-
-  sdf::PrintConfig config;
-  config.SetPreserveIncludes(true);
-  sdf->PrintValues(config);
-
   return 0;
 }
 
