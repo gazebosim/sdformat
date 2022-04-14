@@ -46,6 +46,7 @@
 #include "USDJoints.hh"
 #include "USDLights.hh"
 #include "USDPhysics.hh"
+#include "USDSensors.hh"
 #include "USDLinks.hh"
 
 #include "sdf/Collision.hh"
@@ -241,7 +242,21 @@ namespace usd
         continue;
       }
 
-      if (!prim.IsA<pxr::UsdGeomGprim>() && (primType != "Plane"))
+      if (prim.IsA<pxr::UsdGeomCamera>() || primType == "Lidar")
+      {
+        if (!linkName.empty())
+        {
+          auto sensor = ParseSensors(prim, usdData);
+          auto link = modelPtr->LinkByName(linkName);
+          if (link != nullptr)
+          {
+            link->AddSensor(sensor);
+          }
+        }
+        continue;
+      }
+
+      if (!prim.IsA<pxr::UsdGeomGprim>() && !(primType == "Plane"))
       {
         continue;
       }

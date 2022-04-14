@@ -40,6 +40,7 @@
 #include "sdf/World.hh"
 #include "Light.hh"
 #include "Model.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -75,12 +76,8 @@ namespace usd
     {
       const auto model = *(_world.ModelByIndex(i));
       std::string modelName = model.Name();
-      if (!modelName.empty() && std::isdigit(modelName[0]))
-      {
-        modelName = "_" + modelName;
-      }
+      modelName = sdf::usd::validPath(modelName);
       auto modelPath = std::string(_path + "/" + modelName);
-      modelPath = ignition::common::replaceAll(modelPath, " ", "");
       UsdErrors modelErrors =
         ParseSdfModel(model, _stage, modelPath, worldPrimPath);
       if (!modelErrors.empty())
@@ -96,7 +93,7 @@ namespace usd
     {
       const auto light = *(_world.LightByIndex(i));
       auto lightPath = std::string(_path + "/" + light.Name());
-      lightPath = ignition::common::replaceAll(lightPath, " ", "");
+      lightPath = sdf::usd::validPath(lightPath);
       UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
       if (!lightErrors.empty())
       {
