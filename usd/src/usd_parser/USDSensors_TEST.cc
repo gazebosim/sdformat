@@ -68,7 +68,7 @@ TEST(USDJointTest, JointTest)
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, cameraSDF->PixelFormat());
   EXPECT_DOUBLE_EQ(1000000, cameraSDF->FarClip());
   EXPECT_DOUBLE_EQ(1, cameraSDF->NearClip());
-  EXPECT_DOUBLE_EQ(20.955, cameraSDF->HorizontalFov().Degree());
+  EXPECT_DOUBLE_EQ(20.955, cameraSDF->HorizontalFov().Radian());
   EXPECT_DOUBLE_EQ(24.0, cameraSDF->LensFocalLength());
 
   const auto lidarPrim = stage->GetPrimAtPath(pxr::SdfPath(
