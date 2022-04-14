@@ -19,7 +19,7 @@
 
 #include <ignition/common/Filesystem.hh>
 
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include <sdf/usd/usd_parser/USDStage.hh>
 #include <sdf/usd/UsdError.hh>
