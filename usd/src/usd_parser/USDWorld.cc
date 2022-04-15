@@ -64,7 +64,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    sdf::World &_world)
+      bool _useGazeboPlugins, sdf::World &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
@@ -189,7 +189,7 @@ namespace usd
         }
       }
 
-      if (primType == "RosDifferentialBase")
+      if (_useGazeboPlugins && primType == "RosDifferentialBase")
       {
         if (!modelPtr)
         {
@@ -400,28 +400,31 @@ namespace usd
       }
     }
 
-    // Add some plugins to run the Ignition Gazebo simulation
-    sdf::Plugin physicsPlugin;
-    physicsPlugin.SetName("ignition::gazebo::systems::Physics");
-    physicsPlugin.SetFilename("ignition-gazebo-physics-system");
-    _world.AddPlugin(physicsPlugin);
+    if (_useGazeboPlugins)
+    {
+      // Add some plugins to run the Ignition Gazebo simulation
+      sdf::Plugin physicsPlugin;
+      physicsPlugin.SetName("ignition::gazebo::systems::Physics");
+      physicsPlugin.SetFilename("ignition-gazebo-physics-system");
+      _world.AddPlugin(physicsPlugin);
 
-    sdf::Plugin sensorsPlugin;
-    sensorsPlugin.SetName("ignition::gazebo::systems::Sensors");
-    sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
-    _world.AddPlugin(sensorsPlugin);
+      sdf::Plugin sensorsPlugin;
+      sensorsPlugin.SetName("ignition::gazebo::systems::Sensors");
+      sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
+      _world.AddPlugin(sensorsPlugin);
 
-    sdf::Plugin userCommandsPlugin;
-    userCommandsPlugin.SetName("ignition::gazebo::systems::UserCommands");
-    userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
-    _world.AddPlugin(userCommandsPlugin);
+      sdf::Plugin userCommandsPlugin;
+      userCommandsPlugin.SetName("ignition::gazebo::systems::UserCommands");
+      userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
+      _world.AddPlugin(userCommandsPlugin);
 
-    sdf::Plugin sceneBroadcasterPlugin;
-    sceneBroadcasterPlugin.SetName(
-      "ignition::gazebo::systems::SceneBroadcaster");
-    sceneBroadcasterPlugin.SetFilename(
-      "ignition-gazebo-scene-broadcaster-system");
-    _world.AddPlugin(sceneBroadcasterPlugin);
+      sdf::Plugin sceneBroadcasterPlugin;
+      sceneBroadcasterPlugin.SetName(
+        "ignition::gazebo::systems::SceneBroadcaster");
+      sceneBroadcasterPlugin.SetFilename(
+        "ignition-gazebo-scene-broadcaster-system");
+      _world.AddPlugin(sceneBroadcasterPlugin);
+    }
 
     return errors;
   }
