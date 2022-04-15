@@ -18,14 +18,25 @@
 
 #include "pyBox.hh"
 #include "pyCollision.hh"
+#include "pyCylinder.hh"
 #include "pyError.hh"
+#include "pyMesh.hh"
 #include "pyParserConfig.hh"
+#include "pyPlane.hh"
+#include "pySphere.hh"
+#include "pySurface.hh"
 
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
   sdf::python::defineBox(m);
   sdf::python::defineCollision(m);
+  sdf::python::defineContact(m);
+  sdf::python::defineCylinder(m);
   sdf::python::defineError(m);
+  sdf::python::defineMesh(m);
   sdf::python::defineParserConfig(m);
+  sdf::python::definePlane(m);
+  sdf::python::defineSphere(m);
+  sdf::python::defineSurface(m);
 }
