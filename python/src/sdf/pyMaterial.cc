@@ -41,31 +41,31 @@ void defineMaterial(pybind11::object module)
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("set_ambient", &sdf::Material::SetAmbient,
-         "Get the ambient color. The ambient color is "
+         "Set the ambient color. The ambient color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("diffuse", &sdf::Material::Diffuse,
-         "Get the diffuse color. The ambient color is "
+         "Get the diffuse color. The diffuse color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("set_diffuse", &sdf::Material::SetDiffuse,
-         "Get the diffuse color. The ambient color is "
+         "Set the diffuse color. The diffuse color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("specular", &sdf::Material::Specular,
-         "Get the specular color. The ambient color is "
+         "Get the specular color. The specular color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("set_specular", &sdf::Material::SetSpecular,
-         "Get the specular color. The ambient color is "
+         "Set the specular color. The specular color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("emissive", &sdf::Material::Emissive,
-         "Get the emissive color. The ambient color is "
+         "Get the emissive color. The emissive color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("set_emissive", &sdf::Material::SetEmissive,
-         "Get the emissive color. The ambient color is "
+         "Set the emissive color. The emissive color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
     .def("render_order", &sdf::Material::RenderOrder,

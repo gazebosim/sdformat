@@ -18,7 +18,7 @@ from ignition.math import Color
 import unittest
 
 
-class GeometryTEST(unittest.TestCase):
+class MaterialTEST(unittest.TestCase):
 
   def test_default_construction(self):
     material = Material()
@@ -220,24 +220,6 @@ class GeometryTEST(unittest.TestCase):
     # EXPECT_NE(material.PbrMaterial(), nullptr)
     # self.assertEqual(workflow,
     #   *material.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL))
-
-    # Move the material
-    moved = material
-    self.assertEqual(Color(0.1, 0.2, 0.3, 0.5), moved.ambient())
-    self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), moved.diffuse())
-    self.assertEqual(Color(0.3, 0.4, 0.5, 0.7), moved.specular())
-    self.assertEqual(Color(0.4, 0.5, 0.6, 0.8), moved.emissive())
-    self.assertFalse(moved.lighting())
-    self.assertEqual(5, moved.render_order())
-    self.assertTrue(moved.double_sided())
-    self.assertEqual("uri", moved.script_uri())
-    self.assertEqual("name", moved.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, moved.shader())
-    self.assertEqual("map", moved.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(workflow,
-    #   *moved.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL))
-    self.assertEqual("/my/path", moved.file_path())
 
 
 if __name__ == '__main__':
