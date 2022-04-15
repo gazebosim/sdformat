@@ -20,6 +20,8 @@
 #include <string>
 #include <ignition/utils/ImplPtr.hh>
 
+#include "sdf/OutputConfig.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -202,10 +204,10 @@ namespace sdf
     /// root.
     /// Note that parameter passing functionality is not captured with this
     /// function.
-    /// \param[in] _useIncludeTag This will pass the _useIncludeTag to
-    /// sdf::Model::ToElement.
+    /// \param[in] _config Custom output configuration
     /// \return SDF element pointer with updated root values.
-    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+    public: sdf::ElementPtr ToElement(
+        const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Private data pointer
     IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
