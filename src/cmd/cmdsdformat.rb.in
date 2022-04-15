@@ -42,7 +42,8 @@ COMMANDS = {  'sdf' =>
                        "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                    use only and the output may change without any promise of stability)\n" +
-                       "  -p [ --print ] arg                Print converted arg.\n" +
+                       "  -p [ --print ] arg                Print converted arg. Note the quaternion representation of the\n" +
+                       "                                    rotational part of poses and unit vectors will be normalized.\n" +
                        "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
                        "      --degrees                     Pose rotation angles are printed in degrees.\n" +
                        "      --snap-to-degrees arg         Snap pose rotation angles to this specified interval in degrees. This value must be\n" +
@@ -50,6 +51,9 @@ COMMANDS = {  'sdf' =>
                        "      --snap-tolerance arg          Used in conjunction with --snap-to-degrees, specifies the tolerance at which snapping\n" +
                        "                                    occurs. This value must be larger than 0, less than 360, and less than the defined\n" +
                        "                                    degrees value to snap to. If unspecified, its default value is 0.01.\n" +
+                       "      --inertial-stats  arg         Prints moment of inertia, centre of mass, and total mass from a model sdf file.\n" +
+                       "      --precision arg               Set the output stream precision for floating point numbers. The arg must be a positive integer.\n" +
+
                        COMMON_OPTIONS
             }
 
@@ -65,6 +69,7 @@ class Cmd
     options = {}
     options['degrees'] = 0
     options['snap_tolerance'] = 0.01
+    options['preserve_includes'] = 0
 
     usage = COMMANDS[args[0]]
 
@@ -80,6 +85,10 @@ class Cmd
       opts.on('-k arg', '--check arg', String,
               'Check if an SDFormat file is valid.') do |arg|
         options['check'] = arg
+      end
+      opts.on('--inertial-stats arg', String,
+              'Prints moment of inertia, centre of mass, and total mass from a model sdf file.') do |arg|
+        options['inertial_stats'] = arg
       end
       opts.on('-d', '--describe [VERSION]', 'Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@)') do |v|
         options['describe'] = v
@@ -109,6 +118,10 @@ class Cmd
         end
         options['snap_tolerance'] = arg
       end
+      opts.on('--precision arg', Integer,
+              'Set the output stream precision for floating point numbers.') do |arg|
+        options['precision'] = arg
+      end
       opts.on('-g arg', '--graph type', String,
               'Print PoseRelativeTo or FrameAttachedTo graph') do |graph_type|
         options['graph'] = {:type => graph_type}
@@ -131,7 +144,8 @@ class Cmd
 
     options['command'] = ARGV[0]
 
-    if options['preserve_includes'] and not options['print']
+    if (options['preserve_includes'] != 0 and not options['print']) ||
+        (options['precision'] and not options['print'])
       puts usage
       exit(-1)
     end
@@ -201,26 +215,33 @@ class Cmd
         if options.key?('check')
           Importer.extern 'int cmdCheck(const char *)'
           exit(Importer.cmdCheck(File.expand_path(options['check'])))
+        elsif options.key?('inertial_stats')
+          Importer.extern 'int cmdInertialStats(const char *)'
+          exit(Importer.cmdInertialStats(options['inertial_stats']))
         elsif options.key?('describe')
           Importer.extern 'int cmdDescribe(const char *)'
           exit(Importer.cmdDescribe(options['describe']))
         elsif options.key?('print')
           snap_to_degrees = 0
-          if options['preserve_includes']
-            Importer.extern 'int cmdPrintPreserveIncludes(const char *)'
-            exit(Importer.cmdPrintPreserveIncludes(File.expand_path(options['print'])))
-          elsif options.key?('snap_to_degrees')
+          precision = 0
+
+          if options.key?('snap_to_degrees')
             if options['snap_to_degrees'] < options['snap_tolerance']
               puts "Rotation snapping tolerance must be larger than the snapping tolerance."
               exit(-1)
             end
             snap_to_degrees = options['snap_to_degrees']
           end
-          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance)'
+          if options.key?('precision')
+            precision = options['precision']
+          end
+          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance, int, int)'
           exit(Importer.cmdPrint(File.expand_path(options['print']),
                                  options['degrees'],
                                  snap_to_degrees,
-                                 options['snap_tolerance']))
+                                 options['snap_tolerance'],
+                                 options['preserve_includes'],
+                                 precision))
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))
