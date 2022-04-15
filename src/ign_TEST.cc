@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string>
 
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
@@ -1802,6 +1802,89 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
       << "}";
 
   EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
+}
+
+/////////////////////////////////////////////////
+TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  auto expectedOutput =
+    "Inertial statistics for model: test_model\n"
+    "---\n"
+    "Total mass of the model: 24\n"
+    "---\n"
+    "Centre of mass in model frame: \n"
+    "X: 0\n"
+    "Y: 0\n"
+    "Z: 0\n"
+    "---\n"
+    "Moment of inertia matrix: \n"
+    "304  0    0    \n"
+    "0    304  0    \n"
+    "0    0    604  \n"
+    "---\n";
+
+  // Check a good SDF file by passing the absolute path
+  {
+    std::string path = pathBase +"/inertial_stats.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  // Check a good SDF file from the same folder by passing a relative path
+  {
+    std::string path = "inertial_stats.sdf";
+
+    std::string output =
+      custom_exec_str("cd " + pathBase + " && " +
+                      IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  expectedOutput =
+          "Error Code 18: Msg: A link named link has invalid inertia.\n\n"
+          "Inertial statistics for model: model\n"
+          "---\n"
+          "Total mass of the model: 0\n"
+          "---\n"
+          "Centre of mass in model frame: \n"
+          "X: 0\n"
+          "Y: 0\n"
+          "Z: 0\n"
+          "---\n"
+          "Moment of inertia matrix: \n"
+          "0  0  0  \n"
+          "0  0  0  \n"
+          "0  0  0  \n"
+          "---\n";
+
+  // Check an invalid SDF file by passing the absolute path
+  {
+    std::string path = pathBase +"/inertial_invalid.sdf";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  expectedOutput =
+          "Error: Expected a model file but received a world file.\n";
+  // Check a valid world file.
+  {
+    std::string path = pathBase +"/box_plane_low_friction_test.world";
+
+    std::string output =
+      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
 }
 
 /////////////////////////////////////////////////

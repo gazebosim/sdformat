@@ -116,7 +116,7 @@ if (BUILD_SDF)
 
   ########################################
   # Find ignition utils
-  ign_find_package(ignition-utils2 VERSION REQUIRED)
+  ign_find_package(ignition-utils2 REQUIRED COMPONENTS cli)
   set(IGN_UTILS_VER ${ignition-utils2_VERSION_MAJOR})
 
   ########################################
