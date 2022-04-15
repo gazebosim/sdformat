@@ -52,7 +52,7 @@ namespace sdf
     /// \return The plane normal vector.
     public: ignition::math::Vector3d Normal() const;
 
-    /// \brief Set the plane normal vector. The _normal vector will be
+    /// \brief Set the plane normal vector. The normal vector will be
     /// normalized. See ignition::math::Vector3d Normal() for more information
     /// about the normal vector, such as the frame in which it is specified.
     /// \param[in] _normal The plane normal vector.

@@ -1,9 +1,9 @@
-libignition-cmake2-dev
+libignition-cmake3-dev
 libignition-common5-dev
 libignition-math7-dev
-libignition-tools-dev
-libignition-utils1-dev
-libignition-utils1-cli-dev
+libignition-tools2-dev
+libignition-utils2-dev
+libignition-utils2-cli-dev
 libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils

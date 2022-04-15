@@ -3,8 +3,8 @@
   <model name="test_nested_model_with_frames">
     <include>
       <!-- This search path for this model must be added by the test code -->
-      <uri>test_model_with_frames</uri>
-      <pose>0 10 0 1.570796326794895 0 0</pose>
+      <uri>test_model_with_frames_no_rotations</uri>
+      <pose>0 10 0 0 0 0</pose>
     </include>
   </model>
 </sdf>
