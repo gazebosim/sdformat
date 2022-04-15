@@ -14,15 +14,20 @@
  * limitations under the License.
  *
 */
+#include <set>
 #include <string>
 
 #include <gtest/gtest.h>
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/TempDirectory.hh>
+#include <ignition/common/Util.hh>
 
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
+#include "sdf/Light.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "test_config.h"
@@ -74,6 +79,10 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto tmp = ignition::common::createTempDirectory("usd",
       ignition::common::tempDirectoryPath());
+
+  auto systemPaths = ignition::common::systemPaths();
+  systemPaths->AddFilePaths(ignition::common::joinPaths(
+    sdf::testing::TestFile("usd"), "materials", "textures"));
   // Check a good SDF file
   {
     const std::string path = sdf::testing::TestFile("usd", "upAxisZ.usda");
@@ -99,7 +108,73 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_DOUBLE_EQ(0.0, world->Gravity()[1]);
     EXPECT_DOUBLE_EQ(-0.098, world->Gravity()[2]);
 
-    // TODO(anyone) Check the remaining contents of outputUsdFilePath
-    // when the parser is implemented
+    auto plugins = world->Plugins();
+    EXPECT_EQ(4u, plugins.size());
+    EXPECT_EQ("ignition::gazebo::systems::Physics", plugins[0].Name());
+    EXPECT_EQ("ignition-gazebo-physics-system", plugins[0].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::Sensors", plugins[1].Name());
+    EXPECT_EQ("ignition-gazebo-sensors-system", plugins[1].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::UserCommands", plugins[2].Name());
+    EXPECT_EQ("ignition-gazebo-user-commands-system", plugins[2].Filename());
+
+    EXPECT_EQ("ignition::gazebo::systems::SceneBroadcaster", plugins[3].Name());
+    EXPECT_EQ(
+      "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
+
+    // the world should have lights attached to it
+    std::set<std::string> savedLightNames;
+    for (unsigned int i = 0; i < world->LightCount(); ++i)
+      savedLightNames.insert(world->LightByIndex(i)->Name());
+    EXPECT_EQ(3u, savedLightNames.size());
+
+    EXPECT_NE(savedLightNames.end(), savedLightNames.find("defaultLight"));
+    EXPECT_NE(savedLightNames.end(), savedLightNames.find("diskLight"));
+    EXPECT_NE(savedLightNames.end(), savedLightNames.find("sun"));
+
+    // make sure all models in the USD file were correctly parsed to SDF
+    std::set<std::string> savedModelNames;
+    for (unsigned int i = 0; i < world->ModelCount(); ++i)
+      savedModelNames.insert(world->ModelByIndex(i)->Name());
+    EXPECT_EQ(6u, savedModelNames.size());
+
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("ground_plane"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("box"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("cylinder"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("sphere"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("capsule"));
+    EXPECT_NE(savedModelNames.end(), savedModelNames.find("ellipsoid"));
+
+    // check for static/non-static models
+    ASSERT_NE(nullptr, world->ModelByName("ground_plane"));
+    EXPECT_TRUE(world->ModelByName("ground_plane")->Static());
+    ASSERT_NE(nullptr, world->ModelByName("box"));
+    EXPECT_FALSE(world->ModelByName("box")->Static());
+
+    // Check that models have the right links.
+    // If a link should have a light attached to it, check that as well
+    std::function<void(const std::string &, const std::string &,
+        const std::string &)> checkLink =
+      [&world](const std::string &_modelName, const std::string &_linkName,
+          const std::string &_lightLinkName)
+      {
+        const auto modelPtr = world->ModelByName(_modelName);
+        ASSERT_NE(nullptr, modelPtr);
+        EXPECT_EQ(1u, modelPtr->LinkCount());
+        const auto modelLink = modelPtr->LinkByName(_linkName);
+        ASSERT_NE(nullptr, modelLink);
+
+        if (!_lightLinkName.empty())
+          EXPECT_NE(nullptr, modelLink->LightByName(_lightLinkName));
+        else
+          EXPECT_EQ(0u, modelLink->LightCount());
+      };
+    checkLink("ground_plane", "link", "");
+    checkLink("box", "box_link", "boxModelLight");
+    checkLink("cylinder", "cylinder_link", "");
+    checkLink("sphere", "sphere_link", "");
+    checkLink("capsule", "capsule_link", "");
+    checkLink("ellipsoid", "ellipsoid_link", "");
   }
 }

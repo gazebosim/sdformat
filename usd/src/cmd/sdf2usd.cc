@@ -15,7 +15,8 @@
  *
  */
 
-#include <string.h>
+#include <cctype>
+#include <string>
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
@@ -33,6 +34,8 @@
 
 #include "sdf/sdf.hh"
 #include "sdf/usd/sdf_parser/World.hh"
+#include "../sdf_parser/Model.hh"
+#include "../UsdUtils.hh"
 
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
@@ -223,11 +226,74 @@ void runCommand(const Options &_opt)
     exit(-2);
   }
 
-  // only support SDF files with exactly 1 world for now
+  // only support SDF files with exactly 1 world or 1 model for now
   if (root.WorldCount() != 1u)
   {
-    std::cerr << _opt.inputFilename << " does not have exactly 1 world\n";
-    exit(-3);
+    auto model = root.Model();
+    if (model != nullptr)
+    {
+      std::string pathInputFile =
+        ignition::common::parentPath(_opt.inputFilename);
+      if (pathInputFile.empty() || pathInputFile == _opt.inputFilename)
+      {
+        pathInputFile = ignition::common::cwd();
+      }
+      auto systemPaths = ignition::common::systemPaths();
+      systemPaths->AddFilePaths(pathInputFile);
+
+      // This loop here will add all the directories inside the sdf file.
+      // For example: If we download a model from fuel, textures might live in
+      // in the same path but in a different folder: materials/textures,
+      // this loop will add these two folders to the systempaths allowing the
+      // cmd to find the resources.
+      std::vector<std::string> pathList = {pathInputFile};
+      while (!pathList.empty())
+      {
+        std::string pathToAdd = pathList.back();
+        pathList.pop_back();
+        for (ignition::common::DirIter file(pathToAdd);
+          file != ignition::common::DirIter(); ++file)
+        {
+          std::string current(*file);
+          if (ignition::common::isDirectory(current))
+          {
+            systemPaths->AddFilePaths(current);
+            pathList.push_back(current);
+          }
+        }
+      }
+
+      auto stage = pxr::UsdStage::CreateInMemory();
+      std::string modelName = model->Name();
+      modelName = sdf::usd::validPath(modelName);
+      auto modelPath = std::string("/" + modelName);
+      auto usdErrors = sdf::usd::ParseSdfModel(
+        *model,
+        stage,
+        modelPath,
+        pxr::SdfPath(modelPath));
+      if (!usdErrors.empty())
+      {
+        std::cerr << "The following errors occurred when parsing model ["
+                  << modelName << "]:" << std::endl;
+        for (const auto &e : usdErrors)
+          std::cout << e << "\n";
+        exit(-5);
+      }
+
+      if (!stage->GetRootLayer()->Export(_opt.outputFilename))
+      {
+        std::cerr << "Issue saving USD to " << _opt.outputFilename << "\n";
+        exit(-6);
+      }
+      return;
+    }
+    else
+    {
+      std::cerr << _opt.inputFilename << " does not have exactly 1 world "
+                << "or 1 model\n";
+      exit(-3);
+    }
   }
 
   auto world = root.WorldByIndex(0u);
@@ -240,7 +306,8 @@ void runCommand(const Options &_opt)
 
   auto stage = pxr::UsdStage::CreateInMemory();
 
-  const auto worldPath = std::string("/" + world->Name());
+  auto worldPath = std::string("/" + world->Name());
+  worldPath = sdf::usd::validPath(worldPath);
   auto usdErrors = sdf::usd::ParseSdfWorld(*world, stage, worldPath);
   if (!usdErrors.empty())
   {
@@ -264,7 +331,8 @@ void addFlags(CLI::App &_app)
 
   _app.add_option("input",
     opt->inputFilename,
-    "Input filename. Defaults to input.sdf unless otherwise specified.");
+    "Input filename. Defaults to input.sdf unless otherwise specified."
+    "Input file might be a world or a model");
 
   _app.add_option("output",
     opt->outputFilename,

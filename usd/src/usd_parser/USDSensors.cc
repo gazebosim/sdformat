@@ -17,6 +17,8 @@
 
 #include "USDSensors.hh"
 
+#include <string>
+
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
 #include "pxr/usd/usdGeom/camera.h"
@@ -37,12 +39,12 @@ namespace sdf
   {
   sdf::Sensor ParseSensors(
     const pxr::UsdPrim &_prim,
-    USDData &_usdData,
-    const std::string &_linkName)
+    const USDData &_usdData)
   {
     sdf::Sensor sensor;
 
-    std::string primType = _prim.GetPrimTypeInfo().GetTypeName().GetText();
+    const std::string primType =
+      _prim.GetPrimTypeInfo().GetTypeName().GetText();
 
     ignition::math::Pose3d pose;
     ignition::math::Vector3d scale(1, 1, 1);
@@ -53,23 +55,21 @@ namespace sdf
       scale,
       std::string(_prim.GetParent().GetPath().GetText()));
 
-    if(_prim.IsA<pxr::UsdGeomCamera>())
+    if (_prim.IsA<pxr::UsdGeomCamera>())
     {
       sensor.SetType(sdf::SensorType::CAMERA);
 
       sdf::Camera camera;
 
       auto variantCamera = pxr::UsdGeomCamera(_prim);
-      float horizontalAperture = 20.955;
       float focalLength;
       pxr::GfVec2f clippingRange;
-      // variantCamera.GetHorizontalApertureAttr().Get(&horizontalAperture);
       variantCamera.GetFocalLengthAttr().Get(&focalLength);
       variantCamera.GetClippingRangeAttr().Get(&clippingRange);
 
       sensor.SetName(_prim.GetPath().GetName());
       camera.SetName(_prim.GetPath().GetName());
-      camera.SetHorizontalFov(horizontalAperture);
+      camera.SetHorizontalFov(20.955);
       camera.SetLensFocalLength(focalLength);
       // Camera is Y up axis, rotate the camera to match with Ignition
       ignition::math::Pose3d poseCamera(0, 0, 0, IGN_PI_2, 0, -IGN_PI_2);
@@ -94,7 +94,8 @@ namespace sdf
       float vFOV;
       float vResolution;
       _prim.GetAttribute(pxr::TfToken("horizontalFov")).Get(&hFOV);
-      _prim.GetAttribute(pxr::TfToken("horizontalResolution")).Get(&hResolution);
+      _prim.GetAttribute(
+        pxr::TfToken("horizontalResolution")).Get(&hResolution);
       _prim.GetAttribute(pxr::TfToken("verticalFov")).Get(&vFOV);
       _prim.GetAttribute(pxr::TfToken("verticalResolution")).Get(&vResolution);
       hResolution = IGN_DTOR(hResolution);

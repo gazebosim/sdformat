@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Link.hh"
+#include "Link.hh"
 
 #include <string>
 
@@ -36,10 +36,11 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Link.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Sensor.hh"
-#include "sdf/usd/sdf_parser/Visual.hh"
 #include "../UsdUtils.hh"
+#include "Collision.hh"
+#include "Light.hh"
+#include "Sensor.hh"
+#include "Visual.hh"
 
 namespace sdf
 {
@@ -85,11 +86,12 @@ namespace usd
         return errors;
       }
 
-      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim.GetParent()))
+      if (!pxr::UsdPhysicsRigidBodyAPI::Apply(linkPrim))
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
-              "Internal error: unable to mark link at path [" + _path
-              + "] as a rigid body, so mass properties won't be attached"));
+              "Internal error: unable to mark model at path [" +
+              linkPrim.GetPath().GetString() + "] as a rigid body, "
+              "so mass properties won't be attached"));
         return errors;
       }
 
@@ -129,7 +131,8 @@ namespace usd
     for (uint64_t i = 0; i < _link.VisualCount(); ++i)
     {
       const auto visual = *(_link.VisualByIndex(i));
-      const auto visualPath = std::string(_path + "/" + visual.Name());
+      auto visualPath = std::string(_path + "/" + visual.Name());
+      visualPath = sdf::usd::validPath(visualPath);
       auto errorsLink = ParseSdfVisual(visual, _stage, visualPath);
       if (!errorsLink.empty())
       {
@@ -141,11 +144,32 @@ namespace usd
       }
     }
 
+    // parse all of the link's collisions and convert them to USD
+    for (uint64_t i = 0; i < _link.CollisionCount(); ++i)
+    {
+      const auto collision = *(_link.CollisionByIndex(i));
+      auto collisionPath = std::string(_path + "/" + collision.Name());
+      collisionPath = sdf::usd::validPath(collisionPath);
+      auto errorsCollision = ParseSdfCollision(collision, _stage,
+          collisionPath);
+      if (!errorsCollision.empty())
+      {
+        errors.insert(errors.end(), errorsCollision.begin(),
+            errorsCollision.end());
+        errors.push_back(UsdError(
+          sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
+          "Error parsing collision [" + collision.Name()
+          + "] attached to link [" + _link.Name() + "]"));
+        return errors;
+      }
+    }
+
     // convert the link's sensors
     for (uint64_t i = 0; i < _link.SensorCount(); ++i)
     {
       const auto sensor = *(_link.SensorByIndex(i));
-      const auto sensorPath = std::string(_path + "/" + sensor.Name());
+      auto sensorPath = std::string(_path + "/" + sensor.Name());
+      sensorPath = sdf::usd::validPath(sensorPath);
       UsdErrors errorsSensor = ParseSdfSensor(sensor, _stage, sensorPath);
       if (!errorsSensor.empty())
       {
@@ -162,6 +186,7 @@ namespace usd
     {
       const auto light = *(_link.LightByIndex(i));
       auto lightPath = std::string(_path + "/" + light.Name());
+      lightPath = sdf::usd::validPath(lightPath);
       UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
       if (!lightErrors.empty())
       {
