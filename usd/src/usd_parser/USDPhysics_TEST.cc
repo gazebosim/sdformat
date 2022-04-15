@@ -43,7 +43,7 @@ TEST(USDPhysicsTest, AvailablePhysics)
   ASSERT_TRUE(stage);
 
   const auto physicsScene =
-    pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics")));
+    pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/physics")));
   EXPECT_TRUE(physicsScene);
 
   sdf::World world;
@@ -63,7 +63,7 @@ TEST(USDPhysicsTest, UnavailablePhysics)
   ASSERT_TRUE(stage);
 
   const auto physicsScene =
-    pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/shapes/physics")));
+    pxr::UsdPhysicsScene(stage->GetPrimAtPath(pxr::SdfPath("/physics")));
   EXPECT_FALSE(physicsScene);
 
   sdf::World world;
