@@ -21,6 +21,7 @@
 #include <ignition/utils/cli/CLI.hpp>
 
 #include "sdf/usd/usd_parser/Parser.hh"
+#include "sdf/usd/UsdError.hh"
 #include "sdf/config.hh"
 
 //////////////////////////////////////////////////

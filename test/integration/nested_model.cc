@@ -574,15 +574,15 @@ void prepareForDirectComparison(sdf::ElementPtr _worldElem)
 }
 
 //////////////////////////////////////////////////
-// Test parsing models with child models containg frames nested via <include>
+// Test parsing models with child models containing frames nested via <include>
 // Compare parsed SDF with expected string
 TEST(NestedModel, NestedModelWithFramesDirectComparison)
 {
-  const std::string name = "test_model_with_frames";
+  const std::string name = "test_model_with_frames_no_rotations";
   const std::string modelPath =
     sdf::testing::TestFile("integration", "model", name);
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, 0);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -731,7 +731,7 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
   const std::string modelPath = sdf::testing::TestFile(
       "integration", "model", name);
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, 0);
 
   std::ostringstream stream;
   std::string version = "1.7";
