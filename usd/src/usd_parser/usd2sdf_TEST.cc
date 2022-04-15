@@ -23,7 +23,7 @@
 #include <ignition/common/TempDirectory.hh>
 #include <ignition/common/Util.hh>
 
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
