@@ -75,6 +75,16 @@ namespace sdf
     /// False if they are to be expanded.
     public: bool PreserveIncludes() const;
 
+    /// \brief Set precision of output stream for float / double types.
+    /// By default, the output stream uses maximum precision.
+    /// \param[in] _precision The new precision value. To set back to maximum
+    /// precision, use std::numeric_limits<int>::max().
+    public: void SetOutPrecision(int _precision);
+
+    /// \brief Retrieve the output stream's set precision value.
+    /// \return The output stream's precision.
+    public: int OutPrecision() const;
+
     /// \brief Return true if both PrintConfig objects contain the same values.
     /// \param[in] _config PrintConfig to compare.
     /// \return True if 'this' == _config.
