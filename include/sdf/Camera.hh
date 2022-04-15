@@ -152,6 +152,14 @@ namespace sdf
     /// \param[in] _fmt The pixel format string.
     public: void SetPixelFormatStr(const std::string &_fmt);
 
+    /// \brief Get the anti-aliasing value.
+    /// \return The anti-aliasing value.
+    public: uint32_t AntiAliasingValue() const;
+
+    /// \brief Set the anti-aliasing value.
+    /// \param[in] _antiAliasingValue The anti-aliasing value.
+    public: void SetAntiAliasingValue(uint32_t _antiAliasingValue);
+
     /// \brief Get the near clip distance for the depth camera.
     /// \return The near clip depth distance.
     public: double DepthNearClip() const;

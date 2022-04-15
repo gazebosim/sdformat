@@ -20,10 +20,20 @@
 
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/TempDirectory.hh>
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
+
+// TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
+// are reported using #pragma message so normal diagnostic flags cannot remove
+// them. This workaround requires this block to be used whenever usd is
+// included.
+#pragma push_macro ("__DEPRECATED")
+#undef __DEPRECATED
+#include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/gprim.h>
+#pragma pop_macro ("__DEPRECATED")
 
 #ifdef _WIN32
   #define popen  _popen
@@ -88,10 +98,36 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 }
 
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
+TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase = ignition::common::joinPaths(pathBase, "test", "sdf");
+
+  auto tmpDir = ignition::common::tempDirectoryPath();
+  auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
+  // Check a good SDF file
+  {
+    std::string path = ignition::common::joinPaths(pathBase,
+      "ellipsoid_model.sdf");
+    const auto outputUsdFilePath =
+      ignition::common::joinPaths(tmp, "ellipsoid.usd");
+    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
+    std::string output =
+      custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
+    EXPECT_TRUE(output.empty());
+
+    // make sure that a ellipsoid.usd file was generated
+    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
+
+    const auto stage = pxr::UsdStage::Open(outputUsdFilePath);
+    ASSERT_TRUE(stage);
+
+    ASSERT_TRUE(stage->GetPrimAtPath(pxr::SdfPath("/ellipsoid")));
+    ASSERT_TRUE(stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link")));
+    ASSERT_TRUE(stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual")));
+    ASSERT_TRUE(stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry")));
+  }
 }
