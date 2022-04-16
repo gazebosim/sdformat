@@ -75,7 +75,7 @@ void defineNoise(pybind11::object module)
          "from which bias values are drawn. This is applicable to \"gaussian*\""
          "noise types.")
     .def("precision", &sdf::Noise::Precision,
-         "or type \"gaussian_quantized\", get the precision of output "
+         "For type \"gaussian_quantized\", get the precision of output "
          "signals. A value of zero implies infinite precision / no "
          "quantization.")
     .def("set_precision", &sdf::Noise::SetPrecision,
@@ -94,7 +94,7 @@ void defineNoise(pybind11::object module)
          "used to drive a process to model slow variations in a sensor bias.")
     .def("set_dynamic_bias_correlation_time",
          &sdf::Noise::SetDynamicBiasCorrelationTime,
-         "or type \"gaussian*\", set the correlation time in seconds of "
+         "For type \"gaussian*\", set the correlation time in seconds of "
          "the noise used to drive a process to model slow variations in a "
          "sensor bias.A typical value, when used, would be on the order of "
          "3600 seconds (1 hour).")
