@@ -1,6 +1,9 @@
 <!-- Inertial -->
 <element name="inertial" required="0">
-  <description>The inertial properties of the link.</description>
+  <description>
+    The link’s mass, position of its center of mass, and its central inertia
+    properties.
+  </description>
 
   <element name="mass" type="double" default="1.0" required="0">
     <description>The mass of the link.</description>
@@ -8,7 +11,15 @@
 
   <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
     <description>
-      A pose (translation, rotation) expressed in the frame of the link. The first three components (x, y, z) represent the position of the element's origin (in the @relative_to frame). The rotation component represents the orientation of the element as either a sequence of Euler rotations (r, p, y), see http://sdformat.org/tutorials?tut=specify_pose, or as a quaternion (x, y, z, w), where w is the real component.
+      This pose (translation, rotation) describes the position and orientation
+      of the link’s center-of-mass-frame C relative to the link-frame L.
+      The first three components (x y z) specify the position vector from Lo
+      (the link-frame origin) to Co (the link’s center of mass) as
+      `x L̂x + y L̂y + z L̂ᴢ`, where L̂x, L̂y, L̂ᴢ are link-frame L’s orthogonal unit
+      vectors. The subsequent values characterize C’s orientation relative to
+      link-frame L as a sequence of Euler rotations
+      (r p y) documented in http://sdformat.org/tutorials?tut=specify_pose,
+      or as a quaternion (x y z w), where w is the scalar component.
     </description>
 
     <attribute name="rotation_format" type="string" default="euler_rpy" required="0">
@@ -27,24 +38,50 @@
   </element>
 
   <element name="inertia" required="0">
-    <description>The 3x3 rotational inertia matrix. Because the rotational inertia matrix is symmetric, only 6 above-diagonal elements of this matrix are specified here, using the attributes ixx, ixy, ixz, iyy, iyz, izz.</description>
+    <description>
+      This link’s moments of inertia ixx, iyy, izz and products of inertia
+      ixy, ixz, iyz about Co (the link’s center of mass) for the unit vectors
+      Ĉx, Ĉy, Ĉᴢ fixed in the center-of-mass-frame C.
+      Note: the orientation of Ĉx, Ĉy, Ĉᴢ relative to L̂x, L̂y, L̂ᴢ is specified
+      by the `pose` tag.
+      To avoid compatibility issues associated with the negative sign
+      convention for product of inertia, align Ĉx, Ĉy, Ĉᴢ with principal
+      inertia directions so that all the products of inertia are zero.
     <element name="ixx" type="double" default="1.0" required="1">
-      <description></description>
+      <description>
+        The link’s moment of inertia about Co (the link’s center of mass) for Ĉx.
+      </description>
     </element>
     <element name="ixy" type="double" default="0.0" required="1">
-      <description></description>
+      <description>
+        The link’s product of inertia about Co (the link’s center of mass) for
+        Ĉx and Ĉy, where the product of inertia convention -m x y  (not +m x y)
+        is used. If Ĉx or Ĉy is a principal inertia direction, ixy = 0.
+      </description>
     </element>
     <element name="ixz" type="double" default="0.0" required="1">
-      <description></description>
+      <description>
+        The link’s product of inertia about Co (the link’s center of mass) for
+        Ĉx and Ĉz, where the product of inertia convention -m x z  (not +m x z)
+        is used. If Ĉx or Ĉz is a principal inertia direction, ixz = 0.
+      </description>
     </element>
     <element name="iyy" type="double" default="1.0" required="1">
-      <description></description>
+      <description>
+        The link’s moment of inertia about Co (the link’s center of mass) for Ĉy.
+      </description>
     </element>
     <element name="iyz" type="double" default="0.0" required="1">
-      <description></description>
+      <description>
+        The link’s product of inertia about Co (the link’s center of mass) for
+        Ĉy and Ĉz, where the product of inertia convention -m y z  (not +m y z)
+        is used. If Ĉy or Ĉz is a principal inertia direction, iyz = 0.
+      </description>
     </element>
     <element name="izz" type="double" default="1.0" required="1">
-      <description></description>
+      <description>
+        The link’s moment of inertia about Co (the link’s center of mass) for Ĉz.
+      </description>
     </element>
   </element> <!-- End Inertia -->
 </element> <!-- End Inertial -->
