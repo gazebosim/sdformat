@@ -42,7 +42,7 @@ void defineSemanticPose(pybind11::object module)
          "object's pose is expressed. An empty value indicates that the frame "
          "is relative to the default parent object.")
     .def("resolve", &sdf::SemanticPose::Resolve,
-         pybind11::arg("_pose") = ignition::math::Pose3d(),
+         pybind11::arg("_pose"),
          pybind11::arg("_resolveTo") = "",
          "Resolve pose of this object with respect to another named frame. "
          "If there are any errors resolving the pose, the output will not be "

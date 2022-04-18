@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ignition.math import Vector3d, Pose3d
+from ignition.math import Vector3d
 from sdformat import Box
 import unittest
 

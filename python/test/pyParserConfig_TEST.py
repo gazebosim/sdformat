@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d
 from sdformat import ParserConfig
 from sdformattest import source_file, test_file
 import unittest
