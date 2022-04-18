@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Vector3d
 from sdformat import Noise
 import math
 import unittest
@@ -62,6 +61,9 @@ class NoiseTEST(unittest.TestCase):
         # Copy operator
         noise3 = noise
         self.assertEqual(noise, noise3)
+
+        noise4 = copy.deepcopy(noise)
+        self.assertEqual(noise, noise4)
 
 
 if __name__ == '__main__':
