@@ -445,7 +445,7 @@ std::string Param::GetDefaultAsString(sdf::Errors &_errors,
       "using ParamStreamer instead."});
 
   StringStreamClassicLocale ss;
-  ss << ParamStreamer{ this->dataPtr->defaultValue };
+  ss << ParamStreamer{ this->dataPtr->defaultValue, _config.OutPrecision() };
   return ss.str();
 }
 
@@ -1024,7 +1024,6 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 /// \param[in] _config Printing configuration for the output string.
 /// \param[in] _parentAttributes Parent Element Attributes.
 /// \param[in] _value The variant value of this pose.
-/// \param[in] _originalStr The original string used to set this pose value.
 /// \param[out] _valueStr The pose as a string.
 /// \param[out] _errors Vector of errors.
 /// \return True if the string was successfully retrieved from the pose, false
@@ -1038,6 +1037,11 @@ bool PoseStringFromValue(const PrintConfig &_config,
                          sdf::Errors &_errors)
 {
   StringStreamClassicLocale ss;
+
+  if (_config.OutPrecision() == std::numeric_limits<int>::max())
+    ss << std::setprecision(std::numeric_limits<double>::max_digits10);
+  else
+    ss << std::setprecision(_config.OutPrecision());
 
   const ignition::math::Pose3d *pose =
       std::get_if<ignition::math::Pose3d>(&_value);
@@ -1109,7 +1113,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   }
 
   // Helper function that sanitizes zero values like '-0'
-  auto sanitizeZero = [](double _number)
+  auto sanitizeZero = [&_config](double _number)
   {
     StringStreamClassicLocale stream;
     if (std::fpclassify(_number) == FP_ZERO)
@@ -1118,6 +1122,11 @@ bool PoseStringFromValue(const PrintConfig &_config,
     }
     else
     {
+      if (_config.OutPrecision() == std::numeric_limits<int>::max())
+        stream << std::setprecision(std::numeric_limits<double>::max_digits10);
+      else
+        stream << std::setprecision(_config.OutPrecision());
+
       stream << _number;
     }
     return stream.str();
@@ -1181,17 +1190,6 @@ bool PoseStringFromValue(const PrintConfig &_config,
     return true;
   }
 
-  // If no modification to the value is needed, the original string is returned.
-  if (!_config.RotationInDegrees() &&
-      !_config.RotationSnapToDegrees().has_value() &&
-      !_config.RotationSnapTolerance().has_value() &&
-      _originalStr.has_value() &&
-      !_originalStr->empty())
-  {
-    _valueStr = _originalStr.value();
-    return true;
-  }
-
   ss << pose->Pos() << posRotDelimiter
      << sanitizeZero(pose->Rot().Roll()) << " "
      << sanitizeZero(pose->Rot().Pitch()) << " "
@@ -1217,7 +1215,6 @@ bool ParamPrivate::StringFromValueImpl(
       _errors);
 }
 
-/////////////////////////////////////////////////
 bool ParamPrivate::StringFromValueImpl(
     const PrintConfig &_config,
     const std::string &_typeName,
@@ -1255,7 +1252,7 @@ bool ParamPrivate::StringFromValueImpl(
   }
 
   StringStreamClassicLocale ss;
-  ss << ParamStreamer{ _value };
+  ss << ParamStreamer{ _value, _config.OutPrecision() };
   _valueStr = ss.str();
   return true;
 }
