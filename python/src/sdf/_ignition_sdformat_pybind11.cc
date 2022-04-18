@@ -25,6 +25,7 @@
 #include "pyMesh.hh"
 #include "pyParserConfig.hh"
 #include "pyPlane.hh"
+#include "pySensor.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
 
@@ -41,6 +42,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineMesh(m);
   sdf::python::defineParserConfig(m);
   sdf::python::definePlane(m);
+  sdf::python::defineSensor(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
 }
