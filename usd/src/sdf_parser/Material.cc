@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Material.hh"
+#include "Material.hh"
 
 #include <map>
 #include <string>
@@ -192,6 +192,7 @@ namespace usd
         sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
         "Not able to cast the UsdShadeShader at path [" + shaderPath.GetString()
         + "] to a Prim"));
+      return errors;
     }
 
     auto shaderOut = pxr::UsdShadeConnectableAPI(shaderPrim).CreateOutput(
