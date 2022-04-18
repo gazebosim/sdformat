@@ -17,7 +17,9 @@
 #include <pybind11/pybind11.h>
 
 #include "pyBox.hh"
+#include "pyCapsule.hh"
 #include "pyCylinder.hh"
+#include "pyEllipsoid.hh"
 #include "pyError.hh"
 #include "pyMesh.hh"
 #include "pyNoise.hh"
@@ -30,8 +32,10 @@ PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
   sdf::python::defineBox(m);
+  sdf::python::defineCapsule(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
+  sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
   sdf::python::defineMesh(m);
   sdf::python::defineNoise(m);
