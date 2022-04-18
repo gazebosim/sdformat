@@ -34,8 +34,8 @@ namespace python
 /////////////////////////////////////////////////
 void defineAtmosphere(pybind11::object module)
 {
-  pybind11::class_<sdf::Atmosphere> geometryModule(module, "Atmosphere");
-  geometryModule
+  pybind11::class_<sdf::Atmosphere> atmosphereModule(module, "Atmosphere");
+  atmosphereModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Atmosphere>())
     .def(pybind11::self == pybind11::self)
@@ -56,7 +56,7 @@ void defineAtmosphere(pybind11::object module)
     .def("pressure", &sdf::Atmosphere::Pressure,
          "Get the pressure at sea level in pascals.")
     .def("set_pressure", &sdf::Atmosphere::SetPressure,
-         "et the pressure at sea level in pascals.")
+         "Set the pressure at sea level in pascals.")
     .def("__copy__", [](const sdf::Atmosphere &self) {
       return sdf::Atmosphere(self);
     })
@@ -64,7 +64,7 @@ void defineAtmosphere(pybind11::object module)
       return sdf::Atmosphere(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::AtmosphereType>(geometryModule, "AtmosphereType")
+    pybind11::enum_<sdf::AtmosphereType>(atmosphereModule, "AtmosphereType")
       .value("ADIABATIC", sdf::AtmosphereType::ADIABATIC);
 }
 }  // namespace python
