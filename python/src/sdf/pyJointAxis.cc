@@ -106,7 +106,7 @@ void defineJointAxis(pybind11::object module)
          "unit vector is expressed. An empty value implies the parent (joint) "
          "frame.")
     .def("resolve_xyz", &sdf::JointAxis::ResolveXyz,
-         pybind11::arg("_pose") = ignition::math::Vector3d(),
+         pybind11::arg("_pose"),
          pybind11::arg("_resolveTo") = "",
          "Express xyz unit vector of this axis in the coordinates of "
          "another named frame.")
