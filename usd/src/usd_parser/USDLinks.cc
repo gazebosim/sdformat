@@ -293,7 +293,13 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 
       ignition::math::Pose3d pose;
       ignition::math::Vector3d scale(1, 1, 1);
-      GetTransform(child, _usdData, pose, scale, _link->Name());
+      std::string linkName = pxr::TfStringify(_prim.GetPath());
+      auto found = linkName.find(_link->Name());
+      if (found != std::string::npos)
+      {
+        linkName = linkName.substr(0, found + _link->Name().size());
+      }
+      GetTransform(child, _usdData, pose, scale, linkName);
       _scale *= scale;
       visSubset.SetRawPose(pose);
       _link->AddVisual(visSubset);
@@ -386,7 +392,13 @@ UsdErrors ParseMesh(
 
   ignition::math::Pose3d pose;
   ignition::math::Vector3d scale(1, 1, 1);
-  std::string linkName = _link->Name();
+  std::string linkName = pxr::TfStringify(_prim.GetPath());
+  auto found = linkName.find(_link->Name());
+  if (found != std::string::npos)
+  {
+    linkName = linkName.substr(0, found + _link->Name().size());
+  }
+
   size_t nSlash = std::count(linkName.begin(), linkName.end(), '/');
   if (nSlash == 1)
   {
@@ -394,7 +406,7 @@ UsdErrors ParseMesh(
   }
   else
   {
-    GetTransform(_prim, _usdData, pose, scale, _link->Name());
+    GetTransform(_prim, _usdData, pose, scale, linkName);
   }
 
   _pose = pose;
@@ -522,7 +534,7 @@ void ParseCylinder(
   _geom.SetType(sdf::GeometryType::CYLINDER);
 
   c.SetRadius(radius * _metersPerUnit * _scale.X());
-  c.SetLength(height * _metersPerUnit * _scale.Y());
+  c.SetLength(height * _metersPerUnit * _scale.Z());
 
   _geom.SetCylinderShape(c);
 }
@@ -632,9 +644,9 @@ UsdErrors ParseUSDLinks(
       pxr::UsdModelAPI(parent).GetKind(&kindOfSchema);
     }
 
-    if (_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
-      || pxr::KindRegistry::IsA(kindOfSchema, pxr::KindTokens->model)
-      || !collisionEnabled)
+    if ((_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
+      || pxr::KindRegistry::IsA(kindOfSchema, pxr::KindTokens->model))
+      && !collisionEnabled)
     {
       double metersPerUnit = data.second->MetersPerUnit();
 
@@ -696,7 +708,15 @@ UsdErrors ParseUSDLinks(
 
       ignition::math::Pose3d poseCol;
       ignition::math::Vector3d scaleCol(1, 1, 1);
-      GetTransform(_prim, _usdData, poseCol, scaleCol, _link->Name());
+      std::string linkName = pxr::TfStringify(_prim.GetPath());
+      auto found = linkName.find(_link->Name());
+      if (found != std::string::npos)
+      {
+        linkName = linkName.substr(0, found + _link->Name().size());
+      }
+      GetTransform(_prim, _usdData, poseCol, scaleCol, linkName);
+
+      scaleCol *= _scale;
 
       double metersPerUnit = data.second->MetersPerUnit();
 
