@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sdformat import Box
 from ignition.math import Vector3d
+from sdformat import Box
 import unittest
 
 class BoxTEST(unittest.TestCase):

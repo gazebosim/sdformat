@@ -313,7 +313,6 @@ std::string Param::GetAsString(const PrintConfig &_config) const
       this->dataPtr->StringFromValueImpl(_config,
                                          this->dataPtr->typeName,
                                          this->dataPtr->value,
-                                         this->dataPtr->strValue,
                                          valueStr))
   {
     return valueStr;
@@ -330,7 +329,6 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
         _config,
         this->dataPtr->typeName,
         this->dataPtr->defaultValue,
-        this->dataPtr->defaultStrValue,
         defaultStr))
   {
     return defaultStr;
@@ -339,7 +337,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
   sdferr << "Unable to get string from default value, "
          << "using ParamStreamer instead.\n";
   StringStreamClassicLocale ss;
-  ss << ParamStreamer{ this->dataPtr->defaultValue };
+  ss << ParamStreamer{ this->dataPtr->defaultValue, _config.OutPrecision() };
   return ss.str();
 }
 
@@ -797,7 +795,6 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 /// \param[in] _config Printing configuration for the output string.
 /// \param[in] _parentAttributes Parent Element Attributes.
 /// \param[in] _value The variant value of this pose.
-/// \param[in] _originalStr The original string used to set this pose value.
 /// \param[out] _valueStr The pose as a string.
 /// \return True if the string was successfully retrieved from the pose, false
 /// otherwise.
@@ -805,10 +802,14 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 bool PoseStringFromValue(const PrintConfig &_config,
                          const Param_V &_parentAttributes,
                          const ParamPrivate::ParamVariant &_value,
-                         const std::optional<std::string> &_originalStr,
                          std::string &_valueStr)
 {
   StringStreamClassicLocale ss;
+
+  if (_config.OutPrecision() == std::numeric_limits<int>::max())
+    ss << std::setprecision(std::numeric_limits<double>::max_digits10);
+  else
+    ss << std::setprecision(_config.OutPrecision());
 
   const ignition::math::Pose3d *pose =
       std::get_if<ignition::math::Pose3d>(&_value);
@@ -878,7 +879,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   }
 
   // Helper function that sanitizes zero values like '-0'
-  auto sanitizeZero = [](double _number)
+  auto sanitizeZero = [&_config](double _number)
   {
     StringStreamClassicLocale stream;
     if (std::fpclassify(_number) == FP_ZERO)
@@ -887,6 +888,11 @@ bool PoseStringFromValue(const PrintConfig &_config,
     }
     else
     {
+      if (_config.OutPrecision() == std::numeric_limits<int>::max())
+        stream << std::setprecision(std::numeric_limits<double>::max_digits10);
+      else
+        stream << std::setprecision(_config.OutPrecision());
+
       stream << _number;
     }
     return stream.str();
@@ -949,17 +955,6 @@ bool PoseStringFromValue(const PrintConfig &_config,
     return true;
   }
 
-  // If no modification to the value is needed, the original string is returned.
-  if (!_config.RotationInDegrees() &&
-      !_config.RotationSnapToDegrees().has_value() &&
-      !_config.RotationSnapTolerance().has_value() &&
-      _originalStr.has_value() &&
-      !_originalStr->empty())
-  {
-    _valueStr = _originalStr.value();
-    return true;
-  }
-
   ss << pose->Pos() << posRotDelimiter
      << sanitizeZero(pose->Rot().Roll()) << " "
      << sanitizeZero(pose->Rot().Pitch()) << " "
@@ -973,22 +968,6 @@ bool ParamPrivate::StringFromValueImpl(
     const PrintConfig &_config,
     const std::string &_typeName,
     const ParamVariant &_value,
-    std::string &_valueStr) const
-{
-  return this->StringFromValueImpl(
-      _config,
-      _typeName,
-      _value,
-      std::nullopt,
-      _valueStr);
-}
-
-/////////////////////////////////////////////////
-bool ParamPrivate::StringFromValueImpl(
-    const PrintConfig &_config,
-    const std::string &_typeName,
-    const ParamVariant &_value,
-    const std::optional<std::string> &_originalStr,
     std::string &_valueStr) const
 {
   // This will be handled in a type specific manner
@@ -1012,13 +991,13 @@ bool ParamPrivate::StringFromValueImpl(
     if (!this->ignoreParentAttributes && p)
     {
       return PoseStringFromValue(
-          _config, p->GetAttributes(), _value, _originalStr, _valueStr);
+          _config, p->GetAttributes(), _value, _valueStr);
     }
-    return PoseStringFromValue(_config, {}, _value, _originalStr, _valueStr);
+    return PoseStringFromValue(_config, {}, _value, _valueStr);
   }
 
   StringStreamClassicLocale ss;
-  ss << ParamStreamer{ _value };
+  ss << ParamStreamer{ _value, _config.OutPrecision() };
   _valueStr = ss.str();
   return true;
 }
