@@ -233,7 +233,7 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
 
       ignition::common::SubMesh subMeshSubset;
       subMeshSubset.SetPrimitiveType(ignition::common::SubMesh::TRISTRIPS);
-      subMeshSubset.SetName("subgeommesh");
+      subMeshSubset.SetName("subgeommesh_" + std::to_string(numSubMeshes));
 
       if (it != _usdData.Materials().end())
       {
@@ -288,7 +288,7 @@ int ParseMeshSubGeom(const pxr::UsdPrim &_prim,
       _meshGeom.SetUri(directoryMesh + ".dae");
 
       geomSubset.SetMeshShape(_meshGeom);
-      visSubset.SetName("mesh_subset");
+      visSubset.SetName("mesh_subset_" + std::to_string(numSubMeshes));
       visSubset.SetGeom(geomSubset);
 
       ignition::math::Pose3d pose;
