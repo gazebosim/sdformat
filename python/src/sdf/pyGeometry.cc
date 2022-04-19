@@ -50,43 +50,43 @@ void defineGeometry(pybind11::object module)
          "Set the type of geometry.")
     .def("box_shape", &sdf::Geometry::BoxShape,
          pybind11::return_value_policy::reference,
-         "Get the box geometry, or nullptr if the contained geometry is "
+         "Get the box geometry, or None if the contained geometry is "
          "not a box.")
     .def("set_box_shape", &sdf::Geometry::SetBoxShape,
          "Set the box shape.")
     .def("capsule_shape", &sdf::Geometry::CapsuleShape,
          pybind11::return_value_policy::reference,
-         "Get the capsule geometry, or nullptr if the contained "
+         "Get the capsule geometry, or None if the contained "
          "geometry is not a capsule.")
     .def("set_capsule_shape", &sdf::Geometry::SetCapsuleShape,
          "Set the capsule shape.")
     .def("cylinder_shape", &sdf::Geometry::CylinderShape,
          pybind11::return_value_policy::reference,
-         "Get the cylinder geometry, or nullptr if the contained "
+         "Get the cylinder geometry, or None if the contained "
          "geometry is not a cylinder.")
     .def("set_cylinder_shape", &sdf::Geometry::SetCylinderShape,
          "Set the cylinder shape.")
     .def("ellipsoid_shape", &sdf::Geometry::EllipsoidShape,
          pybind11::return_value_policy::reference,
-         "Get the ellipsoid geometry, or nullptr if the contained "
+         "Get the ellipsoid geometry, or None if the contained "
          "geometry is not a ellipsoid.")
     .def("set_ellipsoid_shape", &sdf::Geometry::SetEllipsoidShape,
          "Set the elliposid shape.")
     .def("sphere_shape", &sdf::Geometry::SphereShape,
          pybind11::return_value_policy::reference,
-         "Get the sphere geometry, or nullptr if the contained "
+         "Get the sphere geometry, or None if the contained "
          "geometry is not a sphere.")
     .def("set_sphere_shape", &sdf::Geometry::SetSphereShape,
          "Set the sphere shape.")
     .def("plane_shape", &sdf::Geometry::PlaneShape,
          pybind11::return_value_policy::reference,
-         "Get the plane geometry, or nullptr if the contained "
+         "Get the plane geometry, or None if the contained "
          "geometry is not a plane.")
     .def("set_plane_shape", &sdf::Geometry::SetPlaneShape,
          "Set the plane shape.")
     .def("mesh_shape", &sdf::Geometry::MeshShape,
          pybind11::return_value_policy::reference,
-         "Get the mesh geometry, or nullptr if the contained "
+         "Get the mesh geometry, or None if the contained "
          "geometry is not a mesh.")
     .def("set_mesh_shape", &sdf::Geometry::SetMeshShape,
          "Set the mesh shape.")
