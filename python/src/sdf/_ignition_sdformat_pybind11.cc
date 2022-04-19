@@ -33,6 +33,7 @@
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
 #include "pyLidar.hh"
+#include "pyLight.hh"
 #include "pyLink.hh"
 #include "pyMagnetometer.hh"
 #include "pyMaterial.hh"
@@ -71,6 +72,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
   sdf::python::defineLidar(m);
+  sdf::python::defineLight(m);
   sdf::python::defineLink(m);
   sdf::python::defineMagnetometer(m);
   sdf::python::defineMaterial(m);
