@@ -40,6 +40,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineGeometry(pybind11::object module)
 {
+  // TODO(ahcorde) Add HeightmapShape and SetHeightmapShape
   pybind11::class_<sdf::Geometry> geometryModule(module, "Geometry");
   geometryModule
     .def(pybind11::init<>())
