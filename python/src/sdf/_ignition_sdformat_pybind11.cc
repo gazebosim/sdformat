@@ -23,6 +23,7 @@
 #include "pyError.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
+#include "pyNoise.hh"
 #include "pyParserConfig.hh"
 #include "pyPlane.hh"
 #include "pySphere.hh"
@@ -39,6 +40,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineError(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
+  sdf::python::defineNoise(m);
   sdf::python::defineParserConfig(m);
   sdf::python::definePlane(m);
   sdf::python::defineSphere(m);
