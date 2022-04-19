@@ -40,6 +40,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyBox.cc
   src/sdf/pyCapsule.cc
+  src/sdf/pyCollision.cc
   src/sdf/pyCylinder.cc
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
@@ -73,6 +74,7 @@ if (BUILD_TESTING)
   set(python_tests
     pyBox_TEST
     pyCapsule_TEST
+    pyCollision_TEST
     pyCylinder_TEST
     pyEllipsoid_TEST
     pyError_TEST
