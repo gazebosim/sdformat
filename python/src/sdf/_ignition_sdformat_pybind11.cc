@@ -22,6 +22,7 @@
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
+#include "pyFrame.hh"
 #include "pyGeometry.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
@@ -43,6 +44,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineCylinder(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
+  sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
