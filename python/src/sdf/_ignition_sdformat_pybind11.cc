@@ -16,6 +16,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include "pyAirPressure.hh"
 #include "pyBox.hh"
 #include "pyCamera.hh"
 #include "pyCapsule.hh"
@@ -45,6 +46,7 @@
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  sdf::python::defineAirPressure(m);
   sdf::python::defineBox(m);
   sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
