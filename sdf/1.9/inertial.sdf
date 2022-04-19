@@ -47,6 +47,7 @@
       To avoid compatibility issues associated with the negative sign
       convention for product of inertia, align Ĉx, Ĉy, Ĉᴢ with principal
       inertia directions so that all the products of inertia are zero.
+    </description>
     <element name="ixx" type="double" default="1.0" required="1">
       <description>
         The link’s moment of inertia about Co (the link’s center of mass) for Ĉx.
