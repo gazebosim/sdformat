@@ -46,6 +46,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyError.cc
   src/sdf/pyFrame.cc
   src/sdf/pyGeometry.cc
+  src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
@@ -83,6 +84,7 @@ if (BUILD_TESTING)
     pyError_TEST
     pyFrame_TEST
     pyGeometry_TEST
+    pyJoint_TEST
     pyJointAxis_TEST
     pyMaterial_TEST
     pyMesh_TEST
