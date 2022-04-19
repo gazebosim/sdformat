@@ -14,9 +14,11 @@
   <attribute name="canonical_link" type="string" default="" required="0">
     <description>
       The name of the model's canonical link, to which the model's implicit
-      coordinate frame is attached. If unset or set to an empty string,
-      the first link element listed as a child of this model is chosen
-      as the canonical link.
+      coordinate frame is attached. If unset or set to an empty string, the
+      first `/link` listed as a direct child of this model is chosen as the
+      canonical link. If the model has no direct `/link` children, it will
+      instead be attached to the first nested (or included) model's implicit
+      frame.
     </description>
   </attribute>
   <attribute name="placement_frame" type="string" default="" required="0">
@@ -24,7 +26,13 @@
   </attribute>
 
   <element name="static" type="bool" default="false" required="0">
-    <description>If set to true, the model is immovable. Otherwise the model is simulated in the dynamics engine.</description>
+    <description>
+      If set to true, the model is immovable; i.e., a dynamics engine will not
+      update its position. This will also overwrite this model's `@canonical_link`
+      and instead attach the model's implicit frame to the world's implicit frame.
+      This holds even if this model is nested (or included) by another model
+      instead of being a direct child of `//world`.
+    </description>
   </element>
 
   <element name="self_collide" type="bool" default="false" required="0">

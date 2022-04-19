@@ -37,10 +37,10 @@
 #include "sdf/Light.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Model.hh"
 #include "test_config.h"
 #include "test_utils.hh"
+#include "Light.hh"
+#include "Model.hh"
 #include "../UsdTestUtils.hh"
 #include "../UsdUtils.hh"
 
