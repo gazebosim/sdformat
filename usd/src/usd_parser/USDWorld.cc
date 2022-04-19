@@ -291,7 +291,8 @@ namespace usd
       }
 
       std::optional<sdf::Link> optionalLink;
-      if (auto linkInserted = modelPtr->LinkByName(ignition::common::basename(linkName)))
+      if (auto linkInserted =
+          modelPtr->LinkByName(ignition::common::basename(linkName)))
       {
         optionalLink = *linkInserted;
         auto scale = linkScaleMap.find(linkName);
