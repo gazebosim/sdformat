@@ -53,6 +53,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pySemanticPose.cc
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
+  src/sdf/pyVisual.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -87,6 +88,7 @@ if (BUILD_TESTING)
     pySemanticPose_TEST
     pySphere_TEST
     pySurface_TEST
+    pyVisual_TEST
   )
 
   foreach (test ${python_tests})
