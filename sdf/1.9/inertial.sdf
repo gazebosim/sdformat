@@ -47,6 +47,9 @@
       To avoid compatibility issues associated with the negative sign
       convention for product of inertia, align Ĉx, Ĉy, Ĉᴢ with principal
       inertia directions so that all the products of inertia are zero.
+      For more information about this sign convention, see the following
+      Mathworks documentation for working with CAD tools:
+      https://www.mathworks.com/help/releases/R2021b/physmod/sm/ug/specify-custom-inertia.html#mw_b043ec69-835b-4ca9-8769-af2e6f1b190c
     </description>
     <element name="ixx" type="double" default="1.0" required="1">
       <description>
