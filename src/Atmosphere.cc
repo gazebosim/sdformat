@@ -136,7 +136,7 @@ void Atmosphere::SetPressure(const double _pressure)
 }
 
 //////////////////////////////////////////////////
-bool Atmosphere::operator==(const Atmosphere &_atmosphere)
+bool Atmosphere::operator==(const Atmosphere &_atmosphere) const
 {
   return this->dataPtr->type == _atmosphere.dataPtr->type &&
     this->dataPtr->temperature == _atmosphere.dataPtr->temperature &&

@@ -17,6 +17,7 @@
 #include <pybind11/pybind11.h>
 
 #include "pyAirPressure.hh"
+#include "pyAtmosphere.hh"
 #include "pyAltimeter.hh"
 #include "pyBox.hh"
 #include "pyCamera.hh"
@@ -48,6 +49,7 @@ PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
   sdf::python::defineAirPressure(m);
+  sdf::python::defineAtmosphere(m);
   sdf::python::defineAltimeter(m);
   sdf::python::defineBox(m);
   sdf::python::defineCamera(m);
