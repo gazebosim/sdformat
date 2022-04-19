@@ -29,6 +29,7 @@
 #include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyIMU.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
 #include "pyLink.hh"
@@ -62,6 +63,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineForceTorque(m);
   sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineIMU(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
   sdf::python::defineLink(m);
