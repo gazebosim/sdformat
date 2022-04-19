@@ -24,8 +24,10 @@
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
 #include "pyMavSat.hh"
+#include "pyNoise.hh"
 #include "pyParserConfig.hh"
 #include "pyPlane.hh"
+#include "pySemanticPose.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
 
@@ -41,8 +43,10 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
   sdf::python::defineNavSat(m);
+  sdf::python::defineNoise(m);
   sdf::python::defineParserConfig(m);
   sdf::python::definePlane(m);
+  sdf::python::defineSemanticPose(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
 }
