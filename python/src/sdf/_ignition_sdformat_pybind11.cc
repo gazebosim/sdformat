@@ -23,7 +23,7 @@
 #include "pyError.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
-#include "pyMavSat.hh"
+#include "pyNavSat.hh"
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
 #include "pyPlane.hh"
