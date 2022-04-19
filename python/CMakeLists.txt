@@ -39,6 +39,7 @@ endfunction()
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
+  src/sdf/pyAltimeter.cc
   src/sdf/pyBox.cc
   src/sdf/pyCamera.cc
   src/sdf/pyCapsule.cc
@@ -84,6 +85,7 @@ if (BUILD_TESTING)
 
   set(python_tests
     pyAirPressure_TEST
+    pyAltimeter_TEST
     pyBox_TEST
     pyCamera_TEST
     pyCapsule_TEST
