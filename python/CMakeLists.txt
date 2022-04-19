@@ -66,6 +66,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyPlane.cc
   src/sdf/pyRoot.cc
   src/sdf/pySemanticPose.cc
+  src/sdf/pySensor.cc
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
   src/sdf/pyVisual.cc
@@ -117,6 +118,7 @@ if (BUILD_TESTING)
     pyPlane_TEST
     pyRoot_TEST
     pySemanticPose_TEST
+    pySensor_TEST
     pySphere_TEST
     pySurface_TEST
     pyVisual_TEST
