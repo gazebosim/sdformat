@@ -15,7 +15,7 @@
  *
 */
 
-#include "sdf/usd/sdf_parser/Visual.hh"
+#include "Visual.hh"
 
 #include <string>
 
@@ -35,9 +35,9 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Visual.hh"
-#include "sdf/usd/sdf_parser/Geometry.hh"
-#include "sdf/usd/sdf_parser/Material.hh"
 #include "../UsdUtils.hh"
+#include "Geometry.hh"
+#include "Material.hh"
 
 namespace sdf
 {
@@ -80,7 +80,8 @@ namespace usd
     }
 
     const auto geometry = *(_visual.Geom());
-    const auto geometryPath = std::string(_path + "/geometry");
+    auto geometryPath = std::string(_path + "/geometry");
+    geometryPath = sdf::usd::validPath(geometryPath);
     auto geomErrors = ParseSdfGeometry(geometry, _stage, geometryPath);
     if (!geomErrors.empty())
     {
