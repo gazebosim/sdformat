@@ -32,6 +32,7 @@
 #include "pyIMU.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
+#include "pyLidar.hh"
 #include "pyLink.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
@@ -66,6 +67,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineIMU(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
+  sdf::python::defineLidar(m);
   sdf::python::defineLink(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);

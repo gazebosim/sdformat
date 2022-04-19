@@ -54,6 +54,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyIMU.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
+  src/sdf/pyLidar.cc
   src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
@@ -102,6 +103,7 @@ if (BUILD_TESTING)
     pyIMU_TEST
     pyJoint_TEST
     pyJointAxis_TEST
+    pyLidar_TEST
     pyLink_TEST
     pyMaterial_TEST
     pyMesh_TEST
