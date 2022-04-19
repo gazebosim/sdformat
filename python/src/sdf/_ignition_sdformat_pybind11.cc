@@ -18,6 +18,7 @@
 
 #include "pyBox.hh"
 #include "pyCapsule.hh"
+#include "pyCollision.hh"
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
@@ -37,6 +38,7 @@ PYBIND11_MODULE(sdformat, m) {
 
   sdf::python::defineBox(m);
   sdf::python::defineCapsule(m);
+  sdf::python::defineCollision(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
   sdf::python::defineEllipsoid(m);
