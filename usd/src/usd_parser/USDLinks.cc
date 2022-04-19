@@ -646,7 +646,7 @@ UsdErrors ParseUSDLinks(
 
     if ((_prim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>()
       || pxr::KindRegistry::IsA(kindOfSchema, pxr::KindTokens->model))
-      && !collisionEnabled)
+      && (!collisionEnabled || _prim.HasAPI<pxr::UsdPhysicsMassAPI>()))
     {
       double metersPerUnit = data.second->MetersPerUnit();
 
