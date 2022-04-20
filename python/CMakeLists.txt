@@ -76,6 +76,7 @@ if (BUILD_TESTING)
     pyCylinder_TEST
     pyEllipsoid_TEST
     pyError_TEST
+    pyMagnetometer_TEST
     pyMaterial_TEST
     pyMesh_TEST
     pyNoise_TEST
