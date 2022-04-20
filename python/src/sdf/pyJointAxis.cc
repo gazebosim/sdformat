@@ -33,8 +33,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineJointAxis(pybind11::object module)
 {
-  pybind11::class_<sdf::JointAxis> geometryModule(module, "JointAxis");
-  geometryModule
+  pybind11::class_<sdf::JointAxis>(module, "JointAxis")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::JointAxis>())
     .def("xyz", &sdf::JointAxis::Xyz,
