@@ -62,9 +62,9 @@ void defineSky(pybind11::object module)
          "Get cloud mean size")
     .def("set_cloud_mean_size", &sdf::Sky::SetCloudMeanSize,
          "Set cloud mean size")
-    .def("CloudAmbient", &sdf::Sky::CloudAmbient,
+    .def("cloud_ambient", &sdf::Sky::CloudAmbient,
          "Get cloud ambient color")
-    .def("set_CloudAmbient", &sdf::Sky::SetCloudAmbient,
+    .def("set_cloud_ambient", &sdf::Sky::SetCloudAmbient,
          "Set cloud ambient color")
     .def("__copy__", [](const sdf::Sky &self) {
       return sdf::Sky(self);
