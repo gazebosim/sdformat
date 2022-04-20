@@ -51,7 +51,7 @@ class SkyTEST(unittest.TestCase):
         self.assertEqual(Angle(1.2), sky2.cloud_direction())
         self.assertAlmostEqual(0.9, sky2.cloud_humidity())
         self.assertAlmostEqual(0.123, sky2.cloud_mean_size())
-        self.assertEqual(ColorBLUE, sky2.cloud_ambient())
+        self.assertEqual(Color.BLUE, sky2.cloud_ambient())
 
 
     def test_assignment(self):
