@@ -49,6 +49,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyMesh.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyPbr.cc
   src/sdf/pyPlane.cc
   src/sdf/pySemanticPose.cc
   src/sdf/pySphere.cc
@@ -83,6 +84,7 @@ if (BUILD_TESTING)
     pyMesh_TEST
     pyNoise_TEST
     pyParserConfig_TEST
+    pyPbr_TEST
     pyPlane_TEST
     pySemanticPose_TEST
     pySphere_TEST
