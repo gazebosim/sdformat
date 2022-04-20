@@ -33,8 +33,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineVisual(pybind11::object module)
 {
-  pybind11::class_<sdf::Visual> geometryModule(module, "Visual");
-  geometryModule
+  pybind11::class_<sdf::Visual>(module, "Visual")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Visual>())
     .def("name", &sdf::Visual::Name,
