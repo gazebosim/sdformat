@@ -35,8 +35,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineModel(pybind11::object module)
 {
-  pybind11::class_<sdf::Model> geometryModule(module, "Model");
-  geometryModule
+  pybind11::class_<sdf::Model>(module, "Model")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Model>())
     .def("validate_graphs", &sdf::Model::ValidateGraphs,
