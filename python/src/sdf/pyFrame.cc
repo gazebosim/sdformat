@@ -32,8 +32,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineFrame(pybind11::object module)
 {
-  pybind11::class_<sdf::Frame> geometryModule(module, "Frame");
-  geometryModule
+  pybind11::class_<sdf::Frame>(module, "Frame")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Frame>())
     .def("name", &sdf::Frame::Name,
