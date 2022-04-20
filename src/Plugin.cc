@@ -15,6 +15,7 @@
  *
 */
 
+#include "sdf/Types.hh"
 #include "sdf/Plugin.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -40,6 +41,18 @@ class sdf::PluginPrivate
 Plugin::Plugin()
   : dataPtr(std::make_unique<sdf::PluginPrivate>())
 {
+}
+
+/////////////////////////////////////////////////
+Plugin::Plugin(const std::string &_filename, const std::string &_name,
+               const std::string &_xmlContent)
+  : dataPtr(std::make_unique<sdf::PluginPrivate>())
+{
+  this->SetFilename(_filename);
+  this->SetName(_name);
+  std::string trimmed = sdf::trim(_xmlContent);
+  if (!trimmed.empty())
+    this->InsertContent(trimmed);
 }
 
 /////////////////////////////////////////////////
@@ -173,6 +186,50 @@ const std::vector<sdf::ElementPtr> &Plugin::Contents() const
 void Plugin::InsertContent(const sdf::ElementPtr _elem)
 {
   this->dataPtr->contents.push_back(_elem->Clone());
+}
+
+/////////////////////////////////////////////////
+bool Plugin::InsertContent(const std::string _content)
+{
+  // Read the XML content
+  auto xmlDoc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);;
+  xmlDoc.Parse(_content.c_str());
+  if (xmlDoc.Error())
+  {
+    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
+    return false;
+  }
+
+  // Insert each XML element
+  for (tinyxml2::XMLElement *xml = xmlDoc.FirstChildElement(); xml;
+       xml = xml->NextSiblingElement())
+  {
+    sdf::ElementPtr element(new sdf::Element);
+
+    // Copy the name
+    element->SetName(xml->Name());
+
+    // Copy attributes
+    for (const tinyxml2::XMLAttribute *attribute = xml->FirstAttribute();
+        attribute; attribute = attribute->Next())
+    {
+      element->AddAttribute(attribute->Name(), "string", "", 1, "");
+      element->GetAttribute(attribute->Name())->SetFromString(
+          attribute->Value());
+    }
+
+    // Copy the value
+    if (xml->GetText() != nullptr)
+      element->AddValue("string", xml->GetText(), true);
+
+    // Copy all children
+    copyChildren(element, xml, false);
+
+    // Add the element to this plugin
+    this->InsertContent(element);
+  }
+
+  return true;
 }
 
 /////////////////////////////////////////////////

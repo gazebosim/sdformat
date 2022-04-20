@@ -525,7 +525,7 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("root.sdf", elem);
@@ -534,7 +534,7 @@ sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
 
   if (this->Model() != nullptr)
   {
-    elem->InsertElement(this->Model()->ToElement(_useIncludeTag), true);
+    elem->InsertElement(this->Model()->ToElement(_config), true);
   }
   else if (this->Light() != nullptr)
   {
@@ -548,7 +548,7 @@ sdf::ElementPtr Root::ToElement(bool _useIncludeTag) const
   {
     // Worlds
     for (const sdf::World &world : this->dataPtr->worlds)
-      elem->InsertElement(world.ToElement(_useIncludeTag), true);
+      elem->InsertElement(world.ToElement(_config), true);
   }
 
   return elem;

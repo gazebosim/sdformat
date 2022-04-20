@@ -214,8 +214,10 @@ TEST(ExplicitlySetInFile, ToString)
     << "  </world>\n"
     << "</sdf>\n";
 
-  EXPECT_EQ(root.Element()->ToString(""), stream.str());
-  EXPECT_EQ(root.Element()->ToString("", true, false), stream.str());
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  EXPECT_EQ(root.Element()->ToString("", config), stream.str());
+  EXPECT_EQ(root.Element()->ToString("", true, false, config), stream.str());
 
   stream.str(std::string());
   stream
@@ -249,5 +251,5 @@ TEST(ExplicitlySetInFile, ToString)
     << "  </world>\n"
     << "</sdf>\n";
 
-  EXPECT_EQ(root.Element()->ToString("", true, true), stream.str());
+  EXPECT_EQ(root.Element()->ToString("", true, true, config), stream.str());
 }
