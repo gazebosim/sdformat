@@ -32,8 +32,8 @@ namespace python
 /////////////////////////////////////////////////
 void defineJoint(pybind11::object module)
 {
-  pybind11::class_<sdf::Joint> geometryModule(module, "Joint");
-  geometryModule
+  pybind11::class_<sdf::Joint> jointModule(module, "Joint");
+  jointModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Joint>())
     .def("name", &sdf::Joint::Name,
@@ -93,7 +93,7 @@ void defineJoint(pybind11::object module)
       return sdf::Joint(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::JointType>(geometryModule, "JointType")
+    pybind11::enum_<sdf::JointType>(jointModule, "JointType")
       .value("INVALID", sdf::JointType::INVALID)
       .value("BALL", sdf::JointType::BALL)
       .value("CONTINUOUS", sdf::JointType::CONTINUOUS)
