@@ -29,6 +29,7 @@
 #include "pyParserConfig.hh"
 #include "pyPlane.hh"
 #include "pySemanticPose.hh"
+#include "pySky.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
 
@@ -49,6 +50,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineParserConfig(m);
   sdf::python::definePlane(m);
   sdf::python::defineSemanticPose(m);
+  sdf::python::defineSky(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
 }
