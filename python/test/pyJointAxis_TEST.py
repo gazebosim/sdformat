@@ -37,7 +37,7 @@ class JointAxisTEST(unittest.TestCase):
         self.assertAlmostEqual(1.0, axis.dissipation())
 
         errors = axis.set_xyz(Vector3d(0, 1, 0))
-        self.assertFalse(errors)
+        self.assertEqual(0, len(errors))
         self.assertEqual(Vector3d.UNIT_Y, axis.xyz())
 
         axis.set_xyz_expressed_in("__model__")
@@ -88,7 +88,7 @@ class JointAxisTEST(unittest.TestCase):
 
     def test_zero_norm_vector_returns_error(self):
         axis = JointAxis()
-        self.assertFalse(axis.set_xyz(Vector3d(1.0, 0, 0)))
+        self.assertEqual(0, len(axis.set_xyz(Vector3d(1.0, 0, 0))))
 
         errors = axis.set_xyz(Vector3d.ZERO)
         self.assertTrue(errors)
