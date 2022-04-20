@@ -34,7 +34,6 @@ class SkyTEST(unittest.TestCase):
 
     def test_copy_construction(self):
         sky = Sky()
-        sky.Load(sdf)
         sky.set_time(1.0)
         sky.set_sunrise(5.0)
         sky.set_sunset(15.0)
