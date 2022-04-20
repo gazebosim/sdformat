@@ -123,16 +123,14 @@ namespace usd
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
         "Internal error: unable to apply a collision to the prim at path ["
         + geometryPath + "]"));
+      return errors;
     }
 
-    auto surface = _collision.Surface();
-    if (surface)
+    if (auto surface = _collision.Surface())
     {
-      auto friction = surface->Friction();
-      if (friction)
+      if (auto friction = surface->Friction())
       {
-        auto ode = friction->ODE();
-        if (ode)
+        if (auto ode = friction->ODE())
         {
           const auto looksPath = pxr::SdfPath("/Looks");
           auto looksPrim = _stage->GetPrimAtPath(looksPath);
@@ -154,23 +152,19 @@ namespace usd
           if (!usdMaterialPrim)
           {
             materialUsd = pxr::UsdShadeMaterial::Define(_stage, materialPath);
+            usdMaterialPrim = _stage->GetPrimAtPath(materialPath);
           }
           else
           {
             materialUsd = pxr::UsdShadeMaterial(usdMaterialPrim);
           }
-          usdMaterialPrim = _stage->GetPrimAtPath(materialPath);
 
-          auto materialUSD =
-            pxr::UsdShadeMaterial(_stage->GetPrimAtPath(materialPath));
-
-          pxr::TfToken appliedSchemaNamePhysicsMaterialRootAPI(
+          const pxr::TfToken appliedSchemaNamePhysicsMaterialRootAPI(
             "PhysicsMaterialAPI");
-          pxr::TfToken appliedSchemaNamePhysxMaterialAPI(
+          const pxr::TfToken appliedSchemaNamePhysxMaterialAPI(
             "PhysxMaterialAPI");
           pxr::SdfPrimSpecHandle primSpec = pxr::SdfCreatePrimInLayer(
-            _stage->GetEditTarget().GetLayer(),
-            materialPath);
+            _stage->GetEditTarget().GetLayer(), materialPath);
           pxr::SdfTokenListOp listOpMaterial;
           // Use ReplaceOperations to append in place.
           listOpMaterial.ReplaceOperations(
@@ -208,7 +202,7 @@ namespace usd
             pxr::TfToken("physXMaterial:restitutionCombineMode"),
             pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("average"));
 
-          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUSD);
+          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUsd);
         }
       }
     }
