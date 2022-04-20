@@ -102,7 +102,9 @@ def Xform "box" (
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Cube "geometry"
+            def Cube "geometry" (
+              kind = "model"
+            )
             {
                 float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
                 rel material:binding = </Looks/Material_1>
@@ -159,7 +161,9 @@ def Xform "cylinder"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Cylinder "geometry"
+            def Cylinder "geometry" (
+              kind = "model"
+            )
             {
                 float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
                 double height = 1
@@ -202,7 +206,9 @@ def Xform "sphere"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Sphere "geometry"
+            def Sphere "geometry" (
+              kind = "model"
+            )
             {
                 float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
                 rel material:binding = </Looks/Material_3>
@@ -243,7 +249,9 @@ def Xform "capsule"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
 
-            def Capsule "geometry"
+            def Capsule "geometry" (
+              kind = "model"
+            )
             {
                 float3[] extent = [(-0.2, -0.2, -0.5), (0.2, 0.2, 0.5)]
                 double height = 0.6
@@ -286,7 +294,9 @@ def Xform "ellipsoid"
             double3 xformOp:translate = (0, 0, 0)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
 
-            def Sphere "geometry"
+            def Sphere "geometry" (
+              kind = "model"
+            )
             {
                 float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
                 rel material:binding = </Looks/Material_5>
