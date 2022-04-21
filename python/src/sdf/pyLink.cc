@@ -117,6 +117,9 @@ void defineLink(pybind11::object module)
     .def("set_inertial",
          &sdf::Link::SetInertial,
          "Set the inertial value for this link.")
+    .def("raw_pose", &sdf::Link::RawPose,
+         "Get the pose of the link object. This is the pose of the "
+         "link as specified in SDF")
     .def("set_raw_pose",
          &sdf::Link::SetRawPose,
          "Set the pose of the link.")
@@ -132,28 +135,6 @@ void defineLink(pybind11::object module)
          "is relative to the parent model.")
     .def("semantic_pose",
          &sdf::Link::SemanticPose,
-         "Get SemanticPose object of this object to aid in resolving "
-         "poses.")
-    .def("Inertial",
-         &sdf::Link::Inertial,
-         "Get the inertial value for this link.")
-    .def("SetInertial",
-         &sdf::Link::SetInertial,
-         "Set the inertial value for this link.")
-    .def("raw_pose", &sdf::Link::RawPose,
-         "Get the pose of the link object. This is the pose of the "
-         "link as specified in SDF")
-    .def("set_raw_pose", &sdf::Link::SetRawPose,
-         "Set the pose of the link object.")
-    .def("pose_relative_to", &sdf::Link::PoseRelativeTo,
-         "Get the name of the coordinate frame relative to which this "
-         "object's pose is expressed. An empty value indicates that the frame "
-         "is relative to the parent model.")
-    .def("set_pose_relative_to", &sdf::Link::SetPoseRelativeTo,
-         "Set the name of the coordinate frame relative to which this "
-         "object's pose is expressed. An empty value indicates that the frame "
-         "is relative to the parent model.")
-    .def("semantic_pose", &sdf::Link::SemanticPose,
          "Get SemanticPose object of this object to aid in resolving "
          "poses.")
     .def("enable_wind",
@@ -184,15 +165,15 @@ void defineLink(pybind11::object module)
     .def("clear_visuals",
          &sdf::Link::ClearVisuals,
          "Remove all visuals")
-    .def("clear_lights",
-         &sdf::Link::ClearLights,
-         "Remove all lights")
-    .def("clear_sensors",
-         &sdf::Link::ClearSensors,
-         "Remove all sensors")
-    .def("clear_particle_emitters",
-         &sdf::Link::ClearParticleEmitters,
-         "Remove all particle emitters")
+    // .def("clear_lights",
+    //      &sdf::Link::ClearLights,
+    //      "Remove all lights")
+    // .def("clear_sensors",
+    //      &sdf::Link::ClearSensors,
+    //      "Remove all sensors")
+    // .def("clear_particle_emitters",
+    //      &sdf::Link::ClearParticleEmitters,
+    //      "Remove all particle emitters")
     .def("__copy__", [](const sdf::Link &self) {
       return sdf::Link(self);
     })
