@@ -385,3 +385,34 @@ TEST(DOMPlugin, InsertStringContent)
   EXPECT_EQ("name", plugin5.Name());
   EXPECT_TRUE(plugin5.Contents().empty());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, EqualityOperators)
+{
+  sdf::Plugin plugin("my-filename", "my-name",
+      "<render_engine>ogre2</render_engine>");
+  sdf::Plugin plugin2(plugin);
+  sdf::Plugin plugin3;
+
+  EXPECT_EQ(plugin, plugin2);
+  EXPECT_NE(plugin, plugin3);
+  EXPECT_NE(plugin2, plugin3);
+
+  // Test contents
+  plugin2.ClearContents();
+  EXPECT_NE(plugin, plugin2);
+  plugin.ClearContents();
+  EXPECT_EQ(plugin, plugin2);
+
+  // test name
+  plugin2.SetName("new-name");
+  EXPECT_NE(plugin, plugin2);
+  plugin.SetName("new-name");
+  EXPECT_EQ(plugin, plugin2);
+
+  // test filename
+  plugin2.SetFilename("new-filename");
+  EXPECT_NE(plugin, plugin2);
+  plugin.SetFilename("new-filename");
+  EXPECT_EQ(plugin, plugin2);
+}
