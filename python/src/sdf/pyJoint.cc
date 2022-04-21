@@ -41,9 +41,9 @@ void defineJoint(pybind11::object module)
     .def("set_name", &sdf::Joint::SetName,
          "Set the name of the joint.")
     .def("type", &sdf::Joint::Type,
-         "Get the type of geometry.")
+         "Get the joint type")
     .def("set_type", &sdf::Joint::SetType,
-         "Set the type of geometry.")
+         "Set the joint type.")
     .def("parent_link_name", &sdf::Joint::ParentLinkName,
          "Get the name of this joint's parent link.")
     .def("set_parent_link_name", &sdf::Joint::SetParentLinkName,
@@ -51,11 +51,21 @@ void defineJoint(pybind11::object module)
     .def("child_link_name", &sdf::Joint::ChildLinkName,
          "Get the name of this joint's child link.")
     .def("set_child_link_name", &sdf::Joint::SetChildLinkName,
-         " Set the name of the child link")
-    .def("resolve_child_link", &sdf::Joint::ResolveChildLink,
+         "Set the name of the child link")
+    .def("resolve_child_link",
+         [](const sdf::Joint &self, std::string &_link)
+         {
+           auto errors = self.ResolveChildLink(_link);
+           return std::make_tuple(errors, _link);
+         },
          "Resolve the name of the child link from the "
          "FrameAttachedToGraph.")
-    .def("resolve_parent_link", &sdf::Joint::ResolveParentLink,
+    .def("resolve_parent_link",
+         [](const sdf::Joint &self, std::string &_link)
+         {
+           auto errors = self.ResolveParentLink(_link);
+           return std::make_tuple(errors, _link);
+         },
          "Resolve the name of the parent link from the "
          "FrameAttachedToGraph. It will return the name of a link or "
          "\"world\".")
@@ -81,7 +91,6 @@ void defineJoint(pybind11::object module)
     .def("thread_pitch", &sdf::Joint::ThreadPitch,
          "Get the thread pitch (only valid for screw joints)")
     .def("set_thread_pitch", &sdf::Joint::SetThreadPitch,
-         pybind11::return_value_policy::reference,
          "Set the thread pitch (only valid for screw joints)")
     .def("semantic_pose", &sdf::Joint::SemanticPose,
          "Get SemanticPose object of this object to aid in resolving "
