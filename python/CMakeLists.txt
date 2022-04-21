@@ -51,6 +51,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyForceTorque.cc
   src/sdf/pyFrame.cc
   src/sdf/pyGeometry.cc
+  src/sdf/pyGui.cc
   src/sdf/pyHeightmap.cc
   src/sdf/pyIMU.cc
   src/sdf/pyJoint.cc
@@ -65,9 +66,11 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyNavSat.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyParticleEmitter.cc
   src/sdf/pyPbr.cc
   src/sdf/pyPhysics.cc
   src/sdf/pyPlane.cc
+  src/sdf/pyPlugin.cc
   src/sdf/pyRoot.cc
   src/sdf/pyScene.cc
   src/sdf/pySemanticPose.cc
@@ -109,6 +112,7 @@ if (BUILD_TESTING)
     pyForceTorque_TEST
     pyFrame_TEST
     pyGeometry_TEST
+    pyGui_TEST
     pyHeightmap_TEST
     pyIMU_TEST
     pyJoint_TEST
@@ -123,9 +127,11 @@ if (BUILD_TESTING)
     pyNavSat_TEST
     pyNoise_TEST
     pyParserConfig_TEST
+    pyParticleEmitter_TEST
     pyPbr_TEST
     pyPhysics_TEST
     pyPlane_TEST
+    pyPlugin_TEST
     pyRoot_TEST
     pyScene_TEST
     pySemanticPose_TEST
