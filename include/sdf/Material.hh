@@ -116,7 +116,7 @@ namespace sdf
     /// \return Specular exponent.
     public: double Shininess() const;
 
-    /// \brief Set the specular exponent. 
+    /// \brief Set the specular exponent.
     /// \param[in] _shininess Specular exponent.
     public: void SetShininess(const double _shininess);
 
