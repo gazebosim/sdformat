@@ -27,6 +27,7 @@
 #include "pyMesh.hh"
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
+#include "pyParticleEmitter.hh"
 #include "pyPlane.hh"
 #include "pySemanticPose.hh"
 #include "pySphere.hh"
@@ -47,6 +48,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineMesh(m);
   sdf::python::defineNoise(m);
   sdf::python::defineParserConfig(m);
+  sdf::python::defineParticleEmitter(m);
   sdf::python::definePlane(m);
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSphere(m);
