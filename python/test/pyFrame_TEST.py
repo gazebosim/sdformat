@@ -63,8 +63,9 @@ class FrameColor(unittest.TestCase):
         self.assertEqual(1, len(semanticPose.resolve(pose)))
 
         body = ""
-        self.assertEqual(1, len(frame.resolve_attached_to_body(body)))
-        self.assertFalse(body)
+        resolveAttachedToBody = frame.resolve_attached_to_body(body);
+        self.assertEqual(1, len(resolveAttachedToBody[0]))
+        self.assertFalse(resolveAttachedToBody[1])
 
 
 if __name__ == '__main__':

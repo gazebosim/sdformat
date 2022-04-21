@@ -59,7 +59,12 @@ void defineFrame(pybind11::object module)
          "Set the name of the coordinate frame relative to which this "
          "frame's pose is expressed. An empty value indicates that the frame "
          "is expressed relative to the attached-to link.")
-    .def("resolve_attached_to_body", &sdf::Frame::ResolveAttachedToBody,
+    .def("resolve_attached_to_body",
+         [](const sdf::Frame &self, std::string &_body)
+         {
+           auto errors = self.ResolveAttachedToBody(_body);
+           return std::make_tuple(errors, _body);
+         },
          "Resolve the attached-to body of this frame from the "
          "FrameAttachedToGraph. Generally, it resolves to the name of a link, "
          "but if it is in the world scope, it can resolve to \"world\".")
