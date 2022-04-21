@@ -224,7 +224,6 @@ void CheckInertial(const pxr::UsdPrim &_usdPrim,
   }
   EXPECT_TRUE(checkedCOM);
 
-  EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsRigidBodyAPI>());
   EXPECT_EQ(_isRigid, _usdPrim.HasAPI<pxr::UsdPhysicsMassAPI>());
 }
 }  // namespace testing
