@@ -34,12 +34,15 @@ namespace sdf
   {
     /// \brief Parse the world information of a USD file
     /// \param[in] _inputFileNameUsd Path where the USD is located
+    /// \param[in] _useGazeboPlugins Whether _world should have gazebo plugins
+    /// in it (true) or not (false)
     /// \param[out] _world World interface where all USD world data is placed
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error
     /// occurred when parsing the world information of _inputFileNameUsd
     UsdErrors parseUSDWorld(
       const std::string &_inputFileNameUsd,
+      bool _useGazeboPlugins,
       sdf::World &_world);
   }
   }
