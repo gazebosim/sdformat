@@ -414,5 +414,5 @@ TEST(DOMPlugin, EqualityOperators)
   plugin2.SetFilename("new-filename");
   EXPECT_NE(plugin, plugin2);
   plugin.SetFilename("new-filename");
-  EXPECT_NE(plugin, plugin2);
+  EXPECT_EQ(plugin, plugin2);
 }
