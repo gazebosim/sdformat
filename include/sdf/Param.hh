@@ -683,10 +683,7 @@ namespace sdf
   {
     sdf::Errors errors;
     bool result = this->Set<T>(_value, errors);
-    for (const auto &e : errors)
-    {
-      sdferr << e.Message() << "\n";
-    }
+    sdferr << errors << "\n";
     return result;
   }
 
@@ -717,10 +714,7 @@ namespace sdf
   {
     sdf::Errors errors;
     bool result = this->Get<T>(_value, errors);
-    for (const auto &e : errors)
-    {
-      sdferr << e.Message() << "\n";
-    }
+    sdferr << errors << "\n";
     return result;
   }
 
@@ -781,10 +775,7 @@ namespace sdf
   {
     sdf::Errors errors;
     bool result = this>GetDefault<T>(_value, errors);
-    for (const auto &e : errors)
-    {
-      sdferr << e.Message() << "\n";
-    }
+    sdferr << errors << "\n";
     return result;
   }
 

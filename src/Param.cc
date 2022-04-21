@@ -156,10 +156,7 @@ bool Param::GetAny(std::any &_anyVal) const
   this->GetAny(_anyVal, errors);
   if(!errors.empty())
   {
-    for (const auto &e : errors)
-    {
-      sdferr << e.Message() << "\n";
-    }
+    sdferr << errors << "\n";
     return false;
   }
   return true;
@@ -347,10 +344,7 @@ void Param::Update()
 {
   sdf::Errors errors;
   this->Update(errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
 }
 
 //////////////////////////////////////////////////
@@ -386,10 +380,7 @@ std::string Param::GetAsString(const PrintConfig &_config) const
 {
   sdf::Errors errors;
   std::string result = GetAsString(errors, _config);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -417,10 +408,7 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
   sdf::Errors errors;
   std::string result = this->GetDefaultAsString(errors, _config);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -455,10 +443,7 @@ std::optional<std::string> Param::GetMinValueAsString(
 {
   sdf::Errors errors;
   auto result = GetMinValueAsString(errors, _config);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -492,10 +477,7 @@ std::optional<std::string> Param::GetMaxValueAsString(
 {
   sdf::Errors errors;
   auto result = GetMaxValueAsString(errors, _config);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -1265,10 +1247,7 @@ bool Param::SetFromString(const std::string &_value,
   bool result = this->SetFromString(_value,
                           _ignoreParentAttributes,
                           errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -1320,10 +1299,7 @@ bool Param::SetFromString(const std::string &_value)
 {
   sdf::Errors errors;
   bool result = this->SetFromString(_value, false, errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -1344,10 +1320,7 @@ bool Param::SetParentElement(ElementPtr _parentElement)
 {
   sdf::Errors errors;
   bool result = this->SetParentElement(_parentElement, errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -1379,10 +1352,7 @@ bool Param::Reparse()
 {
   sdf::Errors errors;
   bool result = this->Reparse(errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
@@ -1492,10 +1462,7 @@ bool Param::ValidateValue() const
 {
   sdf::Errors errors;
   bool result = this->ValidateValue(errors);
-  for (const auto &e : errors)
-  {
-    sdferr << e.Message() << "\n";
-  }
+  sdferr << errors << "\n";
   return result;
 }
 
