@@ -220,6 +220,9 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->specular = _sdf->Get<ignition::math::Color>("specular",
       this->dataPtr->specular).first;
 
+  this->dataPtr->shininess = _sdf->Get<double>("shininess",
+      this->dataPtr->shininess).first;
+
   this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
       this->dataPtr->emissive).first;
 
