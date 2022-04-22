@@ -71,7 +71,7 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
-  EXPECT_FALSE(visual.Geom()->PolylineShape().has_value());
+  EXPECT_TRUE(visual.Geom()->PolylineShape().empty());
 
   EXPECT_EQ(nullptr, visual.Material());
 

@@ -41,7 +41,7 @@ class sdf::GeometryPrivate
   public: std::unique_ptr<Plane> plane;
 
   /// \brief Optional polylines.
-  public: std::optional<std::vector<Polyline>> polylines;
+  public: std::vector<Polyline> polylines;
 
   /// \brief Pointer to a sphere.
   public: std::unique_ptr<Sphere> sphere;
@@ -92,7 +92,7 @@ Geometry::Geometry(const Geometry &_geometry)
         *_geometry.dataPtr->plane);
   }
 
-  if (_geometry.dataPtr->polylines)
+  if (!_geometry.dataPtr->polylines.empty())
   {
     this->dataPtr->polylines = _geometry.dataPtr->polylines;
   }
@@ -207,7 +207,6 @@ Errors Geometry::Load(ElementPtr _sdf)
   else if (_sdf->HasElement("polyline"))
   {
     this->dataPtr->type = GeometryType::POLYLINE;
-    this->dataPtr->polylines.emplace();
 
     for (auto polylineElem = _sdf->GetElement("polyline");
          polylineElem != nullptr;
@@ -216,7 +215,7 @@ Errors Geometry::Load(ElementPtr _sdf)
       sdf::Polyline polyline;
       auto err = polyline.Load(polylineElem);
       errors.insert(errors.end(), err.begin(), err.end());
-      this->dataPtr->polylines.value().push_back(polyline);
+      this->dataPtr->polylines.push_back(polyline);
     }
   }
 
@@ -308,7 +307,7 @@ void Geometry::SetHeightmapShape(const Heightmap &_heightmap)
 }
 
 /////////////////////////////////////////////////
-std::optional<std::vector<Polyline>> Geometry::PolylineShape() const
+const std::vector<Polyline> &Geometry::PolylineShape() const
 {
   return this->dataPtr->polylines;
 }

@@ -136,12 +136,11 @@ namespace sdf
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
 
-    /// \brief Get the polyline geometry, or std::nullopt if the contained
+    /// \brief Get the polyline geometry. Vector is empty if the contained
     /// geometry is not a polyline.
-    /// \return The visual's polyline geometry, or std::nullopt if the
-    /// geometry is not a polyline.
+    /// \return The visual's polyline geometries.
     /// \sa GeometryType Type() const
-    public: std::optional<std::vector<Polyline>> PolylineShape() const;
+    public: const std::vector<Polyline> &PolylineShape() const;
 
     /// \brief Set the polyline shape.
     /// \param[in] _polyline The polyline shape.
