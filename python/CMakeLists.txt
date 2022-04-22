@@ -51,6 +51,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
+  src/sdf/pyModel.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pyPlane.cc
@@ -90,6 +91,7 @@ if (BUILD_TESTING)
     pyLink_TEST
     pyMaterial_TEST
     pyMesh_TEST
+    pyModel_TEST
     pyNoise_TEST
     pyParserConfig_TEST
     pyPlane_TEST
