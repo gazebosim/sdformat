@@ -18,6 +18,8 @@
 #ifndef SDF_USD_SDF_PARSER_UTILS_HH_
 #define SDF_USD_SDF_PARSER_UTILS_HH_
 
+#include <string>
+
 #include <ignition/math/Angle.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
@@ -33,6 +35,8 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
+
+#include <ignition/common/Util.hh>
 
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
@@ -51,6 +55,31 @@ namespace sdf
   //
   namespace usd
   {
+    /// \brief Return a valid USD path
+    /// Path must not:
+    ///   - start with a digit
+    ///   - Contain spaces
+    ///   - Contain dots
+    ///   - Contain dashes
+    /// \param[in] _path Path to check
+    /// \return A valid path
+    inline std::string validPath(const std::string &_path)
+    {
+      std::string result;
+      if (_path.empty())
+      {
+        return result;
+      }
+      result = ignition::common::replaceAll(_path, " ", "");
+      result = ignition::common::replaceAll(result, ".", "_");
+      result = ignition::common::replaceAll(result, "-", "_");
+      if (std::isdigit(result[0]))
+      {
+        result = "_" + result;
+      }
+      return result;
+    }
+
     /// \brief Get an object's pose w.r.t. its parent.
     /// \param[in] _obj The object whose pose should be computed/retrieved.
     /// \param[out] _pose The pose of _obj w.r.t. its parent.
