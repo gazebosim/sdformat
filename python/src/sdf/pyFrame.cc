@@ -60,10 +60,11 @@ void defineFrame(pybind11::object module)
          "frame's pose is expressed. An empty value indicates that the frame "
          "is expressed relative to the attached-to link.")
     .def("resolve_attached_to_body",
-         [](const sdf::Frame &self, std::string &_body)
+         [](const sdf::Frame &self, const std::string &_body)
          {
-           auto errors = self.ResolveAttachedToBody(_body);
-           return std::make_tuple(errors, _body);
+           std::string body = _body;
+           auto errors = self.ResolveAttachedToBody(body);
+           return std::make_tuple(errors, body);
          },
          "Resolve the attached-to body of this frame from the "
          "FrameAttachedToGraph. Generally, it resolves to the name of a link, "
