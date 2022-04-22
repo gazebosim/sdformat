@@ -60,9 +60,9 @@ void defineFrame(pybind11::object module)
          "frame's pose is expressed. An empty value indicates that the frame "
          "is expressed relative to the attached-to link.")
     .def("resolve_attached_to_body",
-         [](const sdf::Frame &self, const std::string &_body)
+         [](const sdf::Frame &self)
          {
-           std::string body = _body;
+           std::string body;
            auto errors = self.ResolveAttachedToBody(body);
            return std::make_tuple(errors, body);
          },

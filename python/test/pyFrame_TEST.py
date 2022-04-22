@@ -62,10 +62,9 @@ class FrameColor(unittest.TestCase):
         # expect errors when trying to resolve pose
         self.assertEqual(1, len(semanticPose.resolve(pose)))
 
-        body = ""
-        resolveAttachedToBody = frame.resolve_attached_to_body(body);
-        self.assertEqual(1, len(resolveAttachedToBody[0]))
-        self.assertFalse(resolveAttachedToBody[1])
+        errors, resolveAttachedToBody = frame.resolve_attached_to_body();
+        self.assertEqual(1, len(errors))
+        self.assertFalse(resolveAttachedToBody)
 
 
 if __name__ == '__main__':
