@@ -53,18 +53,20 @@ void defineJoint(pybind11::object module)
     .def("set_child_link_name", &sdf::Joint::SetChildLinkName,
          "Set the name of the child link")
     .def("resolve_child_link",
-         [](const sdf::Joint &self, std::string &_link)
+         [](const sdf::Joint &self, const  std::string &_link)
          {
-           auto errors = self.ResolveChildLink(_link);
-           return std::make_tuple(errors, _link);
+           std::string link = _link;
+           auto errors = self.ResolveChildLink(link);
+           return std::make_tuple(errors, link);
          },
          "Resolve the name of the child link from the "
          "FrameAttachedToGraph.")
     .def("resolve_parent_link",
-         [](const sdf::Joint &self, std::string &_link)
+         [](const sdf::Joint &self, const std::string &_link)
          {
-           auto errors = self.ResolveParentLink(_link);
-           return std::make_tuple(errors, _link);
+           std::string link = _link;
+           auto errors = self.ResolveParentLink(link);
+           return std::make_tuple(errors, link);
          },
          "Resolve the name of the parent link from the "
          "FrameAttachedToGraph. It will return the name of a link or "
