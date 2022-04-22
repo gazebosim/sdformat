@@ -20,9 +20,13 @@
 #include <memory>
 #include <string>
 #include <ignition/math/Pose3.hh>
+#include "sdf/Box.hh"
+#include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/Material.hh"
+#include "sdf/Plane.hh"
 #include "sdf/SemanticPose.hh"
+#include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
