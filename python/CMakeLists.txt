@@ -47,6 +47,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyGeometry.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
+  src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
   src/sdf/pyNoise.cc
@@ -55,6 +56,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pySemanticPose.cc
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
+  src/sdf/pyVisual.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -83,6 +85,7 @@ if (BUILD_TESTING)
     pyGeometry_TEST
     pyJoint_TEST
     pyJointAxis_TEST
+    pyLink_TEST
     pyMaterial_TEST
     pyMesh_TEST
     pyNoise_TEST
@@ -91,6 +94,7 @@ if (BUILD_TESTING)
     pySemanticPose_TEST
     pySphere_TEST
     pySurface_TEST
+    pyVisual_TEST
   )
 
   foreach (test ${python_tests})
