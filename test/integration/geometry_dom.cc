@@ -243,5 +243,5 @@ TEST(DOMGeometry, Shapes)
   EXPECT_DOUBLE_EQ(1.0, polylineVisGeom.value()[0].Height());
   ASSERT_EQ(3u, polylineVisGeom.value()[0].Points().size());
   EXPECT_EQ(ignition::math::Vector2d(-0.2, -0.2),
-      polylineColGeom.value()[0].Points()[0]);
+      polylineVisGeom.value()[0].Points()[0]);
 }

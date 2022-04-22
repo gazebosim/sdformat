@@ -17,6 +17,8 @@
 #ifndef SDF_POLYLINE_HH_
 #define SDF_POLYLINE_HH_
 
+#include <vector>
+
 #include <ignition/math/Vector2.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
