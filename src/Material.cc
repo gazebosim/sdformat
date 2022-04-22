@@ -54,6 +54,9 @@ class sdf::MaterialPrivate
   /// \brief Specular color
   public: ignition::math::Color specular {0, 0, 0, 1};
 
+  /// \brief Specular exponent
+  public: double shininess {0};
+
   /// \brief Emissive color
   public: ignition::math::Color emissive {0, 0, 0, 1};
 
@@ -93,6 +96,7 @@ Material::Material(const Material &_material)
   this->dataPtr->ambient = _material.dataPtr->ambient;
   this->dataPtr->diffuse = _material.dataPtr->diffuse;
   this->dataPtr->specular = _material.dataPtr->specular;
+  this->dataPtr->shininess = _material.dataPtr->shininess;
   this->dataPtr->emissive = _material.dataPtr->emissive;
   this->dataPtr->sdf = _material.dataPtr->sdf;
   this->dataPtr->filePath = _material.dataPtr->filePath;
@@ -216,6 +220,9 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->specular = _sdf->Get<ignition::math::Color>("specular",
       this->dataPtr->specular).first;
 
+  this->dataPtr->shininess = _sdf->Get<double>("shininess",
+      this->dataPtr->shininess).first;
+
   this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
       this->dataPtr->emissive).first;
 
@@ -270,6 +277,18 @@ ignition::math::Color Material::Specular() const
 void Material::SetSpecular(const ignition::math::Color &_color) const
 {
   this->dataPtr->specular = _color;
+}
+
+//////////////////////////////////////////////////
+double Material::Shininess() const
+{
+  return this->dataPtr->shininess;
+}
+
+//////////////////////////////////////////////////
+void Material::SetShininess(const double _shininess)
+{
+  this->dataPtr->shininess = _shininess;
 }
 
 //////////////////////////////////////////////////
