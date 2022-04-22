@@ -144,6 +144,37 @@
         </geometry>
       </visual>
 
+      <collision name="polyline_col">
+        <geometry>
+          <polyline>
+            <point>-0.5 -0.5</point>
+            <point>-0.5 0.5</point>
+            <point>0.5 0.5</point>
+            <point>0 0</point>
+            <point>0.5 -0.5</point>
+            <height>0.5</height>
+          </polyline>
+          <polyline>
+            <point>-0.3 -0.3</point>
+            <point>-0.3 0.3</point>
+            <point>0.3 0.3</point>
+            <point>0 0</point>
+            <height>0.3</height>
+          </polyline>
+        </geometry>
+      </collision>
+
+      <visual name="polyline_vis">
+        <geometry>
+          <polyline>
+            <point>-0.2 -0.2</point>
+            <point>-0.2 0.2</point>
+            <point>0.2 0.2</point>
+            <height>1</height>
+          </polyline>
+        </geometry>
+      </visual>
+
       <visual name="sphere_vis_transparency">
         <transparency>0.22</transparency>
         <visibility_flags>1</visibility_flags>
@@ -153,7 +184,7 @@
           </sphere>
         </geometry>
       </visual>
-      
+
       <visual name="sphere_vis_laser_retro">
         <laser_retro>1150</laser_retro>
         <geometry>

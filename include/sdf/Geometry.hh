@@ -34,6 +34,7 @@ namespace sdf
   class Heightmap;
   class Mesh;
   class Plane;
+  class Polyline;
   class Sphere;
 
   /// \enum GeometryType
@@ -60,6 +61,9 @@ namespace sdf
 
     /// \brief A heightmap geometry.
     HEIGHTMAP = 6,
+
+    /// \brief A polyline geometry.
+    POLYLINE = 7,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -129,6 +133,17 @@ namespace sdf
     /// \brief Set the cylinder shape.
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
+
+    /// \brief Get the polyline geometry, or std::nullopt if the contained
+    /// geometry is not a polyline.
+    /// \return The visual's polyline geometry, or std::nullopt if the
+    /// geometry is not a polyline.
+    /// \sa GeometryType Type() const
+    public: std::optional<std::vector<Polyline>> PolylineShape() const;
+
+    /// \brief Set the polyline shape.
+    /// \param[in] _polyline The polyline shape.
+    public: void SetPolylineShape(const std::vector<Polyline> &_polyline);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.

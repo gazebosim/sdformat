@@ -20,6 +20,7 @@
 #include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
 
 using namespace sdf;
@@ -38,6 +39,9 @@ class sdf::GeometryPrivate
 
   /// \brief Pointer to a plane.
   public: std::unique_ptr<Plane> plane;
+
+  /// \brief Optional polylines.
+  public: std::optional<std::vector<Polyline>> polylines;
 
   /// \brief Pointer to a sphere.
   public: std::unique_ptr<Sphere> sphere;
@@ -86,6 +90,11 @@ Geometry::Geometry(const Geometry &_geometry)
   {
     this->dataPtr->plane = std::make_unique<sdf::Plane>(
         *_geometry.dataPtr->plane);
+  }
+
+  if (_geometry.dataPtr->polylines)
+  {
+    this->dataPtr->polylines = _geometry.dataPtr->polylines;
   }
 
   if (_geometry.dataPtr->sphere)
@@ -195,6 +204,21 @@ Errors Geometry::Load(ElementPtr _sdf)
     Errors err = this->dataPtr->heightmap->Load(_sdf->GetElement("heightmap"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
+  else if (_sdf->HasElement("polyline"))
+  {
+    this->dataPtr->type = GeometryType::POLYLINE;
+    this->dataPtr->polylines.emplace();
+
+    for (auto polylineElem = _sdf->GetElement("polyline");
+         polylineElem != nullptr;
+         polylineElem = polylineElem->GetNextElement("polyline"))
+    {
+      sdf::Polyline polyline;
+      auto err = polyline.Load(polylineElem);
+      errors.insert(errors.end(), err.begin(), err.end());
+      this->dataPtr->polylines.value().push_back(polyline);
+    }
+  }
 
   return errors;
 }
@@ -281,6 +305,18 @@ const Heightmap *Geometry::HeightmapShape() const
 void Geometry::SetHeightmapShape(const Heightmap &_heightmap)
 {
   this->dataPtr->heightmap = std::make_unique<Heightmap>(_heightmap);
+}
+
+/////////////////////////////////////////////////
+std::optional<std::vector<Polyline>> Geometry::PolylineShape() const
+{
+  return this->dataPtr->polylines;
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
+{
+  this->dataPtr->polylines = _polylines;
 }
 
 /////////////////////////////////////////////////

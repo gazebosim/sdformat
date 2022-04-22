@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Visual.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Geometry.hh"
 
 /////////////////////////////////////////////////
@@ -70,6 +71,7 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
+  EXPECT_FALSE(visual.Geom()->PolylineShape().has_value());
 
   EXPECT_EQ(nullptr, visual.Material());
 
