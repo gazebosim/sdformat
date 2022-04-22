@@ -116,7 +116,7 @@ class LinkTEST(unittest.TestCase):
         self.assertAlmostEqual(0.1, inertial.mass_matrix().off_diagonal_moments().x())
         self.assertAlmostEqual(0.2, inertial.mass_matrix().off_diagonal_moments().y())
         self.assertAlmostEqual(0.3, inertial.mass_matrix().off_diagonal_moments().z())
-        self.assertFalse(link.inertial().mass_matrix().is_valid())
+        self.assertTrue(inertial.mass_matrix().is_valid())
 
 
     def test_copy_construction(self):
