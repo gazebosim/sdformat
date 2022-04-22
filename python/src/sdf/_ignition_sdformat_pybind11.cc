@@ -24,6 +24,9 @@
 #include "pyError.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyJoint.hh"
+#include "pyJointAxis.hh"
+#include "pyLink.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
 #include "pyNoise.hh"
@@ -32,6 +35,7 @@
 #include "pySemanticPose.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
+#include "pyVisual.hh"
 
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
@@ -45,6 +49,9 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineError(m);
   sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineJoint(m);
+  sdf::python::defineJointAxis(m);
+  sdf::python::defineLink(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
   sdf::python::defineNoise(m);
@@ -53,4 +60,5 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
+  sdf::python::defineVisual(m);
 }
