@@ -45,6 +45,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
   src/sdf/pyGeometry.cc
+  src/sdf/pyJointAxis.cc
   src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
@@ -54,6 +55,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pySemanticPose.cc
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
+  src/sdf/pyVisual.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -80,6 +82,7 @@ if (BUILD_TESTING)
     pyEllipsoid_TEST
     pyError_TEST
     pyGeometry_TEST
+    pyJointAxis_TEST
     pyLink_TEST
     pyMaterial_TEST
     pyMesh_TEST
@@ -89,6 +92,7 @@ if (BUILD_TESTING)
     pySemanticPose_TEST
     pySphere_TEST
     pySurface_TEST
+    pyVisual_TEST
   )
 
   foreach (test ${python_tests})
