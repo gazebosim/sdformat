@@ -45,6 +45,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
   src/sdf/pyGeometry.cc
+  src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
   src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
@@ -82,6 +83,7 @@ if (BUILD_TESTING)
     pyEllipsoid_TEST
     pyError_TEST
     pyGeometry_TEST
+    pyJoint_TEST
     pyJointAxis_TEST
     pyLink_TEST
     pyMaterial_TEST

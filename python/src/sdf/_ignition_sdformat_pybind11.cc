@@ -23,6 +23,7 @@
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
 #include "pyGeometry.hh"
+#include "pyJoint.hh"
 #include "pyJointAxis.hh"
 #include "pyLink.hh"
 #include "pyMaterial.hh"
@@ -46,6 +47,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
   sdf::python::defineLink(m);
   sdf::python::defineMaterial(m);
