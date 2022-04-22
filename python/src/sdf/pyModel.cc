@@ -73,12 +73,12 @@ void defineModel(pybind11::object module)
     .def("link_by_index",
          pybind11::overload_cast<uint64_t>(
            &sdf::Model::LinkByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child link based on an index.")
     .def("link_by_name",
          pybind11::overload_cast<const std::string &>(
            &sdf::Model::LinkByName, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child link based on an index.")
     .def("link_name_exists", &sdf::Model::LinkNameExists,
          "Get whether a link name exists.")
@@ -88,12 +88,12 @@ void defineModel(pybind11::object module)
     .def("joint_by_index",
          pybind11::overload_cast<uint64_t>(
            &sdf::Model::JointByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child joint based on an index.")
     .def("joint_by_name",
          pybind11::overload_cast<const std::string &>(
            &sdf::Model::JointByName, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) mutable child joint based on an "
          "index.")
     .def("joint_name_exists", &sdf::Model::JointNameExists,
@@ -104,12 +104,12 @@ void defineModel(pybind11::object module)
     .def("frame_by_index",
          pybind11::overload_cast<uint64_t>(
            &sdf::Model::FrameByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child joint frame on an index.")
     .def("frame_by_name",
          pybind11::overload_cast<const std::string &>(
            &sdf::Model::FrameByName, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) mutable child frame based on an "
          "index.")
     .def("frame_name_exists", &sdf::Model::FrameNameExists,
@@ -120,12 +120,12 @@ void defineModel(pybind11::object module)
     .def("model_by_index",
          pybind11::overload_cast<uint64_t>(
            &sdf::Model::ModelByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child joint model on an index.")
     .def("model_by_name",
          pybind11::overload_cast<const std::string &>(
            &sdf::Model::ModelByName, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) mutable child model based on an "
          "index.")
     .def("model_name_exists", &sdf::Model::ModelNameExists,
@@ -138,7 +138,7 @@ void defineModel(pybind11::object module)
     .def("set_raw_pose", &sdf::Model::SetRawPose,
          "Set the pose of the model.")
     .def("canonical_link", &sdf::Model::CanonicalLink,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get the model's canonical link")
     .def("canonical_link_name", &sdf::Model::CanonicalLinkName,
          "Get the name of the model's canonical link. An empty value "
@@ -164,11 +164,9 @@ void defineModel(pybind11::object module)
     .def("set_placement_frame_name", &sdf::Model::SetPlacementFrameName,
          "Set the name of the placement frame of the model.")
     .def("canonical_link_and_relative_name", &sdf::Model::CanonicalLinkAndRelativeName,
+         pybind11::return_value_policy::reference_internal,
          "Get the model's canonical link and the nested name of the link "
          "relative to the current model, delimited by \"::\".")
-    .def("interface_model_count", &sdf::Model::InterfaceModelCount,
-         "Get the number of nested interface models that are immediate (not "
-         "recursively nested) children of this Model object.")
      .def("name_exists_in_frame_attached_to_graph",
           &sdf::Model::NameExistsInFrameAttachedToGraph,
           "Check if a given name exists in the FrameAttachedTo graph at the "
@@ -196,8 +194,8 @@ void defineModel(pybind11::object module)
      // .def("plugins",
      //      pybind11::overload_cast<>(&sdf::Model::Plugins, pybind11::const_),
      //      "Get the plugins attached to this object.")
-     .def("clear_plugins", &sdf::Model::ClearPlugins,
-          "Remove all plugins")
+     // .def("clear_plugins", &sdf::Model::ClearPlugins,
+     //      "Remove all plugins")
      // .def("add_plugin", &sdf::Model::AddPlugin,
      //      "Add a plugin to this object.")
     .def("__copy__", [](const sdf::Model &self) {
