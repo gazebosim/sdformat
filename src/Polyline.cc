@@ -121,8 +121,7 @@ Errors Polyline::Load(ElementPtr _sdf)
        pointElem != nullptr;
        pointElem = pointElem->GetNextElement("point"))
   {
-    this->dataPtr->points.push_back(
-        _sdf->Get<ignition::math::Vector2d>("point"));
+    this->dataPtr->points.push_back(pointElem->Get<ignition::math::Vector2d>());
   }
 
   return errors;

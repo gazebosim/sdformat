@@ -227,10 +227,14 @@ TEST(DOMGeometry, Shapes)
   ASSERT_EQ(5u, polylineColGeom[0].Points().size());
   EXPECT_EQ(ignition::math::Vector2d(-0.5, -0.5),
       polylineColGeom[0].Points()[0]);
+  EXPECT_EQ(ignition::math::Vector2d(-0.5, 0.5),
+      polylineColGeom[0].Points()[1]);
   EXPECT_DOUBLE_EQ(0.3, polylineColGeom[1].Height());
   ASSERT_EQ(4u, polylineColGeom[1].Points().size());
   EXPECT_EQ(ignition::math::Vector2d(-0.3, -0.3),
       polylineColGeom[1].Points()[0]);
+  EXPECT_EQ(ignition::math::Vector2d(-0.3, 0.3),
+      polylineColGeom[1].Points()[1]);
 
   // Test polyline visual
   auto polylineVis = link->VisualByName("polyline_vis");
@@ -244,4 +248,6 @@ TEST(DOMGeometry, Shapes)
   ASSERT_EQ(3u, polylineVisGeom[0].Points().size());
   EXPECT_EQ(ignition::math::Vector2d(-0.2, -0.2),
       polylineVisGeom[0].Points()[0]);
+  EXPECT_EQ(ignition::math::Vector2d(-0.2, 0.2),
+      polylineVisGeom[0].Points()[1]);
 }
