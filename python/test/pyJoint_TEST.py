@@ -59,13 +59,12 @@ class JointTEST(unittest.TestCase):
         joint.set_child_link_name("child")
         self.assertEqual("child", joint.child_link_name())
 
-        body = ""
-        resolveChildLink = joint.resolve_child_link(body)
-        self.assertEqual(1, len(resolveChildLink[0]))
-        self.assertFalse(resolveChildLink[1])
-        resolveParentLink = joint.resolve_parent_link(body)
-        self.assertEqual(1, len(resolveParentLink[0]))
-        self.assertFalse(resolveParentLink[1])
+        errors, resolveChildLink = joint.resolve_child_link()
+        self.assertEqual(1, len(errors))
+        self.assertFalse(resolveChildLink)
+        errors, resolveParentLink = joint.resolve_parent_link()
+        self.assertEqual(1, len(errors))
+        self.assertFalse(resolveParentLink)
 
         joint.set_type(Joint.JointType.BALL)
         self.assertEqual(Joint.JointType.BALL, joint.type())
