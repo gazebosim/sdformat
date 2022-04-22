@@ -14,6 +14,8 @@
  * limitations under the License.
  *
 */
+#include <vector>
+
 #include "sdf/Polyline.hh"
 
 using namespace sdf;
@@ -83,7 +85,7 @@ Errors Polyline::Load(ElementPtr _sdf)
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a polyline, but the provided SDF element is null."});
+      "Attempting to load a polyline, but the provided SDF element is null."});
     return errors;
   }
 
