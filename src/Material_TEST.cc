@@ -28,6 +28,7 @@ TEST(DOMMaterial, Construction)
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Ambient());
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Diffuse());
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
+  EXPECT_DOUBLE_EQ(0.0, material.Shininess());
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
   EXPECT_TRUE(material.Lighting());
   EXPECT_FALSE(material.DoubleSided());
@@ -47,6 +48,7 @@ TEST(DOMMaterial, MoveConstructor)
   material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
   material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetShininess(5.0);
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
   material.SetDoubleSided(true);
@@ -61,6 +63,7 @@ TEST(DOMMaterial, MoveConstructor)
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
       material2.Specular());
+  EXPECT_DOUBLE_EQ(5.0, material2.Shininess());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
@@ -80,6 +83,7 @@ TEST(DOMMaterial, CopyConstructor)
   material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
   material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetShininess(5.0);
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
   material.SetDoubleSided(true);
@@ -94,6 +98,7 @@ TEST(DOMMaterial, CopyConstructor)
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
       material2.Specular());
+  EXPECT_DOUBLE_EQ(5.0, material2.Shininess());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
@@ -113,6 +118,7 @@ TEST(DOMMaterial, AssignmentOperator)
   material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
   material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetShininess(5.0);
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
   material.SetDoubleSided(true);
@@ -128,6 +134,7 @@ TEST(DOMMaterial, AssignmentOperator)
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
       material2.Specular());
+  EXPECT_DOUBLE_EQ(5.0, material2.Shininess());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
@@ -147,6 +154,7 @@ TEST(DOMMaterial, MoveAssignmentOperator)
   material.SetAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 0.5f));
   material.SetDiffuse(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f));
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
+  material.SetShininess(5.0);
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
   material.SetLighting(false);
   material.SetDoubleSided(true);
@@ -161,6 +169,7 @@ TEST(DOMMaterial, MoveAssignmentOperator)
   EXPECT_EQ(ignition::math::Color(0.2f, 0.3f, 0.4f, 0.6f), material2.Diffuse());
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f),
       material2.Specular());
+  EXPECT_DOUBLE_EQ(5.0, material2.Shininess());
   EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f),
       material2.Emissive());
   EXPECT_FALSE(material2.Lighting());
@@ -206,6 +215,10 @@ TEST(DOMMaterial, Set)
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Specular());
   material.SetSpecular(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f));
   EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f, 0.7f), material.Specular());
+
+  EXPECT_DOUBLE_EQ(0.0, material.Shininess());
+  material.SetShininess(5.0);
+  EXPECT_DOUBLE_EQ(5.0, material.Shininess());
 
   EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), material.Emissive());
   material.SetEmissive(ignition::math::Color(0.4f, 0.5f, 0.6f, 0.8f));
