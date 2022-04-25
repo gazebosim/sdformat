@@ -140,15 +140,42 @@ void Polyline::SetHeight(double _height)
 }
 
 /////////////////////////////////////////////////
-const std::vector<ignition::math::Vector2d> &Polyline::Points() const
+uint64_t Polyline::PointCount() const
 {
-  return this->dataPtr->points;
+  return this->dataPtr->points.size();
 }
 
 /////////////////////////////////////////////////
-void Polyline::AddPoint(const ignition::math::Vector2d &_point)
+const ignition::math::Vector2d *Polyline::PointByIndex(uint64_t _index) const
 {
-  return this->dataPtr->points.push_back(_point);
+  if (_index < this->dataPtr->points.size())
+    return &this->dataPtr->points[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+ignition::math::Vector2d *Polyline::PointByIndex(uint64_t _index)
+{
+  if (_index < this->dataPtr->points.size())
+    return &this->dataPtr->points[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Polyline::AddPoint(const ignition::math::Vector2d &_point)
+{
+  if (this->dataPtr->points.size() == this->dataPtr->points.max_size())
+  {
+    return false;
+  }
+  this->dataPtr->points.push_back(_point);
+  return true;
+}
+
+/////////////////////////////////////////////////
+void Polyline::ClearPoints()
+{
+  this->dataPtr->points.clear();
 }
 
 /////////////////////////////////////////////////

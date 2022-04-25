@@ -76,14 +76,25 @@ namespace sdf
     /// \param[in] _height The height of the polyline in meters.
     public: void SetHeight(const double _height);
 
-    /// \brief Get the polyline's points. Each point has 2D coordinates in
-    /// meters.
-    /// \return The polyline's points.
-    public: const std::vector<ignition::math::Vector2d> &Points() const;
+    /// \brief Get the number of points.
+    /// \return Number of points.
+    public: uint64_t PointCount() const;
+
+    /// \brief Get a point by its index.
+    /// \return Constand pointer to the point.
+    public: const ignition::math::Vector2d *PointByIndex(uint64_t _index) const;
+
+    /// \brief Get a point by its index.
+    /// \return Mutable pointer to the point.
+    public: ignition::math::Vector2d *PointByIndex(uint64_t _index);
 
     /// \brief Add a point to the polyline.
     /// \param[in] _point 2D point to add.
-    public: void AddPoint(const ignition::math::Vector2d &_point);
+    /// \return True for success.
+    public: bool AddPoint(const ignition::math::Vector2d &_point);
+
+    /// \brief Remove all points from the polyline.
+    public: void ClearPoints();
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
