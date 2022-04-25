@@ -64,8 +64,12 @@ namespace sdf
     /// \brief A heightmap geometry.
     HEIGHTMAP = 6,
 
+    // Implemented from sdf10
+    // CAPSULE = 7,
+    // ELLIPSOID = 8,
+
     /// \brief A polyline geometry.
-    POLYLINE = 7,
+    POLYLINE = 9,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
