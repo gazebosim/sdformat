@@ -150,3 +150,27 @@ TEST(DOMPolyline, Points)
   polyline.ClearPoints();
   EXPECT_EQ(0u, polyline.PointCount());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMPolyline, ToElement)
+{
+  sdf::Polyline polyline;
+  polyline.SetHeight(1.2);
+
+  ignition::math::Vector2d p1{1, 2};
+  ignition::math::Vector2d p2{3, 4};
+  EXPECT_TRUE(polyline.AddPoint(p1));
+  EXPECT_TRUE(polyline.AddPoint(p2));
+
+  auto elem = polyline.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Polyline polyline2;
+  polyline2.Load(elem);
+
+  EXPECT_DOUBLE_EQ(polyline.Height(), polyline2.Height());
+  ASSERT_DOUBLE_EQ(polyline.PointCount(), polyline2.PointCount());
+
+  EXPECT_EQ(*polyline.PointByIndex(0), *polyline2.PointByIndex(0));
+  EXPECT_EQ(*polyline.PointByIndex(1), *polyline2.PointByIndex(1));
+}

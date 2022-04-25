@@ -20,6 +20,7 @@
 #include <vector>
 
 #include <ignition/math/Vector2.hh>
+#include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -30,35 +31,11 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  // Forward declare private data class.
-  class PolylinePrivate;
-
   /// \brief Polyline represents a 2D path. Multiple polylines can be combined
   class SDFORMAT_VISIBLE Polyline
   {
     /// \brief Constructor
     public: Polyline();
-
-    /// \brief Copy constructor
-    /// \param[in] _polyline Polyline to copy.
-    public: Polyline(const Polyline &_polyline);
-
-    /// \brief Move constructor
-    /// \param[in] _polyline Polyline to move.
-    public: Polyline(Polyline &&_polyline) noexcept;
-
-    /// \brief Destructor
-    public: virtual ~Polyline();
-
-    /// \brief Assignment operator.
-    /// \param[in] _polyline The polyline to set values from.
-    /// \return *this
-    public: Polyline &operator=(const Polyline &_polyline);
-
-    /// \brief Move assignment operator.
-    /// \param[in] _polyline Polyline to move.
-    /// \return Reference to this.
-    public: Polyline &operator=(Polyline &&_polyline);
 
     /// \brief Load the polyline geometry based on an element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
@@ -107,8 +84,15 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// polyline.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \return SDF element pointer with updated polyline values.
+    public: sdf::ElementPtr ToElement() const;
+
     /// \brief Private data pointer.
-    private: PolylinePrivate *dataPtr;
+    IGN_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

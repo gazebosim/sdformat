@@ -16,12 +16,13 @@
 */
 #include <vector>
 
+#include "sdf/parser.hh"
 #include "sdf/Polyline.hh"
 
 using namespace sdf;
 
 // Private data class
-class sdf::PolylinePrivate
+class sdf::Polyline::Implementation
 {
   /// \brief Height in meters
   public: double height{1.0};
@@ -35,43 +36,8 @@ class sdf::PolylinePrivate
 
 /////////////////////////////////////////////////
 Polyline::Polyline()
-  : dataPtr(new PolylinePrivate)
+  : dataPtr(ignition::utils::MakeImpl<Implementation>())
 {
-}
-
-/////////////////////////////////////////////////
-Polyline::~Polyline()
-{
-  delete this->dataPtr;
-  this->dataPtr = nullptr;
-}
-
-//////////////////////////////////////////////////
-Polyline::Polyline(const Polyline &_polyline)
-  : dataPtr(new PolylinePrivate)
-{
-  this->dataPtr->height = _polyline.dataPtr->height;
-  this->dataPtr->points = _polyline.dataPtr->points;
-  this->dataPtr->sdf = _polyline.dataPtr->sdf;
-}
-
-//////////////////////////////////////////////////
-Polyline::Polyline(Polyline &&_polyline) noexcept
-  : dataPtr(std::exchange(_polyline.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Polyline &Polyline::operator=(const Polyline &_polyline)
-{
-  return *this = Polyline(_polyline);
-}
-
-/////////////////////////////////////////////////
-Polyline &Polyline::operator=(Polyline &&_polyline)
-{
-  std::swap(this->dataPtr, _polyline.dataPtr);
-  return *this;
 }
 
 /////////////////////////////////////////////////
@@ -188,4 +154,22 @@ const std::vector<ignition::math::Vector2d> &Polyline::Points() const
 sdf::ElementPtr Polyline::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Polyline::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("polyline_shape.sdf", elem);
+
+  auto heightElem = elem->GetElement("height");
+  heightElem->Set<double>(this->Height());
+
+  for (auto &point : this->dataPtr->points)
+  {
+    auto pointElem = elem->AddElement("point");
+    pointElem->Set<ignition::math::Vector2d>(point);
+  }
+
+  return elem;
 }

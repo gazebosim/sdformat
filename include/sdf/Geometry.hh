@@ -145,16 +145,6 @@ namespace sdf
     /// \param[in] _ellipsoid The ellipsoid shape.
     public: void SetEllipsoidShape(const Ellipsoid &_ellipsoid);
 
-    /// \brief Get the polyline geometry. Vector is empty if the contained
-    /// geometry is not a polyline.
-    /// \return The visual's polyline geometries.
-    /// \sa GeometryType Type() const
-    public: const std::vector<Polyline> &PolylineShape() const;
-
-    /// \brief Set the polyline shape.
-    /// \param[in] _polyline The polyline shape.
-    public: void SetPolylineShape(const std::vector<Polyline> &_polyline);
-
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.
     /// \return Pointer to the visual's sphere geometry, or nullptr if the
@@ -165,6 +155,16 @@ namespace sdf
     /// \brief Set the sphere shape.
     /// \param[in] _sphere The sphere shape.
     public: void SetSphereShape(const Sphere &_sphere);
+
+    /// \brief Get the polyline geometry. Vector is empty if the contained
+    /// geometry is not a polyline.
+    /// \return The visual's polyline geometries.
+    /// \sa GeometryType Type() const
+    public: const std::vector<Polyline> &PolylineShape() const;
+
+    /// \brief Set the polyline shape.
+    /// \param[in] _polyline The polyline shape.
+    public: void SetPolylineShape(const std::vector<Polyline> &_polyline);
 
     /// \brief Get the plane geometry, or nullptr if the contained geometry is
     /// not a plane.

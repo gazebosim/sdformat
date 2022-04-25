@@ -334,9 +334,14 @@ sdf::ElementPtr Geometry::ToElement() const
     case GeometryType::ELLIPSOID:
       elem->InsertElement(this->dataPtr->ellipsoid->ToElement(), true);
       break;
-    case GeometryType::Polyline:
-      // TODO
+    case GeometryType::POLYLINE:
+    {
+      for (const auto &polyline : this->dataPtr->polylines)
+      {
+        elem->InsertElement(polyline.ToElement(), true);
+      }
       break;
+    }
     case GeometryType::EMPTY:
     default:
       elem->AddElement("empty");
