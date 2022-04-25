@@ -87,7 +87,7 @@ void defineWorld(pybind11::object module)
          "A spherical coordinate can be specified in SDF using the "
          "<spherical_coordinates> element.")
     .def("spherical_coordinates", &sdf::World::SphericalCoordinates,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get the spherical coordinates for the world origin.")
     .def("set_spherical_coordinates", &sdf::World::SetSphericalCoordinates,
          "Set the spherical coordinates for the world origin.")
@@ -96,13 +96,13 @@ void defineWorld(pybind11::object module)
          "children of this World object.")
     .def("model_by_index",
          pybind11::overload_cast<uint64_t>(
-           &sdf::World::ModelByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+           &sdf::World::ModelByIndex),
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child joint model on an index.")
      .def("model_by_name",
           pybind11::overload_cast<const std::string &>(
-            &sdf::World::ModelByName, pybind11::const_),
-          pybind11::return_value_policy::reference,
+            &sdf::World::ModelByName),
+          pybind11::return_value_policy::reference_internal,
           "Get an immediate (not nested) mutable child model based on an "
           "index.")
      .def("model_name_exists", &sdf::World::ModelNameExists,
@@ -119,12 +119,12 @@ void defineWorld(pybind11::object module)
           "Add a frame object to the world.")
      .def("clear_models", &sdf::World::ClearModels,
           "Remove all models.")
-     .def("clear_actors", &sdf::World::ClearActors,
-          "Remove all models.")
-     .def("clear_lights", &sdf::World::ClearLights,
-          "Remove all models.")
-     .def("clear_physics", &sdf::World::ClearPhysics,
-          "Remove all models.")
+     // .def("clear_actors", &sdf::World::ClearActors,
+     //      "Remove all models.")
+     // .def("clear_lights", &sdf::World::ClearLights,
+     //      "Remove all models.")
+     // .def("clear_physics", &sdf::World::ClearPhysics,
+     //      "Remove all models.")
      .def("clear_frames", &sdf::World::ClearFrames,
           "Remove all models.")
      .def("add_model", &sdf::World::ActorCount,
@@ -134,13 +134,13 @@ void defineWorld(pybind11::object module)
           "children of this World object.")
      .def("frame_by_index",
           pybind11::overload_cast<uint64_t>(
-            &sdf::World::FrameByIndex, pybind11::const_),
-          pybind11::return_value_policy::reference,
-          "Get an immediate (not nested) child joint frame on an index.")
+            &sdf::World::FrameByIndex),
+          pybind11::return_value_policy::reference_internal,
+          "Get an immediate (not nested) explicit frame based on an index.")
      .def("frame_by_name",
           pybind11::overload_cast<const std::string &>(
-            &sdf::World::FrameByName, pybind11::const_),
-          pybind11::return_value_policy::reference,
+            &sdf::World::FrameByName),
+          pybind11::return_value_policy::reference_internal,
           "Get an immediate (not nested) mutable child frame based on an "
           "index.")
      .def("frame_name_exists", &sdf::World::FrameNameExists,
@@ -157,8 +157,8 @@ void defineWorld(pybind11::object module)
      // .def("plugins",
      //      pybind11::overload_cast<>(&sdf::World::Plugins, pybind11::const_),
      //      "Get the plugins attached to this object.")
-     .def("clear_plugins", &sdf::World::ClearPlugins,
-          "Remove all plugins")
+     // .def("clear_plugins", &sdf::World::ClearPlugins,
+     //      "Remove all plugins")
      // .def("add_plugin", &sdf::World::AddPlugin,
      //      "Add a plugin to this object.")
     .def("__copy__", [](const sdf::World &self) {
