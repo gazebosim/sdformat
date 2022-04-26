@@ -14,11 +14,11 @@
 
 import copy
 from ignition.math import Pose3d
-from sdformat import Frame, Error
+from sdformat import Frame, Error, SDFErrorsException, ErrorCode
 import unittest
 import math
 
-class FrameColor(unittest.TestCase):
+class FrameTest(unittest.TestCase):
 
     def test_default_construction(self):
         frame = Frame()
@@ -62,9 +62,15 @@ class FrameColor(unittest.TestCase):
         # expect errors when trying to resolve pose
         self.assertEqual(1, len(semanticPose.resolve(pose)))
 
-        errors, resolveAttachedToBody = frame.resolve_attached_to_body();
-        self.assertEqual(1, len(errors))
-        self.assertFalse(resolveAttachedToBody)
+        with self.assertRaises(SDFErrorsException) as cm:
+            resolveAttachedToBody = frame.resolve_attached_to_body()
+            self.assertIsNone(resolveAttachedToBody)
+
+        self.assertEqual(1, len(cm.exception.errors))
+        self.assertEqual(ErrorCode.ELEMENT_INVALID,
+                         cm.exception.errors[0].code())
+        self.assertIn("Frame has invalid pointer to FrameAttachedToGraph",
+                      str(cm.exception))
 
 
 if __name__ == '__main__':
