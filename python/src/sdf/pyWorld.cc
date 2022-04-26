@@ -70,7 +70,8 @@ void defineWorld(pybind11::object module)
          "Set the wind linear velocity in the global/world coordinate "
          "frame. Units are meters per second.")
     .def("gravity", &sdf::World::Gravity,
-         "Get the acceleration due to gravity. The default value is "
+         "Get the acceleration due to gravity. Units are meters per "
+         "second squared. The default value is "
          "Earth's standard gravity at sea level, which equals "
          "[0, 0, -9.80665].")
     .def("set_gravity", &sdf::World::SetGravity,
@@ -124,11 +125,11 @@ void defineWorld(pybind11::object module)
      // .def("clear_lights", &sdf::World::ClearLights,
      //      "Remove all lights.")
      // .def("clear_physics", &sdf::World::ClearPhysics,
-     //      "Remove all physics.")
+     //      "Remove all physics objects.")
      .def("clear_frames", &sdf::World::ClearFrames,
           "Remove all frames.")
      .def("actor_count", &sdf::World::ActorCount,
-          "Add a model object to the world.")
+          "Get the number of actors.")
      .def("frame_count", &sdf::World::FrameCount,
           "Get the number of explicit frames that are immediate (not nested) "
           "children of this World object.")
