@@ -24,6 +24,7 @@
 #include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
 
 /////////////////////////////////////////////////
@@ -50,6 +51,9 @@ TEST(DOMGeometry, Construction)
 
   geom.SetType(sdf::GeometryType::SPHERE);
   EXPECT_EQ(sdf::GeometryType::SPHERE, geom.Type());
+
+  geom.SetType(sdf::GeometryType::POLYLINE);
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, geom.Type());
 }
 
 /////////////////////////////////////////////////

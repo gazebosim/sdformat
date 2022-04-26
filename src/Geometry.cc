@@ -26,6 +26,7 @@
 #include "sdf/Mesh.hh"
 #include "sdf/parser.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
 
 #include "Utils.hh"
@@ -52,6 +53,9 @@ class sdf::Geometry::Implementation
 
   /// \brief Optional plane.
   public: std::optional<Plane> plane;
+
+  /// \brief Optional polylines.
+  public: std::vector<Polyline> polylines;
 
   /// \brief Optional sphere.
   public: std::optional<Sphere> sphere;
@@ -153,6 +157,20 @@ Errors Geometry::Load(ElementPtr _sdf)
     this->dataPtr->heightmap.emplace();
     Errors err = this->dataPtr->heightmap->Load(_sdf->GetElement("heightmap"));
     errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (_sdf->HasElement("polyline"))
+  {
+    this->dataPtr->type = GeometryType::POLYLINE;
+
+    for (auto polylineElem = _sdf->GetElement("polyline");
+         polylineElem != nullptr;
+         polylineElem = polylineElem->GetNextElement("polyline"))
+    {
+      sdf::Polyline polyline;
+      auto err = polyline.Load(polylineElem);
+      errors.insert(errors.end(), err.begin(), err.end());
+      this->dataPtr->polylines.push_back(polyline);
+    }
   }
 
   return errors;
@@ -267,6 +285,18 @@ void Geometry::SetHeightmapShape(const Heightmap &_heightmap)
 }
 
 /////////////////////////////////////////////////
+const std::vector<Polyline> &Geometry::PolylineShape() const
+{
+  return this->dataPtr->polylines;
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
+{
+  this->dataPtr->polylines = _polylines;
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Geometry::Element() const
 {
   return this->dataPtr->sdf;
@@ -303,6 +333,9 @@ sdf::ElementPtr Geometry::ToElement() const
       break;
     case GeometryType::ELLIPSOID:
       elem->InsertElement(this->dataPtr->ellipsoid->ToElement(), true);
+      break;
+    case GeometryType::Polyline:
+      // TODO
       break;
     case GeometryType::EMPTY:
     default:
