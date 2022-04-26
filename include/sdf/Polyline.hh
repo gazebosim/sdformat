@@ -81,7 +81,7 @@ namespace sdf
     public: uint64_t PointCount() const;
 
     /// \brief Get a point by its index.
-    /// \return Constand pointer to the point.
+    /// \return Constant pointer to the point.
     public: const ignition::math::Vector2d *PointByIndex(uint64_t _index) const;
 
     /// \brief Get a point by its index.
