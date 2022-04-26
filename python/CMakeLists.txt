@@ -59,6 +59,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
   src/sdf/pyVisual.cc
+  src/sdf/pyWorld.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -99,6 +100,7 @@ if (BUILD_TESTING)
     pySphere_TEST
     pySurface_TEST
     pyVisual_TEST
+    pyWorld_TEST
   )
 
   foreach (test ${python_tests})

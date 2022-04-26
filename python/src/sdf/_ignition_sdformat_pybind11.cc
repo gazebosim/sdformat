@@ -37,6 +37,7 @@
 #include "pySphere.hh"
 #include "pySurface.hh"
 #include "pyVisual.hh"
+#include "pyWorld.hh"
 
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
@@ -63,4 +64,5 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
   sdf::python::defineVisual(m);
+  sdf::python::defineWorld(m);
 }
