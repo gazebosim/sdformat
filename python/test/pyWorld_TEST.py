@@ -21,7 +21,7 @@ import math
 # TODO(ahcorde)
 # - Add Atmosphere, GUI, Actor, Light, Scene and Plugin tests when the sdf::Classes are ported
 
-class VisualTEST(unittest.TestCase):
+class WorldTEST(unittest.TestCase):
 
     def test_default_construction(self):
         world = World()

@@ -65,17 +65,17 @@ void defineWorld(pybind11::object module)
          "for more information.")
     .def("wind_linear_velocity", &sdf::World::WindLinearVelocity,
          "Get the wind linear velocity in the global/world coordinate "
-         "frame. Units are meters per second \f$(\frac{m}{s})\f$")
+         "frame. Units are meters per second.")
     .def("set_wind_linear_velocity", &sdf::World::SetWindLinearVelocity,
          "Set the wind linear velocity in the global/world coordinate "
-         "frame. Units are meters per second \f$(\frac{m}{s})\f$")
+         "frame. Units are meters per second.")
     .def("gravity", &sdf::World::Gravity,
          "Get the acceleration due to gravity. The default value is "
          "Earth's standard gravity at sea level, which equals "
-         "[0, 0, -9.80665] \f$(\frac{m}{s^2})\f$")
+         "[0, 0, -9.80665].")
     .def("set_gravity", &sdf::World::SetGravity,
          "Set the acceleration due to gravity. Units are meters per "
-         "second squared \f$(\frac{m}{s^2})\f$")
+         "second squared.")
     .def("magnetic_field", &sdf::World::MagneticField,
          "Get the magnetic vector in Tesla, expressed in "
          "a coordinate frame defined by the SphericalCoordinates property. "
@@ -92,7 +92,7 @@ void defineWorld(pybind11::object module)
     .def("set_spherical_coordinates", &sdf::World::SetSphericalCoordinates,
          "Set the spherical coordinates for the world origin.")
     .def("model_count", &sdf::World::ModelCount,
-         "Get the number of explicit model that are immediate (not nested) "
+         "Get the number of explicit models that are immediate (not nested) "
          "children of this World object.")
     .def("model_by_index",
          pybind11::overload_cast<uint64_t>(
@@ -120,15 +120,15 @@ void defineWorld(pybind11::object module)
      .def("clear_models", &sdf::World::ClearModels,
           "Remove all models.")
      // .def("clear_actors", &sdf::World::ClearActors,
-     //      "Remove all models.")
+     //      "Remove all actors.")
      // .def("clear_lights", &sdf::World::ClearLights,
-     //      "Remove all models.")
+     //      "Remove all lights.")
      // .def("clear_physics", &sdf::World::ClearPhysics,
-     //      "Remove all models.")
+     //      "Remove all physics.")
      .def("clear_frames", &sdf::World::ClearFrames,
-          "Remove all models.")
-     .def("add_model", &sdf::World::ActorCount,
-          "Get the number of actors.")
+          "Remove all frames.")
+     .def("actor_count", &sdf::World::ActorCount,
+          "Add a model object to the world.")
      .def("frame_count", &sdf::World::FrameCount,
           "Get the number of explicit frames that are immediate (not nested) "
           "children of this World object.")
