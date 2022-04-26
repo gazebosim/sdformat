@@ -18,7 +18,7 @@ from sdformat import Frame, Error
 import unittest
 import math
 
-class FrameColor(unittest.TestCase):
+class FrameTest(unittest.TestCase):
 
     def test_default_construction(self):
         frame = Frame()
@@ -62,9 +62,8 @@ class FrameColor(unittest.TestCase):
         # expect errors when trying to resolve pose
         self.assertEqual(1, len(semanticPose.resolve(pose)))
 
-        errors, resolveAttachedToBody = frame.resolve_attached_to_body();
-        self.assertEqual(1, len(errors))
-        self.assertFalse(resolveAttachedToBody)
+        with self.assertRaises(RuntimeError):
+            frame.resolve_attached_to_body()
 
 
 if __name__ == '__main__':
