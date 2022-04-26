@@ -52,6 +52,7 @@ set (sources
   Pbr.cc
   Physics.cc
   Plane.cc
+  Polyline.cc
   Root.cc
   Scene.cc
   SDF.cc
@@ -133,6 +134,7 @@ if (BUILD_SDF_TEST)
     Pbr_TEST.cc
     Physics_TEST.cc
     Plane_TEST.cc
+    Polyline_TEST.cc
     Root_TEST.cc
     Scene_TEST.cc
     SemanticPose_TEST.cc

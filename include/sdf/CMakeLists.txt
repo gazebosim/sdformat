@@ -37,6 +37,7 @@ set (headers
   Pbr.hh
   Physics.hh
   Plane.hh
+  Polyline.hh
   Root.hh
   Scene.hh
   SDFImpl.hh

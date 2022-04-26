@@ -17,6 +17,8 @@
 #ifndef SDF_GEOMETRY_HH_
 #define SDF_GEOMETRY_HH_
 
+#include <vector>
+
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -34,6 +36,7 @@ namespace sdf
   class Heightmap;
   class Mesh;
   class Plane;
+  class Polyline;
   class Sphere;
 
   /// \enum GeometryType
@@ -60,6 +63,13 @@ namespace sdf
 
     /// \brief A heightmap geometry.
     HEIGHTMAP = 6,
+
+    // Implemented from sdf10
+    // CAPSULE = 7,
+    // ELLIPSOID = 8,
+
+    /// \brief A polyline geometry.
+    POLYLINE = 9,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -129,6 +139,16 @@ namespace sdf
     /// \brief Set the cylinder shape.
     /// \param[in] _cylinder The cylinder shape.
     public: void SetCylinderShape(const Cylinder &_cylinder);
+
+    /// \brief Get the polyline geometry. Vector is empty if the contained
+    /// geometry is not a polyline.
+    /// \return The visual's polyline geometries.
+    /// \sa GeometryType Type() const
+    public: const std::vector<Polyline> &PolylineShape() const;
+
+    /// \brief Set the polyline shape.
+    /// \param[in] _polyline The polyline shape.
+    public: void SetPolylineShape(const std::vector<Polyline> &_polyline);
 
     /// \brief Get the sphere geometry, or nullptr if the contained geometry is
     /// not a sphere.
