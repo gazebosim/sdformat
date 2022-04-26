@@ -179,6 +179,12 @@ void Polyline::ClearPoints()
 }
 
 /////////////////////////////////////////////////
+const std::vector<ignition::math::Vector2d> &Polyline::Points() const
+{
+  return this->dataPtr->points;
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Polyline::Element() const
 {
   return this->dataPtr->sdf;

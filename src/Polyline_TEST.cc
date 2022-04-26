@@ -25,6 +25,7 @@ TEST(DOMPolyline, Construction)
   EXPECT_EQ(nullptr, polyline.Element());
 
   EXPECT_EQ(0u, polyline.PointCount());
+  EXPECT_TRUE(polyline.Points().empty());
   EXPECT_DOUBLE_EQ(1.0, polyline.Height());
 }
 
@@ -134,9 +135,13 @@ TEST(DOMPolyline, Points)
   EXPECT_TRUE(polyline.AddPoint(p3));
 
   EXPECT_EQ(3u, polyline.PointCount());
+  EXPECT_EQ(3u, polyline.Points().size());
   EXPECT_EQ(p1, *polyline.PointByIndex(0));
   EXPECT_EQ(p2, *polyline.PointByIndex(1));
   EXPECT_EQ(p3, *polyline.PointByIndex(2));
+  EXPECT_EQ(p1, polyline.Points()[0]);
+  EXPECT_EQ(p2, polyline.Points()[1]);
+  EXPECT_EQ(p3, polyline.Points()[2]);
   EXPECT_EQ(nullptr, polyline.PointByIndex(3));
 
   *polyline.PointByIndex(0) = p4;

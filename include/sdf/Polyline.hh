@@ -96,6 +96,11 @@ namespace sdf
     /// \brief Remove all points from the polyline.
     public: void ClearPoints();
 
+    /// \brief Get the polyline's points. Each point has 2D coordinates in
+    /// meters.
+    /// \return The polyline's points.
+    public: const std::vector<ignition::math::Vector2d> &Points() const;
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
