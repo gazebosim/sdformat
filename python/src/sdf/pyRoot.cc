@@ -82,7 +82,7 @@ void defineRoot(pybind11::object module)
     .def("clear_worlds", &sdf::Root::ClearWorlds,
          "Remove all worlds.")
     .def("update_graphs", &sdf::Root::UpdateGraphs,
-         "ecreate the frame and pose graphs for the worlds and model "
+         "Recreate the frame and pose graphs for the worlds and model "
          "that are children of this Root object. You can call this function "
          "to build new graphs when the DOM was created programmatically, or "
          "if you want to regenerate the graphs after editing the DOM.")
