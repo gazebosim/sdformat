@@ -7,7 +7,7 @@
 1. Polyline geometry DOM
     * [Pull request #1000](https://github.com/ignitionrobotics/sdformat/pull/1000)
 
-1. Added <shininess> to <material>
+1. Added `<shininess>` to `<material>`
     * [Pull request #985](https://github.com/ignitionrobotics/sdformat/pull/985)
 
 1. Backport ``ign sdf --inertial-stats``
@@ -16,7 +16,7 @@
 1. Add L16 pixel format to Camera pixel format conversion function
     * [Pull request #487](https://github.com/ignitionrobotics/sdformat/pull/487)
 
-1. Anti-aliasing element for <camera><image>
+1. Anti-aliasing element for `<camera><image>`
     * [Pull request #909](https://github.com/ignitionrobotics/sdformat/pull/909)
 
 1. Fix loading nested include with custom attributes
@@ -24,15 +24,6 @@
 
 1. add enable_orientation to 1.6 spec
     * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
-
-1. Include nested model test
-    * [Pull request #Include nested model test](https://github.com/ignitionrobotics/sdformat/pull/Include nested model test)
-
-1. Use SemanticPose API in test
-    * [Pull request #Use SemanticPose API in test](https://github.com/ignitionrobotics/sdformat/pull/Use SemanticPose API in test)
-
-1. Fix test file path in fixed_joint_reduction.cc
-    * [Pull request #Fix test file path in fixed_joint_reduction.cc](https://github.com/ignitionrobotics/sdformat/pull/Fix test file path in fixed_joint_reduction.cc)
 
 1. Fix xyz and rpy offsets in fixed joint reduction
     * [Pull request #500](https://github.com/ignitionrobotics/sdformat/pull/500)
@@ -56,12 +47,10 @@
     * [Pull request #497](https://github.com/ignitionrobotics/sdformat/pull/497)
 
 1. Patch popen/pclose method for Windows
-    * [Pull request #Patch popen/pclose method for Windows](https://github.com/ignitionrobotics/sdformat/pull/Patch popen/pclose method for Windows)
+    * [Pull request #297](https://github.com/ignitionrobotics/sdformat/pull/297)
 
-1. [sdf4] Update BitBucket links (#248)
-    * [Pull request #248) (#258](https://github.com/ignitionrobotics/sdformat/pull/248) (#258)
-
-1. [sdf6] Changelog links to BitBucket backup
+1. BitBucket
+    * [Pull request #258](https://github.com/ignitionrobotics/sdformat/pull/258)
     * [Pull request #237](https://github.com/ignitionrobotics/sdformat/pull/237)
 
 ### libsdformat 9.7.0 (2021-11-03)
