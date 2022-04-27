@@ -40,6 +40,7 @@
 #include "pySphere.hh"
 #include "pySurface.hh"
 #include "pyVisual.hh"
+#include "pyWorld.hh"
 
 static PyObject *PySDFErrorsException;
 
@@ -94,4 +95,5 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
   sdf::python::defineVisual(m);
+  sdf::python::defineWorld(m);
 }
