@@ -46,9 +46,6 @@
 1. Parse rpyOffset as radians
     * [Pull request #497](https://github.com/ignitionrobotics/sdformat/pull/497)
 
-1. Patch popen/pclose method for Windows
-    * [Pull request #297](https://github.com/ignitionrobotics/sdformat/pull/297)
-
 1. BitBucket
     * [Pull request #258](https://github.com/ignitionrobotics/sdformat/pull/258)
     * [Pull request #237](https://github.com/ignitionrobotics/sdformat/pull/237)
