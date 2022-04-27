@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "pyBox.hh"
 #include "pyCapsule.hh"
@@ -22,6 +24,7 @@
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
+#include "pyExceptions.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
 #include "pyJoint.hh"
@@ -38,8 +41,35 @@
 #include "pySurface.hh"
 #include "pyVisual.hh"
 
+static PyObject *PySDFErrorsException;
+
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
+
+  PySDFErrorsException = PyErr_NewException("sdformat.SDFErrorsException", NULL, NULL);
+  if (PySDFErrorsException) {
+    PyTypeObject *as_type = reinterpret_cast<PyTypeObject *>(PySDFErrorsException);
+    as_type->tp_str = sdf::python::SDFErrorsException_tp_str;
+    PyObject *descr = PyDescr_NewGetSet(as_type, sdf::python::SDFErrorsException_getsetters);
+    auto dict = pybind11::reinterpret_borrow<pybind11::dict>(as_type->tp_dict);
+    dict[pybind11::handle(PyDescr_NAME(descr))] = pybind11::handle(descr);
+
+    Py_XINCREF(PySDFErrorsException);
+    m.add_object("SDFErrorsException", pybind11::handle(PySDFErrorsException));
+  }
+
+  pybind11::register_exception_translator([](std::exception_ptr p) {
+    try {
+      if (p) {
+        std::rethrow_exception(p);
+      }
+    } catch (sdf::python::SDFErrorsException &e) {
+      pybind11::tuple args(2);
+      args[0] = e.getErrorString();
+      args[1] = e.GetErrors();
+      PyErr_SetObject(PySDFErrorsException, args.ptr());
+    }
+  });
 
   sdf::python::defineBox(m);
   sdf::python::defineCapsule(m);
@@ -48,6 +78,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineCylinder(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
+  sdf::python::defineExceptions(m);
   sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
   sdf::python::defineJoint(m);
