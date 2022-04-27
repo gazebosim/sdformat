@@ -17,6 +17,7 @@
 
 #include "sdf/usd/sdf_parser/World.hh"
 
+#include <cctype>
 #include <iostream>
 #include <string>
 
@@ -37,8 +38,9 @@
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/World.hh"
-#include "sdf/usd/sdf_parser/Light.hh"
-#include "sdf/usd/sdf_parser/Model.hh"
+#include "Light.hh"
+#include "Model.hh"
+#include "../UsdUtils.hh"
 
 namespace sdf
 {
@@ -73,15 +75,16 @@ namespace usd
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {
       const auto model = *(_world.ModelByIndex(i));
-      auto modelPath = std::string(_path + "/" + model.Name());
-      modelPath = ignition::common::replaceAll(modelPath, " ", "");
+      std::string modelName = model.Name();
+      modelName = sdf::usd::validPath(modelName);
+      auto modelPath = std::string(_path + "/" + modelName);
       UsdErrors modelErrors =
         ParseSdfModel(model, _stage, modelPath, worldPrimPath);
       if (!modelErrors.empty())
       {
         errors.push_back(UsdError(
               sdf::usd::UsdErrorCode::SDF_TO_USD_PARSING_ERROR,
-              "Error parsing model [" + model.Name() + "]"));
+              "Error parsing model [" + modelName + "]"));
         errors.insert(errors.end(), modelErrors.begin(), modelErrors.end());
       }
     }
@@ -90,7 +93,7 @@ namespace usd
     {
       const auto light = *(_world.LightByIndex(i));
       auto lightPath = std::string(_path + "/" + light.Name());
-      lightPath = ignition::common::replaceAll(lightPath, " ", "");
+      lightPath = sdf::usd::validPath(lightPath);
       UsdErrors lightErrors = ParseSdfLight(light, _stage, lightPath);
       if (!lightErrors.empty())
       {
