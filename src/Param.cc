@@ -73,7 +73,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   {
     for (unsigned int i = 0; i < errors.size() - 1; ++i)
     {
-      sdferr << errors[i].Message() + "\n";
+      sdferr << errors[i].Message() << "\n";
     }
 
     SDF_ASSERT(false, errors.back().Message());
@@ -106,7 +106,7 @@ Param::Param(const std::string &_key, const std::string &_typeName,
   {
     for (unsigned int i = 0; i < errors.size() - 1; ++i)
     {
-      sdferr << errors[i].Message() + "\n";
+      sdferr << errors[i].Message() << "\n";
     }
 
     SDF_ASSERT(false, errors.back().Message());
@@ -156,7 +156,7 @@ bool Param::GetAny(std::any &_anyVal) const
   this->GetAny(_anyVal, errors);
   if(!errors.empty())
   {
-    sdferr << errors << "\n";
+    sdferr << errors;
     return false;
   }
   return true;
@@ -344,7 +344,8 @@ void Param::Update()
 {
   sdf::Errors errors;
   this->Update(errors);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
 }
 
 //////////////////////////////////////////////////
@@ -380,7 +381,8 @@ std::string Param::GetAsString(const PrintConfig &_config) const
 {
   sdf::Errors errors;
   std::string result = GetAsString(errors, _config);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -393,7 +395,6 @@ std::string Param::GetAsString(sdf::Errors &_errors,
       this->dataPtr->StringFromValueImpl(_config,
                                          this->dataPtr->typeName,
                                          this->dataPtr->value,
-                                         this->dataPtr->strValue,
                                          valueStr,
                                          _errors))
   {
@@ -408,7 +409,8 @@ std::string Param::GetDefaultAsString(const PrintConfig &_config) const
 {
   sdf::Errors errors;
   std::string result = this->GetDefaultAsString(errors, _config);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -421,7 +423,6 @@ std::string Param::GetDefaultAsString(sdf::Errors &_errors,
         _config,
         this->dataPtr->typeName,
         this->dataPtr->defaultValue,
-        this->dataPtr->defaultStrValue,
         defaultStr,
         _errors))
   {
@@ -443,7 +444,8 @@ std::optional<std::string> Param::GetMinValueAsString(
 {
   sdf::Errors errors;
   auto result = GetMinValueAsString(errors, _config);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -477,7 +479,8 @@ std::optional<std::string> Param::GetMaxValueAsString(
 {
   sdf::Errors errors;
   auto result = GetMaxValueAsString(errors, _config);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -1014,7 +1017,6 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 bool PoseStringFromValue(const PrintConfig &_config,
                          const Param_V &_parentAttributes,
                          const ParamPrivate::ParamVariant &_value,
-                         const std::optional<std::string> &_originalStr,
                          std::string &_valueStr,
                          sdf::Errors &_errors)
 {
@@ -1188,23 +1190,6 @@ bool ParamPrivate::StringFromValueImpl(
     std::string &_valueStr,
     sdf::Errors &_errors) const
 {
-  return this->StringFromValueImpl(
-      _config,
-      _typeName,
-      _value,
-      std::nullopt,
-      _valueStr,
-      _errors);
-}
-
-bool ParamPrivate::StringFromValueImpl(
-    const PrintConfig &_config,
-    const std::string &_typeName,
-    const ParamVariant &_value,
-    const std::optional<std::string> &_originalStr,
-    std::string &_valueStr,
-    sdf::Errors &_errors) const
-{
   // This will be handled in a type specific manner
   if (_typeName == "bool")
   {
@@ -1226,11 +1211,10 @@ bool ParamPrivate::StringFromValueImpl(
     const ElementPtr p = this->parentElement.lock();
     if (!this->ignoreParentAttributes && p)
     {
-      return PoseStringFromValue(_config, p->GetAttributes(), _value,
-                                 _originalStr, _valueStr, _errors);
+      return PoseStringFromValue(
+          _config, p->GetAttributes(), _value, _valueStr, _errors);
     }
-    return PoseStringFromValue(_config, {}, _value,
-                               _originalStr, _valueStr, _errors);
+    return PoseStringFromValue(_config, {}, _value, _valueStr, _errors);
   }
 
   StringStreamClassicLocale ss;
@@ -1247,7 +1231,8 @@ bool Param::SetFromString(const std::string &_value,
   bool result = this->SetFromString(_value,
                           _ignoreParentAttributes,
                           errors);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -1284,7 +1269,7 @@ bool Param::SetFromString(const std::string &_value,
   this->dataPtr->strValue = str;
 
   // Check if the value is permitted
-  if (!this->ValidateValue())
+  if (!this->ValidateValue(_errors))
   {
     this->dataPtr->value = oldValue;
     return false;
@@ -1299,7 +1284,8 @@ bool Param::SetFromString(const std::string &_value)
 {
   sdf::Errors errors;
   bool result = this->SetFromString(_value, false, errors);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -1320,7 +1306,8 @@ bool Param::SetParentElement(ElementPtr _parentElement)
 {
   sdf::Errors errors;
   bool result = this->SetParentElement(_parentElement, errors);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -1352,7 +1339,8 @@ bool Param::Reparse()
 {
   sdf::Errors errors;
   bool result = this->Reparse(errors);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
@@ -1462,7 +1450,8 @@ bool Param::ValidateValue() const
 {
   sdf::Errors errors;
   bool result = this->ValidateValue(errors);
-  sdferr << errors << "\n";
+  if (!errors.empty())
+    sdferr << errors;
   return result;
 }
 
