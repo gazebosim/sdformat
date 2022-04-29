@@ -72,7 +72,7 @@ void defineRoot(pybind11::object module)
           "Get whether a world name exists.")
     .def("model", &sdf::Root::Model,
          pybind11::return_value_policy::reference_internal,
-         "Get a pointer to the model object if it exists.")
+         "Get a model object if it exists.")
     .def("set_model", &sdf::Root::SetModel,
          pybind11::return_value_policy::reference_internal,
          "Set the model object. This will override any existing model, "

@@ -22,7 +22,7 @@ class RootTEST(unittest.TestCase):
 
   def test_default_construction(self):
     root = Root()
-    # self.assertEqual(SDF_VERSION, root.version())
+    self.assertEqual(SDF_VERSION, root.version())
     self.assertFalse(root.world_name_exists("default"))
     self.assertFalse(root.world_name_exists(""))
     self.assertEqual(0, root.world_count())
