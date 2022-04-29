@@ -169,7 +169,7 @@ TEST(DOMPolyline, ToElement)
   polyline2.Load(elem);
 
   EXPECT_DOUBLE_EQ(polyline.Height(), polyline2.Height());
-  ASSERT_DOUBLE_EQ(polyline.PointCount(), polyline2.PointCount());
+  ASSERT_EQ(polyline.PointCount(), polyline2.PointCount());
 
   EXPECT_EQ(*polyline.PointByIndex(0), *polyline2.PointByIndex(0));
   EXPECT_EQ(*polyline.PointByIndex(1), *polyline2.PointByIndex(1));
