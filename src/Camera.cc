@@ -228,8 +228,11 @@ Errors Camera::Load(ElementPtr _sdf)
   this->dataPtr->triggered = _sdf->Get<bool>("triggered",
       this->dataPtr->triggered).first;
 
-  this->dataPtr->triggerTopic = _sdf->Get<std::string>("trigger_topic",
-      this->dataPtr->triggerTopic).first;
+  if (_sdf->HasElement("trigger_topic"))
+  {
+    this->dataPtr->triggerTopic = _sdf->Get<std::string>("trigger_topic",
+        this->dataPtr->triggerTopic).first;
+  }
 
   this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
