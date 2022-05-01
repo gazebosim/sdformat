@@ -45,7 +45,6 @@ class HeightmapTEST(unittest.TestCase):
         self.assertAlmostEqual(0.0, heightmapBlend.min_height())
         self.assertAlmostEqual(0.0, heightmapBlend.fade_distance())
 
-
     def test_copy_construction(self):
         heightmap = Heightmap()
         heightmap.set_uri("banana")

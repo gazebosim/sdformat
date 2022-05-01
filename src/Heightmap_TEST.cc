@@ -87,6 +87,7 @@ TEST(DOMHeightmap, MoveConstructor)
   EXPECT_DOUBLE_EQ(456.123, heightmapBlend2.FadeDistance());
 }
 
+
 /////////////////////////////////////////////////
 TEST(DOMHeightmap, CopyConstructor)
 {
