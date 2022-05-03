@@ -20,9 +20,9 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <ignition/math/SphericalCoordinates.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/SphericalCoordinates.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"

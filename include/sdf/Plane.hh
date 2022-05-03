@@ -17,10 +17,10 @@
 #ifndef SDF_PLANE_HH_
 #define SDF_PLANE_HH_
 
-#include <ignition/math/Plane.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/math/Vector2.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Plane.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>

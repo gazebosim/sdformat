@@ -17,8 +17,8 @@
 #ifndef SDF_ATMOSPHERE_HH_
 #define SDF_ATMOSPHERE_HH_
 
-#include <ignition/math/Temperature.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Temperature.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
