@@ -144,6 +144,18 @@ namespace sdf
     /// \return A reference to this plugin
     public: Plugin &operator=(Plugin &&_plugin) noexcept;
 
+    /// \brief Plugin equality operator.
+    /// \param[in] _plugin Plugin to compare against.
+    /// \return True if this plugin matches the provided plugin. The name,
+    /// filename, and contents must all match to return true.
+    public: bool operator==(const Plugin &_plugin) const;
+
+    /// \brief Plugin inequality operator.
+    /// \param[in] _plugin Plugin to compare against.
+    /// \return True if this plugin does not match the provided plugin.
+    /// The name, filename, or contents must be different to return false.
+    public: bool operator!=(const Plugin &_plugin) const;
+
     /// \brief Output stream operator for a Plugin.
     /// \param[in] _out The output stream
     /// \param[in] _plugin Plugin to output
