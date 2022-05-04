@@ -18,23 +18,8 @@
       `x L̂x + y L̂y + z L̂ᴢ`, where L̂x, L̂y, L̂ᴢ are link-frame L's orthogonal unit
       vectors. The subsequent values characterize C's orientation relative to
       link-frame L as a sequence of Euler rotations
-      (r p y) documented in http://sdformat.org/tutorials?tut=specify_pose,
-      or as a quaternion (x y z w), where w is the scalar component.
+      (r p y) documented in http://sdformat.org/tutorials?tut=specify_pose.
     </description>
-
-    <attribute name="rotation_format" type="string" default="euler_rpy" required="0">
-      <description>'euler_rpy' by default. Supported rotation formats are
-        'euler_rpy', Euler angles representation in roll, pitch, yaw. The pose is expected to have 6 values.
-        'quat_xyzw', Quaternion representation in x, y, z, w. The pose is expected to have 7 values.
-      </description>
-    </attribute>
-
-    <attribute name="degrees" type="bool" default="false" required="0">
-      <description>
-        Whether or not the euler angles are in degrees, otherwise they will be interpreted as radians by default.
-      </description>
-    </attribute>
-
   </element>
 
   <element name="inertia" required="0">
