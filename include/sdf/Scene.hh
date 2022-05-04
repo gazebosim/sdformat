@@ -17,8 +17,8 @@
 #ifndef SDF_SCENE_HH_
 #define SDF_SCENE_HH_
 
-#include <ignition/math/Color.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Color.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Sky.hh"
