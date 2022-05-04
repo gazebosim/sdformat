@@ -17,9 +17,9 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
-#include <ignition/math/Box.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Box.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
