@@ -17,7 +17,7 @@
 #ifndef SDF_ALTIMETER_HH_
 #define SDF_ALTIMETER_HH_
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
