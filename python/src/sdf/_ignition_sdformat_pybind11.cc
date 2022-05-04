@@ -34,6 +34,7 @@
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
 #include "pyPlane.hh"
+#include "pyRoot.hh"
 #include "pySemanticPose.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
@@ -64,9 +65,13 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineNoise(m);
   sdf::python::defineParserConfig(m);
   sdf::python::definePlane(m);
+  sdf::python::defineRoot(m);
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
   sdf::python::defineVisual(m);
   sdf::python::defineWorld(m);
+
+  m.attr("SDF_VERSION") = SDF_VERSION;
+  m.attr("SDF_PROTOCOL_VERSION") = SDF_PROTOCOL_VERSION;
 }
