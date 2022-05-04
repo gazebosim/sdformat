@@ -33,7 +33,7 @@
 #include <variant>
 #include <vector>
 
-#include <ignition/math.hh>
+#include <gz/math.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/PrintConfig.hh"
