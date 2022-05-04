@@ -17,8 +17,8 @@
 #ifndef SDF_SPHERE_HH_
 #define SDF_SPHERE_HH_
 
-#include <ignition/math/Sphere.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Sphere.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
