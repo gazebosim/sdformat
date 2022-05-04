@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Open Source Robotics Foundation
+ * Copyright 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,75 +24,69 @@
 #include "sdf/Error.hh"
 #include "sdf/Param.hh"
 #include "sdf/Types.hh"
-
+#include "test_utils.hh"
 
 ////////////////////////////////////////
 // Test Param class for sdf::Errors outputs
 TEST(Error, ErrorOutput)
 {
   std::stringstream buffer;
-  std::streambuf * old = std::cerr.rdbuf(buffer.rdbuf());
-  sdf::Errors errors;
-  sdf::Error error;
-  EXPECT_NO_THROW(sdf::Param param1("key", "not_valid_type", "true", false,
-                                    errors, "description"));
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::UNKNOWN_PARAMETER_TYPE, error.Code());
-  ASSERT_EQ("Unknown parameter type[not_valid_type]", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid parameter", error.Message());
+  sdf::testing::RedirectConsoleStream redir(
+    sdf::Console::Instance()->GetMsgStream(), &buffer);
 
-  EXPECT_NO_THROW(sdf::Param param2("key", "not_valid_type", "true",
+  sdf::Errors errors;
+  ASSERT_NO_THROW(sdf::Param param1("key", "not_valid_type", "true", false,
+                                    errors, "description"));
+  ASSERT_EQ(errors[0].Code(), sdf::ErrorCode::UNKNOWN_PARAMETER_TYPE);
+  ASSERT_NE(std::string::npos,
+   errors[0].Message().find(
+     "Unknown parameter type[not_valid_type]"));
+  ASSERT_EQ(errors[1].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos,
+   errors[1].Message().find("Invalid parameter"));
+
+  ASSERT_NO_THROW(sdf::Param param2("key", "not_valid_type", "true",
                                     false, "", "", errors, "description"));
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::UNKNOWN_PARAMETER_TYPE, error.Code());
-  ASSERT_EQ("Unknown parameter type[not_valid_type]", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid parameter", error.Message());
+  ASSERT_EQ(errors[2].Code(), sdf::ErrorCode::UNKNOWN_PARAMETER_TYPE);
+  ASSERT_NE(std::string::npos,
+   errors[2].Message().find("Unknown parameter type[not_valid_type]"));
+  ASSERT_EQ(errors[3].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos,
+   errors[3].Message().find("Invalid parameter"));
 
   sdf::Param param3("key", "bool", "true", false, errors, "description");
-  ASSERT_TRUE(errors.empty());
+  // Check no new errors were added
+  ASSERT_EQ(errors.size(), 4u);
   param3.Set(4, errors);
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid boolean value", error.Message());
+  ASSERT_EQ(errors[4].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos,
+   errors[4].Message().find("Invalid boolean value"));
 
   ignition::math::Pose3d pose;
   param3.Get<ignition::math::Pose3d>(pose, errors);
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("The value for //pose[@rotation_format='euler_rpy'] must have 6 "
-            "values, but 1 were found instead in '1'.", error.Message());
+  ASSERT_EQ(errors[5].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[5].Message().find(
+    "The value for //pose[@rotation_format='euler_rpy'] must have 6 "
+    "values, but 1 were found instead in '1'."));
 
   param3.Update(errors);
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("[updateFunc] is not set.", error.Message());
+  ASSERT_EQ(errors[6].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[6].Message().find(
+    "[updateFunc] is not set."));
 
   sdf::Param requiredParam("key", "int", "1", true, "2", "4", errors,
                            "description");
-  EXPECT_TRUE(errors.empty());
+  // Check no new errors were added
+  ASSERT_EQ(errors.size(), 7u);
   requiredParam.SetFromString("", errors);
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Empty string used when setting a required parameter. Key[key]",
-            error.Message());
+  ASSERT_EQ(errors[7].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[7].Message().find(
+    "Empty string used when setting a required parameter. Key[key]"));
   ASSERT_FALSE(requiredParam.ValidateValue(errors));
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("The value [1] is less than the minimum allowed value of [2] for"
-            " key [key]", error.Message());
+  ASSERT_EQ(errors[8].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[8].Message().find(
+    "The value [1] is less than the minimum allowed value of [2] for "
+    "key [key]"));
 
 
   // Adding a parent with @rotation_format to something invalid
@@ -101,50 +95,38 @@ TEST(Error, ErrorOutput)
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->AddAttribute("rotation_format", "string", "invalid_format", false);
   ASSERT_FALSE(poseParam.SetParentElement(poseElem, errors));
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Undefined attribute //pose[@rotation_format='invalid_format'], "
-            "only 'euler_rpy' and 'quat_xyzw' is supported.", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Failed to set value '1 2 3 0.40000000000000002 0.5 "
-            "0.59999999999999987' to key [] for new parent element of name '',"
-            " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
-            "0.59999999999999987'."
-            , error.Message());
+  ASSERT_EQ(errors[9].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[9].Message().find(
+    "Undefined attribute //pose[@rotation_format='invalid_format'], "
+    "only 'euler_rpy' and 'quat_xyzw' is supported."));
+  ASSERT_EQ(errors[10].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[10].Message().find(
+    "Failed to set value '1 2 3 0.40000000000000002 0.5 "
+    "0.59999999999999987' to key [] for new parent element of name '',"
+    " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
+    "0.59999999999999987'."));
 
   sdf::Param param4("key", "bool", "15", false, "a", "b", errors,
                     "description");
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid boolean value", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid parameter", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid boolean value", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid [min] parameter in SDFormat description of [key]",
-            error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid boolean value", error.Message());
-  error = errors.front();
-  errors.erase(errors.begin());
-  ASSERT_EQ(sdf::ErrorCode::PARAMETER_ERROR, error.Code());
-  ASSERT_EQ("Invalid [max] parameter in SDFormat description of [key]",
-            error.Message());
+  ASSERT_EQ(errors[11].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[11].Message().find(
+    "Invalid boolean value"));
+  ASSERT_EQ(errors[12].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[12].Message().find(
+    "Invalid parameter"));
+  ASSERT_EQ(errors[13].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[13].Message().find(
+    "Invalid boolean value"));
+  ASSERT_EQ(errors[14].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[14].Message().find(
+    "Invalid [min] parameter in SDFormat description of [key]"));
+  ASSERT_EQ(errors[15].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[15].Message().find(
+    "Invalid boolean value"));
+  ASSERT_EQ(errors[16].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+  ASSERT_NE(std::string::npos, errors[16].Message().find(
+    "Invalid [max] parameter in SDFormat description of [key]"));
 
   // Check nothing has been printed
-  EXPECT_TRUE(buffer.str().empty());
-  std::cerr.rdbuf(old);
+  ASSERT_TRUE(buffer.str().empty()) << buffer.str();
 }
