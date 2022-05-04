@@ -18,7 +18,7 @@
 #ifndef SDF_OUTPUT_CONFIG_HH_
 #define SDF_OUTPUT_CONFIG_HH_
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/InterfaceElements.hh"
 #include "sdf/sdf_config.h"
