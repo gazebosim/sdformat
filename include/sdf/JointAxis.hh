@@ -19,8 +19,8 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Exception.hh"
 #include "sdf/Types.hh"
