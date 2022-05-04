@@ -21,7 +21,7 @@
 #include <set>
 #include <string>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"

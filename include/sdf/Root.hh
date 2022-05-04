@@ -18,7 +18,7 @@
 #define SDF_ROOT_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/OutputConfig.hh"
 #include "sdf/ParserConfig.hh"

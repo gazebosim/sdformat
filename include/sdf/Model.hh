@@ -21,8 +21,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/OutputConfig.hh"
 #include "sdf/ParserConfig.hh"

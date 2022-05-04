@@ -21,11 +21,11 @@
 #include <string>
 #include <vector>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
