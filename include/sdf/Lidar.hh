@@ -17,8 +17,8 @@
 #ifndef SDF_LIDAR_HH_
 #define SDF_LIDAR_HH_
 
-#include <ignition/math/Angle.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Angle.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
