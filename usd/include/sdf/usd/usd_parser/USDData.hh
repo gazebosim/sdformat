@@ -24,7 +24,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Material.hh"
 #include "sdf/Types.hh"
