@@ -17,7 +17,7 @@
 #ifndef SDF_SURFACE_HH_
 #define SDF_SURFACE_HH_
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
