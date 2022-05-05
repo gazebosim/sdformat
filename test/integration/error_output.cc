@@ -100,7 +100,6 @@ TEST(Error, ErrorOutput)
     "The value [1] is less than the minimum allowed value of [2] for "
     "key [key]"));
 
-
   errors.clear();
   // Adding a parent with @rotation_format to something invalid
   // will make reparse fail
