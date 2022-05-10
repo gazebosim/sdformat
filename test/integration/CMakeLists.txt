@@ -11,6 +11,7 @@ set(tests
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   element_tracing.cc
+  error_output.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
   frame.cc
