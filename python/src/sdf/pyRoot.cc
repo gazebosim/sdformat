@@ -19,6 +19,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
@@ -66,16 +67,23 @@ void defineRoot(pybind11::object module)
     .def("world_by_index",
          pybind11::overload_cast<uint64_t>(
            &sdf::Root::WorldByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get a world based on an index.")
      .def("world_name_exists", &sdf::Root::WorldNameExists,
           "Get whether a world name exists.")
     .def("model", &sdf::Root::Model,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get a pointer to the model object if it exists.")
     .def("set_model", &sdf::Root::SetModel,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Set the model object. This will override any existing model, "
+         "actor, and light object.")
+    .def("light", &sdf::Root::Light,
+         pybind11::return_value_policy::reference_internal,
+         "Get a pointer to the light object if it exists.")
+    .def("set_light", &sdf::Root::SetLight,
+         pybind11::return_value_policy::reference_internal,
+         "Set the light object. This will override any existing model, "
          "actor, and light object.")
     .def("add_world", &sdf::Root::AddWorld,
          "Add a world to the root.")
