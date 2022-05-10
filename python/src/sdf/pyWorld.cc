@@ -87,7 +87,7 @@ void defineWorld(pybind11::object module)
          "A spherical coordinate can be specified in SDF using the "
          "<spherical_coordinates> element.")
     .def("spherical_coordinates", &sdf::World::SphericalCoordinates,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get the spherical coordinates for the world origin.")
     .def("set_spherical_coordinates", &sdf::World::SetSphericalCoordinates,
          "Set the spherical coordinates for the world origin.")
@@ -97,12 +97,12 @@ void defineWorld(pybind11::object module)
     .def("model_by_index",
          pybind11::overload_cast<uint64_t>(
            &sdf::World::ModelByIndex, pybind11::const_),
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get an immediate (not nested) child joint model on an index.")
      .def("model_by_name",
           pybind11::overload_cast<const std::string &>(
             &sdf::World::ModelByName, pybind11::const_),
-          pybind11::return_value_policy::reference,
+          pybind11::return_value_policy::reference_internal,
           "Get an immediate (not nested) mutable child model based on an "
           "index.")
      .def("model_name_exists", &sdf::World::ModelNameExists,
@@ -111,8 +111,8 @@ void defineWorld(pybind11::object module)
           "Add a model to the world.")
      // .def("add_actor", &sdf::World::AddActor,
      //      "Add a actor to the world.")
-     // .def("add_light", &sdf::World::AddLight,
-     //      "Add a light to the world.")
+     .def("add_light", &sdf::World::AddLight,
+          "Add a light to the world.")
      // .def("add_physics", &sdf::World::AddPhysics,
      //      "Add a physics object to the world.")
      .def("add_frame", &sdf::World::AddFrame,
@@ -135,16 +135,30 @@ void defineWorld(pybind11::object module)
      .def("frame_by_index",
           pybind11::overload_cast<uint64_t>(
             &sdf::World::FrameByIndex, pybind11::const_),
-          pybind11::return_value_policy::reference,
+          pybind11::return_value_policy::reference_internal,
           "Get an immediate (not nested) child joint frame on an index.")
      .def("frame_by_name",
           pybind11::overload_cast<const std::string &>(
             &sdf::World::FrameByName, pybind11::const_),
-          pybind11::return_value_policy::reference,
+          pybind11::return_value_policy::reference_internal,
           "Get an immediate (not nested) mutable child frame based on an "
           "index.")
      .def("frame_name_exists", &sdf::World::FrameNameExists,
           "Get whether a frame name exists.")
+     .def("light_count", &sdf::World::LightCount,
+          "Get the number of lights.")
+     .def("light_by_index",
+          pybind11::overload_cast<uint64_t>(
+            &sdf::World::LightByIndex),
+          pybind11::return_value_policy::reference_internal,
+          "Get a light based on an index.")
+     // .def("light_by_name",
+     //      pybind11::overload_cast<const std::string &>(
+     //        &sdf::World::LightByIndex),
+     //      pybind11::return_value_policy::reference_internal,
+     //      "Get a mutable light based on an index.")
+     .def("light_name_exists", &sdf::World::LightNameExists,
+          "Get whether a light name exists.")
      .def("atmosphere", &sdf::World::Atmosphere,
           "Get a pointer to the atmosphere model associated with this "
           "world. A nullptr indicates that an atmosphere model has not been "
