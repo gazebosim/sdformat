@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import Material
+from sdformat import Material, Pbr, PbrWorkflow
 from ignition.math import Color
 import unittest
 
@@ -271,9 +271,9 @@ class MaterialTEST(unittest.TestCase):
     workflow.set_type(PbrWorkflow.PbrWorkflowType.METAL)
     pbr.set_workflow(workflow.type(), workflow)
     material.set_pbr_material(pbr)
-    EXPECT_NE(material.pbr_material(), None)
+    self.assertNotEqual(material.pbr_material(), None)
     self.assertEqual(workflow,
-      material.pbr_material()->workflow(PbrWorkflow.PbrWorkflowType.METAL))
+      material.pbr_material().workflow(PbrWorkflow.PbrWorkflowType.METAL))
 
 
 if __name__ == '__main__':
