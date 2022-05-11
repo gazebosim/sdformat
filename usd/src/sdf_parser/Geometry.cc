@@ -382,9 +382,6 @@ namespace usd
         pxr::GfVec3f(meshMax.X(), meshMax.Y(), meshMax.Z()));
       usdMesh.CreateExtentAttr().Set(extentBounds);
 
-      // TODO(adlarkin) update this call in sdf13 to avoid casting the index to
-      // an int:
-      // https://github.com/ignitionrobotics/ign-common/pull/319
       auto materialIndex = subMesh->GetMaterialIndex();
       if (materialIndex.has_value())
       {
