@@ -59,6 +59,9 @@ class AtmosphereTEST(unittest.TestCase):
         alt6 = Altimeter()
         self.assertNotEqual(alt3, alt6)
 
+        # set position noise but velocity noise should still be different
+        alt6.set_vertical_position_noise(alt3.vertical_position_noise());
+        self.assertNotEqual(alt3, alt6);
 
 if __name__ == '__main__':
     unittest.main()
