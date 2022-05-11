@@ -350,6 +350,21 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
+Errors Link::ResolveInertial(
+  ignition::math::Inertiald &_inertial,
+  const std::string &_resolveTo) const
+{
+  ignition::math::Pose3d linkPose;
+  auto errors = this->SemanticPose().Resolve(linkPose, _resolveTo);
+  if (errors.empty())
+  {
+    _inertial = this->dataPtr->inertial;
+    _inertial.SetPose(linkPose * _inertial.Pose());
+  }
+  return errors;
+}
+
+/////////////////////////////////////////////////
 const ignition::math::Pose3d &Link::Pose() const
 {
   return this->RawPose();
