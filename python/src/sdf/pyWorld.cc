@@ -89,7 +89,7 @@ void defineWorld(pybind11::object module)
          "<spherical_coordinates> element.")
     .def("spherical_coordinates", &sdf::World::SphericalCoordinates,
          pybind11::return_value_policy::reference_internal,
-         "Get the spherical coordinates for the world origin.")
+         "Get a mutable spherical coordinates for the world origin.")
     .def("set_spherical_coordinates", &sdf::World::SetSphericalCoordinates,
          "Set the spherical coordinates for the world origin.")
     .def("model_count", &sdf::World::ModelCount,
@@ -99,12 +99,12 @@ void defineWorld(pybind11::object module)
          pybind11::overload_cast<uint64_t>(
            &sdf::World::ModelByIndex),
          pybind11::return_value_policy::reference_internal,
-         "Get an immediate (not nested) child joint model on an index.")
+         "Get a mutable immediate (not nested) child joint model on an index.")
      .def("model_by_name",
           pybind11::overload_cast<const std::string &>(
             &sdf::World::ModelByName),
           pybind11::return_value_policy::reference_internal,
-          "Get an immediate (not nested) mutable child model based on an "
+          "Get a mutable immediate (not nested) mutable child model based on an "
           "index.")
      .def("model_name_exists", &sdf::World::ModelNameExists,
           "Get whether a model name exists.")
@@ -137,12 +137,12 @@ void defineWorld(pybind11::object module)
           pybind11::overload_cast<uint64_t>(
             &sdf::World::FrameByIndex),
           pybind11::return_value_policy::reference_internal,
-          "Get an immediate (not nested) explicit frame based on an index.")
+          "Get a mutable immediate (not nested) explicit frame based on an index.")
      .def("frame_by_name",
           pybind11::overload_cast<const std::string &>(
             &sdf::World::FrameByName),
           pybind11::return_value_policy::reference_internal,
-          "Get an immediate (not nested) mutable child frame based on an "
+          "Get a mutable immediate (not nested) mutable child frame based on an "
           "index.")
      .def("frame_name_exists", &sdf::World::FrameNameExists,
           "Get whether a frame name exists.")
@@ -152,7 +152,7 @@ void defineWorld(pybind11::object module)
           pybind11::overload_cast<uint64_t>(
             &sdf::World::LightByIndex),
           pybind11::return_value_policy::reference_internal,
-          "Get a light based on an index.")
+          "Get a mutable light based on an index.")
      .def("light_name_exists", &sdf::World::LightNameExists,
           "Get whether a light name exists.")
      .def("atmosphere", &sdf::World::Atmosphere,

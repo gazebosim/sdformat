@@ -82,7 +82,6 @@ void defineRoot(pybind11::object module)
          pybind11::return_value_policy::reference_internal,
          "Get a pointer to the light object if it exists.")
     .def("set_light", &sdf::Root::SetLight,
-         pybind11::return_value_policy::reference_internal,
          "Set the light object. This will override any existing model, "
          "actor, and light object.")
     .def("add_world", &sdf::Root::AddWorld,
