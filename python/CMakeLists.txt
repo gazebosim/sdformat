@@ -49,12 +49,14 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyGeometry.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
+  src/sdf/pyLight.cc
   src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
   src/sdf/pyModel.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyPbr.cc
   src/sdf/pyPlane.cc
   src/sdf/pyRoot.cc
   src/sdf/pySemanticPose.cc
@@ -92,12 +94,14 @@ if (BUILD_TESTING)
     pyGeometry_TEST
     pyJoint_TEST
     pyJointAxis_TEST
+    pyLight_TEST
     pyLink_TEST
     pyMaterial_TEST
     pyMesh_TEST
     pyModel_TEST
     pyNoise_TEST
     pyParserConfig_TEST
+    pyPbr_TEST
     pyPlane_TEST
     pyRoot_TEST
     pySemanticPose_TEST
