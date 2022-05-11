@@ -16,6 +16,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include "pyAltimeter.hh"
 #include "pyBox.hh"
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
@@ -45,6 +46,7 @@
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  sdf::python::defineAltimeter(m);
   sdf::python::defineBox(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
