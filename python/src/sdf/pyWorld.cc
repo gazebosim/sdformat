@@ -112,8 +112,8 @@ void defineWorld(pybind11::object module)
           "Add a model to the world.")
      // .def("add_actor", &sdf::World::AddActor,
      //      "Add a actor to the world.")
-     // .def("add_light", &sdf::World::AddLight,
-     //      "Add a light to the world.")
+     .def("add_light", &sdf::World::AddLight,
+          "Add a light to the world.")
      // .def("add_physics", &sdf::World::AddPhysics,
      //      "Add a physics object to the world.")
      .def("add_frame", &sdf::World::AddFrame,
@@ -122,8 +122,8 @@ void defineWorld(pybind11::object module)
           "Remove all models.")
      // .def("clear_actors", &sdf::World::ClearActors,
      //      "Remove all actors.")
-     // .def("clear_lights", &sdf::World::ClearLights,
-     //      "Remove all lights.")
+     .def("clear_lights", &sdf::World::ClearLights,
+          "Remove all lights.")
      // .def("clear_physics", &sdf::World::ClearPhysics,
      //      "Remove all physics objects.")
      .def("clear_frames", &sdf::World::ClearFrames,
@@ -146,6 +146,15 @@ void defineWorld(pybind11::object module)
           "index.")
      .def("frame_name_exists", &sdf::World::FrameNameExists,
           "Get whether a frame name exists.")
+     .def("light_count", &sdf::World::LightCount,
+          "Get the number of lights.")
+     .def("light_by_index",
+          pybind11::overload_cast<uint64_t>(
+            &sdf::World::LightByIndex),
+          pybind11::return_value_policy::reference_internal,
+          "Get a light based on an index.")
+     .def("light_name_exists", &sdf::World::LightNameExists,
+          "Get whether a light name exists.")
      .def("atmosphere", &sdf::World::Atmosphere,
           "Get a pointer to the atmosphere model associated with this "
           "world. A nullptr indicates that an atmosphere model has not been "
