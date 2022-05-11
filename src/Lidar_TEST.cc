@@ -66,7 +66,7 @@ TEST(DOMLidar, Set)
   lidar.SetHorizontalScanSamples(111);
   lidar.SetHorizontalScanResolution(2.2);
 
-  EXPECT_EQ(4294967295u, lidar.VisibilityMask());
+  EXPECT_EQ(UINT32_MAX, lidar.VisibilityMask());
   lidar.SetVisibilityMask(123u);
   EXPECT_EQ(123u, lidar.VisibilityMask());
 

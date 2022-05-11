@@ -63,7 +63,7 @@ class sdf::Lidar::Implementation
   public: sdf::ElementPtr sdf{nullptr};
 
   /// \brief Visibility mask of a lidar. Defaults to 0xFFFFFFFF
-  public: uint32_t visibilityMask{4294967295u};
+  public: uint32_t visibilityMask{UINT32_MAX};
 };
 
 //////////////////////////////////////////////////
