@@ -26,6 +26,7 @@
 #include "pyGeometry.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
+#include "pyLight.hh"
 #include "pyLink.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
@@ -55,6 +56,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineGeometry(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
+  sdf::python::defineLight(m);
   sdf::python::defineLink(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
