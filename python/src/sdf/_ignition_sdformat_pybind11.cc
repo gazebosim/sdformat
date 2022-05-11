@@ -16,6 +16,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include "pyAltimeter.hh"
 #include "pyAtmosphere.hh"
 #include "pyBox.hh"
 #include "pyCapsule.hh"
@@ -46,6 +47,7 @@
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
   sdf::python::defineCapsule(m);
