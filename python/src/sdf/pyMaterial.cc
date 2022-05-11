@@ -19,7 +19,7 @@
 #include <pybind11/pybind11.h>
 
 #include "sdf/Material.hh"
-
+#include "sdf/Pbr.hh"
 
 using namespace pybind11::literals;
 
@@ -104,6 +104,12 @@ void defineMaterial(pybind11::object module)
          "a normal map has not been set.")
     .def("set_normal_map", &sdf::Material::SetNormalMap,
          "Set the normal map filename.")
+    .def("set_pbr_material", &sdf::Material::SetPbrMaterial,
+         pybind11::return_value_policy::reference_internal,
+         "Set the Physically Based Rendering (PBR) material")
+    .def("pbr_material", &sdf::Material::PbrMaterial,
+         pybind11::return_value_policy::reference_internal,
+         "Get the Physically Based Rendering (PBR) material")
     .def("file_path", &sdf::Material::FilePath,
          "The path to the file where this element was loaded from.")
     .def("set_file_path", &sdf::Material::SetFilePath,

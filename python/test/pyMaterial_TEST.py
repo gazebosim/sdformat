@@ -33,8 +33,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("", material.script_name())
     self.assertEqual(Material.ShaderType.PIXEL, material.shader())
     self.assertEqual("", material.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material.PbrMaterial())
+    self.assertEqual(None, material.pbr_material())
     self.assertEqual("", material.file_path())
 
 
@@ -65,8 +64,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/path", material2.file_path())
 
     material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
@@ -93,8 +91,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("melon", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("banana", material2.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/foo", material2.file_path())
 
   def test_copy_construction(self):
@@ -126,8 +123,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
 
     material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
@@ -156,8 +152,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
 
   def test_deepcopy(self):
@@ -189,8 +184,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
 
     material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
@@ -219,8 +213,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual("orange", material2.script_name())
     self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
-    # TODO(ahcorde) Add Pbr python interface
-    # self.assertEqual(nullptr, material2.PbrMaterial())
+    self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
 
   def test_set(self):
@@ -273,16 +266,14 @@ class MaterialTEST(unittest.TestCase):
     material.set_file_path("/my/path")
     self.assertEqual("/my/path", material.file_path())
 
-    # TODO(ahcorde) Add Pbr python interface
-    # set pbr material
-    # sdf::Pbr pbr
-    # sdf::PbrWorkflow workflow
-    # workflow.SetType(sdf::PbrWorkflowType::METAL)
-    # pbr.SetWorkflow(workflow.Type(), workflow)
-    # material.SetPbrMaterial(pbr)
-    # EXPECT_NE(material.PbrMaterial(), nullptr)
-    # self.assertEqual(workflow,
-    #   *material.PbrMaterial()->Workflow(sdf::PbrWorkflowType::METAL))
+    pbr = Pbr()
+    workflow = PbrWorkflow()
+    workflow.set_type(PbrWorkflow.PbrWorkflowType.METAL)
+    pbr.set_workflow(workflow.type(), workflow)
+    material.set_pbr_material(pbr)
+    EXPECT_NE(material.pbr_material(), None)
+    self.assertEqual(workflow,
+      material.pbr_material()->workflow(PbrWorkflow.PbrWorkflowType.METAL))
 
 
 if __name__ == '__main__':
