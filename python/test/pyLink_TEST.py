@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from sdformat import (Collision, Link, Visual)
+from sdformat import (Collision, Light, Link, Visual)
 import unittest
 import math
 
@@ -34,12 +34,12 @@ class LinkTEST(unittest.TestCase):
         self.assertFalse(link.visual_name_exists(""))
         self.assertFalse(link.visual_name_exists("default"))
 
-        # self.assertEqual(0, link.light_count())
-        # self.assertEqual(None, link.light_by_index(0))
-        # self.assertEqual(None, link.light_by_index(1))
-        # self.assertFalse(link.light_name_exists(""))
-        # self.assertFalse(link.light_name_exists("default"))
-        # self.assertEqual(None, link.light_by_name("no_such_light"))
+        self.assertEqual(0, link.light_count())
+        self.assertEqual(None, link.light_by_index(0))
+        self.assertEqual(None, link.light_by_index(1))
+        self.assertFalse(link.light_name_exists(""))
+        self.assertFalse(link.light_name_exists("default"))
+        self.assertEqual(None, link.light_by_name("no_such_light"))
 
         # self.assertEqual(0, link.particle_emitter_count())
         # self.assertEqual(None, link.ParticleEmitterByIndex(0))
@@ -177,7 +177,6 @@ class LinkTEST(unittest.TestCase):
         self.assertNotEqual(None, collisionFromLink)
         self.assertEqual(collisionFromLink.name(), collision.name())
 
-
     def test_add_visual(self):
         link = Link()
         self.assertEqual(0, link.visual_count())
@@ -198,29 +197,25 @@ class LinkTEST(unittest.TestCase):
         self.assertNotEqual(None, visualFromLink)
         self.assertEqual(visualFromLink.name(), visual.name())
 
+    def test_add_light(self):
+        link = Link()
+        self.assertEqual(0, link.light_count())
 
-    # /////////////////////////////////////////////////
-    # TEST(DOMLink, AddLight)
-    # {
-    #   sdf::Link link
-    #   self.assertEqual(0, link.light_count())
-    #
-    #   sdf::Light light
-    #   light.set_name("light1")
-    #   self.assertTrue(link.AddLight(light))
-    #   self.assertEqual(1, link.light_count())
-    #   self.assertFalse(link.AddLight(light))
-    #   self.assertEqual(1, link.light_count())
-    #
-    #   link.ClearLights()
-    #   self.assertEqual(0, link.light_count())
-    #
-    #   self.assertTrue(link.AddLight(light))
-    #   self.assertEqual(1, link.light_count())
-    #   const sdf::Light *lightFromLink = link.light_by_index(0)
-    #   self.assertNotEqual(None, lightFromLink)
-    #   self.assertEqual(lightFromLink.name(), light.name())
-    # )
+        light = Light()
+        light.set_name("light1")
+        self.assertTrue(link.add_light(light))
+        self.assertEqual(1, link.light_count())
+        self.assertFalse(link.add_light(light))
+        self.assertEqual(1, link.light_count())
+
+        link.clear_lights()
+        self.assertEqual(0, link.light_count())
+
+        self.assertTrue(link.add_light(light))
+        self.assertEqual(1, link.light_count())
+        lightFromLink = link.light_by_index(0)
+        self.assertNotEqual(None, lightFromLink)
+        self.assertEqual(lightFromLink.name(), light.name())
     #
     # /////////////////////////////////////////////////
     # TEST(DOMLink, AddSensor)
@@ -258,10 +253,10 @@ class LinkTEST(unittest.TestCase):
         collision.set_name("collision1")
         self.assertTrue(link.add_collision(collision))
 
-        # sdf::Light light
-        # light.set_name("light1")
-        # self.assertTrue(link.AddLight(light))
-        #
+        light = Light()
+        light.set_name("light1")
+        self.assertTrue(link.add_light(light))
+
         # sdf::Sensor sensor
         # sensor.set_name("sensor1")
         # self.assertTrue(link.AddSensor(sensor))
@@ -284,13 +279,13 @@ class LinkTEST(unittest.TestCase):
         c.set_name("collision2")
         self.assertEqual("collision2", link.collision_by_index(0).name())
 
-        # # Modify the light
-        # sdf::Light *l = link.light_by_index(0)
-        # self.assertNotEqual(None, l)
-        # self.assertEqual("light1", l.name())
-        # l.set_name("light2")
-        # self.assertEqual("light2", link.light_by_index(0).name())
-        #
+        # Modify the light
+        l = link.light_by_index(0)
+        self.assertNotEqual(None, l)
+        self.assertEqual("light1", l.name())
+        l.set_name("light2")
+        self.assertEqual("light2", link.light_by_index(0).name())
+
         # # Modify the sensor
         # sdf::Sensor *s = link.sensor_by_index(0)
         # self.assertNotEqual(None, s)
@@ -305,7 +300,6 @@ class LinkTEST(unittest.TestCase):
         # p.set_name("pe2")
         # self.assertEqual("pe2", link.ParticleEmitterByIndex(0).name())
 
-
     def test_mutable_by_name(self):
         link = Link()
         link.set_name("my-name")
@@ -318,10 +312,10 @@ class LinkTEST(unittest.TestCase):
         collision.set_name("collision1")
         self.assertTrue(link.add_collision(collision))
 
-        # sdf::Light light
-        # light.set_name("light1")
-        # self.assertTrue(link.AddLight(light))
-        #
+        light = Light()
+        light.set_name("light1")
+        self.assertTrue(link.add_light(light))
+
         # sdf::Sensor sensor
         # sensor.set_name("sensor1")
         # self.assertTrue(link.AddSensor(sensor))
@@ -346,14 +340,14 @@ class LinkTEST(unittest.TestCase):
         self.assertFalse(link.collision_name_exists("collision1"))
         self.assertTrue(link.collision_name_exists("collision2"))
 
-        # // Modify the light
-        # sdf::Light *l = link.light_by_name("light1")
-        # self.assertNotEqual(None, l)
-        # self.assertEqual("light1", l.name())
-        # l.set_name("light2")
-        # self.assertFalse(link.light_name_exists("light1"))
-        # self.assertTrue(link.light_name_exists("light2"))
-        #
+        # Modify the light
+        l = link.light_by_name("light1")
+        self.assertNotEqual(None, l)
+        self.assertEqual("light1", l.name())
+        l.set_name("light2")
+        self.assertFalse(link.light_name_exists("light1"))
+        self.assertTrue(link.light_name_exists("light2"))
+
         # // Modify the sensor
         # sdf::Sensor *s = link.sensor_by_name("sensor1")
         # self.assertNotEqual(None, s)
