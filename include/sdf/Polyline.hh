@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Open Source Robotics Foundation
+ * Copyright 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef SDF_CYLINDER_HH_
-#define SDF_CYLINDER_HH_
+#ifndef SDF_POLYLINE_HH_
+#define SDF_POLYLINE_HH_
 
-#include <ignition/math/Cylinder.hh>
+#include <vector>
+
+#include <ignition/math/Vector2.hh>
 #include <ignition/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -27,14 +29,15 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  /// \brief Cylinder represents a cylinder shape, and is usually accessed
-  /// through a Geometry.
-  class SDFORMAT_VISIBLE Cylinder
+  //
+
+  /// \brief Polyline represents a 2D path. Multiple polylines can be combined
+  class SDFORMAT_VISIBLE Polyline
   {
     /// \brief Constructor
-    public: Cylinder();
+    public: Polyline();
 
-    /// \brief Load the cylinder geometry based on a element pointer.
+    /// \brief Load the polyline geometry based on an element pointer.
     /// This is *not* the usual entry point. Typical usage of the SDF DOM is
     /// through the Root object.
     /// \param[in] _sdf The SDF Element pointer
@@ -42,21 +45,38 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get the cylinder's radius in meters.
-    /// \return The radius of the cylinder in meters.
-    public: double Radius() const;
+    /// \brief Get the polyline's height in meters.
+    /// \return The height of the polyline in meters.
+    public: double Height() const;
 
-    /// \brief Set the cylinder's radius in meters.
-    /// \param[in] _radius The radius of the cylinder in meters.
-    public: void SetRadius(const double _radius);
+    /// \brief Set the polyline's height in meters.
+    /// \param[in] _height The height of the polyline in meters.
+    public: void SetHeight(const double _height);
 
-    /// \brief Get the cylinder's length in meters.
-    /// \return The length of the cylinder in meters.
-    public: double Length() const;
+    /// \brief Get the number of points.
+    /// \return Number of points.
+    public: uint64_t PointCount() const;
 
-    /// \brief Set the cylinder's length in meters.
-    /// \param[in] _length The length of the cylinder in meters.
-    public: void SetLength(const double _length);
+    /// \brief Get a point by its index.
+    /// \return Constant pointer to the point.
+    public: const ignition::math::Vector2d *PointByIndex(uint64_t _index) const;
+
+    /// \brief Get a point by its index.
+    /// \return Mutable pointer to the point.
+    public: ignition::math::Vector2d *PointByIndex(uint64_t _index);
+
+    /// \brief Add a point to the polyline.
+    /// \param[in] _point 2D point to add.
+    /// \return True for success.
+    public: bool AddPoint(const ignition::math::Vector2d &_point);
+
+    /// \brief Remove all points from the polyline.
+    public: void ClearPoints();
+
+    /// \brief Get the polyline's points. Each point has 2D coordinates in
+    /// meters.
+    /// \return The polyline's points.
+    public: const std::vector<ignition::math::Vector2d> &Points() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -64,19 +84,11 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Cylinder.
-    /// \return A const reference to an ignition::math::Cylinderd object.
-    public: const ignition::math::Cylinderd &Shape() const;
-
-    /// \brief Get a mutable Ignition Math representation of this Cylinder.
-    /// \return A reference to an ignition::math::Cylinderd object.
-    public: ignition::math::Cylinderd &Shape();
-
     /// \brief Create and return an SDF element filled with data from this
-    /// cylinder.
+    /// polyline.
     /// Note that parameter passing functionality is not captured with this
     /// function.
-    /// \return SDF element pointer with updated cylinder values.
+    /// \return SDF element pointer with updated polyline values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
