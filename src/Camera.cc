@@ -188,7 +188,7 @@ class sdf::Camera::Implementation
   public: bool hasIntrinsics = false;
 
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
-  public: uint32_t visibilityMask{4294967295u};
+  public: uint32_t visibilityMask{UINT32_MAX};
 };
 
 /////////////////////////////////////////////////
