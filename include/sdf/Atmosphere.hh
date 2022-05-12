@@ -17,8 +17,8 @@
 #ifndef SDF_ATMOSPHERE_HH_
 #define SDF_ATMOSPHERE_HH_
 
-#include <ignition/math/Temperature.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Temperature.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -93,7 +93,7 @@ namespace sdf
     /// instance equals the given atmosphere instance.
     /// \param[in] _atmosphere Atmosphere instance to compare.
     /// \return True if this instance equals the given atmosphere.
-    public: bool operator==(const Atmosphere &_atmosphere);
+    public: bool operator==(const Atmosphere &_atmosphere) const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// atmosphere.

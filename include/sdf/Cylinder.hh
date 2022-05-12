@@ -17,8 +17,8 @@
 #ifndef SDF_CYLINDER_HH_
 #define SDF_CYLINDER_HH_
 
-#include <ignition/math/Cylinder.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Cylinder.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>

@@ -18,7 +18,7 @@
 #define SDF_MATERIAL_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
