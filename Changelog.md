@@ -952,6 +952,54 @@
 
 ### libsdformat 9.X.X (202X-XX-XX)
 
+### libsdformat 9.8.0 (2022-04-26)
+
+1. Polyline geometry DOM
+    * [Pull request #1000](https://github.com/ignitionrobotics/sdformat/pull/1000)
+
+1. Added `<shininess>` to `<material>`
+    * [Pull request #985](https://github.com/ignitionrobotics/sdformat/pull/985)
+
+1. Backport ``ign sdf --inertial-stats``
+    * [Pull request #958](https://github.com/ignitionrobotics/sdformat/pull/958)
+
+1. Add L16 pixel format to Camera pixel format conversion function
+    * [Pull request #487](https://github.com/ignitionrobotics/sdformat/pull/487)
+
+1. Anti-aliasing element for `<camera><image>`
+    * [Pull request #909](https://github.com/ignitionrobotics/sdformat/pull/909)
+
+1. Fix loading nested include with custom attributes
+    * [Pull request #789](https://github.com/ignitionrobotics/sdformat/pull/789)
+
+1. add enable_orientation to 1.6 spec
+    * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
+
+1. Fix xyz and rpy offsets in fixed joint reduction
+    * [Pull request #500](https://github.com/ignitionrobotics/sdformat/pull/500)
+
+1. 👩‍🌾 Remove bitbucket-pipelines and backport labeler / triage
+    * [Pull request #674](https://github.com/ignitionrobotics/sdformat/pull/674)
+
+1. Create CODEOWNERS with azeey and scpeters
+    * [Pull request #650](https://github.com/ignitionrobotics/sdformat/pull/650)
+
+1. Use Ubuntu bionic in CI
+    * [Pull request #626](https://github.com/ignitionrobotics/sdformat/pull/626)
+
+1. Translate poses of nested models inside other nested models (sdf6)
+    * [Pull request #596](https://github.com/ignitionrobotics/sdformat/pull/596)
+
+1. Fix flattening logic for nested model names (sdf6)
+    * [Pull request #597](https://github.com/ignitionrobotics/sdformat/pull/597)
+
+1. Parse rpyOffset as radians
+    * [Pull request #497](https://github.com/ignitionrobotics/sdformat/pull/497)
+
+1. BitBucket
+    * [Pull request #258](https://github.com/ignitionrobotics/sdformat/pull/258)
+    * [Pull request #237](https://github.com/ignitionrobotics/sdformat/pull/237)
+
 ### libsdformat 9.7.0 (2021-11-03)
 
 1. Make exception for plugins when checking for name uniqueness
