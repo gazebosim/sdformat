@@ -16,6 +16,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include "pyAltimeter.hh"
+#include "pyAtmosphere.hh"
 #include "pyBox.hh"
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
@@ -26,6 +28,7 @@
 #include "pyGeometry.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
+#include "pyLight.hh"
 #include "pyLink.hh"
 #include "pyMagnetometer.hh"
 #include "pyMaterial.hh"
@@ -33,6 +36,7 @@
 #include "pyModel.hh"
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
+#include "pyPbr.hh"
 #include "pyPlane.hh"
 #include "pyRoot.hh"
 #include "pySemanticPose.hh"
@@ -44,6 +48,8 @@
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  sdf::python::defineAltimeter(m);
+  sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
@@ -55,6 +61,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineGeometry(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
+  sdf::python::defineLight(m);
   sdf::python::defineLink(m);
   sdf::python::defineMagnetometer(m);
   sdf::python::defineMaterial(m);
@@ -62,6 +69,8 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineModel(m);
   sdf::python::defineNoise(m);
   sdf::python::defineParserConfig(m);
+  sdf::python::definePbr(m);
+  sdf::python::definePbrWorkflow(m);
   sdf::python::definePlane(m);
   sdf::python::defineRoot(m);
   sdf::python::defineSemanticPose(m);
