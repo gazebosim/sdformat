@@ -25,6 +25,8 @@
 
 #include <ignition/utils/ExtraTestMacros.hh>
 
+#include "sdf/Light.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
@@ -121,6 +123,16 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_EQ(
       "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
 
+    // the world should have lights attached to it
+    std::set<std::string> savedLightNames;
+    for (unsigned int i = 0; i < world->LightCount(); ++i)
+      savedLightNames.insert(world->LightByIndex(i)->Name());
+    EXPECT_EQ(3u, savedLightNames.size());
+
+    EXPECT_NE(savedLightNames.end(), savedLightNames.find("defaultLight"));
+    EXPECT_NE(savedLightNames.end(), savedLightNames.find("diskLight"));
+    EXPECT_NE(savedLightNames.end(), savedLightNames.find("sun"));
+
     // make sure all models in the USD file were correctly parsed to SDF
     std::set<std::string> savedModelNames;
     for (unsigned int i = 0; i < world->ModelCount(); ++i)
@@ -140,20 +152,29 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     ASSERT_NE(nullptr, world->ModelByName("box"));
     EXPECT_FALSE(world->ModelByName("box")->Static());
 
-    // check that models have the right links
-    std::function<void(const std::string &, const std::string &)> checkLink =
-      [&world](const std::string &_modelName, const std::string &_linkName)
+    // Check that models have the right links.
+    // If a link should have a light attached to it, check that as well
+    std::function<void(const std::string &, const std::string &,
+        const std::string &)> checkLink =
+      [&world](const std::string &_modelName, const std::string &_linkName,
+          const std::string &_lightLinkName)
       {
         const auto modelPtr = world->ModelByName(_modelName);
         ASSERT_NE(nullptr, modelPtr);
         EXPECT_EQ(1u, modelPtr->LinkCount());
-        EXPECT_NE(nullptr, modelPtr->LinkByName(_linkName));
+        const auto modelLink = modelPtr->LinkByName(_linkName);
+        ASSERT_NE(nullptr, modelLink);
+
+        if (!_lightLinkName.empty())
+          EXPECT_NE(nullptr, modelLink->LightByName(_lightLinkName));
+        else
+          EXPECT_EQ(0u, modelLink->LightCount());
       };
-    checkLink("ground_plane", "link");
-    checkLink("box", "box_link");
-    checkLink("cylinder", "cylinder_link");
-    checkLink("sphere", "sphere_link");
-    checkLink("capsule", "capsule_link");
-    checkLink("ellipsoid", "ellipsoid_link");
+    checkLink("ground_plane", "link", "");
+    checkLink("box", "box_link", "boxModelLight");
+    checkLink("cylinder", "cylinder_link", "");
+    checkLink("sphere", "sphere_link", "");
+    checkLink("capsule", "capsule_link", "");
+    checkLink("ellipsoid", "ellipsoid_link", "");
   }
 }

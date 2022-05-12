@@ -31,14 +31,14 @@ namespace sdf {
 inline namespace SDF_VERSION_NAMESPACE {
 namespace usd {
 ////////////////////////////////////////////////
-UsdErrors USD2SDF::Read(const std::string &_fileName,
+UsdErrors USD2SDF::Read(const std::string &_fileName, bool _useGazeboPlugins,
   sdf::Root &_root)
 {
   UsdErrors errors;
 
   sdf::World sdfWorld;
 
-  errors = parseUSDWorld(_fileName, sdfWorld);
+  errors = parseUSDWorld(_fileName, _useGazeboPlugins, sdfWorld);
   if (!errors.empty())
   {
     errors.emplace_back(UsdError(

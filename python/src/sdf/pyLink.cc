@@ -48,43 +48,44 @@ void defineLink(pybind11::object module)
          "Get the number of visuals.")
     .def("visual_by_index",
          pybind11::overload_cast<uint64_t>(&sdf::Link::VisualByIndex),
-         pybind11::return_value_policy::reference,
-         "Get a visual based on an index.")
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable visual based on an index.")
     .def("visual_name_exists",
          &sdf::Link::VisualNameExists,
          "Get whether a visual name exists.")
     .def("visual_by_name",
          pybind11::overload_cast<const std::string &>(&sdf::Link::VisualByName),
-         pybind11::return_value_policy::reference,
-         "Get a visual based on a name.")
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable visual based on a name.")
     .def("collision_count",
          &sdf::Link::CollisionCount,
          "Get the number of collisions.")
     .def("collision_by_index",
          pybind11::overload_cast<uint64_t>(&sdf::Link::CollisionByIndex),
-         pybind11::return_value_policy::reference,
-         "Get a collision based on an index.")
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable collision based on an index.")
     .def("collision_name_exists",
          &sdf::Link::CollisionNameExists,
          "Get whether a collision name exists.")
     .def("collision_by_name",
          pybind11::overload_cast<const std::string &>(
            &sdf::Link::CollisionByName),
-         pybind11::return_value_policy::reference,
-         "Get a collision based on a name.")
-    // TODO(ahcorde): Enable light
-    // .def(
-    //     "LightCount", &sdf::Link::LightCount,
-    //     "Get the number of lights.")
-    // .def(
-    //     "LightByIndex", &sdf::Link::LightByIndex,
-    //     "Get a light based on an index.")
-    // .def(
-    //     "LightNameExists", &sdf::Link::LightNameExists,
-    //     "Get whether a light name exists.")
-    // .def(
-    //     "LightByName", &sdf::Link::LightByName,
-    //     "Get a light based on a name.")
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable collision based on a name.")
+    .def("light_count", &sdf::Link::LightCount,
+         "Get the number of lights.")
+    .def("light_by_index",
+         pybind11::overload_cast<const uint64_t>(
+           &sdf::Link::LightByIndex),
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable light based on an index.")
+    .def("light_name_exists", &sdf::Link::LightNameExists,
+         "Get whether a light name exists.")
+    .def("light_by_name",
+         pybind11::overload_cast<const std::string &>(
+           &sdf::Link::LightByName),
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable light based on a name.")
     // TODO(ahcorde): Enable sensor
     // .def(
     //     "SensorCount", &sdf::Link::SensorCount,
@@ -150,9 +151,9 @@ void defineLink(pybind11::object module)
     .def("add_visual",
          &sdf::Link::AddVisual,
          "Add a visual to the link.")
-    // .def("AddLight",
-    //      &sdf::Link::AddLight,
-    //      "Add a visual to the link.")
+    .def("add_light",
+         &sdf::Link::AddLight,
+         "Add a light to the link.")
     // .def("AddSensor",
     //      &sdf::Link::AddSensor,
     //      "Add a sensor to the link.")
@@ -165,9 +166,9 @@ void defineLink(pybind11::object module)
     .def("clear_visuals",
          &sdf::Link::ClearVisuals,
          "Remove all visuals")
-    // .def("clear_lights",
-    //      &sdf::Link::ClearLights,
-    //      "Remove all lights")
+    .def("clear_lights",
+         &sdf::Link::ClearLights,
+         "Remove all lights")
     // .def("clear_sensors",
     //      &sdf::Link::ClearSensors,
     //      "Remove all sensors")
