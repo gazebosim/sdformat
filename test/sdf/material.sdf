@@ -7,6 +7,7 @@
           <ambient>0.4 0.2 0.3 1.0</ambient>
           <diffuse>0.2 0.5 0.1 1.0</diffuse>
           <specular>0.7 0.3 0.5 0.9</specular>
+          <shininess>5.0</shininess>
           <emissive>1.0 0.0 0.2 1.0</emissive>
           <lighting>false</lighting>
           <render_order>5.1</render_order>
