@@ -38,6 +38,8 @@ endfunction()
 
 pybind11_add_module(sdformat SHARED
   src/sdf/_ignition_sdformat_pybind11.cc
+  src/sdf/pyAltimeter.cc
+  src/sdf/pyAtmosphere.cc
   src/sdf/pyBox.cc
   src/sdf/pyCapsule.cc
   src/sdf/pyCollision.cc
@@ -48,12 +50,14 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyGeometry.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
+  src/sdf/pyLight.cc
   src/sdf/pyLink.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
   src/sdf/pyModel.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyPbr.cc
   src/sdf/pyPhysics.cc
   src/sdf/pyPlane.cc
   src/sdf/pyRoot.cc
@@ -81,6 +85,8 @@ if (BUILD_TESTING)
   )
 
   set(python_tests
+    pyAltimeter_TEST
+    pyAtmosphere_TEST
     pyBox_TEST
     pyCapsule_TEST
     pyCollision_TEST
@@ -91,12 +97,14 @@ if (BUILD_TESTING)
     pyGeometry_TEST
     pyJoint_TEST
     pyJointAxis_TEST
+    pyLight_TEST
     pyLink_TEST
     pyMaterial_TEST
     pyMesh_TEST
     pyModel_TEST
     pyNoise_TEST
     pyParserConfig_TEST
+    pyPbr_TEST
     pyPhysics_TEST
     pyPlane_TEST
     pyRoot_TEST
