@@ -11,6 +11,10 @@
 1. Polyline geometry DOM
     * [Pull request #1003](https://github.com/ignitionrobotics/sdformat/pull/1003)
 
+1. Added `<shininess>` to `<material>`
+    * [Pull request #985](https://github.com/ignitionrobotics/sdformat/pull/985)
+    * [Pull request #1016](https://github.com/ignitionrobotics/sdformat/pull/1016)
+
 1. `inertial.sdf`: fix ambiguities in documentation
     * [Pull request #990](https://github.com/ignitionrobotics/sdformat/pull/990)
 
