@@ -12,6 +12,13 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 12.x to 13.0
+
+### Deprecations
+
+1. **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
+￼   `Inertial` class in the `ign-math` library.
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
