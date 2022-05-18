@@ -21,7 +21,6 @@
 #include "sdf/Material.hh"
 #include "sdf/Pbr.hh"
 
-
 using namespace pybind11::literals;
 
 namespace sdf

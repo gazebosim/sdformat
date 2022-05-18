@@ -33,8 +33,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineVisual(pybind11::object module)
 {
-  pybind11::class_<sdf::Visual> geometryModule(module, "Visual");
-  geometryModule
+  pybind11::class_<sdf::Visual>(module, "Visual")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Visual>())
     .def("name", &sdf::Visual::Name,
@@ -52,15 +51,15 @@ void defineVisual(pybind11::object module)
     .def("set_transparency", &sdf::Visual::SetTransparency,
          "Set the transparency value for the visual")
     .def("geometry", &sdf::Visual::Geom,
-         pybind11::return_value_policy::reference,
-         "Get a pointer to the collisions's geometry.")
+         pybind11::return_value_policy::reference_internal,
+         "Get a pointer to the visual's geometry.")
     .def("set_geometry", &sdf::Visual::SetGeom,
-         "Set the collision's geometry")
+         "Set the visual's geometry")
     .def("raw_pose", &sdf::Visual::RawPose,
-         "Get the pose of the collision object. This is the pose of the "
+         "Get the pose of the visual object. This is the pose of the "
          "collison as specified in SDF")
     .def("set_raw_pose", &sdf::Visual::SetRawPose,
-         "Set the pose of the collision object.")
+         "Set the pose of the visual object.")
     .def("pose_relative_to", &sdf::Visual::PoseRelativeTo,
          "Get the name of the coordinate frame relative to which this "
          "object's pose is expressed. An empty value indicates that the frame "
@@ -73,7 +72,7 @@ void defineVisual(pybind11::object module)
          "Get SemanticPose object of this object to aid in resolving "
          "poses.")
     .def("material", &sdf::Visual::Material,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get a pointer to the visual's material properties. This can"
          "be a nullptr if material properties have not been set.")
     .def("set_material", &sdf::Visual::SetMaterial,

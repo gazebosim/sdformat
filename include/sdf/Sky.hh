@@ -18,8 +18,8 @@
 #ifndef SDF_SKY_HH_
 #define SDF_SKY_HH_
 
-#include <ignition/math/Color.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Color.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"

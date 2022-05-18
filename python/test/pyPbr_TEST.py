@@ -128,7 +128,7 @@ class PbrTEST(unittest.TestCase):
         self.assertAlmostEqual(0.5, workflow2.metalness())
 
 
-    def test_assignment(self):
+    def test_copy_constructor(self):
         pbr = Pbr()
         workflow = PbrWorkflow()
         workflow.set_type(PbrWorkflow.PbrWorkflowType.METAL)

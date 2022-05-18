@@ -40,6 +40,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 
       /// \brief convert USD file to a sdf::Root object
       /// \param[in] _fileName string containing USD filename.
+      /// \param[in] _useGazeboPlugins Whether _root should have gazebo plugins
+      /// in it (true) or not (false)
       /// \param[out] _root Root element to populate with the equivalent sdf
       /// information from _fileName.
       /// \return UsdErrors, which is a list of UsdError objects. An empty list
@@ -47,6 +49,7 @@ inline namespace SDF_VERSION_NAMESPACE {
       /// of _fileName
       public: UsdErrors Read(
         const std::string &_fileName,
+        bool _useGazeboPlugins,
         sdf::Root &_root);
     };
   }

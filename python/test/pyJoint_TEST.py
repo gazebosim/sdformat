@@ -101,7 +101,7 @@ class JointTEST(unittest.TestCase):
         joint.set_thread_pitch(threadPitch)
         self.assertAlmostEqual(threadPitch, joint.thread_pitch())
 
-        # TODO(ahcorde): Add sensor when sdf::sensors class is converted
+        # TODO(ahcorde): Add sensor when sdf::sensors class is converted
         # self.assertEqual(0u, joint.SensorCount())
         # self.assertEqual(None, joint.SensorByIndex(0))
         # self.assertEqual(None, joint.SensorByIndex(1))

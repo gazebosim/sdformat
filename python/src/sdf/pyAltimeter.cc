@@ -33,8 +33,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineAltimeter(pybind11::object module)
 {
-  pybind11::class_<sdf::Altimeter> geometryModule(module, "Altimeter");
-  geometryModule
+  pybind11::class_<sdf::Altimeter>(module, "Altimeter")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Altimeter>())
     .def(pybind11::self == pybind11::self)

@@ -37,7 +37,7 @@ class JointAxisTEST(unittest.TestCase):
         self.assertAlmostEqual(1.0, axis.dissipation())
 
         errors = axis.set_xyz(Vector3d(0, 1, 0))
-        self.assertFalse(errors)
+        self.assertEqual(0, len(errors))
         self.assertEqual(Vector3d.UNIT_Y, axis.xyz())
 
         axis.set_xyz_expressed_in("__model__")
@@ -45,7 +45,7 @@ class JointAxisTEST(unittest.TestCase):
 
         # expect errors when trying to resolve axis without graph
         vec3 = Vector3d()
-        self.assertTrue(axis.resolve_xyz(vec3))
+        self.assertEqual(1, len(axis.resolve_xyz(vec3)))
 
         axis.set_damping(0.2)
         self.assertAlmostEqual(0.2, axis.damping())
@@ -86,9 +86,17 @@ class JointAxisTEST(unittest.TestCase):
         self.assertEqual(jointAxis.xyz(), jointAxisCopy.xyz())
 
 
+    def test_copy_construction(self):
+        jointAxis = JointAxis()
+        self.assertEqual(0, len(jointAxis.set_xyz(Vector3d(0, 1, 0))))
+
+        jointAxisCopy = copy.deepcopy(jointAxis)
+        self.assertEqual(jointAxis.xyz(), jointAxisCopy.xyz())
+
+
     def test_zero_norm_vector_returns_error(self):
         axis = JointAxis()
-        self.assertFalse(axis.set_xyz(Vector3d(1.0, 0, 0)))
+        self.assertEqual(0, len(axis.set_xyz(Vector3d(1.0, 0, 0))))
 
         errors = axis.set_xyz(Vector3d.ZERO)
         self.assertTrue(errors)

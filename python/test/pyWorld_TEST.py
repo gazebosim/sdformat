@@ -14,14 +14,14 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d, SphericalCoordinates
-from sdformat import World, Model, Frame, Error
+from sdformat import Error, Frame, Light, Model, World
 import unittest
 import math
 
 # TODO(ahcorde)
 # - Add Atmosphere, GUI, Actor, Light, Scene and Plugin tests when the sdf::Classes are ported
 
-class VisualTEST(unittest.TestCase):
+class WorldTEST(unittest.TestCase):
 
     def test_default_construction(self):
         world = World()
@@ -259,29 +259,26 @@ class VisualTEST(unittest.TestCase):
 #   self.assertEqual(actorFromWorld.name(), actor.name())
 # }
 #
-# ########################/
-# TEST(DOMWorld, AddLight)
-# {
-#   world = World()
-#   self.assertEqual(0, world.Light_count())
-#
-#   sdf::Light light
-#   light.set_name("light1")
-#   self.assertTrue(world.add_Light(light))
-#   self.assertEqual(1, world.Light_count())
-#   self.assertFalse(world.add_Light(light))
-#   self.assertEqual(1, world.Light_count())
-#
-#   world.clear_Lights()
-#   self.assertEqual(0, world.Light_count())
-#
-#   self.assertTrue(world.add_Light(light))
-#   self.assertEqual(1, world.Light_count())
-#   const sdf::Light *lightFromWorld = world.Light_by_index(0)
-#   self.assertNotEqual(None, lightFromWorld)
-#   self.assertEqual(lightFromWorld.name(), light.name())
-# }
 
+    def add_light(self):
+        world = World()
+        self.assertEqual(0, world.light_count())
+
+        light = Light()
+        light.set_name("light1")
+        self.assertTrue(world.add_light(light))
+        self.assertEqual(1, world.light_count())
+        self.assertFalse(world.add_light(light))
+        self.assertEqual(1, world.light_count())
+
+        world.clear_lights()
+        self.assertEqual(0, world.light_count())
+
+        self.assertTrue(world.add_light(light))
+        self.assertEqual(1, world.light_count())
+        lightFromWorld = world.light_by_index(0)
+        self.assertNotEqual(None, lightFromWorld)
+        self.assertEqual(lightFromWorld.name(), light.name())
 
     def test_mutable_by_index(self):
         world = World()
@@ -294,9 +291,9 @@ class VisualTEST(unittest.TestCase):
         # actor.set_name("actor1")
         # self.assertTrue(world.add_Actor(actor))
         #
-        # sdf::Light light
-        # light.set_name("light1")
-        # self.assertTrue(world.add_Light(light))
+        light = Light()
+        light.set_name("light1")
+        self.assertTrue(world.add_light(light))
         #
         # sdf::Physics physics
         # physics.set_name("physics1")
@@ -320,12 +317,12 @@ class VisualTEST(unittest.TestCase):
         # a.set_name("actor2")
         # self.assertEqual("actor2", world.Actor_by_index(0).name())
         #
-        # # Modify the light
-        # sdf::Light *l = world.Light_by_index(0)
-        # self.assertNotEqual(None, l)
-        # self.assertEqual("light1", l.name())
-        # l.set_name("light2")
-        # self.assertEqual("light2", world.Light_by_index(0).name())
+        # Modify the light
+        l = world.light_by_index(0)
+        self.assertNotEqual(None, l)
+        self.assertEqual("light1", l.name())
+        l.set_name("light2")
+        self.assertEqual("light2", world.light_by_index(0).name())
 
         # # Modify the physics
         # sdf::Physics *p = world.physics_by_index(1)

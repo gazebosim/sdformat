@@ -20,225 +20,225 @@ import math
 
 class VisualTEST(unittest.TestCase):
 
-  def test_default_construction(self):
-    visual = Visual()
-    self.assertTrue(not visual.name())
+    def test_default_construction(self):
+        visual = Visual()
+        self.assertTrue(not visual.name())
 
-    visual.set_name("test_visual")
-    self.assertEqual(visual.name(), "test_visual")
+        visual.set_name("test_visual")
+        self.assertEqual(visual.name(), "test_visual")
 
-    visual.set_cast_shadows(False)
-    self.assertFalse(visual.cast_shadows())
+        visual.set_cast_shadows(False)
+        self.assertFalse(visual.cast_shadows())
 
-    # check default transparency is 0
-    self.assertEqual(0.0, visual.transparency())
+        # check default transparency is 0
+        self.assertEqual(0.0, visual.transparency())
 
-    visual.set_transparency(0.34)
-    self.assertAlmostEqual(0.34, visual.transparency())
+        visual.set_transparency(0.34)
+        self.assertAlmostEqual(0.34, visual.transparency())
 
-    self.assertEqual(Pose3d.ZERO, visual.raw_pose())
-    self.assertTrue(not visual.pose_relative_to())
+        self.assertEqual(Pose3d.ZERO, visual.raw_pose())
+        self.assertTrue(not visual.pose_relative_to())
 
-    semanticPose = visual.semantic_pose()
-    self.assertEqual(visual.raw_pose(), semanticPose.raw_pose())
-    self.assertTrue(not semanticPose.relative_to())
-    pose = Pose3d()
-    # expect errors when trying to resolve pose
-    self.assertFalse(not semanticPose.resolve(pose))
+        semanticPose = visual.semantic_pose()
+        self.assertEqual(visual.raw_pose(), semanticPose.raw_pose())
+        self.assertEqual('', semanticPose.relative_to())
+        pose = Pose3d()
+        # expect errors when trying to resolve pose
+        self.assertFalse(not semanticPose.resolve(pose))
 
-    visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
-    self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
+        visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
+        self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
             visual.raw_pose())
 
-    visual.set_pose_relative_to("link")
-    self.assertEqual("link", visual.pose_relative_to())
+        visual.set_pose_relative_to("link")
+        self.assertEqual("link", visual.pose_relative_to())
 
-    semanticPose = visual.semantic_pose()
-    self.assertEqual(visual.raw_pose(), semanticPose.raw_pose())
-    self.assertEqual("link", semanticPose.relative_to())
-    pose = Pose3d()
-    # expect errors when trying to resolve pose
-    self.assertFalse(not semanticPose.resolve(pose))
+        semanticPose = visual.semantic_pose()
+        self.assertEqual(visual.raw_pose(), semanticPose.raw_pose())
+        self.assertEqual("link", semanticPose.relative_to())
+        pose = Pose3d()
+        # expect errors when trying to resolve pose
+        self.assertFalse(not semanticPose.resolve(pose))
 
-    self.assertNotEqual(None, visual.geometry())
-    self.assertEqual(Geometry.GeometryType.EMPTY, visual.geometry().type())
-    self.assertEqual(None, visual.geometry().box_shape())
-    self.assertEqual(None, visual.geometry().cylinder_shape())
-    self.assertEqual(None, visual.geometry().plane_shape())
-    self.assertEqual(None, visual.geometry().sphere_shape())
+        self.assertNotEqual(None, visual.geometry())
+        self.assertEqual(Geometry.GeometryType.EMPTY, visual.geometry().type())
+        self.assertEqual(None, visual.geometry().box_shape())
+        self.assertEqual(None, visual.geometry().cylinder_shape())
+        self.assertEqual(None, visual.geometry().plane_shape())
+        self.assertEqual(None, visual.geometry().sphere_shape())
 
-    self.assertEqual(None, visual.material())
+        self.assertEqual(None, visual.material())
 
-    # visibility flags
-    self.assertEqual(4294967295, visual.visibility_flags())
-    visual.set_visibility_flags(1)
-    self.assertEqual(1, visual.visibility_flags())
+        # visibility flags
+        self.assertEqual(4294967295, visual.visibility_flags())
+        visual.set_visibility_flags(1)
+        self.assertEqual(1, visual.visibility_flags())
 
 
-  def test_copy_construction(self):
-    visual = Visual()
-    visual.set_name("test_visual")
-    visual.set_cast_shadows(False)
-    visual.set_transparency(0.345)
-    visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
-    visual.set_visibility_flags(2)
+    def test_copy_construction(self):
+        visual = Visual()
+        visual.set_name("test_visual")
+        visual.set_cast_shadows(False)
+        visual.set_transparency(0.345)
+        visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
+        visual.set_visibility_flags(2)
 
-    visual.set_pose_relative_to("link")
+        visual.set_pose_relative_to("link")
 
-    mat = Material()
-    mat.set_ambient(Color(0.1, 0.1, 0.1))
-    visual.set_material(mat)
+        mat = Material()
+        mat.set_ambient(Color(0.1, 0.1, 0.1))
+        visual.set_material(mat)
 
-    visual2 = Visual(visual)
+        visual2 = Visual(visual)
 
-    self.assertEqual("test_visual", visual.name())
-    self.assertFalse(visual.cast_shadows())
-    self.assertAlmostEqual(0.345, visual.transparency())
-    self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
+        self.assertEqual("test_visual", visual.name())
+        self.assertFalse(visual.cast_shadows())
+        self.assertAlmostEqual(0.345, visual.transparency())
+        self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
             visual.raw_pose())
-    self.assertEqual("link", visual.pose_relative_to())
-    material = visual.material()
-    self.assertTrue(None != visual.material())
-    self.assertEqual(mat.ambient(), visual.material().ambient())
-    self.assertEqual(2, visual.visibility_flags())
+        self.assertEqual("link", visual.pose_relative_to())
+        material = visual.material()
+        self.assertTrue(None != visual.material())
+        self.assertEqual(mat.ambient(), visual.material().ambient())
+        self.assertEqual(2, visual.visibility_flags())
 
-    self.assertEqual("test_visual", visual2.name())
-    self.assertFalse(visual2.cast_shadows())
-    self.assertAlmostEqual(0.345, visual2.transparency())
-    self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
+        self.assertEqual("test_visual", visual2.name())
+        self.assertFalse(visual2.cast_shadows())
+        self.assertAlmostEqual(0.345, visual2.transparency())
+        self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
             visual2.raw_pose())
-    self.assertEqual("link", visual2.pose_relative_to())
-    self.assertTrue(None != visual2.material())
-    self.assertEqual(mat.ambient(), visual2.material().ambient())
-    self.assertEqual(2, visual2.visibility_flags())
+        self.assertEqual("link", visual2.pose_relative_to())
+        self.assertTrue(None != visual2.material())
+        self.assertEqual(mat.ambient(), visual2.material().ambient())
+        self.assertEqual(2, visual2.visibility_flags())
 
 
-  def test_deepcopy(self):
-    visual = Visual()
-    visual.set_name("test_visual")
-    visual.set_cast_shadows(False)
-    visual.set_transparency(0.345)
-    visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
-    visual.set_visibility_flags(2)
+    def test_deepcopy(self):
+        visual = Visual()
+        visual.set_name("test_visual")
+        visual.set_cast_shadows(False)
+        visual.set_transparency(0.345)
+        visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
+        visual.set_visibility_flags(2)
 
-    visual.set_pose_relative_to("link")
+        visual.set_pose_relative_to("link")
 
-    mat = Material()
-    mat.set_ambient(Color(0.1, 0.1, 0.1))
-    visual.set_material(mat)
+        mat = Material()
+        mat.set_ambient(Color(0.1, 0.1, 0.1))
+        visual.set_material(mat)
 
-    visual2 = copy.deepcopy(visual)
+        visual2 = copy.deepcopy(visual)
 
-    self.assertEqual("test_visual", visual.name())
-    self.assertFalse(visual.cast_shadows())
-    self.assertAlmostEqual(0.345, visual.transparency())
-    self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
+        self.assertEqual("test_visual", visual.name())
+        self.assertFalse(visual.cast_shadows())
+        self.assertAlmostEqual(0.345, visual.transparency())
+        self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
             visual.raw_pose())
-    self.assertEqual("link", visual.pose_relative_to())
-    self.assertTrue(None != visual.material())
-    self.assertEqual(mat.ambient(), visual.material().ambient())
-    self.assertEqual(2, visual.visibility_flags())
+        self.assertEqual("link", visual.pose_relative_to())
+        self.assertTrue(None != visual.material())
+        self.assertEqual(mat.ambient(), visual.material().ambient())
+        self.assertEqual(2, visual.visibility_flags())
 
-    self.assertEqual("test_visual", visual2.name())
-    self.assertFalse(visual2.cast_shadows())
-    self.assertAlmostEqual(0.345, visual2.transparency())
-    self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
+        self.assertEqual("test_visual", visual2.name())
+        self.assertFalse(visual2.cast_shadows())
+        self.assertAlmostEqual(0.345, visual2.transparency())
+        self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
             visual2.raw_pose())
-    self.assertEqual("link", visual2.pose_relative_to())
-    self.assertTrue(None != visual2.material())
-    self.assertEqual(mat.ambient(), visual2.material().ambient())
-    self.assertEqual(2, visual2.visibility_flags())
+        self.assertEqual("link", visual2.pose_relative_to())
+        self.assertTrue(None != visual2.material())
+        self.assertEqual(mat.ambient(), visual2.material().ambient())
+        self.assertEqual(2, visual2.visibility_flags())
 
 
-  def test_assignment(self):
-    visual = Visual()
-    visual.set_name("test_visual")
-    visual.set_cast_shadows(False)
-    visual.set_transparency(0.345)
-    visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
-    visual.set_visibility_flags(2)
+    def test_assignment(self):
+        visual = Visual()
+        visual.set_name("test_visual")
+        visual.set_cast_shadows(False)
+        visual.set_transparency(0.345)
+        visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
+        visual.set_visibility_flags(2)
 
-    visual.set_pose_relative_to("link")
+        visual.set_pose_relative_to("link")
 
-    mat = Material()
-    mat.set_ambient(Color(0.1, 0.1, 0.1))
-    visual.set_material(mat)
+        mat = Material()
+        mat.set_ambient(Color(0.1, 0.1, 0.1))
+        visual.set_material(mat)
 
-    visual2 = visual
+        visual2 = visual
 
-    self.assertEqual("test_visual", visual2.name())
-    self.assertFalse(visual2.cast_shadows())
-    self.assertAlmostEqual(0.345, visual2.transparency())
-    self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
+        self.assertEqual("test_visual", visual2.name())
+        self.assertFalse(visual2.cast_shadows())
+        self.assertAlmostEqual(0.345, visual2.transparency())
+        self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
             visual2.raw_pose())
-    self.assertEqual("link", visual2.pose_relative_to())
-    self.assertTrue(None != visual2.material())
-    self.assertEqual(mat.ambient(), visual2.material().ambient())
-    self.assertEqual(2, visual2.visibility_flags())
+        self.assertEqual("link", visual2.pose_relative_to())
+        self.assertTrue(None != visual2.material())
+        self.assertEqual(mat.ambient(), visual2.material().ambient())
+        self.assertEqual(2, visual2.visibility_flags())
 
 
-  def test_set_geometry(self):
-    visual = Visual()
-    self.assertTrue(not visual.name())
+    def test_set_geometry(self):
+        visual = Visual()
+        self.assertTrue(not visual.name())
 
-    geometry = Geometry()
-    geometry.set_type(Geometry.GeometryType.BOX)
+        geometry = Geometry()
+        geometry.set_type(Geometry.GeometryType.BOX)
 
-    visual.set_geometry(geometry)
+        visual.set_geometry(geometry)
 
-    self.assertNotEqual(None, visual.geometry())
-    self.assertEqual(Geometry.GeometryType.BOX, visual.geometry().type())
+        self.assertNotEqual(None, visual.geometry())
+        self.assertEqual(Geometry.GeometryType.BOX, visual.geometry().type())
 
 
-  def test_set_material(self):
-    visual = Visual()
-    self.assertTrue(not visual.name())
+    def test_set_material(self):
+        visual = Visual()
+        self.assertTrue(not visual.name())
 
-    material = Material()
-    material.set_ambient(Color(0, 0.5, 0))
-    material.set_diffuse(Color(1, 0, 0))
-    material.set_specular(Color(0., 0.1, 0.9))
+        material = Material()
+        material.set_ambient(Color(0, 0.5, 0))
+        material.set_diffuse(Color(1, 0, 0))
+        material.set_specular(Color(0., 0.1, 0.9))
 
-    visual.set_material(material)
+        visual.set_material(material)
 
-    self.assertNotEqual(None, visual.material())
-    self.assertEqual(Color(0, 0.5, 0), visual.material().ambient())
-    self.assertEqual(Color(1, 0, 0), visual.material().diffuse())
-    self.assertEqual(Color(0., 0.1, 0.9),
+        self.assertNotEqual(None, visual.material())
+        self.assertEqual(Color(0, 0.5, 0), visual.material().ambient())
+        self.assertEqual(Color(1, 0, 0), visual.material().diffuse())
+        self.assertEqual(Color(0., 0.1, 0.9),
             visual.material().specular())
 
 
-  def test_set_laser_retro(self):
-    visual = Visual()
-    self.assertTrue(not visual.name())
+    def test_set_laser_retro(self):
+        visual = Visual()
+        self.assertTrue(not visual.name())
 
-    visual.set_laser_retro(150)
+        visual.set_laser_retro(150)
 
-    self.assertTrue(visual.has_laser_retro())
-    self.assertEqual(150, visual.laser_retro())
+        self.assertTrue(visual.has_laser_retro())
+        self.assertEqual(150, visual.laser_retro())
 
 
-  # TODO(ahcorde) enable this when sdf::Plugins is converted
-  # def test_plugins(self):
-  #   visual = Visual()
-  #   self.assertTrue(visual.Plugins().empty())
-  #
-  #   plugin = Plugin()
-  #   plugin.set_name("name1")
-  #   plugin.set_filename("filename1")
-  #
-  #   visual.add_plugin(plugin)
-  #   self.assertEqual(1, visual.plugins().size())
-  #
-  #   plugin.set_name("name2")
-  #   visual.add_plugin(plugin)
-  #   self.assertEqual(2, visual.plugins().size())
-  #
-  #   self.assertEqual("name1", visual.plugins()[0].name())
-  #   self.assertEqual("name2", visual.plugins()[1].name())
-  #
-  #   visual.clear_plugins()
-  #   self.assertTrue(visual.Plugins()))
+    # TODO(ahcorde) enable this when sdf::Plugins is converted
+    # def test_plugins(self):
+    #   visual = Visual()
+    #   self.assertTrue(visual.Plugins().empty())
+    #
+    #   plugin = Plugin()
+    #   plugin.set_name("name1")
+    #   plugin.set_filename("filename1")
+    #
+    #   visual.add_plugin(plugin)
+    #   self.assertEqual(1, visual.plugins().size())
+    #
+    #   plugin.set_name("name2")
+    #   visual.add_plugin(plugin)
+    #   self.assertEqual(2, visual.plugins().size())
+    #
+    #   self.assertEqual("name1", visual.plugins()[0].name())
+    #   self.assertEqual("name2", visual.plugins()[1].name())
+    #
+    #   visual.clear_plugins()
+    #   self.assertTrue(visual.Plugins()))
 
 
 if __name__ == '__main__':

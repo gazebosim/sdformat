@@ -65,17 +65,18 @@ void defineWorld(pybind11::object module)
          "for more information.")
     .def("wind_linear_velocity", &sdf::World::WindLinearVelocity,
          "Get the wind linear velocity in the global/world coordinate "
-         "frame. Units are meters per second \f$(\frac{m}{s})\f$")
+         "frame. Units are meters per second.")
     .def("set_wind_linear_velocity", &sdf::World::SetWindLinearVelocity,
          "Set the wind linear velocity in the global/world coordinate "
-         "frame. Units are meters per second \f$(\frac{m}{s})\f$")
+         "frame. Units are meters per second.")
     .def("gravity", &sdf::World::Gravity,
-         "Get the acceleration due to gravity. The default value is "
+         "Get the acceleration due to gravity. Units are meters per "
+         "second squared. The default value is "
          "Earth's standard gravity at sea level, which equals "
-         "[0, 0, -9.80665] \f$(\frac{m}{s^2})\f$")
+         "[0, 0, -9.80665].")
     .def("set_gravity", &sdf::World::SetGravity,
          "Set the acceleration due to gravity. Units are meters per "
-         "second squared \f$(\frac{m}{s^2})\f$")
+         "second squared.")
     .def("magnetic_field", &sdf::World::MagneticField,
          "Get the magnetic vector in Tesla, expressed in "
          "a coordinate frame defined by the SphericalCoordinates property. "
@@ -88,22 +89,22 @@ void defineWorld(pybind11::object module)
          "<spherical_coordinates> element.")
     .def("spherical_coordinates", &sdf::World::SphericalCoordinates,
          pybind11::return_value_policy::reference_internal,
-         "Get the spherical coordinates for the world origin.")
+         "Get a mutable spherical coordinates for the world origin.")
     .def("set_spherical_coordinates", &sdf::World::SetSphericalCoordinates,
          "Set the spherical coordinates for the world origin.")
     .def("model_count", &sdf::World::ModelCount,
-         "Get the number of explicit model that are immediate (not nested) "
+         "Get the number of explicit models that are immediate (not nested) "
          "children of this World object.")
     .def("model_by_index",
          pybind11::overload_cast<uint64_t>(
-           &sdf::World::ModelByIndex, pybind11::const_),
+           &sdf::World::ModelByIndex),
          pybind11::return_value_policy::reference_internal,
-         "Get an immediate (not nested) child joint model on an index.")
+         "Get a mutable immediate (not nested) child joint model on an index.")
      .def("model_by_name",
           pybind11::overload_cast<const std::string &>(
-            &sdf::World::ModelByName, pybind11::const_),
+            &sdf::World::ModelByName),
           pybind11::return_value_policy::reference_internal,
-          "Get an immediate (not nested) mutable child model based on an "
+          "Get a mutable immediate (not nested) mutable child model based on an "
           "index.")
      .def("model_name_exists", &sdf::World::ModelNameExists,
           "Get whether a model name exists.")
@@ -119,29 +120,29 @@ void defineWorld(pybind11::object module)
           "Add a frame object to the world.")
      .def("clear_models", &sdf::World::ClearModels,
           "Remove all models.")
-     .def("clear_actors", &sdf::World::ClearActors,
-          "Remove all models.")
+     // .def("clear_actors", &sdf::World::ClearActors,
+     //      "Remove all actors.")
      .def("clear_lights", &sdf::World::ClearLights,
-          "Remove all models.")
-     .def("clear_physics", &sdf::World::ClearPhysics,
-          "Remove all models.")
+          "Remove all lights.")
+     // .def("clear_physics", &sdf::World::ClearPhysics,
+     //      "Remove all physics objects.")
      .def("clear_frames", &sdf::World::ClearFrames,
-          "Remove all models.")
-     .def("add_model", &sdf::World::ActorCount,
+          "Remove all frames.")
+     .def("actor_count", &sdf::World::ActorCount,
           "Get the number of actors.")
      .def("frame_count", &sdf::World::FrameCount,
           "Get the number of explicit frames that are immediate (not nested) "
           "children of this World object.")
      .def("frame_by_index",
           pybind11::overload_cast<uint64_t>(
-            &sdf::World::FrameByIndex, pybind11::const_),
+            &sdf::World::FrameByIndex),
           pybind11::return_value_policy::reference_internal,
-          "Get an immediate (not nested) child joint frame on an index.")
+          "Get a mutable immediate (not nested) explicit frame based on an index.")
      .def("frame_by_name",
           pybind11::overload_cast<const std::string &>(
-            &sdf::World::FrameByName, pybind11::const_),
+            &sdf::World::FrameByName),
           pybind11::return_value_policy::reference_internal,
-          "Get an immediate (not nested) mutable child frame based on an "
+          "Get a mutable immediate (not nested) mutable child frame based on an "
           "index.")
      .def("frame_name_exists", &sdf::World::FrameNameExists,
           "Get whether a frame name exists.")
@@ -151,12 +152,7 @@ void defineWorld(pybind11::object module)
           pybind11::overload_cast<uint64_t>(
             &sdf::World::LightByIndex),
           pybind11::return_value_policy::reference_internal,
-          "Get a light based on an index.")
-     // .def("light_by_name",
-     //      pybind11::overload_cast<const std::string &>(
-     //        &sdf::World::LightByIndex),
-     //      pybind11::return_value_policy::reference_internal,
-     //      "Get a mutable light based on an index.")
+          "Get a mutable light based on an index.")
      .def("light_name_exists", &sdf::World::LightNameExists,
           "Get whether a light name exists.")
      .def("atmosphere", &sdf::World::Atmosphere,
@@ -171,8 +167,8 @@ void defineWorld(pybind11::object module)
      // .def("plugins",
      //      pybind11::overload_cast<>(&sdf::World::Plugins, pybind11::const_),
      //      "Get the plugins attached to this object.")
-     .def("clear_plugins", &sdf::World::ClearPlugins,
-          "Remove all plugins")
+     // .def("clear_plugins", &sdf::World::ClearPlugins,
+     //      "Remove all plugins")
      // .def("add_plugin", &sdf::World::AddPlugin,
      //      "Add a plugin to this object.")
     .def("__copy__", [](const sdf::World &self) {

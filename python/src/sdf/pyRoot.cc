@@ -66,14 +66,14 @@ void defineRoot(pybind11::object module)
          "Get the number of worlds.")
     .def("world_by_index",
          pybind11::overload_cast<uint64_t>(
-           &sdf::Root::WorldByIndex, pybind11::const_),
+           &sdf::Root::WorldByIndex),
          pybind11::return_value_policy::reference_internal,
          "Get a world based on an index.")
      .def("world_name_exists", &sdf::Root::WorldNameExists,
           "Get whether a world name exists.")
     .def("model", &sdf::Root::Model,
          pybind11::return_value_policy::reference_internal,
-         "Get a pointer to the model object if it exists.")
+         "Get a model object if it exists.")
     .def("set_model", &sdf::Root::SetModel,
          pybind11::return_value_policy::reference_internal,
          "Set the model object. This will override any existing model, "
@@ -82,7 +82,6 @@ void defineRoot(pybind11::object module)
          pybind11::return_value_policy::reference_internal,
          "Get a pointer to the light object if it exists.")
     .def("set_light", &sdf::Root::SetLight,
-         pybind11::return_value_policy::reference_internal,
          "Set the light object. This will override any existing model, "
          "actor, and light object.")
     .def("add_world", &sdf::Root::AddWorld,
@@ -90,7 +89,7 @@ void defineRoot(pybind11::object module)
     .def("clear_worlds", &sdf::Root::ClearWorlds,
          "Remove all worlds.")
     .def("update_graphs", &sdf::Root::UpdateGraphs,
-         "ecreate the frame and pose graphs for the worlds and model "
+         "Recreate the frame and pose graphs for the worlds and model "
          "that are children of this Root object. You can call this function "
          "to build new graphs when the DOM was created programmatically, or "
          "if you want to regenerate the graphs after editing the DOM.")

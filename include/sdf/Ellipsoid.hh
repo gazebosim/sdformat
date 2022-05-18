@@ -17,8 +17,8 @@
 #ifndef SDF_ELLIPSOID_HH_
 #define SDF_ELLIPSOID_HH_
 
-#include <ignition/math/Ellipsoid.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Ellipsoid.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>

@@ -20,51 +20,51 @@ import math
 
 class FrameColor(unittest.TestCase):
 
-  def test_default_construction(self):
-    frame = Frame()
-    self.assertFalse(frame.name())
+    def test_default_construction(self):
+        frame = Frame()
+        self.assertFalse(frame.name())
 
-    frame.set_name("test_frame")
-    self.assertEqual(frame.name(), "test_frame")
+        frame.set_name("test_frame")
+        self.assertEqual(frame.name(), "test_frame")
 
-    self.assertFalse(frame.attached_to())
-    self.assertEqual(Pose3d.ZERO, frame.raw_pose())
-    self.assertFalse(frame.pose_relative_to())
+        self.assertFalse(frame.attached_to())
+        self.assertEqual(Pose3d.ZERO, frame.raw_pose())
+        self.assertFalse(frame.pose_relative_to())
 
-    semanticPose = frame.semantic_pose()
-    self.assertEqual(Pose3d.ZERO, semanticPose.raw_pose())
-    self.assertFalse(semanticPose.relative_to())
-    pose = Pose3d()
-    # expect errors when trying to resolve pose
-    self.assertTrue(semanticPose.resolve(pose))
+        semanticPose = frame.semantic_pose()
+        self.assertEqual(Pose3d.ZERO, semanticPose.raw_pose())
+        self.assertFalse(semanticPose.relative_to())
+        pose = Pose3d()
+        # expect errors when trying to resolve pose
+        self.assertTrue(semanticPose.resolve(pose))
 
-    frame.set_attached_to("attachment")
-    self.assertEqual("attachment", frame.attached_to())
+        frame.set_attached_to("attachment")
+        self.assertEqual("attachment", frame.attached_to())
 
-    frame.set_raw_pose(Pose3d(-10, -20, -30, math.pi, math.pi, math.pi))
-    self.assertEqual(Pose3d(-10, -20, -30, math.pi, math.pi, math.pi),
+        frame.set_raw_pose(Pose3d(-10, -20, -30, math.pi, math.pi, math.pi))
+        self.assertEqual(Pose3d(-10, -20, -30, math.pi, math.pi, math.pi),
         frame.raw_pose())
 
-    semanticPose = frame.semantic_pose()
-    self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
-    self.assertEqual("attachment", semanticPose.relative_to())
-    pose = Pose3d()
-    # expect errors when trying to resolve pose
-    self.assertTrue(semanticPose.resolve(pose))
+        semanticPose = frame.semantic_pose()
+        self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
+        self.assertEqual("attachment", semanticPose.relative_to())
+        pose = Pose3d()
+        # expect errors when trying to resolve pose
+        self.assertTrue(semanticPose.resolve(pose))
 
-    frame.set_pose_relative_to("link")
-    self.assertEqual("link", frame.pose_relative_to())
+        frame.set_pose_relative_to("link")
+        self.assertEqual("link", frame.pose_relative_to())
 
-    semanticPose = frame.semantic_pose()
-    self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
-    self.assertEqual("link", semanticPose.relative_to())
-    pose = Pose3d()
-    # expect errors when trying to resolve pose
-    self.assertEqual(1, len(semanticPose.resolve(pose)))
+        semanticPose = frame.semantic_pose()
+        self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
+        self.assertEqual("link", semanticPose.relative_to())
+        pose = Pose3d()
+        # expect errors when trying to resolve pose
+        self.assertEqual(1, len(semanticPose.resolve(pose)))
 
-    body = ""
-    self.assertEqual(1, len(frame.resolve_attached_to_body(body)))
-    self.assertFalse(body)
+        errors, resolveAttachedToBody = frame.resolve_attached_to_body();
+        self.assertEqual(1, len(errors))
+        self.assertFalse(resolveAttachedToBody)
 
 
 if __name__ == '__main__':

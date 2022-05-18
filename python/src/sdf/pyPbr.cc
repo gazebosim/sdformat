@@ -39,7 +39,7 @@ void definePbr(pybind11::object module)
     .def("set_workflow", &sdf::Pbr::SetWorkflow,
          "Set a PBR workflow by type")
     .def("workflow", &sdf::Pbr::Workflow,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get a PBR workflow by type")
     .def("__copy__", [](const sdf::Pbr &self) {
       return sdf::Pbr(self);
