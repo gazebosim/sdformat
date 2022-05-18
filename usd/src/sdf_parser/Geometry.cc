@@ -204,6 +204,36 @@ namespace usd
       fullName =
         ignition::common::findFile(uri.Str());
     }
+    else if (uri.Scheme() == "model")
+    {
+      fullName =
+        ignition::common::findFile(_geometry.MeshShape()->Uri());
+
+      std::function<void(const std::string)> addSubFolders =
+        [&](const std::string &_dir)
+      {
+        for (ignition::common::DirIter file(_dir);
+          file != ignition::common::DirIter(); ++file)
+        {
+          std::string current(*file);
+          if (ignition::common::isDirectory(current))
+          {
+            auto systemPaths = ignition::common::systemPaths();
+            systemPaths->AddFilePaths(current);
+            addSubFolders(current);
+          }
+        }
+      };
+      auto fileExtensionIndex = fullName.rfind(
+        ignition::common::basename(fullName));
+      if (fileExtensionIndex != std::string::npos)
+      {
+        std::string dirName = fullName;
+        dirName.erase(fileExtensionIndex,
+          ignition::common::basename(fullName).length() + 1);
+        addSubFolders(ignition::common::parentPath(dirName));
+      }
+    }
     else
     {
       fullName =
