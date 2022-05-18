@@ -76,7 +76,7 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Material());
 
   // visibility flags
-  EXPECT_EQ(4294967295u, visual.VisibilityFlags());
+  EXPECT_EQ(UINT32_MAX, visual.VisibilityFlags());
   visual.SetVisibilityFlags(1u);
   EXPECT_EQ(1u, visual.VisibilityFlags());
 }

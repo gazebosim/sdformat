@@ -66,6 +66,10 @@ TEST(DOMLidar, Set)
   lidar.SetHorizontalScanSamples(111);
   lidar.SetHorizontalScanResolution(2.2);
 
+  EXPECT_EQ(UINT32_MAX, lidar.VisibilityMask());
+  lidar.SetVisibilityMask(123u);
+  EXPECT_EQ(123u, lidar.VisibilityMask());
+
   // Inequality operator
   sdf::Lidar lidar2;
   EXPECT_NE(lidar2, lidar);
@@ -135,6 +139,7 @@ TEST(DOMLidar, ToElement)
   lidar.SetRangeMin(1.2);
   lidar.SetRangeMax(3.4);
   lidar.SetRangeResolution(5.6);
+  lidar.SetVisibilityMask(123u);
 
   sdf::Noise noise;
   noise.SetMean(6.5);
@@ -160,6 +165,7 @@ TEST(DOMLidar, ToElement)
   EXPECT_DOUBLE_EQ(1.2, lidar2.RangeMin());
   EXPECT_DOUBLE_EQ(3.4, lidar2.RangeMax());
   EXPECT_DOUBLE_EQ(5.6, lidar2.RangeResolution());
+  EXPECT_EQ(123u, lidar2.VisibilityMask());
   EXPECT_EQ(noise, lidar2.LidarNoise());
 
   // make changes to DOM and verify ToElement produces updated values

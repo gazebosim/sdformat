@@ -188,7 +188,7 @@ TEST(DOMCamera, Construction)
 
   EXPECT_TRUE(cam.HasLensIntrinsics());
 
-  EXPECT_EQ(4294967295u, cam.VisibilityMask());
+  EXPECT_EQ(UINT32_MAX, cam.VisibilityMask());
   cam.SetVisibilityMask(123u);
   EXPECT_EQ(123u, cam.VisibilityMask());
 
