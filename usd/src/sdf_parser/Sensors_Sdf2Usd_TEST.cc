@@ -59,7 +59,7 @@ class UsdStageFixture : public::testing::Test
 TEST_F(UsdStageFixture, Sensors)
 {
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
-  ignition::common::addFindFileURICallback(
+  gz::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
 
   const auto path = sdf::testing::TestFile("sdf", "usd_sensors.sdf");

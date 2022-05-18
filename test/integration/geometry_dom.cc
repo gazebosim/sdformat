@@ -63,7 +63,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::BOX, boxCol->Geom()->Type());
   const sdf::Box *boxColGeom = boxCol->Geom()->BoxShape();
   ASSERT_NE(nullptr, boxColGeom);
-  EXPECT_EQ(ignition::math::Vector3d(3, 4, 5), boxColGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(3, 4, 5), boxColGeom->Size());
 
   // Test box visual
   const sdf::Visual *boxVis = link->VisualByName("box_vis");
@@ -72,7 +72,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::BOX, boxVis->Geom()->Type());
   const sdf::Box *boxVisGeom = boxVis->Geom()->BoxShape();
   ASSERT_NE(nullptr, boxVisGeom);
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), boxVisGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), boxVisGeom->Size());
 
   // Test capsule collision
   const sdf::Collision *capsuleCol = link->CollisionByName("capsule_col");
@@ -122,7 +122,7 @@ TEST(DOMGeometry, Shapes)
   const sdf::Ellipsoid *ellipsoidColGeom =
     ellipsoidCol->Geom()->EllipsoidShape();
   ASSERT_NE(nullptr, ellipsoidColGeom);
-  EXPECT_EQ(ignition::math::Vector3d(1.0, 2.0, 3.0), ellipsoidColGeom->Radii());
+  EXPECT_EQ(gz::math::Vector3d(1.0, 2.0, 3.0), ellipsoidColGeom->Radii());
 
   // Test ellipsoid visual
   const sdf::Visual *ellipsoidVis = link->VisualByName("ellipsoid_vis");
@@ -132,7 +132,7 @@ TEST(DOMGeometry, Shapes)
   const sdf::Ellipsoid *ellipsoidVisGeom =
     ellipsoidVis->Geom()->EllipsoidShape();
   ASSERT_NE(nullptr, ellipsoidVisGeom);
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), ellipsoidVisGeom->Radii());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), ellipsoidVisGeom->Radii());
 
   // Test plane collision
   const sdf::Collision *planeCol = link->CollisionByName("plane_col");
@@ -141,8 +141,8 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::PLANE, planeCol->Geom()->Type());
   const sdf::Plane *planeColGeom = planeCol->Geom()->PlaneShape();
   ASSERT_NE(nullptr, planeColGeom);
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, planeColGeom->Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.4, 6.3), planeColGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, planeColGeom->Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.4, 6.3), planeColGeom->Size());
 
   // Test plane visual
   const sdf::Visual *planeVis = link->VisualByName("plane_vis");
@@ -151,8 +151,8 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::PLANE, planeVis->Geom()->Type());
   const sdf::Plane *planeVisGeom = planeVis->Geom()->PlaneShape();
   ASSERT_NE(nullptr, planeVisGeom);
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, planeVisGeom->Normal());
-  EXPECT_EQ(ignition::math::Vector2d(2, 4), planeVisGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, planeVisGeom->Normal());
+  EXPECT_EQ(gz::math::Vector2d(2, 4), planeVisGeom->Size());
 
   // Test sphere collision
   const sdf::Collision *sphereCol = link->CollisionByName("sphere_col");
@@ -181,7 +181,7 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, meshColGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/"
       "mesh.dae", meshColGeom->Uri());
-  EXPECT_TRUE(ignition::math::Vector3d(0.1, 0.2, 0.3) ==
+  EXPECT_TRUE(gz::math::Vector3d(0.1, 0.2, 0.3) ==
       meshColGeom->Scale());
   EXPECT_EQ("my_submesh", meshColGeom->Submesh());
   EXPECT_TRUE(meshColGeom->CenterSubmesh());
@@ -195,7 +195,7 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, meshVisGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh"
       "/mesh.dae", meshVisGeom->Uri());
-  EXPECT_TRUE(ignition::math::Vector3d(1.2, 2.3, 3.4) ==
+  EXPECT_TRUE(gz::math::Vector3d(1.2, 2.3, 3.4) ==
       meshVisGeom->Scale());
   EXPECT_EQ("another_submesh", meshVisGeom->Submesh());
   EXPECT_FALSE(meshVisGeom->CenterSubmesh());
@@ -209,8 +209,8 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, heightmapColGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
       "materials/textures/heightmap.png", heightmapColGeom->Uri());
-  EXPECT_EQ(ignition::math::Vector3d(500, 500, 100), heightmapColGeom->Size());
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), heightmapColGeom->Position());
+  EXPECT_EQ(gz::math::Vector3d(500, 500, 100), heightmapColGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), heightmapColGeom->Position());
   EXPECT_EQ(0u, heightmapColGeom->TextureCount());
   EXPECT_EQ(0u, heightmapColGeom->BlendCount());
 
@@ -223,8 +223,8 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, heightmapVisGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
       "materials/textures/heightmap.png", heightmapVisGeom->Uri());
-  EXPECT_EQ(ignition::math::Vector3d(500, 500, 100), heightmapVisGeom->Size());
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), heightmapVisGeom->Position());
+  EXPECT_EQ(gz::math::Vector3d(500, 500, 100), heightmapVisGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), heightmapVisGeom->Position());
   EXPECT_EQ(3u, heightmapVisGeom->TextureCount());
   EXPECT_EQ(2u, heightmapVisGeom->BlendCount());
 

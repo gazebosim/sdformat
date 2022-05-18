@@ -75,7 +75,7 @@ namespace usd
     // TODO(adlarkin) incorporate sdf::Light's <direction> somehow? According
     // to the USD API, things like UsdLuxDistantLight and UsdLuxDiskLight emit
     // light along the -Z axis, so I'm not sure if this can be changed.
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = sdf::usd::PoseWrtParent(_light, pose);
     if (!poseErrors.empty())
     {

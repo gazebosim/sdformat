@@ -60,28 +60,28 @@ namespace sdf
 
       /// \brief Translate
       /// \return A 3D vector with the translation
-      public: const ignition::math::Vector3d Translation() const;
+      public: const gz::math::Vector3d Translation() const;
 
       /// \brief Scale
       /// \return A 3D vector with the scale
-      public: const ignition::math::Vector3d Scale() const;
+      public: const gz::math::Vector3d Scale() const;
 
       /// \brief Get the Rotation
       /// \return Return The rotation, if one exists. If no rotation exists,
       /// std::nullopt is returned
-      public: const std::optional<ignition::math::Quaterniond> Rotation() const;
+      public: const std::optional<gz::math::Quaterniond> Rotation() const;
 
       /// \brief Set translate
       /// \param[in] _translate Translate to set
-      public: void SetTranslation(const ignition::math::Vector3d &_translate);
+      public: void SetTranslation(const gz::math::Vector3d &_translate);
 
       /// \brief Set scale
       /// \param[in] _scale Scale to set
-      public: void SetScale(const ignition::math::Vector3d &_scale);
+      public: void SetScale(const gz::math::Vector3d &_scale);
 
       /// \brief Set rotation
       /// \param[in] _q Quaternion that defines the rotation
-      public: void SetRotation(const ignition::math::Quaterniond &_q);
+      public: void SetRotation(const gz::math::Quaterniond &_q);
 
       /// \brief Private data pointer.
       IGN_UTILS_IMPL_PTR(dataPtr)
@@ -99,8 +99,8 @@ namespace sdf
     void IGNITION_SDFORMAT_USD_VISIBLE GetTransform(
       const pxr::UsdPrim &_prim,
       const USDData &_usdData,
-      ignition::math::Pose3d &_pose,
-      ignition::math::Vector3d &_scale,
+      gz::math::Pose3d &_pose,
+      gz::math::Vector3d &_scale,
       const std::string &_schemaToStop);
 
     /// \brief Read the usd prim transforms. Scale, rotation or transform might

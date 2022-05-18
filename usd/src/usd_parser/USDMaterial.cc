@@ -44,16 +44,16 @@ namespace sdf
   UsdErrors copyFile(const std::string &_ori, std::string &_dest)
   {
     UsdErrors errors;
-    if (ignition::common::exists(_ori))
+    if (gz::common::exists(_ori))
     {
       // If the file exists then we append a number suffix to the destination
       // file
       // For example:
       // /bar/foo.extension
       // /bar/foo_X.extension
-      if (ignition::common::exists(_dest))
+      if (gz::common::exists(_dest))
       {
-        const std::string parentPath = ignition::common::parentPath(_dest);
+        const std::string parentPath = gz::common::parentPath(_dest);
         std::string::size_type fileExtensionIndex = _dest.rfind(".");
         if (fileExtensionIndex == std::string::npos)
         {
@@ -65,7 +65,7 @@ namespace sdf
 
         const std::string fileExtension = _dest.substr(fileExtensionIndex);
         std::string fileNameWithoutExtension =
-          ignition::common::basename(_dest);
+          gz::common::basename(_dest);
         size_t pos = fileNameWithoutExtension.find(fileExtension);
         if (pos != std::string::npos)
         {
@@ -73,9 +73,9 @@ namespace sdf
           fileNameWithoutExtension.erase(pos, fileExtension.length());
         }
         int index = 0;
-        while (ignition::common::exists(_dest))
+        while (gz::common::exists(_dest))
         {
-          _dest = ignition::common::joinPaths(
+          _dest = gz::common::joinPaths(
             parentPath,
             fileNameWithoutExtension + "_" + std::to_string(index) +
             fileExtension);
@@ -83,10 +83,10 @@ namespace sdf
         }
       }
 
-      std::string baseName = ignition::common::basename(_dest);
-      std::string pathDest = ignition::common::replaceAll(_dest, baseName, "");
-      ignition::common::createDirectories(pathDest);
-      if (!ignition::common::copyFile(_ori, _dest))
+      std::string baseName = gz::common::basename(_dest);
+      std::string pathDest = gz::common::replaceAll(_dest, baseName, "");
+      gz::common::createDirectories(pathDest);
+      if (!gz::common::copyFile(_ori, _dest))
       {
         errors.emplace_back(
             Error(ErrorCode::FILE_READ, "Unable to copy the file [" + _ori +
@@ -148,16 +148,16 @@ namespace sdf
       // Refer to this comment in github to understand the ambient and diffuse
       // https://github.com/osrf/sdformat/pull/526#discussion_r623937715
       _material.SetAmbient(
-        ignition::math::Color(
-          ignition::math::clamp(color[0][2] / 0.4, 0.0, 1.0),
-          ignition::math::clamp(color[0][1] / 0.4, 0.0, 1.0),
-          ignition::math::clamp(color[0][0] / 0.4, 0.0, 1.0),
+        gz::math::Color(
+          gz::math::clamp(color[0][2] / 0.4, 0.0, 1.0),
+          gz::math::clamp(color[0][1] / 0.4, 0.0, 1.0),
+          gz::math::clamp(color[0][0] / 0.4, 0.0, 1.0),
           alpha));
       _material.SetDiffuse(
-        ignition::math::Color(
-          ignition::math::clamp(color[0][2] / 0.8, 0.0, 1.0),
-          ignition::math::clamp(color[0][1] / 0.8, 0.0, 1.0),
-          ignition::math::clamp(color[0][0] / 0.8, 0.0, 1.0),
+        gz::math::Color(
+          gz::math::clamp(color[0][2] / 0.8, 0.0, 1.0),
+          gz::math::clamp(color[0][1] / 0.8, 0.0, 1.0),
+          gz::math::clamp(color[0][0] / 0.8, 0.0, 1.0),
           alpha));
     }
     // if the prim is a shade Material then get the texture values
@@ -173,7 +173,7 @@ namespace sdf
           bool enableEmission = false;
           bool isPBR = false;
           sdf::PbrWorkflow pbrWorkflow;
-          ignition::math::Color emissiveColorCommon;
+          gz::math::Color emissiveColorCommon;
 
           for (const auto &input : variantShader.GetInputs())
           {
@@ -182,7 +182,7 @@ namespace sdf
               pxr::SdfAssetPath materialPath =
                 assetPath(pxr::TfToken("diffuse_texture"), variantShader);
               std::string fullAlbedoName =
-                ignition::common::findFile(ignition::common::basename(
+                gz::common::findFile(gz::common::basename(
                   materialPath.GetAssetPath()), false);
               std::string dest = materialPath.GetAssetPath();
               UsdErrors errorCopy = copyFile(
@@ -196,8 +196,8 @@ namespace sdf
 
               // We need to set diffuse and specular to (1, 1, 1) otherwise
               // the texture is completely black
-              _material.SetDiffuse(ignition::math::Color(1, 1, 1));
-              _material.SetSpecular(ignition::math::Color(1, 1, 1));
+              _material.SetDiffuse(gz::math::Color(1, 1, 1));
+              _material.SetSpecular(gz::math::Color(1, 1, 1));
 
               isPBR = true;
             }
@@ -206,7 +206,7 @@ namespace sdf
               pxr::SdfAssetPath materialPath =
                 assetPath(pxr::TfToken("normalmap_texture"), variantShader);
               std::string fullNormalName =
-                ignition::common::findFile(ignition::common::basename(
+                gz::common::findFile(gz::common::basename(
                   materialPath.GetAssetPath()), false);
               std::string dest = materialPath.GetAssetPath();
               auto errorCopy = copyFile(fullNormalName, dest);
@@ -223,7 +223,7 @@ namespace sdf
               pxr::SdfAssetPath materialPath = assetPath(
                   pxr::TfToken("reflectionroughness_texture"), variantShader);
               std::string fullRoughnessName =
-                ignition::common::findFile(ignition::common::basename(
+                gz::common::findFile(gz::common::basename(
                   materialPath.GetAssetPath()), false);
               std::string dest = materialPath.GetAssetPath();
               auto errorCopy = copyFile(fullRoughnessName, dest);
@@ -240,7 +240,7 @@ namespace sdf
               pxr::SdfAssetPath materialPath = assetPath(
                   pxr::TfToken("metallic_texture"), variantShader);
               std::string fullMetalnessName =
-                ignition::common::findFile(ignition::common::basename(
+                gz::common::findFile(gz::common::basename(
                   materialPath.GetAssetPath()), false);
               std::string dest = materialPath.GetAssetPath();
               auto errorCopy = copyFile(fullMetalnessName, dest);
@@ -280,7 +280,7 @@ namespace sdf
                 diffuseShaderInput.Get(&diffuseColor);
               }
               _material.SetDiffuse(
-                ignition::math::Color(
+                gz::math::Color(
                   diffuseColor[0],
                   diffuseColor[1],
                   diffuseColor[2]));
@@ -341,7 +341,7 @@ namespace sdf
                 variantShader.GetInput(pxr::TfToken("emissive_color"));
               if (emissiveColorShaderInput.Get(&emissiveColor))
               {
-                emissiveColorCommon = ignition::math::Color(
+                emissiveColorCommon = gz::math::Color(
                   emissiveColor[0],
                   emissiveColor[1],
                   emissiveColor[2]);

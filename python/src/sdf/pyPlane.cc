@@ -43,7 +43,7 @@ void definePlane(pybind11::object module)
           "the Visual or Collision frame, respectively.")
     .def("set_normal", &sdf::Plane::SetNormal,
           "Set the plane normal vector. The normal vector will be "
-          "normalized. See ignition::math::Vector3d Normal() for more "
+          "normalized. See gz::math::Vector3d Normal() for more "
           "information about the normal vector, such as the frame in which it "
           "is specified.")
     .def(

@@ -57,7 +57,7 @@ class UsdStageFixture : public::testing::Test
 TEST_F(UsdStageFixture, Visual)
 {
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
-  ignition::common::addFindFileURICallback(
+  gz::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
 
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
@@ -74,9 +74,9 @@ TEST_F(UsdStageFixture, Visual)
   const auto worldPrim = this->stage->GetPrimAtPath(pxr::SdfPath(worldPath));
   ASSERT_TRUE(worldPrim);
 
-  const auto targetPose = ignition::math::Pose3d(
-      ignition::math::Vector3d(0, 0, 0),
-      ignition::math::Quaterniond(0, 0, 0));
+  const auto targetPose = gz::math::Pose3d(
+      gz::math::Vector3d(0, 0, 0),
+      gz::math::Quaterniond(0, 0, 0));
 
   const std::string groundPlanePath = worldPath + "/ground_plane";
   const auto groundPlane =

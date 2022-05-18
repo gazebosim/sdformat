@@ -59,7 +59,7 @@ namespace usd
       return errors;
     }
 
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = usd::PoseWrtParent(_visual, pose);
     if (!poseErrors.empty())
     {

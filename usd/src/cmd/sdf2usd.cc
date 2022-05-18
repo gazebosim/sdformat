@@ -66,12 +66,12 @@ struct Options
 /// the file could not be found.
 std::string findFileByName(const std::string &_path, const std::string &_name)
 {
-  for (ignition::common::DirIter file(_path);
-    file != ignition::common::DirIter(); ++file)
+  for (gz::common::DirIter file(_path);
+    file != gz::common::DirIter(); ++file)
   {
     std::string current(*file);
 
-    if (ignition::common::isDirectory(current))
+    if (gz::common::isDirectory(current))
     {
       std::string result = findFileByName(current, _name);
       if (result.empty())
@@ -81,10 +81,10 @@ std::string findFileByName(const std::string &_path, const std::string &_name)
       return result;
     }
 
-    if (!ignition::common::isFile(current))
+    if (!gz::common::isFile(current))
       continue;
 
-    auto fileName = ignition::common::basename(current);
+    auto fileName = gz::common::basename(current);
 
     if (fileName == _name)
     {
@@ -108,25 +108,25 @@ std::string findFileByExtension(
 {
   if (_insertDirectories)
   {
-    for (ignition::common::DirIter file(_path);
-      file != ignition::common::DirIter(); ++file)
+    for (gz::common::DirIter file(_path);
+      file != gz::common::DirIter(); ++file)
     {
       std::string current(*file);
-      if (ignition::common::isDirectory(current))
+      if (gz::common::isDirectory(current))
       {
-        auto systemPaths = ignition::common::systemPaths();
+        auto systemPaths = gz::common::systemPaths();
         systemPaths->AddFilePaths(current);
         findFileByExtension(current, "", true);
       }
     }
   }
 
-  for (ignition::common::DirIter file(_path);
-    file != ignition::common::DirIter(); ++file)
+  for (gz::common::DirIter file(_path);
+    file != gz::common::DirIter(); ++file)
   {
     std::string current(*file);
 
-    if (ignition::common::isDirectory(current))
+    if (gz::common::isDirectory(current))
     {
       std::string result = findFileByExtension(current, _extension);
       if (result.empty())
@@ -136,10 +136,10 @@ std::string findFileByExtension(
       return result;
     }
 
-    if (!ignition::common::isFile(current))
+    if (!gz::common::isFile(current))
       continue;
 
-    auto fileName = ignition::common::basename(current);
+    auto fileName = gz::common::basename(current);
     auto fileExtensionIndex = fileName.rfind(".");
     auto fileExtension = fileName.substr(fileExtensionIndex + 1);
 
@@ -159,10 +159,10 @@ std::string findFileByExtension(
 /// string is returned if the file could not be found.
 std::string FindResources(const std::string &_uri)
 {
-  ignition::common::URI uri(_uri);
+  gz::common::URI uri(_uri);
   std::string path;
   std::string home;
-  if (!ignition::common::env("HOME", home, false))
+  if (!gz::common::env("HOME", home, false))
   {
     std::cerr << "The HOME environment variable was not defined, "
               << "so the resource [" << _uri << "] could not be found\n";
@@ -171,21 +171,21 @@ std::string FindResources(const std::string &_uri)
   if (uri.Scheme() == "http" || uri.Scheme() == "https")
   {
     std::vector<std::string> tokens =
-      ignition::common::split(uri.Path().Str(), "/");
+      gz::common::split(uri.Path().Str(), "/");
     const std::string server = tokens[0];
     const std::string versionServer = tokens[1];
-    const std::string owner = ignition::common::lowercase(tokens[2]);
-    const std::string type = ignition::common::lowercase(tokens[3]);
-    const std::string modelName = ignition::common::lowercase(tokens[4]);
-    path = ignition::common::joinPaths(
+    const std::string owner = gz::common::lowercase(tokens[2]);
+    const std::string type = gz::common::lowercase(tokens[3]);
+    const std::string modelName = gz::common::lowercase(tokens[4]);
+    path = gz::common::joinPaths(
       home, ".ignition", "fuel", server, owner, type, modelName);
   }
   else
   {
-    path = ignition::common::joinPaths(home, ".ignition", "fuel");
+    path = gz::common::joinPaths(home, ".ignition", "fuel");
   }
 
-  auto fileName = ignition::common::basename(uri.Path().Str());
+  auto fileName = gz::common::basename(uri.Path().Str());
   auto fileExtensionIndex = fileName.rfind(".");
   if (fileExtensionIndex == std::string::npos)
   {
@@ -199,12 +199,12 @@ std::string FindResources(const std::string &_uri)
 }
 
 //////////////////////////////////////////////////
-/// \brief This function is used by ignition::common::addFindFileURICallback to
+/// \brief This function is used by gz::common::addFindFileURICallback to
 /// find the resources defined in the URI
 /// \param[in] _uri URI of the file to find
 /// \return The full path to the uri. Empty
 /// string is returned if the file could not be found.
-std::string FindResourceUri(const ignition::common::URI &_uri)
+std::string FindResourceUri(const gz::common::URI &_uri)
 {
   return FindResources(_uri.Str());
 }
@@ -213,7 +213,7 @@ void runCommand(const Options &_opt)
 {
   // Configure SDF to fetch assets from ignition fuel.
   sdf::setFindCallback(std::bind(&FindResources, std::placeholders::_1));
-  ignition::common::addFindFileURICallback(
+  gz::common::addFindFileURICallback(
     std::bind(&FindResourceUri, std::placeholders::_1));
 
   sdf::Root root;
@@ -233,12 +233,12 @@ void runCommand(const Options &_opt)
     if (model != nullptr)
     {
       std::string pathInputFile =
-        ignition::common::parentPath(_opt.inputFilename);
+        gz::common::parentPath(_opt.inputFilename);
       if (pathInputFile.empty() || pathInputFile == _opt.inputFilename)
       {
-        pathInputFile = ignition::common::cwd();
+        pathInputFile = gz::common::cwd();
       }
-      auto systemPaths = ignition::common::systemPaths();
+      auto systemPaths = gz::common::systemPaths();
       systemPaths->AddFilePaths(pathInputFile);
 
       // This loop here will add all the directories inside the sdf file.
@@ -251,11 +251,11 @@ void runCommand(const Options &_opt)
       {
         std::string pathToAdd = pathList.back();
         pathList.pop_back();
-        for (ignition::common::DirIter file(pathToAdd);
-          file != ignition::common::DirIter(); ++file)
+        for (gz::common::DirIter file(pathToAdd);
+          file != gz::common::DirIter(); ++file)
         {
           std::string current(*file);
-          if (ignition::common::isDirectory(current))
+          if (gz::common::isDirectory(current))
           {
             systemPaths->AddFilePaths(current);
             pathList.push_back(current);

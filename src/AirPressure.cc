@@ -36,7 +36,7 @@ class sdf::AirPressure::Implementation
 
 //////////////////////////////////////////////////
 AirPressure::AirPressure()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -87,7 +87,7 @@ bool AirPressure::operator!=(const AirPressure &_air) const
 bool AirPressure::operator==(const AirPressure &_air) const
 {
   return this->dataPtr->noise == _air.dataPtr->noise &&
-         ignition::math::equal(this->dataPtr->referenceAltitude,
+         gz::math::equal(this->dataPtr->referenceAltitude,
                                _air.dataPtr->referenceAltitude);
 }
 

@@ -57,7 +57,7 @@ namespace usd
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
 
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = sdf::usd::PoseWrtParent(_link, pose);
     if (!poseErrors.empty())
     {

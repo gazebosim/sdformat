@@ -81,7 +81,7 @@ class sdf::Sensor::Implementation
   public: std::string topic = "";
 
   /// \brief Pose of the sensor
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -136,7 +136,7 @@ class sdf::Sensor::Implementation
 
 /////////////////////////////////////////////////
 Sensor::Sensor()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -150,7 +150,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       this->RawPose() != _sensor.RawPose() ||
       this->PoseRelativeTo() != _sensor.PoseRelativeTo() ||
       this->EnableMetrics() != _sensor.EnableMetrics() ||
-      !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
+      !gz::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
   {
     return false;
   }
@@ -434,7 +434,7 @@ void Sensor::SetTopic(const std::string &_topic)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Sensor::RawPose() const
+const gz::math::Pose3d &Sensor::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -446,7 +446,7 @@ const std::string &Sensor::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Sensor::SetRawPose(const ignition::math::Pose3d &_pose)
+void Sensor::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -703,7 +703,7 @@ sdf::ElementPtr Sensor::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   elem->GetElement("topic")->Set<std::string>(this->Topic());
   elem->GetElement("update_rate")->Set<double>(this->UpdateRate());

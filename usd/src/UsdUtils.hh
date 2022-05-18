@@ -70,9 +70,9 @@ namespace sdf
       {
         return result;
       }
-      result = ignition::common::replaceAll(_path, " ", "");
-      result = ignition::common::replaceAll(result, ".", "_");
-      result = ignition::common::replaceAll(result, "-", "_");
+      result = gz::common::replaceAll(_path, " ", "");
+      result = gz::common::replaceAll(result, ".", "_");
+      result = gz::common::replaceAll(result, "-", "_");
       if (std::isdigit(result[0]))
       {
         result = "_" + result;
@@ -88,7 +88,7 @@ namespace sdf
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
     template <typename T>
-    inline UsdErrors PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
+    inline UsdErrors PoseWrtParent(const T &_obj, gz::math::Pose3d &_pose)
     {
       UsdErrors errors;
       const auto poseResolutionErrors = _obj.SemanticPose().Resolve(_pose, "");
@@ -112,7 +112,7 @@ namespace sdf
     /// pose modified to match _pose.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    inline UsdErrors SetPose(const ignition::math::Pose3d &_pose,
+    inline UsdErrors SetPose(const gz::math::Pose3d &_pose,
         pxr::UsdStageRefPtr &_stage,
         const pxr::SdfPath &_usdPath)
     {
@@ -140,12 +140,12 @@ namespace sdf
             position.X(), position.Y(), position.Z()));
 
       const auto &rotation = _pose.Rot();
-      // roll/pitch/yaw from ignition::math::Pose3d are in radians, but this API
+      // roll/pitch/yaw from gz::math::Pose3d are in radians, but this API
       // call expects degrees
       geomXformAPI.SetRotate(pxr::GfVec3f(
-            ignition::math::Angle(rotation.Roll()).Degree(),
-            ignition::math::Angle(rotation.Pitch()).Degree(),
-            ignition::math::Angle(rotation.Yaw()).Degree()));
+            gz::math::Angle(rotation.Roll()).Degree(),
+            gz::math::Angle(rotation.Pitch()).Degree(),
+            gz::math::Angle(rotation.Yaw()).Degree()));
 
       return errors;
     }

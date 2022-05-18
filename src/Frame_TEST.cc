@@ -30,13 +30,13 @@ TEST(DOMframe, Construction)
   EXPECT_EQ(frame.Name(), "test_frame");
 
   EXPECT_TRUE(frame.AttachedTo().empty());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, frame.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, frame.RawPose());
   EXPECT_TRUE(frame.PoseRelativeTo().empty());
   {
     auto semanticPose = frame.SemanticPose();
-    EXPECT_EQ(ignition::math::Pose3d::Zero, semanticPose.RawPose());
+    EXPECT_EQ(gz::math::Pose3d::Zero, semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -45,13 +45,13 @@ TEST(DOMframe, Construction)
   EXPECT_EQ("attachment", frame.AttachedTo());
 
   frame.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             frame.RawPose());
   {
     auto semanticPose = frame.SemanticPose();
     EXPECT_EQ(frame.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("attachment", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -62,7 +62,7 @@ TEST(DOMframe, Construction)
     auto semanticPose = frame.SemanticPose();
     EXPECT_EQ(frame.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("link", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }

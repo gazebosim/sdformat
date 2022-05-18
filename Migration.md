@@ -65,8 +65,8 @@ one root level model, actor or light.
     + void SetLocalModelName(const std::string &)
     + const std::optional<bool> &IsStatic() const
     + void SetIsStatic(bool)
-    + const std::optional<ignition::math::Pose3d> &IncludeRawPose() const
-    + void SetIncludeRawPose(const ignition::math::Pose3d &includeRawPose)
+    + const std::optional<gz::math::Pose3d> &IncludeRawPose() const
+    + void SetIncludeRawPose(const gz::math::Pose3d &includeRawPose)
     + const std::optional<std::string> &IncludePoseRelativeTo() const
     + void SetIncludePoseRelativeTo(const std::string &)
     + const std::optional<std::string> &PlacementFrame() const
@@ -81,8 +81,8 @@ one root level model, actor or light.
     + bool IgnoresParentElementAttribute() const;
 
 1. **sdf/World.hh**:
-    + const ignition::math::SphericalCoordinates * SphericalCoordinates() const;
-    + void SetSphericalCoordinates(const ignition::math::SphericalCoordinates &);
+    + const gz::math::SphericalCoordinates * SphericalCoordinates() const;
+    + void SetSphericalCoordinates(const gz::math::SphericalCoordinates &);
 
 ### Modifications
 
@@ -256,8 +256,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
    + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
 1. + Removed the deprecated `Pose()`, `SetPose()`, and `*PoseFrame()` API's in all DOM classes:
-   + const ignition::math::Pose3d &Pose()
-   + void SetPose(const ignition::math::Pose3d &)
+   + const gz::math::Pose3d &Pose()
+   + void SetPose(const gz::math::Pose3d &)
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
 
@@ -332,7 +332,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/JointAxis.hh**
-    + Errors ResolveXyz(ignition::math::Vector3d &, const std::string &) const
+    + Errors ResolveXyz(gz::math::Vector3d &, const std::string &) const
 
 1. **sdf/Light.hh**
     + sdf::SemanticPose SemanticPose() const
@@ -384,12 +384,12 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
    + ***Replacement:*** None. Use the functions sdf::readFile or sdf::readString, which automatically convert URDF to SDFormat.
 
 1. All DOM classes with `Pose()` and `PoseFrame()` API's:
-   + ***Deprecation:*** const ignition::math::Pose3d &Pose()
-   + ***Replacement:*** const ignition::math::Pose3d &RawPose()
+   + ***Deprecation:*** const gz::math::Pose3d &Pose()
+   + ***Replacement:*** const gz::math::Pose3d &RawPose()
    + ***Deprecation:*** const std::string &PoseFrame()
    + ***Replacement:*** const std::string &PoseRelativeTo()
-   + ***Deprecation:*** void SetPose(const ignition::math::Pose3d &)
-   + ***Replacement:*** void SetRawPose(const ignition::math::Pose3d &)
+   + ***Deprecation:*** void SetPose(const gz::math::Pose3d &)
+   + ***Replacement:*** void SetRawPose(const gz::math::Pose3d &)
    + ***Deprecation:*** void SetPoseFrame(const std::string &)
    + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
 
@@ -418,7 +418,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **sdf/Types.hh**
    + ***Deprecated:*** sdf::Color class
-   + ***Replacement:*** ignition::math::Color class
+   + ***Replacement:*** gz::math::Color class
 
 ## SDFormat 4.x to 5.x
 
@@ -448,15 +448,15 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **sdf/Types.hh**
     + ***Deprecation:*** sdf::Vector2i
-    + ***Replacement:*** ignition::math::Vector2i
+    + ***Replacement:*** gz::math::Vector2i
     + ***Deprecation:*** sdf::Vector2d
-    + ***Replacement:*** ignition::math::Vector2d
+    + ***Replacement:*** gz::math::Vector2d
     + ***Deprecation:*** sdf::Vector3
-    + ***Replacement:*** ignition::math::Vector3d
+    + ***Replacement:*** gz::math::Vector3d
     + ***Deprecation:*** sdf::Quaternion
-    + ***Replacement:*** ignition::math::Quaterniond
+    + ***Replacement:*** gz::math::Quaterniond
     + ***Deprecation:*** sdf::Pose
-    + ***Replacement:*** ignition::math::Pose3d
+    + ***Replacement:*** gz::math::Pose3d
 
 ## SDFormat 3.x to 4.x
 

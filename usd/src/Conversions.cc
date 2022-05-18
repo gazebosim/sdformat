@@ -27,7 +27,7 @@ namespace sdf
   //
   namespace usd
   {
-  sdf::Material convert(const ignition::common::Material *_in)
+  sdf::Material convert(const gz::common::Material *_in)
   {
     sdf::Material out;
     out.SetEmissive(_in->Emissive());
@@ -37,7 +37,7 @@ namespace sdf
     out.SetRenderOrder(_in->RenderOrder());
     out.SetLighting(_in->Lighting());
     out.SetDoubleSided(_in->TwoSidedEnabled());
-    const ignition::common::Pbr * pbr = _in->PbrMaterial();
+    const gz::common::Pbr * pbr = _in->PbrMaterial();
     if (pbr != nullptr)
     {
       out.SetNormalMap(pbr->NormalMap());
@@ -62,7 +62,7 @@ namespace sdf
       pbrWorkflow.SetGlossiness(pbr->Glossiness());
       pbrWorkflow.SetMetalness(pbr->Metalness());
 
-      if (pbr->NormalMapType() == ignition::common::NormalMapSpace::TANGENT)
+      if (pbr->NormalMapType() == gz::common::NormalMapSpace::TANGENT)
       {
         pbrWorkflow.SetNormalMap(
           pbr->NormalMap(), sdf::NormalMapSpace::TANGENT);
@@ -73,7 +73,7 @@ namespace sdf
           pbr->NormalMap(), sdf::NormalMapSpace::OBJECT);
       }
 
-      if (pbr->Type() == ignition::common::PbrType::SPECULAR)
+      if (pbr->Type() == gz::common::PbrType::SPECULAR)
       {
         pbrWorkflow.SetType(sdf::PbrWorkflowType::SPECULAR);
         pbrOut.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, pbrWorkflow);
@@ -97,7 +97,7 @@ namespace sdf
     return out;
   }
 
-  void convert(const sdf::Material &_in, ignition::common::Material &_out)
+  void convert(const sdf::Material &_in, gz::common::Material &_out)
   {
     _out.SetEmissive(_in.Emissive());
     _out.SetDiffuse(_in.Diffuse());
@@ -110,20 +110,20 @@ namespace sdf
     const sdf::Pbr * pbr = _in.PbrMaterial();
     if (pbr != nullptr)
     {
-      ignition::common::Pbr pbrOut;
+      gz::common::Pbr pbrOut;
 
       const sdf::PbrWorkflow * pbrWorkflow =
         pbr->Workflow(sdf::PbrWorkflowType::METAL);
       if (pbrWorkflow)
       {
-        pbrOut.SetType(ignition::common::PbrType::METAL);
+        pbrOut.SetType(gz::common::PbrType::METAL);
       }
       else
       {
         pbrWorkflow = pbr->Workflow(sdf::PbrWorkflowType::SPECULAR);
         if (pbrWorkflow)
         {
-          pbrOut.SetType(ignition::common::PbrType::SPECULAR);
+          pbrOut.SetType(gz::common::PbrType::SPECULAR);
         }
       }
       if (pbrWorkflow != nullptr)
@@ -144,13 +144,13 @@ namespace sdf
         {
           pbrOut.SetNormalMap(
             pbrWorkflow->NormalMap(),
-            ignition::common::NormalMapSpace::TANGENT);
+            gz::common::NormalMapSpace::TANGENT);
         }
         else if (pbrWorkflow->NormalMapType() == sdf::NormalMapSpace::OBJECT)
         {
           pbrOut.SetNormalMap(
             pbrWorkflow->NormalMap(),
-            ignition::common::NormalMapSpace::OBJECT);
+            gz::common::NormalMapSpace::OBJECT);
         }
       }
       _out.SetPbrMaterial(pbrOut);

@@ -36,7 +36,7 @@
 bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  if(!ignition::utils::env("TMPDIR", tmppath))
+  if(!gz::utils::env("TMPDIR", tmppath))
   {
     tmppath = "/tmp";
   }

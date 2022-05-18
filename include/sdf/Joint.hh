@@ -164,12 +164,12 @@ namespace sdf
     /// Transformations have not been applied to the return value.
     /// \return The pose of the joint. This is the raw pose value, as set in
     /// the SDF file.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the joint.
-    /// \sa const ignition::math::Pose3d &RawPose() const;
+    /// \sa const gz::math::Pose3d &RawPose() const;
     /// \param[in] _pose The pose of the joint.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is

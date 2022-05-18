@@ -35,7 +35,7 @@ class sdf::Collision::Implementation
   public: std::string name = "";
 
   /// \brief Pose of the collision object
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -58,7 +58,7 @@ class sdf::Collision::Implementation
 
 /////////////////////////////////////////////////
 Collision::Collision()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -147,7 +147,7 @@ void Collision::SetSurface(const sdf::Surface &_surface)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Collision::RawPose() const
+const gz::math::Pose3d &Collision::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -159,7 +159,7 @@ const std::string &Collision::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Collision::SetRawPose(const ignition::math::Pose3d &_pose)
+void Collision::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -214,7 +214,7 @@ sdf::ElementPtr Collision::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   // Set the geometry
   elem->InsertElement(this->dataPtr->geom.ToElement(), true);

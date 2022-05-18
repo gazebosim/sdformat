@@ -71,12 +71,12 @@ namespace usd
     // https://graphics.pixar.com/usd/release/wp_rigid_body_physics.html#plane-shapes
     if (usd::IsPlane(_model))
     {
-      ignition::math::Vector3d planePosition(
+      gz::math::Vector3d planePosition(
           _model.RawPose().X(),
           _model.RawPose().Y(),
           _model.RawPose().Z() - (0.5 * kPlaneThickness));
       const auto poseErrors = usd::SetPose(
-          ignition::math::Pose3d(planePosition, _model.RawPose().Rot()),
+          gz::math::Pose3d(planePosition, _model.RawPose().Rot()),
           _stage, sdfModelPath);
       if (!poseErrors.empty())
       {
@@ -90,7 +90,7 @@ namespace usd
     }
     else
     {
-      ignition::math::Pose3d pose;
+      gz::math::Pose3d pose;
       auto poseErrors = usd::PoseWrtParent(_model, pose);
       if (!poseErrors.empty())
       {

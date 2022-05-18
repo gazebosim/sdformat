@@ -112,17 +112,17 @@ TEST(Param, StringTypeGet)
   sdf::Param stringParam("key", "string", "", false, "description");
 
   // pose type
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   EXPECT_TRUE(stringParam.SetFromString("1 1 1 0 0 0"));
-  EXPECT_TRUE(stringParam.Get<ignition::math::Pose3d>(pose));
-  EXPECT_EQ(ignition::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(stringParam.Get<gz::math::Pose3d>(pose));
+  EXPECT_EQ(gz::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
   EXPECT_EQ("string", stringParam.GetTypeName());
 
   // color type
-  ignition::math::Color color;
+  gz::math::Color color;
   EXPECT_TRUE(stringParam.SetFromString("0 0 1 1"));
-  EXPECT_TRUE(stringParam.Get<ignition::math::Color>(color));
-  EXPECT_EQ(ignition::math::Color(0, 0, 1, 1), color);
+  EXPECT_TRUE(stringParam.Get<gz::math::Color>(color));
+  EXPECT_EQ(gz::math::Color(0, 0, 1, 1), color);
   EXPECT_EQ("string", stringParam.GetTypeName());
 }
 
@@ -303,8 +303,8 @@ TEST(Param, uint64t)
 TEST(Param, UnknownType)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
-  ignition::math::Angle value;
-  EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
+  gz::math::Angle value;
+  EXPECT_TRUE(doubleParam.Get<gz::math::Angle>(value));
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
 }
 
@@ -312,10 +312,10 @@ TEST(Param, UnknownType)
 TEST(Param, Vector2i)
 {
   sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
-  ignition::math::Vector2i value;
+  gz::math::Vector2i value;
 
-  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
-  EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+  EXPECT_TRUE(vect2iParam.Get<gz::math::Vector2i>(value));
+  EXPECT_EQ(value, gz::math::Vector2i(0, 0));
 }
 
 ////////////////////////////////////////////////////
@@ -610,7 +610,7 @@ TEST(Param, ReparsingAfterSetFromStringDouble)
 /////////////////////////////////////////////////
 TEST(Param, ReparsingAfterSetPose)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
   Pose value;
@@ -678,7 +678,7 @@ TEST(Param, ReparsingAfterSetPose)
 /////////////////////////////////////////////////
 TEST(Param, ReparsingAfterSetFromStringPose)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
   Pose value;
@@ -794,7 +794,7 @@ TEST(Param, IgnoresParentElementAttribute)
 /////////////////////////////////////////////////
 TEST(Param, WithoutParentElementSetParentElementFail)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::Param poseParam("", "pose", "0 0 0 0 0 0", false, "description");
   EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
@@ -826,7 +826,7 @@ TEST(Param, WithoutParentElementSetParentElementFail)
 /////////////////////////////////////////////////
 TEST(Param, ChangeParentElementFail)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -867,7 +867,7 @@ TEST(Param, ChangeParentElementFail)
 /////////////////////////////////////////////////
 TEST(Param, PoseWithDefaultValue)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   auto poseElem = std::make_shared<sdf::Element>();
   poseElem->SetName("pose");

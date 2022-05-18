@@ -53,7 +53,7 @@ TEST(InterfaceElements, Construction)
   EXPECT_EQ(false, nestedInclude.IsStatic());
 
   nestedInclude.SetIncludeRawPose({1, 2, 3, 0, 0, IGN_PI_4});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI_4),
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, IGN_PI_4),
             nestedInclude.IncludeRawPose());
 
   nestedInclude.SetIncludePoseRelativeTo("test_frame");
