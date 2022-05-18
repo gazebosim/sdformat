@@ -61,7 +61,7 @@ class sdf::Visual::Implementation
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
-  public: uint32_t visibilityFlags = 4294967295u;
+  public: uint32_t visibilityFlags = UINT32_MAX;
 
   /// \brief True indicates the lidar reflective intensity was set.
   public: bool hasLaserRetro{false};
