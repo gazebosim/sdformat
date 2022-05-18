@@ -171,9 +171,29 @@ namespace sdf
     public: friend std::istream &operator>>(std::istream &_in,
                                             sdf::Plugin &_plugin)
     {
+      static const std::string kClosePlugin{"</plugin>"};
+
       std::ostringstream stream;
       stream << "<sdf version='" << SDF_VERSION << "'>";
-      stream << std::string(std::istreambuf_iterator<char>(_in), {});
+
+      std::istreambuf_iterator<char> it(_in);
+      unsigned int closePluginId{0};
+      while (it != std::istreambuf_iterator<char>())
+      {
+        if (*it == kClosePlugin.at(closePluginId))
+        {
+          closePluginId++;
+        }
+        else
+        {
+          closePluginId = 0;
+        }
+        stream << *it;
+
+        if (closePluginId == kClosePlugin.size())
+          break;
+        ++it;
+      }
       stream << "</sdf>";
 
       sdf::SDFPtr sdfParsed(new sdf::SDF());

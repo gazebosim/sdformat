@@ -299,9 +299,12 @@ TEST(DOMPlugin, OutputStreamOperator)
 /////////////////////////////////////////////////
 TEST(DOMPlugin, InputStreamOperator)
 {
-  // The provided plugin input string.
+  // Stream with multiple plugins
   std::string input = R"foo(<plugin name='my-plugin' filename='filename.so'>
   <an-element/>
+</plugin>
+<plugin name='another-plugin' filename='another-filename'>
+  <another-element/>
 </plugin>
 )foo";
   std::istringstream stream(input);
@@ -316,7 +319,19 @@ TEST(DOMPlugin, InputStreamOperator)
   sdf::ElementPtr elem = plugin.ToElement();
   ASSERT_NE(nullptr, elem);
   std::string elemString = elem->ToString("");
-  EXPECT_EQ(input, elemString);
+
+  sdf::Plugin plugin2;
+  stream >> plugin2;
+
+  EXPECT_EQ("another-plugin", plugin2.Name());
+  EXPECT_EQ("another-filename", plugin2.Filename());
+  EXPECT_EQ(1u, plugin2.Contents().size());
+
+  auto elem2 = plugin2.ToElement();
+  ASSERT_NE(nullptr, elem2);
+  auto elemString2 = elem2->ToString("");
+
+  EXPECT_EQ(input, elemString + elemString2);
 }
 
 /////////////////////////////////////////////////
