@@ -26,6 +26,8 @@
         <camera name="my_camera">
           <pose>0.1 0.2 0.3 0 0 0</pose>
           <horizontal_fov>.75</horizontal_fov>
+          <triggered>true</triggered>
+          <trigger_topic>my_camera/trigger</trigger_topic>
           <image>
             <width>640</width>
             <height>480</height>
@@ -384,6 +386,7 @@
         <camera name="my_rgbd_camera">
           <pose>0.1 0.2 0.3 0 0 0</pose>
           <horizontal_fov>.75</horizontal_fov>
+          <triggered>true</triggered>
           <image>
             <width>640</width>
             <height>480</height>

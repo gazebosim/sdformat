@@ -274,6 +274,9 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(ignition::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
             camSensor->RawPose());
   EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
+  EXPECT_EQ("", cameraSensor->Topic());
+  EXPECT_EQ("my_camera/trigger", camSensor->TriggerTopic());
+  EXPECT_TRUE(camSensor->Triggered());
   EXPECT_EQ(640u, camSensor->ImageWidth());
   EXPECT_EQ(480u, camSensor->ImageHeight());
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, camSensor->PixelFormat());
@@ -352,6 +355,9 @@ TEST(DOMLink, Sensors)
   const sdf::Camera *rgbdCamSensor = rgbdSensor->CameraSensor();
   ASSERT_NE(nullptr, rgbdCamSensor);
   EXPECT_EQ("my_rgbd_camera", rgbdCamSensor->Name());
+  EXPECT_EQ("", rgbdSensor->Topic());
+  EXPECT_EQ("", rgbdCamSensor->TriggerTopic());
+  EXPECT_TRUE(rgbdCamSensor->Triggered());
 
   // Get the thermal sensor
   const sdf::Sensor *thermalSensor = link->SensorByName("thermal_sensor");
@@ -664,6 +670,9 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(ignition::math::Pose3d(0.2, 0.3, 0.4, 0, 0, 0),
             wideAngleCam->RawPose());
   EXPECT_DOUBLE_EQ(3.14, wideAngleCam->HorizontalFov().Radian());
+  EXPECT_EQ("wideanglecamera", wideAngleCameraSensor->Topic());
+  EXPECT_EQ("", wideAngleCam->TriggerTopic());
+  EXPECT_FALSE(wideAngleCam->Triggered());
   EXPECT_EQ(320u, wideAngleCam->ImageWidth());
   EXPECT_EQ(240u, wideAngleCam->ImageHeight());
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, wideAngleCam->PixelFormat());
