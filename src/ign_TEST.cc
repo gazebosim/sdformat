@@ -39,7 +39,7 @@ static std::string SdfVersion()
 
 static std::string IgnCommand()
 {
-  return std::string(IGN_PATH) + "/ign";
+  return std::string(GZ_PATH) + "/ign";
 }
 
 /////////////////////////////////////////////////
@@ -1902,7 +1902,7 @@ int main(int argc, char **argv)
   // We need to keep the existing LD_LIBRARY_PATH so that libsdformat.so can
   // find its dependency.
 #ifndef _WIN32
-  std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
+  std::string testLibraryPath = GZ_TEST_LIBRARY_PATH;
 
   std::string currentLibraryPath;
   if (gz::utils::env("LD_LIBRARY_PATH", currentLibraryPath))
