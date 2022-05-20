@@ -1323,7 +1323,7 @@
 1. Parser: add readFileWithoutConversion and readStringWithoutConversion.
     * [BitBucket pull request 647](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/647)
 
-1. Added accessors to `ignition::math::[Boxd, Cylinderd, Planed, Sphered]`
+1. Added accessors to `gz::math::[Boxd, Cylinderd, Planed, Sphered]`
    in the matching `sdf::[Box, Cylinder, Plane, Sphere]` classes.
     * [BitBucket pull request 639](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/639)
 
@@ -1910,7 +1910,7 @@
     * [BitBucket pull request 338](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/338)
     * [BitBucket pull request 339](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/339)
 
-1. Deprecated sdf::Color, and switch to use ignition::math::Color
+1. Deprecated sdf::Color, and switch to use gz::math::Color
     * [BitBucket pull request 330](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/330)
 
 ## libsdformat 5.x

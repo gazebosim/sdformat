@@ -1891,9 +1891,9 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /// Main
 int main(int argc, char **argv)
 {
-  // Set IGN_CONFIG_PATH to the directory where the .yaml configuration file
+  // Set GZ_CONFIG_PATH to the directory where the .yaml configuration file
   // is located.
-  gz::utils::setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH);
+  gz::utils::setenv("GZ_CONFIG_PATH", GZ_CONFIG_PATH);
 
   // Make sure that we load the library recently built and not the one installed
   // in your system. This is done by placing the the current build directory

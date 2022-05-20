@@ -209,7 +209,7 @@ namespace usd
           pxr::TfToken("wheelRadius"));
 
         sdf::Plugin diffDrivePlugin;
-        diffDrivePlugin.SetName("gz::gazebo::systems::DiffDrive");
+        diffDrivePlugin.SetName("gz::sim::systems::DiffDrive");
         diffDrivePlugin.SetFilename("ignition-gazebo-diff-drive-system");
 
         std::string leftWheelName;
@@ -407,23 +407,23 @@ namespace usd
     {
       // Add some plugins to run the Ignition Gazebo simulation
       sdf::Plugin physicsPlugin;
-      physicsPlugin.SetName("gz::gazebo::systems::Physics");
+      physicsPlugin.SetName("gz::sim::systems::Physics");
       physicsPlugin.SetFilename("ignition-gazebo-physics-system");
       _world.AddPlugin(physicsPlugin);
 
       sdf::Plugin sensorsPlugin;
-      sensorsPlugin.SetName("gz::gazebo::systems::Sensors");
+      sensorsPlugin.SetName("gz::sim::systems::Sensors");
       sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
       _world.AddPlugin(sensorsPlugin);
 
       sdf::Plugin userCommandsPlugin;
-      userCommandsPlugin.SetName("gz::gazebo::systems::UserCommands");
+      userCommandsPlugin.SetName("gz::sim::systems::UserCommands");
       userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
       _world.AddPlugin(userCommandsPlugin);
 
       sdf::Plugin sceneBroadcasterPlugin;
       sceneBroadcasterPlugin.SetName(
-        "gz::gazebo::systems::SceneBroadcaster");
+        "gz::sim::systems::SceneBroadcaster");
       sceneBroadcasterPlugin.SetFilename(
         "ignition-gazebo-scene-broadcaster-system");
       _world.AddPlugin(sceneBroadcasterPlugin);

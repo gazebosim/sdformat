@@ -110,16 +110,16 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     auto plugins = world->Plugins();
     EXPECT_EQ(4u, plugins.size());
-    EXPECT_EQ("gz::gazebo::systems::Physics", plugins[0].Name());
+    EXPECT_EQ("gz::sim::systems::Physics", plugins[0].Name());
     EXPECT_EQ("ignition-gazebo-physics-system", plugins[0].Filename());
 
-    EXPECT_EQ("gz::gazebo::systems::Sensors", plugins[1].Name());
+    EXPECT_EQ("gz::sim::systems::Sensors", plugins[1].Name());
     EXPECT_EQ("ignition-gazebo-sensors-system", plugins[1].Filename());
 
-    EXPECT_EQ("gz::gazebo::systems::UserCommands", plugins[2].Name());
+    EXPECT_EQ("gz::sim::systems::UserCommands", plugins[2].Name());
     EXPECT_EQ("ignition-gazebo-user-commands-system", plugins[2].Filename());
 
-    EXPECT_EQ("gz::gazebo::systems::SceneBroadcaster", plugins[3].Name());
+    EXPECT_EQ("gz::sim::systems::SceneBroadcaster", plugins[3].Name());
     EXPECT_EQ(
       "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
 
