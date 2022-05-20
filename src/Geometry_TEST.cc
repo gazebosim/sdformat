@@ -289,12 +289,12 @@ TEST(DOMGeometry, Polyline)
   EXPECT_EQ(2u, polylineShape.size());
   EXPECT_DOUBLE_EQ(1.2, polylineShape[0].Height());
   ASSERT_EQ(2u, polylineShape[0].PointCount());
-  EXPECT_EQ(ignition::math::Vector2d(3.4, 5.6), polylineShape[0].Points()[0]);
-  EXPECT_EQ(ignition::math::Vector2d(7.8, 9.0), polylineShape[0].Points()[1]);
+  EXPECT_EQ(gz::math::Vector2d(3.4, 5.6), polylineShape[0].Points()[0]);
+  EXPECT_EQ(gz::math::Vector2d(7.8, 9.0), polylineShape[0].Points()[1]);
   EXPECT_DOUBLE_EQ(2.1, polylineShape[1].Height());
   ASSERT_EQ(2u, polylineShape[1].PointCount());
-  EXPECT_EQ(ignition::math::Vector2d(4.3, 6.5), polylineShape[1].Points()[0]);
-  EXPECT_EQ(ignition::math::Vector2d(8.7, 0.9), polylineShape[1].Points()[1]);
+  EXPECT_EQ(gz::math::Vector2d(4.3, 6.5), polylineShape[1].Points()[0]);
+  EXPECT_EQ(gz::math::Vector2d(8.7, 0.9), polylineShape[1].Points()[1]);
 }
 
 /////////////////////////////////////////////////
