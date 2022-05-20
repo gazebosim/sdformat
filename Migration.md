@@ -19,6 +19,9 @@ but with improved human-readability..
 - The `ignition` namespace is deprecated and will be removed in future versions.
   Use `gz` instead.
 
+- Header files under `ignition/...` are deprecated and will be removed in future versions.
+  Use `gz/...` instead.
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
@@ -93,14 +96,14 @@ one root level model, actor or light.
 
 ### Modifications
 
-1. **sdf/Element.hh**: The following methods now have an additional parameter of 
+1. **sdf/Element.hh**: The following methods now have an additional parameter of
    type `PrintConfig` with a default value
     + void PrintValues(std::string, const PrintConfig &\_config = PrintConfig()) const
     + void PrintValues(const std::string, bool, bool, const PrintConfig &\_config = PrintConfig()) const
     + std::string ToString(const std::string &, const PrintConfig &\_config = PrintConfig()) const
     + std::string ToString(const std::string &, bool, bool ,const PrintConfig &\_config = PrintConfig()) const
 
-1. **sdf/Param.hh**: The following methods now have an additional parameter of 
+1. **sdf/Param.hh**: The following methods now have an additional parameter of
    type `PrintConfig` with a default value
     + std::string GetAsString(const PrintConfig &\_config = PrintConfig()) const
     + std::string GetDefaultAsString(const PrintConfig &\_config = PrintConfig()) const
@@ -110,14 +113,14 @@ one root level model, actor or light.
     The following now has an additional bool parameter
     + bool SetFromString(const std::string &, bool \_ignoreParentAttributes);
 
-1. **sdf/SDFImpl.hh**: The following methods now have an additional parameter of 
+1. **sdf/SDFImpl.hh**: The following methods now have an additional parameter of
    type `PrintConfig` with a default value
     + void PrintValues(const PrintConfig &\_config = PrintConfig())
     + std::string ToString(const PrintConfig &\_config = PrintConfig()) const
 
-1. The string literals used to indicate non-file sources have been changed to 
-   `<data-string>` and `<urdf-string>` for SDFormat and URDF source 
-   respectively. Users are encouraged to use the constants `kSdfStringSource` 
+1. The string literals used to indicate non-file sources have been changed to
+   `<data-string>` and `<urdf-string>` for SDFormat and URDF source
+   respectively. Users are encouraged to use the constants `kSdfStringSource`
    and `kUrdfStringSource` instead of hard-coding the string literals.
 
 ### Removals
@@ -148,8 +151,8 @@ The following deprecated methods and classes have been removed.
 
 ### Deprecations
 
-1. **sdf/InterfaceElements.hh**: The struct `NestedInclude` has been converted 
-   to a class. Accessing data members directly is deprecated. Instead use the 
+1. **sdf/InterfaceElements.hh**: The struct `NestedInclude` has been converted
+   to a class. Accessing data members directly is deprecated. Instead use the
    corresponding member functions.
 
 ## libsdformat 11.1.0 to 11.2.0
@@ -488,13 +491,13 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 ### Additions
 
 1. **camera.sdf**: New elements to configure segmentation and boundingbox cameras
-    + `//sensor/camera/segmentation_type` 
+    + `//sensor/camera/segmentation_type`
     + `//sensor/camera/box_type`
     + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
 
 1. **forcetorque.sdf**: New elements to specify the noise characteristics of the force-torque sensor
     + `//sensor/force_torque/force`
-    + `//sensor/force_torque/torque` 
+    + `//sensor/force_torque/torque`
     + [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
 
 1. **model.sdf**: `//model/include/@merge` for merging included nested models into the containing model
