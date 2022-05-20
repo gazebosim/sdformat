@@ -53,7 +53,7 @@ namespace sdf
     /// This might contain scale, translate or rotation operations
     /// The booleans are used to check if there is a transform defined
     /// in the schema
-    class IGNITION_SDFORMAT_USD_VISIBLE UDSTransforms
+    class GZ_SDFORMAT_USD_VISIBLE UDSTransforms
     {
       /// \brief Default constructor
       public: UDSTransforms();
@@ -96,7 +96,7 @@ namespace sdf
     /// \param[out] _scale The scale of the prim
     /// \param[in] _schemaToStop Name of the prim where the loop will stop
     /// reading transforms
-    void IGNITION_SDFORMAT_USD_VISIBLE GetTransform(
+    void GZ_SDFORMAT_USD_VISIBLE GetTransform(
       const pxr::UsdPrim &_prim,
       const USDData &_usdData,
       gz::math::Pose3d &_pose,
@@ -108,7 +108,7 @@ namespace sdf
     /// \param[in] _prim Prim where the transforms are read
     /// \return A USDTransforms class with all the transforms related to
     /// the prim
-    UDSTransforms IGNITION_SDFORMAT_USD_VISIBLE ParseUSDTransform(
+    UDSTransforms GZ_SDFORMAT_USD_VISIBLE ParseUSDTransform(
       const pxr::UsdPrim &_prim);
 }
 }

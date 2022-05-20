@@ -40,7 +40,7 @@ namespace sdf
     /// - UpAxis
     /// - MetersPerUnit
     /// - All USD paths
-    class IGNITION_SDFORMAT_USD_VISIBLE USDStage
+    class GZ_SDFORMAT_USD_VISIBLE USDStage
     {
       /// \brief Default constructor
       /// \param[in] _refFileName File name of the stage in the disk
