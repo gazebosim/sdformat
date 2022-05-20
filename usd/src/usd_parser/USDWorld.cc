@@ -23,8 +23,8 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED

@@ -33,8 +33,8 @@
 #include <sdf/usd/usd_parser/USDData.hh>
 #include <sdf/usd/UsdError.hh>
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"

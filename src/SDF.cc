@@ -33,7 +33,7 @@
 #include "sdf/sdf_config.h"
 #include "EmbeddedSdf.hh"
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 namespace sdf
 {

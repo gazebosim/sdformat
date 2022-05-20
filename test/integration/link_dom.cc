@@ -19,7 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"

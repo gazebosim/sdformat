@@ -35,7 +35,7 @@
 #include <pxr/usd/usdPhysics/scene.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 #include "sdf/usd/sdf_parser/World.hh"
 #include "sdf/Root.hh"

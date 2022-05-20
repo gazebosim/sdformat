@@ -28,7 +28,7 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"

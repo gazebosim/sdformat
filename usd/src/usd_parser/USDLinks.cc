@@ -39,14 +39,14 @@
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/ColladaExporter.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Material.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/ColladaExporter.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/SubMesh.hh>
+#include <gz/common/Util.hh>
 
-#include <ignition/math/Inertial.hh>
+#include <gz/math/Inertial.hh>
 
 #include "sdf/Box.hh"
 #include "sdf/Collision.hh"

@@ -16,7 +16,7 @@
  */
 
 #include <string>
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 #include "sdf/Atmosphere.hh"
 #include "sdf/parser.hh"
 

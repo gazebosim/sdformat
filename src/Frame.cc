@@ -15,7 +15,7 @@
  *
 */
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"

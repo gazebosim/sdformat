@@ -19,8 +19,8 @@
 
 #include <vector>
 
-#include <ignition/math/Vector2.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>

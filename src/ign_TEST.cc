@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"

@@ -16,7 +16,7 @@
 */
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"

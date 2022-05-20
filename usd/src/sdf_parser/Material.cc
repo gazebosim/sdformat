@@ -20,11 +20,11 @@
 #include <map>
 #include <string>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
-#include <ignition/common/URI.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
+#include <gz/common/URI.hh>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove

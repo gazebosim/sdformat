@@ -24,8 +24,8 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/graph/Graph.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/graph/Graph.hh>
 
 #include "sdf/sdf_config.h"
 

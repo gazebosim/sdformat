@@ -17,8 +17,8 @@
 
 #include <gtest/gtest.h>
 #include <any>
-#include <ignition/math.hh>
-#include <ignition/utils/Environment.hh>
+#include <gz/math.hh>
+#include <gz/utils/Environment.hh>
 
 #include "sdf/sdf.hh"
 

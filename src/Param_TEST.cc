@@ -21,9 +21,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
 
 #include "sdf/Exception.hh"
 #include "sdf/Element.hh"

@@ -18,10 +18,10 @@
 #include <cctype>
 #include <string>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include <ignition/utils/cli/CLI.hpp>
+#include <gz/utils/cli/CLI.hpp>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove

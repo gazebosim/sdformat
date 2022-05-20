@@ -16,9 +16,9 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Inertial.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"

@@ -19,7 +19,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Frame.hh"

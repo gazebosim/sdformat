@@ -17,8 +17,8 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Material.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/Util.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove

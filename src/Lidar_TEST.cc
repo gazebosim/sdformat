@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Angle.hh>
+#include <gz/math/Angle.hh>
 #include "sdf/Lidar.hh"
 
 /////////////////////////////////////////////////

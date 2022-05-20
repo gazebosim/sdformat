@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Temperature.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Temperature.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////

@@ -20,7 +20,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED

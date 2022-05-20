@@ -19,7 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/SDFImpl.hh"
 #include "sdf/parser.hh"

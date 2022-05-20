@@ -30,7 +30,7 @@
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 #include "sdf/usd/UsdError.hh"
 #include "sdf/usd/usd_parser/USDData.hh"

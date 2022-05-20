@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 #ifndef _WIN32
 #include <fcntl.h>

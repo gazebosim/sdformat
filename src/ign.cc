@@ -31,7 +31,7 @@
 #include "sdf/PrintConfig.hh"
 #include "sdf/system_util.hh"
 
-#include "ignition/math/Inertial.hh"
+#include "gz/math/Inertial.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"

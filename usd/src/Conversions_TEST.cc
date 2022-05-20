@@ -19,9 +19,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Material.hh>
-#include <ignition/common/Pbr.hh>
-#include <ignition/math/Color.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/Pbr.hh>
+#include <gz/math/Color.hh>
 
 #include "sdf/Material.hh"
 #include "sdf/Pbr.hh"

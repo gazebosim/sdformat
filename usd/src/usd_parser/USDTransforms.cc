@@ -20,8 +20,8 @@
 #include <optional>
 #include <utility>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/usd/usd_parser/USDData.hh"
 

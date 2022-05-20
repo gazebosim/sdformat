@@ -25,7 +25,7 @@
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)

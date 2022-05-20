@@ -26,7 +26,7 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 using namespace sdf;
 

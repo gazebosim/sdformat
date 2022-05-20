@@ -27,7 +27,7 @@
 #define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
 #define SDF_TMP_DIR "tmp-sdf/"
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 #include <sdf/Filesystem.hh>
 namespace sdf

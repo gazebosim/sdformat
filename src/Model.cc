@@ -18,8 +18,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"

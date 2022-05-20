@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/sdf/path.h>

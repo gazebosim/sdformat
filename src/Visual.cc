@@ -16,7 +16,7 @@
 */
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "sdf/Error.hh"

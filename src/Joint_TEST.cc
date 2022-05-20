@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Joint.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/JointAxis.hh"

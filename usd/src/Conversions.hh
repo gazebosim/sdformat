@@ -21,7 +21,7 @@
 
 #include <memory>
 
-#include <ignition/common/Material.hh>
+#include <gz/common/Material.hh>
 
 #include "sdf/Material.hh"
 #include "sdf/sdf_config.h"

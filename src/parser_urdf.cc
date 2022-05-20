@@ -25,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/math.hh>
+#include <gz/math.hh>
 
 #include <urdf_model/model.h>
 #include <urdf_model/link.h>

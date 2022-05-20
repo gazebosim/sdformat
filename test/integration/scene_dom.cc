@@ -19,7 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"

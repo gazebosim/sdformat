@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 #include "sdf/Pbr.hh"
 
 /////////////////////////////////////////////////

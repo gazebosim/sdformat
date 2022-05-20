@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "Utils.hh"
 

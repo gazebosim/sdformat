@@ -17,7 +17,7 @@
 
 #include "Conversions.hh"
 
-#include <ignition/common/Pbr.hh>
+#include <gz/common/Pbr.hh>
 
 #include "sdf/Pbr.hh"
 

@@ -18,7 +18,7 @@
 #include <unordered_set>
 #include <vector>
 #include <optional>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"

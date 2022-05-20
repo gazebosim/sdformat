@@ -32,8 +32,8 @@
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
 #include "sdf/Material.hh"
 #include "USDMaterial.hh"

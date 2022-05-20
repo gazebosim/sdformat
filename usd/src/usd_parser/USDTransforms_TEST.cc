@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"

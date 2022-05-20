@@ -16,7 +16,7 @@
 */
 #include <string>
 #include <vector>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Error.hh"
 #include "sdf/parser.hh"

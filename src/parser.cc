@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_set>
 
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
