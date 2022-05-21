@@ -53,6 +53,9 @@ class AtmosphereTEST(unittest.TestCase):
         air3 = air
         self.assertEqual(air, air3)
 
+        air4 = AirPressure()
+        self.assertNotEqual(air3, air4);
+
 
 if __name__ == '__main__':
     unittest.main()
