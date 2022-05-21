@@ -19,6 +19,7 @@
 #include "pyAltimeter.hh"
 #include "pyAtmosphere.hh"
 #include "pyBox.hh"
+#include "pyCamera.hh"
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
 #include "pyCylinder.hh"
@@ -51,6 +52,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
+  sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
   sdf::python::defineContact(m);

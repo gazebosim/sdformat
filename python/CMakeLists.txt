@@ -41,6 +41,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyAltimeter.cc
   src/sdf/pyAtmosphere.cc
   src/sdf/pyBox.cc
+  src/sdf/pyCamera.cc
   src/sdf/pyCapsule.cc
   src/sdf/pyCollision.cc
   src/sdf/pyCylinder.cc
@@ -88,6 +89,7 @@ if (BUILD_TESTING)
     pyAltimeter_TEST
     pyAtmosphere_TEST
     pyBox_TEST
+    pyCamera_TEST
     pyCapsule_TEST
     pyCollision_TEST
     pyCylinder_TEST
