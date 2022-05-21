@@ -93,6 +93,10 @@ void defineRoot(pybind11::object module)
          "that are children of this Root object. You can call this function "
          "to build new graphs when the DOM was created programmatically, or "
          "if you want to regenerate the graphs after editing the DOM.")
+    .def("to_string", [](const sdf::Root &self)
+         {
+           return self.ToElement()->ToString("");
+         })
     .def("__copy__", [](const sdf::Root &self) {
       return self.Clone();
     })

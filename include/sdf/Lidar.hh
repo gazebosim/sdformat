@@ -221,6 +221,14 @@ namespace sdf
     /// \param[in] _noise Noise values for the lidar sensor.
     public: void SetLidarNoise(const Noise &_noise);
 
+    /// \brief Get the visibility mask of a lidar
+    /// \return visibility mask
+    public: uint32_t VisibilityMask() const;
+
+    /// \brief Set the visibility mask of a lidar
+    /// \param[in] _mask visibility mask
+    public: void SetVisibilityMask(uint32_t _mask);
+
     /// \brief Return true if both Lidar objects contain the same values.
     /// \param[_in] _lidar Lidar value to compare.
     /// \return True if 'this' == _lidar.
