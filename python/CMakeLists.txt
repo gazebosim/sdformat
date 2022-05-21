@@ -47,6 +47,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyCylinder.cc
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
+  src/sdf/pyForceTorque.cc
   src/sdf/pyFrame.cc
   src/sdf/pyGeometry.cc
   src/sdf/pyIMU.cc
@@ -95,6 +96,7 @@ if (BUILD_TESTING)
     pyCylinder_TEST
     pyEllipsoid_TEST
     pyError_TEST
+    pyForceTorque_TEST
     pyFrame_TEST
     pyGeometry_TEST
     pyIMU_TEST
