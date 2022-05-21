@@ -26,6 +26,7 @@
 #include "pyError.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyIMU.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
 #include "pyLight.hh"
@@ -58,6 +59,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineError(m);
   sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineIMU(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
   sdf::python::defineLight(m);
