@@ -98,6 +98,16 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 }
 
+// helper method for getting attributes of a prim
+template<typename T>
+void getAttr(const pxr::UsdPrim &_prim, const std::string &_attributeName,
+    T &_value)
+{
+  const auto attr = _prim.GetAttribute(pxr::TfToken(_attributeName));
+  ASSERT_TRUE(attr);
+  attr.Get(&_value);
+}
+
 TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
@@ -129,5 +139,38 @@ TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual")));
     ASSERT_TRUE(stage->GetPrimAtPath(
       pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry")));
+
+    // check material physics
+    const auto materialPhysicsPrim =
+      stage->GetPrimAtPath(pxr::SdfPath("/Looks/MaterialPhysics_0"));
+    ASSERT_TRUE(materialPhysicsPrim);
+    float floatAttrVal;
+    getAttr(materialPhysicsPrim, "physics:density", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 1.0f);
+    getAttr(materialPhysicsPrim, "physics:dynamicFriction", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 0.6f);
+    getAttr(materialPhysicsPrim, "physics:restitution", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 1.0f);
+    getAttr(materialPhysicsPrim, "physics:staticFriction", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 0.7f);
+    pxr::TfToken tokenAttrVal;
+    getAttr(materialPhysicsPrim, "physXMaterial:frictionCombineMode",
+        tokenAttrVal);
+    EXPECT_EQ(tokenAttrVal, pxr::TfToken("average"));
+    getAttr(materialPhysicsPrim, "physXMaterial:restitutionCombineMode",
+        tokenAttrVal);
+    EXPECT_EQ(tokenAttrVal, pxr::TfToken("average"));
+
+    // make sure the collision's friction parameters were properly converted
+    const auto collisionGeometryPrim = stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_collision/geometry"));
+    ASSERT_TRUE(collisionGeometryPrim);
+    const pxr::TfToken frictionRelKey("material:binding");
+    ASSERT_TRUE(collisionGeometryPrim.HasRelationship(frictionRelKey));
+    const auto rel = collisionGeometryPrim.GetRelationship(frictionRelKey);
+    pxr::SdfPathVector paths;
+    rel.GetTargets(&paths);
+    ASSERT_EQ(1u, paths.size());
+    EXPECT_EQ(pxr::SdfPath("/Looks/MaterialPhysics_0"), paths[0]);
   }
 }

@@ -24,6 +24,7 @@
 #include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
 
 /////////////////////////////////////////////////
@@ -50,6 +51,9 @@ TEST(DOMGeometry, Construction)
 
   geom.SetType(sdf::GeometryType::SPHERE);
   EXPECT_EQ(sdf::GeometryType::SPHERE, geom.Type());
+
+  geom.SetType(sdf::GeometryType::POLYLINE);
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, geom.Type());
 }
 
 /////////////////////////////////////////////////
@@ -262,6 +266,38 @@ TEST(DOMGeometry, Plane)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGeometry, Polyline)
+{
+  sdf::Geometry geom;
+  geom.SetType(sdf::GeometryType::POLYLINE);
+
+  sdf::Polyline polylineShape1;
+  polylineShape1.SetHeight(1.2);
+  EXPECT_TRUE(polylineShape1.AddPoint({3.4, 5.6}));
+  EXPECT_TRUE(polylineShape1.AddPoint({7.8, 9.0}));
+
+  sdf::Polyline polylineShape2;
+  polylineShape2.SetHeight(2.1);
+  EXPECT_TRUE(polylineShape2.AddPoint({4.3, 6.5}));
+  EXPECT_TRUE(polylineShape2.AddPoint({8.7, 0.9}));
+
+  geom.SetPolylineShape({polylineShape1, polylineShape2});
+
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, geom.Type());
+  EXPECT_FALSE(geom.PolylineShape().empty());
+  auto polylineShape = geom.PolylineShape();
+  EXPECT_EQ(2u, polylineShape.size());
+  EXPECT_DOUBLE_EQ(1.2, polylineShape[0].Height());
+  ASSERT_EQ(2u, polylineShape[0].PointCount());
+  EXPECT_EQ(ignition::math::Vector2d(3.4, 5.6), polylineShape[0].Points()[0]);
+  EXPECT_EQ(ignition::math::Vector2d(7.8, 9.0), polylineShape[0].Points()[1]);
+  EXPECT_DOUBLE_EQ(2.1, polylineShape[1].Height());
+  ASSERT_EQ(2u, polylineShape[1].PointCount());
+  EXPECT_EQ(ignition::math::Vector2d(4.3, 6.5), polylineShape[1].Points()[0]);
+  EXPECT_EQ(ignition::math::Vector2d(8.7, 0.9), polylineShape[1].Points()[1]);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGeometry, ToElement)
 {
   // Box
@@ -287,6 +323,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Capsule
@@ -312,6 +349,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Cylinder
@@ -337,6 +375,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Ellipsoid
@@ -362,6 +401,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Sphere
@@ -387,6 +427,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Plane
@@ -412,6 +453,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_NE(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Mesh
@@ -437,6 +479,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_NE(nullptr, geom2.MeshShape());
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
   }
 
   // Heightmap
@@ -462,5 +505,32 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.PlaneShape());
     EXPECT_EQ(nullptr, geom2.MeshShape());
     EXPECT_NE(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Polyline
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::POLYLINE);
+    sdf::Polyline polyline;
+    geom.SetPolylineShape({polyline});
+
+    auto elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_FALSE(geom2.PolylineShape().empty());
   }
 }

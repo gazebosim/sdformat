@@ -20,13 +20,16 @@
 #include "pyAltimeter.hh"
 #include "pyAtmosphere.hh"
 #include "pyBox.hh"
+#include "pyCamera.hh"
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
+#include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyIMU.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
 #include "pyLight.hh"
@@ -52,14 +55,17 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
+  sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
+  sdf::python::defineForceTorque(m);
   sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineIMU(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
   sdf::python::defineLight(m);
