@@ -40,15 +40,15 @@ TEST(USDData, Constructor)
   EXPECT_EQ(1u, errors.size());
 
   // Add test/usd directory to find some resources
-  auto systemPaths = ignition::common::systemPaths();
+  auto systemPaths = gz::common::systemPaths();
   systemPaths->AddFilePaths(sdf::testing::TestFile("usd"));
 
   {
     sdf::testing::ScopeExit removeCopiedMaterials(
         []
         {
-          ignition::common::removeAll(
-            ignition::common::joinPaths(ignition::common::cwd(), "materials"));
+          gz::common::removeAll(
+            gz::common::joinPaths(gz::common::cwd(), "materials"));
         });
 
     // Open a valid USD file
@@ -64,39 +64,39 @@ TEST(USDData, Constructor)
     auto materials = usdData.Materials();
 
     auto material0 = materials["Material_0"];
-    EXPECT_EQ(ignition::math::Color(0.8, 0.8, 0.8), material0.Diffuse());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), material0.Emissive());
+    EXPECT_EQ(gz::math::Color(0.8, 0.8, 0.8), material0.Diffuse());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), material0.Emissive());
 
     auto material1 = materials["Material_1"];
-    EXPECT_EQ(ignition::math::Color(1, 0, 0), material1.Diffuse());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), material1.Emissive());
+    EXPECT_EQ(gz::math::Color(1, 0, 0), material1.Diffuse());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), material1.Emissive());
 
     auto material2 = materials["Material_2"];
-    EXPECT_EQ(ignition::math::Color(0, 1, 0), material2.Diffuse());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), material2.Emissive());
+    EXPECT_EQ(gz::math::Color(0, 1, 0), material2.Diffuse());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), material2.Emissive());
 
     auto material3 = materials["Material_3"];
-    EXPECT_EQ(ignition::math::Color(0, 0, 1), material3.Diffuse());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), material3.Emissive());
+    EXPECT_EQ(gz::math::Color(0, 0, 1), material3.Diffuse());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), material3.Emissive());
 
     auto material4 = materials["Material_4"];
-    EXPECT_EQ(ignition::math::Color(1, 1, 0), material4.Diffuse());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), material4.Emissive());
+    EXPECT_EQ(gz::math::Color(1, 1, 0), material4.Diffuse());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), material4.Emissive());
 
     auto material5 = materials["Material_5"];
-    EXPECT_EQ(ignition::math::Color(1, 0, 1), material5.Diffuse());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), material5.Emissive());
+    EXPECT_EQ(gz::math::Color(1, 0, 1), material5.Diffuse());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), material5.Emissive());
 
     auto materialTextures = materials["Material_textures"];
     const auto * pbr = materialTextures.PbrMaterial();
     ASSERT_TRUE(pbr);
     const auto * workflow = pbr->Workflow(sdf::PbrWorkflowType::METAL);
     ASSERT_TRUE(workflow);
-    EXPECT_EQ(ignition::math::Color(1, 1, 1), materialTextures.Diffuse());
+    EXPECT_EQ(gz::math::Color(1, 1, 1), materialTextures.Diffuse());
     EXPECT_EQ(
       "materials/textures/FANS_Albedo.png",
       workflow->AlbedoMap());
-    EXPECT_EQ(ignition::math::Color(0, 0, 0), materialTextures.Emissive());
+    EXPECT_EQ(gz::math::Color(0, 0, 0), materialTextures.Emissive());
     EXPECT_DOUBLE_EQ(0.5, workflow->Metalness());
     EXPECT_EQ(
       "materials/textures/FANS_Metalness.png",

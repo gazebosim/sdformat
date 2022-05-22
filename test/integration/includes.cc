@@ -83,7 +83,7 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ(actorFile, actor->FilePath());
 
   EXPECT_EQ("actor", actor->Name());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), actor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), actor->RawPose());
   EXPECT_EQ("", actor->PoseRelativeTo());
   EXPECT_EQ("meshes/skin.dae", actor->SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor->SkinScale());
@@ -118,7 +118,7 @@ TEST(IncludesTest, Includes)
 
   const auto *actor1 = world->ActorByIndex(1);
   EXPECT_EQ("override_actor_name", actor1->Name());
-  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), actor1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(7, 8, 9, 0, 0, 0), actor1->RawPose());
   EXPECT_EQ("", actor1->PoseRelativeTo());
   ASSERT_NE(nullptr, actor1->Element());
   EXPECT_TRUE(actor1->Element()->HasElement("plugin"));
@@ -133,7 +133,7 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ("point_light", pointLight->Name());
   EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
   EXPECT_FALSE(pointLight->CastShadows());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->RawPose());
   EXPECT_EQ("world", pointLight->PoseRelativeTo());
   EXPECT_DOUBLE_EQ(123.5, pointLight->AttenuationRange());
   EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());
@@ -146,7 +146,7 @@ TEST(IncludesTest, Includes)
   const auto *pointLight1 = world->LightByIndex(1);
   ASSERT_NE(nullptr, pointLight1);
   EXPECT_EQ("override_light_name", pointLight1->Name());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pointLight1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), pointLight1->RawPose());
   EXPECT_EQ("", pointLight1->PoseRelativeTo());
 
   // Models
@@ -181,7 +181,7 @@ TEST(IncludesTest, Includes)
   ASSERT_NE(nullptr, meshColGeom);
   EXPECT_EQ("meshes/mesh.dae", meshColGeom->Uri());
   EXPECT_EQ(modelFile, meshColGeom->FilePath());
-  EXPECT_TRUE(ignition::math::Vector3d(0.1, 0.2, 0.3) ==
+  EXPECT_TRUE(gz::math::Vector3d(0.1, 0.2, 0.3) ==
       meshColGeom->Scale());
   EXPECT_EQ("my_submesh", meshColGeom->Submesh());
   EXPECT_TRUE(meshColGeom->CenterSubmesh());
@@ -193,7 +193,7 @@ TEST(IncludesTest, Includes)
   const auto *meshVisGeom = meshVis->Geom()->MeshShape();
   EXPECT_EQ(modelFile, meshVisGeom->FilePath());
   EXPECT_EQ("meshes/mesh.dae", meshVisGeom->Uri());
-  EXPECT_TRUE(ignition::math::Vector3d(1.2, 2.3, 3.4) ==
+  EXPECT_TRUE(gz::math::Vector3d(1.2, 2.3, 3.4) ==
       meshVisGeom->Scale());
   EXPECT_EQ("another_submesh", meshVisGeom->Submesh());
   EXPECT_FALSE(meshVisGeom->CenterSubmesh());
@@ -206,7 +206,7 @@ TEST(IncludesTest, Includes)
   ASSERT_NE(nullptr, model1);
   EXPECT_EQ("override_model_name", model1->Name());
   EXPECT_TRUE(model1->Static());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), model1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), model1->RawPose());
   EXPECT_EQ("", model1->PoseRelativeTo());
   ASSERT_NE(nullptr, model1->Element());
   EXPECT_TRUE(model1->Element()->HasElement("plugin"));
@@ -397,8 +397,8 @@ TEST(IncludesTest, IncludeUrdf)
 //////////////////////////////////////////////////
 TEST(IncludesTest, MergeInclude)
 {
-  using ignition::math::Pose3d;
-  using ignition::math::Vector3d;
+  using gz::math::Pose3d;
+  using gz::math::Vector3d;
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);
 
@@ -558,7 +558,7 @@ TEST(IncludesTest, MergeInclude)
 //////////////////////////////////////////////////
 TEST(IncludesTest, MergeIncludePlacementFrame)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);
 

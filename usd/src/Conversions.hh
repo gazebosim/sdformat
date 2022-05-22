@@ -37,13 +37,13 @@ namespace sdf
     /// to a SDF material
     /// \param[in] _in Ignition Common Material.
     /// \return SDF material.
-    sdf::Material convert(const ignition::common::Material *_in);
+    sdf::Material convert(const gz::common::Material *_in);
 
     /// \brief Specialized conversion from an SDF material to a Ignition Common
     /// material.
     /// \param[in] _in SDF material.
     /// \param[out] _out The Ignition Common Material.
-    void convert(const sdf::Material &_in, ignition::common::Material &_out);
+    void convert(const sdf::Material &_in, gz::common::Material &_out);
   }
   }
 }

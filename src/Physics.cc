@@ -49,7 +49,7 @@ class sdf::Physics::Implementation
 
 /////////////////////////////////////////////////
 Physics::Physics()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

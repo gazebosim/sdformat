@@ -65,12 +65,12 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the Ignition Math representation of this Cylinder.
-    /// \return A const reference to an ignition::math::Cylinderd object.
-    public: const ignition::math::Cylinderd &Shape() const;
+    /// \return A const reference to an gz::math::Cylinderd object.
+    public: const gz::math::Cylinderd &Shape() const;
 
     /// \brief Get a mutable Ignition Math representation of this Cylinder.
-    /// \return A reference to an ignition::math::Cylinderd object.
-    public: ignition::math::Cylinderd &Shape();
+    /// \return A reference to an gz::math::Cylinderd object.
+    public: gz::math::Cylinderd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// cylinder.

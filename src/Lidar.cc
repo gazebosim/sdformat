@@ -68,7 +68,7 @@ class sdf::Lidar::Implementation
 
 //////////////////////////////////////////////////
 Lidar::Lidar()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

@@ -267,7 +267,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     // R - The `relative_to` frame of the placement frame's //pose element.
     // See resolveModelPoseWithPlacementFrame in FrameSemantics.cc for
     // notation and documentation
-    ignition::math::Pose3d X_RM = model->RawPose();
+    gz::math::Pose3d X_RM = model->RawPose();
     sdf::Errors resolveErrors = model->SemanticPose().Resolve(X_RM);
     _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
     modelPose = X_RM;
@@ -975,8 +975,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
-    ignition::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
-    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
+    gz::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
+    if (sdfVersion >= gz::math::SemanticVersion(1, 8)
         && !recursiveSiblingNoDoubleColonInNames(_sdf->Root()))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
@@ -1070,8 +1070,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
-    ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
-    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
+    gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+    if (sdfVersion >= gz::math::SemanticVersion(1, 8)
         && !recursiveSiblingNoDoubleColonInNames(_sdf))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
@@ -1146,7 +1146,7 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
-  ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+  gz::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
 
   tinyxml2::XMLElement *sdfSearch = sdfXML;
@@ -1155,8 +1155,8 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
     if (sdfSearch->Attribute("version"))
     {
       auto version = std::string(sdfSearch->Attribute("version"));
-      ignition::math::SemanticVersion modelVersion(version);
-      ignition::math::SemanticVersion bestVersion(bestVersionStr);
+      gz::math::SemanticVersion modelVersion(version);
+      gz::math::SemanticVersion bestVersion(bestVersionStr);
       if (modelVersion > bestVersion)
       {
         // this model is better than the previous one

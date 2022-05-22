@@ -40,7 +40,7 @@ class sdf::NavSat::Implementation
 
 //////////////////////////////////////////////////
 NavSat::NavSat()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

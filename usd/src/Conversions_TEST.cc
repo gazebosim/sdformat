@@ -31,10 +31,10 @@
 TEST(Conversions, SdfToCommonMaterial)
 {
   sdf::Material material;
-  material.SetEmissive(ignition::math::Color(1, 0.2, 0.2, 0.7));
-  material.SetDiffuse(ignition::math::Color(0.1, 0.3, 0.4, 0.5));
-  material.SetSpecular(ignition::math::Color(0.11, 0.22, 0.23, 0.77));
-  material.SetAmbient(ignition::math::Color(0.25, 0.21, 0.28, 0.5));
+  material.SetEmissive(gz::math::Color(1, 0.2, 0.2, 0.7));
+  material.SetDiffuse(gz::math::Color(0.1, 0.3, 0.4, 0.5));
+  material.SetSpecular(gz::math::Color(0.11, 0.22, 0.23, 0.77));
+  material.SetAmbient(gz::math::Color(0.25, 0.21, 0.28, 0.5));
   material.SetRenderOrder(5);
   material.SetLighting(true);
   material.SetDoubleSided(false);
@@ -59,9 +59,9 @@ TEST(Conversions, SdfToCommonMaterial)
   pbrSDF.SetWorkflow(sdf::PbrWorkflowType::METAL, pbrWorkflow);
   material.SetPbrMaterial(pbrSDF);
 
-  ignition::common::Material materialCommon;
+  gz::common::Material materialCommon;
   sdf::usd::convert(material, materialCommon);
-  const ignition::common::Pbr * pbrCommon = materialCommon.PbrMaterial();
+  const gz::common::Pbr * pbrCommon = materialCommon.PbrMaterial();
   ASSERT_NE(nullptr, pbrCommon);
 
   EXPECT_EQ(material.Emissive(), materialCommon.Emissive());
@@ -84,9 +84,9 @@ TEST(Conversions, SdfToCommonMaterial)
   EXPECT_EQ(pbrWorkflow.LightMap(), pbrCommon->LightMap());
   EXPECT_EQ(pbrWorkflow.NormalMap(), pbrCommon->NormalMap());
 
-  EXPECT_EQ(ignition::common::NormalMapSpace::TANGENT,
+  EXPECT_EQ(gz::common::NormalMapSpace::TANGENT,
     pbrCommon->NormalMapType());
-  EXPECT_EQ(ignition::common::PbrType::METAL, pbrCommon->Type());
+  EXPECT_EQ(gz::common::PbrType::METAL, pbrCommon->Type());
 
   EXPECT_DOUBLE_EQ(pbrWorkflow.Roughness(), pbrCommon->Roughness());
   EXPECT_DOUBLE_EQ(pbrWorkflow.Glossiness(), pbrCommon->Glossiness());
@@ -95,17 +95,17 @@ TEST(Conversions, SdfToCommonMaterial)
 
 TEST(Conversions, CommonToSdfMaterial)
 {
-  ignition::common::Material materialCommon;
-  materialCommon.SetEmissive(ignition::math::Color(1, 0.2, 0.2, 0.7));
-  materialCommon.SetDiffuse(ignition::math::Color(0.1, 0.3, 0.4, 0.5));
-  materialCommon.SetSpecular(ignition::math::Color(0.11, 0.22, 0.23, 0.77));
-  materialCommon.SetAmbient(ignition::math::Color(0.25, 0.21, 0.28, 0.5));
+  gz::common::Material materialCommon;
+  materialCommon.SetEmissive(gz::math::Color(1, 0.2, 0.2, 0.7));
+  materialCommon.SetDiffuse(gz::math::Color(0.1, 0.3, 0.4, 0.5));
+  materialCommon.SetSpecular(gz::math::Color(0.11, 0.22, 0.23, 0.77));
+  materialCommon.SetAmbient(gz::math::Color(0.25, 0.21, 0.28, 0.5));
   materialCommon.SetRenderOrder(5);
   materialCommon.SetLighting(true);
   materialCommon.SetAlphaFromTexture(false, 0.5, true);
 
-  ignition::common::Pbr pbrCommon;
-  pbrCommon.SetType(ignition::common::PbrType::METAL);
+  gz::common::Pbr pbrCommon;
+  pbrCommon.SetType(gz::common::PbrType::METAL);
 
   pbrCommon.SetAlbedoMap("AlbedoMap");
   pbrCommon.SetMetalnessMap("MetalnessMap");
@@ -116,7 +116,7 @@ TEST(Conversions, CommonToSdfMaterial)
   pbrCommon.SetAmbientOcclusionMap("AmbientOcclusionMap");
   pbrCommon.SetLightMap("LightMap");
   pbrCommon.SetNormalMap(
-    "NormalMap", ignition::common::NormalMapSpace::TANGENT);
+    "NormalMap", gz::common::NormalMapSpace::TANGENT);
   pbrCommon.SetRoughness(0.2);
   pbrCommon.SetGlossiness(0.3);
   pbrCommon.SetMetalness(0.55);
@@ -151,9 +151,9 @@ TEST(Conversions, CommonToSdfMaterial)
   EXPECT_EQ(pbrWorkflow->LightMap(), pbrCommon.LightMap());
   EXPECT_EQ(pbrWorkflow->NormalMap(), pbrCommon.NormalMap());
 
-  EXPECT_EQ(ignition::common::NormalMapSpace::TANGENT,
+  EXPECT_EQ(gz::common::NormalMapSpace::TANGENT,
       pbrCommon.NormalMapType());
-  EXPECT_EQ(ignition::common::PbrType::METAL, pbrCommon.Type());
+  EXPECT_EQ(gz::common::PbrType::METAL, pbrCommon.Type());
 
   EXPECT_DOUBLE_EQ(pbrWorkflow->Roughness(), pbrCommon.Roughness());
   EXPECT_DOUBLE_EQ(pbrWorkflow->Glossiness(), pbrCommon.Glossiness());

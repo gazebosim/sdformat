@@ -83,7 +83,7 @@ TEST(Parser, CustomUnknownElements)
 #endif
 
   std::string homeDir;
-  ASSERT_TRUE(ignition::utils::env(homeVarName, homeDir));
+  ASSERT_TRUE(gz::utils::env(homeVarName, homeDir));
 
   std::string pathLog =
     sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");

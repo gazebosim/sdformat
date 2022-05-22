@@ -121,7 +121,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   }
 
   std::string sdfPathEnv;
-  if(ignition::utils::env("SDF_PATH", sdfPathEnv))
+  if(gz::utils::env("SDF_PATH", sdfPathEnv))
   {
     std::vector<std::string> paths = sdf::split(sdfPathEnv, ":");
     for (std::vector<std::string>::iterator iter = paths.begin();

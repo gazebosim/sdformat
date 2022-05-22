@@ -38,8 +38,8 @@ inline namespace SDF_VERSION_NAMESPACE {
 struct ScopedGraphData
 {
   /// \brief The vertex ID of the designated scope vertex
-  ignition::math::graph::VertexId scopeVertexId {
-      ignition::math::graph::kNullId};
+  gz::math::graph::VertexId scopeVertexId {
+      gz::math::graph::kNullId};
 
   /// \brief The prefix for all names under this scope
   std::string prefix {};
@@ -89,7 +89,7 @@ class ScopedGraph
       "sdf::FrameAttachedToGraph");
 
   /// \brief template for extracting the graph type from the template parameter.
-  /// \tparam G ignition::math::DirectedGraph type
+  /// \tparam G gz::math::DirectedGraph type
   /// \return Vertex and Edge types of G
   public: template <typename G>
           struct GraphTypeExtracter
@@ -99,9 +99,9 @@ class ScopedGraph
   };
 
   /// \brief Specialization for GraphTypeExtracter on
-  /// ignition::math::DirectedGraph
+  /// gz::math::DirectedGraph
   public: template <typename V, typename E>
-          struct GraphTypeExtracter<ignition::math::graph::DirectedGraph<V, E>>
+          struct GraphTypeExtracter<gz::math::graph::DirectedGraph<V, E>>
   {
     using Vertex = V;
     using Edge = E;
@@ -109,11 +109,11 @@ class ScopedGraph
 
   // Type aliases
   public: using MathGraphType = typename T::GraphType;
-  public: using VertexId = ignition::math::graph::VertexId;
+  public: using VertexId = gz::math::graph::VertexId;
   public: using VertexType = typename GraphTypeExtracter<MathGraphType>::Vertex;
   public: using EdgeType = typename GraphTypeExtracter<MathGraphType>::Edge;
-  public: using Vertex = ignition::math::graph::Vertex<VertexType>;
-  public: using Edge = ignition::math::graph::DirectedEdge<EdgeType>;
+  public: using Vertex = gz::math::graph::Vertex<VertexType>;
+  public: using Edge = gz::math::graph::DirectedEdge<EdgeType>;
   public: using MapType = typename T::MapType;
 
   /// \brief Default constructor. The constructed object is invalid as it
@@ -181,7 +181,7 @@ class ScopedGraph
   /// created.
   /// \param[in] _data Edge data.
   /// \return The newly created edge.
-  public: Edge &AddEdge(const ignition::math::graph::VertexId_P &_vertexPair,
+  public: Edge &AddEdge(const gz::math::graph::VertexId_P &_vertexPair,
               const EdgeType &_data);
 
   /// \brief Gets all the local names of the vertices in the current scope.
@@ -346,7 +346,7 @@ auto ScopedGraph<T>::AddVertex(
 /////////////////////////////////////////////////
 template <typename T>
 auto ScopedGraph<T>::AddEdge(
-    const ignition::math::graph::VertexId_P &_vertexPair, const EdgeType &_data)
+    const gz::math::graph::VertexId_P &_vertexPair, const EdgeType &_data)
     -> Edge &
 {
   Edge &edge = this->graphPtr->graph.AddEdge(_vertexPair, _data);
@@ -426,7 +426,7 @@ auto ScopedGraph<T>::VertexIdByName(const std::string &_name) const -> VertexId
   if (it != map.end())
     return it->second;
   else
-    return ignition::math::graph::kNullId;
+    return gz::math::graph::kNullId;
 }
 
 /////////////////////////////////////////////////

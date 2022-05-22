@@ -42,7 +42,7 @@ namespace sdf
     bool ProjectSourcePath(std::string &_sourceDir)
     {
       // Bazel builds set TEST_SRCDIR
-      if(ignition::utils::env("TEST_SRCDIR", _sourceDir))
+      if(gz::utils::env("TEST_SRCDIR", _sourceDir))
       {
         _sourceDir = sdf::filesystem::append(
             _sourceDir, "__main__", "sdformat");
@@ -65,7 +65,7 @@ namespace sdf
     bool TestTmpPath(std::string &_tmpDir)
     {
       // Bazel builds set TEST_UNDECLARED_OUTPUTS_DIR
-      if (ignition::utils::env("TEST_UNDECLARED_OUTPUTS_DIR", _tmpDir))
+      if (gz::utils::env("TEST_UNDECLARED_OUTPUTS_DIR", _tmpDir))
       {
         return true;
       }
@@ -87,7 +87,7 @@ namespace sdf
     /// \return True if directory is set correctly, false otherwise
     bool TestSetHomePath(std::string &_homeDir)
     {
-      if (ignition::utils::env("TEST_UNDECLARED_OUTPUTS_DIR", _homeDir))
+      if (gz::utils::env("TEST_UNDECLARED_OUTPUTS_DIR", _homeDir))
       {
         return true;
       }
@@ -95,8 +95,8 @@ namespace sdf
       {
         _homeDir = PROJECT_BINARY_DIR;
         // Set both for linux and windows
-        return ignition::utils::setenv("HOME", _homeDir) && 
-               ignition::utils::setenv("HOMEPATH", _homeDir);
+        return gz::utils::setenv("HOME", _homeDir) && 
+               gz::utils::setenv("HOMEPATH", _homeDir);
       }
     }
 

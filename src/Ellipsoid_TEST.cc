@@ -25,9 +25,9 @@ TEST(DOMEllipsoid, Construction)
   EXPECT_EQ(nullptr, ellipsoid.Element());
   // A default ellipsoid has all three radii set to 1
   EXPECT_DOUBLE_EQ(IGN_PI * 4. / 3., ellipsoid.Shape().Volume());
-  EXPECT_EQ(ignition::math::Vector3d::One, ellipsoid.Shape().Radii());
+  EXPECT_EQ(gz::math::Vector3d::One, ellipsoid.Shape().Radii());
 
-  const ignition::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.SetRadii(expectedRadii);
   EXPECT_EQ(expectedRadii, ellipsoid.Shape().Radii());
 }
@@ -36,7 +36,7 @@ TEST(DOMEllipsoid, Construction)
 TEST(DOMEllipsoid, MoveConstructor)
 {
   sdf::Ellipsoid ellipsoid;
-  const ignition::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.SetRadii(expectedRadii);
 
   sdf::Ellipsoid ellipsoid2(std::move(ellipsoid));
@@ -47,7 +47,7 @@ TEST(DOMEllipsoid, MoveConstructor)
 TEST(DOMEllipsoid, CopyConstructor)
 {
   sdf::Ellipsoid ellipsoid;
-  const ignition::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.SetRadii(expectedRadii);
 
   sdf::Ellipsoid ellipsoid2(ellipsoid);
@@ -58,7 +58,7 @@ TEST(DOMEllipsoid, CopyConstructor)
 TEST(DOMEllipsoid, CopyAssignmentOperator)
 {
   sdf::Ellipsoid ellipsoid;
-  const ignition::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.SetRadii(expectedRadii);
 
   sdf::Ellipsoid ellipsoid2;
@@ -70,7 +70,7 @@ TEST(DOMEllipsoid, CopyAssignmentOperator)
 TEST(DOMEllipsoid, MoveAssignmentConstructor)
 {
   sdf::Ellipsoid ellipsoid;
-  const ignition::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.SetRadii(expectedRadii);
 
   sdf::Ellipsoid ellipsoid2;
@@ -82,11 +82,11 @@ TEST(DOMEllipsoid, MoveAssignmentConstructor)
 TEST(DOMEllipsoid, CopyAssignmentAfterMove)
 {
   sdf::Ellipsoid ellipsoid1;
-  const ignition::math::Vector3d expectedRadii1(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii1(1.0, 2.0, 3.0);
   ellipsoid1.SetRadii(expectedRadii1);
 
   sdf::Ellipsoid ellipsoid2;
-  const ignition::math::Vector3d expectedRadii2(10.0, 20.0, 30.0);
+  const gz::math::Vector3d expectedRadii2(10.0, 20.0, 30.0);
   ellipsoid2.SetRadii(expectedRadii2);
 
   // This is similar to what std::swap does except it uses std::move for each
@@ -133,9 +133,9 @@ TEST(DOMEllipsoid, Load)
 TEST(DOMEllipsoid, Shape)
 {
   sdf::Ellipsoid ellipsoid;
-  EXPECT_EQ(ignition::math::Vector3d::One, ellipsoid.Radii());
+  EXPECT_EQ(gz::math::Vector3d::One, ellipsoid.Radii());
 
-  const ignition::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
+  const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.Shape().SetRadii(expectedRadii);
   EXPECT_EQ(expectedRadii, ellipsoid.Radii());
 }
@@ -145,7 +145,7 @@ TEST(DOMEllipsoid, ToElement)
 {
   sdf::Ellipsoid ellipsoid;
 
-  ellipsoid.SetRadii(ignition::math::Vector3d(0.1, 1.2, 3.4));
+  ellipsoid.SetRadii(gz::math::Vector3d(0.1, 1.2, 3.4));
 
   sdf::ElementPtr elem = ellipsoid.ToElement();
   ASSERT_NE(nullptr, elem);

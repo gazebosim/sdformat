@@ -30,12 +30,12 @@ class InterfaceFrame::Implementation
   public: std::string attachedTo;
 
   /// \brief Pose of this frame relative to the attachedTo frame.
-  public: ignition::math::Pose3d pose;
+  public: gz::math::Pose3d pose;
 };
 
 InterfaceFrame::InterfaceFrame(const std::string &_name,
-      const std::string &_attachedTo, const ignition::math::Pose3d &_pose)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+      const std::string &_attachedTo, const gz::math::Pose3d &_pose)
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
   this->dataPtr->attachedTo = _attachedTo;
@@ -55,7 +55,7 @@ const std::string &InterfaceFrame::AttachedTo() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &InterfaceFrame::PoseInAttachedToFrame() const
+const gz::math::Pose3d &InterfaceFrame::PoseInAttachedToFrame() const
 {
   return this->dataPtr->pose;
 }

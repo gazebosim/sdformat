@@ -141,19 +141,19 @@ namespace sdf
 
     /// \brief Get the minimum angle for horizontal scan.
     /// \return Minimum angle for horizontal scan.
-    public: ignition::math::Angle HorizontalScanMinAngle() const;
+    public: gz::math::Angle HorizontalScanMinAngle() const;
 
     /// \brief Set the minimum angle for horizontal scan.
     /// \param[in] Minimum angle for horizontal scan.
-    public: void SetHorizontalScanMinAngle(const ignition::math::Angle &_min);
+    public: void SetHorizontalScanMinAngle(const gz::math::Angle &_min);
 
     /// \brief Get the maximum angle for horizontal scan.
     /// \return Maximum angle for horizontal scan.
-    public: ignition::math::Angle HorizontalScanMaxAngle() const;
+    public: gz::math::Angle HorizontalScanMaxAngle() const;
 
     /// \brief Set the maximum angle for horizontal scan.
     /// \param[in] Maximum angle for horizontal scan.
-    public: void SetHorizontalScanMaxAngle(const ignition::math::Angle &_max);
+    public: void SetHorizontalScanMaxAngle(const gz::math::Angle &_max);
 
     /// \brief Get the number of lidar rays vertically to generate per laser
     /// sweep.
@@ -175,19 +175,19 @@ namespace sdf
 
     /// \brief Get the minimum angle for vertical scan.
     /// \return Minimum angle for vertical scan.
-    public: ignition::math::Angle VerticalScanMinAngle() const;
+    public: gz::math::Angle VerticalScanMinAngle() const;
 
     /// \brief Set the minimum angle for vertical scan.
     /// \param[in] Minimum angle for vertical scan.
-    public: void SetVerticalScanMinAngle(const ignition::math::Angle &_min);
+    public: void SetVerticalScanMinAngle(const gz::math::Angle &_min);
 
     /// \brief Get the maximum angle for vertical scan.
     /// \return Maximum angle for vertical scan.
-    public: ignition::math::Angle VerticalScanMaxAngle() const;
+    public: gz::math::Angle VerticalScanMaxAngle() const;
 
     /// \brief Set the maximum angle for vertical scan.
     /// \param[in] Maximum angle for vertical scan.
-    public: void SetVerticalScanMaxAngle(const ignition::math::Angle &_max);
+    public: void SetVerticalScanMaxAngle(const gz::math::Angle &_max);
 
     /// \brief Get minimum distance for each lidar ray.
     /// \return Minimum distance for each lidar ray.

@@ -76,7 +76,7 @@ namespace usd
     collisionPrim.CreateAttribute(pxr::TfToken("purpose"),
         pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("guide"));
 
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = usd::PoseWrtParent(_collision, pose);
     if (!poseErrors.empty())
     {

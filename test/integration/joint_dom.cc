@@ -111,8 +111,8 @@ TEST(DOMJoint, DoublePendulum)
   ASSERT_NE(nullptr, lowerAxis);
 
   // Check the xyz values for both axis.
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, upperAxis->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, lowerAxis->Xyz());
 }
 
 //////////////////////////////////////////////////
@@ -130,7 +130,7 @@ TEST(DOMJoint, Complete)
   const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
 
-  std::vector<ignition::math::Pose3d> jointPoses =
+  std::vector<gz::math::Pose3d> jointPoses =
   {
     {1, 0, 0, 0, 0, 0},
     {0, 1, 0, 0, 0, 0},
@@ -167,7 +167,7 @@ TEST(DOMJoint, LoadJointParentWorld)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -256,10 +256,10 @@ TEST(DOMJoint, LoadJointParentModelFrame)
   EXPECT_TRUE(joint->ResolveParentLink(resolvedLinkName).empty());
   EXPECT_EQ("base_link", resolvedLinkName);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   EXPECT_TRUE(
     joint->SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////
@@ -288,10 +288,10 @@ TEST(DOMJoint, LoadJointChildModelFrame)
   EXPECT_TRUE(joint->ResolveChildLink(resolvedLinkName).empty());
   EXPECT_EQ("base_link", resolvedLinkName);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   EXPECT_TRUE(
     joint->SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////
@@ -304,7 +304,7 @@ TEST(DOMJoint, LoadJointParentFrame)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -396,7 +396,7 @@ TEST(DOMJoint, LoadJointChildFrame)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -488,7 +488,7 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -676,7 +676,7 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
     std::cout << e << std::endl;
   EXPECT_TRUE(errors.empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -754,8 +754,8 @@ TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
     std::cout << e << std::endl;
   EXPECT_TRUE(errors.empty());
 
-  using Pose = ignition::math::Pose3d;
-  using Vector3 = ignition::math::Vector3d;
+  using Pose = gz::math::Pose3d;
+  using Vector3 = gz::math::Vector3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -835,7 +835,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
   auto errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty()) << errors;
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -984,7 +984,7 @@ TEST(DOMJoint, Sensors)
   ASSERT_NE(nullptr, forceTorqueSensor);
   EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
   EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
       forceTorqueSensor->RawPose());
   auto forceTorqueSensorObj = forceTorqueSensor->ForceTorqueSensor();
   ASSERT_NE(nullptr, forceTorqueSensorObj);

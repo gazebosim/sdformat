@@ -72,7 +72,7 @@ class sdf::Geometry::Implementation
 
 /////////////////////////////////////////////////
 Geometry::Geometry()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
