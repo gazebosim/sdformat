@@ -65,6 +65,9 @@ class MagnetometerTEST(unittest.TestCase):
     mag3 = mag
     self.assertEqual(mag, mag3)
 
+    mag4 = Magnetometer()
+    self.assertNotEqual(mag, mag4)
+
 
 if __name__ == '__main__':
     unittest.main()
