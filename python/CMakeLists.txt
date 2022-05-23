@@ -56,6 +56,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyJointAxis.cc
   src/sdf/pyLight.cc
   src/sdf/pyLink.cc
+  src/sdf/pyMagnetometer.cc
   src/sdf/pyMaterial.cc
   src/sdf/pyMesh.cc
   src/sdf/pyModel.cc
@@ -107,6 +108,7 @@ if (BUILD_TESTING)
     pyJointAxis_TEST
     pyLight_TEST
     pyLink_TEST
+    pyMagnetometer_TEST
     pyMaterial_TEST
     pyMesh_TEST
     pyModel_TEST
