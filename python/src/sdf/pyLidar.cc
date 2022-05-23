@@ -97,6 +97,11 @@ void defineLidar(pybind11::object module)
          "Get the noise values for the lidar sensor.")
     .def("set_lidar_noise", &sdf::Lidar::SetLidarNoise,
          "Set the noise values for the lidar sensor.")
+    .def("visibility_mask",
+         &sdf::Lidar::VisibilityMask,
+         "Get the visibility mask of a lidar")
+    .def("set_visibility_mask", &sdf::Lidar::SetVisibilityMask,
+         "Set the visibility mask of a lidar.")
     .def("__copy__", [](const sdf::Lidar &self) {
       return sdf::Lidar(self);
     })

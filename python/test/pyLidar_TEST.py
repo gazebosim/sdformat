@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Angle, Pose3d, Vector3d
+from ignition.math import Angle, Pose3d, Vector3d, Helpers
 from sdformat import Lidar, Error, Noise
 import math
 import unittest
@@ -64,6 +64,10 @@ class LidarTEST(unittest.TestCase):
     lidar.set_horizontal_scan_samples(111)
     lidar.set_horizontal_scan_resolution(2.2)
 
+    self.assertEqual(Helpers.MAX_UI32, lidar.visibility_mask());
+    lidar.set_visibility_mask(123);
+    self.assertEqual(123, lidar.visibility_mask());
+
     # Inequality operator
     lidar2 = Lidar()
     self.assertNotEqual(lidar2, lidar)
@@ -75,7 +79,6 @@ class LidarTEST(unittest.TestCase):
     # Assignment operator
     lidarAssigned = lidar
     self.assertEqual(lidarAssigned, lidar)
-
 
 
 if __name__ == '__main__':
