@@ -256,7 +256,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
 
       // TODO(ahcorde) This part should be reviewed, revisit how rotateXYZ
       // and rotateZYX are handle.
-      // Related issue https://github.com/ignitionrobotics/sdformat/issues/926
+      // Related issue https://github.com/gazebosim/sdformat/issues/926
       // if (op == kXFormOpRotateZYX)
       // {
       //   std::swap(angleX, angleZ);

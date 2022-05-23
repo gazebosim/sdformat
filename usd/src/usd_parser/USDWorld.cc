@@ -154,7 +154,7 @@ namespace usd
       // This conversion might only work with Issac Sim USDs
       // TODO(adlarkin) find a better way to get root model prims/parent prims
       // of lights attached to the stage: see
-      // https://github.com/ignitionrobotics/sdformat/issues/927
+      // https://github.com/gazebosim/sdformat/issues/927
       if (primPathTokens.size() >= 2)
       {
         bool shortName = false;

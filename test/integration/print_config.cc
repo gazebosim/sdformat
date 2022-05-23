@@ -153,7 +153,7 @@ R"(<model name='test2'>
 /////////////////////////////////////////////////
 // Test verifies preserving includes does not work for merge-includes.
 // Need to update test if issue is addressed.
-// https://github.com/ignitionrobotics/sdformat/issues/769
+// https://github.com/gazebosim/sdformat/issues/769
 TEST(PrintConfig, PreserveIncludesWithMerge)
 {
   const std::string modelPath = sdf::testing::TestFile("integration", "model");
@@ -192,7 +192,7 @@ R"(<model name="m2">
 
   // The expected output pose string here still contains a -0 on the pitch value
   // as it was set using gz::math::Pose3d::operator<<, this test will have
-  // to be modified when we start using ignitionrobotics/ign-math#206.
+  // to be modified when we start using gazebosim/ign-math#206.
   const std::string expectedIncludeMerge =
 R"(<model name='m2'>
   <frame name='_merged__test_box2__model__' attached_to='link'>

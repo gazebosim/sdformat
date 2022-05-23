@@ -6,15 +6,15 @@ This example shows how a world in a SDF file can be converted to [USD](https://g
 
 You will need all of the dependencies for sdformat, along with the following additional dependencies:
 * USD: [installation instructions](https://github.com/PixarAnimationStudios/USD/blob/release/README.md#getting-and-building-the-code)
-* [ignition-common5](https://github.com/ignitionrobotics/ign-common)
-* [ignition-utils2 (including the CLI component)](https://github.com/ignitionrobotics/ign-utils)
+* [ignition-common5](https://github.com/gazebosim/ign-common)
+* [ignition-utils2 (including the CLI component)](https://github.com/gazebosim/ign-utils)
 
 ## Setup
 
 Build sdformat. The steps below follow a traditional cmake build, but sdformat
 can also be built with [colcon](https://colcon.readthedocs.io/en/released/index.html):
 ```bash
-git clone https://github.com/ignitionrobotics/sdformat.git
+git clone https://github.com/gazebosim/sdformat.git
 cd sdformat
 mkdir build
 cd build
@@ -29,10 +29,10 @@ To see how the executable works, run the following command from the `sdformat/bu
 ./sdf2usd -h
 ```
 
-To convert [shapes_world.sdf](https://github.com/ignitionrobotics/sdformat/blob/sdf12/test/sdf/shapes_world.sdf) to its USD representation as a file called `shapes.usd`, run the following commands:
+To convert [shapes_world.sdf](https://github.com/gazebosim/sdformat/blob/sdf12/test/sdf/shapes_world.sdf) to its USD representation as a file called `shapes.usd`, run the following commands:
 
 ```bash
-wget https://raw.githubusercontent.com/ignitionrobotics/sdformat/sdf12/test/sdf/shapes_world.sdf
+wget https://raw.githubusercontent.com/gazebosim/sdformat/sdf12/test/sdf/shapes_world.sdf
 ./sdf2usd shapes_world.sdf shapes.usd
 ```
 

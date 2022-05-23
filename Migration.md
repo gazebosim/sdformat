@@ -493,33 +493,33 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 1. **camera.sdf**: New elements to configure segmentation and boundingbox cameras
     + `//sensor/camera/segmentation_type`
     + `//sensor/camera/box_type`
-    + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+    + [Pull request #592](https://github.com/gazebosim/sdformat/pull/592)
 
 1. **forcetorque.sdf**: New elements to specify the noise characteristics of the force-torque sensor
     + `//sensor/force_torque/force`
     + `//sensor/force_torque/torque`
-    + [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+    + [Pull request #669](https://github.com/gazebosim/sdformat/pull/669)
 
 1. **model.sdf**: `//model/include/@merge` for merging included nested models into the containing model
-    + [Pull request #659](https://github.com/ignitionrobotics/sdformat/pull/659)
+    + [Pull request #659](https://github.com/gazebosim/sdformat/pull/659)
 
 1. **pose.sdf**: New attributes to support specifying angles in degrees and specifying rotations in quaternions
     + `//pose/@rotation_format`
     + `//pose/@degrees`
-    + [Pull request #690](https://github.com/ignitionrobotics/sdformat/pull/690)
-    + [Pull request #589](https://github.com/ignitionrobotics/sdformat/pull/589)
+    + [Pull request #690](https://github.com/gazebosim/sdformat/pull/690)
+    + [Pull request #589](https://github.com/gazebosim/sdformat/pull/589)
 
 1. **sensor.sdf**: New sensor types `boundingbox_camera`, `segmentation_camera`, and `custom`.
-    + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+    + [Pull request #592](https://github.com/gazebosim/sdformat/pull/592)
 
 ### Removals
 
 1. **joint.sdf**
     + Deprecated elements `//joint/axis/initial_position` and `//joint/axis2/initial_position` have been removed
-    * [Pull request #622](https://github.com/ignitionrobotics/sdformat/pull/622)
+    * [Pull request #622](https://github.com/gazebosim/sdformat/pull/622)
 
 1. **spherical_coordinates**: Unsupported options `NED` and `NWU` have been removed from `//spherical_coordinates/world_frame_orientation`
-    * [Pull request #685](https://github.com/ignitionrobotics/sdformat/pull/685)
+    * [Pull request #685](https://github.com/gazebosim/sdformat/pull/685)
 
 ## SDFormat specification 1.7 to 1.8
 

@@ -352,7 +352,7 @@ namespace usd
         // range, SDF does not have limits for a ball joint. So, there's
         // nothing to do after creating a UsdPhysicsSphericalJoint, since this
         // joint by default has no limits (i.e., allows for circular motion)
-        // related issue https://github.com/ignitionrobotics/sdformat/issues/860
+        // related issue https://github.com/gazebosim/sdformat/issues/860
         pxr::UsdPhysicsSphericalJoint::Define(_stage, pxr::SdfPath(_path));
         break;
       case sdf::JointType::FIXED:

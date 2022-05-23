@@ -123,7 +123,7 @@ void GetInertial(
 
       // TODO(ahcorde) Figure out how to use PrincipalMoments and
       // PrincipalAxesOffset: see
-      // https://github.com/ignitionrobotics/sdformat/pull/902#discussion_r840905534
+      // https://github.com/gazebosim/sdformat/pull/902#discussion_r840905534
       massMatrix.SetDiagonalMoments(
         gz::math::Vector3d(
           diagonalInertia[0],
