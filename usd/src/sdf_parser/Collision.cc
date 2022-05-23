@@ -31,9 +31,12 @@
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdPhysics/collisionAPI.h>
+#include <pxr/usd/usdShade/connectableAPI.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
 #include "sdf/Collision.hh"
+#include "sdf/Surface.hh"
 #include "../UsdUtils.hh"
 #include "Geometry.hh"
 
@@ -120,6 +123,88 @@ namespace usd
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::FAILED_PRIM_API_APPLY,
         "Internal error: unable to apply a collision to the prim at path ["
         + geometryPath + "]"));
+      return errors;
+    }
+
+    if (auto surface = _collision.Surface())
+    {
+      if (auto friction = surface->Friction())
+      {
+        if (auto ode = friction->ODE())
+        {
+          const auto looksPath = pxr::SdfPath("/Looks");
+          auto looksPrim = _stage->GetPrimAtPath(looksPath);
+          if (!looksPrim)
+          {
+            looksPrim = _stage->DefinePrim(looksPath, pxr::TfToken("Scope"));
+          }
+
+          // This variable will increase with every new material to avoid
+          // collision with the names of the materials
+          static int i = 0;
+
+          auto materialPath =
+            pxr::SdfPath("/Looks/MaterialPhysics_" + std::to_string(i));
+          i++;
+
+          pxr::UsdShadeMaterial materialUsd;
+          auto usdMaterialPrim = _stage->GetPrimAtPath(materialPath);
+          if (!usdMaterialPrim)
+          {
+            materialUsd = pxr::UsdShadeMaterial::Define(_stage, materialPath);
+            usdMaterialPrim = _stage->GetPrimAtPath(materialPath);
+          }
+          else
+          {
+            materialUsd = pxr::UsdShadeMaterial(usdMaterialPrim);
+          }
+
+          const pxr::TfToken appliedSchemaNamePhysicsMaterialRootAPI(
+            "PhysicsMaterialAPI");
+          const pxr::TfToken appliedSchemaNamePhysxMaterialAPI(
+            "PhysxMaterialAPI");
+          pxr::SdfPrimSpecHandle primSpec = pxr::SdfCreatePrimInLayer(
+            _stage->GetEditTarget().GetLayer(), materialPath);
+          pxr::SdfTokenListOp listOpMaterial;
+          // Use ReplaceOperations to append in place.
+          listOpMaterial.ReplaceOperations(
+            pxr::SdfListOpTypeExplicit,
+            0,
+            0,
+            {appliedSchemaNamePhysicsMaterialRootAPI,
+             appliedSchemaNamePhysxMaterialAPI});
+          primSpec->SetInfo(
+            pxr::UsdTokens->apiSchemas, pxr::VtValue::Take(listOpMaterial));
+
+          usdMaterialPrim.CreateAttribute(
+            pxr::TfToken("physics:density"),
+            pxr::SdfValueTypeNames->Float, false).Set(1.0f);
+
+          usdMaterialPrim.CreateAttribute(
+            pxr::TfToken("physics:dynamicFriction"),
+            pxr::SdfValueTypeNames->Float, false).Set(
+              static_cast<float>(ode->Mu()));
+
+          usdMaterialPrim.CreateAttribute(
+            pxr::TfToken("physics:restitution"),
+            pxr::SdfValueTypeNames->Float, false).Set(1.0f);
+
+          usdMaterialPrim.CreateAttribute(
+            pxr::TfToken("physics:staticFriction"),
+            pxr::SdfValueTypeNames->Float, false).Set(
+              static_cast<float>(ode->Mu2()));
+
+          usdMaterialPrim.CreateAttribute(
+            pxr::TfToken("physXMaterial:frictionCombineMode"),
+            pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("average"));
+
+          usdMaterialPrim.CreateAttribute(
+            pxr::TfToken("physXMaterial:restitutionCombineMode"),
+            pxr::SdfValueTypeNames->Token, false).Set(pxr::TfToken("average"));
+
+          pxr::UsdShadeMaterialBindingAPI(geomPrim).Bind(materialUsd);
+        }
+      }
     }
 
     return errors;
