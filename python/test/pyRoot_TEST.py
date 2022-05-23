@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Vector3d, Pose3d
-from sdformat import Error, Light, Root, SDF_VERSION, SDF_PROTOCOL_VERSION, World
+from sdformat import Error, Model, Light, Root, SDF_VERSION, SDF_PROTOCOL_VERSION, World
 import unittest
 
 
@@ -250,6 +250,78 @@ class RootTEST(unittest.TestCase):
         self.assertEqual("world1", w.name())
         w.set_name("world2")
         self.assertEqual("world2", root.world_by_index(0).name())
+
+
+    def test_to_element_empty(self):
+        root = Root()
+        root2 = Root()
+        root2.load_sdf_string(root.to_string())
+
+        self.assertEqual(SDF_VERSION, root2.version())
+
+    def test_to_element_model(self):
+        root = Root()
+
+        # sdf::Actor actor1
+        # actor1.set_name("actor1")
+        # root.SetActor(actor1)
+
+        light1 = Light()
+        light1.set_name("light1")
+        root.set_light(light1)
+
+        model1 = Model()
+        model1.set_name("model1")
+        root.set_model(model1)
+
+        self.assertNotEqual(None, root.model())
+        self.assertEqual(None, root.light())
+        # self.assertEqual(None, root.Actor())
+        self.assertEqual(0, root.world_count())
+
+        root2 = Root()
+        root2.load_sdf_string(root.to_string())
+
+        self.assertEqual(SDF_VERSION, root2.version())
+
+        self.assertNotEqual(None, root2.model())
+        self.assertEqual("model1", root2.model().name())
+
+        # ASSERT_EQ(None, root2.Actor())
+        self.assertEqual(None, root2.light())
+        self.assertEqual(0, root2.world_count())
+
+    def test_element_to_light(self):
+        root = Root()
+
+        model1 = Model()
+        model1.set_name("model1")
+        root.set_model(model1)
+
+        # sdf::Actor actor1
+        # actor1.set_name("actor1")
+        # root.SetActor(actor1)
+
+        light1 = Light()
+        light1.set_name("light1")
+        root.set_light(light1)
+
+        self.assertNotEqual(None, root.light())
+        self.assertEqual(None, root.model())
+        # self.assertEqual(None, root.Actor())
+        self.assertEqual(0, root.world_count())
+
+        root2 = Root()
+        root2.load_sdf_string(root.to_string())
+
+        self.assertEqual(SDF_VERSION, root2.version())
+
+        self.assertNotEqual(None, root2.light())
+        self.assertEqual("light1", root2.light().name())
+
+        self.assertEqual(None, root2.model())
+        # ASSERT_EQ(None, root2.Actor())
+        self.assertEqual(0, root2.world_count())
 
 
 if __name__ == '__main__':
