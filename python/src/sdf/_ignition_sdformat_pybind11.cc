@@ -35,6 +35,7 @@
 #include "pyLidar.hh"
 #include "pyLight.hh"
 #include "pyLink.hh"
+#include "pyMagnetometer.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
 #include "pyModel.hh"
@@ -73,6 +74,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineLidar(m);
   sdf::python::defineLight(m);
   sdf::python::defineLink(m);
+  sdf::python::defineMagnetometer(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
   sdf::python::defineModel(m);
