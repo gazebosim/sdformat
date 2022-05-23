@@ -58,6 +58,14 @@ namespace sdf
     /// \brief Default constructor
     public: Root();
 
+    /// \brief Get the name of the world
+    /// \param[in] _filename Name of the SDF file to parse.
+    /// \param[out] _worldName The name of the world
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors GetWorldName(const std::string &_filename,
+                                std::string &_worldName);
+
     /// \brief Parse the given SDF file, and generate objects based on types
     /// specified in the SDF file.
     /// \param[in] _filename Name of the SDF file to parse.

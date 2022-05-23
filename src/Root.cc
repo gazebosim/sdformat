@@ -140,6 +140,29 @@ Root::Root()
 {
 }
 
+Errors Root::GetWorldName(const std::string &_filename, std::string &_worldName)
+{
+  Errors errors;
+
+  tinyxml2::XMLDocument doc;
+  doc.LoadFile(_filename.c_str());
+  tinyxml2::XMLElement * pRootElement = doc.RootElement();
+  if (NULL != pRootElement)
+  {
+    tinyxml2::XMLElement * pworld = pRootElement->FirstChildElement("world");
+    if(pworld)
+    {
+      _worldName = pworld->Attribute("name");
+    }
+  }
+  else
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+                      "Failed to read the world name."});
+  }
+  return errors;
+}
+
 /////////////////////////////////////////////////
 Errors Root::Load(const std::string &_filename)
 {
