@@ -11,6 +11,7 @@ set(tests
   deprecated_specs.cc
   disable_fixed_joint_reduction.cc
   element_tracing.cc
+  error_output.cc
   fixed_joint_reduction.cc
   force_torque_sensor.cc
   frame.cc
@@ -58,7 +59,7 @@ set(tests
   world_dom.cc
 )
 
-if (PYTHONINTERP_FOUND AND PY_PSUTIL)
+if (Python3_Interpreter_FOUND AND PY_PSUTIL)
   set(tests ${tests} element_memory_leak.cc)
 endif()
 

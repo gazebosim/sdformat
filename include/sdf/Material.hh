@@ -18,7 +18,7 @@
 #define SDF_MATERIAL_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -90,6 +90,14 @@ namespace sdf
     /// each in the range of [0,1].
     /// \param[in] _color Specular color.
     public: void SetSpecular(const ignition::math::Color &_color);
+
+    /// \brief Get the specular exponent.
+    /// \return Specular exponent.
+    public: double Shininess() const;
+
+    /// \brief Set the specular exponent.
+    /// \param[in] _shininess Specular exponent.
+    public: void SetShininess(const double _shininess);
 
     /// \brief Get the emissive color. The emissive color is
     /// specified by a set of three numbers representing red/green/blue,

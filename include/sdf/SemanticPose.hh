@@ -19,8 +19,8 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>

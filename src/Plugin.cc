@@ -259,3 +259,16 @@ Plugin &Plugin::operator=(Plugin &&_plugin) noexcept
   this->dataPtr = std::move(_plugin.dataPtr);
   return *this;
 }
+
+/////////////////////////////////////////////////
+bool Plugin::operator==(const Plugin &_plugin) const
+{
+  // Simplest thing to do is compare the string form of each plugin
+  return _plugin.ToElement()->ToString("") == this->ToElement()->ToString("");
+}
+
+/////////////////////////////////////////////////
+bool Plugin::operator!=(const Plugin &_plugin) const
+{
+  return !(*this == _plugin);
+}

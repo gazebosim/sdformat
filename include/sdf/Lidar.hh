@@ -17,8 +17,8 @@
 #ifndef SDF_LIDAR_HH_
 #define SDF_LIDAR_HH_
 
-#include <ignition/math/Angle.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Angle.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -220,6 +220,14 @@ namespace sdf
     /// \biref Set the noise values for the lidar sensor.
     /// \param[in] _noise Noise values for the lidar sensor.
     public: void SetLidarNoise(const Noise &_noise);
+
+    /// \brief Get the visibility mask of a lidar
+    /// \return visibility mask
+    public: uint32_t VisibilityMask() const;
+
+    /// \brief Set the visibility mask of a lidar
+    /// \param[in] _mask visibility mask
+    public: void SetVisibilityMask(uint32_t _mask);
 
     /// \brief Return true if both Lidar objects contain the same values.
     /// \param[_in] _lidar Lidar value to compare.
