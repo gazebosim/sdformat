@@ -31,6 +31,7 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Model.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Root.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
@@ -255,4 +256,40 @@ TEST(DOMGeometry, Shapes)
   auto blend1 = heightmapVisGeom->BlendByIndex(1u);
   EXPECT_DOUBLE_EQ(30.0, blend1->MinHeight());
   EXPECT_DOUBLE_EQ(10.0, blend1->FadeDistance());
+
+  // Test polyline collision
+  auto polylineCol = link->CollisionByName("polyline_col");
+  ASSERT_NE(nullptr, polylineCol);
+  ASSERT_NE(nullptr, polylineCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, polylineCol->Geom()->Type());
+  auto polylineColGeom = polylineCol->Geom()->PolylineShape();
+  ASSERT_FALSE(polylineColGeom.empty());
+  ASSERT_EQ(2u, polylineColGeom.size());
+  EXPECT_DOUBLE_EQ(0.5, polylineColGeom[0].Height());
+  ASSERT_EQ(5u, polylineColGeom[0].PointCount());
+  EXPECT_EQ(ignition::math::Vector2d(-0.5, -0.5),
+      *polylineColGeom[0].PointByIndex(0));
+  EXPECT_EQ(ignition::math::Vector2d(-0.5, 0.5),
+      *polylineColGeom[0].PointByIndex(1));
+  EXPECT_DOUBLE_EQ(0.3, polylineColGeom[1].Height());
+  ASSERT_EQ(4u, polylineColGeom[1].PointCount());
+  EXPECT_EQ(ignition::math::Vector2d(-0.3, -0.3),
+      *polylineColGeom[1].PointByIndex(0));
+  EXPECT_EQ(ignition::math::Vector2d(-0.3, 0.3),
+      *polylineColGeom[1].PointByIndex(1));
+
+  // Test polyline visual
+  auto polylineVis = link->VisualByName("polyline_vis");
+  ASSERT_NE(nullptr, polylineVis);
+  ASSERT_NE(nullptr, polylineVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, polylineVis->Geom()->Type());
+  auto polylineVisGeom = polylineVis->Geom()->PolylineShape();
+  ASSERT_FALSE(polylineVisGeom.empty());
+  ASSERT_EQ(1u, polylineVisGeom.size());
+  EXPECT_DOUBLE_EQ(1.0, polylineVisGeom[0].Height());
+  ASSERT_EQ(3u, polylineVisGeom[0].PointCount());
+  EXPECT_EQ(ignition::math::Vector2d(-0.2, -0.2),
+      *polylineVisGeom[0].PointByIndex(0));
+  EXPECT_EQ(ignition::math::Vector2d(-0.2, 0.2),
+      *polylineVisGeom[0].PointByIndex(1));
 }
