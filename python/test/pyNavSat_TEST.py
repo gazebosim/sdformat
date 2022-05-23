@@ -69,7 +69,7 @@ class NavSatColor(unittest.TestCase):
     navSatAssigned = navSat
     self.assertEqual(navSatAssigned, navSat)
 
-    # Test nullptr private class
+    # Test deep copy
     navSatCopied = copy.deepcopy(navSatAssigned)
     self.assertEqual(navSatAssigned, navSatCopied)
 
