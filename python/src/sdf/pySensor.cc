@@ -95,7 +95,7 @@ void defineSensor(pybind11::object module)
          pybind11::overload_cast<>(
            &sdf::Sensor::MagnetometerSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the magnetometer sensor, or nullptr if this sensor type "
+         "Get the magnetometer sensor, or None if this sensor type "
          "is not a Magnetometer.")
     .def("set_magnetometer_sensor", &sdf::Sensor::SetMagnetometerSensor,
          "Set the magnetometer sensor.")
@@ -103,7 +103,7 @@ void defineSensor(pybind11::object module)
          pybind11::overload_cast<>(
            &sdf::Sensor::AltimeterSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the altimeter sensor, or nullptr if this sensor type "
+         "Get the altimeter sensor, or None if this sensor type "
          "is not an Altimeter.")
     .def("set_altimeter_sensor", &sdf::Sensor::SetAltimeterSensor,
          "Set the altimeter sensor.")
@@ -111,44 +111,50 @@ void defineSensor(pybind11::object module)
          pybind11::overload_cast<>(
            &sdf::Sensor::AirPressureSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the update rate in Hz.")
+         "Get a mutable air pressure sensor, or None if this sensor type "
+         "is not an AirPressure sensor.")
     .def("set_air_pressure_sensor", &sdf::Sensor::SetAirPressureSensor,
-         "Set the altimeter sensor.")
+         "Set the air pressure sensor.")
     .def("camera_sensor",
          pybind11::overload_cast<>(
            &sdf::Sensor::CameraSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the update rate in Hz.")
+         "Get a pointer to a camera sensor, or None if the sensor "
+         "does not contain a camera sensor.")
     .def("set_camera_sensor", &sdf::Sensor::SetCameraSensor,
          "Set the altimeter sensor.")
     .def("nav_sat_sensor",
          pybind11::overload_cast<>(
            &sdf::Sensor::NavSatSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the update rate in Hz.")
+         "Get a pointer to a NAVSAT sensor, or None if the sensor "
+         "does not contain an NAVSAT sensor.")
     .def("set_nav_sat_sensor", &sdf::Sensor::SetNavSatSensor,
-         "Set the altimeter sensor.")
+         "Set the NAVSAT sensor.")
     .def("force_torque_sensor",
          pybind11::overload_cast<>(
            &sdf::Sensor::ForceTorqueSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the update rate in Hz.")
+         "Get a pointer to a force torque sensor, or None if the sensor "
+         "does not contain a force torque sensor.")
     .def("set_force_torque_sensor", &sdf::Sensor::SetForceTorqueSensor,
-         "Set the altimeter sensor.")
+         "Set the force torque sensor.")
     .def("imu_sensor",
          pybind11::overload_cast<>(
            &sdf::Sensor::ImuSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the update rate in Hz.")
+         "Get a pointer to an IMU sensor, or None if the sensor "
+         "does not contain an IMU sensor.")
     .def("set_imu_sensor", &sdf::Sensor::SetImuSensor,
-         "Set the altimeter sensor.")
+         "Set the IMU sensor.")
     .def("lidar_sensor",
          pybind11::overload_cast<>(
            &sdf::Sensor::LidarSensor),
          pybind11::return_value_policy::reference_internal,
-         "Get the update rate in Hz.")
+         "Get a mutable lidar sensor, or None if this sensor type is "
+         "not a Lidar.")
     .def("set_lidar_sensor", &sdf::Sensor::SetLidarSensor,
-         "Set the altimeter sensor.")
+         "Set the lidar sensor.")
     .def("__copy__", [](const sdf::Sensor &self) {
       return sdf::Sensor(self);
     })
