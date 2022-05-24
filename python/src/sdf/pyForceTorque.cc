@@ -78,14 +78,14 @@ void defineForceTorque(pybind11::object module)
     }, "memo"_a);
 
     pybind11::enum_<sdf::ForceTorqueFrame>(
-      forceTorqueModule, "ForceTorqueFrame")
+      module, "ForceTorqueFrame")
         .value("INVALID", sdf::ForceTorqueFrame::INVALID)
         .value("PARENT", sdf::ForceTorqueFrame::PARENT)
         .value("CHILD", sdf::ForceTorqueFrame::CHILD)
         .value("SENSOR", sdf::ForceTorqueFrame::SENSOR);
 
     pybind11::enum_<sdf::ForceTorqueMeasureDirection>(
-      forceTorqueModule, "ForceTorqueMeasureDirection")
+      module, "ForceTorqueMeasureDirection")
         .value("INVALID", sdf::ForceTorqueMeasureDirection::INVALID)
         .value("PARENT_TO_CHILD", sdf::ForceTorqueMeasureDirection::PARENT_TO_CHILD)
         .value("CHILD_TO_PARENT", sdf::ForceTorqueMeasureDirection::CHILD_TO_PARENT);

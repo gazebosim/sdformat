@@ -104,7 +104,7 @@ void defineJoint(pybind11::object module)
       return sdf::Joint(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::JointType>(jointModule, "JointType")
+    pybind11::enum_<sdf::JointType>(module, "JointType")
       .value("INVALID", sdf::JointType::INVALID)
       .value("BALL", sdf::JointType::BALL)
       .value("CONTINUOUS", sdf::JointType::CONTINUOUS)

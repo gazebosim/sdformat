@@ -162,7 +162,7 @@ void defineSensor(pybind11::object module)
       return sdf::Sensor(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::SensorType>(geometryModule, "Sensortype")
+    pybind11::enum_<sdf::SensorType>(module, "Sensortype")
       .value("NONE", sdf::SensorType::NONE)
       .value("ALTIMETER", sdf::SensorType::ALTIMETER)
       .value("CAMERA", sdf::SensorType::CAMERA)
