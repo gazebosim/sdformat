@@ -15,15 +15,17 @@
 import copy
 from ignition.math import Pose3d, Vector3d
 from sdformat import Joint, JointAxis, Error, SemanticPose
+import sdformat as sdf
 import math
 import unittest
+
 
 class JointTEST(unittest.TestCase):
 
     def test_default_construction(self):
         joint = Joint()
         self.assertFalse(joint.name())
-        self.assertEqual(Joint.JointType.INVALID, joint.type())
+        self.assertEqual(sdf.JointType.INVALID, joint.type())
         self.assertFalse(joint.parent_link_name())
         self.assertFalse(joint.child_link_name())
         self.assertEqual(Pose3d.ZERO, joint.raw_pose())
@@ -66,22 +68,22 @@ class JointTEST(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertFalse(resolveParentLink)
 
-        joint.set_type(Joint.JointType.BALL)
-        self.assertEqual(Joint.JointType.BALL, joint.type())
-        joint.set_type(Joint.JointType.CONTINUOUS)
-        self.assertEqual(Joint.JointType.CONTINUOUS, joint.type())
-        joint.set_type(Joint.JointType.GEARBOX)
-        self.assertEqual(Joint.JointType.GEARBOX, joint.type())
-        joint.set_type(Joint.JointType.PRISMATIC)
-        self.assertEqual(Joint.JointType.PRISMATIC, joint.type())
-        joint.set_type(Joint.JointType.REVOLUTE)
-        self.assertEqual(Joint.JointType.REVOLUTE, joint.type())
-        joint.set_type(Joint.JointType.REVOLUTE2)
-        self.assertEqual(Joint.JointType.REVOLUTE2, joint.type())
-        joint.set_type(Joint.JointType.SCREW)
-        self.assertEqual(Joint.JointType.SCREW, joint.type())
-        joint.set_type(Joint.JointType.UNIVERSAL)
-        self.assertEqual(Joint.JointType.UNIVERSAL, joint.type())
+        joint.set_type(sdf.JointType.BALL)
+        self.assertEqual(sdf.JointType.BALL, joint.type())
+        joint.set_type(sdf.JointType.CONTINUOUS)
+        self.assertEqual(sdf.JointType.CONTINUOUS, joint.type())
+        joint.set_type(sdf.JointType.GEARBOX)
+        self.assertEqual(sdf.JointType.GEARBOX, joint.type())
+        joint.set_type(sdf.JointType.PRISMATIC)
+        self.assertEqual(sdf.JointType.PRISMATIC, joint.type())
+        joint.set_type(sdf.JointType.REVOLUTE)
+        self.assertEqual(sdf.JointType.REVOLUTE, joint.type())
+        joint.set_type(sdf.JointType.REVOLUTE2)
+        self.assertEqual(sdf.JointType.REVOLUTE2, joint.type())
+        joint.set_type(sdf.JointType.SCREW)
+        self.assertEqual(sdf.JointType.SCREW, joint.type())
+        joint.set_type(sdf.JointType.UNIVERSAL)
+        self.assertEqual(sdf.JointType.UNIVERSAL, joint.type())
 
         self.assertEqual(None, joint.axis(0))
         self.assertEqual(None, joint.axis(1))

@@ -14,6 +14,7 @@
 
 from ignition.math import Vector3d
 from sdformat import AirPressure, Noise
+import sdformat as sdf
 import unittest
 
 class AtmosphereTEST(unittest.TestCase):
@@ -32,7 +33,7 @@ class AtmosphereTEST(unittest.TestCase):
         self.assertEqual(defaultNoise, air.pressure_noise())
         self.assertAlmostEqual(0.0, air.reference_altitude())
 
-        noise.set_type(Noise.NoiseType.GAUSSIAN)
+        noise.set_type(sdf.NoiseType.GAUSSIAN)
         noise.set_mean(1.2)
         noise.set_std_dev(2.3)
         noise.set_bias_mean(4.5)

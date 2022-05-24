@@ -48,7 +48,7 @@ void definePbr(pybind11::object module)
       return sdf::Pbr(self);
     }, "memo"_a);
 
-  pybind11::enum_<sdf::NormalMapSpace>(pbrModule, "NormalMapSpace")
+  pybind11::enum_<sdf::NormalMapSpace>(module, "NormalMapSpace")
     .value("TANGENT", sdf::NormalMapSpace::TANGENT)
     .value("OBJECT", sdf::NormalMapSpace::OBJECT);
 }
@@ -142,7 +142,7 @@ void definePbrWorkflow(pybind11::object module)
       return sdf::PbrWorkflow(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::PbrWorkflowType>(workflowModule, "PbrWorkflowType")
+    pybind11::enum_<sdf::PbrWorkflowType>(module, "PbrWorkflowType")
       .value("NONE", sdf::PbrWorkflowType::NONE)
       .value("METAL", sdf::PbrWorkflowType::METAL)
       .value("SPECULAR", sdf::PbrWorkflowType::SPECULAR);

@@ -15,6 +15,7 @@
 import copy
 from ignition.math import Pose3d, Vector3d, SphericalCoordinates
 from sdformat import Error, Frame, Light, Model, World
+import sdformat as sdf
 import unittest
 import math
 
@@ -62,10 +63,10 @@ class WorldTEST(unittest.TestCase):
 
         errors = world.validate_graphs()
         self.assertEqual(2, len(errors))
-        self.assertEqual(errors[0].code(), Error.ErrorCode.FRAME_ATTACHED_TO_GRAPH_ERROR)
+        self.assertEqual(errors[0].code(), sdf.ErrorCode.FRAME_ATTACHED_TO_GRAPH_ERROR)
         self.assertEqual(errors[0].message(),
           "FrameAttachedToGraph error: scope does not point to a valid graph.")
-        self.assertEqual(errors[1].code(), Error.ErrorCode.POSE_RELATIVE_TO_GRAPH_ERROR)
+        self.assertEqual(errors[1].code(), sdf.ErrorCode.POSE_RELATIVE_TO_GRAPH_ERROR)
         self.assertEqual(errors[1].message(),
           "PoseRelativeToGraph error: scope does not point to a valid graph.")
 

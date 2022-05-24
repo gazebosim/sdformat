@@ -14,6 +14,7 @@
 
 import copy
 from sdformat import ForceTorque, Noise
+import sdformat as sdf
 import unittest
 
 class ForceTorqueTEST(unittest.TestCase):
@@ -23,7 +24,7 @@ class ForceTorqueTEST(unittest.TestCase):
     defaultNoise = Noise()
     noise = Noise()
 
-    noise.set_type(Noise.NoiseType.GAUSSIAN)
+    noise.set_type(sdf.NoiseType.GAUSSIAN)
     noise.set_mean(1.2)
     noise.set_std_dev(2.3)
     noise.set_bias_mean(4.5)
@@ -54,15 +55,15 @@ class ForceTorqueTEST(unittest.TestCase):
     ft.set_torque_z_noise(noise)
     self.assertEqual(noise, ft.torque_z_noise())
 
-    self.assertEqual(ft.frame(), ForceTorque.ForceTorqueFrame.CHILD)
-    ft.set_frame(ForceTorque.ForceTorqueFrame.PARENT)
-    self.assertEqual(ft.frame(), ForceTorque.ForceTorqueFrame.PARENT)
+    self.assertEqual(ft.frame(), sdf.ForceTorqueFrame.CHILD)
+    ft.set_frame(sdf.ForceTorqueFrame.PARENT)
+    self.assertEqual(ft.frame(), sdf.ForceTorqueFrame.PARENT)
 
     self.assertEqual(ft.measure_direction(),
-            ForceTorque.ForceTorqueMeasureDirection.CHILD_TO_PARENT)
-    ft.set_measure_direction(ForceTorque.ForceTorqueMeasureDirection.PARENT_TO_CHILD)
+            sdf.ForceTorqueMeasureDirection.CHILD_TO_PARENT)
+    ft.set_measure_direction(sdf.ForceTorqueMeasureDirection.PARENT_TO_CHILD)
     self.assertEqual(ft.measure_direction(),
-            ForceTorque.ForceTorqueMeasureDirection.PARENT_TO_CHILD)
+            sdf.ForceTorqueMeasureDirection.PARENT_TO_CHILD)
 
     # Copy Constructor
     ft2 = ForceTorque(ft)

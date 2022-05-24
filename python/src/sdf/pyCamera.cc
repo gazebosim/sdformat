@@ -260,7 +260,7 @@ void defineCamera(pybind11::object module)
       return sdf::Camera(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::PixelFormatType>(cameraModule, "PixelFormatType")
+    pybind11::enum_<sdf::PixelFormatType>(module, "PixelFormatType")
       .value("UNKNOWN_PIXEL_FORMAT", sdf::PixelFormatType::UNKNOWN_PIXEL_FORMAT)
       .value("L_INT8", sdf::PixelFormatType::L_INT8)
       .value("L_INT16", sdf::PixelFormatType::L_INT16)
