@@ -192,7 +192,7 @@ R"(<model name="m2">
 
   // The expected output pose string here still contains a -0 on the pitch value
   // as it was set using gz::math::Pose3d::operator<<, this test will have
-  // to be modified when we start using gazebosim/ign-math#206.
+  // to be modified when we start using gazebosim/gz-math#206.
   const std::string expectedIncludeMerge =
 R"(<model name='m2'>
   <frame name='_merged__test_box2__model__' attached_to='link'>

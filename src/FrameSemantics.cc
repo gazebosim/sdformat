@@ -55,7 +55,7 @@ void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
 // The following two functions were originally submitted to ign-math,
 // but were not accepted as they were not generic enough.
 // For now, they will be kept here.
-// https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/ign-math/pull-requests/333
+// https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-math/pull-requests/333
 
 /// \brief Starting from a given vertex in a directed graph, traverse edges
 /// in reverse direction to find a source vertex (has only outgoing edges).
