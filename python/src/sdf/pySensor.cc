@@ -41,8 +41,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineSensor(pybind11::object module)
 {
-  pybind11::class_<sdf::Sensor> geometryModule(module, "Sensor");
-  geometryModule
+  pybind11::class_<sdf::Sensor>(module, "Sensor")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Sensor>())
     .def(pybind11::self == pybind11::self)
