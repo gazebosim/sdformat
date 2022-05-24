@@ -181,6 +181,9 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   this->dataPtr->specular = _sdf->Get<gz::math::Color>("specular",
       this->dataPtr->specular).first;
 
+  this->dataPtr->shininess = _sdf->Get<double>("shininess",
+      this->dataPtr->shininess).first;
+
   this->dataPtr->emissive = _sdf->Get<gz::math::Color>("emissive",
       this->dataPtr->emissive).first;
 
@@ -235,6 +238,18 @@ gz::math::Color Material::Specular() const
 void Material::SetSpecular(const gz::math::Color &_color)
 {
   this->dataPtr->specular = _color;
+}
+
+//////////////////////////////////////////////////
+double Material::Shininess() const
+{
+  return this->dataPtr->shininess;
+}
+
+//////////////////////////////////////////////////
+void Material::SetShininess(const double _shininess)
+{
+  this->dataPtr->shininess = _shininess;
 }
 
 //////////////////////////////////////////////////
