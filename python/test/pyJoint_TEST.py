@@ -103,14 +103,12 @@ class JointTEST(unittest.TestCase):
         joint.set_thread_pitch(threadPitch)
         self.assertAlmostEqual(threadPitch, joint.thread_pitch())
 
-        # TODO(ahcorde): Add sensor when sdf::sensors class is converted
-        # self.assertEqual(0u, joint.SensorCount())
-        # self.assertEqual(None, joint.SensorByIndex(0))
-        # self.assertEqual(None, joint.SensorByIndex(1))
-        # self.assertEqual(None, joint.SensorByName("empty"))
-        # self.assertFalse(joint.SensorNameExists(""))
-        # self.assertFalse(joint.SensorNameExists("default"))
-
+        self.assertEqual(0, joint.sensor_count())
+        self.assertEqual(None, joint.sensor_by_index(0))
+        self.assertEqual(None, joint.sensor_by_index(1))
+        self.assertEqual(None, joint.sensor_by_name("empty"))
+        self.assertFalse(joint.sensor_name_exists(""))
+        self.assertFalse(joint.sensor_name_exists("default"))
 
     def test_copy_construction(self):
         joint = Joint()
