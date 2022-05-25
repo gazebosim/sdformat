@@ -32,8 +32,7 @@ namespace python
 /////////////////////////////////////////////////
 void defineNoise(pybind11::object module)
 {
-  pybind11::class_<sdf::Noise> geometryModule(module, "Noise");
-  geometryModule
+  pybind11::class_<sdf::Noise>(module, "Noise")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Noise>())
     .def(pybind11::self == pybind11::self)
@@ -105,7 +104,7 @@ void defineNoise(pybind11::object module)
       return sdf::Noise(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::NoiseType>(geometryModule, "NoiseType")
+    pybind11::enum_<sdf::NoiseType>(module, "NoiseType")
       .value("NONE", sdf::NoiseType::NONE)
       .value("GAUSSIAN", sdf::NoiseType::GAUSSIAN)
       .value("GAUSSIAN_QUANTIZED", sdf::NoiseType::GAUSSIAN_QUANTIZED);

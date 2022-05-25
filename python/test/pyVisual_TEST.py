@@ -15,6 +15,7 @@
 import copy
 from ignition.math import Pose3d, Color
 from sdformat import Geometry, Material, Visual
+import sdformat as sdf
 import unittest
 import math
 
@@ -61,7 +62,7 @@ class VisualTEST(unittest.TestCase):
         self.assertFalse(not semanticPose.resolve(pose))
 
         self.assertNotEqual(None, visual.geometry())
-        self.assertEqual(Geometry.GeometryType.EMPTY, visual.geometry().type())
+        self.assertEqual(sdf.GeometryType.EMPTY, visual.geometry().type())
         self.assertEqual(None, visual.geometry().box_shape())
         self.assertEqual(None, visual.geometry().cylinder_shape())
         self.assertEqual(None, visual.geometry().plane_shape())
@@ -182,12 +183,12 @@ class VisualTEST(unittest.TestCase):
         self.assertTrue(not visual.name())
 
         geometry = Geometry()
-        geometry.set_type(Geometry.GeometryType.BOX)
+        geometry.set_type(sdf.GeometryType.BOX)
 
         visual.set_geometry(geometry)
 
         self.assertNotEqual(None, visual.geometry())
-        self.assertEqual(Geometry.GeometryType.BOX, visual.geometry().type())
+        self.assertEqual(sdf.GeometryType.BOX, visual.geometry().type())
 
 
     def test_set_material(self):

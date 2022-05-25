@@ -16,6 +16,7 @@ import copy
 from ignition.math import Angle, Pose3d, Vector2d
 import math
 from sdformat import Camera
+import sdformat as sdf
 import unittest
 
 class CameraTEST(unittest.TestCase):
@@ -46,9 +47,9 @@ class CameraTEST(unittest.TestCase):
       cam.set_image_height(125)
       self.assertEqual(125, cam.image_height())
 
-      self.assertEqual(Camera.PixelFormatType.RGB_INT8, cam.pixel_format())
-      cam.set_pixel_format(Camera.PixelFormatType.L_INT8)
-      self.assertEqual(Camera.PixelFormatType.L_INT8 , cam.pixel_format())
+      self.assertEqual(sdf.PixelFormatType.RGB_INT8, cam.pixel_format())
+      cam.set_pixel_format(sdf.PixelFormatType.L_INT8)
+      self.assertEqual(sdf.PixelFormatType.L_INT8 , cam.pixel_format())
 
       self.assertEqual(4, cam.anti_aliasing_value())
       cam.set_anti_aliasing_value(8)

@@ -16,6 +16,7 @@ import copy
 from ignition.math import Pose3d
 from sdformat import (AirPressure, Altimeter, Camera, IMU, ForceTorque, Lidar,
                       Magnetometer, NavSat, Noise, SemanticPose, Sensor)
+import sdformat as sdf
 import unittest
 
 
@@ -27,10 +28,10 @@ class SensorTEST(unittest.TestCase):
         self.assertTrue(sensor == sensor2)
         self.assertFalse(sensor != sensor2)
 
-        self.assertEqual(Sensor.Sensortype.NONE, sensor.type())
+        self.assertEqual(sdf.Sensortype.NONE, sensor.type())
 
-        sensor.set_type(Sensor.Sensortype.ALTIMETER)
-        self.assertEqual(Sensor.Sensortype.ALTIMETER, sensor.type())
+        sensor.set_type(sdf.Sensortype.ALTIMETER)
+        self.assertEqual(sdf.Sensortype.ALTIMETER, sensor.type())
 
         self.assertEqual(Pose3d.ZERO, sensor.raw_pose())
         self.assertFalse(sensor.pose_relative_to())
@@ -64,7 +65,7 @@ class SensorTEST(unittest.TestCase):
     def test_copy_construction(self):
         sensor = Sensor()
         sensor.set_raw_pose(Pose3d(1, 2, 3, 0, 0, 0))
-        sensor.set_type(Sensor.Sensortype.MAGNETOMETER)
+        sensor.set_type(sdf.Sensortype.MAGNETOMETER)
         sensor.set_pose_relative_to("a_frame")
         sensor.set_update_rate(0.123)
 
@@ -76,14 +77,14 @@ class SensorTEST(unittest.TestCase):
 
         sensor2 = Sensor(sensor)
 
-        self.assertEqual(Sensor.Sensortype.MAGNETOMETER, sensor.type())
+        self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor.raw_pose())
         self.assertEqual("a_frame", sensor.pose_relative_to())
         self.assertTrue(None != sensor.magnetometer_sensor())
         self.assertAlmostEqual(mag.x_noise().mean(),
                                sensor.magnetometer_sensor().x_noise().mean())
 
-        self.assertEqual(Sensor.Sensortype.MAGNETOMETER, sensor2.type())
+        self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor2.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor2.raw_pose())
         self.assertEqual("a_frame", sensor2.pose_relative_to())
         self.assertTrue(None != sensor2.magnetometer_sensor())
@@ -94,7 +95,7 @@ class SensorTEST(unittest.TestCase):
     def test_deepcopy(self):
         sensor = Sensor()
         sensor.set_raw_pose(Pose3d(1, 2, 3, 0, 0, 0))
-        sensor.set_type(Sensor.Sensortype.MAGNETOMETER)
+        sensor.set_type(sdf.Sensortype.MAGNETOMETER)
         sensor.set_pose_relative_to("a_frame")
 
         noise = Noise()
@@ -105,14 +106,14 @@ class SensorTEST(unittest.TestCase):
 
         sensor2 = copy.deepcopy(sensor)
 
-        self.assertEqual(Sensor.Sensortype.MAGNETOMETER, sensor.type())
+        self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor.raw_pose())
         self.assertEqual("a_frame", sensor.pose_relative_to())
         self.assertTrue(None != sensor.magnetometer_sensor())
         self.assertAlmostEqual(mag.x_noise().mean(),
                                sensor.magnetometer_sensor().x_noise().mean())
 
-        self.assertEqual(Sensor.Sensortype.MAGNETOMETER, sensor2.type())
+        self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor2.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor2.raw_pose())
         self.assertEqual("a_frame", sensor2.pose_relative_to())
         self.assertTrue(None != sensor2.magnetometer_sensor())
@@ -122,33 +123,33 @@ class SensorTEST(unittest.TestCase):
     def test_type(self):
         sensor = Sensor()
 
-        self.assertEqual(Sensor.Sensortype.NONE, sensor.type())
+        self.assertEqual(sdf.Sensortype.NONE, sensor.type())
         self.assertEqual("none", sensor.type_str())
 
         types = [
-            Sensor.Sensortype.NONE,
-            Sensor.Sensortype.ALTIMETER,
-            Sensor.Sensortype.BOUNDINGBOX_CAMERA,
-            Sensor.Sensortype.CAMERA,
-            Sensor.Sensortype.CONTACT,
-            Sensor.Sensortype.DEPTH_CAMERA,
-            Sensor.Sensortype.FORCE_TORQUE,
-            Sensor.Sensortype.NAVSAT,
-            Sensor.Sensortype.GPU_LIDAR,
-            Sensor.Sensortype.IMU,
-            Sensor.Sensortype.LOGICAL_CAMERA,
-            Sensor.Sensortype.MAGNETOMETER,
-            Sensor.Sensortype.MULTICAMERA,
-            Sensor.Sensortype.LIDAR,
-            Sensor.Sensortype.RFID,
-            Sensor.Sensortype.RFIDTAG,
-            Sensor.Sensortype.SEGMENTATION_CAMERA,
-            Sensor.Sensortype.SONAR,
-            Sensor.Sensortype.WIRELESS_RECEIVER,
-            Sensor.Sensortype.WIRELESS_TRANSMITTER,
-            Sensor.Sensortype.THERMAL_CAMERA,
-            Sensor.Sensortype.CUSTOM,
-            Sensor.Sensortype.WIDE_ANGLE_CAMERA
+            sdf.Sensortype.NONE,
+            sdf.Sensortype.ALTIMETER,
+            sdf.Sensortype.BOUNDINGBOX_CAMERA,
+            sdf.Sensortype.CAMERA,
+            sdf.Sensortype.CONTACT,
+            sdf.Sensortype.DEPTH_CAMERA,
+            sdf.Sensortype.FORCE_TORQUE,
+            sdf.Sensortype.NAVSAT,
+            sdf.Sensortype.GPU_LIDAR,
+            sdf.Sensortype.IMU,
+            sdf.Sensortype.LOGICAL_CAMERA,
+            sdf.Sensortype.MAGNETOMETER,
+            sdf.Sensortype.MULTICAMERA,
+            sdf.Sensortype.LIDAR,
+            sdf.Sensortype.RFID,
+            sdf.Sensortype.RFIDTAG,
+            sdf.Sensortype.SEGMENTATION_CAMERA,
+            sdf.Sensortype.SONAR,
+            sdf.Sensortype.WIRELESS_RECEIVER,
+            sdf.Sensortype.WIRELESS_TRANSMITTER,
+            sdf.Sensortype.THERMAL_CAMERA,
+            sdf.Sensortype.CUSTOM,
+            sdf.Sensortype.WIDE_ANGLE_CAMERA
         ]
         type_strs = [
             "none",
@@ -193,7 +194,7 @@ class SensorTEST(unittest.TestCase):
     def test_mutable_sensors(self):
         # Altimeter
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.ALTIMETER)
+        sensor.set_type(sdf.Sensortype.ALTIMETER)
 
         alt = Altimeter()
         sensor.set_altimeter_sensor(alt)
@@ -212,7 +213,7 @@ class SensorTEST(unittest.TestCase):
 
         # Air pressure
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.AIR_PRESSURE)
+        sensor.set_type(sdf.Sensortype.AIR_PRESSURE)
 
         air = AirPressure()
         sensor.set_air_pressure_sensor(air)
@@ -230,7 +231,7 @@ class SensorTEST(unittest.TestCase):
 
         # Camera
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.CAMERA)
+        sensor.set_type(sdf.Sensortype.CAMERA)
 
         cam = Camera()
         sensor.set_camera_sensor(cam)
@@ -245,7 +246,7 @@ class SensorTEST(unittest.TestCase):
 
         # Force torque
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.FORCE_TORQUE)
+        sensor.set_type(sdf.Sensortype.FORCE_TORQUE)
 
         ftq = ForceTorque()
         sensor.set_force_torque_sensor(ftq)
@@ -264,7 +265,7 @@ class SensorTEST(unittest.TestCase):
 
         # IMU
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.FORCE_TORQUE)
+        sensor.set_type(sdf.Sensortype.FORCE_TORQUE)
 
         imu = IMU()
         sensor.set_imu_sensor(imu)
@@ -283,7 +284,7 @@ class SensorTEST(unittest.TestCase):
 
         # Lidar
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.LIDAR)
+        sensor.set_type(sdf.Sensortype.LIDAR)
 
         ldr = Lidar()
         sensor.set_lidar_sensor(ldr)
@@ -302,7 +303,7 @@ class SensorTEST(unittest.TestCase):
 
         # Magnetometer
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.MAGNETOMETER)
+        sensor.set_type(sdf.Sensortype.MAGNETOMETER)
 
         mag = Magnetometer()
         sensor.set_magnetometer_sensor(mag)
@@ -320,7 +321,7 @@ class SensorTEST(unittest.TestCase):
 
         # NavSat
         sensor = Sensor()
-        sensor.set_type(Sensor.Sensortype.NAVSAT)
+        sensor.set_type(sdf.Sensortype.NAVSAT)
 
         nav = NavSat()
         sensor.set_nav_sat_sensor(nav)

@@ -15,6 +15,7 @@
 import copy
 from sdformat import Material, Pbr, PbrWorkflow
 from ignition.math import Color
+import sdformat as sdf
 import unittest
 
 
@@ -31,7 +32,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertFalse(material.double_sided())
     self.assertEqual("", material.script_uri())
     self.assertEqual("", material.script_name())
-    self.assertEqual(Material.ShaderType.PIXEL, material.shader())
+    self.assertEqual(sdf.ShaderType.PIXEL, material.shader())
     self.assertEqual("", material.normal_map())
     self.assertEqual(None, material.pbr_material())
     self.assertEqual("", material.file_path())
@@ -48,7 +49,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_double_sided(True)
     material.set_script_uri("banana")
     material.set_script_name("orange")
-    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_shader(sdf.ShaderType.VERTEX)
     material.set_normal_map("blueberry")
     material.set_file_path("/tmp/path")
 
@@ -62,7 +63,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(2.0, material2.render_order())
     self.assertEqual("banana", material2.script_uri())
     self.assertEqual("orange", material2.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual(sdf.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
     self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/path", material2.file_path())
@@ -76,7 +77,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_double_sided(False)
     material.set_script_uri("apple")
     material.set_script_name("melon")
-    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_shader(sdf.ShaderType.VERTEX)
     material.set_normal_map("banana")
     material.set_file_path("/tmp/foo")
 
@@ -89,7 +90,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(2, material2.render_order())
     self.assertEqual("apple", material2.script_uri())
     self.assertEqual("melon", material2.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual(sdf.ShaderType.VERTEX, material2.shader())
     self.assertEqual("banana", material2.normal_map())
     self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/foo", material2.file_path())
@@ -105,7 +106,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_double_sided(True)
     material.set_script_uri("banana")
     material.set_script_name("orange")
-    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_shader(sdf.ShaderType.VERTEX)
     material.set_normal_map("blueberry")
     material.set_file_path("/tmp/other")
 
@@ -121,7 +122,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(4, material2.render_order())
     self.assertEqual("banana", material2.script_uri())
     self.assertEqual("orange", material2.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual(sdf.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
     self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
@@ -135,7 +136,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_double_sided(False)
     material.set_script_uri("apple")
     material.set_script_name("melon")
-    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_shader(sdf.ShaderType.VERTEX)
     material.set_normal_map("banana")
     material.set_file_path("/tmp/foo")
 
@@ -150,7 +151,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(4, material2.render_order())
     self.assertEqual("banana", material2.script_uri())
     self.assertEqual("orange", material2.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual(sdf.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
     self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
@@ -166,7 +167,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_double_sided(True)
     material.set_script_uri("banana")
     material.set_script_name("orange")
-    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_shader(sdf.ShaderType.VERTEX)
     material.set_normal_map("blueberry")
     material.set_file_path("/tmp/other")
 
@@ -182,7 +183,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(4, material2.render_order())
     self.assertEqual("banana", material2.script_uri())
     self.assertEqual("orange", material2.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual(sdf.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
     self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
@@ -196,7 +197,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_double_sided(False)
     material.set_script_uri("apple")
     material.set_script_name("melon")
-    material.set_shader(Material.ShaderType.VERTEX)
+    material.set_shader(sdf.ShaderType.VERTEX)
     material.set_normal_map("banana")
     material.set_file_path("/tmp/foo")
 
@@ -211,7 +212,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(4, material2.render_order())
     self.assertEqual("banana", material2.script_uri())
     self.assertEqual("orange", material2.script_name())
-    self.assertEqual(Material.ShaderType.VERTEX, material2.shader())
+    self.assertEqual(sdf.ShaderType.VERTEX, material2.shader())
     self.assertEqual("blueberry", material2.normal_map())
     self.assertEqual(None, material2.pbr_material())
     self.assertEqual("/tmp/other", material2.file_path())
@@ -254,9 +255,9 @@ class MaterialTEST(unittest.TestCase):
     material.set_script_name("name")
     self.assertEqual("name", material.script_name())
 
-    self.assertEqual(Material.ShaderType.PIXEL, material.shader())
-    material.set_shader(Material.ShaderType.VERTEX)
-    self.assertEqual(Material.ShaderType.VERTEX, material.shader())
+    self.assertEqual(sdf.ShaderType.PIXEL, material.shader())
+    material.set_shader(sdf.ShaderType.VERTEX)
+    self.assertEqual(sdf.ShaderType.VERTEX, material.shader())
 
     self.assertEqual("", material.normal_map())
     material.set_normal_map("map")
@@ -268,12 +269,12 @@ class MaterialTEST(unittest.TestCase):
 
     pbr = Pbr()
     workflow = PbrWorkflow()
-    workflow.set_type(PbrWorkflow.PbrWorkflowType.METAL)
+    workflow.set_type(sdf.PbrWorkflowType.METAL)
     pbr.set_workflow(workflow.type(), workflow)
     material.set_pbr_material(pbr)
     self.assertNotEqual(material.pbr_material(), None)
     self.assertEqual(workflow,
-      material.pbr_material().workflow(PbrWorkflow.PbrWorkflowType.METAL))
+      material.pbr_material().workflow(sdf.PbrWorkflowType.METAL))
 
 
 if __name__ == '__main__':

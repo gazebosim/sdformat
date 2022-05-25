@@ -14,7 +14,10 @@
 
 import copy
 from ignition.math import Vector3d, Pose3d
-from sdformat import Error, Model, Light, Root, SDF_VERSION, SDF_PROTOCOL_VERSION, World
+from sdformat import (Error, Model, Light, Root, SDF_VERSION,
+                      SDF_PROTOCOL_VERSION, World)
+import sdformat as sdf
+
 import unittest
 
 
@@ -222,7 +225,7 @@ class RootTEST(unittest.TestCase):
         self.assertEqual(0, len(errors))
         self.assertEqual(1, root.world_count())
         self.assertEqual(1, len(root.add_world(world)))
-        self.assertEqual(Error.ErrorCode.DUPLICATE_NAME, root.add_world(world)[0].code())
+        self.assertEqual(sdf.ErrorCode.DUPLICATE_NAME, root.add_world(world)[0].code())
         self.assertEqual(1, root.world_count())
 
         root.clear_worlds()
