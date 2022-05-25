@@ -315,3 +315,37 @@ TEST(DOMJoint, ToElement)
   joint3.Load(joint2Elem);
   EXPECT_EQ("new_parent", joint3.ParentLinkName());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, MutableByIndex)
+{
+  sdf::Joint joint;
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(joint.AddSensor(sensor));
+
+  // Modify the sensor
+  sdf::Sensor *s = joint.SensorByIndex(0);
+  ASSERT_NE(nullptr, s);
+  EXPECT_EQ("sensor1", s->Name());
+  s->SetName("sensor2");
+  EXPECT_EQ("sensor2", joint.SensorByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, MutableByName)
+{
+  sdf::Joint joint;
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(joint.AddSensor(sensor));
+
+  // Modify the sensor
+  sdf::Sensor *s = joint.SensorByName("sensor1");
+  ASSERT_NE(nullptr, s);
+  EXPECT_EQ("sensor1", s->Name());
+  s->SetName("sensor2");
+  EXPECT_EQ("sensor2", joint.SensorByName("sensor2")->Name());
+}
