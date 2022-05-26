@@ -24,6 +24,7 @@
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
+#include "test_config.h"
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, Construction)
@@ -139,4 +140,24 @@ TEST(DOMRoot, Set)
   EXPECT_STREQ("", root.Version().c_str());
   root.SetVersion(SDF_PROTOCOL_VERSION);
   EXPECT_STREQ(SDF_PROTOCOL_VERSION, root.Version().c_str());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, WorldName)
+{
+  const auto path =
+    sdf::testing::TestFile("sdf", "box_plane_low_friction_test.world");
+  sdf::Root root;
+  std::string worldName;
+  auto errors = root.WorldName(path, worldName);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_EQ("default", worldName);
+
+  const auto path2 = sdf::testing::TestFile("sdf", "empty_invalid.sdf");
+  errors = root.WorldName(path2, worldName);
+  EXPECT_FALSE(errors.empty());
+
+  const auto path3 = sdf::testing::TestFile("sdf", "invalid_file_name.sdf");
+  errors = root.WorldName(path3, worldName);
+  EXPECT_FALSE(errors.empty());
 }

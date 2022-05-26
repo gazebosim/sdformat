@@ -18,6 +18,8 @@
 #include <vector>
 #include <utility>
 
+#include <tinyxml.h>
+
 #include "sdf/Actor.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
@@ -104,6 +106,48 @@ Errors Root::LoadSdfString(const std::string &_sdf)
 
   Errors loadErrors = this->Load(sdfParsed);
   errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+
+  return errors;
+}
+
+Errors Root::WorldName(const std::string &_filename, std::string &_worldName)
+{
+  Errors errors;
+
+  TiXmlDocument xmlDoc;
+
+  if (!xmlDoc.LoadFile(_filename))
+  {
+    errors.push_back({ErrorCode::FILE_READ,
+                  "Error parsing XML in file[" + _filename + "]:" +
+                  xmlDoc.ErrorDesc()});
+    return errors;
+  }
+
+  TiXmlHandle hDoc(&xmlDoc);
+  TiXmlHandle hRoot(0);
+  TiXmlElement* pElem;
+
+  pElem = hDoc.FirstChildElement().Element();
+  if (!pElem)
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+                  "Failed to read the root."});
+    return errors;
+  }
+  hRoot = TiXmlHandle(pElem);
+
+  pElem = hRoot.FirstChild("world").Element();
+
+  if (pElem)
+  {
+    _worldName = pElem->Attribute("name");
+  }
+  else
+  {
+    errors.push_back({ErrorCode::ELEMENT_INVALID,
+                      "Failed to read the world tag."});
+  }
 
   return errors;
 }
