@@ -14,6 +14,7 @@
 
 from ignition.math import Pose3d, Temperature
 from sdformat import Atmosphere
+import sdformat as sdf
 import unittest
 
 class AtmosphereTEST(unittest.TestCase):
@@ -21,7 +22,7 @@ class AtmosphereTEST(unittest.TestCase):
 
   def test_default_construction(self):
     atmosphere = Atmosphere()
-    self.assertEqual(Atmosphere.AtmosphereType.ADIABATIC, atmosphere.type())
+    self.assertEqual(sdf.AtmosphereType.ADIABATIC, atmosphere.type())
     self.assertAlmostEqual(288.15, atmosphere.temperature().kelvin())
     self.assertAlmostEqual(-0.0065, atmosphere.temperature_gradient())
     self.assertAlmostEqual(101325, atmosphere.pressure())
@@ -29,8 +30,8 @@ class AtmosphereTEST(unittest.TestCase):
 
   def test_set(self):
     atmosphere = Atmosphere()
-    atmosphere.set_type(Atmosphere.AtmosphereType.ADIABATIC)
-    self.assertEqual(Atmosphere.AtmosphereType.ADIABATIC, atmosphere.type())
+    atmosphere.set_type(sdf.AtmosphereType.ADIABATIC)
+    self.assertEqual(sdf.AtmosphereType.ADIABATIC, atmosphere.type())
 
     atmosphere.set_temperature(Temperature(123.23))
     self.assertAlmostEqual(123.23, atmosphere.temperature().kelvin())
@@ -49,7 +50,7 @@ class AtmosphereTEST(unittest.TestCase):
     atmosphere.set_pressure(76531.3)
 
     atmosphere2 = atmosphere
-    self.assertEqual(Atmosphere.AtmosphereType.ADIABATIC, atmosphere2.type())
+    self.assertEqual(sdf.AtmosphereType.ADIABATIC, atmosphere2.type())
     self.assertAlmostEqual(123.23, atmosphere2.temperature().kelvin())
     self.assertAlmostEqual(-1.65, atmosphere2.temperature_gradient())
     self.assertAlmostEqual(76531.3, atmosphere2.pressure())

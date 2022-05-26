@@ -14,6 +14,7 @@
 
 from ignition.math import Vector3d
 from sdformat import Altimeter, Noise
+import sdformat as sdf
 import unittest
 
 
@@ -33,7 +34,7 @@ class AtmosphereTEST(unittest.TestCase):
         self.assertTrue(defaultNoise, alt.vertical_position_noise())
         self.assertTrue(defaultNoise, alt.vertical_velocity_noise())
 
-        noise.set_type(Noise.NoiseType.GAUSSIAN)
+        noise.set_type(sdf.NoiseType.GAUSSIAN)
         noise.set_mean(1.2)
         noise.set_std_dev(2.3)
         noise.set_bias_mean(4.5)

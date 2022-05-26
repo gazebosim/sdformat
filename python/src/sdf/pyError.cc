@@ -90,7 +90,7 @@ void defineError(pybind11::object module)
       return sdf::Error(self);
     }, "memo"_a);
 
-  pybind11::enum_<sdf::ErrorCode>(errorModule, "ErrorCode")
+  pybind11::enum_<sdf::ErrorCode>(module, "ErrorCode")
     .value("NONE", sdf::ErrorCode::NONE)
     .value("FILE_READ", sdf::ErrorCode::FILE_READ)
     .value("DUPLICATE_NAME", sdf::ErrorCode::DUPLICATE_NAME)

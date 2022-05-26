@@ -20,6 +20,7 @@
 #include <pybind11/stl.h>
 
 #include "sdf/Joint.hh"
+#include "sdf/Sensor.hh"
 
 using namespace pybind11::literals;
 
@@ -97,6 +98,22 @@ void defineJoint(pybind11::object module)
     .def("semantic_pose", &sdf::Joint::SemanticPose,
          "Get SemanticPose object of this object to aid in resolving "
          "poses.")
+    .def("sensor_count", &sdf::Joint::SensorCount,
+         "Get the number of sensors.")
+    .def("sensor_by_index", &sdf::Joint::SensorByIndex,
+         pybind11::return_value_policy::reference_internal,
+         "Get a sensor based on an index.")
+    .def("sensor_name_exists", &sdf::Joint::SensorNameExists,
+         "Get whether a sensor name exists.")
+    .def("sensor_by_name", &sdf::Joint::SensorByName,
+         pybind11::return_value_policy::reference_internal,
+         "Get a sensor based on a name.")
+    .def("add_sensor",
+         &sdf::Joint::AddSensor,
+         "Add a sensor to the link.")
+    .def("clear_sensors",
+         &sdf::Joint::ClearSensors,
+         "Remove all sensors")
     .def("__copy__", [](const sdf::Joint &self) {
       return sdf::Joint(self);
     })
@@ -104,7 +121,7 @@ void defineJoint(pybind11::object module)
       return sdf::Joint(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::JointType>(jointModule, "JointType")
+    pybind11::enum_<sdf::JointType>(module, "JointType")
       .value("INVALID", sdf::JointType::INVALID)
       .value("BALL", sdf::JointType::BALL)
       .value("CONTINUOUS", sdf::JointType::CONTINUOUS)

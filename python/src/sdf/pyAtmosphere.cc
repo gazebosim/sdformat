@@ -64,7 +64,7 @@ void defineAtmosphere(pybind11::object module)
       return sdf::Atmosphere(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::AtmosphereType>(atmosphereModule, "AtmosphereType")
+    pybind11::enum_<sdf::AtmosphereType>(module, "AtmosphereType")
       .value("ADIABATIC", sdf::AtmosphereType::ADIABATIC);
 }
 }  // namespace python
