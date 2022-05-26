@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d, SphericalCoordinates
-from sdformat import Error, Frame, Light, Model, World
+from sdformat import Plugin, Error, Frame, Light, Model, World
 import sdformat as sdf
 import unittest
 import math
@@ -366,31 +366,27 @@ class WorldTEST(unittest.TestCase):
         f.set_name("frame2")
         self.assertFalse(world.frame_by_name("frame1"))
         self.assertTrue(world.frame_by_name("frame2"))
-#
-# ########################/
-# TEST(DOMWorld, Plugins)
-# {
-#   world = World()
-#   self.assertTrue(world.Plugins().empty())
-#
-#   sdf::Plugin plugin
-#   plugin.set_name("name1")
-#   plugin.set_Filename("filename1")
-#
-#   world.add_Plugin(plugin)
-#   ASSERT_EQ(1, world.Plugins().size())
-#
-#   plugin.set_name("name2")
-#   world.add_Plugin(plugin)
-#   ASSERT_EQ(2, world.Plugins().size())
-#
-#   self.assertEqual("name1", world.Plugins()[0].name())
-#   self.assertEqual("name2", world.Plugins()[1].name())
-#
-#   world.clear_Plugins()
-#   self.assertTrue(world.Plugins().empty())
-# }
-#
+
+    def test_plugins(self):
+        world = World()
+        self.assertEqual(0, len(world.plugins()))
+
+        plugin = Plugin()
+        plugin.set_name("name1")
+        plugin.set_filename("filename1")
+
+        world.add_plugin(plugin)
+        self.assertEqual(1, len(world.plugins()))
+
+        plugin.set_name("name2")
+        world.add_plugin(plugin)
+        self.assertEqual(2, len(world.plugins()))
+
+        self.assertEqual("name1", world.plugins()[0].name())
+        self.assertEqual("name2", world.plugins()[1].name())
+
+        world.clear_plugins()
+        self.assertEqual(0, len(world.plugins()))
 
 
 if __name__ == '__main__':
