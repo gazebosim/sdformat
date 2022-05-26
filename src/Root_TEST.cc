@@ -66,14 +66,22 @@ TEST(DOMRoot, MoveAssignmentOperator)
   EXPECT_EQ("test_root", root2.Version());
 }
 
-TEST(DOMRoot, GetWorldName)
+TEST(DOMRoot, WorldName)
 {
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
   sdf::Root root;
   std::string worldName;
-  auto errors = root.GetWorldName(path, worldName);
+  auto errors = root.WorldName(path, worldName);
   EXPECT_TRUE(errors.empty());
   EXPECT_EQ("shapes_world", worldName);
+
+  const auto path2 = sdf::testing::TestFile("sdf", "empty_invalid.sdf");
+  errors = root.WorldName(path2, worldName);
+  EXPECT_FALSE(errors.empty());
+
+  const auto path3 = sdf::testing::TestFile("sdf", "invalid_file_name.sdf");
+  errors = root.WorldName(path3, worldName);
+  EXPECT_FALSE(errors.empty());
 }
 
 /////////////////////////////////////////////////
