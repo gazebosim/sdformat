@@ -55,7 +55,7 @@ void definePlugin(pybind11::object module)
     .def("insert_content",
          pybind11::overload_cast<const std::string>
           (&sdf::Plugin::InsertContent),
-         "Set Sunrise time")
+         "Insert an element into the plugin content.")
     .def("set_filename", &sdf::Plugin::SetFilename,
          "Set the filename of the shared library.")
     .def("__str__", toString)
