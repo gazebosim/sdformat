@@ -331,6 +331,11 @@ void Joint::SetPoseRelativeToGraph(
       axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
     }
   }
+  for (auto &sensor : this->dataPtr->sensors)
+  {
+    sensor.SetXmlParentName(this->dataPtr->name);
+    sensor.SetPoseRelativeToGraph(_graph);
+  }
 }
 
 /////////////////////////////////////////////////
