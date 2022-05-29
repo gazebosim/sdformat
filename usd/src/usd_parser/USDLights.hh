@@ -50,7 +50,7 @@ namespace sdf
     /// \param[in] _linkName Name of the link to find the transform
     /// \return Shared point with the sdf Light object or std::nullopt if the
     /// light is not supported.
-    std::optional<sdf::Light> IGNITION_SDFORMAT_USD_VISIBLE ParseUSDLights(
+    std::optional<sdf::Light> GZ_SDFORMAT_USD_VISIBLE ParseUSDLights(
       const pxr::UsdPrim &_prim,
       const USDData &_usdData,
       const std::string &_linkName);

@@ -30,7 +30,7 @@
 #include <pxr/usd/usdPhysics/revoluteJoint.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 #include "sdf/usd/UsdError.hh"
 #include "sdf/usd/usd_parser/USDData.hh"
@@ -66,19 +66,19 @@ namespace sdf
 
       if (body1.size() > 0)
       {
-        _joint.SetChildLinkName(ignition::common::basename(
+        _joint.SetChildLinkName(gz::common::basename(
           body1[0].GetString()));
       }
       else if (body0.size() > 0)
       {
         _joint.SetParentLinkName("world");
-        _joint.SetChildLinkName(ignition::common::basename(
+        _joint.SetChildLinkName(gz::common::basename(
           body0[0].GetString()));
       }
 
       if (body0.size() > 0 && _joint.ParentLinkName().empty())
       {
-        _joint.SetParentLinkName(ignition::common::basename(
+        _joint.SetParentLinkName(gz::common::basename(
           body0[0].GetString()));
       }
       else
@@ -103,10 +103,10 @@ namespace sdf
       float maxForce;
       float jointFriction;
       float vel;
-      ignition::math::Quaterniond q1;
-      ignition::math::Quaterniond q2;
+      gz::math::Quaterniond q1;
+      gz::math::Quaterniond q2;
       pxr::GfVec3f trans;
-      ignition::math::Vector3d axisVector;
+      gz::math::Vector3d axisVector;
       sdf::JointAxis jointAxis;
 
       if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>() ||
@@ -126,15 +126,15 @@ namespace sdf
 
         if (axis == pxr::UsdGeomTokens->x)
         {
-          axisVector = ignition::math::Vector3d(1, 0, 0);
+          axisVector = gz::math::Vector3d(1, 0, 0);
         }
         else if (axis == pxr::UsdGeomTokens->y)
         {
-          axisVector = ignition::math::Vector3d(0, 1, 0);
+          axisVector = gz::math::Vector3d(0, 1, 0);
         }
         else if (axis == pxr::UsdGeomTokens->z)
         {
-          axisVector = ignition::math::Vector3d(0, 0, 1);
+          axisVector = gz::math::Vector3d(0, 0, 1);
         }
 
         pxr::GfVec3f localPose0, localPose1;
@@ -148,12 +148,12 @@ namespace sdf
 
         trans = (localPose0 + localPose1) * metersPerUnit;
 
-        q1 = ignition::math::Quaterniond(
+        q1 = gz::math::Quaterniond(
           localRot0.GetReal(),
           localRot0.GetImaginary()[0],
           localRot0.GetImaginary()[1],
           localRot0.GetImaginary()[2]);
-        q2 = ignition::math::Quaterniond(
+        q2 = gz::math::Quaterniond(
           localRot1.GetReal(),
           localRot1.GetImaginary()[0],
           localRot1.GetImaginary()[1],
@@ -223,9 +223,9 @@ namespace sdf
         }
 
         _joint.SetRawPose(
-          ignition::math::Pose3d(
-            ignition::math::Vector3d(trans[0], trans[1], trans[2]),
-            ignition::math::Quaterniond(q1 * q2)));
+          gz::math::Pose3d(
+            gz::math::Vector3d(trans[0], trans[1], trans[2]),
+            gz::math::Quaterniond(q1 * q2)));
 
         jointAxis.SetLower(lowerLimit * metersPerUnit);
         jointAxis.SetUpper(upperLimit * metersPerUnit);
@@ -252,8 +252,8 @@ namespace sdf
           return errors;
         }
 
-        _joint.SetRawPose(ignition::math::Pose3d(
-            ignition::math::Vector3d(trans[0], trans[1], trans[2]),
+        _joint.SetRawPose(gz::math::Pose3d(
+            gz::math::Vector3d(trans[0], trans[1], trans[2]),
             q1));
 
         jointAxis.SetLower(IGN_DTOR(lowerLimit));

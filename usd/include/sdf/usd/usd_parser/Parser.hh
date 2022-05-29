@@ -39,7 +39,7 @@ namespace sdf
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error
     /// occurred when parsing the USD file to its SDF representation.
-    UsdErrors IGNITION_SDFORMAT_USD_VISIBLE parseUSDFile(
+    UsdErrors GZ_SDFORMAT_USD_VISIBLE parseUSDFile(
       const std::string &_inputFilenameUsd,
       const std::string &_outputFilenameSdf,
       bool _useGazeboPlugins = true);

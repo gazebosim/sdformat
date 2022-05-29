@@ -20,10 +20,10 @@
 
 #include <string>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/math/Quaternion.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Quaternion.hh>
 
 // TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -36,7 +36,7 @@
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
@@ -70,9 +70,9 @@ namespace sdf
       {
         return result;
       }
-      result = ignition::common::replaceAll(_path, " ", "");
-      result = ignition::common::replaceAll(result, ".", "_");
-      result = ignition::common::replaceAll(result, "-", "_");
+      result = gz::common::replaceAll(_path, " ", "");
+      result = gz::common::replaceAll(result, ".", "_");
+      result = gz::common::replaceAll(result, "-", "_");
       if (std::isdigit(result[0]))
       {
         result = "_" + result;
@@ -88,7 +88,7 @@ namespace sdf
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
     template <typename T>
-    inline UsdErrors PoseWrtParent(const T &_obj, ignition::math::Pose3d &_pose)
+    inline UsdErrors PoseWrtParent(const T &_obj, gz::math::Pose3d &_pose)
     {
       UsdErrors errors;
       const auto poseResolutionErrors = _obj.SemanticPose().Resolve(_pose, "");
@@ -112,7 +112,7 @@ namespace sdf
     /// pose modified to match _pose.
     /// \return UsdErrors, which is a vector of UsdError objects. Each UsdError
     /// includes an error code and message. An empty vector indicates no error.
-    inline UsdErrors SetPose(const ignition::math::Pose3d &_pose,
+    inline UsdErrors SetPose(const gz::math::Pose3d &_pose,
         pxr::UsdStageRefPtr &_stage,
         const pxr::SdfPath &_usdPath)
     {
@@ -140,12 +140,12 @@ namespace sdf
             position.X(), position.Y(), position.Z()));
 
       const auto &rotation = _pose.Rot();
-      // roll/pitch/yaw from ignition::math::Pose3d are in radians, but this API
+      // roll/pitch/yaw from gz::math::Pose3d are in radians, but this API
       // call expects degrees
       geomXformAPI.SetRotate(pxr::GfVec3f(
-            ignition::math::Angle(rotation.Roll()).Degree(),
-            ignition::math::Angle(rotation.Pitch()).Degree(),
-            ignition::math::Angle(rotation.Yaw()).Degree()));
+            gz::math::Angle(rotation.Roll()).Degree(),
+            gz::math::Angle(rotation.Pitch()).Degree(),
+            gz::math::Angle(rotation.Yaw()).Degree()));
 
       return errors;
     }

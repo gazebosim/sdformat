@@ -58,7 +58,7 @@ class sdf::ParserConfig::Implementation
 
 /////////////////////////////////////////////////
 ParserConfig::ParserConfig()
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
