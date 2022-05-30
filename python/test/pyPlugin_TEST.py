@@ -31,7 +31,6 @@ class PluginTEST(unittest.TestCase):
         plugin.set_filename("filename.so")
         self.assertEqual("filename.so", plugin.filename())
 
-
     def test_copy_construction(self):
         plugin = Plugin()
         plugin.set_name("pluginname")
@@ -43,7 +42,6 @@ class PluginTEST(unittest.TestCase):
 
         self.assertEqual("pluginname", plugin.name())
         self.assertEqual("filename", plugin.filename())
-
 
     def test_assigment(self):
         plugin = Plugin()
@@ -57,7 +55,6 @@ class PluginTEST(unittest.TestCase):
         self.assertEqual("pluginname", plugin.name())
         self.assertEqual("filename", plugin.filename())
 
-
     def test_output_stream(self):
         plugin = Plugin()
         plugin.set_name("my-plugin")
@@ -68,10 +65,9 @@ class PluginTEST(unittest.TestCase):
 
         # The expected plugin output string.
         expected = """<plugin name='my-plugin' filename='filename.so'/>\n"""
-        self.assertEqual(expected, plugin.__str__())
+        self.assertEqual(expected, str(plugin))
 
-
-    def test_output_stream(self):
+    def test_insert_string_content(self):
         plugin = Plugin("my-filename", "my-name",
           "<render_engine>ogre2</render_engine>")
         self.assertEqual("my-filename", plugin.filename())
@@ -115,6 +111,34 @@ class PluginTEST(unittest.TestCase):
         plugin5 = Plugin("filename", "name", "    ")
         self.assertEqual("filename", plugin5.filename())
         self.assertEqual("name", plugin5.name())
+
+    def test_equality_operators(self):
+        plugin = Plugin("my-filename", "my-name",
+          "<render_engine>ogre2</render_engine>")
+        plugin2 = Plugin(plugin)
+        plugin3 = Plugin()
+
+        self.assertEqual(plugin, plugin2)
+        self.assertNotEqual(plugin, plugin3)
+        self.assertNotEqual(plugin2, plugin3)
+
+        # Test contents
+        plugin2.clear_contents()
+        self.assertNotEqual(plugin, plugin2)
+        plugin.clear_contents()
+        self.assertEqual(plugin, plugin2)
+
+        # test name
+        plugin2.set_name("new-name")
+        self.assertNotEqual(plugin, plugin2)
+        plugin.set_name("new-name")
+        self.assertEqual(plugin, plugin2)
+
+        # test filename
+        plugin2.set_filename("new-filename")
+        self.assertNotEqual(plugin, plugin2)
+        plugin.set_filename("new-filename")
+        self.assertEqual(plugin, plugin2)
 
 
 if __name__ == '__main__':

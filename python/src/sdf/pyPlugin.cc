@@ -16,6 +16,7 @@
 
 #include "pyPlugin.hh"
 
+#include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -44,6 +45,8 @@ void definePlugin(pybind11::object module)
       const std::string &, const std::string &, const std::string &>(),
       pybind11::arg("_filename"), pybind11::arg("_name"),
       pybind11::arg("_xmlContent") = "")
+    .def(pybind11::self == pybind11::self)
+    .def(pybind11::self != pybind11::self)
     .def("name", &sdf::Plugin::Name,
          "Get the name of the plugin.")
     .def("set_name", &sdf::Plugin::SetName,
@@ -51,7 +54,8 @@ void definePlugin(pybind11::object module)
     .def("filename", &sdf::Plugin::Filename,
          "Get the filename of the shared library.")
     .def("clear_contents", &sdf::Plugin::ClearContents,
-         "Remove the contents of the plugin, this is everything that")
+         "Remove the contents of the plugin, this is everything that"
+         "is a child element of the `<plugin>`.")
     .def("insert_content",
          pybind11::overload_cast<const std::string>
           (&sdf::Plugin::InsertContent),
