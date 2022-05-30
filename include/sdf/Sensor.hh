@@ -435,6 +435,10 @@ namespace sdf
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
     /// a private function, so we need to befriend the entire class.
     friend class Link;
+    /// \brief Allow Joint::SetPoseRelativeToGraph to call SetXmlParentName
+    /// and SetPoseRelativeToGraph, but Joint::SetPoseRelativeToGraph is
+    /// a private function, so we need to befriend the entire class.
+    friend class Joint;
 
     /// \brief Private data pointer.
     IGN_UTILS_IMPL_PTR(dataPtr)

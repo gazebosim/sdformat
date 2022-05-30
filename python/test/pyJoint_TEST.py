@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d
-from sdformat import Joint, JointAxis, Error, SemanticPose
+from sdformat import Joint, JointAxis, Error, SemanticPose, Sensor
 import sdformat as sdf
 import math
 import unittest
@@ -158,6 +158,35 @@ class JointTEST(unittest.TestCase):
         self.assertIsNotNone(joint2.axis(1))
         self.assertEqual(axis.xyz(), joint2.axis(0).xyz())
         self.assertEqual(axis1.xyz(), joint2.axis(1).xyz())
+
+    def test_mutable_by_index(self):
+        joint = Joint()
+
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(joint.add_sensor(sensor))
+
+        # Modify the sensor
+        s = joint.sensor_by_index(0)
+        self.assertNotEqual(None, s)
+        self.assertEqual("sensor1", s.name())
+        s.set_name("sensor2")
+        self.assertEqual("sensor2", joint.sensor_by_index(0).name())
+
+    def test_mutable_by_name(self):
+        joint = Joint()
+
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(joint.add_sensor(sensor))
+
+        # Modify the sensor
+        s = joint.sensor_by_name("sensor1")
+        self.assertNotEqual(None, s)
+        self.assertEqual("sensor1", s.name())
+        s.set_name("sensor2")
+        self.assertEqual("sensor2", joint.sensor_by_name("sensor2").name())
+
 
 if __name__ == '__main__':
     unittest.main()
