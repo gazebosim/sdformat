@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Box.hh"
 #include "sdf/parser.hh"
 
@@ -24,7 +24,7 @@ using namespace sdf;
 class sdf::Box::Implementation
 {
   // Size of the box
-  public: ignition::math::Boxd box{ignition::math::Vector3d::One};
+  public: gz::math::Boxd box{gz::math::Vector3d::One};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -32,7 +32,7 @@ class sdf::Box::Implementation
 
 /////////////////////////////////////////////////
 Box::Box()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -63,8 +63,8 @@ Errors Box::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("size"))
   {
-    std::pair<ignition::math::Vector3d, bool> pair =
-      _sdf->Get<ignition::math::Vector3d>("size", this->dataPtr->box.Size());
+    std::pair<gz::math::Vector3d, bool> pair =
+      _sdf->Get<gz::math::Vector3d>("size", this->dataPtr->box.Size());
 
     if (!pair.second)
     {
@@ -85,13 +85,13 @@ Errors Box::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d Box::Size() const
+gz::math::Vector3d Box::Size() const
 {
   return this->dataPtr->box.Size();
 }
 
 //////////////////////////////////////////////////
-void Box::SetSize(const ignition::math::Vector3d &_size)
+void Box::SetSize(const gz::math::Vector3d &_size)
 {
   this->dataPtr->box.SetSize(_size);
 }
@@ -103,13 +103,13 @@ sdf::ElementPtr Box::Element() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Boxd &Box::Shape() const
+const gz::math::Boxd &Box::Shape() const
 {
   return this->dataPtr->box;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Boxd &Box::Shape()
+gz::math::Boxd &Box::Shape()
 {
   return this->dataPtr->box;
 }

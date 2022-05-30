@@ -18,7 +18,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "sdf/sdf.hh"
 #include "test_config.h"
@@ -158,14 +158,14 @@ TEST(Material, ValidColors)
                                        ->GetElement("material");
   ASSERT_NE(elem, nullptr);
 
-  EXPECT_EQ(elem->Get<ignition::math::Color>("diffuse"),
-            ignition::math::Color(0, 0.1f, 0.2f, 1));
-  EXPECT_EQ(elem->Get<ignition::math::Color>("specular"),
-            ignition::math::Color(0, 0.1f, 0.2f, 0.3f));
-  EXPECT_EQ(elem->Get<ignition::math::Color>("emissive"),
-            ignition::math::Color(0.12f, 0.23f, 0.34f, 0.56f));
-  EXPECT_EQ(elem->Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0, 0, 0, 1));
+  EXPECT_EQ(elem->Get<gz::math::Color>("diffuse"),
+            gz::math::Color(0, 0.1f, 0.2f, 1));
+  EXPECT_EQ(elem->Get<gz::math::Color>("specular"),
+            gz::math::Color(0, 0.1f, 0.2f, 0.3f));
+  EXPECT_EQ(elem->Get<gz::math::Color>("emissive"),
+            gz::math::Color(0.12f, 0.23f, 0.34f, 0.56f));
+  EXPECT_EQ(elem->Get<gz::math::Color>("ambient"),
+            gz::math::Color(0, 0, 0, 1));
 }
 
 //////////////////////////////////////////////////
@@ -185,12 +185,12 @@ TEST(Material, URDFValidColors)
                                        ->GetElement("visual")
                                        ->GetElement("material");
   ASSERT_NE(elem, nullptr);
-  EXPECT_EQ(elem->Get<ignition::math::Color>("diffuse"),
-            ignition::math::Color(0.0, 1.0f, 1.0f, 1));
-  EXPECT_EQ(elem->Get<ignition::math::Color>("specular"),
-            ignition::math::Color(0.0, 0.0f, 0.0f, 1));
-  EXPECT_EQ(elem->Get<ignition::math::Color>("emissive"),
-            ignition::math::Color(0, 0, 0, 1));
-  EXPECT_EQ(elem->Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0.0, 1.0f, 1.0f, 1));
+  EXPECT_EQ(elem->Get<gz::math::Color>("diffuse"),
+            gz::math::Color(0.0, 1.0f, 1.0f, 1));
+  EXPECT_EQ(elem->Get<gz::math::Color>("specular"),
+            gz::math::Color(0.0, 0.0f, 0.0f, 1));
+  EXPECT_EQ(elem->Get<gz::math::Color>("emissive"),
+            gz::math::Color(0, 0, 0, 1));
+  EXPECT_EQ(elem->Get<gz::math::Color>("ambient"),
+            gz::math::Color(0.0, 1.0f, 1.0f, 1));
 }

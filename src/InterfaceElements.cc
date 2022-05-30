@@ -30,7 +30,7 @@ class sdf::NestedInclude::Implementation
 SDF_SUPPRESS_DEPRECATED_BEGIN
 /////////////////////////////////////////////////
 NestedInclude::NestedInclude()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -97,7 +97,7 @@ void NestedInclude::SetIsStatic(bool _isStatic)
 }
 
 /////////////////////////////////////////////////
-const std::optional<ignition::math::Pose3d> &NestedInclude::IncludeRawPose()
+const std::optional<gz::math::Pose3d> &NestedInclude::IncludeRawPose()
     const
 {
   return this->includeRawPose;
@@ -105,7 +105,7 @@ const std::optional<ignition::math::Pose3d> &NestedInclude::IncludeRawPose()
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIncludeRawPose(
-    const ignition::math::Pose3d &_includeRawPose)
+    const gz::math::Pose3d &_includeRawPose)
 {
   this->includeRawPose = _includeRawPose;
 }

@@ -17,8 +17,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Assert.hh"
 #include "sdf/Error.hh"
@@ -36,7 +36,7 @@ class sdf::JointAxis::Implementation
   /// The axis is expressed in the joint frame unless the
   /// use_parent_model_frame flag is set to true. The vector should be
   /// normalized.
-  public: ignition::math::Vector3d xyz = ignition::math::Vector3d::UnitZ;
+  public: gz::math::Vector3d xyz = gz::math::Vector3d::UnitZ;
 
   /// \brief Frame in which xyz is expressed in.
   public: std::string xyzExpressedIn = "";
@@ -91,7 +91,7 @@ class sdf::JointAxis::Implementation
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -105,7 +105,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Read the xyz values.
   if (_sdf->HasElement("xyz"))
   {
-    using ignition::math::Vector3d;
+    using gz::math::Vector3d;
     auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz", Vector3d::UnitZ).first);
     std::copy(errs.begin(), errs.end(), std::back_inserter(errors));
     auto e = _sdf->GetElement("xyz");
@@ -162,13 +162,13 @@ Errors JointAxis::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d JointAxis::Xyz() const
+gz::math::Vector3d JointAxis::Xyz() const
 {
   return this->dataPtr->xyz;
 }
 
 /////////////////////////////////////////////////
-sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
+sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
 {
   if (sdf::equal(_xyz.Length(), 0.0))
   {
@@ -326,7 +326,7 @@ void JointAxis::SetPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Errors JointAxis::ResolveXyz(
-    ignition::math::Vector3d &_xyz,
+    gz::math::Vector3d &_xyz,
     const std::string &_resolveTo) const
 {
   Errors errors;
@@ -358,7 +358,7 @@ Errors JointAxis::ResolveXyz(
     resolveTo = this->dataPtr->xmlParentName;
   }
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   errors = resolvePose(pose, graph, axisExpressedIn, resolveTo);
 
   if (errors.empty())
@@ -386,7 +386,7 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
     axisElemName += std::to_string(_index + 1);
   sdf::ElementPtr axisElem = elem->GetElement(axisElemName);
   sdf::ElementPtr xyzElem = axisElem->GetElement("xyz");
-  xyzElem->Set<ignition::math::Vector3d>(this->Xyz());
+  xyzElem->Set<gz::math::Vector3d>(this->Xyz());
   if (!this->XyzExpressedIn().empty())
   {
     xyzElem->GetAttribute("expressed_in")->Set<std::string>(

@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 #ifndef _WIN32
 #include <fcntl.h>
@@ -36,7 +36,7 @@
 bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  if(!ignition::utils::env("TMPDIR", tmppath))
+  if(!gz::utils::env("TMPDIR", tmppath))
   {
     tmppath = "/tmp";
   }

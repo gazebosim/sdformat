@@ -20,10 +20,10 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/URI.hh>
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/URI.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Pose3.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -61,12 +61,12 @@ std::string findFileCb(const std::string &_input)
   return sdf::testing::TestFile("sdf", _input);
 }
 
-/// \brief This function is used by ignition::common::addFindFileURICallback to
+/// \brief This function is used by gz::common::addFindFileURICallback to
 /// find the resources defined in the URI
 /// \param[in] _uri URI of the file to find
 /// \return The full path to the uri. Empty
 /// string is returned if the file could not be found.
-std::string FindResourceUri(const ignition::common::URI &_uri)
+std::string FindResourceUri(const gz::common::URI &_uri)
 {
   std::string prefix = _uri.Scheme();
   std::string suffix;
@@ -77,14 +77,14 @@ std::string FindResourceUri(const ignition::common::URI &_uri)
     suffix += _uri.Path().Str();
   suffix += _uri.Query().Str();
 
-  return findFileCb(ignition::common::copyFromUnixPath(suffix));
+  return findFileCb(gz::common::copyFromUnixPath(suffix));
 }
 
 /// \brief Compare the pose of a USD prim to a desired pose
 /// \param[in] _usdPrim The USD prim
 /// \param[in] _targetPose The pose that _usdPrim should have
 void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
-            const ignition::math::Pose3d &_targetPose)
+            const gz::math::Pose3d &_targetPose)
 {
   bool checkedTranslate = false;
   if (auto translateAttr =
@@ -108,13 +108,13 @@ void CheckPrimPose(const pxr::UsdPrim &_usdPrim,
     // USD uses degrees, but SDF uses radians. USD also uses floats for angles
     // here, but SDF uses doubles
     const auto sdfRollAngle = static_cast<float>(
-        ignition::math::Angle(_targetPose.Rot().Roll()).Degree());
+        gz::math::Angle(_targetPose.Rot().Roll()).Degree());
     EXPECT_FLOAT_EQ(usdRotation[0], sdfRollAngle);
     const auto sdfPitchAngle = static_cast<float>(
-        ignition::math::Angle(_targetPose.Rot().Pitch()).Degree());
+        gz::math::Angle(_targetPose.Rot().Pitch()).Degree());
     EXPECT_FLOAT_EQ(usdRotation[1], sdfPitchAngle);
     const auto sdfYawAngle = static_cast<float>(
-        ignition::math::Angle(_targetPose.Rot().Yaw()).Degree());
+        gz::math::Angle(_targetPose.Rot().Yaw()).Degree());
     EXPECT_FLOAT_EQ(usdRotation[2], sdfYawAngle);
     checkedRotate = true;
   }

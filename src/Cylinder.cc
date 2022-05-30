@@ -24,7 +24,7 @@ using namespace sdf;
 class sdf::Cylinder::Implementation
 {
   // A cylinder with a length of 1 meter and radius if 0.5 meters.
-  public: ignition::math::Cylinderd cylinder{1.0, 0.5};
+  public: gz::math::Cylinderd cylinder{1.0, 0.5};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -32,7 +32,7 @@ class sdf::Cylinder::Implementation
 
 /////////////////////////////////////////////////
 Cylinder::Cylinder()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -125,13 +125,13 @@ sdf::ElementPtr Cylinder::Element() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Cylinderd &Cylinder::Shape() const
+const gz::math::Cylinderd &Cylinder::Shape() const
 {
   return this->dataPtr->cylinder;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Cylinderd &Cylinder::Shape()
+gz::math::Cylinderd &Cylinder::Shape()
 {
   return this->dataPtr->cylinder;
 }

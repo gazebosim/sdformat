@@ -7,7 +7,7 @@ BUILD_DIR=`pwd`
 cd /tmp
 
 # check that we can compile USD from sources (only Focal)
-# see https://github.com/ignitionrobotics/sdformat/issues/869
+# see https://github.com/gazebosim/sdformat/issues/869
 return_code=0
 if [ "$(lsb_release -r -s)" != "20.04" ]; then
   return_code=$(($return_code + 1))

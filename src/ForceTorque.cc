@@ -60,7 +60,7 @@ class sdf::ForceTorque::Implementation
 
 //////////////////////////////////////////////////
 ForceTorque::ForceTorque()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
