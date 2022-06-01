@@ -19,11 +19,11 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/TempDirectory.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/TempDirectory.hh>
+#include <gz/common/Util.hh>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
@@ -40,7 +40,7 @@
 
 static std::string usd2sdfCommand()
 {
-  return ignition::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
+  return gz::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
       "usd2sdf");
 }
 
@@ -77,23 +77,23 @@ TEST(version_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /////////////////////////////////////////////////
 TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  const auto tmp = ignition::common::createTempDirectory("usd",
-      ignition::common::tempDirectoryPath());
+  const auto tmp = gz::common::createTempDirectory("usd",
+      gz::common::tempDirectoryPath());
 
-  auto systemPaths = ignition::common::systemPaths();
-  systemPaths->AddFilePaths(ignition::common::joinPaths(
+  auto systemPaths = gz::common::systemPaths();
+  systemPaths->AddFilePaths(gz::common::joinPaths(
     sdf::testing::TestFile("usd"), "materials", "textures"));
   // Check a good SDF file
   {
     const std::string path = sdf::testing::TestFile("usd", "upAxisZ.usda");
     const auto outputSdfFilePath =
-      ignition::common::joinPaths(tmp, "upAxisZ.sdf");
-    EXPECT_FALSE(ignition::common::isFile(outputSdfFilePath));
+      gz::common::joinPaths(tmp, "upAxisZ.sdf");
+    EXPECT_FALSE(gz::common::isFile(outputSdfFilePath));
     const std::string output =
       custom_exec_str(usd2sdfCommand() + " " + path + " " + outputSdfFilePath);
 
     // make sure that a sdf file was generated
-    ASSERT_TRUE(ignition::common::isFile(outputSdfFilePath)) << output;
+    ASSERT_TRUE(gz::common::isFile(outputSdfFilePath)) << output;
 
     // check the contents of the generated SDF file
     sdf::Root root;
@@ -110,16 +110,16 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     auto plugins = world->Plugins();
     EXPECT_EQ(4u, plugins.size());
-    EXPECT_EQ("ignition::gazebo::systems::Physics", plugins[0].Name());
+    EXPECT_EQ("gz::sim::systems::Physics", plugins[0].Name());
     EXPECT_EQ("ignition-gazebo-physics-system", plugins[0].Filename());
 
-    EXPECT_EQ("ignition::gazebo::systems::Sensors", plugins[1].Name());
+    EXPECT_EQ("gz::sim::systems::Sensors", plugins[1].Name());
     EXPECT_EQ("ignition-gazebo-sensors-system", plugins[1].Filename());
 
-    EXPECT_EQ("ignition::gazebo::systems::UserCommands", plugins[2].Name());
+    EXPECT_EQ("gz::sim::systems::UserCommands", plugins[2].Name());
     EXPECT_EQ("ignition-gazebo-user-commands-system", plugins[2].Filename());
 
-    EXPECT_EQ("ignition::gazebo::systems::SceneBroadcaster", plugins[3].Name());
+    EXPECT_EQ("gz::sim::systems::SceneBroadcaster", plugins[3].Name());
     EXPECT_EQ(
       "ignition-gazebo-scene-broadcaster-system", plugins[3].Filename());
 

@@ -14,9 +14,10 @@
 
 import copy
 from ignition.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from sdformat import (Collision, Light, Link, Visual)
+from sdformat import (Collision, Light, Link, Sensor, Visual)
 import unittest
 import math
+
 
 class LinkTEST(unittest.TestCase):
 
@@ -52,12 +53,12 @@ class LinkTEST(unittest.TestCase):
         link.set_enable_wind(True)
         self.assertTrue(link.enable_wind())
 
-        # self.assertEqual(0, link.sensor_count())
-        # self.assertEqual(None, link.sensor_by_index(0))
-        # self.assertEqual(None, link.sensor_by_index(1))
-        # self.assertEqual(None, link.sensor_by_name("empty"))
-        # self.assertFalse(link.sensor_name_exists(""))
-        # self.assertFalse(link.sensor_name_exists("default"))
+        self.assertEqual(0, link.sensor_count())
+        self.assertEqual(None, link.sensor_by_index(0))
+        self.assertEqual(None, link.sensor_by_index(1))
+        self.assertEqual(None, link.sensor_by_name("empty"))
+        self.assertFalse(link.sensor_name_exists(""))
+        self.assertFalse(link.sensor_name_exists("default"))
 
         self.assertEqual(Pose3d.ZERO, link.raw_pose())
         self.assertFalse(link.pose_relative_to())
@@ -216,30 +217,26 @@ class LinkTEST(unittest.TestCase):
         lightFromLink = link.light_by_index(0)
         self.assertNotEqual(None, lightFromLink)
         self.assertEqual(lightFromLink.name(), light.name())
-    #
-    # /////////////////////////////////////////////////
-    # TEST(DOMLink, AddSensor)
-    # {
-    #   sdf::Link link
-    #   self.assertEqual(0, link.sensor_count())
-    #
-    #   sdf::Sensor sensor
-    #   sensor.set_name("sensor1")
-    #   self.assertTrue(link.AddSensor(sensor))
-    #   self.assertEqual(1, link.sensor_count())
-    #   self.assertFalse(link.AddSensor(sensor))
-    #   self.assertEqual(1, link.sensor_count())
-    #
-    #   link.ClearSensors()
-    #   self.assertEqual(0, link.sensor_count())
-    #
-    #   self.assertTrue(link.AddSensor(sensor))
-    #   self.assertEqual(1, link.sensor_count())
-    #   const sdf::Sensor *sensorFromLink = link.sensor_by_index(0)
-    #   self.assertNotEqual(None, sensorFromLink)
-    #   self.assertEqual(sensorFromLink.name(), sensor.name())
-    # )
 
+    def test_add_sensor(self):
+        link = Link()
+        self.assertEqual(0, link.sensor_count())
+
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(link.add_sensor(sensor))
+        self.assertEqual(1, link.sensor_count())
+        self.assertFalse(link.add_sensor(sensor))
+        self.assertEqual(1, link.sensor_count())
+
+        link.clear_sensors()
+        self.assertEqual(0, link.sensor_count())
+
+        self.assertTrue(link.add_sensor(sensor))
+        self.assertEqual(1, link.sensor_count())
+        sensorFromLink = link.sensor_by_index(0)
+        self.assertNotEqual(None, sensorFromLink)
+        self.assertEqual(sensorFromLink.name(), sensor.name())
 
     def test_mutable_by_index(self):
         link = Link()
@@ -257,10 +254,10 @@ class LinkTEST(unittest.TestCase):
         light.set_name("light1")
         self.assertTrue(link.add_light(light))
 
-        # sdf::Sensor sensor
-        # sensor.set_name("sensor1")
-        # self.assertTrue(link.AddSensor(sensor))
-        #
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(link.add_sensor(sensor))
+
         # sdf::ParticleEmitter pe
         # pe.set_name("pe1")
         # self.assertTrue(link.AddParticleEmitter(pe))
@@ -286,13 +283,13 @@ class LinkTEST(unittest.TestCase):
         l.set_name("light2")
         self.assertEqual("light2", link.light_by_index(0).name())
 
-        # # Modify the sensor
-        # sdf::Sensor *s = link.sensor_by_index(0)
-        # self.assertNotEqual(None, s)
-        # self.assertEqual("sensor1", s.name())
-        # s.set_name("sensor2")
-        # self.assertEqual("sensor2", link.sensor_by_index(0).name())
-        #
+        # Modify the sensor
+        s = link.sensor_by_index(0)
+        self.assertNotEqual(None, s)
+        self.assertEqual("sensor1", s.name())
+        s.set_name("sensor2")
+        self.assertEqual("sensor2", link.sensor_by_index(0).name())
+
         # # Modify the particle emitter
         # sdf::ParticleEmitter *p = link.ParticleEmitterByIndex(0)
         # self.assertNotEqual(None, p)
@@ -316,10 +313,10 @@ class LinkTEST(unittest.TestCase):
         light.set_name("light1")
         self.assertTrue(link.add_light(light))
 
-        # sdf::Sensor sensor
-        # sensor.set_name("sensor1")
-        # self.assertTrue(link.AddSensor(sensor))
-        #
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(link.add_sensor(sensor))
+
         # sdf::ParticleEmitter pe
         # pe.set_name("pe1")
         # self.assertTrue(link.AddParticleEmitter(pe))
@@ -348,14 +345,14 @@ class LinkTEST(unittest.TestCase):
         self.assertFalse(link.light_name_exists("light1"))
         self.assertTrue(link.light_name_exists("light2"))
 
-        # // Modify the sensor
-        # sdf::Sensor *s = link.sensor_by_name("sensor1")
-        # self.assertNotEqual(None, s)
-        # self.assertEqual("sensor1", s.name())
-        # s.set_name("sensor2")
-        # self.assertFalse(link.sensor_name_exists("sensor1"))
-        # self.assertTrue(link.sensor_name_exists("sensor2"))
-        #
+        # Modify the sensor
+        s = link.sensor_by_name("sensor1")
+        self.assertNotEqual(None, s)
+        self.assertEqual("sensor1", s.name())
+        s.set_name("sensor2")
+        self.assertFalse(link.sensor_name_exists("sensor1"))
+        self.assertTrue(link.sensor_name_exists("sensor2"))
+
         # // Modify the particle emitter
         # sdf::ParticleEmitter *p = link.ParticleEmitterByName("pe1")
         # self.assertNotEqual(None, p)

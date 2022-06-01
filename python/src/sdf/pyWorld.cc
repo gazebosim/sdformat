@@ -157,20 +157,19 @@ void defineWorld(pybind11::object module)
           "Get whether a light name exists.")
      .def("atmosphere", &sdf::World::Atmosphere,
           "Get a pointer to the atmosphere model associated with this "
-          "world. A nullptr indicates that an atmosphere model has not been "
+          "world. A None indicates that an atmosphere model has not been "
           "set.")
      .def("set_atmosphere", &sdf::World::SetAtmosphere,
           "Set the atmosphere model associated with this world.")
      .def("physics_count", &sdf::World::PhysicsCount,
           "Get the number of physics profiles.")
-     // TODO(ahcorde) Enable plugins when sdf::plugins is converted
-     // .def("plugins",
-     //      pybind11::overload_cast<>(&sdf::World::Plugins, pybind11::const_),
-     //      "Get the plugins attached to this object.")
-     // .def("clear_plugins", &sdf::World::ClearPlugins,
-     //      "Remove all plugins")
-     // .def("add_plugin", &sdf::World::AddPlugin,
-     //      "Add a plugin to this object.")
+     .def("plugins",
+          pybind11::overload_cast<>(&sdf::World::Plugins, pybind11::const_),
+          "Get the plugins attached to this object.")
+     .def("clear_plugins", &sdf::World::ClearPlugins,
+          "Remove all plugins")
+     .def("add_plugin", &sdf::World::AddPlugin,
+          "Add a plugin to this object.")
     .def("__copy__", [](const sdf::World &self) {
       return sdf::World(self);
     })

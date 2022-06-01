@@ -23,7 +23,7 @@ TEST(DOMJointAxis, Construction)
 {
   sdf::JointAxis axis;
   EXPECT_EQ(nullptr, axis.Element());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis.Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, axis.Xyz());
   EXPECT_TRUE(axis.XyzExpressedIn().empty());
   EXPECT_DOUBLE_EQ(0.0, axis.Damping());
   EXPECT_DOUBLE_EQ(0.0, axis.Friction());
@@ -37,16 +37,16 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(1.0, axis.Dissipation());
 
   {
-    sdf::Errors errors = axis.SetXyz(ignition::math::Vector3d(0, 1, 0));
+    sdf::Errors errors = axis.SetXyz(gz::math::Vector3d(0, 1, 0));
     EXPECT_TRUE(errors.empty());
-    EXPECT_EQ(ignition::math::Vector3d::UnitY, axis.Xyz());
+    EXPECT_EQ(gz::math::Vector3d::UnitY, axis.Xyz());
   }
 
   axis.SetXyzExpressedIn("__model__");
   EXPECT_EQ("__model__", axis.XyzExpressedIn());
 
   // expect errors when trying to resolve axis without graph
-  ignition::math::Vector3d vec3;
+  gz::math::Vector3d vec3;
   EXPECT_FALSE(axis.ResolveXyz(vec3).empty());
 
   axis.SetDamping(0.2);
@@ -84,7 +84,7 @@ TEST(DOMJointAxis, Construction)
 TEST(DOMJointAxis, CopyConstructor)
 {
   sdf::JointAxis jointAxis;
-  EXPECT_TRUE(jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0)).empty());
+  EXPECT_TRUE(jointAxis.SetXyz(gz::math::Vector3d(0, 1, 0)).empty());
 
   sdf::JointAxis jointAxisCopy(jointAxis);
   EXPECT_EQ(jointAxis.Xyz(), jointAxisCopy.Xyz());
@@ -94,7 +94,7 @@ TEST(DOMJointAxis, CopyConstructor)
 TEST(DOMJointAxis, AssignmentOperator)
 {
   sdf::JointAxis jointAxis;
-  EXPECT_TRUE(jointAxis.SetXyz(ignition::math::Vector3d(0, 1, 0)).empty());
+  EXPECT_TRUE(jointAxis.SetXyz(gz::math::Vector3d(0, 1, 0)).empty());
 
   sdf::JointAxis jointAxisCopy;
   jointAxisCopy = jointAxis;
@@ -104,7 +104,7 @@ TEST(DOMJointAxis, AssignmentOperator)
 /////////////////////////////////////////////////
 TEST(DOMJointAxis, MoveConstructor)
 {
-  ignition::math::Vector3d axis{0, 1, 0};
+  gz::math::Vector3d axis{0, 1, 0};
   sdf::JointAxis jointAxis;
   EXPECT_TRUE(jointAxis.SetXyz(axis).empty());
 
@@ -115,7 +115,7 @@ TEST(DOMJointAxis, MoveConstructor)
 /////////////////////////////////////////////////
 TEST(DOMJointAxis, MoveAssignmentOperator)
 {
-  ignition::math::Vector3d axis{0, 1, 0};
+  gz::math::Vector3d axis{0, 1, 0};
   sdf::JointAxis jointAxis;
   EXPECT_TRUE(jointAxis.SetXyz(axis).empty());
 
@@ -127,11 +127,11 @@ TEST(DOMJointAxis, MoveAssignmentOperator)
 /////////////////////////////////////////////////
 TEST(DOMJointAxis, CopyAssignmentAfterMove)
 {
-  ignition::math::Vector3d axis1{0, 1, 0};
+  gz::math::Vector3d axis1{0, 1, 0};
   sdf::JointAxis jointAxis1;
   EXPECT_TRUE(jointAxis1.SetXyz(axis1).empty());
 
-  ignition::math::Vector3d axis2{1, 0, 0};
+  gz::math::Vector3d axis2{1, 0, 0};
   sdf::JointAxis jointAxis2;
   EXPECT_TRUE(jointAxis2.SetXyz(axis2).empty());
 
@@ -151,7 +151,7 @@ TEST(DOMJointAxis, ZeroNormVectorReturnsError)
   sdf::JointAxis axis;
   EXPECT_TRUE(axis.SetXyz({1.0, 0, 0}).empty());
 
-  sdf::Errors errors = axis.SetXyz(ignition::math::Vector3d::Zero);
+  sdf::Errors errors = axis.SetXyz(gz::math::Vector3d::Zero);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Message(), "The norm of the xyz vector cannot be zero");
 }

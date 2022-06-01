@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 #include "sdf/sdf.hh"
 
 #include "test_config.h"
@@ -68,18 +68,18 @@ TEST(Frame, LinkLight)
   EXPECT_EQ(lightElem->Get<std::string>("type"), "point");
 
   EXPECT_TRUE(lightElem->HasElement("pose"));
-  auto pose = lightElem->Get<ignition::math::Pose3d>("pose");
-  EXPECT_EQ(ignition::math::Pose3d(0.1, 0, 0, 0, 0, 0), pose);
+  auto pose = lightElem->Get<gz::math::Pose3d>("pose");
+  EXPECT_EQ(gz::math::Pose3d(0.1, 0, 0, 0, 0, 0), pose);
 
   // diffuse
   EXPECT_TRUE(lightElem->HasElement("diffuse"));
   sdf::ElementPtr diffuseElem = lightElem->GetElement("diffuse");
-  EXPECT_EQ(diffuseElem->Get<ignition::math::Color>(),
-      ignition::math::Color(0.2f, 0.3f, 0.4f, 1.0f));
+  EXPECT_EQ(diffuseElem->Get<gz::math::Color>(),
+      gz::math::Color(0.2f, 0.3f, 0.4f, 1.0f));
 
   // specular
   EXPECT_TRUE(lightElem->HasElement("specular"));
   sdf::ElementPtr specularElem = lightElem->GetElement("specular");
-  EXPECT_EQ(specularElem->Get<ignition::math::Color>(),
-      ignition::math::Color(0.3f, 0.4f, 0.5f, 1.0f));
+  EXPECT_EQ(specularElem->Get<gz::math::Color>(),
+      gz::math::Color(0.3f, 0.4f, 0.5f, 1.0f));
 }

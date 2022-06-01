@@ -63,11 +63,11 @@ namespace sdf
 
     /// \brief Get the mesh's scale factor.
     /// \return The mesh's scale factor.
-    public: ignition::math::Vector3d Scale() const;
+    public: gz::math::Vector3d Scale() const;
 
     /// \brief Set the mesh's scale factor.
     /// \return The mesh's scale factor.
-    public: void SetScale(const ignition::math::Vector3d &_scale);
+    public: void SetScale(const gz::math::Vector3d &_scale);
 
     /// \brief A submesh, contained with the mesh at the specified URI, may
     /// optionally be specified. If specified, this submesh should be used

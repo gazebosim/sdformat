@@ -29,7 +29,7 @@ class sdf::OutputConfig::Implementation
 
 /////////////////////////////////////////////////
 OutputConfig::OutputConfig()
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

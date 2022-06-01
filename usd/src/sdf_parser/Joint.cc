@@ -19,9 +19,9 @@
 
 #include <sstream>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -70,17 +70,17 @@ namespace usd
   {
     UsdErrors errors;
 
-    ignition::math::Pose3d parentToJoint;
+    gz::math::Pose3d parentToJoint;
     if (_joint.ParentLinkName() == "world")
     {
-      ignition::math::Pose3d modelToJoint;
+      gz::math::Pose3d modelToJoint;
       auto poseErrors = usd::PoseWrtParent(_joint, modelToJoint);
       if (!poseErrors.empty())
         return poseErrors;
 
       // it is assumed the _parentModel's parent is the world because nested
       // models are not yet supported (see issue #845)
-      ignition::math::Pose3d worldToModel;
+      gz::math::Pose3d worldToModel;
       poseErrors = usd::PoseWrtParent(_parentModel, worldToModel);
       if (!poseErrors.empty())
         return poseErrors;
@@ -103,7 +103,7 @@ namespace usd
       }
     }
 
-    ignition::math::Pose3d childToJoint;
+    gz::math::Pose3d childToJoint;
     auto poseResolutionErrors = _joint.SemanticPose().Resolve(childToJoint,
         _joint.ChildLinkName());
     if (!poseResolutionErrors.empty())
@@ -131,21 +131,21 @@ namespace usd
 
     const auto axis = _joint.Axis();
     // TODO(anyone) Review this logic which converts a Y axis into a X axis.
-    if (axis && (axis->Xyz() == ignition::math::Vector3d::UnitY))
+    if (axis && (axis->Xyz() == gz::math::Vector3d::UnitY))
     {
       if (auto jointRevolute = pxr::UsdPhysicsRevoluteJoint(_jointPrim))
       {
-        const ignition::math::Quaterniond fixRotation(0, 0, IGN_DTOR(90));
-        ignition::math::Quaterniond parentRotationTmp = parentToJoint.Rot();
-        ignition::math::Quaterniond childRotationTmp = childToJoint.Rot();
+        const gz::math::Quaterniond fixRotation(0, 0, IGN_DTOR(90));
+        gz::math::Quaterniond parentRotationTmp = parentToJoint.Rot();
+        gz::math::Quaterniond childRotationTmp = childToJoint.Rot();
 
-        if (parentRotationTmp == ignition::math::Quaterniond::Identity)
+        if (parentRotationTmp == gz::math::Quaterniond::Identity)
         {
           parentRotationTmp = fixRotation * parentRotationTmp;
         }
         else
         {
-          parentRotationTmp = ignition::math::Quaterniond(IGN_DTOR(-90),
+          parentRotationTmp = gz::math::Quaterniond(IGN_DTOR(-90),
               IGN_PI, IGN_PI) * parentRotationTmp;
         }
 
@@ -200,18 +200,18 @@ namespace usd
 
     const auto axis = _joint.Axis();
 
-    if (axis->Xyz() == ignition::math::Vector3d::UnitX ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitX)
+    if (axis->Xyz() == gz::math::Vector3d::UnitX ||
+        axis->Xyz() == -gz::math::Vector3d::UnitX)
     {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
     }
-    else if (axis->Xyz() == ignition::math::Vector3d::UnitY ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitY)
+    else if (axis->Xyz() == gz::math::Vector3d::UnitY ||
+        axis->Xyz() == -gz::math::Vector3d::UnitY)
     {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
     }
-    else if (axis->Xyz() == ignition::math::Vector3d::UnitZ ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitZ)
+    else if (axis->Xyz() == gz::math::Vector3d::UnitZ ||
+        axis->Xyz() == -gz::math::Vector3d::UnitZ)
     {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     }
@@ -273,18 +273,18 @@ namespace usd
 
     const auto axis = _joint.Axis();
 
-    if (axis->Xyz() == ignition::math::Vector3d::UnitX ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitX)
+    if (axis->Xyz() == gz::math::Vector3d::UnitX ||
+        axis->Xyz() == -gz::math::Vector3d::UnitX)
     {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("X"));
     }
-    else if (axis->Xyz() == ignition::math::Vector3d::UnitY ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitY)
+    else if (axis->Xyz() == gz::math::Vector3d::UnitY ||
+        axis->Xyz() == -gz::math::Vector3d::UnitY)
     {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Y"));
     }
-    else if (axis->Xyz() == ignition::math::Vector3d::UnitZ ||
-        axis->Xyz() == -ignition::math::Vector3d::UnitZ)
+    else if (axis->Xyz() == gz::math::Vector3d::UnitZ ||
+        axis->Xyz() == -gz::math::Vector3d::UnitZ)
     {
       usdJoint.CreateAxisAttr().Set(pxr::TfToken("Z"));
     }
@@ -352,7 +352,7 @@ namespace usd
         // range, SDF does not have limits for a ball joint. So, there's
         // nothing to do after creating a UsdPhysicsSphericalJoint, since this
         // joint by default has no limits (i.e., allows for circular motion)
-        // related issue https://github.com/ignitionrobotics/sdformat/issues/860
+        // related issue https://github.com/gazebosim/sdformat/issues/860
         pxr::UsdPhysicsSphericalJoint::Define(_stage, pxr::SdfPath(_path));
         break;
       case sdf::JointType::FIXED:

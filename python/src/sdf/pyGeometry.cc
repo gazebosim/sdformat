@@ -98,7 +98,7 @@ void defineGeometry(pybind11::object module)
       return sdf::Geometry(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::GeometryType>(geometryModule, "GeometryType")
+    pybind11::enum_<sdf::GeometryType>(module, "GeometryType")
       .value("EMPTY", sdf::GeometryType::EMPTY)
       .value("BOX", sdf::GeometryType::BOX)
       .value("CYLINDER", sdf::GeometryType::CYLINDER)

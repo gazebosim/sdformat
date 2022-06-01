@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -57,7 +57,7 @@ namespace usd
 
     auto usdLinkXform = pxr::UsdGeomXform::Define(_stage, sdfLinkPath);
 
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = sdf::usd::PoseWrtParent(_link, pose);
     if (!poseErrors.empty())
     {

@@ -18,7 +18,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
@@ -133,7 +133,7 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_FALSE(nullptr == model->LinkByIndex(1));
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
@@ -171,7 +171,7 @@ TEST(DOMRoot, NestedModel)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("parent"));
@@ -345,7 +345,7 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -435,7 +435,7 @@ TEST(DOMRoot, LoadCanonicalLink)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("link1"));
@@ -571,10 +571,10 @@ TEST(DOMRoot, ModelPlacementFrameAttribute)
   auto *model = root.Model();
   ASSERT_NE(nullptr, model);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   errors = model->SemanticPose().Resolve(pose);
   EXPECT_TRUE(errors.empty()) << errors;
-  EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////

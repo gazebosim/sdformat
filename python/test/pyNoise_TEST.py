@@ -14,6 +14,7 @@
 
 import copy
 from sdformat import Noise
+import sdformat as sdf
 import math
 import unittest
 
@@ -22,9 +23,9 @@ class NoiseTEST(unittest.TestCase):
     def test_construct_and_set(self):
         noise = Noise()
 
-        self.assertEqual(Noise.NoiseType.NONE, noise.type())
-        noise.set_type(Noise.NoiseType.GAUSSIAN)
-        self.assertEqual(Noise.NoiseType.GAUSSIAN, noise.type())
+        self.assertEqual(sdf.NoiseType.NONE, noise.type())
+        noise.set_type(sdf.NoiseType.GAUSSIAN)
+        self.assertEqual(sdf.NoiseType.GAUSSIAN, noise.type())
 
         self.assertAlmostEqual(0.0, noise.mean())
         noise.set_mean(1.2)
