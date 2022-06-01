@@ -58,12 +58,12 @@ namespace sdf
   /// function parameters) the pose value and coordinate frame.
   /// \param[in] _sdf Pointer to an SDF element that is a pose element.
   /// \param[out] _pose Value of the pose element. The default value is
-  /// ignition::math::Pose3d::Zero.
+  /// gz::math::Pose3d::Zero.
   /// \param[out] _frame Value of the frame attribute. The default value is
   /// an empty string.
-  /// \return True if the pose element contained an ignition::math::Pose3d
+  /// \return True if the pose element contained an gz::math::Pose3d
   /// value.
-  bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+  bool loadPose(sdf::ElementPtr _sdf, gz::math::Pose3d &_pose,
                 std::string &_frame);
 
   /// \brief If the value is negative, convert it to positive infinity.

@@ -37,7 +37,7 @@ class sdf::Exception::Implementation
 
 //////////////////////////////////////////////////
 Exception::Exception()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

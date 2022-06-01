@@ -16,7 +16,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Link.hh"
 #include "sdf/SemanticPose.hh"
 
@@ -24,7 +24,7 @@
 TEST(SemanticPose, Construction)
 {
   sdf::Link link;
-  ignition::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
+  gz::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
   link.SetRawPose(rawPose);
   const sdf::SemanticPose &semPose = link.SemanticPose();
   EXPECT_EQ(rawPose, semPose.RawPose());
@@ -34,7 +34,7 @@ TEST(SemanticPose, Construction)
 TEST(SemanticPose, CopyConstructor)
 {
   sdf::Link link;
-  ignition::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
+  gz::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
   link.SetRawPose(rawPose);
   sdf::SemanticPose semPose1 = link.SemanticPose();
 
@@ -46,14 +46,14 @@ TEST(SemanticPose, CopyConstructor)
 TEST(SemanticPose, CopyAssignmentOperator)
 {
   sdf::Link link;
-  ignition::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
+  gz::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
   link.SetRawPose(rawPose);
   sdf::SemanticPose semPose1 = link.SemanticPose();
 
   // Create another SemanticPose object from another Link;
   sdf::Link link2;
   sdf::SemanticPose semPose2 = link2.SemanticPose();
-  EXPECT_EQ(ignition::math::Pose3d::Zero, semPose2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, semPose2.RawPose());
 
   semPose2 = semPose1;
   EXPECT_EQ(rawPose, semPose2.RawPose());
@@ -63,7 +63,7 @@ TEST(SemanticPose, CopyAssignmentOperator)
 TEST(SemanticPose, MoveConstructor)
 {
   sdf::Link link;
-  ignition::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
+  gz::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
   link.SetRawPose(rawPose);
   sdf::SemanticPose semPose1 = link.SemanticPose();
 
@@ -75,14 +75,14 @@ TEST(SemanticPose, MoveConstructor)
 TEST(SemanticPose, MoveAssignmentOperator)
 {
   sdf::Link link;
-  ignition::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
+  gz::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
   link.SetRawPose(rawPose);
   sdf::SemanticPose semPose1 = link.SemanticPose();
 
   // Create another SemanticPose object from another Link;
   sdf::Link link2;
   sdf::SemanticPose semPose2 = link2.SemanticPose();
-  EXPECT_EQ(ignition::math::Pose3d::Zero, semPose2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, semPose2.RawPose());
 
   semPose2 = std::move(semPose1);
   EXPECT_EQ(rawPose, semPose2.RawPose());
@@ -92,14 +92,14 @@ TEST(SemanticPose, MoveAssignmentOperator)
 TEST(SemanticPose, CopyAssignmentAfterMove)
 {
   sdf::Link link;
-  ignition::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
+  gz::math::Pose3d rawPose(1, 0, 0, 0, 0, 0);
   link.SetRawPose(rawPose);
   sdf::SemanticPose semPose1 = link.SemanticPose();
 
   // Create another SemanticPose object from another Link;
   sdf::Link link2;
   sdf::SemanticPose semPose2 = link2.SemanticPose();
-  EXPECT_EQ(ignition::math::Pose3d::Zero, semPose2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, semPose2.RawPose());
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -107,6 +107,6 @@ TEST(SemanticPose, CopyAssignmentAfterMove)
   semPose1 = semPose2;
   semPose2 = tmp;
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, semPose1.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, semPose1.RawPose());
   EXPECT_EQ(rawPose, semPose2.RawPose());
 }

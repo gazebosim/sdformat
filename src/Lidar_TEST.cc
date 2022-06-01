@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Angle.hh>
+#include <gz/math/Angle.hh>
 #include "sdf/Lidar.hh"
 
 /////////////////////////////////////////////////
@@ -36,18 +36,18 @@ TEST(DOMLidar, Set)
   EXPECT_EQ(lidar.HorizontalScanSamples(), 123u);
   lidar.SetHorizontalScanResolution(0.45);
   EXPECT_DOUBLE_EQ(lidar.HorizontalScanResolution(), 0.45);
-  lidar.SetHorizontalScanMinAngle(ignition::math::Angle(0.67));
+  lidar.SetHorizontalScanMinAngle(gz::math::Angle(0.67));
   EXPECT_DOUBLE_EQ(*(lidar.HorizontalScanMinAngle()), 0.67);
-  lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(0.89));
+  lidar.SetHorizontalScanMaxAngle(gz::math::Angle(0.89));
   EXPECT_DOUBLE_EQ(*(lidar.HorizontalScanMaxAngle()), 0.89);
 
   lidar.SetVerticalScanSamples(98);
   EXPECT_EQ(lidar.VerticalScanSamples(), 98u);
   lidar.SetVerticalScanResolution(0.76);
   EXPECT_DOUBLE_EQ(lidar.VerticalScanResolution(), 0.76);
-  lidar.SetVerticalScanMinAngle(ignition::math::Angle(0.54));
+  lidar.SetVerticalScanMinAngle(gz::math::Angle(0.54));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMinAngle()), 0.54);
-  lidar.SetVerticalScanMaxAngle(ignition::math::Angle(0.321));
+  lidar.SetVerticalScanMaxAngle(gz::math::Angle(0.321));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMaxAngle()), 0.321);
 
   lidar.SetRangeMin(1.2);
@@ -65,6 +65,10 @@ TEST(DOMLidar, Set)
 
   lidar.SetHorizontalScanSamples(111);
   lidar.SetHorizontalScanResolution(2.2);
+
+  EXPECT_EQ(UINT32_MAX, lidar.VisibilityMask());
+  lidar.SetVisibilityMask(123u);
+  EXPECT_EQ(123u, lidar.VisibilityMask());
 
   // Inequality operator
   sdf::Lidar lidar2;
@@ -126,15 +130,16 @@ TEST(DOMLidar, ToElement)
   sdf::Lidar lidar;
   lidar.SetHorizontalScanSamples(123);
   lidar.SetHorizontalScanResolution(0.45);
-  lidar.SetHorizontalScanMinAngle(ignition::math::Angle(0.67));
-  lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(0.89));
+  lidar.SetHorizontalScanMinAngle(gz::math::Angle(0.67));
+  lidar.SetHorizontalScanMaxAngle(gz::math::Angle(0.89));
   lidar.SetVerticalScanSamples(98);
   lidar.SetVerticalScanResolution(0.76);
-  lidar.SetVerticalScanMinAngle(ignition::math::Angle(0.54));
-  lidar.SetVerticalScanMaxAngle(ignition::math::Angle(0.321));
+  lidar.SetVerticalScanMinAngle(gz::math::Angle(0.54));
+  lidar.SetVerticalScanMaxAngle(gz::math::Angle(0.321));
   lidar.SetRangeMin(1.2);
   lidar.SetRangeMax(3.4);
   lidar.SetRangeResolution(5.6);
+  lidar.SetVisibilityMask(123u);
 
   sdf::Noise noise;
   noise.SetMean(6.5);
@@ -160,6 +165,7 @@ TEST(DOMLidar, ToElement)
   EXPECT_DOUBLE_EQ(1.2, lidar2.RangeMin());
   EXPECT_DOUBLE_EQ(3.4, lidar2.RangeMax());
   EXPECT_DOUBLE_EQ(5.6, lidar2.RangeResolution());
+  EXPECT_EQ(123u, lidar2.VisibilityMask());
   EXPECT_EQ(noise, lidar2.LidarNoise());
 
   // make changes to DOM and verify ToElement produces updated values

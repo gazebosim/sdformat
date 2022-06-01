@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include <pxr/base/tf/token.h>
 #include <pxr/usd/sdf/path.h>
@@ -75,7 +75,7 @@ namespace usd
     // TODO(adlarkin) incorporate sdf::Light's <direction> somehow? According
     // to the USD API, things like UsdLuxDistantLight and UsdLuxDiskLight emit
     // light along the -Z axis, so I'm not sure if this can be changed.
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = sdf::usd::PoseWrtParent(_light, pose);
     if (!poseErrors.empty())
     {

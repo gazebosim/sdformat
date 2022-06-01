@@ -39,7 +39,7 @@ class InterfaceModel::Implementation
   public: std::string canonicalLinkName;
 
   /// \brief Model frame pose relative to the parent frame.
-  public: ignition::math::Pose3d poseInParentFrame;
+  public: gz::math::Pose3d poseInParentFrame;
 
   /// \brief Collection of child interface models
   public: std::vector<sdf::InterfaceModelConstPtr> nestedModels;
@@ -61,8 +61,8 @@ InterfaceModel::InterfaceModel(const std::string &_name,
     const sdf::RepostureFunction &_repostureFunction,
     bool _static,
     const std::string &_canonicalLinkName,
-    const ignition::math::Pose3d &_poseInParentFrame)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    const gz::math::Pose3d &_poseInParentFrame)
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
   this->dataPtr->repostureFunction = _repostureFunction;
@@ -90,7 +90,7 @@ const std::string &InterfaceModel::CanonicalLinkName() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &
+const gz::math::Pose3d &
 InterfaceModel::ModelFramePoseInParentFrame() const
 {
   return this->dataPtr->poseInParentFrame;

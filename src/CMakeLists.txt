@@ -29,7 +29,7 @@ endif()
 
 if (BUILD_TESTING)
   # Build this test file only if Ignition Tools is installed.
-  if (NOT IGN_PROGRAM)
+  if (NOT GZ_PROGRAM)
     list(REMOVE_ITEM gtest_sources ign_TEST.cc)
   endif()
 

@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -131,7 +131,7 @@ TEST_F(UsdStageFixture, Ellipsoid)
 TEST_F(UsdStageFixture, Geometry)
 {
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
-  ignition::common::addFindFileURICallback(
+  gz::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
 
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");

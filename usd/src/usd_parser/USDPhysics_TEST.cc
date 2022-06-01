@@ -52,7 +52,7 @@ TEST(USDPhysicsTest, AvailablePhysics)
 
   sdf::usd::ParseUSDPhysicsScene(
     physicsScene, world, metersPerUnit);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.8), world.Gravity());
+  EXPECT_EQ(gz::math::Vector3d(0, 0, -9.8), world.Gravity());
 }
 
 /////////////////////////////////////////////////
@@ -72,5 +72,5 @@ TEST(USDPhysicsTest, UnavailablePhysics)
 
   sdf::usd::ParseUSDPhysicsScene(
     physicsScene, world, metersPerUnit);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.8), world.Gravity());
+  EXPECT_EQ(gz::math::Vector3d(0, 0, -9.8), world.Gravity());
 }
