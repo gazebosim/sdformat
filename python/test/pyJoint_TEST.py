@@ -14,16 +14,18 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d
-from sdformat import Joint, JointAxis, Error, SemanticPose
+from sdformat import Joint, JointAxis, Error, SemanticPose, Sensor
+import sdformat as sdf
 import math
 import unittest
+
 
 class JointTEST(unittest.TestCase):
 
     def test_default_construction(self):
         joint = Joint()
         self.assertFalse(joint.name())
-        self.assertEqual(Joint.JointType.INVALID, joint.type())
+        self.assertEqual(sdf.JointType.INVALID, joint.type())
         self.assertFalse(joint.parent_link_name())
         self.assertFalse(joint.child_link_name())
         self.assertEqual(Pose3d.ZERO, joint.raw_pose())
@@ -66,22 +68,22 @@ class JointTEST(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertFalse(resolveParentLink)
 
-        joint.set_type(Joint.JointType.BALL)
-        self.assertEqual(Joint.JointType.BALL, joint.type())
-        joint.set_type(Joint.JointType.CONTINUOUS)
-        self.assertEqual(Joint.JointType.CONTINUOUS, joint.type())
-        joint.set_type(Joint.JointType.GEARBOX)
-        self.assertEqual(Joint.JointType.GEARBOX, joint.type())
-        joint.set_type(Joint.JointType.PRISMATIC)
-        self.assertEqual(Joint.JointType.PRISMATIC, joint.type())
-        joint.set_type(Joint.JointType.REVOLUTE)
-        self.assertEqual(Joint.JointType.REVOLUTE, joint.type())
-        joint.set_type(Joint.JointType.REVOLUTE2)
-        self.assertEqual(Joint.JointType.REVOLUTE2, joint.type())
-        joint.set_type(Joint.JointType.SCREW)
-        self.assertEqual(Joint.JointType.SCREW, joint.type())
-        joint.set_type(Joint.JointType.UNIVERSAL)
-        self.assertEqual(Joint.JointType.UNIVERSAL, joint.type())
+        joint.set_type(sdf.JointType.BALL)
+        self.assertEqual(sdf.JointType.BALL, joint.type())
+        joint.set_type(sdf.JointType.CONTINUOUS)
+        self.assertEqual(sdf.JointType.CONTINUOUS, joint.type())
+        joint.set_type(sdf.JointType.GEARBOX)
+        self.assertEqual(sdf.JointType.GEARBOX, joint.type())
+        joint.set_type(sdf.JointType.PRISMATIC)
+        self.assertEqual(sdf.JointType.PRISMATIC, joint.type())
+        joint.set_type(sdf.JointType.REVOLUTE)
+        self.assertEqual(sdf.JointType.REVOLUTE, joint.type())
+        joint.set_type(sdf.JointType.REVOLUTE2)
+        self.assertEqual(sdf.JointType.REVOLUTE2, joint.type())
+        joint.set_type(sdf.JointType.SCREW)
+        self.assertEqual(sdf.JointType.SCREW, joint.type())
+        joint.set_type(sdf.JointType.UNIVERSAL)
+        self.assertEqual(sdf.JointType.UNIVERSAL, joint.type())
 
         self.assertEqual(None, joint.axis(0))
         self.assertEqual(None, joint.axis(1))
@@ -101,14 +103,12 @@ class JointTEST(unittest.TestCase):
         joint.set_thread_pitch(threadPitch)
         self.assertAlmostEqual(threadPitch, joint.thread_pitch())
 
-        # TODO(ahcorde): Add sensor when sdf::sensors class is converted
-        # self.assertEqual(0u, joint.SensorCount())
-        # self.assertEqual(None, joint.SensorByIndex(0))
-        # self.assertEqual(None, joint.SensorByIndex(1))
-        # self.assertEqual(None, joint.SensorByName("empty"))
-        # self.assertFalse(joint.SensorNameExists(""))
-        # self.assertFalse(joint.SensorNameExists("default"))
-
+        self.assertEqual(0, joint.sensor_count())
+        self.assertEqual(None, joint.sensor_by_index(0))
+        self.assertEqual(None, joint.sensor_by_index(1))
+        self.assertEqual(None, joint.sensor_by_name("empty"))
+        self.assertFalse(joint.sensor_name_exists(""))
+        self.assertFalse(joint.sensor_name_exists("default"))
 
     def test_copy_construction(self):
         joint = Joint()
@@ -158,6 +158,35 @@ class JointTEST(unittest.TestCase):
         self.assertIsNotNone(joint2.axis(1))
         self.assertEqual(axis.xyz(), joint2.axis(0).xyz())
         self.assertEqual(axis1.xyz(), joint2.axis(1).xyz())
+
+    def test_mutable_by_index(self):
+        joint = Joint()
+
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(joint.add_sensor(sensor))
+
+        # Modify the sensor
+        s = joint.sensor_by_index(0)
+        self.assertNotEqual(None, s)
+        self.assertEqual("sensor1", s.name())
+        s.set_name("sensor2")
+        self.assertEqual("sensor2", joint.sensor_by_index(0).name())
+
+    def test_mutable_by_name(self):
+        joint = Joint()
+
+        sensor = Sensor()
+        sensor.set_name("sensor1")
+        self.assertTrue(joint.add_sensor(sensor))
+
+        # Modify the sensor
+        s = joint.sensor_by_name("sensor1")
+        self.assertNotEqual(None, s)
+        self.assertEqual("sensor1", s.name())
+        s.set_name("sensor2")
+        self.assertEqual("sensor2", joint.sensor_by_name("sensor2").name())
+
 
 if __name__ == '__main__':
     unittest.main()

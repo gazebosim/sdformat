@@ -26,7 +26,7 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 using namespace sdf;
 
@@ -56,7 +56,7 @@ Console::Console()
   std::string homeVarName = "HOMEPATH";
 #endif
   std::string home;
-  if (!ignition::utils::env(homeVarName, home))
+  if (!gz::utils::env(homeVarName, home))
   {
     std::cerr << "No HOME defined in the environment. Will not log."
               << std::endl;

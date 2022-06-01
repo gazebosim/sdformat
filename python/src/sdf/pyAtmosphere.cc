@@ -19,7 +19,7 @@
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 
-#include <ignition/math/Temperature.hh>
+#include <gz/math/Temperature.hh>
 
 #include "sdf/Atmosphere.hh"
 
@@ -64,7 +64,7 @@ void defineAtmosphere(pybind11::object module)
       return sdf::Atmosphere(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::AtmosphereType>(atmosphereModule, "AtmosphereType")
+    pybind11::enum_<sdf::AtmosphereType>(module, "AtmosphereType")
       .value("ADIABATIC", sdf::AtmosphereType::ADIABATIC);
 }
 }  // namespace python

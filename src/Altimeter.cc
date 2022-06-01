@@ -36,7 +36,7 @@ class sdf::Altimeter::Implementation
 
 //////////////////////////////////////////////////
 Altimeter::Altimeter()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

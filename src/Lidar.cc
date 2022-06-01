@@ -18,7 +18,7 @@
 #include "sdf/parser.hh"
 
 using namespace sdf;
-using namespace ignition;
+using namespace gz;
 
 /// \brief Private lidar data.
 class sdf::Lidar::Implementation
@@ -61,11 +61,14 @@ class sdf::Lidar::Implementation
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
+
+  /// \brief Visibility mask of a lidar. Defaults to 0xFFFFFFFF
+  public: uint32_t visibilityMask{UINT32_MAX};
 };
 
 //////////////////////////////////////////////////
 Lidar::Lidar()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -172,6 +175,12 @@ Errors Lidar::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("noise"))
     this->dataPtr->lidarNoise.Load(_sdf->GetElement("noise"));
+
+  if (_sdf->HasElement("visibility_mask"))
+  {
+    this->dataPtr->visibilityMask = _sdf->Get<uint32_t>("visibility_mask",
+        this->dataPtr->visibilityMask).first;
+  }
 
   return errors;
 }
@@ -326,6 +335,18 @@ void Lidar::SetLidarNoise(const Noise &_noise)
   this->dataPtr->lidarNoise = _noise;
 }
 
+/////////////////////////////////////////////////
+uint32_t Lidar::VisibilityMask() const
+{
+  return this->dataPtr->visibilityMask;
+}
+
+/////////////////////////////////////////////////
+void Lidar::SetVisibilityMask(uint32_t _mask)
+{
+  this->dataPtr->visibilityMask = _mask;
+}
+
 //////////////////////////////////////////////////
 bool Lidar::operator==(const Lidar &_lidar) const
 {
@@ -357,6 +378,8 @@ bool Lidar::operator==(const Lidar &_lidar) const
     return false;
   }
   if (this->dataPtr->lidarNoise != _lidar.LidarNoise())
+    return false;
+  if (this->dataPtr->visibilityMask != _lidar.VisibilityMask())
     return false;
 
   return true;
@@ -421,6 +444,9 @@ sdf::ElementPtr Lidar::ToElement() const
   noiseElem->GetElement("mean")->Set<double>(this->dataPtr->lidarNoise.Mean());
   noiseElem->GetElement("stddev")->Set<double>(
       this->dataPtr->lidarNoise.StdDev());
+
+  elem->GetElement("visibility_mask")->Set<uint32_t>(
+      this->VisibilityMask());
 
   return elem;
 }

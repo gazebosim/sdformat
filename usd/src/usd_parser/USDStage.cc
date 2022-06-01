@@ -57,7 +57,7 @@ namespace usd
 
   /////////////////////////////////////////////////
   USDStage::USDStage(const std::string &_refFileName)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
   {
     this->dataPtr->refFileName = _refFileName;
   }

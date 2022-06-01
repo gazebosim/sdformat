@@ -27,7 +27,7 @@ TEST(DOMMesh, Construction)
   EXPECT_EQ(std::string(), mesh.FilePath());
   EXPECT_EQ(std::string(), mesh.Uri());
   EXPECT_EQ(std::string(), mesh.Submesh());
-  EXPECT_TRUE(ignition::math::Vector3d(1, 1, 1) == mesh.Scale());
+  EXPECT_TRUE(gz::math::Vector3d(1, 1, 1) == mesh.Scale());
   EXPECT_FALSE(mesh.CenterSubmesh());
 }
 
@@ -44,7 +44,7 @@ TEST(DOMMesh, MoveConstructor)
   sdf::Mesh mesh2(std::move(mesh));
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
   EXPECT_TRUE(mesh2.CenterSubmesh());
   EXPECT_EQ("/pear", mesh2.FilePath());
 }
@@ -62,7 +62,7 @@ TEST(DOMMesh, CopyConstructor)
   sdf::Mesh mesh2(mesh);
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
   EXPECT_TRUE(mesh2.CenterSubmesh());
   EXPECT_EQ("/pear", mesh2.FilePath());
 }
@@ -81,7 +81,7 @@ TEST(DOMMesh, CopyAssignmentOperator)
   mesh2 = mesh;
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
   EXPECT_TRUE(mesh2.CenterSubmesh());
   EXPECT_EQ("/pear", mesh2.FilePath());
 }
@@ -100,7 +100,7 @@ TEST(DOMMesh, MoveAssignmentOperator)
   mesh2 = std::move(mesh);
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
   EXPECT_TRUE(mesh2.CenterSubmesh());
   EXPECT_EQ("/pear", mesh2.FilePath());
 }
@@ -138,9 +138,9 @@ TEST(DOMMesh, Set)
   mesh.SetSubmesh("my_submesh");
   EXPECT_EQ("my_submesh", mesh.Submesh());
 
-  EXPECT_TRUE(ignition::math::Vector3d(1, 1, 1) == mesh.Scale());
-  mesh.SetScale(ignition::math::Vector3d(0.2, 1.4, 7.8));
-  EXPECT_TRUE(ignition::math::Vector3d(0.2, 1.4, 7.8) == mesh.Scale());
+  EXPECT_TRUE(gz::math::Vector3d(1, 1, 1) == mesh.Scale());
+  mesh.SetScale(gz::math::Vector3d(0.2, 1.4, 7.8));
+  EXPECT_TRUE(gz::math::Vector3d(0.2, 1.4, 7.8) == mesh.Scale());
 
   EXPECT_FALSE(mesh.CenterSubmesh());
   mesh.SetCenterSubmesh(true);
@@ -186,7 +186,7 @@ TEST(DOMMesh, ToElement)
   sdf::Mesh mesh;
 
   mesh.SetUri("mesh-uri");
-  mesh.SetScale(ignition::math::Vector3d(1, 2, 3));
+  mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
   mesh.SetCenterSubmesh(false);
 

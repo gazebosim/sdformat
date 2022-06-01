@@ -24,7 +24,7 @@ using namespace sdf;
 class sdf::Ellipsoid::Implementation
 {
   /// \brief An ellipsoid with all three radii of 1 meter
-  public: ignition::math::Ellipsoidd ellipsoid{ignition::math::Vector3d::One};
+  public: gz::math::Ellipsoidd ellipsoid{gz::math::Vector3d::One};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -32,7 +32,7 @@ class sdf::Ellipsoid::Implementation
 
 /////////////////////////////////////////////////
 Ellipsoid::Ellipsoid()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -63,8 +63,8 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("radii"))
   {
-    std::pair<ignition::math::Vector3d, bool> pair =
-      _sdf->Get<ignition::math::Vector3d>(
+    std::pair<gz::math::Vector3d, bool> pair =
+      _sdf->Get<gz::math::Vector3d>(
         "radii", this->dataPtr->ellipsoid.Radii());
 
     if (!pair.second)
@@ -86,13 +86,13 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d Ellipsoid::Radii() const
+gz::math::Vector3d Ellipsoid::Radii() const
 {
   return this->dataPtr->ellipsoid.Radii();
 }
 
 //////////////////////////////////////////////////
-void Ellipsoid::SetRadii(const ignition::math::Vector3d &_radii)
+void Ellipsoid::SetRadii(const gz::math::Vector3d &_radii)
 {
   this->dataPtr->ellipsoid.SetRadii(_radii);
 }
@@ -104,13 +104,13 @@ sdf::ElementPtr Ellipsoid::Element() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Ellipsoidd &Ellipsoid::Shape() const
+const gz::math::Ellipsoidd &Ellipsoid::Shape() const
 {
   return this->dataPtr->ellipsoid;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Ellipsoidd &Ellipsoid::Shape()
+gz::math::Ellipsoidd &Ellipsoid::Shape()
 {
   return this->dataPtr->ellipsoid;
 }

@@ -153,7 +153,7 @@ R"(<model name='test2'>
 /////////////////////////////////////////////////
 // Test verifies preserving includes does not work for merge-includes.
 // Need to update test if issue is addressed.
-// https://github.com/ignitionrobotics/sdformat/issues/769
+// https://github.com/gazebosim/sdformat/issues/769
 TEST(PrintConfig, PreserveIncludesWithMerge)
 {
   const std::string modelPath = sdf::testing::TestFile("integration", "model");
@@ -191,8 +191,8 @@ R"(<model name="m2">
   ASSERT_NE(includeMergedModel, nullptr);
 
   // The expected output pose string here still contains a -0 on the pitch value
-  // as it was set using ignition::math::Pose3d::operator<<, this test will have
-  // to be modified when we start using ignitionrobotics/ign-math#206.
+  // as it was set using gz::math::Pose3d::operator<<, this test will have
+  // to be modified when we start using gazebosim/gz-math#206.
   const std::string expectedIncludeMerge =
 R"(<model name='m2'>
   <frame name='_merged__test_box2__model__' attached_to='link'>
@@ -324,7 +324,7 @@ R"(<?xml version='1.0' ?>
   };
   sdf::ElementPtr elem;
 
-  // //pose -> type: ignition::math::Pose3d
+  // //pose -> type: gz::math::Pose3d
   {
     SCOPED_TRACE("PrecisionTest: Pose3d");
     elem = visual->Element()->FindElement("pose");
@@ -356,7 +356,7 @@ R"(<?xml version='1.0' ?>
   auto *material = visual->Material();
   ASSERT_NE(material, nullptr);
 
-  // //material/diffuse -> type: ignition::math::Color (float values)
+  // //material/diffuse -> type: gz::math::Color (float values)
   {
     SCOPED_TRACE("PrecisionTest: Color");
     elem = material->Element()->FindElement("diffuse");
@@ -379,7 +379,7 @@ R"(<?xml version='1.0' ?>
     PrecisionTest(elem, expected);
   }
 
-  // //camera/distortion/center -> type: ignition::math::Vector2d
+  // //camera/distortion/center -> type: gz::math::Vector2d
   {
     auto *sensor = link->SensorByIndex(0);
     ASSERT_NE(sensor, nullptr);
@@ -397,7 +397,7 @@ R"(<?xml version='1.0' ?>
     PrecisionTest(elem, expected);
   }
 
-  // //joint/axis/xyz -> type: ignition::math::Vector3d
+  // //joint/axis/xyz -> type: gz::math::Vector3d
   {
     auto *joint = model->JointByIndex(0);
     ASSERT_NE(joint, nullptr);

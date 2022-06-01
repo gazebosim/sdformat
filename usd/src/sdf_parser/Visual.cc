@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 // TODO(adlarkin) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -59,7 +59,7 @@ namespace usd
       return errors;
     }
 
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     auto poseErrors = usd::PoseWrtParent(_visual, pose);
     if (!poseErrors.empty())
     {
