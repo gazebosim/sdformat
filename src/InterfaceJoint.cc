@@ -30,12 +30,12 @@ class InterfaceJoint::Implementation
   public: std::string childName;
 
   /// \brief Pose of this joint relative to the child frame.
-  public: ignition::math::Pose3d pose;
+  public: gz::math::Pose3d pose;
 };
 
 InterfaceJoint::InterfaceJoint(const std::string &_name,
-    const std::string &_childName, const ignition::math::Pose3d &_pose)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    const std::string &_childName, const gz::math::Pose3d &_pose)
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
   this->dataPtr->childName = _childName;
@@ -55,7 +55,7 @@ const std::string &InterfaceJoint::ChildName() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &InterfaceJoint::PoseInChildFrame() const
+const gz::math::Pose3d &InterfaceJoint::PoseInChildFrame() const
 {
   return this->dataPtr->pose;
 }

@@ -23,8 +23,8 @@
 #include <memory>
 #include <vector>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/InterfaceFrame.hh"
 #include "sdf/InterfaceJoint.hh"
@@ -72,7 +72,7 @@ class SDFORMAT_VISIBLE InterfaceModel
               const sdf::RepostureFunction &_repostureFunction,
               bool _static,
               const std::string &_canonicalLinkName,
-              const ignition::math::Pose3d &_poseInParentFrame = {});
+              const gz::math::Pose3d &_poseInParentFrame = {});
 
   /// \brief Get the name of the model.
   /// \return Local name of the model.
@@ -91,7 +91,7 @@ class SDFORMAT_VISIBLE InterfaceModel
 
   /// \brief Get the pose of this model in the parent frame.
   /// \return Pose of this model in the parent model frame.
-  public: const ignition::math::Pose3d &ModelFramePoseInParentFrame() const;
+  public: const gz::math::Pose3d &ModelFramePoseInParentFrame() const;
 
   /// \brief Provided so that hierarchy can still be leveraged from SDFormat.
   /// \param[in] _nestedModel A child interface model.

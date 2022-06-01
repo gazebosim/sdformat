@@ -17,9 +17,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Filesystem.hh>
+#include <gz/common/Filesystem.hh>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include <sdf/usd/usd_parser/USDStage.hh>
 #include <sdf/usd/UsdError.hh>
@@ -39,7 +39,7 @@ TEST(USDStage, Constructor)
 
     EXPECT_EQ("Z", stage.UpAxis());
     EXPECT_DOUBLE_EQ(0.01, stage.MetersPerUnit());
-    EXPECT_EQ(25u, stage.USDPaths().size());
+    EXPECT_EQ(26u, stage.USDPaths().size());
   }
 
   // Check up Axis equal to Y and metersPerUnit

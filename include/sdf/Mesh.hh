@@ -18,8 +18,8 @@
 #define SDF_MESH_HH_
 
 #include <string>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>
@@ -63,11 +63,11 @@ namespace sdf
 
     /// \brief Get the mesh's scale factor.
     /// \return The mesh's scale factor.
-    public: ignition::math::Vector3d Scale() const;
+    public: gz::math::Vector3d Scale() const;
 
     /// \brief Set the mesh's scale factor.
     /// \return The mesh's scale factor.
-    public: void SetScale(const ignition::math::Vector3d &_scale);
+    public: void SetScale(const gz::math::Vector3d &_scale);
 
     /// \brief A submesh, contained with the mesh at the specified URI, may
     /// optionally be specified. If specified, this submesh should be used

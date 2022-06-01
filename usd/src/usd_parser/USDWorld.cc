@@ -23,7 +23,8 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -63,7 +64,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace usd
 {
   UsdErrors parseUSDWorld(const std::string &_inputFileName,
-    sdf::World &_world)
+      bool _useGazeboPlugins, sdf::World &_world)
   {
     UsdErrors errors;
     USDData usdData(_inputFileName);
@@ -96,7 +97,7 @@ namespace usd
 
     // USD link may have scale, store this value to apply this to the sdf visual
     // the key is the name of the link and the value is the scale value
-    std::map<std::string, ignition::math::Vector3d> linkScaleMap;
+    std::map<std::string, gz::math::Vector3d> linkScaleMap;
 
     auto range = pxr::UsdPrimRange::Stage(reference);
     for (const auto &prim : range)
@@ -112,7 +113,7 @@ namespace usd
       std::string primType = prim.GetPrimTypeInfo().GetTypeName().GetText();
 
       std::vector<std::string> primPathTokens =
-        ignition::common::split(primPath, "/");
+        gz::common::split(primPath, "/");
 
       // This assumption on the scene graph wouldn't hold if the usd does
       // not come from Isaac Sim
@@ -126,8 +127,8 @@ namespace usd
         model.SetName(primPathTokens[0]);
         currentModelName = primPathTokens[0];
 
-        ignition::math::Pose3d pose;
-        ignition::math::Vector3d scale{1, 1, 1};
+        gz::math::Pose3d pose;
+        gz::math::Vector3d scale{1, 1, 1};
 
         GetTransform(
           prim,
@@ -153,7 +154,7 @@ namespace usd
       // This conversion might only work with Issac Sim USDs
       // TODO(adlarkin) find a better way to get root model prims/parent prims
       // of lights attached to the stage: see
-      // https://github.com/ignitionrobotics/sdformat/issues/927
+      // https://github.com/gazebosim/sdformat/issues/927
       if (primPathTokens.size() >= 2)
       {
         bool shortName = false;
@@ -174,20 +175,6 @@ namespace usd
         }
       }
 
-      if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
-          prim.IsA<pxr::UsdLuxNonboundableLightBase>())
-      {
-        auto light = ParseUSDLights(prim, usdData, linkName);
-        light->SetName(primName);
-        if (light)
-        {
-          _world.AddLight(light.value());
-          // TODO(ahcorde) Include lights which are inside links
-        }
-        continue;
-      }
-      // TODO(anyone) support converting other USD light types
-
       sdf::Model *modelPtr = nullptr;
       if (!currentModelName.empty())
       {
@@ -200,6 +187,100 @@ namespace usd
                 "], but a sdf::Model with this name should exist."));
           return errors;
         }
+      }
+
+      if (_useGazeboPlugins && primType == "RosDifferentialBase")
+      {
+        if (!modelPtr)
+        {
+          errors.push_back(UsdError(UsdErrorCode::USD_TO_SDF_PARSING_ERROR,
+            "Unable to store RosDifferentialBase in a DiffDrive plugin "
+            "because the corresponding sdf::Model object wasn't found."));
+          return errors;
+        }
+
+        auto leftWheelAttr = prim.GetAttribute(
+          pxr::TfToken("leftWheelJointName"));
+        auto rightWheelAttr = prim.GetAttribute(
+          pxr::TfToken("rightWheelJointName"));
+        auto wheelBaseAttr = prim.GetAttribute(
+          pxr::TfToken("wheelBase"));
+        auto wheelRadiusAttr = prim.GetAttribute(
+          pxr::TfToken("wheelRadius"));
+
+        sdf::Plugin diffDrivePlugin;
+        diffDrivePlugin.SetName("gz::sim::systems::DiffDrive");
+        diffDrivePlugin.SetFilename("ignition-gazebo-diff-drive-system");
+
+        std::string leftWheelName;
+        std::string rightWheelName;
+        float wheelBase;
+        float wheelRadius;
+        wheelBaseAttr.Get<float>(&wheelBase);
+        wheelRadiusAttr.Get<float>(&wheelRadius);
+        leftWheelAttr.Get<std::string>(&leftWheelName);
+        rightWheelAttr.Get<std::string>(&rightWheelName);
+
+        sdf::ElementPtr leftJointContent(new sdf::Element);
+        leftJointContent->SetName("left_joint");
+        leftJointContent->AddValue("string", "", false);
+        leftJointContent->Set(leftWheelName + "_joint");
+        diffDrivePlugin.InsertContent(leftJointContent);
+
+        sdf::ElementPtr rightJointContent(new sdf::Element);
+        rightJointContent->SetName("right_joint");
+        rightJointContent->AddValue("string", "", false);
+        rightJointContent->Set(rightWheelName + "_joint");
+        diffDrivePlugin.InsertContent(rightJointContent);
+
+        sdf::ElementPtr wheelSeparationContent(new sdf::Element);
+        wheelSeparationContent->SetName("wheel_separation");
+        wheelSeparationContent->AddValue("float", "0.0", false);
+        wheelSeparationContent->Set(wheelBase);
+        diffDrivePlugin.InsertContent(wheelSeparationContent);
+
+        sdf::ElementPtr wheelRadiusContent(new sdf::Element);
+        wheelRadiusContent->SetName("wheel_radius");
+        wheelRadiusContent->AddValue("float", "0.0", false);
+        wheelRadiusContent->Set(wheelRadius);
+        diffDrivePlugin.InsertContent(wheelRadiusContent);
+
+        modelPtr->AddPlugin(diffDrivePlugin);
+        continue;
+      }
+
+      if (prim.IsA<pxr::UsdLuxBoundableLightBase>() ||
+          prim.IsA<pxr::UsdLuxNonboundableLightBase>())
+      {
+        auto light = ParseUSDLights(prim, usdData, linkName);
+        if (light)
+        {
+          light->SetName(primName);
+
+          // assume this light belongs to the world unless the corresponding
+          // model/link for this light are found
+          bool worldLight = true;
+
+          // if the light prim we are parsing has no parent (or if its parent
+          // is the root prim), this means the light belongs to the world
+          const bool noModelAncestor = !prim.GetParent() ||
+            (prim.GetParent().GetName().GetString() == "/");
+          if (!noModelAncestor && modelPtr)
+          {
+            if (auto link =
+                modelPtr->LinkByName(gz::common::basename(linkName)))
+            {
+              link->AddLight(light.value());
+              worldLight = false;
+            }
+          }
+
+          if (worldLight)
+          {
+            _world.AddLight(light.value());
+          }
+        }
+        continue;
       }
 
       if (prim.IsA<pxr::UsdPhysicsJoint>())
@@ -270,21 +351,24 @@ namespace usd
       }
 
       std::optional<sdf::Link> optionalLink;
-      if (auto linkInserted = modelPtr->LinkByName(linkName))
+      if (auto linkInserted =
+          modelPtr->LinkByName(gz::common::basename(linkName)))
       {
         optionalLink = *linkInserted;
         auto scale = linkScaleMap.find(linkName);
         if (scale == linkScaleMap.end())
         {
           scale = linkScaleMap.insert(
-              {linkName, ignition::math::Vector3d(1, 1, 1)}).first;
+              {linkName, gz::math::Vector3d(1, 1, 1)}).first;
         }
         sdf::usd::ParseUSDLinks(
           prim, linkName, optionalLink, usdData, scale->second);
+        *linkInserted = optionalLink.value();
+        linkScaleMap[linkName] = scale->second;
       }
       else
       {
-        ignition::math::Vector3d scale{1, 1, 1};
+        gz::math::Vector3d scale{1, 1, 1};
 
         sdf::usd::ParseUSDLinks(prim, linkName, optionalLink, usdData, scale);
         linkScaleMap[linkName] = scale;
@@ -300,7 +384,7 @@ namespace usd
     for (unsigned int i = 0; i < _world.LightCount(); ++i)
     {
       auto light = _world.LightByIndex(i);
-      light->SetName(ignition::common::basename(light->Name()));
+      light->SetName(gz::common::basename(light->Name()));
     }
 
     for (unsigned int i = 0; i < _world.ModelCount(); ++i)
@@ -319,28 +403,31 @@ namespace usd
       }
     }
 
-    // Add some plugins to run the Ignition Gazebo simulation
-    sdf::Plugin physicsPlugin;
-    physicsPlugin.SetName("ignition::gazebo::systems::Physics");
-    physicsPlugin.SetFilename("ignition-gazebo-physics-system");
-    _world.AddPlugin(physicsPlugin);
+    if (_useGazeboPlugins)
+    {
+      // Add some plugins to run the Ignition Gazebo simulation
+      sdf::Plugin physicsPlugin;
+      physicsPlugin.SetName("gz::sim::systems::Physics");
+      physicsPlugin.SetFilename("ignition-gazebo-physics-system");
+      _world.AddPlugin(physicsPlugin);
 
-    sdf::Plugin sensorsPlugin;
-    sensorsPlugin.SetName("ignition::gazebo::systems::Sensors");
-    sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
-    _world.AddPlugin(sensorsPlugin);
+      sdf::Plugin sensorsPlugin;
+      sensorsPlugin.SetName("gz::sim::systems::Sensors");
+      sensorsPlugin.SetFilename("ignition-gazebo-sensors-system");
+      _world.AddPlugin(sensorsPlugin);
 
-    sdf::Plugin userCommandsPlugin;
-    userCommandsPlugin.SetName("ignition::gazebo::systems::UserCommands");
-    userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
-    _world.AddPlugin(userCommandsPlugin);
+      sdf::Plugin userCommandsPlugin;
+      userCommandsPlugin.SetName("gz::sim::systems::UserCommands");
+      userCommandsPlugin.SetFilename("ignition-gazebo-user-commands-system");
+      _world.AddPlugin(userCommandsPlugin);
 
-    sdf::Plugin sceneBroadcasterPlugin;
-    sceneBroadcasterPlugin.SetName(
-      "ignition::gazebo::systems::SceneBroadcaster");
-    sceneBroadcasterPlugin.SetFilename(
-      "ignition-gazebo-scene-broadcaster-system");
-    _world.AddPlugin(sceneBroadcasterPlugin);
+      sdf::Plugin sceneBroadcasterPlugin;
+      sceneBroadcasterPlugin.SetName(
+        "gz::sim::systems::SceneBroadcaster");
+      sceneBroadcasterPlugin.SetFilename(
+        "ignition-gazebo-scene-broadcaster-system");
+      _world.AddPlugin(sceneBroadcasterPlugin);
+    }
 
     return errors;
   }

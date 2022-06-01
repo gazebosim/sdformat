@@ -51,8 +51,8 @@ namespace usd
 
     auto variantLight = pxr::UsdLuxBoundableLightBase(_prim);
 
-    ignition::math::Pose3d pose;
-    ignition::math::Vector3d scale(1, 1, 1);
+    gz::math::Pose3d pose;
+    gz::math::Vector3d scale(1, 1, 1);
     GetTransform(_prim, _usdData, pose, scale, _linkName);
 
     light->SetName(_prim.GetPath().GetName());
@@ -65,10 +65,10 @@ namespace usd
     light->SetIntensity(intensity / 10000);
     float diffuse;
     variantLight.GetDiffuseAttr().Get(&diffuse);
-    light->SetDiffuse(ignition::math::Color(diffuse, diffuse, diffuse, 1));
+    light->SetDiffuse(gz::math::Color(diffuse, diffuse, diffuse, 1));
     float specular;
     variantLight.GetSpecularAttr().Get(&specular);
-    light->SetSpecular(ignition::math::Color(specular, specular, specular, 1));
+    light->SetSpecular(gz::math::Color(specular, specular, specular, 1));
     light->SetCastShadows(true);
 
     if (_prim.IsA<pxr::UsdLuxDistantLight>())
@@ -77,10 +77,10 @@ namespace usd
 
       // DistantLight in USD does not define height. Added some height to the
       // light. The default sun light in ign-gazebo sdf world is 10.
-      pose += ignition::math::Pose3d(0, 0, 10, 0, 0, 0);
+      pose = gz::math::Pose3d(0, 0, 10, 0, 0, 0) * pose;
       // Light emitted from a distant source along the -Z axis
       // The pose should set the direction
-      light->SetDirection(ignition::math::Vector3d(0, 0, -1));
+      light->SetDirection(gz::math::Vector3d(0, 0, -1));
     }
     else if (_prim.IsA<pxr::UsdLuxDiskLight>())
     {

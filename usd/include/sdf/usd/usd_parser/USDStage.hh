@@ -21,7 +21,7 @@
 #include <set>
 #include <string>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -40,7 +40,7 @@ namespace sdf
     /// - UpAxis
     /// - MetersPerUnit
     /// - All USD paths
-    class IGNITION_SDFORMAT_USD_VISIBLE USDStage
+    class GZ_SDFORMAT_USD_VISIBLE USDStage
     {
       /// \brief Default constructor
       /// \param[in] _refFileName File name of the stage in the disk

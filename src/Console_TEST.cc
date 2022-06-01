@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 #ifndef _WIN32
 #include <stdio.h>
@@ -32,7 +32,7 @@
 bool create_new_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  if(!ignition::utils::env("TMPDIR", tmppath))
+  if(!gz::utils::env("TMPDIR", tmppath))
   {
     tmppath = "/tmp";
   }
@@ -54,7 +54,7 @@ bool create_new_temp_dir(std::string &_new_temp_path)
 TEST(Console, nohome)
 {
   sdf::Console::Clear();
-  ignition::utils::unsetenv("HOME");
+  gz::utils::unsetenv("HOME");
 
   sdferr << "Error.\n";
 }
@@ -66,7 +66,7 @@ TEST(Console, logdir_is_file)
 
   std::string temp_dir;
   ASSERT_TRUE(create_new_temp_dir(temp_dir));
-  ASSERT_TRUE(ignition::utils::setenv("HOME", temp_dir));
+  ASSERT_TRUE(gz::utils::setenv("HOME", temp_dir));
 
   std::string sdf_file = temp_dir + "/.sdformat";
 
@@ -86,7 +86,7 @@ TEST(Console, logdir_doesnt_exist)
   std::string temp_dir;
   ASSERT_TRUE(create_new_temp_dir(temp_dir));
   temp_dir += "/foobarbaz";
-  ASSERT_TRUE(ignition::utils::setenv("HOME", temp_dir));
+  ASSERT_TRUE(gz::utils::setenv("HOME", temp_dir));
 
   sdferr << "Error.\n";
 }

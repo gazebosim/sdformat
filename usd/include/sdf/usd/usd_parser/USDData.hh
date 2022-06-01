@@ -24,7 +24,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Material.hh"
 #include "sdf/Types.hh"
@@ -45,7 +45,7 @@ namespace sdf
     /// It will parse the materials in the stage
     /// If the stage has some references to other stages, this class
     /// will read them and make this data available here too.
-    class IGNITION_SDFORMAT_USD_VISIBLE USDData
+    class GZ_SDFORMAT_USD_VISIBLE USDData
     {
       /// \brief Constructor
       public: explicit USDData(const std::string &_filename);

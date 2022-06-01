@@ -19,11 +19,11 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Helpers.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -131,23 +131,23 @@ class UsdJointStageFixture : public::testing::Test
   /// \param[in] _targetChildPose The pose _usdJoint should have w.r.t. its
   /// child link
   public: void CheckRelativeLinkPoses(const pxr::UsdPhysicsJoint *_usdJoint,
-              const ignition::math::Pose3d &_targetParentPose,
-              const ignition::math::Pose3d &_targetChildPose) const
+              const gz::math::Pose3d &_targetParentPose,
+              const gz::math::Pose3d &_targetChildPose) const
   {
-    // helper function to compare USD position to ignition::math position
+    // helper function to compare USD position to gz::math position
     auto validatePos =
       [](const pxr::GfVec3f &_usdPos,
-          const ignition::math::Vector3d &_targetPos)
+          const gz::math::Vector3d &_targetPos)
       {
         EXPECT_FLOAT_EQ(_usdPos[0], static_cast<float>(_targetPos.X()));
         EXPECT_FLOAT_EQ(_usdPos[1], static_cast<float>(_targetPos.Y()));
         EXPECT_FLOAT_EQ(_usdPos[2], static_cast<float>(_targetPos.Z()));
       };
 
-    // helper function to compare USD rotation to ignition::math quaternion
+    // helper function to compare USD rotation to gz::math quaternion
     auto validateRot =
       [](const pxr::GfQuatf &_usdRot,
-          const ignition::math::Quaterniond &_targetRot)
+          const gz::math::Quaterniond &_targetRot)
       {
         EXPECT_FLOAT_EQ(_usdRot.GetReal(),
             static_cast<float>(_targetRot.W()));
@@ -279,12 +279,12 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
         this->modelPath + "/" + sdfJoint->ChildLinkName());
 
     // check joint's pose w.r.t. parent and child links
-    ignition::math::Pose3d parentToJointPose;
+    gz::math::Pose3d parentToJointPose;
     auto poseErrors = sdfJoint->SemanticPose().Resolve(parentToJointPose,
           sdfJoint->ParentLinkName());
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
-    ignition::math::Pose3d childToJointPose;
+    gz::math::Pose3d childToJointPose;
     poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
           sdfJoint->ChildLinkName());
     EXPECT_TRUE(poseErrors.empty());
@@ -372,16 +372,16 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
 
     // check joint's pose w.r.t. parent and child links. For this test case,
     // we need to get the joint pose w.r.t. the world
-    ignition::math::Pose3d modelToJointPose;
+    gz::math::Pose3d modelToJointPose;
     auto poseErrors = sdfJoint->SemanticPose().Resolve(modelToJointPose);
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
-    ignition::math::Pose3d worldToModelPose;
+    gz::math::Pose3d worldToModelPose;
     poseErrors = this->model->SemanticPose().Resolve(worldToModelPose);
     const auto worldToJointPose = worldToModelPose * modelToJointPose;
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
-    ignition::math::Pose3d childToJointPose;
+    gz::math::Pose3d childToJointPose;
     poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
           sdfJoint->ChildLinkName());
     EXPECT_TRUE(poseErrors.empty());
@@ -454,12 +454,12 @@ TEST_F(UsdJointStageFixture, BallPrismaticJoint)
         this->modelPath + "/" + sdfJoint->ChildLinkName());
 
     // check joint's pose w.r.t. parent and child links
-    ignition::math::Pose3d parentToJointPose;
+    gz::math::Pose3d parentToJointPose;
     auto poseErrors = sdfJoint->SemanticPose().Resolve(parentToJointPose,
           sdfJoint->ParentLinkName());
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
-    ignition::math::Pose3d childToJointPose;
+    gz::math::Pose3d childToJointPose;
     poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
           sdfJoint->ChildLinkName());
     EXPECT_TRUE(poseErrors.empty());
