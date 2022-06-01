@@ -121,7 +121,7 @@ void defineMaterial(pybind11::object module)
       return sdf::Material(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::ShaderType>(materialModule, "ShaderType")
+    pybind11::enum_<sdf::ShaderType>(module, "ShaderType")
       .value("PIXEL", sdf::ShaderType::PIXEL)
       .value("VERTEX", sdf::ShaderType::VERTEX)
       .value("NORMAL_MAP_OBJECTSPACE", sdf::ShaderType::NORMAL_MAP_OBJECTSPACE)

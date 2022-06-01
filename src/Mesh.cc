@@ -29,7 +29,7 @@ class sdf::Mesh::Implementation
   public: std::string filePath = "";
 
   /// \brief The mesh's scale.
-  public: ignition::math::Vector3d scale {1, 1, 1};
+  public: gz::math::Vector3d scale {1, 1, 1};
 
   /// \brief The name of the submesh.
   public: std::string submesh = "";
@@ -43,7 +43,7 @@ class sdf::Mesh::Implementation
 
 /////////////////////////////////////////////////
 Mesh::Mesh()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -106,7 +106,7 @@ Errors Mesh::Load(ElementPtr _sdf)
         this->dataPtr->centerSubmesh).first;
   }
 
-  this->dataPtr->scale = _sdf->Get<ignition::math::Vector3d>("scale",
+  this->dataPtr->scale = _sdf->Get<gz::math::Vector3d>("scale",
       this->dataPtr->scale).first;
 
   return errors;
@@ -143,13 +143,13 @@ void Mesh::SetFilePath(const std::string &_filePath)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d Mesh::Scale() const
+gz::math::Vector3d Mesh::Scale() const
 {
   return this->dataPtr->scale;
 }
 
 //////////////////////////////////////////////////
-void Mesh::SetScale(const ignition::math::Vector3d &_scale)
+void Mesh::SetScale(const gz::math::Vector3d &_scale)
 {
   this->dataPtr->scale = _scale;
 }

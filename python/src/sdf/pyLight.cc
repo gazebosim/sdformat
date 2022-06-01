@@ -159,7 +159,7 @@ void defineLight(pybind11::object module)
       return sdf::Light(self);
     }, "memo"_a);
 
-    pybind11::enum_<sdf::LightType>(lightModule, "LightType")
+    pybind11::enum_<sdf::LightType>(module, "LightType")
       .value("INVALID", sdf::LightType::INVALID)
       .value("POINT", sdf::LightType::POINT)
       .value("SPOT", sdf::LightType::SPOT)

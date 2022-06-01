@@ -87,13 +87,13 @@ namespace sdf
     /// (<frame><pose> ... </pose></frame>).
     /// Use SemanticPose to compute the pose relative to a specific frame.
     /// \return The pose of the frame object.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the raw pose of the frame object. This is interpreted
     /// relative to the frame named in the //pose/@relative_to attribute.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the frame object.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// frame's pose is expressed. An empty value indicates that the frame is

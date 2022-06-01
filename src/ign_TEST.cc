@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
@@ -39,7 +39,7 @@ static std::string SdfVersion()
 
 static std::string IgnCommand()
 {
-  return std::string(IGN_PATH) + "/ign";
+  return std::string(GZ_PATH) + "/ign";
 }
 
 /////////////////////////////////////////////////
@@ -789,7 +789,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF world file with an invalid usage of __root__
   {
     // Set SDF_PATH so that included models can be found
-    ignition::utils::setenv(
+    gz::utils::setenv(
       "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
     std::string path = pathBase + "/world_invalid_root_reference.sdf";
 
@@ -1163,7 +1163,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  ignition::utils::setenv(
+  gz::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const std::string path =
       sdf::testing::TestFile("sdf", "includes_rotations_in_degrees.sdf");
@@ -1234,7 +1234,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  ignition::utils::setenv(
+  gz::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const std::string path =
       sdf::testing::TestFile("sdf", "includes_rotations_in_radians.sdf");
@@ -1306,7 +1306,7 @@ TEST(print_includes_rotations_in_quaternions,
      IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  ignition::utils::setenv(
+  gz::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const auto path = sdf::testing::TestFile(
       "sdf", "includes_rotations_in_quaternions.sdf");
@@ -1891,9 +1891,9 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /// Main
 int main(int argc, char **argv)
 {
-  // Set IGN_CONFIG_PATH to the directory where the .yaml configuration file
+  // Set GZ_CONFIG_PATH to the directory where the .yaml configuration file
   // is located.
-  ignition::utils::setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH);
+  gz::utils::setenv("GZ_CONFIG_PATH", GZ_CONFIG_PATH);
 
   // Make sure that we load the library recently built and not the one installed
   // in your system. This is done by placing the the current build directory
@@ -1902,15 +1902,15 @@ int main(int argc, char **argv)
   // We need to keep the existing LD_LIBRARY_PATH so that libsdformat.so can
   // find its dependency.
 #ifndef _WIN32
-  std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
+  std::string testLibraryPath = GZ_TEST_LIBRARY_PATH;
 
   std::string currentLibraryPath;
-  if (ignition::utils::env("LD_LIBRARY_PATH", currentLibraryPath))
+  if (gz::utils::env("LD_LIBRARY_PATH", currentLibraryPath))
   {
     testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
   }
 
-  ignition::utils::setenv("LD_LIBRARY_PATH", testLibraryPath);
+  gz::utils::setenv("LD_LIBRARY_PATH", testLibraryPath);
 #endif
 
   ::testing::InitGoogleTest(&argc, argv);

@@ -22,12 +22,12 @@
 /** \def SDFORMAT_VISIBLE
  * Use to represent "symbol visible" if supported
  */
-#define SDFORMAT_VISIBLE IGNITION_SDFORMAT_VISIBLE
+#define SDFORMAT_VISIBLE GZ_SDFORMAT_VISIBLE
 
 /** \def SDFORMAT_HIDDEN
  * Use to represent "symbol hidden" if supported
  */
-#define SDFORMAT_HIDDEN IGNITION_SDFORMAT_HIDDEN
+#define SDFORMAT_HIDDEN GZ_SDFORMAT_HIDDEN
 
 // SDF_VISIBLE_HH_
 #endif

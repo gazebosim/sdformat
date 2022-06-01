@@ -16,30 +16,39 @@
 
 #include <pybind11/pybind11.h>
 
+#include "pyAirPressure.hh"
 #include "pyAltimeter.hh"
 #include "pyAtmosphere.hh"
 #include "pyBox.hh"
+#include "pyCamera.hh"
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
+#include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
 #include "pyHeightmap.hh"
+#include "pyIMU.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
+#include "pyLidar.hh"
 #include "pyLight.hh"
 #include "pyLink.hh"
+#include "pyMagnetometer.hh"
 #include "pyMaterial.hh"
 #include "pyMesh.hh"
 #include "pyModel.hh"
+#include "pyNavSat.hh"
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
 #include "pyPbr.hh"
 #include "pyPlane.hh"
+#include "pyPlugin.hh"
 #include "pyRoot.hh"
 #include "pySemanticPose.hh"
+#include "pySensor.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
 #include "pyVisual.hh"
@@ -48,34 +57,43 @@
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  sdf::python::defineAirPressure(m);
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
+  sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
+  sdf::python::defineForceTorque(m);
   sdf::python::defineFrame(m);
   sdf::python::defineGeometry(m);
   sdf::python::defineHeightmap(m);
   sdf::python::defineHeightmapBlend(m);
   sdf::python::defineHeightmapTexture(m);
+  sdf::python::defineIMU(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
+  sdf::python::defineLidar(m);
   sdf::python::defineLight(m);
   sdf::python::defineLink(m);
+  sdf::python::defineMagnetometer(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
   sdf::python::defineModel(m);
+  sdf::python::defineNavSat(m);
   sdf::python::defineNoise(m);
   sdf::python::defineParserConfig(m);
   sdf::python::definePbr(m);
   sdf::python::definePbrWorkflow(m);
   sdf::python::definePlane(m);
+  sdf::python::definePlugin(m);
   sdf::python::defineRoot(m);
   sdf::python::defineSemanticPose(m);
+  sdf::python::defineSensor(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
   sdf::python::defineVisual(m);

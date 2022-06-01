@@ -20,11 +20,11 @@
 #include <map>
 #include <string>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
-#include <ignition/common/URI.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
+#include <gz/common/URI.hh>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -56,14 +56,14 @@ namespace usd
   {
     if (!_path.empty() && !_fullPath.empty())
     {
-      auto fileName = ignition::common::basename(_path);
+      auto fileName = gz::common::basename(_path);
       auto filePathIndex = _path.rfind(fileName);
       auto filePath = _path.substr(0, filePathIndex);
       if (!filePath.empty())
       {
-        ignition::common::createDirectories(filePath);
+        gz::common::createDirectories(filePath);
       }
-      return ignition::common::copyFile(_fullPath, _path);
+      return gz::common::copyFile(_fullPath, _path);
     }
     return false;
   }
@@ -74,10 +74,10 @@ namespace usd
   /// materials/textures/<filename with extension>
   std::string getMaterialCopyPath(const std::string &_uri)
   {
-    return ignition::common::joinPaths(
+    return gz::common::joinPaths(
       "materials",
       "textures",
-      ignition::common::basename(_uri));
+      gz::common::basename(_uri));
   }
 
   /// \brief Fill Material shader attributes and properties
@@ -213,7 +213,7 @@ namespace usd
        pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
-    const ignition::math::Color diffuse = _materialSdf->Diffuse();
+    const gz::math::Color diffuse = _materialSdf->Diffuse();
     auto errorsMaterialDiffuseColorConstant = CreateMaterialInput<pxr::GfVec3f>(
       shaderPrim,
       "diffuse_color_constant",
@@ -243,7 +243,7 @@ namespace usd
        pxr::VtValue(pxr::GfVec3f(100000, 100000, 100000))},
       {pxr::TfToken("range:min"), pxr::VtValue(pxr::GfVec3f(0, 0, 0))}
     };
-    ignition::math::Color emissive = _materialSdf->Emissive();
+    gz::math::Color emissive = _materialSdf->Emissive();
     auto errorsMaterialEmissiveColor = CreateMaterialInput<pxr::GfVec3f>(
       shaderPrim,
       "emissive_color",
@@ -397,8 +397,8 @@ namespace usd
           std::string copyPath = getMaterialCopyPath(pbrWorkflow->AlbedoMap());
 
           std::string fullnameAlbedoMap =
-            ignition::common::findFile(
-              ignition::common::basename(pbrWorkflow->AlbedoMap()));
+            gz::common::findFile(
+              gz::common::basename(pbrWorkflow->AlbedoMap()));
 
           if (fullnameAlbedoMap.empty())
           {
@@ -436,8 +436,8 @@ namespace usd
             getMaterialCopyPath(pbrWorkflow->MetalnessMap());
 
           std::string fullnameMetallnessMap =
-            ignition::common::findFile(
-              ignition::common::basename(pbrWorkflow->MetalnessMap()));
+            gz::common::findFile(
+              gz::common::basename(pbrWorkflow->MetalnessMap()));
 
           if (fullnameMetallnessMap.empty())
           {
@@ -474,8 +474,8 @@ namespace usd
           std::string copyPath = getMaterialCopyPath(pbrWorkflow->NormalMap());
 
           std::string fullnameNormalMap =
-            ignition::common::findFile(
-              ignition::common::basename(pbrWorkflow->NormalMap()));
+            gz::common::findFile(
+              gz::common::basename(pbrWorkflow->NormalMap()));
 
           if (fullnameNormalMap.empty())
           {
@@ -513,8 +513,8 @@ namespace usd
             getMaterialCopyPath(pbrWorkflow->RoughnessMap());
 
           std::string fullnameRoughnessMap =
-            ignition::common::findFile(
-              ignition::common::basename(pbrWorkflow->RoughnessMap()));
+            gz::common::findFile(
+              gz::common::basename(pbrWorkflow->RoughnessMap()));
 
           if (fullnameRoughnessMap.empty())
           {

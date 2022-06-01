@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Temperature.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Temperature.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////
@@ -137,7 +137,7 @@ TEST(DOMAtmosphere, ToElement)
 {
   sdf::Atmosphere atmosphere;
   atmosphere.SetType(sdf::AtmosphereType::ADIABATIC);
-  atmosphere.SetTemperature(ignition::math::Temperature(123));
+  atmosphere.SetTemperature(gz::math::Temperature(123));
   atmosphere.SetTemperatureGradient(1.34);
   atmosphere.SetPressure(2.65);
 

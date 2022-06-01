@@ -16,6 +16,7 @@ import copy
 from ignition.math import Pose3d
 from sdformat import (Box, Collision, Contact, Cylinder, Error, Geometry,
                       Plane, Surface, Sphere)
+import sdformat as sdf
 import unittest
 import math
 
@@ -54,7 +55,7 @@ class CollisionTEST(unittest.TestCase):
         # self.assertFalse(semanticPose.resolve(pose).empty())
 
         self.assertNotEqual(None, collision.geometry())
-        self.assertEqual(Geometry.GeometryType.EMPTY, collision.geometry().type())
+        self.assertEqual(sdf.GeometryType.EMPTY, collision.geometry().type())
         self.assertEqual(None, collision.geometry().box_shape())
         self.assertEqual(None, collision.geometry().cylinder_shape())
         self.assertEqual(None, collision.geometry().plane_shape())
@@ -105,12 +106,12 @@ class CollisionTEST(unittest.TestCase):
         self.assertTrue(not collision.name())
 
         geometry = Geometry()
-        geometry.set_type(Geometry.GeometryType.BOX)
+        geometry.set_type(sdf.GeometryType.BOX)
 
         collision.set_geometry(geometry)
 
         self.assertNotEqual(None, collision.geometry())
-        self.assertEqual(Geometry.GeometryType.BOX, collision.geometry().type())
+        self.assertEqual(sdf.GeometryType.BOX, collision.geometry().type())
 
 
     def test_set_surface(self):

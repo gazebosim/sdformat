@@ -62,10 +62,10 @@ class sdf::Heightmap::Implementation
   public: std::string filePath{""};
 
   /// \brief The heightmap's size.
-  public: ignition::math::Vector3d size{1, 1, 1};
+  public: gz::math::Vector3d size{1, 1, 1};
 
   /// \brief Position offset.
-  public: ignition::math::Vector3d position{0, 0, 0};
+  public: gz::math::Vector3d position{0, 0, 0};
 
   /// \brief Whether to use terrain paging.
   public: bool useTerrainPaging{false};
@@ -85,7 +85,7 @@ class sdf::Heightmap::Implementation
 
 /////////////////////////////////////////////////
 HeightmapTexture::HeightmapTexture()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -193,7 +193,7 @@ void HeightmapTexture::SetNormal(const std::string &_normal)
 
 /////////////////////////////////////////////////
 HeightmapBlend::HeightmapBlend()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -279,7 +279,7 @@ void HeightmapBlend::SetFadeDistance(double _fadeDistance)
 
 /////////////////////////////////////////////////
 Heightmap::Heightmap()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -319,10 +319,10 @@ Errors Heightmap::Load(ElementPtr _sdf)
         "Heightmap geometry is missing a <uri> child element."});
   }
 
-  this->dataPtr->size = _sdf->Get<ignition::math::Vector3d>("size",
+  this->dataPtr->size = _sdf->Get<gz::math::Vector3d>("size",
       this->dataPtr->size).first;
 
-  this->dataPtr->position = _sdf->Get<ignition::math::Vector3d>("pos",
+  this->dataPtr->position = _sdf->Get<gz::math::Vector3d>("pos",
       this->dataPtr->position).first;
 
   this->dataPtr->useTerrainPaging = _sdf->Get<bool>("use_terrain_paging",
@@ -374,25 +374,25 @@ void Heightmap::SetFilePath(const std::string &_filePath)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d Heightmap::Size() const
+gz::math::Vector3d Heightmap::Size() const
 {
   return this->dataPtr->size;
 }
 
 //////////////////////////////////////////////////
-void Heightmap::SetSize(const ignition::math::Vector3d &_size)
+void Heightmap::SetSize(const gz::math::Vector3d &_size)
 {
   this->dataPtr->size = _size;
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d Heightmap::Position() const
+gz::math::Vector3d Heightmap::Position() const
 {
   return this->dataPtr->position;
 }
 
 //////////////////////////////////////////////////
-void Heightmap::SetPosition(const ignition::math::Vector3d &_position)
+void Heightmap::SetPosition(const gz::math::Vector3d &_position)
 {
   this->dataPtr->position = _position;
 }

@@ -18,7 +18,7 @@
 #include <unordered_set>
 #include <vector>
 #include <optional>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
@@ -53,8 +53,8 @@ class sdf::World::Implementation
   public: std::string audioDevice = "default";
 
   /// \brief Gravity vector.
-  public: ignition::math::Vector3d gravity =
-           ignition::math::Vector3d(0, 0, -9.80665);
+  public: gz::math::Vector3d gravity =
+           gz::math::Vector3d(0, 0, -9.80665);
 
   /// \brief Optional Gui parameters.
   public: std::optional<sdf::Gui> gui;
@@ -72,11 +72,11 @@ class sdf::World::Implementation
   public: std::vector<Actor> actors;
 
   /// \brief Magnetic field.
-  public: ignition::math::Vector3d magneticField =
-           ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
+  public: gz::math::Vector3d magneticField =
+           gz::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
 
   /// \brief Spherical coordinates
-  public: std::optional<ignition::math::SphericalCoordinates>
+  public: std::optional<gz::math::SphericalCoordinates>
       sphericalCoordinates;
 
   /// \brief The models specified in this world.
@@ -96,8 +96,8 @@ class sdf::World::Implementation
   public: sdf::ElementPtr sdf;
 
   /// \brief Linear velocity of wind.
-  public: ignition::math::Vector3d windLinearVelocity =
-           ignition::math::Vector3d::Zero;
+  public: gz::math::Vector3d windLinearVelocity =
+           gz::math::Vector3d::Zero;
 
   /// \brief Scoped Frame Attached-To graph that points to a graph owned
   /// by this world.
@@ -113,7 +113,7 @@ class sdf::World::Implementation
 
 /////////////////////////////////////////////////
 World::World()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->physics.emplace_back(Physics());
 }
@@ -169,7 +169,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     sdf::ElementPtr elem = _sdf->GetElement("wind");
     this->dataPtr->windLinearVelocity =
-      elem->Get<ignition::math::Vector3d>("linear_velocity",
+      elem->Get<gz::math::Vector3d>("linear_velocity",
           this->dataPtr->windLinearVelocity).first;
   }
 
@@ -184,12 +184,12 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // Read gravity.
-  this->dataPtr->gravity = _sdf->Get<ignition::math::Vector3d>("gravity",
+  this->dataPtr->gravity = _sdf->Get<gz::math::Vector3d>("gravity",
         this->dataPtr->gravity).first;
 
   // Read the magnetic field.
   this->dataPtr->magneticField =
-    _sdf->Get<ignition::math::Vector3d>("magnetic_field",
+    _sdf->Get<gz::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
 
   // Read the spherical coordinates
@@ -358,37 +358,37 @@ void World::SetAudioDevice(const std::string &_device)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d World::WindLinearVelocity() const
+gz::math::Vector3d World::WindLinearVelocity() const
 {
   return this->dataPtr->windLinearVelocity;
 }
 
 /////////////////////////////////////////////////
-void World::SetWindLinearVelocity(const ignition::math::Vector3d &_wind)
+void World::SetWindLinearVelocity(const gz::math::Vector3d &_wind)
 {
   this->dataPtr->windLinearVelocity = _wind;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d World::Gravity() const
+gz::math::Vector3d World::Gravity() const
 {
   return this->dataPtr->gravity;
 }
 
 /////////////////////////////////////////////////
-void World::SetGravity(const ignition::math::Vector3d &_gravity)
+void World::SetGravity(const gz::math::Vector3d &_gravity)
 {
   this->dataPtr->gravity = _gravity;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d World::MagneticField() const
+gz::math::Vector3d World::MagneticField() const
 {
   return this->dataPtr->magneticField;
 }
 
 /////////////////////////////////////////////////
-void World::SetMagneticField(const ignition::math::Vector3d &_mag)
+void World::SetMagneticField(const gz::math::Vector3d &_mag)
 {
   this->dataPtr->magneticField = _mag;
 }
@@ -463,14 +463,14 @@ void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::SphericalCoordinates *
+const gz::math::SphericalCoordinates *
     World::SphericalCoordinates() const
 {
   return optionalToPointer(this->dataPtr->sphericalCoordinates);
 }
 
 /////////////////////////////////////////////////
-void World::SetSphericalCoordinates(const ignition::math::SphericalCoordinates
+void World::SetSphericalCoordinates(const gz::math::SphericalCoordinates
     &_sphericalCoordinates)
 {
   this->dataPtr->sphericalCoordinates = _sphericalCoordinates;
@@ -770,7 +770,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
 
   // Get elements
   auto surfaceModel =
-      ignition::math::SphericalCoordinates::SurfaceType::EARTH_WGS84;
+      gz::math::SphericalCoordinates::SurfaceType::EARTH_WGS84;
   if (!_elem->HasElement("surface_model"))
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -785,7 +785,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
           "The supplied <surface_model> [" + surfaceModelStr +
           "] is not supported."});
     }
-    surfaceModel = ignition::math::SphericalCoordinates::Convert(
+    surfaceModel = gz::math::SphericalCoordinates::Convert(
         surfaceModelStr);
   }
 
@@ -802,7 +802,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
     }
   }
 
-  ignition::math::Angle latitude{0.0};
+  gz::math::Angle latitude{0.0};
   if (!_elem->HasElement("latitude_deg"))
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -813,7 +813,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
     latitude.SetDegree(_elem->Get<double>("latitude_deg"));
   }
 
-  ignition::math::Angle longitude{0.0};
+  gz::math::Angle longitude{0.0};
   if (!_elem->HasElement("longitude_deg"))
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -835,7 +835,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
     elevation = _elem->Get<double>("elevation");
   }
 
-  ignition::math::Angle heading{0.0};
+  gz::math::Angle heading{0.0};
   if (!_elem->HasElement("heading_deg"))
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -849,7 +849,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
   // Create coordinates
   this->sphericalCoordinates.emplace();
   this->sphericalCoordinates =
-      ignition::math::SphericalCoordinates(surfaceModel, latitude, longitude,
+      gz::math::SphericalCoordinates(surfaceModel, latitude, longitude,
       elevation, heading);
 
   return errors;
@@ -889,7 +889,7 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
   {
     sdf::ElementPtr sphericalElem = elem->GetElement("spherical_coordinates");
     sphericalElem->GetElement("surface_model")->Set(
-        ignition::math::SphericalCoordinates::Convert(
+        gz::math::SphericalCoordinates::Convert(
           this->dataPtr->sphericalCoordinates->Surface()));
     sphericalElem->GetElement("world_frame_orientation")->Set("ENU");
     sphericalElem->GetElement("latitude_deg")->Set(

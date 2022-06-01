@@ -16,7 +16,7 @@
 */
 #include <string>
 #include <vector>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Error.hh"
 #include "sdf/parser.hh"
@@ -51,7 +51,7 @@ class sdf::Waypoint::Implementation
   public: double time = 0.0;
 
   /// \brief Pose to be reached.
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 };
 
 /// \brief Trajectory private data.
@@ -77,7 +77,7 @@ class sdf::Actor::Implementation
   public: std::string name = "__default__";
 
   /// \brief Pose of the actor.
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the actor.
   public: std::string poseRelativeTo = "";
@@ -121,7 +121,7 @@ class sdf::Actor::Implementation
 
 /////////////////////////////////////////////////
 Animation::Animation()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -218,7 +218,7 @@ void Animation::SetFilePath(const std::string &_filePath)
 
 /////////////////////////////////////////////////
 Waypoint::Waypoint()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -235,7 +235,7 @@ Errors Waypoint::Load(ElementPtr _sdf)
   }
   this->dataPtr->time = timeValue.first;
 
-  std::pair posePair = _sdf->Get<ignition::math::Pose3d>
+  std::pair posePair = _sdf->Get<gz::math::Pose3d>
                         ("pose", this->dataPtr->pose);
   if (!posePair.second)
   {
@@ -260,20 +260,20 @@ void Waypoint::SetTime(double _time)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Pose3d Waypoint::Pose() const
+gz::math::Pose3d Waypoint::Pose() const
 {
   return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
-void Waypoint::SetPose(const ignition::math::Pose3d &_pose)
+void Waypoint::SetPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
 
 /////////////////////////////////////////////////
 Trajectory::Trajectory()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -368,7 +368,7 @@ void Trajectory::AddWaypoint(const Waypoint &_waypoint)
 
 /////////////////////////////////////////////////
 Actor::Actor()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -479,7 +479,7 @@ void Actor::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Actor::RawPose() const
+const gz::math::Pose3d &Actor::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -491,7 +491,7 @@ const std::string &Actor::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Actor::SetRawPose(const ignition::math::Pose3d &_pose)
+void Actor::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -736,7 +736,7 @@ sdf::ElementPtr Actor::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   // Skin
   if (this->dataPtr->skinFilename != "__default__")
