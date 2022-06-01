@@ -18,6 +18,7 @@
 
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Sensor.hh"
 
@@ -154,6 +155,13 @@ void defineSensor(pybind11::object module)
          "not a Lidar.")
     .def("set_lidar_sensor", &sdf::Sensor::SetLidarSensor,
          "Set the lidar sensor.")
+    .def("plugins",
+         pybind11::overload_cast<>(&sdf::Sensor::Plugins, pybind11::const_),
+         "Get the plugins attached to this object.")
+    .def("clear_plugins", &sdf::Sensor::ClearPlugins,
+         "Remove all plugins")
+    .def("add_plugin", &sdf::Sensor::AddPlugin,
+         "Add a plugin to this object.")
     .def("__copy__", [](const sdf::Sensor &self) {
       return sdf::Sensor(self);
     })

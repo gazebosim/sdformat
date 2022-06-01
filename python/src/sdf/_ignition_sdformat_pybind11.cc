@@ -44,6 +44,7 @@
 #include "pyParserConfig.hh"
 #include "pyPbr.hh"
 #include "pyPlane.hh"
+#include "pyPlugin.hh"
 #include "pyRoot.hh"
 #include "pySemanticPose.hh"
 #include "pySensor.hh"
@@ -85,6 +86,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::definePbr(m);
   sdf::python::definePbrWorkflow(m);
   sdf::python::definePlane(m);
+  sdf::python::definePlugin(m);
   sdf::python::defineRoot(m);
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSensor(m);

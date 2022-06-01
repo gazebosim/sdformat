@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d
-from sdformat import Model, Joint, Link, Error, Frame, SemanticPose
+from sdformat import Plugin, Model, Joint, Link, Error, Frame, SemanticPose
 import sdformat as sdf
 import math
 import unittest
@@ -347,27 +347,27 @@ class ModelTEST(unittest.TestCase):
         self.assertTrue(model.frame_name_exists("frame2"))
 
 
-        # TODO(ahcorde): Uncomment this when sdf::Plugin is enabled
-        # def test_mutable_by_name(self):
-        #   model = Model()
-        #   self.assertTrue(model.plugins().empty())
-        #
-        #   plugin = Plugin()
-        #   plugin.set_name("name1")
-        #   plugin.set_filename("filename1")
-        #
-        #   model.add_plugin(plugin)
-        #   ASSERT_EQ(1, model.plugins().size())
-        #
-        #   plugin.set_name("name2")
-        #   model.add_plugin(plugin)
-        #   ASSERT_EQ(2, model.plugins().size())
-        #
-        #   self.assertEqual("name1", model.plugins()[0].name())
-        #   self.assertEqual("name2", model.plugins()[1].name())
-        #
-        #   model.clear_plugins()
-        #   self.assertTrue(model.plugins().empty())
+    def test_plugins(self):
+        model = Model()
+        self.assertEqual(0, len(model.plugins()))
+
+        plugin = Plugin()
+        plugin.set_name("name1")
+        plugin.set_filename("filename1")
+
+        model.add_plugin(plugin)
+        self.assertEqual(1, len(model.plugins()))
+
+        plugin.set_name("name2")
+        model.add_plugin(plugin)
+        self.assertEqual(2, len(model.plugins()))
+
+        self.assertEqual("name1", model.plugins()[0].name())
+        self.assertEqual("name2", model.plugins()[1].name())
+
+        model.clear_plugins()
+        self.assertEqual(0, len(model.plugins()))
+
 
 if __name__ == '__main__':
     unittest.main()
