@@ -99,6 +99,14 @@ namespace sdf
     /// \param[in] _ambient cloud ambient color
     public: void SetCloudAmbient(const ignition::math::Color &_ambient);
 
+    /// \brief Get the skybox texture URI.
+    /// \return The URI of the skybox texture.
+    public: std::string Uri() const;
+
+    /// \brief Set the skybox texture URI.
+    /// \param[in] _uri The URI of the skybox texture.
+    public: void SetUri(const std::string &_uri);
+
     /// \brief Load the sky based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.

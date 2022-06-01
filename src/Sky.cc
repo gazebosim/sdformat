@@ -48,6 +48,9 @@ class sdf::Sky::Implementation
   public: ignition::math::Color cloudAmbient =
       ignition::math::Color(0.8f, 0.8f, 0.8f);
 
+  /// \brief Skybox texture URI
+  public: std::string uri = "";
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -154,6 +157,18 @@ void Sky::SetCloudAmbient(const ignition::math::Color &_ambient)
   this->dataPtr->cloudAmbient = _ambient;
 }
 
+//////////////////////////////////////////////////
+std::string Sky::Uri() const
+{
+  return this->dataPtr->uri;
+}
+
+//////////////////////////////////////////////////
+void Sky::SetUri(const std::string &_uri)
+{
+  this->dataPtr->uri = _uri;
+}
+
 /////////////////////////////////////////////////
 Errors Sky::Load(ElementPtr _sdf)
 {
@@ -169,6 +184,13 @@ Errors Sky::Load(ElementPtr _sdf)
         "Attempting to load a Sky, but the provided SDF element is not a "
         "<sky>."});
     return errors;
+  }
+
+  // Optional uri element. If not provided, assume there is some default in
+  // downstream implementation.
+  if (_sdf->HasElement("uri"))
+  {
+    this->dataPtr->uri = _sdf->Get<std::string>("uri", "").first;
   }
 
   this->dataPtr->time = _sdf->Get<double>("time", this->dataPtr->time).first;
@@ -209,6 +231,9 @@ sdf::ElementPtr Sky::ToElement() const
   sdf::ElementPtr sceneElem(new sdf::Element);
   sdf::initFile("scene.sdf", sceneElem);
   sdf::ElementPtr elem = sceneElem->GetElement("sky");
+
+  sdf::ElementPtr uriElem = elem->GetElement("uri");
+  uriElem->Set(this->Uri());
 
   elem->GetElement("time")->Set(this->Time());
   elem->GetElement("sunrise")->Set(this->Sunrise());
