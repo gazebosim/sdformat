@@ -27,12 +27,12 @@ class InterfaceLink::Implementation
   public: std::string name;
 
   /// \brief Pose of this link relative to the containing model frame.
-  public: ignition::math::Pose3d pose;
+  public: gz::math::Pose3d pose;
 };
 
 InterfaceLink::InterfaceLink(
-    const std::string &_name, const ignition::math::Pose3d &_pose)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    const std::string &_name, const gz::math::Pose3d &_pose)
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
   this->dataPtr->pose = _pose;
@@ -45,7 +45,7 @@ const std::string &InterfaceLink::Name() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &InterfaceLink::PoseInModelFrame() const
+const gz::math::Pose3d &InterfaceLink::PoseInModelFrame() const
 {
   return this->dataPtr->pose;
 }

@@ -18,9 +18,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/TempDirectory.hh>
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/TempDirectory.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -42,7 +42,7 @@
 
 static std::string sdf2usdCommand()
 {
-  return ignition::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
+  return gz::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
       "sdf2usd");
 }
 
@@ -72,17 +72,17 @@ std::string custom_exec_str(std::string _cmd)
 TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase = ignition::common::joinPaths(pathBase, "test", "sdf");
+  pathBase = gz::common::joinPaths(pathBase, "test", "sdf");
 
-  auto tmpDir = ignition::common::tempDirectoryPath();
-  auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
+  auto tmpDir = gz::common::tempDirectoryPath();
+  auto tmp = gz::common::createTempDirectory("usd", tmpDir);
   // Check a good SDF file
   {
-    std::string path = ignition::common::joinPaths(pathBase,
+    std::string path = gz::common::joinPaths(pathBase,
       "lights.sdf");
     const auto outputUsdFilePath =
-      ignition::common::joinPaths(tmp, "shapes.usd");
-    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
+      gz::common::joinPaths(tmp, "shapes.usd");
+    EXPECT_FALSE(gz::common::isFile(outputUsdFilePath));
     std::string output =
       custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
     // TODO(adlarkin) make sure 'output' (i.e., the result of running the
@@ -91,33 +91,43 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // that functionality isn't complete)
 
     // make sure that a shapes.usd file was generated
-    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
+    EXPECT_TRUE(gz::common::isFile(outputUsdFilePath)) << output;
 
     // TODO(ahcorde): Check the contents of outputUsdFilePath when the parser
     // is implemented
   }
 }
 
+// helper method for getting attributes of a prim
+template<typename T>
+void getAttr(const pxr::UsdPrim &_prim, const std::string &_attributeName,
+    T &_value)
+{
+  const auto attr = _prim.GetAttribute(pxr::TfToken(_attributeName));
+  ASSERT_TRUE(attr);
+  attr.Get(&_value);
+}
+
 TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase = ignition::common::joinPaths(pathBase, "test", "sdf");
+  pathBase = gz::common::joinPaths(pathBase, "test", "sdf");
 
-  auto tmpDir = ignition::common::tempDirectoryPath();
-  auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
+  auto tmpDir = gz::common::tempDirectoryPath();
+  auto tmp = gz::common::createTempDirectory("usd", tmpDir);
   // Check a good SDF file
   {
-    std::string path = ignition::common::joinPaths(pathBase,
+    std::string path = gz::common::joinPaths(pathBase,
       "ellipsoid_model.sdf");
     const auto outputUsdFilePath =
-      ignition::common::joinPaths(tmp, "ellipsoid.usd");
-    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
+      gz::common::joinPaths(tmp, "ellipsoid.usd");
+    EXPECT_FALSE(gz::common::isFile(outputUsdFilePath));
     std::string output =
       custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
     EXPECT_TRUE(output.empty());
 
     // make sure that a ellipsoid.usd file was generated
-    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
+    EXPECT_TRUE(gz::common::isFile(outputUsdFilePath)) << output;
 
     const auto stage = pxr::UsdStage::Open(outputUsdFilePath);
     ASSERT_TRUE(stage);
@@ -129,5 +139,38 @@ TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual")));
     ASSERT_TRUE(stage->GetPrimAtPath(
       pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry")));
+
+    // check material physics
+    const auto materialPhysicsPrim =
+      stage->GetPrimAtPath(pxr::SdfPath("/Looks/MaterialPhysics_0"));
+    ASSERT_TRUE(materialPhysicsPrim);
+    float floatAttrVal;
+    getAttr(materialPhysicsPrim, "physics:density", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 1.0f);
+    getAttr(materialPhysicsPrim, "physics:dynamicFriction", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 0.6f);
+    getAttr(materialPhysicsPrim, "physics:restitution", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 1.0f);
+    getAttr(materialPhysicsPrim, "physics:staticFriction", floatAttrVal);
+    EXPECT_FLOAT_EQ(floatAttrVal, 0.7f);
+    pxr::TfToken tokenAttrVal;
+    getAttr(materialPhysicsPrim, "physXMaterial:frictionCombineMode",
+        tokenAttrVal);
+    EXPECT_EQ(tokenAttrVal, pxr::TfToken("average"));
+    getAttr(materialPhysicsPrim, "physXMaterial:restitutionCombineMode",
+        tokenAttrVal);
+    EXPECT_EQ(tokenAttrVal, pxr::TfToken("average"));
+
+    // make sure the collision's friction parameters were properly converted
+    const auto collisionGeometryPrim = stage->GetPrimAtPath(
+      pxr::SdfPath("/ellipsoid/ellipsoid_link/ellipsoid_collision/geometry"));
+    ASSERT_TRUE(collisionGeometryPrim);
+    const pxr::TfToken frictionRelKey("material:binding");
+    ASSERT_TRUE(collisionGeometryPrim.HasRelationship(frictionRelKey));
+    const auto rel = collisionGeometryPrim.GetRelationship(frictionRelKey);
+    pxr::SdfPathVector paths;
+    rel.GetTargets(&paths);
+    ASSERT_EQ(1u, paths.size());
+    EXPECT_EQ(pxr::SdfPath("/Looks/MaterialPhysics_0"), paths[0]);
   }
 }

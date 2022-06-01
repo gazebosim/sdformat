@@ -17,6 +17,7 @@
 #include "pyVisual.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Visual.hh"
 #include "sdf/Geometry.hh"
@@ -89,14 +90,13 @@ void defineVisual(pybind11::object module)
          "Get the flidar reflective intensity.")
     .def("set_laser_retro", &sdf::Visual::SetLaserRetro,
          "Set the lidar reflective intensity.")
-    // TODO(ahcorde) Enable these methods when sdf::Plugins is converted
-    // .def("plugins",
-    //      pybind11::overload_cast<>(&sdf::Visual::Plugins, pybind11::const_),
-    //      "Get the plugins attached to this object.")
-    // .def("clear_plugins", &sdf::Visual::ClearPlugins,
-    //      "Remove all plugins")
-    // .def("add_pPlugin", &sdf::Visual::AddPlugin,
-    //      "Add a plugin to this object.")
+    .def("plugins",
+         pybind11::overload_cast<>(&sdf::Visual::Plugins, pybind11::const_),
+         "Get the plugins attached to this object.")
+    .def("clear_plugins", &sdf::Visual::ClearPlugins,
+         "Remove all plugins")
+    .def("add_plugin", &sdf::Visual::AddPlugin,
+         "Add a plugin to this object.")
     .def("__copy__", [](const sdf::Visual &self) {
       return sdf::Visual(self);
     })

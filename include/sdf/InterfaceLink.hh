@@ -37,7 +37,7 @@ class SDFORMAT_VISIBLE InterfaceLink
   /// \param[in] name The *local* name.
   /// \param[in] _pose The pose of the link relative to model frame.
   public: InterfaceLink(
-              const std::string &_name, const ignition::math::Pose3d &_pose);
+              const std::string &_name, const gz::math::Pose3d &_pose);
 
   /// \brief Get the name of the link.
   /// \return Local name of the link.
@@ -45,7 +45,7 @@ class SDFORMAT_VISIBLE InterfaceLink
 
   /// \brief Get the pose of this link in the parent model frame.
   /// \return The pose of this link in the parent model frame.
-  public: const ignition::math::Pose3d &PoseInModelFrame() const;
+  public: const gz::math::Pose3d &PoseInModelFrame() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

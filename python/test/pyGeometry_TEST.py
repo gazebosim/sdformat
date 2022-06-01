@@ -15,6 +15,7 @@
 import copy
 from sdformat import Geometry, Box, Capsule, Cylinder, Ellipsoid, Mesh, Plane, Sphere
 from ignition.math import Vector3d, Vector2d
+import sdformat as sdf
 import unittest
 
 
@@ -22,52 +23,52 @@ class GeometryTEST(unittest.TestCase):
 
   def test_default_construction(self):
     geom = Geometry()
-    self.assertEqual(Geometry.GeometryType.EMPTY, geom.type())
+    self.assertEqual(sdf.GeometryType.EMPTY, geom.type())
 
-    geom.set_type(Geometry.GeometryType.BOX)
-    self.assertEqual(Geometry.GeometryType.BOX, geom.type())
+    geom.set_type(sdf.GeometryType.BOX)
+    self.assertEqual(sdf.GeometryType.BOX, geom.type())
 
-    geom.set_type(Geometry.GeometryType.CAPSULE)
-    self.assertEqual(Geometry.GeometryType.CAPSULE, geom.type())
+    geom.set_type(sdf.GeometryType.CAPSULE)
+    self.assertEqual(sdf.GeometryType.CAPSULE, geom.type())
 
-    geom.set_type(Geometry.GeometryType.CYLINDER)
-    self.assertEqual(Geometry.GeometryType.CYLINDER, geom.type())
+    geom.set_type(sdf.GeometryType.CYLINDER)
+    self.assertEqual(sdf.GeometryType.CYLINDER, geom.type())
 
-    geom.set_type(Geometry.GeometryType.ELLIPSOID)
-    self.assertEqual(Geometry.GeometryType.ELLIPSOID, geom.type())
+    geom.set_type(sdf.GeometryType.ELLIPSOID)
+    self.assertEqual(sdf.GeometryType.ELLIPSOID, geom.type())
 
-    geom.set_type(Geometry.GeometryType.PLANE)
-    self.assertEqual(Geometry.GeometryType.PLANE, geom.type())
+    geom.set_type(sdf.GeometryType.PLANE)
+    self.assertEqual(sdf.GeometryType.PLANE, geom.type())
 
-    geom.set_type(Geometry.GeometryType.SPHERE)
-    self.assertEqual(Geometry.GeometryType.SPHERE, geom.type())
+    geom.set_type(sdf.GeometryType.SPHERE)
+    self.assertEqual(sdf.GeometryType.SPHERE, geom.type())
 
 
   def test_assignment(self):
     geometry = Geometry()
-    geometry.set_type(Geometry.GeometryType.BOX)
+    geometry.set_type(sdf.GeometryType.BOX)
 
     geometry2 = geometry
-    self.assertEqual(Geometry.GeometryType.BOX, geometry2.type())
+    self.assertEqual(sdf.GeometryType.BOX, geometry2.type())
 
 
   def test_deepcopy_construction(self):
     geometry = Geometry()
-    geometry.set_type(Geometry.GeometryType.BOX)
+    geometry.set_type(sdf.GeometryType.BOX)
     boxShape = Box()
     boxShape.set_size(Vector3d(1, 2, 3))
     geometry.set_box_shape(boxShape)
 
     geometry2 = copy.deepcopy(geometry)
-    self.assertEqual(Geometry.GeometryType.BOX, geometry2.type())
+    self.assertEqual(sdf.GeometryType.BOX, geometry2.type())
 
 
   def test_deepcopy_after_assignment(self):
     geometry1 = Geometry()
-    geometry1.set_type(Geometry.GeometryType.BOX)
+    geometry1.set_type(sdf.GeometryType.BOX)
 
     geometry2 = Geometry()
-    geometry2.set_type(Geometry.GeometryType.SPHERE)
+    geometry2.set_type(sdf.GeometryType.SPHERE)
 
     # This is similar to what std::swap does except it uses std::move for each
     # assignment
@@ -75,46 +76,46 @@ class GeometryTEST(unittest.TestCase):
     geometry1 = geometry2
     geometry2 = tmp
 
-    self.assertEqual(Geometry.GeometryType.SPHERE, geometry1.type())
-    self.assertEqual(Geometry.GeometryType.BOX, geometry2.type())
+    self.assertEqual(sdf.GeometryType.SPHERE, geometry1.type())
+    self.assertEqual(sdf.GeometryType.BOX, geometry2.type())
 
 
   def test_box(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.BOX)
+    geom.set_type(sdf.GeometryType.BOX)
 
     boxShape = Box()
     boxShape.set_size(Vector3d(1, 2, 3))
     geom.set_box_shape(boxShape)
 
-    self.assertEqual(Geometry.GeometryType.BOX, geom.type())
+    self.assertEqual(sdf.GeometryType.BOX, geom.type())
     self.assertNotEqual(None, geom.box_shape())
     self.assertEqual(Vector3d(1, 2, 3), geom.box_shape().size())
 
 
   def test_sphere(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.SPHERE)
+    geom.set_type(sdf.GeometryType.SPHERE)
 
     sphereShape = Sphere()
     sphereShape.set_radius(0.123)
     geom.set_sphere_shape(sphereShape)
 
-    self.assertEqual(Geometry.GeometryType.SPHERE, geom.type())
+    self.assertEqual(sdf.GeometryType.SPHERE, geom.type())
     self.assertNotEqual(None, geom.sphere_shape())
     self.assertEqual(0.123, geom.sphere_shape().radius())
 
 
   def test_capsule(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.CAPSULE)
+    geom.set_type(sdf.GeometryType.CAPSULE)
 
     capsuleShape = Capsule()
     capsuleShape.set_radius(0.123)
     capsuleShape.set_length(4.56)
     geom.set_capsule_shape(capsuleShape)
 
-    self.assertEqual(Geometry.GeometryType.CAPSULE, geom.type())
+    self.assertEqual(sdf.GeometryType.CAPSULE, geom.type())
     self.assertNotEqual(None, geom.capsule_shape())
     self.assertEqual(0.123, geom.capsule_shape().radius())
     self.assertEqual(4.56, geom.capsule_shape().length())
@@ -122,14 +123,14 @@ class GeometryTEST(unittest.TestCase):
 
   def test_cylinder(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.CYLINDER)
+    geom.set_type(sdf.GeometryType.CYLINDER)
 
     cylinderShape = Cylinder()
     cylinderShape.set_radius(0.123)
     cylinderShape.set_length(4.56)
     geom.set_cylinder_shape(cylinderShape)
 
-    self.assertEqual(Geometry.GeometryType.CYLINDER, geom.type())
+    self.assertEqual(sdf.GeometryType.CYLINDER, geom.type())
     self.assertNotEqual(None, geom.cylinder_shape())
     self.assertEqual(0.123, geom.cylinder_shape().radius())
     self.assertEqual(4.56, geom.cylinder_shape().length())
@@ -137,21 +138,21 @@ class GeometryTEST(unittest.TestCase):
 
   def test_ellipsoid(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.ELLIPSOID)
+    geom.set_type(sdf.GeometryType.ELLIPSOID)
 
     ellipsoidShape = Ellipsoid()
     expectedRadii = Vector3d(1, 2, 3)
     ellipsoidShape.set_radii(expectedRadii)
     geom.set_ellipsoid_shape(ellipsoidShape)
 
-    self.assertEqual(Geometry.GeometryType.ELLIPSOID, geom.type())
+    self.assertEqual(sdf.GeometryType.ELLIPSOID, geom.type())
     self.assertNotEqual(None, geom.ellipsoid_shape())
     self.assertEqual(expectedRadii, geom.ellipsoid_shape().radii())
 
 
   def test_mesh(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.MESH)
+    geom.set_type(sdf.GeometryType.MESH)
 
     meshShape = Mesh()
     meshShape.set_scale(Vector3d(1, 2, 3))
@@ -160,7 +161,7 @@ class GeometryTEST(unittest.TestCase):
     meshShape.set_center_submesh(True)
     geom.set_mesh_shape(meshShape)
 
-    self.assertEqual(Geometry.GeometryType.MESH, geom.type())
+    self.assertEqual(sdf.GeometryType.MESH, geom.type())
     self.assertNotEqual(None, geom.mesh_shape())
     self.assertEqual(Vector3d(1, 2, 3), geom.mesh_shape().scale())
     self.assertEqual("banana", geom.mesh_shape().uri())
@@ -170,14 +171,14 @@ class GeometryTEST(unittest.TestCase):
 
   def test_plane(self):
     geom = Geometry()
-    geom.set_type(Geometry.GeometryType.PLANE)
+    geom.set_type(sdf.GeometryType.PLANE)
 
     planeShape = Plane()
     planeShape.set_normal(Vector3d.UNIT_X)
     planeShape.set_size(Vector2d(9, 8))
     geom.set_plane_shape(planeShape)
 
-    self.assertEqual(Geometry.GeometryType.PLANE, geom.type())
+    self.assertEqual(sdf.GeometryType.PLANE, geom.type())
     self.assertNotEqual(None, geom.plane_shape())
     self.assertEqual(Vector3d.UNIT_X, geom.plane_shape().normal())
     self.assertEqual(Vector2d(9, 8), geom.plane_shape().size())

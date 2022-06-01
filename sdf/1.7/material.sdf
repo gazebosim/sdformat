@@ -45,6 +45,10 @@
     <description>The specular color of a material specified by set of four numbers representing red/green/blue/alpha, each in the range of [0,1].</description>
   </element>
 
+  <element name="shininess" type="double" default="0" required="0">
+    <description>The specular exponent of a material</description>
+  </element>
+
   <element name="emissive" type="color" default="0 0 0 1" required="0">
     <description>The emissive color of a material specified by set of four numbers representing red/green/blue, each in the range of [0,1].</description>
   </element>

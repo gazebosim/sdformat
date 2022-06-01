@@ -23,6 +23,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/Collision.hh"
 #include "sdf/SemanticPose.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/Light.hh"
 
 using namespace pybind11::literals;
@@ -86,19 +87,20 @@ void defineLink(pybind11::object module)
            &sdf::Link::LightByName),
          pybind11::return_value_policy::reference_internal,
          "Get a mutable light based on a name.")
-    // TODO(ahcorde): Enable sensor
-    // .def(
-    //     "SensorCount", &sdf::Link::SensorCount,
-    //     "Get the number of sensors.")
-    // .def(
-    //     "SensorByIndex", &sdf::Link::SensorByIndex,
-    //     "Get a sensor based on an index.")
-    // .def(
-    //     "SensorNameExists", &sdf::Link::SensorNameExists,
-    //     "Get whether a sensor name exists.")
-    // .def(
-    //     "SensorByName", &sdf::Link::SensorByName,
-    //     "Get a sensor based on a name.")
+    .def("sensor_count", &sdf::Link::SensorCount,
+         "Get the number of sensors.")
+    .def("sensor_by_index",
+         pybind11::overload_cast<uint64_t>(
+           &sdf::Link::SensorByIndex),
+         pybind11::return_value_policy::reference_internal,
+         "Get a sensor based on an index.")
+    .def("sensor_name_exists", &sdf::Link::SensorNameExists,
+         "Get whether a sensor name exists.")
+    .def("sensor_by_name",
+         pybind11::overload_cast<const std::string &>(
+           &sdf::Link::SensorByName),
+         pybind11::return_value_policy::reference_internal,
+         "Get a sensor based on a name.")
     // TODO(ahcorde): Enable particle emitter
     // .def(
     //     "ParticleEmitterCount", &sdf::Link::ParticleEmitterCount,
@@ -154,9 +156,9 @@ void defineLink(pybind11::object module)
     .def("add_light",
          &sdf::Link::AddLight,
          "Add a light to the link.")
-    // .def("AddSensor",
-    //      &sdf::Link::AddSensor,
-    //      "Add a sensor to the link.")
+    .def("add_sensor",
+         &sdf::Link::AddSensor,
+         "Add a sensor to the link.")
     // .def("AddParticleEmitter",
     //      &sdf::Link::AddParticleEmitter,
     //      "Add a particle emitter to the link.")
@@ -169,9 +171,9 @@ void defineLink(pybind11::object module)
     .def("clear_lights",
          &sdf::Link::ClearLights,
          "Remove all lights")
-    // .def("clear_sensors",
-    //      &sdf::Link::ClearSensors,
-    //      "Remove all sensors")
+    .def("clear_sensors",
+         &sdf::Link::ClearSensors,
+         "Remove all sensors")
     // .def("clear_particle_emitters",
     //      &sdf::Link::ClearParticleEmitters,
     //      "Remove all particle emitters")

@@ -32,8 +32,8 @@
 #include <pxr/usd/usdShade/material.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
 #include "sdf/Material.hh"
 #include "USDMaterial.hh"
@@ -67,14 +67,14 @@ namespace usd {
       /// \param[in] _path Path of the subdirectory to add
       void AddSubdirectories(const std::string &_path)
       {
-        for (ignition::common::DirIter file(_path);
-          file != ignition::common::DirIter(); ++file)
+        for (gz::common::DirIter file(_path);
+          file != gz::common::DirIter(); ++file)
         {
           std::string current(*file);
 
-          if (ignition::common::isDirectory(current))
+          if (gz::common::isDirectory(current))
           {
-            auto systemPaths = ignition::common::systemPaths();
+            auto systemPaths = gz::common::systemPaths();
             systemPaths->AddFilePaths(current);
             this->AddSubdirectories(current);
           }
@@ -84,7 +84,7 @@ namespace usd {
 
   /////////////////////////////////////////////////
   USDData::USDData(const std::string &_filename)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
   {
     this->dataPtr->filename = _filename;
   }
@@ -138,12 +138,12 @@ namespace usd {
       return errors;
     }
 
-    this->dataPtr->directoryPath = ignition::common::absPath(
+    this->dataPtr->directoryPath = gz::common::absPath(
       this->dataPtr->filename);
 
-    std::string basename = ignition::common::basename(
+    std::string basename = gz::common::basename(
       this->dataPtr->directoryPath);
-    this->dataPtr->directoryPath = ignition::common::replaceAll(
+    this->dataPtr->directoryPath = gz::common::replaceAll(
         this->dataPtr->directoryPath, basename, "");
 
     this->dataPtr->AddSubdirectories(this->dataPtr->directoryPath);
@@ -256,17 +256,17 @@ namespace usd {
     auto search = this->dataPtr->references.find(_ref);
     if (search == this->dataPtr->references.end())
     {
-      std::string basename = ignition::common::basename(key);
-      auto subDirectory = ignition::common::replaceAll(key, basename, "");
+      std::string basename = gz::common::basename(key);
+      auto subDirectory = gz::common::replaceAll(key, basename, "");
 
-      auto systemPaths = ignition::common::systemPaths();
-      systemPaths->AddFilePaths(ignition::common::joinPaths(
+      auto systemPaths = gz::common::systemPaths();
+      systemPaths->AddFilePaths(gz::common::joinPaths(
         this->dataPtr->directoryPath, subDirectory));
 
-      this->dataPtr->AddSubdirectories(ignition::common::joinPaths(
+      this->dataPtr->AddSubdirectories(gz::common::joinPaths(
         this->dataPtr->directoryPath, subDirectory));
 
-      std::string fileNameRef = ignition::common::findFile(basename);
+      std::string fileNameRef = gz::common::findFile(basename);
       if (fileNameRef.empty())
       {
         errors.emplace_back(UsdError(

@@ -55,5 +55,5 @@ TEST(DOMSurface, Shapes)
   EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Slip1(), 4);
   EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Slip2(), 5);
   EXPECT_EQ(boxCol->Surface()->Friction()->ODE()->Fdir1(),
-            ignition::math::Vector3d(1.2, 3.4, 5.6));
+            gz::math::Vector3d(1.2, 3.4, 5.6));
 }

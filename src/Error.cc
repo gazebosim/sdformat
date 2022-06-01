@@ -39,12 +39,12 @@ class sdf::Error::Implementation
 
 /////////////////////////////////////////////////
 Error::Error()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {}
 
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
@@ -53,7 +53,7 @@ Error::Error(const ErrorCode _code, const std::string &_message)
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
              const std::string &_filePath)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;
@@ -63,7 +63,7 @@ Error::Error(const ErrorCode _code, const std::string &_message,
 /////////////////////////////////////////////////
 Error::Error(const ErrorCode _code, const std::string &_message,
              const std::string &_filePath, int _lineNumber)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->code = _code;
   this->dataPtr->message = _message;

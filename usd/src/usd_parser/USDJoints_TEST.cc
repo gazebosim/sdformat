@@ -28,7 +28,7 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -63,12 +63,12 @@ TEST(USDJointTest, JointTest)
   EXPECT_EQ("upper_joint", joint1.Name());
   EXPECT_EQ("upper_link", joint1.ChildLinkName());
   EXPECT_EQ("base", joint1.ParentLinkName());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.021, -1.5708, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0.021, -1.5708, 0, 0),
             joint1.RawPose());
 
   auto axis = joint1.Axis(0);
   ASSERT_NE(nullptr, axis);
-  EXPECT_EQ(ignition::math::Vector3d(1, 0, 0), axis->Xyz());
+  EXPECT_EQ(gz::math::Vector3d(1, 0, 0), axis->Xyz());
 
   const auto lowerJoint = stage->GetPrimAtPath(pxr::SdfPath(
     "/double_pendulum/double_pendulum_with_base/lower"));
@@ -83,9 +83,9 @@ TEST(USDJointTest, JointTest)
   EXPECT_EQ("lower_joint", joint2.Name());
   EXPECT_EQ("lower_link", joint2.ChildLinkName());
   EXPECT_EQ("upper_link", joint2.ParentLinkName());
-  EXPECT_EQ(ignition::math::Pose3d(0.0025, -0, 0.01, -0.4292, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(0.0025, -0, 0.01, -0.4292, 0, 0),
             joint2.RawPose());
   axis = joint2.Axis(0);
   ASSERT_NE(nullptr, axis);
-  EXPECT_EQ(ignition::math::Vector3d(1, 0, 0), axis->Xyz());
+  EXPECT_EQ(gz::math::Vector3d(1, 0, 0), axis->Xyz());
 }
