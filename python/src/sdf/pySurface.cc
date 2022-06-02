@@ -51,7 +51,7 @@ void defineFriction(pybind11::object module)
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Friction>())
     .def("ode", &sdf::Friction::ODE,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get the ODE object.")
     .def("set_ode", &sdf::Friction::SetODE,
          "Set the ODE object.")
@@ -102,12 +102,12 @@ void defineSurface(pybind11::object module)
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Surface>())
     .def("contact", &sdf::Surface::Contact,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get the associated contact object")
     .def("set_contact", &sdf::Surface::SetContact,
          "Set the associated contact object.")
     .def("friction", &sdf::Surface::Friction,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get the associated friction object")
     .def("set_friction", &sdf::Surface::SetFriction,
          "Set the associated friction object.")
