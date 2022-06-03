@@ -244,7 +244,7 @@ sdf::ElementPtr Sky::ToElement() const
   cloudElem->GetElement("ambient")->Set(this->CloudAmbient());
 
   sdf::ElementPtr uriElem = elem->GetElement("uri");
-  uriElem->Set(this->Uri());
+  uriElem->GetElement("uri")->Set(this->Uri());
 
   return elem;
 }
