@@ -18,6 +18,8 @@
 #ifndef SDF_SKY_HH_
 #define SDF_SKY_HH_
 
+#include <string>
+
 #include <ignition/math/Color.hh>
 #include <ignition/utils/ImplPtr.hh>
 
