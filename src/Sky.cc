@@ -49,7 +49,7 @@ class sdf::Sky::Implementation
       ignition::math::Color(0.8f, 0.8f, 0.8f);
 
   /// \brief Skybox texture URI
-  public: std::string uri = "";
+  public: std::string uri = "__default__";
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -213,7 +213,8 @@ Errors Sky::Load(ElementPtr _sdf)
   // downstream implementation.
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri", "__default__").first;
+    this->dataPtr->uri = _sdf->Get<std::string>("uri",
+      this->dataPtr->uri).first;
   }
 
   return errors;
@@ -235,6 +236,7 @@ sdf::ElementPtr Sky::ToElement() const
   elem->GetElement("time")->Set(this->Time());
   elem->GetElement("sunrise")->Set(this->Sunrise());
   elem->GetElement("sunset")->Set(this->Sunset());
+  elem->GetElement("uri")->Set(this->Uri());
 
   sdf::ElementPtr cloudElem = elem->GetElement("clouds");
   cloudElem->GetElement("speed")->Set(this->CloudSpeed());
@@ -242,9 +244,6 @@ sdf::ElementPtr Sky::ToElement() const
   cloudElem->GetElement("humidity")->Set(this->CloudHumidity());
   cloudElem->GetElement("mean_size")->Set(this->CloudMeanSize());
   cloudElem->GetElement("ambient")->Set(this->CloudAmbient());
-
-  sdf::ElementPtr uriElem = elem->GetElement("uri");
-  uriElem->GetElement("uri")->Set(this->Uri());
 
   return elem;
 }
