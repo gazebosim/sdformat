@@ -19,6 +19,7 @@
           <humidity>0.9</humidity>
           <ambient>0.1 0.2 0.3</ambient>
         </clouds>
+        <uri>dummyUri</uri>
       </sky>
     </scene>
 

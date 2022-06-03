@@ -186,13 +186,6 @@ Errors Sky::Load(ElementPtr _sdf)
     return errors;
   }
 
-  // Optional uri element. If not provided, assume there is some default in
-  // downstream implementation.
-  if (_sdf->HasElement("uri"))
-  {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri", "").first;
-  }
-
   this->dataPtr->time = _sdf->Get<double>("time", this->dataPtr->time).first;
   this->dataPtr->sunrise =
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
@@ -216,6 +209,13 @@ Errors Sky::Load(ElementPtr _sdf)
         this->dataPtr->cloudAmbient).first;
   }
 
+  // Optional uri element. If not provided, assume there is some default in
+  // downstream implementation.
+  if (_sdf->HasElement("uri"))
+  {
+    this->dataPtr->uri = _sdf->Get<std::string>("uri", "__default__").first;
+  }
+
   return errors;
 }
 
@@ -232,9 +232,6 @@ sdf::ElementPtr Sky::ToElement() const
   sdf::initFile("scene.sdf", sceneElem);
   sdf::ElementPtr elem = sceneElem->GetElement("sky");
 
-  sdf::ElementPtr uriElem = elem->GetElement("uri");
-  uriElem->Set(this->Uri());
-
   elem->GetElement("time")->Set(this->Time());
   elem->GetElement("sunrise")->Set(this->Sunrise());
   elem->GetElement("sunset")->Set(this->Sunset());
@@ -245,6 +242,9 @@ sdf::ElementPtr Sky::ToElement() const
   cloudElem->GetElement("humidity")->Set(this->CloudHumidity());
   cloudElem->GetElement("mean_size")->Set(this->CloudMeanSize());
   cloudElem->GetElement("ambient")->Set(this->CloudAmbient());
+
+  sdf::ElementPtr uriElem = elem->GetElement("uri");
+  uriElem->Set(this->Uri());
 
   return elem;
 }
