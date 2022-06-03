@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Visual.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Geometry.hh"
 
 /////////////////////////////////////////////////
@@ -70,11 +71,12 @@ TEST(DOMVisual, Construction)
   EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
+  EXPECT_TRUE(visual.Geom()->PolylineShape().empty());
 
   EXPECT_EQ(nullptr, visual.Material());
 
   // visibility flags
-  EXPECT_EQ(4294967295u, visual.VisibilityFlags());
+  EXPECT_EQ(UINT32_MAX, visual.VisibilityFlags());
   visual.SetVisibilityFlags(1u);
   EXPECT_EQ(1u, visual.VisibilityFlags());
 }

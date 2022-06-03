@@ -979,7 +979,6 @@ TEST(DOMJoint, Sensors)
   EXPECT_EQ(1u, joint->SensorCount());
 
   ignition::math::Pose3d pose;
-
   // Get the force_torque sensor
   const sdf::Sensor *forceTorqueSensor =
     joint->SensorByName("force_torque_sensor");
@@ -988,6 +987,12 @@ TEST(DOMJoint, Sensors)
   EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
   EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
       forceTorqueSensor->RawPose());
+  EXPECT_TRUE(
+      forceTorqueSensor->SemanticPose().Resolve(pose, "__model__").empty());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0), pose);
+  EXPECT_TRUE(forceTorqueSensor->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0), pose);
+
   auto forceTorqueSensorObj = forceTorqueSensor->ForceTorqueSensor();
   ASSERT_NE(nullptr, forceTorqueSensorObj);
   EXPECT_EQ(sdf::ForceTorqueFrame::PARENT, forceTorqueSensorObj->Frame());

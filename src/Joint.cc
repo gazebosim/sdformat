@@ -331,6 +331,11 @@ void Joint::SetPoseRelativeToGraph(
       axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
     }
   }
+  for (auto &sensor : this->dataPtr->sensors)
+  {
+    sensor.SetXmlParentName(this->dataPtr->name);
+    sensor.SetPoseRelativeToGraph(_graph);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -429,6 +434,13 @@ const Sensor *Joint::SensorByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Sensor *Joint::SensorByIndex(const uint64_t _index)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Joint*>(this)->SensorByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Joint::SensorNameExists(const std::string &_name) const
 {
   return nullptr != this->SensorByName(_name);
@@ -445,6 +457,13 @@ const Sensor *Joint::SensorByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Sensor *Joint::SensorByName(const std::string &_name)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Joint*>(this)->SensorByName(_name));
 }
 
 /////////////////////////////////////////////////
