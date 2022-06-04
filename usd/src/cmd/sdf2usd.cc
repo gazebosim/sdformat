@@ -178,11 +178,11 @@ std::string FindResources(const std::string &_uri)
     const std::string type = gz::common::lowercase(tokens[3]);
     const std::string modelName = gz::common::lowercase(tokens[4]);
     path = gz::common::joinPaths(
-      home, ".ignition", "fuel", server, owner, type, modelName);
+      home, ".gz", "fuel", server, owner, type, modelName);
   }
   else
   {
-    path = gz::common::joinPaths(home, ".ignition", "fuel");
+    path = gz::common::joinPaths(home, ".gz", "fuel");
   }
 
   auto fileName = gz::common::basename(uri.Path().Str());
