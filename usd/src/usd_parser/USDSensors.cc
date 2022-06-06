@@ -73,7 +73,7 @@ namespace sdf
       camera.SetLensFocalLength(focalLength);
       // Camera is Y up axis, rotate the camera to match with Ignition
       gz::math::Pose3d poseCamera(0, 0, 0, IGN_PI_2, 0, -IGN_PI_2);
-      sensor.SetRawPose(pose * -poseCamera);
+      sensor.SetRawPose(pose * poseCamera.Inverse());
       camera.SetNearClip(clippingRange[0]);
       camera.SetFarClip(clippingRange[1]);
       camera.SetImageWidth(640);
