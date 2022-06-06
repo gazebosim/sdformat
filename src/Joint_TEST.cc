@@ -41,8 +41,8 @@ TEST(DOMJoint, Construction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  joint.SetRawPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
-  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
+  joint.SetRawPose({-1, -2, -3, GZ_PI, GZ_PI, 0});
+  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, GZ_PI, GZ_PI, 0),
             joint.RawPose());
 
   joint.SetPoseRelativeTo("link");
@@ -257,7 +257,7 @@ TEST(DOMJoint, ToElement)
 {
   // test calling ToElement on a DOM object constructed without calling Load
   sdf::Joint joint;
-  joint.SetRawPose({-1, -2, -3, 0, IGN_PI, 0});
+  joint.SetRawPose({-1, -2, -3, 0, GZ_PI, 0});
   joint.SetPoseRelativeTo("link");
   joint.SetName("test_joint");
   joint.SetParentLinkName("parent");
@@ -291,7 +291,7 @@ TEST(DOMJoint, ToElement)
   sdf::Joint joint2;
   joint2.Load(jointElem);
 
-  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, 0, IGN_PI, 0),
+  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, 0, GZ_PI, 0),
             joint2.RawPose());
   EXPECT_EQ("link", joint2.PoseRelativeTo());
   EXPECT_EQ("test_joint", joint2.Name());

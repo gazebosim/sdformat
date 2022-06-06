@@ -168,7 +168,7 @@ void GetAllTransforms(
     // used by other renderers
     gz::math::Pose3d poseUpAxis = gz::math::Pose3d(
       gz::math::Vector3d(0, 0, 0),
-      gz::math::Quaterniond(IGN_PI_2, 0, 0));
+      gz::math::Quaterniond(GZ_PI_2, 0, 0));
     _tfs.push_back(poseUpAxis);
   }
 }
@@ -247,9 +247,9 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotationEuler[2] = static_cast<float>(rotationEulerTmp[2]);
       }
       gz::math::Quaterniond qX, qY, qZ;
-      gz::math::Angle angleX(IGN_DTOR(rotationEuler[0]));
-      gz::math::Angle angleY(IGN_DTOR(rotationEuler[1]));
-      gz::math::Angle angleZ(IGN_DTOR(rotationEuler[2]));
+      gz::math::Angle angleX(GZ_DTOR(rotationEuler[0]));
+      gz::math::Angle angleY(GZ_DTOR(rotationEuler[1]));
+      gz::math::Angle angleZ(GZ_DTOR(rotationEuler[2]));
       qX = gz::math::Quaterniond(angleX.Normalized().Radian(), 0, 0);
       qY = gz::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
       qZ = gz::math::Quaterniond(0, 0, angleZ.Normalized().Radian());

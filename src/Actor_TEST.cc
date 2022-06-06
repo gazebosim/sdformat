@@ -49,7 +49,7 @@ sdf::Trajectory CreateDummyTrajectory()
   sdf::Trajectory trajectory;
   sdf::Waypoint waypoint;
   waypoint.SetTime(0.12);
-  waypoint.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  waypoint.SetPose({3, 2, 1, 0, GZ_PI, 0});
   trajectory.SetId(1234);
   trajectory.SetType("trajectory_type");
   trajectory.SetTension(4.567);
@@ -85,7 +85,7 @@ sdf::Actor CreateDummyActor()
 {
   sdf::Actor actor;
   actor.SetName("test_dummy_actor");
-  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   actor.SetPoseRelativeTo("ground_plane");
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
@@ -372,7 +372,7 @@ TEST(DOMWaypoint, CopyConstructor)
 {
   sdf::Waypoint waypoint1;
   waypoint1.SetTime(1.23);
-  waypoint1.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  waypoint1.SetPose({3, 2, 1, 0, GZ_PI, 0});
 
   sdf::Waypoint waypoint2(waypoint1);
   EXPECT_DOUBLE_EQ(waypoint1.Time(), waypoint2.Time());
@@ -384,7 +384,7 @@ TEST(DOMWaypoint, CopyAssignmentOperator)
 {
   sdf::Waypoint waypoint1;
   waypoint1.SetTime(1.23);
-  waypoint1.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  waypoint1.SetPose({3, 2, 1, 0, GZ_PI, 0});
 
   sdf::Waypoint waypoint2;
   waypoint2 = waypoint1;
@@ -396,7 +396,7 @@ TEST(DOMWaypoint, CopyAssignmentOperator)
 TEST(DOMWaypoint, MoveConstructor)
 {
   sdf::Waypoint waypoint1;
-  gz::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, GZ_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
 
@@ -409,7 +409,7 @@ TEST(DOMWaypoint, MoveConstructor)
 TEST(DOMWaypoint, MoveAssignment)
 {
   sdf::Waypoint waypoint1;
-  gz::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, GZ_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
 
@@ -423,11 +423,11 @@ TEST(DOMWaypoint, MoveAssignment)
 TEST(DOMWaypoint, CopyAssignmentAfterMove)
 {
   sdf::Waypoint waypoint1;
-  gz::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, GZ_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
   sdf::Waypoint waypoint2;
-  gz::math::Pose3d pose2(1, 2, 3, 1, 2, IGN_PI);
+  gz::math::Pose3d pose2(1, 2, 3, 1, 2, GZ_PI);
   waypoint2.SetTime(3.45);
   waypoint2.SetPose(pose2);
 

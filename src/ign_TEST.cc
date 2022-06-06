@@ -65,7 +65,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -858,7 +858,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_shapes_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -881,7 +881,7 @@ TEST(check_shapes_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_model_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/integration/model/box";
@@ -907,7 +907,7 @@ TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(describe, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(describe, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Get the description
   std::string output =
@@ -919,7 +919,7 @@ TEST(describe, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -955,7 +955,7 @@ static bool contains(const std::string &_a, const std::string &_b)
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
@@ -1023,7 +1023,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_radians.sdf");
@@ -1091,7 +1091,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto path = sdf::testing::TestFile(
       "sdf", "rotations_in_quaternions.sdf");
@@ -1160,7 +1160,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
@@ -1231,7 +1231,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
@@ -1303,7 +1303,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
 /////////////////////////////////////////////////
 TEST(print_includes_rotations_in_quaternions,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
@@ -1376,7 +1376,7 @@ TEST(print_includes_rotations_in_quaternions,
 
 /////////////////////////////////////////////////
 TEST(print_rotations_in_unnormalized_degrees,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_degrees.sdf");
@@ -1448,7 +1448,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 
 /////////////////////////////////////////////////
 TEST(print_rotations_in_unnormalized_radians,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
@@ -1516,7 +1516,7 @@ TEST(print_rotations_in_unnormalized_radians,
 }
 
 /////////////////////////////////////////////////
-TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
@@ -1566,7 +1566,7 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
 /////////////////////////////////////////////////
 TEST(print_snap_to_degrees_tolerance_too_high,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path = sdf::testing::TestFile(
       "sdf",
@@ -1583,7 +1583,7 @@ TEST(print_snap_to_degrees_tolerance_too_high,
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
 
@@ -1634,7 +1634,7 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_relative_to_nested_reference.sdf";
@@ -1710,7 +1710,7 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/world_nested_frame_attached_to.sdf";
@@ -1756,7 +1756,7 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_nested_frame_attached_to.sdf";
@@ -1805,7 +1805,7 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 }
 
 /////////////////////////////////////////////////
-TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";

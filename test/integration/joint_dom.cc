@@ -512,9 +512,9 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
   EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->RawPose());
-  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->RawPose());
-  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("P1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -GZ_PI/2, 0), model->LinkByName("C1")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("P2")->RawPose());
   EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
@@ -536,28 +536,28 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_TRUE(
     model->LinkByName("P1")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("C1")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 0, 0, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->JointByName("J1")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     model->LinkByName("P2")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(3, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->JointByName("J2")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(5, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(5, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("C2")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(5, 0, -4, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(5, 0, -4, 0, GZ_PI/2, 0), pose);
 
   // resolve pose of J1 relative to C1, J2 relative to P2
   // these should match the numbers in the model file
@@ -855,7 +855,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
 
     Pose pose;
     EXPECT_TRUE(j1->SemanticPose().Resolve(pose, "__model__").empty());
-    EXPECT_EQ(Pose(0, 0, 9, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(0, 0, 9, 0, GZ_PI_2, 0), pose);
   }
   {
     const sdf::Joint *j2 = model->JointByName("J2");
@@ -871,7 +871,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
 
     Pose pose;
     EXPECT_TRUE(j2->SemanticPose().Resolve(pose, "__model__").empty());
-    EXPECT_EQ(Pose(0, 1, 10, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(0, 1, 10, 0, GZ_PI_2, 0), pose);
   }
   {
     const sdf::Joint *j3 = model->JointByName("J3");
@@ -919,7 +919,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
 
     Pose pose;
     EXPECT_TRUE(j5->SemanticPose().Resolve(pose, "__model__").empty());
-    EXPECT_EQ(Pose(0, -1, 1, IGN_PI_2, 0, 0), pose);
+    EXPECT_EQ(Pose(0, -1, 1, GZ_PI_2, 0, 0), pose);
   }
   {
     const sdf::Joint *j6 = model->JointByName("J6");
@@ -935,7 +935,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
 
     Pose pose;
     EXPECT_TRUE(j6->SemanticPose().Resolve(pose, "__model__").empty());
-    EXPECT_EQ(Pose(1, 0, 10, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(1, 0, 10, 0, GZ_PI_2, 0), pose);
   }
   {
     const sdf::Joint *j7 = model->JointByName("J7");

@@ -91,7 +91,7 @@ namespace sdf
     public: void SetInterpolateX(bool _interpolateX);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Waypoint for Trajectory.
@@ -125,7 +125,7 @@ namespace sdf
     public: void SetPose(const gz::math::Pose3d &_pose);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Trajectory for Animation.
@@ -183,7 +183,7 @@ namespace sdf
     public: void AddWaypoint(const Waypoint &_waypoint);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
 
@@ -404,7 +404,7 @@ namespace sdf
     public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

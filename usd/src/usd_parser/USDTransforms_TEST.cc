@@ -103,7 +103,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
     stage,
     gz::math::Vector3d(0, 1.5, 0.5),
       gz::math::Quaterniond(
-        IGN_DTOR(-62), IGN_DTOR(-47.5), IGN_DTOR(-53.41)),
+        GZ_DTOR(-62), GZ_DTOR(-47.5), GZ_DTOR(-53.41)),
     gz::math::Vector3d(1, 1, 1)
   );
 
@@ -112,7 +112,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
     stage,
     gz::math::Vector3d(0, -3.0, 0.5),
     gz::math::Quaterniond(
-      IGN_DTOR(-75.1), IGN_DTOR(49.2), IGN_DTOR(-81.2)),
+      GZ_DTOR(-75.1), GZ_DTOR(49.2), GZ_DTOR(-81.2)),
     gz::math::Vector3d(1, 1, 1)
   );
 
@@ -129,7 +129,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
     stage,
     gz::math::Vector3d(0, 3.0, 0.5),
     gz::math::Quaterniond(
-      IGN_DTOR(-75.1), IGN_DTOR(49.2), IGN_DTOR(-81.2)),
+      GZ_DTOR(-75.1), GZ_DTOR(49.2), GZ_DTOR(-81.2)),
     gz::math::Vector3d(1, 1, 1)
   );
 
@@ -145,7 +145,7 @@ TEST(USDTransformsTest, ParseUSDTransform)
     "/sun",
     stage,
     gz::math::Vector3d(0, 0, 10),
-      gz::math::Quaterniond(0, IGN_DTOR(-35), 0),
+      gz::math::Quaterniond(0, GZ_DTOR(-35), 0),
     gz::math::Vector3d(1, 1, 1)
   );
 }
@@ -176,7 +176,7 @@ TEST(USDTransformsTest, GetAllTransform)
       gz::math::Pose3d(
         gz::math::Vector3d(0, 0.03, 0.005),
         gz::math::Quaterniond(
-          IGN_DTOR(-75.1), IGN_DTOR(49.2), IGN_DTOR(-81.2))),
+          GZ_DTOR(-75.1), GZ_DTOR(49.2), GZ_DTOR(-81.2))),
       pose);
   }
 
@@ -212,10 +212,10 @@ TEST(USDTransformsTest, GetAllTransform)
     verifyNestedTf(
       "/transforms/nested_transforms_XYZ/child_transform",
         gz::math::Vector3d(0.01, 0.01, 0),
-        gz::math::Quaterniond(0, 0, IGN_DTOR(90)));
+        gz::math::Quaterniond(0, 0, GZ_DTOR(90)));
     verifyNestedTf(
       "/transforms/nested_transforms_ZYX/child_transform",
       gz::math::Vector3d(0.02, 0.0, 0),
-      gz::math::Quaterniond(IGN_DTOR(90), 0, 0));
+      gz::math::Quaterniond(GZ_DTOR(90), 0, 0));
   }
 }

@@ -125,7 +125,7 @@ TEST(Pose1_9, PoseExpressionFormats)
   model = world->ModelByIndex(14);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_euler_rpy_degrees_true", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
+  EXPECT_EQ(Pose(1, 2, 3, GZ_DTOR(90), GZ_DTOR(180), GZ_DTOR(270)),
       model->RawPose());
 
   model = world->ModelByIndex(15);
@@ -146,7 +146,7 @@ TEST(Pose1_9, PoseExpressionFormats)
     const auto link = model->LinkByIndex(0);
     ASSERT_NE(nullptr, link);
     EXPECT_EQ("link_euler_rpy_degrees_true", link->Name());
-    EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
+    EXPECT_EQ(Pose(1, 2, 3, GZ_DTOR(90), GZ_DTOR(180), GZ_DTOR(270)),
               link->Inertial().Pose());
   }
   {
@@ -1017,7 +1017,7 @@ TEST(Pose1_9, IncludePoseInModelString)
 
   auto boxModel = model->ModelByName("box");
   ASSERT_NE(nullptr, boxModel);
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
       boxModel->RawPose());
 }
 
@@ -1056,7 +1056,7 @@ TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
 
   auto boxModel = model->ModelByName("box");
   ASSERT_NE(nullptr, boxModel);
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
       boxModel->RawPose());
 }
 
@@ -1120,7 +1120,7 @@ TEST(Pose1_9, IncludePoseInWorld)
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("first_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 
   model = world->ModelByIndex(1);
@@ -1131,18 +1131,18 @@ TEST(Pose1_9, IncludePoseInWorld)
   model = world->ModelByIndex(2);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("third_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 
   model = world->ModelByIndex(3);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("forth_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 
   model = world->ModelByIndex(4);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("fifth_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 }

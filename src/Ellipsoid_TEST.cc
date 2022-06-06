@@ -24,7 +24,7 @@ TEST(DOMEllipsoid, Construction)
   sdf::Ellipsoid ellipsoid;
   EXPECT_EQ(nullptr, ellipsoid.Element());
   // A default ellipsoid has all three radii set to 1
-  EXPECT_DOUBLE_EQ(IGN_PI * 4. / 3., ellipsoid.Shape().Volume());
+  EXPECT_DOUBLE_EQ(GZ_PI * 4. / 3., ellipsoid.Shape().Volume());
   EXPECT_EQ(gz::math::Vector3d::One, ellipsoid.Shape().Radii());
 
   const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);

@@ -215,8 +215,8 @@ class UsdJointStageFixture : public::testing::Test
   {
     if (_convertToDeg)
     {
-      _targetLower = IGN_RTOD(_targetLower);
-      _targetUpper = IGN_RTOD(_targetUpper);
+      _targetLower = GZ_RTOD(_targetLower);
+      _targetUpper = GZ_RTOD(_targetUpper);
     }
 
     float usdLowerLimit;

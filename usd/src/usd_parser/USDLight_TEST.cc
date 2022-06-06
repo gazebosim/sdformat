@@ -67,7 +67,7 @@ TEST(USDLightsTest, DistanceLight)
   EXPECT_EQ(gz::math::Color(0.5, 0.5, 0.5, 1), light->Diffuse());
   EXPECT_EQ(gz::math::Color(1, 1, 1, 1), light->Specular());
   EXPECT_FLOAT_EQ(0.5, light->Intensity());
-  EXPECT_EQ(gz::math::Pose3d(0, 0, 10, 0, IGN_DTOR(45), 0),
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 10, 0, GZ_DTOR(45), 0),
       light->RawPose());
 
   prim = stage->GetPrimAtPath(pxr::SdfPath("/diskLight"));
@@ -84,7 +84,7 @@ TEST(USDLightsTest, DistanceLight)
   EXPECT_EQ(gz::math::Color(0.5, 0.5, 0.5, 1), diskLight->Specular());
   EXPECT_FLOAT_EQ(0.3, diskLight->Intensity());
   EXPECT_EQ(
-    gz::math::Pose3d(0, 0, 10, 0, 0, IGN_DTOR(45)), diskLight->RawPose());
+    gz::math::Pose3d(0, 0, 10, 0, 0, GZ_DTOR(45)), diskLight->RawPose());
   EXPECT_DOUBLE_EQ(0.1, diskLight->SpotInnerAngle().Radian());
   EXPECT_DOUBLE_EQ(0.5, diskLight->SpotOuterAngle().Radian());
   EXPECT_DOUBLE_EQ(0.8, diskLight->SpotFalloff());
