@@ -43,7 +43,6 @@ file(GENERATE
 # Install the ruby command line library in an unversioned location.
 install(FILES ${cmd_script_generated} DESTINATION lib/ruby/ignition)
 
-
 #===============================================================================
 # Bash completion
 
