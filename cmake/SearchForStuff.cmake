@@ -86,6 +86,10 @@ else()
 generating aggregated SDFormat descriptions for sdformat.org, please install \
 ignition-tools.")
 endif()
+if (ignition-tools_FOUND)
+  set (HAVE_IGN_TOOLS TRUE)
+  set (IGN_TOOLS_VER 1)
+endif()
 
 ################################################
 # Find the Python interpreter for running the
