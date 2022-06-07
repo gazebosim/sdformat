@@ -211,7 +211,7 @@ std::string FindResourceUri(const gz::common::URI &_uri)
 
 void runCommand(const Options &_opt)
 {
-  // Configure SDF to fetch assets from ignition fuel.
+  // Configure SDF to fetch assets from Gazebo Fuel.
   sdf::setFindCallback(std::bind(&FindResources, std::placeholders::_1));
   gz::common::addFindFileURICallback(
     std::bind(&FindResourceUri, std::placeholders::_1));

@@ -57,11 +57,11 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Box.
+    /// \brief Get the Gazebo Math representation of this Box.
     /// \return A const reference to an gz::math::Boxd object.
     public: const gz::math::Boxd &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Box.
+    /// \brief Get a mutable Gazebo Math representation of this Box.
     /// \return A reference to an gz::math::Boxd object.
     public: gz::math::Boxd &Shape();
 

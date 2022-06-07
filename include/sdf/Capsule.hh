@@ -64,11 +64,11 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Capsule.
+    /// \brief Get the Gazebo Math representation of this Capsule.
     /// \return A const reference to an gz::math::Sphered object.
     public: const gz::math::Capsuled &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Capsule.
+    /// \brief Get a mutable Gazebo Math representation of this Capsule.
     /// \return A reference to an gz::math::Capsuled object.
     public: gz::math::Capsuled &Shape();
 

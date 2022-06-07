@@ -71,7 +71,7 @@ namespace sdf
       camera.SetName(_prim.GetPath().GetName());
       camera.SetHorizontalFov(20.955);
       camera.SetLensFocalLength(focalLength);
-      // Camera is Y up axis, rotate the camera to match with Ignition
+      // Camera is Y up axis, rotate the camera to match with Gazebo
       gz::math::Pose3d poseCamera(0, 0, 0, GZ_PI_2, 0, -GZ_PI_2);
       sensor.SetRawPose(pose * -poseCamera);
       camera.SetNearClip(clippingRange[0]);
