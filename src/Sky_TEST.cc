@@ -31,7 +31,7 @@ TEST(DOMSky, Construction)
   EXPECT_DOUBLE_EQ(0.5, sky.CloudMeanSize());
   EXPECT_EQ(ignition::math::Color(0.8f, 0.8f, 0.8f),
       sky.CloudAmbient());
-  EXPECT_EQ("", sky.Uri());
+  EXPECT_EQ("", sky.CubemapUri());
 }
 
 /////////////////////////////////////////////////
@@ -49,7 +49,7 @@ TEST(DOMSky, CopyConstruction)
   sky.SetCloudHumidity(0.9);
   sky.SetCloudMeanSize(0.123);
   sky.SetCloudAmbient(ignition::math::Color::Blue);
-  sky.SetUri("dummyUri");
+  sky.SetCubemapUri("dummyUri");
 
   sdf::Sky sky2(sky);
   EXPECT_DOUBLE_EQ(1.0, sky2.Time());
@@ -60,7 +60,7 @@ TEST(DOMSky, CopyConstruction)
   EXPECT_DOUBLE_EQ(0.9, sky2.CloudHumidity());
   EXPECT_DOUBLE_EQ(0.123, sky2.CloudMeanSize());
   EXPECT_EQ(ignition::math::Color::Blue, sky2.CloudAmbient());
-  EXPECT_EQ("dummyUri", sky2.Uri());
+  EXPECT_EQ("dummyUri", sky2.CubemapUri());
 
   EXPECT_NE(nullptr, sky2.Element());
   EXPECT_EQ(sky.Element(), sky2.Element());
@@ -78,7 +78,7 @@ TEST(DOMSky, MoveConstruction)
   sky.SetCloudHumidity(0.9);
   sky.SetCloudMeanSize(0.123);
   sky.SetCloudAmbient(ignition::math::Color::Blue);
-  sky.SetUri("dummyUri");
+  sky.SetCubemapUri("dummyUri");
 
   sdf::Sky sky2(std::move(sky));
   EXPECT_DOUBLE_EQ(1.0, sky2.Time());
@@ -89,7 +89,7 @@ TEST(DOMSky, MoveConstruction)
   EXPECT_DOUBLE_EQ(0.9, sky2.CloudHumidity());
   EXPECT_DOUBLE_EQ(0.123, sky2.CloudMeanSize());
   EXPECT_EQ(ignition::math::Color::Blue, sky2.CloudAmbient());
-  EXPECT_EQ("dummyUri", sky2.Uri());
+  EXPECT_EQ("dummyUri", sky2.CubemapUri());
 }
 
 /////////////////////////////////////////////////
@@ -104,7 +104,7 @@ TEST(DOMSky, MoveAssignmentOperator)
   sky.SetCloudHumidity(0.9);
   sky.SetCloudMeanSize(0.123);
   sky.SetCloudAmbient(ignition::math::Color::Blue);
-  sky.SetUri("dummyUri");
+  sky.SetCubemapUri("dummyUri");
 
   sdf::Sky sky2;
   sky2 = std::move(sky);
@@ -116,7 +116,7 @@ TEST(DOMSky, MoveAssignmentOperator)
   EXPECT_DOUBLE_EQ(0.9, sky2.CloudHumidity());
   EXPECT_DOUBLE_EQ(0.123, sky2.CloudMeanSize());
   EXPECT_EQ(ignition::math::Color::Blue, sky2.CloudAmbient());
-  EXPECT_EQ("dummyUri", sky2.Uri());
+  EXPECT_EQ("dummyUri", sky2.CubemapUri());
 }
 
 /////////////////////////////////////////////////
@@ -131,7 +131,7 @@ TEST(DOMSky, AssignmentOperator)
   sky.SetCloudHumidity(0.9);
   sky.SetCloudMeanSize(0.123);
   sky.SetCloudAmbient(ignition::math::Color::Blue);
-  sky.SetUri("dummyUri");
+  sky.SetCubemapUri("dummyUri");
 
   sdf::Sky sky2;
   sky2 = sky;
@@ -143,7 +143,7 @@ TEST(DOMSky, AssignmentOperator)
   EXPECT_DOUBLE_EQ(0.9, sky2.CloudHumidity());
   EXPECT_DOUBLE_EQ(0.123, sky2.CloudMeanSize());
   EXPECT_EQ(ignition::math::Color::Blue, sky2.CloudAmbient());
-  EXPECT_EQ("dummyUri", sky2.Uri());
+  EXPECT_EQ("dummyUri", sky2.CubemapUri());
 }
 
 /////////////////////////////////////////////////
@@ -195,8 +195,8 @@ TEST(DOMSky, Set)
   EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f),
       sky.CloudAmbient());
 
-  sky.SetUri("dummyUri");
-  EXPECT_EQ("dummyUri", sky.Uri());
+  sky.SetCubemapUri("dummyUri");
+  EXPECT_EQ("dummyUri", sky.CubemapUri());
 }
 
 /////////////////////////////////////////////////
@@ -212,7 +212,7 @@ TEST(DOMSky, ToElement)
   sky.SetCloudHumidity(0.2);
   sky.SetCloudMeanSize(0.5);
   sky.SetCloudAmbient(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
-  sky.SetUri("dummyUri");
+  sky.SetCubemapUri("dummyUri");
 
   sdf::ElementPtr elem = sky.ToElement();
   ASSERT_NE(nullptr, elem);
@@ -228,5 +228,5 @@ TEST(DOMSky, ToElement)
   EXPECT_DOUBLE_EQ(sky.CloudHumidity(), sky2.CloudHumidity());
   EXPECT_DOUBLE_EQ(sky.CloudMeanSize(), sky2.CloudMeanSize());
   EXPECT_EQ(sky.CloudAmbient(), sky2.CloudAmbient());
-  EXPECT_EQ(sky.Uri(), sky2.Uri());
+  EXPECT_EQ(sky.CubemapUri(), sky2.CubemapUri());
 }

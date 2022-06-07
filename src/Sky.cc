@@ -49,7 +49,7 @@ class sdf::Sky::Implementation
       ignition::math::Color(0.8f, 0.8f, 0.8f);
 
   /// \brief Skybox texture URI
-  public: std::string uri = "__default__";
+  public: std::string cubemapUri = "";
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -158,15 +158,15 @@ void Sky::SetCloudAmbient(const ignition::math::Color &_ambient)
 }
 
 //////////////////////////////////////////////////
-std::string Sky::Uri() const
+std::string Sky::CubemapUri() const
 {
-  return this->dataPtr->uri;
+  return this->dataPtr->cubemapUri;
 }
 
 //////////////////////////////////////////////////
-void Sky::SetUri(const std::string &_uri)
+void Sky::SetCubemapUri(const std::string &_uri)
 {
-  this->dataPtr->uri = _uri;
+  this->dataPtr->cubemapUri = _uri;
 }
 
 /////////////////////////////////////////////////
@@ -191,6 +191,8 @@ Errors Sky::Load(ElementPtr _sdf)
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
       _sdf->Get<double>("sunset", this->dataPtr->sunset).first;
+  this->dataPtr->cubemapUri =
+      _sdf->Get<std::string>("cubemap_uri", this->dataPtr->cubemapUri).first;
 
   if ( _sdf->HasElement("clouds"))
   {
@@ -207,14 +209,6 @@ Errors Sky::Load(ElementPtr _sdf)
     this->dataPtr->cloudAmbient =
         cloudElem->Get<ignition::math::Color>("ambient",
         this->dataPtr->cloudAmbient).first;
-  }
-
-  // Optional uri element. If not provided, assume there is some default in
-  // downstream implementation.
-  if (_sdf->HasElement("uri"))
-  {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri",
-      this->dataPtr->uri).first;
   }
 
   return errors;
@@ -236,7 +230,7 @@ sdf::ElementPtr Sky::ToElement() const
   elem->GetElement("time")->Set(this->Time());
   elem->GetElement("sunrise")->Set(this->Sunrise());
   elem->GetElement("sunset")->Set(this->Sunset());
-  elem->GetElement("uri")->Set(this->Uri());
+  elem->GetElement("cubemap_uri")->Set(this->CubemapUri());
 
   sdf::ElementPtr cloudElem = elem->GetElement("clouds");
   cloudElem->GetElement("speed")->Set(this->CloudSpeed());
