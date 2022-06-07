@@ -115,6 +115,11 @@ extern "C" SDFORMAT_VISIBLE char *gzVersion()
 #endif
 }
 
+extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
+{
+  return gzVersion();
+}
+
 //////////////////////////////////////////////////
 /// \brief Print the full description of the SDF spec.
 /// \return 0 on success, -1 if SDF could not be initialized.
