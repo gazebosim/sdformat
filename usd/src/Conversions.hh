@@ -33,7 +33,7 @@ namespace sdf
   //
   namespace usd
   {
-    /// \brief Specialized conversion from an Gazebo Common Material
+    /// \brief Specialized conversion from a Gazebo Common Material
     /// to a SDF material
     /// \param[in] _in Gazebo Common Material.
     /// \return SDF material.
