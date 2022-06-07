@@ -25,7 +25,10 @@
 #include <utility>
 #include <vector>
 
-#include <gz/math.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
 #include <urdf_model/model.h>
 #include <urdf_model/link.h>
