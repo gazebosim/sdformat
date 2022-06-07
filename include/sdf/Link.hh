@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <ignition/math/Inertial.hh>
 #include <ignition/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"

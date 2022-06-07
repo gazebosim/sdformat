@@ -25,7 +25,10 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/math.hh>
+#include <ignition/math/Helpers.hh>
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Quaternion.hh>
+#include <ignition/math/Vector3.hh>
 
 #include <urdf_model/model.h>
 #include <urdf_model/link.h>
