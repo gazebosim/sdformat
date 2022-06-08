@@ -23,7 +23,7 @@ but with improved human-readability..
   Use `gz/...` instead.
 
 - **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
-￼   `Inertial` class in the `ign-math` library.
+￼   `Inertial` class in the `gz-math` library.
 
 ## libsdformat 11.x to 12.0
 
