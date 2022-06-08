@@ -17,7 +17,7 @@
 #include "sdf/NavSat.hh"
 
 using namespace sdf;
-using namespace ignition;
+using namespace gz;
 
 /// \brief Private navsat data.
 class sdf::NavSat::Implementation
@@ -40,7 +40,7 @@ class sdf::NavSat::Implementation
 
 //////////////////////////////////////////////////
 NavSat::NavSat()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

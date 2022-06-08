@@ -19,7 +19,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
@@ -47,7 +47,7 @@ class sdf::Joint::Implementation
   public: JointType type = JointType::INVALID;
 
   /// \brief Pose of the joint
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -73,7 +73,7 @@ class sdf::Joint::Implementation
 
 /////////////////////////////////////////////////
 Joint::Joint()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -287,7 +287,7 @@ void Joint::SetAxis(const unsigned int _index, const JointAxis &_axis)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Joint::RawPose() const
+const gz::math::Pose3d &Joint::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -299,7 +299,7 @@ const std::string &Joint::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetRawPose(const ignition::math::Pose3d &_pose)
+void Joint::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -330,6 +330,11 @@ void Joint::SetPoseRelativeToGraph(
       axis->SetXmlParentName(this->dataPtr->name);
       axis->SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
     }
+  }
+  for (auto &sensor : this->dataPtr->sensors)
+  {
+    sensor.SetXmlParentName(this->dataPtr->name);
+    sensor.SetPoseRelativeToGraph(_graph);
   }
 }
 
@@ -429,6 +434,13 @@ const Sensor *Joint::SensorByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Sensor *Joint::SensorByIndex(const uint64_t _index)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Joint*>(this)->SensorByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Joint::SensorNameExists(const std::string &_name) const
 {
   return nullptr != this->SensorByName(_name);
@@ -448,6 +460,13 @@ const Sensor *Joint::SensorByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Sensor *Joint::SensorByName(const std::string &_name)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Joint*>(this)->SensorByName(_name));
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Joint::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
@@ -460,7 +479,7 @@ sdf::ElementPtr Joint::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   std::string jointType = "invalid";
   switch (this->Type())

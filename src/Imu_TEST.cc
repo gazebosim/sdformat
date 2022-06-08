@@ -55,17 +55,17 @@ TEST(DOMImu, Construction)
   imu.SetAngularVelocityZNoise(noise);
   EXPECT_EQ(noise, imu.AngularVelocityZNoise());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, imu.GravityDirX());
-  imu.SetGravityDirX(ignition::math::Vector3d::Zero);
-  EXPECT_EQ(ignition::math::Vector3d::Zero, imu.GravityDirX());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, imu.GravityDirX());
+  imu.SetGravityDirX(gz::math::Vector3d::Zero);
+  EXPECT_EQ(gz::math::Vector3d::Zero, imu.GravityDirX());
 
   EXPECT_TRUE(imu.GravityDirXParentFrame().empty());
   imu.SetGravityDirXParentFrame("my_frame");
   EXPECT_EQ("my_frame", imu.GravityDirXParentFrame());
 
-  EXPECT_EQ(ignition::math::Vector3d::Zero, imu.CustomRpy());
-  imu.SetCustomRpy(ignition::math::Vector3d::UnitZ);
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imu.CustomRpy());
+  EXPECT_EQ(gz::math::Vector3d::Zero, imu.CustomRpy());
+  imu.SetCustomRpy(gz::math::Vector3d::UnitZ);
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, imu.CustomRpy());
 
   EXPECT_TRUE(imu.CustomRpyParentFrame().empty());
   imu.SetCustomRpyParentFrame("other_frame");
@@ -145,9 +145,9 @@ TEST(DOMImu, ToElement)
   imu.SetAngularVelocityXNoise(noise);
   imu.SetAngularVelocityYNoise(noise);
   imu.SetAngularVelocityZNoise(noise);
-  imu.SetGravityDirX(ignition::math::Vector3d::Zero);
+  imu.SetGravityDirX(gz::math::Vector3d::Zero);
   imu.SetGravityDirXParentFrame("my_frame");
-  imu.SetCustomRpy(ignition::math::Vector3d::UnitZ);
+  imu.SetCustomRpy(gz::math::Vector3d::UnitZ);
   imu.SetCustomRpyParentFrame("other_frame");
   imu.SetLocalization("NED");
   imu.SetOrientationEnabled(false);
@@ -166,18 +166,18 @@ TEST(DOMImu, ToElement)
   EXPECT_EQ(noise, imu2.AngularVelocityXNoise());
   EXPECT_EQ(noise, imu2.AngularVelocityYNoise());
   EXPECT_EQ(noise, imu2.AngularVelocityZNoise());
-  EXPECT_EQ(ignition::math::Vector3d::Zero, imu2.GravityDirX());
+  EXPECT_EQ(gz::math::Vector3d::Zero, imu2.GravityDirX());
   EXPECT_EQ("my_frame", imu2.GravityDirXParentFrame());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imu2.CustomRpy());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, imu2.CustomRpy());
   EXPECT_EQ("other_frame", imu2.CustomRpyParentFrame());
   EXPECT_EQ("NED", imu2.Localization());
   EXPECT_FALSE(imu2.OrientationEnabled());
 
   // make changes to DOM and verify ToElement produces updated values
-  imu2.SetGravityDirX(ignition::math::Vector3d(1, 2, 3));;
+  imu2.SetGravityDirX(gz::math::Vector3d(1, 2, 3));;
   sdf::ElementPtr imu2Elem = imu2.ToElement();
   EXPECT_NE(nullptr, imu2Elem);
   sdf::Imu imu3;
   imu3.Load(imu2Elem);
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), imu3.GravityDirX());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), imu3.GravityDirX());
 }

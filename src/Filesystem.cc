@@ -542,7 +542,7 @@ std::string basename(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-DirIter::DirIter() : dataPtr(ignition::utils::MakeUniqueImpl<Implementation>())
+DirIter::DirIter() : dataPtr(gz::utils::MakeUniqueImpl<Implementation>())
 {
   this->dataPtr->current = "";
 

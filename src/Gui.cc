@@ -35,7 +35,7 @@ class sdf::Gui::Implementation
 
 /////////////////////////////////////////////////
 Gui::Gui()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

@@ -95,12 +95,12 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the visual object.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the visual object.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is

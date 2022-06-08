@@ -159,8 +159,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(sensor->HasElement("pose"));
       const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-        "", ignition::math::Pose3d::Zero);
+      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+        "", gz::math::Pose3d::Zero);
       ASSERT_TRUE(posePair.second);
 
       const auto& pose = posePair.first;
@@ -180,8 +180,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(sensor->HasElement("pose"));
       const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-        "", ignition::math::Pose3d::Zero);
+      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+        "", gz::math::Pose3d::Zero);
       ASSERT_TRUE(posePair.second);
 
       const auto& pose = posePair.first;
@@ -201,8 +201,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(sensor->HasElement("pose"));
       const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-        "", ignition::math::Pose3d::Zero);
+      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+        "", gz::math::Pose3d::Zero);
       ASSERT_TRUE(posePair.second);
 
       const auto& pose = posePair.first;
@@ -222,8 +222,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(sensor->HasElement("pose"));
       const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-        "", ignition::math::Pose3d::Zero);
+      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+        "", gz::math::Pose3d::Zero);
       ASSERT_TRUE(posePair.second);
 
       const auto& pose = posePair.first;
@@ -243,8 +243,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(sensor->HasElement("pose"));
       const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-        "", ignition::math::Pose3d::Zero);
+      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+        "", gz::math::Pose3d::Zero);
       ASSERT_TRUE(posePair.second);
 
       const auto& pose = posePair.first;
@@ -264,8 +264,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       ASSERT_TRUE(sensor->HasElement("pose"));
       const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-        "", ignition::math::Pose3d::Zero);
+      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+        "", gz::math::Pose3d::Zero);
       ASSERT_TRUE(posePair.second);
 
       const auto& pose = posePair.first;

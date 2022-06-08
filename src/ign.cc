@@ -31,7 +31,7 @@
 #include "sdf/PrintConfig.hh"
 #include "sdf/system_util.hh"
 
-#include "ignition/math/Inertial.hh"
+#include "gz/math/Inertial.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
@@ -288,11 +288,11 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
             " models will not be included." << std::endl;
   }
 
-  ignition::math::Inertiald totalInertial;
+  gz::math::Inertiald totalInertial;
 
   for (uint64_t i = 0; i < model->LinkCount(); i++)
   {
-    ignition::math::Pose3d linkPoseRelativeToModel;
+    gz::math::Pose3d linkPoseRelativeToModel;
     errors = model->LinkByIndex(i)->SemanticPose().
       Resolve(linkPoseRelativeToModel, "__model__");
 

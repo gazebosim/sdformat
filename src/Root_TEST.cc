@@ -236,10 +236,10 @@ TEST(DOMRoot, FrameSemanticsOnMove)
     auto *frame = world->FrameByIndex(0);
     ASSERT_NE(nullptr, frame);
     EXPECT_EQ("frame1", frame->Name());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     sdf::Errors errors = frame->SemanticPose().Resolve(pose);
     EXPECT_TRUE(errors.empty()) << errors;
-    EXPECT_EQ(ignition::math::Pose3d(0, 1, 0, 0, 0, 0), pose);
+    EXPECT_EQ(gz::math::Pose3d(0, 1, 0, 0, 0, 0), pose);
   };
 
   auto testFrame2 = [](const sdf::Root &_root)
@@ -249,10 +249,10 @@ TEST(DOMRoot, FrameSemanticsOnMove)
     auto *frame = world->FrameByIndex(0);
     ASSERT_NE(nullptr, frame);
     EXPECT_EQ("frame2", frame->Name());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     sdf::Errors errors = frame->SemanticPose().Resolve(pose);
     EXPECT_TRUE(errors.empty()) << errors;
-    EXPECT_EQ(ignition::math::Pose3d(1, 1, 0, 0, 0, 0), pose);
+    EXPECT_EQ(gz::math::Pose3d(1, 1, 0, 0, 0, 0), pose);
   };
 
   {

@@ -15,6 +15,7 @@
 import copy
 from ignition.math import Angle, Color, Pose3d, Vector3d
 from sdformat import Light
+import sdformat as sdf
 import math
 import unittest
 
@@ -23,7 +24,7 @@ class LightColor(unittest.TestCase):
 
     def test_default_construction(self):
         light = Light()
-        self.assertEqual(Light.LightType.POINT, light.type())
+        self.assertEqual(sdf.LightType.POINT, light.type())
         self.assertFalse(light.name())
 
         light.set_name("test_light")
@@ -111,7 +112,7 @@ class LightColor(unittest.TestCase):
     def test_copy_construction(self):
         light = Light()
         light.set_name("test_copy_light")
-        light.set_type(Light.LightType.DIRECTIONAL)
+        light.set_type(sdf.LightType.DIRECTIONAL)
         light.set_raw_pose(Pose3d(3, 2, 1, 0, math.pi, 0))
         light.set_pose_relative_to("ground_plane")
         light.set_cast_shadows(True)
@@ -131,7 +132,7 @@ class LightColor(unittest.TestCase):
 
         light2 = Light(light)
         self.assertEqual("test_copy_light", light2.name())
-        self.assertEqual(Light.LightType.DIRECTIONAL, light2.type())
+        self.assertEqual(sdf.LightType.DIRECTIONAL, light2.type())
         self.assertEqual(Pose3d(3, 2, 1, 0, math.pi, 0), light2.raw_pose())
         self.assertEqual("ground_plane", light2.pose_relative_to())
         self.assertTrue(light2.cast_shadows())
@@ -152,7 +153,7 @@ class LightColor(unittest.TestCase):
     def test_deepcopy(self):
         light = Light()
         light.set_name("test_light_assignment")
-        light.set_type(Light.LightType.DIRECTIONAL)
+        light.set_type(sdf.LightType.DIRECTIONAL)
         light.set_raw_pose(Pose3d(3, 2, 1, 0, math.pi, 0))
         light.set_pose_relative_to("ground_plane")
         light.set_cast_shadows(True)
@@ -172,7 +173,7 @@ class LightColor(unittest.TestCase):
 
         light2 = copy.deepcopy(light)
         self.assertEqual("test_light_assignment", light2.name())
-        self.assertEqual(Light.LightType.DIRECTIONAL, light2.type())
+        self.assertEqual(sdf.LightType.DIRECTIONAL, light2.type())
         self.assertEqual(Pose3d(3, 2, 1, 0, math.pi, 0), light2.raw_pose())
         self.assertEqual("ground_plane", light2.pose_relative_to())
         self.assertTrue(light2.cast_shadows())

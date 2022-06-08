@@ -90,11 +90,11 @@ namespace sdf
 
     /// \brief Get the fdir
     /// \returns ODE fdir
-    public: const ignition::math::Vector3d &Fdir1() const;
+    public: const gz::math::Vector3d &Fdir1() const;
 
     /// \brief Set fdir
     /// \param[in] _fdir ODE fdir
-    public: void SetFdir1(const ignition::math::Vector3d &_fdir);
+    public: void SetFdir1(const gz::math::Vector3d &_fdir);
 
     /// \brief Get the slip1
     /// \returns ODE slip1

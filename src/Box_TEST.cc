@@ -25,16 +25,16 @@ TEST(DOMBox, Construction)
   sdf::Box box;
   EXPECT_EQ(nullptr, box.Element());
 
-  EXPECT_EQ(ignition::math::Vector3d::One, box.Size());
+  EXPECT_EQ(gz::math::Vector3d::One, box.Size());
 
-  box.SetSize(ignition::math::Vector3d::Zero);
-  EXPECT_EQ(ignition::math::Vector3d::Zero, box.Size());
+  box.SetSize(gz::math::Vector3d::Zero);
+  EXPECT_EQ(gz::math::Vector3d::Zero, box.Size());
 }
 
 /////////////////////////////////////////////////
 TEST(DOMBox, MoveConstructor)
 {
-  const ignition::math::Vector3d size(1, 2, 3);
+  const gz::math::Vector3d size(1, 2, 3);
 
   sdf::Box box;
   box.SetSize(size);
@@ -49,7 +49,7 @@ TEST(DOMBox, MoveConstructor)
 /////////////////////////////////////////////////
 TEST(DOMBox, CopyConstructor)
 {
-  const ignition::math::Vector3d size(0.1, 0.2, 0.3);
+  const gz::math::Vector3d size(0.1, 0.2, 0.3);
 
   sdf::Box box;
   box.SetSize(size);
@@ -61,7 +61,7 @@ TEST(DOMBox, CopyConstructor)
 /////////////////////////////////////////////////
 TEST(DOMBox, CopyAssigmentOperator)
 {
-  const ignition::math::Vector3d size(0.2, 0.3, 0.4);
+  const gz::math::Vector3d size(0.2, 0.3, 0.4);
 
   sdf::Box box;
   box.SetSize(size);
@@ -74,7 +74,7 @@ TEST(DOMBox, CopyAssigmentOperator)
 /////////////////////////////////////////////////
 TEST(DOMBox, MoveAssignmentConstructor)
 {
-  const ignition::math::Vector3d size(1, 2, 3);
+  const gz::math::Vector3d size(1, 2, 3);
 
   sdf::Box box;
   box.SetSize(size);
@@ -87,8 +87,8 @@ TEST(DOMBox, MoveAssignmentConstructor)
 /////////////////////////////////////////////////
 TEST(DOMBox, CopyAssignmentAfterMove)
 {
-  const ignition::math::Vector3d size1(1, 2, 3);
-  const ignition::math::Vector3d size2(4, 5, 6);
+  const gz::math::Vector3d size1(1, 2, 3);
+  const gz::math::Vector3d size2(4, 5, 6);
 
   sdf::Box box1;
   box1.SetSize(size1);
@@ -138,10 +138,10 @@ TEST(DOMBox, Load)
 TEST(DOMBox, Shape)
 {
   sdf::Box box;
-  EXPECT_EQ(ignition::math::Vector3d::One, box.Size());
+  EXPECT_EQ(gz::math::Vector3d::One, box.Size());
 
-  box.Shape().SetSize(ignition::math::Vector3d(1, 2, 3));
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), box.Size());
+  box.Shape().SetSize(gz::math::Vector3d(1, 2, 3));
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), box.Size());
 }
 
 /////////////////////////////////////////////////
@@ -149,7 +149,7 @@ TEST(DOMBox, ToElement)
 {
   sdf::Box box;
 
-  box.SetSize(ignition::math::Vector3d(1, 2, 3));
+  box.SetSize(gz::math::Vector3d(1, 2, 3));
 
   sdf::ElementPtr elem = box.ToElement();
   ASSERT_NE(nullptr, elem);

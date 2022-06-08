@@ -14,6 +14,7 @@
 
 import copy
 from sdformat import Error
+import sdformat as sdf
 import unittest
 
 class ErrorColor(unittest.TestCase):
@@ -22,7 +23,7 @@ class ErrorColor(unittest.TestCase):
     error = Error()
 
     self.assertEqual(error.is_valid(), False)
-    self.assertEqual(error.code(), Error.ErrorCode.NONE)
+    self.assertEqual(error.code(), sdf.ErrorCode.NONE)
     self.assertFalse(error.message())
     self.assertFalse(error.xml_path())
     self.assertFalse(error.file_path())
@@ -43,9 +44,9 @@ class ErrorColor(unittest.TestCase):
 
 
   def test_value_construction_without_file(self):
-    error = Error(Error.ErrorCode.FILE_READ, "Unable to read a file")
+    error = Error(sdf.ErrorCode.FILE_READ, "Unable to read a file")
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
+    self.assertEqual(error.code(), sdf.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertFalse(error.xml_path())
     self.assertFalse(error.file_path())
@@ -53,7 +54,7 @@ class ErrorColor(unittest.TestCase):
 
 
   def test_deepcopy(self):
-    error = Error(Error.ErrorCode.FILE_READ, "Unable to read a file")
+    error = Error(sdf.ErrorCode.FILE_READ, "Unable to read a file")
 
     error2 = copy.deepcopy(error)
     self.assertEqual(error.is_valid(), error2.is_valid())
@@ -76,11 +77,11 @@ class ErrorColor(unittest.TestCase):
   def test_value_construction_with_file(self):
     emptyfile_path = "Empty/file/path";
     error = Error(
-        Error.ErrorCode.FILE_READ,
+        sdf.ErrorCode.FILE_READ,
         "Unable to read a file",
         emptyfile_path)
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
+    self.assertEqual(error.code(), sdf.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertFalse(error.xml_path())
     self.assertTrue(error.file_path())
@@ -92,12 +93,12 @@ class ErrorColor(unittest.TestCase):
     emptyfile_path = "Empty/file/path";
     line_number = 10;
     error = Error(
-        Error.ErrorCode.FILE_READ,
+        sdf.ErrorCode.FILE_READ,
         "Unable to read a file",
         emptyfile_path,
         line_number)
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
+    self.assertEqual(error.code(), sdf.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertFalse(error.xml_path())
     self.assertTrue(error.file_path())
@@ -110,12 +111,12 @@ class ErrorColor(unittest.TestCase):
     emptyfile_path = "Empty/file/path";
     line_number = 10;
     error = Error(
-        Error.ErrorCode.FILE_READ,
+        sdf.ErrorCode.FILE_READ,
         "Unable to read a file",
         emptyfile_path,
         line_number)
     self.assertEqual(error.is_valid(), True)
-    self.assertEqual(error.code(), Error.ErrorCode.FILE_READ)
+    self.assertEqual(error.code(), sdf.ErrorCode.FILE_READ)
     self.assertEqual(error.message(), "Unable to read a file")
     self.assertTrue(error.file_path())
     self.assertEqual(error.file_path(), emptyfile_path)

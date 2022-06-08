@@ -91,7 +91,7 @@ void defineParserConfig(pybind11::object module)
     }, "memo"_a);
 
   pybind11::enum_<sdf::EnforcementPolicy>(
-    parseConfigModule, "EnforcementPolicy")
+    module, "EnforcementPolicy")
     .value("ERR", sdf::EnforcementPolicy::ERR)
     .value("WARN", sdf::EnforcementPolicy::WARN)
     .value("LOG", sdf::EnforcementPolicy::LOG);

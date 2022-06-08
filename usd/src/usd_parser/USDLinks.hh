@@ -54,7 +54,7 @@ namespace sdf
       const std::string &_nameLink,
       std::optional<sdf::Link> &_link,
       const USDData &_usdData,
-      ignition::math::Vector3d &_scale);
+      gz::math::Vector3d &_scale);
   }
   }
 }

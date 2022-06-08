@@ -49,7 +49,7 @@ TEST(DOMParticleEmitter, Construction)
   emitter.SetLifetime(22.0);
   EXPECT_DOUBLE_EQ(22.0, emitter.Lifetime());
   emitter.SetLifetime(-1.0);
-  EXPECT_DOUBLE_EQ(ignition::math::MIN_D, emitter.Lifetime());
+  EXPECT_DOUBLE_EQ(gz::math::MIN_D, emitter.Lifetime());
 
   EXPECT_DOUBLE_EQ(10.0, emitter.Rate());
   emitter.SetRate(123.0);
@@ -75,26 +75,26 @@ TEST(DOMParticleEmitter, Construction)
   emitter.SetMaxVelocity(-12.4);
   EXPECT_DOUBLE_EQ(0.0, emitter.MaxVelocity());
 
-  EXPECT_EQ(ignition::math::Vector3d::One, emitter.Size());
-  emitter.SetSize(ignition::math::Vector3d(3, 2, 1));
-  EXPECT_EQ(ignition::math::Vector3d(3, 2, 1), emitter.Size());
-  emitter.SetSize(ignition::math::Vector3d(-3, -2, -1));
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, 0), emitter.Size());
+  EXPECT_EQ(gz::math::Vector3d::One, emitter.Size());
+  emitter.SetSize(gz::math::Vector3d(3, 2, 1));
+  EXPECT_EQ(gz::math::Vector3d(3, 2, 1), emitter.Size());
+  emitter.SetSize(gz::math::Vector3d(-3, -2, -1));
+  EXPECT_EQ(gz::math::Vector3d(0, 0, 0), emitter.Size());
 
-  EXPECT_EQ(ignition::math::Vector3d::One, emitter.ParticleSize());
-  emitter.SetParticleSize(ignition::math::Vector3d(4, 5, 6));
-  EXPECT_EQ(ignition::math::Vector3d(4, 5, 6), emitter.ParticleSize());
-  emitter.SetParticleSize(ignition::math::Vector3d(-4, -5, -6));
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, 0), emitter.ParticleSize());
+  EXPECT_EQ(gz::math::Vector3d::One, emitter.ParticleSize());
+  emitter.SetParticleSize(gz::math::Vector3d(4, 5, 6));
+  EXPECT_EQ(gz::math::Vector3d(4, 5, 6), emitter.ParticleSize());
+  emitter.SetParticleSize(gz::math::Vector3d(-4, -5, -6));
+  EXPECT_EQ(gz::math::Vector3d(0, 0, 0), emitter.ParticleSize());
 
-  EXPECT_EQ(ignition::math::Color::White, emitter.ColorStart());
-  emitter.SetColorStart(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
-  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f),
+  EXPECT_EQ(gz::math::Color::White, emitter.ColorStart());
+  emitter.SetColorStart(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  EXPECT_EQ(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0f),
       emitter.ColorStart());
 
-  EXPECT_EQ(ignition::math::Color::White, emitter.ColorEnd());
-  emitter.SetColorEnd(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0f));
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0f), emitter.ColorEnd());
+  EXPECT_EQ(gz::math::Color::White, emitter.ColorEnd());
+  emitter.SetColorEnd(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0f));
+  EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0f), emitter.ColorEnd());
 
   EXPECT_TRUE(emitter.ColorRangeImage().empty());
   emitter.SetColorRangeImage("/test/string");
@@ -108,9 +108,9 @@ TEST(DOMParticleEmitter, Construction)
   emitter.SetScatterRatio(0.5f);
   EXPECT_FLOAT_EQ(0.5f, emitter.ScatterRatio());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, emitter.RawPose());
-  emitter.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 1.5707));
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 1.5707), emitter.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, emitter.RawPose());
+  emitter.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 1.5707));
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 1.5707), emitter.RawPose());
 
   EXPECT_TRUE(emitter.PoseRelativeTo().empty());
   emitter.SetPoseRelativeTo("/test/relative");
@@ -131,14 +131,14 @@ TEST(DOMParticleEmitter, ToElement)
   emitter.SetScaleRate(0.2);
   emitter.SetMinVelocity(32.4);
   emitter.SetMaxVelocity(50.1);
-  emitter.SetSize(ignition::math::Vector3d(1, 2, 3));
-  emitter.SetParticleSize(ignition::math::Vector3d(4, 5, 6));
-  emitter.SetColorStart(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
-  emitter.SetColorEnd(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0f));
+  emitter.SetSize(gz::math::Vector3d(1, 2, 3));
+  emitter.SetParticleSize(gz::math::Vector3d(4, 5, 6));
+  emitter.SetColorStart(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  emitter.SetColorEnd(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0f));
   emitter.SetColorRangeImage("my-image");
   emitter.SetTopic("my-topic");
   emitter.SetScatterRatio(0.3f);
-  emitter.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  emitter.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   sdf::Material material;
   emitter.SetMaterial(material);
 

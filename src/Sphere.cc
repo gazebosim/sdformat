@@ -23,7 +23,7 @@ using namespace sdf;
 class sdf::Sphere::Implementation
 {
   /// \brief Representation of the sphere
-  public: ignition::math::Sphered sphere{1.0};
+  public: gz::math::Sphered sphere{1.0};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -31,7 +31,7 @@ class sdf::Sphere::Implementation
 
 /////////////////////////////////////////////////
 Sphere::Sphere()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -95,13 +95,13 @@ void Sphere::SetRadius(const double _radius)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Sphered &Sphere::Shape() const
+const gz::math::Sphered &Sphere::Shape() const
 {
   return this->dataPtr->sphere;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Sphered &Sphere::Shape()
+gz::math::Sphered &Sphere::Shape()
 {
   return this->dataPtr->sphere;
 }

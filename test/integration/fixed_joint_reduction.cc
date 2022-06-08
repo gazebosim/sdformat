@@ -265,12 +265,12 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
             "file://media/materials/scripts/gazebo.material");
 
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0, 1, 0, 1));
+            Get<gz::math::Color>("ambient"),
+            gz::math::Color(0, 1, 0, 1));
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
+            Get<gz::math::Color>("ambient"),
              sdf_child_link_1_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"));
+            Get<gz::math::Color>("ambient"));
 
   // child_link_1a
   //   <collision name='base_link_fixed_joint_lump__child_link_1a_collision_3'>
@@ -316,12 +316,12 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
 
   // ambient unassigned should be 0, 0, 0, 1
   EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0, 0, 0, 1));
+            Get<gz::math::Color>("ambient"),
+            gz::math::Color(0, 0, 0, 1));
   EXPECT_EQ(urdf_child_link_1a_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
+            Get<gz::math::Color>("ambient"),
             sdf_child_link_1a_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"));
+            Get<gz::math::Color>("ambient"));
 
   // child_link_2
   //   <collision name='base_link_fixed_joint_lump__child_link_2_collision_2'>
@@ -363,12 +363,12 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
 
   // ambient unassigned should be 0, 0, 0, 1
   EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0, 0, 0, 1));
+            Get<gz::math::Color>("ambient"),
+            gz::math::Color(0, 0, 0, 1));
   EXPECT_EQ(urdf_child_link_2_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
+            Get<gz::math::Color>("ambient"),
             sdf_child_link_2_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"));
+            Get<gz::math::Color>("ambient"));
 }
 
 /////////////////////////////////////////////////
@@ -492,12 +492,12 @@ void FixedJointReductionCollisionVisualExtensionEmptyRoot(
             "file://media/materials/scripts/gazebo.material");
 
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
-            ignition::math::Color(0, 1, 0, 1));
+            Get<gz::math::Color>("ambient"),
+            gz::math::Color(0, 1, 0, 1));
   EXPECT_EQ(urdf_child_link_1_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"),
+            Get<gz::math::Color>("ambient"),
             sdf_child_link_1_vis->GetElement("material")->
-            Get<ignition::math::Color>("ambient"));
+            Get<gz::math::Color>("ambient"));
 }
 
 /////////////////////////////////////////////////
@@ -508,54 +508,54 @@ void FixedJointReductionEquivalence(const std::string &_file)
   ASSERT_TRUE(sdf::readFile(_file, robot));
 
   std::map<std::string, double> linkMasses;
-  std::map<std::string, ignition::math::Pose3d> linkPoses;
-  std::map<std::string, ignition::math::Vector3d> mapIxxIyyIzz;
-  std::map<std::string, ignition::math::Vector3d> mapIxyIxzIyz;
+  std::map<std::string, gz::math::Pose3d> linkPoses;
+  std::map<std::string, gz::math::Vector3d> mapIxxIyyIzz;
+  std::map<std::string, gz::math::Vector3d> mapIxyIxzIyz;
 
   {
     std::string linkName = "link0";
     linkMasses[linkName] = 1000;
-    linkPoses[linkName] = ignition::math::Pose3d(0, 0, -0.5, 0, -0, 0);
-    mapIxxIyyIzz[linkName] = ignition::math::Vector3d(1, 1, 1);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d(0, 0, 0);
+    linkPoses[linkName] = gz::math::Pose3d(0, 0, -0.5, 0, -0, 0);
+    mapIxxIyyIzz[linkName] = gz::math::Vector3d(1, 1, 1);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d(0, 0, 0);
   }
 
   {
     std::string linkName = "link1";
     linkMasses[linkName] = 100;
     linkPoses[linkName] =
-      ignition::math::Pose3d(0, -1.5, 0, -2.14159, 0.141593, 0.858407);
-    mapIxxIyyIzz[linkName] = ignition::math::Vector3d(2, 3, 4);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d(0, 0, 0);
+      gz::math::Pose3d(0, -1.5, 0, -2.14159, 0.141593, 0.858407);
+    mapIxxIyyIzz[linkName] = gz::math::Vector3d(2, 3, 4);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d(0, 0, 0);
   }
 
   {
     std::string linkName = "link2";
     linkMasses[linkName] = 200;
     linkPoses[linkName] =
-      ignition::math::Pose3d(0.2, 0.4, 1, -1.14159, -0.141593, 1.5708);
-    mapIxxIyyIzz[linkName] = ignition::math::Vector3d(5, 6, 7);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d(0, 0, 0);
+      gz::math::Pose3d(0.2, 0.4, 1, -1.14159, -0.141593, 1.5708);
+    mapIxxIyyIzz[linkName] = gz::math::Vector3d(5, 6, 7);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d(0, 0, 0);
   }
 
   {
     std::string linkName = "link3";
     linkMasses[linkName] = 400;
     linkPoses[linkName] =
-      ignition::math::Pose3d(0.1, 0.2, 0.3, -1.14159, 0.141593, 0.858407);
-    mapIxxIyyIzz[linkName] = ignition::math::Vector3d(8, 9, 10);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d(0, 0, 0);
+      gz::math::Pose3d(0.1, 0.2, 0.3, -1.14159, 0.141593, 0.858407);
+    mapIxxIyyIzz[linkName] = gz::math::Vector3d(8, 9, 10);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d(0, 0, 0);
   }
 
   {
     std::string linkName = "link1a";
     linkMasses[linkName] = 700;
-    linkPoses[linkName] = ignition::math::Pose3d(
+    linkPoses[linkName] = gz::math::Pose3d(
       1.6, -2.72857, -0.342857, -2.14159, 0.141593, 0.858407);
     mapIxxIyyIzz[linkName] =
-      ignition::math::Vector3d(576.477313, 527.680922, 420.127477);
+      gz::math::Vector3d(576.477313, 527.680922, 420.127477);
     mapIxyIxzIyz[linkName] =
-      ignition::math::Vector3d(-65.680839, 134.562430, 264.780538);
+      gz::math::Vector3d(-65.680839, 134.562430, 264.780538);
   }
 
   // Count collisions and visuals
@@ -569,8 +569,8 @@ void FixedJointReductionEquivalence(const std::string &_file)
     std::string linkName = link->Get<std::string>("name");
     sdf::ElementPtr inertial = link->GetElement("inertial");
     double linkMass = inertial->Get<double>("mass");
-    ignition::math::Pose3d linkPose =
-      inertial->Get<ignition::math::Pose3d>("pose");
+    gz::math::Pose3d linkPose =
+      inertial->Get<gz::math::Pose3d>("pose");
     sdf::ElementPtr inertia = inertial->GetElement("inertia");
     double ixx = inertia->Get<double>("ixx");
     double iyy = inertia->Get<double>("iyy");
@@ -642,60 +642,60 @@ TEST(SDFParser, FixedJointReductionSimple)
   ASSERT_TRUE(sdf::readFile(GetFullTestFilePath(SDF_TEST_FILE_SIMPLE), robot));
 
   std::map<std::string, double> linkMasses;
-  std::map<std::string, ignition::math::Pose3d> linkPoses;
-  std::map<std::string, ignition::math::Vector3d> mapIxxIyyIzz;
-  std::map<std::string, ignition::math::Vector3d> mapIxyIxzIyz;
+  std::map<std::string, gz::math::Pose3d> linkPoses;
+  std::map<std::string, gz::math::Vector3d> mapIxxIyyIzz;
+  std::map<std::string, gz::math::Vector3d> mapIxyIxzIyz;
 
-  const ignition::math::Vector3d defaultIxxIyyIzz(7, 9, 11);
+  const gz::math::Vector3d defaultIxxIyyIzz(7, 9, 11);
   {
     std::string linkName = "link1";
     linkMasses[linkName] = 300;
-    linkPoses[linkName] = ignition::math::Pose3d();
+    linkPoses[linkName] = gz::math::Pose3d();
     mapIxxIyyIzz[linkName] = defaultIxxIyyIzz;
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d();
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d();
   }
 
   {
     std::string linkName = "link1a";
     linkMasses[linkName] = 300;
-    linkPoses[linkName] = ignition::math::Pose3d();
+    linkPoses[linkName] = gz::math::Pose3d();
     mapIxxIyyIzz[linkName] = defaultIxxIyyIzz;
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d();
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d();
   }
 
   {
     std::string linkName = "link1b";
     linkMasses[linkName] = 300;
-    linkPoses[linkName] = ignition::math::Pose3d();
+    linkPoses[linkName] = gz::math::Pose3d();
     mapIxxIyyIzz[linkName] = defaultIxxIyyIzz;
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d();
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d();
   }
 
   {
     std::string linkName = "link1c";
     linkMasses[linkName] = 300;
-    linkPoses[linkName] = ignition::math::Pose3d(0.2, 0, 0, 0, 0, 0);
+    linkPoses[linkName] = gz::math::Pose3d(0.2, 0, 0, 0, 0, 0);
     mapIxxIyyIzz[linkName] =
-      defaultIxxIyyIzz + ignition::math::Vector3d(0, 6, 6);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d();
+      defaultIxxIyyIzz + gz::math::Vector3d(0, 6, 6);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d();
   }
 
   {
     std::string linkName = "link1d";
     linkMasses[linkName] = 300;
-    linkPoses[linkName] = ignition::math::Pose3d(0.2, 0, 0, 0, 0, 0);
+    linkPoses[linkName] = gz::math::Pose3d(0.2, 0, 0, 0, 0, 0);
     mapIxxIyyIzz[linkName] =
-      defaultIxxIyyIzz + ignition::math::Vector3d(0, 6, 6);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d();
+      defaultIxxIyyIzz + gz::math::Vector3d(0, 6, 6);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d();
   }
 
   {
     std::string linkName = "link1e";
     linkMasses[linkName] = 300;
-    linkPoses[linkName] = ignition::math::Pose3d(0.2, 0, 0, 0, 0, 0);
+    linkPoses[linkName] = gz::math::Pose3d(0.2, 0, 0, 0, 0, 0);
     mapIxxIyyIzz[linkName] =
-      defaultIxxIyyIzz + ignition::math::Vector3d(0, 6, 6);
-    mapIxyIxzIyz[linkName] = ignition::math::Vector3d();
+      defaultIxxIyyIzz + gz::math::Vector3d(0, 6, 6);
+    mapIxyIxzIyz[linkName] = gz::math::Vector3d();
   }
 
   sdf::ElementPtr model = robot->Root()->GetElement("model");
@@ -705,8 +705,8 @@ TEST(SDFParser, FixedJointReductionSimple)
     std::string linkName = link->Get<std::string>("name");
     sdf::ElementPtr inertial = link->GetElement("inertial");
     double linkMass = inertial->Get<double>("mass");
-    ignition::math::Pose3d linkPose =
-      inertial->Get<ignition::math::Pose3d>("pose");
+    gz::math::Pose3d linkPose =
+      inertial->Get<gz::math::Pose3d>("pose");
     sdf::ElementPtr inertia = inertial->GetElement("inertia");
     double ixx = inertia->Get<double>("ixx");
     double iyy = inertia->Get<double>("iyy");
@@ -752,13 +752,13 @@ TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
   sdf::ElementPtr model = robot->Root()->GetElement("model");
   sdf::ElementPtr plugin = model->GetElement("plugin");
 
-  auto xyzOffset = plugin->Get<ignition::math::Vector3d>("xyzOffset");
-  auto rpyOffset = plugin->Get<ignition::math::Vector3d>("rpyOffset");
+  auto xyzOffset = plugin->Get<gz::math::Vector3d>("xyzOffset");
+  auto rpyOffset = plugin->Get<gz::math::Vector3d>("rpyOffset");
   auto bodyName = plugin->Get<std::string>("bodyName");
   EXPECT_EQ("base_link", bodyName);
-  EXPECT_EQ(ignition::math::Vector3d(-0.707108, 1.70711, 0), xyzOffset);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, 1.5708), rpyOffset);
+  EXPECT_EQ(gz::math::Vector3d(-0.707108, 1.70711, 0), xyzOffset);
+  EXPECT_EQ(gz::math::Vector3d(0, 0, 1.5708), rpyOffset);
 
-  bool correctedOffset = plugin->Get<bool>("ignition::corrected_offsets");
+  bool correctedOffset = plugin->Get<bool>("gz::corrected_offsets");
   EXPECT_TRUE(correctedOffset);
 }

@@ -17,8 +17,8 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Material.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/Util.hh>
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
 // are reported using #pragma message so normal diagnostic flags cannot remove
@@ -194,16 +194,16 @@ TEST_F(UsdStageFixture, MaterialTextureName)
   sdf::testing::ScopeExit removeCopiedMaterials(
       []
       {
-        ignition::common::removeAll(
-          ignition::common::joinPaths(ignition::common::cwd(), "materials"));
+        gz::common::removeAll(
+          gz::common::joinPaths(gz::common::cwd(), "materials"));
       });
 
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
-  ignition::common::addFindFileURICallback(
+  gz::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
 
-  ignition::common::Material materialCommon;
+  gz::common::Material materialCommon;
   materialCommon.SetTextureImage("materials/textures/albedo_map.png");
 
   const sdf::Material materialSdf = sdf::usd::convert(&materialCommon);
@@ -253,12 +253,12 @@ TEST_F(UsdStageFixture, Material)
   sdf::testing::ScopeExit removeCopiedMaterials(
       []
       {
-        ignition::common::removeAll(
-          ignition::common::joinPaths(ignition::common::cwd(), "materials"));
+        gz::common::removeAll(
+          gz::common::joinPaths(gz::common::cwd(), "materials"));
       });
 
   sdf::setFindCallback(sdf::usd::testing::findFileCb);
-  ignition::common::addFindFileURICallback(
+  gz::common::addFindFileURICallback(
     std::bind(&sdf::usd::testing::FindResourceUri, std::placeholders::_1));
 
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");

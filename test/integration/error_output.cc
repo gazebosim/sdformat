@@ -68,8 +68,8 @@ TEST(Error, ErrorOutput)
    errors[0].Message().find("Invalid boolean value"));
 
   errors.clear();
-  ignition::math::Pose3d pose;
-  param3.Get<ignition::math::Pose3d>(pose, errors);
+  gz::math::Pose3d pose;
+  param3.Get<gz::math::Pose3d>(pose, errors);
   ASSERT_GE(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARAMETER_ERROR);
   EXPECT_NE(std::string::npos, errors[0].Message().find(

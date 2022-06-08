@@ -12,11 +12,17 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
-## libsdformat 12.x to 13.0
+## libsdformat 12.x to 13.x
 
 ### Deprecations
 
-1. **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
+- The `ignition` namespace is deprecated and will be removed in future versions.
+  Use `gz` instead.
+
+- Header files under `ignition/...` are deprecated and will be removed in future versions.
+  Use `gz/...` instead.
+
+- **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
 ￼   `Inertial` class in the `ign-math` library.
 
 ## libsdformat 11.x to 12.0
@@ -72,8 +78,8 @@ one root level model, actor or light.
     + void SetLocalModelName(const std::string &)
     + const std::optional<bool> &IsStatic() const
     + void SetIsStatic(bool)
-    + const std::optional<ignition::math::Pose3d> &IncludeRawPose() const
-    + void SetIncludeRawPose(const ignition::math::Pose3d &includeRawPose)
+    + const std::optional<gz::math::Pose3d> &IncludeRawPose() const
+    + void SetIncludeRawPose(const gz::math::Pose3d &includeRawPose)
     + const std::optional<std::string> &IncludePoseRelativeTo() const
     + void SetIncludePoseRelativeTo(const std::string &)
     + const std::optional<std::string> &PlacementFrame() const
@@ -88,19 +94,19 @@ one root level model, actor or light.
     + bool IgnoresParentElementAttribute() const;
 
 1. **sdf/World.hh**:
-    + const ignition::math::SphericalCoordinates * SphericalCoordinates() const;
-    + void SetSphericalCoordinates(const ignition::math::SphericalCoordinates &);
+    + const gz::math::SphericalCoordinates * SphericalCoordinates() const;
+    + void SetSphericalCoordinates(const gz::math::SphericalCoordinates &);
 
 ### Modifications
 
-1. **sdf/Element.hh**: The following methods now have an additional parameter of 
+1. **sdf/Element.hh**: The following methods now have an additional parameter of
    type `PrintConfig` with a default value
     + void PrintValues(std::string, const PrintConfig &\_config = PrintConfig()) const
     + void PrintValues(const std::string, bool, bool, const PrintConfig &\_config = PrintConfig()) const
     + std::string ToString(const std::string &, const PrintConfig &\_config = PrintConfig()) const
     + std::string ToString(const std::string &, bool, bool ,const PrintConfig &\_config = PrintConfig()) const
 
-1. **sdf/Param.hh**: The following methods now have an additional parameter of 
+1. **sdf/Param.hh**: The following methods now have an additional parameter of
    type `PrintConfig` with a default value
     + std::string GetAsString(const PrintConfig &\_config = PrintConfig()) const
     + std::string GetDefaultAsString(const PrintConfig &\_config = PrintConfig()) const
@@ -110,14 +116,14 @@ one root level model, actor or light.
     The following now has an additional bool parameter
     + bool SetFromString(const std::string &, bool \_ignoreParentAttributes);
 
-1. **sdf/SDFImpl.hh**: The following methods now have an additional parameter of 
+1. **sdf/SDFImpl.hh**: The following methods now have an additional parameter of
    type `PrintConfig` with a default value
     + void PrintValues(const PrintConfig &\_config = PrintConfig())
     + std::string ToString(const PrintConfig &\_config = PrintConfig()) const
 
-1. The string literals used to indicate non-file sources have been changed to 
-   `<data-string>` and `<urdf-string>` for SDFormat and URDF source 
-   respectively. Users are encouraged to use the constants `kSdfStringSource` 
+1. The string literals used to indicate non-file sources have been changed to
+   `<data-string>` and `<urdf-string>` for SDFormat and URDF source
+   respectively. Users are encouraged to use the constants `kSdfStringSource`
    and `kUrdfStringSource` instead of hard-coding the string literals.
 
 ### Removals
@@ -148,8 +154,8 @@ The following deprecated methods and classes have been removed.
 
 ### Deprecations
 
-1. **sdf/InterfaceElements.hh**: The struct `NestedInclude` has been converted 
-   to a class. Accessing data members directly is deprecated. Instead use the 
+1. **sdf/InterfaceElements.hh**: The struct `NestedInclude` has been converted
+   to a class. Accessing data members directly is deprecated. Instead use the
    corresponding member functions.
 
 ## libsdformat 11.1.0 to 11.2.0
@@ -263,8 +269,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
    + [Pull request 276](https://github.com/osrf/sdformat/pull/276)
 
 1. + Removed the deprecated `Pose()`, `SetPose()`, and `*PoseFrame()` API's in all DOM classes:
-   + const ignition::math::Pose3d &Pose()
-   + void SetPose(const ignition::math::Pose3d &)
+   + const gz::math::Pose3d &Pose()
+   + void SetPose(const gz::math::Pose3d &)
    + const std::string &PoseFrame()
    + void SetPoseFrame(const std::string &)
 
@@ -339,7 +345,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + sdf::SemanticPose SemanticPose() const
 
 1. **sdf/JointAxis.hh**
-    + Errors ResolveXyz(ignition::math::Vector3d &, const std::string &) const
+    + Errors ResolveXyz(gz::math::Vector3d &, const std::string &) const
 
 1. **sdf/Light.hh**
     + sdf::SemanticPose SemanticPose() const
@@ -391,12 +397,12 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
    + ***Replacement:*** None. Use the functions sdf::readFile or sdf::readString, which automatically convert URDF to SDFormat.
 
 1. All DOM classes with `Pose()` and `PoseFrame()` API's:
-   + ***Deprecation:*** const ignition::math::Pose3d &Pose()
-   + ***Replacement:*** const ignition::math::Pose3d &RawPose()
+   + ***Deprecation:*** const gz::math::Pose3d &Pose()
+   + ***Replacement:*** const gz::math::Pose3d &RawPose()
    + ***Deprecation:*** const std::string &PoseFrame()
    + ***Replacement:*** const std::string &PoseRelativeTo()
-   + ***Deprecation:*** void SetPose(const ignition::math::Pose3d &)
-   + ***Replacement:*** void SetRawPose(const ignition::math::Pose3d &)
+   + ***Deprecation:*** void SetPose(const gz::math::Pose3d &)
+   + ***Replacement:*** void SetRawPose(const gz::math::Pose3d &)
    + ***Deprecation:*** void SetPoseFrame(const std::string &)
    + ***Replacement:*** void SetPoseRelativeTo(const std::string &)
 
@@ -425,7 +431,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **sdf/Types.hh**
    + ***Deprecated:*** sdf::Color class
-   + ***Replacement:*** ignition::math::Color class
+   + ***Replacement:*** gz::math::Color class
 
 ## SDFormat 4.x to 5.x
 
@@ -455,15 +461,15 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **sdf/Types.hh**
     + ***Deprecation:*** sdf::Vector2i
-    + ***Replacement:*** ignition::math::Vector2i
+    + ***Replacement:*** gz::math::Vector2i
     + ***Deprecation:*** sdf::Vector2d
-    + ***Replacement:*** ignition::math::Vector2d
+    + ***Replacement:*** gz::math::Vector2d
     + ***Deprecation:*** sdf::Vector3
-    + ***Replacement:*** ignition::math::Vector3d
+    + ***Replacement:*** gz::math::Vector3d
     + ***Deprecation:*** sdf::Quaternion
-    + ***Replacement:*** ignition::math::Quaterniond
+    + ***Replacement:*** gz::math::Quaterniond
     + ***Deprecation:*** sdf::Pose
-    + ***Replacement:*** ignition::math::Pose3d
+    + ***Replacement:*** gz::math::Pose3d
 
 ## SDFormat 3.x to 4.x
 
@@ -488,35 +494,35 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 ### Additions
 
 1. **camera.sdf**: New elements to configure segmentation and boundingbox cameras
-    + `//sensor/camera/segmentation_type` 
+    + `//sensor/camera/segmentation_type`
     + `//sensor/camera/box_type`
-    + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+    + [Pull request #592](https://github.com/gazebosim/sdformat/pull/592)
 
 1. **forcetorque.sdf**: New elements to specify the noise characteristics of the force-torque sensor
     + `//sensor/force_torque/force`
-    + `//sensor/force_torque/torque` 
-    + [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+    + `//sensor/force_torque/torque`
+    + [Pull request #669](https://github.com/gazebosim/sdformat/pull/669)
 
 1. **model.sdf**: `//model/include/@merge` for merging included nested models into the containing model
-    + [Pull request #659](https://github.com/ignitionrobotics/sdformat/pull/659)
+    + [Pull request #659](https://github.com/gazebosim/sdformat/pull/659)
 
 1. **pose.sdf**: New attributes to support specifying angles in degrees and specifying rotations in quaternions
     + `//pose/@rotation_format`
     + `//pose/@degrees`
-    + [Pull request #690](https://github.com/ignitionrobotics/sdformat/pull/690)
-    + [Pull request #589](https://github.com/ignitionrobotics/sdformat/pull/589)
+    + [Pull request #690](https://github.com/gazebosim/sdformat/pull/690)
+    + [Pull request #589](https://github.com/gazebosim/sdformat/pull/589)
 
 1. **sensor.sdf**: New sensor types `boundingbox_camera`, `segmentation_camera`, and `custom`.
-    + [Pull request #592](https://github.com/ignitionrobotics/sdformat/pull/592)
+    + [Pull request #592](https://github.com/gazebosim/sdformat/pull/592)
 
 ### Removals
 
 1. **joint.sdf**
     + Deprecated elements `//joint/axis/initial_position` and `//joint/axis2/initial_position` have been removed
-    * [Pull request #622](https://github.com/ignitionrobotics/sdformat/pull/622)
+    * [Pull request #622](https://github.com/gazebosim/sdformat/pull/622)
 
 1. **spherical_coordinates**: Unsupported options `NED` and `NWU` have been removed from `//spherical_coordinates/world_frame_orientation`
-    * [Pull request #685](https://github.com/ignitionrobotics/sdformat/pull/685)
+    * [Pull request #685](https://github.com/gazebosim/sdformat/pull/685)
 
 ## SDFormat specification 1.7 to 1.8
 
