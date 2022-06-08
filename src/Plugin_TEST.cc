@@ -300,15 +300,42 @@ TEST(DOMPlugin, OutputStreamOperator)
 TEST(DOMPlugin, InputStreamOperator)
 {
   // Stream with multiple plugins
-  std::string input = R"foo(<plugin name='my-plugin' filename='filename.so'>
+  std::string input1 = R"foo(<plugin name='my-plugin' filename='filename.so'>
   <an-element/>
 </plugin>
-<plugin name='another-plugin' filename='another-filename'>
+)foo";
+
+  std::string input2 = R"foo(<plugin name='another-plugin' filename='another-filename'>
   <another-element/>
 </plugin>
 )foo";
-  std::istringstream stream(input);
 
+  std::string input3 = R"foo(<plugin name='plugin-no-contents' filename='filename3'/>
+)foo";
+
+  std::string input4 = R"foo(<plugin name='plugin-after-no-contents' filename='filename4'>
+  <contents> blah</contents>
+  <more>  foo  </more>
+  <blank-with-spaces    />
+  <plugin   >
+    <nested  />
+  </plugin  >
+</plugin>
+)foo";
+  std::string input4AfterWhiteSpaceStripped =
+  R"foo(<plugin name='plugin-after-no-contents' filename='filename4'>
+  <contents>blah</contents>
+  <more>foo</more>
+  <blank-with-spaces/>
+  <plugin>
+    <nested/>
+  </plugin>
+</plugin>
+)foo";
+
+  std::istringstream stream(input1 + input2 + input3 + input4);
+
+  // First plugin
   sdf::Plugin plugin;
   stream >> plugin;
 
@@ -320,6 +347,7 @@ TEST(DOMPlugin, InputStreamOperator)
   ASSERT_NE(nullptr, elem);
   std::string elemString = elem->ToString("");
 
+  // Second plugin
   sdf::Plugin plugin2;
   stream >> plugin2;
 
@@ -327,11 +355,38 @@ TEST(DOMPlugin, InputStreamOperator)
   EXPECT_EQ("another-filename", plugin2.Filename());
   EXPECT_EQ(1u, plugin2.Contents().size());
 
-  auto elem2 = plugin2.ToElement();
+  sdf::ElementPtr elem2 = plugin2.ToElement();
   ASSERT_NE(nullptr, elem2);
-  auto elemString2 = elem2->ToString("");
+  std::string elemString2 = elem2->ToString("");
 
-  EXPECT_EQ(input, elemString + elemString2);
+  EXPECT_EQ(input1 + input2, elemString + elemString2);
+
+  // Third plugin
+  sdf::Plugin plugin3;
+  stream >> plugin3;
+
+  EXPECT_EQ("plugin-no-contents", plugin3.Name());
+  EXPECT_EQ("filename3", plugin3.Filename());
+  EXPECT_EQ(0u, plugin3.Contents().size());
+
+  sdf::ElementPtr elem3 = plugin3.ToElement();
+  ASSERT_NE(nullptr, elem3);
+  std::string elemString3 = elem3->ToString("");
+  EXPECT_EQ(input1 + input2 + input3, elemString + elemString2 + elemString3);
+
+  // Fourth plugin
+  sdf::Plugin plugin4;
+  stream >> plugin4;
+
+  EXPECT_EQ("plugin-after-no-contents", plugin4.Name());
+  EXPECT_EQ("filename4", plugin4.Filename());
+  EXPECT_EQ(4u, plugin4.Contents().size());
+
+  sdf::ElementPtr elem4 = plugin4.ToElement();
+  ASSERT_NE(nullptr, elem4);
+  std::string elemString4 = elem4->ToString("");
+  EXPECT_EQ(input1 + input2 + input3 + input4AfterWhiteSpaceStripped,
+      elemString + elemString2 + elemString3 + elemString4);
 }
 
 /////////////////////////////////////////////////

@@ -272,3 +272,4 @@ bool Plugin::operator!=(const Plugin &_plugin) const
 {
   return !(*this == _plugin);
 }
+

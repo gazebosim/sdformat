@@ -458,6 +458,15 @@ namespace sdf
   /// \return The computed frame name
   SDFORMAT_VISIBLE
   std::string computeMergedModelProxyFrameName(const std::string &_modelName);
+
+  /// \brief A function that recursively reads XML elements from a stream and
+  /// returns the XML content as a string.
+  /// \param[in,out] _in Input stream to read from. This function will
+  /// consume the data on the stream from the start of the XML content to the
+  /// closing tag.
+  /// \return String that contains the XML content.
+  SDFORMAT_VISIBLE
+  std::string readXMLStream(std::istream &_in);
   }
 }
 #endif

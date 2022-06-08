@@ -171,31 +171,22 @@ namespace sdf
     public: friend std::istream &operator>>(std::istream &_in,
                                             sdf::Plugin &_plugin)
     {
-      static const std::string kClosePlugin{"</plugin>"};
+      // Strip out leading whitespace
+      std::istreambuf_iterator<char> it(_in);
+      while (it != std::istreambuf_iterator<char>() &&
+          (*it == ' ' || *it == '\n'))
+        ++it;
 
       std::ostringstream stream;
       stream << "<sdf version='" << SDF_VERSION << "'>";
 
-      std::istreambuf_iterator<char> it(_in);
-      unsigned int closePluginId{0};
-      while (it != std::istreambuf_iterator<char>())
-      {
-        if (*it == kClosePlugin.at(closePluginId))
-        {
-          closePluginId++;
-        }
-        else
-        {
-          closePluginId = 0;
-        }
-        stream << *it;
+      // Recursively read elements into a string, and add that string into
+      // the final SDF stream.
+      stream << readXMLStream(_in);
 
-        if (closePluginId == kClosePlugin.size())
-          break;
-        ++it;
-      }
       stream << "</sdf>";
 
+      // Parse the final SDF plugin
       sdf::SDFPtr sdfParsed(new sdf::SDF());
       sdf::init(sdfParsed);
       bool result = sdf::readString(stream.str(), sdfParsed);
