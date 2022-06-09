@@ -25,9 +25,6 @@ but with improved human-readability..
 - **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
 ￼   `Inertial` class in the `gz-math` library.
 
-- `ignitionVersion()` is deprecated and will be removed in future versions.
-  Use `gzVersion()` instead.
-
 - **sdf/Joint.hh**:
    + ***Deprecation:*** const std::string &ChildLinkName() const
    + ***Replacement:*** const std::string &ChildName() const
