@@ -49,6 +49,7 @@
 #include "pyRoot.hh"
 #include "pySemanticPose.hh"
 #include "pySensor.hh"
+#include "pySky.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
 #include "pyVisual.hh"
@@ -96,6 +97,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineRoot(m);
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSensor(m);
+  sdf::python::defineSky(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
   sdf::python::defineVisual(m);
