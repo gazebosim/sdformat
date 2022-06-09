@@ -34,7 +34,6 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path);
 
 /// \brief External hook to read the library version.
 /// \return C-string representing the version. Ex.: 0.1.2
-extern "C" SDFORMAT_VISIBLE char SDF_DEPRECATED(13) *ignitionVersion();
 extern "C" SDFORMAT_VISIBLE char *gzVersion();
 }
 

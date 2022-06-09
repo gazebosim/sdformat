@@ -25,9 +25,6 @@ but with improved human-readability..
 - **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
 ￼   `Inertial` class in the `gz-math` library.
 
-- `ignitionVersion()` is deprecated and will be removed in future versions.
-  Use `gzVersion()` instead.
-
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
