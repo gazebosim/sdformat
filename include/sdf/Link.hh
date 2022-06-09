@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <gz/math/Inertial.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"

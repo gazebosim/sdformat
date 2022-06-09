@@ -70,6 +70,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineError(m);
   sdf::python::defineForceTorque(m);
   sdf::python::defineFrame(m);
+  sdf::python::defineFriction(m);
   sdf::python::defineGeometry(m);
   sdf::python::defineHeightmap(m);
   sdf::python::defineHeightmapBlend(m);
@@ -86,6 +87,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineModel(m);
   sdf::python::defineNavSat(m);
   sdf::python::defineNoise(m);
+  sdf::python::defineODE(m);
   sdf::python::defineParserConfig(m);
   sdf::python::definePbr(m);
   sdf::python::definePbrWorkflow(m);
