@@ -51,6 +51,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyForceTorque.cc
   src/sdf/pyFrame.cc
   src/sdf/pyGeometry.cc
+  src/sdf/pyHeightmap.cc
   src/sdf/pyIMU.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
@@ -106,6 +107,7 @@ if (BUILD_TESTING)
     pyForceTorque_TEST
     pyFrame_TEST
     pyGeometry_TEST
+    pyHeightmap_TEST
     pyIMU_TEST
     pyJoint_TEST
     pyJointAxis_TEST
