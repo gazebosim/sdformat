@@ -163,6 +163,15 @@ void defineWorld(pybind11::object module)
           "Set the atmosphere model associated with this world.")
      .def("physics_count", &sdf::World::PhysicsCount,
           "Get the number of physics profiles.")
+     .def("physics_count", &sdf::World::LightCount,
+          "Get the number of physics profiles.")
+     .def("physics_by_index",
+          pybind11::overload_cast<uint64_t>(
+            &sdf::World::LightByIndex),
+          pybind11::return_value_policy::reference_internal,
+          "Get a mutable physics profile based on an index.")
+     .def("physics_name_exists", &sdf::World::LightNameExists,
+          "Get whether a physics profile name exists.")
      .def("plugins",
           pybind11::overload_cast<>(&sdf::World::Plugins, pybind11::const_),
           "Get the plugins attached to this object.")
