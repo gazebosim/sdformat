@@ -14,13 +14,13 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d, SphericalCoordinates
-from sdformat import Plugin, Error, Frame, Light, Model, World
+from sdformat import Atmosphere, Gui, Plugin, Error, Frame, Light, Model, World
 import sdformat as sdf
 import unittest
 import math
 
 # TODO(ahcorde)
-# - Add Atmosphere, GUI, Actor, Light, Scene and Plugin tests when the sdf::Classes are ported
+# - Add Actor, Physics and sSene tests when the sdf::Classes are ported
 
 class WorldTEST(unittest.TestCase):
 
@@ -73,20 +73,20 @@ class WorldTEST(unittest.TestCase):
 
     def test_copy_construction(self):
         world = World()
-        # atmosphere = Atmosphere()
-        # atmosphere.set_pressure(0.1)
-        # world.set_Atmosphere(atmosphere)
+        atmosphere = Atmosphere()
+        atmosphere.set_pressure(0.1)
+        world.set_atmosphere(atmosphere)
         world.set_audio_device("test_audio_device")
         world.set_gravity(Vector3d(1, 0, 0))
         world.set_spherical_coordinates(SphericalCoordinates())
 
-        # sdf::Gui gui
-        # gui.set_Fullscreen(true)
-        # world.set_Gui(gui)
-        #
+        gui = Gui()
+        gui.set_fullscreen(True)
+        world.set_gui(gui)
+
         # sdf::Scene scene
-        # scene.set_Grid(true)
-        # world.set_Scene(scene)
+        # scene.set_grid(True)
+        # world.set_scene(scene)
 
         world.set_magnetic_field(Vector3d(0, 1, 0))
         world.set_name("test_world")
@@ -95,16 +95,16 @@ class WorldTEST(unittest.TestCase):
 
         world2 = World(world)
 
-        # self.assertTrue(None != world.Atmosphere())
-        # self.assertAlmostEqual(0.1, world.Atmosphere().Pressure())
+        self.assertTrue(None != world.atmosphere())
+        self.assertAlmostEqual(0.1, world.atmosphere().pressure())
         self.assertTrue(None != world.spherical_coordinates())
         self.assertEqual(SphericalCoordinates.EARTH_WGS84,
           world.spherical_coordinates().surface())
         self.assertEqual("test_audio_device", world.audio_device())
         self.assertEqual(Vector3d.UNIT_X, world.gravity())
 
-        # self.assertTrue(None != world.Gui())
-        # self.assertEqual(gui.Fullscreen(), world.Gui().Fullscreen())
+        self.assertTrue(None != world.gui())
+        self.assertEqual(gui.fullscreen(), world.gui().fullscreen())
 
         # self.assertTrue(None != world.Scene())
         # self.assertEqual(scene.Grid(), world.Scene().Grid())
@@ -113,14 +113,14 @@ class WorldTEST(unittest.TestCase):
         self.assertEqual(Vector3d.UNIT_Z, world.wind_linear_velocity())
         self.assertEqual("test_world", world.name())
 
-        # self.assertTrue(None != world2.Atmosphere())
-        # self.assertAlmostEqual(0.1, world2.Atmosphere().Pressure())
+        self.assertTrue(None != world2.atmosphere())
+        self.assertAlmostEqual(0.1, world2.atmosphere().pressure())
         self.assertEqual("test_audio_device", world2.audio_device())
         self.assertEqual(Vector3d.UNIT_X, world2.gravity())
 
-        # self.assertTrue(None != world2.Gui())
-        # self.assertEqual(gui.Fullscreen(), world2.Gui().Fullscreen())
-        #
+        self.assertTrue(None != world2.gui())
+        self.assertEqual(gui.fullscreen(), world2.gui().fullscreen())
+
         # self.assertTrue(None != world2.Scene())
         # self.assertEqual(scene.Grid(), world2.Scene().Grid())
 
@@ -148,21 +148,16 @@ class WorldTEST(unittest.TestCase):
         world.set_magnetic_field(Vector3d(1.2, -2.3, 4.5))
         self.assertEqual(Vector3d(1.2, -2.3, 4.5), world.magnetic_field())
 
-#
-# ########################/
-# TEST(DOMWorld, SetGui)
-# {
-#   sdf::Gui gui
-#   gui.set_Fullscreen(true)
-#
-#   world = World()
-#   self.assertEqual(None, world.Gui())
-#
-#   world.set_Gui(gui)
-#   self.assertNotEqual(None, world.Gui())
-#   self.assertTrue(world.Gui().Fullscreen())
-# }
-#
+    def test_set_gui(self):
+        gui = Gui()
+
+        world = World()
+        self.assertEqual(None, world.gui())
+
+        world.set_gui(gui)
+        self.assertNotEqual(None, world.gui())
+        self.assertFalse(world.gui().fullscreen())
+
 # ########################/
 # TEST(DOMWorld, SetScene)
 # {
