@@ -779,7 +779,8 @@ Errors World::Implementation::LoadSphericalCoordinates(
   else
   {
     auto surfaceModelStr = _elem->Get<std::string>("surface_model");
-    if (surfaceModelStr != "EARTH_WGS84")
+    if ((surfaceModelStr != "EARTH_WGS84") &&
+        (surfaceModelStr != "MOON_SCS"))
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "The supplied <surface_model> [" + surfaceModelStr +
