@@ -50,10 +50,8 @@ install(FILES ${cmd_script_generated} DESTINATION lib/ruby/ignition)
 configure_file(
   "sdf.bash_completion.sh"
     "${CMAKE_CURRENT_BINARY_DIR}/sdf${PROJECT_VERSION_MAJOR}.bash_completion.sh" @ONLY)
-if (HAVE_IGN_TOOLS)
-  install(
-    FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/sdf${PROJECT_VERSION_MAJOR}.bash_completion.sh
-    DESTINATION
-      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/gz/gz${IGN_TOOLS_VER}.completion.d)
-endif()
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/sdf${PROJECT_VERSION_MAJOR}.bash_completion.sh
+  DESTINATION
+    ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/gz/gz${IGN_TOOLS_VER}.completion.d)

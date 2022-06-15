@@ -15,13 +15,13 @@
  *
 */
 
-#include <filesystem>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
+#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -825,12 +825,13 @@ TEST(HelpVsCompletionFlags, SDF)
   std::string helpOutput = custom_exec_str(IgnCommand() + " sdf --help");
 
   // Call the output function in the bash completion script
-  std::filesystem::path scriptPath = PROJECT_SOURCE_PATH;
-  scriptPath = scriptPath / "src" / "cmd" / "sdf.bash_completion.sh";
+  std::string scriptPath = PROJECT_SOURCE_PATH;
+  scriptPath = sdf::filesystem::append(scriptPath, "src", "cmd",
+      "sdf.bash_completion.sh");
 
   // Equivalent to:
   // sh -c "bash -c \". /path/to/sdf.bash_completion.sh; _gz_sdf_flags\""
-  std::string cmd = "bash -c \". " + scriptPath.string() +
+  std::string cmd = "bash -c \". " + scriptPath +
     "; _gz_sdf_flags\"";
   std::string scriptOutput = custom_exec_str(cmd);
 
@@ -842,7 +843,7 @@ TEST(HelpVsCompletionFlags, SDF)
   EXPECT_GT(flags.size(), 0u);
 
   // Match each flag in script output with help message
-  for (std::string flag : flags)
+  for (const auto &flag : flags)
   {
     EXPECT_NE(std::string::npos, helpOutput.find(flag)) << helpOutput;
   }
