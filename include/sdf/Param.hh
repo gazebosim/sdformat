@@ -33,7 +33,12 @@
 #include <variant>
 #include <vector>
 
-#include <gz/math.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/PrintConfig.hh"

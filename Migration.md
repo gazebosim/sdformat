@@ -22,6 +22,9 @@ but with improved human-readability..
 - Header files under `ignition/...` are deprecated and will be removed in future versions.
   Use `gz/...` instead.
 
+- **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
+￼   `Inertial` class in the `gz-math` library.
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
