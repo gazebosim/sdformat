@@ -86,6 +86,12 @@ else()
 generating aggregated SDFormat descriptions for sdformat.org, please install \
 ignition-tools.")
 endif()
+if (ignition-tools_FOUND)
+  set (HAVE_IGN_TOOLS TRUE)
+endif()
+# Note that CLI files are installed regardless of whether the dependency is
+# available during build time
+set (IGN_TOOLS_VER 1)
 
 ################################################
 # Find the Python interpreter for running the
@@ -128,7 +134,7 @@ endmacro()
 
 ########################################
 # Find ignition cmake2
-# Only for using the testing macros and creating the codecheck target, not 
+# Only for using the testing macros and creating the codecheck target, not
 # really being use to configure the whole project
 find_package(ignition-cmake2 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
