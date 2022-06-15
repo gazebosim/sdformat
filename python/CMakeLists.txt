@@ -52,6 +52,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyFrame.cc
   src/sdf/pyGeometry.cc
   src/sdf/pyGui.cc
+  src/sdf/pyHeightmap.cc
   src/sdf/pyIMU.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
@@ -71,6 +72,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyRoot.cc
   src/sdf/pySemanticPose.cc
   src/sdf/pySensor.cc
+  src/sdf/pySky.cc
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
   src/sdf/pyVisual.cc
@@ -108,6 +110,7 @@ if (BUILD_TESTING)
     pyFrame_TEST
     pyGeometry_TEST
     pyGui_TEST
+    pyHeightmap_TEST
     pyIMU_TEST
     pyJoint_TEST
     pyJointAxis_TEST
@@ -127,6 +130,7 @@ if (BUILD_TESTING)
     pyRoot_TEST
     pySemanticPose_TEST
     pySensor_TEST
+    pySky_TEST
     pySphere_TEST
     pySurface_TEST
     pyVisual_TEST

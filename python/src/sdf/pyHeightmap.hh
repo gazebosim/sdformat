@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef SDFORMAT_PYTHON_SURFACE_HH_
-#define SDFORMAT_PYTHON_SURFACE_HH_
+#ifndef SDFORMAT_PYTHON_HEIGHTMAP_HH_
+#define SDFORMAT_PYTHON_HEIGHTMAP_HH_
 
 #include <pybind11/pybind11.h>
 
-#include "sdf/Surface.hh"
+#include "sdf/Heightmap.hh"
 
 #include "sdf/config.hh"
 
@@ -29,31 +29,25 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
-/// Define a pybind11 wrapper for an sdf::Contact
+/// Define a pybind11 wrapper for an sdf::HeightmapTexture
 /**
  * \param[in] module a pybind11 module to add the definition to
  */
-void defineContact(pybind11::object module);
+void defineHeightmapTexture(pybind11::object module);
 
-/// Define a pybind11 wrapper for an sdf::Friction
+/// Define a pybind11 wrapper for an sdf::HeightmapBlend
 /**
  * \param[in] module a pybind11 module to add the definition to
  */
-void defineFriction(pybind11::object module);
+void defineHeightmapBlend(pybind11::object module);
 
-/// Define a pybind11 wrapper for an sdf::ODE
+/// Define a pybind11 wrapper for an sdf::Heightmap
 /**
  * \param[in] module a pybind11 module to add the definition to
  */
-void defineODE(pybind11::object module);
-
-/// Define a pybind11 wrapper for an sdf::Surface
-/**
- * \param[in] module a pybind11 module to add the definition to
- */
-void defineSurface(pybind11::object module);
+void defineHeightmap(pybind11::object module);
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
 }  // namespace sdf
 
-#endif  // SDFORMAT_PYTHON_SURFACE_HH_
+#endif  // SDFORMAT_PYTHON_HEIGHTMAP_HH_
