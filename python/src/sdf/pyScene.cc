@@ -54,12 +54,11 @@ void defineScene(pybind11::object module)
          "Get whether shadows are enabled")
     .def("set_shadows", &sdf::Scene::SetShadows,
          "Set whether shadows should be enabled")
-    // TODO(ahcorde) Enable this when Sky is converted
-    // .def("set_sky", &sdf::Scene::SetSky,
-    //      "Get sky")
-    // .def("sky", &sdf::Scene::Sky,
-    //      pybind11::return_value_policy::reference,
-    //      "Get sky")
+    .def("set_sky", &sdf::Scene::SetSky,
+         "Set sky")
+    .def("sky", &sdf::Scene::Sky,
+         pybind11::return_value_policy::reference_internal,
+         "Get sky")
     .def("__copy__", [](const sdf::Scene &self) {
       return sdf::Scene(self);
     })

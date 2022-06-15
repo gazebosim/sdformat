@@ -14,10 +14,9 @@
 
 import copy
 from ignition.math import Color
-from sdformat import Scene
+from sdformat import Scene, Sky
 import unittest
 
-# TODO(ahcorde) Includ Sky tests
 
 class RootTEST(unittest.TestCase):
 
@@ -28,7 +27,7 @@ class RootTEST(unittest.TestCase):
         self.assertTrue(scene.grid())
         self.assertTrue(scene.shadows())
         self.assertTrue(scene.origin_visual())
-        # self.assertEqual(None, scene.sky())
+        self.assertEqual(None, scene.sky())
 
 
     def test_copy_construction(self):
@@ -38,8 +37,8 @@ class RootTEST(unittest.TestCase):
         scene.set_grid(False)
         scene.set_shadows(False)
         scene.set_origin_visual(False)
-        # sky = Sky()
-        # scene.set_sky(sky)
+        sky = Sky()
+        scene.set_sky(sky)
 
         scene2 = Scene(scene)
         self.assertEqual(Color.BLUE, scene2.ambient())
@@ -47,8 +46,7 @@ class RootTEST(unittest.TestCase):
         self.assertFalse(scene2.grid())
         self.assertFalse(scene2.shadows())
         self.assertFalse(scene2.origin_visual())
-        # self.assertNotEqual(None, scene2.sky())
-
+        self.assertNotEqual(None, scene2.sky())
 
     def test_assignment(self):
         scene = Scene()
@@ -57,8 +55,8 @@ class RootTEST(unittest.TestCase):
         scene.set_grid(False)
         scene.set_shadows(False)
         scene.set_origin_visual(False)
-        # sky = Sky()
-        # scene.set_sky(sky)
+        sky = Sky()
+        scene.set_sky(sky)
 
         scene2 = scene
         self.assertEqual(Color.RED, scene2.ambient())
@@ -66,7 +64,7 @@ class RootTEST(unittest.TestCase):
         self.assertFalse(scene2.grid())
         self.assertFalse(scene2.shadows())
         self.assertFalse(scene2.origin_visual())
-        # self.assertNotEqual(None, scene2.sky())
+        self.assertNotEqual(None, scene2.sky())
 
     def test_deepcopy(self):
         scene = Scene()
@@ -75,8 +73,8 @@ class RootTEST(unittest.TestCase):
         scene.set_grid(False)
         scene.set_shadows(False)
         scene.set_origin_visual(False)
-        # sky = Sky()
-        # scene.set_sky(sky)
+        sky = Sky()
+        scene.set_sky(sky)
 
         scene2 = copy.deepcopy(scene)
         self.assertEqual(Color.RED, scene2.ambient())
@@ -84,7 +82,7 @@ class RootTEST(unittest.TestCase):
         self.assertFalse(scene2.grid())
         self.assertFalse(scene2.shadows())
         self.assertFalse(scene2.origin_visual())
-        # self.assertNotEqual(None, scene2.sky())
+        self.assertNotEqual(None, scene2.sky())
 
     def test_set(self):
         scene = Scene()
@@ -109,9 +107,9 @@ class RootTEST(unittest.TestCase):
         scene.set_origin_visual(False)
         self.assertFalse(scene.origin_visual())
 
-        # sky = Sky()
-        # scene.set_sky(sky)
-        # self.assertNotEqual(None, scene.sky())
+        sky = Sky()
+        scene.set_sky(sky)
+        self.assertNotEqual(None, scene.sky())
 
 if __name__ == '__main__':
     unittest.main()
