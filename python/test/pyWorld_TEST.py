@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d, SphericalCoordinates
-from sdformat import Plugin, Error, Frame, Light, Model, World
+from sdformat import Physics, Plugin, Error, Frame, Light, Model, World
 import sdformat as sdf
 import unittest
 import math
@@ -295,10 +295,10 @@ class WorldTEST(unittest.TestCase):
         light = Light()
         light.set_name("light1")
         self.assertTrue(world.add_light(light))
-        #
-        # sdf::Physics physics
-        # physics.set_name("physics1")
-        # self.assertTrue(world.add_Physics(physics))
+
+        physics = Physics()
+        physics.set_name("physics1")
+        self.assertTrue(world.add_physics(physics))
 
         frame = Frame()
         frame.set_name("frame1")
@@ -325,12 +325,12 @@ class WorldTEST(unittest.TestCase):
         l.set_name("light2")
         self.assertEqual("light2", world.light_by_index(0).name())
 
-        # # Modify the physics
-        # sdf::Physics *p = world.physics_by_index(1)
-        # self.assertNotEqual(None, p)
-        # self.assertEqual("physics1", p.name())
-        # p.set_name("physics2")
-        # self.assertEqual("physics2", world.physics_by_index(1).name())
+        # Modify the physics
+        p = world.physics_by_index(1)
+        self.assertNotEqual(None, p)
+        self.assertEqual("physics1", p.name())
+        p.set_name("physics2")
+        self.assertEqual("physics2", world.physics_by_index(1).name())
 
         # Modify the frame
         f = world.frame_by_index(0)
@@ -338,7 +338,6 @@ class WorldTEST(unittest.TestCase):
         self.assertEqual("frame1", f.name())
         f.set_name("frame2")
         self.assertEqual("frame2", world.frame_by_index(0).name())
-
 
     def test_mutable_by_name(self):
         world = World()

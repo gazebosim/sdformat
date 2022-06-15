@@ -114,8 +114,8 @@ void defineWorld(pybind11::object module)
      //      "Add a actor to the world.")
      .def("add_light", &sdf::World::AddLight,
           "Add a light to the world.")
-     // .def("add_physics", &sdf::World::AddPhysics,
-     //      "Add a physics object to the world.")
+     .def("add_physics", &sdf::World::AddPhysics,
+          "Add a physics object to the world.")
      .def("add_frame", &sdf::World::AddFrame,
           "Add a frame object to the world.")
      .def("clear_models", &sdf::World::ClearModels,
@@ -124,8 +124,8 @@ void defineWorld(pybind11::object module)
      //      "Remove all actors.")
      .def("clear_lights", &sdf::World::ClearLights,
           "Remove all lights.")
-     // .def("clear_physics", &sdf::World::ClearPhysics,
-     //      "Remove all physics objects.")
+     .def("clear_physics", &sdf::World::ClearPhysics,
+          "Remove all physics objects.")
      .def("clear_frames", &sdf::World::ClearFrames,
           "Remove all frames.")
      .def("actor_count", &sdf::World::ActorCount,
