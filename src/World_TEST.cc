@@ -696,7 +696,6 @@ TEST(DOMWorld, Plugins)
 TEST(DOMWorld, LoadSphericalCoordinates)
 {
   sdf::World world;
-
   sdf::ElementPtr SphericalCoordinatesSDF;
 
   std::ostringstream stream;
@@ -704,7 +703,7 @@ TEST(DOMWorld, LoadSphericalCoordinates)
     << "<?xml version='1.0'?>"
     << "<sdf version='1.6'>"
     << "<world name='spherical coordinates'>"
-    << "<spherical_coordinates>
+    << "<spherical_coordinates>"
     << " <surface_model>MOON_SCS</surface_model>"
     << "  <world_frame_orientation>ENU</world_frame_orientation>"
     << "  <latitude_deg>-22.9</latitude_deg>"
