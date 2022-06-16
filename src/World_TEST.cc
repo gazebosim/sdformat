@@ -691,3 +691,39 @@ TEST(DOMWorld, Plugins)
   world.ClearPlugins();
   EXPECT_TRUE(world.Plugins().empty());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, LoadSphericalCoordinates)
+{
+  sdf::World world;
+
+  sdf::ElementPtr SphericalCoordinatesSDF;
+
+  std::ostringstream stream;
+  stream
+    << "<?xml version='1.0'?>"
+    << "<sdf version='1.6'>"
+    << "<world name='spherical coordinates'>"
+    << "<spherical_coordinates>
+    << " <surface_model>MOON_SCS</surface_model>"
+    << "  <world_frame_orientation>ENU</world_frame_orientation>"
+    << "  <latitude_deg>-22.9</latitude_deg>"
+    << "  <longitude_deg>-43.2</longitude_deg>"
+    << "  <elevation>0</elevation>"
+    << "  <heading_deg>0</heading_deg>"
+    << "</spherical_coordinates>"
+    << "</world>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  if (sdf::readString(stream.str(), sdfParsed))
+  {
+    SphericalCoordinatesSDF = 
+      sdfParsed->Root()->GetElement("world")->
+      GetElement("spherical_coordinates");
+  }
+
+  auto errors = world.LoadSphericalCoordinates(SphericalCoordinatesSDF);
+  EXPECT_EQ(errors.size(), 0);
+}
