@@ -26,7 +26,7 @@ set(sources
   usd_parser/USDWorld.cc
 )
 
-ign_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
+gz_add_component(usd SOURCES ${sources} GET_TARGET_NAME usd_target)
 
 target_include_directories(${usd_target}
   PUBLIC
@@ -65,7 +65,7 @@ set(gtest_sources
 )
 
 # Build the unit tests
-ign_build_tests(
+gz_build_tests(
   TYPE UNIT
   SOURCES ${gtest_sources}
   LIB_DEPS ${usd_target}
