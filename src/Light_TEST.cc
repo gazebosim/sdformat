@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Light.hh"
 
 /////////////////////////////////////////////////
@@ -30,19 +30,19 @@ TEST(DOMLight, DefaultConstruction)
   light.SetName("test_light");
   EXPECT_EQ("test_light", light.Name());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, light.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, light.RawPose());
   EXPECT_TRUE(light.PoseRelativeTo().empty());
   {
     auto semanticPose = light.SemanticPose();
     EXPECT_EQ(light.RawPose(), semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
   light.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), light.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), light.RawPose());
 
   light.SetPoseRelativeTo("world");
   EXPECT_EQ("world", light.PoseRelativeTo());
@@ -50,7 +50,7 @@ TEST(DOMLight, DefaultConstruction)
     auto semanticPose = light.SemanticPose();
     EXPECT_EQ(light.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("world", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -67,13 +67,13 @@ TEST(DOMLight, DefaultConstruction)
   light.SetCastShadows(true);
   EXPECT_TRUE(light.CastShadows());
 
-  EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), light.Diffuse());
-  light.SetDiffuse(ignition::math::Color(0.1f, 0.2f, 0.3f, 1.0));
-  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f, 1), light.Diffuse());
+  EXPECT_EQ(gz::math::Color(0, 0, 0, 1), light.Diffuse());
+  light.SetDiffuse(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0));
+  EXPECT_EQ(gz::math::Color(0.1f, 0.2f, 0.3f, 1), light.Diffuse());
 
-  EXPECT_EQ(ignition::math::Color(0, 0, 0, 1), light.Specular());
-  light.SetSpecular(ignition::math::Color(0.4f, 0.6f, 0.7f, 1.0));
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.6f, 0.7f, 1), light.Specular());
+  EXPECT_EQ(gz::math::Color(0, 0, 0, 1), light.Specular());
+  light.SetSpecular(gz::math::Color(0.4f, 0.6f, 0.7f, 1.0));
+  EXPECT_EQ(gz::math::Color(0.4f, 0.6f, 0.7f, 1), light.Specular());
 
   EXPECT_DOUBLE_EQ(10.0, light.AttenuationRange());
   light.SetAttenuationRange(1.2);
@@ -91,17 +91,17 @@ TEST(DOMLight, DefaultConstruction)
   light.SetQuadraticAttenuationFactor(1.1);
   EXPECT_DOUBLE_EQ(1.1, light.QuadraticAttenuationFactor());
 
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -1), light.Direction());
+  EXPECT_EQ(gz::math::Vector3d(0, 0, -1), light.Direction());
   light.SetDirection({0.4, 0.2, 0});
-  EXPECT_EQ(ignition::math::Vector3d(0.4, 0.2, 0), light.Direction());
+  EXPECT_EQ(gz::math::Vector3d(0.4, 0.2, 0), light.Direction());
 
-  EXPECT_EQ(ignition::math::Angle(0.0), light.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(0.0), light.SpotInnerAngle());
   light.SetSpotInnerAngle(1.4);
-  EXPECT_EQ(ignition::math::Angle(1.4), light.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(1.4), light.SpotInnerAngle());
 
-  EXPECT_EQ(ignition::math::Angle(0.0), light.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Angle(0.0), light.SpotOuterAngle());
   light.SetSpotOuterAngle(0.2);
-  EXPECT_EQ(ignition::math::Angle(0.2), light.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Angle(0.2), light.SpotOuterAngle());
 
   EXPECT_DOUBLE_EQ(0.0, light.SpotFalloff());
   light.SetSpotFalloff(4.3);
@@ -123,8 +123,8 @@ TEST(DOMLight, CopyConstructor)
   light.SetCastShadows(true);
   light.SetLightOn(false);
   light.SetVisualize(false);
-  light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
-  light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
+  light.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0));
+  light.SetSpecular(gz::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
   light.SetLinearAttenuationFactor(0.1);
   light.SetConstantAttenuationFactor(0.5);
@@ -138,20 +138,20 @@ TEST(DOMLight, CopyConstructor)
   sdf::Light light2(light);
   EXPECT_EQ("test_copy_light", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
   EXPECT_FALSE(light2.Visualize());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
+  EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
+  EXPECT_EQ(gz::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
   EXPECT_DOUBLE_EQ(0.1, light2.LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.5, light2.ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.01, light2.QuadraticAttenuationFactor());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 1), light2.Direction());
-  EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
-  EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 1), light2.Direction());
+  EXPECT_EQ(gz::math::Angle(1.9), light2.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
@@ -167,8 +167,8 @@ TEST(DOMLight, CopyAssignmentOperator)
   light.SetCastShadows(true);
   light.SetLightOn(false);
   light.SetVisualize(false);
-  light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
-  light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
+  light.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0));
+  light.SetSpecular(gz::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
   light.SetLinearAttenuationFactor(0.1);
   light.SetConstantAttenuationFactor(0.5);
@@ -183,20 +183,20 @@ TEST(DOMLight, CopyAssignmentOperator)
   light2 = light;
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
   EXPECT_FALSE(light2.Visualize());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
+  EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
+  EXPECT_EQ(gz::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
   EXPECT_DOUBLE_EQ(0.1, light2.LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.5, light2.ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.01, light2.QuadraticAttenuationFactor());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 1), light2.Direction());
-  EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
-  EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 1), light2.Direction());
+  EXPECT_EQ(gz::math::Angle(1.9), light2.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
@@ -212,8 +212,8 @@ TEST(DOMLight, MoveConstructor)
   light.SetCastShadows(true);
   light.SetLightOn(false);
   light.SetVisualize(false);
-  light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
-  light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
+  light.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0));
+  light.SetSpecular(gz::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
   light.SetLinearAttenuationFactor(0.1);
   light.SetConstantAttenuationFactor(0.5);
@@ -227,20 +227,20 @@ TEST(DOMLight, MoveConstructor)
   sdf::Light light2(std::move(light));
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
   EXPECT_FALSE(light2.Visualize());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
+  EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
+  EXPECT_EQ(gz::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
   EXPECT_DOUBLE_EQ(0.1, light2.LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.5, light2.ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.01, light2.QuadraticAttenuationFactor());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 1), light2.Direction());
-  EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
-  EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 1), light2.Direction());
+  EXPECT_EQ(gz::math::Angle(1.9), light2.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
@@ -256,8 +256,8 @@ TEST(DOMLight, MoveAssignment)
   light.SetCastShadows(true);
   light.SetLightOn(false);
   light.SetVisualize(false);
-  light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
-  light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
+  light.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0));
+  light.SetSpecular(gz::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
   light.SetLinearAttenuationFactor(0.1);
   light.SetConstantAttenuationFactor(0.5);
@@ -272,20 +272,20 @@ TEST(DOMLight, MoveAssignment)
   light2 = std::move(light);
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
   EXPECT_FALSE(light2.Visualize());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
+  EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
+  EXPECT_EQ(gz::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
   EXPECT_DOUBLE_EQ(0.1, light2.LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.5, light2.ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.01, light2.QuadraticAttenuationFactor());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 1), light2.Direction());
-  EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
-  EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 1), light2.Direction());
+  EXPECT_EQ(gz::math::Angle(1.9), light2.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 }
@@ -354,8 +354,8 @@ TEST(DOMLight, ToElement)
   light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
-  light.SetDiffuse(ignition::math::Color(0.4f, 0.5f, 0.6f, 1.0));
-  light.SetSpecular(ignition::math::Color(0.8f, 0.9f, 0.1f, 1.0));
+  light.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0));
+  light.SetSpecular(gz::math::Color(0.8f, 0.9f, 0.1f, 1.0));
   light.SetAttenuationRange(3.2);
   light.SetLinearAttenuationFactor(0.1);
   light.SetConstantAttenuationFactor(0.5);
@@ -377,18 +377,18 @@ TEST(DOMLight, ToElement)
   EXPECT_NE(nullptr, light2.Element());
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::SPOT, light2.Type());
-  EXPECT_EQ(ignition::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
+  EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());
+  EXPECT_EQ(gz::math::Color(0.8f, 0.9f, 0.1f, 1), light2.Specular());
   EXPECT_DOUBLE_EQ(3.2, light2.AttenuationRange());
   EXPECT_DOUBLE_EQ(0.1, light2.LinearAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.5, light2.ConstantAttenuationFactor());
   EXPECT_DOUBLE_EQ(0.01, light2.QuadraticAttenuationFactor());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 1), light2.Direction());
-  EXPECT_EQ(ignition::math::Angle(1.9), light2.SpotInnerAngle());
-  EXPECT_EQ(ignition::math::Angle(3.3), light2.SpotOuterAngle());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 1), light2.Direction());
+  EXPECT_EQ(gz::math::Angle(1.9), light2.SpotInnerAngle());
+  EXPECT_EQ(gz::math::Angle(3.3), light2.SpotOuterAngle());
   EXPECT_DOUBLE_EQ(0.9, light2.SpotFalloff());
   EXPECT_DOUBLE_EQ(1.7, light2.Intensity());
 

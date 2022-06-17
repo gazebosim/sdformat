@@ -46,7 +46,7 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
   const auto canonicalLink = _doc["canonical_link"].ParamGet<std::string>();
 
   // Pose of model (M) in parent (P) frame
-  const auto X_PM = _doc["pose"].ParamGet<ignition::math::Pose3d>();
+  const auto X_PM = _doc["pose"].ParamGet<gz::math::Pose3d>();
 
   bool isStatic = _doc["static"].ParamGet<bool>(false);
 
@@ -55,7 +55,7 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
 
   for (auto &[name, link] : _doc["links"].Map())
   {
-    const auto pose = link["pose"].ParamGet<ignition::math::Pose3d>();
+    const auto pose = link["pose"].ParamGet<gz::math::Pose3d>();
     model->AddLink({name, pose});
   }
 
@@ -63,13 +63,13 @@ sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
   {
     const auto attachedTo =
         frame["attached_to"].ParamGet<std::string>("__model__");
-    const auto pose = frame["pose"].ParamGet<ignition::math::Pose3d>();
+    const auto pose = frame["pose"].ParamGet<gz::math::Pose3d>();
     model->AddFrame({name, attachedTo, pose});
   }
 
   for (auto &[name, joint] : _doc["joints"].Map())
   {
-    const auto pose = joint["pose"].ParamGet<ignition::math::Pose3d>();
+    const auto pose = joint["pose"].ParamGet<gz::math::Pose3d>();
     const auto child = joint["child"].ParamGet<std::string>();
     model->AddJoint({name, child, pose});
   }
@@ -196,7 +196,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
     EXPECT_TRUE(_include.IsStatic().value());
 
     EXPECT_TRUE(_include.IncludeRawPose().has_value());
-    EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0),
               _include.IncludeRawPose().value());
 
     EXPECT_TRUE(_include.IncludePoseRelativeTo().has_value());
@@ -275,7 +275,7 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
         // first, we do not expect parser 0 to be called.
         auto model = std::make_shared<sdf::InterfaceModel>(
             "test_model" + std::to_string(_parserId), nullptr, false,
-            "base_link", ignition::math::Pose3d());
+            "base_link", gz::math::Pose3d());
         model->AddLink({"base_link", {}});
         return model;
       }
@@ -301,7 +301,7 @@ TEST_F(InterfaceAPI, CustomParserPrecedence)
 /////////////////////////////////////////////////
 void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   ASSERT_NE(nullptr, _interfaceModel);
   EXPECT_EQ("double_pendulum", _interfaceModel->Name());
   EXPECT_EQ("base", _interfaceModel->CanonicalLinkName());
@@ -361,7 +361,7 @@ void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPI, TomlParserWorldInclude)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "world_include_with_interface_api.sdf");
 
@@ -380,7 +380,7 @@ TEST_F(InterfaceAPI, TomlParserWorldInclude)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPI, TomlParserModelInclude)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "model_include_with_interface_api.sdf");
 
@@ -399,7 +399,7 @@ TEST_F(InterfaceAPI, TomlParserModelInclude)
 
 void InterfaceAPI::CheckFrameSemantics(const sdf::World *world)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
 
   auto resolvePoseNoErrors =
       [](const sdf::SemanticPose &_semPose, const std::string &_relativeTo = "")
@@ -592,7 +592,7 @@ TEST_F(InterfaceAPI, FrameSemantics)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPI, Reposturing)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "include_with_interface_api_reposture.sdf");
 
@@ -609,7 +609,7 @@ TEST_F(InterfaceAPI, Reposturing)
             const sdf::InterfaceModelPoseGraph &_graph)
     {
       {
-        ignition::math::Pose3d pose;
+        gz::math::Pose3d pose;
         sdf::Errors errors =
             _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
         EXPECT_TRUE(errors.empty()) << errors;
@@ -621,7 +621,7 @@ TEST_F(InterfaceAPI, Reposturing)
       {
         for (const auto &link : modelIt->second->Links())
         {
-          ignition::math::Pose3d pose;
+          gz::math::Pose3d pose;
           sdf::Errors errors = _graph.ResolveNestedFramePose(pose, link.Name());
           EXPECT_TRUE(errors.empty()) << errors;
           posesAfterReposture[sdf::JoinName(modelName, link.Name())] = pose;
@@ -706,7 +706,7 @@ TEST_F(InterfaceAPI, Reposturing)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPI, PlacementFrame)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   std::unordered_map<std::string, Pose3d> modelPosesAfterReposture;
   auto repostureTestParser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &)
@@ -716,7 +716,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
     auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
                              const sdf::InterfaceModelPoseGraph &_graph)
     {
-      ignition::math::Pose3d pose;
+      gz::math::Pose3d pose;
       sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
       EXPECT_TRUE(errors.empty()) << errors;
       modelPosesAfterReposture[modelName] = pose;
@@ -864,7 +864,7 @@ TEST_F(InterfaceAPI, PlacementFrame)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPI, NameCollision)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
 
   this->config.RegisterCustomModelParser(this->customTomlParser);
 
@@ -951,7 +951,7 @@ TEST_F(InterfaceAPIMergeInclude, FrameSemantics)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPIMergeInclude, Reposturing)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "merge_include_with_interface_api_reposture.sdf");
 
@@ -971,7 +971,7 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
 
       for (const auto &elem : modelIt->second)
       {
-        ignition::math::Pose3d pose;
+        gz::math::Pose3d pose;
         sdf::Errors errors =
             _graph.ResolveNestedFramePose(pose, elem);
         EXPECT_TRUE(errors.empty()) << errors;
@@ -1091,7 +1091,7 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPIMergeInclude, PlacementFrame)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   std::unordered_map<std::string, Pose3d> modelPosesAfterReposture;
   auto repostureTestParser =
       [&](const sdf::NestedInclude &_include, sdf::Errors &)
@@ -1101,7 +1101,7 @@ TEST_F(InterfaceAPIMergeInclude, PlacementFrame)
     auto repostureFunc = [modelName = modelName, &modelPosesAfterReposture](
                              const sdf::InterfaceModelPoseGraph &_graph)
     {
-      ignition::math::Pose3d pose;
+      gz::math::Pose3d pose;
       sdf::Errors errors = _graph.ResolveNestedModelFramePoseInWorldFrame(pose);
       EXPECT_TRUE(errors.empty()) << errors;
       modelPosesAfterReposture[modelName] = pose;

@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Color
-from sdformat import Geometry, Material, Visual
+from sdformat import Geometry, Material, Visual, Plugin
 import sdformat as sdf
 import unittest
 import math
@@ -219,27 +219,26 @@ class VisualTEST(unittest.TestCase):
         self.assertEqual(150, visual.laser_retro())
 
 
-    # TODO(ahcorde) enable this when sdf::Plugins is converted
-    # def test_plugins(self):
-    #   visual = Visual()
-    #   self.assertTrue(visual.Plugins().empty())
-    #
-    #   plugin = Plugin()
-    #   plugin.set_name("name1")
-    #   plugin.set_filename("filename1")
-    #
-    #   visual.add_plugin(plugin)
-    #   self.assertEqual(1, visual.plugins().size())
-    #
-    #   plugin.set_name("name2")
-    #   visual.add_plugin(plugin)
-    #   self.assertEqual(2, visual.plugins().size())
-    #
-    #   self.assertEqual("name1", visual.plugins()[0].name())
-    #   self.assertEqual("name2", visual.plugins()[1].name())
-    #
-    #   visual.clear_plugins()
-    #   self.assertTrue(visual.Plugins()))
+    def test_plugins(self):
+        visual = Visual()
+        self.assertEqual(0, len(visual.plugins()))
+
+        plugin = Plugin()
+        plugin.set_name("name1")
+        plugin.set_filename("filename1")
+
+        visual.add_plugin(plugin)
+        self.assertEqual(1, len(visual.plugins()))
+
+        plugin.set_name("name2")
+        visual.add_plugin(plugin)
+        self.assertEqual(2, len(visual.plugins()))
+
+        self.assertEqual("name1", visual.plugins()[0].name())
+        self.assertEqual("name2", visual.plugins()[1].name())
+
+        visual.clear_plugins()
+        self.assertEqual(0, len(visual.plugins()))
 
 
 if __name__ == '__main__':

@@ -94,12 +94,12 @@ namespace sdf
     /// typically used to express the position and rotation of a light in a
     /// global coordinate frame.
     /// \return The pose of the light.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the light.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new light pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -154,25 +154,25 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Diffuse color.
-    public: ignition::math::Color Diffuse() const;
+    public: gz::math::Color Diffuse() const;
 
     /// \brief Set the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Diffuse color.
-    public: void SetDiffuse(const ignition::math::Color &_color);
+    public: void SetDiffuse(const gz::math::Color &_color);
 
     /// \brief Get the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Specular color.
-    public: ignition::math::Color Specular() const;
+    public: gz::math::Color Specular() const;
 
     /// \brief Set the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Specular color.
-    public: void SetSpecular(const ignition::math::Color &_color);
+    public: void SetSpecular(const gz::math::Color &_color);
 
     /// \brief Get the range of the light source in meters.
     /// \return Range of the light source in meters.
@@ -220,32 +220,32 @@ namespace sdf
     /// for spot and directional light types. The default value is
     /// [0, 0, -1].
     /// \return Light source direction.
-    public: ignition::math::Vector3d Direction() const;
+    public: gz::math::Vector3d Direction() const;
 
     /// \brief Set the direction of the light source. This only has meaning
     /// for spot and directional light types.
     /// \param[in] _dir Light source direction.
-    public: void SetDirection(const ignition::math::Vector3d  &_dir);
+    public: void SetDirection(const gz::math::Vector3d  &_dir);
 
     /// \brief Get the angle covered by the bright inner cone.
     /// \return The angle covered by the bright inner cone.
     /// \note This function only has meaning for a spot light.
-    public: ignition::math::Angle SpotInnerAngle() const;
+    public: gz::math::Angle SpotInnerAngle() const;
 
     /// \brief Set the angle covered by the bright inner cone.
     /// \param[in] _angle The angle covered by the bright inner cone.
     /// \note This function only has meaning for a spot light.
-    public: void SetSpotInnerAngle(const ignition::math::Angle &_angle);
+    public: void SetSpotInnerAngle(const gz::math::Angle &_angle);
 
     /// \brief Get the angle covered by the outer cone.
     /// \return The angle covered by the outer cone.
     /// \note This function only has meaning for a spot light.
-    public: ignition::math::Angle SpotOuterAngle() const;
+    public: gz::math::Angle SpotOuterAngle() const;
 
     /// \brief Set the angle covered by the outer cone.
     /// \param[in] _angle The angle covered by the outer cone.
     /// \note This function only has meaning for a spot light.
-    public: void SetSpotOuterAngle(const ignition::math::Angle &_angle);
+    public: void SetSpotOuterAngle(const gz::math::Angle &_angle);
 
     /// \brief Get the rate of falloff between the inner and outer cones.
     /// A value of 1.0 is a linear falloff, less than 1.0 is a slower falloff,

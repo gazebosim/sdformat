@@ -19,7 +19,7 @@
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 
-#include <ignition/math/Temperature.hh>
+#include <gz/math/Temperature.hh>
 
 #include "sdf/Atmosphere.hh"
 

@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "Utils.hh"
 
@@ -29,11 +29,11 @@ TEST(DOMUtils, PoseDefaultValues)
   element->AddValue("pose", "0 0 0 0 0 0", true);
   element->AddAttribute("relative_to", "string", "", false);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_EQ(gz::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
 }
 
@@ -44,11 +44,11 @@ TEST(DOMUtils, PoseNoFrame)
   element->SetName("pose");
   element->AddValue("pose", "0 0 0 0 0 0", true);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_EQ(gz::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
 }
 
@@ -59,11 +59,11 @@ TEST(DOMUtils, PoseNoValue)
   element->SetName("pose");
   element->AddValue("pose", "", true);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_EQ(gz::math::Pose3d::Zero, pose);
   EXPECT_TRUE(frame.empty());
 }
 
@@ -76,11 +76,11 @@ TEST(DOMUtils, PoseWithFrame)
   element->AddAttribute("relative_to", "string", "", false);
   element->GetAttribute("relative_to")->SetFromString("frame_name");
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, pose);
+  EXPECT_EQ(gz::math::Pose3d::Zero, pose);
   EXPECT_EQ("frame_name", frame);
 }
 
@@ -94,11 +94,11 @@ TEST(DOMUtils, PoseWithValue)
   element->GetAttribute("relative_to")->SetFromString("another frame");
   element->GetValue()->SetFromString("1 2 3 0.1 0.2 0.3");
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   std::string frame;
   EXPECT_TRUE(sdf::loadPose(element, pose, frame));
 
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3), pose);
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3), pose);
   EXPECT_EQ("another frame", frame);
 }
 

@@ -117,11 +117,11 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \brief The raw pose as specified in `//include/pose`. This is nullopt if
   /// `//include/pose` is not set.
   /// \return The raw pose.  nullopt if `//include/pose` is not set.
-  public: const std::optional<ignition::math::Pose3d> &IncludeRawPose() const;
+  public: const std::optional<gz::math::Pose3d> &IncludeRawPose() const;
 
   /// \brief Set the raw pose as specified in `//include/pose`.
   /// \param[in] _includeRawPose The raw pose
-  public: void SetIncludeRawPose(const ignition::math::Pose3d &_includeRawPose);
+  public: void SetIncludeRawPose(const gz::math::Pose3d &_includeRawPose);
 
   /// \brief The relative-to frame of the pose as specified in
   /// `//include/pose/@relative_to`. This is nullopt if
@@ -202,7 +202,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \brief The raw pose as specified in //include/pose. This is nullopt if
   /// `//include/pose` is not set.
   /// \deprecated Use NestedInclude::IncludeRawPose() instead
-  public: std::optional<ignition::math::Pose3d> includeRawPose
+  public: std::optional<gz::math::Pose3d> includeRawPose
               SDF_DEPRECATED(12);
 
   /// \brief The relative-to frame of the pose as specified in

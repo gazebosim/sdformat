@@ -15,7 +15,8 @@
 import copy
 from ignition.math import Pose3d
 from sdformat import (AirPressure, Altimeter, Camera, IMU, ForceTorque, Lidar,
-                      Magnetometer, NavSat, Noise, SemanticPose, Sensor)
+                      Magnetometer, NavSat, Noise, Plugin, SemanticPose,
+                      Sensor)
 import sdformat as sdf
 import unittest
 
@@ -339,6 +340,27 @@ class SensorTEST(unittest.TestCase):
             2.0)
         self.assertAlmostEqual(
             sensor.nav_sat_sensor().horizontal_position_noise().mean(), 2.0)
+
+    def test_plugins(self):
+        sensor = Sensor()
+        self.assertEqual(0, len(sensor.plugins()))
+
+        plugin = Plugin()
+        plugin.set_name("name1")
+        plugin.set_filename("filename1")
+
+        sensor.add_plugin(plugin)
+        self.assertEqual(1, len(sensor.plugins()))
+
+        plugin.set_name("name2")
+        sensor.add_plugin(plugin)
+        self.assertEqual(2, len(sensor.plugins()))
+
+        self.assertEqual("name1", sensor.plugins()[0].name())
+        self.assertEqual("name2", sensor.plugins()[1].name())
+
+        sensor.clear_plugins()
+        self.assertEqual(0, len(sensor.plugins()))
 
 
 if __name__ == '__main__':

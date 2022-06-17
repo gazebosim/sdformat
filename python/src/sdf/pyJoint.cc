@@ -100,12 +100,16 @@ void defineJoint(pybind11::object module)
          "poses.")
     .def("sensor_count", &sdf::Joint::SensorCount,
          "Get the number of sensors.")
-    .def("sensor_by_index", &sdf::Joint::SensorByIndex,
+    .def("sensor_by_index",
+         pybind11::overload_cast<uint64_t>(
+           &sdf::Joint::SensorByIndex),
          pybind11::return_value_policy::reference_internal,
          "Get a sensor based on an index.")
     .def("sensor_name_exists", &sdf::Joint::SensorNameExists,
          "Get whether a sensor name exists.")
-    .def("sensor_by_name", &sdf::Joint::SensorByName,
+    .def("sensor_by_name",
+         pybind11::overload_cast<const std::string &>(
+           &sdf::Joint::SensorByName),
          pybind11::return_value_policy::reference_internal,
          "Get a sensor based on a name.")
     .def("add_sensor",

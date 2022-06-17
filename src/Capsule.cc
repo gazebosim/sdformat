@@ -24,7 +24,7 @@ using namespace sdf;
 class sdf::Capsule::Implementation
 {
   // A capsule with a length of 1 meter and radius if 0.5 meters.
-  public: ignition::math::Capsuled capsule{1.0, 0.5};
+  public: gz::math::Capsuled capsule{1.0, 0.5};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -32,7 +32,7 @@ class sdf::Capsule::Implementation
 
 /////////////////////////////////////////////////
 Capsule::Capsule()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -125,13 +125,13 @@ sdf::ElementPtr Capsule::Element() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Capsuled &Capsule::Shape() const
+const gz::math::Capsuled &Capsule::Shape() const
 {
   return this->dataPtr->capsule;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Capsuled &Capsule::Shape()
+gz::math::Capsuled &Capsule::Shape()
 {
   return this->dataPtr->capsule;
 }

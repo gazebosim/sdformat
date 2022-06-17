@@ -33,7 +33,12 @@
 #include <variant>
 #include <vector>
 
-#include <gz/math.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/PrintConfig.hh"
@@ -86,16 +91,16 @@ namespace sdf
     if (s.precision == std::numeric_limits<int>::max())
     {
       if constexpr (std::is_same_v<T, double>
-                    || std::is_same_v<T, ignition::math::Angle>
-                    || std::is_same_v<T, ignition::math::Vector2d>
-                    || std::is_same_v<T, ignition::math::Vector3d>
-                    || std::is_same_v<T, ignition::math::Quaterniond>
-                    || std::is_same_v<T, ignition::math::Pose3d>)
+                    || std::is_same_v<T, gz::math::Angle>
+                    || std::is_same_v<T, gz::math::Vector2d>
+                    || std::is_same_v<T, gz::math::Vector3d>
+                    || std::is_same_v<T, gz::math::Quaterniond>
+                    || std::is_same_v<T, gz::math::Pose3d>)
       {
         os << std::setprecision(std::numeric_limits<double>::max_digits10);
       }
       else if constexpr (std::is_same_v<T, float>
-                         || std::is_same_v<T, ignition::math::Color>)
+                         || std::is_same_v<T, gz::math::Color>)
       {
         os << std::setprecision(std::numeric_limits<float>::max_digits10);
       }
@@ -518,13 +523,13 @@ namespace sdf
     /// and template std::ostream operator if new variant is floating point
     public: typedef std::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
-                                   ignition::math::Angle,
-                                   ignition::math::Color,
-                                   ignition::math::Vector2i,
-                                   ignition::math::Vector2d,
-                                   ignition::math::Vector3d,
-                                   ignition::math::Quaterniond,
-                                   ignition::math::Pose3d> ParamVariant;
+                                   gz::math::Angle,
+                                   gz::math::Color,
+                                   gz::math::Vector2i,
+                                   gz::math::Vector2d,
+                                   gz::math::Vector3d,
+                                   gz::math::Quaterniond,
+                                   gz::math::Pose3d> ParamVariant;
 
     /// \brief This parameter's value
     public: ParamVariant value;
@@ -634,19 +639,19 @@ namespace sdf
       return "float";
     else if constexpr (std::is_same_v<T, sdf::Time>)
       return "time";
-    else if constexpr (std::is_same_v<T, ignition::math::Angle>)
+    else if constexpr (std::is_same_v<T, gz::math::Angle>)
       return "angle";
-    else if constexpr (std::is_same_v<T, ignition::math::Color>)
+    else if constexpr (std::is_same_v<T, gz::math::Color>)
       return "color";
-    else if constexpr (std::is_same_v<T, ignition::math::Vector2i>)
+    else if constexpr (std::is_same_v<T, gz::math::Vector2i>)
       return "vector2i";
-    else if constexpr (std::is_same_v<T, ignition::math::Vector2d>)
+    else if constexpr (std::is_same_v<T, gz::math::Vector2d>)
       return "vector2d";
-    else if constexpr (std::is_same_v<T, ignition::math::Vector3d>)
+    else if constexpr (std::is_same_v<T, gz::math::Vector3d>)
       return "vector3";
-    else if constexpr (std::is_same_v<T, ignition::math::Quaterniond>)
+    else if constexpr (std::is_same_v<T, gz::math::Quaterniond>)
       return "quaternion";
-    else if constexpr (std::is_same_v<T, ignition::math::Pose3d>)
+    else if constexpr (std::is_same_v<T, gz::math::Pose3d>)
       return "pose";
     else
       return "";
@@ -734,7 +739,7 @@ namespace sdf
       {
         // this section for handling bool types is to keep backward behavior
         // TODO(anyone) remove for Fortress. For more details:
-        // https://github.com/ignitionrobotics/sdformat/pull/638
+        // https://github.com/gazebosim/sdformat/pull/638
         valueStr = lowercase(valueStr);
 
         std::stringstream tmp;
