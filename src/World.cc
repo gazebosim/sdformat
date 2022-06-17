@@ -780,7 +780,8 @@ Errors World::Implementation::LoadSphericalCoordinates(
   {
     auto surfaceModelStr = _elem->Get<std::string>("surface_model");
     if ((surfaceModelStr != "EARTH_WGS84") &&
-        (surfaceModelStr != "MOON_SCS"))
+        (surfaceModelStr != "MOON_SCS") &&
+        (surfaceModelStr != "CUSTOM_SURFACE"))
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "The supplied <surface_model> [" + surfaceModelStr +
@@ -788,6 +789,55 @@ Errors World::Implementation::LoadSphericalCoordinates(
     }
     surfaceModel = gz::math::SphericalCoordinates::Convert(
         surfaceModelStr);
+  }
+
+  // Read ellipsoidal parameters for custom surfaces.
+  double radius = 0;
+  double axisEquatorial = 0;
+  double axisPolar = 0;
+  double flattening = 0;
+
+  if (surfaceModel == gz::math::SphericalCoordinates::CUSTOM_SURFACE)
+  {
+    if (!_elem->HasElement("surface_radius"))
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Missing required element <surface_radius>"});
+    }
+    else
+    {
+      radius = _elem->Get<double>("surface_radius");
+    }
+
+    if (!_elem->HasElement("surface_axis_equatorial"))
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Missing required element <surface_axis_equatorial>"});
+    }
+    else
+    {
+      axisEquatorial = _elem->Get<double>("surface_axis_equatorial");
+    }
+
+    if (!_elem->HasElement("surface_axis_polar"))
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Missing required element <surface_axis_polar>"});
+    }
+    else
+    {
+      axisPolar = _elem->Get<double>("surface_axis_polar");
+    }
+
+    if (!_elem->HasElement("surface_flattening"))
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Missing required element <surface_flattening>"});
+    }
+    else
+    {
+      flattening = _elem->Get<double>("surface_flattening");
+    }
   }
 
   std::string worldFrameOrientation{"ENU"};
@@ -849,9 +899,25 @@ Errors World::Implementation::LoadSphericalCoordinates(
 
   // Create coordinates
   this->sphericalCoordinates.emplace();
-  this->sphericalCoordinates =
-      gz::math::SphericalCoordinates(surfaceModel, latitude, longitude,
-      elevation, heading);
+  if (surfaceModel != gz::math::SphericalCoordinates::CUSTOM_SURFACE)
+  {
+    this->sphericalCoordinates =
+        gz::math::SphericalCoordinates(surfaceModel, latitude, longitude,
+        elevation, heading);
+  }
+  else
+  {
+    auto sphericalCoordinatesObject =
+      gz::math::SphericalCoordinates(surfaceModel, radius,
+          axisEquatorial, axisPolar, flattening);
+
+    sphericalCoordinatesObject.SetLatitudeReference(latitude);
+    sphericalCoordinatesObject.SetLongitudeReference(longitude);
+    sphericalCoordinatesObject.SetElevationReference(elevation);
+    sphericalCoordinatesObject.SetHeadingOffset(heading);
+
+    this->sphericalCoordinates = sphericalCoordinatesObject;
+  }
 
   return errors;
 }
