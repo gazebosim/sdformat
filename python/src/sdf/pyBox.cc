@@ -41,7 +41,7 @@ void defineBox(pybind11::object module)
         "shape",
         pybind11::overload_cast<>(&sdf::Box::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Ignition Math representation of this Box.")
+        "Get a mutable Gazebo Math representation of this Box.")
     .def("__copy__", [](const sdf::Box &self) {
       return sdf::Box(self);
     })

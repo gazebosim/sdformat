@@ -193,12 +193,12 @@ class Cmd
     end
 
     # Read the library version.
-    Importer.extern 'char* ignitionVersion()'
+    Importer.extern 'char* gzVersion()'
     begin
-      plugin_version = Importer.ignitionVersion.to_s
+      plugin_version = Importer.gzVersion.to_s
     rescue DLError
-      puts "Library error: Problem running 'ignitionVersion()' from #{plugin}."
-      exit(-1)
+        puts "Library error: Problem running 'gzVersion()' from #{plugin}."
+        exit(-1)
     end
 
     # Sanity check: Verify that the version of the yaml file matches the version

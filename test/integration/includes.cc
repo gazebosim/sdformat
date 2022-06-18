@@ -439,7 +439,7 @@ TEST(IncludesTest, MergeInclude)
 
   // X_PM - Pose of original model (M) in parent model (P) frame. This is the
   // pose override in the //include tag.
-  const Pose3d X_PM(100, 0, 0, IGN_PI_4, 0, 0);
+  const Pose3d X_PM(100, 0, 0, GZ_PI_4, 0, 0);
   // X_MRw - Pose of the right wheel in the original model (M) as specified in
   // the SDFormat file.
   const Pose3d X_MRw(0.554282, -0.625029, -0.025, -1.5707, 0, 0);
@@ -496,7 +496,7 @@ TEST(IncludesTest, MergeInclude)
     // From SDFormat file
     // X_MS - Pose of sensor_frame (S) in the original model (M) as
     // specified in the SDF file.
-    const Pose3d X_MS(0, 1, 0, 0, IGN_PI_4, 0);
+    const Pose3d X_MS(0, 1, 0, 0, GZ_PI_4, 0);
     const Pose3d expectedPose = X_PM * X_MS;
     EXPECT_EQ(expectedPose, testPose);
   }

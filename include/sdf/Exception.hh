@@ -101,7 +101,7 @@ namespace sdf
     }
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \class InternalError Exception.hh common/common.hh

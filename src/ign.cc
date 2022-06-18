@@ -106,7 +106,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
+extern "C" SDFORMAT_VISIBLE char *gzVersion()
 {
 #ifdef _MSC_VER
   return _strdup(SDF_VERSION_FULL);

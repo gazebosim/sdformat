@@ -720,11 +720,11 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   EXPECT_TRUE(model->LinkByName("L2")->PoseRelativeTo().empty());
   EXPECT_EQ("L1", model->LinkByName("L3")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("L1")->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("L1")->RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("L2")->RawPose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->LinkByName("L3")->RawPose());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI / 2, 0),
             model->LinkByName("L1")->SemanticPose().RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
             model->LinkByName("L2")->SemanticPose().RawPose());
@@ -735,20 +735,20 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   Pose pose;
   EXPECT_TRUE(
     model->LinkByName("L1")->SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("L2")->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("L3")->SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, -3, 0, GZ_PI/2, 0), pose);
   // test other API too
   EXPECT_TRUE(model->LinkByName("L1")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(model->LinkByName("L2")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->LinkByName("L3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, -3, 0, GZ_PI/2, 0), pose);
 
   // resolve pose of L1 relative to L3
   // should be inverse of L3's Pose()

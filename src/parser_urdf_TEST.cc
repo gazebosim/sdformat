@@ -762,7 +762,7 @@ TEST(URDFParser, CheckJointTransform)
     << "  <joint name='joint1_2' type='continuous'>"
     << "    <parent link='link1' />"
     << "    <child  link='link2' />"
-    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << IGN_PI*0.5 << "' />"
+    << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << GZ_PI*0.5 << "' />"
     << "  </joint>"
     << "  <link name='link2'>"
     << "    <inertial>"

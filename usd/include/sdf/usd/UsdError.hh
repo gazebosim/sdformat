@@ -179,7 +179,7 @@ namespace sdf
         std::ostream &_out, const sdf::usd::UsdError &_err);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   using UsdErrors = std::vector<UsdError>;

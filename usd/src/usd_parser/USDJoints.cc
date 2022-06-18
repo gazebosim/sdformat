@@ -256,8 +256,8 @@ namespace sdf
             gz::math::Vector3d(trans[0], trans[1], trans[2]),
             q1));
 
-        jointAxis.SetLower(IGN_DTOR(lowerLimit));
-        jointAxis.SetUpper(IGN_DTOR(upperLimit));
+        jointAxis.SetLower(GZ_DTOR(lowerLimit));
+        jointAxis.SetUpper(GZ_DTOR(upperLimit));
         _joint.SetAxis(0, jointAxis);
 
         return errors;

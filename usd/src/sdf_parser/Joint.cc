@@ -135,7 +135,7 @@ namespace usd
     {
       if (auto jointRevolute = pxr::UsdPhysicsRevoluteJoint(_jointPrim))
       {
-        const gz::math::Quaterniond fixRotation(0, 0, IGN_DTOR(90));
+        const gz::math::Quaterniond fixRotation(0, 0, GZ_DTOR(90));
         gz::math::Quaterniond parentRotationTmp = parentToJoint.Rot();
         gz::math::Quaterniond childRotationTmp = childToJoint.Rot();
 
@@ -145,8 +145,8 @@ namespace usd
         }
         else
         {
-          parentRotationTmp = gz::math::Quaterniond(IGN_DTOR(-90),
-              IGN_PI, IGN_PI) * parentRotationTmp;
+          parentRotationTmp = gz::math::Quaterniond(GZ_DTOR(-90),
+              GZ_PI, GZ_PI) * parentRotationTmp;
         }
 
         childRotationTmp = fixRotation * childRotationTmp;
@@ -228,9 +228,9 @@ namespace usd
 
     // Revolute joint limits in SDF are in radians, but USD expects degrees
     // of C++ type float
-    auto sdfLimitDegrees = static_cast<float>(IGN_RTOD(axis->Lower()));
+    auto sdfLimitDegrees = static_cast<float>(GZ_RTOD(axis->Lower()));
     usdJoint.CreateLowerLimitAttr().Set(sdfLimitDegrees);
-    sdfLimitDegrees = static_cast<float>(IGN_RTOD(axis->Upper()));
+    sdfLimitDegrees = static_cast<float>(GZ_RTOD(axis->Upper()));
     usdJoint.CreateUpperLimitAttr().Set(sdfLimitDegrees);
 
     pxr::UsdPrim usdJointPrim = _stage->GetPrimAtPath(pxr::SdfPath(_path));

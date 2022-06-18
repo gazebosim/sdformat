@@ -358,11 +358,11 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
       model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 3, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
       linkC->VisualByName("vF3")->
         SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(16, 3, 3, 0, GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
       model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
@@ -389,17 +389,17 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
     linkC->VisualByName("vP")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->VisualByName("vP")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     linkC->VisualByName("vJ")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->VisualByName("vJ")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     linkC->VisualByName("vF3")->SemanticPose().Resolve(pose, "C").empty());
@@ -410,10 +410,10 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
     linkC->VisualByName("vF4")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->VisualByName("vF4")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -GZ_PI/2, 0), pose);
 }
 
 //////////////////////////////////////////////////

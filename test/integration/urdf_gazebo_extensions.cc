@@ -170,7 +170,7 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
       EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
       EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), IGN_PI_2, 1e-5);
+      EXPECT_NEAR(pose.Yaw(), GZ_PI_2, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
     }
@@ -191,7 +191,7 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
       EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
       EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), IGN_PI_2 - 1, 1e-5);
+      EXPECT_NEAR(pose.Yaw(), GZ_PI_2 - 1, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
     }
@@ -233,7 +233,7 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       EXPECT_DOUBLE_EQ(pose.Z(), 222.0);
       EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
       EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), IGN_PI_2 - 1, 1e-5);
+      EXPECT_NEAR(pose.Yaw(), GZ_PI_2 - 1, 1e-5);
 
       EXPECT_FALSE(poseElem->GetNextElement("pose"));
     }

@@ -715,7 +715,7 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   // After reparse, rotation values will be parsed as degrees.
   EXPECT_TRUE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 
   // Changing parent @rotation_format to euler_rpy, value remains the same
   sdf::ParamPtr rotationFormatAttrib =
@@ -724,21 +724,21 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
   EXPECT_TRUE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 
   // Changing parent @rotation_format to quat_xyzw, reparse will fail, value
   // remains the same as before
   ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
   EXPECT_FALSE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 
   // Changing parent @rotation_format to something invalid, reparse will fail,
   // value remains the same as before
   ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("invalid_format"));
   EXPECT_FALSE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 }
 
 /////////////////////////////////////////////////
