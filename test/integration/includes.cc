@@ -526,14 +526,14 @@ TEST(IncludesTest, MergeInclude)
     // left_wheel_joint's axis is expressed in __model__.
     auto joint = model->JointByName("test_model_parent");
     ASSERT_NE(nullptr, joint);
-    EXPECT_EQ(prefixedFrameName, joint->ParentLinkName());
+    EXPECT_EQ(prefixedFrameName, joint->ParentName());
   }
   // Check joint child set as __model__
   {
     // left_wheel_joint's axis is expressed in __model__.
     auto joint = model->JointByName("test_model_child");
     ASSERT_NE(nullptr, joint);
-    EXPECT_EQ(prefixedFrameName, joint->ChildLinkName());
+    EXPECT_EQ(prefixedFrameName, joint->ChildName());
   }
 
   // Verify that plugins get merged
