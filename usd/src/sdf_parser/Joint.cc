@@ -71,7 +71,7 @@ namespace usd
     UsdErrors errors;
 
     gz::math::Pose3d parentToJoint;
-    if (_joint.ParentLinkName() == "world")
+    if (_joint.ParentName() == "world")
     {
       gz::math::Pose3d modelToJoint;
       auto poseErrors = usd::PoseWrtParent(_joint, modelToJoint);
@@ -90,13 +90,13 @@ namespace usd
     else
     {
       auto poseResolutionErrors =
-        _joint.SemanticPose().Resolve(parentToJoint, _joint.ParentLinkName());
+        _joint.SemanticPose().Resolve(parentToJoint, _joint.ParentName());
       if (!poseResolutionErrors.empty())
       {
         errors.push_back(UsdError(
               sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
               "Unable to get the pose of joint [" + _joint.Name() +
-              "] w.r.t. its parent link [" + _joint.ParentLinkName() + "].")));
+              "] w.r.t. its parent link [" + _joint.ParentName() + "].")));
         for (const auto &e : poseResolutionErrors)
           errors.push_back(UsdError(e));
         return errors;
@@ -105,13 +105,13 @@ namespace usd
 
     gz::math::Pose3d childToJoint;
     auto poseResolutionErrors = _joint.SemanticPose().Resolve(childToJoint,
-        _joint.ChildLinkName());
+        _joint.ChildName());
     if (!poseResolutionErrors.empty())
     {
       errors.push_back(UsdError(
           sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_INVALID,
             "Unable to get the pose of joint [" + _joint.Name() +
-            "] w.r.t. its child [" + _joint.ChildLinkName() + "].")));
+            "] w.r.t. its child [" + _joint.ChildName() + "].")));
       for (const auto &e : poseResolutionErrors)
         errors.push_back(UsdError(e));
       return errors;
@@ -318,24 +318,24 @@ namespace usd
     // the joint's parent may be "world". If this is the case, the joint's
     // parent should be set to the world prim, not a link
     auto parentLinkPath = _worldPath;
-    if (_joint.ParentLinkName() != "world")
+    if (_joint.ParentName() != "world")
     {
-      const auto it = _linkToUsdPath.find(_joint.ParentLinkName());
+      const auto it = _linkToUsdPath.find(_joint.ParentName());
       if (it == _linkToUsdPath.end())
       {
         errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
-              "Unable to find a USD path for link [" + _joint.ParentLinkName() +
+              "Unable to find a USD path for link [" + _joint.ParentName() +
               "], which is the parent link of joint [" + _joint.Name() + "]."));
         return errors;
       }
       parentLinkPath = it->second;
     }
 
-    const auto it = _linkToUsdPath.find(_joint.ChildLinkName());
+    const auto it = _linkToUsdPath.find(_joint.ChildName());
     if (it == _linkToUsdPath.end())
     {
       errors.push_back(UsdError(sdf::usd::UsdErrorCode::INVALID_PRIM_PATH,
-            "Unable to find a USD path for link [" + _joint.ParentLinkName() +
+            "Unable to find a USD path for link [" + _joint.ParentName() +
             "], which is the child link of joint [" + _joint.Name() + "]."));
       return errors;
     }

@@ -66,24 +66,24 @@ namespace sdf
 
       if (body1.size() > 0)
       {
-        _joint.SetChildLinkName(gz::common::basename(
+        _joint.SetChildName(gz::common::basename(
           body1[0].GetString()));
       }
       else if (body0.size() > 0)
       {
-        _joint.SetParentLinkName("world");
-        _joint.SetChildLinkName(gz::common::basename(
+        _joint.SetParentName("world");
+        _joint.SetChildName(gz::common::basename(
           body0[0].GetString()));
       }
 
-      if (body0.size() > 0 && _joint.ParentLinkName().empty())
+      if (body0.size() > 0 && _joint.ParentName().empty())
       {
-        _joint.SetParentLinkName(gz::common::basename(
+        _joint.SetParentName(gz::common::basename(
           body0[0].GetString()));
       }
       else
       {
-        _joint.SetParentLinkName("world");
+        _joint.SetParentName("world");
       }
 
       std::string primName = _prim.GetName();
@@ -112,7 +112,7 @@ namespace sdf
       if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>() ||
           _prim.IsA<pxr::UsdPhysicsRevoluteJoint>())
       {
-        _joint.SetPoseRelativeTo(_joint.ParentLinkName());
+        _joint.SetPoseRelativeTo(_joint.ParentName());
 
         pxr::TfToken axis;
         if (_prim.IsA<pxr::UsdPhysicsPrismaticJoint>())
