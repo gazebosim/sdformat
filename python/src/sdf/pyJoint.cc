@@ -36,6 +36,7 @@ namespace python
 void defineJoint(pybind11::object module)
 {
   pybind11::class_<sdf::Joint> jointModule(module, "Joint");
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   jointModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Joint>())
@@ -55,7 +56,6 @@ void defineJoint(pybind11::object module)
          "Get the name of this joint's child frame.")
     .def("set_child_name", &sdf::Joint::SetChildName,
          "Set the name of the child frame.")
-    GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
     .def("parent_link_name", &sdf::Joint::ParentLinkName,
          "Get the name of this joint's parent link.")
     .def("set_parent_link_name", &sdf::Joint::SetParentLinkName,
@@ -64,7 +64,6 @@ void defineJoint(pybind11::object module)
          "Get the name of this joint's child link.")
     .def("set_child_link_name", &sdf::Joint::SetChildLinkName,
          "Set the name of the child link")
-    GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
     .def("resolve_child_link",
          [](const sdf::Joint &self)
          {
@@ -148,6 +147,7 @@ void defineJoint(pybind11::object module)
       .value("REVOLUTE2", sdf::JointType::REVOLUTE2)
       .value("SCREW", sdf::JointType::SCREW)
       .value("UNIVERSAL", sdf::JointType::UNIVERSAL);
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
