@@ -48,7 +48,7 @@
     </element>
 
     <element name="cubemap_uri" type="string" default="" required="0">
-      <description>Skybox texture uri</description>
+      <description>The URI to a cubemap texture for a skybox. A .dds file is typically used for the cubemap.</description>
     </element>
   </element>
 
