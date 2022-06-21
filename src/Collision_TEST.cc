@@ -184,6 +184,11 @@ TEST(DOMCollision, ToElement)
   sdf::Contact contact;
   contact.SetCollideBitmask(123u);
   surface.SetContact(contact);
+  sdf::Friction friction;
+  sdf::ODE ode;
+  ode.SetMu(1.23);
+  friction.SetODE(ode);
+  surface.SetFriction(friction);
   collision.SetSurface(surface);
 
   sdf::ElementPtr elem = collision.ToElement();
@@ -199,4 +204,7 @@ TEST(DOMCollision, ToElement)
   ASSERT_NE(nullptr, surface2);
   ASSERT_NE(nullptr, surface2->Contact());
   EXPECT_EQ(123u, surface2->Contact()->CollideBitmask());
+  ASSERT_NE(nullptr, surface2->Friction());
+  ASSERT_NE(nullptr, surface2->Friction()->ODE());
+  EXPECT_DOUBLE_EQ(1.23, surface2->Friction()->ODE()->Mu());
 }

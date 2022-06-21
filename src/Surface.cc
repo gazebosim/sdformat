@@ -399,5 +399,9 @@ sdf::ElementPtr Surface::ToElement() const
   contactElem->GetElement("collide_bitmask")->Set(
       this->dataPtr->contact.CollideBitmask());
 
+  sdf::ElementPtr frictionElem = elem->GetElement("friction");
+  frictionElem->GetElement("ode")->GetElement("mu")->Set(
+      this->dataPtr->friction.ODE()->Mu());
+
   return elem;
 }
