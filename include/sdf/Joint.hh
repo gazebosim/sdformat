@@ -113,21 +113,41 @@ namespace sdf
     /// \param[in] _jointType The type of joint.
     public: void SetType(const JointType _jointType);
 
+    /// \brief Get the name of this joint's parent frame.
+    /// \return The name of the parent frame.
+    public: const std::string &ParentName() const;
+
+    /// \brief Set the name of the parent frame.
+    /// \param[in] _name Name of the parent frame.
+    public: void SetParentName(const std::string &_name);
+
+    /// \brief Get the name of this joint's child frame.
+    /// \return The name of the child frame.
+    public: const std::string &ChildName() const;
+
+    /// \brief Set the name of the child frame.
+    /// \param[in] _name Name of the child frame.
+    public: void SetChildName(const std::string &_name);
+
     /// \brief Get the name of this joint's parent link.
     /// \return The name of the parent link.
-    public: const std::string &ParentLinkName() const;
+    /// \deprecated Use ParentName.
+    public: GZ_DEPRECATED(13) const std::string &ParentLinkName() const;
 
     /// \brief Set the name of the parent link.
     /// \param[in] _name Name of the parent link.
-    public: void SetParentLinkName(const std::string &_name);
+    /// \deprecated Use SetParentName.
+    public: GZ_DEPRECATED(13) void SetParentLinkName(const std::string &_name);
 
     /// \brief Get the name of this joint's child link.
     /// \return The name of the child link.
-    public: const std::string &ChildLinkName() const;
+    /// \deprecated Use ChildName.
+    public: GZ_DEPRECATED(13) const std::string &ChildLinkName() const;
 
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
-    public: void SetChildLinkName(const std::string &_name);
+    /// \deprecated Use SetChildName.
+    public: GZ_DEPRECATED(13) void SetChildLinkName(const std::string &_name);
 
     /// \brief Resolve the name of the child link from the
     /// FrameAttachedToGraph.

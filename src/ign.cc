@@ -58,7 +58,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
-  if (!sdf::checkJointParentChildLinkNames(&root))
+  if (!sdf::checkJointParentChildNames(&root))
   {
     result = -1;
   }
