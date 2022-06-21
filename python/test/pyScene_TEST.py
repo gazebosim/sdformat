@@ -18,7 +18,7 @@ from sdformat import Scene, Sky
 import unittest
 
 
-class RootTEST(unittest.TestCase):
+class SceneTEST(unittest.TestCase):
 
     def test_default_construction(self):
         scene = Scene()
@@ -89,8 +89,8 @@ class RootTEST(unittest.TestCase):
         scene.set_ambient(Color(0.1, 0.2, 0.3))
         self.assertEqual(Color(0.1, 0.2, 0.3), scene.ambient())
 
-        scene.set_background(Color(0.1, 0.2, 0.3))
-        self.assertEqual(Color(0.1, 0.2, 0.3), scene.ambient())
+        scene.set_background(Color(0.2, 0.3, 0.4))
+        self.assertEqual(Color(0.2, 0.3, 0.4), scene.background())
 
         scene.set_grid(True)
         self.assertTrue(scene.grid())
