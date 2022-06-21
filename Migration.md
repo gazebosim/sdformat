@@ -14,6 +14,12 @@ but with improved human-readability..
 
 ## libsdformat 12.x to 13.x
 
+### Modifications
+
+- The `eigen3` component of `gz-math` is now required and exported as a
+  target dependency of the core library so that Eigen types may be used
+  in the libsdformat API.
+
 ### Deprecations
 
 - The `ignition` namespace is deprecated and will be removed in future versions.

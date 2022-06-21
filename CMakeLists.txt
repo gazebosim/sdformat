@@ -111,7 +111,7 @@ if (BUILD_SDF)
   ########################################
   # Find ignition math
   # Set a variable for generating ProjectConfig.cmake
-  gz_find_package(ignition-math7 VERSION REQUIRED)
+  gz_find_package(ignition-math7 REQUIRED COMPONENTS eigen3)
   set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
 
   ########################################

@@ -1,6 +1,6 @@
 libignition-cmake3-dev
 libignition-common5-dev
-libignition-math7-dev
+libignition-math7-eigen3-dev
 libignition-tools2-dev
 libignition-utils2-dev
 libignition-utils2-cli-dev
