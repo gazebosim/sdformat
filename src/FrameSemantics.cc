@@ -383,7 +383,7 @@ struct JointWrapper : public WrapperBase
       : WrapperBase{_joint.Name(), "Joint", FrameType::JOINT},
         rawPose(_joint.RawPose()),
         rawRelativeTo(_joint.PoseRelativeTo()),
-        childName(_joint.ChildLinkName()),
+        childName(_joint.ChildName()),
         relativeTo(rawRelativeTo.empty() ? childName : rawRelativeTo)
   {
   }

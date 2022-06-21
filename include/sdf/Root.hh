@@ -189,7 +189,7 @@ namespace sdf
     /// \brief Deep copy this Root object and return the new Root object.
     /// \return A clone of this Root object.
     /// Deprecate this function in SDF version 13, and use
-    /// IGN_UTILS_IMPL_PTR instead.
+    /// GZ_UTILS_IMPL_PTR instead.
     public: sdf::Root Clone() const;
 
     /// \brief Recreate the frame and pose graphs for the worlds and model
@@ -210,7 +210,7 @@ namespace sdf
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Private data pointer
-    IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+    GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr)
   };
   }
 }

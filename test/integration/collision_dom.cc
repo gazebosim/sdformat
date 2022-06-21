@@ -225,11 +225,11 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
       model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 3, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
       linkC->CollisionByName("F3")->
           SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(16, 3, 3, 0, GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
       model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
@@ -256,17 +256,17 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
     linkC->CollisionByName("P")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->CollisionByName("P")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     linkC->CollisionByName("J")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->CollisionByName("J")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     linkC->CollisionByName("F3")->SemanticPose().Resolve(pose, "C").empty());
@@ -277,8 +277,8 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
     linkC->CollisionByName("F4")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->CollisionByName("F4")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -GZ_PI/2, 0), pose);
 }

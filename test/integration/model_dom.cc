@@ -368,11 +368,11 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   EXPECT_TRUE(model->ModelByName("M2")->PoseRelativeTo().empty());
   EXPECT_EQ("M1", model->ModelByName("M3")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->ModelByName("M1")->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), model->ModelByName("M1")->RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->ModelByName("M2")->RawPose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->ModelByName("M3")->RawPose());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI / 2, 0),
             model->ModelByName("M1")->SemanticPose().RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
             model->ModelByName("M2")->SemanticPose().RawPose());
@@ -385,7 +385,7 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   EXPECT_TRUE(
     model->ModelByName("M1")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->ModelByName("M2")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
@@ -393,14 +393,14 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   EXPECT_TRUE(
     model->ModelByName("M3")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, -3, 0, GZ_PI/2, 0), pose);
   // test other API too
   EXPECT_TRUE(model->ModelByName("M1")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(model->ModelByName("M2")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->ModelByName("M3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, -3, 0, GZ_PI/2, 0), pose);
 
   // resolve pose of M1 relative to M3
   // should be inverse of M3's Pose()

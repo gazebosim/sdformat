@@ -41,8 +41,8 @@ TEST(DOMLight, DefaultConstruction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  light.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), light.RawPose());
+  light.SetRawPose({1, 2, 3, 0, 0, GZ_PI});
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, GZ_PI), light.RawPose());
 
   light.SetPoseRelativeTo("world");
   EXPECT_EQ("world", light.PoseRelativeTo());
@@ -118,7 +118,7 @@ TEST(DOMLight, CopyConstructor)
   sdf::Light light;
   light.SetName("test_copy_light");
   light.SetType(sdf::LightType::DIRECTIONAL);
-  light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  light.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetLightOn(false);
@@ -138,7 +138,7 @@ TEST(DOMLight, CopyConstructor)
   sdf::Light light2(light);
   EXPECT_EQ("test_copy_light", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, GZ_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
@@ -162,7 +162,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   sdf::Light light;
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::DIRECTIONAL);
-  light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  light.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetLightOn(false);
@@ -183,7 +183,7 @@ TEST(DOMLight, CopyAssignmentOperator)
   light2 = light;
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, GZ_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
@@ -207,7 +207,7 @@ TEST(DOMLight, MoveConstructor)
   sdf::Light light;
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::DIRECTIONAL);
-  light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  light.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetLightOn(false);
@@ -227,7 +227,7 @@ TEST(DOMLight, MoveConstructor)
   sdf::Light light2(std::move(light));
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, GZ_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
@@ -251,7 +251,7 @@ TEST(DOMLight, MoveAssignment)
   sdf::Light light;
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::DIRECTIONAL);
-  light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  light.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetLightOn(false);
@@ -272,7 +272,7 @@ TEST(DOMLight, MoveAssignment)
   light2 = std::move(light);
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::DIRECTIONAL, light2.Type());
-  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, GZ_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_FALSE(light2.LightOn());
@@ -351,7 +351,7 @@ TEST(DOMLight, ToElement)
   sdf::Light light;
   light.SetName("test_light_assignment");
   light.SetType(sdf::LightType::SPOT);
-  light.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  light.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   light.SetPoseRelativeTo("ground_plane");
   light.SetCastShadows(true);
   light.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 1.0));
@@ -377,7 +377,7 @@ TEST(DOMLight, ToElement)
   EXPECT_NE(nullptr, light2.Element());
   EXPECT_EQ("test_light_assignment", light2.Name());
   EXPECT_EQ(sdf::LightType::SPOT, light2.Type());
-  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, IGN_PI, 0), light2.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(3, 2, 1, 0, GZ_PI, 0), light2.RawPose());
   EXPECT_EQ("ground_plane", light2.PoseRelativeTo());
   EXPECT_TRUE(light2.CastShadows());
   EXPECT_EQ(gz::math::Color(0.4f, 0.5f, 0.6f, 1), light2.Diffuse());

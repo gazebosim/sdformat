@@ -215,8 +215,8 @@ class UsdJointStageFixture : public::testing::Test
   {
     if (_convertToDeg)
     {
-      _targetLower = IGN_RTOD(_targetLower);
-      _targetUpper = IGN_RTOD(_targetUpper);
+      _targetLower = GZ_RTOD(_targetLower);
+      _targetUpper = GZ_RTOD(_targetUpper);
     }
 
     float usdLowerLimit;
@@ -274,19 +274,19 @@ TEST_F(UsdJointStageFixture, RevoluteJoints)
 
     // make sure joint is pointing to the proper parent/child links
     this->CheckParentLinkPath(&usdRevoluteJoint,
-        this->modelPath + "/" + sdfJoint->ParentLinkName());
+        this->modelPath + "/" + sdfJoint->ParentName());
     this->CheckChildLinkPath(&usdRevoluteJoint,
-        this->modelPath + "/" + sdfJoint->ChildLinkName());
+        this->modelPath + "/" + sdfJoint->ChildName());
 
     // check joint's pose w.r.t. parent and child links
     gz::math::Pose3d parentToJointPose;
     auto poseErrors = sdfJoint->SemanticPose().Resolve(parentToJointPose,
-          sdfJoint->ParentLinkName());
+          sdfJoint->ParentName());
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
     gz::math::Pose3d childToJointPose;
     poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
-          sdfJoint->ChildLinkName());
+          sdfJoint->ChildName());
     EXPECT_TRUE(poseErrors.empty());
     this->CheckRelativeLinkPoses(&usdRevoluteJoint, parentToJointPose,
         childToJointPose);
@@ -368,7 +368,7 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
     // The parent in this test should be the world
     this->CheckParentLinkPath(&usdFixedJoint, this->worldPath.GetString());
     this->CheckChildLinkPath(&usdFixedJoint,
-        this->modelPath + "/" + sdfJoint->ChildLinkName());
+        this->modelPath + "/" + sdfJoint->ChildName());
 
     // check joint's pose w.r.t. parent and child links. For this test case,
     // we need to get the joint pose w.r.t. the world
@@ -383,7 +383,7 @@ TEST_F(UsdJointStageFixture, JointParentIsWorld)
     poseErrors.clear();
     gz::math::Pose3d childToJointPose;
     poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
-          sdfJoint->ChildLinkName());
+          sdfJoint->ChildName());
     EXPECT_TRUE(poseErrors.empty());
     this->CheckRelativeLinkPoses(&usdFixedJoint, worldToJointPose,
         childToJointPose);
@@ -449,19 +449,19 @@ TEST_F(UsdJointStageFixture, BallPrismaticJoint)
 
     // make sure joint is pointing to the proper parent/child links
     this->CheckParentLinkPath(&usdJoint,
-        this->modelPath + "/" + sdfJoint->ParentLinkName());
+        this->modelPath + "/" + sdfJoint->ParentName());
     this->CheckChildLinkPath(&usdJoint,
-        this->modelPath + "/" + sdfJoint->ChildLinkName());
+        this->modelPath + "/" + sdfJoint->ChildName());
 
     // check joint's pose w.r.t. parent and child links
     gz::math::Pose3d parentToJointPose;
     auto poseErrors = sdfJoint->SemanticPose().Resolve(parentToJointPose,
-          sdfJoint->ParentLinkName());
+          sdfJoint->ParentName());
     EXPECT_TRUE(poseErrors.empty());
     poseErrors.clear();
     gz::math::Pose3d childToJointPose;
     poseErrors = sdfJoint->SemanticPose().Resolve(childToJointPose,
-          sdfJoint->ChildLinkName());
+          sdfJoint->ChildName());
     EXPECT_TRUE(poseErrors.empty());
     this->CheckRelativeLinkPoses(&usdJoint, parentToJointPose,
         childToJointPose);
