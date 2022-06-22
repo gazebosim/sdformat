@@ -539,7 +539,7 @@ namespace sdf
     friend struct ModelWrapper;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

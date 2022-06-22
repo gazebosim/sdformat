@@ -67,7 +67,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(version_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(version_cmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string output =
     custom_exec_str(usd2sdfCommand() + " --version");
@@ -75,7 +75,7 @@ TEST(version_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_cmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto tmp = gz::common::createTempDirectory("usd",
       gz::common::tempDirectoryPath());
