@@ -35,7 +35,7 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
-#include "ign.hh"
+#include "gz.hh"
 
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)

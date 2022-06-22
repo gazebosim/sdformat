@@ -1353,7 +1353,7 @@ bool Param::Reparse(sdf::Errors &_errors)
     strToReparse = this->dataPtr->strValue.value();
   }
   // A default PrintConfig can be used here, as Reparse() is not called in the
-  // code path from the 'ign sdf -p' command.
+  // code path from the 'gz sdf -p' command.
   else if (!this->dataPtr->StringFromValueImpl(PrintConfig(),
                                                this->dataPtr->typeName,
                                                this->dataPtr->defaultValue,

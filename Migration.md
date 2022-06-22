@@ -633,7 +633,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
       Uniqueness is forced so that referencing implicit frames is not ambiguous,
       e.g. you cannot have a link and joint share an implicit frame name.
       Some existing SDFormat models may not comply with this requirement.
-      The `ign sdf --check` command can be used to identify models that violate
+      The `gz sdf --check` command can be used to identify models that violate
       this requirement.
     + [BitBucket pull request 600](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/600)
 
