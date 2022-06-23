@@ -125,7 +125,7 @@ Errors Plugin::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-std::string Plugin::Name() const
+const std::string &Plugin::Name() const
 {
   return this->dataPtr->name;
 }
@@ -137,7 +137,7 @@ void Plugin::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-std::string Plugin::Filename() const
+const std::string &Plugin::Filename() const
 {
   return this->dataPtr->filename;
 }
