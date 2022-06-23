@@ -160,8 +160,10 @@ sdf::ElementPtr Plugin::ToElement() const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("plugin.sdf", elem);
 
-  elem->GetAttribute("name")->Set(this->Name());
-  elem->GetAttribute("filename")->Set(this->Filename());
+  if (!this->dataPtr->name.empty())
+    elem->GetAttribute("name")->Set(this->dataPtr->name);
+  if (!this->dataPtr->filename.empty())
+    elem->GetAttribute("filename")->Set(this->dataPtr->filename);
 
   // Insert plugin content
   for (const sdf::ElementPtr content : this->dataPtr->contents)
