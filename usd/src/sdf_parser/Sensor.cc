@@ -82,7 +82,7 @@ namespace usd
     else
     {
       // The default value in USD is 50, but something more
-      // similar to ignition Gazebo is 40.
+      // similar to Gazebo Sim is 40.
       usdCamera.CreateFocalLengthAttr().Set(
           static_cast<float>(40.0f));
     }
@@ -230,7 +230,7 @@ namespace usd
         // Camera sensors are upAxis equal to "Y", we need to rotate the camera
         // properly.
         const gz::math::Pose3d poseCamera(
-          0, 0, 0, IGN_PI_2, 0, -IGN_PI_2);
+          0, 0, 0, GZ_PI_2, 0, -GZ_PI_2);
         usd::SetPose(
           pose * poseCamera, _stage, sdfSensorPath);
       }

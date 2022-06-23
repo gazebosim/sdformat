@@ -26,8 +26,8 @@ class JointTEST(unittest.TestCase):
         joint = Joint()
         self.assertFalse(joint.name())
         self.assertEqual(sdf.JointType.INVALID, joint.type())
-        self.assertFalse(joint.parent_link_name())
-        self.assertFalse(joint.child_link_name())
+        self.assertFalse(joint.parent_name())
+        self.assertFalse(joint.child_name())
         self.assertEqual(Pose3d.ZERO, joint.raw_pose())
         self.assertFalse(joint.pose_relative_to())
 
@@ -55,11 +55,11 @@ class JointTEST(unittest.TestCase):
         joint.set_name("test_joint")
         self.assertEqual("test_joint", joint.name())
 
-        joint.set_parent_link_name("parent")
-        self.assertEqual("parent", joint.parent_link_name())
+        joint.set_parent_name("parent")
+        self.assertEqual("parent", joint.parent_name())
 
-        joint.set_child_link_name("child")
-        self.assertEqual("child", joint.child_link_name())
+        joint.set_child_name("child")
+        self.assertEqual("child", joint.child_name())
 
         errors, resolveChildLink = joint.resolve_child_link()
         self.assertEqual(1, len(errors))

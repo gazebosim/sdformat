@@ -125,7 +125,7 @@ namespace sdf
       private: void close_handle();
 
       /// \brief Private data.
-      IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+      GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr)
     };
   }
   }

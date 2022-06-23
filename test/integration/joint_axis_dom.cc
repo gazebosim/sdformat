@@ -147,9 +147,9 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
   EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->RawPose());
-  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->RawPose());
-  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("P1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -GZ_PI/2, 0), model->LinkByName("C1")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("P2")->RawPose());
   EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
@@ -194,11 +194,11 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_TRUE(
       model->JointByName("J1")->
           SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Quaternion(0, -IGN_PI/2, 0), pose.Rot());
+  EXPECT_EQ(Quaternion(0, -GZ_PI/2, 0), pose.Rot());
   EXPECT_TRUE(
       model->JointByName("J2")->
           SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Quaternion(0, IGN_PI/2, 0), pose.Rot());
+  EXPECT_EQ(Quaternion(0, GZ_PI/2, 0), pose.Rot());
 
   // Resolve joint axis xyz values in __model__ and child link frames
   EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "__model__").empty());

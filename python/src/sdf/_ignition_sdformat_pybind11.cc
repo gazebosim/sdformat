@@ -47,6 +47,7 @@
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyRoot.hh"
+#include "pyScene.hh"
 #include "pySemanticPose.hh"
 #include "pySensor.hh"
 #include "pySky.hh"
@@ -95,6 +96,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::definePlane(m);
   sdf::python::definePlugin(m);
   sdf::python::defineRoot(m);
+  sdf::python::defineScene(m);
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSensor(m);
   sdf::python::defineSky(m);

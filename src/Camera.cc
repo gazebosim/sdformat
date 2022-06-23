@@ -164,7 +164,7 @@ class sdf::Camera::Implementation
   public: std::string lensFun{"tan"};
 
   /// \brief Lens cutoff angle.
-  public: gz::math::Angle lensCutoffAngle{IGN_PI_2};
+  public: gz::math::Angle lensCutoffAngle{GZ_PI_2};
 
   /// \brief lens environment texture size.
   public: int lensEnvTextureSize{256};

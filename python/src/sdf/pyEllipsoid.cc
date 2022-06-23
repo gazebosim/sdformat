@@ -41,7 +41,7 @@ void defineEllipsoid(pybind11::object module)
         "shape",
         pybind11::overload_cast<>(&sdf::Ellipsoid::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Ignition Math representation of this Ellipsoid.")
+        "Get a mutable Gazebo Math representation of this Ellipsoid.")
     .def("__copy__", [](const sdf::Ellipsoid &self) {
       return sdf::Ellipsoid(self);
     })

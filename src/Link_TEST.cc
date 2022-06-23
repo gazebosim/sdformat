@@ -78,8 +78,8 @@ TEST(DOMLink, Construction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  link.SetRawPose({10, 20, 30, 0, IGN_PI, 0});
-  EXPECT_EQ(gz::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.RawPose());
+  link.SetRawPose({10, 20, 30, 0, GZ_PI, 0});
+  EXPECT_EQ(gz::math::Pose3d(10, 20, 30, 0, GZ_PI, 0), link.RawPose());
 
   link.SetPoseRelativeTo("model");
   EXPECT_EQ("model", link.PoseRelativeTo());

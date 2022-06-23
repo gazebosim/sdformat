@@ -246,14 +246,14 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_EQ(gz::math::Pose3d(1, 0, 1, 0, 0, 0), pose);
 
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "C").empty());
-  EXPECT_EQ(gz::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(2, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F2").empty());
-  EXPECT_EQ(gz::math::Pose3d(4, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(4, 0, 0, 0, GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "J").empty());
   EXPECT_EQ(gz::math::Pose3d(2, 3, 0, 0, 0, 0), pose);
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F3").empty());
-  EXPECT_EQ(gz::math::Pose3d(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(2, 3, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePoseRelativeToRoot(pose, graph, "F4").empty());
   EXPECT_EQ(gz::math::Pose3d(6, 3, 3, 0, 0, 0), pose);
 
@@ -262,18 +262,18 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "P", "__model__").empty());
   EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "C", "__model__").empty());
-  EXPECT_EQ(gz::math::Pose3d(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(2, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "J", "C").empty());
-  EXPECT_EQ(gz::math::Pose3d(0, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(0, 3, 0, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "F1", "P").empty());
   EXPECT_EQ(gz::math::Pose3d(0, 0, 1, 0, 0, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "F2", "C").empty());
   EXPECT_EQ(gz::math::Pose3d(0, 0, 2, 0, 0, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "F3", "J").empty());
-  EXPECT_EQ(gz::math::Pose3d(0, 0, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(sdf::resolvePose(pose, graph, "F4", "F3").empty());
-  EXPECT_EQ(gz::math::Pose3d(0, 0, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 4, 0, -GZ_PI/2, 0), pose);
 
   // Try to resolve invalid frame names
   errors = sdf::resolvePose(pose, graph, "invalid", "__model__");

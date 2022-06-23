@@ -24,7 +24,7 @@ TEST(DOMCapsule, Construction)
   sdf::Capsule capsule;
   EXPECT_EQ(nullptr, capsule.Element());
   // A default capsule has a length of 1 meter and radius if 0.5 meters.
-  EXPECT_DOUBLE_EQ(IGN_PI * std::pow(0.5, 2) * (1.0 + 4./3. * 0.5),
+  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.5, 2) * (1.0 + 4./3. * 0.5),
                    capsule.Shape().Volume());
 
   EXPECT_DOUBLE_EQ(0.5, capsule.Radius());
@@ -43,14 +43,14 @@ TEST(DOMCapsule, MoveConstructor)
   sdf::Capsule capsule;
   capsule.SetRadius(0.2);
   capsule.SetLength(3.0);
-  EXPECT_DOUBLE_EQ(IGN_PI * std::pow(0.2, 2) * (3.0 + 4./3. * 0.2),
+  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.2, 2) * (3.0 + 4./3. * 0.2),
                    capsule.Shape().Volume());
 
   sdf::Capsule capsule2(std::move(capsule));
   EXPECT_DOUBLE_EQ(0.2, capsule2.Radius());
   EXPECT_DOUBLE_EQ(3.0, capsule2.Length());
 
-  EXPECT_DOUBLE_EQ(IGN_PI * std::pow(0.2, 2) * (3.0 + 4./3. * 0.2),
+  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.2, 2) * (3.0 + 4./3. * 0.2),
                    capsule2.Shape().Volume());
   EXPECT_DOUBLE_EQ(0.2, capsule2.Shape().Radius());
   EXPECT_DOUBLE_EQ(3.0, capsule2.Shape().Length());

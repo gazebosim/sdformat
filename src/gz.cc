@@ -35,7 +35,7 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
-#include "ign.hh"
+#include "gz.hh"
 
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
@@ -58,7 +58,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
-  if (!sdf::checkJointParentChildLinkNames(&root))
+  if (!sdf::checkJointParentChildNames(&root))
   {
     result = -1;
   }
@@ -106,7 +106,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
+extern "C" SDFORMAT_VISIBLE char *gzVersion()
 {
 #ifdef _MSC_VER
   return _strdup(SDF_VERSION_FULL);

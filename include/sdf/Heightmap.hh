@@ -72,7 +72,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Blend information to be used between textures on heightmaps.
@@ -111,7 +111,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Heightmap represents a shape defined by a 2D field, and is usually
@@ -222,7 +222,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

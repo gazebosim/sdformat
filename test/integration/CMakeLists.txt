@@ -67,10 +67,10 @@ find_program(XMLLINT_EXE xmllint)
 if (EXISTS ${XMLLINT_EXE})
   set (tests ${tests} schema_test.cc)
 else()
-  ign_build_warning("xmllint not found. schema_test won't be run")
+  gz_build_warning("xmllint not found. schema_test won't be run")
 endif()
 
-ign_build_tests(TYPE ${TEST_TYPE} SOURCES ${tests} INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test)
+gz_build_tests(TYPE ${TEST_TYPE} SOURCES ${tests} INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test)
 
 if (EXISTS ${XMLLINT_EXE})
   # Need to run schema target (build .xsd files) before running schema_test

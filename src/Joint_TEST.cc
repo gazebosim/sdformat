@@ -27,8 +27,14 @@ TEST(DOMJoint, Construction)
   sdf::Joint joint;
   EXPECT_TRUE(joint.Name().empty());
   EXPECT_EQ(sdf::JointType::INVALID, joint.Type());
+
+  EXPECT_TRUE(joint.ParentName().empty());
+  EXPECT_TRUE(joint.ChildName().empty());
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_TRUE(joint.ParentLinkName().empty());
   EXPECT_TRUE(joint.ChildLinkName().empty());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+
   EXPECT_EQ(gz::math::Pose3d::Zero, joint.RawPose());
   EXPECT_TRUE(joint.PoseRelativeTo().empty());
   EXPECT_EQ(nullptr, joint.Element());
@@ -41,8 +47,8 @@ TEST(DOMJoint, Construction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  joint.SetRawPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
-  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
+  joint.SetRawPose({-1, -2, -3, GZ_PI, GZ_PI, 0});
+  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, GZ_PI, GZ_PI, 0),
             joint.RawPose());
 
   joint.SetPoseRelativeTo("link");
@@ -59,11 +65,23 @@ TEST(DOMJoint, Construction)
   joint.SetName("test_joint");
   EXPECT_EQ("test_joint", joint.Name());
 
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   joint.SetParentLinkName("parent");
   EXPECT_EQ("parent", joint.ParentLinkName());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+  EXPECT_EQ("parent", joint.ParentName());
 
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   joint.SetChildLinkName("child");
   EXPECT_EQ("child", joint.ChildLinkName());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+  EXPECT_EQ("child", joint.ChildName());
+
+  joint.SetParentName("parent2");
+  EXPECT_EQ("parent2", joint.ParentName());
+
+  joint.SetChildName("child2");
+  EXPECT_EQ("child2", joint.ChildName());
 
   std::string body;
   EXPECT_FALSE(joint.ResolveChildLink(body).empty());
@@ -257,11 +275,11 @@ TEST(DOMJoint, ToElement)
 {
   // test calling ToElement on a DOM object constructed without calling Load
   sdf::Joint joint;
-  joint.SetRawPose({-1, -2, -3, 0, IGN_PI, 0});
+  joint.SetRawPose({-1, -2, -3, 0, GZ_PI, 0});
   joint.SetPoseRelativeTo("link");
   joint.SetName("test_joint");
-  joint.SetParentLinkName("parent");
-  joint.SetChildLinkName("child");
+  joint.SetParentName("parent");
+  joint.SetChildName("child");
   joint.SetType(sdf::JointType::BALL);
   sdf::JointAxis axis;
   EXPECT_TRUE(axis.SetXyz(gz::math::Vector3d(1, 0, 0)).empty());
@@ -291,12 +309,12 @@ TEST(DOMJoint, ToElement)
   sdf::Joint joint2;
   joint2.Load(jointElem);
 
-  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, 0, IGN_PI, 0),
+  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, 0, GZ_PI, 0),
             joint2.RawPose());
   EXPECT_EQ("link", joint2.PoseRelativeTo());
   EXPECT_EQ("test_joint", joint2.Name());
-  EXPECT_EQ("parent", joint2.ParentLinkName());
-  EXPECT_EQ("child", joint2.ChildLinkName());
+  EXPECT_EQ("parent", joint2.ParentName());
+  EXPECT_EQ("child", joint2.ChildName());
   EXPECT_EQ(sdf::JointType::BALL, joint2.Type());
   ASSERT_TRUE(nullptr != joint2.Axis(0));
   ASSERT_TRUE(nullptr != joint2.Axis(1));
@@ -308,12 +326,12 @@ TEST(DOMJoint, ToElement)
     EXPECT_NE(nullptr, joint.SensorByIndex(i));
 
   // make changes to DOM and verify ToElement produces updated values
-  joint2.SetParentLinkName("new_parent");
+  joint2.SetParentName("new_parent");
   sdf::ElementPtr joint2Elem = joint2.ToElement();
   EXPECT_NE(nullptr, joint2Elem);
   sdf::Joint joint3;
   joint3.Load(joint2Elem);
-  EXPECT_EQ("new_parent", joint3.ParentLinkName());
+  EXPECT_EQ("new_parent", joint3.ParentName());
 }
 
 /////////////////////////////////////////////////

@@ -61,7 +61,7 @@ namespace sdf
       public: const std::set<std::string> &USDPaths() const;
 
       /// \brief Private data pointer.
-      IGN_UTILS_IMPL_PTR(dataPtr)
+      GZ_UTILS_IMPL_PTR(dataPtr)
     };
   }
   }
