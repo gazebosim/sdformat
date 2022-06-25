@@ -36,7 +36,7 @@ COMMON_OPTIONS =
                '  --versions                        Show the available versions.'
 COMMANDS = {  'sdf' =>
                        "Utilities for SDF files.\n\n"\
-                       "  ign sdf [options]\n\n"\
+                       "  gz sdf [options]\n\n"\
                        "Options:\n\n"\
                        "  -k [ --check ] arg                Check if an SDFormat file is valid.\n" +
                        "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
@@ -251,7 +251,7 @@ class Cmd
         end
       else
         puts 'Command error: I do not have an implementation for '\
-             "command [ign #{options['command']}]."
+             "command [gz #{options['command']}]."
       end
     rescue
       puts "Library error: Problem running [#{options['command']}]() "\

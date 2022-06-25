@@ -64,8 +64,8 @@ if (BUILD_SDF)
   endif()
 
   #################################################
-  # Find ign command line utility:
-  find_program(GZ_PROGRAM ign)
+  # Find gz command line utility:
+  find_program(GZ_PROGRAM gz)
 
   #################################################
   # Copied from catkin/cmake/empy.cmake

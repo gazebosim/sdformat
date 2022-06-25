@@ -568,8 +568,8 @@ TEST(SDFDomConversion, Joints)
   EXPECT_EQ("joint", joint->Name());
   EXPECT_EQ(1u, joint->SensorCount());
 
-  EXPECT_EQ("link1", joint->ParentLinkName());
-  EXPECT_EQ("link2", joint->ChildLinkName());
+  EXPECT_EQ("link1", joint->ParentName());
+  EXPECT_EQ("link2", joint->ChildName());
   EXPECT_EQ(sdf::JointType::FIXED, joint->Type());
 
   // Get the force_torque sensor

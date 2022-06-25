@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,29 +12,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
-*/
+ */
 
-#ifndef SDF_IGN_HH_
-#define SDF_IGN_HH_
+#ifndef SDFORMAT_PYTHON_SCENE_HH_
+#define SDFORMAT_PYTHON_SCENE_HH_
 
-#include <cstring>
+#include <pybind11/pybind11.h>
 
-#include <sdf/sdf_config.h>
-#include "sdf/system_util.hh"
+#include "sdf/Scene.hh"
 
+#include "sdf/config.hh"
+
+namespace sdf
+{
 // Inline bracket to help doxygen filtering.
 inline namespace SDF_VERSION_NAMESPACE {
-//
+namespace python
+{
+/// Define a pybind11 wrapper for an sdf::Scene
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineScene(pybind11::object module);
+}  // namespace python
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
 
-/// \brief External hook to execute 'ign sdf -k' from the command line.
-/// \param[in] _path Path to the file to validate.
-/// \return Zero on success, negative one otherwise.
-extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path);
-
-/// \brief External hook to read the library version.
-/// \return C-string representing the version. Ex.: 0.1.2
-extern "C" SDFORMAT_VISIBLE char *gzVersion();
-}
-
-#endif
+#endif  // SDFORMAT_PYTHON_SCENE_HH_

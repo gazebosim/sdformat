@@ -30,7 +30,7 @@ endif()
 if (BUILD_TESTING)
   # Build this test file only if Ignition Tools is installed.
   if (NOT GZ_PROGRAM)
-    list(REMOVE_ITEM gtest_sources ign_TEST.cc)
+    list(REMOVE_ITEM gtest_sources gz_TEST.cc)
   endif()
 
   # Skip tests that don't work on Windows
