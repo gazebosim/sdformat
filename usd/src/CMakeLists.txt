@@ -35,8 +35,8 @@ target_include_directories(${usd_target}
 
 target_link_libraries(${usd_target}
   PUBLIC
-    ignition-common${IGN_COMMON_VER}::ignition-common${IGN_COMMON_VER}
-    ignition-common${IGN_COMMON_VER}::graphics
+    gz-common${GZ_COMMON_VER}::gz-common${GZ_COMMON_VER}
+    gz-common${GZ_COMMON_VER}::graphics
     ${PXR_LIBRARIES}
 )
 

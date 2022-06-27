@@ -92,7 +92,7 @@ if (BUILD_TESTING)
 
   target_link_libraries(sdformattest PRIVATE
     ${PROJECT_LIBRARY_TARGET_NAME}
-    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   )
 
   set(python_tests
