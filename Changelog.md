@@ -29,7 +29,7 @@
 1. Added convenience constructor to plugin
     * [Pull request #911](https://github.com/gazebosim/sdformat/pull/911)
 
-1. Use ign-utils instead of ign-cmake utilities
+1. Use gz-utils instead of gz-cmake utilities
     * [Pull request #978](https://github.com/gazebosim/sdformat/pull/978)
 
 1. Added `Friction` and `ODE` classes
@@ -192,7 +192,7 @@
 1. sdf_custom: fix nested model expectations
     * [Pull request #807](https://github.com/gazebosim/sdformat/pull/807)
 
-1. Replace custom cmake code with ign-cmake2
+1. Replace custom cmake code with gz-cmake2
     * [Pull request #780](https://github.com/gazebosim/sdformat/pull/780)
 
 1. Support printing sdf poses in degrees and allow snapping to commonly used angles
@@ -414,7 +414,7 @@
 1. Fix test compilation with `USE_INTERNAL_URDF`
     * [Pull request #800](https://github.com/gazebosim/sdformat/pull/800)
 
-1. Replace custom CMake code with `ign-cmake2`
+1. Replace custom CMake code with `gz-cmake2`
     * [Pull request #780](https://github.com/gazebosim/sdformat/pull/780)
 
 1. Fix loading nested include with custom attributes
@@ -803,7 +803,7 @@
 1. Fix loading nested include with custom attributes
     * [Pull request #789](https://github.com/gazebosim/sdformat/pull/789)
 
-1. Replace custom cmake code with ign-cmake2
+1. Replace custom cmake code with gz-cmake2
     * [Pull request #780](https://github.com/osrf/sdformat/pull/780)
 
 1. Fix test compilation with USE_INTERNAL_URDF
@@ -1518,7 +1518,7 @@
 
 ### libsdformat 8.6.0 (2019-11-20)
 
-1. configure.bat: use ign-math6, not gz11
+1. configure.bat: use gz-math6, not gz11
     * [BitBucket pull request 595](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/595)
 
 1. Set `sdformat8_PKGCONFIG_*` variables in cmake config instead of `SDFormat_PKGCONFIG*`.
@@ -2199,7 +2199,7 @@
     * [BitBucket pull request 194](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/194)
 1. Adding iterations to state
     * [BitBucket pull request 188](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/188)
-1. Convert to use ignition-math
+1. Convert to use gz-math
     * [BitBucket pull request 173](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/173)
 1. Add world origin to scene
     * [BitBucket pull request 183](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/183)
