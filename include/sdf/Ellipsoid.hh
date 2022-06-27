@@ -44,11 +44,11 @@ namespace sdf
 
     /// \brief Get the ellipsoid's radii in meters.
     /// \return The radius of the ellipsoid in meters.
-    public: ignition::math::Vector3d Radii() const;
+    public: gz::math::Vector3d Radii() const;
 
     /// \brief Set the ellipsoid's x, y, and z radii in meters.
     /// \param[in] _radius Vector of radii (x, y, z) of the ellipsoid in meters.
-    public: void SetRadii(const ignition::math::Vector3d &_radii);
+    public: void SetRadii(const gz::math::Vector3d &_radii);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -56,13 +56,13 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Ellipsoid.
-    /// \return A const reference to an ignition::math::Ellipsoidd object.
-    public: const ignition::math::Ellipsoidd &Shape() const;
+    /// \brief Get the Gazebo Math representation of this Ellipsoid.
+    /// \return A const reference to an gz::math::Ellipsoidd object.
+    public: const gz::math::Ellipsoidd &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Ellipsoid.
-    /// \return A reference to an ignition::math::Ellipsoidd object.
-    public: ignition::math::Ellipsoidd &Shape();
+    /// \brief Get a mutable Gazebo Math representation of this Ellipsoid.
+    /// \return A reference to an gz::math::Ellipsoidd object.
+    public: gz::math::Ellipsoidd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// ellipsoid.
@@ -72,7 +72,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

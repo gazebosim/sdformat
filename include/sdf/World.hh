@@ -105,26 +105,26 @@ namespace sdf
     /// \brief Get the wind linear velocity in the global/world coordinate
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
     /// \return Linear velocity of wind in the global/world coordinate frame.
-    /// \sa void SetWindLinearVelocity(const ignition::math::Vector3d &_wind)
-    public: ignition::math::Vector3d WindLinearVelocity() const;
+    /// \sa void SetWindLinearVelocity(const gz::math::Vector3d &_wind)
+    public: gz::math::Vector3d WindLinearVelocity() const;
 
     /// \brief Set the wind linear velocity in the global/world coordinate
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
     /// \param[in] _wind The new linear velocity of wind.
-    /// \sa ignition::math::Vector3d WindLinearVelocity() const
-    public: void SetWindLinearVelocity(const ignition::math::Vector3d &_wind);
+    /// \sa gz::math::Vector3d WindLinearVelocity() const
+    public: void SetWindLinearVelocity(const gz::math::Vector3d &_wind);
 
     /// \brief Get the acceleration due to gravity. The default value is
     /// Earth's standard gravity at sea level, which equals
     /// [0, 0, -9.80665] \f$(\frac{m}{s^2})\f$
     /// \return Gravity vector in meters per second squared
     /// \f$(\frac{m}{s^2})\f$
-    public: ignition::math::Vector3d Gravity() const;
+    public: gz::math::Vector3d Gravity() const;
 
     /// \brief Set the acceleration due to gravity. Units are meters per
     /// second squared \f$(\frac{m}{s^2})\f$
     /// \param[in] _gravity The new gravity vector.
-    public: void SetGravity(const ignition::math::Vector3d &_gravity);
+    public: void SetGravity(const gz::math::Vector3d &_gravity);
 
     /// \brief Get the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinates property.
@@ -132,7 +132,7 @@ namespace sdf
     /// <spherical_coordinates> element.
     /// \return Magnetic field vector.
     /// \sa SphericalCoordinates
-    public: ignition::math::Vector3d MagneticField() const;
+    public: gz::math::Vector3d MagneticField() const;
 
     /// \brief Set the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinate.
@@ -140,17 +140,17 @@ namespace sdf
     /// <spherical_coordinates> element.
     /// \param[in] _mag The new magnetic field vector.
     /// \sa SphericalCoordinates
-    public: void SetMagneticField(const ignition::math::Vector3d &_mag);
+    public: void SetMagneticField(const gz::math::Vector3d &_mag);
 
     /// \brief Get the spherical coordinates for the world origin.
     /// \return Spherical coordinates or null if not defined.
-    public: const ignition::math::SphericalCoordinates *
+    public: const gz::math::SphericalCoordinates *
         SphericalCoordinates() const;
 
     /// \brief Set the spherical coordinates for the world origin.
     /// \param[in] _coord The new coordinates for the world origin.
     public: void SetSphericalCoordinates(
-        const ignition::math::SphericalCoordinates &_coord);
+        const gz::math::SphericalCoordinates &_coord);
 
     /// \brief Get the number of models that are immediate (not nested) children
     /// of this World object.
@@ -474,7 +474,7 @@ namespace sdf
     friend class Root;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

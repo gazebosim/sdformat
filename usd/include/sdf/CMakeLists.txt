@@ -1,1 +1,1 @@
-ign_install_all_headers(COMPONENT usd)
+gz_install_all_headers(COMPONENT usd)

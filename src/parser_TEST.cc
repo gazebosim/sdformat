@@ -25,7 +25,7 @@
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
 
-#include <ignition/utils/Environment.hh>
+#include <gz/utils/Environment.hh>
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -83,7 +83,7 @@ TEST(Parser, CustomUnknownElements)
 #endif
 
   std::string homeDir;
-  ASSERT_TRUE(ignition::utils::env(homeVarName, homeDir));
+  ASSERT_TRUE(gz::utils::env(homeVarName, homeDir));
 
   std::string pathLog =
     sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
@@ -149,8 +149,8 @@ TEST(Parser, readFileConversions)
 /////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
-  // These tests are copies of the ones in ign_TEST.cc but use direct calls to
-  // name uniqueness validator functions instead of going through ign.
+  // These tests are copies of the ones in gz_TEST.cc but use direct calls to
+  // name uniqueness validator functions instead of going through gz.
 
   // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.

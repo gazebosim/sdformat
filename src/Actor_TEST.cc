@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Plugin.hh"
 
@@ -49,7 +49,7 @@ sdf::Trajectory CreateDummyTrajectory()
   sdf::Trajectory trajectory;
   sdf::Waypoint waypoint;
   waypoint.SetTime(0.12);
-  waypoint.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  waypoint.SetPose({3, 2, 1, 0, GZ_PI, 0});
   trajectory.SetId(1234);
   trajectory.SetType("trajectory_type");
   trajectory.SetTension(4.567);
@@ -85,7 +85,7 @@ sdf::Actor CreateDummyActor()
 {
   sdf::Actor actor;
   actor.SetName("test_dummy_actor");
-  actor.SetRawPose({3, 2, 1, 0, IGN_PI, 0});
+  actor.SetRawPose({3, 2, 1, 0, GZ_PI, 0});
   actor.SetPoseRelativeTo("ground_plane");
   actor.SetSkinFilename("walk.dae");
   actor.SetSkinScale(2.0);
@@ -146,7 +146,7 @@ TEST(DOMActor, DefaultConstruction)
 {
   sdf::Actor actor;
   EXPECT_EQ("__default__", actor.Name());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, actor.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, actor.RawPose());
   EXPECT_EQ("", actor.PoseRelativeTo());
   EXPECT_EQ(nullptr, actor.Element());
   EXPECT_EQ("__default__", actor.SkinFilename());
@@ -364,7 +364,7 @@ TEST(DOMWaypoint, DefaultConstruction)
 {
   sdf::Waypoint waypoint;
   EXPECT_DOUBLE_EQ(waypoint.Time(), 0.0);
-  EXPECT_EQ(waypoint.Pose(), ignition::math::Pose3d::Zero);
+  EXPECT_EQ(waypoint.Pose(), gz::math::Pose3d::Zero);
 }
 
 //////////////////////////////////////////////////
@@ -372,7 +372,7 @@ TEST(DOMWaypoint, CopyConstructor)
 {
   sdf::Waypoint waypoint1;
   waypoint1.SetTime(1.23);
-  waypoint1.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  waypoint1.SetPose({3, 2, 1, 0, GZ_PI, 0});
 
   sdf::Waypoint waypoint2(waypoint1);
   EXPECT_DOUBLE_EQ(waypoint1.Time(), waypoint2.Time());
@@ -384,7 +384,7 @@ TEST(DOMWaypoint, CopyAssignmentOperator)
 {
   sdf::Waypoint waypoint1;
   waypoint1.SetTime(1.23);
-  waypoint1.SetPose({3, 2, 1, 0, IGN_PI, 0});
+  waypoint1.SetPose({3, 2, 1, 0, GZ_PI, 0});
 
   sdf::Waypoint waypoint2;
   waypoint2 = waypoint1;
@@ -396,7 +396,7 @@ TEST(DOMWaypoint, CopyAssignmentOperator)
 TEST(DOMWaypoint, MoveConstructor)
 {
   sdf::Waypoint waypoint1;
-  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, GZ_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
 
@@ -409,7 +409,7 @@ TEST(DOMWaypoint, MoveConstructor)
 TEST(DOMWaypoint, MoveAssignment)
 {
   sdf::Waypoint waypoint1;
-  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, GZ_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
 
@@ -423,11 +423,11 @@ TEST(DOMWaypoint, MoveAssignment)
 TEST(DOMWaypoint, CopyAssignmentAfterMove)
 {
   sdf::Waypoint waypoint1;
-  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, GZ_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
   sdf::Waypoint waypoint2;
-  ignition::math::Pose3d pose2(1, 2, 3, 1, 2, IGN_PI);
+  gz::math::Pose3d pose2(1, 2, 3, 1, 2, GZ_PI);
   waypoint2.SetTime(3.45);
   waypoint2.SetPose(pose2);
 
@@ -510,7 +510,7 @@ TEST(DOMActor, ToElement)
   sdf::Actor actor;
 
   actor.SetName("my-actor");
-  actor.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  actor.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   actor.SetSkinFilename("my-skinfilename");
   actor.SetSkinScale(1.2);
   actor.SetScriptLoop(true);
@@ -549,10 +549,10 @@ TEST(DOMActor, ToElement)
   trajectory.SetTension(1.0);
   sdf::Waypoint waypointA, waypointB;
   waypointA.SetTime(0.0);
-  waypointA.SetPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  waypointA.SetPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   trajectory.AddWaypoint(waypointA);
   waypointB.SetTime(1.0);
-  waypointB.SetPose(ignition::math::Pose3d(2, 4, 6, 0.1, 0.2, 0.3));
+  waypointB.SetPose(gz::math::Pose3d(2, 4, 6, 0.1, 0.2, 0.3));
   trajectory.AddWaypoint(waypointB);
   actor.AddTrajectory(trajectory);
 

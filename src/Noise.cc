@@ -57,7 +57,7 @@ class sdf::Noise::Implementation
 
 //////////////////////////////////////////////////
 Noise::Noise()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -239,14 +239,14 @@ bool Noise::operator!=(const Noise &_noise) const
 bool Noise::operator==(const Noise &_noise) const
 {
   return this->dataPtr->type == _noise.Type() &&
-    ignition::math::equal(this->dataPtr->mean, _noise.Mean()) &&
-    ignition::math::equal(this->dataPtr->stdDev, _noise.StdDev()) &&
-    ignition::math::equal(this->dataPtr->biasMean, _noise.BiasMean()) &&
-    ignition::math::equal(this->dataPtr->biasStdDev, _noise.BiasStdDev()) &&
-    ignition::math::equal(this->dataPtr->precision, _noise.Precision()) &&
-    ignition::math::equal(this->dataPtr->dynamicBiasStdDev,
+    gz::math::equal(this->dataPtr->mean, _noise.Mean()) &&
+    gz::math::equal(this->dataPtr->stdDev, _noise.StdDev()) &&
+    gz::math::equal(this->dataPtr->biasMean, _noise.BiasMean()) &&
+    gz::math::equal(this->dataPtr->biasStdDev, _noise.BiasStdDev()) &&
+    gz::math::equal(this->dataPtr->precision, _noise.Precision()) &&
+    gz::math::equal(this->dataPtr->dynamicBiasStdDev,
                           _noise.DynamicBiasStdDev()) &&
-    ignition::math::equal(this->dataPtr->dynamicBiasCorrelationTime,
+    gz::math::equal(this->dataPtr->dynamicBiasCorrelationTime,
                           _noise.DynamicBiasCorrelationTime());
 }
 

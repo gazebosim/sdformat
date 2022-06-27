@@ -191,13 +191,13 @@ void defineModel(pybind11::object module)
           "Get the URI associated with this model")
      .def("set_uri", &sdf::Model::SetUri,
           "Set the URI associated with this model.")
-     // .def("plugins",
-     //      pybind11::overload_cast<>(&sdf::Model::Plugins, pybind11::const_),
-     //      "Get the plugins attached to this object.")
-     // .def("clear_plugins", &sdf::Model::ClearPlugins,
-     //      "Remove all plugins")
-     // .def("add_plugin", &sdf::Model::AddPlugin,
-     //      "Add a plugin to this object.")
+     .def("plugins",
+          pybind11::overload_cast<>(&sdf::Model::Plugins, pybind11::const_),
+          "Get the plugins attached to this object.")
+     .def("clear_plugins", &sdf::Model::ClearPlugins,
+          "Remove all plugins")
+     .def("add_plugin", &sdf::Model::AddPlugin,
+          "Add a plugin to this object.")
     .def("__copy__", [](const sdf::Model &self) {
       return sdf::Model(self);
     })

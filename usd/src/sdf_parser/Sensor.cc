@@ -74,7 +74,7 @@ namespace usd
     const auto sdfCamera = _sensor.CameraSensor();
 
     // When then focal length is not defined in SDF, the default value is 1
-    if (!ignition::math::equal(sdfCamera->LensFocalLength(), 1.0))
+    if (!gz::math::equal(sdfCamera->LensFocalLength(), 1.0))
     {
       usdCamera.CreateFocalLengthAttr().Set(
           static_cast<float>(sdfCamera->LensFocalLength()));
@@ -82,7 +82,7 @@ namespace usd
     else
     {
       // The default value in USD is 50, but something more
-      // similar to ignition Gazebo is 40.
+      // similar to Gazebo Sim is 40.
       usdCamera.CreateFocalLengthAttr().Set(
           static_cast<float>(40.0f));
     }
@@ -217,7 +217,7 @@ namespace usd
 
     if (errors.empty())
     {
-      ignition::math::Pose3d pose;
+      gz::math::Pose3d pose;
       auto poseErrors = sdf::usd::PoseWrtParent(_sensor, pose);
       if (!poseErrors.empty())
       {
@@ -229,8 +229,8 @@ namespace usd
       {
         // Camera sensors are upAxis equal to "Y", we need to rotate the camera
         // properly.
-        const ignition::math::Pose3d poseCamera(
-          0, 0, 0, IGN_PI_2, 0, -IGN_PI_2);
+        const gz::math::Pose3d poseCamera(
+          0, 0, 0, GZ_PI_2, 0, -GZ_PI_2);
         usd::SetPose(
           pose * poseCamera, _stage, sdfSensorPath);
       }

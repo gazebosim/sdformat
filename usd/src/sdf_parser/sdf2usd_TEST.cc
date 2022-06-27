@@ -18,9 +18,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/TempDirectory.hh>
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/TempDirectory.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -42,7 +42,7 @@
 
 static std::string sdf2usdCommand()
 {
-  return ignition::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
+  return gz::common::joinPaths(std::string(PROJECT_BINARY_DIR), "bin",
       "sdf2usd");
 }
 
@@ -69,20 +69,20 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_cmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase = ignition::common::joinPaths(pathBase, "test", "sdf");
+  pathBase = gz::common::joinPaths(pathBase, "test", "sdf");
 
-  auto tmpDir = ignition::common::tempDirectoryPath();
-  auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
+  auto tmpDir = gz::common::tempDirectoryPath();
+  auto tmp = gz::common::createTempDirectory("usd", tmpDir);
   // Check a good SDF file
   {
-    std::string path = ignition::common::joinPaths(pathBase,
+    std::string path = gz::common::joinPaths(pathBase,
       "lights.sdf");
     const auto outputUsdFilePath =
-      ignition::common::joinPaths(tmp, "shapes.usd");
-    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
+      gz::common::joinPaths(tmp, "shapes.usd");
+    EXPECT_FALSE(gz::common::isFile(outputUsdFilePath));
     std::string output =
       custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
     // TODO(adlarkin) make sure 'output' (i.e., the result of running the
@@ -91,7 +91,7 @@ TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // that functionality isn't complete)
 
     // make sure that a shapes.usd file was generated
-    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
+    EXPECT_TRUE(gz::common::isFile(outputUsdFilePath)) << output;
 
     // TODO(ahcorde): Check the contents of outputUsdFilePath when the parser
     // is implemented
@@ -108,26 +108,26 @@ void getAttr(const pxr::UsdPrim &_prim, const std::string &_attributeName,
   attr.Get(&_value);
 }
 
-TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_cmd_model, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase = ignition::common::joinPaths(pathBase, "test", "sdf");
+  pathBase = gz::common::joinPaths(pathBase, "test", "sdf");
 
-  auto tmpDir = ignition::common::tempDirectoryPath();
-  auto tmp = ignition::common::createTempDirectory("usd", tmpDir);
+  auto tmpDir = gz::common::tempDirectoryPath();
+  auto tmp = gz::common::createTempDirectory("usd", tmpDir);
   // Check a good SDF file
   {
-    std::string path = ignition::common::joinPaths(pathBase,
+    std::string path = gz::common::joinPaths(pathBase,
       "ellipsoid_model.sdf");
     const auto outputUsdFilePath =
-      ignition::common::joinPaths(tmp, "ellipsoid.usd");
-    EXPECT_FALSE(ignition::common::isFile(outputUsdFilePath));
+      gz::common::joinPaths(tmp, "ellipsoid.usd");
+    EXPECT_FALSE(gz::common::isFile(outputUsdFilePath));
     std::string output =
       custom_exec_str(sdf2usdCommand() + " " + path + " " + outputUsdFilePath);
     EXPECT_TRUE(output.empty());
 
     // make sure that a ellipsoid.usd file was generated
-    EXPECT_TRUE(ignition::common::isFile(outputUsdFilePath)) << output;
+    EXPECT_TRUE(gz::common::isFile(outputUsdFilePath)) << output;
 
     const auto stage = pxr::UsdStage::Open(outputUsdFilePath);
     ASSERT_TRUE(stage);

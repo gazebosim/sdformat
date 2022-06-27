@@ -32,7 +32,7 @@ TODO(eric.cousineau): Move terminology section to sdf_tutorials?
 ## Test coverage
 
 <!-- Note: The branch name in the codecov URL should be updated when forward porting -->
-[![codecov](https://codecov.io/gh/ignitionrobotics/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/sdformat/branch/main)
+[![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/main)
 
 # Installation
 
@@ -79,8 +79,8 @@ Miniconda suffices.
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 Install `sdformat`:
@@ -143,7 +143,7 @@ make uninstall
 
 Clone the repository
 ```sh
-git clone https://github.com/ignitionrobotics/sdformat -b sdf<#>
+git clone https://github.com/gazebosim/sdformat -b sdf<#>
 ```
 Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
 which version you need.
@@ -184,8 +184,8 @@ Miniconda suffices.
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 Install prerequisites:

@@ -26,8 +26,8 @@ TEST(DOMHeightmap, Construction)
 
   EXPECT_EQ(std::string(), heightmap.FilePath());
   EXPECT_EQ(std::string(), heightmap.Uri());
-  EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), heightmap.Size());
-  EXPECT_EQ(ignition::math::Vector3d::Zero, heightmap.Position());
+  EXPECT_EQ(gz::math::Vector3d(1, 1, 1), heightmap.Size());
+  EXPECT_EQ(gz::math::Vector3d::Zero, heightmap.Position());
   EXPECT_FALSE(heightmap.UseTerrainPaging());
   EXPECT_EQ(1u, heightmap.Sampling());
   EXPECT_EQ(0u, heightmap.TextureCount());
@@ -63,8 +63,8 @@ TEST(DOMHeightmap, MoveConstructor)
   sdf::Heightmap heightmap2(std::move(heightmap));
   EXPECT_EQ("banana", heightmap2.Uri());
   EXPECT_EQ("/pear", heightmap2.FilePath());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
   EXPECT_TRUE(heightmap2.UseTerrainPaging());
   EXPECT_EQ(123u, heightmap2.Sampling());
 
@@ -87,6 +87,7 @@ TEST(DOMHeightmap, MoveConstructor)
   EXPECT_DOUBLE_EQ(456.123, heightmapBlend2.FadeDistance());
 }
 
+
 /////////////////////////////////////////////////
 TEST(DOMHeightmap, CopyConstructor)
 {
@@ -101,8 +102,8 @@ TEST(DOMHeightmap, CopyConstructor)
   sdf::Heightmap heightmap2(heightmap);
   EXPECT_EQ("banana", heightmap2.Uri());
   EXPECT_EQ("/pear", heightmap2.FilePath());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
   EXPECT_TRUE(heightmap2.UseTerrainPaging());
   EXPECT_EQ(123u, heightmap2.Sampling());
 
@@ -140,8 +141,8 @@ TEST(DOMHeightmap, CopyAssignmentOperator)
   heightmap2 = heightmap;
   EXPECT_EQ("banana", heightmap2.Uri());
   EXPECT_EQ("/pear", heightmap2.FilePath());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
   EXPECT_TRUE(heightmap2.UseTerrainPaging());
   EXPECT_EQ(123u, heightmap2.Sampling());
 
@@ -181,8 +182,8 @@ TEST(DOMHeightmap, MoveAssignmentOperator)
   heightmap2 = std::move(heightmap);
   EXPECT_EQ("banana", heightmap2.Uri());
   EXPECT_EQ("/pear", heightmap2.FilePath());
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), heightmap2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), heightmap2.Position());
   EXPECT_TRUE(heightmap2.UseTerrainPaging());
   EXPECT_EQ(123u, heightmap2.Sampling());
 
@@ -292,13 +293,13 @@ TEST(DOMHeightmap, Set)
   heightmap.SetFilePath("/mypath");
   EXPECT_EQ("/mypath", heightmap.FilePath());
 
-  EXPECT_EQ(ignition::math::Vector3d::One, heightmap.Size());
-  heightmap.SetSize(ignition::math::Vector3d(0.2, 1.4, 7.8));
-  EXPECT_EQ(ignition::math::Vector3d(0.2, 1.4, 7.8), heightmap.Size());
+  EXPECT_EQ(gz::math::Vector3d::One, heightmap.Size());
+  heightmap.SetSize(gz::math::Vector3d(0.2, 1.4, 7.8));
+  EXPECT_EQ(gz::math::Vector3d(0.2, 1.4, 7.8), heightmap.Size());
 
-  EXPECT_EQ(ignition::math::Vector3d::Zero, heightmap.Position());
-  heightmap.SetPosition(ignition::math::Vector3d(0.2, 1.4, 7.8));
-  EXPECT_EQ(ignition::math::Vector3d(0.2, 1.4, 7.8), heightmap.Position());
+  EXPECT_EQ(gz::math::Vector3d::Zero, heightmap.Position());
+  heightmap.SetPosition(gz::math::Vector3d(0.2, 1.4, 7.8));
+  EXPECT_EQ(gz::math::Vector3d(0.2, 1.4, 7.8), heightmap.Position());
 
   EXPECT_FALSE(heightmap.UseTerrainPaging());
   heightmap.SetUseTerrainPaging(true);
@@ -413,8 +414,8 @@ TEST(DOMHeightmap, ToElement)
   sdf::Heightmap heightmap;
 
   heightmap.SetUri("https://test-uri.org");
-  heightmap.SetSize(ignition::math::Vector3d(1, 2, 3));
-  heightmap.SetPosition(ignition::math::Vector3d(4, 5, 6));
+  heightmap.SetSize(gz::math::Vector3d(1, 2, 3));
+  heightmap.SetPosition(gz::math::Vector3d(4, 5, 6));
   heightmap.SetUseTerrainPaging(true);
   heightmap.SetSampling(2);
 

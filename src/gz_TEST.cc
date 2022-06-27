@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
@@ -37,9 +37,9 @@ static std::string SdfVersion()
   return " --force-version " + std::string(SDF_VERSION_FULL);
 }
 
-static std::string IgnCommand()
+static std::string GzCommand()
 {
-  return std::string(IGN_PATH) + "/ign";
+  return std::string(GZ_PATH);
 }
 
 /////////////////////////////////////////////////
@@ -65,7 +65,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -76,7 +76,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -86,7 +86,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Required attribute"), std::string::npos)
       << output;
   }
@@ -98,7 +98,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check world_duplicate.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("World with name[default] already exists."),
               std::string::npos) << output;
   }
@@ -110,7 +110,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check world_sibling_same_names.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
@@ -119,7 +119,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/world_duplicate_plugins.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -130,7 +130,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_duplicate_links.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("link with name[link] already exists."),
               std::string::npos) << output;
   }
@@ -142,7 +142,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_duplicate_joints.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("joint with name[joint] already exists."),
               std::string::npos) << output;
   }
@@ -154,7 +154,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_link_joint_same_name.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
@@ -164,7 +164,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/model_duplicate_plugins.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -175,7 +175,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check link_duplicate_sibling_collisions.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("collision with name[collision] "
                           "already exists."),
               std::string::npos) << output;
@@ -188,7 +188,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check link_duplicate_sibling_visuals.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("visual with name[visual] already exists."),
               std::string::npos) << output;
   }
@@ -200,7 +200,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check link_duplicate_cousin_collisions.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -211,7 +211,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check link_duplicate_cousin_visuals.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -221,7 +221,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_invalid_child.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Child frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
@@ -234,7 +234,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_invalid_parent.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("parent frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_parent]."),
@@ -247,7 +247,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_invalid_self_child.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("FrameAttachedToGraph cycle detected, already "
                           "visited vertex [joint_invalid_self_child::self]."),
               std::string::npos) << output;
@@ -259,7 +259,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_invalid_self_parent.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("joint with name[self] in model with "
                           "name[joint_invalid_self_parent] must not specify "
                           "its own name as the parent frame."),
@@ -272,7 +272,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Joint with name[joint] must "
                           "specify different frame names for parent and child, "
                           "while [link] was specified for both."),
@@ -287,7 +287,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_invalid_resolved_parent_same_as_child.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("specified parent frame [J1] and child frame [L2] "
                           "that both resolve to [L2], but they should resolve "
                           "to different values."),
@@ -300,7 +300,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_child_world.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Joint with name[joint] specified invalid "
                           "child link [world]."),
               std::string::npos) << output;
@@ -313,7 +313,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_parent_world.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -324,7 +324,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_child_frame.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -335,7 +335,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_parent_frame.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -346,7 +346,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check joint_axis_infinite_limits.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -357,7 +357,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_canonical_link.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -367,7 +367,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_canonical_link.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("canonical_link with name[link3] not found in "
                           "model with name[model_invalid_canonical_link]."),
               std::string::npos) << output;
@@ -379,7 +379,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_without_links.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("A model must have at least one link."),
               std::string::npos) << output;
   }
@@ -390,7 +390,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check nested_model.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -400,7 +400,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check nested_canonical_link.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -412,7 +412,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check nested_explicit_canonical_link.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -422,7 +422,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check nested_without_links_invalid.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("A model must have at least one link."),
               std::string::npos) << output;
   }
@@ -433,7 +433,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_reserved_names.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("The supplied link name [world] is reserved."),
               std::string::npos) << output;
     EXPECT_NE(output.find("The supplied link name [__link__] "
@@ -458,7 +458,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/ignore_sdf_in_plugin.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -467,7 +467,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/ignore_sdf_in_namespaced_elements.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -478,7 +478,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_attached_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -489,7 +489,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_attached_to_joint.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -500,7 +500,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_attached_to_nested_model.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -510,7 +510,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_invalid_attached_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("attached_to name[A] specified by frame with "
                           "name[F3] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -528,7 +528,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_invalid_attached_to_cycle.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos,
         output.find("FrameAttachedToGraph cycle detected, already visited "
                     "vertex [model_frame_invalid_attached_to_cycle::F1]."))
@@ -546,7 +546,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check world_frame_attached_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -556,7 +556,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check world_frame_invalid_attached_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("attached_to name[A] specified by frame with "
                           "name[F] does not match a model or frame "
                           "name in world with "
@@ -576,7 +576,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_link_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -586,7 +586,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_link_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by link with "
                           "name[L] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -605,7 +605,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -617,7 +617,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -628,7 +628,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_joint_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -638,7 +638,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_joint_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by joint with "
                           "name[J] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -657,7 +657,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -668,7 +668,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_frame_relative_to_joint.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -678,7 +678,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by frame with "
                           "name[F] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -696,7 +696,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_frame_relative_to_cycle.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos,
         output.find("PoseRelativeToGraph cycle detected, already visited "
                     "vertex [model_invalid_frame_relative_to_cycle::F1]."))
@@ -714,7 +714,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check world_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -724,7 +724,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check world_frame_invalid_relative_to.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by model with "
                           "name[M] does not match a model or frame "
                           "name in world with "
@@ -753,7 +753,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check model_invalid_placement_frame.sdf
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("unable to find unique frame with name [link3] in graph"),
         std::string::npos)
@@ -765,7 +765,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase + "/nested_model_cross_references.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -774,7 +774,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase + "/model_invalid_root_reference.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [relative_to]"),
@@ -789,12 +789,12 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF world file with an invalid usage of __root__
   {
     // Set SDF_PATH so that included models can be found
-    ignition::utils::setenv(
+    gz::utils::setenv(
       "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
     std::string path = pathBase + "/world_invalid_root_reference.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [relative_to]"),
@@ -841,7 +841,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase + "/world_valid_root_reference.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
   // Check an SDF with an invalid relative frame at the top level model
@@ -849,7 +849,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase + "/model_invalid_top_level_frame.sdf";
 
     std::string output =
-        custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+        custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("Attribute //pose[@relative_to] of top level model must be "
                     "left empty, found //pose[@relative_to='some_frame']."),
@@ -858,7 +858,7 @@ TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_shapes_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -867,7 +867,7 @@ TEST(check_shapes_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/shapes.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 
@@ -875,13 +875,13 @@ TEST(check_shapes_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/shapes_world.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 }
 
 /////////////////////////////////////////////////
-TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_model_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/integration/model/box";
@@ -891,7 +891,7 @@ TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/model.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -k " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 
@@ -901,17 +901,17 @@ TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
-                      IgnCommand() + " sdf -k " + path + SdfVersion());
+                      GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 }
 
 /////////////////////////////////////////////////
-TEST(describe, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(describe, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Get the description
   std::string output =
-    custom_exec_str(IgnCommand() + " sdf -d " + SdfVersion());
+    custom_exec_str(GzCommand() + " sdf -d " + SdfVersion());
   EXPECT_FALSE(output.empty());
 
   // The first line should start with the following text.
@@ -919,7 +919,7 @@ TEST(describe, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -933,7 +933,7 @@ TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -p " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -p " + path + SdfVersion());
     EXPECT_EQ(sdf->Root()->ToString(""), output);
   }
 
@@ -943,7 +943,7 @@ TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf -p " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -p " + path + SdfVersion());
     EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
   }
 }
@@ -955,21 +955,21 @@ static bool contains(const std::string &_a, const std::string &_b)
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -978,7 +978,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -987,7 +987,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -996,7 +996,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1005,7 +1005,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1014,7 +1014,7 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1023,21 +1023,21 @@ TEST(print_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_radians.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1046,7 +1046,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1055,7 +1055,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1064,7 +1064,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1073,7 +1073,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1082,7 +1082,7 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1091,14 +1091,14 @@ TEST(print_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const auto path = sdf::testing::TestFile(
       "sdf", "rotations_in_quaternions.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose rotation_format='quat_xyzw'>"
@@ -1106,7 +1106,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1115,7 +1115,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1124,7 +1124,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1133,7 +1133,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1142,7 +1142,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1151,7 +1151,7 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1160,24 +1160,24 @@ TEST(print_rotations_in_quaternions, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  ignition::utils::setenv(
+  gz::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const std::string path =
       sdf::testing::TestFile("sdf", "includes_rotations_in_degrees.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1186,7 +1186,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1195,7 +1195,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1204,7 +1204,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1213,7 +1213,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1222,7 +1222,7 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1231,24 +1231,24 @@ TEST(print_includes_rotations_in_degrees, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  ignition::utils::setenv(
+  gz::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const std::string path =
       sdf::testing::TestFile("sdf", "includes_rotations_in_radians.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1257,7 +1257,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1266,7 +1266,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1275,7 +1275,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1284,7 +1284,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1293,7 +1293,7 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1303,17 +1303,17 @@ TEST(print_includes_rotations_in_radians, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
 /////////////////////////////////////////////////
 TEST(print_includes_rotations_in_quaternions,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Set SDF_PATH so that included models can be found
-  ignition::utils::setenv(
+  gz::utils::setenv(
     "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
   const auto path = sdf::testing::TestFile(
       "sdf", "includes_rotations_in_quaternions.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose rotation_format='quat_xyzw'>"
@@ -1321,7 +1321,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1330,7 +1330,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1339,7 +1339,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1348,7 +1348,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1357,7 +1357,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1366,7 +1366,7 @@ TEST(print_includes_rotations_in_quaternions,
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1376,7 +1376,7 @@ TEST(print_includes_rotations_in_quaternions,
 
 /////////////////////////////////////////////////
 TEST(print_rotations_in_unnormalized_degrees,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_degrees.sdf");
@@ -1386,14 +1386,14 @@ TEST(print_rotations_in_unnormalized_degrees,
   // returned by parsing the pose value, whenever a parent Element Attribute,
   // or PrintConfig is used.
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1402,7 +1402,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1411,7 +1411,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1420,7 +1420,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1429,7 +1429,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1438,7 +1438,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1448,21 +1448,21 @@ TEST(print_rotations_in_unnormalized_degrees,
 
 /////////////////////////////////////////////////
 TEST(print_rotations_in_unnormalized_radians,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
 
   // Default printing
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose>1 2 3 0.523755 0.785251 -1.04736</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1471,7 +1471,7 @@ TEST(print_rotations_in_unnormalized_radians,
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1480,7 +1480,7 @@ TEST(print_rotations_in_unnormalized_radians,
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1489,7 +1489,7 @@ TEST(print_rotations_in_unnormalized_radians,
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1498,7 +1498,7 @@ TEST(print_rotations_in_unnormalized_radians,
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1507,7 +1507,7 @@ TEST(print_rotations_in_unnormalized_radians,
 
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1516,14 +1516,14 @@ TEST(print_rotations_in_unnormalized_radians,
 }
 
 /////////////////////////////////////////////////
-TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
 
   // -p PATH --degrees
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p --precision 6 " + path + " --degrees "
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1532,7 +1532,7 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // --degrees -p PATH
   output = custom_exec_str(
-      IgnCommand() + " sdf --degrees -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf --degrees -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1540,7 +1540,7 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // -p PATH --snap-to-degrees ARG
   output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
@@ -1549,7 +1549,7 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // -p --snap-to-degrees ARG PATH
   output = custom_exec_str(
-      IgnCommand() + " sdf -p --snap-to-degrees 5 " + path + SdfVersion());
+      GzCommand() + " sdf -p --snap-to-degrees 5 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1557,7 +1557,7 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // --snap-to-degrees ARG -p PATH
   output = custom_exec_str(
-      IgnCommand() + " sdf --snap-to-degrees 5 -p " + path + SdfVersion());
+      GzCommand() + " sdf --snap-to-degrees 5 -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1566,14 +1566,14 @@ TEST(shuffled_cmd_flags, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
 /////////////////////////////////////////////////
 TEST(print_snap_to_degrees_tolerance_too_high,
-     IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   const std::string path = sdf::testing::TestFile(
       "sdf",
       "rotations_in_degrees_high_snap_tolerance.sdf");
 
   std::string output = custom_exec_str(
-      IgnCommand() + " sdf -p " + path +
+      GzCommand() + " sdf -p " + path +
       " --snap-to-degrees 5 " + " --snap-tolerance 4" +
       SdfVersion());
   ASSERT_FALSE(output.empty());
@@ -1583,7 +1583,7 @@ TEST(print_snap_to_degrees_tolerance_too_high,
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
 
@@ -1592,7 +1592,7 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
     pathBase + "/world_relative_to_nested_reference.sdf";
 
   const std::string output =
-    custom_exec_str(IgnCommand() + " sdf -g pose " + path + SdfVersion());
+    custom_exec_str(GzCommand() + " sdf -g pose " + path + SdfVersion());
 
   std::stringstream expected;
   expected << "digraph {\n"
@@ -1634,12 +1634,12 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_relative_to_nested_reference.sdf";
   const std::string output =
-    custom_exec_str(IgnCommand() + " sdf -g pose " + path + SdfVersion());
+    custom_exec_str(GzCommand() + " sdf -g pose " + path + SdfVersion());
 
   std::stringstream expected;
   expected << "digraph {\n"
@@ -1710,12 +1710,12 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/world_nested_frame_attached_to.sdf";
   const std::string output =
-      custom_exec_str(IgnCommand() + " sdf -g frame " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -g frame " + path + SdfVersion());
 
   std::stringstream expected;
 
@@ -1756,12 +1756,12 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
+TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_nested_frame_attached_to.sdf";
   const std::string output =
-      custom_exec_str(IgnCommand() + " sdf -g frame " + path + SdfVersion());
+      custom_exec_str(GzCommand() + " sdf -g frame " + path + SdfVersion());
 
   std::stringstream expected;
 
@@ -1805,7 +1805,7 @@ TEST(GraphCmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 }
 
 /////////////////////////////////////////////////
-TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -1831,7 +1831,7 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/inertial_stats.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+      custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
@@ -1842,7 +1842,7 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
-                      IgnCommand() + " sdf --inertial-stats " +
+                      GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
@@ -1869,7 +1869,7 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/inertial_invalid.sdf";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+      custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
@@ -1881,7 +1881,7 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string path = pathBase +"/box_plane_low_friction_test.world";
 
     std::string output =
-      custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
+      custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
@@ -1891,9 +1891,9 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /// Main
 int main(int argc, char **argv)
 {
-  // Set IGN_CONFIG_PATH to the directory where the .yaml configuration file
+  // Set GZ_CONFIG_PATH to the directory where the .yaml configuration file
   // is located.
-  ignition::utils::setenv("IGN_CONFIG_PATH", IGN_CONFIG_PATH);
+  gz::utils::setenv("GZ_CONFIG_PATH", GZ_CONFIG_PATH);
 
   // Make sure that we load the library recently built and not the one installed
   // in your system. This is done by placing the the current build directory
@@ -1902,15 +1902,15 @@ int main(int argc, char **argv)
   // We need to keep the existing LD_LIBRARY_PATH so that libsdformat.so can
   // find its dependency.
 #ifndef _WIN32
-  std::string testLibraryPath = IGN_TEST_LIBRARY_PATH;
+  std::string testLibraryPath = GZ_TEST_LIBRARY_PATH;
 
   std::string currentLibraryPath;
-  if (ignition::utils::env("LD_LIBRARY_PATH", currentLibraryPath))
+  if (gz::utils::env("LD_LIBRARY_PATH", currentLibraryPath))
   {
     testLibraryPath = testLibraryPath + ":" + currentLibraryPath;
   }
 
-  ignition::utils::setenv("LD_LIBRARY_PATH", testLibraryPath);
+  gz::utils::setenv("LD_LIBRARY_PATH", testLibraryPath);
 #endif
 
   ::testing::InitGoogleTest(&argc, argv);

@@ -45,11 +45,11 @@ namespace sdf
 
     /// \brief Get the box size in meters.
     /// \return Size of the box in meters.
-    public: ignition::math::Vector3d Size() const;
+    public: gz::math::Vector3d Size() const;
 
     /// \brief Set the box size in meters.
     /// \param[in] _size Size of the box in meters.
-    public: void SetSize(const ignition::math::Vector3d &_size);
+    public: void SetSize(const gz::math::Vector3d &_size);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -57,13 +57,13 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Box.
-    /// \return A const reference to an ignition::math::Boxd object.
-    public: const ignition::math::Boxd &Shape() const;
+    /// \brief Get the Gazebo Math representation of this Box.
+    /// \return A const reference to an gz::math::Boxd object.
+    public: const gz::math::Boxd &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Box.
-    /// \return A reference to an ignition::math::Boxd object.
-    public: ignition::math::Boxd &Shape();
+    /// \brief Get a mutable Gazebo Math representation of this Box.
+    /// \return A reference to an gz::math::Boxd object.
+    public: gz::math::Boxd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// box.
@@ -73,7 +73,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

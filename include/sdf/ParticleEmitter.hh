@@ -187,24 +187,24 @@ namespace sdf
     //                identical to EM_BOX, except that the dimensions
     //                describe the widest points along each of the axes.
     /// \return Size of the emitter region in meters.
-    public: ignition::math::Vector3d Size() const;
+    public: gz::math::Vector3d Size() const;
 
     /// \brief Set the size of the emitter where the particles are sampled.
     /// \param[in] _size Size of the emitter in meters.
     /// Each component of _size must be greater than or equal to zero. Any
     /// negative value will be replaced with zero.
-    /// \sa ignition::math::Vector3d Size()
-    public: void SetSize(const ignition::math::Vector3d &_size);
+    /// \sa gz::math::Vector3d Size()
+    public: void SetSize(const gz::math::Vector3d &_size);
 
     /// \brief Get the size of a particle in meters.
     /// \return Size of a particle in meters.
-    public: ignition::math::Vector3d ParticleSize() const;
+    public: gz::math::Vector3d ParticleSize() const;
 
     /// \brief Set the size of a particle in meters.
     /// \param[in] _size Size of a particle in meters.
     /// Each component of _size must be greater than or equal to zero. Any
     /// negative value will be replaced with zero.
-    public: void SetParticleSize(const ignition::math::Vector3d &_size);
+    public: void SetParticleSize(const gz::math::Vector3d &_size);
 
     /// \brief Gets the starting color for all particles emitted.
     /// The actual color will be interpolated between this color
@@ -212,12 +212,12 @@ namespace sdf
     /// Color::White is the default color for the particles
     /// unless a specific function is used.
     /// \return The starting color.
-    public: ignition::math::Color ColorStart() const;
+    public: gz::math::Color ColorStart() const;
 
     /// \brief Set the starting color for all particles emitted.
     /// \param[in] _colorStart The starting color for all particles emitted.
-    /// \sa ignition::math::Color ColorStart()
-    public: void SetColorStart(const ignition::math::Color &_colorStart);
+    /// \sa gz::math::Color ColorStart()
+    public: void SetColorStart(const gz::math::Color &_colorStart);
 
     /// \brief Get the end color for all particles emitted.
     /// The actual color will be interpolated between this color
@@ -225,12 +225,12 @@ namespace sdf
     /// Color::White is the default color for the particles
     /// unless a specific function is used.
     /// \return The end color.
-    public: ignition::math::Color ColorEnd() const;
+    public: gz::math::Color ColorEnd() const;
 
     /// \brief Set the end color for all particles emitted.
     /// \param[in] _colorEnd The end color for all particles emitted.
-    /// \sa ignition::math::Color ColorEnd()
-    public: void SetColorEnd(const ignition::math::Color &_colorEnd);
+    /// \sa gz::math::Color ColorEnd()
+    public: void SetColorEnd(const gz::math::Color &_colorEnd);
 
     /// \brief Get the path to the color image used as an affector.
     /// This affector modifies the color of particles in flight.
@@ -270,12 +270,12 @@ namespace sdf
     /// emitter as specified in SDF
     /// (<particle_emitter><pose> ... </pose></particle_emitter>).
     /// \return The pose of the particle emitter.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the particle emitter object.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the particle emitter.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// emitter's pose is expressed. An empty value indicates that the frame is
@@ -342,7 +342,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

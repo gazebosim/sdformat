@@ -39,7 +39,7 @@ class InterfaceModelPoseGraph::Implementation
 InterfaceModelPoseGraph::InterfaceModelPoseGraph(
     const std::string &_name,
     const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->modelGraph = _graph.ChildModelScope(_name);
   this->dataPtr->rootGraph = _graph.RootScope();
@@ -47,20 +47,20 @@ InterfaceModelPoseGraph::InterfaceModelPoseGraph(
 }
 
 sdf::Errors InterfaceModelPoseGraph::ResolveNestedModelFramePoseInWorldFrame(
-    ignition::math::Pose3d &_pose) const
+    gz::math::Pose3d &_pose) const
 {
   return sdf::resolvePose(_pose, this->dataPtr->rootGraph,
       this->dataPtr->modelVertexId, this->dataPtr->rootGraph.ScopeVertexId());
 }
 
 sdf::Errors InterfaceModelPoseGraph::ResolveNestedFramePose(
-    ignition::math::Pose3d &_pose, const std::string &_frameName,
+    gz::math::Pose3d &_pose, const std::string &_frameName,
     const std::string &_relativeTo) const
 {
   if (_relativeTo == "world")
   {
     const auto vertexId = this->dataPtr->modelGraph.VertexIdByName(_frameName);
-    if (ignition::math::graph::kNullId == vertexId)
+    if (gz::math::graph::kNullId == vertexId)
     {
       return {sdf::Error(sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
           "Frame name [" + _frameName + "] not found in pose graph.")};

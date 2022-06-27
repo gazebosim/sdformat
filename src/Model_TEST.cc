@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
@@ -117,19 +117,19 @@ TEST(DOMModel, Construction)
   model.SetPlacementFrameName("test_frame");
   EXPECT_EQ("test_frame", model.PlacementFrameName());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, model.RawPose());
   EXPECT_TRUE(model.PoseRelativeTo().empty());
   {
     auto semanticPose = model.SemanticPose();
     EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  model.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.RawPose());
+  model.SetRawPose({1, 2, 3, 0, 0, GZ_PI});
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, GZ_PI), model.RawPose());
 
   model.SetPoseRelativeTo("world");
   EXPECT_EQ("world", model.PoseRelativeTo());
@@ -137,7 +137,7 @@ TEST(DOMModel, Construction)
     auto semanticPose = model.SemanticPose();
     EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("world", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -330,7 +330,7 @@ TEST(DOMModel, ToElement)
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
   model.SetEnableWind(true);
-  model.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  model.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
 
   for (int j = 0; j <= 1; ++j)
   {
@@ -415,7 +415,7 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
-  ignition::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
+  gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
     "https://fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model";
 
@@ -442,7 +442,7 @@ TEST(DOMModel, Uri)
 
     sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
-    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ(pose, poseElem->Get<gz::math::Pose3d>());
     EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
     EXPECT_EQ("link0",
@@ -477,7 +477,7 @@ TEST(DOMModel, Uri)
 
     sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
-    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ(pose, poseElem->Get<gz::math::Pose3d>());
     EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
     sdf::ElementPtr staticElem = elem->FindElement("static");

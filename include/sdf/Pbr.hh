@@ -230,7 +230,7 @@ namespace sdf
     public: void SetType(PbrWorkflowType _type);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief This class provides access to Physically-Based-Rendering (PBR)
@@ -262,7 +262,7 @@ namespace sdf
     public: const PbrWorkflow *Workflow(PbrWorkflowType _type) const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

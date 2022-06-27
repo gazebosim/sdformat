@@ -50,7 +50,7 @@ class sdf::ODE::Implementation
 
   /// \brief Unit vector specifying first friction pyramid direction in
   /// collision-fixed reference frame.
-  public: ignition::math::Vector3d fdir1 = {0, 0, 0};
+  public: gz::math::Vector3d fdir1 = {0, 0, 0};
 
   /// \brief Force dependent slip in first friction pyramid direction,
   /// equivalent to inverse of viscous damping coefficient
@@ -87,7 +87,7 @@ class sdf::Surface::Implementation
 
 /////////////////////////////////////////////////
 ODE::ODE()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -121,7 +121,7 @@ Errors ODE::Load(ElementPtr _sdf)
   this->dataPtr->mu2 = _sdf->Get<double>("mu2", this->dataPtr->mu2).first;
   this->dataPtr->slip1 = _sdf->Get<double>("slip1", this->dataPtr->slip1).first;
   this->dataPtr->slip2 = _sdf->Get<double>("slip2", this->dataPtr->slip2).first;
-  this->dataPtr->fdir1 = _sdf->Get<ignition::math::Vector3d>("fdir1",
+  this->dataPtr->fdir1 = _sdf->Get<gz::math::Vector3d>("fdir1",
         this->dataPtr->fdir1).first;
 
   return errors;
@@ -152,13 +152,13 @@ void ODE::SetMu2(double _mu2)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Vector3d &ODE::Fdir1() const
+const gz::math::Vector3d &ODE::Fdir1() const
 {
   return this->dataPtr->fdir1;
 }
 
 /////////////////////////////////////////////////
-void ODE::SetFdir1(const ignition::math::Vector3d &_fdir)
+void ODE::SetFdir1(const gz::math::Vector3d &_fdir)
 {
   this->dataPtr->fdir1 = _fdir;
 }
@@ -195,7 +195,7 @@ sdf::ElementPtr ODE::Element() const
 
 /////////////////////////////////////////////////
 Friction::Friction()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -254,7 +254,7 @@ const sdf::ODE *Friction::ODE() const
 
 /////////////////////////////////////////////////
 Contact::Contact()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -314,7 +314,7 @@ void Contact::SetCollideBitmask(const uint16_t _bitmask)
 
 /////////////////////////////////////////////////
 Surface::Surface()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -398,6 +398,10 @@ sdf::ElementPtr Surface::ToElement() const
   sdf::ElementPtr contactElem = elem->GetElement("contact");
   contactElem->GetElement("collide_bitmask")->Set(
       this->dataPtr->contact.CollideBitmask());
+
+  sdf::ElementPtr frictionElem = elem->GetElement("friction");
+  frictionElem->GetElement("ode")->GetElement("mu")->Set(
+      this->dataPtr->friction.ODE()->Mu());
 
   return elem;
 }

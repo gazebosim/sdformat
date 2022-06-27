@@ -82,16 +82,16 @@ TEST(Frame, ModelFrame)
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
   EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
   EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
-  EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-            ignition::math::Pose3d(1, 1, 0, 0, 0, 0));
+  EXPECT_EQ(poseElem->Get<gz::math::Pose3d>(),
+            gz::math::Pose3d(1, 1, 0, 0, 0, 0));
 
   // model pose
   EXPECT_TRUE(modelElem->HasElement("pose"));
   sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
   EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
   EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "mframe");
-  EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-            ignition::math::Pose3d(1, 0, 0, 0, 0, 0));
+  EXPECT_EQ(modelPoseElem->Get<gz::math::Pose3d>(),
+            gz::math::Pose3d(1, 0, 0, 0, 0, 0));
 
   // link
   EXPECT_TRUE(modelElem->HasElement("link"));
@@ -137,8 +137,8 @@ TEST(Frame, FrameDefaultPose)
   sdf::ElementPtr poseElem = frameElem->GetElement("pose");
   EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
   EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "");
-  EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-            ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(poseElem->Get<gz::math::Pose3d>(),
+            gz::math::Pose3d(0, 0, 0, 0, 0, 0));
 
   // link
   EXPECT_TRUE(modelElem->HasElement("link"));
@@ -184,8 +184,8 @@ TEST(Frame, NoFrame)
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
     EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
     EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "");
-    EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-              ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+    EXPECT_EQ(poseElem->Get<gz::math::Pose3d>(),
+              gz::math::Pose3d(0, 0, 0, 0, 0, 0));
   }
 
   // link
@@ -200,8 +200,8 @@ TEST(Frame, NoFrame)
     sdf::ElementPtr poseElem = linkElem->GetElement("pose");
     EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
     EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "");
-    EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-              ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+    EXPECT_EQ(poseElem->Get<gz::math::Pose3d>(),
+              gz::math::Pose3d(0, 0, 0, 0, 0, 0));
   }
 }
 
@@ -258,16 +258,16 @@ TEST(Frame, StateFrame)
     sdf::ElementPtr poseElem = frameElem->GetElement("pose");
     EXPECT_TRUE(poseElem->HasAttribute("relative_to"));
     EXPECT_EQ(poseElem->Get<std::string>("relative_to"), "/world");
-    EXPECT_EQ(poseElem->Get<ignition::math::Pose3d>(),
-              ignition::math::Pose3d(1, 0, 2, 0, 0, 0));
+    EXPECT_EQ(poseElem->Get<gz::math::Pose3d>(),
+              gz::math::Pose3d(1, 0, 2, 0, 0, 0));
 
     // model pose
     EXPECT_TRUE(modelStateElem->HasElement("pose"));
     sdf::ElementPtr modelPoseElem = modelStateElem->GetElement("pose");
     EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
     EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "mframe");
-    EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-              ignition::math::Pose3d(3, 3, 9, 0, 0, 0));
+    EXPECT_EQ(modelPoseElem->Get<gz::math::Pose3d>(),
+              gz::math::Pose3d(3, 3, 9, 0, 0, 0));
   }
 
   // link
@@ -282,8 +282,8 @@ TEST(Frame, StateFrame)
     sdf::ElementPtr linkPoseElem = linkStateElem->GetElement("pose");
     EXPECT_TRUE(linkPoseElem->HasAttribute("relative_to"));
     EXPECT_EQ(linkPoseElem->Get<std::string>("relative_to"), "lframe");
-    EXPECT_EQ(linkPoseElem->Get<ignition::math::Pose3d>(),
-              ignition::math::Pose3d(111, 3, 0, 0, 0, 0));
+    EXPECT_EQ(linkPoseElem->Get<gz::math::Pose3d>(),
+              gz::math::Pose3d(111, 3, 0, 0, 0, 0));
   }
 
   EXPECT_TRUE(stateElem->HasElement("light"));
@@ -299,8 +299,8 @@ TEST(Frame, StateFrame)
     sdf::ElementPtr lightPoseElem = lightStateElem->GetElement("pose");
     EXPECT_TRUE(lightPoseElem->HasAttribute("relative_to"));
     EXPECT_EQ(lightPoseElem->Get<std::string>("relative_to"), "lframe");
-    EXPECT_EQ(lightPoseElem->Get<ignition::math::Pose3d>(),
-              ignition::math::Pose3d(99, 0, 22, 0, 0, 0));
+    EXPECT_EQ(lightPoseElem->Get<gz::math::Pose3d>(),
+              gz::math::Pose3d(99, 0, 22, 0, 0, 0));
   }
 }
 
@@ -345,8 +345,8 @@ TEST(Frame, IncludeRelativeTo)
   sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
   EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
   EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "/world");
-  EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-            ignition::math::Pose3d(5, -2, 1, 0, 0, 0));
+  EXPECT_EQ(modelPoseElem->Get<gz::math::Pose3d>(),
+            gz::math::Pose3d(5, -2, 1, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -397,8 +397,8 @@ TEST(Frame, IncludeRelativeToEmptyPose)
     sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
     EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
     EXPECT_EQ(modelPoseElem->Get<std::string>("relative_to"), "/world");
-    EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d::Zero);
+    EXPECT_EQ(modelPoseElem->Get<gz::math::Pose3d>(),
+        gz::math::Pose3d::Zero);
   }
   // Check next model
   modelElem = modelElem->GetNextElement("model");
@@ -412,8 +412,8 @@ TEST(Frame, IncludeRelativeToEmptyPose)
     sdf::ElementPtr modelPoseElem = modelElem->GetElement("pose");
     EXPECT_TRUE(modelPoseElem->HasAttribute("relative_to"));
     EXPECT_FALSE(modelPoseElem->GetAttribute("relative_to")->GetSet());
-    EXPECT_EQ(modelPoseElem->Get<ignition::math::Pose3d>(),
-        ignition::math::Pose3d::Zero);
+    EXPECT_EQ(modelPoseElem->Get<gz::math::Pose3d>(),
+        gz::math::Pose3d::Zero);
   }
 }
 
@@ -434,7 +434,7 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_EQ(nullptr, model->LinkByIndex(1));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("L"));
@@ -569,7 +569,7 @@ TEST(DOMFrame, LoadModelFramesAttachedToJoint)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("P"));
@@ -821,7 +821,7 @@ TEST(DOMFrame, LoadModelFramesRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -982,7 +982,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -999,7 +999,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   ASSERT_TRUE(model->LinkNameExists("C"));
 
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), model->LinkByName("P")->RawPose());
-  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("C")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("C")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
 
@@ -1008,7 +1008,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(nullptr, model->JointByIndex(1));
 
   ASSERT_TRUE(model->JointNameExists("J"));
-  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), model->JointByName("J")->RawPose());
+  EXPECT_EQ(Pose(0, 3, 0, 0, -GZ_PI/2, 0), model->JointByName("J")->RawPose());
 
   EXPECT_EQ(4u, model->FrameCount());
   EXPECT_NE(nullptr, model->FrameByIndex(0));
@@ -1033,8 +1033,8 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
 
   EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->FrameByName("F1")->RawPose());
   EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->FrameByName("F2")->RawPose());
-  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), model->FrameByName("F3")->RawPose());
-  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0),
+  EXPECT_EQ(Pose(0, 0, 3, 0, GZ_PI/2, 0), model->FrameByName("F3")->RawPose());
+  EXPECT_EQ(Pose(0, 0, 4, 0, -GZ_PI/2, 0),
             model->FrameByName("F4")->RawPose());
 
   // Test ResolvePose for each Frame.
@@ -1051,11 +1051,11 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_TRUE(
     model->LinkByName("C")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->FrameByName("F2")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(4, 0, 0, 0, GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     model->JointByName("J")->
@@ -1064,7 +1064,7 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_TRUE(
     model->FrameByName("F3")->
       SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 3, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->FrameByName("F4")->
       SemanticPose().Resolve(pose, "__model__").empty());
@@ -1073,9 +1073,9 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_TRUE(model->FrameByName("F1")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(1, 0, 1, 0, 0, 0), pose);
   EXPECT_TRUE(model->FrameByName("F2")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(4, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(4, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 3, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(6, 3, 3, 0, 0, 0), pose);
 
@@ -1086,10 +1086,10 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
     model->LinkByName("C")->SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(2, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->JointByName("J")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(0, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(0, 3, 0, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     model->FrameByName("F1")->SemanticPose().Resolve(pose, "P").empty());
@@ -1099,10 +1099,10 @@ TEST(DOMFrame, LoadModelFramesRelativeToJoint)
   EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), pose);
   EXPECT_TRUE(
     model->FrameByName("F3")->SemanticPose().Resolve(pose, "J").empty());
-  EXPECT_EQ(Pose(0, 0, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(0, 0, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->FrameByName("F4")->SemanticPose().Resolve(pose, "F3").empty());
-  EXPECT_EQ(Pose(0, 0, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(0, 0, 4, 0, -GZ_PI/2, 0), pose);
 }
 
 /////////////////////////////////////////////////
@@ -1233,7 +1233,7 @@ TEST(DOMFrame, WorldIncludeModel)
   sdf::Errors errors = root.LoadSdfString(stream.str());
   EXPECT_TRUE(errors.empty()) << errors[0].Message();
 
-  ignition::math::Pose3d expectedPoses[] = {
+  gz::math::Pose3d expectedPoses[] = {
     {0, 0, 0, 0, 0, 0},
     {1, 0, 0, 0, 0, 0},
     {1, 1, 0, 0, 0, 0},
@@ -1247,7 +1247,7 @@ TEST(DOMFrame, WorldIncludeModel)
   {
     const sdf::Model *model = world->ModelByIndex(i);
     ASSERT_NE(nullptr, model);
-    ignition::math::Pose3d modelPose;
+    gz::math::Pose3d modelPose;
     sdf::Errors resolveErrors = model->SemanticPose().Resolve(modelPose);
     EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
     EXPECT_EQ(expectedPoses[i], modelPose);
@@ -1304,12 +1304,12 @@ TEST(Frame, IncludeFrameWithSubmodel)
   ASSERT_NE(nullptr, link0);
   EXPECT_EQ(link0->Name(), "link");
 
-  ignition::math::Pose3d linkPose;
+  gz::math::Pose3d linkPose;
   sdf::Errors resolveErrors = model->SemanticPose().Resolve(linkPose,
       "top_level_model::box_with_submodel::link");
   EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
   EXPECT_EQ(linkPose.Inverse(),
-            ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
+            gz::math::Pose3d(5, 5, 0, 0, 0, 0));
   /* submodel: pose from parent is translated to model. links are the same
    * ...
    *   <model name='box_with_submodel::submodel_box_with_submodel'>
@@ -1325,10 +1325,10 @@ TEST(Frame, IncludeFrameWithSubmodel)
   EXPECT_EQ(submodel->Name(),
             "submodel_of_box_with_submodel");
 
-  ignition::math::Pose3d submodelPose;
+  gz::math::Pose3d submodelPose;
   resolveErrors = model->SemanticPose().Resolve(submodelPose,
       "top_level_model::box_with_submodel");
   EXPECT_TRUE(resolveErrors.empty()) << resolveErrors[0].Message();
   EXPECT_EQ(submodelPose.Inverse(),
-            ignition::math::Pose3d(5, 5, 0, 0, 0, 0));
+            gz::math::Pose3d(5, 5, 0, 0, 0, 0));
 }

@@ -47,12 +47,12 @@ class SDFORMAT_VISIBLE InterfaceModelPoseGraph
   /// \param[out] _pose Resolved pose
   /// \return Errors
   public: sdf::Errors ResolveNestedModelFramePoseInWorldFrame(
-              ignition::math::Pose3d &_pose) const;
+              gz::math::Pose3d &_pose) const;
 
   /// \brief Resolve the pose a frame within the model's scope.
   /// \param[in] relative_to Can be "world", or any frame within the nested
   ///   model's frame graph. (It cannot reach outside of this model).
-  public: sdf::Errors ResolveNestedFramePose(ignition::math::Pose3d &_pose,
+  public: sdf::Errors ResolveNestedFramePose(gz::math::Pose3d &_pose,
               const std::string &_frameName,
               const std::string &_relativeTo = "world") const;
 
@@ -65,7 +65,7 @@ class SDFORMAT_VISIBLE InterfaceModelPoseGraph
 
   friend class InterfaceModel;
   /// \brief Private data pointer.
-  IGN_UTILS_IMPL_PTR(dataPtr)
+  GZ_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

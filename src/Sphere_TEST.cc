@@ -50,7 +50,7 @@ TEST(DOMSphere, CopyConstructor)
   sdf::Sphere sphere2(sphere);
   EXPECT_DOUBLE_EQ(0.2, sphere2.Radius());
 
-  EXPECT_DOUBLE_EQ(4.0/3.0*IGN_PI*std::pow(0.2, 3), sphere2.Shape().Volume());
+  EXPECT_DOUBLE_EQ(4.0/3.0*GZ_PI*std::pow(0.2, 3), sphere2.Shape().Volume());
   EXPECT_DOUBLE_EQ(0.2, sphere2.Shape().Radius());
 }
 

@@ -20,7 +20,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #pragma push_macro ("__DEPRECATED")
 #undef __DEPRECATED
@@ -191,7 +191,7 @@ TEST_F(UsdLightStageFixture, Lights)
     if (validLight)
     {
       this->CheckLightIntensity(lightUsd, lightSdf);
-      ignition::math::Pose3d pose;
+      gz::math::Pose3d pose;
       const auto poseErrors = sdf::usd::PoseWrtParent(lightSdf, pose);
       EXPECT_TRUE(poseErrors.empty());
       sdf::usd::testing::CheckPrimPose(lightUsd, pose);

@@ -89,7 +89,7 @@ namespace sdf
     USD_TO_SDF_POLYGON_PARSING_ERROR,
   };
 
-  class IGNITION_SDFORMAT_USD_VISIBLE UsdError
+  class GZ_SDFORMAT_USD_VISIBLE UsdError
   {
     /// \brief Default constructor
     public: UsdError();
@@ -175,11 +175,11 @@ namespace sdf
     /// \param[in,out] _out The output stream.
     /// \param[in] _err The error to output.
     /// \return Reference to the given output stream
-   public: friend IGNITION_SDFORMAT_VISIBLE std::ostream &operator<<(
+   public: friend GZ_SDFORMAT_VISIBLE std::ostream &operator<<(
         std::ostream &_out, const sdf::usd::UsdError &_err);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   using UsdErrors = std::vector<UsdError>;

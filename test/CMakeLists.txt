@@ -1,4 +1,3 @@
-get_filename_component(IGN_PATH ${IGN_PROGRAM} DIRECTORY)
 configure_file(test_config.h.in ${PROJECT_BINARY_DIR}/include/test_config.h)
 
 # Build gtest

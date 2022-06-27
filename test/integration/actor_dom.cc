@@ -55,7 +55,7 @@ TEST(DOMActor, LoadActors)
 
   const sdf::Actor *actor1 = world->ActorByIndex(0);
   EXPECT_EQ("actor_1", actor1->Name());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), actor1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), actor1->RawPose());
   EXPECT_EQ("", actor1->PoseRelativeTo());
   EXPECT_EQ(1u, actor1->AnimationCount());
   EXPECT_NE(nullptr, actor1->AnimationByIndex(0));
@@ -83,7 +83,7 @@ TEST(DOMActor, LoadActors)
 
   const sdf::Actor *actor2 = world->ActorByIndex(1);
   EXPECT_EQ("actor_2", actor2->Name());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 1.1, 0, 0, 0), actor2->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 1.1, 0, 0, 0), actor2->RawPose());
   EXPECT_EQ("", actor2->PoseRelativeTo());
   EXPECT_EQ(3u, actor2->AnimationCount());
   EXPECT_NE(nullptr, actor2->AnimationByIndex(0));

@@ -65,11 +65,11 @@ namespace sdf
 
     /// \brief Get the temperature at sea level.
     /// \return The temperature at sea level.
-    public: ignition::math::Temperature Temperature() const;
+    public: gz::math::Temperature Temperature() const;
 
     /// \brief Set the temperature at sea level.
     /// \param[in] _temp The temperature at sea level.
-    public: void SetTemperature(const ignition::math::Temperature &_temp);
+    public: void SetTemperature(const gz::math::Temperature &_temp);
 
     /// \brief Get the temperature gradient with respect to increasing
     /// altitude in units of K/m.
@@ -103,7 +103,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

@@ -43,14 +43,14 @@ void definePlane(pybind11::object module)
           "the Visual or Collision frame, respectively.")
     .def("set_normal", &sdf::Plane::SetNormal,
           "Set the plane normal vector. The normal vector will be "
-          "normalized. See ignition::math::Vector3d Normal() for more "
+          "normalized. See gz::math::Vector3d Normal() for more "
           "information about the normal vector, such as the frame in which it "
           "is specified.")
     .def(
         "shape",
         pybind11::overload_cast<>(&sdf::Plane::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Ignition Math representation of this Plane.")
+        "Get a mutable Gazebo Math representation of this Plane.")
     .def("__copy__", [](const sdf::Plane &self) {
       return sdf::Plane(self);
     })

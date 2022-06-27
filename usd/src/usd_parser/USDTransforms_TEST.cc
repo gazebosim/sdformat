@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"
 #include "test_utils.hh"
@@ -40,9 +40,9 @@
 void checkTransforms(
   const std::string &_primName,
   pxr::UsdStageRefPtr &_stage,
-  const ignition::math::Vector3d &_translation,
-  const std::optional<ignition::math::Quaterniond> &_rotation,
-  const ignition::math::Vector3d &_scale)
+  const gz::math::Vector3d &_translation,
+  const std::optional<gz::math::Quaterniond> &_rotation,
+  const gz::math::Vector3d &_scale)
 {
   pxr::UsdPrim prim = _stage->GetPrimAtPath(pxr::SdfPath(_primName));
   ASSERT_TRUE(prim);
@@ -55,13 +55,13 @@ void checkTransforms(
   if (_rotation)
   {
     ASSERT_TRUE(usdTransforms.Rotation());
-    EXPECT_TRUE(ignition::math::equal(
+    EXPECT_TRUE(gz::math::equal(
       _rotation.value().Roll(),
        usdTransforms.Rotation().value().Roll(), 0.1));
-   EXPECT_TRUE(ignition::math::equal(
+   EXPECT_TRUE(gz::math::equal(
      _rotation.value().Pitch(),
       usdTransforms.Rotation().value().Pitch(), 0.1));
-    EXPECT_TRUE(ignition::math::equal(
+    EXPECT_TRUE(gz::math::equal(
       _rotation.value().Yaw(),
        usdTransforms.Rotation().value().Yaw(), 0.1));
   }
@@ -77,76 +77,76 @@ TEST(USDTransformsTest, ParseUSDTransform)
   checkTransforms(
     "/ground_plane",
     stage,
-    ignition::math::Vector3d(0, 0, -0.125),
-    ignition::math::Quaterniond(1, 0, 0, 0),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, 0, -0.125),
+    gz::math::Quaterniond(1, 0, 0, 0),
+    gz::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/ground_plane/link/visual/geometry",
     stage,
-    ignition::math::Vector3d(0, 0, 0),
+    gz::math::Vector3d(0, 0, 0),
     std::nullopt,
-    ignition::math::Vector3d(100, 100, 0.25)
+    gz::math::Vector3d(100, 100, 0.25)
   );
 
   checkTransforms(
     "/cylinder",
     stage,
-    ignition::math::Vector3d(0, -1.5, 0.5),
-    ignition::math::Quaterniond(1, 0, 0, 0),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, -1.5, 0.5),
+    gz::math::Quaterniond(1, 0, 0, 0),
+    gz::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/sphere",
     stage,
-    ignition::math::Vector3d(0, 1.5, 0.5),
-      ignition::math::Quaterniond(
-        IGN_DTOR(-62), IGN_DTOR(-47.5), IGN_DTOR(-53.41)),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, 1.5, 0.5),
+      gz::math::Quaterniond(
+        GZ_DTOR(-62), GZ_DTOR(-47.5), GZ_DTOR(-53.41)),
+    gz::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/capsule",
     stage,
-    ignition::math::Vector3d(0, -3.0, 0.5),
-    ignition::math::Quaterniond(
-      IGN_DTOR(-75.1), IGN_DTOR(49.2), IGN_DTOR(-81.2)),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, -3.0, 0.5),
+    gz::math::Quaterniond(
+      GZ_DTOR(-75.1), GZ_DTOR(49.2), GZ_DTOR(-81.2)),
+    gz::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/capsule/capsule_link/capsule_visual",
     stage,
-    ignition::math::Vector3d(0, 0, 0),
-    ignition::math::Quaterniond(0, 0, M_PI_2),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, 0, 0),
+    gz::math::Quaterniond(0, 0, M_PI_2),
+    gz::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/ellipsoid",
     stage,
-    ignition::math::Vector3d(0, 3.0, 0.5),
-    ignition::math::Quaterniond(
-      IGN_DTOR(-75.1), IGN_DTOR(49.2), IGN_DTOR(-81.2)),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, 3.0, 0.5),
+    gz::math::Quaterniond(
+      GZ_DTOR(-75.1), GZ_DTOR(49.2), GZ_DTOR(-81.2)),
+    gz::math::Vector3d(1, 1, 1)
   );
 
   checkTransforms(
     "/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry",
     stage,
-    ignition::math::Vector3d(0, 0, 0),
+    gz::math::Vector3d(0, 0, 0),
     std::nullopt,
-    ignition::math::Vector3d(0.4, 0.6, 1)
+    gz::math::Vector3d(0.4, 0.6, 1)
   );
 
   checkTransforms(
     "/sun",
     stage,
-    ignition::math::Vector3d(0, 0, 10),
-      ignition::math::Quaterniond(0, IGN_DTOR(-35), 0),
-    ignition::math::Vector3d(1, 1, 1)
+    gz::math::Vector3d(0, 0, 10),
+      gz::math::Quaterniond(0, GZ_DTOR(-35), 0),
+    gz::math::Vector3d(1, 1, 1)
   );
 }
 
@@ -166,17 +166,17 @@ TEST(USDTransformsTest, GetAllTransform)
         "/ellipsoid/ellipsoid_link/ellipsoid_visual/geometry"));
     ASSERT_TRUE(prim);
 
-    ignition::math::Pose3d pose;
-    ignition::math::Vector3d scale{1, 1, 1};
+    gz::math::Pose3d pose;
+    gz::math::Vector3d scale{1, 1, 1};
 
     sdf::usd::GetTransform(prim, usdData, pose, scale, "/shapes");
 
-    EXPECT_EQ(ignition::math::Vector3d(0.4, 0.6, 1), scale);
+    EXPECT_EQ(gz::math::Vector3d(0.4, 0.6, 1), scale);
     EXPECT_EQ(
-      ignition::math::Pose3d(
-        ignition::math::Vector3d(0, 0.03, 0.005),
-        ignition::math::Quaterniond(
-          IGN_DTOR(-75.1), IGN_DTOR(49.2), IGN_DTOR(-81.2))),
+      gz::math::Pose3d(
+        gz::math::Vector3d(0, 0.03, 0.005),
+        gz::math::Quaterniond(
+          GZ_DTOR(-75.1), GZ_DTOR(49.2), GZ_DTOR(-81.2))),
       pose);
   }
 
@@ -191,31 +191,31 @@ TEST(USDTransformsTest, GetAllTransform)
 
     std::function<void(
       const std::string &,
-      const ignition::math::Vector3d &,
-      const ignition::math::Quaterniond &)> verifyNestedTf =
+      const gz::math::Vector3d &,
+      const gz::math::Quaterniond &)> verifyNestedTf =
       [&](const std::string &_path,
-          const ignition::math::Vector3d &_posePrim,
-          const ignition::math::Quaterniond &_qPrim)
+          const gz::math::Vector3d &_posePrim,
+          const gz::math::Quaterniond &_qPrim)
       {
         pxr::UsdPrim prim = stage->GetPrimAtPath(pxr::SdfPath(_path));
         ASSERT_TRUE(prim);
 
-        ignition::math::Pose3d pose;
-        ignition::math::Vector3d scale{1, 1, 1};
+        gz::math::Pose3d pose;
+        gz::math::Vector3d scale{1, 1, 1};
 
         sdf::usd::GetTransform(prim, usdData, pose, scale, "/transforms");
 
-        EXPECT_EQ(ignition::math::Vector3d(1, 1, 1), scale);
-        EXPECT_EQ(ignition::math::Pose3d(_posePrim, _qPrim), pose);
+        EXPECT_EQ(gz::math::Vector3d(1, 1, 1), scale);
+        EXPECT_EQ(gz::math::Pose3d(_posePrim, _qPrim), pose);
       };
 
     verifyNestedTf(
       "/transforms/nested_transforms_XYZ/child_transform",
-        ignition::math::Vector3d(0.01, 0.01, 0),
-        ignition::math::Quaterniond(0, 0, IGN_DTOR(90)));
+        gz::math::Vector3d(0.01, 0.01, 0),
+        gz::math::Quaterniond(0, 0, GZ_DTOR(90)));
     verifyNestedTf(
       "/transforms/nested_transforms_ZYX/child_transform",
-      ignition::math::Vector3d(0.02, 0.0, 0),
-      ignition::math::Quaterniond(IGN_DTOR(90), 0, 0));
+      gz::math::Vector3d(0.02, 0.0, 0),
+      gz::math::Quaterniond(GZ_DTOR(90), 0, 0));
   }
 }

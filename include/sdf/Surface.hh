@@ -55,7 +55,7 @@ namespace sdf
     public: void SetCollideBitmask(const uint16_t _bitmask);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief ODE information for a friction.
@@ -90,11 +90,11 @@ namespace sdf
 
     /// \brief Get the fdir
     /// \returns ODE fdir
-    public: const ignition::math::Vector3d &Fdir1() const;
+    public: const gz::math::Vector3d &Fdir1() const;
 
     /// \brief Set fdir
     /// \param[in] _fdir ODE fdir
-    public: void SetFdir1(const ignition::math::Vector3d &_fdir);
+    public: void SetFdir1(const gz::math::Vector3d &_fdir);
 
     /// \brief Get the slip1
     /// \returns ODE slip1
@@ -119,7 +119,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Friction information for a surface.
@@ -152,7 +152,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Surface information for a collision.
@@ -201,7 +201,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

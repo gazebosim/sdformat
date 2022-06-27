@@ -51,6 +51,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyForceTorque.cc
   src/sdf/pyFrame.cc
   src/sdf/pyGeometry.cc
+  src/sdf/pyHeightmap.cc
   src/sdf/pyIMU.cc
   src/sdf/pyJoint.cc
   src/sdf/pyJointAxis.cc
@@ -66,9 +67,12 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyParserConfig.cc
   src/sdf/pyPbr.cc
   src/sdf/pyPlane.cc
+  src/sdf/pyPlugin.cc
   src/sdf/pyRoot.cc
+  src/sdf/pyScene.cc
   src/sdf/pySemanticPose.cc
   src/sdf/pySensor.cc
+  src/sdf/pySky.cc
   src/sdf/pySphere.cc
   src/sdf/pySurface.cc
   src/sdf/pyVisual.cc
@@ -88,7 +92,7 @@ if (BUILD_TESTING)
 
   target_link_libraries(sdformattest PRIVATE
     ${PROJECT_LIBRARY_TARGET_NAME}
-    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   )
 
   set(python_tests
@@ -105,6 +109,7 @@ if (BUILD_TESTING)
     pyForceTorque_TEST
     pyFrame_TEST
     pyGeometry_TEST
+    pyHeightmap_TEST
     pyIMU_TEST
     pyJoint_TEST
     pyJointAxis_TEST
@@ -120,9 +125,12 @@ if (BUILD_TESTING)
     pyParserConfig_TEST
     pyPbr_TEST
     pyPlane_TEST
+    pyPlugin_TEST
     pyRoot_TEST
+    pyScene_TEST
     pySemanticPose_TEST
     pySensor_TEST
+    pySky_TEST
     pySphere_TEST
     pySurface_TEST
     pyVisual_TEST

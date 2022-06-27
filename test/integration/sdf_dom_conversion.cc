@@ -73,7 +73,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, altimeterSensor);
     EXPECT_EQ("altimeter_sensor", altimeterSensor->Name());
     EXPECT_EQ(sdf::SensorType::ALTIMETER, altimeterSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d::Zero, altimeterSensor->RawPose());
+    EXPECT_EQ(gz::math::Pose3d::Zero, altimeterSensor->RawPose());
     EXPECT_FALSE(altimeterSensor->EnableMetrics());
     const sdf::Altimeter *altSensor = altimeterSensor->AltimeterSensor();
     ASSERT_NE(nullptr, altSensor);
@@ -94,13 +94,13 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, cameraSensor);
     EXPECT_EQ("camera_sensor", cameraSensor->Name());
     EXPECT_EQ(sdf::SensorType::CAMERA, cameraSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0),
         cameraSensor->RawPose());
     EXPECT_FALSE(cameraSensor->EnableMetrics());
     const sdf::Camera *camSensor = cameraSensor->CameraSensor();
     ASSERT_NE(nullptr, camSensor);
     EXPECT_EQ("my_camera", camSensor->Name());
-    EXPECT_EQ(ignition::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
               camSensor->RawPose());
     EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
     EXPECT_EQ(640u, camSensor->ImageWidth());
@@ -117,7 +117,7 @@ TEST(SDFDomConversion, Sensors)
     EXPECT_DOUBLE_EQ(0.3, camSensor->DistortionK3());
     EXPECT_DOUBLE_EQ(0.4, camSensor->DistortionP1());
     EXPECT_DOUBLE_EQ(0.5, camSensor->DistortionP2());
-    EXPECT_EQ(ignition::math::Vector2d(0.2, 0.4),
+    EXPECT_EQ(gz::math::Vector2d(0.2, 0.4),
         camSensor->DistortionCenter());
     EXPECT_EQ("custom", camSensor->LensType());
     EXPECT_FALSE(camSensor->LensScaleToHfov());
@@ -146,7 +146,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, depthSensor);
     EXPECT_EQ("depth_sensor", depthSensor->Name());
     EXPECT_EQ(sdf::SensorType::DEPTH_CAMERA, depthSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->RawPose());
+    EXPECT_EQ(gz::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->RawPose());
     EXPECT_TRUE(depthSensor->EnableMetrics());
     const sdf::Camera *depthCamSensor = depthSensor->CameraSensor();
     ASSERT_NE(nullptr, depthCamSensor);
@@ -164,7 +164,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, rgbdSensor);
     EXPECT_EQ("rgbd_sensor", rgbdSensor->Name());
     EXPECT_EQ(sdf::SensorType::RGBD_CAMERA, rgbdSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(37, 38, 39, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(37, 38, 39, 0, 0, 0),
         rgbdSensor->RawPose());
     EXPECT_FALSE(rgbdSensor->EnableMetrics());
     const sdf::Camera *rgbdCamSensor = rgbdSensor->CameraSensor();
@@ -183,7 +183,7 @@ TEST(SDFDomConversion, Sensors)
   ASSERT_NE(nullptr, thermalSensor);
     EXPECT_EQ("thermal_sensor", thermalSensor->Name());
     EXPECT_EQ(sdf::SensorType::THERMAL_CAMERA, thermalSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(37, 38, 39, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(37, 38, 39, 0, 0, 0),
               thermalSensor->RawPose());
     EXPECT_FALSE(thermalSensor->EnableMetrics());
     const sdf::Camera *thermalCamSensor = thermalSensor->CameraSensor();
@@ -202,7 +202,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, segmentationSensor);
     EXPECT_EQ("segmentation_sensor", segmentationSensor->Name());
     EXPECT_EQ(sdf::SensorType::SEGMENTATION_CAMERA, segmentationSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(37, 38, 39, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(37, 38, 39, 0, 0, 0),
               segmentationSensor->RawPose());
     const sdf::Camera *segmentationCameraSensor =
       segmentationSensor->CameraSensor();
@@ -223,7 +223,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, forceTorqueSensor);
     EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
     EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
         forceTorqueSensor->RawPose());
     EXPECT_FALSE(forceTorqueSensor->EnableMetrics());
   }
@@ -239,21 +239,21 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, gpuLidarSensor);
     EXPECT_EQ("gpu_lidar_sensor", gpuLidarSensor->Name());
     EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuLidarSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0),
               gpuLidarSensor->RawPose());
     EXPECT_FALSE(gpuLidarSensor->EnableMetrics());
     const sdf::Lidar *gpuLidar = gpuLidarSensor->LidarSensor();
     ASSERT_NE(nullptr, gpuLidar);
     EXPECT_EQ(640u, gpuLidar->HorizontalScanSamples());
     EXPECT_DOUBLE_EQ(1u, gpuLidar->HorizontalScanResolution());
-    EXPECT_EQ(ignition::math::Angle(-1.396263),
+    EXPECT_EQ(gz::math::Angle(-1.396263),
         gpuLidar->HorizontalScanMinAngle());
-    EXPECT_EQ(ignition::math::Angle(1.396263),
+    EXPECT_EQ(gz::math::Angle(1.396263),
         gpuLidar->HorizontalScanMaxAngle());
     EXPECT_EQ(1u, gpuLidar->VerticalScanSamples());
     EXPECT_DOUBLE_EQ(0.01, gpuLidar->VerticalScanResolution());
-    EXPECT_EQ(ignition::math::Angle(0.1), gpuLidar->VerticalScanMinAngle());
-    EXPECT_EQ(ignition::math::Angle(0.2), gpuLidar->VerticalScanMaxAngle());
+    EXPECT_EQ(gz::math::Angle(0.1), gpuLidar->VerticalScanMinAngle());
+    EXPECT_EQ(gz::math::Angle(0.2), gpuLidar->VerticalScanMaxAngle());
 
     EXPECT_DOUBLE_EQ(0.08, gpuLidar->RangeMin());
     EXPECT_DOUBLE_EQ(10.0, gpuLidar->RangeMax());
@@ -271,7 +271,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, imuSensor);
     EXPECT_EQ("imu_sensor", imuSensor->Name());
     EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->RawPose());
+    EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->RawPose());
     EXPECT_FALSE(imuSensor->EnableMetrics());
     const sdf::Imu *imuSensorObj = imuSensor->ImuSensor();
     ASSERT_NE(nullptr, imuSensorObj);
@@ -320,9 +320,9 @@ TEST(SDFDomConversion, Sensors)
 
     EXPECT_EQ("ENU", imuSensorObj->Localization());
     EXPECT_EQ("linka", imuSensorObj->CustomRpyParentFrame());
-    EXPECT_EQ(ignition::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
+    EXPECT_EQ(gz::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
     EXPECT_EQ("linkb", imuSensorObj->GravityDirXParentFrame());
-    EXPECT_EQ(ignition::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
+    EXPECT_EQ(gz::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
 
     EXPECT_FALSE(imuSensorObj->OrientationEnabled());
   }
@@ -338,7 +338,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, magnetometerSensor);
     EXPECT_EQ("magnetometer_sensor", magnetometerSensor->Name());
     EXPECT_EQ(sdf::SensorType::MAGNETOMETER, magnetometerSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
         magnetometerSensor->RawPose());
     EXPECT_FALSE(magnetometerSensor->EnableMetrics());
     const sdf::Magnetometer *magSensor =
@@ -363,7 +363,7 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, airPressureSensor);
     EXPECT_EQ("air_pressure_sensor", airPressureSensor->Name());
     EXPECT_EQ(sdf::SensorType::AIR_PRESSURE, airPressureSensor->Type());
-    EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(10, 20, 30, 0, 0, 0),
         airPressureSensor->RawPose());
     EXPECT_FALSE(airPressureSensor->EnableMetrics());
     const sdf::AirPressure *airSensor = airPressureSensor->AirPressureSensor();
@@ -404,12 +404,12 @@ TEST(SDFDomConversion, Lights)
     ASSERT_NE(nullptr, pointLight);
     EXPECT_EQ("point_light", pointLight->Name());
     EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
-    EXPECT_EQ(ignition::math::Pose3d(10, 2, 100, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(10, 2, 100, 0, 0, 0),
         pointLight->RawPose());
     EXPECT_FALSE(pointLight->CastShadows());
-    EXPECT_EQ(ignition::math::Color(0.0f, 0.1f, 0.8f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 0.1f, 0.8f, 1.0f),
         pointLight->Diffuse());
-    EXPECT_EQ(ignition::math::Color(0.03f, 0.02f, 0.0f, 0.5f),
+    EXPECT_EQ(gz::math::Color(0.03f, 0.02f, 0.0f, 0.5f),
         pointLight->Specular());
     EXPECT_DOUBLE_EQ(1234.0, pointLight->AttenuationRange());
     // value should be clamped to [0, 1]
@@ -427,18 +427,18 @@ TEST(SDFDomConversion, Lights)
     ASSERT_NE(nullptr, spotLight);
     EXPECT_EQ("spot_light", spotLight->Name());
     EXPECT_EQ(sdf::LightType::SPOT, spotLight->Type());
-    EXPECT_EQ(ignition::math::Pose3d::Zero,
+    EXPECT_EQ(gz::math::Pose3d::Zero,
         spotLight->RawPose());
     EXPECT_TRUE(spotLight->CastShadows());
     EXPECT_DOUBLE_EQ(12.34, spotLight->AttenuationRange());
     EXPECT_DOUBLE_EQ(0.01, spotLight->LinearAttenuationFactor());
     EXPECT_DOUBLE_EQ(0.02, spotLight->ConstantAttenuationFactor());
     EXPECT_DOUBLE_EQ(0.0001, spotLight->QuadraticAttenuationFactor());
-    EXPECT_EQ(ignition::math::Color(0.0f, 0.05f, 0.06f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 0.05f, 0.06f, 1.0f),
         spotLight->Diffuse());
-    EXPECT_EQ(ignition::math::Color(0.05f, 0.04f, 0.1f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.05f, 0.04f, 0.1f, 1.0f),
         spotLight->Specular());
-    EXPECT_EQ(ignition::math::Vector3d(1.0, 5.1, 2.1), spotLight->Direction());
+    EXPECT_EQ(gz::math::Vector3d(1.0, 5.1, 2.1), spotLight->Direction());
   }
 
   // directional
@@ -450,14 +450,14 @@ TEST(SDFDomConversion, Lights)
     ASSERT_NE(nullptr, dirLight);
     EXPECT_EQ("directional_light", dirLight->Name());
     EXPECT_EQ(sdf::LightType::DIRECTIONAL, dirLight->Type());
-    EXPECT_EQ(ignition::math::Pose3d(1, 1, 2, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(1, 1, 2, 0, 0, 0),
         dirLight->RawPose());
     EXPECT_TRUE(dirLight->CastShadows());
-    EXPECT_EQ(ignition::math::Color(0.0f, 0.0f, 0.3f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 0.0f, 0.3f, 1.0f),
         dirLight->Diffuse());
-    EXPECT_EQ(ignition::math::Color(0.0f, 0.9f, 0.11f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 0.9f, 0.11f, 1.0f),
         dirLight->Specular());
-    EXPECT_EQ(ignition::math::Vector3d(5.0, 5.2, 6.0), dirLight->Direction());
+    EXPECT_EQ(gz::math::Vector3d(5.0, 5.2, 6.0), dirLight->Direction());
   }
 
   // Get model with lights attached to its link
@@ -477,18 +477,18 @@ TEST(SDFDomConversion, Lights)
     ASSERT_NE(nullptr, spotLight);
     EXPECT_EQ("link_spot_light", spotLight->Name());
     EXPECT_EQ(sdf::LightType::SPOT, spotLight->Type());
-    EXPECT_EQ(ignition::math::Pose3d::Zero,
+    EXPECT_EQ(gz::math::Pose3d::Zero,
         spotLight->RawPose());
     EXPECT_TRUE(spotLight->CastShadows());
     EXPECT_DOUBLE_EQ(12.35, spotLight->AttenuationRange());
     EXPECT_DOUBLE_EQ(0.1, spotLight->LinearAttenuationFactor());
     EXPECT_DOUBLE_EQ(0.2, spotLight->ConstantAttenuationFactor());
     EXPECT_DOUBLE_EQ(0.001, spotLight->QuadraticAttenuationFactor());
-    EXPECT_EQ(ignition::math::Color(0.0f, 0.05f, 0.06f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 0.05f, 0.06f, 1.0f),
         spotLight->Diffuse());
-    EXPECT_EQ(ignition::math::Color(0.03f, 0.02f, 0.0f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.03f, 0.02f, 0.0f, 1.0f),
         spotLight->Specular());
-    EXPECT_EQ(ignition::math::Vector3d(1.0, 5.0, 2.0), spotLight->Direction());
+    EXPECT_EQ(gz::math::Vector3d(1.0, 5.0, 2.0), spotLight->Direction());
   }
 
   // point
@@ -500,12 +500,12 @@ TEST(SDFDomConversion, Lights)
     ASSERT_NE(nullptr, pointLight);
     EXPECT_EQ("link_point_light", pointLight->Name());
     EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
-    EXPECT_EQ(ignition::math::Pose3d(10, 20, 100, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(10, 20, 100, 0, 0, 0),
         pointLight->RawPose());
     EXPECT_FALSE(pointLight->CastShadows());
-    EXPECT_EQ(ignition::math::Color(1.0f, 0.0f, 0.6f, 1.0f),
+    EXPECT_EQ(gz::math::Color(1.0f, 0.0f, 0.6f, 1.0f),
         pointLight->Diffuse());
-    EXPECT_EQ(ignition::math::Color(0.3f, 0.2f, 0.0f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.3f, 0.2f, 0.0f, 1.0f),
         pointLight->Specular());
     EXPECT_DOUBLE_EQ(1235.0, pointLight->AttenuationRange());
     EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());
@@ -523,14 +523,14 @@ TEST(SDFDomConversion, Lights)
     ASSERT_NE(nullptr, dirLight);
     EXPECT_EQ("link_directional_light", dirLight->Name());
     EXPECT_EQ(sdf::LightType::DIRECTIONAL, dirLight->Type());
-    EXPECT_EQ(ignition::math::Pose3d(0, 1, 2, 0, 0, 0),
+    EXPECT_EQ(gz::math::Pose3d(0, 1, 2, 0, 0, 0),
         dirLight->RawPose());
     EXPECT_TRUE(dirLight->CastShadows());
-    EXPECT_EQ(ignition::math::Color(0.0f, 1.0f, 0.2f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 1.0f, 0.2f, 1.0f),
         dirLight->Diffuse());
-    EXPECT_EQ(ignition::math::Color(0.0f, 0.2f, 0.1f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.0f, 0.2f, 0.1f, 1.0f),
         dirLight->Specular());
-    EXPECT_EQ(ignition::math::Vector3d(4.0, 5.0, 6.0), dirLight->Direction());
+    EXPECT_EQ(gz::math::Vector3d(4.0, 5.0, 6.0), dirLight->Direction());
   }
 }
 
@@ -568,8 +568,8 @@ TEST(SDFDomConversion, Joints)
   EXPECT_EQ("joint", joint->Name());
   EXPECT_EQ(1u, joint->SensorCount());
 
-  EXPECT_EQ("link1", joint->ParentLinkName());
-  EXPECT_EQ("link2", joint->ChildLinkName());
+  EXPECT_EQ("link1", joint->ParentName());
+  EXPECT_EQ("link2", joint->ChildName());
   EXPECT_EQ(sdf::JointType::FIXED, joint->Type());
 
   // Get the force_torque sensor
@@ -578,7 +578,7 @@ TEST(SDFDomConversion, Joints)
   ASSERT_NE(nullptr, forceTorqueSensor);
   EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
   EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
       forceTorqueSensor->RawPose());
   auto forceTorqueSensorObj = forceTorqueSensor->ForceTorqueSensor();
   ASSERT_NE(nullptr, forceTorqueSensorObj);

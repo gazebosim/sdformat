@@ -20,8 +20,8 @@
 #include <optional>
 #include <utility>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/usd/usd_parser/USDData.hh"
 
@@ -49,56 +49,56 @@ const char kGfQuatdString[] = {"GfQuatd"};
 class UDSTransforms::Implementation
 {
   /// \brief Scale of the schema
-  public: ignition::math::Vector3d scale{1, 1, 1};
+  public: gz::math::Vector3d scale{1, 1, 1};
 
   /// \brief Rotation of the schema
-  public: std::optional<ignition::math::Quaterniond> q = std::nullopt;
+  public: std::optional<gz::math::Quaterniond> q = std::nullopt;
 
   /// \brief Translation of the schema
-  public: ignition::math::Vector3d translate{0, 0, 0};
+  public: gz::math::Vector3d translate{0, 0, 0};
 };
 
 /////////////////////////////////////////////////
 UDSTransforms::UDSTransforms()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
 //////////////////////////////////////////////////
-const ignition::math::Vector3d UDSTransforms::Translation() const
+const gz::math::Vector3d UDSTransforms::Translation() const
 {
   return this->dataPtr->translate;
 }
 
 //////////////////////////////////////////////////
-const ignition::math::Vector3d UDSTransforms::Scale() const
+const gz::math::Vector3d UDSTransforms::Scale() const
 {
   return this->dataPtr->scale;
 }
 
 //////////////////////////////////////////////////
-const std::optional<ignition::math::Quaterniond> UDSTransforms::Rotation() const
+const std::optional<gz::math::Quaterniond> UDSTransforms::Rotation() const
 {
   return this->dataPtr->q;
 }
 
 //////////////////////////////////////////////////
 void UDSTransforms::SetTranslation(
-  const ignition::math::Vector3d &_translate)
+  const gz::math::Vector3d &_translate)
 {
   this->dataPtr->translate = _translate;
 }
 
 //////////////////////////////////////////////////
 void UDSTransforms::SetScale(
-  const ignition::math::Vector3d &_scale)
+  const gz::math::Vector3d &_scale)
 {
   this->dataPtr->scale = _scale;
 }
 
 //////////////////////////////////////////////////
 void UDSTransforms::SetRotation(
-  const ignition::math::Quaterniond &_q)
+  const gz::math::Quaterniond &_q)
 {
   this->dataPtr->q = _q;
 }
@@ -115,8 +115,8 @@ void UDSTransforms::SetRotation(
 void GetAllTransforms(
   const pxr::UsdPrim &_prim,
   const USDData &_usdData,
-  std::vector<ignition::math::Pose3d> &_tfs,
-  ignition::math::Vector3d &_scale,
+  std::vector<gz::math::Pose3d> &_tfs,
+  gz::math::Vector3d &_scale,
   const std::string &_schemaToStop)
 {
   pxr::UsdPrim parent = _prim;
@@ -139,7 +139,7 @@ void GetAllTransforms(
 
     UDSTransforms t = ParseUSDTransform(parent);
 
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     _scale *= t.Scale();
 
     pose.Pos() = t.Translation() * metersPerUnit;
@@ -166,9 +166,9 @@ void GetAllTransforms(
     // Add additional rotation to match with Z up Axis.
     // TODO(anyone) handle upAxis == "X". This is a case that is rarely
     // used by other renderers
-    ignition::math::Pose3d poseUpAxis = ignition::math::Pose3d(
-      ignition::math::Vector3d(0, 0, 0),
-      ignition::math::Quaterniond(IGN_PI_2, 0, 0));
+    gz::math::Pose3d poseUpAxis = gz::math::Pose3d(
+      gz::math::Vector3d(0, 0, 0),
+      gz::math::Quaterniond(GZ_PI_2, 0, 0));
     _tfs.push_back(poseUpAxis);
   }
 }
@@ -177,11 +177,11 @@ void GetAllTransforms(
 void GetTransform(
   const pxr::UsdPrim &_prim,
   const USDData &_usdData,
-  ignition::math::Pose3d &_pose,
-  ignition::math::Vector3d &_scale,
+  gz::math::Pose3d &_pose,
+  gz::math::Vector3d &_scale,
   const std::string &_schemaToStop)
 {
-  std::vector<ignition::math::Pose3d> tfs;
+  std::vector<gz::math::Pose3d> tfs;
   GetAllTransforms(_prim, _usdData, tfs, _scale, _schemaToStop);
   for (auto & rt : tfs)
   {
@@ -220,7 +220,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         scale[1] = static_cast<float>(scaleTmp[1]);
         scale[2] = static_cast<float>(scaleTmp[2]);
       }
-      t.SetScale(ignition::math::Vector3d(scale[0], scale[1], scale[2]));
+      t.SetScale(gz::math::Vector3d(scale[0], scale[1], scale[2]));
     }
     else if (op == kXFormOpRotateZYX || op == kXFormOpRotateXYZ)
     {
@@ -246,17 +246,17 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         rotationEuler[1] = static_cast<float>(rotationEulerTmp[1]);
         rotationEuler[2] = static_cast<float>(rotationEulerTmp[2]);
       }
-      ignition::math::Quaterniond qX, qY, qZ;
-      ignition::math::Angle angleX(IGN_DTOR(rotationEuler[0]));
-      ignition::math::Angle angleY(IGN_DTOR(rotationEuler[1]));
-      ignition::math::Angle angleZ(IGN_DTOR(rotationEuler[2]));
-      qX = ignition::math::Quaterniond(angleX.Normalized().Radian(), 0, 0);
-      qY = ignition::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
-      qZ = ignition::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
+      gz::math::Quaterniond qX, qY, qZ;
+      gz::math::Angle angleX(GZ_DTOR(rotationEuler[0]));
+      gz::math::Angle angleY(GZ_DTOR(rotationEuler[1]));
+      gz::math::Angle angleZ(GZ_DTOR(rotationEuler[2]));
+      qX = gz::math::Quaterniond(angleX.Normalized().Radian(), 0, 0);
+      qY = gz::math::Quaterniond(0, angleY.Normalized().Radian(), 0);
+      qZ = gz::math::Quaterniond(0, 0, angleZ.Normalized().Radian());
 
       // TODO(ahcorde) This part should be reviewed, revisit how rotateXYZ
       // and rotateZYX are handle.
-      // Related issue https://github.com/ignitionrobotics/sdformat/issues/926
+      // Related issue https://github.com/gazebosim/sdformat/issues/926
       // if (op == kXFormOpRotateZYX)
       // {
       //   std::swap(angleX, angleZ);
@@ -278,7 +278,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
         translate[1] = static_cast<float>(translateTmp[1]);
         translate[2] = static_cast<float>(translateTmp[2]);
       }
-      t.SetTranslation(ignition::math::Vector3d(
+      t.SetTranslation(gz::math::Vector3d(
         translate[0],
         translate[1],
         translate[2]));
@@ -300,7 +300,7 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
           rotationQuadTmp.GetImaginary()[2]);
         rotationQuad.SetReal(rotationQuadTmp.GetReal());
       }
-      ignition::math::Quaterniond q(
+      gz::math::Quaterniond q(
         rotationQuad.GetReal(),
         rotationQuad.GetImaginary()[0],
         rotationQuad.GetImaginary()[1],
@@ -316,17 +316,17 @@ UDSTransforms ParseUSDTransform(const pxr::UsdPrim &_prim)
       const auto rot = transform.RemoveScaleShear();
       const auto scaleShear = transform * rot.GetInverse();
 
-      t.SetScale(ignition::math::Vector3d(
+      t.SetScale(gz::math::Vector3d(
         scaleShear[0][0],
         scaleShear[1][1],
         scaleShear[2][2]));
 
       const auto rotQuat = rot.ExtractRotationQuat();
-      t.SetTranslation(ignition::math::Vector3d(
+      t.SetTranslation(gz::math::Vector3d(
         transform[3][0],
         transform[3][1],
         transform[3][2]));
-      ignition::math::Quaterniond q(
+      gz::math::Quaterniond q(
         rotQuat.GetReal(),
         rotQuat.GetImaginary()[0],
         rotQuat.GetImaginary()[1],

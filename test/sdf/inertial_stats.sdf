@@ -2,7 +2,7 @@
 <!---
 Model consists of 4 cubes places symmetrically
 in the XY plane. This model is used to verify the
-"ign sdf --inertial-stats" tool .
+"gz sdf --inertial-stats" tool .
             +y
             │
           ┌─┼─┐

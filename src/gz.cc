@@ -31,11 +31,11 @@
 #include "sdf/PrintConfig.hh"
 #include "sdf/system_util.hh"
 
-#include "ignition/math/Inertial.hh"
+#include "gz/math/Inertial.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
-#include "ign.hh"
+#include "gz.hh"
 
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
@@ -58,7 +58,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
     result = -1;
   }
 
-  if (!sdf::checkJointParentChildLinkNames(&root))
+  if (!sdf::checkJointParentChildNames(&root))
   {
     result = -1;
   }
@@ -106,7 +106,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE char *ignitionVersion()
+extern "C" SDFORMAT_VISIBLE char *gzVersion()
 {
 #ifdef _MSC_VER
   return _strdup(SDF_VERSION_FULL);
@@ -288,11 +288,11 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
             " models will not be included." << std::endl;
   }
 
-  ignition::math::Inertiald totalInertial;
+  gz::math::Inertiald totalInertial;
 
   for (uint64_t i = 0; i < model->LinkCount(); i++)
   {
-    ignition::math::Pose3d linkPoseRelativeToModel;
+    gz::math::Pose3d linkPoseRelativeToModel;
     errors = model->LinkByIndex(i)->SemanticPose().
       Resolve(linkPoseRelativeToModel, "__model__");
 

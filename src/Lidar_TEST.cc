@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Angle.hh>
+#include <gz/math/Angle.hh>
 #include "sdf/Lidar.hh"
 
 /////////////////////////////////////////////////
@@ -36,18 +36,18 @@ TEST(DOMLidar, Set)
   EXPECT_EQ(lidar.HorizontalScanSamples(), 123u);
   lidar.SetHorizontalScanResolution(0.45);
   EXPECT_DOUBLE_EQ(lidar.HorizontalScanResolution(), 0.45);
-  lidar.SetHorizontalScanMinAngle(ignition::math::Angle(0.67));
+  lidar.SetHorizontalScanMinAngle(gz::math::Angle(0.67));
   EXPECT_DOUBLE_EQ(*(lidar.HorizontalScanMinAngle()), 0.67);
-  lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(0.89));
+  lidar.SetHorizontalScanMaxAngle(gz::math::Angle(0.89));
   EXPECT_DOUBLE_EQ(*(lidar.HorizontalScanMaxAngle()), 0.89);
 
   lidar.SetVerticalScanSamples(98);
   EXPECT_EQ(lidar.VerticalScanSamples(), 98u);
   lidar.SetVerticalScanResolution(0.76);
   EXPECT_DOUBLE_EQ(lidar.VerticalScanResolution(), 0.76);
-  lidar.SetVerticalScanMinAngle(ignition::math::Angle(0.54));
+  lidar.SetVerticalScanMinAngle(gz::math::Angle(0.54));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMinAngle()), 0.54);
-  lidar.SetVerticalScanMaxAngle(ignition::math::Angle(0.321));
+  lidar.SetVerticalScanMaxAngle(gz::math::Angle(0.321));
   EXPECT_DOUBLE_EQ(*(lidar.VerticalScanMaxAngle()), 0.321);
 
   lidar.SetRangeMin(1.2);
@@ -130,12 +130,12 @@ TEST(DOMLidar, ToElement)
   sdf::Lidar lidar;
   lidar.SetHorizontalScanSamples(123);
   lidar.SetHorizontalScanResolution(0.45);
-  lidar.SetHorizontalScanMinAngle(ignition::math::Angle(0.67));
-  lidar.SetHorizontalScanMaxAngle(ignition::math::Angle(0.89));
+  lidar.SetHorizontalScanMinAngle(gz::math::Angle(0.67));
+  lidar.SetHorizontalScanMaxAngle(gz::math::Angle(0.89));
   lidar.SetVerticalScanSamples(98);
   lidar.SetVerticalScanResolution(0.76);
-  lidar.SetVerticalScanMinAngle(ignition::math::Angle(0.54));
-  lidar.SetVerticalScanMaxAngle(ignition::math::Angle(0.321));
+  lidar.SetVerticalScanMinAngle(gz::math::Angle(0.54));
+  lidar.SetVerticalScanMaxAngle(gz::math::Angle(0.321));
   lidar.SetRangeMin(1.2);
   lidar.SetRangeMax(3.4);
   lidar.SetRangeResolution(5.6);

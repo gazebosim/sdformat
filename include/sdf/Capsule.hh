@@ -64,13 +64,13 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Capsule.
-    /// \return A const reference to an ignition::math::Sphered object.
-    public: const ignition::math::Capsuled &Shape() const;
+    /// \brief Get the Gazebo Math representation of this Capsule.
+    /// \return A const reference to an gz::math::Sphered object.
+    public: const gz::math::Capsuled &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Capsule.
-    /// \return A reference to an ignition::math::Capsuled object.
-    public: ignition::math::Capsuled &Shape();
+    /// \brief Get a mutable Gazebo Math representation of this Capsule.
+    /// \return A reference to an gz::math::Capsuled object.
+    public: gz::math::Capsuled &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.
@@ -80,7 +80,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }
