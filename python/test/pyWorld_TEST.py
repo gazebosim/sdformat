@@ -164,7 +164,7 @@ class WorldTEST(unittest.TestCase):
 # }
 #
 
-    def test_set_scene(self):
+    def test_set_physics(self):
         world = World()
         self.assertEqual(None, world.physics_default())
         physics = Physics()
