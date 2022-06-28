@@ -22,7 +22,7 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.

@@ -23,7 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 #include <gz/utils/Environment.hh>
 

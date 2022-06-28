@@ -17,7 +17,7 @@ OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" O
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
-# Find ign-cmake
+# Find gz-cmake
 find_package(gz-cmake3 REQUIRED)
 set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
@@ -30,6 +30,9 @@ option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
 option(USE_DIST_PACKAGES_FOR_PYTHON
       "Use dist-packages instead of site-package to install python modules"
       OFF)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_SDF)
   gz_configure_project(

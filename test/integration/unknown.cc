@@ -22,7 +22,7 @@
 #include "sdf/sdf.hh"
 #include "sdf/Error.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 /// Test the copy of XML elements that are not part of the specification.
