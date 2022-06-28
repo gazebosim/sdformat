@@ -148,8 +148,8 @@ TEST(DOMScene, Set)
   scene.SetAmbient(gz::math::Color(0.1f, 0.2f, 0.3f));
   EXPECT_EQ(gz::math::Color(0.1f, 0.2f, 0.3f), scene.Ambient());
 
-  scene.SetBackground(gz::math::Color(0.1f, 0.2f, 0.3f));
-  EXPECT_EQ(gz::math::Color(0.1f, 0.2f, 0.3f), scene.Ambient());
+  scene.SetBackground(gz::math::Color(0.2f, 0.3f, 0.4f));
+  EXPECT_EQ(gz::math::Color(0.2f, 0.3f, 0.4f), scene.Background());
 
   scene.SetGrid(true);
   EXPECT_TRUE(scene.Grid());

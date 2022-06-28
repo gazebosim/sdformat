@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 const char SDF_TEST_FILE[] = "fixed_joint_reduction.urdf";
 const char SDF_TEST_FILE_COLLISION[] = "fixed_joint_reduction_collision.urdf";

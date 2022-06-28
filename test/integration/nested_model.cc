@@ -25,7 +25,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////
 // Test parsing nested model with joint
@@ -259,13 +259,13 @@ TEST(NestedModel, NestedInclude)
   //
   // 1. double_pendulum_with_base is included directly into the world
   //    with the following pose
-  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, GZ_PI/2);
   // 2. it's also included into the model named "include_with_rotation"
   //    with the following pose
-  const gz::math::Pose3d model2Pose(-10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model2Pose(-10, 0, 0, 0, 0, GZ_PI/2);
   // 3. double_pendulum_with_base_14 is included into
   //    the model named "include_with_rotation_1.4" with the following pose
-  const gz::math::Pose3d model3Pose(0, 10, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model3Pose(0, 10, 0, 0, 0, GZ_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.5";
@@ -409,7 +409,7 @@ TEST(NestedModel, NestedModelWithFrames)
   const std::string modelPath =
     sdf::testing::TestFile("integration", "model", name);
 
-  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, GZ_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -448,8 +448,8 @@ TEST(NestedModel, NestedModelWithFrames)
   using gz::math::Pose3d;
   using gz::math::Vector3d;
   // Expected poses for frames, links and joints after nesting.
-  Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI/2, 0, 0);
-  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI/4, 0);
+  Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, GZ_PI/2, 0, 0);
+  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, GZ_PI/4, 0);
   Pose3d link1ExpPose = frame1ExpPose;
   Pose3d link2ExpPose = frame1ExpPose * Pose3d(1, 0, 0, 0, 0, 0);
   Pose3d joint1ExpPose = link1ExpPose;
@@ -785,8 +785,8 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
   const std::string MODEL_PATH =
       sdf::testing::TestFile("integration", "model", name);
 
-  const gz::math::Pose3d testFramePose(0, 5, 0, 0, 0, -IGN_PI/2);
-  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d testFramePose(0, 5, 0, 0, 0, -GZ_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, GZ_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -835,8 +835,8 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
   // Expected poses
   Pose3d nestedModel1FrameExpPose = testFramePose * model1Pose;
   Pose3d frame1ExpPose =
-      nestedModel1FrameExpPose * Pose3d(0, 0, 0, IGN_PI / 2, 0, 0);
-  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI / 4, 0);
+      nestedModel1FrameExpPose * Pose3d(0, 0, 0, GZ_PI / 2, 0, 0);
+  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, GZ_PI / 4, 0);
   Pose3d link1ExpPose = frame1ExpPose;
   Pose3d link2ExpPose = frame1ExpPose * Pose3d(1, 0, 0, 0, 0, 0);
   Pose3d joint1ExpPose = link1ExpPose;
@@ -888,7 +888,7 @@ TEST(NestedModel, NestedFrameOnlyModel)
   const std::string MODEL_PATH =
       sdf::testing::TestFile("integration", "model", name);
 
-  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, GZ_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.8";
@@ -925,8 +925,8 @@ TEST(NestedModel, NestedFrameOnlyModel)
   using gz::math::Pose3d;
   using gz::math::Vector3d;
   // Expected poses for frames after nesting.
-  Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI, 0, 0);
-  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI, 0);
+  Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, GZ_PI, 0, 0);
+  Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, GZ_PI, 0);
 
   Pose3d frame1Pose;
   EXPECT_TRUE(parentSemPose.Resolve(frame1Pose, "ParentModel::M1::F1").empty());
@@ -1002,7 +1002,7 @@ class PlacementFrame: public ::testing::Test
   void TestExpectedWorldPose(const std::string &_testModelName,
                              const std::string &_testFrameName)
   {
-    const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const Pose3d placementPose(0, 10, 0, GZ_PI_2, 0, 0);
     const sdf::Model *testModel = this->world->ModelByName(_testModelName);
     ASSERT_NE(nullptr, testModel);
 
@@ -1034,7 +1034,7 @@ class PlacementFrame: public ::testing::Test
   void TestExpectedModelPose(const std::string &_parentModelName,
                              const std::string &_testFrameName)
   {
-    const Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const Pose3d placementPose(0, 10, 0, GZ_PI_2, 0, 0);
     const sdf::Model *parentModel = this->world->ModelByName(_parentModelName);
     ASSERT_NE(nullptr, parentModel);
 
@@ -1141,42 +1141,42 @@ TEST(NestedReference, PoseRelativeTo)
     const sdf::Model *testModel = model->ModelByName("M2");
     ASSERT_NE(nullptr, testModel);
     EXPECT_TRUE(parentSemPose.Resolve(pose, "parent_model::M2").empty());
-    EXPECT_EQ(Pose(1, 0, -2, 0, IGN_PI_2, 0), pose.Inverse());
+    EXPECT_EQ(Pose(1, 0, -2, 0, GZ_PI_2, 0), pose.Inverse());
   }
   {
     Pose pose;
     const sdf::Model *testModel = model->ModelByName("M3");
     ASSERT_NE(nullptr, testModel);
     EXPECT_TRUE(parentSemPose.Resolve(pose, "parent_model::M3").empty());
-    EXPECT_EQ(Pose(1, 1, -3, 0, IGN_PI_2, 0), pose.Inverse());
+    EXPECT_EQ(Pose(1, 1, -3, 0, GZ_PI_2, 0), pose.Inverse());
   }
   {
     Pose pose;
     const sdf::Model *testModel = model->ModelByName("M4");
     ASSERT_NE(nullptr, testModel);
     EXPECT_TRUE(parentSemPose.Resolve(pose, "parent_model::M4").empty());
-    EXPECT_EQ(Pose(2, 0, -4, 0, IGN_PI_2, 0), pose.Inverse());
+    EXPECT_EQ(Pose(2, 0, -4, 0, GZ_PI_2, 0), pose.Inverse());
   }
   {
     Pose pose;
     const sdf::Model *testModel = model->ModelByName("M5");
     ASSERT_NE(nullptr, testModel);
     EXPECT_TRUE(parentSemPose.Resolve(pose, "parent_model::M5").empty());
-    EXPECT_EQ(Pose(2, 0, -6, 0, IGN_PI_2, 0), pose.Inverse());
+    EXPECT_EQ(Pose(2, 0, -6, 0, GZ_PI_2, 0), pose.Inverse());
   }
   {
     Pose pose;
     const sdf::Model *testModel = model->ModelByName("M6");
     ASSERT_NE(nullptr, testModel);
     EXPECT_TRUE(parentSemPose.Resolve(pose, "parent_model::M6").empty());
-    EXPECT_EQ(Pose(1, 1, -6, IGN_PI_2, IGN_PI_2, 0), pose.Inverse());
+    EXPECT_EQ(Pose(1, 1, -6, GZ_PI_2, GZ_PI_2, 0), pose.Inverse());
   }
   {
     Pose pose;
     const sdf::Model *testModel = model->ModelByName("M7");
     ASSERT_NE(nullptr, testModel);
     EXPECT_TRUE(parentSemPose.Resolve(pose, "parent_model::M7").empty());
-    EXPECT_EQ(Pose(1, -6, -1, 0, 0, -IGN_PI_2), pose.Inverse());
+    EXPECT_EQ(Pose(1, -6, -1, 0, 0, -GZ_PI_2), pose.Inverse());
   }
 }
 
@@ -1202,42 +1202,42 @@ TEST(NestedReference, PoseRelativeToInWorld)
     const sdf::Frame *testFrame = world->FrameByName("F2");
     ASSERT_NE(nullptr, testFrame);
     EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
-    EXPECT_EQ(Pose(1, 0, -2, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(1, 0, -2, 0, GZ_PI_2, 0), pose);
   }
   {
     Pose pose;
     const sdf::Frame *testFrame = world->FrameByName("F3");
     ASSERT_NE(nullptr, testFrame);
     EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
-    EXPECT_EQ(Pose(1, 1, -3, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(1, 1, -3, 0, GZ_PI_2, 0), pose);
   }
   {
     Pose pose;
     const sdf::Frame *testFrame = world->FrameByName("F4");
     ASSERT_NE(nullptr, testFrame);
     EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
-    EXPECT_EQ(Pose(2, 0, -4, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(2, 0, -4, 0, GZ_PI_2, 0), pose);
   }
   {
     Pose pose;
     const sdf::Frame *testFrame = world->FrameByName("F5");
     ASSERT_NE(nullptr, testFrame);
     EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
-    EXPECT_EQ(Pose(2, 0, -6, 0, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(2, 0, -6, 0, GZ_PI_2, 0), pose);
   }
   {
     Pose pose;
     const sdf::Frame *testFrame = world->FrameByName("F6");
     ASSERT_NE(nullptr, testFrame);
     EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
-    EXPECT_EQ(Pose(1, 1, -6, IGN_PI_2, IGN_PI_2, 0), pose);
+    EXPECT_EQ(Pose(1, 1, -6, GZ_PI_2, GZ_PI_2, 0), pose);
   }
   {
     Pose pose;
     const sdf::Frame *testFrame = world->FrameByName("F7");
     ASSERT_NE(nullptr, testFrame);
     EXPECT_TRUE(testFrame->SemanticPose().Resolve(pose).empty());
-    EXPECT_EQ(Pose(1, -6, -1, 0, 0, -IGN_PI_2), pose);
+    EXPECT_EQ(Pose(1, -6, -1, 0, 0, -GZ_PI_2), pose);
   }
 }
 
@@ -1302,7 +1302,7 @@ TEST(NestedReference, PlacementFrameElement)
 
   // Test with //world/include overriding the placement_frame
   {
-    const gz::math::Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const gz::math::Pose3d placementPose(0, 10, 0, GZ_PI_2, 0, 0);
     std::ostringstream stream;
     stream << R"(
     <sdf version='1.8'>
@@ -1362,7 +1362,7 @@ TEST(NestedReference, PlacementFrameElement)
 
   // Test with //model/include overriding the placement_frame
   {
-    const gz::math::Pose3d placementPose(0, 10, 0, IGN_PI_2, 0, 0);
+    const gz::math::Pose3d placementPose(0, 10, 0, GZ_PI_2, 0, 0);
     std::ostringstream stream;
     stream << R"(
     <sdf version='1.8'>

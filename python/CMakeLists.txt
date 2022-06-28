@@ -70,6 +70,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
   src/sdf/pyRoot.cc
+  src/sdf/pyScene.cc
   src/sdf/pySemanticPose.cc
   src/sdf/pySensor.cc
   src/sdf/pySky.cc
@@ -92,7 +93,7 @@ if (BUILD_TESTING)
 
   target_link_libraries(sdformattest PRIVATE
     ${PROJECT_LIBRARY_TARGET_NAME}
-    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   )
 
   set(python_tests
@@ -128,6 +129,7 @@ if (BUILD_TESTING)
     pyPlane_TEST
     pyPlugin_TEST
     pyRoot_TEST
+    pyScene_TEST
     pySemanticPose_TEST
     pySensor_TEST
     pySky_TEST

@@ -84,7 +84,7 @@ namespace sdf
       public: void SetRotation(const gz::math::Quaterniond &_q);
 
       /// \brief Private data pointer.
-      IGN_UTILS_IMPL_PTR(dataPtr)
+      GZ_UTILS_IMPL_PTR(dataPtr)
     };
 
     /// \brief This function gets the transform from a prim to the specified

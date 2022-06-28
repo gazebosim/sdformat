@@ -21,7 +21,7 @@
 #include <gz/math/Color.hh>
 
 #include "sdf/sdf.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 void ExpectInvalidWithMessage(sdf::Errors &_errors, std::string _compType)
 {

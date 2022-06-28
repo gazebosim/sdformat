@@ -393,6 +393,17 @@ namespace sdf
   /// \return True if all models have joints with valid parent and child
   /// link names.
   SDFORMAT_VISIBLE
+  bool checkJointParentChildNames(const sdf::Root *_root);
+
+  /// \brief Check that all joints in contained models specify parent
+  /// and child link names that match the names of sibling links.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root SDF Root object to check recursively.
+  /// \return True if all models have joints with valid parent and child
+  /// link names.
+  /// \deprecated Use checkJointParentChildNames.
+  SDFORMAT_VISIBLE GZ_DEPRECATED(13)
   bool checkJointParentChildLinkNames(const sdf::Root *_root);
 
   /// \brief Check that all joints in contained models specify parent

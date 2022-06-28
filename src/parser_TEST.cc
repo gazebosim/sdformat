@@ -23,7 +23,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 #include <gz/utils/Environment.hh>
 
@@ -149,8 +149,8 @@ TEST(Parser, readFileConversions)
 /////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
-  // These tests are copies of the ones in ign_TEST.cc but use direct calls to
-  // name uniqueness validator functions instead of going through ign.
+  // These tests are copies of the ones in gz_TEST.cc but use direct calls to
+  // name uniqueness validator functions instead of going through gz.
 
   // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.

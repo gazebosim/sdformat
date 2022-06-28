@@ -80,7 +80,7 @@ namespace sdf
     /// The name of the plugin should be unique within the scope of its
     /// parent.
     /// \return Name of the plugin.
-    public: std::string Name() const;
+    public: const std::string &Name() const;
 
     /// \brief Set the name of the plugin.
     /// The name of the plugin should be unique within the scope of its
@@ -90,7 +90,7 @@ namespace sdf
 
     /// \brief Get the filename of the shared library.
     /// \return Filename of the shared library associated with the plugin.
-    public: std::string Filename() const;
+    public: const std::string &Filename() const;
 
     /// \brief Remove the contents of the plugin, this is everything that
     /// is a child element of the `<plugin>`.

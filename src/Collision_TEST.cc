@@ -41,8 +41,8 @@ TEST(DOMcollision, Construction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             collision.RawPose());
 
   collision.SetPoseRelativeTo("link");
@@ -71,10 +71,10 @@ TEST(DOMcollision, Construction)
 TEST(DOMCollision, MoveConstructor)
 {
   sdf::Collision collision;
-  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
 
   sdf::Collision collision2(std::move(collision));
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             collision2.RawPose());
 }
 
@@ -82,10 +82,10 @@ TEST(DOMCollision, MoveConstructor)
 TEST(DOMCollision, CopyConstructor)
 {
   sdf::Collision collision;
-  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
 
   sdf::Collision collision2(collision);
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             collision2.RawPose());
 }
 
@@ -93,11 +93,11 @@ TEST(DOMCollision, CopyConstructor)
 TEST(DOMCollision, MoveAssignment)
 {
   sdf::Collision collision;
-  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
 
   sdf::Collision collision2;
   collision2 = std::move(collision);
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             collision2.RawPose());
 }
 
@@ -105,11 +105,11 @@ TEST(DOMCollision, MoveAssignment)
 TEST(DOMCollision, CopyAssignment)
 {
   sdf::Collision collision;
-  collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
 
   sdf::Collision collision2;
   collision2 = collision;
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             collision2.RawPose());
 }
 
@@ -117,10 +117,10 @@ TEST(DOMCollision, CopyAssignment)
 TEST(DOMCollision, CopyAssignmentAfterMove)
 {
   sdf::Collision collision1;
-  collision1.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
+  collision1.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
 
   sdf::Collision collision2;
-  collision2.SetRawPose({-20, -30, -40, IGN_PI, IGN_PI, IGN_PI});
+  collision2.SetRawPose({-20, -30, -40, GZ_PI, GZ_PI, GZ_PI});
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -128,9 +128,9 @@ TEST(DOMCollision, CopyAssignmentAfterMove)
   collision1 = collision2;
   collision2 = tmp;
 
-  EXPECT_EQ(gz::math::Pose3d(-20, -30, -40, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-20, -30, -40, GZ_PI, GZ_PI, GZ_PI),
             collision1.RawPose());
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             collision2.RawPose());
 }
 
@@ -184,6 +184,11 @@ TEST(DOMCollision, ToElement)
   sdf::Contact contact;
   contact.SetCollideBitmask(123u);
   surface.SetContact(contact);
+  sdf::Friction friction;
+  sdf::ODE ode;
+  ode.SetMu(1.23);
+  friction.SetODE(ode);
+  surface.SetFriction(friction);
   collision.SetSurface(surface);
 
   sdf::ElementPtr elem = collision.ToElement();
@@ -199,4 +204,7 @@ TEST(DOMCollision, ToElement)
   ASSERT_NE(nullptr, surface2);
   ASSERT_NE(nullptr, surface2->Contact());
   EXPECT_EQ(123u, surface2->Contact()->CollideBitmask());
+  ASSERT_NE(nullptr, surface2->Friction());
+  ASSERT_NE(nullptr, surface2->Friction()->ODE());
+  EXPECT_DOUBLE_EQ(1.23, surface2->Friction()->ODE()->Mu());
 }

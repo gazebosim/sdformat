@@ -1,6 +1,6 @@
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable
-ign_get_libsources_and_unittests(sources gtest_sources)
+gz_get_libsources_and_unittests(sources gtest_sources)
 
 # Add the source file auto-generated into the build folder from sdf/CMakeLists.txt
 list(APPEND sources EmbeddedSdf.cc)
@@ -28,9 +28,9 @@ else()
 endif()
 
 if (BUILD_TESTING)
-  # Build this test file only if Ignition Tools is installed.
+  # Build this test file only if Gazebo Tools is installed.
   if (NOT GZ_PROGRAM)
-    list(REMOVE_ITEM gtest_sources ign_TEST.cc)
+    list(REMOVE_ITEM gtest_sources gz_TEST.cc)
   endif()
 
   # Skip tests that don't work on Windows
@@ -43,7 +43,7 @@ if (BUILD_TESTING)
     list(REMOVE_ITEM gtest_sources parser_urdf_TEST.cc)
   endif()
 
-  ign_build_tests(
+  gz_build_tests(
     TYPE UNIT
     SOURCES ${gtest_sources}
     INCLUDE_DIRS
@@ -103,15 +103,14 @@ if (BUILD_TESTING)
   endif()
 endif()
 
-ign_create_core_library(SOURCES ${sources}
-  CXX_STANDARD 17
+gz_create_core_library(SOURCES ${sources}
   LEGACY_PROJECT_PREFIX SDFormat
   )
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-    ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
-    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    gz-math${GZ_MATH_VER}::gz-math${GZ_MATH_VER}
+    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   PRIVATE
     TINYXML2::TINYXML2
     using_parser_urdf)

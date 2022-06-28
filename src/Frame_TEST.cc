@@ -44,8 +44,8 @@ TEST(DOMframe, Construction)
   frame.SetAttachedTo("attachment");
   EXPECT_EQ("attachment", frame.AttachedTo());
 
-  frame.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
-  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  frame.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
             frame.RawPose());
   {
     auto semanticPose = frame.SemanticPose();

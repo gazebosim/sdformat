@@ -25,7 +25,7 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 /// Test global config

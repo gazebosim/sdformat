@@ -158,7 +158,7 @@ TEST(DOMCamera, Construction)
   cam.SetLensFunction("sin");
   EXPECT_EQ("sin", cam.LensFunction());
 
-  EXPECT_DOUBLE_EQ(IGN_PI_2, cam.LensCutoffAngle().Radian());
+  EXPECT_DOUBLE_EQ(GZ_PI_2, cam.LensCutoffAngle().Radian());
   cam.SetLensCutoffAngle(0.456);
   EXPECT_DOUBLE_EQ(0.456, cam.LensCutoffAngle().Radian());
 
