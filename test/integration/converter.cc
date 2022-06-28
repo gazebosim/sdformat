@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 /// \brief Use different sdf versions for ParserStringConverter Test.
 void ParserStringConverter(const std::string &_version);

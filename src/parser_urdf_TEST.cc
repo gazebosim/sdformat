@@ -993,11 +993,3 @@ TEST(URDFParser, ParseWhitespace)
   EXPECT_EQ("100", std::string(muElem->GetText()));
   EXPECT_EQ("1000", std::string(mu2Elem->GetText()));
 }
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

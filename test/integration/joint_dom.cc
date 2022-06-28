@@ -31,7 +31,7 @@
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/parser.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMJoint, NotAJoint)

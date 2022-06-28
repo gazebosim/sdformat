@@ -25,7 +25,7 @@
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
-#include "test_config.h"
+#include "test_config.hh"
 
 #ifdef _WIN32
   #define popen  _popen

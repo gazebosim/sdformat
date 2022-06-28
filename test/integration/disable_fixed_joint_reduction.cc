@@ -21,7 +21,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
