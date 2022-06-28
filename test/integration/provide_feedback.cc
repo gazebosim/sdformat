@@ -21,7 +21,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(SDFParser, ProvideFeedbackTest)
@@ -76,12 +76,4 @@ TEST(SDFParser, ProvideFeedbackTest)
   }
 
   EXPECT_EQ(jointBitMask, 0x7u);
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

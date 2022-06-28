@@ -358,11 +358,3 @@ TEST(Filesystem, directory_iterator)
 
   EXPECT_EQ(found_items.size(), 0UL);
 }
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

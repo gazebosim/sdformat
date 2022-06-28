@@ -50,7 +50,7 @@
 #include "sdf/JointAxis.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 #include "Model.hh"
 

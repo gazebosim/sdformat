@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 // Windows supports the setlocale call but we can not extract the
 // available locales using the Linux call

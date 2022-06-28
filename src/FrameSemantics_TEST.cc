@@ -33,7 +33,7 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(FrameSemantics, buildFrameAttachedToGraph_Model)

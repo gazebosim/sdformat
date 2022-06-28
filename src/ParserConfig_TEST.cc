@@ -20,7 +20,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/SDFImpl.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::ParserConfig.

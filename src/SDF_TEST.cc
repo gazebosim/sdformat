@@ -712,11 +712,3 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
 #endif  // _WIN32
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

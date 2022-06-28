@@ -30,7 +30,7 @@
 
 #include <gz/math/Pose3.hh>
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 #include "USDSensors.hh"

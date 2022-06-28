@@ -20,7 +20,7 @@
 #include "sdf/sdf.hh"
 #include "sdf/Pbr.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(Material, PbrDOM)
