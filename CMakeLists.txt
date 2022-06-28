@@ -31,6 +31,9 @@ option(USE_DIST_PACKAGES_FOR_PYTHON
       "Use dist-packages instead of site-package to install python modules"
       OFF)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if (BUILD_SDF)
   gz_configure_project(
     NO_IGNITION_PREFIX

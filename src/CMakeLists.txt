@@ -104,7 +104,6 @@ if (BUILD_TESTING)
 endif()
 
 gz_create_core_library(SOURCES ${sources}
-  CXX_STANDARD 17
   LEGACY_PROJECT_PREFIX SDFormat
   )
 
