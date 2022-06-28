@@ -77,6 +77,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pySurface.cc
   src/sdf/pyVisual.cc
   src/sdf/pyWorld.cc
+  src/sdf/pybind11_helpers.cc
 )
 
 target_link_libraries(sdformat PRIVATE
