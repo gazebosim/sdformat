@@ -15,6 +15,7 @@
  */
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "pyAirPressure.hh"
 #include "pyAltimeter.hh"
@@ -26,6 +27,7 @@
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
+#include "pyExceptions.hh"
 #include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
@@ -109,4 +111,21 @@ PYBIND11_MODULE(sdformat, m) {
 
   m.attr("SDF_VERSION") = SDF_VERSION;
   m.attr("SDF_PROTOCOL_VERSION") = SDF_PROTOCOL_VERSION;
+
+  static pybind11::exception<sdf::python::PySDFErrorsException>
+      sdfErrorsException(m, "SDFErrorsException", PyExc_RuntimeError);
+
+  pybind11::register_exception_translator([](std::exception_ptr p) {
+    try {
+      if (p) {
+        std::rethrow_exception(p);
+      }
+    } catch (const sdf::python::PySDFErrorsException &e) {
+      sdfErrorsException.attr("errors") = pybind11::cast(e.Errors());
+      // This has to be called last since it's the call that sets
+      // PyErr_SetString.
+      sdfErrorsException(e.what());
+    }
+  });
+
 }
