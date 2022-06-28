@@ -69,10 +69,3 @@ TEST(ModelVersionsTest, Correct_ModelFilePath)
 
   EXPECT_EQ(modelPath, sdf::filesystem::append(MODEL_PATH, "model-1_4.sdf"));
 }
-
-/////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
