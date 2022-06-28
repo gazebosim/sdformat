@@ -19,7 +19,7 @@
 #include <string>
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////
 // Test that plugin child elements are available even when nested in an include

@@ -22,7 +22,7 @@
 #include <gz/common/TempDirectory.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings

@@ -37,7 +37,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "toml_parser.hh"
 
 sdf::InterfaceModelPtr parseModel(toml::Value &_doc,

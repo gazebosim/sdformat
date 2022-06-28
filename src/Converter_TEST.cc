@@ -24,7 +24,7 @@
 #include "Converter.hh"
 #include "XmlUtils.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////////////////
 /// Set up an xml string for testing

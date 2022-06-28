@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 // testing the wrapper around an sdf element WrapInRoot(const ElementPtr &_sdf)
 TEST(BasicTest, RootWrapper)

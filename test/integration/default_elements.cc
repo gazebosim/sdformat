@@ -26,7 +26,7 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, EmptyRoadSphCoords)

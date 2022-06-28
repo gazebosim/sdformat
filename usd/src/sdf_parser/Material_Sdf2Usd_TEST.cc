@@ -36,7 +36,7 @@
 #include "sdf/usd/sdf_parser/World.hh"
 #include "sdf/Material.hh"
 #include "sdf/Root.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 #include "../UsdTestUtils.hh"
 #include "../Conversions.hh"
