@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 // testing the wrapper around an sdf element WrapInRoot(const ElementPtr &_sdf)
 TEST(BasicTest, RootWrapper)
@@ -43,11 +43,4 @@ TEST(BasicTest, RootWrapper)
   sdf::ElementPtr checkElem = wrappedElem->GetFirstElement();
   ASSERT_NE(checkElem, nullptr);
   EXPECT_EQ(checkElem->GetName(), testName);
-}
-
-/////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

@@ -32,7 +32,7 @@
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Pbr.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMWorld, LoadParticleEmitter)

@@ -222,7 +222,7 @@ class SDFORMAT_VISIBLE NestedInclude
   public: sdf::ElementPtr includeElement SDF_DEPRECATED(12);
 
   /// \brief Private data pointer.
-  IGN_UTILS_IMPL_PTR(dataPtr)
+  GZ_UTILS_IMPL_PTR(dataPtr)
 };
 #ifdef _MSC_VER
 #pragma warning(pop)

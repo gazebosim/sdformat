@@ -37,7 +37,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "toml_parser.hh"
 
 sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
@@ -1040,7 +1040,7 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
         makeRepostureFunc(absoluteNestedModelName), false, "nested_link",
         Pose3d(3, 0, 0, 0, 0, 0));
 
-    nestedModel->AddLink({"nested_link", Pose3d(0, 0, 0, IGN_PI_2, 0, 0)});
+    nestedModel->AddLink({"nested_link", Pose3d(0, 0, 0, GZ_PI_2, 0, 0)});
     elementsToReposture[absoluteNestedModelName].emplace_back("nested_link");
 
     model->AddNestedModel(nestedModel);
@@ -1076,15 +1076,15 @@ TEST_F(InterfaceAPIMergeInclude, Reposturing)
   // There is one included model using a custom parser containing two models and
   // two links.
   ASSERT_EQ(7u, posesAfterReposture.size());
-  EXPECT_TRUE(checkPose("parent_model::base_link", {1, 2, 3, IGN_PI_2, 0, 0}));
-  EXPECT_TRUE(checkPose("parent_model::top_link", {1, 1, 3, IGN_PI_2, 0, 0}));
-  EXPECT_TRUE(checkPose("parent_model::j1", {2, 1, 3, IGN_PI_2, 0, 0}));
-  EXPECT_TRUE(checkPose("parent_model::frame1", {1, 2, 4, IGN_PI_2, 0, 0}));
-  EXPECT_TRUE(checkPose("parent_model::frame2", {1, 1, 4, IGN_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::base_link", {1, 2, 3, GZ_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::top_link", {1, 1, 3, GZ_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::j1", {2, 1, 3, GZ_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::frame1", {1, 2, 4, GZ_PI_2, 0, 0}));
+  EXPECT_TRUE(checkPose("parent_model::frame2", {1, 1, 4, GZ_PI_2, 0, 0}));
   EXPECT_TRUE(
-      checkPose("parent_model::nested_model", {4, 2, 3, IGN_PI_2, 0, 0}));
+      checkPose("parent_model::nested_model", {4, 2, 3, GZ_PI_2, 0, 0}));
   EXPECT_TRUE(checkPose(
-      "parent_model::nested_model::nested_link", {4, 2, 3, IGN_PI, 0, 0}));
+      "parent_model::nested_model::nested_link", {4, 2, 3, GZ_PI, 0, 0}));
 }
 
 

@@ -50,7 +50,7 @@ void definePlane(pybind11::object module)
         "shape",
         pybind11::overload_cast<>(&sdf::Plane::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Ignition Math representation of this Plane.")
+        "Get a mutable Gazebo Math representation of this Plane.")
     .def("__copy__", [](const sdf::Plane &self) {
       return sdf::Plane(self);
     })

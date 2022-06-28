@@ -37,11 +37,11 @@ class sdf::Joint::Implementation
   /// \brief Name of the joint.
   public: std::string name = "";
 
-  /// \brief Name of the parent link.
-  public: std::string parentLinkName = "";
+  /// \brief Name of the parent frame.
+  public: std::string parentName = "";
 
-  /// \brief Name of the child link.
-  public: std::string childLinkName = "";
+  /// \brief Name of the child frame.
+  public: std::string childName = "";
 
   /// \brief the joint type.
   public: JointType type = JointType::INVALID;
@@ -117,11 +117,11 @@ Errors Joint::Load(ElementPtr _sdf)
     _sdf->Get<std::string>("parent", "");
   if (parentPair.second)
   {
-    this->dataPtr->parentLinkName = parentPair.first;
-    if (!isValidFrameReference(this->dataPtr->parentLinkName))
+    this->dataPtr->parentName = parentPair.first;
+    if (!isValidFrameReference(this->dataPtr->parentName))
     {
       errors.push_back({ErrorCode::RESERVED_NAME,
-          "The supplied joint parent name [" + this->dataPtr->parentLinkName +
+          "The supplied joint parent name [" + this->dataPtr->parentName +
               "] is not valid."});
     }
   }
@@ -135,11 +135,11 @@ Errors Joint::Load(ElementPtr _sdf)
   std::pair<std::string, bool> childPair = _sdf->Get<std::string>("child", "");
   if (childPair.second)
   {
-    this->dataPtr->childLinkName = childPair.first;
-    if (!isValidFrameReference(this->dataPtr->childLinkName))
+    this->dataPtr->childName = childPair.first;
+    if (!isValidFrameReference(this->dataPtr->childName))
     {
       errors.push_back({ErrorCode::RESERVED_NAME,
-          "The supplied joint child name [" + this->dataPtr->childLinkName +
+          "The supplied joint child name [" + this->dataPtr->childName +
               "] is not valid."});
     }
   }
@@ -149,19 +149,19 @@ Errors Joint::Load(ElementPtr _sdf)
         "The child element is missing."});
   }
 
-  if (this->dataPtr->childLinkName == "world")
+  if (this->dataPtr->childName == "world")
   {
     errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
         "Joint with name[" + this->dataPtr->name +
         "] specified invalid child link [world]."});
   }
 
-  if (this->dataPtr->childLinkName == this->dataPtr->parentLinkName)
+  if (this->dataPtr->childName == this->dataPtr->parentName)
   {
     errors.push_back({ErrorCode::JOINT_PARENT_SAME_AS_CHILD,
         "Joint with name[" + this->dataPtr->name +
         "] must specify different frame names for "
-        "parent and child, while [" + this->dataPtr->childLinkName +
+        "parent and child, while [" + this->dataPtr->childName +
         "] was specified for both."});
   }
 
@@ -251,27 +251,51 @@ void Joint::SetType(const JointType _jointType)
 }
 
 /////////////////////////////////////////////////
+const std::string &Joint::ParentName() const
+{
+  return this->dataPtr->parentName;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetParentName(const std::string &_name)
+{
+  this->dataPtr->parentName = _name;
+}
+
+/////////////////////////////////////////////////
+const std::string &Joint::ChildName() const
+{
+  return this->dataPtr->childName;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetChildName(const std::string &_name)
+{
+  this->dataPtr->childName = _name;
+}
+
+/////////////////////////////////////////////////
 const std::string &Joint::ParentLinkName() const
 {
-  return this->dataPtr->parentLinkName;
+  return this->ParentName();
 }
 
 /////////////////////////////////////////////////
 void Joint::SetParentLinkName(const std::string &_name)
 {
-  this->dataPtr->parentLinkName = _name;
+  this->SetParentName(_name);
 }
 
 /////////////////////////////////////////////////
 const std::string &Joint::ChildLinkName() const
 {
-  return this->dataPtr->childLinkName;
+  return this->ChildName();
 }
 
 /////////////////////////////////////////////////
 void Joint::SetChildLinkName(const std::string &_name)
 {
-  this->dataPtr->childLinkName = _name;
+  this->SetChildName(_name);
 }
 
 /////////////////////////////////////////////////
@@ -352,7 +376,7 @@ Errors Joint::ResolveChildLink(std::string &_link) const
   }
 
   std::string link;
-  errors = resolveFrameAttachedToBody(link, graph, this->ChildLinkName());
+  errors = resolveFrameAttachedToBody(link, graph, this->ChildName());
   if (errors.empty())
   {
     _link = link;
@@ -367,7 +391,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
 
   // special case for world, return without resolving since it's not in a
   // model's FrameAttachedToGraph
-  if ("world" == this->ParentLinkName())
+  if ("world" == this->ParentName())
   {
     _link = "world";
     return errors;
@@ -382,7 +406,7 @@ Errors Joint::ResolveParentLink(std::string &_link) const
   }
 
   std::string link;
-  errors = resolveFrameAttachedToBody(link, graph, this->ParentLinkName());
+  errors = resolveFrameAttachedToBody(link, graph, this->ParentName());
   if (errors.empty())
   {
     _link = link;
@@ -397,7 +421,7 @@ sdf::SemanticPose Joint::SemanticPose() const
       this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
-      this->ChildLinkName(),
+      this->ChildName(),
       this->dataPtr->poseRelativeToGraph);
 }
 
@@ -516,8 +540,8 @@ sdf::ElementPtr Joint::ToElement() const
   }
 
   elem->GetAttribute("type")->Set<std::string>(jointType);
-  elem->GetElement("parent")->Set<std::string>(this->ParentLinkName());
-  elem->GetElement("child")->Set<std::string>(this->ChildLinkName());
+  elem->GetElement("parent")->Set<std::string>(this->ParentName());
+  elem->GetElement("child")->Set<std::string>(this->ChildName());
   for (unsigned int i = 0u; i < 2u; ++i)
   {
     const JointAxis *axis =  this->Axis(i);

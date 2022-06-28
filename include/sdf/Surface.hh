@@ -55,7 +55,7 @@ namespace sdf
     public: void SetCollideBitmask(const uint16_t _bitmask);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief ODE information for a friction.
@@ -119,7 +119,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Friction information for a surface.
@@ -152,7 +152,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Surface information for a collision.
@@ -201,7 +201,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

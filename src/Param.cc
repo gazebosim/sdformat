@@ -751,7 +751,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
     if (parseAsDegrees)
     {
       _value = gz::math::Pose3d(values[0], values[1], values[2],
-          IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
+          GZ_DTOR(values[3]), GZ_DTOR(values[4]), GZ_DTOR(values[5]));
     }
     else
     {
@@ -1156,20 +1156,20 @@ bool PoseStringFromValue(const PrintConfig &_config,
 
     ss << pose->Pos() << posRotDelimiter
        << sanitizeZero(snapToInterval(
-              IGN_RTOD(pose->Rot().Roll()), interval, tolerance)) << " "
+              GZ_RTOD(pose->Rot().Roll()), interval, tolerance)) << " "
        << sanitizeZero(snapToInterval(
-              IGN_RTOD(pose->Rot().Pitch()), interval, tolerance)) << " "
+              GZ_RTOD(pose->Rot().Pitch()), interval, tolerance)) << " "
        << sanitizeZero(snapToInterval(
-              IGN_RTOD(pose->Rot().Yaw()), interval, tolerance));
+              GZ_RTOD(pose->Rot().Yaw()), interval, tolerance));
     _valueStr = ss.str();
     return true;
   }
   else if (rotationFormat == "euler_rpy" && inDegrees)
   {
     ss << pose->Pos() << posRotDelimiter
-       << sanitizeZero(IGN_RTOD(pose->Rot().Roll())) << " "
-       << sanitizeZero(IGN_RTOD(pose->Rot().Pitch())) << " "
-       << sanitizeZero(IGN_RTOD(pose->Rot().Yaw()));
+       << sanitizeZero(GZ_RTOD(pose->Rot().Roll())) << " "
+       << sanitizeZero(GZ_RTOD(pose->Rot().Pitch())) << " "
+       << sanitizeZero(GZ_RTOD(pose->Rot().Yaw()));
     _valueStr = ss.str();
     return true;
   }
@@ -1353,7 +1353,7 @@ bool Param::Reparse(sdf::Errors &_errors)
     strToReparse = this->dataPtr->strValue.value();
   }
   // A default PrintConfig can be used here, as Reparse() is not called in the
-  // code path from the 'ign sdf -p' command.
+  // code path from the 'gz sdf -p' command.
   else if (!this->dataPtr->StringFromValueImpl(PrintConfig(),
                                                this->dataPtr->typeName,
                                                this->dataPtr->defaultValue,

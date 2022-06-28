@@ -45,7 +45,7 @@ void defineCylinder(pybind11::object module)
         "shape",
         pybind11::overload_cast<>(&sdf::Cylinder::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Ignition Math representation of this Cylinder.")
+        "Get a mutable Gazebo Math representation of this Cylinder.")
     .def("__copy__", [](const sdf::Cylinder &self) {
       return sdf::Cylinder(self);
     })

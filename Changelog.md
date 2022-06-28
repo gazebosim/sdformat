@@ -29,7 +29,7 @@
 1. Added convenience constructor to plugin
     * [Pull request #911](https://github.com/gazebosim/sdformat/pull/911)
 
-1. Use ign-utils instead of ign-cmake utilities
+1. Use gz-utils instead of gz-cmake utilities
     * [Pull request #978](https://github.com/gazebosim/sdformat/pull/978)
 
 1. Added `Friction` and `ODE` classes
@@ -38,7 +38,7 @@
 1. Add `L16` pixel format to Camera pixel format conversion function
     * [Pull request #487](https://github.com/gazebosim/sdformat/pull/487)
 
-1. Added ``--inertial-stats`` option to ``ign sdf``
+1. Added ``--inertial-stats`` option to ``gz sdf``
     * [Pull request #936](https://github.com/gazebosim/sdformat/pull/936)
 
 1. Added `anti_aliasing` element to camera's SDF
@@ -192,7 +192,7 @@
 1. sdf_custom: fix nested model expectations
     * [Pull request #807](https://github.com/gazebosim/sdformat/pull/807)
 
-1. Replace custom cmake code with ign-cmake2
+1. Replace custom cmake code with gz-cmake2
     * [Pull request #780](https://github.com/gazebosim/sdformat/pull/780)
 
 1. Support printing sdf poses in degrees and allow snapping to commonly used angles
@@ -414,7 +414,7 @@
 1. Fix test compilation with `USE_INTERNAL_URDF`
     * [Pull request #800](https://github.com/gazebosim/sdformat/pull/800)
 
-1. Replace custom CMake code with `ign-cmake2`
+1. Replace custom CMake code with `gz-cmake2`
     * [Pull request #780](https://github.com/gazebosim/sdformat/pull/780)
 
 1. Fix loading nested include with custom attributes
@@ -803,7 +803,7 @@
 1. Fix loading nested include with custom attributes
     * [Pull request #789](https://github.com/gazebosim/sdformat/pull/789)
 
-1. Replace custom cmake code with ign-cmake2
+1. Replace custom cmake code with gz-cmake2
     * [Pull request #780](https://github.com/osrf/sdformat/pull/780)
 
 1. Fix test compilation with USE_INTERNAL_URDF
@@ -925,7 +925,7 @@
 
 ### libsdformat 10.2.0 (2021-01-12)
 
-1. Disable ign test on Windows
+1. Disable gz test on Windows
     + [Pull request 456](https://github.com/osrf/sdformat/pull/456)
 
 1. Add Heightmap class
@@ -1026,7 +1026,7 @@
 1. Added `<shininess>` to `<material>`
     * [Pull request #985](https://github.com/gazebosim/sdformat/pull/985)
 
-1. Backport ``ign sdf --inertial-stats``
+1. Backport ``gz sdf --inertial-stats``
     * [Pull request #958](https://github.com/gazebosim/sdformat/pull/958)
 
 1. Add L16 pixel format to Camera pixel format conversion function
@@ -1361,10 +1361,10 @@
 
 ### libsdformat 9.0.0 (2019-12-10)
 
-1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
+1. Move recursiveSameTypeUniqueNames from gz.cc to parser.cc and make public.
     * [BitBucket pull request 606](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/606)
 
-1. Check that joints have valid parent and child names in `ign sdf --check`.
+1. Check that joints have valid parent and child names in `gz sdf --check`.
     * [BitBucket pull request 609](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/609)
 
 1. Model DOM: error when trying to load nested models, which aren't yet supported.
@@ -1382,7 +1382,7 @@
 1. Relax name checking, so name collisions generate warnings and names are automatically changed.
     * [BitBucket pull request 621](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/621)
 
-1. Unversioned library name for ign tool commands.
+1. Unversioned library name for gz tool commands.
     * [BitBucket pull request 612](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/612)
 
 1. Initial version of SDFormat 1.7 specification.
@@ -1518,7 +1518,7 @@
 
 ### libsdformat 8.6.0 (2019-11-20)
 
-1. configure.bat: use ign-math6, not gz11
+1. configure.bat: use gz-math6, not gz11
     * [BitBucket pull request 595](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/595)
 
 1. Set `sdformat8_PKGCONFIG_*` variables in cmake config instead of `SDFormat_PKGCONFIG*`.
@@ -1544,7 +1544,7 @@
 1. Use inline namespaces in Utils.cc
     * [BitBucket pull request 574](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/574)
 
-1. Convert `ign sdf` file inputs to absolute paths before processing them
+1. Convert `gz sdf` file inputs to absolute paths before processing them
     * [BitBucket pull request 583](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/583)
 
 1. Add `emissive_map` to material sdf
@@ -1581,11 +1581,11 @@
 1. Move private headers from include/sdf to src folder.
     * [BitBucket pull request 553](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/553)
 
-1. Fix ign library path on macOS.
+1. Fix gz library path on macOS.
     * [BitBucket pull request 542](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/542)
     * [BitBucket pull request 564](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/564)
 
-1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
+1. Use `gz sdf --check` to check sibling elements of the same type for non-unique names.
     * [BitBucket pull request 554](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/554)
 
 1. Converter: remove all matching elements specified by `<remove>` tag.
@@ -1769,7 +1769,7 @@
     * [BitBucket pull request 476](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/476)
     * [BitBucket pull request 463](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/463)
 
-1. Fix ign library path on macOS.
+1. Fix gz library path on macOS.
     * [BitBucket pull request 542](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/542)
 
 1. Preserve XML elements that are not part of the SDF specification.
@@ -1826,7 +1826,7 @@
 
 ### libsdformat 6.3.0 (2021-06-21)
 
-1. Move recursiveSameTypeUniqueNames from ign.cc to parser.cc and make public.
+1. Move recursiveSameTypeUniqueNames from gz.cc to parser.cc and make public.
     * [Pull request 580](https://github.com/osrf/sdformat/pull/580)
 
 1. Parse rpyOffset as radians
@@ -1841,10 +1841,10 @@
 1. Avoid hardcoding /machine:x64 flag on 64-bit on MSVC with CMake >= 3.5.
     * [BitBucket pull request 565](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/565)
 
-1. Fix ign library path on macOS.
+1. Fix gz library path on macOS.
     * [BitBucket pull request 552](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/552)
 
-1. Use `ign sdf --check` to check sibling elements of the same type for non-unique names.
+1. Use `gz sdf --check` to check sibling elements of the same type for non-unique names.
     * [BitBucket pull request 554](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/554)
 
 1. Converter: remove all matching elements specified by `<remove>` tag.
@@ -2199,7 +2199,7 @@
     * [BitBucket pull request 194](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/194)
 1. Adding iterations to state
     * [BitBucket pull request 188](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/188)
-1. Convert to use ignition-math
+1. Convert to use gz-math
     * [BitBucket pull request 173](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/173)
 1. Add world origin to scene
     * [BitBucket pull request 183](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/183)

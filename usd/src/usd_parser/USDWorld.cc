@@ -405,7 +405,7 @@ namespace usd
 
     if (_useGazeboPlugins)
     {
-      // Add some plugins to run the Ignition Gazebo simulation
+      // Add some plugins to run the Gazebo Sim simulation
       sdf::Plugin physicsPlugin;
       physicsPlugin.SetName("gz::sim::systems::Physics");
       physicsPlugin.SetFilename("ignition-gazebo-physics-system");

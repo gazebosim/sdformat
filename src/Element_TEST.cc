@@ -1041,11 +1041,3 @@ TEST(Element, FindElement)
     EXPECT_EQ("first_child", childElemB->GetAttribute("name")->GetAsString());
   }
 }
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
