@@ -156,11 +156,19 @@ void defineWorld(pybind11::object module)
      .def("light_name_exists", &sdf::World::LightNameExists,
           "Get whether a light name exists.")
      .def("atmosphere", &sdf::World::Atmosphere,
+           pybind11::return_value_policy::reference_internal,
           "Get a pointer to the atmosphere model associated with this "
           "world. A None indicates that an atmosphere model has not been "
           "set.")
      .def("set_atmosphere", &sdf::World::SetAtmosphere,
           "Set the atmosphere model associated with this world.")
+     .def("scene", &sdf::World::Scene,
+          pybind11::return_value_policy::reference_internal,
+          "Get a pointer to the Scene associated with this "
+          "world. A nullptr indicates that a Scene element has not been "
+          "specified.")
+     .def("set_scene", &sdf::World::SetScene,
+          "Set the Scene parameters associated with this world.")
      .def("physics_count", &sdf::World::PhysicsCount,
           "Get the number of physics profiles.")
      .def("physics_by_index",
@@ -168,6 +176,10 @@ void defineWorld(pybind11::object module)
             &sdf::World::PhysicsByIndex),
           pybind11::return_value_policy::reference_internal,
           "Get a mutable physics profile based on an index.")
+     .def("physics_default",
+          &sdf::World::PhysicsDefault,
+          pybind11::return_value_policy::reference_internal,
+          "Get the default physics profile.")
      .def("physics_name_exists", &sdf::World::PhysicsNameExists,
           "Get whether a physics profile name exists.")
      .def("plugins",
