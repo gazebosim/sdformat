@@ -76,7 +76,7 @@ namespace usd
       light->SetType(sdf::LightType::DIRECTIONAL);
 
       // DistantLight in USD does not define height. Added some height to the
-      // light. The default sun light in ign-gazebo sdf world is 10.
+      // light. The default sun light in gz-sim sdf world is 10.
       pose = gz::math::Pose3d(0, 0, 10, 0, 0, 0) * pose;
       // Light emitted from a distant source along the -Z axis
       // The pose should set the direction

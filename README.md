@@ -193,7 +193,7 @@ Install prerequisites:
 conda install urdfdom --channel conda-forge
 ```
 
-Install Ignition dependencies:
+Install Gazebo dependencies:
 
 You can view lists of dependencies:
 ```

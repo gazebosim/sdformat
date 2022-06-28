@@ -17,7 +17,7 @@ OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" O
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
-# Find ign-cmake
+# Find gz-cmake
 find_package(gz-cmake3 REQUIRED)
 set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
