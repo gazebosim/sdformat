@@ -42,9 +42,9 @@ void defineGui(pybind11::object module)
     .def("set_fullscreen", &sdf::Gui::SetFullscreen,
          "Set whether the Gui should be full screen.")
     .def("plugin_count", &sdf::Gui::PluginCount,
-         "Get the filename of the shared library.")
+         "Get the number of plugins.")
     .def("plugin_by_index", &sdf::Gui::PluginByIndex,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get a plugin based on an index.")
     .def("clear_plugins", &sdf::Gui::ClearPlugins,
          "Remove all plugins")
@@ -52,6 +52,7 @@ void defineGui(pybind11::object module)
          "Add a plugin to this object.")
     .def("plugins",
          pybind11::overload_cast<>(&sdf::Gui::Plugins),
+         pybind11::return_value_policy::reference_internal,
          "Get a mutable vector of plugins attached to this object")
     .def("__copy__", [](const sdf::Gui &self) {
       return sdf::Gui(self);

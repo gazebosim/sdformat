@@ -20,7 +20,7 @@ import unittest
 import math
 
 # TODO(ahcorde)
-# - Add Actor, Physics and sSene tests when the sdf::Classes are ported
+# - Add Actor, Physics and Scene tests when the sdf::Classes are ported
 
 class WorldTEST(unittest.TestCase):
 
@@ -202,7 +202,6 @@ class WorldTEST(unittest.TestCase):
 
 
     def test_add_modify_frame(self):
-
         world = World()
         self.assertEqual(0, world.frame_count())
 

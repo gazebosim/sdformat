@@ -17,7 +17,7 @@ from sdformat import Gui, Plugin
 import unittest
 
 
-class PluginTEST(unittest.TestCase):
+class GuiTEST(unittest.TestCase):
 
     def test_default_construction(self):
         gui = Gui()
