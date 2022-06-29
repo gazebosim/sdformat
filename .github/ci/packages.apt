@@ -12,4 +12,5 @@ python3-distutils
 python3-ignition-math7
 python3-psutil
 python3-pybind11
+python3-pytest
 ruby-dev
