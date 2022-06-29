@@ -67,6 +67,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyParserConfig.cc
   src/sdf/pyParticleEmitter.cc
   src/sdf/pyPbr.cc
+  src/sdf/pyPhysics.cc
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
   src/sdf/pyRoot.cc
@@ -127,6 +128,7 @@ if (BUILD_TESTING)
     pyParserConfig_TEST
     pyParticleEmitter_TEST
     pyPbr_TEST
+    pyPhysics_TEST
     pyPlane_TEST
     pyPlugin_TEST
     pyRoot_TEST

@@ -47,6 +47,7 @@
 #include "pyParserConfig.hh"
 #include "pyParticleEmitter.hh"
 #include "pyPbr.hh"
+#include "pyPhysics.hh"
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyRoot.hh"
@@ -97,6 +98,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineParticleEmitter(m);
   sdf::python::definePbr(m);
   sdf::python::definePbrWorkflow(m);
+  sdf::python::definePhysics(m);
   sdf::python::definePlane(m);
   sdf::python::definePlugin(m);
   sdf::python::defineRoot(m);
