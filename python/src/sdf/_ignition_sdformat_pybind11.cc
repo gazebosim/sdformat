@@ -45,6 +45,7 @@
 #include "pyNavSat.hh"
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
+#include "pyParticleEmitter.hh"
 #include "pyPbr.hh"
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
@@ -93,6 +94,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineNoise(m);
   sdf::python::defineODE(m);
   sdf::python::defineParserConfig(m);
+  sdf::python::defineParticleEmitter(m);
   sdf::python::definePbr(m);
   sdf::python::definePbrWorkflow(m);
   sdf::python::definePlane(m);

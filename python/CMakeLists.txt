@@ -65,6 +65,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyNavSat.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyParticleEmitter.cc
   src/sdf/pyPbr.cc
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
@@ -124,6 +125,7 @@ if (BUILD_TESTING)
     pyNoise_TEST
     pyNavSat_TEST
     pyParserConfig_TEST
+    pyParticleEmitter_TEST
     pyPbr_TEST
     pyPlane_TEST
     pyPlugin_TEST
