@@ -14,7 +14,8 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d
-from sdformat import Joint, JointAxis, Error, SemanticPose, Sensor
+from sdformat import (Joint, JointAxis, Error, SemanticPose, Sensor,
+                      SDFErrorsException)
 import sdformat as sdf
 import math
 import unittest
@@ -34,9 +35,9 @@ class JointTEST(unittest.TestCase):
         semanticPose = joint.semantic_pose()
         self.assertEqual(Pose3d.ZERO, semanticPose.raw_pose())
         self.assertFalse(semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose without graph
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         joint.set_raw_pose(Pose3d(-1, -2, -3, math.pi, math.pi, 0))
         self.assertEqual(Pose3d(-1, -2, -3, math.pi, math.pi, 0),
@@ -48,9 +49,9 @@ class JointTEST(unittest.TestCase):
         semanticPose = joint.semantic_pose()
         self.assertEqual(joint.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("link", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose without graph
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         joint.set_name("test_joint")
         self.assertEqual("test_joint", joint.name())
@@ -61,12 +62,11 @@ class JointTEST(unittest.TestCase):
         joint.set_child_name("child")
         self.assertEqual("child", joint.child_name())
 
-        errors, resolveChildLink = joint.resolve_child_link()
-        self.assertEqual(1, len(errors))
-        self.assertFalse(resolveChildLink)
-        errors, resolveParentLink = joint.resolve_parent_link()
-        self.assertEqual(1, len(errors))
-        self.assertFalse(resolveParentLink)
+        with self.assertRaises(SDFErrorsException):
+            joint.resolve_child_link()
+
+        with self.assertRaises(SDFErrorsException):
+            joint.resolve_parent_link()
 
         joint.set_type(sdf.JointType.BALL)
         self.assertEqual(sdf.JointType.BALL, joint.type())
@@ -88,10 +88,10 @@ class JointTEST(unittest.TestCase):
         self.assertEqual(None, joint.axis(0))
         self.assertEqual(None, joint.axis(1))
         axis = JointAxis()
-        self.assertEqual(0, len(axis.set_xyz(Vector3d(1, 0, 0))))
+        axis.set_xyz(Vector3d(1, 0, 0))
         joint.set_axis(0, axis)
         axis1 = JointAxis()
-        self.assertEqual(0, len(axis1.set_xyz(Vector3d(0, 1, 0))))
+        axis1.set_xyz(Vector3d(0, 1, 0))
         joint.set_axis(1, axis1)
         self.assertNotEqual(None, joint.axis(0))
         self.assertNotEqual(None, joint.axis(1))
@@ -114,10 +114,10 @@ class JointTEST(unittest.TestCase):
         joint = Joint()
         joint.set_name("test_joint")
         axis = JointAxis()
-        self.assertEqual(0, len(axis.set_xyz(Vector3d(1, 0, 0))))
+        axis.set_xyz(Vector3d(1, 0, 0))
         joint.set_axis(0, axis)
         axis1 = JointAxis()
-        self.assertEqual(0, len(axis1.set_xyz(Vector3d(0, 1, 0))))
+        axis1.set_xyz(Vector3d(0, 1, 0))
         joint.set_axis(1, axis1)
 
         joint2 = Joint(joint)
@@ -139,10 +139,10 @@ class JointTEST(unittest.TestCase):
         joint = Joint()
         joint.set_name("test_joint")
         axis = JointAxis()
-        self.assertEqual(0, len(axis.set_xyz(Vector3d(1, 0, 0))))
+        axis.set_xyz(Vector3d(1, 0, 0))
         joint.set_axis(0, axis)
         axis1 = JointAxis()
-        self.assertEqual(0, len(axis1.set_xyz(Vector3d(0, 1, 0))))
+        axis1.set_xyz(Vector3d(0, 1, 0))
         joint.set_axis(1, axis1)
 
         joint2 = copy.deepcopy(joint)

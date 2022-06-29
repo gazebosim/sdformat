@@ -14,7 +14,8 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d
-from sdformat import Plugin, Model, Joint, Link, Error, Frame, SemanticPose
+from sdformat import (Plugin, Model, Joint, Link, Error, Frame, SemanticPose,
+                      SDFErrorsException)
 import sdformat as sdf
 import math
 import unittest
@@ -116,9 +117,9 @@ class ModelTEST(unittest.TestCase):
         semanticPose = model.semantic_pose()
         self.assertEqual(model.raw_pose(), semanticPose.raw_pose())
         self.assertFalse(semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertEqual(1, len(semanticPose.resolve(pose)))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         model.set_raw_pose(Pose3d(1, 2, 3, 0, 0, math.pi))
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, math.pi), model.raw_pose())
@@ -129,11 +130,13 @@ class ModelTEST(unittest.TestCase):
         semanticPose = model.semantic_pose()
         self.assertEqual(model.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("world", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertNotEqual(0, semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
-        errors = model.validate_graphs()
+        with self.assertRaises(SDFErrorsException) as cm:
+            model.validate_graphs()
+        errors = cm.exception.errors
         self.assertEqual(2, len(errors))
         self.assertEqual(errors[0].code(), sdf.ErrorCode.FRAME_ATTACHED_TO_GRAPH_ERROR)
         self.assertEqual(errors[0].message(),

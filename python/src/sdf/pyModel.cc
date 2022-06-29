@@ -24,6 +24,8 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 
+#include "pybind11_helpers.hh"
+
 using namespace pybind11::literals;
 
 namespace sdf
@@ -38,7 +40,10 @@ void defineModel(pybind11::object module)
   pybind11::class_<sdf::Model>(module, "Model")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Model>())
-    .def("validate_graphs", &sdf::Model::ValidateGraphs,
+    .def("validate_graphs", [](const sdf::Model &self)
+         {
+           ThrowIfErrors(self.ValidateGraphs());
+         },
          "Check that the FrameAttachedToGraph and PoseRelativeToGraph "
          "are valid.")
     .def("name", &sdf::Model::Name,

@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Vector3d
-from sdformat import JointAxis, Error
+from sdformat import JointAxis, Error, SDFErrorsException
 import math
 import unittest
 
@@ -36,16 +36,15 @@ class JointAxisTEST(unittest.TestCase):
         self.assertAlmostEqual(1e8, axis.stiffness())
         self.assertAlmostEqual(1.0, axis.dissipation())
 
-        errors = axis.set_xyz(Vector3d(0, 1, 0))
-        self.assertEqual(0, len(errors))
+        axis.set_xyz(Vector3d(0, 1, 0))
         self.assertEqual(Vector3d.UNIT_Y, axis.xyz())
 
         axis.set_xyz_expressed_in("__model__")
         self.assertEqual("__model__", axis.xyz_expressed_in())
 
         # expect errors when trying to resolve axis without graph
-        vec3 = Vector3d()
-        self.assertEqual(1, len(axis.resolve_xyz(vec3)))
+        with self.assertRaises(SDFErrorsException):
+            axis.resolve_xyz()
 
         axis.set_damping(0.2)
         self.assertAlmostEqual(0.2, axis.damping())
@@ -88,7 +87,7 @@ class JointAxisTEST(unittest.TestCase):
 
     def test_copy_construction(self):
         jointAxis = JointAxis()
-        self.assertEqual(0, len(jointAxis.set_xyz(Vector3d(0, 1, 0))))
+        jointAxis.set_xyz(Vector3d(0, 1, 0))
 
         jointAxisCopy = copy.deepcopy(jointAxis)
         self.assertEqual(jointAxis.xyz(), jointAxisCopy.xyz())
@@ -96,9 +95,11 @@ class JointAxisTEST(unittest.TestCase):
 
     def test_zero_norm_vector_returns_error(self):
         axis = JointAxis()
-        self.assertEqual(0, len(axis.set_xyz(Vector3d(1.0, 0, 0))))
+        axis.set_xyz(Vector3d(1.0, 0, 0))
 
-        errors = axis.set_xyz(Vector3d.ZERO)
+        with self.assertRaises(SDFErrorsException) as cm:
+            axis.set_xyz(Vector3d.ZERO)
+        errors = cm.exception.errors
         self.assertTrue(errors)
         self.assertEqual(errors[0].message(), "The norm of the xyz vector cannot be zero")
 
