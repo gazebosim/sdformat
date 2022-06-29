@@ -21,9 +21,6 @@
 #include "sdf/ParserConfig.hh"
 
 #include "sdf/ParticleEmitter.hh"
-#include "sdf/Mesh.hh"
-#include "sdf/Plane.hh"
-#include "sdf/Sphere.hh"
 
 using namespace pybind11::literals;
 
