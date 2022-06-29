@@ -21,6 +21,7 @@
 #include <gz/math/Pose3.hh>
 
 #include "sdf/SemanticPose.hh"
+#include "pybind11_helpers.hh"
 
 using namespace pybind11::literals;
 
@@ -41,8 +42,13 @@ void defineSemanticPose(pybind11::object module)
          "Get the name of the coordinate frame relative to which this "
          "object's pose is expressed. An empty value indicates that the frame "
          "is relative to the default parent object.")
-    .def("resolve", &sdf::SemanticPose::Resolve,
-         pybind11::arg("_pose"),
+    .def("resolve",
+         [](const sdf::SemanticPose &self, const std::string &_resolveTo)
+         {
+           gz::math::Pose3d pose;
+           ThrowIfErrors(self.Resolve(pose, _resolveTo));
+           return pose;
+         },
          pybind11::arg("_resolveTo") = "",
          "Resolve pose of this object with respect to another named frame. "
          "If there are any errors resolving the pose, the output will not be "

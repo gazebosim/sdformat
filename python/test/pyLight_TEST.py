@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Angle, Color, Pose3d, Vector3d
-from sdformat import Light
+from sdformat import Light, SDFErrorsException
 import sdformat as sdf
 import math
 import unittest
@@ -36,9 +36,9 @@ class LightColor(unittest.TestCase):
         semanticPose = light.semantic_pose()
         self.assertEqual(light.raw_pose(), semanticPose.raw_pose())
         self.assertFalse(semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertEqual(1, len(semanticPose.resolve(pose)))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         light.set_raw_pose(Pose3d(1, 2, 3, 0, 0, math.pi))
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, math.pi), light.raw_pose())
@@ -49,9 +49,9 @@ class LightColor(unittest.TestCase):
         semanticPose = light.semantic_pose()
         self.assertEqual(light.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("world", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(1, len(semanticPose.resolve(pose)))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         self.assertTrue(light.light_on())
         light.set_light_on(False)

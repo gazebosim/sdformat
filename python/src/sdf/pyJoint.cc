@@ -21,6 +21,7 @@
 
 #include "sdf/Joint.hh"
 #include "sdf/Sensor.hh"
+#include "pybind11_helpers.hh"
 
 using namespace pybind11::literals;
 
@@ -57,8 +58,8 @@ void defineJoint(pybind11::object module)
          [](const sdf::Joint &self)
          {
            std::string link;
-           auto errors = self.ResolveChildLink(link);
-           return std::make_tuple(errors, link);
+           ThrowIfErrors(self.ResolveChildLink(link));
+           return link;
          },
          "Resolve the name of the child link from the "
          "FrameAttachedToGraph.")
@@ -66,8 +67,8 @@ void defineJoint(pybind11::object module)
          [](const sdf::Joint &self)
          {
            std::string link;
-           auto errors = self.ResolveParentLink(link);
-           return std::make_tuple(errors, link);
+           ThrowIfErrors(self.ResolveParentLink(link));
+           return link;
          },
          "Resolve the name of the parent link from the "
          "FrameAttachedToGraph. It will return the name of a link or "
