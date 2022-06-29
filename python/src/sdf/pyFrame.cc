@@ -20,6 +20,7 @@
 #include <pybind11/stl.h>
 
 #include "sdf/Frame.hh"
+#include "pyExceptions.hh"
 
 using namespace pybind11::literals;
 
@@ -64,7 +65,11 @@ void defineFrame(pybind11::object module)
          {
            std::string body;
            auto errors = self.ResolveAttachedToBody(body);
-           return std::make_tuple(errors, body);
+           if (!errors.empty())
+           {
+             throw PySDFErrorsException(errors);
+           }
+           return body;
          },
          "Resolve the attached-to body of this frame from the "
          "FrameAttachedToGraph. Generally, it resolves to the name of a link, "
