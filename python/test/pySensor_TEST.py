@@ -16,7 +16,7 @@ import copy
 from ignition.math import Pose3d
 from sdformat import (AirPressure, Altimeter, Camera, IMU, ForceTorque, Lidar,
                       Magnetometer, NavSat, Noise, Plugin, SemanticPose,
-                      Sensor)
+                      Sensor, SDFErrorsException)
 import sdformat as sdf
 import unittest
 
@@ -40,9 +40,9 @@ class SensorTEST(unittest.TestCase):
         semanticPose = sensor.semantic_pose()
         self.assertEqual(sensor.raw_pose(), semanticPose.raw_pose())
         self.assertFalse(semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         sensor.set_raw_pose(Pose3d(1, 2, 3, 0, 0, 0))
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor.raw_pose())
@@ -53,9 +53,9 @@ class SensorTEST(unittest.TestCase):
         semanticPose = sensor.semantic_pose()
         self.assertEqual(sensor.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("a_frame", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         self.assertAlmostEqual(0.0, sensor.update_rate())
 

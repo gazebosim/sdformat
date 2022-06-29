@@ -21,6 +21,7 @@
 
 #include "sdf/Frame.hh"
 #include "pyExceptions.hh"
+#include "pybind11_helpers.hh"
 
 using namespace pybind11::literals;
 
@@ -64,11 +65,7 @@ void defineFrame(pybind11::object module)
          [](const sdf::Frame &self)
          {
            std::string body;
-           auto errors = self.ResolveAttachedToBody(body);
-           if (!errors.empty())
-           {
-             throw PySDFErrorsException(errors);
-           }
+           ThrowIfErrors(self.ResolveAttachedToBody(body));
            return body;
          },
          "Resolve the attached-to body of this frame from the "
