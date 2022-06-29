@@ -26,7 +26,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 const auto g_testPath = sdf::testing::TestFile();
 const auto g_modelsPath =

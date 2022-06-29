@@ -21,7 +21,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 TEST(ModelVersionsTest, Empty_ModelFilePath)
 {
@@ -68,11 +68,4 @@ TEST(ModelVersionsTest, Correct_ModelFilePath)
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
   EXPECT_EQ(modelPath, sdf::filesystem::append(MODEL_PATH, "model-1_4.sdf"));
-}
-
-/////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

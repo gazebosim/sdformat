@@ -28,7 +28,7 @@
 #include "sdf/World.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Light.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)

@@ -2483,6 +2483,12 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
+  return checkJointParentChildNames(_root);
+}
+
+//////////////////////////////////////////////////
+bool checkJointParentChildNames(const sdf::Root *_root)
+{
   Errors errors;
   checkJointParentChildNames(_root, errors);
   if (!errors.empty())
@@ -2505,7 +2511,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
     {
       auto joint = _model->JointByIndex(j);
 
-      const std::string &parentName = joint->ParentLinkName();
+      const std::string &parentName = joint->ParentName();
       const std::string parentLocalName = sdf::SplitName(parentName).second;
 
       if (parentName != "world" && parentLocalName != "__model__" &&
@@ -2517,7 +2523,7 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           "] not found in model with name[" + _model->Name() + "]."});
       }
 
-      const std::string &childName = joint->ChildLinkName();
+      const std::string &childName = joint->ChildName();
       const std::string childLocalName = sdf::SplitName(childName).second;
       if (childName == "world")
       {

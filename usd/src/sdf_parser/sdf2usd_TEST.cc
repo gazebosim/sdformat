@@ -22,7 +22,7 @@
 #include <gz/common/TempDirectory.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 // TODO(ahcorde) this is to remove deprecated "warnings" in usd, these warnings
@@ -69,7 +69,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(check_cmd, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_cmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase = gz::common::joinPaths(pathBase, "test", "sdf");
@@ -108,7 +108,7 @@ void getAttr(const pxr::UsdPrim &_prim, const std::string &_attributeName,
   attr.Get(&_value);
 }
 
-TEST(check_cmd_model, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_cmd_model, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase = gz::common::joinPaths(pathBase, "test", "sdf");

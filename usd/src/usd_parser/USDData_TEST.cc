@@ -25,7 +25,7 @@
 #include <sdf/usd/usd_parser/USDData.hh>
 #include <sdf/usd/UsdError.hh>
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 #include <sdf/Material.hh>

@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <gz/math/Inertial.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
@@ -370,7 +371,7 @@ namespace sdf
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

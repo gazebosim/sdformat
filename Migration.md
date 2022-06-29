@@ -22,6 +22,23 @@ but with improved human-readability..
 - Header files under `ignition/...` are deprecated and will be removed in future versions.
   Use `gz/...` instead.
 
+- **sdf/Types.hh**: The `Inertia` class has been deprecated. Please use the
+￼   `Inertial` class in the `gz-math` library.
+
+- **sdf/Joint.hh**:
+   + ***Deprecation:*** const std::string &ChildLinkName() const
+   + ***Replacement:*** const std::string &ChildName() const
+   + ***Deprecation:*** const std::string &ParentLinkName() const
+   + ***Replacement:*** const std::string &ParentName() const
+   + ***Deprecation:*** void SetChildLinkName(const std::string &)
+   + ***Replacement:*** void SetChildName(const std::string &)
+   + ***Deprecation:*** void SetParentLinkName(const std::string &)
+   + ***Replacement:*** void SetParentName(const std::string &)
+
+- **sdf/parser.hh**:
+   + ***Deprecation:*** bool checkJointParentChildLinkNames(const sdf::Root \*)
+   + ***Replacement:*** bool checkJointParentChildNames(const sdf::Root \*)
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
@@ -616,7 +633,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
       Uniqueness is forced so that referencing implicit frames is not ambiguous,
       e.g. you cannot have a link and joint share an implicit frame name.
       Some existing SDFormat models may not comply with this requirement.
-      The `ign sdf --check` command can be used to identify models that violate
+      The `gz sdf --check` command can be used to identify models that violate
       this requirement.
     + [BitBucket pull request 600](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/600)
 

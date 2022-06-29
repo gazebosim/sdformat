@@ -15,6 +15,7 @@
  */
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "pyAirPressure.hh"
 #include "pyAltimeter.hh"
@@ -26,9 +27,11 @@
 #include "pyCylinder.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
+#include "pyExceptions.hh"
 #include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyHeightmap.hh"
 #include "pyIMU.hh"
 #include "pyJoint.hh"
 #include "pyJointAxis.hh"
@@ -47,8 +50,10 @@
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyRoot.hh"
+#include "pyScene.hh"
 #include "pySemanticPose.hh"
 #include "pySensor.hh"
+#include "pySky.hh"
 #include "pySphere.hh"
 #include "pySurface.hh"
 #include "pyVisual.hh"
@@ -70,7 +75,11 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineError(m);
   sdf::python::defineForceTorque(m);
   sdf::python::defineFrame(m);
+  sdf::python::defineFriction(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineHeightmap(m);
+  sdf::python::defineHeightmapBlend(m);
+  sdf::python::defineHeightmapTexture(m);
   sdf::python::defineIMU(m);
   sdf::python::defineJoint(m);
   sdf::python::defineJointAxis(m);
@@ -83,6 +92,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineModel(m);
   sdf::python::defineNavSat(m);
   sdf::python::defineNoise(m);
+  sdf::python::defineODE(m);
   sdf::python::defineParserConfig(m);
   sdf::python::defineParticleEmitter(m);
   sdf::python::definePbr(m);
@@ -90,8 +100,10 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::definePlane(m);
   sdf::python::definePlugin(m);
   sdf::python::defineRoot(m);
+  sdf::python::defineScene(m);
   sdf::python::defineSemanticPose(m);
   sdf::python::defineSensor(m);
+  sdf::python::defineSky(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
   sdf::python::defineVisual(m);
@@ -99,4 +111,21 @@ PYBIND11_MODULE(sdformat, m) {
 
   m.attr("SDF_VERSION") = SDF_VERSION;
   m.attr("SDF_PROTOCOL_VERSION") = SDF_PROTOCOL_VERSION;
+
+  static pybind11::exception<sdf::python::PySDFErrorsException>
+      sdfErrorsException(m, "SDFErrorsException", PyExc_RuntimeError);
+
+  pybind11::register_exception_translator([](std::exception_ptr p) {
+    try {
+      if (p) {
+        std::rethrow_exception(p);
+      }
+    } catch (const sdf::python::PySDFErrorsException &e) {
+      sdfErrorsException.attr("errors") = pybind11::cast(e.Errors());
+      // This has to be called last since it's the call that sets
+      // PyErr_SetString.
+      sdfErrorsException(e.what());
+    }
+  });
+
 }

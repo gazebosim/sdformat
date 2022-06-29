@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////////////////
 /// Ensure that include sdf descriptions can be overriden
@@ -48,12 +48,4 @@ TEST(Include, IncludeDescription)
   EXPECT_TRUE(sdf->Root()->HasElement("pose"));
   sdf::ElementPtr poseElem = sdf->Root()->GetElement("pose");
   EXPECT_EQ(poseElem->GetDescription(), "override");
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

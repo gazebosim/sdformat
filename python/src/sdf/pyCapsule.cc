@@ -45,7 +45,7 @@ void defineCapsule(pybind11::object module)
         "shape",
         pybind11::overload_cast<>(&sdf::Capsule::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Ignition Math representation of this Capsule.")
+        "Get a mutable Gazebo Math representation of this Capsule.")
     .def("__copy__", [](const sdf::Capsule &self) {
       return sdf::Capsule(self);
     })

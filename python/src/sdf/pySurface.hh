@@ -35,6 +35,18 @@ namespace python
  */
 void defineContact(pybind11::object module);
 
+/// Define a pybind11 wrapper for an sdf::Friction
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineFriction(pybind11::object module);
+
+/// Define a pybind11 wrapper for an sdf::ODE
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineODE(pybind11::object module);
+
 /// Define a pybind11 wrapper for an sdf::Surface
 /**
  * \param[in] module a pybind11 module to add the definition to

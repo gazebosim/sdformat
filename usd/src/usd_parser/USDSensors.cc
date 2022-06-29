@@ -71,8 +71,8 @@ namespace sdf
       camera.SetName(_prim.GetPath().GetName());
       camera.SetHorizontalFov(20.955);
       camera.SetLensFocalLength(focalLength);
-      // Camera is Y up axis, rotate the camera to match with Ignition
-      gz::math::Pose3d poseCamera(0, 0, 0, IGN_PI_2, 0, -IGN_PI_2);
+      // Camera is Y up axis, rotate the camera to match with Gazebo
+      gz::math::Pose3d poseCamera(0, 0, 0, GZ_PI_2, 0, -GZ_PI_2);
       sensor.SetRawPose(pose * -poseCamera);
       camera.SetNearClip(clippingRange[0]);
       camera.SetFarClip(clippingRange[1]);
@@ -98,10 +98,10 @@ namespace sdf
         pxr::TfToken("horizontalResolution")).Get(&hResolution);
       _prim.GetAttribute(pxr::TfToken("verticalFov")).Get(&vFOV);
       _prim.GetAttribute(pxr::TfToken("verticalResolution")).Get(&vResolution);
-      hResolution = IGN_DTOR(hResolution);
-      vResolution = IGN_DTOR(vResolution);
-      hFOV = IGN_DTOR(hFOV);
-      vFOV = IGN_DTOR(vFOV);
+      hResolution = GZ_DTOR(hResolution);
+      vResolution = GZ_DTOR(vResolution);
+      hFOV = GZ_DTOR(hFOV);
+      vFOV = GZ_DTOR(vFOV);
 
       lidar.SetHorizontalScanMinAngle(gz::math::Angle(-hFOV / 2));
       lidar.SetHorizontalScanMaxAngle(gz::math::Angle(hFOV / 2));

@@ -38,7 +38,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMGeometry, Shapes)

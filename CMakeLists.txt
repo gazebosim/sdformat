@@ -17,9 +17,9 @@ OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" O
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
-# Find ign-cmake
-find_package(ignition-cmake3 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
+# Find gz-cmake
+find_package(gz-cmake3 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 ########################################
 # Python interfaces vars
@@ -31,15 +31,18 @@ option(USE_DIST_PACKAGES_FOR_PYTHON
       "Use dist-packages instead of site-package to install python modules"
       OFF)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if (BUILD_SDF)
-  ign_configure_project(
+  gz_configure_project(
     NO_IGNITION_PREFIX
     REPLACE_IGNITION_INCLUDE_PATH sdf
     VERSION_SUFFIX pre1)
 
   #################################################
   # Find tinyxml2.
-  ign_find_package(TINYXML2 REQUIRED)
+  gz_find_package(TINYXML2 REQUIRED)
 
   ################################################
   # Find urdfdom parser. Logic:
@@ -48,13 +51,13 @@ if (BUILD_SDF)
   #  2. if USE_INTERNAL_URDF is set to True, use the internal copy
   #  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
   if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
-    ign_find_package(IgnURDFDOM VERSION 1.0 QUIET)
+    gz_find_package(IgnURDFDOM VERSION 1.0 QUIET)
     if (NOT IgnURDFDOM_FOUND)
       if (NOT DEFINED USE_INTERNAL_URDF)
         # fallback to internal urdf
         set(USE_INTERNAL_URDF ON)
       else()
-        ign_build_error("Couldn't find the urdfdom >= 1.0 system installation")
+        gz_build_error("Couldn't find the urdfdom >= 1.0 system installation")
       endif()
     endif()
   endif()
@@ -64,8 +67,8 @@ if (BUILD_SDF)
   endif()
 
   #################################################
-  # Find ign command line utility:
-  find_program(GZ_PROGRAM ign)
+  # Find gz command line utility:
+  find_program(GZ_PROGRAM gz)
 
   #################################################
   # Copied from catkin/cmake/empy.cmake
@@ -96,33 +99,33 @@ if (BUILD_SDF)
   # Find psutil python package for memory tests
   find_python_module(psutil)
   if (NOT PY_PSUTIL)
-    ign_build_warning("Python psutil package not found. Memory leak tests will be skipped")
+    gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
   endif()
 
   ################################################
   # Find ruby executable to produce xml schemas
   find_program(RUBY ruby)
   if (NOT RUBY)
-    ign_build_error ("Ruby version 1.9 is needed to build xml schemas")
+    gz_build_error ("Ruby version 1.9 is needed to build xml schemas")
   else()
     message(STATUS "Found ruby executable: ${RUBY}")
   endif()
 
   ########################################
-  # Find ignition math
+  # Find gz math
   # Set a variable for generating ProjectConfig.cmake
-  ign_find_package(ignition-math7 VERSION REQUIRED)
-  set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
+  gz_find_package(gz-math7 VERSION REQUIRED)
+  set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
 
   ########################################
-  # Find ignition utils
-  ign_find_package(ignition-utils2 REQUIRED COMPONENTS cli)
-  set(IGN_UTILS_VER ${ignition-utils2_VERSION_MAJOR})
+  # Find gz utils
+  gz_find_package(gz-utils2 REQUIRED COMPONENTS cli)
+  set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
   ########################################
-  # Find ignition common
-  ign_find_package(ignition-common5 COMPONENTS graphics REQUIRED_BY usd)
-  set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
+  # Find gz common
+  gz_find_package(gz-common5 COMPONENTS graphics REQUIRED_BY usd)
+  set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
 
   ########################################
   # Python interfaces
@@ -146,12 +149,12 @@ if (BUILD_SDF)
 
   ########################################
   # Find PXR
-  ign_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
+  gz_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
 
-  ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
+  gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
     COMPONENTS usd)
 
-  ign_create_packages()
+  gz_create_packages()
 
   add_subdirectory(sdf)
   add_subdirectory(conf)
