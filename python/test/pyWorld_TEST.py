@@ -166,16 +166,20 @@ class WorldTEST(unittest.TestCase):
 
     def test_set_physics(self):
         world = World()
-        self.assertEqual(None, world.physics_default())
+        self.assertNotEqual(None, world.physics_default())
         physics = Physics()
+        physics.set_name("physics1")
         physics.set_default(True)
         physics.set_engine_type("bullet")
         physics.set_max_step_size(1.234)
         physics.set_real_time_factor(2.45)
 
-        world.set_physics(physics)
+        world.clear_plugins()
 
-        physics = world.physics()
+        self.assertTrue(world.add_physics(physics))
+        self.assertFalse(world.add_physics(physics))
+
+        physics = world.physics_default()
 
         self.assertTrue(physics.is_default())
         self.assertEqual("bullet", physics.engine_type())
