@@ -158,7 +158,7 @@ void Sky::SetCloudAmbient(const ignition::math::Color &_ambient)
 }
 
 //////////////////////////////////////////////////
-std::string Sky::CubemapUri() const
+const std::string &Sky::CubemapUri() const
 {
   return this->dataPtr->cubemapUri;
 }

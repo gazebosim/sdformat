@@ -103,7 +103,7 @@ namespace sdf
 
     /// \brief Get the skybox texture URI.
     /// \return The URI of the skybox texture.
-    public: std::string CubemapUri() const;
+    public: const std::string &CubemapUri() const;
 
     /// \brief Set the skybox texture URI.
     /// \param[in] _uri The URI of the skybox texture.
