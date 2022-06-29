@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Color, Pose3d, Vector3d
+from ignition.math import Color, Pose3d, Vector3d, Helpers
 from sdformat import ParticleEmitter
 import unittest
 
@@ -49,6 +49,7 @@ class ParticleEmitterTEST(unittest.TestCase):
         emitter.set_lifetime(22.0)
         self.assertAlmostEqual(22.0, emitter.lifetime())
         emitter.set_lifetime(-1.0)
+        self.assertAlmostEqual(Helpers.MIN_D, emitter.lifetime())
 
         self.assertAlmostEqual(10.0, emitter.rate())
         emitter.set_rate(123.0)

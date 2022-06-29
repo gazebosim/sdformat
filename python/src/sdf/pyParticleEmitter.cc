@@ -20,10 +20,6 @@
 
 #include "sdf/ParserConfig.hh"
 
-#include "sdf/Box.hh"
-#include "sdf/Capsule.hh"
-#include "sdf/Cylinder.hh"
-#include "sdf/Ellipsoid.hh"
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
@@ -40,7 +36,6 @@ namespace python
 /////////////////////////////////////////////////
 void defineParticleEmitter(pybind11::object module)
 {
-  // TODO(ahcorde) Add ParticleEmitterShape and SetParticleEmitterShape
   pybind11::class_<sdf::ParticleEmitter> particleEmitterModule(module, "ParticleEmitter");
   particleEmitterModule
     .def(pybind11::init<>())
@@ -143,7 +138,7 @@ void defineParticleEmitter(pybind11::object module)
          "Get SemanticPose object of this object to aid in resolving "
          "poses.")
     .def("material", &sdf::ParticleEmitter::Material,
-         pybind11::return_value_policy::reference,
+         pybind11::return_value_policy::reference_internal,
          "Get a pointer to the emitter's material properties. This can "
          "be a None if material properties have not been set.")
     .def("set_material", &sdf::ParticleEmitter::SetMaterial,
