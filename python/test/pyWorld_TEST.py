@@ -13,14 +13,14 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d, Vector3d, SphericalCoordinates
-from sdformat import Atmosphere, Gui, Plugin, Error, Frame, Light, Model, World
+from ignition.math import Color, Pose3d, Vector3d, SphericalCoordinates
+from sdformat import Atmosphere, Gui, Physics, Plugin, Error, Frame, Light, Model, Scene, World
 import sdformat as sdf
 import unittest
 import math
 
 # TODO(ahcorde)
-# - Add Actor, Physics and Scene tests when the sdf::Classes are ported
+# - Add Actor when the sdf::Classes are ported
 
 class WorldTEST(unittest.TestCase):
 
@@ -84,9 +84,9 @@ class WorldTEST(unittest.TestCase):
         gui.set_fullscreen(True)
         world.set_gui(gui)
 
-        # sdf::Scene scene
-        # scene.set_grid(True)
-        # world.set_scene(scene)
+        scene = Scene()
+        scene.set_grid(True)
+        world.set_scene(scene)
 
         world.set_magnetic_field(Vector3d(0, 1, 0))
         world.set_name("test_world")
@@ -106,8 +106,8 @@ class WorldTEST(unittest.TestCase):
         self.assertTrue(None != world.gui())
         self.assertEqual(gui.fullscreen(), world.gui().fullscreen())
 
-        # self.assertTrue(None != world.Scene())
-        # self.assertEqual(scene.Grid(), world.Scene().Grid())
+        self.assertTrue(None != world.scene())
+        self.assertEqual(scene.grid(), world.scene().grid())
 
         self.assertEqual(Vector3d.UNIT_Y, world.magnetic_field())
         self.assertEqual(Vector3d.UNIT_Z, world.wind_linear_velocity())
@@ -121,8 +121,8 @@ class WorldTEST(unittest.TestCase):
         self.assertTrue(None != world2.gui())
         self.assertEqual(gui.fullscreen(), world2.gui().fullscreen())
 
-        # self.assertTrue(None != world2.Scene())
-        # self.assertEqual(scene.Grid(), world2.Scene().Grid())
+        self.assertTrue(None != world2.scene())
+        self.assertEqual(scene.grid(), world2.scene().grid())
 
         self.assertEqual(Vector3d.UNIT_Y, world2.magnetic_field())
         self.assertEqual(Vector3d.UNIT_Z, world2.wind_linear_velocity())
@@ -158,27 +158,46 @@ class WorldTEST(unittest.TestCase):
         self.assertNotEqual(None, world.gui())
         self.assertFalse(world.gui().fullscreen())
 
-# ########################/
-# TEST(DOMWorld, SetScene)
-# {
-#   world = World()
-#   self.assertEqual(None, world.Scene())
-#
-#   sdf::Scene scene
-#   scene.set_Ambient(Color::Blue)
-#   scene.set_Background(Color::Red)
-#   scene.set_Grid(true)
-#   scene.set_Shadows(true)
-#   scene.set_OriginVisual(true)
-#   world.set_Scene(scene)
-#
-#   self.assertNotEqual(None, world.Scene())
-#   self.assertEqual(Color::Blue, world.Scene().Ambient())
-#   self.assertEqual(Color::Red, world.Scene().Background())
-#   self.assertTrue(world.Scene().Grid())
-#   self.assertTrue(world.Scene().Shadows())
-#   self.assertTrue(world.Scene().OriginVisual())
-# }
+    def test_set_physics(self):
+        world = World()
+        self.assertNotEqual(None, world.physics_default())
+        physics = Physics()
+        physics.set_name("physics1")
+        physics.set_default(True)
+        physics.set_engine_type("bullet")
+        physics.set_max_step_size(1.234)
+        physics.set_real_time_factor(2.45)
+
+        world.clear_plugins()
+
+        self.assertTrue(world.add_physics(physics))
+        self.assertFalse(world.add_physics(physics))
+
+        physics = world.physics_default()
+
+        self.assertTrue(physics.is_default())
+        self.assertEqual("bullet", physics.engine_type())
+        self.assertAlmostEqual(1.234, physics.max_step_size())
+        self.assertAlmostEqual(2.45, physics.real_time_factor())
+
+    def test_set_scene(self):
+        world = World()
+        self.assertEqual(None, world.scene())
+
+        scene = Scene()
+        scene.set_ambient(Color.BLUE)
+        scene.set_background(Color.RED)
+        scene.set_grid(True)
+        scene.set_shadows(True)
+        scene.set_origin_visual(True)
+        world.set_scene(scene)
+
+        self.assertNotEqual(None, world.scene())
+        self.assertEqual(Color.BLUE, world.scene().ambient())
+        self.assertEqual(Color.RED, world.scene().background())
+        self.assertTrue(world.scene().grid())
+        self.assertTrue(world.scene().shadows())
+        self.assertTrue(world.scene().origin_visual())
 
     def test_add_model(self):
         world = World()
@@ -289,10 +308,10 @@ class WorldTEST(unittest.TestCase):
         light = Light()
         light.set_name("light1")
         self.assertTrue(world.add_light(light))
-        #
-        # sdf::Physics physics
-        # physics.set_name("physics1")
-        # self.assertTrue(world.add_Physics(physics))
+
+        physics = Physics()
+        physics.set_name("physics1")
+        self.assertTrue(world.add_physics(physics))
 
         frame = Frame()
         frame.set_name("frame1")
@@ -319,12 +338,12 @@ class WorldTEST(unittest.TestCase):
         l.set_name("light2")
         self.assertEqual("light2", world.light_by_index(0).name())
 
-        # # Modify the physics
-        # sdf::Physics *p = world.physics_by_index(1)
-        # self.assertNotEqual(None, p)
-        # self.assertEqual("physics1", p.name())
-        # p.set_name("physics2")
-        # self.assertEqual("physics2", world.physics_by_index(1).name())
+        # Modify the physics
+        p = world.physics_by_index(1)
+        self.assertNotEqual(None, p)
+        self.assertEqual("physics1", p.name())
+        p.set_name("physics2")
+        self.assertEqual("physics2", world.physics_by_index(1).name())
 
         # Modify the frame
         f = world.frame_by_index(0)
@@ -332,7 +351,6 @@ class WorldTEST(unittest.TestCase):
         self.assertEqual("frame1", f.name())
         f.set_name("frame2")
         self.assertEqual("frame2", world.frame_by_index(0).name())
-
 
     def test_mutable_by_name(self):
         world = World()

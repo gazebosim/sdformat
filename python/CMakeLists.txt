@@ -66,7 +66,9 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyNavSat.cc
   src/sdf/pyNoise.cc
   src/sdf/pyParserConfig.cc
+  src/sdf/pyParticleEmitter.cc
   src/sdf/pyPbr.cc
+  src/sdf/pyPhysics.cc
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
   src/sdf/pyRoot.cc
@@ -78,6 +80,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pySurface.cc
   src/sdf/pyVisual.cc
   src/sdf/pyWorld.cc
+  src/sdf/pybind11_helpers.cc
 )
 
 target_link_libraries(sdformat PRIVATE
@@ -125,7 +128,9 @@ if (BUILD_TESTING)
     pyNoise_TEST
     pyNavSat_TEST
     pyParserConfig_TEST
+    pyParticleEmitter_TEST
     pyPbr_TEST
+    pyPhysics_TEST
     pyPlane_TEST
     pyPlugin_TEST
     pyRoot_TEST
@@ -138,10 +143,25 @@ if (BUILD_TESTING)
     pyVisual_TEST
     pyWorld_TEST
   )
+  execute_process(COMMAND "${Python3_EXECUTABLE}" -m pytest --version
+    OUTPUT_VARIABLE PYTEST_output
+    ERROR_VARIABLE  PYTEST_error
+    RESULT_VARIABLE PYTEST_result)
+  if(${PYTEST_result} EQUAL 0)
+    set(pytest_FOUND TRUE)
+  else()
+    message("")
+    message(WARNING "Pytest package not available: ${PYTEST_error}")
+  endif()
 
   foreach (test ${python_tests})
-    add_test(NAME ${test}.py COMMAND
-      "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
+    if (pytest_FOUND)
+      add_test(NAME ${test}.py COMMAND
+        "${Python3_EXECUTABLE}" -m pytest "${CMAKE_SOURCE_DIR}/python/test/${test}.py" --junitxml "${CMAKE_BINARY_DIR}/test_results/${test}.xml")
+    else()
+      add_test(NAME ${test}.py COMMAND
+        "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
+    endif()
     set(_env_vars)
     list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib:$ENV{PYTHONPATH}")
     list(APPEND _env_vars "LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}:$ENV{LD_LIBRARY_PATH}")

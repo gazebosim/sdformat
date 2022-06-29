@@ -34,9 +34,9 @@ class FrameTest(unittest.TestCase):
         semanticPose = frame.semantic_pose()
         self.assertEqual(Pose3d.ZERO, semanticPose.raw_pose())
         self.assertFalse(semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         frame.set_attached_to("attachment")
         self.assertEqual("attachment", frame.attached_to())
@@ -48,9 +48,9 @@ class FrameTest(unittest.TestCase):
         semanticPose = frame.semantic_pose()
         self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("attachment", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         frame.set_pose_relative_to("link")
         self.assertEqual("link", frame.pose_relative_to())
@@ -58,9 +58,9 @@ class FrameTest(unittest.TestCase):
         semanticPose = frame.semantic_pose()
         self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("link", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertEqual(1, len(semanticPose.resolve(pose)))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         with self.assertRaises(SDFErrorsException) as cm:
             resolveAttachedToBody = frame.resolve_attached_to_body()

@@ -15,7 +15,7 @@
 import copy
 from ignition.math import Pose3d
 from sdformat import (Box, Collision, Contact, Cylinder, Error, Geometry,
-                      Plane, Surface, Sphere)
+                      Plane, Surface, Sphere, SDFErrorsException)
 import sdformat as sdf
 import unittest
 import math
@@ -35,10 +35,9 @@ class CollisionTEST(unittest.TestCase):
         semanticPose = collision.semantic_pose()
         self.assertEqual(collision.raw_pose(), semanticPose.raw_pose())
         self.assertTrue(not semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        semanticPose.resolve(pose)
-        # self.assertFalse()
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         collision.set_raw_pose(Pose3d(-10, -20, -30, math.pi, math.pi, math.pi))
         self.assertEqual(Pose3d(-10, -20, -30, math.pi, math.pi, math.pi),
@@ -50,9 +49,9 @@ class CollisionTEST(unittest.TestCase):
         semanticPose = collision.semantic_pose()
         self.assertEqual(collision.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("link", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        # self.assertFalse(semanticPose.resolve(pose).empty())
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         self.assertNotEqual(None, collision.geometry())
         self.assertEqual(sdf.GeometryType.EMPTY, collision.geometry().type())
