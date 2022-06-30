@@ -31,7 +31,7 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 //////////////////////////////////////////////////

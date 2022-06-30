@@ -32,7 +32,7 @@
 #include "sdf/parser.hh"
 #include "sdf/sdf_config.h"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////
 // Test parsing a model element that has a frame element

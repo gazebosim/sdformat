@@ -14,11 +14,11 @@
 
 import copy
 from ignition.math import Pose3d
-from sdformat import Frame, Error
+from sdformat import Frame, Error, SDFErrorsException, ErrorCode
 import unittest
 import math
 
-class FrameColor(unittest.TestCase):
+class FrameTest(unittest.TestCase):
 
     def test_default_construction(self):
         frame = Frame()
@@ -34,9 +34,9 @@ class FrameColor(unittest.TestCase):
         semanticPose = frame.semantic_pose()
         self.assertEqual(Pose3d.ZERO, semanticPose.raw_pose())
         self.assertFalse(semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         frame.set_attached_to("attachment")
         self.assertEqual("attachment", frame.attached_to())
@@ -48,9 +48,9 @@ class FrameColor(unittest.TestCase):
         semanticPose = frame.semantic_pose()
         self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("attachment", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertTrue(semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         frame.set_pose_relative_to("link")
         self.assertEqual("link", frame.pose_relative_to())
@@ -58,13 +58,19 @@ class FrameColor(unittest.TestCase):
         semanticPose = frame.semantic_pose()
         self.assertEqual(frame.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("link", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertEqual(1, len(semanticPose.resolve(pose)))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
-        errors, resolveAttachedToBody = frame.resolve_attached_to_body();
-        self.assertEqual(1, len(errors))
-        self.assertFalse(resolveAttachedToBody)
+        with self.assertRaises(SDFErrorsException) as cm:
+            resolveAttachedToBody = frame.resolve_attached_to_body()
+            self.assertIsNone(resolveAttachedToBody)
+
+        self.assertEqual(1, len(cm.exception.errors))
+        self.assertEqual(ErrorCode.ELEMENT_INVALID,
+                         cm.exception.errors[0].code())
+        self.assertIn("Frame has invalid pointer to FrameAttachedToGraph",
+                      str(cm.exception))
 
 
 if __name__ == '__main__':

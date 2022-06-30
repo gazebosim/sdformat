@@ -23,6 +23,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
+#include "pybind11_helpers.hh"
 
 using namespace pybind11::literals;
 
@@ -38,23 +39,32 @@ void defineRoot(pybind11::object module)
   pybind11::class_<sdf::Root>(module, "Root")
     .def(pybind11::init<>())
     .def("load",
-         pybind11::overload_cast<const std::string &>(&sdf::Root::Load),
+         [](Root &self, const std::string &_filename)
+         {
+           ThrowIfErrors(self.Load(_filename));
+         },
          "Parse the given SDF file, and generate objects based on types "
          "specified in the SDF file.")
     .def("load",
-          pybind11::overload_cast<
-            const std::string &, const ParserConfig &>(&sdf::Root::Load),
+         [](Root &self, const std::string &_filename, 
+            const ParserConfig &_config)
+         {
+           ThrowIfErrors(self.Load(_filename, _config));
+         },
          "Parse the given SDF file, and generate objects based on types "
          "specified in the SDF file.")
    .def("load_sdf_string",
-         pybind11::overload_cast<const std::string &>(
-           &sdf::Root::LoadSdfString),
+         [](Root &self, const std::string &_sdf)
+         {
+           ThrowIfErrors(self.LoadSdfString(_sdf));
+         },
          "Parse the given SDF string, and generate objects based on types "
          "specified in the SDF file.")
     .def("load_sdf_string",
-          pybind11::overload_cast<
-            const std::string &, const ParserConfig &>(
-              &sdf::Root::LoadSdfString),
+         [](Root &self, const std::string &_sdf, const ParserConfig &_config)
+         {
+           ThrowIfErrors(self.LoadSdfString(_sdf, _config));
+         },
          "Parse the given SDF string, and generate objects based on types "
          "specified in the SDF file.")
     .def("version", &sdf::Root::Version,
@@ -84,11 +94,17 @@ void defineRoot(pybind11::object module)
     .def("set_light", &sdf::Root::SetLight,
          "Set the light object. This will override any existing model, "
          "actor, and light object.")
-    .def("add_world", &sdf::Root::AddWorld,
+    .def("add_world", [](Root &self, const World &_world)
+         {
+           ThrowIfErrors(self.AddWorld(_world));
+         },
          "Add a world to the root.")
     .def("clear_worlds", &sdf::Root::ClearWorlds,
          "Remove all worlds.")
-    .def("update_graphs", &sdf::Root::UpdateGraphs,
+    .def("update_graphs", [](Root &self)
+         {
+           ThrowIfErrors(self.UpdateGraphs());
+         },
          "Recreate the frame and pose graphs for the worlds and model "
          "that are children of this Root object. You can call this function "
          "to build new graphs when the DOM was created programmatically, or "

@@ -20,7 +20,7 @@
 #include <gz/math/Color.hh>
 #include "sdf/sdf.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////
 // Test parsing a link element that has a child light element
