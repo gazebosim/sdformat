@@ -42,7 +42,6 @@ void defineWorld(pybind11::object module)
 {
   // TODO(ahcorde)
   //  - Added Scene methods
-  //  - Added Light methods
   //  - Added Physics methods
 
   pybind11::class_<sdf::World> geometryModule(module, "World");
@@ -162,6 +161,12 @@ void defineWorld(pybind11::object module)
           "set.")
      .def("set_atmosphere", &sdf::World::SetAtmosphere,
           "Set the atmosphere model associated with this world.")
+     .def("gui", &sdf::World::Gui,
+          pybind11::return_value_policy::reference_internal,
+          "Get a pointer to the Gui associated with this "
+          "world. None indicates that a Gui element has not been specified.")
+     .def("set_gui", &sdf::World::SetGui,
+          "Set the Gui parameters associated with this world.")
      .def("scene", &sdf::World::Scene,
           pybind11::return_value_policy::reference_internal,
           "Get a pointer to the Scene associated with this "

@@ -31,6 +31,7 @@
 #include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyGui.hh"
 #include "pyHeightmap.hh"
 #include "pyIMU.hh"
 #include "pyJoint.hh"
@@ -78,6 +79,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineFrame(m);
   sdf::python::defineFriction(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineGui(m);
   sdf::python::defineHeightmap(m);
   sdf::python::defineHeightmapBlend(m);
   sdf::python::defineHeightmapTexture(m);

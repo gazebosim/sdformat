@@ -14,13 +14,13 @@
 
 import copy
 from ignition.math import Color, Pose3d, Vector3d, SphericalCoordinates
-from sdformat import Atmosphere, Physics, Plugin, Error, Frame, Light, Model, Scene, World
+from sdformat import Atmosphere, Gui, Physics, Plugin, Error, Frame, Light, Model, Scene, World
 import sdformat as sdf
 import unittest
 import math
 
 # TODO(ahcorde)
-# - Add GUI and Actor when the sdf::Classes are ported
+# - Add Actor when the sdf::Classes are ported
 
 class WorldTEST(unittest.TestCase):
 
@@ -80,9 +80,9 @@ class WorldTEST(unittest.TestCase):
         world.set_gravity(Vector3d(1, 0, 0))
         world.set_spherical_coordinates(SphericalCoordinates())
 
-        # sdf::Gui gui
-        # gui.set_Fullscreen(true)
-        # world.set_Gui(gui)
+        gui = Gui()
+        gui.set_fullscreen(True)
+        world.set_gui(gui)
 
         scene = Scene()
         scene.set_grid(True)
@@ -103,8 +103,8 @@ class WorldTEST(unittest.TestCase):
         self.assertEqual("test_audio_device", world.audio_device())
         self.assertEqual(Vector3d.UNIT_X, world.gravity())
 
-        # self.assertTrue(None != world.Gui())
-        # self.assertEqual(gui.Fullscreen(), world.Gui().Fullscreen())
+        self.assertTrue(None != world.gui())
+        self.assertEqual(gui.fullscreen(), world.gui().fullscreen())
 
         self.assertTrue(None != world.scene())
         self.assertEqual(scene.grid(), world.scene().grid())
@@ -118,8 +118,8 @@ class WorldTEST(unittest.TestCase):
         self.assertEqual("test_audio_device", world2.audio_device())
         self.assertEqual(Vector3d.UNIT_X, world2.gravity())
 
-        # self.assertTrue(None != world2.Gui())
-        # self.assertEqual(gui.Fullscreen(), world2.Gui().Fullscreen())
+        self.assertTrue(None != world2.gui())
+        self.assertEqual(gui.fullscreen(), world2.gui().fullscreen())
 
         self.assertTrue(None != world2.scene())
         self.assertEqual(scene.grid(), world2.scene().grid())
@@ -148,21 +148,15 @@ class WorldTEST(unittest.TestCase):
         world.set_magnetic_field(Vector3d(1.2, -2.3, 4.5))
         self.assertEqual(Vector3d(1.2, -2.3, 4.5), world.magnetic_field())
 
-#
-# ########################/
-# TEST(DOMWorld, SetGui)
-# {
-#   sdf::Gui gui
-#   gui.set_Fullscreen(true)
-#
-#   world = World()
-#   self.assertEqual(None, world.Gui())
-#
-#   world.set_Gui(gui)
-#   self.assertNotEqual(None, world.Gui())
-#   self.assertTrue(world.Gui().Fullscreen())
-# }
-#
+    def test_set_gui(self):
+        gui = Gui()
+
+        world = World()
+        self.assertEqual(None, world.gui())
+
+        world.set_gui(gui)
+        self.assertNotEqual(None, world.gui())
+        self.assertFalse(world.gui().fullscreen())
 
     def test_set_physics(self):
         world = World()
@@ -204,7 +198,6 @@ class WorldTEST(unittest.TestCase):
         self.assertTrue(world.scene().grid())
         self.assertTrue(world.scene().shadows())
         self.assertTrue(world.scene().origin_visual())
-
 
     def test_add_model(self):
         world = World()
