@@ -14,7 +14,7 @@
 
 import copy
 from ignition.math import Pose3d, Color
-from sdformat import Geometry, Material, Visual, Plugin
+from sdformat import Geometry, Material, Visual, Plugin, SDFErrorsException
 import sdformat as sdf
 import unittest
 import math
@@ -43,9 +43,9 @@ class VisualTEST(unittest.TestCase):
         semanticPose = visual.semantic_pose()
         self.assertEqual(visual.raw_pose(), semanticPose.raw_pose())
         self.assertEqual('', semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertFalse(not semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         visual.set_raw_pose(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2))
         self.assertEqual(Pose3d(0, -20, 30, math.pi/2, -math.pi, math.pi/2),
@@ -57,9 +57,9 @@ class VisualTEST(unittest.TestCase):
         semanticPose = visual.semantic_pose()
         self.assertEqual(visual.raw_pose(), semanticPose.raw_pose())
         self.assertEqual("link", semanticPose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertFalse(not semanticPose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semanticPose.resolve()
 
         self.assertNotEqual(None, visual.geometry())
         self.assertEqual(sdf.GeometryType.EMPTY, visual.geometry().type())

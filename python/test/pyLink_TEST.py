@@ -14,7 +14,8 @@
 
 import copy
 from ignition.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from sdformat import (Collision, Light, Link, Sensor, Visual)
+from sdformat import (Collision, Light, Link, Sensor, Visual,
+                      SDFErrorsException)
 import unittest
 import math
 
@@ -66,9 +67,9 @@ class LinkTEST(unittest.TestCase):
         semantic_pose = link.semantic_pose()
         self.assertEqual(Pose3d.ZERO, semantic_pose.raw_pose())
         self.assertFalse(semantic_pose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertFalse(not semantic_pose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semantic_pose.resolve()
 
         link.set_raw_pose(Pose3d(10, 20, 30, 0, math.pi, 0))
         self.assertEqual(Pose3d(10, 20, 30, 0, math.pi, 0), link.raw_pose())
@@ -79,9 +80,9 @@ class LinkTEST(unittest.TestCase):
         semantic_pose = link.semantic_pose()
         self.assertEqual(link.raw_pose(), semantic_pose.raw_pose())
         self.assertEqual("model", semantic_pose.relative_to())
-        pose = Pose3d()
         # expect errors when trying to resolve pose
-        self.assertFalse(not semantic_pose.resolve(pose))
+        with self.assertRaises(SDFErrorsException):
+            semantic_pose.resolve()
 
         # Get the default inertial
         inertial = link.inertial()

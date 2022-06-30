@@ -31,6 +31,7 @@
 #include "pyForceTorque.hh"
 #include "pyFrame.hh"
 #include "pyGeometry.hh"
+#include "pyGui.hh"
 #include "pyHeightmap.hh"
 #include "pyIMU.hh"
 #include "pyJoint.hh"
@@ -45,7 +46,9 @@
 #include "pyNavSat.hh"
 #include "pyNoise.hh"
 #include "pyParserConfig.hh"
+#include "pyParticleEmitter.hh"
 #include "pyPbr.hh"
+#include "pyPhysics.hh"
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyRoot.hh"
@@ -76,6 +79,7 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineFrame(m);
   sdf::python::defineFriction(m);
   sdf::python::defineGeometry(m);
+  sdf::python::defineGui(m);
   sdf::python::defineHeightmap(m);
   sdf::python::defineHeightmapBlend(m);
   sdf::python::defineHeightmapTexture(m);
@@ -93,8 +97,10 @@ PYBIND11_MODULE(sdformat, m) {
   sdf::python::defineNoise(m);
   sdf::python::defineODE(m);
   sdf::python::defineParserConfig(m);
+  sdf::python::defineParticleEmitter(m);
   sdf::python::definePbr(m);
   sdf::python::definePbrWorkflow(m);
+  sdf::python::definePhysics(m);
   sdf::python::definePlane(m);
   sdf::python::definePlugin(m);
   sdf::python::defineRoot(m);
