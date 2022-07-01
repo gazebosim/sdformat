@@ -566,10 +566,12 @@ TEST(SDF, EmbeddedSpec)
 
   result = sdf::SDF::EmbeddedSpec("actor.sdf", false);
   EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
-  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"), std::string::npos);
+  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"),
+      std::string::npos);
   result = sdf::SDF::EmbeddedSpec("actor.sdf", true);
   EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
-  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"), std::string::npos);
+  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"),
+      std::string::npos);
 
   result = sdf::SDF::EmbeddedSpec("root.sdf", false);
   EXPECT_NE(result.find("SDFormat base element"), std::string::npos);
@@ -592,7 +594,8 @@ TEST(SDF, EmbeddedSpecNonExistent)
 #endif
 
   result = sdf::SDF::EmbeddedSpec("unavailable.sdf", false);
-  EXPECT_NE(stderr_buffer.str().find("Unable to find SDF filename"), std::string::npos);
+  EXPECT_NE(stderr_buffer.str().find("Unable to find SDF filename"),
+      std::string::npos);
   EXPECT_NE(stderr_buffer.str().find("with version"), std::string::npos);
   EXPECT_TRUE(result.empty());
 
