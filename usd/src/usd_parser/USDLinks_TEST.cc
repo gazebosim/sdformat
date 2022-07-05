@@ -29,7 +29,7 @@
 #include <pxr/usd/usd/stage.h>
 #pragma pop_macro ("__DEPRECATED")
 
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 #include "USDLinks.hh"

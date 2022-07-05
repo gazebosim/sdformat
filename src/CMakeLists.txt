@@ -28,7 +28,7 @@ else()
 endif()
 
 if (BUILD_TESTING)
-  # Build this test file only if Ignition Tools is installed.
+  # Build this test file only if Gazebo Tools is installed.
   if (NOT GZ_PROGRAM)
     list(REMOVE_ITEM gtest_sources gz_TEST.cc)
   endif()
@@ -104,14 +104,13 @@ if (BUILD_TESTING)
 endif()
 
 gz_create_core_library(SOURCES ${sources}
-  CXX_STANDARD 17
   LEGACY_PROJECT_PREFIX SDFormat
   )
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-    ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
-    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+    gz-math${GZ_MATH_VER}::gz-math${GZ_MATH_VER}
+    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   PRIVATE
     TINYXML2::TINYXML2
     using_parser_urdf)

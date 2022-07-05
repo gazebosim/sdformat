@@ -16,7 +16,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "test_config.h"
+#include "test_config.hh"
 
 PYBIND11_MODULE(sdformattest, m) {
   m.doc() = "sdformat test Python Library.";

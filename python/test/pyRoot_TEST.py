@@ -15,7 +15,7 @@
 import copy
 from ignition.math import Vector3d, Pose3d
 from sdformat import (Error, Model, Light, Root, SDF_VERSION,
-                      SDF_PROTOCOL_VERSION, World)
+                      SDFErrorsException, SDF_PROTOCOL_VERSION, World)
 import sdformat as sdf
 
 import unittest
@@ -54,8 +54,7 @@ class RootTEST(unittest.TestCase):
              </sdf>"""
 
         root = Root()
-        errors = root.load_sdf_string(sdf)
-        self.assertEqual(0, len(errors))
+        root.load_sdf_string(sdf)
 
         model = root.model()
         self.assertNotEqual(None, model)
@@ -108,8 +107,7 @@ class RootTEST(unittest.TestCase):
                    </sdf>"""
 
         root = Root()
-        errors = root.load_sdf_string(sdf)
-        self.assertEqual(0, len(errors))
+        root.load_sdf_string(sdf)
 
         light = root.light()
         self.assertNotEqual(None, light)
@@ -188,9 +186,7 @@ class RootTEST(unittest.TestCase):
             frame = world.frame_by_index(0)
             self.assertNotEqual(None, frame)
             self.assertEqual("frame1", frame.name())
-            pose = Pose3d()
-            errors = frame.semantic_pose().resolve(pose)
-            self.assertEqual(0, len(errors))
+            pose = frame.semantic_pose().resolve()
             self.assertEqual(Pose3d(0, 1, 0, 0, 0, 0), pose)
 
         def testFrame2(_root):
@@ -199,19 +195,15 @@ class RootTEST(unittest.TestCase):
             frame = world.frame_by_index(0)
             self.assertNotEqual(None, frame)
             self.assertEqual("frame2", frame.name())
-            pose = Pose3d()
-            errors = frame.semantic_pose().resolve(pose)
-            self.assertEqual(0, len(errors))
+            pose = frame.semantic_pose().resolve()
             self.assertEqual(Pose3d(1, 1, 0, 0, 0, 0), pose)
 
         root1 = Root()
-        errors = root1.load_sdf_string(sdfString1)
-        self.assertEqual(0, len(errors))
+        root1.load_sdf_string(sdfString1)
         testFrame1(root1)
 
         root2 = Root()
-        errors = root2.load_sdf_string(sdfString2)
-        self.assertEqual(0, len(errors))
+        root2.load_sdf_string(sdfString2)
         testFrame2(root2)
 
 
@@ -221,17 +213,19 @@ class RootTEST(unittest.TestCase):
 
         world = World()
         world.set_name("world1")
-        errors = root.add_world(world)
-        self.assertEqual(0, len(errors))
+        root.add_world(world)
         self.assertEqual(1, root.world_count())
-        self.assertEqual(1, len(root.add_world(world)))
-        self.assertEqual(sdf.ErrorCode.DUPLICATE_NAME, root.add_world(world)[0].code())
+        with self.assertRaises(SDFErrorsException) as cm:
+            root.add_world(world)
+        errors = cm.exception.errors
+        self.assertEqual(1, len(errors))
+        self.assertEqual(sdf.ErrorCode.DUPLICATE_NAME, errors[0].code())
         self.assertEqual(1, root.world_count())
 
         root.clear_worlds()
         self.assertEqual(0, root.world_count())
 
-        self.assertEqual(0, len(root.add_world(world)))
+        root.add_world(world)
         self.assertEqual(1, root.world_count())
         worldFromRoot = root.world_by_index(0)
         self.assertNotEqual(None, worldFromRoot)
@@ -244,7 +238,7 @@ class RootTEST(unittest.TestCase):
 
         world = World()
         world.set_name("world1")
-        self.assertEqual(0, len(root.add_world(world)))
+        root.add_world(world)
         self.assertEqual(1, root.world_count())
 
         # Modify the world
@@ -283,7 +277,10 @@ class RootTEST(unittest.TestCase):
         self.assertEqual(0, root.world_count())
 
         root2 = Root()
-        root2.load_sdf_string(root.to_string())
+        try:
+            root2.load_sdf_string(root.to_string())
+        except SDFErrorsException:
+            pass
 
         self.assertEqual(SDF_VERSION, root2.version())
 

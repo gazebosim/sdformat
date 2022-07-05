@@ -24,7 +24,7 @@
 #include "Converter.hh"
 #include "XmlUtils.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 ////////////////////////////////////////////////////
 /// Set up an xml string for testing
@@ -2725,12 +2725,4 @@ TEST(Converter, World_17_to_18)
   EXPECT_STREQ(convertedElem->Name(), "pose");
   EXPECT_STREQ(convertedElem->Attribute("relative_to"), "__model__");
   EXPECT_STREQ(convertedElem->NextSiblingElement()->Name(), "geometry");
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

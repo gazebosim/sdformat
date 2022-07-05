@@ -35,7 +35,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 #include "UsdTestUtils.hh"
 #include "UsdUtils.hh"

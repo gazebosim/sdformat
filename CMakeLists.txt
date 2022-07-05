@@ -17,9 +17,9 @@ OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" O
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
-# Find ign-cmake
-find_package(ignition-cmake3 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
+# Find gz-cmake
+find_package(gz-cmake3 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 ########################################
 # Python interfaces vars
@@ -30,6 +30,9 @@ option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
 option(USE_DIST_PACKAGES_FOR_PYTHON
       "Use dist-packages instead of site-package to install python modules"
       OFF)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_SDF)
   gz_configure_project(
@@ -109,20 +112,20 @@ if (BUILD_SDF)
   endif()
 
   ########################################
-  # Find ignition math
+  # Find gz math
   # Set a variable for generating ProjectConfig.cmake
-  gz_find_package(ignition-math7 VERSION REQUIRED)
-  set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
+  gz_find_package(gz-math7 VERSION REQUIRED)
+  set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
 
   ########################################
-  # Find ignition utils
-  gz_find_package(ignition-utils2 REQUIRED COMPONENTS cli)
-  set(IGN_UTILS_VER ${ignition-utils2_VERSION_MAJOR})
+  # Find gz utils
+  gz_find_package(gz-utils2 REQUIRED COMPONENTS cli)
+  set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
   ########################################
-  # Find ignition common
-  gz_find_package(ignition-common5 COMPONENTS graphics REQUIRED_BY usd)
-  set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
+  # Find gz common
+  gz_find_package(gz-common5 COMPONENTS graphics REQUIRED_BY usd)
+  set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
 
   ########################################
   # Python interfaces

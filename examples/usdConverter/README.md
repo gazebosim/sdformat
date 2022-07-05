@@ -6,8 +6,8 @@ This example shows how a world in a SDF file can be converted to [USD](https://g
 
 You will need all of the dependencies for sdformat, along with the following additional dependencies:
 * USD: [installation instructions](https://github.com/PixarAnimationStudios/USD/blob/release/README.md#getting-and-building-the-code)
-* [ignition-common5](https://github.com/gazebosim/gz-common)
-* [ignition-utils2 (including the CLI component)](https://github.com/gazebosim/gz-utils)
+* [gz-common5](https://github.com/gazebosim/gz-common)
+* [gz-utils2 (including the CLI component)](https://github.com/gazebosim/gz-utils)
 
 ## Setup
 

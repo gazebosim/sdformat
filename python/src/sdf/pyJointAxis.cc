@@ -20,6 +20,7 @@
 #include <pybind11/stl.h>
 
 #include "sdf/JointAxis.hh"
+#include "pybind11_helpers.hh"
 
 
 using namespace pybind11::literals;
@@ -38,7 +39,10 @@ void defineJointAxis(pybind11::object module)
     .def(pybind11::init<sdf::JointAxis>())
     .def("xyz", &sdf::JointAxis::Xyz,
          "Get the x,y,z components of the axis unit vector.")
-    .def("set_xyz", &sdf::JointAxis::SetXyz,
+    .def("set_xyz", [](JointAxis &self, const gz::math::Vector3d &_xyz)
+         {
+           ThrowIfErrors(self.SetXyz(_xyz));
+         },
          "Set the x,y,z components of the axis unit vector.")
     .def("damping", &sdf::JointAxis::Damping,
          "Get the physical velocity dependent viscous damping coefficient "
@@ -104,8 +108,12 @@ void defineJointAxis(pybind11::object module)
          "Set the name of the coordinate frame in which this joint axis's "
          "unit vector is expressed. An empty value implies the parent (joint) "
          "frame.")
-    .def("resolve_xyz", &sdf::JointAxis::ResolveXyz,
-         pybind11::arg("_xyz"),
+    .def("resolve_xyz", [](const JointAxis &self, const std::string &_resolveTo)
+         {
+           gz::math::Vector3d xyz;
+           ThrowIfErrors(self.ResolveXyz(xyz, _resolveTo));
+           return xyz;
+         },
          pybind11::arg("_resolveTo") = "",
          "Express xyz unit vector of this axis in the coordinates of "
          "another named frame.")
