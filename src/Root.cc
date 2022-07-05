@@ -140,7 +140,9 @@ Root::Root()
 {
 }
 
-Errors Root::WorldName(const std::string &_filename, std::string &_worldName)
+Errors Root::WorldNameFromFile(
+  const std::string &_filename,
+  std::vector<std::string> &_worldNames)
 {
   Errors errors;
 
@@ -156,11 +158,14 @@ Errors Root::WorldName(const std::string &_filename, std::string &_worldName)
   if (nullptr != pRootElement)
   {
     tinyxml2::XMLElement * pworld = pRootElement->FirstChildElement("world");
-    if(pworld)
+
+    while(pworld)
     {
-      _worldName = pworld->Attribute("name");
+      _worldNames.push_back(pworld->Attribute("name"));
+      pworld = pworld->NextSiblingElement("world");
     }
-    else
+
+    if (_worldNames.size() == 0)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
                         "Failed to read the world tag."});

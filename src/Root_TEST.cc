@@ -26,7 +26,7 @@
 #include "sdf/World.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Root.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, Construction)
@@ -66,21 +66,26 @@ TEST(DOMRoot, MoveAssignmentOperator)
   EXPECT_EQ("test_root", root2.Version());
 }
 
-TEST(DOMRoot, WorldName)
+TEST(DOMRoot, WorldNameFromFile)
 {
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
   sdf::Root root;
-  std::string worldName;
-  auto errors = root.WorldName(path, worldName);
+  std::vector<std::string> worldNames;
+  auto errors = root.WorldNameFromFile(path, worldNames);
   EXPECT_TRUE(errors.empty());
-  EXPECT_EQ("shapes_world", worldName);
+  EXPECT_EQ(1u, worldNames.size());
+  EXPECT_EQ("shapes_world", worldNames[0]);
 
+  worldNames.clear();
   const auto path2 = sdf::testing::TestFile("sdf", "empty_invalid.sdf");
-  errors = root.WorldName(path2, worldName);
+  errors = root.WorldNameFromFile(path2, worldNames);
+  EXPECT_EQ(0u, worldNames.size());
   EXPECT_FALSE(errors.empty());
 
+  worldNames.clear();
   const auto path3 = sdf::testing::TestFile("sdf", "invalid_file_name.sdf");
-  errors = root.WorldName(path3, worldName);
+  errors = root.WorldNameFromFile(path3, worldNames);
+  EXPECT_EQ(0u, worldNames.size());
   EXPECT_FALSE(errors.empty());
 }
 
