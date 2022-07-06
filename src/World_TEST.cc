@@ -534,9 +534,7 @@ TEST(DOMWorld, ToElement)
   plugin.SetFilename("filename1");
   world.AddPlugin(plugin);
 
-  std::cout << "hello" << std::endl;
   sdf::ElementPtr elem = world.ToElement();
-  std::cout << "hello 2" << std::endl;
   ASSERT_NE(nullptr, elem);
 
   sdf::World world2;
