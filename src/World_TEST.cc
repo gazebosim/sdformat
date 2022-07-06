@@ -718,7 +718,7 @@ TEST(DOMWorld, LoadMoonSurface)
   sdf::init(sdfParsed);
   if (sdf::readString(stream.str(), sdfParsed))
   {
-    SphericalCoordinatesSDF = 
+    SphericalCoordinatesSDF =
       sdfParsed->Root()->GetElement("world");
   }
 
@@ -760,38 +760,4 @@ TEST(DOMWorld, LoadCustomSurface)
 
   auto errors = world.Load(SphericalCoordinatesSDF);
   EXPECT_EQ(errors.size(), 0);
-}
-
-/////////////////////////////////////////////////
-TEST(DOMWorld, LoadBadCustomSurface)
-{
-  sdf::World world;
-  sdf::ElementPtr SphericalCoordinatesSDF;
-
-  std::ostringstream stream;
-  stream
-    << "<?xml version='1.0'?>"
-    << "<sdf version='1.6'>"
-    << "<world name='spherical coordinates'>"
-    << "<spherical_coordinates>"
-    << " <surface_model>CUSTOM_SURFACE</surface_model>"
-    << "  <world_frame_orientation>ENU</world_frame_orientation>"
-    << "  <latitude_deg>-22.9</latitude_deg>"
-    << "  <longitude_deg>-43.2</longitude_deg>"
-    << "  <elevation>0</elevation>"
-    << "  <heading_deg>0</heading_deg>"
-    << "</spherical_coordinates>"
-    << "</world>"
-    << "</sdf>";
-
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  if (sdf::readString(stream.str(), sdfParsed))
-  {
-    SphericalCoordinatesSDF =
-      sdfParsed->Root()->GetElement("world");
-  }
-
-  auto errors = world.Load(SphericalCoordinatesSDF);
-  EXPECT_EQ(errors.size(), 2);
 }
