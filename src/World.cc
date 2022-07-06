@@ -792,23 +792,11 @@ Errors World::Implementation::LoadSphericalCoordinates(
   }
 
   // Read ellipsoidal parameters for custom surfaces.
-  double radius = 0;
   double axisEquatorial = 0;
   double axisPolar = 0;
-  double flattening = 0;
 
   if (surfaceModel == gz::math::SphericalCoordinates::CUSTOM_SURFACE)
   {
-    if (!_elem->HasElement("surface_radius"))
-    {
-      errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "Missing required element <surface_radius>"});
-    }
-    else
-    {
-      radius = _elem->Get<double>("surface_radius");
-    }
-
     if (!_elem->HasElement("surface_axis_equatorial"))
     {
       errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -827,16 +815,6 @@ Errors World::Implementation::LoadSphericalCoordinates(
     else
     {
       axisPolar = _elem->Get<double>("surface_axis_polar");
-    }
-
-    if (!_elem->HasElement("surface_flattening"))
-    {
-      errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "Missing required element <surface_flattening>"});
-    }
-    else
-    {
-      flattening = _elem->Get<double>("surface_flattening");
     }
   }
 
@@ -908,8 +886,8 @@ Errors World::Implementation::LoadSphericalCoordinates(
   else
   {
     auto sphericalCoordinatesObject =
-      gz::math::SphericalCoordinates(surfaceModel, radius,
-          axisEquatorial, axisPolar, flattening);
+      gz::math::SphericalCoordinates(surfaceModel,
+          axisEquatorial, axisPolar);
 
     sphericalCoordinatesObject.SetLatitudeReference(latitude);
     sphericalCoordinatesObject.SetLongitudeReference(longitude);
@@ -967,6 +945,10 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
         this->dataPtr->sphericalCoordinates->ElevationReference());
     sphericalElem->GetElement("heading_deg")->Set(
         this->dataPtr->sphericalCoordinates->HeadingOffset().Degree());
+    sphericalElem->GetElement("surface_axis_equatorial")->Set(
+        this->dataPtr->sphericalCoordinates->SurfaceAxisEquatorial());
+    sphericalElem->GetElement("surface_axis_polar")->Set(
+        this->dataPtr->sphericalCoordinates->SurfaceAxisPolar());
   }
 
   // Atmosphere

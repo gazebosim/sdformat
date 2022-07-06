@@ -534,7 +534,9 @@ TEST(DOMWorld, ToElement)
   plugin.SetFilename("filename1");
   world.AddPlugin(plugin);
 
+  std::cout << "hello" << std::endl;
   sdf::ElementPtr elem = world.ToElement();
+  std::cout << "hello 2" << std::endl;
   ASSERT_NE(nullptr, elem);
 
   sdf::World world2;
@@ -739,10 +741,8 @@ TEST(DOMWorld, LoadCustomSurface)
     << "<world name='spherical coordinates'>"
     << "<spherical_coordinates>"
     << " <surface_model>CUSTOM_SURFACE</surface_model>"
-    << "  <surface_radius>10</surface_radius>"
     << "  <surface_axis_equatorial>11</surface_axis_equatorial>"
     << "  <surface_axis_polar>9</surface_axis_polar>"
-    << "  <surface_flattening>0.18</surface_flattening>"
     << "  <world_frame_orientation>ENU</world_frame_orientation>"
     << "  <latitude_deg>-22.9</latitude_deg>"
     << "  <longitude_deg>-43.2</longitude_deg>"
@@ -795,5 +795,5 @@ TEST(DOMWorld, LoadBadCustomSurface)
   }
 
   auto errors = world.Load(SphericalCoordinatesSDF);
-  EXPECT_EQ(errors.size(), 4);
+  EXPECT_EQ(errors.size(), 2);
 }
