@@ -144,7 +144,7 @@ namespace sdf
   };
 
   /// \brief A class for inertial information about a link.
-  class SDFORMAT_VISIBLE SDF_DEPRECATED(13) Inertia
+  class SDFORMAT_VISIBLE GZ_DEPRECATED(13) Inertia
   {
     public: double mass;
   };
