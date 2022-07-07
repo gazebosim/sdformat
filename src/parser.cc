@@ -1601,7 +1601,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
             init(includeSDFTemplate, _config);
           }
           SDFPtr includeSDF(new SDF);
-          includeSDF->Root(includeSDFTemplate->Root()->Clone());
+          includeSDF->SetRoot(includeSDFTemplate->Root()->Clone());
 
           if (!readFile(filename, _config, includeSDF, _errors))
           {

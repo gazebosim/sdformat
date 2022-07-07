@@ -51,7 +51,7 @@ TEST(DeprecatedElements, CanEmitErrors)
   elem->SetRequired("-1");
   elem->SetName("testElem");
   // Change the root of sdf so we can test "testElem" in isolation
-  sdf->Root(elem);
+  sdf->SetRoot(elem);
   auto config = sdf::ParserConfig::GlobalConfig();
   config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -89,7 +89,7 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
   elem->SetRequired("-1");
   elem->SetName("testElem");
   // Change the root of sdf so we can test "testElem" in isolation
-  sdf->Root(elem);
+  sdf->SetRoot(elem);
   {
     auto config = sdf::ParserConfig::GlobalConfig();
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
