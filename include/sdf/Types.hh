@@ -25,32 +25,9 @@
 #include <utility>
 #include <vector>
 
-#include <gz/utils/SuppressWarning.hh>
-
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
-
-#ifndef SDF_DEPRECATED
-#define SDF_DEPRECATED(version) GZ_DEPRECATED(version)
-#endif
-
-#if defined(__GNUC__) || defined(__clang__)
-#define SDF_FORCEINLINE __attribute__((always_inline))
-#elif defined(_MSC_VER)
-#define SDF_FORCEINLINE __forceinline
-#else
-#define SDF_FORCEINLINE
-#endif
-
-#ifndef SDF_SUPPRESS_DEPRECATED_BEGIN
-#define SDF_SUPPRESS_DEPRECATED_BEGIN \
-    GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-#endif
-#ifndef SDF_SUPPRESS_DEPRECATED_END
-#define SDF_SUPPRESS_DEPRECATED_END \
-    GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
-#endif
 
 namespace sdf
 {

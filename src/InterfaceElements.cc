@@ -15,6 +15,7 @@
  *
  */
 
+#include <gz/utils/SuppressWarning.hh>
 #include "sdf/InterfaceElements.hh"
 
 using namespace sdf;
@@ -27,7 +28,7 @@ class sdf::NestedInclude::Implementation
   public: std::optional<bool> isMerge;
 };
 
-SDF_SUPPRESS_DEPRECATED_BEGIN
+GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
 /////////////////////////////////////////////////
 NestedInclude::NestedInclude()
   : dataPtr(gz::utils::MakeImpl<Implementation>())
@@ -146,7 +147,7 @@ void NestedInclude::SetIncludeElement(sdf::ElementPtr _includeElement)
 {
   this->includeElement = _includeElement;
 }
-SDF_SUPPRESS_DEPRECATED_END
+GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIsMerge(bool _isMerge)
