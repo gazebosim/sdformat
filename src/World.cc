@@ -885,16 +885,14 @@ Errors World::Implementation::LoadSphericalCoordinates(
   }
   else
   {
-    auto sphericalCoordinatesObject =
+    this->sphericalCoordinates =
       gz::math::SphericalCoordinates(surfaceModel,
           axisEquatorial, axisPolar);
 
-    sphericalCoordinatesObject.SetLatitudeReference(latitude);
-    sphericalCoordinatesObject.SetLongitudeReference(longitude);
-    sphericalCoordinatesObject.SetElevationReference(elevation);
-    sphericalCoordinatesObject.SetHeadingOffset(heading);
-
-    this->sphericalCoordinates = sphericalCoordinatesObject;
+    this->sphericalCoordinates->SetLatitudeReference(latitude);
+    this->sphericalCoordinates->SetLongitudeReference(longitude);
+    this->sphericalCoordinates->SetElevationReference(elevation);
+    this->sphericalCoordinates->SetHeadingOffset(heading);
   }
 
   return errors;
