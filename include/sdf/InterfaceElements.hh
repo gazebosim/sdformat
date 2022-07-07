@@ -169,14 +169,14 @@ class SDFORMAT_VISIBLE NestedInclude
   /// not end with a file extension (it will not end with an extension if it
   /// refers to a model package).
   /// \deprecated Use NestedInclude::Uri() instead
-  public: std::string uri SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::string uri;
 
   /// \brief Provides the *resolved* absolute file path from the URI.
   /// It is recommended to use this in `CustomModelParser` when checking
   /// predicates on filenames -- however, the predicates should generally only
   /// check the file extension.
   /// \deprecated Use NestedInclude::ResolvedFileName() instead
-  public: std::string resolvedFileName SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::string resolvedFileName;
 
   /// \brief Name of the parent entity in absolute hierarchy.
   /// Example: if the interface model's name is
@@ -184,7 +184,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// `top_model::middle_model`. If the parent entity is the world, this would
   /// be an empty string.
   /// \deprecated Use NestedInclude::AbsoluteParentName() instead
-  public: std::string absoluteParentName SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::string absoluteParentName;
 
   /// \brief Name relative to immediate parent as specified in
   /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
@@ -192,34 +192,34 @@ class SDFORMAT_VISIBLE NestedInclude
   /// included model file.
   /// Example: `my_new_model`
   /// \deprecated Use NestedInclude::LocalModelName() instead
-  public: std::optional<std::string> localModelName SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::optional<std::string> localModelName;
 
   /// \brief Whether the model is static as defined by `//include/static`. This
   /// is nullopt if `//include/static` is not set.
   /// \deprecated Use NestedInclude::IsStatic() instead
-  public: std::optional<bool> isStatic SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::optional<bool> isStatic;
 
   /// \brief The raw pose as specified in //include/pose. This is nullopt if
   /// `//include/pose` is not set.
   /// \deprecated Use NestedInclude::IncludeRawPose() instead
-  public: std::optional<gz::math::Pose3d> includeRawPose
-              SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12)
+          std::optional<gz::math::Pose3d> includeRawPose;
 
   /// \brief The relative-to frame of the pose as specified in
   /// `//include/pose/@relative_to`. This is nullopt if
   /// `//include/pose/@relative_to` is not set.
   /// \deprecated Use NestedInclude::IncludePoseRelativeTo() instead
-  public: std::optional<std::string> includePoseRelativeTo SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::optional<std::string> includePoseRelativeTo;
 
   /// \brief The placement frame as specified in `//include/placement_frame`.
   /// This is nullopt if `//include/placement_frame` is is not set.
   /// \deprecated Use NestedInclude::PlacementFrame() instead
-  public: std::optional<std::string> placementFrame SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) std::optional<std::string> placementFrame;
 
   /// This is the `//include` element. This can be used to pass custom elements
   /// and attributes to the custom model parser.
   /// \deprecated Use NestedInclude::IncludeElement() instead
-  public: sdf::ElementPtr includeElement SDF_DEPRECATED(12);
+  public: SDF_DEPRECATED(12) sdf::ElementPtr includeElement;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)
