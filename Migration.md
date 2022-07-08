@@ -39,6 +39,10 @@ but with improved human-readability..
    + ***Deprecation:*** bool checkJointParentChildLinkNames(const sdf::Root \*)
    + ***Replacement:*** bool checkJointParentChildNames(const sdf::Root \*)
 
+- **sdf/SDFImpl.hh**:
+   + ***Deprecation:*** void Root(sdf::ElementPtr)
+   + ***Replacement:*** void SetRoot(sdf::ElementPtr)
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
