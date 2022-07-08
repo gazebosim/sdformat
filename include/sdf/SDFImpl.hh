@@ -146,7 +146,12 @@ namespace sdf
 
     /// \brief Set the root pointer
     /// \param[in] _root Root element
-    public: void Root(const ElementPtr _root);
+    public: void SetRoot(const ElementPtr _root);
+
+    /// \brief Set the root pointer
+    /// \param[in] _root Root element
+    /// \deprecated Use SetRoot
+    public: GZ_DEPRECATED(13) void Root(const ElementPtr _root);
 
     /// \brief Get the path to the SDF document on disk.
     /// \return The full path to the SDF document.
