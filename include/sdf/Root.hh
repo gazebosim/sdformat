@@ -18,6 +18,7 @@
 #define SDF_ROOT_HH_
 
 #include <string>
+#include <vector>
 #include <gz/utils/ImplPtr.hh>
 
 #include "sdf/OutputConfig.hh"
@@ -57,6 +58,17 @@ namespace sdf
   {
     /// \brief Default constructor
     public: Root();
+
+    /// \brief Get the name of the world without loading the entire world
+    /// Users shouldn't normally need to use this API.
+    /// This doesn't load the world, it might return the world name even if the
+    /// file is not a valid SDFormat file.
+    /// \param[in] _filename Name of the SDF file to parse.
+    /// \param[out] _worldNames A vector with world names
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors WorldNamesFromFile(const std::string &_filename,
+                                     std::vector<std::string> &_worldNames);
 
     /// \brief Parse the given SDF file, and generate objects based on types
     /// specified in the SDF file.
