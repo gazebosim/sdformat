@@ -367,9 +367,15 @@ ElementPtr SDF::Root() const
 }
 
 /////////////////////////////////////////////////
-void SDF::Root(const ElementPtr _root)
+void SDF::SetRoot(const ElementPtr _root)
 {
   this->dataPtr->root = _root;
+}
+
+/////////////////////////////////////////////////
+void SDF::Root(const ElementPtr _root)
+{
+  this->SetRoot(_root);
 }
 
 /////////////////////////////////////////////////
