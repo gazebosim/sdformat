@@ -67,7 +67,7 @@ namespace sdf
     /// \param[out] _worldNames A vector with world names
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors WorldNameFromFile(const std::string &_filename,
+    public: Errors WorldNamesFromFile(const std::string &_filename,
                                      std::vector<std::string> &_worldNames);
 
     /// \brief Parse the given SDF file, and generate objects based on types

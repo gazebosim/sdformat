@@ -140,7 +140,7 @@ Root::Root()
 {
 }
 
-Errors Root::WorldNameFromFile(
+Errors Root::WorldNamesFromFile(
   const std::string &_filename,
   std::vector<std::string> &_worldNames)
 {
