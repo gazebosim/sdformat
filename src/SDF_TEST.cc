@@ -277,22 +277,21 @@ TEST(SDF, ElementRemoveChild)
 ////////////////////////////////////////////////////
 TEST(SDF, SetRoot)
 {
-  sdf::SDFPtr s;
-  EXPECT_EQ(nullptr, s->Root());
+  sdf::SDF s;
 
   sdf::ElementPtr elem;
   elem.reset(new sdf::Element());
   elem->AddValue("bool", "true", "0", "description");
-  s->SetRoot(elem);
-  EXPECT_EQ(elem, s->Root());
+  s.SetRoot(elem);
+  EXPECT_EQ(elem, s.Root());
 
   // Test deprecated setter, remove in libsdformat14
-  s->SetRoot(nullptr);
-  EXPECT_EQ(nullptr, s->Root());
+  s.SetRoot(nullptr);
+  EXPECT_EQ(nullptr, s.Root());
   GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  s->Root(elem);
+  s.Root(elem);
   GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
-  EXPECT_EQ(elem, s->Root());
+  EXPECT_EQ(elem, s.Root());
 }
 
 ////////////////////////////////////////////////////
