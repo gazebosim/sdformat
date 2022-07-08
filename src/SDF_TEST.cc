@@ -19,6 +19,7 @@
 #include <any>
 #include <gz/math.hh>
 #include <gz/utils/Environment.hh>
+#include <gz/utils/SuppressWarning.hh>
 
 #include "sdf/sdf.hh"
 
@@ -271,6 +272,27 @@ TEST(SDF, ElementRemoveChild)
   // Try to get another model element
   elem = elem->GetNextElement("model");
   EXPECT_FALSE(elem);
+}
+
+////////////////////////////////////////////////////
+TEST(SDF, SetRoot)
+{
+  sdf::SDFPtr s;
+  EXPECT_EQ(nullptr, s->Root());
+
+  sdf::ElementPtr elem;
+  elem.reset(new sdf::Element());
+  elem->AddValue("bool", "true", "0", "description");
+  s->SetRoot(elem);
+  EXPECT_EQ(elem, s->Root());
+
+  // Test deprecated setter, remove in libsdformat14
+  s->SetRoot(nullptr);
+  EXPECT_EQ(nullptr, s->Root());
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
+  s->Root(elem);
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+  EXPECT_EQ(elem, s->Root());
 }
 
 ////////////////////////////////////////////////////
