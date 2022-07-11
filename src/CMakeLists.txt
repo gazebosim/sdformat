@@ -24,7 +24,7 @@ if (USE_INTERNAL_URDF)
   endif()
 else()
   target_link_libraries(using_parser_urdf INTERFACE
-    IgnURDFDOM::IgnURDFDOM)
+    GzURDFDOM::GzURDFDOM)
 endif()
 
 if (BUILD_TESTING)
