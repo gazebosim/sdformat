@@ -57,11 +57,11 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Ellipsoid.
-    /// \return A const reference to an gz::math::Ellipsoidd object.
+    /// \return A const reference to a gz::math::Ellipsoidd object.
     public: const gz::math::Ellipsoidd &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Ellipsoid.
-    /// \return A reference to an gz::math::Ellipsoidd object.
+    /// \return A reference to a gz::math::Ellipsoidd object.
     public: gz::math::Ellipsoidd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this

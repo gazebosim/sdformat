@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d
+from gz.math import Pose3d
 from sdformat import (AirPressure, Altimeter, Camera, IMU, ForceTorque, Lidar,
                       Magnetometer, NavSat, Noise, Plugin, SemanticPose,
                       Sensor, SDFErrorsException)
