@@ -1156,7 +1156,7 @@
 1. Add camera type aliases to docs.
     * [Pull request #514](https://github.com/gazebosim/sdformat/pull/514)
 
-1. Add action-ignition-ci
+1. Add action-gz-ci
     * [Pull request #501](https://github.com/gazebosim/sdformat/pull/452)
 
 ### libsdformat 9.5.0 (2021-02-11)

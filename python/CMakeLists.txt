@@ -21,23 +21,23 @@ if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
   endif()
 
   if(USE_DIST_PACKAGES_FOR_PYTHON)
-    string(REPLACE "site-packages" "dist-packages" IGN_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    string(REPLACE "site-packages" "dist-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
   endif()
 else()
   # If not a system installation, respect local paths
-  set(IGN_PYTHON_INSTALL_PATH ${IGN_LIB_INSTALL_DIR}/python)
+  set(GZ_PYTHON_INSTALL_PATH ${GZ_LIB_INSTALL_DIR}/python)
 endif()
 
 # Set the build location and install location for a CPython extension
 function(configure_build_install_location _library_name)
   # Install library for actual use
   install(TARGETS ${_library_name}
-    DESTINATION "${IGN_PYTHON_INSTALL_PATH}"
+    DESTINATION "${GZ_PYTHON_INSTALL_PATH}"
   )
 endfunction()
 
 pybind11_add_module(sdformat SHARED
-  src/sdf/_ignition_sdformat_pybind11.cc
+  src/sdf/_gz_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
   src/sdf/pyAltimeter.cc
   src/sdf/pyAtmosphere.cc
@@ -91,7 +91,7 @@ configure_build_install_location(sdformat)
 
 if (BUILD_TESTING)
   pybind11_add_module(sdformattest SHARED
-    test/_ignition_sdformattest_pybind11.cc
+    test/_gz_sdformattest_pybind11.cc
   )
 
   target_link_libraries(sdformattest PRIVATE

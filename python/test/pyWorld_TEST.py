@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Color, Pose3d, Vector3d, SphericalCoordinates
+from gz.math import Color, Pose3d, Vector3d, SphericalCoordinates
 from sdformat import Atmosphere, Gui, Physics, Plugin, Error, Frame, Light, Model, Scene, World
 import sdformat as sdf
 import unittest

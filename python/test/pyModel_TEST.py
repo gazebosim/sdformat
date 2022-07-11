@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d, Vector3d
+from gz.math import Pose3d, Vector3d
 from sdformat import (Plugin, Model, Joint, Link, Error, Frame, SemanticPose,
                       SDFErrorsException)
 import sdformat as sdf
@@ -251,7 +251,7 @@ class ModelTEST(unittest.TestCase):
 
     def test_uri(self):
         model = Model()
-        uri = "https:#fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model"
+        uri = "https:#fuel.gzrobotics.org/1.0/openrobotics/models/my-model"
 
         model.set_uri(uri)
         self.assertEqual(uri, model.uri())

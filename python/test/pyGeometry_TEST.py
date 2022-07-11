@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import Geometry, Box, Capsule, Cylinder, Ellipsoid, Mesh, Plane, Sphere
-from ignition.math import Vector3d, Vector2d
+from gz.math import Vector3d, Vector2d
 import sdformat as sdf
 import unittest
 

@@ -20,4 +20,4 @@ configure_file(
 
 # Install the yaml configuration files in an unversioned location.
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.yaml
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/ignition/)
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/gz/)

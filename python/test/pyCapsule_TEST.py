@@ -14,7 +14,7 @@
 
 import copy
 
-from ignition.math import Vector3d, Capsuled
+from gz.math import Vector3d, Capsuled
 
 import math
 

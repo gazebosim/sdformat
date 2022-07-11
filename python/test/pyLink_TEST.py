@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
+from gz.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
 from sdformat import (Collision, Light, Link, Sensor, Visual,
                       SDFErrorsException)
 import unittest
