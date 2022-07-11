@@ -202,7 +202,7 @@ conda search libsdformat --channel conda-forge --info
 
 Install dependencies, replacing `<#>` with the desired versions:
 ```
-conda install libignition-math<#> libignition-tools<#> --channel conda-forge
+conda install libgz-math<#> libgz-tools<#> --channel conda-forge
 ```
 
 ### Build from Source

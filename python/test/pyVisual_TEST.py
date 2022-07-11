@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d, Color
+from gz.math import Pose3d, Color
 from sdformat import Geometry, Material, Visual, Plugin, SDFErrorsException
 import sdformat as sdf
 import unittest
