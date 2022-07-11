@@ -51,7 +51,7 @@ if (BUILD_SDF)
   #  2. if USE_INTERNAL_URDF is set to True, use the internal copy
   #  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
   if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
-    gz_find_package(GZURDFDOM VERSION 1.0 QUIET)
+    gz_find_package(GzURDFDOM VERSION 1.0 QUIET)
     if (NOT GzURDFDOM_FOUND)
       if (NOT DEFINED USE_INTERNAL_URDF)
         # fallback to internal urdf
