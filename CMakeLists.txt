@@ -36,8 +36,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_SDF)
   gz_configure_project(
-    NO_GZ_PREFIX
-    REPLACE_GZ_INCLUDE_PATH sdf
+    NO_PROJECT_PREFIX
+    REPLACE_INCLUDE_PATH sdf
     VERSION_SUFFIX pre1)
 
   #################################################

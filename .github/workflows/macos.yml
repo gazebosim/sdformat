@@ -32,7 +32,7 @@ jobs:
           popd
           echo '# END SECTION'
         fi
-        # ignition-math7 has problems with swig, remove it for now
+        # gz-math7 has problems with swig, remove it for now
         brew remove swig || true
         brew install --only-dependencies ${PACKAGE};
 
