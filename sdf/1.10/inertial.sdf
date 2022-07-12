@@ -2,7 +2,7 @@
 <element name="inertial" required="0">
   <description>
     The link's mass, position of its center of mass, and its central inertia
-    properties.
+    properties. Optionally, it's fluid added mass.
   </description>
 
   <element name="mass" type="double" default="1.0" required="0">
@@ -88,4 +88,120 @@
       </description>
     </element>
   </element> <!-- End Inertia -->
+
+  <element name="fluid_added_mass" required="0">
+    <description>
+      This link's fluid added mass matrix about the link's center of mass.
+      This matrix represents the inertia of the fluid that is dislocated when the
+      body moves. Added mass should be zero if the density of the surrounding
+      fluid is negligible with respect to the body's density.
+      The 6x6 matrix is symmetric, therefore only 21 unique elements can be set.
+      The elements of the matrix follow the [x, y, z, p, q, r] notation.
+    </description>
+    <element name="xx" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to linear acceleration in the X axis.
+      </description>
+    </element>
+    <element name="xy" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to linear acceleration in the Y axis, and vice-versa.
+      </description>
+    </element>
+    <element name="xz" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to linear acceleration in the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="xp" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to angular acceleration about the X axis, and vice-versa.
+      </description>
+    </element>
+    <element name="xq" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to angular acceleration about the Y axis, and vice-versa.
+      </description>
+    </element>
+    <element name="xr" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to angular acceleration about the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="yy" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to linear acceleration in the Y axis.
+      </description>
+    </element>
+    <element name="yz" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to linear acceleration in the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="yp" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to angular acceleration about the X axis, and vice-versa.
+      </description>
+    </element>
+    <element name="yq" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to angular acceleration about the Y axis, and vice-versa.
+      </description>
+    </element>
+    <element name="yr" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to angular acceleration about the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="zz" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to linear acceleration in the Z axis.
+      </description>
+    </element>
+    <element name="zp" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to angular acceleration about the X axis, and vice-versa.
+      </description>
+    </element>
+    <element name="zq" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to angular acceleration about the Y axis, and vice-versa.
+      </description>
+    </element>
+    <element name="zr" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to angular acceleration about the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="pp" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the X axis due to angular acceleration about the X axis, and vice-versa.
+      </description>
+    </element>
+    <element name="pq" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the X axis due to angular acceleration about the Y axis, and vice-versa.
+      </description>
+    </element>
+    <element name="pr" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the X axis due to angular acceleration about the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="qq" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the Y axis due to angular acceleration about the Y axis, and vice-versa.
+      </description>
+    </element>
+    <element name="qr" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the Y axis due to angular acceleration about the Z axis, and vice-versa.
+      </description>
+    </element>
+    <element name="rr" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the Z axis due to angular acceleration about the Z axis, and vice-versa.
+      </description>
+    </element>
+  </element> <!-- End fluid added mass -->
 </element> <!-- End Inertial -->
