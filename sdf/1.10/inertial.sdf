@@ -2,7 +2,7 @@
 <element name="inertial" required="0">
   <description>
     The link's mass, position of its center of mass, and its central inertia
-    properties. Optionally, it's fluid added mass.
+    properties, and optionally its fluid added mass.
   </description>
 
   <element name="mass" type="double" default="1.0" required="0">
@@ -96,7 +96,9 @@
       body moves. Added mass should be zero if the density of the surrounding
       fluid is negligible with respect to the body's density.
       The 6x6 matrix is symmetric, therefore only 21 unique elements can be set.
-      The elements of the matrix follow the [x, y, z, p, q, r] notation.
+      The elements of the matrix follow the [x, y, z, p, q, r] notation, where
+      [x, y, z] correspond to translation and [p, q, r] to rotation
+      (i.e. roll, pitch, yaw).
     </description>
     <element name="xx" type="double" default="0.0" required="0">
       <description>
@@ -175,7 +177,7 @@
     </element>
     <element name="pp" type="double" default="0.0" required="0">
       <description>
-        Added mass moment about the X axis due to angular acceleration about the X axis, and vice-versa.
+        Added mass moment about the X axis due to angular acceleration about the X axis.
       </description>
     </element>
     <element name="pq" type="double" default="0.0" required="0">
@@ -190,7 +192,7 @@
     </element>
     <element name="qq" type="double" default="0.0" required="0">
       <description>
-        Added mass moment about the Y axis due to angular acceleration about the Y axis, and vice-versa.
+        Added mass moment about the Y axis due to angular acceleration about the Y axis.
       </description>
     </element>
     <element name="qr" type="double" default="0.0" required="0">
@@ -200,7 +202,7 @@
     </element>
     <element name="rr" type="double" default="0.0" required="0">
       <description>
-        Added mass moment about the Z axis due to angular acceleration about the Z axis, and vice-versa.
+        Added mass moment about the Z axis due to angular acceleration about the Z axis.
       </description>
     </element>
   </element> <!-- End fluid added mass -->

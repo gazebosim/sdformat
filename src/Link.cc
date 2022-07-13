@@ -66,7 +66,7 @@ class sdf::Link::Implementation
   /// \brief The inertial information for this link.
   public: gz::math::Inertiald inertial {{1.0,
             gz::math::Vector3d::One, gz::math::Vector3d::Zero},
-            gz::math::Pose3d::Zero, gz::math::Matrix6d::Zero};
+            gz::math::Pose3d::Zero};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -148,7 +148,6 @@ Errors Link::Load(ElementPtr _sdf)
   gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
   gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
   gz::math::Pose3d inertiaPose;
-  gz::math::Matrix6d addedMass;
   std::string inertiaFrame = "";
   double mass = 1.0;
 
@@ -179,6 +178,7 @@ Errors Link::Load(ElementPtr _sdf)
     {
       auto addedMassElem = inertialElem->GetElement("fluid_added_mass");
 
+      gz::math::Matrix6d addedMass;
       addedMass(0, 0) = addedMassElem->Get<double>("xx", 0.0).first;
       addedMass(0, 1) = addedMassElem->Get<double>("xy", 0.0).first;
       addedMass(0, 2) = addedMassElem->Get<double>("xz", 0.0).first;
@@ -220,6 +220,14 @@ Errors Link::Load(ElementPtr _sdf)
       addedMass(5, 3) = addedMass(3, 5);
       addedMass(5, 4) = addedMass(4, 5);
       addedMass(5, 5) = addedMassElem->Get<double>("rr", 0.0).first;
+
+      if (!this->dataPtr->inertial.SetFluidAddedMass(addedMass))
+      {
+        errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+                         "A link named " +
+                         this->Name() +
+                         " has invalid fluid added mass."});
+      }
     }
   }
   if (!this->dataPtr->inertial.SetMassMatrix(
@@ -229,13 +237,6 @@ Errors Link::Load(ElementPtr _sdf)
                      "A link named " +
                      this->Name() +
                      " has invalid inertia."});
-  }
-  if (!this->dataPtr->inertial.SetFluidAddedMass(addedMass))
-  {
-    errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
-                     "A link named " +
-                     this->Name() +
-                     " has invalid fluid added mass."});
   }
 
   /// \todo: Handle inertia frame properly
