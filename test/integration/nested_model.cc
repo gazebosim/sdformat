@@ -986,6 +986,17 @@ class PlacementFrame: public ::testing::Test
     {
       return _model->JointByName(_testFrameName);
     }
+    else if constexpr (std::is_same_v<FrameType, sdf::Model>)
+    {
+      if (_testFrameName == _model ->Name())
+      {
+        return _model;
+      }
+      else
+      {
+        return _model->ModelByName(_testFrameName);
+      }
+    }
     else
     {
       return nullptr;
@@ -1019,10 +1030,18 @@ class PlacementFrame: public ::testing::Test
     ASSERT_NE(nullptr, testFrame);
 
     // Pose of frame in its parent model frame.
+    std::string parentModelFrame = "__model__";
+    // When <placement_frame> is the internal implicit model frame
+    // of the model the parent model frame would be itself
+    if (testFrame->Name() == _testModelName)
+    {
+      parentModelFrame = _testModelName;
+    }
+
     Pose3d frameRelPose;
     {
       sdf::Errors errors =
-          testFrame->SemanticPose().Resolve(frameRelPose, "__model__");
+          testFrame->SemanticPose().Resolve(frameRelPose, parentModelFrame);
       EXPECT_TRUE(errors.empty()) << errors[0].Message();
     }
 
@@ -1069,6 +1088,10 @@ TEST_F(PlacementFrame, WorldInclude)
   // Test that joint names can be used for <placement_frame>
   this->TestExpectedWorldPose<sdf::Joint>("placement_frame_using_joint", "J2");
 
+  // Test that joint names can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Model>("placement_frame_using_model",
+                                          "placement_frame_using_model");
+
   // Test that the pose of an included model with placement_frame can use the
   // relative_to attribute
   this->TestExpectedWorldPose<sdf::Link>(
@@ -1090,6 +1113,10 @@ TEST_F(PlacementFrame, ModelInclude)
   this->TestExpectedModelPose<sdf::Joint>(
       "parent_model_include", "placement_frame_using_joint::J2");
 
+  // Test that the model name can be used for <placement_frame>
+  this->TestExpectedModelPose<sdf::Model>("parent_model_include",
+                                          "placement_frame_using_model");
+
   // Test that the pose of an included model with placement_frame can use the
   // relative_to attribute
   this->TestExpectedModelPose<sdf::Link>("parent_model_include",
@@ -1110,6 +1137,10 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
   // Test that joint names can be used for <placement_frame>
   this->TestExpectedWorldPose<sdf::Joint>(
       "model_with_joint_placement_frame", "J2");
+
+  // Test that the model name can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Model>(
+      "model_with_model_placement_frame", "model_with_model_placement_frame");
 
   // Test that the pose of a model with a placement_frame attribute can use the
   // relative_to attribute

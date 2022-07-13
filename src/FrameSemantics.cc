@@ -736,9 +736,19 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     {
       ignition::math::Pose3d resolvedModelPose = item.rawPose;
 
-      sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
-          item.rawPose, item.placementFrameName,
-          _out.ChildModelScope(item.name), resolvedModelPose);
+      sdf::Errors resolveErrors;
+      if (item.placementFrameName == item.name)
+      {
+        resolveErrors = resolveModelPoseWithPlacementFrame(
+            item.rawPose, _out.ChildModelScope(item.name).ScopeContextName(),
+            _out.ChildModelScope(item.name), resolvedModelPose);
+      }
+      else
+      {
+        resolveErrors = resolveModelPoseWithPlacementFrame(
+            item.rawPose, item.placementFrameName,
+            _out.ChildModelScope(item.name), resolvedModelPose);
+      }
       _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
 
       _out.AddEdge({relativeToId, itemId}, resolvedModelPose);
