@@ -732,29 +732,32 @@ sdf::ElementPtr Link::ToElement() const
   inertiaElem->GetElement("iyz")->Set(massMatrix.Iyz());
   inertiaElem->GetElement("izz")->Set(massMatrix.Izz());
 
-  auto addedMass = this->dataPtr->inertial.FluidAddedMass();
-  auto addedMassElem = inertialElem->GetElement("fluid_added_mass");
-  addedMassElem->GetElement("xx")->Set(addedMass(0, 0));
-  addedMassElem->GetElement("xy")->Set(addedMass(0, 1));
-  addedMassElem->GetElement("xz")->Set(addedMass(0, 2));
-  addedMassElem->GetElement("xp")->Set(addedMass(0, 3));
-  addedMassElem->GetElement("xq")->Set(addedMass(0, 4));
-  addedMassElem->GetElement("xr")->Set(addedMass(0, 5));
-  addedMassElem->GetElement("yy")->Set(addedMass(1, 1));
-  addedMassElem->GetElement("yz")->Set(addedMass(1, 2));
-  addedMassElem->GetElement("yp")->Set(addedMass(1, 3));
-  addedMassElem->GetElement("yq")->Set(addedMass(1, 4));
-  addedMassElem->GetElement("yr")->Set(addedMass(1, 5));
-  addedMassElem->GetElement("zz")->Set(addedMass(2, 2));
-  addedMassElem->GetElement("zp")->Set(addedMass(2, 3));
-  addedMassElem->GetElement("zq")->Set(addedMass(2, 4));
-  addedMassElem->GetElement("zr")->Set(addedMass(2, 5));
-  addedMassElem->GetElement("pp")->Set(addedMass(3, 3));
-  addedMassElem->GetElement("pq")->Set(addedMass(3, 4));
-  addedMassElem->GetElement("pr")->Set(addedMass(3, 5));
-  addedMassElem->GetElement("qq")->Set(addedMass(4, 4));
-  addedMassElem->GetElement("qr")->Set(addedMass(4, 5));
-  addedMassElem->GetElement("rr")->Set(addedMass(5, 5));
+  if (this->dataPtr->inertial.FluidAddedMass().has_value())
+  {
+    auto addedMass = this->dataPtr->inertial.FluidAddedMass().value();
+    auto addedMassElem = inertialElem->GetElement("fluid_added_mass");
+    addedMassElem->GetElement("xx")->Set(addedMass(0, 0));
+    addedMassElem->GetElement("xy")->Set(addedMass(0, 1));
+    addedMassElem->GetElement("xz")->Set(addedMass(0, 2));
+    addedMassElem->GetElement("xp")->Set(addedMass(0, 3));
+    addedMassElem->GetElement("xq")->Set(addedMass(0, 4));
+    addedMassElem->GetElement("xr")->Set(addedMass(0, 5));
+    addedMassElem->GetElement("yy")->Set(addedMass(1, 1));
+    addedMassElem->GetElement("yz")->Set(addedMass(1, 2));
+    addedMassElem->GetElement("yp")->Set(addedMass(1, 3));
+    addedMassElem->GetElement("yq")->Set(addedMass(1, 4));
+    addedMassElem->GetElement("yr")->Set(addedMass(1, 5));
+    addedMassElem->GetElement("zz")->Set(addedMass(2, 2));
+    addedMassElem->GetElement("zp")->Set(addedMass(2, 3));
+    addedMassElem->GetElement("zq")->Set(addedMass(2, 4));
+    addedMassElem->GetElement("zr")->Set(addedMass(2, 5));
+    addedMassElem->GetElement("pp")->Set(addedMass(3, 3));
+    addedMassElem->GetElement("pq")->Set(addedMass(3, 4));
+    addedMassElem->GetElement("pr")->Set(addedMass(3, 5));
+    addedMassElem->GetElement("qq")->Set(addedMass(4, 4));
+    addedMassElem->GetElement("qr")->Set(addedMass(4, 5));
+    addedMassElem->GetElement("rr")->Set(addedMass(5, 5));
+  }
 
   // wind mode
   elem->GetElement("enable_wind")->Set(this->EnableWind());

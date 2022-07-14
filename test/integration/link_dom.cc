@@ -138,7 +138,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().X());
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Z());
-  EXPECT_EQ(gz::math::Matrix6d::Zero, inertial.FluidAddedMass());
+  EXPECT_FALSE(inertial.FluidAddedMass().has_value());
 
   const sdf::Link *upperLink = model->LinkByIndex(1);
   ASSERT_NE(nullptr, upperLink);
@@ -159,7 +159,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
-  EXPECT_EQ(gz::math::Matrix6d::Zero, inertialUpper.FluidAddedMass());
+  EXPECT_FALSE(inertial.FluidAddedMass().has_value());
 
   const sdf::Link *lowerLink = model->LinkByIndex(2);
   ASSERT_TRUE(lowerLink != nullptr);
@@ -198,7 +198,8 @@ TEST(DOMLink, InertialComplete)
   EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 
-  auto addedMass = inertial.FluidAddedMass();
+  ASSERT_TRUE(inertial.FluidAddedMass().has_value());
+  auto addedMass = inertial.FluidAddedMass().value();
   EXPECT_DOUBLE_EQ(11, addedMass(0, 0));
   EXPECT_DOUBLE_EQ(12, addedMass(0, 1));
   EXPECT_DOUBLE_EQ(13, addedMass(0, 2));
