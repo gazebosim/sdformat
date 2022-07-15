@@ -6,7 +6,7 @@
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 <!--
-Note: The branch name in the codecov URL & library version should be updated when forward porting 
+Note: The branch name in the codecov URL & library version should be updated when forward porting
 -->
 Build | Status
 -- | --
@@ -30,8 +30,6 @@ allows conversion from previous versions.
   which can be used to read SDFormat files and return a C++ interface.
 
 [http://sdformat.org/](http://sdformat.org/)
-
-Test coverage:
 
 # Installation
 
