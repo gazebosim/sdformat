@@ -576,6 +576,21 @@ TEST(DOMWorld, ToElement)
   ASSERT_EQ(1u, world2.Plugins().size());
   EXPECT_EQ("name1", world2.Plugins()[0].Name());
   EXPECT_EQ("filename1", world2.Plugins()[0].Filename());
+
+  std::string sphericalCoordsSdf =
+    "<spherical_coordinates>\n"
+    "  <surface_model>EARTH_WGS84</surface_model>\n"
+    "  <latitude_deg>0</latitude_deg>\n"
+    "  <longitude_deg>0</longitude_deg>\n"
+    "  <elevation>0</elevation>\n"
+    "  <heading_deg>0</heading_deg>\n"
+    "  <world_frame_orientation>ENU</world_frame_orientation>\n"
+    "  <surface_axis_equatorial>6378140</surface_axis_equatorial>\n"
+    "  <surface_axis_polar>6356750</surface_axis_polar>\n"
+    "</spherical_coordinates>\n";
+
+  EXPECT_EQ(sphericalCoordsSdf,
+      elem->GetElement("spherical_coordinates")->ToString(""));
 }
 
 /////////////////////////////////////////////////

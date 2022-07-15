@@ -943,16 +943,10 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
         this->dataPtr->sphericalCoordinates->ElevationReference());
     sphericalElem->GetElement("heading_deg")->Set(
         this->dataPtr->sphericalCoordinates->HeadingOffset().Degree());
-    if (sphericalElem->HasElement("surface_axis_equatorial"))
-    {
-      sphericalElem->GetElement("surface_axis_equatorial")->Set(
-          this->dataPtr->sphericalCoordinates->SurfaceAxisEquatorial());
-    }
-    if (sphericalElem->HasElement("surface_axis_polar"))
-    {
-      sphericalElem->GetElement("surface_axis_polar")->Set(
-          this->dataPtr->sphericalCoordinates->SurfaceAxisPolar());
-    }
+    sphericalElem->GetElement("surface_axis_equatorial")->Set(
+        this->dataPtr->sphericalCoordinates->SurfaceAxisEquatorial());
+    sphericalElem->GetElement("surface_axis_polar")->Set(
+        this->dataPtr->sphericalCoordinates->SurfaceAxisPolar());
   }
 
   // Atmosphere
