@@ -631,7 +631,7 @@
 1. Add EnforcementPolicy in ParserConfig to configure parsing strictness.
     * [Pull request 481](https://github.com/osrf/sdformat/pull/481)
 
-1. Use `ImplPtr` / `UniqueImplPtr` from ignition-utils
+1. Use `ImplPtr` / `UniqueImplPtr` from gz-utils
     * [Pull request 472](https://github.com/osrf/sdformat/pull/472)
     * [Pull request 474](https://github.com/osrf/sdformat/pull/474)
 
@@ -979,7 +979,7 @@
 1. Add cmake option to disable console logfile.
     * [Pull request 348](https://github.com/osrf/sdformat/pull/348)
 
-1. CMake fixes: include CMakePackageConfigHelpers and use modern cmake target for  ignition math.
+1. CMake fixes: include CMakePackageConfigHelpers and use modern cmake target for  gz math.
     * [Pull request 358](https://github.com/osrf/sdformat/pull/358)
 
 1. Cmake: add tinyxml2 to Config names.
@@ -1156,7 +1156,7 @@
 1. Add camera type aliases to docs.
     * [Pull request #514](https://github.com/gazebosim/sdformat/pull/514)
 
-1. Add action-ignition-ci
+1. Add action-gz-ci
     * [Pull request #501](https://github.com/gazebosim/sdformat/pull/452)
 
 ### libsdformat 9.5.0 (2021-02-11)

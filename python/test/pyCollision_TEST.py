@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Pose3d
+from gz.math import Pose3d
 from sdformat import (Box, Collision, Contact, Cylinder, Error, Geometry,
                       Plane, Surface, Sphere, SDFErrorsException)
 import sdformat as sdf

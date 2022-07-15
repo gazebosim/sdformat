@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import Material, Pbr, PbrWorkflow
-from ignition.math import Color
+from gz.math import Color
 import sdformat as sdf
 import unittest
 

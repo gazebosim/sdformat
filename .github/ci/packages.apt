@@ -1,9 +1,9 @@
-libignition-cmake3-dev
-libignition-common5-dev
-libignition-math7-dev
-libignition-tools2-dev
-libignition-utils2-dev
-libignition-utils2-cli-dev
+libgz-cmake3-dev
+libgz-common5-dev
+libgz-math7-dev
+libgz-tools2-dev
+libgz-utils2-dev
+libgz-utils2-cli-dev
 libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils

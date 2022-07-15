@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef SDF_IGN_HH_
-#define SDF_IGN_HH_
+#ifndef SDF_GZ_HH_
+#define SDF_GZ_HH_
 
 #include <cstring>
 

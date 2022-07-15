@@ -61,7 +61,7 @@ namespace sdf
   /// gz::math::Pose3d::Zero.
   /// \param[out] _frame Value of the frame attribute. The default value is
   /// an empty string.
-  /// \return True if the pose element contained an gz::math::Pose3d
+  /// \return True if the pose element contained a gz::math::Pose3d
   /// value.
   bool loadPose(sdf::ElementPtr _sdf, gz::math::Pose3d &_pose,
                 std::string &_frame);
