@@ -23,6 +23,7 @@
 #include "sdf/Actor.hh"
 #include "sdf/Model.hh"
 #include "sdf/Physics.hh"
+#include "sdf/Root.hh"
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////
@@ -695,129 +696,109 @@ TEST(DOMWorld, Plugins)
 /////////////////////////////////////////////////
 TEST(DOMWorld, LoadEarthSurface)
 {
+  std::string sdf =
+    "<?xml version='1.0'?>"
+    "<sdf version='1.10'>"
+    "<world name='spherical coordinates'>"
+    "<spherical_coordinates>"
+    " <surface_model>EARTH_WGS84</surface_model>"
+    "  <world_frame_orientation>ENU</world_frame_orientation>"
+    "  <latitude_deg>-22.9</latitude_deg>"
+    "  <longitude_deg>-43.2</longitude_deg>"
+    "  <elevation>0</elevation>"
+    "  <heading_deg>0</heading_deg>"
+    "</spherical_coordinates>"
+    "</world>"
+    "</sdf>";
+
+  sdf::Root root;
   sdf::World world;
+  root.LoadSdfString(sdf);
+  EXPECT_NE(nullptr, root.Element());
 
-  std::ostringstream stream;
-  stream
-    << "<?xml version='1.0'?>"
-    << "<sdf version='1.10'>"
-    << "<world name='spherical coordinates'>"
-    << "<spherical_coordinates>"
-    << " <surface_model>EARTH_WGS84</surface_model>"
-    << "  <world_frame_orientation>ENU</world_frame_orientation>"
-    << "  <latitude_deg>-22.9</latitude_deg>"
-    << "  <longitude_deg>-43.2</longitude_deg>"
-    << "  <elevation>0</elevation>"
-    << "  <heading_deg>0</heading_deg>"
-    << "</spherical_coordinates>"
-    << "</world>"
-    << "</sdf>";
-
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-  auto SphericalCoordinatesSDF =
-    sdfParsed->Root()->GetElement("world");
-  ASSERT_NE(nullptr, SphericalCoordinatesSDF);
-
-  auto errors = world.Load(SphericalCoordinatesSDF);
-  EXPECT_EQ(errors.size(), 0);
+  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
+  EXPECT_EQ(sdfErrors.size(), 0);
 }
 
 /////////////////////////////////////////////////
 TEST(DOMWorld, LoadMoonSurface)
 {
+  std::string sdf =
+    "<?xml version='1.0'?>"
+    "<sdf version='1.10'>"
+    "<world name='spherical coordinates'>"
+    "<spherical_coordinates>"
+    " <surface_model>MOON_SCS</surface_model>"
+    "  <world_frame_orientation>ENU</world_frame_orientation>"
+    "  <latitude_deg>-22.9</latitude_deg>"
+    "  <longitude_deg>-43.2</longitude_deg>"
+    "  <elevation>0</elevation>"
+    "  <heading_deg>0</heading_deg>"
+    "</spherical_coordinates>"
+    "</world>"
+    "</sdf>";
+
+  sdf::Root root;
   sdf::World world;
+  root.LoadSdfString(sdf);
+  EXPECT_NE(nullptr, root.Element());
 
-  std::ostringstream stream;
-  stream
-    << "<?xml version='1.0'?>"
-    << "<sdf version='1.10'>"
-    << "<world name='spherical coordinates'>"
-    << "<spherical_coordinates>"
-    << " <surface_model>MOON_SCS</surface_model>"
-    << "  <world_frame_orientation>ENU</world_frame_orientation>"
-    << "  <latitude_deg>-22.9</latitude_deg>"
-    << "  <longitude_deg>-43.2</longitude_deg>"
-    << "  <elevation>0</elevation>"
-    << "  <heading_deg>0</heading_deg>"
-    << "</spherical_coordinates>"
-    << "</world>"
-    << "</sdf>";
-
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-  auto SphericalCoordinatesSDF =
-    sdfParsed->Root()->GetElement("world");
-  ASSERT_NE(nullptr, SphericalCoordinatesSDF);
-
-  auto errors = world.Load(SphericalCoordinatesSDF);
-  EXPECT_EQ(errors.size(), 0);
+  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
+  EXPECT_EQ(sdfErrors.size(), 0);
 }
 
 /////////////////////////////////////////////////
 TEST(DOMWorld, LoadCustomSurface)
 {
+  std::string sdf =
+    "<?xml version='1.0'?>"
+    "<sdf version='1.10'>"
+    "<world name='spherical coordinates'>"
+    "<spherical_coordinates>"
+    " <surface_model>CUSTOM_SURFACE</surface_model>"
+    "  <surface_axis_equatorial>20000</surface_axis_equatorial>"
+    "  <surface_axis_polar>18000</surface_axis_polar>"
+    "  <world_frame_orientation>ENU</world_frame_orientation>"
+    "  <latitude_deg>-22.9</latitude_deg>"
+    "  <longitude_deg>-43.2</longitude_deg>"
+    "  <elevation>0</elevation>"
+    "  <heading_deg>0</heading_deg>"
+    "</spherical_coordinates>"
+    "</world>"
+    "</sdf>";
+
+  sdf::Root root;
   sdf::World world;
+  root.LoadSdfString(sdf);
+  EXPECT_NE(nullptr, root.Element());
 
-  std::ostringstream stream;
-  stream
-    << "<?xml version='1.0'?>"
-    << "<sdf version='1.10'>"
-    << "<world name='spherical coordinates'>"
-    << "<spherical_coordinates>"
-    << " <surface_model>CUSTOM_SURFACE</surface_model>"
-    << "  <surface_axis_equatorial>20000</surface_axis_equatorial>"
-    << "  <surface_axis_polar>18000</surface_axis_polar>"
-    << "  <world_frame_orientation>ENU</world_frame_orientation>"
-    << "  <latitude_deg>-22.9</latitude_deg>"
-    << "  <longitude_deg>-43.2</longitude_deg>"
-    << "  <elevation>0</elevation>"
-    << "  <heading_deg>0</heading_deg>"
-    << "</spherical_coordinates>"
-    << "</world>"
-    << "</sdf>";
-
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-  auto SphericalCoordinatesSDF =
-    sdfParsed->Root()->GetElement("world");
-  ASSERT_NE(nullptr, SphericalCoordinatesSDF);
-
-  auto errors = world.Load(SphericalCoordinatesSDF);
-  EXPECT_EQ(errors.size(), 0);
+  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
+  EXPECT_EQ(sdfErrors.size(), 0);
 }
 
 /////////////////////////////////////////////////
 TEST(DOMWorld, LoadCustomSurfaceWithErrors)
 {
+  std::string sdf =
+    "<?xml version='1.0'?>"
+    "<sdf version='1.10'>"
+    "<world name='spherical coordinates'>"
+    "<spherical_coordinates>"
+    " <surface_model>CUSTOM_SURFACE</surface_model>"
+    "  <world_frame_orientation>ENU</world_frame_orientation>"
+    "  <latitude_deg>-22.9</latitude_deg>"
+    "  <longitude_deg>-43.2</longitude_deg>"
+    "  <elevation>0</elevation>"
+    "  <heading_deg>0</heading_deg>"
+    "</spherical_coordinates>"
+    "</world>"
+    "</sdf>";
+
+  sdf::Root root;
   sdf::World world;
+  root.LoadSdfString(sdf);
+  EXPECT_NE(nullptr, root.Element());
 
-  std::ostringstream stream;
-  stream
-    << "<?xml version='1.0'?>"
-    << "<sdf version='1.10'>"
-    << "<world name='spherical coordinates'>"
-    << "<spherical_coordinates>"
-    << " <surface_model>CUSTOM_SURFACE</surface_model>"
-    << "  <world_frame_orientation>ENU</world_frame_orientation>"
-    << "  <latitude_deg>-22.9</latitude_deg>"
-    << "  <longitude_deg>-43.2</longitude_deg>"
-    << "  <elevation>0</elevation>"
-    << "  <heading_deg>0</heading_deg>"
-    << "</spherical_coordinates>"
-    << "</world>"
-    << "</sdf>";
-
-  sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
-  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed));
-  auto SphericalCoordinatesSDF =
-    sdfParsed->Root()->GetElement("world");
-  ASSERT_NE(nullptr, SphericalCoordinatesSDF);
-
-  auto errors = world.Load(SphericalCoordinatesSDF);
-  EXPECT_EQ(errors.size(), 2);
+  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
+  EXPECT_EQ(sdfErrors.size(), 2);
 }
