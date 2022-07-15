@@ -39,15 +39,15 @@
 
   <element name="surface_axis_equatorial" type="double" default="0.0" required="0">
     <description>
-      Equatorial axis of a custom surface type. This is only required for custom
-      surfaces.
+      Equatorial axis of a custom surface type, specified in meters.
+      This is only required for custom surfaces.
     </description>
   </element>
 
   <element name="surface_axis_polar" type="double" default="0.0" required="0">
     <description>
-      Polar axis of a custom surface type. This is only required for custom
-      surfaces.
+      Polar axis of a custom surface type, specified in meters.
+      This is only required for custom surfaces.
     </description>
   </element>
 
