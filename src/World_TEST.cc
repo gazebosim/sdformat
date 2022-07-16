@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <gz/math/Color.hh>
+#include <gz/math/SphericalCoordinates.hh>
 #include <gz/math/Vector3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Light.hh"
@@ -727,12 +728,26 @@ TEST(DOMWorld, LoadEarthSurface)
     "</sdf>";
 
   sdf::Root root;
-  sdf::World world;
-  root.LoadSdfString(sdf);
+  auto sdfErrors = root.LoadSdfString(sdf);
   EXPECT_NE(nullptr, root.Element());
+  EXPECT_TRUE(sdfErrors.empty());
 
-  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
-  EXPECT_EQ(sdfErrors.size(), 0);
+  auto world = root.WorldByIndex(0);
+  auto sc = world->SphericalCoordinates();
+  EXPECT_EQ(sc->Surface(),
+      gz::math::SphericalCoordinates::EARTH_WGS84);
+  EXPECT_NEAR(sc->LatitudeReference().Degree(), -22.9, 1e-6);
+  EXPECT_NEAR(sc->LongitudeReference().Degree(), -43.2, 1e-6);
+  EXPECT_NEAR(sc->HeadingOffset().Degree(), 0, 1e-6);
+  EXPECT_NEAR(sc->ElevationReference(), 0, 1e-6);
+  EXPECT_NEAR(sc->SurfaceRadius(),
+      6371000.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisEquatorial(),
+      6378137.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisPolar(),
+      6356752.314245, 1e-3);
+  EXPECT_NEAR(sc->SurfaceFlattening(),
+      1.0/298.257223563, 1e-5);
 }
 
 /////////////////////////////////////////////////
@@ -754,12 +769,26 @@ TEST(DOMWorld, LoadMoonSurface)
     "</sdf>";
 
   sdf::Root root;
-  sdf::World world;
-  root.LoadSdfString(sdf);
+  auto sdfErrors = root.LoadSdfString(sdf);
   EXPECT_NE(nullptr, root.Element());
+  EXPECT_TRUE(sdfErrors.empty());
 
-  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
-  EXPECT_EQ(sdfErrors.size(), 0);
+  auto world = root.WorldByIndex(0);
+  auto sc = world->SphericalCoordinates();
+  EXPECT_EQ(sc->Surface(),
+      gz::math::SphericalCoordinates::MOON_SCS);
+  EXPECT_NEAR(sc->LatitudeReference().Degree(), -22.9, 1e-6);
+  EXPECT_NEAR(sc->LongitudeReference().Degree(), -43.2, 1e-6);
+  EXPECT_NEAR(sc->HeadingOffset().Degree(), 0, 1e-6);
+  EXPECT_NEAR(sc->ElevationReference(), 0, 1e-6);
+  EXPECT_NEAR(sc->SurfaceRadius(),
+      1737400.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisEquatorial(),
+      1738100.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisPolar(),
+      1736000.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceFlattening(),
+      0.0012, 1e-5);
 }
 
 /////////////////////////////////////////////////
@@ -771,8 +800,8 @@ TEST(DOMWorld, LoadCustomSurface)
     "<world name='spherical coordinates'>"
     "<spherical_coordinates>"
     " <surface_model>CUSTOM_SURFACE</surface_model>"
-    "  <surface_axis_equatorial>20000</surface_axis_equatorial>"
-    "  <surface_axis_polar>18000</surface_axis_polar>"
+    "  <surface_axis_equatorial>12000</surface_axis_equatorial>"
+    "  <surface_axis_polar>10000</surface_axis_polar>"
     "  <world_frame_orientation>ENU</world_frame_orientation>"
     "  <latitude_deg>-22.9</latitude_deg>"
     "  <longitude_deg>-43.2</longitude_deg>"
@@ -783,12 +812,26 @@ TEST(DOMWorld, LoadCustomSurface)
     "</sdf>";
 
   sdf::Root root;
-  sdf::World world;
-  root.LoadSdfString(sdf);
+  auto sdfErrors = root.LoadSdfString(sdf);
   EXPECT_NE(nullptr, root.Element());
+  EXPECT_TRUE(sdfErrors.empty());
 
-  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
-  EXPECT_EQ(sdfErrors.size(), 0);
+  auto world = root.WorldByIndex(0);
+  auto sc = world->SphericalCoordinates();
+  EXPECT_EQ(sc->Surface(),
+      gz::math::SphericalCoordinates::CUSTOM_SURFACE);
+  EXPECT_NEAR(sc->LatitudeReference().Degree(), -22.9, 1e-6);
+  EXPECT_NEAR(sc->LongitudeReference().Degree(), -43.2, 1e-6);
+  EXPECT_NEAR(sc->HeadingOffset().Degree(), 0, 1e-6);
+  EXPECT_NEAR(sc->ElevationReference(), 0, 1e-6);
+  EXPECT_NEAR(sc->SurfaceRadius(),
+      11333.333, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisEquatorial(),
+      12000.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisPolar(),
+      10000.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceFlattening(),
+      0.1666666, 1e-5);
 }
 
 /////////////////////////////////////////////////
@@ -810,10 +853,26 @@ TEST(DOMWorld, LoadCustomSurfaceWithErrors)
     "</sdf>";
 
   sdf::Root root;
-  sdf::World world;
-  root.LoadSdfString(sdf);
+  auto sdfErrors = root.LoadSdfString(sdf);
   EXPECT_NE(nullptr, root.Element());
+  EXPECT_EQ(sdfErrors.size(), 3);
 
-  auto sdfErrors = world.Load(root.WorldByIndex(0)->Element());
-  EXPECT_EQ(sdfErrors.size(), 2);
+  // Since equatorial and polar axes were not passed
+  // in the sdf, the measurements default to Earth's values.
+  auto world = root.WorldByIndex(0);
+  auto sc = world->SphericalCoordinates();
+  EXPECT_EQ(sc->Surface(),
+      gz::math::SphericalCoordinates::CUSTOM_SURFACE);
+  EXPECT_NEAR(sc->LatitudeReference().Degree(), -22.9, 1e-6);
+  EXPECT_NEAR(sc->LongitudeReference().Degree(), -43.2, 1e-6);
+  EXPECT_NEAR(sc->HeadingOffset().Degree(), 0, 1e-6);
+  EXPECT_NEAR(sc->ElevationReference(), 0, 1e-6);
+  EXPECT_NEAR(sc->SurfaceRadius(),
+      6371000.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisEquatorial(),
+      6378137.0, 1e-3);
+  EXPECT_NEAR(sc->SurfaceAxisPolar(),
+      6356752.314245, 1e-3);
+  EXPECT_NEAR(sc->SurfaceFlattening(),
+      1.0/298.257223563, 1e-5);
 }
