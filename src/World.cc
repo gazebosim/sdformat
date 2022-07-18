@@ -779,7 +779,9 @@ Errors World::Implementation::LoadSphericalCoordinates(
   else
   {
     auto surfaceModelStr = _elem->Get<std::string>("surface_model");
-    if (surfaceModelStr != "EARTH_WGS84")
+    if ((surfaceModelStr != "EARTH_WGS84") &&
+        (surfaceModelStr != "MOON_SCS") &&
+        (surfaceModelStr != "CUSTOM_SURFACE"))
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "The supplied <surface_model> [" + surfaceModelStr +
@@ -787,6 +789,33 @@ Errors World::Implementation::LoadSphericalCoordinates(
     }
     surfaceModel = gz::math::SphericalCoordinates::Convert(
         surfaceModelStr);
+  }
+
+  // Read ellipsoidal parameters for custom surfaces.
+  double axisEquatorial = 0;
+  double axisPolar = 0;
+
+  if (surfaceModel == gz::math::SphericalCoordinates::CUSTOM_SURFACE)
+  {
+    if (!_elem->HasElement("surface_axis_equatorial"))
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Missing required element <surface_axis_equatorial>"});
+    }
+    else
+    {
+      axisEquatorial = _elem->Get<double>("surface_axis_equatorial");
+    }
+
+    if (!_elem->HasElement("surface_axis_polar"))
+    {
+      errors.push_back({ErrorCode::ELEMENT_MISSING,
+          "Missing required element <surface_axis_polar>"});
+    }
+    else
+    {
+      axisPolar = _elem->Get<double>("surface_axis_polar");
+    }
   }
 
   std::string worldFrameOrientation{"ENU"};
@@ -848,9 +877,23 @@ Errors World::Implementation::LoadSphericalCoordinates(
 
   // Create coordinates
   this->sphericalCoordinates.emplace();
-  this->sphericalCoordinates =
-      gz::math::SphericalCoordinates(surfaceModel, latitude, longitude,
-      elevation, heading);
+  if (surfaceModel != gz::math::SphericalCoordinates::CUSTOM_SURFACE)
+  {
+    this->sphericalCoordinates =
+        gz::math::SphericalCoordinates(surfaceModel, latitude, longitude,
+        elevation, heading);
+  }
+  else
+  {
+    this->sphericalCoordinates =
+      gz::math::SphericalCoordinates(surfaceModel,
+          axisEquatorial, axisPolar);
+
+    this->sphericalCoordinates->SetLatitudeReference(latitude);
+    this->sphericalCoordinates->SetLongitudeReference(longitude);
+    this->sphericalCoordinates->SetElevationReference(elevation);
+    this->sphericalCoordinates->SetHeadingOffset(heading);
+  }
 
   return errors;
 }
@@ -900,6 +943,10 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
         this->dataPtr->sphericalCoordinates->ElevationReference());
     sphericalElem->GetElement("heading_deg")->Set(
         this->dataPtr->sphericalCoordinates->HeadingOffset().Degree());
+    sphericalElem->GetElement("surface_axis_equatorial")->Set(
+        this->dataPtr->sphericalCoordinates->SurfaceAxisEquatorial());
+    sphericalElem->GetElement("surface_axis_polar")->Set(
+        this->dataPtr->sphericalCoordinates->SurfaceAxisPolar());
   }
 
   // Atmosphere

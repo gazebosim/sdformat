@@ -21,7 +21,7 @@ jobs:
         brew tap osrf/simulation;
         # check for ci_matching_branch
         brew install wget
-        wget https://github.com/ignition-tooling/release-tools/raw/master/jenkins-scripts/tools/detect_ci_matching_branch.py
+        wget https://github.com/gazebo-tooling/release-tools/raw/master/jenkins-scripts/tools/detect_ci_matching_branch.py
         TRY_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
         if python3 detect_ci_matching_branch.py ${TRY_BRANCH}
         then
@@ -32,7 +32,7 @@ jobs:
           popd
           echo '# END SECTION'
         fi
-        # ignition-math7 has problems with swig, remove it for now
+        # gz-math7 has problems with swig, remove it for now
         brew remove swig || true
         brew install --only-dependencies ${PACKAGE};
 

@@ -26,6 +26,7 @@
 #include "sdf/World.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Root.hh"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, Construction)
@@ -63,6 +64,29 @@ TEST(DOMRoot, MoveAssignmentOperator)
   sdf::Root root2;
   root2 = std::move(root);
   EXPECT_EQ("test_root", root2.Version());
+}
+
+TEST(DOMRoot, WorldNamesFromFile)
+{
+  const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
+  sdf::Root root;
+  std::vector<std::string> worldNames;
+  auto errors = root.WorldNamesFromFile(path, worldNames);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_EQ(1u, worldNames.size());
+  EXPECT_EQ("shapes_world", worldNames[0]);
+
+  worldNames.clear();
+  const auto path2 = sdf::testing::TestFile("sdf", "empty_invalid.sdf");
+  errors = root.WorldNamesFromFile(path2, worldNames);
+  EXPECT_EQ(0u, worldNames.size());
+  EXPECT_FALSE(errors.empty());
+
+  worldNames.clear();
+  const auto path3 = sdf::testing::TestFile("sdf", "invalid_file_name.sdf");
+  errors = root.WorldNamesFromFile(path3, worldNames);
+  EXPECT_EQ(0u, worldNames.size());
+  EXPECT_FALSE(errors.empty());
 }
 
 /////////////////////////////////////////////////

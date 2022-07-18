@@ -184,12 +184,12 @@ TEST(DOMPlugin, Load)
 TEST(DOMPlugin, LoadWithChildren)
 {
   std::string pluginStr = R"(<plugin name='3D View' filename='MinimalScene'>
-  <ignition-gui>
+  <gz-gui>
     <title>3D View</title>
-    <property type='Ignition.Msgs.Boolean'>false</property>
+    <property type='Gz.Msgs.Boolean'>false</property>
     <property type='bool' key='showTitleBar'>0</property>
     <property type='string' key='state'>docked</property>
-  </ignition-gui>
+  </gz-gui>
   <engine>ogre</engine>
   <scene>scene</scene>
   <ambient_light>0.4 0.4 0.4</ambient_light>

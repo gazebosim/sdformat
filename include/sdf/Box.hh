@@ -58,11 +58,11 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Box.
-    /// \return A const reference to an gz::math::Boxd object.
+    /// \return A const reference to a gz::math::Boxd object.
     public: const gz::math::Boxd &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Box.
-    /// \return A reference to an gz::math::Boxd object.
+    /// \return A reference to a gz::math::Boxd object.
     public: gz::math::Boxd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this

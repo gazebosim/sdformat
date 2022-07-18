@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Vector3d
+from gz.math import Vector3d
 from sdformat import Heightmap, HeightmapBlend, HeightmapTexture
 import unittest
 

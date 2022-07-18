@@ -65,11 +65,11 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Capsule.
-    /// \return A const reference to an gz::math::Sphered object.
+    /// \return A const reference to a gz::math::Sphered object.
     public: const gz::math::Capsuled &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Capsule.
-    /// \return A reference to an gz::math::Capsuled object.
+    /// \return A reference to a gz::math::Capsuled object.
     public: gz::math::Capsuled &Shape();
 
     /// \brief Create and return an SDF element filled with data from this

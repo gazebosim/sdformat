@@ -24,7 +24,7 @@ if (USE_INTERNAL_URDF)
   endif()
 else()
   target_link_libraries(using_parser_urdf INTERFACE
-    IgnURDFDOM::IgnURDFDOM)
+    GzURDFDOM::GzURDFDOM)
 endif()
 
 if (BUILD_TESTING)
@@ -104,6 +104,7 @@ if (BUILD_TESTING)
 endif()
 
 gz_create_core_library(SOURCES ${sources}
+  CXX_STANDARD 17
   LEGACY_PROJECT_PREFIX SDFormat
   )
 

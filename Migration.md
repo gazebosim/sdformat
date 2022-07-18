@@ -14,6 +14,12 @@ but with improved human-readability..
 
 ## libsdformat 12.x to 13.x
 
+### Additions
+
+1. **New SDFormat specification version 1.10**
+    + Details about the 1.9 to 1.10 transition are explained below in this same
+      document
+
 ### Deprecations
 
 - The `ignition` namespace is deprecated and will be removed in future versions.
@@ -38,6 +44,10 @@ but with improved human-readability..
 - **sdf/parser.hh**:
    + ***Deprecation:*** bool checkJointParentChildLinkNames(const sdf::Root \*)
    + ***Replacement:*** bool checkJointParentChildNames(const sdf::Root \*)
+
+- **sdf/SDFImpl.hh**:
+   + ***Deprecation:*** void Root(sdf::ElementPtr)
+   + ***Replacement:*** void SetRoot(sdf::ElementPtr)
 
 ### Removals
 
@@ -507,6 +517,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 1. **Lump:: prefix in link names**
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
+
+## SDFormat specification 1.9 to 1.10
 
 ## SDFormat specification 1.8 to 1.9
 

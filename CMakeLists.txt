@@ -9,7 +9,7 @@ project (sdformat13 VERSION 13.0.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
-set (SDF_PROTOCOL_VERSION 1.9)
+set (SDF_PROTOCOL_VERSION 1.10)
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
@@ -36,8 +36,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_SDF)
   gz_configure_project(
-    NO_IGNITION_PREFIX
-    REPLACE_IGNITION_INCLUDE_PATH sdf
+    NO_PROJECT_PREFIX
+    REPLACE_INCLUDE_PATH sdf
     VERSION_SUFFIX pre1)
 
   #################################################
@@ -51,8 +51,8 @@ if (BUILD_SDF)
   #  2. if USE_INTERNAL_URDF is set to True, use the internal copy
   #  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
   if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
-    gz_find_package(IgnURDFDOM VERSION 1.0 QUIET)
-    if (NOT IgnURDFDOM_FOUND)
+    gz_find_package(GzURDFDOM VERSION 1.0 QUIET)
+    if (NOT GzURDFDOM_FOUND)
       if (NOT DEFINED USE_INTERNAL_URDF)
         # fallback to internal urdf
         set(USE_INTERNAL_URDF ON)
@@ -72,7 +72,7 @@ if (BUILD_SDF)
 
   #################################################
   # Copied from catkin/cmake/empy.cmake
-  include(IgnPython)
+  include(GzPython)
   function(find_python_module module)
     # cribbed from http://www.cmake.org/pipermail/cmake/2011-January/041666.html
     string(TOUPPER ${module} module_upper)
@@ -130,7 +130,7 @@ if (BUILD_SDF)
   ########################################
   # Python interfaces
   if (NOT PYTHON3_FOUND)
-    IGN_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
+    GZ_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
     message (STATUS "Searching for Python - not found.")
   else()
     message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
@@ -139,10 +139,10 @@ if (BUILD_SDF)
     find_package(pybind11 2.4 QUIET)
 
     if (${pybind11_FOUND})
-      find_package(Python3 ${IGN_PYTHON_VERSION} REQUIRED COMPONENTS Development)
+      find_package(Python3 ${GZ_PYTHON_VERSION} REQUIRED COMPONENTS Development)
       message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
   	else()
-  		IGN_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
+  		GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
   		message (STATUS "Searching for pybind11 - not found.")
   	endif()
   endif()
