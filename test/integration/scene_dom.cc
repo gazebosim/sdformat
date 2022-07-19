@@ -69,4 +69,5 @@ TEST(DOMScene, LoadScene)
   EXPECT_DOUBLE_EQ(0.2, sky->CloudMeanSize());
   EXPECT_DOUBLE_EQ(0.9, sky->CloudHumidity());
   EXPECT_EQ(gz::math::Color(0.1f, 0.2f, 0.3f), sky->CloudAmbient());
+  EXPECT_EQ("dummyUri", sky->CubemapUri());
 }
