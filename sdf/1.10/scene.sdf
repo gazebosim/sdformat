@@ -46,6 +46,10 @@
         <description>Ambient cloud color</description>
       </element>
     </element>
+
+    <element name="cubemap_uri" type="string" default="" required="0">
+      <description>The URI to a cubemap texture for a skybox. A .dds file is typically used for the cubemap.</description>
+    </element>
   </element>
 
   <element name="shadows" type="bool" default="true" required="1">
