@@ -1,5 +1,21 @@
 # sdformat
 
+[![GitHub open issues](https://img.shields.io/github/issues-raw/gazebosim/sdformat.svg)](https://github.com/gazebosim/sdformat/issues)
+[![GitHub open pull requests](https://img.shields.io/github/issues-pr-raw/gazebosim/sdformat.svg)](https://github.com/gazebosim/sdformat/pulls)
+[![Discourse topics](https://img.shields.io/discourse/https/community.gazebosim.org/topics.svg)](https://community.gazebosim.org)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
+<!--
+Note: The branch name in the codecov URL & library version should be updated when forward porting
+-->
+Build | Status
+-- | --
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/sdf9/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/sdf9)
+Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdformat9-focal-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdformat9-focal-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdformat9-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdformat9-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdformat9-windows7-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdformat9-windows7-amd64)
+
+
 SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
@@ -14,11 +30,6 @@ allows conversion from previous versions.
   which can be used to read SDFormat files and return a C++ interface.
 
 [http://sdformat.org/](http://sdformat.org/)
-
-Test coverage:
-
-<!-- Note: The branch name in the codecov URL should be updated when forward porting -->
-[![codecov](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf9/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf9)
 
 # Installation
 
@@ -45,8 +56,8 @@ Miniconda suffices.
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 Install `sdformat`:
@@ -104,8 +115,8 @@ Miniconda suffices.
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 Install prerequisites:
@@ -113,7 +124,7 @@ Install prerequisites:
 conda install urdfdom --channel conda-forge
 ```
 
-Install Ignition dependencies:
+Install Gazebo dependencies:
 
 You can view lists of dependencies:
 ```
