@@ -60,6 +60,10 @@ void defineMaterial(pybind11::object module)
          "Set the specular color. The specular color is "
          "specified by a set of three numbers representing red/green/blue, "
          "each in the range of [0,1].")
+    .def("shininess", &sdf::Material::Shininess,
+         "Get the specular exponent.")
+    .def("set_shininess", &sdf::Material::SetShininess,
+         "Set the specular exponent.")
     .def("emissive", &sdf::Material::Emissive,
          "Get the emissive color. The emissive color is "
          "specified by a set of three numbers representing red/green/blue, "
