@@ -438,37 +438,85 @@ namespace sdf
     /// \param[in] _size The lens environment texture size.
     public: void SetLensEnvironmentTextureSize(int _size);
 
-    /// \brief Get the lens X focal length in pixels.
-    /// \return The lens X focal length in pixels.
+    /// \brief Get the lens X focal length in pixels for the intrinsic matrix.
+    /// \return The lens X focal length in pixels for the intrinsic matrix.
     public: double LensIntrinsicsFx() const;
 
-    /// \brief Set the lens X focal length in pixels.
-    /// \param[in] _fx The lens X focal length in pixels.
+    /// \brief Set the lens X focal length in pixels for the intrinsic matrix.
+    /// \param[in] _fx The lens X focal length in pixels for the intrinsic matrix.
     public: void SetLensIntrinsicsFx(double _fx);
 
-    /// \brief Get the lens Y focal length in pixels.
-    /// \return The lens Y focal length in pixels.
+    /// \brief Get the lens Y focal length in pixels for the intrinsic matrix.
+    /// \return The lens Y focal length in pixels for the intrinsic matrix.
     public: double LensIntrinsicsFy() const;
 
-    /// \brief Set the lens Y focal length in pixels.
-    /// \param[in] _fy The lens Y focal length in pixels.
+    /// \brief Set the lens Y focal length in pixels for the intrinsic matrix.
+    /// \param[in] _fy The lens Y focal length in pixels for the intrinsic matrix.
     public: void SetLensIntrinsicsFy(double _fy);
 
-    /// \brief Get the lens X principal point in pixels.
-    /// \return The lens X principal point in pixels.
+    /// \brief Get the lens X principal point in pixels for the intrinsic matrix.
+    /// \return The lens X principal point in pixels for the intrinsic matrix.
     public: double LensIntrinsicsCx() const;
 
-    /// \brief Set the lens X principal point in pixels.
-    /// \param[in] _cx The lens X principal point in pixels.
+    /// \brief Set the lens X principal point in pixels for the intrinsic matrix.
+    /// \param[in] _cx The lens X principal point in pixels for the intrinsic matrix.
     public: void SetLensIntrinsicsCx(double _cx);
 
-    /// \brief Get the lens Y principal point in pixels.
-    /// \return The lens Y principal point in pixels.
+    /// \brief Get the lens Y principal point in pixels for the intrinsic matrix.
+    /// \return The lens Y principal point in pixels for the intrinsic matrix.
     public: double LensIntrinsicsCy() const;
 
-    /// \brief Set the lens Y principal point in pixels.
-    /// \param[in] _cy The lens Y principal point in pixels.
+    /// \brief Set the lens Y principal point in pixels for the intrinsic matrix.
+    /// \param[in] _cy The lens Y principal point in pixels for the intrinsic matrix.
     public: void SetLensIntrinsicsCy(double _cy);
+
+    /// \brief Get the lens X focal length in pixels for the projection matrix.
+    /// \return The lens X focal length in pixels for the projection matrix.
+    public: double LensIntrinsicsFx_p() const;
+
+    /// \brief Set the lens X focal length in pixels for the projection matrix.
+    /// \param[in] _fx_p The lens X focal length in pixels for the projection matrix.
+    public: void SetLensIntrinsicsFx_p(double _fx_p);
+
+    /// \brief Get the lens Y focal length in pixels for the projection matrix.
+    /// \return The lens Y focal length in pixels for the projection matrix.
+    public: double LensIntrinsicsFy_p() const;
+
+    /// \brief Set the lens Y focal length in pixels for the projection matrix.
+    /// \param[in] _fy_p The lens Y focal length in pixels for the projection matrix.
+    public: void SetLensIntrinsicsFy_p(double _fy_p);
+
+    /// \brief Get the lens X principal point in pixels for the projection matrix.
+    /// \return The lens X principal point in pixels for the projection matrix.
+    public: double LensIntrinsicsCx_p() const;
+
+    /// \brief Set the lens X principal point in pixels for the projection matrix.
+    /// \param[in] _cx_p The lens X principal point in pixels for the projection matrix.
+    public: void SetLensIntrinsicsCx_p(double _cx_p);
+
+    /// \brief Get the lens Y principal point in pixels for the projection matrix.
+    /// \return The lens Y principal point in pixels for the projection matrix.
+    public: double LensIntrinsicsCy_p() const;
+
+    /// \brief Set the lens Y principal point in pixels for the projection matrix.
+    /// \param[in] _cy_p The lens Y principal point in pixels for the projection matrix.
+    public: void SetLensIntrinsicsCy_p(double _cy_p);
+
+    /// \brief Get the lens X translation in pixels for the projection matrix.
+    /// \return The lens X translation in pixels for the projection matrix.
+    public: double LensIntrinsicsTx() const;
+
+    /// \brief Set the lens X translation in pixels for the projection matrix.
+    /// \param[in] _tx The lens X translation in pixels for the projection matrix.
+    public: void SetLensIntrinsicsTx(double _tx);
+
+    /// \brief Get the lens Y translation in pixels for the projection matrix.
+    /// \return The lens Y translation in pixels for the projection matrix.
+    public: double LensIntrinsicsTy() const;
+
+    /// \brief Set the lens Y translation in pixels for the projection matrix.
+    /// \param[in] _ty The lens Y translation in pixels for the projection matrix.
+    public: void SetLensIntrinsicsTy(double _ty);
 
     /// \brief Get the lens XY axis skew.
     /// \return The lens XY axis skew.

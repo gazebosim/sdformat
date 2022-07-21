@@ -162,6 +162,24 @@ class sdf::CameraPrivate
   /// \brief lens instrinsics cy.
   public: double lensIntrinsicsCy{120.0};
 
+  /// \brief lens instrinsics fx_p.
+  public: double lensIntrinsicsFx_p{277.0};
+
+  /// \brief lens instrinsics fy_p.
+  public: double lensIntrinsicsFy_p{277.0};
+
+  /// \brief lens instrinsics cx_p.
+  public: double lensIntrinsicsCx_p{160.0};
+
+  /// \brief lens instrinsics cy_p.
+  public: double lensIntrinsicsCy_p{120.0};
+
+  /// \brief lens instrinsics Tx
+  public: double lensIntrinsicsTx{0.0};
+
+  /// \brief lens instrinsics Ty
+  public: double lensIntrinsicsTy{0.0};
+
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
@@ -905,6 +923,84 @@ double Camera::LensIntrinsicsCy() const
 void Camera::SetLensIntrinsicsCy(double _cy)
 {
   this->dataPtr->lensIntrinsicsCy = _cy;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsFx_p() const
+{
+  return this->dataPtr->lensIntrinsicsFx_p;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsFx_p(double _fx_p)
+{
+  this->dataPtr->lensIntrinsicsFx_p = _fx_p;
+  this->dataPtr->hasIntrinsics = true;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsFy_p() const
+{
+  return this->dataPtr->lensIntrinsicsFy_p;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsFy_p(double _fy_p)
+{
+  this->dataPtr->lensIntrinsicsFy_p = _fy_p;
+  this->dataPtr->hasIntrinsics = true;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsCx_p() const
+{
+  return this->dataPtr->lensIntrinsicsCx_p;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsCx_p(double _cx_p)
+{
+  this->dataPtr->lensIntrinsicsCx_p = _cx_p;
+  this->dataPtr->hasIntrinsics = true;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsCy_p() const
+{
+  return this->dataPtr->lensIntrinsicsCy_p;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsCy_p(double _cy_p)
+{
+  this->dataPtr->lensIntrinsicsCy_p = _cy_p;
+  this->dataPtr->hasIntrinsics = true;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsTx() const
+{
+  return this->dataPtr->lensIntrinsicsTx;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsTx(double _tx)
+{
+  this->dataPtr->lensIntrinsicsTx = _tx;
+  this->dataPtr->hasIntrinsics = true;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensIntrinsicsTy() const
+{
+  return this->dataPtr->lensIntrinsicsTy;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensIntrinsicsTy(double _ty)
+{
+  this->dataPtr->lensIntrinsicsTy = _ty;
+  this->dataPtr->hasIntrinsics = true;
 }
 
 /////////////////////////////////////////////////
