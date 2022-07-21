@@ -16,12 +16,14 @@
 */
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
 #include <ignition/utils/ExtraTestMacros.hh>
 
+#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -1875,6 +1877,38 @@ TEST(inertial_stats, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       custom_exec_str(IgnCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
+  }
+}
+
+//////////////////////////////////////////////////
+/// \brief Check help message and bash completion script for consistent flags
+TEST(HelpVsCompletionFlags, SDF)
+{
+  // Flags in help message
+  std::string helpOutput = custom_exec_str(IgnCommand() + " sdf --help");
+
+  // Call the output function in the bash completion script
+  std::string scriptPath = PROJECT_SOURCE_PATH;
+  scriptPath = sdf::filesystem::append(scriptPath, "src", "cmd",
+      "sdf.bash_completion.sh");
+
+  // Equivalent to:
+  // sh -c "bash -c \". /path/to/sdf.bash_completion.sh; _gz_sdf_flags\""
+  std::string cmd = "bash -c \". " + scriptPath +
+    "; _gz_sdf_flags\"";
+  std::string scriptOutput = custom_exec_str(cmd);
+
+  // Tokenize script output
+  std::istringstream iss(scriptOutput);
+  std::vector<std::string> flags((std::istream_iterator<std::string>(iss)),
+    std::istream_iterator<std::string>());
+
+  EXPECT_GT(flags.size(), 0u);
+
+  // Match each flag in script output with help message
+  for (const auto &flag : flags)
+  {
+    EXPECT_NE(std::string::npos, helpOutput.find(flag)) << helpOutput;
   }
 }
 
