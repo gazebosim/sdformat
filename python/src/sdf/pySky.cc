@@ -66,6 +66,10 @@ void defineSky(pybind11::object module)
          "Get cloud ambient color")
     .def("set_cloud_ambient", &sdf::Sky::SetCloudAmbient,
          "Set cloud ambient color")
+    .def("cubemap_uri", &sdf::Sky::CubemapUri,
+         "Get the skybox texture URI.")
+    .def("set_cubemap_uri", &sdf::Sky::SetCubemapUri,
+         "Set the skybox texture URI.")
     .def("__copy__", [](const sdf::Sky &self) {
       return sdf::Sky(self);
     })
