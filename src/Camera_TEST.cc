@@ -158,6 +158,30 @@ TEST(DOMCamera, Construction)
   cam.SetLensIntrinsicsCy(123);
   EXPECT_DOUBLE_EQ(123, cam.LensIntrinsicsCy());
 
+  EXPECT_DOUBLE_EQ(277, cam.LensProjectionFx());
+  cam.SetLensProjectionFx(132);
+  EXPECT_DOUBLE_EQ(132, cam.LensProjectionFx());
+
+  EXPECT_DOUBLE_EQ(277, cam.LensProjectionFy());
+  cam.SetLensProjectionFy(456);
+  EXPECT_DOUBLE_EQ(456, cam.LensProjectionFy());
+
+  EXPECT_DOUBLE_EQ(160, cam.LensProjectionCx());
+  cam.SetLensProjectionCx(254);
+  EXPECT_DOUBLE_EQ(254, cam.LensProjectionCx());
+
+  EXPECT_DOUBLE_EQ(120, cam.LensProjectionCy());
+  cam.SetLensProjectionCy(123);
+  EXPECT_DOUBLE_EQ(123, cam.LensProjectionCy());
+
+  EXPECT_DOUBLE_EQ(0, cam.LensProjectionTx());
+  cam.SetLensProjectionTx(1);
+  EXPECT_DOUBLE_EQ(1, cam.LensProjectionTx());
+
+  EXPECT_DOUBLE_EQ(0, cam.LensProjectionTy());
+  cam.SetLensProjectionTy(2);
+  EXPECT_DOUBLE_EQ(2, cam.LensProjectionTy());
+
   EXPECT_DOUBLE_EQ(1.0, cam.LensIntrinsicsSkew());
   cam.SetLensIntrinsicsSkew(2.3);
   EXPECT_DOUBLE_EQ(2.3, cam.LensIntrinsicsSkew());
