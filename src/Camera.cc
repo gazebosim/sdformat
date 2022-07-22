@@ -402,18 +402,23 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensIntrinsicsCy).first;
       this->dataPtr->lensIntrinsicsS = intrinsics->Get<double>("s",
           this->dataPtr->lensIntrinsicsS).first;
-      this->dataPtr->lensProjectionFx = intrinsics->Get<double>("p_fx",
+    }
+
+    if (elem->HasElement("projection")) {
+      sdf::ElementPtr projection = elem->GetElement("projection");
+      this->dataPtr->lensProjectionFx = projection->Get<double>("p_fx",
           this->dataPtr->lensProjectionFx).first;
-      this->dataPtr->lensProjectionFy = intrinsics->Get<double>("p_fy",
+      this->dataPtr->lensProjectionFy = projection->Get<double>("p_fy",
           this->dataPtr->lensProjectionFy).first;
-      this->dataPtr->lensProjectionCx = intrinsics->Get<double>("p_cx",
+      this->dataPtr->lensProjectionCx = projection->Get<double>("p_cx",
           this->dataPtr->lensProjectionCx).first;
-      this->dataPtr->lensProjectionCy = intrinsics->Get<double>("p_cy",
+      this->dataPtr->lensProjectionCy = projection->Get<double>("p_cy",
           this->dataPtr->lensProjectionCy).first;
-      this->dataPtr->lensProjectionTx = intrinsics->Get<double>("tx",
+      this->dataPtr->lensProjectionTx = projection->Get<double>("tx",
           this->dataPtr->lensProjectionTx).first;
-      this->dataPtr->lensProjectionTy = intrinsics->Get<double>("ty",
+      this->dataPtr->lensProjectionTy = projection->Get<double>("ty",
           this->dataPtr->lensProjectionTy).first;
+
     }
   }
 

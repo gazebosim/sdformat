@@ -151,6 +151,13 @@
       <element name="cy" type="double" default="120" required="1">
         <description>Y principal point (in pixels)</description>
       </element>
+      <element name="s" type="double" default="0.0" required="1">
+        <description>XY axis skew</description>
+      </element>
+    </element> <!-- End Intrinsics -->
+
+    <element name="projection" required="0">
+    <description>Camera projection matrix P for overriding camera intrinsic matrix K values so that users can configure P independently of K. This is useful when working with stereo cameras where P may be different from K due to the transform between the two cameras.</description>
       <element name="p_fx" type="double" default="277" required="0">
         <description>X focal length for projection matrix(in pixels, overrides fx)</description>
       </element>
@@ -169,10 +176,7 @@
       <element name="ty" type="double" default="0.0" required="0">
         <description>Y translation for projection matrix (in pixels)</description>
       </element>
-      <element name="s" type="double" default="0.0" required="1">
-        <description>XY axis skew</description>
-      </element>
-    </element> <!-- End Intrinsics -->
+    </element> <!-- End Projection -->
   </element> <!-- End Lens -->
 
   <element name="visibility_mask" type="unsigned int" default="4294967295" required="0">
