@@ -54,9 +54,9 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  EXPECT_EQ(6u, graph.map.size());
-  EXPECT_EQ(6u, graph.graph.Vertices().size());
-  EXPECT_EQ(5u, graph.graph.Edges().size());
+  EXPECT_EQ(7u, graph.map.size());
+  EXPECT_EQ(7u, graph.graph.Vertices().size());
+  EXPECT_EQ(6u, graph.graph.Edges().size());
 
   EXPECT_EQ(1u, graph.map.count("__model__"));
   EXPECT_EQ(1u, graph.map.count("L"));
@@ -118,9 +118,9 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  EXPECT_EQ(6u, graph.map.size());
-  EXPECT_EQ(6u, graph.graph.Vertices().size());
-  EXPECT_EQ(4u, graph.graph.Edges().size());
+  EXPECT_EQ(7u, graph.map.size());
+  EXPECT_EQ(7u, graph.graph.Vertices().size());
+  EXPECT_EQ(5u, graph.graph.Edges().size());
 
   EXPECT_EQ(1u, graph.map.count("world"));
   EXPECT_EQ(1u, graph.map.count("world_frame"));
