@@ -34,7 +34,7 @@
     <name>placement_frame_using_model</name>
     <uri>test_model_with_frames</uri>
     <pose>0 10 0 1.570796326794895 0 0</pose>
-    <placement_frame>placement_frame_using_model</placement_frame>
+    <placement_frame>__model__</placement_frame>
   </include>
 
   <frame name='frame_1'>
@@ -79,7 +79,7 @@
       <name>placement_frame_using_model</name>
       <uri>test_model_with_frames</uri>
       <pose>0 10 0 1.570796326794895 0 0</pose>
-      <placement_frame>placement_frame_using_model</placement_frame>
+      <placement_frame>__model__</placement_frame>
     </include>
 
     <include>
@@ -99,11 +99,23 @@
     </link>
   </model>
 
-  <model name='model_with_model_placement_frame' placement_frame='model_with_model_placement_frame'>
+  <model name='model_with_model_placement_frame' placement_frame='__model__'>
     <pose>0 10 0 1.570796326794895 0 0</pose>
     <link name='L4'>
       <pose>0 0 1 0 0 0</pose>
     </link>
+  </model>
+
+  <model name='model_with_nested_model_placement_frame' placement_frame='nested_model'>
+    <pose>0 10 0 1.570796326794895 0 0</pose>
+    <link name='L4'>
+      <pose>0 0 1 0 0 0</pose>
+    </link>
+    <model name ='nested_model'>
+      <link name='L4'>
+        <pose>0 0 1 0 0 0</pose>
+      </link>
+    </model>
   </model>
 
   <model name='model_with_frame_placement_frame' placement_frame='F2'>

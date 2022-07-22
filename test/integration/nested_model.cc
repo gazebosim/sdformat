@@ -988,7 +988,7 @@ class PlacementFrame: public ::testing::Test
     }
     else if constexpr (std::is_same_v<FrameType, sdf::Model>)
     {
-      if (_testFrameName == _model ->Name())
+      if (_testFrameName == "__model__")
       {
         return _model;
       }
@@ -1090,7 +1090,7 @@ TEST_F(PlacementFrame, WorldInclude)
 
   // Test that joint names can be used for <placement_frame>
   this->TestExpectedWorldPose<sdf::Model>("placement_frame_using_model",
-                                          "placement_frame_using_model");
+                                          "__model__");
 
   // Test that the pose of an included model with placement_frame can use the
   // relative_to attribute
@@ -1140,7 +1140,11 @@ TEST_F(PlacementFrame, ModelPlacementFrameAttribute)
 
   // Test that the model name can be used for <placement_frame>
   this->TestExpectedWorldPose<sdf::Model>(
-      "model_with_model_placement_frame", "model_with_model_placement_frame");
+      "model_with_model_placement_frame", "__model__");
+
+  // Test that a nested model can be used for <placement_frame>
+  this->TestExpectedWorldPose<sdf::Model>(
+      "model_with_nested_model_placement_frame", "nested_model");
 
   // Test that the pose of a model with a placement_frame attribute can use the
   // relative_to attribute
