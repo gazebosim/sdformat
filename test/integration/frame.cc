@@ -444,28 +444,34 @@ TEST(DOMFrame, LoadModelFramesAttachedTo)
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
 
-  EXPECT_EQ(4u, model->FrameCount());
+  EXPECT_EQ(5u, model->FrameCount());
   EXPECT_NE(nullptr, model->FrameByIndex(0));
   EXPECT_NE(nullptr, model->FrameByIndex(1));
   EXPECT_NE(nullptr, model->FrameByIndex(2));
   EXPECT_NE(nullptr, model->FrameByIndex(3));
-  EXPECT_EQ(nullptr, model->FrameByIndex(4));
+  EXPECT_NE(nullptr, model->FrameByIndex(4));
+  EXPECT_EQ(nullptr, model->FrameByIndex(5));
+  ASSERT_TRUE(model->FrameNameExists("F000"));
   ASSERT_TRUE(model->FrameNameExists("F00"));
   ASSERT_TRUE(model->FrameNameExists("F0"));
   ASSERT_TRUE(model->FrameNameExists("F1"));
   ASSERT_TRUE(model->FrameNameExists("F2"));
 
+  EXPECT_EQ("__model__", model->FrameByName("F000")->AttachedTo());
   EXPECT_TRUE(model->FrameByName("F00")->AttachedTo().empty());
   EXPECT_TRUE(model->FrameByName("F0")->AttachedTo().empty());
   EXPECT_EQ("L", model->FrameByName("F1")->AttachedTo());
   EXPECT_EQ("F1", model->FrameByName("F2")->AttachedTo());
 
+  EXPECT_TRUE(model->FrameByName("F000")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F00")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F1")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->FrameByName("F2")->PoseRelativeTo().empty());
 
   std::string body;
+  EXPECT_TRUE(model->FrameByName("F000")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("L", body);
   EXPECT_TRUE(model->FrameByName("F00")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("L", body);
   EXPECT_TRUE(model->FrameByName("F0")->ResolveAttachedToBody(body).empty());
@@ -699,23 +705,27 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   ASSERT_TRUE(model->FrameNameExists("F0"));
   EXPECT_EQ("L", model->FrameByName("F0")->AttachedTo());
 
-  EXPECT_EQ(4u, world->FrameCount());
+  EXPECT_EQ(5u, world->FrameCount());
   EXPECT_NE(nullptr, world->FrameByIndex(0));
   EXPECT_NE(nullptr, world->FrameByIndex(1));
   EXPECT_NE(nullptr, world->FrameByIndex(2));
   EXPECT_NE(nullptr, world->FrameByIndex(3));
-  EXPECT_EQ(nullptr, world->FrameByIndex(4));
+  EXPECT_NE(nullptr, world->FrameByIndex(4));
+  EXPECT_EQ(nullptr, world->FrameByIndex(5));
   ASSERT_TRUE(world->FrameNameExists("world_frame"));
+  ASSERT_TRUE(world->FrameNameExists("F00"));
   ASSERT_TRUE(world->FrameNameExists("F0"));
   ASSERT_TRUE(world->FrameNameExists("F1"));
   ASSERT_TRUE(world->FrameNameExists("F2"));
 
   EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
+  EXPECT_EQ("world", world->FrameByName("F00")->AttachedTo());
   EXPECT_EQ("F0", world->FrameByName("F1")->AttachedTo());
   EXPECT_EQ("M1", world->FrameByName("F2")->AttachedTo());
 
   EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
+  EXPECT_TRUE(world->FrameByName("F00")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
@@ -723,6 +733,8 @@ TEST(DOMFrame, LoadWorldFramesAttachedTo)
   std::string body;
   EXPECT_TRUE(
     world->FrameByName("world_frame")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("world", body);
+  EXPECT_TRUE(world->FrameByName("F00")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("world", body);
   EXPECT_TRUE(world->FrameByName("F0")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("world", body);
@@ -1149,26 +1161,53 @@ TEST(DOMFrame, LoadWorldFramesRelativeTo)
   EXPECT_EQ("M2", world->ModelByName("M3")->PoseRelativeTo());
   EXPECT_EQ("F1", world->ModelByName("M4")->PoseRelativeTo());
 
-  EXPECT_EQ(4u, world->FrameCount());
+  EXPECT_EQ(5u, world->FrameCount());
   EXPECT_NE(nullptr, world->FrameByIndex(0));
   EXPECT_NE(nullptr, world->FrameByIndex(1));
   EXPECT_NE(nullptr, world->FrameByIndex(2));
   EXPECT_NE(nullptr, world->FrameByIndex(3));
-  EXPECT_EQ(nullptr, world->FrameByIndex(4));
+  EXPECT_NE(nullptr, world->FrameByIndex(4));
+  EXPECT_EQ(nullptr, world->FrameByIndex(5));
   ASSERT_TRUE(world->FrameNameExists("world_frame"));
   ASSERT_TRUE(world->FrameNameExists("F0"));
   ASSERT_TRUE(world->FrameNameExists("F1"));
+  ASSERT_TRUE(world->FrameNameExists("F1a"));
   ASSERT_TRUE(world->FrameNameExists("F2"));
 
   EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
   EXPECT_EQ("F0", world->FrameByName("F1")->PoseRelativeTo());
+  EXPECT_EQ("world", world->FrameByName("F1a")->PoseRelativeTo());
   EXPECT_EQ("M1", world->FrameByName("F2")->PoseRelativeTo());
 
   EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
   EXPECT_TRUE(world->FrameByName("F1")->AttachedTo().empty());
+  EXPECT_EQ("F1", world->FrameByName("F1a")->AttachedTo());
   EXPECT_TRUE(world->FrameByName("F2")->AttachedTo().empty());
+
+  using Pose = ignition::math::Pose3d;
+  Pose pose;
+  EXPECT_TRUE(
+    world->FrameByName("world_frame")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->FrameByName("F0")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->FrameByName("F1")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->FrameByName("F1a")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    world->FrameByName("F2")->
+      SemanticPose().Resolve(pose, "world").empty());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////

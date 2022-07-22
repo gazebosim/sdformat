@@ -3,6 +3,7 @@
   <world name="world_frame_attached_to">
 
     <frame name="world_frame"/>          <!-- VALID: Directly attached_to implicit world frame. -->
+    <frame name="F00" attached_to="world"/> <!-- VALID: Directly attached_to implicit world frame. -->
     <frame name="F0" attached_to=""/>    <!-- VALID: Directly attached_to implicit world frame by default. -->
     <frame name="F1" attached_to="F0"/>  <!-- VALID: Indirectly attached_to implicit world frame via frame F0. -->
 
