@@ -151,6 +151,24 @@
       <element name="cy" type="double" default="120" required="1">
         <description>Y principal point (in pixels)</description>
       </element>
+      <element name="p_fx" type="double" default="277" required="0">
+        <description>X focal length for projection matrix(in pixels, overrides fx)</description>
+      </element>
+      <element name="p_fy" type="double" default="277" required="0">
+        <description>Y focal length for projection matrix(in pixels, overrides fy)</description>
+      </element>
+      <element name="p_cx" type="double" default="160" required="0">
+        <description>X principal point for projection matrix(in pixels, overrides cx)</description>
+      </element>
+      <element name="p_cy" type="double" default="120" required="0">
+        <description>Y principal point for projection matrix(in pixels, overrides cy)</description>
+      </element>
+      <element name="tx" type="double" default="0.0" required="0">
+        <description>X translation for projection matrix (in pixels)</description>
+      </element>
+      <element name="ty" type="double" default="0.0" required="0">
+        <description>Y translation for projection matrix (in pixels)</description>
+      </element>
       <element name="s" type="double" default="0.0" required="1">
         <description>XY axis skew</description>
       </element>

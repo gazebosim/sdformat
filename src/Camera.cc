@@ -162,23 +162,23 @@ class sdf::CameraPrivate
   /// \brief lens instrinsics cy.
   public: double lensIntrinsicsCy{120.0};
 
-  /// \brief lens instrinsics fx_p.
-  public: double lensIntrinsicsFx_p{277.0};
+  /// \brief lens projection fx
+  public: double lensProjectionFx{277.0};
 
-  /// \brief lens instrinsics fy_p.
-  public: double lensIntrinsicsFy_p{277.0};
+  /// \brief lens projection fy
+  public: double lensProjectionFy{277.0};
 
-  /// \brief lens instrinsics cx_p.
-  public: double lensIntrinsicsCx_p{160.0};
+  /// \brief lens projection cx
+  public: double lensProjectionCx{160.0};
 
-  /// \brief lens instrinsics cy_p.
-  public: double lensIntrinsicsCy_p{120.0};
+  /// \brief lens projection cy
+  public: double lensProjectionCy{120.0};
 
-  /// \brief lens instrinsics Tx
-  public: double lensIntrinsicsTx{0.0};
+  /// \brief lens projection tx
+  public: double lensProjectionTx{0.0};
 
-  /// \brief lens instrinsics Ty
-  public: double lensIntrinsicsTy{0.0};
+  /// \brief lens projection ty
+  public: double lensProjectionTy{0.0};
 
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
@@ -402,6 +402,18 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensIntrinsicsCy).first;
       this->dataPtr->lensIntrinsicsS = intrinsics->Get<double>("s",
           this->dataPtr->lensIntrinsicsS).first;
+      this->dataPtr->lensProjectionFx = intrinsics->Get<double>("p_fx",
+          this->dataPtr->lensProjectionFx).first;
+      this->dataPtr->lensProjectionFy = intrinsics->Get<double>("p_fy",
+          this->dataPtr->lensProjectionFy).first;
+      this->dataPtr->lensProjectionCx = intrinsics->Get<double>("p_cx",
+          this->dataPtr->lensProjectionCx).first;
+      this->dataPtr->lensProjectionCy = intrinsics->Get<double>("p_cy",
+          this->dataPtr->lensProjectionCy).first;
+      this->dataPtr->lensProjectionTx = intrinsics->Get<double>("tx",
+          this->dataPtr->lensProjectionTx).first;
+      this->dataPtr->lensProjectionTy = intrinsics->Get<double>("ty",
+          this->dataPtr->lensProjectionTy).first;
     }
   }
 
@@ -926,81 +938,75 @@ void Camera::SetLensIntrinsicsCy(double _cy)
 }
 
 /////////////////////////////////////////////////
-double Camera::LensIntrinsicsFx_p() const
+double Camera::LensProjectionFx() const
 {
-  return this->dataPtr->lensIntrinsicsFx_p;
+  return this->dataPtr->lensProjectionFx;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensIntrinsicsFx_p(double _fx_p)
+void Camera::SetLensProjectionFx(double _fx_p)
 {
-  this->dataPtr->lensIntrinsicsFx_p = _fx_p;
-  this->dataPtr->hasIntrinsics = true;
+  this->dataPtr->lensProjectionFx = _fx_p;
 }
 
 /////////////////////////////////////////////////
-double Camera::LensIntrinsicsFy_p() const
+double Camera::LensProjectionFy() const
 {
-  return this->dataPtr->lensIntrinsicsFy_p;
+  return this->dataPtr->lensProjectionFy;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensIntrinsicsFy_p(double _fy_p)
+void Camera::SetLensProjectionFy(double _fy_p)
 {
-  this->dataPtr->lensIntrinsicsFy_p = _fy_p;
-  this->dataPtr->hasIntrinsics = true;
+  this->dataPtr->lensProjectionFy = _fy_p;
 }
 
 /////////////////////////////////////////////////
-double Camera::LensIntrinsicsCx_p() const
+double Camera::LensProjectionCx() const
 {
-  return this->dataPtr->lensIntrinsicsCx_p;
+  return this->dataPtr->lensProjectionCx;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensIntrinsicsCx_p(double _cx_p)
+void Camera::SetLensProjectionCx(double _cx_p)
 {
-  this->dataPtr->lensIntrinsicsCx_p = _cx_p;
-  this->dataPtr->hasIntrinsics = true;
+  this->dataPtr->lensProjectionCx = _cx_p;
 }
 
 /////////////////////////////////////////////////
-double Camera::LensIntrinsicsCy_p() const
+double Camera::LensProjectionCy() const
 {
-  return this->dataPtr->lensIntrinsicsCy_p;
+  return this->dataPtr->lensProjectionCy;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensIntrinsicsCy_p(double _cy_p)
+void Camera::SetLensProjectionCy(double _cy_p)
 {
-  this->dataPtr->lensIntrinsicsCy_p = _cy_p;
-  this->dataPtr->hasIntrinsics = true;
+  this->dataPtr->lensProjectionCy = _cy_p;
 }
 
 /////////////////////////////////////////////////
-double Camera::LensIntrinsicsTx() const
+double Camera::LensProjectionTx() const
 {
-  return this->dataPtr->lensIntrinsicsTx;
+  return this->dataPtr->lensProjectionTx;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensIntrinsicsTx(double _tx)
+void Camera::SetLensProjectionTx(double _tx)
 {
-  this->dataPtr->lensIntrinsicsTx = _tx;
-  this->dataPtr->hasIntrinsics = true;
+  this->dataPtr->lensProjectionTx = _tx;
 }
 
 /////////////////////////////////////////////////
-double Camera::LensIntrinsicsTy() const
+double Camera::LensProjectionTy() const
 {
-  return this->dataPtr->lensIntrinsicsTy;
+  return this->dataPtr->lensProjectionTy;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensIntrinsicsTy(double _ty)
+void Camera::SetLensProjectionTy(double _ty)
 {
-  this->dataPtr->lensIntrinsicsTy = _ty;
-  this->dataPtr->hasIntrinsics = true;
+  this->dataPtr->lensProjectionTy = _ty;
 }
 
 /////////////////////////////////////////////////

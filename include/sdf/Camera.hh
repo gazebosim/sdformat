@@ -472,51 +472,51 @@ namespace sdf
 
     /// \brief Get the lens X focal length in pixels for the projection matrix.
     /// \return The lens X focal length in pixels for the projection matrix.
-    public: double LensIntrinsicsFx_p() const;
+    public: double LensProjectionFx() const;
 
     /// \brief Set the lens X focal length in pixels for the projection matrix.
     /// \param[in] _fx_p The lens X focal length in pixels for the projection matrix.
-    public: void SetLensIntrinsicsFx_p(double _fx_p);
+    public: void SetLensProjectionFx(double _fx_p);
 
     /// \brief Get the lens Y focal length in pixels for the projection matrix.
     /// \return The lens Y focal length in pixels for the projection matrix.
-    public: double LensIntrinsicsFy_p() const;
+    public: double LensProjectionFy() const;
 
     /// \brief Set the lens Y focal length in pixels for the projection matrix.
     /// \param[in] _fy_p The lens Y focal length in pixels for the projection matrix.
-    public: void SetLensIntrinsicsFy_p(double _fy_p);
+    public: void SetLensProjectionFy(double _fy_p);
 
     /// \brief Get the lens X principal point in pixels for the projection matrix.
     /// \return The lens X principal point in pixels for the projection matrix.
-    public: double LensIntrinsicsCx_p() const;
+    public: double LensProjectionCx() const;
 
     /// \brief Set the lens X principal point in pixels for the projection matrix.
     /// \param[in] _cx_p The lens X principal point in pixels for the projection matrix.
-    public: void SetLensIntrinsicsCx_p(double _cx_p);
+    public: void SetLensProjectionCx(double _cx_p);
 
     /// \brief Get the lens Y principal point in pixels for the projection matrix.
     /// \return The lens Y principal point in pixels for the projection matrix.
-    public: double LensIntrinsicsCy_p() const;
+    public: double LensProjectionCy() const;
 
     /// \brief Set the lens Y principal point in pixels for the projection matrix.
     /// \param[in] _cy_p The lens Y principal point in pixels for the projection matrix.
-    public: void SetLensIntrinsicsCy_p(double _cy_p);
+    public: void SetLensProjectionCy(double _cy_p);
 
     /// \brief Get the lens X translation in pixels for the projection matrix.
     /// \return The lens X translation in pixels for the projection matrix.
-    public: double LensIntrinsicsTx() const;
+    public: double LensProjectionTx() const;
 
     /// \brief Set the lens X translation in pixels for the projection matrix.
     /// \param[in] _tx The lens X translation in pixels for the projection matrix.
-    public: void SetLensIntrinsicsTx(double _tx);
+    public: void SetLensProjectionTx(double _tx);
 
     /// \brief Get the lens Y translation in pixels for the projection matrix.
     /// \return The lens Y translation in pixels for the projection matrix.
-    public: double LensIntrinsicsTy() const;
+    public: double LensProjectionTy() const;
 
     /// \brief Set the lens Y translation in pixels for the projection matrix.
     /// \param[in] _ty The lens Y translation in pixels for the projection matrix.
-    public: void SetLensIntrinsicsTy(double _ty);
+    public: void SetLensProjectionTy(double _ty);
 
     /// \brief Get the lens XY axis skew.
     /// \return The lens XY axis skew.
