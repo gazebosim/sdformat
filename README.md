@@ -1,5 +1,21 @@
 # sdformat
 
+[![GitHub open issues](https://img.shields.io/github/issues-raw/gazebosim/sdformat.svg)](https://github.com/gazebosim/sdformat/issues)
+[![GitHub open pull requests](https://img.shields.io/github/issues-pr-raw/gazebosim/sdformat.svg)](https://github.com/gazebosim/sdformat/pulls)
+[![Discourse topics](https://img.shields.io/discourse/https/community.gazebosim.org/topics.svg)](https://community.gazebosim.org)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
+<!--
+Note: The branch name in the codecov URL & library version should be updated when forward porting
+-->
+Build | Status
+-- | --
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/sdf12/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/sdf12)
+Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdformat12-focal-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdformat12-focal-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdformat12-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdformat12-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdformat12-windows7-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdformat12-windows7-amd64)
+
+
 SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
@@ -13,7 +29,7 @@ See the [SDFormat Website](http://sdformat.org/) for a more comprehensive
 description of the specification, proposals for modifications, developer
 information, etc.
 This website is published using some information from the
-[`sdf_tutorials`](https://github.com/osrf/sdf_tutorials) repository.
+[`sdf_tutorials`](https://github.com/gazebosim/sdf_tutorials) repository.
 
 <!--
 TODO(eric.cousineau): Move installation instructions to sdf_tutorials, and link
@@ -29,10 +45,7 @@ TODO(eric.cousineau): Move terminology section to sdf_tutorials?
 * `libsdformat` - The C++ parsing code contained within this repository,
   which can be used to read SDFormat files and return a C++ interface.
 
-## Test coverage
-
-<!-- Note: The branch name in the codecov URL should be updated when forward porting -->
-[![codecov](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf12/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/sdformat/branch/sdf12)
+[http://sdformat.org/](http://sdformat.org/)
 
 # Installation
 
@@ -79,8 +92,8 @@ Miniconda suffices.
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 Install `sdformat`:
@@ -95,14 +108,14 @@ conda search libsdformat --channel conda-forge
 
 and install a specific minor version with
 ```
-conda install libsdformat=9.3.0 --channel conda-forge
+conda install libsdformat=12.5.0 --channel conda-forge
 ```
 
 ## Source Installation
 
 
-**Note:** the `main` branch is under development for `libsdformat12` and is
-currently unstable. A release branch (`sdf11`, `sdf10`, `sdf9`, etc.) is
+**Note:** the `main` branch is under development for `libsdformat13` and is
+currently unstable. A release branch (`sdf12`, `sdf11`, `sdf10`, `sdf9`, etc.) is
 recommended for most users.
 
 ## UNIX
@@ -143,7 +156,7 @@ make uninstall
 
 Clone the repository
 ```sh
-git clone https://github.com/ignitionrobotics/sdformat -b sdf<#>
+git clone https://github.com/gazebosim/sdformat -b sdf<#>
 ```
 Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
 which version you need.
@@ -184,8 +197,8 @@ Miniconda suffices.
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 Install prerequisites:
@@ -193,7 +206,7 @@ Install prerequisites:
 conda install urdfdom --channel conda-forge
 ```
 
-Install Ignition dependencies:
+Install Gazebo dependencies:
 
 You can view lists of dependencies:
 ```
