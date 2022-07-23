@@ -71,6 +71,7 @@ pybind11_add_module(sdformat SHARED
   src/sdf/pyPhysics.cc
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
+  src/sdf/pyPolyline.cc
   src/sdf/pyRoot.cc
   src/sdf/pyScene.cc
   src/sdf/pySemanticPose.cc
@@ -133,6 +134,7 @@ if (BUILD_TESTING)
     pyPhysics_TEST
     pyPlane_TEST
     pyPlugin_TEST
+    pyPolyline_TEST
     pyRoot_TEST
     pyScene_TEST
     pySemanticPose_TEST
