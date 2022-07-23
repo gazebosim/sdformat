@@ -263,6 +263,16 @@ namespace sdf
     /// \sa const ignition::math::Inertiald &Inertial() const
     public: bool SetInertial(const ignition::math::Inertiald &_inertial);
 
+    /// \brief Resolve the Inertial to a specified frame.
+    /// If there are any errors resolving the Inertial, the output will not
+    /// be modified.
+    /// \param[out] _inertial The resolved Inertial.
+    /// \param[in] _resolveTo The Inertial will be resolved with respect to this
+    /// frame. If unset or empty, the default resolve-to frame will be used.
+    /// \return Errors in resolving pose.
+    public: Errors ResolveInertial(ignition::math::Inertiald &_inertial,
+                                   const std::string &_resolveTo = "") const;
+
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.

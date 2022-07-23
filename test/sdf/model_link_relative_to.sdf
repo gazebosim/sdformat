@@ -7,6 +7,9 @@
     <link name="L2">
       <pose relative_to="">2 0 0 0 0 0</pose>
     </link>
+    <link name="L2a">
+      <pose relative_to="__model__">12 0 0 0 0 0</pose>
+    </link>
     <link name="L3">
       <pose relative_to="L1">3 0 0 0 0 0</pose>
     </link>
