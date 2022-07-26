@@ -230,6 +230,14 @@ sdf::ElementPtr Frame::ToElement() const
   if (!this->dataPtr->attachedTo.empty())
     elem->GetAttribute("attached_to")->Set(this->dataPtr->attachedTo);
 
-  elem->GetElement("pose")->Set(this->dataPtr->pose);
+  // Set pose
+  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  if (!this->dataPtr->poseRelativeTo.empty())
+  {
+    poseElem->GetAttribute("relative_to")->Set<std::string>(
+        this->dataPtr->poseRelativeTo);
+  }
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
+
   return elem;
 }
