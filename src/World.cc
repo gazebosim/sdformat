@@ -927,6 +927,10 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
   for (const sdf::Light &light : this->dataPtr->lights)
     elem->InsertElement(light.ToElement(), true);
 
+  // Frames
+  for (const sdf::Frame &frame : this->dataPtr->frames)
+    elem->InsertElement(frame.ToElement(), true);
+
   // Spherical coordinates.
   if (this->dataPtr->sphericalCoordinates)
   {

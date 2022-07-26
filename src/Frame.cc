@@ -18,6 +18,7 @@
 #include <gz/math/Pose3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Error.hh"
+#include "sdf/parser.hh"
 #include "sdf/Types.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
@@ -216,4 +217,19 @@ sdf::SemanticPose Frame::SemanticPose() const
 sdf::ElementPtr Frame::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Frame::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("frame.sdf", elem);
+
+  elem->GetAttribute("name")->Set(this->dataPtr->name);
+
+  if (!this->dataPtr->attachedTo.empty())
+    elem->GetAttribute("attached_to")->Set(this->dataPtr->attachedTo);
+
+  elem->GetElement("pose")->Set(this->dataPtr->pose);
+  return elem;
 }
