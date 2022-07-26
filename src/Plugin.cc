@@ -275,3 +275,40 @@ bool Plugin::operator!=(const Plugin &_plugin) const
   return !(*this == _plugin);
 }
 
+/////////////////////////////////////////////////
+std::ostream &sdf::operator<<(std::ostream& _out,
+                              const sdf::Plugin &_plugin)
+{
+  return _out << _plugin.ToElement()->ToString("");
+}
+
+/////////////////////////////////////////////////
+std::istream &sdf::operator>>(std::istream &_in, sdf::Plugin &_plugin)
+{
+  // Strip out leading whitespace
+  std::istreambuf_iterator<char> it(_in);
+  while (it != std::istreambuf_iterator<char>() &&
+      (*it == ' ' || *it == '\n'))
+    ++it;
+
+  std::ostringstream stream;
+  stream << "<sdf version='" << SDF_VERSION << "'>";
+
+  // Recursively read elements into a string, and add that string into
+  // the final SDF stream.
+  stream << readXMLStream(_in);
+
+  stream << "</sdf>";
+
+  // Parse the final SDF plugin
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  bool result = sdf::readString(stream.str(), sdfParsed);
+  if (!result)
+    return _in;
+
+  _plugin.ClearContents();
+  _plugin.Load(sdfParsed->Root()->GetFirstElement());
+
+  return _in;
+}
