@@ -604,22 +604,3 @@ TEST(DOMRoot, CopyConstructor)
     testFrame1(root3);
   }
 }
-
-/////////////////////////////////////////////////
-TEST(DOMRoot, CopyAssignmentAfterMove)
-{
-  sdf::Root root1;
-  root1.SetVersion("root1");
-
-  sdf::Root root2;
-  root2.SetVersion("root2");
-
-  // This is similar to what std::swap does except it uses std::move for each
-  // assignment
-  sdf::Root tmp = std::move(root1);
-  root1 = root2;
-  root2 = tmp;
-
-  EXPECT_EQ("root2", root1.Version());
-  EXPECT_EQ("root1", root2.Version());
-}
