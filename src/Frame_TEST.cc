@@ -81,6 +81,7 @@ TEST(DOMFrame, ToElement)
 
     frame.SetName("my-frame");
     frame.SetAttachedTo("attached-to-frame");
+    frame.SetPoseRelativeTo("relative-to-frame");
     frame.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
 
     sdf::ElementPtr elem = frame.ToElement();
@@ -91,6 +92,7 @@ TEST(DOMFrame, ToElement)
 
     EXPECT_EQ(frame.Name(), frame.Name());
     EXPECT_EQ(frame.AttachedTo(), frame2.AttachedTo());
+    EXPECT_EQ(frame.PoseRelativeTo(), frame2.PoseRelativeTo());
     EXPECT_EQ(frame.RawPose(), frame2.RawPose());
   }
 
