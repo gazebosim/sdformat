@@ -25,7 +25,10 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/math.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
 #include <urdf_model/model.h>
 #include <urdf_model/link.h>
@@ -95,13 +98,13 @@ bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt);
 ///   in extensions when doing fixed joint reduction
 void ReduceSDFExtensionSensorTransformReduction(
       std::vector<XMLDocumentPtr>::iterator _blobIt,
-      ignition::math::Pose3d _reductionTransform);
+      gz::math::Pose3d _reductionTransform);
 
 /// reduced fixed joints:  apply transform reduction for projectors in
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorTransformReduction(
       std::vector<XMLDocumentPtr>::iterator _blobIt,
-      ignition::math::Pose3d _reductionTransform);
+      gz::math::Pose3d _reductionTransform);
 
 
 /// reduced fixed joints:  apply transform reduction to extensions
@@ -133,7 +136,7 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
 
 /// create SDF Joint block based on URDF
 void CreateJoint(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
-                 ignition::math::Pose3d &_currentTransform);
+                 gz::math::Pose3d &_currentTransform);
 
 /// insert extensions into links
 void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
@@ -152,15 +155,15 @@ void CreateInertial(tinyxml2::XMLElement *_elem,
 
 /// append transform (pose) to the end of the xml element
 void AddTransform(tinyxml2::XMLElement *_elem,
-    const ignition::math::Pose3d &_transform);
+    const gz::math::Pose3d &_transform);
 
 /// create SDF from URDF link
 void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
-               const ignition::math::Pose3d &_transform);
+               const gz::math::Pose3d &_transform);
 
 /// create SDF Link block based on URDF
 void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
-                ignition::math::Pose3d &_currentTransform);
+                gz::math::Pose3d &_currentTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
@@ -186,7 +189,7 @@ void ReduceSDFExtensionPluginFrameReplace(
       tinyxml2::XMLElement *_blob,
       urdf::LinkSharedPtr _link, const std::string &_pluginName,
       const std::string &_elementName,
-      ignition::math::Pose3d _reductionTransform);
+      gz::math::Pose3d _reductionTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in urdf
 ///   extensions when doing fixed joint reduction
@@ -235,22 +238,22 @@ urdf::Pose TransformToParentFrame(urdf::Pose _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
 
 /// reduced fixed joints: transform to parent frame
-ignition::math::Pose3d TransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
+gz::math::Pose3d TransformToParentFrame(
+    gz::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform);
 
 /// reduced fixed joints: transform to parent frame
-ignition::math::Pose3d TransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
-    ignition::math::Pose3d _parentToLinkTransform);
+gz::math::Pose3d TransformToParentFrame(
+    gz::math::Pose3d _transformInLinkFrame,
+    gz::math::Pose3d _parentToLinkTransform);
 
 /// reduced fixed joints: utility to copy between urdf::Pose and
 ///   math::Pose
-ignition::math::Pose3d CopyPose(urdf::Pose _pose);
+gz::math::Pose3d CopyPose(urdf::Pose _pose);
 
 /// reduced fixed joints: utility to copy between urdf::Pose and
 ///   math::Pose
-urdf::Pose CopyPose(ignition::math::Pose3d _pose);
+urdf::Pose CopyPose(gz::math::Pose3d _pose);
 
 ////////////////////////////////////////////////////////////////////////////////
 bool URDF2SDF::IsURDF(const std::string &_filename)
@@ -1039,7 +1042,7 @@ void ReduceJointsToParent(urdf::LinkSharedPtr _link)
     {
       // go down the tree until we hit a parent joint that is not fixed
       urdf::LinkSharedPtr newParentLink = _link;
-      ignition::math::Pose3d jointAnchorTransform;
+      gz::math::Pose3d jointAnchorTransform;
       while (newParentLink->parent_joint &&
              newParentLink->getParent()->name != "world" &&
              FixedJointShouldBeReduced(newParentLink->parent_joint) )
@@ -1159,9 +1162,9 @@ void AddKeyValue(tinyxml2::XMLElement *_elem, const std::string &_key,
 
 ////////////////////////////////////////////////////////////////////////////////
 void AddTransform(tinyxml2::XMLElement *_elem,
-                  const ignition::math::Pose3d &_transform)
+                  const gz::math::Pose3d &_transform)
 {
-  ignition::math::Vector3d e = _transform.Rot().Euler();
+  gz::math::Vector3d e = _transform.Rot().Euler();
   double cpose[6] = { _transform.Pos().X(), _transform.Pos().Y(),
                       _transform.Pos().Z(), e.X(), e.Y(), e.Z() };
 
@@ -2417,28 +2420,28 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
 urdf::Pose TransformToParentFrame(urdf::Pose _transformInLinkFrame,
                                   urdf::Pose _parentToLinkTransform)
 {
-  // transform to ignition::math::Pose3d then call TransformToParentFrame
-  ignition::math::Pose3d p1 = CopyPose(_transformInLinkFrame);
-  ignition::math::Pose3d p2 = CopyPose(_parentToLinkTransform);
+  // transform to gz::math::Pose3d then call TransformToParentFrame
+  gz::math::Pose3d p1 = CopyPose(_transformInLinkFrame);
+  gz::math::Pose3d p2 = CopyPose(_parentToLinkTransform);
   return CopyPose(TransformToParentFrame(p1, p2));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ignition::math::Pose3d TransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
+gz::math::Pose3d TransformToParentFrame(
+    gz::math::Pose3d _transformInLinkFrame,
     urdf::Pose _parentToLinkTransform)
 {
-  // transform to ignition::math::Pose3d then call TransformToParentFrame
-  ignition::math::Pose3d p2 = CopyPose(_parentToLinkTransform);
+  // transform to gz::math::Pose3d then call TransformToParentFrame
+  gz::math::Pose3d p2 = CopyPose(_parentToLinkTransform);
   return TransformToParentFrame(_transformInLinkFrame, p2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ignition::math::Pose3d TransformToParentFrame(
-    ignition::math::Pose3d _transformInLinkFrame,
-    ignition::math::Pose3d _parentToLinkTransform)
+gz::math::Pose3d TransformToParentFrame(
+    gz::math::Pose3d _transformInLinkFrame,
+    gz::math::Pose3d _parentToLinkTransform)
 {
-  ignition::math::Pose3d transformInParentLinkFrame;
+  gz::math::Pose3d transformInParentLinkFrame;
   // rotate link pose to parentLink frame
   transformInParentLinkFrame.Pos() =
     _parentToLinkTransform.Rot() * _transformInLinkFrame.Pos();
@@ -2633,15 +2636,15 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 ////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(tinyxml2::XMLElement *_root,
                urdf::LinkConstSharedPtr _link,
-               const ignition::math::Pose3d &_transform)
+               const gz::math::Pose3d &_transform)
 {
-  ignition::math::Pose3d _currentTransform = _transform;
+  gz::math::Pose3d _currentTransform = _transform;
 
   // must have an <inertial> block and cannot have zero mass.
   //  allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
   if (_link->name != "world" &&
-      ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
+      ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0)))
   {
     if (!_link->child_links.empty())
     {
@@ -2689,9 +2692,9 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ignition::math::Pose3d CopyPose(urdf::Pose _pose)
+gz::math::Pose3d CopyPose(urdf::Pose _pose)
 {
-  ignition::math::Pose3d p;
+  gz::math::Pose3d p;
   p.Pos().X() = _pose.position.x;
   p.Pos().Y() = _pose.position.y;
   p.Pos().Z() = _pose.position.z;
@@ -2703,7 +2706,7 @@ ignition::math::Pose3d CopyPose(urdf::Pose _pose)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-urdf::Pose CopyPose(ignition::math::Pose3d _pose)
+urdf::Pose CopyPose(gz::math::Pose3d _pose)
 {
   urdf::Pose p;
   p.position.x = _pose.Pos().X();
@@ -2719,7 +2722,7 @@ urdf::Pose CopyPose(ignition::math::Pose3d _pose)
 ////////////////////////////////////////////////////////////////////////////////
 void CreateLink(tinyxml2::XMLElement *_root,
                 urdf::LinkConstSharedPtr _link,
-                ignition::math::Pose3d &_currentTransform)
+                gz::math::Pose3d &_currentTransform)
 {
   // create new body
   tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("link");
@@ -2728,7 +2731,6 @@ void CreateLink(tinyxml2::XMLElement *_root,
   elem->SetAttribute("name", _link->name.c_str());
 
   // compute global transform
-  ignition::math::Pose3d localTransform;
   // this is the transform from parent link to current _link
   // this transform does not exist for the root link
   if (_link->parent_joint)
@@ -2741,7 +2743,7 @@ void CreateLink(tinyxml2::XMLElement *_root,
   {
     sdfdbg << "[" << _link->name << "] has no parent joint\n";
 
-    if (_currentTransform != ignition::math::Pose3d::Zero)
+    if (_currentTransform != gz::math::Pose3d::Zero)
     {
       // create origin tag for this element
       AddTransform(elem, _currentTransform);
@@ -2870,7 +2872,7 @@ void CreateInertial(tinyxml2::XMLElement *_elem,
   _link->inertial->origin.rotation.getRPY(roll, pitch, yaw);
 
   /// add pose
-  ignition::math::Pose3d pose = CopyPose(_link->inertial->origin);
+  gz::math::Pose3d pose = CopyPose(_link->inertial->origin);
   AddTransform(inertial, pose);
 
   // add mass
@@ -2899,7 +2901,7 @@ void CreateInertial(tinyxml2::XMLElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateJoint(tinyxml2::XMLElement *_root,
                  urdf::LinkConstSharedPtr _link,
-                 ignition::math::Pose3d &/*_currentTransform*/)
+                 gz::math::Pose3d &/*_currentTransform*/)
 {
   // compute the joint tag
   std::string jtype;
@@ -3182,11 +3184,11 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
       {
         double color_diffuse[4];
         color_diffuse[0] =
-          ignition::math::clamp(_visual->material->color.r / 0.8, 0.0, 1.0);
+          gz::math::clamp(_visual->material->color.r / 0.8, 0.0, 1.0);
         color_diffuse[1] =
-          ignition::math::clamp(_visual->material->color.g / 0.8, 0.0, 1.0);
+          gz::math::clamp(_visual->material->color.g / 0.8, 0.0, 1.0);
         color_diffuse[2] =
-          ignition::math::clamp(_visual->material->color.b / 0.8, 0.0, 1.0);
+          gz::math::clamp(_visual->material->color.b / 0.8, 0.0, 1.0);
         color_diffuse[3] = _visual->material->color.a;
         AddKeyValue(materialTag, "diffuse", Values2str(4, color_diffuse));
       }
@@ -3194,13 +3196,13 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
       {
         double color_ambient[4];
         color_ambient[0] =
-          ignition::math::clamp(
+          gz::math::clamp(
             0.5 * _visual->material->color.r / 0.4, 0.0, 1.0);
         color_ambient[1] =
-          ignition::math::clamp(
+          gz::math::clamp(
             0.5 * _visual->material->color.g / 0.4, 0.0, 1.0);
         color_ambient[2] =
-          ignition::math::clamp(
+          gz::math::clamp(
             0.5 * _visual->material->color.b / 0.4, 0.0, 1.0);
         color_ambient[3] = _visual->material->color.a;
         AddKeyValue(materialTag, "ambient", Values2str(4, color_ambient));
@@ -3213,6 +3215,7 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
 
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::InitModelString(const std::string &_urdfStr,
+                               const ParserConfig& _config,
                                tinyxml2::XMLDocument* _sdfXmlOut,
                                bool _enforceLimits)
 {
@@ -3235,7 +3238,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
 
   // initialize transform for the model, urdf is recursive,
   // while sdf defines all links relative to model frame
-  ignition::math::Pose3d transform;
+  gz::math::Pose3d transform;
 
   // parse sdf extension
   tinyxml2::XMLDocument urdfXml;
@@ -3244,6 +3247,10 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
     sdferr << "Unable to parse URDF string: " << urdfXml.ErrorStr() << "\n";
     return;
   }
+
+  // Set g_reduceFixedJoints based on config value.
+  g_reduceFixedJoints = !_config.URDFPreserveFixedJoint();
+
   g_extensions.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
   g_fixedJointsTransformedInRevoluteJoints.clear();
@@ -3319,22 +3326,24 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
 
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::InitModelDoc(const tinyxml2::XMLDocument *_xmlDoc,
+                            const ParserConfig& _config,
                             tinyxml2::XMLDocument *_sdfXmlDoc)
 {
   tinyxml2::XMLPrinter printer;
   _xmlDoc->Print(&printer);
   std::string urdfStr = printer.CStr();
-  InitModelString(urdfStr, _sdfXmlDoc);
+  InitModelString(urdfStr, _config, _sdfXmlDoc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void URDF2SDF::InitModelFile(const std::string &_filename,
+                             const ParserConfig& _config,
                              tinyxml2::XMLDocument *_sdfXmlDoc)
 {
   tinyxml2::XMLDocument xmlDoc;
   if (!xmlDoc.LoadFile(_filename.c_str()))
   {
-    this->InitModelDoc(&xmlDoc, _sdfXmlDoc);
+    this->InitModelDoc(&xmlDoc, _config, _sdfXmlDoc);
   }
   else
   {
@@ -3359,7 +3368,7 @@ bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt)
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionSensorTransformReduction(
     std::vector<XMLDocumentPtr>::iterator _blobIt,
-    ignition::math::Pose3d _reductionTransform)
+    gz::math::Pose3d _reductionTransform)
 {
   auto sensorElement = (*_blobIt)->FirstChildElement();
   if ( strcmp(sensorElement->Name(), "sensor") == 0)
@@ -3376,7 +3385,7 @@ void ReduceSDFExtensionSensorTransformReduction(
     //   sdfdbg << "    " << streamIn.CStr() << "\n";
     // }
 
-    auto sensorPose {ignition::math::Pose3d::Zero};
+    auto sensorPose {gz::math::Pose3d::Zero};
     {
       auto sensorPosText = "0 0 0 0 0 0";
       const auto& oldPoseKey = sensorElement->FirstChildElement("pose");
@@ -3459,7 +3468,7 @@ void ReduceSDFExtensionSensorTransformReduction(
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorTransformReduction(
     std::vector<XMLDocumentPtr>::iterator _blobIt,
-    ignition::math::Pose3d _reductionTransform)
+    gz::math::Pose3d _reductionTransform)
 {
   auto projectorElement = (*_blobIt)->FirstChildElement();
   if ( strcmp(projectorElement->Name(), "projector") == 0)
@@ -3475,7 +3484,7 @@ void ReduceSDFExtensionProjectorTransformReduction(
     //   sdfdbg << "    " << streamIn << "\n";
     // }
 
-    auto projectorPose {ignition::math::Pose3d::Zero};
+    auto projectorPose {gz::math::Pose3d::Zero};
     {
       auto projectorPosText = "0 0 0 0 0 0";
       const auto& oldPoseKey = projectorElement->FirstChildElement("pose");
@@ -3600,7 +3609,7 @@ void ReduceSDFExtensionPluginFrameReplace(
     tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link,
     const std::string &_pluginName, const std::string &_elementName,
-    ignition::math::Pose3d _reductionTransform)
+    gz::math::Pose3d _reductionTransform)
 {
   std::string linkName = _link->name;
   std::string parentLinkName = _link->getParent()->name;
@@ -3632,7 +3641,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         {
           urdf::Vector3 v1 = ParseVector3(xyzKey);
           _reductionTransform.Pos() =
-            ignition::math::Vector3d(v1.x, v1.y, v1.z);
+            gz::math::Vector3d(v1.x, v1.y, v1.z);
           // remove xyzOffset and rpyOffset
           _blob->DeleteChild(xyzKey);
         }
@@ -3641,12 +3650,12 @@ void ReduceSDFExtensionPluginFrameReplace(
         {
           urdf::Vector3 rpy = ParseVector3(rpyKey);
           _reductionTransform.Rot() =
-            ignition::math::Quaterniond::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
+            gz::math::Quaterniond::EulerToQuaternion(rpy.x, rpy.y, rpy.z);
           // remove xyzOffset and rpyOffset
           _blob->DeleteChild(rpyKey);
         }
         tinyxml2::XMLNode *correctedOffsetKey =
-            _blob->FirstChildElement("ignition::corrected_offsets");
+            _blob->FirstChildElement("gz::corrected_offsets");
         if (correctedOffsetKey)
         {
           _blob->DeleteChild(correctedOffsetKey);
@@ -3659,7 +3668,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         // create new offset xml blocks
         xyzKey = doc->NewElement("xyzOffset");
         rpyKey = doc->NewElement("rpyOffset");
-        correctedOffsetKey = doc->NewElement("ignition::corrected_offsets");
+        correctedOffsetKey = doc->NewElement("gz::corrected_offsets");
 
         // create new offset xml blocks
         urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),

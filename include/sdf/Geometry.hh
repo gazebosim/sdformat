@@ -17,7 +17,9 @@
 #ifndef SDF_GEOMETRY_HH_
 #define SDF_GEOMETRY_HH_
 
-#include <ignition/utils/ImplPtr.hh>
+#include <vector>
+
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -36,6 +38,7 @@ namespace sdf
   class Heightmap;
   class Mesh;
   class Plane;
+  class Polyline;
   class Sphere;
 
   /// \enum GeometryType
@@ -68,6 +71,9 @@ namespace sdf
 
     /// \brief An ellipsoid geometry
     ELLIPSOID = 8,
+
+    /// \brief A polyline geometry.
+    POLYLINE = 9,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -150,6 +156,16 @@ namespace sdf
     /// \param[in] _sphere The sphere shape.
     public: void SetSphereShape(const Sphere &_sphere);
 
+    /// \brief Get the polyline geometry. Vector is empty if the contained
+    /// geometry is not a polyline.
+    /// \return The visual's polyline geometries.
+    /// \sa GeometryType Type() const
+    public: const std::vector<Polyline> &PolylineShape() const;
+
+    /// \brief Set the polyline shape.
+    /// \param[in] _polyline The polyline shape.
+    public: void SetPolylineShape(const std::vector<Polyline> &_polyline);
+
     /// \brief Get the plane geometry, or nullptr if the contained geometry is
     /// not a plane.
     /// \return Pointer to the visual's plane geometry, or nullptr if the
@@ -191,11 +207,13 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// geometry.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated geometry values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

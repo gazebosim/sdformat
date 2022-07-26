@@ -17,9 +17,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <ignition/math/Inertial.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
@@ -43,7 +43,7 @@ class sdf::Link::Implementation
   public: std::string name = "";
 
   /// \brief Pose of the link
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -64,9 +64,9 @@ class sdf::Link::Implementation
   public: std::vector<ParticleEmitter> emitters;
 
   /// \brief The inertial information for this link.
-  public: ignition::math::Inertiald inertial {{1.0,
-            ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
-            ignition::math::Pose3d::Zero};
+  public: gz::math::Inertiald inertial {{1.0,
+            gz::math::Vector3d::One, gz::math::Vector3d::Zero},
+            gz::math::Pose3d::Zero};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -80,7 +80,7 @@ class sdf::Link::Implementation
 
 /////////////////////////////////////////////////
 Link::Link()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -145,9 +145,9 @@ Errors Link::Load(ElementPtr _sdf)
   errors.insert(errors.end(), emitterLoadErrors.begin(),
       emitterLoadErrors.end());
 
-  ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
-  ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
-  ignition::math::Pose3d inertiaPose;
+  gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
+  gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
+  gz::math::Pose3d inertiaPose;
   std::string inertiaFrame = "";
   double mass = 1.0;
 
@@ -175,7 +175,7 @@ Errors Link::Load(ElementPtr _sdf)
     }
   }
   if (!this->dataPtr->inertial.SetMassMatrix(
-      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+      gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
                      "A link named " +
@@ -219,6 +219,13 @@ const Visual *Link::VisualByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Visual *Link::VisualByIndex(uint64_t _index)
+{
+  return const_cast<Visual*>(
+      static_cast<const Link*>(this)->VisualByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Link::VisualNameExists(const std::string &_name) const
 {
   for (auto const &v : this->dataPtr->visuals)
@@ -243,6 +250,13 @@ const Collision *Link::CollisionByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->collisions.size())
     return &this->dataPtr->collisions[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Collision *Link::CollisionByIndex(uint64_t _index)
+{
+  return const_cast<Collision*>(
+      static_cast<const Link*>(this)->CollisionByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -273,6 +287,13 @@ const Light *Link::LightByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Light *Link::LightByIndex(uint64_t _index)
+{
+  return const_cast<Light*>(
+      static_cast<const Link*>(this)->LightByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Link::LightNameExists(const std::string &_name) const
 {
   return this->LightByName(_name) != nullptr;
@@ -290,6 +311,13 @@ const Sensor *Link::SensorByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->sensors.size())
     return &this->dataPtr->sensors[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Sensor *Link::SensorByIndex(uint64_t _index)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Link*>(this)->SensorByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -319,6 +347,13 @@ const Sensor *Link::SensorByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Sensor *Link::SensorByName(const std::string &_name)
+{
+  return const_cast<Sensor*>(
+      static_cast<const Link*>(this)->SensorByName(_name));
+}
+
+/////////////////////////////////////////////////
 uint64_t Link::ParticleEmitterCount() const
 {
   return this->dataPtr->emitters.size();
@@ -330,6 +365,13 @@ const ParticleEmitter *Link::ParticleEmitterByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->emitters.size())
     return &this->dataPtr->emitters[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+ParticleEmitter *Link::ParticleEmitterByIndex(uint64_t _index)
+{
+  return const_cast<ParticleEmitter*>(
+      static_cast<const Link*>(this)->ParticleEmitterByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -359,22 +401,28 @@ const ParticleEmitter *Link::ParticleEmitterByName(
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+ParticleEmitter *Link::ParticleEmitterByName(const std::string &_name)
+{
+  return const_cast<ParticleEmitter *>(
+      static_cast<const Link*>(this)->ParticleEmitterByName(_name));
+}
 
 /////////////////////////////////////////////////
-const ignition::math::Inertiald &Link::Inertial() const
+const gz::math::Inertiald &Link::Inertial() const
 {
   return this->dataPtr->inertial;
 }
 
 /////////////////////////////////////////////////
-bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
+bool Link::SetInertial(const gz::math::Inertiald &_inertial)
 {
   this->dataPtr->inertial = _inertial;
   return _inertial.MassMatrix().IsValid();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Link::RawPose() const
+const gz::math::Pose3d &Link::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -386,7 +434,7 @@ const std::string &Link::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Link::SetRawPose(const ignition::math::Pose3d &_pose)
+void Link::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -456,9 +504,16 @@ const Visual *Link::VisualByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Visual *Link::VisualByName(const std::string &_name)
+{
+  return const_cast<Visual *>(
+      static_cast<const Link*>(this)->VisualByName(_name));
+}
+
+/////////////////////////////////////////////////
 const Collision *Link::CollisionByName(const std::string &_name) const
 {
-  for (auto const &c : this->dataPtr->collisions)
+  for (auto &c : this->dataPtr->collisions)
   {
     if (c.Name() == _name)
     {
@@ -466,6 +521,13 @@ const Collision *Link::CollisionByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Collision *Link::CollisionByName(const std::string &_name)
+{
+  return const_cast<Collision *>(
+      static_cast<const Link*>(this)->CollisionByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -479,6 +541,14 @@ const Light *Link::LightByName(const std::string &_name) const
     }
   }
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Light *Link::LightByName(const std::string &_name)
+{
+  return const_cast<Light *>(
+      static_cast<const Link*>(this)->LightByName(_name));
+
 }
 
 /////////////////////////////////////////////////
@@ -589,13 +659,13 @@ sdf::ElementPtr Link::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   // inertial
   sdf::ElementPtr inertialElem = elem->GetElement("inertial");
   inertialElem->GetElement("pose")->Set(
       this->dataPtr->inertial.Pose());
-  const ignition::math::MassMatrix3d &massMatrix =
+  const gz::math::MassMatrix3d &massMatrix =
     this->dataPtr->inertial.MassMatrix();
   inertialElem->GetElement("mass")->Set<double>(massMatrix.Mass());
   sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");

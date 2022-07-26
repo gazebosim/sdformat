@@ -23,8 +23,8 @@
 #include <memory>
 #include <vector>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/InterfaceFrame.hh"
 #include "sdf/InterfaceJoint.hh"
@@ -72,7 +72,7 @@ class SDFORMAT_VISIBLE InterfaceModel
               const sdf::RepostureFunction &_repostureFunction,
               bool _static,
               const std::string &_canonicalLinkName,
-              const ignition::math::Pose3d &_poseInParentFrame = {});
+              const gz::math::Pose3d &_poseInParentFrame = {});
 
   /// \brief Get the name of the model.
   /// \return Local name of the model.
@@ -91,7 +91,7 @@ class SDFORMAT_VISIBLE InterfaceModel
 
   /// \brief Get the pose of this model in the parent frame.
   /// \return Pose of this model in the parent model frame.
-  public: const ignition::math::Pose3d &ModelFramePoseInParentFrame() const;
+  public: const gz::math::Pose3d &ModelFramePoseInParentFrame() const;
 
   /// \brief Provided so that hierarchy can still be leveraged from SDFormat.
   /// \param[in] _nestedModel A child interface model.
@@ -124,15 +124,25 @@ class SDFORMAT_VISIBLE InterfaceModel
   /// \brief Gets registered links.
   public: const std::vector<sdf::InterfaceLink> &Links() const;
 
+  /// \brief Whether the custom parser supports merge-include.
+  /// \return True if the custom parser supports merge-include
+  public: bool ParserSupportsMergeInclude() const;
+
+  /// \brief Set whether the custom parser supports merge-include.
+  /// \brief[in] _val True if the custom parser supports merge-include.
+  public: void SetParserSupportsMergeInclude(bool _val);
+
   /// \brief Recursively invoke the reposture callback if a the callback is set.
   /// \param[in] _poseGraph Object used for resolving poses.
-  private: void InvokeRespostureFunction(
-      sdf::ScopedGraph<PoseRelativeToGraph> _graph) const;
+  /// \param[in] _name Override name of graph scope.
+  private: void InvokeRepostureFunction(
+               sdf::ScopedGraph<PoseRelativeToGraph> _graph,
+               const std::optional<std::string> &_name) const;
 
   friend World;
   friend Model;
   /// \brief Private data pointer.
-  IGN_UTILS_IMPL_PTR(dataPtr)
+  GZ_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

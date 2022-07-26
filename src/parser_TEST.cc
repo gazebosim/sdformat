@@ -23,7 +23,9 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
+
+#include <gz/utils/Environment.hh>
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -75,12 +77,13 @@ TEST(Parser, CustomUnknownElements)
   EXPECT_TRUE(sdf::readFile(path, sdf));
 
 #ifndef _WIN32
-  char *homeDir = getenv("HOME");
+  std::string homeVarName = "HOME";
 #else
-  char *homeDir;
-  size_t sz = 0;
-  _dupenv_s(&homeDir, &sz, "HOMEPATH");
+  std::string homeVarName = "HOMEPATH";
 #endif
+
+  std::string homeDir;
+  ASSERT_TRUE(gz::utils::env(homeVarName, homeDir));
 
   std::string pathLog =
     sdf::filesystem::append(homeDir, ".sdformat", "sdformat.log");
@@ -146,8 +149,8 @@ TEST(Parser, readFileConversions)
 /////////////////////////////////////////////////
 TEST(Parser, NameUniqueness)
 {
-  // These tests are copies of the ones in ign_TEST.cc but use direct calls to
-  // name uniqueness validator functions instead of going through ign.
+  // These tests are copies of the ones in gz_TEST.cc but use direct calls to
+  // name uniqueness validator functions instead of going through gz.
 
   // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.

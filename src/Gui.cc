@@ -35,7 +35,7 @@ class sdf::Gui::Implementation
 
 /////////////////////////////////////////////////
 Gui::Gui()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -133,3 +133,17 @@ void Gui::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Gui::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Gui::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+

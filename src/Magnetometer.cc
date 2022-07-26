@@ -33,7 +33,7 @@ class sdf::Magnetometer::Implementation
 
 //////////////////////////////////////////////////
 Magnetometer::Magnetometer()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

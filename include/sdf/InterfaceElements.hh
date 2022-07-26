@@ -20,8 +20,9 @@
 #include <string>
 #include <memory>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
+#include <gz/utils/SuppressWarning.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/InterfaceModel.hh"
@@ -50,13 +51,13 @@ class SDFORMAT_VISIBLE NestedInclude
   // class.
   // TODO(anyone) Remove the constructor and destructor once the deprecated
   // members are removed.
-  SDF_SUPPRESS_DEPRECATED_BEGIN
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   public: NestedInclude(const NestedInclude&) = default;
   public: NestedInclude(NestedInclude&&) = default;
   public: NestedInclude& operator=(const NestedInclude&) = default;
   public: NestedInclude& operator=(NestedInclude&&) = default;
   public: ~NestedInclude() = default;
-  SDF_SUPPRESS_DEPRECATED_END
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
   /// not end with a file extension (it will not end with an extension if it
@@ -117,11 +118,11 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \brief The raw pose as specified in `//include/pose`. This is nullopt if
   /// `//include/pose` is not set.
   /// \return The raw pose.  nullopt if `//include/pose` is not set.
-  public: const std::optional<ignition::math::Pose3d> &IncludeRawPose() const;
+  public: const std::optional<gz::math::Pose3d> &IncludeRawPose() const;
 
   /// \brief Set the raw pose as specified in `//include/pose`.
   /// \param[in] _includeRawPose The raw pose
-  public: void SetIncludeRawPose(const ignition::math::Pose3d &_includeRawPose);
+  public: void SetIncludeRawPose(const gz::math::Pose3d &_includeRawPose);
 
   /// \brief The relative-to frame of the pose as specified in
   /// `//include/pose/@relative_to`. This is nullopt if
@@ -154,18 +155,29 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \param[in] _includeElement The include element
   public: void SetIncludeElement(sdf::ElementPtr _includeElement);
 
+
+  /// \brief Set whether the interface model is to be merge-included (i.e
+  /// set the value of `//include/[@merge]`)
+  /// \param[in] _isMerge True if the interface model is to be merge included
+  public: void SetIsMerge(bool _isMerge);
+
+  /// \brief Whether the interface model is to be merge-included
+  /// \return If `//include/[@merge]` is set, this returns the value of the
+  /// attribute, otherwise, nullopt.
+  public: const std::optional<bool> &IsMerge() const;
+
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
   /// not end with a file extension (it will not end with an extension if it
   /// refers to a model package).
   /// \deprecated Use NestedInclude::Uri() instead
-  public: std::string uri SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::string uri;
 
   /// \brief Provides the *resolved* absolute file path from the URI.
   /// It is recommended to use this in `CustomModelParser` when checking
   /// predicates on filenames -- however, the predicates should generally only
   /// check the file extension.
   /// \deprecated Use NestedInclude::ResolvedFileName() instead
-  public: std::string resolvedFileName SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::string resolvedFileName;
 
   /// \brief Name of the parent entity in absolute hierarchy.
   /// Example: if the interface model's name is
@@ -173,7 +185,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// `top_model::middle_model`. If the parent entity is the world, this would
   /// be an empty string.
   /// \deprecated Use NestedInclude::AbsoluteParentName() instead
-  public: std::string absoluteParentName SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::string absoluteParentName;
 
   /// \brief Name relative to immediate parent as specified in
   /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
@@ -181,37 +193,37 @@ class SDFORMAT_VISIBLE NestedInclude
   /// included model file.
   /// Example: `my_new_model`
   /// \deprecated Use NestedInclude::LocalModelName() instead
-  public: std::optional<std::string> localModelName SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::optional<std::string> localModelName;
 
   /// \brief Whether the model is static as defined by `//include/static`. This
   /// is nullopt if `//include/static` is not set.
   /// \deprecated Use NestedInclude::IsStatic() instead
-  public: std::optional<bool> isStatic SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::optional<bool> isStatic;
 
   /// \brief The raw pose as specified in //include/pose. This is nullopt if
   /// `//include/pose` is not set.
   /// \deprecated Use NestedInclude::IncludeRawPose() instead
-  public: std::optional<ignition::math::Pose3d> includeRawPose
-              SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12)
+          std::optional<gz::math::Pose3d> includeRawPose;
 
   /// \brief The relative-to frame of the pose as specified in
   /// `//include/pose/@relative_to`. This is nullopt if
   /// `//include/pose/@relative_to` is not set.
   /// \deprecated Use NestedInclude::IncludePoseRelativeTo() instead
-  public: std::optional<std::string> includePoseRelativeTo SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::optional<std::string> includePoseRelativeTo;
 
   /// \brief The placement frame as specified in `//include/placement_frame`.
   /// This is nullopt if `//include/placement_frame` is is not set.
   /// \deprecated Use NestedInclude::PlacementFrame() instead
-  public: std::optional<std::string> placementFrame SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) std::optional<std::string> placementFrame;
 
   /// This is the `//include` element. This can be used to pass custom elements
   /// and attributes to the custom model parser.
   /// \deprecated Use NestedInclude::IncludeElement() instead
-  public: sdf::ElementPtr includeElement SDF_DEPRECATED(12);
+  public: GZ_DEPRECATED(12) sdf::ElementPtr includeElement;
 
   /// \brief Private data pointer.
-  IGN_UTILS_IMPL_PTR(dataPtr)
+  GZ_UTILS_IMPL_PTR(dataPtr)
 };
 #ifdef _MSC_VER
 #pragma warning(pop)

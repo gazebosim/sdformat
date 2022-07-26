@@ -15,7 +15,7 @@
  *
 */
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Assert.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Error.hh"
@@ -34,7 +34,7 @@ class SemanticPose::Implementation
   public: std::string name = "";
 
   /// \brief Raw pose of the SemanticPose object.
-  public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d rawPose = gz::math::Pose3d::Zero;
 
   /// \brief Name of the relative-to frame.
   public: std::string relativeTo = "";
@@ -50,11 +50,11 @@ class SemanticPose::Implementation
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
         const std::string &_name,
-        const ignition::math::Pose3d &_pose,
+        const gz::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->name = _name;
   this->dataPtr->rawPose = _pose;
@@ -65,11 +65,11 @@ SemanticPose::SemanticPose(
 
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
-        const ignition::math::Pose3d &_pose,
+        const gz::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         const sdf::ScopedGraph<sdf::PoseRelativeToGraph> &_graph)
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->rawPose = _pose;
   this->dataPtr->relativeTo = _relativeTo;
@@ -78,7 +78,7 @@ SemanticPose::SemanticPose(
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &SemanticPose::RawPose() const
+const gz::math::Pose3d &SemanticPose::RawPose() const
 {
   return this->dataPtr->rawPose;
 }
@@ -91,7 +91,7 @@ const std::string &SemanticPose::RelativeTo() const
 
 /////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
+    gz::math::Pose3d &_pose,
     const std::string &_resolveTo) const
 {
   Errors errors;
@@ -116,7 +116,7 @@ Errors SemanticPose::Resolve(
     resolveTo = this->dataPtr->defaultResolveTo;
   }
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   if (this->dataPtr->name.empty())
   {
     errors = resolvePose(pose, graph, relativeTo, resolveTo);

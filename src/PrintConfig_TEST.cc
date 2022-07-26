@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "sdf/PrintConfig.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(PrintConfig, Construction)
@@ -104,4 +104,17 @@ TEST(PrintConfig, PreserveIncludes)
   EXPECT_TRUE(config.PreserveIncludes());
   config.SetPreserveIncludes(false);
   EXPECT_FALSE(config.PreserveIncludes());
+}
+
+/////////////////////////////////////////////////
+TEST(PrintConfig, OutPrecision)
+{
+  sdf::PrintConfig config;
+  EXPECT_EQ(std::numeric_limits<int>::max(), config.OutPrecision());
+  config.SetOutPrecision(2);
+  EXPECT_EQ(2, config.OutPrecision());
+  config.SetOutPrecision(8);
+  EXPECT_EQ(8, config.OutPrecision());
+  config.SetOutPrecision(std::numeric_limits<int>::max());
+  EXPECT_EQ(std::numeric_limits<int>::max(), config.OutPrecision());
 }

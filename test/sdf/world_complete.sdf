@@ -27,6 +27,8 @@
       <heading_deg>90</heading_deg>
     </spherical_coordinates>
     <gui fullscreen="true">
+      <plugin name="gui_plugin1" filename="test/file/gui1"/>
+      <plugin name="gui_plugin2" filename="test/file/gui2"/>
     </gui>
     <scene>
       <ambient>0.3 0.4 0.5</ambient>
@@ -111,7 +113,35 @@
             <falloff>2.2</falloff>
           </spot>
         </light>
+        <visual name="link_visual">
+          <geometry>
+            <box><size>1 1 1</size></box>
+          </geometry>
+          <plugin name="visual_plugin1" filename="test/file/visual1"/>
+          <plugin name="visual_plugin2" filename="test/file/visual2"/>
+        </visual>
+
+        <sensor name="altimeter_sensor" type="altimeter">
+          <altimeter>
+            <vertical_position>
+              <noise type="gaussian">
+                <mean>0.1</mean>
+                <stddev>0.2</stddev>
+              </noise>
+            </vertical_position>
+            <vertical_velocity>
+              <noise type="gaussian">
+                <mean>2.3</mean>
+                <stddev>4.5</stddev>
+              </noise>
+            </vertical_velocity>
+          </altimeter>
+          <plugin name="sensor_plugin1" filename="test/file/sensor1"/>
+          <plugin name="sensor_plugin2" filename="test/file/sensor2"/>
+        </sensor>
       </link>
+      <plugin name="model_plugin1" filename="test/file/model1"/>
+      <plugin name="model_plugin2" filename="test/file/model2"/>
     </model>
 
     <actor name="actor_1">
@@ -148,6 +178,8 @@
           </waypoint>
         </trajectory>
       </script>
+      <plugin name="actor_plugin1" filename="test/file/actor1"/>
+      <plugin name="actor_plugin2" filename="test/file/actor2"/>
     </actor>
 
     <actor name="actor_2">
@@ -224,6 +256,9 @@
         <parent>link2</parent>
       </joint>
     </actor>
+
+    <plugin name="world_plugin1" filename="test/file/world1"/>
+    <plugin name="world_plugin2" filename="test/file/world2"/>
 
   </world>
 </sdf>

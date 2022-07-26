@@ -18,7 +18,7 @@
 #include <string>
 #include <optional>
 #include <vector>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
@@ -81,7 +81,7 @@ class sdf::Sensor::Implementation
   public: std::string topic = "";
 
   /// \brief Pose of the sensor
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -129,11 +129,14 @@ class sdf::Sensor::Implementation
   /// \brief The frequency at which the sensor data is generated.
   /// If left unspecified (0.0), the sensor will generate data every cycle.
   public: double updateRate = 0.0;
+
+  /// \brief Sensor plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
 Sensor::Sensor()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -147,7 +150,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       this->RawPose() != _sensor.RawPose() ||
       this->PoseRelativeTo() != _sensor.PoseRelativeTo() ||
       this->EnableMetrics() != _sensor.EnableMetrics() ||
-      !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
+      !gz::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
   {
     return false;
   }
@@ -398,6 +401,11 @@ Errors Sensor::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the sensor pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
+  // Load the sensor plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
+
   return errors;
 }
 
@@ -426,7 +434,7 @@ void Sensor::SetTopic(const std::string &_topic)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Sensor::RawPose() const
+const gz::math::Pose3d &Sensor::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -438,7 +446,7 @@ const std::string &Sensor::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Sensor::SetRawPose(const ignition::math::Pose3d &_pose)
+void Sensor::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -695,7 +703,7 @@ sdf::ElementPtr Sensor::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   elem->GetElement("topic")->Set<std::string>(this->Topic());
   elem->GetElement("update_rate")->Set<double>(this->UpdateRate());
@@ -755,5 +763,34 @@ sdf::ElementPtr Sensor::ToElement() const
     std::cout << "Conversion of sensor type: [" << this->TypeStr() << "] from "
       << "SDF DOM to Element is not supported yet." << std::endl;
   }
+
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Sensor::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Sensor::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Sensor::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Sensor::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

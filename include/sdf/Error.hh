@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <optional>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
@@ -145,8 +145,16 @@ namespace sdf
     VERSION_DEPRECATED,
 
     /// \brief Merge include is unspported for the type of entity being
-    /// included.
+    /// included, or the custom parser does not support merge includes.
     MERGE_INCLUDE_UNSUPPORTED,
+
+    /// \brief Generic error type for parameters (values of SDFormat elements
+    /// or attributes).
+    PARAMETER_ERROR,
+
+    /// \brief The specified parameter (values of SDFormat elements
+    /// or attributes) type is unknown.
+    UNKNOWN_PARAMETER_TYPE,
   };
 
   class SDFORMAT_VISIBLE Error
@@ -238,7 +246,7 @@ namespace sdf
         std::ostream &_out, const sdf::Error &_err);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

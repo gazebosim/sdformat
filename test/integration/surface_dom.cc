@@ -28,7 +28,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMSurface, Shapes)
@@ -50,4 +50,10 @@ TEST(DOMSurface, Shapes)
   ASSERT_NE(nullptr, boxCol->Surface());
   ASSERT_NE(nullptr, boxCol->Surface()->Contact());
   EXPECT_EQ(boxCol->Surface()->Contact()->CollideBitmask(), 0xAB);
+  EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Mu(), 0.6);
+  EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Mu2(), 0.7);
+  EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Slip1(), 4);
+  EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Slip2(), 5);
+  EXPECT_EQ(boxCol->Surface()->Friction()->ODE()->Fdir1(),
+            gz::math::Vector3d(1.2, 3.4, 5.6));
 }

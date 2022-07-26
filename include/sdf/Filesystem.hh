@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 
@@ -125,7 +125,7 @@ namespace sdf
       private: void close_handle();
 
       /// \brief Private data.
-      IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+      GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr)
     };
   }
   }

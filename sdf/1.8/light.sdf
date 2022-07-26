@@ -14,6 +14,14 @@
     <description>When true, the light will cast shadows.</description>
   </element>
 
+  <element name="light_on" type="bool" default="true" required="0">
+    <description>When true, the light is on.</description>
+  </element>
+
+  <element name="visualize" type="bool" default="true" required="0">
+    <description>If true, the light is visualized in the GUI</description>
+  </element>
+
   <element name="intensity" type="double" default="1" required="0">
     <description>Scale factor to set the relative power of a light.</description>
   </element>

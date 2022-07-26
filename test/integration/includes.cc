@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include <iostream>
 #include <string>
 
@@ -37,7 +37,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 /////////////////////////////////////////////////
@@ -83,7 +83,7 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ(actorFile, actor->FilePath());
 
   EXPECT_EQ("actor", actor->Name());
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), actor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), actor->RawPose());
   EXPECT_EQ("", actor->PoseRelativeTo());
   EXPECT_EQ("meshes/skin.dae", actor->SkinFilename());
   EXPECT_DOUBLE_EQ(1.0, actor->SkinScale());
@@ -118,7 +118,7 @@ TEST(IncludesTest, Includes)
 
   const auto *actor1 = world->ActorByIndex(1);
   EXPECT_EQ("override_actor_name", actor1->Name());
-  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), actor1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(7, 8, 9, 0, 0, 0), actor1->RawPose());
   EXPECT_EQ("", actor1->PoseRelativeTo());
   ASSERT_NE(nullptr, actor1->Element());
   EXPECT_TRUE(actor1->Element()->HasElement("plugin"));
@@ -133,7 +133,7 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ("point_light", pointLight->Name());
   EXPECT_EQ(sdf::LightType::POINT, pointLight->Type());
   EXPECT_FALSE(pointLight->CastShadows());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 10, 0, 0, 0), pointLight->RawPose());
   EXPECT_EQ("world", pointLight->PoseRelativeTo());
   EXPECT_DOUBLE_EQ(123.5, pointLight->AttenuationRange());
   EXPECT_DOUBLE_EQ(1.0, pointLight->LinearAttenuationFactor());
@@ -146,7 +146,7 @@ TEST(IncludesTest, Includes)
   const auto *pointLight1 = world->LightByIndex(1);
   ASSERT_NE(nullptr, pointLight1);
   EXPECT_EQ("override_light_name", pointLight1->Name());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pointLight1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), pointLight1->RawPose());
   EXPECT_EQ("", pointLight1->PoseRelativeTo());
 
   // Models
@@ -181,7 +181,7 @@ TEST(IncludesTest, Includes)
   ASSERT_NE(nullptr, meshColGeom);
   EXPECT_EQ("meshes/mesh.dae", meshColGeom->Uri());
   EXPECT_EQ(modelFile, meshColGeom->FilePath());
-  EXPECT_TRUE(ignition::math::Vector3d(0.1, 0.2, 0.3) ==
+  EXPECT_TRUE(gz::math::Vector3d(0.1, 0.2, 0.3) ==
       meshColGeom->Scale());
   EXPECT_EQ("my_submesh", meshColGeom->Submesh());
   EXPECT_TRUE(meshColGeom->CenterSubmesh());
@@ -193,7 +193,7 @@ TEST(IncludesTest, Includes)
   const auto *meshVisGeom = meshVis->Geom()->MeshShape();
   EXPECT_EQ(modelFile, meshVisGeom->FilePath());
   EXPECT_EQ("meshes/mesh.dae", meshVisGeom->Uri());
-  EXPECT_TRUE(ignition::math::Vector3d(1.2, 2.3, 3.4) ==
+  EXPECT_TRUE(gz::math::Vector3d(1.2, 2.3, 3.4) ==
       meshVisGeom->Scale());
   EXPECT_EQ("another_submesh", meshVisGeom->Submesh());
   EXPECT_FALSE(meshVisGeom->CenterSubmesh());
@@ -206,7 +206,7 @@ TEST(IncludesTest, Includes)
   ASSERT_NE(nullptr, model1);
   EXPECT_EQ("override_model_name", model1->Name());
   EXPECT_TRUE(model1->Static());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), model1->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), model1->RawPose());
   EXPECT_EQ("", model1->PoseRelativeTo());
   ASSERT_NE(nullptr, model1->Element());
   EXPECT_TRUE(model1->Element()->HasElement("plugin"));
@@ -397,8 +397,8 @@ TEST(IncludesTest, IncludeUrdf)
 //////////////////////////////////////////////////
 TEST(IncludesTest, MergeInclude)
 {
-  using ignition::math::Pose3d;
-  using ignition::math::Vector3d;
+  using gz::math::Pose3d;
+  using gz::math::Vector3d;
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);
 
@@ -411,8 +411,8 @@ TEST(IncludesTest, MergeInclude)
   ASSERT_NE(nullptr, world);
   auto model = world->ModelByIndex(0);
   EXPECT_EQ("robot1", model->Name());
-  EXPECT_EQ(5u, model->LinkCount());
-  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(7u, model->LinkCount());
+  EXPECT_EQ(6u, model->JointCount());
   EXPECT_EQ(1u, model->ModelCount());
   ASSERT_NE(nullptr, model->CanonicalLink());
   EXPECT_EQ(model->LinkByIndex(0), model->CanonicalLink());
@@ -439,7 +439,7 @@ TEST(IncludesTest, MergeInclude)
 
   // X_PM - Pose of original model (M) in parent model (P) frame. This is the
   // pose override in the //include tag.
-  const Pose3d X_PM(100, 0, 0, IGN_PI_4, 0, 0);
+  const Pose3d X_PM(100, 0, 0, GZ_PI_4, 0, 0);
   // X_MRw - Pose of the right wheel in the original model (M) as specified in
   // the SDFormat file.
   const Pose3d X_MRw(0.554282, -0.625029, -0.025, -1.5707, 0, 0);
@@ -496,7 +496,7 @@ TEST(IncludesTest, MergeInclude)
     // From SDFormat file
     // X_MS - Pose of sensor_frame (S) in the original model (M) as
     // specified in the SDF file.
-    const Pose3d X_MS(0, 1, 0, 0, IGN_PI_4, 0);
+    const Pose3d X_MS(0, 1, 0, 0, GZ_PI_4, 0);
     const Pose3d expectedPose = X_PM * X_MS;
     EXPECT_EQ(expectedPose, testPose);
   }
@@ -521,6 +521,20 @@ TEST(IncludesTest, MergeInclude)
     EXPECT_EQ(expectedXyz, xyz);
   }
 
+  // Check joint parent set as __model__
+  {
+    // left_wheel_joint's axis is expressed in __model__.
+    auto joint = model->JointByName("test_model_parent");
+    ASSERT_NE(nullptr, joint);
+    EXPECT_EQ(prefixedFrameName, joint->ParentName());
+  }
+  // Check joint child set as __model__
+  {
+    // left_wheel_joint's axis is expressed in __model__.
+    auto joint = model->JointByName("test_model_child");
+    ASSERT_NE(nullptr, joint);
+    EXPECT_EQ(prefixedFrameName, joint->ChildName());
+  }
 
   // Verify that plugins get merged
   auto modelElem = model->Element();
@@ -544,7 +558,7 @@ TEST(IncludesTest, MergeInclude)
 //////////////////////////////////////////////////
 TEST(IncludesTest, MergeIncludePlacementFrame)
 {
-  using ignition::math::Pose3d;
+  using gz::math::Pose3d;
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);
 
@@ -557,8 +571,8 @@ TEST(IncludesTest, MergeIncludePlacementFrame)
   ASSERT_NE(nullptr, world);
   auto model = world->ModelByIndex(1);
   EXPECT_EQ("robot2", model->Name());
-  EXPECT_EQ(5u, model->LinkCount());
-  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(7u, model->LinkCount());
+  EXPECT_EQ(6u, model->JointCount());
   auto topLink = model->LinkByName("top");
   ASSERT_NE(nullptr, topLink);
   Pose3d topLinkPose;

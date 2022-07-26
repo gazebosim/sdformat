@@ -19,13 +19,14 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Box.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/Material.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
@@ -94,12 +95,12 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the visual object.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the visual object.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -162,8 +163,27 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// visual.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated visual values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
@@ -184,7 +204,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

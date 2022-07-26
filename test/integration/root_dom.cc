@@ -20,11 +20,12 @@
 
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Frame.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, InvalidSDF)
@@ -107,4 +108,103 @@ TEST(DOMRoot, LoadDuplicateModels)
 
   EXPECT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, CreateMulipleWorlds)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf",
+        "world_frame_attached_to.sdf");
+
+  // Load the SDF file
+  sdf::Root loadedRoot;
+  EXPECT_TRUE(loadedRoot.Load(testFile).empty());
+  sdf::World *loadedWorld = loadedRoot.WorldByIndex(0);
+
+  sdf::Root root;
+  loadedWorld->SetName("world0");
+  EXPECT_TRUE(root.AddWorld(*loadedWorld).empty());
+
+  loadedWorld->SetName("world1");
+  EXPECT_TRUE(root.AddWorld(*loadedWorld).empty());
+  EXPECT_FALSE(root.AddWorld(*loadedWorld).empty());
+
+  auto testFunc = std::function<void(sdf::Root &)>(
+      [](sdf::Root &_root)
+  {
+    EXPECT_EQ(2u, _root.WorldCount());
+    for (int i = 0; i < 1; ++i)
+    {
+      // Get the first world
+      const sdf::World *world = _root.WorldByIndex(i);
+      ASSERT_NE(nullptr, world);
+
+      EXPECT_EQ(std::string("world") + std::to_string(i), world->Name());
+      EXPECT_EQ(1u, world->ModelCount());
+      EXPECT_NE(nullptr, world->ModelByIndex(0));
+      EXPECT_EQ(nullptr, world->ModelByIndex(1));
+
+      EXPECT_TRUE(world->ModelNameExists("M1"));
+
+      const sdf::Model *model = world->ModelByIndex(0);
+      ASSERT_NE(nullptr, model);
+      EXPECT_EQ("M1", model->Name());
+      EXPECT_EQ(1u, model->LinkCount());
+      EXPECT_NE(nullptr, model->LinkByIndex(0));
+      EXPECT_EQ(nullptr, model->LinkByIndex(1));
+      EXPECT_EQ(1u, model->FrameCount());
+      EXPECT_NE(nullptr, model->FrameByIndex(0));
+      EXPECT_EQ(nullptr, model->FrameByIndex(1));
+      ASSERT_TRUE(model->LinkNameExists("L"));
+      ASSERT_TRUE(model->FrameNameExists("F0"));
+      EXPECT_EQ("L", model->FrameByName("F0")->AttachedTo());
+
+      EXPECT_EQ(4u, world->FrameCount());
+      EXPECT_NE(nullptr, world->FrameByIndex(0));
+      EXPECT_NE(nullptr, world->FrameByIndex(1));
+      EXPECT_NE(nullptr, world->FrameByIndex(2));
+      EXPECT_NE(nullptr, world->FrameByIndex(3));
+      EXPECT_EQ(nullptr, world->FrameByIndex(4));
+      ASSERT_TRUE(world->FrameNameExists("world_frame"));
+      ASSERT_TRUE(world->FrameNameExists("F0"));
+      ASSERT_TRUE(world->FrameNameExists("F1"));
+      ASSERT_TRUE(world->FrameNameExists("F2"));
+
+      EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
+      EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
+      EXPECT_EQ("F0", world->FrameByName("F1")->AttachedTo());
+      EXPECT_EQ("M1", world->FrameByName("F2")->AttachedTo());
+
+      EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
+      EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
+      EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
+      EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
+
+      std::string body;
+      EXPECT_TRUE(
+        world->FrameByName("world_frame")->ResolveAttachedToBody(body).empty());
+      EXPECT_EQ("world", body);
+      EXPECT_TRUE(
+          world->FrameByName("F0")->ResolveAttachedToBody(body).empty());
+      EXPECT_EQ("world", body);
+      EXPECT_TRUE(
+          world->FrameByName("F1")->ResolveAttachedToBody(body).empty());
+      EXPECT_EQ("world", body);
+      EXPECT_TRUE(
+          world->FrameByName("F2")->ResolveAttachedToBody(body).empty());
+      EXPECT_EQ("M1::L", body);
+    }
+  });
+
+  testFunc(root);
+
+  // Test UpdateGraphs
+  EXPECT_TRUE(root.UpdateGraphs().empty());
+  testFunc(root);
+
+  // Test cloning
+  sdf::Root root2 = root.Clone();
+  testFunc(root);
+  testFunc(root2);
 }

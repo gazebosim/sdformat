@@ -36,6 +36,7 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
+#include "Utils.hh"
 
 namespace sdf
 {
@@ -51,7 +52,7 @@ void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
   std::cout << _graph.Graph() << std::endl;
 }
 
-// The following two functions were originally submitted to ign-math,
+// The following two functions were originally submitted to gz-math,
 // but were not accepted as they were not generic enough.
 // For now, they will be kept here.
 // https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-math/pull-requests/333
@@ -71,11 +72,11 @@ template <typename T>
 std::pair<const typename ScopedGraph<T>::Vertex &,
     std::vector<typename ScopedGraph<T>::Edge>>
 FindSourceVertex(const ScopedGraph<T> &_graph,
-    const ignition::math::graph::VertexId _id, Errors &_errors)
+    const gz::math::graph::VertexId _id, Errors &_errors)
 {
   using DirectedEdge = typename ScopedGraph<T>::Edge;
   using Vertex = typename ScopedGraph<T>::Vertex;
-  using VertexId = ignition::math::graph::VertexId;
+  using VertexId = gz::math::graph::VertexId;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
@@ -150,12 +151,12 @@ std::pair<const typename ScopedGraph<T>::Vertex &,
     std::vector<typename ScopedGraph<T>::Edge>>
 FindSinkVertex(
     const ScopedGraph<T> &_graph,
-    const ignition::math::graph::VertexId _id,
+    const gz::math::graph::VertexId _id,
     Errors &_errors)
 {
   using DirectedEdge = typename ScopedGraph<T>::Edge;
   using Vertex = typename ScopedGraph<T>::Vertex;
-  using VertexId = ignition::math::graph::VertexId;
+  using VertexId = gz::math::graph::VertexId;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
@@ -245,21 +246,21 @@ FindSinkVertex(
 /// encountered during `sdf::resolvePoseRelativeToRoot`, _resolvedPose will not
 /// be modified.
 static Errors resolveModelPoseWithPlacementFrame(
-    const ignition::math::Pose3d &_rawPose,
+    const gz::math::Pose3d &_rawPose,
     const std::string &_placementFrame,
     const sdf::ScopedGraph<PoseRelativeToGraph> &_graph,
-    ignition::math::Pose3d &_resolvedPose)
+    gz::math::Pose3d &_resolvedPose)
 {
   sdf::Errors errors;
 
   // Alias for better pose notation
-  ignition::math::Pose3d &X_RM = _resolvedPose;
-  const ignition::math::Pose3d &X_RPf = _rawPose;
+  gz::math::Pose3d &X_RM = _resolvedPose;
+  const gz::math::Pose3d &X_RPf = _rawPose;
 
   // If the model has a placement frame, calculate the necessary pose to use
   if (_placementFrame != "")
   {
-    ignition::math::Pose3d X_MPf;
+    gz::math::Pose3d X_MPf;
 
     errors = sdf::resolvePoseRelativeToRoot(X_MPf, _graph, _placementFrame);
     if (errors.empty())
@@ -306,8 +307,19 @@ struct LinkWrapper : public WrapperBase
   {
   }
 
+  /// \brief Constructor from name and pose data (without sdf::Link or
+  /// sdf::InterfaceLink)
+  LinkWrapper(const std::string &_name, const gz::math::Pose3d &_rawPose,
+              const std::string &_relativeTo)
+      : WrapperBase{_name, "Link", FrameType::LINK},
+        rawPose(_rawPose),
+        rawRelativeTo(_relativeTo),
+        relativeTo(rawRelativeTo)
+  {
+  }
+
   /// \brief Raw pose of the entity.
-  const ignition::math::Pose3d rawPose;
+  const gz::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
   const std::string rawRelativeTo;
   /// \brief The final @relative_to attribute. This is the same as rawRelativeTo
@@ -339,8 +351,20 @@ struct FrameWrapper : public WrapperBase
   {
   }
 
+  /// \brief Constructor from name, pose, and attachement data (without
+  /// sdf::Frame or sdf::InterfaceFrame)
+  FrameWrapper(const std::string &_name, const gz::math::Pose3d &_rawPose,
+               const std::string &_relativeTo, const std::string &_attachedTo)
+      : WrapperBase{_name, "Frame", FrameType::FRAME},
+        rawPose(_rawPose),
+        rawRelativeTo(_relativeTo),
+        attachedTo(_attachedTo),
+        relativeTo(rawRelativeTo.empty() ? attachedTo : rawRelativeTo)
+  {
+  }
+
   /// \brief Raw pose of the entity.
-  const ignition::math::Pose3d rawPose;
+  const gz::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
   const std::string rawRelativeTo;
   /// \brief The //frame/@attached_to attribute.
@@ -359,7 +383,7 @@ struct JointWrapper : public WrapperBase
       : WrapperBase{_joint.Name(), "Joint", FrameType::JOINT},
         rawPose(_joint.RawPose()),
         rawRelativeTo(_joint.PoseRelativeTo()),
-        childName(_joint.ChildLinkName()),
+        childName(_joint.ChildName()),
         relativeTo(rawRelativeTo.empty() ? childName : rawRelativeTo)
   {
   }
@@ -375,7 +399,7 @@ struct JointWrapper : public WrapperBase
   }
 
   /// \brief Raw pose of the entity.
-  const ignition::math::Pose3d rawPose;
+  const gz::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
   const std::string rawRelativeTo;
   /// \brief The name of the child frame (i.e. content of //joint/child).
@@ -384,6 +408,15 @@ struct JointWrapper : public WrapperBase
   /// the childName if the rawRelativeTo is empty. For sdf::InterfaceJoint, it's
   /// always set to childName.
   const std::string relativeTo;
+};
+
+/// \brief Placement frame information
+struct PlacementFrameInfo
+{
+  /// \brief Computed name of the proxy model frame
+  std::string proxyName;
+  /// \brief The name of placement frame from //include/placement_frame.
+  std::string placementFrameName;
 };
 
 /// \brief Wrapper for sdf::Model and sdf::InterfaceModel
@@ -422,6 +455,56 @@ struct ModelWrapper : public WrapperBase
       this->models.emplace_back(*_model.InterfaceModelNestedIncludeByIndex(i),
                                 *_model.InterfaceModelByIndex(i));
     }
+    for (const auto &[nestedInclude, model] : _model.MergedInterfaceModels())
+    {
+      const std::string proxyModelFrameName = computeMergedModelProxyFrameName(
+          nestedInclude->LocalModelName().value_or(model->Name()));
+
+      std::string poseRelativeTo =
+          nestedInclude->IncludePoseRelativeTo().value_or("");
+      if (poseRelativeTo.empty())
+      {
+        poseRelativeTo = "__model__";
+      }
+      this->frames.emplace_back(proxyModelFrameName,
+                                nestedInclude->IncludeRawPose().value_or(
+                                    model->ModelFramePoseInParentFrame()),
+                                poseRelativeTo, model->CanonicalLinkName());
+
+      for (const auto &item : model->Links())
+      {
+        this->links.emplace_back(item.Name(), item.PoseInModelFrame(),
+                                 proxyModelFrameName);
+      }
+      for (const auto &item : model->Frames())
+      {
+        std::string attachedTo = item.AttachedTo();
+        if (item.AttachedTo() == "__model__")
+        {
+          attachedTo = proxyModelFrameName;
+        }
+        this->frames.emplace_back(item.Name(), item.PoseInAttachedToFrame(),
+                                  attachedTo, attachedTo);
+      }
+      for (const auto &item : model->Joints())
+      {
+        std::string childName = item.ChildName();
+        if (item.ChildName() == "__model__")
+        {
+          childName = proxyModelFrameName;
+        }
+        this->joints.emplace_back(sdf::InterfaceJoint(item.Name(), childName,
+                                                      item.PoseInChildFrame()));
+      }
+      if (nestedInclude->PlacementFrame().has_value())
+      {
+        this->mergedModelPlacements.push_back(
+            {proxyModelFrameName, *nestedInclude->PlacementFrame()});
+      }
+
+      // Skip adding nested interface models because they are already included
+      // in the parent model's list of nested models.
+    }
   }
 
   /// \brief Constructor that takes an sdf::NestedInclude and
@@ -431,7 +514,8 @@ struct ModelWrapper : public WrapperBase
       : WrapperBase{_ifaceModel.Name(), "Interface Model",
                     _ifaceModel.Static() ? FrameType::STATIC_MODEL
                                          : FrameType::MODEL},
-        rawPose(_ifaceModel.ModelFramePoseInParentFrame()),
+        rawPose(_nestedInclude.IncludeRawPose().value_or(
+            _ifaceModel.ModelFramePoseInParentFrame())),
         rawRelativeTo(_nestedInclude.IncludePoseRelativeTo().value_or("")),
         relativeTo(rawRelativeTo),
         canonicalLinkName(_ifaceModel.CanonicalLinkName()),
@@ -458,7 +542,7 @@ struct ModelWrapper : public WrapperBase
   }
 
   /// \brief Raw pose of the entity.
-  const ignition::math::Pose3d rawPose;
+  const gz::math::Pose3d rawPose;
   /// \brief The //pose/@relative_to attribute.
   const std::string rawRelativeTo;
   /// \brief The final @relative_to attribute. This is set to rawRelativeTo for
@@ -479,6 +563,8 @@ struct ModelWrapper : public WrapperBase
   std::vector<JointWrapper> joints;
   /// \brief Children nested models and interface models.
   std::vector<ModelWrapper> models;
+  /// \brief Placement frame information for each merged model.
+  std::vector<PlacementFrameInfo> mergedModelPlacements;
 
   /// \brief Helper function to add children of interface models.
   private: void AddInterfaceChildren(const sdf::InterfaceModel &_ifaceModel)
@@ -594,7 +680,7 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
   for (const auto &item : _items)
   {
     const std::string &relativeTo = item.relativeTo;
-    const ignition::math::Pose3d poseInRelativeTo = item.rawPose;
+    const gz::math::Pose3d poseInRelativeTo = item.rawPose;
 
     auto itemId = _out.VertexIdByName(item.name);
     auto relativeToId = _out.ScopeVertexId();
@@ -648,7 +734,7 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 
     if constexpr (std::is_same_v<ElementT, ModelWrapper>)
     {
-      ignition::math::Pose3d resolvedModelPose = item.rawPose;
+      gz::math::Pose3d resolvedModelPose = item.rawPose;
 
       sdf::Errors resolveErrors = resolveModelPoseWithPlacementFrame(
           item.rawPose, item.placementFrameName,
@@ -829,7 +915,7 @@ Errors wrapperBuildFrameAttachedToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
   const auto canonicalLinkId = outModel.VertexIdByName(canonicalLinkName);
   if (!_model.isStatic)
   {
-    if (ignition::math::graph::kNullId == canonicalLinkId)
+    if (gz::math::graph::kNullId == canonicalLinkId)
     {
       if (canonicalLinkName.empty())
       {
@@ -874,11 +960,6 @@ Errors buildFrameAttachedToGraph(
   if (!_model)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
-  }
-  else if (!_model->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
   }
   return wrapperBuildFrameAttachedToGraph(_out, ModelWrapper(*_model), _isRoot);
 }
@@ -927,11 +1008,6 @@ Errors buildFrameAttachedToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
   }
-  else if (!_world->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
-  }
 
   return buildFrameAttachedToGraph(_out, WorldWrapper(*_world));
 }
@@ -952,7 +1028,7 @@ Errors wrapperBuildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
   Errors errors;
 
   const std::string scopeContextName = "__model__";
-  auto rootId = ignition::math::graph::kNullId;
+  auto rootId = gz::math::graph::kNullId;
   // add the model frame vertex first
   if (_isRoot)
   {
@@ -1006,13 +1082,37 @@ Errors wrapperBuildPoseRelativeToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
     // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
     // pose is calculated.
     auto rootToModel = outModel.AddEdge({rootId, modelId}, {});
-    ignition::math::Pose3d resolvedModelPose = _model.rawPose;
+    gz::math::Pose3d resolvedModelPose = _model.rawPose;
     sdf::Errors resolveErrors =
         resolveModelPoseWithPlacementFrame(_model.rawPose,
             _model.placementFrameName, outModel, resolvedModelPose);
     errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
 
     outModel.UpdateEdge(rootToModel, resolvedModelPose);
+  }
+
+  // For each merge model, update the edge between the parent model and the
+  // proxy model frame to take into account the placement frame used when
+  // nesting the merged model via //include.
+  for (const auto &[proxyName, placementFrameName] :
+       _model.mergedModelPlacements)
+  {
+    auto proxyId = outModel.VertexIdByName(proxyName);
+    auto modelToProxy =
+        outModel.Graph().EdgeFromVertices(modelFrameId, proxyId);
+    const auto rawPose = modelToProxy.Data();
+
+    // We have to first set the edge data to an identity pose to be able to call
+    // resolveModelPoseWithPlacementFrame, which in turn calls
+    // sdf::resolvePoseRelativeToRoot. We will later update the edge after the
+    // pose is calculated.
+    outModel.UpdateEdge(modelToProxy, gz::math::Pose3d::Zero);
+    gz::math::Pose3d resolvedModelPose;
+    sdf::Errors resolveErrors =
+        resolveModelPoseWithPlacementFrame(rawPose,
+            placementFrameName, outModel, resolvedModelPose);
+    errors.insert(errors.end(), resolveErrors.begin(), resolveErrors.end());
+    outModel.UpdateEdge(modelToProxy, resolvedModelPose);
   }
   return errors;
 }
@@ -1023,11 +1123,6 @@ Errors buildPoseRelativeToGraph(
   if (!_model)
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::Model pointer."}};
-  }
-  else if (!_model->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid model element in sdf::Model."}};
   }
 
   return wrapperBuildPoseRelativeToGraph(_out, ModelWrapper(*_model), _isRoot);
@@ -1088,11 +1183,7 @@ Errors buildPoseRelativeToGraph(
   {
     return Errors{{ErrorCode::ELEMENT_INVALID, "Invalid sdf::World pointer."}};
   }
-  else if (!_world->Element())
-  {
-    return Errors{
-        {ErrorCode::ELEMENT_INVALID, "Invalid world element in sdf::World."}};
-  }
+
   return wrapperBuildPoseRelativeToGraph(_out, WorldWrapper(*_world));
 }
 
@@ -1517,7 +1608,7 @@ Errors validatePoseRelativeToGraph(
   {
     if (name == "__root__")
       continue;
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     Errors e = resolvePoseRelativeToRoot(pose, _in, name);
     errors.insert(errors.end(), e.begin(), e.end());
   }
@@ -1609,7 +1700,7 @@ Errors resolveFrameAttachedToBody(
 
 /////////////////////////////////////////////////
 Errors resolvePoseRelativeToRoot(
-      ignition::math::Pose3d &_pose,
+      gz::math::Pose3d &_pose,
       const ScopedGraph<PoseRelativeToGraph> &_graph,
       const std::string &_vertexName)
 {
@@ -1628,9 +1719,9 @@ Errors resolvePoseRelativeToRoot(
 }
 /////////////////////////////////////////////////
 Errors resolvePoseRelativeToRoot(
-      ignition::math::Pose3d &_pose,
+      gz::math::Pose3d &_pose,
       const ScopedGraph<PoseRelativeToGraph> &_graph,
-      const ignition::math::graph::VertexId &_vertexId)
+      const gz::math::graph::VertexId &_vertexId)
 {
   Errors errors;
 
@@ -1658,7 +1749,7 @@ Errors resolvePoseRelativeToRoot(
     return errors;
   }
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   for (auto const &edge : incomingVertexEdges.second)
   {
     pose = edge.Data() * pose;
@@ -1673,17 +1764,17 @@ Errors resolvePoseRelativeToRoot(
 }
 
 /////////////////////////////////////////////////
-Errors resolvePose(ignition::math::Pose3d &_pose,
+Errors resolvePose(gz::math::Pose3d &_pose,
     const ScopedGraph<PoseRelativeToGraph> &_graph,
-    const ignition::math::graph::VertexId &_frameVertexId,
-    const ignition::math::graph::VertexId &_resolveToVertexId)
+    const gz::math::graph::VertexId &_frameVertexId,
+    const gz::math::graph::VertexId &_resolveToVertexId)
 {
   Errors errors = resolvePoseRelativeToRoot(_pose, _graph, _frameVertexId);
 
   // If the resolveTo is empty, we're resolving to the Root, so we're done
-  if (_resolveToVertexId != ignition::math::graph::kNullId)
+  if (_resolveToVertexId != gz::math::graph::kNullId)
   {
-    ignition::math::Pose3d poseR;
+    gz::math::Pose3d poseR;
     Errors errorsR =
         resolvePoseRelativeToRoot(poseR, _graph, _resolveToVertexId);
     errors.insert(errors.end(), errorsR.begin(), errorsR.end());
@@ -1699,7 +1790,7 @@ Errors resolvePose(ignition::math::Pose3d &_pose,
 
 /////////////////////////////////////////////////
 Errors resolvePose(
-    ignition::math::Pose3d &_pose,
+    gz::math::Pose3d &_pose,
     const ScopedGraph<PoseRelativeToGraph> &_graph,
     const std::string &_frameName,
     const std::string &_resolveTo)

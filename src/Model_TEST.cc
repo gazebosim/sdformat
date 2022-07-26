@@ -16,12 +16,13 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
+#include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.
@@ -116,19 +117,19 @@ TEST(DOMModel, Construction)
   model.SetPlacementFrameName("test_frame");
   EXPECT_EQ("test_frame", model.PlacementFrameName());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, model.RawPose());
   EXPECT_TRUE(model.PoseRelativeTo().empty());
   {
     auto semanticPose = model.SemanticPose();
     EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  model.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.RawPose());
+  model.SetRawPose({1, 2, 3, 0, 0, GZ_PI});
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, GZ_PI), model.RawPose());
 
   model.SetPoseRelativeTo("world");
   EXPECT_EQ("world", model.PoseRelativeTo());
@@ -136,7 +137,7 @@ TEST(DOMModel, Construction)
     auto semanticPose = model.SemanticPose();
     EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("world", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -286,6 +287,40 @@ TEST(DOMModel, AddModel)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMModel, AddModifyFrame)
+{
+  sdf::Model model;
+  EXPECT_EQ(0u, model.FrameCount());
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+  EXPECT_FALSE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+
+  model.ClearFrames();
+  EXPECT_EQ(0u, model.FrameCount());
+
+  EXPECT_TRUE(model.AddFrame(frame));
+  EXPECT_EQ(1u, model.FrameCount());
+
+  const sdf::Frame *frameFromModel = model.FrameByIndex(0);
+  ASSERT_NE(nullptr, frameFromModel);
+  EXPECT_EQ(frameFromModel->Name(), frame.Name());
+
+  sdf::Frame *mutableFrame = model.FrameByIndex(0);
+  mutableFrame->SetName("newName1");
+  EXPECT_EQ(mutableFrame->Name(), model.FrameByIndex(0)->Name());
+
+  sdf::Frame *mutableFrameByName = model.FrameByName("frame1");
+  EXPECT_EQ(nullptr, mutableFrameByName);
+  mutableFrameByName = model.FrameByName("newName1");
+  ASSERT_NE(nullptr, mutableFrameByName);
+  EXPECT_EQ("newName1", model.FrameByName("newName1")->Name());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMModel, ToElement)
 {
   sdf::Model model;
@@ -295,7 +330,7 @@ TEST(DOMModel, ToElement)
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
   model.SetEnableWind(true);
-  model.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  model.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
 
   for (int j = 0; j <= 1; ++j)
   {
@@ -338,6 +373,11 @@ TEST(DOMModel, ToElement)
       model.ClearModels();
   }
 
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+  model.AddPlugin(plugin);
+
   sdf::ElementPtr elem = model.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -364,6 +404,10 @@ TEST(DOMModel, ToElement)
   EXPECT_EQ(model.ModelCount(), model2.ModelCount());
   for (uint64_t i = 0; i < model2.ModelCount(); ++i)
     EXPECT_NE(nullptr, model2.ModelByIndex(i));
+
+  ASSERT_EQ(1u, model2.Plugins().size());
+  EXPECT_EQ("name1", model2.Plugins()[0].Name());
+  EXPECT_EQ("filename1", model2.Plugins()[0].Filename());
 }
 
 /////////////////////////////////////////////////
@@ -371,7 +415,7 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
-  ignition::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
+  gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
     "https://fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model";
 
@@ -398,7 +442,7 @@ TEST(DOMModel, Uri)
 
     sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
-    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ(pose, poseElem->Get<gz::math::Pose3d>());
     EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
     EXPECT_EQ("link0",
@@ -411,7 +455,9 @@ TEST(DOMModel, Uri)
 
   // ToElement NOT using the URI, which should result in a <model>
   {
-    sdf::ElementPtr elem = model.ToElement(false);
+    sdf::OutputConfig config = sdf::OutputConfig::GlobalConfig();
+    config.SetToElementUseIncludeTag(false);
+    sdf::ElementPtr elem = model.ToElement(config);
     elem->PrintValues("  ");
 
     // Should be a <model>
@@ -431,7 +477,7 @@ TEST(DOMModel, Uri)
 
     sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
-    EXPECT_EQ(pose, poseElem->Get<ignition::math::Pose3d>());
+    EXPECT_EQ(pose, poseElem->Get<gz::math::Pose3d>());
     EXPECT_EQ("other", poseElem->GetAttribute("relative_to")->GetAsString());
 
     sdf::ElementPtr staticElem = elem->FindElement("static");
@@ -477,4 +523,125 @@ TEST(DOMModel, ToElementNestedHasUri)
   sdf::ElementPtr modelElem = elem->FindElement("model");
   ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ("child2", modelElem->GetAttribute("name")->GetAsString());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MutableByIndex)
+{
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+
+  // Modify the link
+  sdf::Link *l = model.LinkByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("link1", l->Name());
+  l->SetName("link2");
+  EXPECT_EQ("link2", model.LinkByIndex(0)->Name());
+
+  // Modify the joint
+  sdf::Joint *j = model.JointByIndex(0);
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_EQ("joint2", model.JointByIndex(0)->Name());
+
+  // Modify the nested model
+  sdf::Model *m = model.ModelByIndex(0);
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("child1", m->Name());
+  m->SetName("child2");
+  EXPECT_EQ("child2", model.ModelByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, MutableByName)
+{
+  sdf::Model model;
+  model.SetName("model1");
+  EXPECT_EQ(0u, model.ModelCount());
+
+  sdf::Link link;
+  link.SetName("link1");
+  EXPECT_TRUE(model.AddLink(link));
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(model.AddJoint(joint));
+
+  sdf::Model nestedModel;
+  nestedModel.SetName("child1");
+  EXPECT_TRUE(model.AddModel(nestedModel));
+
+  sdf::Frame frame;
+  frame.SetName("frame1");
+  EXPECT_TRUE(model.AddFrame(frame));
+
+  // Modify the link
+  sdf::Link *l = model.LinkByName("link1");
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("link1", l->Name());
+  l->SetName("link2");
+  EXPECT_FALSE(model.LinkNameExists("link1"));
+  EXPECT_TRUE(model.LinkNameExists("link2"));
+
+  // Modify the joint
+  sdf::Joint *j = model.JointByName("joint1");
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_FALSE(model.JointNameExists("joint1"));
+  EXPECT_TRUE(model.JointNameExists("joint2"));
+
+  // Modify the nested model
+  sdf::Model *m = model.ModelByName("child1");
+  ASSERT_NE(nullptr, m);
+  EXPECT_EQ("child1", m->Name());
+  m->SetName("child2");
+  EXPECT_FALSE(model.ModelNameExists("child1"));
+  EXPECT_TRUE(model.ModelNameExists("child2"));
+
+  // Modify the frame
+  sdf::Frame *f = model.FrameByName("frame1");
+  ASSERT_NE(nullptr, f);
+  EXPECT_EQ("frame1", f->Name());
+  f->SetName("frame2");
+  EXPECT_FALSE(model.FrameNameExists("frame1"));
+  EXPECT_TRUE(model.FrameNameExists("frame2"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMModel, Plugins)
+{
+  sdf::Model model;
+  EXPECT_TRUE(model.Plugins().empty());
+
+  sdf::Plugin plugin;
+  plugin.SetName("name1");
+  plugin.SetFilename("filename1");
+
+  model.AddPlugin(plugin);
+  ASSERT_EQ(1u, model.Plugins().size());
+
+  plugin.SetName("name2");
+  model.AddPlugin(plugin);
+  ASSERT_EQ(2u, model.Plugins().size());
+
+  EXPECT_EQ("name1", model.Plugins()[0].Name());
+  EXPECT_EQ("name2", model.Plugins()[1].Name());
+
+  model.ClearPlugins();
+  EXPECT_TRUE(model.Plugins().empty());
 }

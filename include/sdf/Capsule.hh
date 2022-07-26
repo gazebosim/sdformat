@@ -17,8 +17,8 @@
 #ifndef SDF_CAPSULE_HH_
 #define SDF_CAPSULE_HH_
 
-#include <ignition/math/Capsule.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Capsule.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -64,21 +64,23 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Capsule.
-    /// \return A const reference to an ignition::math::Sphered object.
-    public: const ignition::math::Capsuled &Shape() const;
+    /// \brief Get the Gazebo Math representation of this Capsule.
+    /// \return A const reference to a gz::math::Sphered object.
+    public: const gz::math::Capsuled &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Capsule.
-    /// \return A reference to an ignition::math::Capsuled object.
-    public: ignition::math::Capsuled &Shape();
+    /// \brief Get a mutable Gazebo Math representation of this Capsule.
+    /// \return A reference to a gz::math::Capsuled object.
+    public: gz::math::Capsuled &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated capsule values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

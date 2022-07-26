@@ -26,7 +26,7 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
@@ -198,7 +198,8 @@ TEST(ExplicitlySetInFile, ToString)
     << "      <heading_deg>0</heading_deg>\n"
     << "    </spherical_coordinates>\n"
     << "    <gravity>0 0 -9.8</gravity>\n"
-    << "    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>\n"
+    << "    <magnetic_field>5.5645e-06 2.28758e-05 -4.23884e-05"
+    << "</magnetic_field>\n"
     << "    <atmosphere type='adiabatic'/>\n"
     << "    <physics type='ode'>\n"
     << "      <max_step_size>0.001</max_step_size>\n"
@@ -213,8 +214,10 @@ TEST(ExplicitlySetInFile, ToString)
     << "  </world>\n"
     << "</sdf>\n";
 
-  EXPECT_EQ(root.Element()->ToString(""), stream.str());
-  EXPECT_EQ(root.Element()->ToString("", true, false), stream.str());
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  EXPECT_EQ(root.Element()->ToString("", config), stream.str());
+  EXPECT_EQ(root.Element()->ToString("", true, false, config), stream.str());
 
   stream.str(std::string());
   stream
@@ -232,7 +235,8 @@ TEST(ExplicitlySetInFile, ToString)
     << "      <heading_deg>0</heading_deg>\n"
     << "    </spherical_coordinates>\n"
     << "    <gravity>0 0 -9.8</gravity>\n"
-    << "    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>\n"
+    << "    <magnetic_field>5.5645e-06 2.28758e-05 -4.23884e-05"
+    << "</magnetic_field>\n"
     << "    <atmosphere type='adiabatic'/>\n"
     << "    <physics name='default_physics' default='false' type='ode'>\n"
     << "      <max_step_size>0.001</max_step_size>\n"
@@ -247,5 +251,5 @@ TEST(ExplicitlySetInFile, ToString)
     << "  </world>\n"
     << "</sdf>\n";
 
-  EXPECT_EQ(root.Element()->ToString("", true, true), stream.str());
+  EXPECT_EQ(root.Element()->ToString("", true, true, config), stream.str());
 }

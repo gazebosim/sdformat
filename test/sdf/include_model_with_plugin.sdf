@@ -1,0 +1,8 @@
+<sdf version='1.9'>
+  <world name="default">
+    <include>
+       <uri>test_model_with_plugin</uri>
+       <plugin name="test_model_include_plugin" filename="include/test/model/plugin"/>
+    </include>
+  </world>
+</sdf>

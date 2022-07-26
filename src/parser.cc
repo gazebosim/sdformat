@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_set>
 
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
@@ -155,7 +155,9 @@ static bool isSdfFile(const std::string &_fileName)
 
 //////////////////////////////////////////////////
 template <typename TPtr>
-static inline bool _initFile(const std::string &_filename, TPtr _sdf)
+static inline bool _initFile(const std::string &_filename,
+                             const ParserConfig &_config,
+                             TPtr _sdf)
 {
   auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
@@ -165,7 +167,7 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
     return false;
   }
 
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -181,7 +183,9 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 /// \param[out] _errors Captures errors encountered during parsing.
 static void insertIncludedElement(sdf::SDFPtr _includeSDF,
                                   const SourceLocation &_sourceLoc, bool _merge,
-                                  sdf::ElementPtr _parent, sdf::Errors &_errors)
+                                  sdf::ElementPtr _parent,
+                                  const ParserConfig &_config,
+                                  sdf::Errors &_errors)
 {
   Error invalidFileError(ErrorCode::FILE_READ,
                          "Included model is invalid. Skipping model.");
@@ -230,7 +234,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   // We create a throwaway sdf::Root object in order to validate the
   // included entity.
   sdf::Root includedRoot;
-  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF);
+  sdf::Errors includeDOMerrors = includedRoot.Load(_includeSDF, _config);
   _errors.insert(_errors.end(), includeDOMerrors.begin(),
                  includeDOMerrors.end());
 
@@ -246,7 +250,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 
   ElementPtr proxyModelFrame = _parent->AddElement("frame");
   const std::string proxyModelFrameName =
-      "_merged__" + model->Name() + "__model__";
+      computeMergedModelProxyFrameName(model->Name());
 
   proxyModelFrame->GetAttribute("name")->Set(proxyModelFrameName);
 
@@ -263,7 +267,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     // R - The `relative_to` frame of the placement frame's //pose element.
     // See resolveModelPoseWithPlacementFrame in FrameSemantics.cc for
     // notation and documentation
-    ignition::math::Pose3d X_RM = model->RawPose();
+    gz::math::Pose3d X_RM = model->RawPose();
     sdf::Errors resolveErrors = model->SemanticPose().Resolve(X_RM);
     _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
     modelPose = X_RM;
@@ -324,6 +328,18 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     {
       setAttributeToProxyFrame("relative_to", elem->GetElementImpl("pose"),
                                false);
+
+      auto parent = elem->FindElement("parent");
+      if (nullptr != parent && parent->Get<std::string>() == "__model__")
+      {
+        parent->Set(proxyModelFrameName);
+      }
+      auto child = elem->FindElement("child");
+      if (nullptr != child && child->Get<std::string>() == "__model__")
+      {
+        child->Set(proxyModelFrameName);
+      }
+
       // cppcheck-suppress syntaxError
       // cppcheck-suppress unmatchedSuppression
       if (auto axis = elem->GetElementImpl("axis"); axis)
@@ -354,10 +370,16 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf)
 {
+  return init(_sdf, ParserConfig::GlobalConfig());
+}
+
+//////////////////////////////////////////////////
+bool init(SDFPtr _sdf, const ParserConfig &_config)
+{
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -375,9 +397,10 @@ bool initFile(
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
+    return initDoc(&xmlDoc, _config, _sdf);
   }
-  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config), _config,
+                   _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -395,14 +418,15 @@ bool initFile(
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _sdf);
+    return initDoc(&xmlDoc, _config, _sdf);
   }
-  return _initFile(sdf::findFile(_filename, true, false, _config), _sdf);
+  return _initFile(sdf::findFile(_filename, true, false, _config), _config,
+                   _sdf);
 }
 
 //////////////////////////////////////////////////
 bool initString(
-    const std::string &_xmlString, const ParserConfig &, SDFPtr _sdf)
+    const std::string &_xmlString, const ParserConfig &_config, SDFPtr _sdf)
 {
   auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
@@ -411,7 +435,7 @@ bool initString(
     return false;
   }
 
-  return initDoc(&xmlDoc, _sdf);
+  return initDoc(&xmlDoc, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
@@ -440,7 +464,9 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config,
+             SDFPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -448,11 +474,13 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf)
     return false;
   }
 
-  return initXml(element, _sdf->Root());
+  return initXml(element, _config, _sdf->Root());
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
+bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config,
+             ElementPtr _sdf)
 {
   auto element = _initDocGetElement(_xmlDoc);
   if (!element)
@@ -460,11 +488,13 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf)
     return false;
   }
 
-  return initXml(element, _sdf);
+  return initXml(element, _config, _sdf);
 }
 
 //////////////////////////////////////////////////
-bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
+bool initXml(tinyxml2::XMLElement *_xml,
+             const ParserConfig &_config,
+             ElementPtr _sdf)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -582,7 +612,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
     else
     {
       ElementPtr element(new Element);
-      initXml(child, element);
+      initXml(child, _config, element);
       _sdf->AddElementDescription(element);
     }
   }
@@ -595,7 +625,7 @@ bool initXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf)
 
     ElementPtr element(new Element);
 
-    initFile(filename, element);
+    initFile(filename, _config, element);
 
     // override description for include elements
     tinyxml2::XMLElement *description = child->FirstChildElement("description");
@@ -622,7 +652,7 @@ SDFPtr readFile(
 {
   // Create and initialize the data structure that will hold the parsed SDF data
   sdf::SDFPtr sdfParsed(new sdf::SDF());
-  sdf::init(sdfParsed);
+  sdf::init(sdfParsed, _config);
 
   // Read an SDF file, and store the result in sdfParsed.
   if (!sdf::readFile(_filename, _config, sdfParsed, _errors))
@@ -728,7 +758,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelFile(filename, &doc);
+    u2g.InitModelFile(filename, _config, &doc);
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -805,7 +835,7 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   {
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, &doc);
+    u2g.InitModelString(_xmlString, _config, &doc);
 
     if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                     _config, _errors))
@@ -945,8 +975,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
-    ignition::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
-    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
+    gz::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
+    if (sdfVersion >= gz::math::SemanticVersion(1, 8)
         && !recursiveSiblingNoDoubleColonInNames(_sdf->Root()))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
@@ -1040,8 +1070,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
-    ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
-    if (sdfVersion >= ignition::math::SemanticVersion(1, 8)
+    gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+    if (sdfVersion >= gz::math::SemanticVersion(1, 8)
         && !recursiveSiblingNoDoubleColonInNames(_sdf))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
@@ -1116,7 +1146,7 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
-  ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+  gz::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
 
   tinyxml2::XMLElement *sdfSearch = sdfXML;
@@ -1125,8 +1155,8 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
     if (sdfSearch->Attribute("version"))
     {
       auto version = std::string(sdfSearch->Attribute("version"));
-      ignition::math::SemanticVersion modelVersion(version);
-      ignition::math::SemanticVersion bestVersion(bestVersionStr);
+      gz::math::SemanticVersion modelVersion(version);
+      gz::math::SemanticVersion bestVersion(bestVersionStr);
       if (modelVersion > bestVersion)
       {
         // this model is better than the previous one
@@ -1498,7 +1528,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, refSDF);
+    initFile(refFilename, _config, refSDF);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 
@@ -1563,17 +1593,17 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           // a new sdf pointer is created here by cloning a fresh sdf template
           // pointer instead of calling init every iteration.
           // SDFPtr includeSDF(new SDF);
-          // init(includeSDF);
+          // init(includeSDF, _config);
           static SDFPtr includeSDFTemplate;
           if (!includeSDFTemplate)
           {
             includeSDFTemplate.reset(new SDF);
-            init(includeSDFTemplate);
+            init(includeSDFTemplate, _config);
           }
           SDFPtr includeSDF(new SDF);
-          includeSDF->Root(includeSDFTemplate->Root()->Clone());
+          includeSDF->SetRoot(includeSDFTemplate->Root()->Clone());
 
-          if (!readFile(filename, includeSDF))
+          if (!readFile(filename, _config, includeSDF, _errors))
           {
             Error err(
                 ErrorCode::FILE_READ,
@@ -1791,7 +1821,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           SourceLocation sourceLoc{includeXmlPath, _source,
                                    elemXml->GetLineNum()};
 
-          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _errors);
+          insertIncludedElement(includeSDF, sourceLoc, toMerge, _sdf, _config,
+                                _errors);
           continue;
         }
       }
@@ -1900,65 +1931,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
   }
 
   return true;
-}
-
-/////////////////////////////////////////////////
-void copyChildren(ElementPtr _sdf,
-                  tinyxml2::XMLElement *_xml,
-                  const bool _onlyUnknown)
-{
-  // Iterate over all the child elements
-  tinyxml2::XMLElement *elemXml = nullptr;
-  for (elemXml = _xml->FirstChildElement(); elemXml;
-       elemXml = elemXml->NextSiblingElement())
-  {
-    std::string elemName = elemXml->Name();
-
-    if (_sdf->HasElementDescription(elemName))
-    {
-      if (!_onlyUnknown)
-      {
-        sdf::ElementPtr element = _sdf->AddElement(elemName);
-
-        // FIXME: copy attributes
-        for (const auto *attribute = elemXml->FirstAttribute();
-             attribute; attribute = attribute->Next())
-        {
-          element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->Value());
-        }
-
-        // copy value
-        const char *value = elemXml->GetText();
-        if (value)
-        {
-          element->GetValue()->SetFromString(value);
-        }
-        copyChildren(element, elemXml, _onlyUnknown);
-      }
-    }
-    else
-    {
-      ElementPtr element(new Element);
-      element->SetParent(_sdf);
-      element->SetName(elemName);
-      for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
-           attribute; attribute = attribute->Next())
-      {
-        element->AddAttribute(attribute->Name(), "string", "", 1, "");
-        element->GetAttribute(attribute->Name())->SetFromString(
-            attribute->Value());
-      }
-
-      if (elemXml->GetText() != nullptr)
-      {
-        element->AddValue("string", elemXml->GetText(), true);
-      }
-
-      copyChildren(element, elemXml, _onlyUnknown);
-      _sdf->InsertElement(element);
-    }
-  }
 }
 
 /////////////////////////////////////////////////
@@ -2511,6 +2483,12 @@ bool checkPoseRelativeToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkJointParentChildLinkNames(const sdf::Root *_root)
 {
+  return checkJointParentChildNames(_root);
+}
+
+//////////////////////////////////////////////////
+bool checkJointParentChildNames(const sdf::Root *_root)
+{
   Errors errors;
   checkJointParentChildNames(_root, errors);
   if (!errors.empty())
@@ -2533,10 +2511,11 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
     {
       auto joint = _model->JointByIndex(j);
 
-      const std::string &parentName = joint->ParentLinkName();
-      if (parentName != "world" && !_model->LinkNameExists(parentName) &&
-          !_model->JointNameExists(parentName) &&
-          !_model->FrameNameExists(parentName))
+      const std::string &parentName = joint->ParentName();
+      const std::string parentLocalName = sdf::SplitName(parentName).second;
+
+      if (parentName != "world" && parentLocalName != "__model__" &&
+          !_model->NameExistsInFrameAttachedToGraph(parentName))
       {
         errors.push_back({ErrorCode::JOINT_PARENT_LINK_INVALID,
           "parent frame with name[" + parentName +
@@ -2544,7 +2523,8 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           "] not found in model with name[" + _model->Name() + "]."});
       }
 
-      const std::string &childName = joint->ChildLinkName();
+      const std::string &childName = joint->ChildName();
+      const std::string childLocalName = sdf::SplitName(childName).second;
       if (childName == "world")
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
@@ -2552,10 +2532,8 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
           joint->Name() + "] in model with name[" + _model->Name() + "]."});
       }
 
-      if (!_model->LinkNameExists(childName) &&
-          !_model->JointNameExists(childName) &&
-          !_model->FrameNameExists(childName) &&
-          !_model->ModelNameExists(childName))
+      if (childLocalName != "__model__" &&
+          !_model->NameExistsInFrameAttachedToGraph(childName))
       {
         errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
           "child frame with name[" + childName +
@@ -2635,6 +2613,12 @@ bool shouldValidateElement(sdf::ElementPtr _elem)
   }
 
   return true;
+}
+
+/////////////////////////////////////////////////
+std::string computeMergedModelProxyFrameName(const std::string &_modelName)
+{
+  return "_merged__" + _modelName + "__model__";
 }
 }
 }

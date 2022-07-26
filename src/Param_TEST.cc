@@ -21,9 +21,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
 
 #include "sdf/Exception.hh"
 #include "sdf/Element.hh"
@@ -112,17 +112,17 @@ TEST(Param, StringTypeGet)
   sdf::Param stringParam("key", "string", "", false, "description");
 
   // pose type
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   EXPECT_TRUE(stringParam.SetFromString("1 1 1 0 0 0"));
-  EXPECT_TRUE(stringParam.Get<ignition::math::Pose3d>(pose));
-  EXPECT_EQ(ignition::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(stringParam.Get<gz::math::Pose3d>(pose));
+  EXPECT_EQ(gz::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
   EXPECT_EQ("string", stringParam.GetTypeName());
 
   // color type
-  ignition::math::Color color;
+  gz::math::Color color;
   EXPECT_TRUE(stringParam.SetFromString("0 0 1 1"));
-  EXPECT_TRUE(stringParam.Get<ignition::math::Color>(color));
-  EXPECT_EQ(ignition::math::Color(0, 0, 1, 1), color);
+  EXPECT_TRUE(stringParam.Get<gz::math::Color>(color));
+  EXPECT_EQ(gz::math::Color(0, 0, 1, 1), color);
   EXPECT_EQ("string", stringParam.GetTypeName());
 }
 
@@ -303,8 +303,8 @@ TEST(Param, uint64t)
 TEST(Param, UnknownType)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
-  ignition::math::Angle value;
-  EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
+  gz::math::Angle value;
+  EXPECT_TRUE(doubleParam.Get<gz::math::Angle>(value));
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
 }
 
@@ -312,10 +312,10 @@ TEST(Param, UnknownType)
 TEST(Param, Vector2i)
 {
   sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
-  ignition::math::Vector2i value;
+  gz::math::Vector2i value;
 
-  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
-  EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+  EXPECT_TRUE(vect2iParam.Get<gz::math::Vector2i>(value));
+  EXPECT_EQ(value, gz::math::Vector2i(0, 0));
 }
 
 ////////////////////////////////////////////////////
@@ -610,7 +610,7 @@ TEST(Param, ReparsingAfterSetFromStringDouble)
 /////////////////////////////////////////////////
 TEST(Param, ReparsingAfterSetPose)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
   Pose value;
@@ -678,7 +678,7 @@ TEST(Param, ReparsingAfterSetPose)
 /////////////////////////////////////////////////
 TEST(Param, ReparsingAfterSetFromStringPose)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
   Pose value;
@@ -715,7 +715,7 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   // After reparse, rotation values will be parsed as degrees.
   EXPECT_TRUE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 
   // Changing parent @rotation_format to euler_rpy, value remains the same
   sdf::ParamPtr rotationFormatAttrib =
@@ -724,21 +724,21 @@ TEST(Param, ReparsingAfterSetFromStringPose)
   ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("euler_rpy"));
   EXPECT_TRUE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 
   // Changing parent @rotation_format to quat_xyzw, reparse will fail, value
   // remains the same as before
   ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("quat_xyzw"));
   EXPECT_FALSE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 
   // Changing parent @rotation_format to something invalid, reparse will fail,
   // value remains the same as before
   ASSERT_TRUE(rotationFormatAttrib->Set<std::string>("invalid_format"));
   EXPECT_FALSE(poseParam.Reparse());
   EXPECT_TRUE(poseParam.Get<Pose>(value));
-  EXPECT_EQ(Pose(2, 3, 4, IGN_DTOR(0.5), IGN_DTOR(0.6), IGN_DTOR(0.7)), value);
+  EXPECT_EQ(Pose(2, 3, 4, GZ_DTOR(0.5), GZ_DTOR(0.6), GZ_DTOR(0.7)), value);
 }
 
 /////////////////////////////////////////////////
@@ -794,7 +794,7 @@ TEST(Param, IgnoresParentElementAttribute)
 /////////////////////////////////////////////////
 TEST(Param, WithoutParentElementSetParentElementFail)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::Param poseParam("", "pose", "0 0 0 0 0 0", false, "description");
   EXPECT_TRUE(poseParam.SetFromString("2 3 4 0.5 0.6 0.7"));
@@ -826,7 +826,7 @@ TEST(Param, WithoutParentElementSetParentElementFail)
 /////////////////////////////////////////////////
 TEST(Param, ChangeParentElementFail)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -867,7 +867,7 @@ TEST(Param, ChangeParentElementFail)
 /////////////////////////////////////////////////
 TEST(Param, PoseWithDefaultValue)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   auto poseElem = std::make_shared<sdf::Element>();
   poseElem->SetName("pose");
@@ -899,12 +899,4 @@ TEST(Param, PoseWithDefaultValue)
 
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0), poseElemClone->Get<Pose>());
   EXPECT_STREQ(expectedString.c_str(), poseElemClone->ToString("").c_str());
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

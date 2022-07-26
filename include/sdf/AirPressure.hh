@@ -17,7 +17,7 @@
 #ifndef SDF_AIRPRESSURE_HH_
 #define SDF_AIRPRESSURE_HH_
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -86,11 +86,13 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// air pressure sensor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated sensor values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

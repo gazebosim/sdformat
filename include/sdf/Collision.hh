@@ -19,8 +19,8 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -85,12 +85,12 @@ namespace sdf
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the collision object.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The pose of the collision object.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -117,6 +117,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// collision.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated collision values.
     public: sdf::ElementPtr ToElement() const;
 
@@ -139,7 +141,7 @@ namespace sdf
     friend class Link;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

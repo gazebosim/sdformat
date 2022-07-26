@@ -33,6 +33,8 @@
 #include "sdf/sdf_config.h"
 #include "EmbeddedSdf.hh"
 
+#include <gz/utils/Environment.hh>
+
 namespace sdf
 {
 inline namespace SDF_VERSION_NAMESPACE
@@ -118,18 +120,10 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     return path;
   }
 
-  // Next check SDF_PATH environment variable
-#ifndef _WIN32
-  const char *pathCStr = std::getenv("SDF_PATH");
-#else
-  char *pathCStr;
-  size_t sz = 0;
-  _dupenv_s(&pathCStr, &sz, "SDF_PATH");
-#endif
-
-  if (pathCStr)
+  std::string sdfPathEnv;
+  if(gz::utils::env("SDF_PATH", sdfPathEnv))
   {
-    std::vector<std::string> paths = sdf::split(pathCStr, ":");
+    std::vector<std::string> paths = sdf::split(sdfPathEnv, ":");
     for (std::vector<std::string>::iterator iter = paths.begin();
          iter != paths.end(); ++iter)
     {
@@ -373,9 +367,15 @@ ElementPtr SDF::Root() const
 }
 
 /////////////////////////////////////////////////
-void SDF::Root(const ElementPtr _root)
+void SDF::SetRoot(const ElementPtr _root)
 {
   this->dataPtr->root = _root;
+}
+
+/////////////////////////////////////////////////
+void SDF::Root(const ElementPtr _root)
+{
+  this->SetRoot(_root);
 }
 
 /////////////////////////////////////////////////

@@ -26,6 +26,14 @@ TEST(DOMCamera, Construction)
   cam.SetName("my_camera");
   EXPECT_EQ("my_camera", cam.Name());
 
+  EXPECT_FALSE(cam.Triggered());
+  cam.SetTriggered(true);
+  EXPECT_TRUE(cam.Triggered());
+
+  EXPECT_TRUE(cam.TriggerTopic().empty());
+  cam.SetTriggerTopic("my_camera/trigger");
+  EXPECT_EQ("my_camera/trigger", cam.TriggerTopic());
+
   EXPECT_DOUBLE_EQ(1.047, cam.HorizontalFov().Radian());
   cam.SetHorizontalFov(1.45);
   EXPECT_DOUBLE_EQ(1.45, cam.HorizontalFov().Radian());
@@ -41,6 +49,10 @@ TEST(DOMCamera, Construction)
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, cam.PixelFormat());
   cam.SetPixelFormat(sdf::PixelFormatType::L_INT8);
   EXPECT_EQ(sdf::PixelFormatType::L_INT8 , cam.PixelFormat());
+
+  EXPECT_EQ(4u, cam.AntiAliasingValue());
+  cam.SetAntiAliasingValue(8);
+  EXPECT_EQ(8u, cam.AntiAliasingValue());
 
   EXPECT_DOUBLE_EQ(0.1, cam.DepthNearClip());
   EXPECT_FALSE(cam.HasDepthNearClip());
@@ -106,13 +118,13 @@ TEST(DOMCamera, Construction)
   cam.SetDistortionP2(0.2);
   EXPECT_DOUBLE_EQ(0.2, cam.DistortionP2());
 
-  EXPECT_EQ(ignition::math::Vector2d(0.5, 0.5), cam.DistortionCenter());
-  cam.SetDistortionCenter(ignition::math::Vector2d(0.1, 0.2));
-  EXPECT_EQ(ignition::math::Vector2d(0.1, 0.2), cam.DistortionCenter());
+  EXPECT_EQ(gz::math::Vector2d(0.5, 0.5), cam.DistortionCenter());
+  cam.SetDistortionCenter(gz::math::Vector2d(0.1, 0.2));
+  EXPECT_EQ(gz::math::Vector2d(0.1, 0.2), cam.DistortionCenter());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, cam.RawPose());
-  cam.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cam.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, cam.RawPose());
+  cam.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), cam.RawPose());
 
   EXPECT_TRUE(cam.PoseRelativeTo().empty());
   cam.SetPoseRelativeTo("/frame");
@@ -146,7 +158,7 @@ TEST(DOMCamera, Construction)
   cam.SetLensFunction("sin");
   EXPECT_EQ("sin", cam.LensFunction());
 
-  EXPECT_DOUBLE_EQ(IGN_PI_2, cam.LensCutoffAngle().Radian());
+  EXPECT_DOUBLE_EQ(GZ_PI_2, cam.LensCutoffAngle().Radian());
   cam.SetLensCutoffAngle(0.456);
   EXPECT_DOUBLE_EQ(0.456, cam.LensCutoffAngle().Radian());
 
@@ -176,7 +188,7 @@ TEST(DOMCamera, Construction)
 
   EXPECT_TRUE(cam.HasLensIntrinsics());
 
-  EXPECT_EQ(4294967295u, cam.VisibilityMask());
+  EXPECT_EQ(UINT32_MAX, cam.VisibilityMask());
   cam.SetVisibilityMask(123u);
   EXPECT_EQ(123u, cam.VisibilityMask());
 

@@ -46,6 +46,13 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool init(SDFPtr _sdf);
 
+  /// \brief Initialize the SDF interface from the embedded root spec file
+  /// \param[out] _sdf Pointer to an SDF object.
+  /// \param[in] _config Custom parser configuration
+  /// \return True if successful.
+  SDFORMAT_VISIBLE
+  bool init(SDFPtr _sdf, const ParserConfig &_config);
+
   /// \brief Initialize the SDF interface using a file
   /// \param[in] _filename Name of the SDF file
   /// \param[out] _sdf Pointer to an SDF object.
@@ -386,6 +393,17 @@ namespace sdf
   /// \return True if all models have joints with valid parent and child
   /// link names.
   SDFORMAT_VISIBLE
+  bool checkJointParentChildNames(const sdf::Root *_root);
+
+  /// \brief Check that all joints in contained models specify parent
+  /// and child link names that match the names of sibling links.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root SDF Root object to check recursively.
+  /// \return True if all models have joints with valid parent and child
+  /// link names.
+  /// \deprecated Use checkJointParentChildNames.
+  SDFORMAT_VISIBLE GZ_DEPRECATED(13)
   bool checkJointParentChildLinkNames(const sdf::Root *_root);
 
   /// \brief Check that all joints in contained models specify parent
@@ -444,6 +462,13 @@ namespace sdf
   /// \return True if the element should be validated
   SDFORMAT_VISIBLE
   bool shouldValidateElement(sdf::ElementPtr _elem);
+
+  /// \brief Function to compute a merged model's proxy frame name
+  ///
+  /// \param [in] _modelName The merged model's name
+  /// \return The computed frame name
+  SDFORMAT_VISIBLE
+  std::string computeMergedModelProxyFrameName(const std::string &_modelName);
   }
 }
 #endif

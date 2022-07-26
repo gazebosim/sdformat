@@ -36,7 +36,7 @@ class sdf::Sky::Implementation
   public: double cloudSpeed = 0.6;
 
   /// \brief Cloud direction.
-  public: ignition::math::Angle cloudDirection;
+  public: gz::math::Angle cloudDirection;
 
   /// \brief Cloud humidity
   public: double cloudHumidity = 0.5;
@@ -45,8 +45,11 @@ class sdf::Sky::Implementation
   public: double cloudMeanSize = 0.5;
 
   /// \brief Cloud ambient color
-  public: ignition::math::Color cloudAmbient =
-      ignition::math::Color(0.8f, 0.8f, 0.8f);
+  public: gz::math::Color cloudAmbient =
+      gz::math::Color(0.8f, 0.8f, 0.8f);
+
+  /// \brief Skybox texture URI
+  public: std::string cubemapUri = "";
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -54,7 +57,7 @@ class sdf::Sky::Implementation
 
 /////////////////////////////////////////////////
 Sky::Sky()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -107,13 +110,13 @@ void Sky::SetCloudSpeed(double _speed)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Angle Sky::CloudDirection() const
+gz::math::Angle Sky::CloudDirection() const
 {
   return this->dataPtr->cloudDirection;
 }
 
 /////////////////////////////////////////////////
-void Sky::SetCloudDirection(const ignition::math::Angle &_angle)
+void Sky::SetCloudDirection(const gz::math::Angle &_angle)
 {
   this->dataPtr->cloudDirection = _angle;
 }
@@ -143,15 +146,27 @@ void Sky::SetCloudMeanSize(double _size)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color Sky::CloudAmbient() const
+gz::math::Color Sky::CloudAmbient() const
 {
   return this->dataPtr->cloudAmbient;
 }
 
 /////////////////////////////////////////////////
-void Sky::SetCloudAmbient(const ignition::math::Color &_ambient)
+void Sky::SetCloudAmbient(const gz::math::Color &_ambient)
 {
   this->dataPtr->cloudAmbient = _ambient;
+}
+
+//////////////////////////////////////////////////
+const std::string &Sky::CubemapUri() const
+{
+  return this->dataPtr->cubemapUri;
+}
+
+//////////////////////////////////////////////////
+void Sky::SetCubemapUri(const std::string &_uri)
+{
+  this->dataPtr->cubemapUri = _uri;
 }
 
 /////////////////////////////////////////////////
@@ -176,6 +191,8 @@ Errors Sky::Load(ElementPtr _sdf)
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
       _sdf->Get<double>("sunset", this->dataPtr->sunset).first;
+  this->dataPtr->cubemapUri =
+      _sdf->Get<std::string>("cubemap_uri", this->dataPtr->cubemapUri).first;
 
   if ( _sdf->HasElement("clouds"))
   {
@@ -183,14 +200,14 @@ Errors Sky::Load(ElementPtr _sdf)
     this->dataPtr->cloudSpeed =
         cloudElem->Get<double>("speed", this->dataPtr->cloudSpeed).first;
     this->dataPtr->cloudDirection =
-        cloudElem->Get<ignition::math::Angle>("direction",
+        cloudElem->Get<gz::math::Angle>("direction",
         this->dataPtr->cloudDirection).first;
     this->dataPtr->cloudHumidity =
         cloudElem->Get<double>("humidity", this->dataPtr->cloudHumidity).first;
     this->dataPtr->cloudMeanSize =
         cloudElem->Get<double>("mean_size", this->dataPtr->cloudMeanSize).first;
     this->dataPtr->cloudAmbient =
-        cloudElem->Get<ignition::math::Color>("ambient",
+        cloudElem->Get<gz::math::Color>("ambient",
         this->dataPtr->cloudAmbient).first;
   }
 
@@ -213,6 +230,7 @@ sdf::ElementPtr Sky::ToElement() const
   elem->GetElement("time")->Set(this->Time());
   elem->GetElement("sunrise")->Set(this->Sunrise());
   elem->GetElement("sunset")->Set(this->Sunset());
+  elem->GetElement("cubemap_uri")->Set(this->CubemapUri());
 
   sdf::ElementPtr cloudElem = elem->GetElement("clouds");
   cloudElem->GetElement("speed")->Set(this->CloudSpeed());

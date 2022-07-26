@@ -26,6 +26,8 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 
+#include <gz/utils/Environment.hh>
+
 using namespace sdf;
 
 /// Static pointer to the console.
@@ -49,13 +51,12 @@ Console::Console()
 #ifndef SDFORMAT_DISABLE_CONSOLE_LOGFILE
   // Set up the file that we'll log to.
 #ifndef _WIN32
-  const char *home = std::getenv("HOME");
+  std::string homeVarName = "HOME";
 #else
-  char *home;
-  size_t sz = 0;
-  _dupenv_s(&home, &sz, "HOMEPATH");
+  std::string homeVarName = "HOMEPATH";
 #endif
-  if (!home)
+  std::string home;
+  if (!gz::utils::env(homeVarName, home))
   {
     std::cerr << "No HOME defined in the environment. Will not log."
               << std::endl;

@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
@@ -168,8 +168,14 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the registered custom model parsers
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
+  /// \brief Set the preserveFixedJoint flag.
+  public: void URDFSetPreserveFixedJoint(bool _preserveFixedJoint);
+
+  /// \brief Get the preserveFixedJoint flag value.
+  public: bool URDFPreserveFixedJoint() const;
+
   /// \brief Private data pointer.
-  IGN_UTILS_IMPL_PTR(dataPtr)
+  GZ_UTILS_IMPL_PTR(dataPtr)
 };
 }
 }

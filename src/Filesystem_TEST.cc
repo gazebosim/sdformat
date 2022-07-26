@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <gz/utils/Environment.hh>
+
 #ifndef _WIN32
 #include <fcntl.h>
 #include <limits.h>
@@ -34,14 +36,9 @@
 bool create_and_switch_to_temp_dir(std::string &_new_temp_path)
 {
   std::string tmppath;
-  const char *tmp = getenv("TMPDIR");
-  if (tmp)
+  if(!gz::utils::env("TMPDIR", tmppath))
   {
-    tmppath = std::string(tmp);
-  }
-  else
-  {
-    tmppath = std::string("/tmp");
+    tmppath = "/tmp";
   }
 
   tmppath += "/XXXXXX";
@@ -360,12 +357,4 @@ TEST(Filesystem, directory_iterator)
   }
 
   EXPECT_EQ(found_items.size(), 0UL);
-}
-
-/////////////////////////////////////////////////
-/// Main
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

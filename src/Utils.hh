@@ -22,6 +22,7 @@
 #include <optional>
 #include <utility>
 #include <vector>
+#include <tinyxml2.h>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
 #include "sdf/InterfaceElements.hh"
@@ -57,12 +58,12 @@ namespace sdf
   /// function parameters) the pose value and coordinate frame.
   /// \param[in] _sdf Pointer to an SDF element that is a pose element.
   /// \param[out] _pose Value of the pose element. The default value is
-  /// ignition::math::Pose3d::Zero.
+  /// gz::math::Pose3d::Zero.
   /// \param[out] _frame Value of the frame attribute. The default value is
   /// an empty string.
-  /// \return True if the pose element contained an ignition::math::Pose3d
+  /// \return True if the pose element contained a gz::math::Pose3d
   /// value.
-  bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+  bool loadPose(sdf::ElementPtr _sdf, gz::math::Pose3d &_pose,
                 std::string &_frame);
 
   /// \brief If the value is negative, convert it to positive infinity.
@@ -229,6 +230,15 @@ namespace sdf
       return &_opt.value();
     return nullptr;
   }
+
+  /// \brief Copy all children from the provided tinyxml2 object into the
+  /// provided sdf element pointer.
+  /// \param[in, out] _sdf A valid sdf element pointer.
+  /// \param[in] _xml XML to copy.
+  /// \param[in] _onlyUnknown Set this to true to only copy XML elements that
+  /// do not have a matching description in the provided sdf element pointer.
+  void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
+      const bool _onlyUnknown);
 }
 }
 #endif

@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="ellipsoid">
+    <pose>0 3.0 0.5 0 0 0</pose>
+    <link name="ellipsoid_link">
+      <inertial>
+        <inertia>
+          <ixx>0.068</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.058</iyy>
+          <iyz>0</iyz>
+          <izz>0.026</izz>
+        </inertia>
+        <mass>1.0</mass>
+      </inertial>
+      <collision name="ellipsoid_collision">
+        <geometry>
+          <ellipsoid>
+            <radii>0.2 0.3 0.5</radii>
+          </ellipsoid>
+        </geometry>
+        <surface>
+          <contact>
+            <collide_bitmask>0xAB</collide_bitmask>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.7</mu2>
+              <slip1>4</slip1>
+              <slip2>5</slip2>
+              <fdir1>1.2 3.4 5.6</fdir1>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ellipsoid_visual">
+        <geometry>
+          <ellipsoid>
+            <radii>0.2 0.3 0.5</radii>
+          </ellipsoid>
+        </geometry>
+        <material>
+          <ambient>1 0 1 1</ambient>
+          <diffuse>1 0 1 1</diffuse>
+          <specular>1 0 1 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

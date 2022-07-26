@@ -18,7 +18,7 @@
 #define SDF_MATERIAL_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -59,49 +59,57 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Ambient color.
-    public: ignition::math::Color Ambient() const;
+    public: gz::math::Color Ambient() const;
 
     /// \brief Set the ambient color. The ambient color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Ambient color.
-    public: void SetAmbient(const ignition::math::Color &_color);
+    public: void SetAmbient(const gz::math::Color &_color);
 
     /// \brief Get the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Diffuse color.
-    public: ignition::math::Color Diffuse() const;
+    public: gz::math::Color Diffuse() const;
 
     /// \brief Set the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Diffuse color.
-    public: void SetDiffuse(const ignition::math::Color &_color);
+    public: void SetDiffuse(const gz::math::Color &_color);
 
     /// \brief Get the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Specular color.
-    public: ignition::math::Color Specular() const;
+    public: gz::math::Color Specular() const;
 
     /// \brief Set the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Specular color.
-    public: void SetSpecular(const ignition::math::Color &_color);
+    public: void SetSpecular(const gz::math::Color &_color);
+
+    /// \brief Get the specular exponent.
+    /// \return Specular exponent.
+    public: double Shininess() const;
+
+    /// \brief Set the specular exponent.
+    /// \param[in] _shininess Specular exponent.
+    public: void SetShininess(const double _shininess);
 
     /// \brief Get the emissive color. The emissive color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Emissive color.
-    public: ignition::math::Color Emissive() const;
+    public: gz::math::Color Emissive() const;
 
     /// \brief Set the emissive color. The emissive color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Emissive color.
-    public: void SetEmissive(const ignition::math::Color &_color);
+    public: void SetEmissive(const gz::math::Color &_color);
 
     /// \brief Get render order for coplanar polygons. The higher value will
     /// be rendered on top of the other coplanar polygons. The default value
@@ -195,11 +203,13 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// material.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated material values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

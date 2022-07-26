@@ -17,9 +17,9 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
-#include <ignition/math/Box.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Box.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -45,11 +45,11 @@ namespace sdf
 
     /// \brief Get the box size in meters.
     /// \return Size of the box in meters.
-    public: ignition::math::Vector3d Size() const;
+    public: gz::math::Vector3d Size() const;
 
     /// \brief Set the box size in meters.
     /// \param[in] _size Size of the box in meters.
-    public: void SetSize(const ignition::math::Vector3d &_size);
+    public: void SetSize(const gz::math::Vector3d &_size);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -57,21 +57,23 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Box.
-    /// \return A const reference to an ignition::math::Boxd object.
-    public: const ignition::math::Boxd &Shape() const;
+    /// \brief Get the Gazebo Math representation of this Box.
+    /// \return A const reference to a gz::math::Boxd object.
+    public: const gz::math::Boxd &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Box.
-    /// \return A reference to an ignition::math::Boxd object.
-    public: ignition::math::Boxd &Shape();
+    /// \brief Get a mutable Gazebo Math representation of this Box.
+    /// \return A reference to a gz::math::Boxd object.
+    public: gz::math::Boxd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// box.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated box values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

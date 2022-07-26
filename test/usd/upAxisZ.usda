@@ -1,0 +1,812 @@
+#usda 1.0
+(
+  metersPerUnit = 0.01
+  upAxis = "Z"
+)
+
+def PhysicsScene "physics"
+{
+    vector3f physics:gravityDirection = (0, 0, -1)
+    float physics:gravityMagnitude = 9.8
+}
+
+def DistantLight "defaultLight" (
+    prepend apiSchemas = ["ShapingAPI"]
+    kind = "model"
+)
+{
+    float angle = 1
+    float inputs:diffuse = 0.5
+    float inputs:intensity = 5000
+    float shaping:cone:angle = 180
+    float3 xformOp:rotateZYX = (0, 45, 0)
+    float3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+}
+
+def DiskLight "diskLight" (
+    prepend apiSchemas = ["ShapingAPI"]
+    kind = "model"
+)
+{
+    float inputs:intensity = 3000
+    float inputs:specular = 0.5
+    float3 xformOp:rotateZYX = (0, 0, 45)
+    float3 xformOp:translate = (0, 0, 1000)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+}
+
+def Xform "ground_plane"
+{
+    float3 xformOp:rotateXYZ = (0, 0, 0)
+    double3 xformOp:translate = (0, 0, -0.125)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+    def Xform "link"
+    {
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+        def Xform "visual"
+        {
+            float3 xformOp:rotateXYZ = (0, 0, 0)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+            def Cube "geometry"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_0>
+                double size = 1
+                float3 xformOp:scale = (100, 100, 0.25)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+            def Cube "collision" (
+                prepend apiSchemas = ["PhysicsCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_0>
+                double size = 1
+                float3 xformOp:scale = (100, 100, 0.25)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+    }
+}
+
+def Xform "box" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI"]
+)
+{
+    float3 xformOp:rotateXYZ = (0, 0, 0)
+    double3 xformOp:translate = (0, 0, 0.5)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+    def Xform "box_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0, 0, 0)
+        float3 physics:diagonalInertia = (0.16666, 0.16666, 0.16666)
+        float physics:mass = 1
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        float3 xformOp:scale = (1, 0.1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+        def Xform "box_visual"
+        {
+            float3 xformOp:rotateXYZ = (0, 0, 0)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+            def Cube "geometry" (
+              kind = "model"
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_1>
+                double size = 1
+                float3 xformOp:scale = (1, 0.1, 0.2)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+            def Cube "collision" (
+                prepend apiSchemas = ["PhysicsCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_1>
+                double size = 1
+                float3 xformOp:scale = (1, 1, 1)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+
+        def DiskLight "boxModelLight" (
+            prepend apiSchemas = ["ShapingAPI"]
+            kind = "model"
+        )
+        {
+            float inputs:intensity = 3000
+            float inputs:specular = 0.5
+            float3 xformOp:rotateZYX = (0, 0, 45)
+            float3 xformOp:translate = (0, 0, 1000)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+        }
+    }
+}
+
+def Xform "cylinder"
+{
+    float3 xformOp:rotateXYZ = (0, 0, 0)
+    double3 xformOp:translate = (0, -1.5, 0.5)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+    def Xform "cylinder_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0, 0, 0)
+        float3 physics:diagonalInertia = (0.1458, 0.1458, 0.125)
+        float physics:mass = 1.7
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+        def Xform "cylinder_visual"
+        {
+            float3 xformOp:rotateXYZ = (0, 0, 0)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+            def Cylinder "geometry" (
+              kind = "model"
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                double height = 1
+                rel material:binding = </Looks/Material_2>
+                double radius = 0.5
+            }
+            def Cylinder "collision" (
+                prepend apiSchemas = ["PhysicsCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                double height = 1
+                rel material:binding = </Looks/Material_2>
+                double radius = 0.5
+            }
+        }
+    }
+}
+
+def Xform "sphere"
+{
+    float3 xformOp:rotateZYX = (-69, 31, -62)
+    double3 xformOp:translate = (0, 1.5, 0.5)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+
+    def Xform "sphere_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0, 0, 0)
+        float3 physics:diagonalInertia = (0.1, 0.1, 0.1)
+        float physics:mass = 2
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+        def Xform "sphere_visual"
+        {
+            float3 xformOp:rotateXYZ = (0, 0, 0)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+            def Sphere "geometry" (
+              kind = "model"
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_3>
+                double radius = 0.5
+            }
+            def Sphere "collision" (
+                prepend apiSchemas = ["PhysicsCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_3>
+                double radius = 0.5
+            }
+        }
+    }
+}
+
+def Xform "capsule"
+{
+    float3 xformOp:rotateZYX = (15, 80, -55)
+    double3 xformOp:translate = (0, -3, 0.5)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+
+    def Xform "capsule_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0, 0, 0)
+        float3 physics:diagonalInertia = (0.074154, 0.074154, 0.018769)
+        float physics:mass = 1
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+        def Xform "capsule_visual"
+        {
+            float3 xformOp:rotateZYX = (0, 0, 90)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+
+            def Capsule "geometry" (
+              kind = "model"
+            )
+            {
+                float3[] extent = [(-0.2, -0.2, -0.5), (0.2, 0.2, 0.5)]
+                double height = 0.6
+                rel material:binding = </Looks/Material_4>
+                double radius = 0.2
+            }
+            def Capsule "collision" (
+                prepend apiSchemas = ["PhysicsCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.2, -0.2, -0.5), (0.2, 0.2, 0.5)]
+                double height = 0.6
+                rel material:binding = </Looks/Material_4>
+                double radius = 0.2
+            }
+        }
+    }
+}
+
+def Xform "ellipsoid"
+{
+    float3 xformOp:rotateXYZ = (15, 80, -55)
+    double3 xformOp:translate = (0, 3, 0.5)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+    def Xform "ellipsoid_link" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0, 0, 0)
+        float3 physics:diagonalInertia = (0.068, 0.058, 0.026)
+        float physics:mass = 1
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+        def Xform "ellipsoid_visual"
+        {
+            float3 xformOp:rotateXYZ = (0, 0, 0)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+
+            def Sphere "geometry" (
+              kind = "model"
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_5>
+                double radius = 0.5
+                float3 xformOp:scale = (0.4, 0.6, 1)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+            def Sphere "collision" (
+                prepend apiSchemas = ["PhysicsCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </Looks/Material_5>
+                double radius = 0.5
+                float3 xformOp:scale = (0.4, 0.6, 1)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+    }
+}
+
+def DistantLight "sun"
+{
+    float inputs:intensity = 1000
+    float intensity = 100
+    float3 xformOp:rotateXYZ = (0, -35, 0)
+    double3 xformOp:translate = (0, 0, 10)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+}
+
+def Scope "Looks"
+{
+  def Material "Material_0"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_0/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_0/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_0/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (0.8, 0.8, 0.8) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          token outputs:out
+      }
+  }
+
+  def Material "Material_1"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_1/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_1/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_1/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (1, 0, 0) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          token outputs:out
+      }
+  }
+
+  def Material "Material_2"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_2/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_2/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_2/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (0, 1, 0) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          token outputs:out
+      }
+  }
+
+  def Material "Material_3"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_3/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_3/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_3/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (0, 0, 1) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          token outputs:out
+      }
+  }
+
+  def Material "Material_4"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_4/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_4/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_4/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (1, 1, 0) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          token outputs:out
+      }
+  }
+
+  def Material "Material_5"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_5/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_5/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_5/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (1, 0, 1) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          token outputs:out
+      }
+  }
+
+  def Material "Material_textures"
+  {
+      token outputs:mdl:displacement.connect = </Looks/Material_36/Shader.outputs:out>
+      token outputs:mdl:surface.connect = </Looks/Material_36/Shader.outputs:out>
+      token outputs:mdl:volume.connect = </Looks/Material_36/Shader.outputs:out>
+
+      def Shader "Shader"
+      {
+          uniform token info:implementationSource = "sourceAsset"
+          uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+          uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+          color3f inputs:diffuse_color_constant = (1, 1, 1) (
+              customData = {
+                  float3 default = (0.2, 0.2, 0.2)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Color"
+              doc = "This is the base color"
+          )
+          asset inputs:diffuse_texture = @materials/textures/FANS_Albedo.png@ (
+              colorSpace = "auto"
+              customData = {
+                  asset default = @@
+              }
+              displayGroup = "Albedo"
+              displayName = "Base Map"
+          )
+          color3f inputs:emissive_color = (0, 0, 0) (
+              customData = {
+                  float3 default = (1, 0.1, 0.1)
+                  dictionary range = {
+                      float3 max = (100000, 100000, 100000)
+                      float3 min = (0, 0, 0)
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Color"
+              doc = "The emission color"
+          )
+          float inputs:emissive_intensity = 1 (
+              customData = {
+                  int default = 40
+                  dictionary range = {
+                      int max = 100000
+                      int min = 0
+                  }
+              }
+              displayGroup = "Emissive"
+              displayName = "Emissive Intensity"
+              doc = "Intensity of the emission"
+          )
+          bool inputs:enable_emission = 1 (
+              customData = {
+                  int default = 0
+              }
+              displayGroup = "Emissive"
+              displayName = "Enable Emissive"
+              doc = "Enables the emission of light from the material"
+          )
+          float inputs:metallic_constant = 0.5 (
+              customData = {
+                  double default = 0.5
+                  dictionary range = {
+                      int max = 1
+                      int min = 0
+                  }
+              }
+              displayGroup = "Reflectivity"
+              displayName = "Metallic Amount"
+              doc = "Metallic Material"
+          )
+          asset inputs:metallic_texture = @materials/textures/FANS_Metalness.png@ (
+              colorSpace = "raw"
+              customData = {
+                  asset default = @@
+              }
+              displayGroup = "Reflectivity"
+              displayName = "Metallic Map"
+          )
+          asset inputs:normalmap_texture = @materials/textures/FANS_Normal.png@ (
+              colorSpace = "raw"
+              customData = {
+                  asset default = @@
+              }
+              displayGroup = "Normal"
+              displayName = "Normal Map"
+          )
+          float inputs:reflection_roughness_constant = 0.5 (
+              customData = {
+                  double default = 0.5
+                  dictionary range = {
+                      int max = 1
+                      int min = 0
+                  }
+              }
+              displayGroup = "Reflectivity"
+              displayName = "Roughness Amount"
+              doc = "Higher roughness values lead to more blurry reflections"
+          )
+          bool inputs:reflection_roughness_texture_influence = 1 (
+              colorSpace = "raw"
+              customData = {
+                  int default = 0
+                  dictionary range = {
+                      int max = 1
+                      int min = 0
+                  }
+              }
+              displayGroup = "Reflectivity"
+              displayName = "Roughness Map Influence"
+          )
+          asset inputs:reflectionroughness_texture = @materials/textures/FANS_Roughness.png@ (
+              colorSpace = "raw"
+              customData = {
+                  asset default = @@
+              }
+              displayGroup = "RoughnessMap"
+              displayName = "RoughnessMap Map"
+          )
+          token outputs:out
+      }
+  }
+}

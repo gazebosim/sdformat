@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <limits>
 
 #include "sdf/PrintConfig.hh"
 #include "sdf/Console.hh"
@@ -36,11 +37,14 @@ class PrintConfig::Implementation
 
   /// \brief True to preserve <include> tags, false to expand.
   public: bool preserveIncludes = false;
+
+  /// \brief The output stream's precision. By default, uses maximum precision.
+  public: int outPrecision = std::numeric_limits<int>::max();
 };
 
 /////////////////////////////////////////////////
 PrintConfig::PrintConfig()
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -105,12 +109,25 @@ std::optional<double> PrintConfig::RotationSnapTolerance() const
 }
 
 /////////////////////////////////////////////////
+void PrintConfig::SetOutPrecision(int _precision)
+{
+  this->dataPtr->outPrecision = _precision;
+}
+
+/////////////////////////////////////////////////
+int PrintConfig::OutPrecision() const
+{
+  return this->dataPtr->outPrecision;
+}
+
+/////////////////////////////////////////////////
 bool PrintConfig::operator==(const PrintConfig &_config) const
 {
   if (this->RotationInDegrees() == _config.RotationInDegrees() &&
       this->RotationSnapToDegrees() == _config.RotationSnapToDegrees() &&
       this->RotationSnapTolerance() == _config.RotationSnapTolerance() &&
-      this->PreserveIncludes() == _config.PreserveIncludes())
+      this->PreserveIncludes() == _config.PreserveIncludes() &&
+      this->OutPrecision() == _config.OutPrecision())
   {
     return true;
   }

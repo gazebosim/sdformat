@@ -17,13 +17,13 @@
 #ifndef SDF_NAVSAT_HH_
 #define SDF_NAVSAT_HH_
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
 #include <sdf/sdf_config.h>
 
-#include <ignition/math/Angle.hh>
+#include <gz/math/Angle.hh>
 
 namespace sdf
 {
@@ -134,7 +134,7 @@ namespace sdf
     public: bool operator!=(const NavSat &_navsat) const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

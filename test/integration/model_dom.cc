@@ -18,7 +18,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
@@ -28,8 +28,14 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
+
+/////////////////////////////////////////////////
+std::string findFileCb(const std::string &_input)
+{
+  return sdf::testing::TestFile("integration", "model", _input);
+}
 
 //////////////////////////////////////////////////
 TEST(DOMModel, NotAModel)
@@ -127,7 +133,7 @@ TEST(DOMRoot, LoadDoublePendulum)
   EXPECT_FALSE(nullptr == model->LinkByIndex(1));
   EXPECT_FALSE(nullptr == model->LinkByIndex(2));
   EXPECT_TRUE(nullptr == model->LinkByIndex(3));
-  EXPECT_EQ(ignition::math::Pose3d(1, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("base"));
@@ -165,7 +171,7 @@ TEST(DOMRoot, NestedModel)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("parent"));
@@ -309,6 +315,23 @@ TEST(DOMRoot, MultiNestedModel)
   EXPECT_EQ(innerModel->FrameByIndex(0),
             outerModel->FrameByName(innerFrameNestedName));
   EXPECT_NE(nullptr, outerModel->FrameByName(innerFrameNestedName));
+
+
+  // Check that each implicit/explicit frame is in the frame attached to graph
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("outer_link"));
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("outer_joint"));
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("outer_frame"));
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph("mid_model"));
+
+  // Check that mid_link does not exist directly under outer_model, but can be
+  // accessed via its scoped name
+  EXPECT_FALSE(outerModel->NameExistsInFrameAttachedToGraph("mid_link"));
+  EXPECT_TRUE(
+      outerModel->NameExistsInFrameAttachedToGraph("mid_model::mid_link"));
+
+  // Check multiple levels of nesting
+  EXPECT_TRUE(outerModel->NameExistsInFrameAttachedToGraph(
+      "mid_model::inner_model::inner_joint"));
 }
 
 /////////////////////////////////////////////////
@@ -322,7 +345,7 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -345,11 +368,11 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   EXPECT_TRUE(model->ModelByName("M2")->PoseRelativeTo().empty());
   EXPECT_EQ("M1", model->ModelByName("M3")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->ModelByName("M1")->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), model->ModelByName("M1")->RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->ModelByName("M2")->RawPose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->ModelByName("M3")->RawPose());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI / 2, 0),
             model->ModelByName("M1")->SemanticPose().RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
             model->ModelByName("M2")->SemanticPose().RawPose());
@@ -362,7 +385,7 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   EXPECT_TRUE(
     model->ModelByName("M1")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     model->ModelByName("M2")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
@@ -370,14 +393,14 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
   EXPECT_TRUE(
     model->ModelByName("M3")->SemanticPose().Resolve(pose,
                                                      "__model__").empty());
-  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, -3, 0, GZ_PI/2, 0), pose);
   // test other API too
   EXPECT_TRUE(model->ModelByName("M1")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(model->ModelByName("M2")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->ModelByName("M3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(1, 0, -3, 0, GZ_PI/2, 0), pose);
 
   // resolve pose of M1 relative to M3
   // should be inverse of M3's Pose()
@@ -412,7 +435,7 @@ TEST(DOMRoot, LoadCanonicalLink)
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_EQ(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   EXPECT_TRUE(model->LinkNameExists("link1"));
@@ -548,10 +571,10 @@ TEST(DOMRoot, ModelPlacementFrameAttribute)
   auto *model = root.Model();
   ASSERT_NE(nullptr, model);
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   errors = model->SemanticPose().Resolve(pose);
   EXPECT_TRUE(errors.empty()) << errors;
-  EXPECT_EQ(ignition::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(0, -2, 10, 0, 0, 0), pose);
 }
 
 /////////////////////////////////////////////////
@@ -626,5 +649,106 @@ TEST(DOMModel, LoadModelWithDuplicateChildNames)
     auto errors = root.Load(testFile);
     EXPECT_TRUE(errors.empty()) << errors;
     EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  }
+}
+
+//////////////////////////////////////////////////
+TEST(DOMModel, ModelPlugins)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  ASSERT_EQ(2u, model->Plugins().size());
+  EXPECT_EQ("model_plugin1", model->Plugins()[0].Name());
+  EXPECT_EQ("test/file/model1", model->Plugins()[0].Filename());
+  EXPECT_EQ("model_plugin2", model->Plugins()[1].Name());
+  EXPECT_EQ("test/file/model2", model->Plugins()[1].Filename());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMModel, IncludeModelWithPlugin)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "include_model_with_plugin.sdf");
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  sdf::OutputConfig outConfig;
+  // Test ToElement with useInclude == true
+  {
+    outConfig.SetToElementUseIncludeTag(true);
+    sdf::ElementPtr elem = model->ToElement(outConfig);
+
+    // There should be a uri
+    ASSERT_TRUE(elem->HasElement("uri"));
+    EXPECT_EQ("test_model_with_plugin", elem->Get<std::string>("uri"));
+
+    // There should be a plugin
+    ASSERT_TRUE(elem->HasElement("plugin"));
+    sdf::ElementPtr pluginElem = elem->GetElement("plugin");
+    EXPECT_EQ("test_model_include_plugin",
+        pluginElem->Get<std::string>("name"));
+
+    EXPECT_EQ("include/test/model/plugin",
+        pluginElem->Get<std::string>("filename"));
+
+    // There should be only one plugin
+    ASSERT_EQ(nullptr, pluginElem->GetNextElement("plugin"));
+  }
+
+  // Test ToElement with useInclude == false. This will result in the full
+  // model SDF which would have two plugins, one from the <include> tag and
+  // one from the included model
+  {
+    outConfig.SetToElementUseIncludeTag(false);
+    sdf::ElementPtr elem = model->ToElement(outConfig);
+
+    // There should NOT be a uri
+    ASSERT_FALSE(elem->HasElement("uri"));
+
+    // There should be a plugin
+    ASSERT_TRUE(elem->HasElement("plugin"));
+    sdf::ElementPtr pluginElem = elem->GetElement("plugin");
+    EXPECT_EQ("test_model_plugin",
+        pluginElem->Get<std::string>("name"));
+
+    EXPECT_EQ("test/model/plugin",
+        pluginElem->Get<std::string>("filename"));
+
+    // There should be a second plugin with different information
+    pluginElem = pluginElem->GetNextElement("plugin");
+    ASSERT_NE(nullptr, pluginElem);
+    EXPECT_EQ("test_model_include_plugin",
+        pluginElem->Get<std::string>("name"));
+    EXPECT_EQ("include/test/model/plugin",
+        pluginElem->Get<std::string>("filename"));
+
+    // THere should not be third plugin.
+    ASSERT_EQ(nullptr, pluginElem->GetNextElement("plugin"));
   }
 }

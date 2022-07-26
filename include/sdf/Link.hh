@@ -19,8 +19,9 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -76,6 +77,13 @@ namespace sdf
     /// \sa uint64_t VisualCount() const
     public: const Visual *VisualByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable visual based on an index.
+    /// \param[in] _index Index of the visual. The index should be in the
+    /// range [0..VisualCount()).
+    /// \return Pointer to the visual. Nullptr if the index does not exist.
+    /// \sa uint64_t VisualCount() const
+    public: Visual *VisualByIndex(uint64_t _index);
+
     /// \brief Get whether a visual name exists.
     /// \param[in] _name Name of the visual to check.
     /// \return True if there exists a visual with the given name.
@@ -85,6 +93,11 @@ namespace sdf
     /// \param[in] _name Name of the visual.
     /// \return Pointer to the visual. Nullptr if the name does not exist.
     public: const Visual *VisualByName(const std::string &_name) const;
+
+    /// \brief Get a mutable visual based on a name.
+    /// \param[in] _name Name of the visual.
+    /// \return Pointer to the visual. Nullptr if the name does not exist.
+    public: Visual *VisualByName(const std::string &_name);
 
     /// \brief Get the number of collisions.
     /// \return Number of collisions contained in this Link object.
@@ -97,6 +110,13 @@ namespace sdf
     /// \sa uint64_t CollisionCount() const
     public: const Collision *CollisionByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable collision based on an index.
+    /// \param[in] _index Index of the collision. The index should be in the
+    /// range [0..CollisionCount()).
+    /// \return Pointer to the collision. Nullptr if the index does not exist.
+    /// \sa uint64_t CollisionCount() const
+    public: Collision *CollisionByIndex(uint64_t _index);
+
     /// \brief Get whether a collision name exists.
     /// \param[in] _name Name of the collision to check.
     /// \return True if there exists a collision with the given name.
@@ -106,6 +126,11 @@ namespace sdf
     /// \param[in] _name Name of the collision.
     /// \return Pointer to the collision. Nullptr if the name does not exist.
     public: const Collision *CollisionByName(const std::string &_name) const;
+
+    /// \brief Get a mutable collision based on a name.
+    /// \param[in] _name Name of the collision.
+    /// \return Pointer to the collision. Nullptr if the name does not exist.
+    public: Collision *CollisionByName(const std::string &_name);
 
     /// \brief Get the number of lights.
     /// \return Number of lights contained in this Link object.
@@ -118,6 +143,13 @@ namespace sdf
     /// \sa uint64_t LightCount() const
     public: const Light *LightByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: Light *LightByIndex(uint64_t _index);
+
     /// \brief Get whether a light name exists.
     /// \param[in] _name Name of the light to check.
     /// \return True if there exists a light with the given name.
@@ -127,6 +159,11 @@ namespace sdf
     /// \param[in] _name Name of the light.
     /// \return Pointer to the light. Nullptr if the name does not exist.
     public: const Light *LightByName(const std::string &_name) const;
+
+    /// \brief Get a mutable light based on a name.
+    /// \param[in] _name Name of the light.
+    /// \return Pointer to the light. Nullptr if the name does not exist.
+    public: Light *LightByName(const std::string &_name);
 
     /// \brief Get the number of sensors.
     /// \return Number of sensors contained in this Link object.
@@ -139,6 +176,13 @@ namespace sdf
     /// \sa uint64_t SensorCount() const
     public: const Sensor *SensorByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable sensor based on an index.
+    /// \param[in] _index Index of the sensor. The index should be in the
+    /// range [0..SensorCount()).
+    /// \return Pointer to the sensor. Nullptr if the index does not exist.
+    /// \sa uint64_t SensorCount() const
+    public: Sensor *SensorByIndex(uint64_t _index);
+
     /// \brief Get whether a sensor name exists.
     /// \param[in] _name Name of the sensor to check.
     /// \return True if there exists a sensor with the given name.
@@ -150,6 +194,13 @@ namespace sdf
     ///  does not exist.
     /// \sa bool SensorNameExists(const std::string &_name) const
     public: const Sensor *SensorByName(const std::string &_name) const;
+
+    /// \brief Get a mutable sensor based on a name.
+    /// \param[in] _name Name of the sensor.
+    /// \return Pointer to the sensor. Nullptr if a sensor with the given name
+    ///  does not exist.
+    /// \sa bool SensorNameExists(const std::string &_name) const
+    public: Sensor *SensorByName(const std::string &_name);
 
     /// \brief Get the number of particle emitters.
     /// \return Number of particle emitters contained in this Link object.
@@ -164,6 +215,14 @@ namespace sdf
     public: const ParticleEmitter *ParticleEmitterByIndex(
                 const uint64_t _index) const;
 
+    /// \brief Get a mutable particle emitter based on an index.
+    /// \param[in] _index Index of the particle emitter.
+    /// The index should be in the range [0..ParticleEmitterCount()).
+    /// \return Pointer to the particle emitter. Nullptr if the index does
+    /// not exist.
+    /// \sa uint64_t ParticleEmitterCount() const
+    public: ParticleEmitter *ParticleEmitterByIndex(uint64_t _index);
+
     /// \brief Get whether a particle emitter name exists.
     /// \param[in] _name Name of the particle emitter to check.
     /// \return True if there exists a particle emitter with the given name.
@@ -177,36 +236,43 @@ namespace sdf
     public: const ParticleEmitter *ParticleEmitterByName(
                 const std::string &_name) const;
 
+    /// \brief Get a mutable particle emitter based on a name.
+    /// \param[in] _name Name of the particle emitter.
+    /// \return Pointer to the particle emitter. Nullptr if a particle emitter
+    /// with the given name does not exist.
+    /// \sa bool ParticleEmitterNameExists(const std::string &_name) const
+    public: ParticleEmitter *ParticleEmitterByName(const std::string &_name);
+
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and
     /// a pose for the inertial reference frame. The units for mass is
     /// kilograms with a default value of 1kg. The 3x3 rotational inertia
     /// matrix is symmetric and only 6 above-diagonal elements of this matrix
-    /// are specified the Interial's ignition::math::MassMatrix3 property.
+    /// are specified the Interial's gz::math::MassMatrix3 property.
     ///
     /// The origin of the inertial reference frame needs to be at the center
     /// of mass expressed in this link's frame.
     /// The axes of the inertial reference frame do not need to
     /// be aligned with the principal axes of the inertia.
     /// \return The link's inertial value.
-    /// \sa void SetInertial(const ignition::math::Inertiald &_inertial)
-    public: const ignition::math::Inertiald &Inertial() const;
+    /// \sa void SetInertial(const gz::math::Inertiald &_inertial)
+    public: const gz::math::Inertiald &Inertial() const;
 
     /// \brief Set the inertial value for this link.
     /// \param[in] _inertial The link's inertial value.
     /// \return True if the inertial is valid, false otherwise.
-    /// \sa const ignition::math::Inertiald &Inertial() const
-    public: bool SetInertial(const ignition::math::Inertiald &_inertial);
+    /// \sa const gz::math::Inertiald &Inertial() const
+    public: bool SetInertial(const gz::math::Inertiald &_inertial);
 
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the link.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new link pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -299,11 +365,13 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// link.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated link values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

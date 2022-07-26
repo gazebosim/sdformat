@@ -21,7 +21,7 @@
 #include "sdf/Error.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/parser.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 ////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ TEST(DeprecatedElements, CanEmitErrors)
   elem->SetRequired("-1");
   elem->SetName("testElem");
   // Change the root of sdf so we can test "testElem" in isolation
-  sdf->Root(elem);
+  sdf->SetRoot(elem);
   auto config = sdf::ParserConfig::GlobalConfig();
   config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -89,7 +89,7 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
   elem->SetRequired("-1");
   elem->SetName("testElem");
   // Change the root of sdf so we can test "testElem" in isolation
-  sdf->Root(elem);
+  sdf->SetRoot(elem);
   {
     auto config = sdf::ParserConfig::GlobalConfig();
     config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);

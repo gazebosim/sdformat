@@ -55,8 +55,14 @@ class sdf::Camera::Implementation
   /// \brief Name of the camera.
   public: std::string name = "";
 
+  /// \brief True if the camera is triggered by a topic.
+  public: bool triggered{false};
+
+  /// \brief Camera trigger topic.
+  public: std::string triggerTopic = "";
+
   /// \brief Horizontal fied of view.
-  public: ignition::math::Angle hfov{1.047};
+  public: gz::math::Angle hfov{1.047};
 
   /// \brief Image width.
   public: uint32_t imageWidth{320};
@@ -66,6 +72,9 @@ class sdf::Camera::Implementation
 
   /// \brief Image format.
   public: PixelFormatType pixelFormat{PixelFormatType::RGB_INT8};
+
+  /// \brief Anti-aliasing value.
+  public: uint32_t antiAliasingValue{4};
 
   /// \brief Near clip distance.
   public: double nearClip{0.1};
@@ -125,10 +134,10 @@ class sdf::Camera::Implementation
   public: double distortionP2{0.0};
 
   /// \brief The distortion center or principal point
-  public: ignition::math::Vector2d distortionCenter{0.5, 0.5};
+  public: gz::math::Vector2d distortionCenter{0.5, 0.5};
 
   /// \brief Pose of the link
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -155,7 +164,7 @@ class sdf::Camera::Implementation
   public: std::string lensFun{"tan"};
 
   /// \brief Lens cutoff angle.
-  public: ignition::math::Angle lensCutoffAngle{IGN_PI_2};
+  public: gz::math::Angle lensCutoffAngle{GZ_PI_2};
 
   /// \brief lens environment texture size.
   public: int lensEnvTextureSize{256};
@@ -179,12 +188,12 @@ class sdf::Camera::Implementation
   public: bool hasIntrinsics = false;
 
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
-  public: uint32_t visibilityMask{4294967295u};
+  public: uint32_t visibilityMask{UINT32_MAX};
 };
 
 /////////////////////////////////////////////////
 Camera::Camera()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -216,7 +225,13 @@ Errors Camera::Load(ElementPtr _sdf)
   // Read the camera's name
   loadName(_sdf, this->dataPtr->name);
 
-  this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
+  this->dataPtr->triggered = _sdf->Get<bool>("triggered",
+      this->dataPtr->triggered).first;
+
+  this->dataPtr->triggerTopic = _sdf->Get<std::string>("trigger_topic",
+      this->dataPtr->triggerTopic).first;
+
+  this->dataPtr->hfov = _sdf->Get<gz::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
 
   // Read the distortion
@@ -235,7 +250,7 @@ Errors Camera::Load(ElementPtr _sdf)
     this->dataPtr->distortionP2 = elem->Get<double>("p2",
       this->dataPtr->distortionP2).first;
 
-    this->dataPtr->distortionCenter = elem->Get<ignition::math::Vector2d>(
+    this->dataPtr->distortionCenter = elem->Get<gz::math::Vector2d>(
         "center", this->dataPtr->distortionCenter).first;
   }
 
@@ -254,6 +269,10 @@ Errors Camera::Load(ElementPtr _sdf)
       errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Camera sensor <image><format> has invalid value of " + format});
     }
+
+    this->dataPtr->antiAliasingValue =
+        elem->Get<uint32_t>("anti_aliasing",
+            this->dataPtr->antiAliasingValue).first;
   }
   else
   {
@@ -338,7 +357,7 @@ Errors Camera::Load(ElementPtr _sdf)
         this->dataPtr->lensType).first;
     this->dataPtr->lensScaleToHfov = elem->Get<bool>("scale_to_hfov",
         this->dataPtr->lensScaleToHfov).first;
-    this->dataPtr->lensCutoffAngle = elem->Get<ignition::math::Angle>(
+    this->dataPtr->lensCutoffAngle = elem->Get<gz::math::Angle>(
         "cutoff_angle", this->dataPtr->lensCutoffAngle).first;
     this->dataPtr->lensEnvTextureSize = elem->Get<int>("env_texture_size",
         this->dataPtr->lensEnvTextureSize).first;
@@ -403,13 +422,39 @@ void Camera::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Angle Camera::HorizontalFov() const
+bool Camera::Triggered() const
+{
+  return this->dataPtr->triggered;
+}
+
+
+/////////////////////////////////////////////////
+void Camera::SetTriggered(bool _triggered)
+{
+  this->dataPtr->triggered = _triggered;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::TriggerTopic() const
+{
+  return this->dataPtr->triggerTopic;
+}
+
+
+/////////////////////////////////////////////////
+void Camera::SetTriggerTopic(const std::string &_triggerTopic)
+{
+  this->dataPtr->triggerTopic = _triggerTopic;
+}
+
+/////////////////////////////////////////////////
+gz::math::Angle Camera::HorizontalFov() const
 {
   return this->dataPtr->hfov;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetHorizontalFov(const ignition::math::Angle &_hfov)
+void Camera::SetHorizontalFov(const gz::math::Angle &_hfov)
 {
   this->dataPtr->hfov = _hfov;
 }
@@ -460,6 +505,18 @@ std::string Camera::PixelFormatStr() const
 void Camera::SetPixelFormatStr(const std::string &_fmt)
 {
   this->dataPtr->pixelFormat = ConvertPixelFormat(_fmt);
+}
+
+//////////////////////////////////////////////////
+uint32_t Camera::AntiAliasingValue() const
+{
+  return this->dataPtr->antiAliasingValue;
+}
+
+//////////////////////////////////////////////////
+void Camera::SetAntiAliasingValue(uint32_t _antiAliasingValue)
+{
+  this->dataPtr->antiAliasingValue = _antiAliasingValue;
 }
 
 //////////////////////////////////////////////////
@@ -630,8 +687,8 @@ bool Camera::operator==(const Camera &_cam) const
     this->ImageWidth() == _cam.ImageWidth() &&
     this->ImageHeight() == _cam.ImageHeight() &&
     this->PixelFormat() == _cam.PixelFormat() &&
-    ignition::math::equal(this->NearClip(), _cam.NearClip()) &&
-    ignition::math::equal(this->FarClip(), _cam.FarClip()) &&
+    gz::math::equal(this->NearClip(), _cam.NearClip()) &&
+    gz::math::equal(this->FarClip(), _cam.FarClip()) &&
     this->SaveFrames() == _cam.SaveFrames() &&
     this->SaveFramesPath() == _cam.SaveFramesPath() &&
     this->ImageNoise() == _cam.ImageNoise() &&
@@ -717,19 +774,19 @@ void Camera::SetDistortionP2(double _p2)
 }
 
 //////////////////////////////////////////////////
-const ignition::math::Vector2d &Camera::DistortionCenter() const
+const gz::math::Vector2d &Camera::DistortionCenter() const
 {
   return this->dataPtr->distortionCenter;
 }
 
 //////////////////////////////////////////////////
-void Camera::SetDistortionCenter(const ignition::math::Vector2d &_center)
+void Camera::SetDistortionCenter(const gz::math::Vector2d &_center)
 {
   this->dataPtr->distortionCenter = _center;
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Camera::RawPose() const
+const gz::math::Pose3d &Camera::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -741,7 +798,7 @@ const std::string &Camera::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Camera::SetRawPose(const ignition::math::Pose3d &_pose)
+void Camera::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -837,13 +894,13 @@ void Camera::SetLensFunction(const std::string &_fun)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Angle Camera::LensCutoffAngle() const
+gz::math::Angle Camera::LensCutoffAngle() const
 {
   return this->dataPtr->lensCutoffAngle;
 }
 
 /////////////////////////////////////////////////
-void Camera::SetLensCutoffAngle(const ignition::math::Angle &_angle)
+void Camera::SetLensCutoffAngle(const gz::math::Angle &_angle)
 {
   this->dataPtr->lensCutoffAngle = _angle;
 }
@@ -998,13 +1055,16 @@ sdf::ElementPtr Camera::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
   elem->GetElement("horizontal_fov")->Set<double>(
       this->HorizontalFov().Radian());
   sdf::ElementPtr imageElem = elem->GetElement("image");
   imageElem->GetElement("width")->Set<double>(this->ImageWidth());
   imageElem->GetElement("height")->Set<double>(this->ImageHeight());
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
+  imageElem->GetElement("anti_aliasing")->Set<uint32_t>(
+      this->AntiAliasingValue());
+
   sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
   clipElem->GetElement("far")->Set<double>(this->FarClip());
@@ -1053,7 +1113,7 @@ sdf::ElementPtr Camera::ToElement() const
   distortionElem->GetElement("k3")->Set<double>(this->DistortionK3());
   distortionElem->GetElement("p1")->Set<double>(this->DistortionP1());
   distortionElem->GetElement("p2")->Set<double>(this->DistortionP2());
-  distortionElem->GetElement("center")->Set<ignition::math::Vector2d>(
+  distortionElem->GetElement("center")->Set<gz::math::Vector2d>(
       this->DistortionCenter());
 
   sdf::ElementPtr lensElem = elem->GetElement("lens");

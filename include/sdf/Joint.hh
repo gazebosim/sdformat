@@ -19,8 +19,8 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -113,21 +113,41 @@ namespace sdf
     /// \param[in] _jointType The type of joint.
     public: void SetType(const JointType _jointType);
 
+    /// \brief Get the name of this joint's parent frame.
+    /// \return The name of the parent frame.
+    public: const std::string &ParentName() const;
+
+    /// \brief Set the name of the parent frame.
+    /// \param[in] _name Name of the parent frame.
+    public: void SetParentName(const std::string &_name);
+
+    /// \brief Get the name of this joint's child frame.
+    /// \return The name of the child frame.
+    public: const std::string &ChildName() const;
+
+    /// \brief Set the name of the child frame.
+    /// \param[in] _name Name of the child frame.
+    public: void SetChildName(const std::string &_name);
+
     /// \brief Get the name of this joint's parent link.
     /// \return The name of the parent link.
-    public: const std::string &ParentLinkName() const;
+    /// \deprecated Use ParentName.
+    public: GZ_DEPRECATED(13) const std::string &ParentLinkName() const;
 
     /// \brief Set the name of the parent link.
     /// \param[in] _name Name of the parent link.
-    public: void SetParentLinkName(const std::string &_name);
+    /// \deprecated Use SetParentName.
+    public: GZ_DEPRECATED(13) void SetParentLinkName(const std::string &_name);
 
     /// \brief Get the name of this joint's child link.
     /// \return The name of the child link.
-    public: const std::string &ChildLinkName() const;
+    /// \deprecated Use ChildName.
+    public: GZ_DEPRECATED(13) const std::string &ChildLinkName() const;
 
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
-    public: void SetChildLinkName(const std::string &_name);
+    /// \deprecated Use SetChildName.
+    public: GZ_DEPRECATED(13) void SetChildLinkName(const std::string &_name);
 
     /// \brief Resolve the name of the child link from the
     /// FrameAttachedToGraph.
@@ -164,12 +184,12 @@ namespace sdf
     /// Transformations have not been applied to the return value.
     /// \return The pose of the joint. This is the raw pose value, as set in
     /// the SDF file.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the joint.
-    /// \sa const ignition::math::Pose3d &RawPose() const;
+    /// \sa const gz::math::Pose3d &RawPose() const;
     /// \param[in] _pose The pose of the joint.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -213,6 +233,13 @@ namespace sdf
     /// \sa uint64_t SensorCount() const
     public: const Sensor *SensorByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable sensor based on an index.
+    /// \param[in] _index Index of the sensor. The index should be in the
+    /// range [0..SensorCount()).
+    /// \return Pointer to the sensor. Nullptr if the index does not exist.
+    /// \sa uint64_t SensorCount() const
+    public: Sensor *SensorByIndex(uint64_t _index);
+
     /// \brief Get whether a sensor name exists.
     /// \param[in] _name Name of the sensor to check.
     /// \return True if there exists a sensor with the given name.
@@ -225,8 +252,17 @@ namespace sdf
     /// \sa bool SensorNameExists(const std::string &_name) const
     public: const Sensor *SensorByName(const std::string &_name) const;
 
+    /// \brief Get a mutable sensor based on a name.
+    /// \param[in] _name Name of the sensor.
+    /// \return Pointer to the sensor. Nullptr if a sensor with the given name
+    ///  does not exist.
+    /// \sa bool SensorNameExists(const std::string &_name) const
+    public: Sensor *SensorByName(const std::string &_name);
+
     /// \brief Create and return an SDF element filled with data from this
     /// joint.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated joint values.
     public: sdf::ElementPtr ToElement() const;
 
@@ -256,7 +292,7 @@ namespace sdf
     friend class Model;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

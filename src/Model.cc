@@ -18,11 +18,12 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
+#include "sdf/InterfaceLink.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Joint.hh"
@@ -62,7 +63,7 @@ class sdf::Model::Implementation
   public: std::string placementFrameName = "";
 
   /// \brief Pose of the model
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -80,8 +81,15 @@ class sdf::Model::Implementation
   public: std::vector<Model> models;
 
   /// \brief The interface models specified in this model.
-  public: std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
-              interfaceModels;
+  public: std::vector<std::pair<std::optional<sdf::NestedInclude>,
+          sdf::InterfaceModelConstPtr>> interfaceModels;
+
+  /// \brief The interface models added into in this model via merge include.
+  public: std::vector<std::pair<std::optional<sdf::NestedInclude>,
+          sdf::InterfaceModelConstPtr>> mergedInterfaceModels;
+
+  /// \brief The interface links specified in this model.
+  public: std::vector<InterfaceLink> interfaceLinks;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -98,11 +106,31 @@ class sdf::Model::Implementation
   /// \brief Optional URI string that specifies where this model was or
   /// can be loaded from.
   public: std::string uri = "";
+
+  /// \brief All of the model plugins.
+  public: std::vector<Plugin> plugins;
+
+  /// \brief The model plugins that were specified only in an <include> tag.
+  /// This data structure is used by the ToElement() function to accurately
+  /// reproduce the <include> tag.
+  ///
+  /// For example, a world could be:
+  ///  <world name="default">
+  ///    <include>
+  ///       <uri>test_model_with_plugin</uri>
+  ///       <plugin name="plugin_name" filename="plugin_filename"/>
+  ///    </include>
+  /// </world>
+  ///
+  /// and the included model could also have a plugin. We want the
+  /// ToElement() function to output only the plugin specified in the
+  /// <include> tag when the ToElementUseIncludeTag policy is true..
+  public: std::vector<Plugin> includePlugins;
 };
 
 /////////////////////////////////////////////////
 Model::Model()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -118,7 +146,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
-  ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+  gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
 
   // Check that the provided SDF element is a <model>
   // This is an error that cannot be recovered, so return an error.
@@ -200,15 +228,53 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     frameNames.insert(model.Name());
   }
 
+  // Load InterfaceModels into a temporary container so we can have special
+  // handling for merged InterfaceModels.
+  std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
+      tmpInterfaceModels;
   // Load included models via the interface API
   Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
-      _sdf, _config, this->dataPtr->interfaceModels);
+      _sdf, _config, tmpInterfaceModels);
   errors.insert(errors.end(), interfaceModelLoadErrors.begin(),
       interfaceModelLoadErrors.end());
 
-  for (const auto &ifaceModelPair : this->dataPtr->interfaceModels)
+  for (const auto &[ifaceInclude, ifaceModel] : tmpInterfaceModels)
   {
-    frameNames.insert(ifaceModelPair.second->Name());
+    if (!ifaceInclude.IsMerge().value_or(false))
+    {
+      frameNames.insert(ifaceModel->Name());
+      this->dataPtr->interfaceModels.emplace_back(ifaceInclude, ifaceModel);
+    }
+    else
+    {
+      const std::string proxyModelFrameName =
+          computeMergedModelProxyFrameName(ifaceModel->Name());
+
+      this->dataPtr->mergedInterfaceModels.emplace_back(ifaceInclude,
+                                                        ifaceModel);
+
+      // Copy interface links so that they can be used for resolving canonical
+      // links.
+      for (const auto &ifaceLink : ifaceModel->Links())
+      {
+        this->dataPtr->interfaceLinks.push_back(ifaceLink);
+      }
+
+      for (const auto &ifaceNestedModel : ifaceModel->NestedModels())
+      {
+        sdf::NestedInclude nestedInclude;
+        // The pose of nested interface models is always given relative to the
+        // parent model, but since this is a merged model, we set the relativeTo
+        // to proxyModelFrameName. This nested interface models don't actually
+        // have an //include that was used to nest them, so we create a
+        // NestedInclude object and fill in the the necessary bits.
+        nestedInclude.SetIncludePoseRelativeTo(proxyModelFrameName);
+        nestedInclude.SetIncludeRawPose(
+            ifaceNestedModel->ModelFramePoseInParentFrame());
+        this->dataPtr->interfaceModels.emplace_back(nestedInclude,
+                                                    ifaceNestedModel);
+      }
+    }
   }
 
   // Load all the links.
@@ -223,7 +289,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (frameNames.count(linkName) > 0)
     {
       // This link has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming link
         linkName += "_link";
@@ -249,10 +315,11 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // If the model is not static and has no nested models:
-  // Require at least one link so the implicit model frame can be attached to
-  // something.
+  // Require at least one (interface) link so the implicit model frame can be
+  // attached to something.
   if (!this->Static() && this->dataPtr->links.empty() &&
-      this->dataPtr->models.empty() && this->dataPtr->interfaceModels.empty())
+      this->dataPtr->interfaceLinks.empty() && this->dataPtr->models.empty() &&
+      this->dataPtr->interfaceModels.empty())
   {
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
@@ -270,7 +337,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (frameNames.count(jointName) > 0)
     {
       // This joint has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming joint
         jointName += "_joint";
@@ -307,7 +374,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (frameNames.count(frameName) > 0)
     {
       // This joint has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming frame
         frameName += "_frame";
@@ -332,6 +399,23 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     frameNames.insert(frameName);
   }
 
+  // Load the model plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
+
+  // Check whether the model was loaded from an <include> tag. If so, set
+  // the URI and capture the plugins.
+  if (_sdf->GetIncludeElement() && _sdf->GetIncludeElement()->HasElement("uri"))
+  {
+    sdf::ElementPtr includeElem = _sdf->GetIncludeElement();
+    this->SetUri(includeElem->Get<std::string>("uri"));
+
+    Errors includePluginErrors = loadRepeated<Plugin>(includeElem, "plugin",
+        this->dataPtr->includePlugins);
+    errors.insert(errors.end(), includePluginErrors.begin(),
+        includePluginErrors.end());
+  }
 
   return errors;
 }
@@ -422,6 +506,13 @@ const Link *Model::LinkByIndex(const uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
+Link *Model::LinkByIndex(uint64_t _index)
+{
+  return const_cast<Link*>(
+      static_cast<const Model*>(this)->LinkByIndex(_index));
+}
+
+/////////////////////////////////////////////////
 bool Model::LinkNameExists(const std::string &_name) const
 {
   return nullptr != this->LinkByName(_name);
@@ -439,6 +530,13 @@ const Joint *Model::JointByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->joints.size())
     return &this->dataPtr->joints[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Joint *Model::JointByIndex(uint64_t _index)
+{
+  return const_cast<Joint*>(
+      static_cast<const Model*>(this)->JointByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -474,6 +572,14 @@ const Joint *Model::JointByName(const std::string &_name) const
     }
   }
   return nullptr;
+
+}
+
+/////////////////////////////////////////////////
+Joint *Model::JointByName(const std::string &_name)
+{
+  return const_cast<Joint*>(
+      static_cast<const Model*>(this)->JointByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -488,6 +594,13 @@ const Frame *Model::FrameByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->frames.size())
     return &this->dataPtr->frames[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Frame *Model::FrameByIndex(uint64_t _index)
+{
+  return const_cast<Frame*>(
+      static_cast<const Model*>(this)->FrameByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -526,6 +639,13 @@ const Frame *Model::FrameByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+Frame *Model::FrameByName(const std::string &_name)
+{
+  return const_cast<Frame*>(
+      static_cast<const Model*>(this)->FrameByName(_name));
+}
+
+/////////////////////////////////////////////////
 uint64_t Model::ModelCount() const
 {
   return this->dataPtr->models.size();
@@ -537,6 +657,13 @@ const Model *Model::ModelByIndex(const uint64_t _index) const
   if (_index < this->dataPtr->models.size())
     return &this->dataPtr->models[_index];
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+Model *Model::ModelByIndex(uint64_t _index)
+{
+  return const_cast<Model*>(
+      static_cast<const Model*>(this)->ModelByIndex(_index));
 }
 
 /////////////////////////////////////////////////
@@ -566,6 +693,14 @@ const Model *Model::ModelByName(const std::string &_name) const
     return nextModel->ModelByName(_name.substr(index + 2));
   }
   return nextModel;
+
+}
+
+/////////////////////////////////////////////////
+Model *Model::ModelByName(const std::string &_name)
+{
+  return const_cast<Model*>(
+      static_cast<const Model*>(this)->ModelByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -583,6 +718,11 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
     {
       auto firstLink = this->LinkByIndex(0);
       return std::make_pair(firstLink, firstLink->Name());
+    }
+    if (this->dataPtr->interfaceLinks.size() > 0)
+    {
+      const auto &firstLink = this->dataPtr->interfaceLinks.front();
+      return std::make_pair(nullptr, firstLink.Name());
     }
     else if (this->ModelCount() > 0)
     {
@@ -649,7 +789,7 @@ void Model::SetPlacementFrameName(const std::string &_placementFrame)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::RawPose() const
+const gz::math::Pose3d &Model::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -661,7 +801,7 @@ const std::string &Model::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Model::SetRawPose(const ignition::math::Pose3d &_pose)
+void Model::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -687,7 +827,17 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   }
   for (auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    ifaceModelPair.second->InvokeRespostureFunction(childPoseGraph);
+    // Don't invoke reposture for interface models that were merged because we
+    // will reposture them below with a different scope in the poe graph.
+    if (ifaceModelPair.first.has_value())
+    {
+      ifaceModelPair.second->InvokeRepostureFunction(childPoseGraph, {});
+    }
+  }
+  for (auto &ifaceModelPair : this->dataPtr->mergedInterfaceModels)
+  {
+    ifaceModelPair.second->InvokeRepostureFunction(this->dataPtr->poseGraph,
+                                                   this->Name());
   }
   for (auto &link : this->dataPtr->links)
   {
@@ -763,6 +913,14 @@ const Link *Model::LinkByName(const std::string &_name) const
     }
   }
   return nullptr;
+
+}
+
+/////////////////////////////////////////////////
+Link *Model::LinkByName(const std::string &_name)
+{
+  return const_cast<Link*>(
+      static_cast<const Model*>(this)->LinkByName(_name));
 }
 
 /////////////////////////////////////////////////
@@ -791,8 +949,16 @@ const NestedInclude *Model::InterfaceModelNestedIncludeByIndex(
     const uint64_t _index) const
 {
   if (_index < this->dataPtr->interfaceModels.size())
-    return &this->dataPtr->interfaceModels[_index].first;
+    return optionalToPointer(this->dataPtr->interfaceModels[_index].first);
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+const std::vector<
+    std::pair<std::optional<sdf::NestedInclude>, sdf::InterfaceModelConstPtr>>
+    &Model::MergedInterfaceModels() const
+{
+  return this->dataPtr->mergedInterfaceModels;
 }
 
 /////////////////////////////////////////////////
@@ -808,9 +974,9 @@ void Model::SetUri(const std::string &_uri)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
+sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
 {
-  if (_useIncludeTag && !this->dataPtr->uri.empty())
+  if (_config.ToElementUseIncludeTag() && !this->dataPtr->uri.empty())
   {
     sdf::ElementPtr worldElem(new sdf::Element);
     sdf::initFile("world.sdf", worldElem);
@@ -825,7 +991,15 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
           "relative_to")->Set<std::string>(this->dataPtr->poseRelativeTo);
     }
     includeElem->GetElement("static")->Set(this->Static());
-    includeElem->GetElement("placement_frame")->Set(this->PlacementFrameName());
+    if (!this->dataPtr->placementFrameName.empty())
+    {
+      includeElem->GetElement("placement_frame")->Set(
+          this->PlacementFrameName());
+    }
+
+    // Output the plugins
+    for (const Plugin &plugin : this->dataPtr->includePlugins)
+      includeElem->InsertElement(plugin.ToElement(), true);
 
     return includeElem;
   }
@@ -857,7 +1031,7 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   // Links
   for (const sdf::Link &link : this->dataPtr->links)
@@ -869,7 +1043,11 @@ sdf::ElementPtr Model::ToElement(bool _useIncludeTag) const
 
   // Model
   for (const sdf::Model &model : this->dataPtr->models)
-    elem->InsertElement(model.ToElement(_useIncludeTag), true);
+    elem->InsertElement(model.ToElement(_config), true);
+
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
 
   return elem;
 }
@@ -917,4 +1095,53 @@ void Model::ClearJoints()
 void Model::ClearModels()
 {
   this->dataPtr->models.clear();
+}
+
+//////////////////////////////////////////////////
+bool Model::AddFrame(const Frame &_frame)
+{
+  if (this->FrameNameExists(_frame.Name()))
+    return false;
+  this->dataPtr->frames.push_back(_frame);
+  return true;
+}
+
+//////////////////////////////////////////////////
+void Model::ClearFrames()
+{
+  this->dataPtr->frames.clear();
+}
+
+/////////////////////////////////////////////////
+bool Model::NameExistsInFrameAttachedToGraph(const std::string &_name) const
+{
+  if (!this->dataPtr->frameAttachedToGraph)
+    return false;
+
+  return this->dataPtr->frameAttachedToGraph.VertexIdByName(sdf::JoinName(
+             this->Name(), _name)) != gz::math::graph::kNullId;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Model::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Model::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Model::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Model::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

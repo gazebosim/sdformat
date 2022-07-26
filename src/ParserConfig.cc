@@ -45,12 +45,20 @@ class sdf::ParserConfig::Implementation
 
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
+
+  /// \brief Flag to explicitly preserve fixed joints when
+  /// reading the SDF/URDF file.
+  public: bool preserveFixedJoint = false;
+
+  /// \brief Flag to use <include> tags within ToElement methods instead of
+  /// the fully included model.
+  public: bool toElementUseIncludeTag = true;
 };
 
 
 /////////////////////////////////////////////////
 ParserConfig::ParserConfig()
-    : dataPtr(ignition::utils::MakeImpl<Implementation>())
+    : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -152,4 +160,16 @@ void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
 const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 {
   return this->dataPtr->customParsers;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
+{
+  this->dataPtr->preserveFixedJoint = _preserveFixedJoint;
+}
+
+/////////////////////////////////////////////////
+bool ParserConfig::URDFPreserveFixedJoint() const
+{
+  return this->dataPtr->preserveFixedJoint;
 }

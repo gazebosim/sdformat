@@ -17,8 +17,12 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "sdf/Filesystem.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
 #include "sdf/Root.hh"
-#include "test_config.h"
+#include "sdf/Visual.hh"
+#include "sdf/World.hh"
+#include "test_config.hh"
 
 void PrintErrors(sdf::Errors &_errors)
 {
@@ -162,4 +166,37 @@ TEST(ParamPassingTest, NestedInclude)
   EXPECT_EQ(root.Element()->ToString(""), expectedRoot.Element()->ToString(""))
         << "ACTUAL:\n" << root.Element()->ToString("\t")
         << "\nEXPECTED:\n" << expectedRoot.Element()->ToString("\t");
+}
+
+/////////////////////////////////////////////////
+TEST(ParamPassingTest, CheckPluginClone)
+{
+  const std::string modelRootPath =
+    sdf::testing::TestFile("integration", "model");
+  sdf::setFindCallback(
+      [&](const std::string &_file)
+      {
+        return sdf::filesystem::append(modelRootPath, _file);
+      });
+
+  // checks <include> containing <experimental:params> w/ correctly specified
+  // elements
+  sdf::Root root;
+  std::string testFile = sdf::testing::TestFile("integration",
+      "include_custom_model.sdf");
+  sdf::Errors errors = root.Load(testFile);
+  PrintErrors(errors);
+  EXPECT_TRUE(errors.empty());
+
+  sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  sdf::Model *model = world->ModelByName("robot");
+  ASSERT_NE(nullptr, model);
+  sdf::Model *nestedModel = model->ModelByName("vehicle");
+  ASSERT_NE(nullptr, nestedModel);
+  sdf::Link *link = nestedModel->LinkByName("top");
+  ASSERT_NE(nullptr, link);
+  sdf::Visual *visual = link->VisualByName("camera_visual");
+  ASSERT_NE(nullptr, visual);
+  EXPECT_EQ(4u, visual->Plugins().size());
 }

@@ -15,19 +15,23 @@
  *
  */
 
+#include <gz/utils/SuppressWarning.hh>
 #include "sdf/InterfaceElements.hh"
 
 using namespace sdf;
 
 class sdf::NestedInclude::Implementation
 {
-
+  /// \brief Whether the included model should be merged as specified in
+  /// //include/[@merge]
+  /// This is nullopt if `//include/[@merge]` is is not set.
+  public: std::optional<bool> isMerge;
 };
 
-SDF_SUPPRESS_DEPRECATED_BEGIN
+GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
 /////////////////////////////////////////////////
 NestedInclude::NestedInclude()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -94,7 +98,7 @@ void NestedInclude::SetIsStatic(bool _isStatic)
 }
 
 /////////////////////////////////////////////////
-const std::optional<ignition::math::Pose3d> &NestedInclude::IncludeRawPose()
+const std::optional<gz::math::Pose3d> &NestedInclude::IncludeRawPose()
     const
 {
   return this->includeRawPose;
@@ -102,7 +106,7 @@ const std::optional<ignition::math::Pose3d> &NestedInclude::IncludeRawPose()
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIncludeRawPose(
-    const ignition::math::Pose3d &_includeRawPose)
+    const gz::math::Pose3d &_includeRawPose)
 {
   this->includeRawPose = _includeRawPose;
 }
@@ -143,4 +147,16 @@ void NestedInclude::SetIncludeElement(sdf::ElementPtr _includeElement)
 {
   this->includeElement = _includeElement;
 }
-SDF_SUPPRESS_DEPRECATED_END
+GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+
+/////////////////////////////////////////////////
+void NestedInclude::SetIsMerge(bool _isMerge)
+{
+  this->dataPtr->isMerge = _isMerge;
+}
+
+/////////////////////////////////////////////////
+const std::optional<bool> &NestedInclude::IsMerge() const
+{
+  return this->dataPtr->isMerge;
+}

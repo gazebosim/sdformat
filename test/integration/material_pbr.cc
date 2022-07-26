@@ -20,7 +20,7 @@
 #include "sdf/sdf.hh"
 #include "sdf/Pbr.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(Material, PbrDOM)
@@ -56,7 +56,7 @@ TEST(Material, PbrDOM)
     ASSERT_NE(nullptr, material);
 
     // diffuse
-    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
         material->Diffuse());
 
     // pbr
@@ -114,7 +114,7 @@ TEST(Material, PbrDOM)
     ASSERT_NE(nullptr, material);
 
     // diffuse
-    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
         material->Diffuse());
 
     // pbr
@@ -169,7 +169,7 @@ TEST(Material, PbrDOM)
     ASSERT_NE(nullptr, material);
 
     // diffuse
-    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+    EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
         material->Diffuse());
 
     // pbr
@@ -300,8 +300,8 @@ TEST(Material, MaterialPBR)
     // diffuse
     EXPECT_TRUE(materialElem->HasElement("diffuse"));
     sdf::ElementPtr diffuseElem = materialElem->GetElement("diffuse");
-    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
-        diffuseElem->Get<ignition::math::Color>());
+    EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+        diffuseElem->Get<gz::math::Color>());
 
     // pbr
     EXPECT_TRUE(materialElem->HasElement("pbr"));
@@ -379,8 +379,8 @@ TEST(Material, MaterialPBR)
     // diffuse
     EXPECT_TRUE(materialElem->HasElement("diffuse"));
     sdf::ElementPtr diffuseElem = materialElem->GetElement("diffuse");
-    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
-        diffuseElem->Get<ignition::math::Color>());
+    EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+        diffuseElem->Get<gz::math::Color>());
 
     // pbr
     EXPECT_TRUE(materialElem->HasElement("pbr"));
@@ -454,8 +454,8 @@ TEST(Material, MaterialPBR)
     // diffuse
     EXPECT_TRUE(materialElem->HasElement("diffuse"));
     sdf::ElementPtr diffuseElem = materialElem->GetElement("diffuse");
-    EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
-        diffuseElem->Get<ignition::math::Color>());
+    EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f),
+        diffuseElem->Get<gz::math::Color>());
 
     // pbr
     EXPECT_TRUE(materialElem->HasElement("pbr"));

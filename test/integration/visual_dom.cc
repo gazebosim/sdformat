@@ -28,7 +28,8 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
-#include "test_config.h"
+#include "sdf/World.hh"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMVisual, NotAVisual)
@@ -79,7 +80,7 @@ TEST(DOMVisual, DoublePendulum)
   const sdf::Visual *plateVis = baseLink->VisualByIndex(0);
   ASSERT_TRUE(plateVis != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateVis->RawPose());
   EXPECT_EQ("", plateVis->PoseRelativeTo());
   EXPECT_FALSE(plateVis->CastShadows());
 
@@ -87,7 +88,7 @@ TEST(DOMVisual, DoublePendulum)
   ASSERT_TRUE(poleVis != nullptr);
   EXPECT_TRUE(poleVis->CastShadows());
 
-  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
             poleVis->RawPose());
   EXPECT_EQ("", poleVis->PoseRelativeTo());
 }
@@ -114,10 +115,10 @@ TEST(DOMVisual, Material)
   const sdf::Material *mat = vis1->Material();
   ASSERT_NE(nullptr, mat);
 
-  EXPECT_EQ(ignition::math::Color(0.4f, 0.2f, 0.3f, 1.0f), mat->Ambient());
-  EXPECT_EQ(ignition::math::Color(0.2f, 0.5f, 0.1f, 1.0f), mat->Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.7f, 0.3f, 0.5f, 0.9f), mat->Specular());
-  EXPECT_EQ(ignition::math::Color(1.0f, 0.0f, 0.2f, 1.0f), mat->Emissive());
+  EXPECT_EQ(gz::math::Color(0.4f, 0.2f, 0.3f, 1.0f), mat->Ambient());
+  EXPECT_EQ(gz::math::Color(0.2f, 0.5f, 0.1f, 1.0f), mat->Diffuse());
+  EXPECT_EQ(gz::math::Color(0.7f, 0.3f, 0.5f, 0.9f), mat->Specular());
+  EXPECT_EQ(gz::math::Color(1.0f, 0.0f, 0.2f, 1.0f), mat->Emissive());
   EXPECT_FALSE(mat->Lighting());
   EXPECT_TRUE(mat->DoubleSided());
   EXPECT_FLOAT_EQ(5.1f, mat->RenderOrder());
@@ -232,7 +233,7 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -357,11 +358,11 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
       model->FrameByName("F3")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(2, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(2, 3, 3, 0, GZ_PI/2, 0), pose);
   EXPECT_TRUE(
       linkC->VisualByName("vF3")->
         SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Pose(16, 3, 3, 0, IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(16, 3, 3, 0, GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
       model->FrameByName("F4")->SemanticPose().Resolve(pose).empty());
@@ -388,17 +389,17 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
     linkC->VisualByName("vP")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->VisualByName("vP")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-12, 0, -1, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-12, 0, -1, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     linkC->VisualByName("vJ")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->VisualByName("vJ")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-13, 3, 0, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-13, 3, 0, 0, -GZ_PI/2, 0), pose);
 
   EXPECT_TRUE(
     linkC->VisualByName("vF3")->SemanticPose().Resolve(pose, "C").empty());
@@ -409,10 +410,10 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 
   EXPECT_TRUE(
     linkC->VisualByName("vF4")->SemanticPose().Resolve(pose, "C").empty());
-  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -GZ_PI/2, 0), pose);
   EXPECT_TRUE(
     linkC->VisualByName("vF4")->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(Pose(-18, 3, 4, 0, -IGN_PI/2, 0), pose);
+  EXPECT_EQ(Pose(-18, 3, 4, 0, -GZ_PI/2, 0), pose);
 }
 
 //////////////////////////////////////////////////
@@ -435,4 +436,35 @@ TEST(DOMVisual, VisibilityFlags)
   ASSERT_NE(nullptr, vis1);
 
   EXPECT_EQ(0x00000001u, vis1->VisibilityFlags());
+}
+
+//////////////////////////////////////////////////
+TEST(DOMVisual, VisualPlugins)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  const sdf::Model *model = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+
+  const sdf::Link *link = model->LinkByIndex(0);
+  ASSERT_NE(nullptr, link);
+
+  const sdf::Visual *visual = link->VisualByIndex(0);
+  ASSERT_NE(nullptr, visual);
+
+  ASSERT_EQ(2u, visual->Plugins().size());
+  EXPECT_EQ("visual_plugin1", visual->Plugins()[0].Name());
+  EXPECT_EQ("test/file/visual1", visual->Plugins()[0].Filename());
+  EXPECT_EQ("visual_plugin2", visual->Plugins()[1].Name());
+  EXPECT_EQ("test/file/visual2", visual->Plugins()[1].Filename());
 }

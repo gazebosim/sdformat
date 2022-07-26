@@ -69,7 +69,7 @@
           <collision>base_footprint_geom_base_link</collision>
           <topic>__default_topic__</topic>
         </contact>
-        <plugin name='gazebo_contact' filename='libContactPlugin.so'/>
+        <plugin name='sim_contact' filename='libContactPlugin.so'/>
       </sensor>
       <sensor name='base_laser' type='ray'>
         <always_on>1</always_on>

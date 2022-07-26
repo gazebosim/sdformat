@@ -16,7 +16,7 @@
 */
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "sdf/Error.hh"
@@ -40,7 +40,7 @@ class sdf::Visual::Implementation
   public: float transparency  = 0.0;
 
   /// \brief Pose of the visual object
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -61,18 +61,21 @@ class sdf::Visual::Implementation
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
-  public: uint32_t visibilityFlags = 4294967295u;
+  public: uint32_t visibilityFlags = UINT32_MAX;
 
   /// \brief True indicates the lidar reflective intensity was set.
   public: bool hasLaserRetro{false};
 
   /// \brief Lidar reflective intensity
   public: double laserRetro = 0;
+
+  /// \brief Visual plugins.
+  public: std::vector<Plugin> plugins;
 };
 
 /////////////////////////////////////////////////
 Visual::Visual()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -149,6 +152,11 @@ Errors Visual::Load(ElementPtr _sdf)
     this->SetLaserRetro(_sdf->Get<double>("laser_retro"));
   }
 
+  // Load the visual plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
+
   return errors;
 }
 
@@ -189,7 +197,7 @@ void Visual::SetTransparency(float _transparency)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Visual::RawPose() const
+const gz::math::Pose3d &Visual::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -201,7 +209,7 @@ const std::string &Visual::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Visual::SetRawPose(const ignition::math::Pose3d &_pose)
+void Visual::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -317,7 +325,7 @@ sdf::ElementPtr Visual::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   // Set the geometry
   elem->InsertElement(this->dataPtr->geom.ToElement(), true);
@@ -332,5 +340,33 @@ sdf::ElementPtr Visual::ToElement() const
     elem->InsertElement(this->dataPtr->material->ToElement(), true);
   }
 
+  // Add in the plugins
+  for (const Plugin &plugin : this->dataPtr->plugins)
+    elem->InsertElement(plugin.ToElement(), true);
+
   return elem;
+}
+
+/////////////////////////////////////////////////
+const sdf::Plugins &Visual::Plugins() const
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+sdf::Plugins &Visual::Plugins()
+{
+  return this->dataPtr->plugins;
+}
+
+/////////////////////////////////////////////////
+void Visual::ClearPlugins()
+{
+  this->dataPtr->plugins.clear();
+}
+
+/////////////////////////////////////////////////
+void Visual::AddPlugin(const Plugin &_plugin)
+{
+  this->dataPtr->plugins.push_back(_plugin);
 }

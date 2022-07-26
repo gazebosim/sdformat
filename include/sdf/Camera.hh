@@ -18,8 +18,8 @@
 #define SDF_CAMERA_HH_
 
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -32,7 +32,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   /// \enum PixelFormatType
   /// \brief The set of pixel formats. This list should match
-  /// ignition::common::Image::PixelFormatType.
+  /// gz::common::Image::PixelFormatType.
   enum class PixelFormatType
   {
     UNKNOWN_PIXEL_FORMAT = 0,
@@ -95,13 +95,29 @@ namespace sdf
     /// \param[in] _name Name of the sensor.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get whether the camera is triggered by a topic.
+    /// \return True if the camera is triggered by a topic.
+    public: bool Triggered() const;
+
+    /// \brief Set whether the camera should be triggered by a topic.
+    /// \param[in] _triggered True if the camera should be triggered by a topic.
+    public: void SetTriggered(bool _triggered);
+
+    /// \brief Get the topic that will trigger the camera.
+    /// \return Topic for the camera trigger.
+    public: std::string TriggerTopic() const;
+
+    /// \brief Set the topic that will trigger the camera.
+    /// \param[in] _triggerTopic Topic for the camera trigger.
+    public: void SetTriggerTopic(const std::string &_triggerTopic);
+
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
-    public: ignition::math::Angle HorizontalFov() const;
+    public: gz::math::Angle HorizontalFov() const;
 
     /// \brief Set the horizontal field of view in radians.
     /// \param[in] _hfov The horizontal field of view in radians.
-    public: void SetHorizontalFov(const ignition::math::Angle &_hfov);
+    public: void SetHorizontalFov(const gz::math::Angle &_hfov);
 
     /// \brief Get the image width in pixels.
     /// \return The image width in pixels.
@@ -135,6 +151,14 @@ namespace sdf
     /// \brief Set the pixel format from a string.
     /// \param[in] _fmt The pixel format string.
     public: void SetPixelFormatStr(const std::string &_fmt);
+
+    /// \brief Get the anti-aliasing value.
+    /// \return The anti-aliasing value.
+    public: uint32_t AntiAliasingValue() const;
+
+    /// \brief Set the anti-aliasing value.
+    /// \param[in] _antiAliasingValue The anti-aliasing value.
+    public: void SetAntiAliasingValue(uint32_t _antiAliasingValue);
 
     /// \brief Get the near clip distance for the depth camera.
     /// \return The near clip depth distance.
@@ -296,21 +320,21 @@ namespace sdf
 
     /// \brief Get the distortion center or principal point.
     /// \return Distortion center or principal point.
-    public: const ignition::math::Vector2d &DistortionCenter() const;
+    public: const gz::math::Vector2d &DistortionCenter() const;
 
     /// \brief Set the distortion center or principal point.
     /// \param[in] _center Distortion center or principal point.
-    public: void SetDistortionCenter(const ignition::math::Vector2d &_center);
+    public: void SetDistortionCenter(const gz::math::Vector2d &_center);
 
     /// \brief Get the pose of the camer. This is the pose of the camera
     /// as specified in SDF (<camera> <pose> ... </pose></camera>).
     /// \return The pose of the link.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the camera.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new camera pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -392,12 +416,12 @@ namespace sdf
     /// \brief Get lens cutoff angle. Everything outside of the specified
     /// angle will be hidden.
     /// \return The lens cutoff angle.
-    public: ignition::math::Angle LensCutoffAngle() const;
+    public: gz::math::Angle LensCutoffAngle() const;
 
     /// \brief Set lens cutoff angle. Everything outside of the specified
     /// angle will be hidden.
     /// \param[in] _angle The lens cutoff angle.
-    public: void SetLensCutoffAngle(const ignition::math::Angle &_angle);
+    public: void SetLensCutoffAngle(const gz::math::Angle &_angle);
 
     /// \brief Get environment texture size. This is the resolution of the
     /// environment cube map used to draw the world.
@@ -474,11 +498,13 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// camera.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated camera values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

@@ -20,13 +20,14 @@
 #include <memory>
 #include <string>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/Link.hh"
 #include "sdf/Joint.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
@@ -90,7 +91,7 @@ namespace sdf
     public: void SetInterpolateX(bool _interpolateX);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Waypoint for Trajectory.
@@ -117,14 +118,14 @@ namespace sdf
 
     /// \brief Get the pose to be reached.
     /// \return Pose to be reached.
-    public: ignition::math::Pose3d Pose() const;
+    public: gz::math::Pose3d Pose() const;
 
     /// \brief Set the pose to be reached.
     /// \param[in] _pose Pose to be reached.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    public: void SetPose(const gz::math::Pose3d &_pose);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief Trajectory for Animation.
@@ -182,7 +183,7 @@ namespace sdf
     public: void AddWaypoint(const Waypoint &_waypoint);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
 
@@ -213,12 +214,12 @@ namespace sdf
     /// typically used to express the position and rotation of an actor in a
     /// global coordinate frame.
     /// \return The pose of the actor.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the actor.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new actor pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -380,11 +381,30 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// actor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated actor values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
+
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

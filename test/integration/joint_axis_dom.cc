@@ -28,7 +28,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMJointAxis, Complete)
@@ -80,8 +80,8 @@ TEST(DOMJointAxis, Complete)
   const sdf::JointAxis *axis2 = joint->Axis(1);
   ASSERT_NE(nullptr, axis2);
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, axis2->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, axis->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, axis2->Xyz());
 
   EXPECT_EQ("__model__", axis->XyzExpressedIn());
   EXPECT_TRUE(axis2->XyzExpressedIn().empty());
@@ -121,9 +121,9 @@ TEST(DOMJointAxis, XyzExpressedIn)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty());
 
-  using Pose = ignition::math::Pose3d;
-  using Quaternion = ignition::math::Quaterniond;
-  using Vector3 = ignition::math::Vector3d;
+  using Pose = gz::math::Pose3d;
+  using Quaternion = gz::math::Quaterniond;
+  using Vector3 = gz::math::Vector3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -147,9 +147,9 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_TRUE(model->LinkByName("C1")->PoseRelativeTo().empty());
   EXPECT_EQ("J2", model->LinkByName("C2")->PoseRelativeTo());
 
-  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P1")->RawPose());
-  EXPECT_EQ(Pose(2, 0, 0, 0, -IGN_PI/2, 0), model->LinkByName("C1")->RawPose());
-  EXPECT_EQ(Pose(3, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("P2")->RawPose());
+  EXPECT_EQ(Pose(1, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("P1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, -GZ_PI/2, 0), model->LinkByName("C1")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, GZ_PI/2, 0), model->LinkByName("P2")->RawPose());
   EXPECT_EQ(Pose(4, 0, 0, 0, 0, 0), model->LinkByName("C2")->RawPose());
 
   EXPECT_TRUE(model->CanonicalLinkName().empty());
@@ -194,11 +194,11 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_TRUE(
       model->JointByName("J1")->
           SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Quaternion(0, -IGN_PI/2, 0), pose.Rot());
+  EXPECT_EQ(Quaternion(0, -GZ_PI/2, 0), pose.Rot());
   EXPECT_TRUE(
       model->JointByName("J2")->
           SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(Quaternion(0, IGN_PI/2, 0), pose.Rot());
+  EXPECT_EQ(Quaternion(0, GZ_PI/2, 0), pose.Rot());
 
   // Resolve joint axis xyz values in __model__ and child link frames
   EXPECT_TRUE(joint1axis->ResolveXyz(vec3, "__model__").empty());
@@ -299,7 +299,7 @@ TEST(DOMJointAxis, XyzNormalization)
       errors[0].Message().find("The norm of the xyz vector cannot be zero") !=
       std::string::npos);
 
-  using ignition::math::Vector3d;
+  using gz::math::Vector3d;
 
   // Get the first model
   const sdf::Model *model = root.Model();

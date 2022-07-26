@@ -16,9 +16,9 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Inertial.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
@@ -67,19 +67,19 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.SensorNameExists(""));
   EXPECT_FALSE(link.SensorNameExists("default"));
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, link.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, link.RawPose());
   EXPECT_TRUE(link.PoseRelativeTo().empty());
   {
     auto semanticPose = link.SemanticPose();
-    EXPECT_EQ(ignition::math::Pose3d::Zero, semanticPose.RawPose());
+    EXPECT_EQ(gz::math::Pose3d::Zero, semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
-  link.SetRawPose({10, 20, 30, 0, IGN_PI, 0});
-  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, IGN_PI, 0), link.RawPose());
+  link.SetRawPose({10, 20, 30, 0, GZ_PI, 0});
+  EXPECT_EQ(gz::math::Pose3d(10, 20, 30, 0, GZ_PI, 0), link.RawPose());
 
   link.SetPoseRelativeTo("model");
   EXPECT_EQ("model", link.PoseRelativeTo());
@@ -87,13 +87,13 @@ TEST(DOMLink, Construction)
     auto semanticPose = link.SemanticPose();
     EXPECT_EQ(link.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("model", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
   // Get the default inertial
-  const ignition::math::Inertiald inertial = link.Inertial();
+  const gz::math::Inertiald inertial = link.Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().Y());
@@ -109,11 +109,11 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.CollisionNameExists(""));
   EXPECT_FALSE(link.CollisionNameExists("default"));
 
-  ignition::math::Inertiald inertial2 {
+  gz::math::Inertiald inertial2 {
     {2.3,
-      ignition::math::Vector3d(1.4, 2.3, 3.2),
-      ignition::math::Vector3d(0.1, 0.2, 0.3)},
-      ignition::math::Pose3d(1, 2, 3, 0, 0, 0)};
+      gz::math::Vector3d(1.4, 2.3, 3.2),
+      gz::math::Vector3d(0.1, 0.2, 0.3)},
+      gz::math::Pose3d(1, 2, 3, 0, 0, 0)};
 
   EXPECT_TRUE(link.SetInertial(inertial2));
 
@@ -195,10 +195,10 @@ TEST(DOMLink, InvalidInertia)
   EXPECT_EQ(nullptr, link.Element());
   EXPECT_TRUE(link.Name().empty());
 
-  ignition::math::Inertiald invalidInertial {
-    {2.3, ignition::math::Vector3d(0.1, 0.2, 0.3),
-      ignition::math::Vector3d(1.2, 2.3, 3.4)},
-      ignition::math::Pose3d(1, 2, 3, 0, 0, 0)};
+  gz::math::Inertiald invalidInertial {
+    {2.3, gz::math::Vector3d(0.1, 0.2, 0.3),
+      gz::math::Vector3d(1.2, 2.3, 3.4)},
+      gz::math::Pose3d(1, 2, 3, 0, 0, 0)};
 
   EXPECT_FALSE(link.SetInertial(invalidInertial));
 
@@ -310,13 +310,13 @@ TEST(DOMLink, ToElement)
   sdf::Link link;
   link.SetName("my-name");
 
-  ignition::math::Inertiald inertial {
+  gz::math::Inertiald inertial {
     {2.3,
-      ignition::math::Vector3d(1.4, 2.3, 3.2),
-      ignition::math::Vector3d(0.1, 0.2, 0.3)},
-      ignition::math::Pose3d(1, 2, 3, 0, 0, 0)};
+      gz::math::Vector3d(1.4, 2.3, 3.2),
+      gz::math::Vector3d(0.1, 0.2, 0.3)},
+      gz::math::Pose3d(1, 2, 3, 0, 0, 0)};
   EXPECT_TRUE(link.SetInertial(inertial));
-  link.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  link.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   link.SetEnableWind(true);
 
   for (int j = 0; j <= 1; ++j)
@@ -413,4 +413,133 @@ TEST(DOMLink, ToElement)
   EXPECT_EQ(link.ParticleEmitterCount(), link2.ParticleEmitterCount());
   for (uint64_t i = 0; i < link2.ParticleEmitterCount(); ++i)
     EXPECT_NE(nullptr, link2.ParticleEmitterByIndex(i));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MutableByIndex)
+{
+  sdf::Link link;
+  link.SetName("my-name");
+
+  sdf::Visual visual;
+  visual.SetName("visual1");
+  EXPECT_TRUE(link.AddVisual(visual));
+
+  sdf::Collision collision;
+  collision.SetName("collision1");
+  EXPECT_TRUE(link.AddCollision(collision));
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(link.AddLight(light));
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(link.AddSensor(sensor));
+
+  sdf::ParticleEmitter pe;
+  pe.SetName("pe1");
+  EXPECT_TRUE(link.AddParticleEmitter(pe));
+
+  // Modify the visual
+  sdf::Visual *v = link.VisualByIndex(0);
+  ASSERT_NE(nullptr, v);
+  EXPECT_EQ("visual1", v->Name());
+  v->SetName("visual2");
+  EXPECT_EQ("visual2", link.VisualByIndex(0)->Name());
+
+  // Modify the collision
+  sdf::Collision *c = link.CollisionByIndex(0);
+  ASSERT_NE(nullptr, c);
+  EXPECT_EQ("collision1", c->Name());
+  c->SetName("collision2");
+  EXPECT_EQ("collision2", link.CollisionByIndex(0)->Name());
+
+  // Modify the light
+  sdf::Light *l = link.LightByIndex(0);
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("light1", l->Name());
+  l->SetName("light2");
+  EXPECT_EQ("light2", link.LightByIndex(0)->Name());
+
+  // Modify the sensor
+  sdf::Sensor *s = link.SensorByIndex(0);
+  ASSERT_NE(nullptr, s);
+  EXPECT_EQ("sensor1", s->Name());
+  s->SetName("sensor2");
+  EXPECT_EQ("sensor2", link.SensorByIndex(0)->Name());
+
+  // Modify the particle emitter
+  sdf::ParticleEmitter *p = link.ParticleEmitterByIndex(0);
+  ASSERT_NE(nullptr, p);
+  EXPECT_EQ("pe1", p->Name());
+  p->SetName("pe2");
+  EXPECT_EQ("pe2", link.ParticleEmitterByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, MutableByName)
+{
+  sdf::Link link;
+  link.SetName("my-name");
+
+  sdf::Visual visual;
+  visual.SetName("visual1");
+  EXPECT_TRUE(link.AddVisual(visual));
+
+  sdf::Collision collision;
+  collision.SetName("collision1");
+  EXPECT_TRUE(link.AddCollision(collision));
+
+  sdf::Light light;
+  light.SetName("light1");
+  EXPECT_TRUE(link.AddLight(light));
+
+  sdf::Sensor sensor;
+  sensor.SetName("sensor1");
+  EXPECT_TRUE(link.AddSensor(sensor));
+
+  sdf::ParticleEmitter pe;
+  pe.SetName("pe1");
+  EXPECT_TRUE(link.AddParticleEmitter(pe));
+
+  // Modify the visual
+  sdf::Visual *v = link.VisualByName("visual1");
+  ASSERT_NE(nullptr, v);
+  EXPECT_EQ("visual1", v->Name());
+  v->SetName("visual2");
+  EXPECT_FALSE(link.VisualNameExists("visual1"));
+  EXPECT_TRUE(link.VisualNameExists("visual2"));
+
+  // Modify the collision
+  sdf::Collision *c = link.CollisionByName("collision1");
+  ASSERT_NE(nullptr, c);
+  EXPECT_EQ("collision1", c->Name());
+  c->SetName("collision2");
+  EXPECT_FALSE(link.CollisionNameExists("collision1"));
+  EXPECT_TRUE(link.CollisionNameExists("collision2"));
+
+  // Modify the light
+  sdf::Light *l = link.LightByName("light1");
+  ASSERT_NE(nullptr, l);
+  EXPECT_EQ("light1", l->Name());
+  l->SetName("light2");
+  EXPECT_FALSE(link.LightNameExists("light1"));
+  EXPECT_TRUE(link.LightNameExists("light2"));
+
+  // Modify the sensor
+  sdf::Sensor *s = link.SensorByName("sensor1");
+  ASSERT_NE(nullptr, s);
+  EXPECT_EQ("sensor1", s->Name());
+  s->SetName("sensor2");
+  EXPECT_FALSE(link.SensorNameExists("sensor1"));
+  EXPECT_TRUE(link.SensorNameExists("sensor2"));
+
+  // Modify the particle emitter
+  sdf::ParticleEmitter *p = link.ParticleEmitterByName("pe1");
+  ASSERT_NE(nullptr, p);
+  EXPECT_EQ("pe1", p->Name());
+  p->SetName("pe2");
+  EXPECT_FALSE(link.ParticleEmitterNameExists("pe1"));
+  EXPECT_TRUE(link.ParticleEmitterNameExists("pe2"));
 }

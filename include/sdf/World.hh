@@ -20,13 +20,16 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <ignition/math/SphericalCoordinates.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/SphericalCoordinates.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Atmosphere.hh"
 #include "sdf/Element.hh"
 #include "sdf/Gui.hh"
+#include "sdf/OutputConfig.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/Scene.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -102,26 +105,26 @@ namespace sdf
     /// \brief Get the wind linear velocity in the global/world coordinate
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
     /// \return Linear velocity of wind in the global/world coordinate frame.
-    /// \sa void SetWindLinearVelocity(const ignition::math::Vector3d &_wind)
-    public: ignition::math::Vector3d WindLinearVelocity() const;
+    /// \sa void SetWindLinearVelocity(const gz::math::Vector3d &_wind)
+    public: gz::math::Vector3d WindLinearVelocity() const;
 
     /// \brief Set the wind linear velocity in the global/world coordinate
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
     /// \param[in] _wind The new linear velocity of wind.
-    /// \sa ignition::math::Vector3d WindLinearVelocity() const
-    public: void SetWindLinearVelocity(const ignition::math::Vector3d &_wind);
+    /// \sa gz::math::Vector3d WindLinearVelocity() const
+    public: void SetWindLinearVelocity(const gz::math::Vector3d &_wind);
 
     /// \brief Get the acceleration due to gravity. The default value is
     /// Earth's standard gravity at sea level, which equals
     /// [0, 0, -9.80665] \f$(\frac{m}{s^2})\f$
     /// \return Gravity vector in meters per second squared
     /// \f$(\frac{m}{s^2})\f$
-    public: ignition::math::Vector3d Gravity() const;
+    public: gz::math::Vector3d Gravity() const;
 
     /// \brief Set the acceleration due to gravity. Units are meters per
     /// second squared \f$(\frac{m}{s^2})\f$
     /// \param[in] _gravity The new gravity vector.
-    public: void SetGravity(const ignition::math::Vector3d &_gravity);
+    public: void SetGravity(const gz::math::Vector3d &_gravity);
 
     /// \brief Get the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinates property.
@@ -129,7 +132,7 @@ namespace sdf
     /// <spherical_coordinates> element.
     /// \return Magnetic field vector.
     /// \sa SphericalCoordinates
-    public: ignition::math::Vector3d MagneticField() const;
+    public: gz::math::Vector3d MagneticField() const;
 
     /// \brief Set the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinate.
@@ -137,17 +140,17 @@ namespace sdf
     /// <spherical_coordinates> element.
     /// \param[in] _mag The new magnetic field vector.
     /// \sa SphericalCoordinates
-    public: void SetMagneticField(const ignition::math::Vector3d &_mag);
+    public: void SetMagneticField(const gz::math::Vector3d &_mag);
 
     /// \brief Get the spherical coordinates for the world origin.
     /// \return Spherical coordinates or null if not defined.
-    public: const ignition::math::SphericalCoordinates *
+    public: const gz::math::SphericalCoordinates *
         SphericalCoordinates() const;
 
     /// \brief Set the spherical coordinates for the world origin.
     /// \param[in] _coord The new coordinates for the world origin.
     public: void SetSphericalCoordinates(
-        const ignition::math::SphericalCoordinates &_coord);
+        const gz::math::SphericalCoordinates &_coord);
 
     /// \brief Get the number of models that are immediate (not nested) children
     /// of this World object.
@@ -164,6 +167,14 @@ namespace sdf
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not recursively nested) mutable child model
+    /// based on an index.
+    /// \param[in] _index Index of the model. The index should be in the range
+    /// [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: Model *ModelByIndex(uint64_t _index);
+
     /// \brief Get a model based on a name.
     /// \param[in] _name Name of the model.
     /// To get a model nested in other models, prefix the model name
@@ -172,6 +183,15 @@ namespace sdf
     /// does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
+
+    /// \brief Get a mutable model based on a name.
+    /// \param[in] _name Name of the model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    /// does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
+    public: Model *ModelByName(const std::string &_name);
 
     /// \brief Get whether a model name exists.
     /// \param[in] _name Name of the model to check.
@@ -204,6 +224,12 @@ namespace sdf
     /// already exists.
     public: bool AddPhysics(const Physics &_physics);
 
+    /// \brief Add a frame object to the world.
+    /// \param[in] _frame Frame to add.
+    /// \return True if successful, false if a frames object with the name
+    /// already exists.
+    public: bool AddFrame(const Frame &_frame);
+
     /// \brief Remove all models.
     public: void ClearModels();
 
@@ -216,6 +242,9 @@ namespace sdf
     /// \brief Remove all physics.
     public: void ClearPhysics();
 
+    /// \brief Remove all frames.
+    public: void ClearFrames();
+
     /// \brief Get the number of actors.
     /// \return Number of actors contained in this World object.
     public: uint64_t ActorCount() const;
@@ -226,6 +255,13 @@ namespace sdf
     /// \return Pointer to the actor. Nullptr if the index does not exist.
     /// \sa uint64_t ActorCount() const
     public: const Actor *ActorByIndex(const uint64_t _index) const;
+
+    /// \brief Get a mutable actor based on an index.
+    /// \param[in] _index Index of the actor. The index should be in the
+    /// range [0..ActorCount()).
+    /// \return Pointer to the actor. Nullptr if the index does not exist.
+    /// \sa uint64_t ActorCount() const
+    public: Actor *ActorByIndex(uint64_t _index);
 
     /// \brief Get whether an actor name exists.
     /// \param[in] _name Name of the actor to check.
@@ -248,6 +284,15 @@ namespace sdf
     /// \sa uint64_t FrameCount() const
     public: const Frame *FrameByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable immediate (not nested) child explicit frame based
+    /// on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: Frame *FrameByIndex(uint64_t _index);
+
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
     /// To get a frame in a nested model, prefix the frame name with the
@@ -255,6 +300,14 @@ namespace sdf
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get a mutable explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: Frame *FrameByName(const std::string &_name);
 
     /// \brief Get whether an explicit frame name exists.
     /// \param[in] _name Name of the explicit frame to check.
@@ -273,6 +326,13 @@ namespace sdf
     /// \return Pointer to the light. Nullptr if the index does not exist.
     /// \sa uint64_t LightCount() const
     public: const Light *LightByIndex(const uint64_t _index) const;
+
+    /// \brief Get a mutable light based on an index.
+    /// \param[in] _index Index of the light. The index should be in the
+    /// range [0..LightCount()).
+    /// \return Pointer to the light. Nullptr if the index does not exist.
+    /// \sa uint64_t LightCount() const
+    public: Light *LightByIndex(uint64_t _index);
 
     /// \brief Get whether a light name exists.
     /// \param[in] _name Name of the light to check.
@@ -327,6 +387,14 @@ namespace sdf
     ///// \sa uint64_t PhysicsCount() const
     public: const Physics *PhysicsByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable physics profile based on an index.
+    /// \param[in] _index Index of the physics profile.
+    /// The index should be in the range [0..PhysicsCount()).
+    /// \return Pointer to the physics profile. Nullptr if the index does not
+    /// exist.
+    ///// \sa uint64_t PhysicsCount() const
+    public: Physics *PhysicsByIndex(uint64_t _index);
+
     /// \brief Get the default physics profile.
     /// \return Pointer to the default physics profile.
     public: const Physics *PhysicsDefault() const;
@@ -363,8 +431,29 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// world.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[in] _config Custom parser configuration
     /// \return SDF element pointer with updated world values.
-    public: sdf::ElementPtr ToElement() const;
+    public: sdf::ElementPtr ToElement(
+        const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be
@@ -385,7 +474,7 @@ namespace sdf
     friend class Root;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

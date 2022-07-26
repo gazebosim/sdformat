@@ -18,7 +18,7 @@
 #define SDF_PBR_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -230,7 +230,7 @@ namespace sdf
     public: void SetType(PbrWorkflowType _type);
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
 
   /// \brief This class provides access to Physically-Based-Rendering (PBR)
@@ -262,7 +262,7 @@ namespace sdf
     public: const PbrWorkflow *Workflow(PbrWorkflowType _type) const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

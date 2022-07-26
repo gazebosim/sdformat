@@ -18,7 +18,7 @@
 #define SDF_IMU_HH_
 
 #include <string>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/Noise.hh>
@@ -115,7 +115,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \return The gravity direction.
-    public: const ignition::math::Vector3d &GravityDirX() const;
+    public: const gz::math::Vector3d &GravityDirX() const;
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the
@@ -123,7 +123,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \param[in] _grav The gravity direction.
-    public: void SetGravityDirX(const ignition::math::Vector3d  &_grav);
+    public: void SetGravityDirX(const gz::math::Vector3d  &_grav);
 
     /// \brief Get the name of parent frame which the GravityDirX vector is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -212,11 +212,11 @@ namespace sdf
     ///    +z:up).
     ///    Example sdf: parent_frame="local", custom_rpy="-0.5*M_PI 0 -0.5*M_PI"
     /// \return Custom RPY vectory
-    public: const ignition::math::Vector3d &CustomRpy() const;
+    public: const gz::math::Vector3d &CustomRpy() const;
 
     /// \brief See CustomRpy() const.
     /// \param[in] Custom RPY vectory
-    public: void SetCustomRpy(const ignition::math::Vector3d &_rpy);
+    public: void SetCustomRpy(const gz::math::Vector3d &_rpy);
 
     /// \brief Get the name of parent frame which the custom_rpy transform is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -255,11 +255,13 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// imu sensor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated sensor values.
     public: sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

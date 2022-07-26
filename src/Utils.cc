@@ -45,7 +45,7 @@ bool loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+bool loadPose(sdf::ElementPtr _sdf, gz::math::Pose3d &_pose,
               std::string &_frame)
 {
   sdf::ElementPtr sdf = _sdf;
@@ -62,8 +62,8 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
       sdf->Get<std::string>("relative_to", "");
 
   // Read the pose value.
-  std::pair<ignition::math::Pose3d, bool> posePair =
-    sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
+  std::pair<gz::math::Pose3d, bool> posePair =
+    sdf->Get<gz::math::Pose3d>("", gz::math::Pose3d::Zero);
 
   // Set output, but only if the return value is true.
   if (posePair.second)
@@ -241,7 +241,7 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     if (includeElem->HasElement("pose"))
     {
       auto poseElem = includeElem->GetElement("pose");
-      include.SetIncludeRawPose(poseElem->Get<ignition::math::Pose3d>());
+      include.SetIncludeRawPose(poseElem->Get<gz::math::Pose3d>());
       if (poseElem->HasAttribute("relative_to"))
       {
         include.SetIncludePoseRelativeTo(
@@ -253,6 +253,11 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     {
       include.SetPlacementFrame(
           includeElem->Get<std::string>("placement_frame"));
+    }
+
+    if (includeElem->HasAttribute("merge"))
+    {
+      include.SetIsMerge(includeElem->Get<bool>("merge"));
     }
 
     // Iterate through custom model parsers in reverse per the SDFormat proposal
@@ -277,6 +282,15 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
           allErrors.emplace_back(sdf::ErrorCode::ATTRIBUTE_INVALID,
               "Missing name of custom model with URI [" + include.Uri() + "]");
         }
+        else if (include.IsMerge().value_or(false) &&
+                 !model->ParserSupportsMergeInclude())
+        {
+          allErrors.emplace_back(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+                                 "Custom parser does not support "
+                                 "merge-include, but merge-include was "
+                                 "requested for model with uri [" +
+                                     include.Uri() + "]");
+        }
         else
         {
           _models.emplace_back(include, model);
@@ -289,6 +303,64 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
   }
 
   return allErrors;
+}
+
+/////////////////////////////////////////////////
+void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
+    const bool _onlyUnknown)
+{
+  // Iterate over all the child elements
+  tinyxml2::XMLElement *elemXml = nullptr;
+  for (elemXml = _xml->FirstChildElement(); elemXml;
+       elemXml = elemXml->NextSiblingElement())
+  {
+    std::string elemName = elemXml->Name();
+
+    if (_sdf->HasElementDescription(elemName))
+    {
+      if (!_onlyUnknown)
+      {
+        sdf::ElementPtr element = _sdf->AddElement(elemName);
+
+        // FIXME: copy attributes
+        for (const auto *attribute = elemXml->FirstAttribute();
+             attribute; attribute = attribute->Next())
+        {
+          element->GetAttribute(attribute->Name())->SetFromString(
+            attribute->Value());
+        }
+
+        // copy value
+        const char *value = elemXml->GetText();
+        if (value)
+        {
+          element->GetValue()->SetFromString(value);
+        }
+        copyChildren(element, elemXml, _onlyUnknown);
+      }
+    }
+    else
+    {
+      sdf::ElementPtr element(new sdf::Element);
+      element->SetParent(_sdf);
+      element->SetName(elemName);
+      for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
+           attribute; attribute = attribute->Next())
+      {
+        element->AddAttribute(attribute->Name(), "string", "", 1, "");
+        element->GetAttribute(attribute->Name())->SetFromString(
+            attribute->Value());
+      }
+
+      if (elemXml->GetText() != nullptr)
+      {
+        element->AddValue("string", elemXml->GetText(), true);
+      }
+
+      copyChildren(element, elemXml, _onlyUnknown);
+      _sdf->InsertElement(element);
+    }
+  }
 }
 }
 }

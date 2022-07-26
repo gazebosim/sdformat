@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
@@ -9,7 +9,7 @@ project (sdformat13 VERSION 13.0.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
-set (SDF_PROTOCOL_VERSION 1.9)
+set (SDF_PROTOCOL_VERSION 1.10)
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
@@ -17,19 +17,32 @@ OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" O
 set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
-# Find ign-cmake
-find_package(ignition-cmake2 2.10 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+# Find gz-cmake
+find_package(gz-cmake3 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
+
+########################################
+# Python interfaces vars
+option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
+      "Install python modules in standard system paths in the system"
+      OFF)
+
+option(USE_DIST_PACKAGES_FOR_PYTHON
+      "Use dist-packages instead of site-package to install python modules"
+      OFF)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_SDF)
-  ign_configure_project(
-    NO_IGNITION_PREFIX
-    REPLACE_IGNITION_INCLUDE_PATH sdf
+  gz_configure_project(
+    NO_PROJECT_PREFIX
+    REPLACE_INCLUDE_PATH sdf
     VERSION_SUFFIX pre1)
 
   #################################################
   # Find tinyxml2.
-  ign_find_package(TINYXML2 REQUIRED)
+  gz_find_package(TINYXML2 REQUIRED)
 
   ################################################
   # Find urdfdom parser. Logic:
@@ -38,13 +51,13 @@ if (BUILD_SDF)
   #  2. if USE_INTERNAL_URDF is set to True, use the internal copy
   #  3. if USE_INTERNAL_URDF is set to False, force to search system installation, fail on error
   if (NOT DEFINED USE_INTERNAL_URDF OR NOT USE_INTERNAL_URDF)
-    ign_find_package(IgnURDFDOM VERSION 1.0 QUIET)
-    if (NOT IgnURDFDOM_FOUND)
+    gz_find_package(GzURDFDOM VERSION 1.0 QUIET)
+    if (NOT GzURDFDOM_FOUND)
       if (NOT DEFINED USE_INTERNAL_URDF)
         # fallback to internal urdf
         set(USE_INTERNAL_URDF ON)
       else()
-        ign_build_error("Couldn't find the urdfdom >= 1.0 system installation")
+        gz_build_error("Couldn't find the urdfdom >= 1.0 system installation")
       endif()
     endif()
   endif()
@@ -54,12 +67,12 @@ if (BUILD_SDF)
   endif()
 
   #################################################
-  # Find ign command line utility:
-  find_program(IGN_PROGRAM ign)
+  # Find gz command line utility:
+  find_program(GZ_PROGRAM gz)
 
   #################################################
   # Copied from catkin/cmake/empy.cmake
-  include(IgnPython)
+  include(GzPython)
   function(find_python_module module)
     # cribbed from http://www.cmake.org/pipermail/cmake/2011-January/041666.html
     string(TOUPPER ${module} module_upper)
@@ -70,7 +83,7 @@ if (BUILD_SDF)
       # A module's location is usually a directory, but for
       # binary modules
       # it's a .so file.
-      execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
+      execute_process(COMMAND "${Python3_EXECUTABLE}" "-c" "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
         RESULT_VARIABLE _${module}_status
         OUTPUT_VARIABLE _${module}_location
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -86,36 +99,69 @@ if (BUILD_SDF)
   # Find psutil python package for memory tests
   find_python_module(psutil)
   if (NOT PY_PSUTIL)
-    ign_build_warning("Python psutil package not found. Memory leak tests will be skipped")
+    gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
   endif()
 
   ################################################
   # Find ruby executable to produce xml schemas
   find_program(RUBY ruby)
   if (NOT RUBY)
-    ign_build_error ("Ruby version 1.9 is needed to build xml schemas")
+    gz_build_error ("Ruby version 1.9 is needed to build xml schemas")
   else()
     message(STATUS "Found ruby executable: ${RUBY}")
   endif()
 
   ########################################
-  # Find ignition math
+  # Find gz math
   # Set a variable for generating ProjectConfig.cmake
-  ign_find_package(ignition-math7 VERSION REQUIRED)
-  set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
+  gz_find_package(gz-math7 VERSION REQUIRED)
+  set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
 
   ########################################
-  # Find ignition utils
-  ign_find_package(ignition-utils1 VERSION REQUIRED)
-  set(IGN_UTILS_VER ${ignition-utils1_VERSION_MAJOR})
+  # Find gz utils
+  gz_find_package(gz-utils2 REQUIRED COMPONENTS cli)
+  set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
+  ########################################
+  # Find gz common
+  gz_find_package(gz-common5 COMPONENTS graphics REQUIRED_BY usd)
+  set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
 
-  ign_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
-  ign_create_packages()
+  ########################################
+  # Python interfaces
+  if (NOT PYTHON3_FOUND)
+    GZ_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
+    message (STATUS "Searching for Python - not found.")
+  else()
+    message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
+
+    set(PYBIND11_PYTHON_VERSION 3)
+    find_package(pybind11 2.4 QUIET)
+
+    if (${pybind11_FOUND})
+      find_package(Python3 ${GZ_PYTHON_VERSION} REQUIRED COMPONENTS Development)
+      message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
+  	else()
+  		GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
+  		message (STATUS "Searching for pybind11 - not found.")
+  	endif()
+  endif()
+
+  ########################################
+  # Find PXR
+  gz_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
+
+  gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
+    COMPONENTS usd)
+
+  gz_create_packages()
 
   add_subdirectory(sdf)
   add_subdirectory(conf)
   add_subdirectory(doc)
+  if (${pybind11_FOUND})
+  	add_subdirectory(python)
+  endif()
 endif(BUILD_SDF)
 
 ########################################

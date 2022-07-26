@@ -31,13 +31,14 @@
 #include "sdf/Mesh.hh"
 #include "sdf/Model.hh"
 #include "sdf/Plane.hh"
+#include "sdf/Polyline.hh"
 #include "sdf/Root.hh"
 #include "sdf/Sphere.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
 
-#include "test_config.h"
+#include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(DOMGeometry, Shapes)
@@ -62,7 +63,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::BOX, boxCol->Geom()->Type());
   const sdf::Box *boxColGeom = boxCol->Geom()->BoxShape();
   ASSERT_NE(nullptr, boxColGeom);
-  EXPECT_EQ(ignition::math::Vector3d(3, 4, 5), boxColGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(3, 4, 5), boxColGeom->Size());
 
   // Test box visual
   const sdf::Visual *boxVis = link->VisualByName("box_vis");
@@ -71,7 +72,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::BOX, boxVis->Geom()->Type());
   const sdf::Box *boxVisGeom = boxVis->Geom()->BoxShape();
   ASSERT_NE(nullptr, boxVisGeom);
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), boxVisGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), boxVisGeom->Size());
 
   // Test capsule collision
   const sdf::Collision *capsuleCol = link->CollisionByName("capsule_col");
@@ -121,7 +122,7 @@ TEST(DOMGeometry, Shapes)
   const sdf::Ellipsoid *ellipsoidColGeom =
     ellipsoidCol->Geom()->EllipsoidShape();
   ASSERT_NE(nullptr, ellipsoidColGeom);
-  EXPECT_EQ(ignition::math::Vector3d(1.0, 2.0, 3.0), ellipsoidColGeom->Radii());
+  EXPECT_EQ(gz::math::Vector3d(1.0, 2.0, 3.0), ellipsoidColGeom->Radii());
 
   // Test ellipsoid visual
   const sdf::Visual *ellipsoidVis = link->VisualByName("ellipsoid_vis");
@@ -131,7 +132,7 @@ TEST(DOMGeometry, Shapes)
   const sdf::Ellipsoid *ellipsoidVisGeom =
     ellipsoidVis->Geom()->EllipsoidShape();
   ASSERT_NE(nullptr, ellipsoidVisGeom);
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), ellipsoidVisGeom->Radii());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), ellipsoidVisGeom->Radii());
 
   // Test plane collision
   const sdf::Collision *planeCol = link->CollisionByName("plane_col");
@@ -140,8 +141,8 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::PLANE, planeCol->Geom()->Type());
   const sdf::Plane *planeColGeom = planeCol->Geom()->PlaneShape();
   ASSERT_NE(nullptr, planeColGeom);
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, planeColGeom->Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.4, 6.3), planeColGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, planeColGeom->Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.4, 6.3), planeColGeom->Size());
 
   // Test plane visual
   const sdf::Visual *planeVis = link->VisualByName("plane_vis");
@@ -150,8 +151,8 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::PLANE, planeVis->Geom()->Type());
   const sdf::Plane *planeVisGeom = planeVis->Geom()->PlaneShape();
   ASSERT_NE(nullptr, planeVisGeom);
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, planeVisGeom->Normal());
-  EXPECT_EQ(ignition::math::Vector2d(2, 4), planeVisGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, planeVisGeom->Normal());
+  EXPECT_EQ(gz::math::Vector2d(2, 4), planeVisGeom->Size());
 
   // Test sphere collision
   const sdf::Collision *sphereCol = link->CollisionByName("sphere_col");
@@ -180,7 +181,7 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, meshColGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/"
       "mesh.dae", meshColGeom->Uri());
-  EXPECT_TRUE(ignition::math::Vector3d(0.1, 0.2, 0.3) ==
+  EXPECT_TRUE(gz::math::Vector3d(0.1, 0.2, 0.3) ==
       meshColGeom->Scale());
   EXPECT_EQ("my_submesh", meshColGeom->Submesh());
   EXPECT_TRUE(meshColGeom->CenterSubmesh());
@@ -194,7 +195,7 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, meshVisGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh"
       "/mesh.dae", meshVisGeom->Uri());
-  EXPECT_TRUE(ignition::math::Vector3d(1.2, 2.3, 3.4) ==
+  EXPECT_TRUE(gz::math::Vector3d(1.2, 2.3, 3.4) ==
       meshVisGeom->Scale());
   EXPECT_EQ("another_submesh", meshVisGeom->Submesh());
   EXPECT_FALSE(meshVisGeom->CenterSubmesh());
@@ -208,8 +209,8 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, heightmapColGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
       "materials/textures/heightmap.png", heightmapColGeom->Uri());
-  EXPECT_EQ(ignition::math::Vector3d(500, 500, 100), heightmapColGeom->Size());
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), heightmapColGeom->Position());
+  EXPECT_EQ(gz::math::Vector3d(500, 500, 100), heightmapColGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), heightmapColGeom->Position());
   EXPECT_EQ(0u, heightmapColGeom->TextureCount());
   EXPECT_EQ(0u, heightmapColGeom->BlendCount());
 
@@ -222,8 +223,8 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, heightmapVisGeom);
   EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
       "materials/textures/heightmap.png", heightmapVisGeom->Uri());
-  EXPECT_EQ(ignition::math::Vector3d(500, 500, 100), heightmapVisGeom->Size());
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), heightmapVisGeom->Position());
+  EXPECT_EQ(gz::math::Vector3d(500, 500, 100), heightmapVisGeom->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), heightmapVisGeom->Position());
   EXPECT_EQ(3u, heightmapVisGeom->TextureCount());
   EXPECT_EQ(2u, heightmapVisGeom->BlendCount());
 
@@ -255,4 +256,40 @@ TEST(DOMGeometry, Shapes)
   auto blend1 = heightmapVisGeom->BlendByIndex(1u);
   EXPECT_DOUBLE_EQ(30.0, blend1->MinHeight());
   EXPECT_DOUBLE_EQ(10.0, blend1->FadeDistance());
+
+  // Test polyline collision
+  auto polylineCol = link->CollisionByName("polyline_col");
+  ASSERT_NE(nullptr, polylineCol);
+  ASSERT_NE(nullptr, polylineCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, polylineCol->Geom()->Type());
+  auto polylineColGeom = polylineCol->Geom()->PolylineShape();
+  ASSERT_FALSE(polylineColGeom.empty());
+  ASSERT_EQ(2u, polylineColGeom.size());
+  EXPECT_DOUBLE_EQ(0.5, polylineColGeom[0].Height());
+  ASSERT_EQ(5u, polylineColGeom[0].PointCount());
+  EXPECT_EQ(gz::math::Vector2d(-0.5, -0.5),
+      *polylineColGeom[0].PointByIndex(0));
+  EXPECT_EQ(gz::math::Vector2d(-0.5, 0.5),
+      *polylineColGeom[0].PointByIndex(1));
+  EXPECT_DOUBLE_EQ(0.3, polylineColGeom[1].Height());
+  ASSERT_EQ(4u, polylineColGeom[1].PointCount());
+  EXPECT_EQ(gz::math::Vector2d(-0.3, -0.3),
+      *polylineColGeom[1].PointByIndex(0));
+  EXPECT_EQ(gz::math::Vector2d(-0.3, 0.3),
+      *polylineColGeom[1].PointByIndex(1));
+
+  // Test polyline visual
+  auto polylineVis = link->VisualByName("polyline_vis");
+  ASSERT_NE(nullptr, polylineVis);
+  ASSERT_NE(nullptr, polylineVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::POLYLINE, polylineVis->Geom()->Type());
+  auto polylineVisGeom = polylineVis->Geom()->PolylineShape();
+  ASSERT_FALSE(polylineVisGeom.empty());
+  ASSERT_EQ(1u, polylineVisGeom.size());
+  EXPECT_DOUBLE_EQ(1.0, polylineVisGeom[0].Height());
+  ASSERT_EQ(3u, polylineVisGeom[0].PointCount());
+  EXPECT_EQ(gz::math::Vector2d(-0.2, -0.2),
+      *polylineVisGeom[0].PointByIndex(0));
+  EXPECT_EQ(gz::math::Vector2d(-0.2, 0.2),
+      *polylineVisGeom[0].PointByIndex(1));
 }

@@ -25,7 +25,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 //////////////////////////////////////////////////
@@ -94,9 +94,9 @@ TEST(DOMWorld, Load)
   ASSERT_NE(nullptr, world->Element());
   EXPECT_EQ(world->Name(), "default");
   EXPECT_EQ(world->AudioDevice(), "/dev/audio");
-  EXPECT_EQ(world->WindLinearVelocity(), ignition::math::Vector3d(4, 5, 6));
-  EXPECT_EQ(world->Gravity(), ignition::math::Vector3d(1, 2, 3));
-  EXPECT_EQ(world->MagneticField(), ignition::math::Vector3d(-1, 0.5, 10));
+  EXPECT_EQ(world->WindLinearVelocity(), gz::math::Vector3d(4, 5, 6));
+  EXPECT_EQ(world->Gravity(), gz::math::Vector3d(1, 2, 3));
+  EXPECT_EQ(world->MagneticField(), gz::math::Vector3d(-1, 0.5, 10));
   EXPECT_EQ(testFile, world->Element()->FilePath());
   auto graphErrors = world->ValidateGraphs();
   EXPECT_EQ(0u, graphErrors.size());
@@ -110,7 +110,7 @@ TEST(DOMWorld, Load)
 
   const auto *sphericalCoords = world->SphericalCoordinates();
   ASSERT_NE(nullptr, sphericalCoords);
-  EXPECT_EQ(ignition::math::SphericalCoordinates::EARTH_WGS84,
+  EXPECT_EQ(gz::math::SphericalCoordinates::EARTH_WGS84,
       sphericalCoords->Surface());
   EXPECT_DOUBLE_EQ(-22.9, sphericalCoords->LatitudeReference().Degree());
   EXPECT_DOUBLE_EQ(-43.2, sphericalCoords->LongitudeReference().Degree());
@@ -129,8 +129,8 @@ TEST(DOMWorld, Load)
   EXPECT_TRUE(scene->Grid());
   EXPECT_TRUE(scene->Shadows());
   EXPECT_TRUE(scene->OriginVisual());
-  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
-  EXPECT_EQ(ignition::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
+  EXPECT_EQ(gz::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
+  EXPECT_EQ(gz::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
   EXPECT_EQ(testFile, scene->Element()->FilePath());
 
   ASSERT_EQ(1u, world->PhysicsCount());
@@ -166,7 +166,7 @@ TEST(DOMWorld, LoadModelFrameSameName)
     std::cout << e << std::endl;
   EXPECT_TRUE(errors.empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first world
   const sdf::World *world = root.WorldByIndex(0);
@@ -357,4 +357,26 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
     EXPECT_TRUE(errors.empty()) << errors;
     EXPECT_TRUE(buffer.str().empty()) << buffer.str();
   }
+}
+
+//////////////////////////////////////////////////
+TEST(DOMWorld, WorldPlugins)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_complete.sdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, root.Element());
+  EXPECT_EQ(testFile, root.Element()->FilePath());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  ASSERT_EQ(2u, world->Plugins().size());
+  EXPECT_EQ("world_plugin1", world->Plugins()[0].Name());
+  EXPECT_EQ("test/file/world1", world->Plugins()[0].Filename());
+  EXPECT_EQ("world_plugin2", world->Plugins()[1].Name());
+  EXPECT_EQ("test/file/world2", world->Plugins()[1].Filename());
 }

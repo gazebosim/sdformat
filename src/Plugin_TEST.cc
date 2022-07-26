@@ -184,12 +184,12 @@ TEST(DOMPlugin, Load)
 TEST(DOMPlugin, LoadWithChildren)
 {
   std::string pluginStr = R"(<plugin name='3D View' filename='MinimalScene'>
-  <ignition-gui>
+  <gz-gui>
     <title>3D View</title>
-    <property type='Ignition.Msgs.Boolean'>false</property>
+    <property type='Gz.Msgs.Boolean'>false</property>
     <property type='bool' key='showTitleBar'>0</property>
     <property type='string' key='state'>docked</property>
-  </ignition-gui>
+  </gz-gui>
   <engine>ogre</engine>
   <scene>scene</scene>
   <ambient_light>0.4 0.4 0.4</ambient_light>
@@ -261,4 +261,158 @@ TEST(DOMPlugin, ToElement)
   EXPECT_EQ(plugin.Filename(), plugin2.Filename());
   EXPECT_EQ(1u, plugin2.Contents().size());
   EXPECT_EQ("an-element", plugin2.Contents()[0]->GetName());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, OutputStreamOperator)
+{
+  sdf::Plugin plugin;
+  plugin.SetName("my-plugin");
+  EXPECT_EQ("my-plugin", plugin.Name());
+
+  plugin.SetFilename("filename.so");
+  EXPECT_EQ("filename.so", plugin.Filename());
+
+  sdf::ElementPtr content(new sdf::Element);
+  content->SetName("an-element");
+  plugin.InsertContent(content);
+  EXPECT_EQ(1u, plugin.Contents().size());
+
+  sdf::ElementPtr elem = plugin.ToElement();
+  ASSERT_NE(nullptr, elem);
+  std::string elemString = elem->ToString("");
+
+  std::ostringstream stream;
+  stream << plugin;
+
+  EXPECT_EQ(elemString, stream.str());
+
+  // The expected plugin output string.
+  std::string expected = R"foo(<plugin name='my-plugin' filename='filename.so'>
+  <an-element/>
+</plugin>
+)foo";
+
+  EXPECT_EQ(expected, stream.str());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, InputStreamOperator)
+{
+  // The provided plugin input string.
+  std::string input = R"foo(<plugin name='my-plugin' filename='filename.so'>
+  <an-element/>
+</plugin>
+)foo";
+  std::istringstream stream(input);
+
+  sdf::Plugin plugin;
+  stream >> plugin;
+
+  EXPECT_EQ("my-plugin", plugin.Name());
+  EXPECT_EQ("filename.so", plugin.Filename());
+  EXPECT_EQ(1u, plugin.Contents().size());
+
+  sdf::ElementPtr elem = plugin.ToElement();
+  ASSERT_NE(nullptr, elem);
+  std::string elemString = elem->ToString("");
+  EXPECT_EQ(input, elemString);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, InsertStringContent)
+{
+  sdf::Plugin plugin("my-filename", "my-name",
+      "<render_engine>ogre2</render_engine>");
+  EXPECT_EQ("my-filename", plugin.Filename());
+  EXPECT_EQ("my-name", plugin.Name());
+  ASSERT_EQ(1u, plugin.Contents().size());
+  EXPECT_EQ("render_engine", plugin.Contents()[0]->GetName());
+  EXPECT_EQ("ogre2", plugin.Contents()[0]->Get<std::string>());
+
+  std::string extraContent = R"foo(
+  <with_attribute value='bar'>1.234</with_attribute>
+  <sibling>hello</sibling>
+  <with_children>
+    <child1>goodbye</child1>
+    <child2>goodbye</child2>
+  </with_children>
+)foo";
+
+  // Insert more content using a string
+  EXPECT_TRUE(plugin.InsertContent(extraContent));
+
+  std::ostringstream completeContent;
+  completeContent << "  <render_engine>ogre2</render_engine>" << extraContent;
+
+  std::ostringstream completePlugin;
+  completePlugin << "<plugin name='my-name' filename='my-filename'>\n"
+    << completeContent.str()
+    << "</plugin>\n";
+  EXPECT_EQ(completePlugin.str(), plugin.ToElement()->ToString(""));
+
+  // Try out curly braces intitialization
+  sdf::Plugin plugin2{plugin.Filename(), plugin.Name(), completeContent.str()};
+  EXPECT_EQ(plugin.ToElement()->ToString(""),
+            plugin2.ToElement()->ToString(""));
+
+  // Try to insert poorly formed XML, which should fail and not modify the
+  // content.
+  EXPECT_FALSE(plugin2.InsertContent("<a></b>"));
+  EXPECT_EQ(plugin.ToElement()->ToString(""),
+            plugin2.ToElement()->ToString(""));
+
+  // An empty string will also fail and not modify the content
+  EXPECT_FALSE(plugin2.InsertContent(""));
+  EXPECT_EQ(plugin.ToElement()->ToString(""),
+            plugin2.ToElement()->ToString(""));
+
+  // Contructing a new plugin with no content
+  sdf::Plugin plugin3{"a filename", "a name"};
+  EXPECT_EQ("a filename", plugin3.Filename());
+  EXPECT_EQ("a name", plugin3.Name());
+  EXPECT_TRUE(plugin3.Contents().empty());
+
+  // Contructing a new plugin with bad XML content
+  sdf::Plugin plugin4{"filename", "name", "<garbage>"};
+  EXPECT_EQ("filename", plugin4.Filename());
+  EXPECT_EQ("name", plugin4.Name());
+  EXPECT_TRUE(plugin4.Contents().empty());
+
+  // Contructing a new plugin with bad XML content
+  sdf::Plugin plugin5{"filename", "name", "    "};
+  EXPECT_EQ("filename", plugin5.Filename());
+  EXPECT_EQ("name", plugin5.Name());
+  EXPECT_TRUE(plugin5.Contents().empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlugin, EqualityOperators)
+{
+  sdf::Plugin plugin("my-filename", "my-name",
+      "<render_engine>ogre2</render_engine>");
+  sdf::Plugin plugin2(plugin);
+  sdf::Plugin plugin3;
+
+  EXPECT_EQ(plugin, plugin2);
+  EXPECT_NE(plugin, plugin3);
+  EXPECT_NE(plugin2, plugin3);
+
+  // Test contents
+  plugin2.ClearContents();
+  EXPECT_NE(plugin, plugin2);
+  plugin.ClearContents();
+  EXPECT_EQ(plugin, plugin2);
+
+  // test name
+  plugin2.SetName("new-name");
+  EXPECT_NE(plugin, plugin2);
+  plugin.SetName("new-name");
+  EXPECT_EQ(plugin, plugin2);
+
+  // test filename
+  plugin2.SetFilename("new-filename");
+  EXPECT_NE(plugin, plugin2);
+  plugin.SetFilename("new-filename");
+  EXPECT_EQ(plugin, plugin2);
 }

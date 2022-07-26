@@ -19,9 +19,10 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -176,12 +177,12 @@ namespace sdf
     /// typically used to express the position and rotation of a sensor in a
     /// global coordinate frame.
     /// \return The pose of the sensor.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the sensor.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new sensor pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -208,6 +209,8 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// sensor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
     /// \return SDF element pointer with updated sensor values.
     public: sdf::ElementPtr ToElement() const;
 
@@ -398,6 +401,23 @@ namespace sdf
     /// \param[in] _lidar The lidar sensor.
     public: void SetLidarSensor(const Lidar &_lidar);
 
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
+
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.
@@ -415,9 +435,13 @@ namespace sdf
     /// and SetPoseRelativeToGraph, but Link::SetPoseRelativeToGraph is
     /// a private function, so we need to befriend the entire class.
     friend class Link;
+    /// \brief Allow Joint::SetPoseRelativeToGraph to call SetXmlParentName
+    /// and SetPoseRelativeToGraph, but Joint::SetPoseRelativeToGraph is
+    /// a private function, so we need to befriend the entire class.
+    friend class Joint;
 
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

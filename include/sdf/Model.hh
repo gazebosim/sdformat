@@ -20,9 +20,13 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <vector>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
+#include "sdf/OutputConfig.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Plugin.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -44,6 +48,8 @@ namespace sdf
   struct PoseRelativeToGraph;
   struct FrameAttachedToGraph;
   template <typename T> class ScopedGraph;
+  using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
+
 
   class SDFORMAT_VISIBLE Model
   {
@@ -145,12 +151,27 @@ namespace sdf
     /// \sa uint64_t LinkCount() const
     public: const Link *LinkByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not nested) mutable child link based on an
+    /// index.
+    /// \param[in] _index Index of the link. The index should be in the
+    /// range [0..LinkCount()).
+    /// \return Pointer to the link. Nullptr if the index does not exist.
+    /// \sa uint64_t LinkCount() const
+    public: Link *LinkByIndex(uint64_t _index);
+
     /// \brief Get a link based on a name.
     /// \param[in] _name Name of the link.
     /// To get a link in a nested model, prefix the link name with the
     /// sequence of nested models containing this link, delimited by "::".
     /// \return Pointer to the link. Nullptr if the name does not exist.
     public: const Link *LinkByName(const std::string &_name) const;
+
+    /// \brief Get a mutable link based on a name.
+    /// \param[in] _name Name of the link.
+    /// To get a link in a nested model, prefix the link name with the
+    /// sequence of nested models containing this link, delimited by "::".
+    /// \return Pointer to the link. Nullptr if the name does not exist.
+    public: Link *LinkByName(const std::string &_name);
 
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
@@ -173,6 +194,14 @@ namespace sdf
     /// \sa uint64_t JointCount() const
     public: const Joint *JointByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not nested) mutable child joint based on an
+    /// index.
+    /// \param[in] _index Index of the joint. The index should be in the
+    /// range [0..JointCount()).
+    /// \return Pointer to the joint. Nullptr if the index does not exist.
+    /// \sa uint64_t JointCount() const
+    public: Joint *JointByIndex(uint64_t _index);
+
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
     /// To check for a joint in a nested model, prefix the joint name with
@@ -188,6 +217,15 @@ namespace sdf
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
+
+    /// \brief Get a mubtable joint based on a name.
+    /// \param[in] _name Name of the joint.
+    /// To get a joint in a nested model, prefix the joint name with the
+    /// sequence of nested models containing this joint, delimited by "::".
+    /// \return Pointer to the joint. Nullptr if a joint with the given name
+    ///  does not exist.
+    /// \sa bool JointNameExists(const std::string &_name) const
+    public: Joint *JointByName(const std::string &_name);
 
     /// \brief Get the number of explicit frames that are immediate (not nested)
     /// children of this Model object.
@@ -205,6 +243,15 @@ namespace sdf
     /// \sa uint64_t FrameCount() const
     public: const Frame *FrameByIndex(const uint64_t _index) const;
 
+    /// \brief Get a mutable immediate (not nested) child explicit frame based
+    /// on an index.
+    /// \param[in] _index Index of the explicit frame. The index should be in
+    /// the range [0..FrameCount()).
+    /// \return Pointer to the explicit frame. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t FrameCount() const
+    public: Frame *FrameByIndex(uint64_t _index);
+
     /// \brief Get an explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
     /// To get a frame in a nested model, prefix the frame name with the
@@ -212,6 +259,14 @@ namespace sdf
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
     public: const Frame *FrameByName(const std::string &_name) const;
+
+    /// \brief Get a mutable explicit frame based on a name.
+    /// \param[in] _name Name of the explicit frame.
+    /// To get a frame in a nested model, prefix the frame name with the
+    /// sequence of nested models containing this frame, delimited by "::".
+    /// \return Pointer to the explicit frame. Nullptr if the name does not
+    /// exist.
+    public: Frame *FrameByName(const std::string &_name);
 
     /// \brief Get whether an explicit frame name exists.
     /// \param[in] _name Name of the explicit frame to check.
@@ -235,6 +290,14 @@ namespace sdf
     /// \sa uint64_t ModelCount() const
     public: const Model *ModelByIndex(const uint64_t _index) const;
 
+    /// \brief Get an immediate (not recursively nested) mutable child model
+    // based on an index.
+    /// \param[in] _index Index of the nested model. The index should be in the
+    /// range [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: Model *ModelByIndex(uint64_t _index);
+
     /// \brief Get whether a nested model name exists.
     /// \param[in] _name Name of the nested model to check.
     /// To check for a model nested in other models, prefix the model name
@@ -251,17 +314,26 @@ namespace sdf
     /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
 
+    /// \brief Get a mutable nested model based on a name.
+    /// \param[in] _name Name of the nested model.
+    /// To get a model nested in other models, prefix the model name
+    /// with the sequence of nested model names, delimited by "::".
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    ///  does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
+    public: Model *ModelByName(const std::string &_name);
+
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the model.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new model pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the model's canonical link
     /// \return An immutable pointer to the canonical link
@@ -348,7 +420,10 @@ namespace sdf
 
     /// \brief Create and return an SDF element filled with data from this
     /// model.
-    /// \param[in] _useIncludeTag When true, the model's URI is used to create
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[in] _config Output configuration. When the ToElementUseIncludeTag
+    /// policy is true, the model's URI is used to create
     /// an SDF `<include>` rather than a `<model>`. The model's URI must be
     /// first set using the `Model::SetUri` function. If the model's URI is
     /// empty, then a `<model>` element will be generated. The default is true
@@ -357,7 +432,20 @@ namespace sdf
     /// is loaded from an `<include>` tag since the parser will
     /// automatically expand an `<include>` element to a `<model>` element.
     /// \return SDF element pointer with updated model values.
-    public: sdf::ElementPtr ToElement(bool _useIncludeTag = true) const;
+    public: sdf::ElementPtr ToElement(
+        const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
+
+    /// \brief Check if a given name exists in the FrameAttachedTo graph at the
+    /// scope of the model.
+    /// \param[in] _name Name of the implicit or explicit frame to check.
+    /// To check for a frame in a nested model, prefix the frame name with
+    /// the sequence of nested models containing this frame, delimited by "::".
+    /// \return True if the frame name is found in the FrameAttachedTo graph.
+    /// False otherwise, or if the frame graph is invalid.
+    /// \note This function assumes the model has a valid FrameAttachedTo graph.
+    /// It will return false if the graph is invalid.
+    public: bool NameExistsInFrameAttachedToGraph(
+                const std::string &_name) const;
 
     /// \brief Add a link to the model.
     /// \param[in] _link Link to add.
@@ -377,6 +465,12 @@ namespace sdf
     /// exists.
     public: bool AddModel(const Model &_model);
 
+    /// \brief Add a frame to the model.
+    /// \param[in] _frame Frame to add.
+    /// \return True if successful, false if a frame with the name already
+    /// exists.
+    public: bool AddFrame(const Frame &_frame);
+
     /// \brief Remove all links.
     public: void ClearLinks();
 
@@ -386,6 +480,9 @@ namespace sdf
     /// \brief Remove all models.
     public: void ClearModels();
 
+    /// \brief Remove all frames.
+    public: void ClearFrames();
+
     /// \brief Get the URI associated with this model
     /// \return The model's URI, or empty string if it has not been set.
     public: std::string Uri() const;
@@ -393,6 +490,23 @@ namespace sdf
     /// \brief Set the URI associated with this model.
     /// \param[in] _uri The model's URI.
     public: void SetUri(const std::string &_uri);
+
+    /// \brief Get the plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: const sdf::Plugins &Plugins() const;
+
+    /// \brief Get a mutable vector of plugins attached to this object.
+    /// \return A vector of Plugin, which will be empty if there are no
+    /// plugins.
+    public: sdf::Plugins &Plugins();
+
+    /// \brief Remove all plugins
+    public: void ClearPlugins();
+
+    /// \brief Add a plugin to this object.
+    /// \param[in] _plugin Plugin to add.
+    public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
@@ -410,14 +524,22 @@ namespace sdf
     private: void SetFrameAttachedToGraph(
         sdf::ScopedGraph<FrameAttachedToGraph> _graph);
 
+    /// \brief Get the list of merged interface models.
+    /// \return The list of merged interface models.
+    private: const std::vector<std::pair<std::optional<sdf::NestedInclude>,
+             sdf::InterfaceModelConstPtr>> &MergedInterfaceModels() const;
+
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
     friend class Root;
     friend class World;
 
+    // Allow ModelWrapper from FrameSemantics.cc to call MergedInterfaceModels
+    friend struct ModelWrapper;
+
     /// \brief Private data pointer.
-    IGN_UTILS_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

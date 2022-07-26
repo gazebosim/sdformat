@@ -20,9 +20,9 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Link.hh"
@@ -31,13 +31,13 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.h"
+#include "test_config.hh"
 #include "test_utils.hh"
 
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseExpressionFormats)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "pose_1_9.sdf");
@@ -125,7 +125,7 @@ TEST(Pose1_9, PoseExpressionFormats)
   model = world->ModelByIndex(14);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_euler_rpy_degrees_true", model->Name());
-  EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
+  EXPECT_EQ(Pose(1, 2, 3, GZ_DTOR(90), GZ_DTOR(180), GZ_DTOR(270)),
       model->RawPose());
 
   model = world->ModelByIndex(15);
@@ -146,7 +146,7 @@ TEST(Pose1_9, PoseExpressionFormats)
     const auto link = model->LinkByIndex(0);
     ASSERT_NE(nullptr, link);
     EXPECT_EQ("link_euler_rpy_degrees_true", link->Name());
-    EXPECT_EQ(Pose(1, 2, 3, IGN_DTOR(90), IGN_DTOR(180), IGN_DTOR(270)),
+    EXPECT_EQ(Pose(1, 2, 3, GZ_DTOR(90), GZ_DTOR(180), GZ_DTOR(270)),
               link->Inertial().Pose());
   }
   {
@@ -360,7 +360,7 @@ TEST(Pose1_9, PoseSet8ValuesFail)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseElementSetAndGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -378,7 +378,7 @@ TEST(Pose1_9, PoseElementSetAndGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseElementSetAndParamGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -399,7 +399,7 @@ TEST(Pose1_9, PoseElementSetAndParamGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetAndGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -421,7 +421,7 @@ TEST(Pose1_9, PoseParamSetAndGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetFromStringAndGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -443,7 +443,7 @@ TEST(Pose1_9, PoseParamSetFromStringAndGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetAndElemGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -465,7 +465,7 @@ TEST(Pose1_9, PoseParamSetAndElemGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetAndParentElemGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -494,7 +494,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   // reparsing should not change their values, even when parent elements have
   // been changed.
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -563,7 +563,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   // should change their values, when parent elements have been changed.
 
   const double pi = 3.14159265358979323846;
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -635,7 +635,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
 TEST(Pose1_9, ChangingAttributeOfParentElement)
 {
   const double pi = 3.14159265358979323846;
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -712,7 +712,7 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
 //////////////////////////////////////////////////
 TEST(Pose1_9, QuatXYZWSetDegreesTrueFail)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -764,7 +764,9 @@ TEST(Pose1_9, ToStringWithoutAttrib)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
 
@@ -786,7 +788,9 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -809,7 +813,9 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -833,7 +839,9 @@ TEST(Pose1_9, ToStringWithEulerRPY)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -861,7 +869,9 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
@@ -886,9 +896,11 @@ TEST(Pose1_9, ToStringWithQuatXYZ)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
-  std::string elemStr = poseElem->ToString("");
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
   EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
 }
@@ -916,9 +928,11 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3   0.7071068 0 0 0.7071068"));
 
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
-  std::string elemStr = poseElem->ToString("");
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
   EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
@@ -939,7 +953,9 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   ASSERT_NE(nullptr, valParam);
   ASSERT_TRUE(valParam->SetFromString("1 2 3 0.4 0.5 0.6"));
 
-  std::string elemStr = poseElem->ToString("");
+  sdf::PrintConfig config;
+  config.SetOutPrecision(6);
+  std::string elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing to attribute to degrees, however this does not modify the
@@ -950,13 +966,14 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   ASSERT_TRUE(degreesAttrib->Set<bool>(true));
   EXPECT_TRUE(valParam->Reparse());
 
-  elemStr = poseElem->ToString("");
+  elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='true'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
-  elemStr = poseElem->ToString("");
+  EXPECT_TRUE(valParam->Reparse());
+  elemStr = poseElem->ToString("", config);
   EXPECT_PRED2(contains, elemStr, "degrees='false'");
   EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
 }
@@ -970,7 +987,7 @@ std::string findFileCb(const std::string &_input)
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludePoseInModelString)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
 
@@ -1000,14 +1017,14 @@ TEST(Pose1_9, IncludePoseInModelString)
 
   auto boxModel = model->ModelByName("box");
   ASSERT_NE(nullptr, boxModel);
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
       boxModel->RawPose());
 }
 
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
 
@@ -1039,14 +1056,14 @@ TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
 
   auto boxModel = model->ModelByName("box");
   ASSERT_NE(nullptr, boxModel);
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
       boxModel->RawPose());
 }
 
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludeQuatXYZWPoseIn)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
 
@@ -1085,7 +1102,7 @@ TEST(Pose1_9, IncludeQuatXYZWPoseIn)
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludePoseInWorld)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
   const std::string testFile = sdf::testing::TestFile(
@@ -1103,7 +1120,7 @@ TEST(Pose1_9, IncludePoseInWorld)
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("first_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 
   model = world->ModelByIndex(1);
@@ -1114,18 +1131,18 @@ TEST(Pose1_9, IncludePoseInWorld)
   model = world->ModelByIndex(2);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("third_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 
   model = world->ModelByIndex(3);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("forth_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 
   model = world->ModelByIndex(4);
   ASSERT_NE(nullptr, model);
   ASSERT_EQ("fifth_box", model->Name());
-  EXPECT_EQ(Pose(0, 10, 0, IGN_DTOR(90), IGN_DTOR(0), IGN_DTOR(0)),
+  EXPECT_EQ(Pose(0, 10, 0, GZ_DTOR(90), GZ_DTOR(0), GZ_DTOR(0)),
             model->RawPose());
 }
