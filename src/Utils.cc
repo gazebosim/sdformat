@@ -362,5 +362,87 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
     }
   }
 }
+
+/////////////////////////////////////////////////
+std::string readXMLStream(std::istream &_in)
+{
+  // An XML element can end with a `/>`
+  static std::string closeElement1 = "/>";
+  unsigned int closeElementId1{0};
+
+  // This will hold the XML element that is read from the stream.
+  std::string element;
+
+  std::istreambuf_iterator<char> it(_in);
+
+  // Capture the starting `<`, if present. The starting `<` will not be present
+  // when called during recursion because the `<` character will have already
+  // been read from teh stream.
+  if (*it == '<')
+    element += *it++;
+
+  // Get the name of the element. The name will be used to find the
+  // element's end tag (</NAME>).
+  std::string name;
+
+  // Iterate until one of the following:
+  //   1. White space is found. Such as in: `<NAME ...`
+  //   2. Close `>` is found. Such as in: `<NAME>`
+  //   3. The element is closed. Such as in `<NAME/>`
+  while (it != std::istreambuf_iterator<char>() && *it != ' ' &&
+      closeElementId1 < closeElement1.size())
+  {
+    if (*it == closeElement1.at(closeElementId1))
+      closeElementId1++;
+    else if (*it != ' ')
+      name += *it;
+    element += *it;
+    it++;
+
+    // Handle the case where there element has this structure: <NAME>
+    if (*it == '>' && closeElementId1 == 0)
+      break;
+  }
+
+  // If the element had the structure `<NAME/>`, then return the element.
+  if (closeElementId1 >= closeElement1.size())
+    return element;
+
+  // This is one option for the closing tag. The other option is the `/>`
+  // sequence.
+  std::string closeElement2 = "</" + name + ">";
+  unsigned int closeElementId2{0};
+
+  closeElementId1 = 0;
+  bool newElementStart = false;
+
+  // Read the rest of the XML element stopping when the element close is
+  // found.
+  while (it != std::istreambuf_iterator<char>() &&
+      closeElementId1 != closeElement1.size() &&
+      closeElementId2 != closeElement2.size())
+  {
+    // Recursively read nested elements.
+    if (newElementStart && *it != '/')
+      element += readXMLStream(_in.putback(*it));
+
+    // Keep track of a potential new element. A flag is used because if the
+    // next character in the stream  is a `/`, then it's a closing tag and
+    // not a new element.
+    newElementStart = *it == '<';
+
+    element += *it;
+
+    // Keep track of potential end tags
+    closeElementId1 = *it == closeElement1.at(closeElementId1) ?
+      closeElementId1 + 1 : 0;
+    closeElementId2 = *it == closeElement2.at(closeElementId2) ?
+      closeElementId2 + 1 : 0;
+
+    ++it;
+  }
+
+  return element;
+}
 }
 }

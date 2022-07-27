@@ -73,6 +73,14 @@ namespace sdf
   /// value.
   double infiniteIfNegative(double _value);
 
+  /// \brief A function that recursively reads XML elements from a stream and
+  /// returns the XML content as a string.
+  /// \param[in,out] _in Input stream to read from. This function will
+  /// consume the data on the stream from the start of the XML content to the
+  /// closing tag.
+  /// \return String that contains the XML content.
+  std::string readXMLStream(std::istream &_in);
+
   /// \brief Handle a condition which can be treated as an error, warning or
   /// ignored entirely.
   /// Based on the policy, this will either add it to an errors vector, stream
