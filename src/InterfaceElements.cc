@@ -26,9 +26,54 @@ class sdf::NestedInclude::Implementation
   /// //include/[@merge]
   /// This is nullopt if `//include/[@merge]` is is not set.
   public: std::optional<bool> isMerge;
+
+  /// \brief Provides the URI as specified in `//include/uri`. This may or may
+  /// not end with a file extension (it will not end with an extension if it
+  /// refers to a model package).
+  public: std::string uri;
+
+  /// \brief Provides the *resolved* absolute file path from the URI.
+  /// It is recommended to use this in `CustomModelParser` when checking
+  /// predicates on filenames -- however, the predicates should generally only
+  /// check the file extension.
+  public: std::string resolvedFileName;
+
+  /// \brief Name of the parent entity in absolute hierarchy.
+  /// Example: if the interface model's name is
+  /// `top_model::middle_model::my_new_model`, the absoluteParentName would be
+  /// `top_model::middle_model`. If the parent entity is the world, this would
+  /// be an empty string.
+  public: std::string absoluteParentName;
+
+  /// \brief Name relative to immediate parent as specified in
+  /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
+  /// name of the model must be determined by the custom model parser from the
+  /// included model file.
+  /// Example: `my_new_model`
+  public: std::optional<std::string> localModelName;
+
+  /// \brief Whether the model is static as defined by `//include/static`. This
+  /// is nullopt if `//include/static` is not set.
+  public: std::optional<bool> isStatic;
+
+  /// \brief The raw pose as specified in //include/pose. This is nullopt if
+  /// `//include/pose` is not set.
+  public: std::optional<gz::math::Pose3d> includeRawPose;
+
+  /// \brief The relative-to frame of the pose as specified in
+  /// `//include/pose/@relative_to`. This is nullopt if
+  /// `//include/pose/@relative_to` is not set.
+  public: std::optional<std::string> includePoseRelativeTo;
+
+  /// \brief The placement frame as specified in `//include/placement_frame`.
+  /// This is nullopt if `//include/placement_frame` is is not set.
+  public: std::optional<std::string> placementFrame;
+
+  /// This is the `//include` element. This can be used to pass custom elements
+  /// and attributes to the custom model parser.
+  public: sdf::ElementPtr includeElement;
 };
 
-GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
 /////////////////////////////////////////////////
 NestedInclude::NestedInclude()
   : dataPtr(gz::utils::MakeImpl<Implementation>())
@@ -38,116 +83,115 @@ NestedInclude::NestedInclude()
 /////////////////////////////////////////////////
 const std::string &NestedInclude::Uri() const
 {
-  return this->uri;
+  return this->dataPtr->uri;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetUri(const std::string &_uri)
 {
-  this->uri = _uri;
+  this->dataPtr->uri = _uri;
 }
 
 /////////////////////////////////////////////////
 const std::string &NestedInclude::ResolvedFileName() const
 {
-  return this->resolvedFileName;
+  return this->dataPtr->resolvedFileName;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetResolvedFileName(const std::string &_resolvedFileName)
 {
-  this->resolvedFileName = _resolvedFileName;
+  this->dataPtr->resolvedFileName = _resolvedFileName;
 }
 
 /////////////////////////////////////////////////
 const std::string &NestedInclude::AbsoluteParentName() const
 {
-  return this->absoluteParentName;
+  return this->dataPtr->absoluteParentName;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetAbsoluteParentName(
     const std::string &_absoluteParentName)
 {
-  this->absoluteParentName = _absoluteParentName;
+  this->dataPtr->absoluteParentName = _absoluteParentName;
 }
 
 /////////////////////////////////////////////////
 const std::optional<std::string> &NestedInclude::LocalModelName() const
 {
-  return this->localModelName;
+  return this->dataPtr->localModelName;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetLocalModelName(const std::string &_localModelName)
 {
-  this->localModelName = _localModelName;
+  this->dataPtr->localModelName = _localModelName;
 }
 
 /////////////////////////////////////////////////
 const std::optional<bool> &NestedInclude::IsStatic() const
 {
-  return this->isStatic;
+  return this->dataPtr->isStatic;
 
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIsStatic(bool _isStatic)
 {
-  this->isStatic = _isStatic;
+  this->dataPtr->isStatic = _isStatic;
 }
 
 /////////////////////////////////////////////////
 const std::optional<gz::math::Pose3d> &NestedInclude::IncludeRawPose()
     const
 {
-  return this->includeRawPose;
+  return this->dataPtr->includeRawPose;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIncludeRawPose(
     const gz::math::Pose3d &_includeRawPose)
 {
-  this->includeRawPose = _includeRawPose;
+  this->dataPtr->includeRawPose = _includeRawPose;
 }
 
 /////////////////////////////////////////////////
 const std::optional<std::string> &NestedInclude::IncludePoseRelativeTo() const
 {
-  return this->includePoseRelativeTo;
+  return this->dataPtr->includePoseRelativeTo;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIncludePoseRelativeTo(
     const std::string &_includePoseRelativeTo)
 {
-  this->includePoseRelativeTo = _includePoseRelativeTo;
+  this->dataPtr->includePoseRelativeTo = _includePoseRelativeTo;
 }
 
 /////////////////////////////////////////////////
 const std::optional<std::string> &NestedInclude::PlacementFrame() const
 {
-  return this->placementFrame;
+  return this->dataPtr->placementFrame;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetPlacementFrame(const std::string &_placementFrame)
 {
-  this->placementFrame = _placementFrame;
+  this->dataPtr->placementFrame = _placementFrame;
 }
 
 /////////////////////////////////////////////////
 sdf::ElementPtr NestedInclude::IncludeElement() const
 {
-  return this->includeElement;
+  return this->dataPtr->includeElement;
 }
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIncludeElement(sdf::ElementPtr _includeElement)
 {
-  this->includeElement = _includeElement;
+  this->dataPtr->includeElement = _includeElement;
 }
-GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
 /////////////////////////////////////////////////
 void NestedInclude::SetIsMerge(bool _isMerge)
