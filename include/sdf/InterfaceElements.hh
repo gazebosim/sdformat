@@ -46,18 +46,6 @@ class SDFORMAT_VISIBLE NestedInclude
 {
   /// \brief Constructor
   public: NestedInclude();
-  // Defaulted copy, move constructors and destructors are needed to avoid
-  // deprecation warnings on memeber variables when simply instantiating this
-  // class.
-  // TODO(anyone) Remove the constructor and destructor once the deprecated
-  // members are removed.
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  public: NestedInclude(const NestedInclude&) = default;
-  public: NestedInclude(NestedInclude&&) = default;
-  public: NestedInclude& operator=(const NestedInclude&) = default;
-  public: NestedInclude& operator=(NestedInclude&&) = default;
-  public: ~NestedInclude() = default;
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   /// \brief Provides the URI as specified in `//include/uri`. This may or may
   /// not end with a file extension (it will not end with an extension if it
@@ -165,62 +153,6 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \return If `//include/[@merge]` is set, this returns the value of the
   /// attribute, otherwise, nullopt.
   public: const std::optional<bool> &IsMerge() const;
-
-  /// \brief Provides the URI as specified in `//include/uri`. This may or may
-  /// not end with a file extension (it will not end with an extension if it
-  /// refers to a model package).
-  /// \deprecated Use NestedInclude::Uri() instead
-  public: GZ_DEPRECATED(12) std::string uri;
-
-  /// \brief Provides the *resolved* absolute file path from the URI.
-  /// It is recommended to use this in `CustomModelParser` when checking
-  /// predicates on filenames -- however, the predicates should generally only
-  /// check the file extension.
-  /// \deprecated Use NestedInclude::ResolvedFileName() instead
-  public: GZ_DEPRECATED(12) std::string resolvedFileName;
-
-  /// \brief Name of the parent entity in absolute hierarchy.
-  /// Example: if the interface model's name is
-  /// `top_model::middle_model::my_new_model`, the absoluteParentName would be
-  /// `top_model::middle_model`. If the parent entity is the world, this would
-  /// be an empty string.
-  /// \deprecated Use NestedInclude::AbsoluteParentName() instead
-  public: GZ_DEPRECATED(12) std::string absoluteParentName;
-
-  /// \brief Name relative to immediate parent as specified in
-  /// `//include/name`. This is nullopt if `//include/name` is not set. Then the
-  /// name of the model must be determined by the custom model parser from the
-  /// included model file.
-  /// Example: `my_new_model`
-  /// \deprecated Use NestedInclude::LocalModelName() instead
-  public: GZ_DEPRECATED(12) std::optional<std::string> localModelName;
-
-  /// \brief Whether the model is static as defined by `//include/static`. This
-  /// is nullopt if `//include/static` is not set.
-  /// \deprecated Use NestedInclude::IsStatic() instead
-  public: GZ_DEPRECATED(12) std::optional<bool> isStatic;
-
-  /// \brief The raw pose as specified in //include/pose. This is nullopt if
-  /// `//include/pose` is not set.
-  /// \deprecated Use NestedInclude::IncludeRawPose() instead
-  public: GZ_DEPRECATED(12)
-          std::optional<gz::math::Pose3d> includeRawPose;
-
-  /// \brief The relative-to frame of the pose as specified in
-  /// `//include/pose/@relative_to`. This is nullopt if
-  /// `//include/pose/@relative_to` is not set.
-  /// \deprecated Use NestedInclude::IncludePoseRelativeTo() instead
-  public: GZ_DEPRECATED(12) std::optional<std::string> includePoseRelativeTo;
-
-  /// \brief The placement frame as specified in `//include/placement_frame`.
-  /// This is nullopt if `//include/placement_frame` is is not set.
-  /// \deprecated Use NestedInclude::PlacementFrame() instead
-  public: GZ_DEPRECATED(12) std::optional<std::string> placementFrame;
-
-  /// This is the `//include` element. This can be used to pass custom elements
-  /// and attributes to the custom model parser.
-  /// \deprecated Use NestedInclude::IncludeElement() instead
-  public: GZ_DEPRECATED(12) sdf::ElementPtr includeElement;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)
