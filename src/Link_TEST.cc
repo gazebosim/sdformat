@@ -101,6 +101,8 @@ TEST(DOMLink, Construction)
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().X());
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Z());
+  EXPECT_FALSE(inertial.FluidAddedMass().has_value());
+  EXPECT_EQ(inertial.BodyMatrix(), inertial.SpatialMatrix());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 
   EXPECT_EQ(0u, link.CollisionCount());
@@ -113,7 +115,13 @@ TEST(DOMLink, Construction)
     {2.3,
       gz::math::Vector3d(1.4, 2.3, 3.2),
       gz::math::Vector3d(0.1, 0.2, 0.3)},
-      gz::math::Pose3d(1, 2, 3, 0, 0, 0)};
+      gz::math::Pose3d(1, 2, 3, 0, 0, 0),
+    {1, 2, 3, 4, 5, 6,
+     2, 7, 8, 9, 10, 11,
+     3, 8, 12, 13, 14, 15,
+     4, 9, 13, 16, 17, 18,
+     5, 10, 14, 17, 19, 20,
+     6, 11, 15, 18, 20, 21}};
 
   EXPECT_TRUE(link.SetInertial(inertial2));
 
@@ -125,6 +133,44 @@ TEST(DOMLink, Construction)
   EXPECT_DOUBLE_EQ(0.2, link.Inertial().MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(0.3, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_TRUE(link.Inertial().MassMatrix().IsValid());
+
+  ASSERT_TRUE(link.Inertial().FluidAddedMass().has_value());
+  EXPECT_DOUBLE_EQ(1.0, link.Inertial().FluidAddedMass().value()(0, 0));
+  EXPECT_DOUBLE_EQ(2.0, link.Inertial().FluidAddedMass().value()(0, 1));
+  EXPECT_DOUBLE_EQ(3.0, link.Inertial().FluidAddedMass().value()(0, 2));
+  EXPECT_DOUBLE_EQ(4.0, link.Inertial().FluidAddedMass().value()(0, 3));
+  EXPECT_DOUBLE_EQ(5.0, link.Inertial().FluidAddedMass().value()(0, 4));
+  EXPECT_DOUBLE_EQ(6.0, link.Inertial().FluidAddedMass().value()(0, 5));
+  EXPECT_DOUBLE_EQ(2.0, link.Inertial().FluidAddedMass().value()(1, 0));
+  EXPECT_DOUBLE_EQ(7.0, link.Inertial().FluidAddedMass().value()(1, 1));
+  EXPECT_DOUBLE_EQ(8.0, link.Inertial().FluidAddedMass().value()(1, 2));
+  EXPECT_DOUBLE_EQ(9.0, link.Inertial().FluidAddedMass().value()(1, 3));
+  EXPECT_DOUBLE_EQ(10.0, link.Inertial().FluidAddedMass().value()(1, 4));
+  EXPECT_DOUBLE_EQ(11.0, link.Inertial().FluidAddedMass().value()(1, 5));
+  EXPECT_DOUBLE_EQ(3.0, link.Inertial().FluidAddedMass().value()(2, 0));
+  EXPECT_DOUBLE_EQ(8.0, link.Inertial().FluidAddedMass().value()(2, 1));
+  EXPECT_DOUBLE_EQ(12.0, link.Inertial().FluidAddedMass().value()(2, 2));
+  EXPECT_DOUBLE_EQ(13.0, link.Inertial().FluidAddedMass().value()(2, 3));
+  EXPECT_DOUBLE_EQ(14.0, link.Inertial().FluidAddedMass().value()(2, 4));
+  EXPECT_DOUBLE_EQ(15.0, link.Inertial().FluidAddedMass().value()(2, 5));
+  EXPECT_DOUBLE_EQ(4.0, link.Inertial().FluidAddedMass().value()(3, 0));
+  EXPECT_DOUBLE_EQ(9.0, link.Inertial().FluidAddedMass().value()(3, 1));
+  EXPECT_DOUBLE_EQ(13.0, link.Inertial().FluidAddedMass().value()(3, 2));
+  EXPECT_DOUBLE_EQ(16.0, link.Inertial().FluidAddedMass().value()(3, 3));
+  EXPECT_DOUBLE_EQ(17.0, link.Inertial().FluidAddedMass().value()(3, 4));
+  EXPECT_DOUBLE_EQ(18.0, link.Inertial().FluidAddedMass().value()(3, 5));
+  EXPECT_DOUBLE_EQ(5.0, link.Inertial().FluidAddedMass().value()(4, 0));
+  EXPECT_DOUBLE_EQ(10.0, link.Inertial().FluidAddedMass().value()(4, 1));
+  EXPECT_DOUBLE_EQ(14.0, link.Inertial().FluidAddedMass().value()(4, 2));
+  EXPECT_DOUBLE_EQ(17.0, link.Inertial().FluidAddedMass().value()(4, 3));
+  EXPECT_DOUBLE_EQ(19.0, link.Inertial().FluidAddedMass().value()(4, 4));
+  EXPECT_DOUBLE_EQ(20.0, link.Inertial().FluidAddedMass().value()(4, 5));
+  EXPECT_DOUBLE_EQ(6.0, link.Inertial().FluidAddedMass().value()(5, 0));
+  EXPECT_DOUBLE_EQ(11.0, link.Inertial().FluidAddedMass().value()(5, 1));
+  EXPECT_DOUBLE_EQ(15.0, link.Inertial().FluidAddedMass().value()(5, 2));
+  EXPECT_DOUBLE_EQ(18.0, link.Inertial().FluidAddedMass().value()(5, 3));
+  EXPECT_DOUBLE_EQ(20.0, link.Inertial().FluidAddedMass().value()(5, 4));
+  EXPECT_DOUBLE_EQ(21.0, link.Inertial().FluidAddedMass().value()(5, 5));
 }
 
 /////////////////////////////////////////////////
@@ -314,7 +360,13 @@ TEST(DOMLink, ToElement)
     {2.3,
       gz::math::Vector3d(1.4, 2.3, 3.2),
       gz::math::Vector3d(0.1, 0.2, 0.3)},
-      gz::math::Pose3d(1, 2, 3, 0, 0, 0)};
+      gz::math::Pose3d(1, 2, 3, 0, 0, 0),
+    {1, 2, 3, 4, 5, 6,
+     2, 7, 8, 9, 10, 11,
+     3, 8, 12, 13, 14, 15,
+     4, 9, 13, 16, 17, 18,
+     5, 10, 14, 17, 19, 20,
+     6, 11, 15, 18, 20, 21}};
   EXPECT_TRUE(link.SetInertial(inertial));
   link.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   link.SetEnableWind(true);

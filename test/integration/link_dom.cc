@@ -138,6 +138,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().X());
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(0.0, inertial.MassMatrix().OffDiagonalMoments().Z());
+  EXPECT_FALSE(inertial.FluidAddedMass().has_value());
 
   const sdf::Link *upperLink = model->LinkByIndex(1);
   ASSERT_NE(nullptr, upperLink);
@@ -158,6 +159,7 @@ TEST(DOMLink, InertialDoublePendulum)
   EXPECT_DOUBLE_EQ(0.0, inertialUpper.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.5, inertialUpper.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
+  EXPECT_FALSE(inertial.FluidAddedMass().has_value());
 
   const sdf::Link *lowerLink = model->LinkByIndex(2);
   ASSERT_TRUE(lowerLink != nullptr);
@@ -195,6 +197,45 @@ TEST(DOMLink, InertialComplete)
   EXPECT_DOUBLE_EQ(0.0, inertial.Pose().Pos().Y());
   EXPECT_DOUBLE_EQ(0.02, inertial.Pose().Pos().Z());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
+
+  ASSERT_TRUE(inertial.FluidAddedMass().has_value());
+  auto addedMass = inertial.FluidAddedMass().value();
+  EXPECT_DOUBLE_EQ(11, addedMass(0, 0));
+  EXPECT_DOUBLE_EQ(12, addedMass(0, 1));
+  EXPECT_DOUBLE_EQ(13, addedMass(0, 2));
+  EXPECT_DOUBLE_EQ(14, addedMass(0, 3));
+  EXPECT_DOUBLE_EQ(15, addedMass(0, 4));
+  EXPECT_DOUBLE_EQ(16, addedMass(0, 5));
+  EXPECT_DOUBLE_EQ(12, addedMass(1, 0));
+  EXPECT_DOUBLE_EQ(22, addedMass(1, 1));
+  EXPECT_DOUBLE_EQ(23, addedMass(1, 2));
+  EXPECT_DOUBLE_EQ(24, addedMass(1, 3));
+  EXPECT_DOUBLE_EQ(25, addedMass(1, 4));
+  EXPECT_DOUBLE_EQ(26, addedMass(1, 5));
+  EXPECT_DOUBLE_EQ(13, addedMass(2, 0));
+  EXPECT_DOUBLE_EQ(23, addedMass(2, 1));
+  EXPECT_DOUBLE_EQ(33, addedMass(2, 2));
+  EXPECT_DOUBLE_EQ(34, addedMass(2, 3));
+  EXPECT_DOUBLE_EQ(35, addedMass(2, 4));
+  EXPECT_DOUBLE_EQ(36, addedMass(2, 5));
+  EXPECT_DOUBLE_EQ(14, addedMass(3, 0));
+  EXPECT_DOUBLE_EQ(24, addedMass(3, 1));
+  EXPECT_DOUBLE_EQ(34, addedMass(3, 2));
+  EXPECT_DOUBLE_EQ(44, addedMass(3, 3));
+  EXPECT_DOUBLE_EQ(45, addedMass(3, 4));
+  EXPECT_DOUBLE_EQ(46, addedMass(3, 5));
+  EXPECT_DOUBLE_EQ(15, addedMass(4, 0));
+  EXPECT_DOUBLE_EQ(25, addedMass(4, 1));
+  EXPECT_DOUBLE_EQ(35, addedMass(4, 2));
+  EXPECT_DOUBLE_EQ(45, addedMass(4, 3));
+  EXPECT_DOUBLE_EQ(55, addedMass(4, 4));
+  EXPECT_DOUBLE_EQ(56, addedMass(4, 5));
+  EXPECT_DOUBLE_EQ(16, addedMass(5, 0));
+  EXPECT_DOUBLE_EQ(26, addedMass(5, 1));
+  EXPECT_DOUBLE_EQ(36, addedMass(5, 2));
+  EXPECT_DOUBLE_EQ(46, addedMass(5, 3));
+  EXPECT_DOUBLE_EQ(56, addedMass(5, 4));
+  EXPECT_DOUBLE_EQ(66, addedMass(5, 5));
 }
 
 //////////////////////////////////////////////////
