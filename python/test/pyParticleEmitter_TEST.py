@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Color, Pose3d, Vector3d, Helpers
+from gz.math import Color, Pose3d, Vector3d, Helpers
 from sdformat import ParticleEmitter
 import unittest
 

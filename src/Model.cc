@@ -1049,6 +1049,10 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
   for (const Plugin &plugin : this->dataPtr->plugins)
     elem->InsertElement(plugin.ToElement(), true);
 
+  // Frames
+  for (const sdf::Frame &frame : this->dataPtr->frames)
+    elem->InsertElement(frame.ToElement(), true);
+
   return elem;
 }
 

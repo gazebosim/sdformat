@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Angle, Color
+from gz.math import Angle, Color
 from sdformat import Sky
 import unittest
 
@@ -30,6 +30,7 @@ class SkyTEST(unittest.TestCase):
         self.assertAlmostEqual(0.5, sky.cloud_humidity())
         self.assertAlmostEqual(0.5, sky.cloud_mean_size())
         self.assertEqual(Color(0.8, 0.8, 0.8), sky.cloud_ambient())
+        self.assertEqual("", sky.cubemap_uri())
 
 
     def test_copy_construction(self):
@@ -42,6 +43,8 @@ class SkyTEST(unittest.TestCase):
         sky.set_cloud_humidity(0.9)
         sky.set_cloud_mean_size(0.123)
         sky.set_cloud_ambient(Color.BLUE)
+        self.assertEqual("", sky.cubemap_uri())
+        sky.set_cubemap_uri("dummyUri");
 
         sky2 = Sky(sky)
         self.assertAlmostEqual(1.0, sky2.time())
@@ -52,6 +55,7 @@ class SkyTEST(unittest.TestCase):
         self.assertAlmostEqual(0.9, sky2.cloud_humidity())
         self.assertAlmostEqual(0.123, sky2.cloud_mean_size())
         self.assertEqual(Color.BLUE, sky2.cloud_ambient())
+        self.assertEqual("dummyUri", sky2.cubemap_uri())
 
 
     def test_assignment(self):
@@ -64,6 +68,7 @@ class SkyTEST(unittest.TestCase):
         sky.set_cloud_humidity(0.9)
         sky.set_cloud_mean_size(0.123)
         sky.set_cloud_ambient(Color.BLUE)
+        sky.set_cubemap_uri("dummyUri");
 
         sky2 = sky
         self.assertAlmostEqual(1.0, sky2.time())
@@ -74,6 +79,7 @@ class SkyTEST(unittest.TestCase):
         self.assertAlmostEqual(0.9, sky2.cloud_humidity())
         self.assertAlmostEqual(0.123, sky2.cloud_mean_size())
         self.assertEqual(Color.BLUE, sky2.cloud_ambient())
+        self.assertEqual("dummyUri", sky2.cubemap_uri())
 
 
     def test_deepcopy(self):
@@ -86,6 +92,7 @@ class SkyTEST(unittest.TestCase):
         sky.set_cloud_humidity(0.9)
         sky.set_cloud_mean_size(0.123)
         sky.set_cloud_ambient(Color.BLUE)
+        sky.set_cubemap_uri("dummyUri");
 
         sky2 = copy.deepcopy(sky)
         self.assertAlmostEqual(1.0, sky2.time())
@@ -96,6 +103,7 @@ class SkyTEST(unittest.TestCase):
         self.assertAlmostEqual(0.9, sky2.cloud_humidity())
         self.assertAlmostEqual(0.123, sky2.cloud_mean_size())
         self.assertEqual(Color.BLUE, sky2.cloud_ambient())
+        self.assertEqual("dummyUri", sky2.cubemap_uri())
 
 
     def test_set(self):
@@ -125,6 +133,8 @@ class SkyTEST(unittest.TestCase):
         sky.set_cloud_ambient(Color(0.1, 0.2, 0.3))
         self.assertEqual(Color(0.1, 0.2, 0.3), sky.cloud_ambient())
 
+        sky.set_cubemap_uri("dummyUri");
+        self.assertEqual("dummyUri", sky.cubemap_uri())
 
 if __name__ == '__main__':
     unittest.main()

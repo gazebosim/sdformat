@@ -136,7 +136,7 @@ ScopedGraph<PoseRelativeToGraph> addPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Root::Root()
-  : dataPtr(gz::utils::MakeUniqueImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

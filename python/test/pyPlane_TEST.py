@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import Plane
-from ignition.math import Vector3d, Vector2d, Planed
+from gz.math import Vector3d, Vector2d, Planed
 import unittest
 
 

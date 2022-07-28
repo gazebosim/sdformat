@@ -332,6 +332,16 @@ TEST(DOMModel, ToElement)
   model.SetEnableWind(true);
   model.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
 
+  sdf::Frame frame1, frame2;
+  frame1.SetName("my-frame1");
+  frame1.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  model.AddFrame(frame1);
+  frame2.SetName("my-frame2");
+  frame2.SetAttachedTo("my-frame1");
+  frame2.SetRawPose(gz::math::Pose3d(-1, 20, 34, 0.1, 0.2, 0.3));
+  model.AddFrame(frame2);
+  EXPECT_EQ(2u, model.FrameCount());
+
   for (int j = 0; j <= 1; ++j)
   {
     for (int i = 0; i < 1; ++i)
@@ -408,6 +418,17 @@ TEST(DOMModel, ToElement)
   ASSERT_EQ(1u, model2.Plugins().size());
   EXPECT_EQ("name1", model2.Plugins()[0].Name());
   EXPECT_EQ("filename1", model2.Plugins()[0].Filename());
+
+  ASSERT_EQ(2u, model2.FrameCount());
+  const sdf::Frame *model2Frame1 = model2.FrameByIndex(0);
+  EXPECT_EQ(frame1.Name(), model2Frame1->Name());
+  EXPECT_EQ(frame1.AttachedTo(), model2Frame1->AttachedTo());
+  EXPECT_EQ(frame1.RawPose(), model2Frame1->RawPose());
+
+  const sdf::Frame *model2Frame2 = model2.FrameByIndex(1);
+  EXPECT_EQ(frame2.Name(), model2Frame2->Name());
+  EXPECT_EQ(frame2.AttachedTo(), model2Frame2->AttachedTo());
+  EXPECT_EQ(frame2.RawPose(), model2Frame2->RawPose());
 }
 
 /////////////////////////////////////////////////

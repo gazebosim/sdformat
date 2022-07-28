@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import Material, Pbr, PbrWorkflow
-from ignition.math import Color
+from gz.math import Color
 import sdformat as sdf
 import unittest
 
@@ -26,6 +26,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0, 0, 0, 1), material.ambient())
     self.assertEqual(Color(0, 0, 0, 1), material.diffuse())
     self.assertEqual(Color(0, 0, 0, 1), material.specular())
+    self.assertAlmostEqual(0.0, material.shininess());
     self.assertEqual(Color(0, 0, 0, 1), material.emissive())
     self.assertTrue(material.lighting())
     self.assertEqual(0, material.render_order())
@@ -43,6 +44,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_ambient(Color(0.1, 0.2, 0.3, 0.5))
     material.set_diffuse(Color(0.2, 0.3, 0.4, 0.6))
     material.set_specular(Color(0.3, 0.4, 0.5, 0.7))
+    material.set_shininess(5.0)
     material.set_emissive(Color(0.4, 0.5, 0.6, 0.8))
     material.set_lighting(False)
     material.set_render_order(2)
@@ -57,6 +59,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0.1, 0.2, 0.3, 0.5), material2.ambient())
     self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
     self.assertEqual(Color(0.3, 0.4, 0.5, 0.7), material2.specular())
+    self.assertAlmostEqual(5.0, material2.shininess());
     self.assertEqual(Color(0.4, 0.5, 0.6, 0.8), material2.emissive())
     self.assertFalse(material2.lighting())
     self.assertTrue(material2.double_sided())
@@ -71,6 +74,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
     material.set_diffuse(Color(0.4, 0.4, 0.5, 0.6))
     material.set_specular(Color(0.5, 0.6, 0.7, 0.8))
+    material.set_shininess(6.0)
     material.set_emissive(Color(0.6, 0.7, 0.8, 0.9))
     material.set_lighting(True)
     material.set_render_order(2)
@@ -84,6 +88,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0.3, 0.1, 0.2, 0.3), material2.ambient())
     self.assertEqual(Color(0.4, 0.4, 0.5, 0.6), material2.diffuse())
     self.assertEqual(Color(0.5, 0.6, 0.7, 0.8), material2.specular())
+    self.assertAlmostEqual(6.0, material2.shininess());
     self.assertEqual(Color(0.6, 0.7, 0.8, 0.9), material2.emissive())
     self.assertTrue(material2.lighting())
     self.assertFalse(material2.double_sided())
@@ -100,6 +105,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_ambient(Color(0.1, 0.2, 0.3, 0.5))
     material.set_diffuse(Color(0.2, 0.3, 0.4, 0.6))
     material.set_specular(Color(0.3, 0.4, 0.5, 0.7))
+    material.set_shininess(5.0)
     material.set_emissive(Color(0.4, 0.5, 0.6, 0.8))
     material.set_lighting(False)
     material.set_render_order(4)
@@ -115,6 +121,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
     self.assertEqual(Color(0.3, 0.4, 0.5, 0.7),
       material2.specular())
+    self.assertAlmostEqual(5.0, material2.shininess());
     self.assertEqual(Color(0.4, 0.5, 0.6, 0.8),
       material2.emissive())
     self.assertFalse(material2.lighting())
@@ -130,6 +137,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
     material.set_diffuse(Color(0.4, 0.4, 0.5, 0.6))
     material.set_specular(Color(0.5, 0.6, 0.7, 0.8))
+    material.set_shininess(6.0)
     material.set_emissive(Color(0.6, 0.7, 0.8, 0.9))
     material.set_lighting(True)
     material.set_render_order(2)
@@ -144,6 +152,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
     self.assertEqual(Color(0.3, 0.4, 0.5, 0.7),
       material2.specular())
+    self.assertAlmostEqual(5.0, material2.shininess());
     self.assertEqual(Color(0.4, 0.5, 0.6, 0.8),
       material2.emissive())
     self.assertFalse(material2.lighting())
@@ -161,6 +170,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_ambient(Color(0.1, 0.2, 0.3, 0.5))
     material.set_diffuse(Color(0.2, 0.3, 0.4, 0.6))
     material.set_specular(Color(0.3, 0.4, 0.5, 0.7))
+    material.set_shininess(5.0)
     material.set_emissive(Color(0.4, 0.5, 0.6, 0.8))
     material.set_lighting(False)
     material.set_render_order(4)
@@ -176,6 +186,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
     self.assertEqual(Color(0.3, 0.4, 0.5, 0.7),
       material2.specular())
+    self.assertAlmostEqual(5.0, material2.shininess());
     self.assertEqual(Color(0.4, 0.5, 0.6, 0.8),
       material2.emissive())
     self.assertFalse(material2.lighting())
@@ -191,6 +202,7 @@ class MaterialTEST(unittest.TestCase):
     material.set_ambient(Color(0.3, 0.1, 0.2, 0.3))
     material.set_diffuse(Color(0.4, 0.4, 0.5, 0.6))
     material.set_specular(Color(0.5, 0.6, 0.7, 0.8))
+    material.set_shininess(6.0)
     material.set_emissive(Color(0.6, 0.7, 0.8, 0.9))
     material.set_lighting(True)
     material.set_render_order(2)
@@ -205,6 +217,7 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0.2, 0.3, 0.4, 0.6), material2.diffuse())
     self.assertEqual(Color(0.3, 0.4, 0.5, 0.7),
       material2.specular())
+    self.assertAlmostEqual(5.0, material2.shininess());
     self.assertEqual(Color(0.4, 0.5, 0.6, 0.8),
       material2.emissive())
     self.assertFalse(material2.lighting())
@@ -230,6 +243,10 @@ class MaterialTEST(unittest.TestCase):
     self.assertEqual(Color(0, 0, 0, 1), material.specular())
     material.set_specular(Color(0.3, 0.4, 0.5, 0.7))
     self.assertEqual(Color(0.3, 0.4, 0.5, 0.7), material.specular())
+
+    self.assertAlmostEqual(0.0, material.shininess());
+    material.set_shininess(5.0)
+    self.assertAlmostEqual(5.0, material.shininess());
 
     self.assertEqual(Color(0, 0, 0, 1), material.emissive())
     material.set_emissive(Color(0.4, 0.5, 0.6, 0.8))

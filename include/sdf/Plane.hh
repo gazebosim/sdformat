@@ -73,11 +73,11 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Plane.
-    /// \return A const reference to an gz::math::Planed object.
+    /// \return A const reference to a gz::math::Planed object.
     public: const gz::math::Planed &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Plane.
-    /// \return A reference to an gz::math::Planed object.
+    /// \return A reference to a gz::math::Planed object.
     public: gz::math::Planed &Shape();
 
     /// \brief Create and return an SDF element filled with data from this

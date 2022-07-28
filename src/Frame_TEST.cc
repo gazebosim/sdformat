@@ -71,3 +71,48 @@ TEST(DOMframe, Construction)
   EXPECT_FALSE(frame.ResolveAttachedToBody(body).empty());
   EXPECT_TRUE(body.empty());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMFrame, ToElement)
+{
+  // With 'attached-to'
+  {
+    sdf::Frame frame;
+
+    frame.SetName("my-frame");
+    frame.SetAttachedTo("attached-to-frame");
+    frame.SetPoseRelativeTo("relative-to-frame");
+    frame.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+
+    sdf::ElementPtr elem = frame.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Frame frame2;
+    frame2.Load(elem);
+
+    EXPECT_EQ(frame.Name(), frame.Name());
+    EXPECT_EQ(frame.AttachedTo(), frame2.AttachedTo());
+    EXPECT_EQ(frame.PoseRelativeTo(), frame2.PoseRelativeTo());
+    EXPECT_EQ(frame.RawPose(), frame2.RawPose());
+  }
+
+  // Without 'attached-to'
+  {
+    sdf::Frame frame;
+
+    frame.SetName("my-frame");
+    frame.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+    EXPECT_TRUE(frame.AttachedTo().empty());
+
+    sdf::ElementPtr elem = frame.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Frame frame2;
+    frame2.Load(elem);
+
+    EXPECT_EQ(frame.Name(), frame.Name());
+    EXPECT_EQ(frame.RawPose(), frame2.RawPose());
+    EXPECT_TRUE(frame.AttachedTo().empty());
+    EXPECT_TRUE(frame2.AttachedTo().empty());
+  }
+}

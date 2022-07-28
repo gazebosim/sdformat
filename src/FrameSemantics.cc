@@ -52,7 +52,7 @@ void printGraph(const ScopedGraph<FrameAttachedToGraph> &_graph)
   std::cout << _graph.Graph() << std::endl;
 }
 
-// The following two functions were originally submitted to ign-math,
+// The following two functions were originally submitted to gz-math,
 // but were not accepted as they were not generic enough.
 // For now, they will be kept here.
 // https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-math/pull-requests/333

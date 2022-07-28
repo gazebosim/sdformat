@@ -222,7 +222,7 @@ namespace sdf
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Private data pointer
-    GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+    GZ_UTILS_IMPL_PTR(dataPtr)
   };
   }
 }

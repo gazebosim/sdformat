@@ -526,3 +526,81 @@ TEST(DOMRoot, ToElementWorld)
   ASSERT_NE(nullptr, root2.WorldByIndex(1));
   EXPECT_EQ("world2", root2.WorldByIndex(1)->Name());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, CopyConstructor)
+{
+  const std::string sdfString = R"(
+    <sdf version="1.10">
+      <world name="default">
+        <frame name="frame1">
+          <pose>0 1 0 0 0 0</pose>
+        </frame>
+      </world>
+    </sdf>)";
+
+  auto testFrame1 = [](const sdf::Root &_root)
+  {
+    EXPECT_EQ("1.10", _root.Version());
+
+    const sdf::World *world = _root.WorldByIndex(0);
+    ASSERT_NE(nullptr, world);
+    EXPECT_EQ("default", world->Name());
+    const sdf::Frame *frame = world->FrameByIndex(0);
+    ASSERT_NE(nullptr, frame);
+    EXPECT_EQ("frame1", frame->Name());
+    gz::math::Pose3d pose;
+    sdf::Errors errors = frame->SemanticPose().Resolve(pose);
+    EXPECT_TRUE(errors.empty()) << errors;
+    EXPECT_EQ(gz::math::Pose3d(0, 1, 0, 0, 0, 0), pose);
+  };
+
+  sdf::Root root;
+  root.LoadSdfString(sdfString);
+  testFrame1(root);
+
+  // Copy constructor test
+  {
+    sdf::Root root2(root);
+    testFrame1(root2);
+
+    // Test conversion to element after copy constructor
+    sdf::ElementPtr elem = root2.ToElement();
+    ASSERT_NE(nullptr, elem);
+    sdf::Root root3;
+    root3.LoadSdfString(elem->ToString(""));
+    testFrame1(root3);
+  }
+
+  // Copy assignment test
+  {
+    sdf::Root root2;
+    root2 = root;
+    testFrame1(root2);
+
+    // Test conversion to element after copy constructor
+    sdf::ElementPtr elem = root2.ToElement();
+    ASSERT_NE(nullptr, elem);
+    sdf::Root root3;
+    root3.LoadSdfString(elem->ToString(""));
+    testFrame1(root3);
+  }
+
+  // Copy assignment after move test
+  {
+    sdf::Root root2;
+
+    // This is similar to what std::swap does except it uses std::move for each
+    // assignment
+    sdf::Root tmp = std::move(root);
+    root = root2;
+    root2 = tmp;
+
+    // Test conversion to element after copy constructor
+    sdf::ElementPtr elem = root2.ToElement();
+    ASSERT_NE(nullptr, elem);
+    sdf::Root root3;
+    root3.LoadSdfString(elem->ToString(""));
+    testFrame1(root3);
+  }
+}

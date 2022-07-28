@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from ignition.math import Angle, Color, Pose3d, Vector3d
+from gz.math import Angle, Color, Pose3d, Vector3d
 from sdformat import Light, SDFErrorsException
 import sdformat as sdf
 import math

@@ -29,32 +29,6 @@
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
 
-#if defined(__GNUC__) || defined(__clang__)
-#define SDF_DEPRECATED(version) __attribute__((deprecated))
-#define SDF_FORCEINLINE __attribute__((always_inline))
-#elif defined(_MSC_VER)
-#define SDF_DEPRECATED(version)
-#define SDF_FORCEINLINE __forceinline
-#else
-#define SDF_DEPRECATED(version)
-#define SDF_FORCEINLINE
-#endif
-
-#if defined(__GNUC__)
-#  define SDF_SUPPRESS_DEPRECATED_BEGIN \
-     _Pragma("GCC diagnostic push") \
-     _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-#  define SDF_SUPPRESS_DEPRECATED_END _Pragma("GCC diagnostic pop")
-#elif defined(__clang__)
-#  define SDF_SUPPRESS_DEPRECATED_BEGIN \
-     _Pragma("clang diagnostic push") \
-     _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-#  define SDF_SUPPRESS_DEPRECATED_END _Pragma("clang diagnostic pop")
-#else
-#  define SDF_SUPPRESS_DEPRECATED_BEGIN
-#  define SDF_SUPPRESS_DEPRECATED_END
-#endif
-
 namespace sdf
 {
   // Inline bracket to help doxygen filtering.
@@ -170,7 +144,7 @@ namespace sdf
   };
 
   /// \brief A class for inertial information about a link.
-  class SDFORMAT_VISIBLE SDF_DEPRECATED(13) Inertia
+  class SDFORMAT_VISIBLE GZ_DEPRECATED(13) Inertia
   {
     public: double mass;
   };
