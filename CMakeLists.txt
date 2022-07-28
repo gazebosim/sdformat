@@ -56,6 +56,9 @@ if (BUILD_SDF)
   #################################################
   # Find ign command line utility:
   find_program(IGN_PROGRAM ign)
+  # Note that CLI files are installed regardless of whether the dependency is
+  # available during build time
+  set(IGN_TOOLS_VER 1)
 
   #################################################
   # Copied from catkin/cmake/empy.cmake

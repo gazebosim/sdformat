@@ -58,9 +58,9 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
   graph = graph.ChildModelScope(model->Name());
-  EXPECT_EQ(8u, graph.Map().size());
-  EXPECT_EQ(8u, graph.Graph().Vertices().size());
-  EXPECT_EQ(6u, graph.Graph().Edges().size());
+  EXPECT_EQ(9u, graph.Map().size());
+  EXPECT_EQ(9u, graph.Graph().Vertices().size());
+  EXPECT_EQ(7u, graph.Graph().Edges().size());
 
   EXPECT_EQ(1u, graph.Count("__model__"));
   EXPECT_EQ(1u, graph.Count("L"));
@@ -126,9 +126,9 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
   EXPECT_TRUE(sdf::checkFrameAttachedToGraph(&root));
   EXPECT_TRUE(sdf::checkFrameAttachedToNames(&root));
 
-  EXPECT_EQ(9u, graph.Map().size());
-  EXPECT_EQ(9u, graph.Graph().Vertices().size());
-  EXPECT_EQ(7u, graph.Graph().Edges().size());
+  EXPECT_EQ(10u, graph.Map().size());
+  EXPECT_EQ(10u, graph.Graph().Vertices().size());
+  EXPECT_EQ(8u, graph.Graph().Edges().size());
 
   EXPECT_EQ(1u, graph.Count("world"));
   EXPECT_EQ(1u, graph.Count("world_frame"));

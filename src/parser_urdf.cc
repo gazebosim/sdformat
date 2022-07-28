@@ -165,7 +165,7 @@ void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionJointFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in gripper
@@ -2558,7 +2558,7 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
         _ge->reductionTransform);
     ReduceSDFExtensionProjectorFrameReplace(blobIt, _link);
     ReduceSDFExtensionGripperFrameReplace(blobIt, _link);
-    ReduceSDFExtensionJointFrameReplace(blobIt, _link);
+    ReduceSDFExtensionJointFrameReplace((*blobIt)->FirstChildElement(), _link);
   }
 }
 
@@ -3800,45 +3800,45 @@ void ReduceSDFExtensionGripperFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionJointFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
   std::string parentLinkName = _link->getParent()->name;
-  auto* doc = (*_blobIt)->GetDocument();
+  auto* doc = _blob->GetDocument();
 
-  if (strcmp((*_blobIt)->FirstChildElement()->Name(), "joint") == 0)
+  if (strcmp(_blob->Name(), "joint") == 0)
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
-    tinyxml2::XMLNode *parent = (*_blobIt)->FirstChildElement("parent");
+    tinyxml2::XMLNode *parent = _blob->FirstChildElement("parent");
     if (parent)
     {
       if (GetKeyValueAsString(parent->ToElement()) == linkName)
       {
-        (*_blobIt)->DeleteChild(parent);
+        _blob->DeleteChild(parent);
         tinyxml2::XMLElement *parentNameKey = doc->NewElement("parent");
         std::ostringstream parentNameStream;
         parentNameStream << parentLinkName;
         tinyxml2::XMLText *parentNameTxt =
           doc->NewText(parentNameStream.str().c_str());
         parentNameKey->LinkEndChild(parentNameTxt);
-        (*_blobIt)->LinkEndChild(parentNameKey);
+        _blob->LinkEndChild(parentNameKey);
       }
     }
-    tinyxml2::XMLNode *child = (*_blobIt)->FirstChildElement("child");
+    tinyxml2::XMLNode *child = _blob->FirstChildElement("child");
     if (child)
     {
       if (GetKeyValueAsString(child->ToElement()) == linkName)
       {
-        (*_blobIt)->DeleteChild(child);
+        _blob->DeleteChild(child);
         tinyxml2::XMLElement *childNameKey = doc->NewElement("child");
         std::ostringstream childNameStream;
         childNameStream << parentLinkName;
         tinyxml2::XMLText *childNameTxt =
           doc->NewText(childNameStream.str().c_str());
         childNameKey->LinkEndChild(childNameTxt);
-        (*_blobIt)->LinkEndChild(childNameKey);
+        _blob->LinkEndChild(childNameKey);
       }
     }
     /// @todo add anchor offsets if parent link changes location!
