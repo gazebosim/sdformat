@@ -13,6 +13,29 @@
           <iyz>-0.0005</iyz>
           <izz>0.117937</izz>
         </inertia>
+        <fluid_added_mass>
+          <xx>11.0</xx>
+          <xy>12.0</xy>
+          <xz>13.0</xz>
+          <xp>14.0</xp>
+          <xq>15.0</xq>
+          <xr>16.0</xr>
+          <yy>22.0</yy>
+          <yz>23.0</yz>
+          <yp>24.0</yp>
+          <yq>25.0</yq>
+          <yr>26.0</yr>
+          <zz>33.0</zz>
+          <zp>34.0</zp>
+          <zq>35.0</zq>
+          <zr>36.0</zr>
+          <pp>44.0</pp>
+          <pq>45.0</pq>
+          <pr>46.0</pr>
+          <qq>55.0</qq>
+          <qr>56.0</qr>
+          <rr>66.0</rr>
+        </fluid_added_mass>
       </inertial>
     </link>
   </model>
