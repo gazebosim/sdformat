@@ -113,6 +113,9 @@ one root level model, actor or light.
    respectively. Users are encouraged to use the constants `kSdfStringSource` 
    and `kUrdfStringSource` instead of hard-coding the string literals.
 
+1. USD component now is living in https://github.com/gazebosim/gz-usd as an
+   independent package.
+
 ### Removals
 
 The following deprecated methods and classes have been removed.

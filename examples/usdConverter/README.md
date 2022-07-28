@@ -6,33 +6,34 @@ This example shows how a world in a SDF file can be converted to [USD](https://g
 
 You will need all of the dependencies for sdformat, along with the following additional dependencies:
 * USD: [installation instructions](https://github.com/PixarAnimationStudios/USD/blob/release/README.md#getting-and-building-the-code)
-* [ignition-common4](https://github.com/ignitionrobotics/ign-common)
-* [ignition-utils1 (including the CLI component)](https://github.com/ignitionrobotics/ign-utils)
+* [gz-usd](https://github.com/gazebosim/gz-usd)
+* [ignition-common](https://github.com/gazebosim/gz-common)
+* [ignition-utils1 (including the CLI component)](https://github.com/gazebosim/igzgn-utils)
 
 ## Setup
 
-Build sdformat. The steps below follow a traditional cmake build, but sdformat
+Build `gz-usd`. The steps below follow a traditional cmake build, but `gz-usd`
 can also be built with [colcon](https://colcon.readthedocs.io/en/released/index.html):
 ```bash
-git clone https://github.com/ignitionrobotics/sdformat.git
-cd sdformat
+git clone https://github.com/gazebosim/gz-usd
+cd gz-usd
 mkdir build
 cd build
 cmake ..
 make
 ```
 
-You should now have an executable named `sdf2usd` in the `sdformat/build/bin` directory.
+You should now have an executable named `sdf2usd` in the `./build/bin` directory.
 This executable can be used to convert a SDF world file to a USD file.
-To see how the executable works, run the following command from the `sdformat/build/bin` directory:
+To see how the executable works, run the following command from the `./build/bin` directory:
 ```bash
 ./sdf2usd -h
 ```
 
-To convert [shapes_world.sdf](https://github.com/ignitionrobotics/sdformat/blob/sdf12/test/sdf/shapes_world.sdf) to its USD representation as a file called `shapes.usd`, run the following commands:
+To convert [shapes_world.sdf](https://github.com/gazebosim/sdformat/blob/sdf12/test/sdf/shapes_world.sdf) to its USD representation as a file called `shapes.usd`, run the following commands:
 
 ```bash
-wget https://raw.githubusercontent.com/ignitionrobotics/sdformat/sdf12/test/sdf/shapes_world.sdf
+wget https://raw.githubusercontent.com/gazebosim/sdformat/sdf12/test/sdf/shapes_world.sdf
 ./sdf2usd shapes_world.sdf shapes.usd
 ```
 
@@ -59,5 +60,5 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/USD/lib
 ```
 
 Another thing to note if building with colcon is that after sourcing the workspace with sdformat,
-the `sdf2usd` executable can be run without having to go to the `sdformat/build/bin` directory.
+the `sdf2usd` executable can be run without having to go to the `./build/bin` directory.
 So, instead of going to that directory and running `./sdf2usd ...`, you should be able to run `sdf2usd ...` from anywhere.
