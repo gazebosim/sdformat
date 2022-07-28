@@ -20,6 +20,11 @@ but with improved human-readability..
     + Details about the 1.9 to 1.10 transition are explained below in this same
       document
 
+### Modifications
+
+1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
+   elements.
+
 ### Deprecations
 
 - The `ignition` namespace is deprecated and will be removed in future versions.
