@@ -48,6 +48,9 @@ class sdf::Sky::Implementation
   public: gz::math::Color cloudAmbient =
       gz::math::Color(0.8f, 0.8f, 0.8f);
 
+  /// \brief Skybox texture URI
+  public: std::string cubemapUri = "";
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 };
@@ -154,6 +157,18 @@ void Sky::SetCloudAmbient(const gz::math::Color &_ambient)
   this->dataPtr->cloudAmbient = _ambient;
 }
 
+//////////////////////////////////////////////////
+const std::string &Sky::CubemapUri() const
+{
+  return this->dataPtr->cubemapUri;
+}
+
+//////////////////////////////////////////////////
+void Sky::SetCubemapUri(const std::string &_uri)
+{
+  this->dataPtr->cubemapUri = _uri;
+}
+
 /////////////////////////////////////////////////
 Errors Sky::Load(ElementPtr _sdf)
 {
@@ -176,6 +191,8 @@ Errors Sky::Load(ElementPtr _sdf)
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
       _sdf->Get<double>("sunset", this->dataPtr->sunset).first;
+  this->dataPtr->cubemapUri =
+      _sdf->Get<std::string>("cubemap_uri", this->dataPtr->cubemapUri).first;
 
   if ( _sdf->HasElement("clouds"))
   {
@@ -213,6 +230,7 @@ sdf::ElementPtr Sky::ToElement() const
   elem->GetElement("time")->Set(this->Time());
   elem->GetElement("sunrise")->Set(this->Sunrise());
   elem->GetElement("sunset")->Set(this->Sunset());
+  elem->GetElement("cubemap_uri")->Set(this->CubemapUri());
 
   sdf::ElementPtr cloudElem = elem->GetElement("clouds");
   cloudElem->GetElement("speed")->Set(this->CloudSpeed());

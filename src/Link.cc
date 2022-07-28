@@ -173,6 +173,62 @@ Errors Link::Load(ElementPtr _sdf)
       xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
       xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
     }
+
+    if (inertialElem->HasElement("fluid_added_mass"))
+    {
+      auto addedMassElem = inertialElem->GetElement("fluid_added_mass");
+
+      gz::math::Matrix6d addedMass;
+      addedMass(0, 0) = addedMassElem->Get<double>("xx", 0.0).first;
+      addedMass(0, 1) = addedMassElem->Get<double>("xy", 0.0).first;
+      addedMass(0, 2) = addedMassElem->Get<double>("xz", 0.0).first;
+      addedMass(0, 3) = addedMassElem->Get<double>("xp", 0.0).first;
+      addedMass(0, 4) = addedMassElem->Get<double>("xq", 0.0).first;
+      addedMass(0, 5) = addedMassElem->Get<double>("xr", 0.0).first;
+
+      addedMass(1, 0) = addedMass(0, 1);
+      addedMass(1, 1) = addedMassElem->Get<double>("yy", 0.0).first;
+      addedMass(1, 2) = addedMassElem->Get<double>("yz", 0.0).first;
+      addedMass(1, 3) = addedMassElem->Get<double>("yp", 0.0).first;
+      addedMass(1, 4) = addedMassElem->Get<double>("yq", 0.0).first;
+      addedMass(1, 5) = addedMassElem->Get<double>("yr", 0.0).first;
+
+      addedMass(2, 0) = addedMass(0, 2);
+      addedMass(2, 1) = addedMass(1, 2);
+      addedMass(2, 2) = addedMassElem->Get<double>("zz", 0.0).first;
+      addedMass(2, 3) = addedMassElem->Get<double>("zp", 0.0).first;
+      addedMass(2, 4) = addedMassElem->Get<double>("zq", 0.0).first;
+      addedMass(2, 5) = addedMassElem->Get<double>("zr", 0.0).first;
+
+      addedMass(3, 0) = addedMass(0, 3);
+      addedMass(3, 1) = addedMass(1, 3);
+      addedMass(3, 2) = addedMass(2, 3);
+      addedMass(3, 3) = addedMassElem->Get<double>("pp", 0.0).first;
+      addedMass(3, 4) = addedMassElem->Get<double>("pq", 0.0).first;
+      addedMass(3, 5) = addedMassElem->Get<double>("pr", 0.0).first;
+
+      addedMass(4, 0) = addedMass(0, 4);
+      addedMass(4, 1) = addedMass(1, 4);
+      addedMass(4, 2) = addedMass(2, 4);
+      addedMass(4, 3) = addedMass(3, 4);
+      addedMass(4, 4) = addedMassElem->Get<double>("qq", 0.0).first;
+      addedMass(4, 5) = addedMassElem->Get<double>("qr", 0.0).first;
+
+      addedMass(5, 0) = addedMass(0, 5);
+      addedMass(5, 1) = addedMass(1, 5);
+      addedMass(5, 2) = addedMass(2, 5);
+      addedMass(5, 3) = addedMass(3, 5);
+      addedMass(5, 4) = addedMass(4, 5);
+      addedMass(5, 5) = addedMassElem->Get<double>("rr", 0.0).first;
+
+      if (!this->dataPtr->inertial.SetFluidAddedMass(addedMass))
+      {
+        errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+                         "A link named " +
+                         this->Name() +
+                         " has invalid fluid added mass."});
+      }
+    }
   }
   if (!this->dataPtr->inertial.SetMassMatrix(
       gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
@@ -675,6 +731,33 @@ sdf::ElementPtr Link::ToElement() const
   inertiaElem->GetElement("iyy")->Set(massMatrix.Iyy());
   inertiaElem->GetElement("iyz")->Set(massMatrix.Iyz());
   inertiaElem->GetElement("izz")->Set(massMatrix.Izz());
+
+  if (this->dataPtr->inertial.FluidAddedMass().has_value())
+  {
+    auto addedMass = this->dataPtr->inertial.FluidAddedMass().value();
+    auto addedMassElem = inertialElem->GetElement("fluid_added_mass");
+    addedMassElem->GetElement("xx")->Set(addedMass(0, 0));
+    addedMassElem->GetElement("xy")->Set(addedMass(0, 1));
+    addedMassElem->GetElement("xz")->Set(addedMass(0, 2));
+    addedMassElem->GetElement("xp")->Set(addedMass(0, 3));
+    addedMassElem->GetElement("xq")->Set(addedMass(0, 4));
+    addedMassElem->GetElement("xr")->Set(addedMass(0, 5));
+    addedMassElem->GetElement("yy")->Set(addedMass(1, 1));
+    addedMassElem->GetElement("yz")->Set(addedMass(1, 2));
+    addedMassElem->GetElement("yp")->Set(addedMass(1, 3));
+    addedMassElem->GetElement("yq")->Set(addedMass(1, 4));
+    addedMassElem->GetElement("yr")->Set(addedMass(1, 5));
+    addedMassElem->GetElement("zz")->Set(addedMass(2, 2));
+    addedMassElem->GetElement("zp")->Set(addedMass(2, 3));
+    addedMassElem->GetElement("zq")->Set(addedMass(2, 4));
+    addedMassElem->GetElement("zr")->Set(addedMass(2, 5));
+    addedMassElem->GetElement("pp")->Set(addedMass(3, 3));
+    addedMassElem->GetElement("pq")->Set(addedMass(3, 4));
+    addedMassElem->GetElement("pr")->Set(addedMass(3, 5));
+    addedMassElem->GetElement("qq")->Set(addedMass(4, 4));
+    addedMassElem->GetElement("qr")->Set(addedMass(4, 5));
+    addedMassElem->GetElement("rr")->Set(addedMass(5, 5));
+  }
 
   // wind mode
   elem->GetElement("enable_wind")->Set(this->EnableWind());

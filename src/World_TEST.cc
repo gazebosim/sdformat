@@ -470,6 +470,16 @@ TEST(DOMWorld, ToElement)
   world.SetMagneticField(gz::math::Vector3d(2.0, 0.1, 0.5));
   world.SetSphericalCoordinates(gz::math::SphericalCoordinates());
 
+  sdf::Frame frame1, frame2;
+  frame1.SetName("my-frame1");
+  frame1.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  world.AddFrame(frame1);
+  frame2.SetName("my-frame2");
+  frame2.SetAttachedTo("my-frame1");
+  frame2.SetRawPose(gz::math::Pose3d(-1, 20, 34, 0.1, 0.2, 0.3));
+  world.AddFrame(frame2);
+  EXPECT_EQ(2u, world.FrameCount());
+
   sdf::Atmosphere atmosphere;
   world.SetAtmosphere(atmosphere);
 
@@ -592,6 +602,17 @@ TEST(DOMWorld, ToElement)
 
   EXPECT_EQ(sphericalCoordsSdf,
       elem->GetElement("spherical_coordinates")->ToString(""));
+
+  ASSERT_EQ(2u, world2.FrameCount());
+  const sdf::Frame *world2Frame1 = world2.FrameByIndex(0);
+  EXPECT_EQ(frame1.Name(), world2Frame1->Name());
+  EXPECT_EQ(frame1.AttachedTo(), world2Frame1->AttachedTo());
+  EXPECT_EQ(frame1.RawPose(), world2Frame1->RawPose());
+
+  const sdf::Frame *world2Frame2 = world2.FrameByIndex(1);
+  EXPECT_EQ(frame2.Name(), world2Frame2->Name());
+  EXPECT_EQ(frame2.AttachedTo(), world2Frame2->AttachedTo());
+  EXPECT_EQ(frame2.RawPose(), world2Frame2->RawPose());
 }
 
 /////////////////////////////////////////////////
