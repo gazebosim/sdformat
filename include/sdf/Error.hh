@@ -85,7 +85,7 @@ namespace sdf
     /// expected, and an element of a different type was received.
     ELEMENT_INCORRECT_TYPE,
 
-    /// \Briev Generic error type for Elements
+    /// \brief Generic error type for Elements
     ELEMENT_ERROR,
 
     /// \brief A URI is invalid.
