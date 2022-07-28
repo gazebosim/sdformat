@@ -22,6 +22,7 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
+#include "sdf/Error.hh"
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -1810,7 +1811,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
 
-  auto expectedOutput =
+  std::string expectedOutput =
     "Inertial statistics for model: test_model\n"
     "---\n"
     "Total mass of the model: 24\n"
@@ -1848,7 +1849,10 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 
   expectedOutput =
-          "Error Code 18: Msg: A link named link has invalid inertia.\n\n"
+          "Error Code " +
+          std::to_string(static_cast<int>(
+              sdf::ErrorCode::LINK_INERTIA_INVALID)) +
+          ": Msg: A link named link has invalid inertia.\n\n"
           "Inertial statistics for model: model\n"
           "---\n"
           "Total mass of the model: 0\n"
@@ -1871,6 +1875,8 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
+    std::cout << GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion() << std::endl;
     EXPECT_EQ(expectedOutput, output);
   }
 

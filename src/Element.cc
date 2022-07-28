@@ -145,6 +145,17 @@ void Element::AddValue(const std::string &_type,
 void Element::AddValue(const std::string &_type,
                        const std::string &_defaultValue,
                        bool _required,
+                       sdf::Errors &_errors,
+                       const std::string &_description)
+{
+  this->dataPtr->value = this->CreateParam(this->dataPtr->name,
+      _type, _defaultValue, _required, _errors, _description);
+}
+
+/////////////////////////////////////////////////
+void Element::AddValue(const std::string &_type,
+                       const std::string &_defaultValue,
+                       bool _required,
                        const std::string &_minValue,
                        const std::string &_maxValue,
                        const std::string &_description)
@@ -154,6 +165,26 @@ void Element::AddValue(const std::string &_type,
                               _required, _minValue, _maxValue, _description);
   SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
       "Cannot set parent Element of value to itself.");
+}
+
+/////////////////////////////////////////////////
+void Element::AddValue(const std::string &_type,
+                       const std::string &_defaultValue,
+                       bool _required,
+                       const std::string &_minValue,
+                       const std::string &_maxValue,
+                       sdf::Errors &_errors,
+                       const std::string &_description)
+{
+  this->dataPtr->value =
+      std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
+                              _required, _minValue, _maxValue, _errors,
+                              _description);
+  if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
+  {
+    _errors.push_back({ErrorCode::ELEMENT_ERROR,
+        "Cannot set parent Element of value to itself."});
+  }
 }
 
 /////////////////////////////////////////////////
@@ -171,6 +202,25 @@ ParamPtr Element::CreateParam(const std::string &_key,
 }
 
 /////////////////////////////////////////////////
+ParamPtr Element::CreateParam(const std::string &_key,
+                              const std::string &_type,
+                              const std::string &_defaultValue,
+                              bool _required,
+                              sdf::Errors &_errors,
+                              const std::string &_description)
+{
+  ParamPtr param = std::make_shared<Param>(
+      _key, _type, _defaultValue, _required, _errors, _description);
+
+  if(!param->SetParentElement(shared_from_this(), _errors))
+  {
+    _errors.push_back({ErrorCode::ELEMENT_ERROR,
+          "Cannot set parent Element of created Param to itself."});
+  }
+  return param;
+}
+
+/////////////////////////////////////////////////
 void Element::AddAttribute(const std::string &_key,
                            const std::string &_type,
                            const std::string &_defaultValue,
@@ -182,7 +232,32 @@ void Element::AddAttribute(const std::string &_key,
 }
 
 /////////////////////////////////////////////////
+void Element::AddAttribute(const std::string &_key,
+                           const std::string &_type,
+                           const std::string &_defaultValue,
+                           bool _required,
+                           sdf::Errors &_errors,
+                           const std::string &_description)
+{
+  this->dataPtr->attributes.push_back(
+      this->CreateParam(_key, _type, _defaultValue,
+                        _required, _errors, _description));
+}
+
+/////////////////////////////////////////////////
 ElementPtr Element::Clone() const
+{
+  return this->CloneImpl();
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::Clone(sdf::Errors &_errors) const
+{
+  return this->CloneImpl(&_errors);
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::CloneImpl(sdf::Errors *const _errorsPtr) const
 {
   ElementPtr clone(new Element);
   clone->dataPtr->description = this->dataPtr->description;
@@ -201,9 +276,22 @@ ElementPtr Element::Clone() const
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     auto clonedAttribute = (*aiter)->Clone();
-    SDF_ASSERT(clonedAttribute->SetParentElement(clone),
-        "Cannot set parent Element of cloned attribute Param to cloned "
-        "Element.");
+    if (_errorsPtr)
+    {
+      if (!clonedAttribute->SetParentElement(clone, *_errorsPtr))
+      {
+          _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+              "Cannot set parent Element of cloned attribute Param to cloned "
+              "Element."});
+          return nullptr;
+      }
+    }
+    else
+    {
+      SDF_ASSERT(clonedAttribute->SetParentElement(clone),
+          "Cannot set parent Element of cloned attribute Param to cloned "
+          "Element.");
+    }
     clone->dataPtr->attributes.push_back(clonedAttribute);
   }
 
@@ -224,13 +312,29 @@ ElementPtr Element::Clone() const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
-    SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
-        "Cannot set parent Element of cloned value Param to cloned Element.");
+
+    if (_errorsPtr)
+    {
+      if (!clone->dataPtr->value->SetParentElement(clone, *_errorsPtr))
+      {
+        _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+          "Cannot set parent Element of cloned value Param to cloned "
+          "Element."});
+        return nullptr;
+      }
+    }
+    else
+    {
+      SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
+          "Cannot set parent Element of cloned value Param to cloned Element.");
+    }
   }
 
   if (this->dataPtr->includeElement)
   {
-    clone->dataPtr->includeElement = this->dataPtr->includeElement->Clone();
+    clone->dataPtr->includeElement =
+        _errorsPtr ? this->dataPtr->includeElement->Clone(*_errorsPtr) :
+        this->dataPtr->includeElement->Clone();
   }
 
   return clone;
@@ -238,6 +342,18 @@ ElementPtr Element::Clone() const
 
 /////////////////////////////////////////////////
 void Element::Copy(const ElementPtr _elem)
+{
+  this->CopyImpl(_elem);
+}
+
+/////////////////////////////////////////////////
+void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
+{
+  this->CopyImpl(_elem, &_errors);
+}
+
+/////////////////////////////////////////////////
+void Element::CopyImpl(const ElementPtr _elem, sdf::Errors *const _errorsPtr)
 {
   this->dataPtr->name = _elem->GetName();
   this->dataPtr->description = _elem->GetDescription();
@@ -259,8 +375,21 @@ void Element::Copy(const ElementPtr _elem)
     }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-    SDF_ASSERT(param->SetParentElement(shared_from_this()),
-        "Cannot set parent Element of copied attribute Param to itself.");
+
+    if (_errorsPtr)
+    {
+      if (!param->SetParentElement(shared_from_this(), *_errorsPtr))
+      {
+        _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+            "Cannot set parent Element of copied attribute Param to itself."});
+        return;
+      }
+    }
+    else
+    {
+      SDF_ASSERT(param->SetParentElement(shared_from_this()),
+          "Cannot set parent Element of copied attribute Param to itself.");
+    }
   }
 
   if (_elem->GetValue())
@@ -273,8 +402,21 @@ void Element::Copy(const ElementPtr _elem)
     {
       *(this->dataPtr->value) = *(_elem->GetValue());
     }
-    SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
-        "Cannot set parent Element of copied value Param to itself.");
+    if(_errorsPtr)
+    {
+      if (!this->dataPtr->value->SetParentElement(shared_from_this(),
+                                                  *_errorsPtr))
+      {
+        _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+            "Cannot set parent Element of copied attribute Param to itself."});
+        return;
+      }
+    }
+    else
+    {
+      SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+          "Cannot set parent Element of copied value Param to itself.");
+    }
   }
 
   this->dataPtr->elementDescriptions.clear();
@@ -282,15 +424,31 @@ void Element::Copy(const ElementPtr _elem)
        _elem->dataPtr->elementDescriptions.begin();
        iter != _elem->dataPtr->elementDescriptions.end(); ++iter)
   {
-    this->dataPtr->elementDescriptions.push_back((*iter)->Clone());
+    if (_errorsPtr)
+    {
+      this->dataPtr->elementDescriptions.push_back((*iter)->Clone(*_errorsPtr));
+    }
+    else
+    {
+      this->dataPtr->elementDescriptions.push_back((*iter)->Clone());
+    }
   }
 
   this->dataPtr->elements.clear();
   for (ElementPtr_V::iterator iter = _elem->dataPtr->elements.begin();
        iter != _elem->dataPtr->elements.end(); ++iter)
   {
-    ElementPtr elem = (*iter)->Clone();
-    elem->Copy(*iter);
+    ElementPtr elem;
+    if (_errorsPtr)
+    {
+      elem = (*iter)->Clone(*_errorsPtr);
+      elem->Copy(*iter, *_errorsPtr);
+    }
+    else
+    {
+      elem = (*iter)->Clone();
+      elem->Copy(*iter);
+    }
     elem->SetParent(shared_from_this());
     this->dataPtr->elements.push_back(elem);
   }
@@ -299,11 +457,21 @@ void Element::Copy(const ElementPtr _elem)
   {
     if (!this->dataPtr->includeElement)
     {
-      this->dataPtr->includeElement = _elem->dataPtr->includeElement->Clone();
+      this->dataPtr->includeElement = _errorsPtr ?
+          _elem->dataPtr->includeElement->Clone(*_errorsPtr) :
+          _elem->dataPtr->includeElement->Clone();
     }
     else
     {
-      this->dataPtr->includeElement->Copy(_elem->dataPtr->includeElement);
+      if (_errorsPtr)
+      {
+        this->dataPtr->includeElement->Copy(_elem->dataPtr->includeElement,
+                                            *_errorsPtr);
+      }
+      else
+      {
+        this->dataPtr->includeElement->Copy(_elem->dataPtr->includeElement);
+      }
     }
   }
 }
@@ -942,6 +1110,18 @@ ElementPtr Element::GetElement(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+ElementPtr Element::GetElement(const std::string &_name, sdf::Errors &_errors)
+{
+  ElementPtr result = this->GetElementImpl(_name);
+  if (result == ElementPtr())
+  {
+    result = this->AddElement(_name, _errors);
+  }
+
+  return result;
+}
+
+/////////////////////////////////////////////////
 ElementPtr Element::FindElement(const std::string &_name)
 {
   return this->GetElementImpl(_name);
@@ -976,6 +1156,30 @@ bool Element::HasElementDescription(const std::string &_name) const
 /////////////////////////////////////////////////
 ElementPtr Element::AddElement(const std::string &_name)
 {
+  ElementPtr elem = this->AddElementImpl(_name);
+  if (elem.get() == nullptr)
+  {
+    sdferr << "Missing element description for [" << _name << "]\n";
+  }
+  return elem;
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
+{
+  ElementPtr elem = this->AddElementImpl(_name, &_errors);
+  if (elem.get() == nullptr)
+  {
+    _errors.push_back({ErrorCode::ELEMENT_ERROR,
+        "Missing element description for [" + _name + "]\n"});
+  }
+  return elem;
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::AddElementImpl(const std::string &_name,
+                                   sdf::Errors *const _errorsPtr)
+{
   // if this element is a reference sdf and does not have any element
   // descriptions then get them from its parent
   auto parent = this->dataPtr->parent.lock();
@@ -985,8 +1189,16 @@ ElementPtr Element::AddElement(const std::string &_name)
   {
     for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
-      this->dataPtr->elementDescriptions.push_back(
-          parent->GetElementDescription(i)->Clone());
+      if (_errorsPtr)
+      {
+        this->dataPtr->elementDescriptions.push_back(
+            parent->GetElementDescription(i)->Clone(*_errorsPtr));
+      }
+      else
+      {
+        this->dataPtr->elementDescriptions.push_back(
+            parent->GetElementDescription(i)->Clone());
+      }
     }
   }
 
@@ -996,7 +1208,8 @@ ElementPtr Element::AddElement(const std::string &_name)
   {
     if ((*iter)->dataPtr->name == _name)
     {
-      ElementPtr elem = (*iter)->Clone();
+      ElementPtr elem =
+          _errorsPtr ? (*iter)->Clone(*_errorsPtr) : (*iter)->Clone();
       elem->SetParent(shared_from_this());
       this->dataPtr->elements.push_back(elem);
 
@@ -1007,15 +1220,20 @@ ElementPtr Element::AddElement(const std::string &_name)
         // Add only required child element
         if ((*iter2)->GetRequired() == "1")
         {
-          elem->AddElement((*iter2)->dataPtr->name);
+          if (_errorsPtr)
+          {
+            elem->AddElement((*iter2)->dataPtr->name, *_errorsPtr);
+          }
+          else
+          {
+            elem->AddElement((*iter2)->dataPtr->name);
+          }
         }
       }
-
       return this->dataPtr->elements.back();
     }
   }
 
-  sdferr << "Missing element description for [" << _name << "]\n";
   return ElementPtr();
 }
 
@@ -1193,6 +1411,26 @@ void Element::RemoveChild(ElementPtr _child)
 {
   SDF_ASSERT(_child, "Cannot remove a nullptr child pointer");
 
+  RemoveChildImpl(_child);
+}
+
+/////////////////////////////////////////////////
+void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
+{
+  if (!_child)
+  {
+    _errors.push_back({ErrorCode::ELEMENT_ERROR,
+        "Cannot remove a nullptr child pointer"});
+    return;
+  }
+
+  RemoveChildImpl(_child);
+}
+
+/////////////////////////////////////////////////
+void Element::RemoveChildImpl(ElementPtr _child)
+{
+
   ElementPtr_V::iterator iter;
   iter = std::find(this->dataPtr->elements.begin(),
                    this->dataPtr->elements.end(), _child);
@@ -1207,13 +1445,34 @@ void Element::RemoveChild(ElementPtr _child)
 /////////////////////////////////////////////////
 std::any Element::GetAny(const std::string &_key) const
 {
+  return this->GetAnyImpl(_key);
+}
+
+/////////////////////////////////////////////////
+std::any Element::GetAny(sdf::Errors &_errors, const std::string &_key) const
+{
+  return this->GetAnyImpl(_key, &_errors);
+}
+
+/////////////////////////////////////////////////
+std::any Element::GetAnyImpl(const std::string &_key,
+                             sdf::Errors *const _errorsPtr) const
+{
   std::any result;
   if (_key.empty() && this->dataPtr->value)
   {
     if (!this->dataPtr->value->GetAny(result))
     {
-      sdferr << "Couldn't get element [" << this->GetName()
-             << "] as std::any\n";
+      if (_errorsPtr)
+      {
+        _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+            "Couldn't get element [" + this->GetName() + "] as std::any\n"});
+      }
+      else
+      {
+        sdferr << "Couldn't get element [" << this->GetName()
+               << "] as std::any\n";
+      }
     }
   }
   else if (!_key.empty())
@@ -1223,7 +1482,15 @@ std::any Element::GetAny(const std::string &_key) const
     {
       if (!this->GetAttribute(_key)->GetAny(result))
       {
-        sdferr << "Couldn't get attribute [" << _key << "] as std::any\n";
+        if (_errorsPtr)
+        {
+          _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+              "Couldn't get attribute [" + _key + "] as std::any\n"});
+        }
+        else
+        {
+          sdferr << "Couldn't get attribute [" << _key << "] as std::any\n";
+        }
       }
     }
     else
@@ -1242,7 +1509,15 @@ std::any Element::GetAny(const std::string &_key) const
         }
         else
         {
-          sdferr << "Unable to find value for key [" << _key << "]\n";
+          if (_errorsPtr)
+          {
+            _errorsPtr->push_back({ErrorCode::ELEMENT_ERROR,
+                "Unable to find value for key [" + _key + "]\n"});
+          }
+          else
+          {
+            sdferr << "Unable to find value for key [" << _key << "]\n";
+          }
         }
       }
     }

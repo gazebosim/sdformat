@@ -28,7 +28,7 @@
 
 ////////////////////////////////////////
 // Test Param class for sdf::Errors outputs
-TEST(Error, ErrorOutput)
+TEST(ErrorOutput, ParamErrorOutput)
 {
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
@@ -106,7 +106,8 @@ TEST(Error, ErrorOutput)
   // will make reparse fail
   sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
   sdf::ElementPtr poseElem(new sdf::Element);
-  poseElem->AddAttribute("rotation_format", "string", "invalid_format", false);
+  poseElem->AddAttribute(
+    "rotation_format", "string", "invalid_format", false);
   EXPECT_FALSE(poseParam.SetParentElement(poseElem, errors));
   ASSERT_EQ(errors.size(), 2u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARAMETER_ERROR);
@@ -142,6 +143,79 @@ TEST(Error, ErrorOutput)
   EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::PARAMETER_ERROR);
   EXPECT_NE(std::string::npos, errors[5].Message().find(
     "Invalid [max] parameter in SDFormat description of [key]"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+////////////////////////////////////////
+// Test Element class for sdf::Errors outputs
+TEST(ErrorOutput, ElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+    sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::Errors errors;
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  elem->SetName("testElement");
+
+  elem->GetAny(errors, "test");
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Unable to find value for key [test]"));
+  ASSERT_EQ(errors.size(), 1u);
+
+  errors.clear();
+  elem->GetElement("missingElement", errors);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Missing element description for [missingElement]"));
+  ASSERT_EQ(errors.size(), 1u);
+
+  errors.clear();
+  elem->AddAttribute(
+    "invalidAttribute", "int", "invalidFormat", false, errors);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Invalid argument. Unable to set value [invalidFormat]"
+    " for key[invalidAttribute]"));
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+    "Invalid parameter"));
+  ASSERT_EQ(errors.size(), 2u);
+
+  errors.clear();
+  elem->AddValue("type", "value", true, "a", "b", errors);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Unknown parameter type[type]"));
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+    "Invalid parameter"));
+  EXPECT_NE(std::string::npos, errors[2].Message().find(
+    "Unknown parameter type[type]"));
+  EXPECT_NE(std::string::npos, errors[3].Message().find(
+    "Invalid [min] parameter in SDFormat description of [testElement]"));
+  EXPECT_NE(std::string::npos, errors[4].Message().find(
+    "Unknown parameter type[type]"));
+  EXPECT_NE(std::string::npos, errors[5].Message().find(
+    "Invalid [max] parameter in SDFormat description of [testElement]"));
+  EXPECT_NE(std::string::npos, errors[6].Message().find(
+    "Unknown parameter type[type]"));
+  EXPECT_NE(std::string::npos, errors[7].Message().find(
+    "Failed to set value '0' to key [testElement] for new parent element"
+    " of name 'testElement', reverting to previous value '0'."));
+  EXPECT_NE(std::string::npos, errors[8].Message().find(
+    "Cannot set parent Element of value to itself."));
+  ASSERT_EQ(errors.size(), 9u);
+  errors.clear();
+
+  elem->GetElement("nonExistentElement", errors);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Missing element description for [nonExistentElement]"));
+  ASSERT_EQ(errors.size(), 1u);
+  errors.clear();
+
+  elem->RemoveChild(sdf::ElementPtr(), errors);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Cannot remove a nullptr child pointer"));
+  ASSERT_EQ(errors.size(), 1u);
 
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
