@@ -368,12 +368,6 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
 }
 
 //////////////////////////////////////////////////
-bool init(SDFPtr _sdf)
-{
-  return init(_sdf, ParserConfig::GlobalConfig());
-}
-
-//////////////////////////////////////////////////
 bool init(SDFPtr _sdf, const ParserConfig &_config)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
