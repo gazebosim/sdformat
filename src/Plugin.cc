@@ -98,11 +98,7 @@ Errors Plugin::Load(ElementPtr _sdf)
   }
 
   // Read the models's name
-  if (!loadName(_sdf, this->dataPtr->name))
-  {
-    errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
-                     "A plugin name is required, but the name is not set."});
-  }
+  loadName(_sdf, this->dataPtr->name);
 
   // Read the filename
   std::pair<std::string, bool> filenamePair =

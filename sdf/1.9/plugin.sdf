@@ -1,7 +1,7 @@
 <!-- Plugin -->
 <element name="plugin" required="*">
   <description>A plugin is a dynamically loaded chunk of code. It can exist as a child of world, model, and sensor.</description>
-  <attribute name="name" type="string" default="__default__" required="1">
+  <attribute name="name" type="string" default="__default__" required="0">
     <description>A name for the plugin.</description>
   </attribute>
   <attribute name="filename" type="string" default="__default__" required="1">
