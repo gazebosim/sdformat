@@ -135,6 +135,9 @@ namespace sdf
     /// \brief The pose relative-to graph has an internal error.
     POSE_RELATIVE_TO_GRAPH_ERROR,
 
+    /// \brief The rotation snap config provided is not valid.
+    ROTATION_SNAP_CONFIG_ERROR,
+
     /// \brief Indicates that reading an SDF string failed.
     STRING_READ,
 

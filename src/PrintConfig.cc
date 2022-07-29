@@ -76,18 +76,52 @@ bool PrintConfig::PreserveIncludes() const
 bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
                                            double _tolerance)
 {
+  return this->SetRotationSnapToDegreesImpl(_interval, _tolerance);
+}
+
+/////////////////////////////////////////////////
+bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
+                                           double _tolerance,
+                                           sdf::Errors &_errors)
+{
+  return this->SetRotationSnapToDegreesImpl(_interval, _tolerance, &_errors);
+}
+
+/////////////////////////////////////////////////
+bool PrintConfig::SetRotationSnapToDegreesImpl(unsigned int _interval,
+                                               double _tolerance,
+                                               sdf::Errors *const _errors)
+{
   if (_interval == 0 || _interval > 360)
   {
-    sdferr << "Interval value to snap to must be larger than 0, and less than "
-           << "or equal to 360.\n";
+    std::stringstream ss;
+    ss << "Interval value to snap to must be larger than 0, and less than "
+       << "or equal to 360.\n";
+    if (_errors == nullptr)
+    {
+      sdferr << ss.str();
+    }
+    else
+    {
+      _errors->push_back({ErrorCode::ROTATION_SNAP_CONFIG_ERROR, ss.str()});
+    }
     return false;
   }
 
   if (_tolerance <= 0 || _tolerance > 360 ||
       _tolerance >= static_cast<double>(_interval))
   {
-    sdferr << "Tolerance must be larger than 0, less than or equal to "
-           << "360, and less than the provided interval.\n";
+    std::stringstream ss;
+    ss << "Tolerance must be larger than 0, less than or equal to "
+       << "360, and less than the provided interval.\n";
+    if (_errors == nullptr)
+    {
+      sdferr << ss.str();
+    }
+    else
+    {
+      _errors->push_back({ErrorCode::ROTATION_SNAP_CONFIG_ERROR, ss.str()});
+    }
     return false;
   }
 

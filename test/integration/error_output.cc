@@ -100,7 +100,6 @@ TEST(Error, ErrorOutput)
     "The value [1] is less than the minimum allowed value of [2] for "
     "key [key]"));
 
-
   errors.clear();
   // Adding a parent with @rotation_format to something invalid
   // will make reparse fail
@@ -142,6 +141,33 @@ TEST(Error, ErrorOutput)
   EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::PARAMETER_ERROR);
   EXPECT_NE(std::string::npos, errors[5].Message().find(
     "Invalid [max] parameter in SDFormat description of [key]"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+////////////////////////////////////////
+// Test PrintConfig class for sdf::Errors outputs
+TEST(ErrorOutput, PrintConfigErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+    sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::Errors errors;
+  sdf::PrintConfig printConfig;
+  ASSERT_FALSE(printConfig.SetRotationSnapToDegrees(361, 300, errors));
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Interval value to snap to must be larger than 0,"
+    " and less than or equal to 360."));
+  ASSERT_EQ(errors.size(), 1u);
+  errors.clear();
+
+  ASSERT_FALSE(printConfig.SetRotationSnapToDegrees(300, 300, errors));
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Tolerance must be larger than 0, less than or equal to 360, "
+    "and less than the provided interval."));
+  ASSERT_EQ(errors.size(), 1u);
 
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
