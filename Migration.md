@@ -529,6 +529,10 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat specification 1.9 to 1.10
 
+### Modifications
+
+1. **plugin.sdf**: name attribute is now optional.
+
 ## SDFormat specification 1.8 to 1.9
 
 ### Additions
