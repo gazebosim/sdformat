@@ -180,6 +180,62 @@ TEST(DOMPlugin, Load)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMPlugin, LoadWithoutName)
+{
+  std::string pluginStr = R"(<plugin filename='MinimalScene'>
+  <gz-gui>
+    <title>3D View</title>
+    <property type='Gz.Msgs.Boolean'>false</property>
+    <property type='bool' key='showTitleBar'>0</property>
+    <property type='string' key='state'>docked</property>
+  </gz-gui>
+  <engine>ogre</engine>
+  <scene>scene</scene>
+  <ambient_light>0.4 0.4 0.4</ambient_light>
+  <background_color>0.8 0.8 0.8</background_color>
+  <camera_pose>-6 0 6 0 0.5 0</camera_pose>
+</plugin>
+)";
+
+  std::string pluginStrWithSdf = std::string("<sdf version='1.9'>") +
+    pluginStr + "</sdf>";
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("plugin.sdf", elem);
+  ASSERT_TRUE(sdf::readString(pluginStrWithSdf, elem));
+
+  sdf::Plugin plugin;
+  sdf::Errors errors;
+  errors = plugin.Load(elem);
+  ASSERT_EQ(0u, errors.size());
+
+  EXPECT_TRUE(plugin.Name().empty());
+  EXPECT_EQ("MinimalScene", plugin.Filename());
+
+  // The elements should be the same
+  EXPECT_EQ(elem->ToString(""), plugin.Element()->ToString(""));
+
+  sdf::ElementPtr toElem = plugin.ToElement();
+
+  // The elements should be the same
+  EXPECT_EQ(elem->ToString(""), toElem->ToString(""));
+  EXPECT_EQ(pluginStr, toElem->ToString(""));
+
+  // Test plugin copy
+  sdf::Plugin plugin3;
+  plugin3 = plugin;
+  plugin.ClearContents();
+  sdf::Plugin plugin4(plugin3);
+
+  toElem = plugin3.ToElement();
+  EXPECT_EQ(6u, plugin3.Contents().size());
+  EXPECT_EQ(pluginStr, toElem->ToString(""));
+
+  toElem = plugin4.ToElement();
+  EXPECT_EQ(6u, plugin4.Contents().size());
+  EXPECT_EQ(pluginStr, toElem->ToString(""));
+}
+
+/////////////////////////////////////////////////
 TEST(DOMPlugin, LoadWithChildren)
 {
   std::string pluginStr = R"(<plugin name='3D View' filename='MinimalScene'>

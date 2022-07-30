@@ -513,7 +513,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
   const char *requiredString = _xml->Attribute("required");
   if (!requiredString)
   {
-    sdferr << "Element is missing the required attributed\n";
+    sdferr << "Element is missing the required attribute\n";
     return false;
   }
   _sdf->SetRequired(requiredString);
