@@ -65,6 +65,54 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
+TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  // Check an SDFormat file with unrecognized elements
+  {
+    std::string path = pathBase +"/unrecognized_elements.sdf";
+
+    std::string output =
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Attribute[some_attribute] in element[model] not defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Element[not_a_link_element], child of element[link], not "
+        "defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Element[not_a_model_element], child of element[model], not "
+        "defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Element[not_an_sdf_element], child of element[sdf], not "
+        "defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find("Valid."))
+      << output;
+  }
+
+  // Check an SDFormat file with unrecognized elements with XML namespaces
+  {
+    std::string path = pathBase +"/unrecognized_elements_with_namespace.sdf";
+
+    std::string output =
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Attribute[some_attribute] in element[model] not defined in SDF."))
+      << output;
+    EXPECT_EQ(std::string::npos, output.find(
+        "XML Element["))
+      << output;
+    EXPECT_NE(std::string::npos, output.find("Valid."))
+      << output;
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
@@ -1848,7 +1896,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 
   expectedOutput =
-          "Error Code 18: Msg: A link named link has invalid inertia.\n\n"
+          "Error Code 19: Msg: A link named link has invalid inertia.\n\n"
           "Inertial statistics for model: model\n"
           "---\n"
           "Total mass of the model: 0\n"

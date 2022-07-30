@@ -20,6 +20,11 @@ but with improved human-readability..
     + Details about the 1.9 to 1.10 transition are explained below in this same
       document
 
+### Modifications
+
+1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
+   elements.
+
 ### Deprecations
 
 - The `ignition` namespace is deprecated and will be removed in future versions.
@@ -50,6 +55,10 @@ but with improved human-readability..
    + ***Replacement:*** void SetRoot(sdf::ElementPtr)
 
 ### Removals
+
+- **sdf/InterfaceElements.hh**: The deprecated data members from the
+   `NestedInclude` class have been removed. Instead use the corresponding
+   member functions.
 
 - **sdf/Types.hh**: The `SDF_DEPRECATED` and `SDF_SUPPRESS_*` macros have been
   removed in favor of `GZ_DEPRECATED` and `GZ_UTILS_WARN_*`.

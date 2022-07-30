@@ -36,7 +36,7 @@ class sdf::ParserConfig::Implementation
   /// treated.
   /// Default is to ignore them for compatibility with legacy behavior
   public: EnforcementPolicy unrecognizedElementsPolicy =
-    EnforcementPolicy::LOG;
+    EnforcementPolicy::WARN;
 
   /// \brief Policy indicating how deprecated elements are treated.
   /// Defaults to the value of `warningsPolicy`. It can be overriden by the user
