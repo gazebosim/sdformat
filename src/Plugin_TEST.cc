@@ -160,9 +160,8 @@ TEST(DOMPlugin, Load)
 
   // Missing name and filename attribute
   errors = plugin.Load(sdf);
-  ASSERT_EQ(2u, errors.size());
+  ASSERT_EQ(1u, errors.size()) << errors;
   EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[0].Code());
-  EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_MISSING, errors[1].Code());
 
   sdf->AddAttribute("name", "string", "__default__", true);
   sdf->GetAttribute("name")->Set<std::string>("my-plugin-name");
