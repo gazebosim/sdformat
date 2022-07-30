@@ -1896,7 +1896,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 
   expectedOutput =
-          "Error Code 18: Msg: A link named link has invalid inertia.\n\n"
+          "Error Code 19: Msg: A link named link has invalid inertia.\n\n"
           "Inertial statistics for model: model\n"
           "---\n"
           "Total mass of the model: 0\n"

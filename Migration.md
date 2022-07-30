@@ -56,6 +56,10 @@ but with improved human-readability..
 
 ### Removals
 
+- **sdf/InterfaceElements.hh**: The deprecated data members from the
+   `NestedInclude` class have been removed. Instead use the corresponding
+   member functions.
+
 - **sdf/Types.hh**: The `SDF_DEPRECATED` and `SDF_SUPPRESS_*` macros have been
   removed in favor of `GZ_DEPRECATED` and `GZ_UTILS_WARN_*`.
 
