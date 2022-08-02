@@ -195,6 +195,7 @@ ElementPtr Element::Clone() const
   clone->dataPtr->xmlPath = this->dataPtr->xmlPath;
   clone->dataPtr->originalVersion = this->dataPtr->originalVersion;
   clone->dataPtr->explicitlySetInFile = this->dataPtr->explicitlySetInFile;
+  clone->dataPtr->parent = this->dataPtr->parent;
 
   Param_V::const_iterator aiter;
   for (aiter = this->dataPtr->attributes.begin();
