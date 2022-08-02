@@ -762,8 +762,8 @@ TEST(SDFParser, FixedJointReductionJointFrameExtensionTest)
   const sdf::Joint *joint = model->JointByName(ball_joint_name);
   ASSERT_NE(nullptr, joint);
 
-  EXPECT_EQ("link3", joint->ChildLinkName());
-  EXPECT_EQ("base_link", joint->ParentLinkName());
+  EXPECT_EQ("link3", joint->ChildName());
+  EXPECT_EQ("base_link", joint->ParentName());
 }
 
 /////////////////////////////////////////////////
