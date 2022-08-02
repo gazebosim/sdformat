@@ -167,7 +167,8 @@ sdf::ElementPtr Plugin::ToElement() const
   for (const sdf::ElementPtr content : this->dataPtr->contents)
     elem->InsertElement(content, true);
 
-  elem->SetParent(this->dataPtr->sdf->GetParent());
+  if (nullptr != this->dataPtr->sdf)
+    elem->SetParent(this->dataPtr->sdf->GetParent());
 
   return elem;
 }
