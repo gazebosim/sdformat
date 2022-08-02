@@ -7,11 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Ubuntu Focal CI
     steps:
-      - name: Set env
-        run: |
-          echo "PATH=$PATH:/tmp/USD/bin" >> $GITHUB_ENV
-          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/USD/lib" >> $GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/tmp/USD" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v2
       - name: Compile and test

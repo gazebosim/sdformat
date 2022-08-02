@@ -292,13 +292,9 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
 
   for (uint64_t i = 0; i < model->LinkCount(); i++)
   {
-    gz::math::Pose3d linkPoseRelativeToModel;
-    errors = model->LinkByIndex(i)->SemanticPose().
-      Resolve(linkPoseRelativeToModel, "__model__");
+    gz::math::Inertiald currentLinkInertial;
+    model->LinkByIndex(i)->ResolveInertial(currentLinkInertial, "__model__");
 
-    auto currentLinkInertial = model->LinkByIndex(i)->Inertial();
-    currentLinkInertial.SetPose(linkPoseRelativeToModel *
-      currentLinkInertial.Pose());
     totalInertial += currentLinkInertial;
   }
 
