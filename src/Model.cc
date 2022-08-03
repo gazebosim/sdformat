@@ -373,7 +373,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     std::string frameName = frame.Name();
     if (frameNames.count(frameName) > 0)
     {
-      // This joint has a name collision
+      // This frame has a name collision
       if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming frame

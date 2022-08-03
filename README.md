@@ -1,5 +1,21 @@
 # sdformat
 
+[![GitHub open issues](https://img.shields.io/github/issues-raw/gazebosim/sdformat.svg)](https://github.com/gazebosim/sdformat/issues)
+[![GitHub open pull requests](https://img.shields.io/github/issues-pr-raw/gazebosim/sdformat.svg)](https://github.com/gazebosim/sdformat/pulls)
+[![Discourse topics](https://img.shields.io/discourse/https/community.gazebosim.org/topics.svg)](https://community.gazebosim.org)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
+<!--
+Note: The branch name in the codecov URL & library version should be updated when forward porting
+-->
+Build | Status
+-- | --
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/main)
+Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-focal-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-focal-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-windows7-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-windows7-amd64)
+
+
 SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
@@ -13,7 +29,7 @@ See the [SDFormat Website](http://sdformat.org/) for a more comprehensive
 description of the specification, proposals for modifications, developer
 information, etc.
 This website is published using some information from the
-[`sdf_tutorials`](https://github.com/osrf/sdf_tutorials) repository.
+[`sdf_tutorials`](https://github.com/gazebosim/sdf_tutorials) repository.
 
 <!--
 TODO(eric.cousineau): Move installation instructions to sdf_tutorials, and link
@@ -29,10 +45,7 @@ TODO(eric.cousineau): Move terminology section to sdf_tutorials?
 * `libsdformat` - The C++ parsing code contained within this repository,
   which can be used to read SDFormat files and return a C++ interface.
 
-## Test coverage
-
-<!-- Note: The branch name in the codecov URL should be updated when forward porting -->
-[![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/main)
+[http://sdformat.org/](http://sdformat.org/)
 
 # Installation
 
@@ -95,7 +108,7 @@ conda search libsdformat --channel conda-forge
 
 and install a specific minor version with
 ```
-conda install libsdformat=9.3.0 --channel conda-forge
+conda install libsdformat=12.5.0 --channel conda-forge
 ```
 
 ## Source Installation

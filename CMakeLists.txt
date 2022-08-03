@@ -69,6 +69,9 @@ if (BUILD_SDF)
   #################################################
   # Find gz command line utility:
   find_program(GZ_PROGRAM gz)
+  # Note that CLI files are installed regardless of whether the dependency is
+  # available during build time
+  set(GZ_TOOLS_VER 2)
 
   #################################################
   # Copied from catkin/cmake/empy.cmake
@@ -123,11 +126,6 @@ if (BUILD_SDF)
   set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
   ########################################
-  # Find gz common
-  gz_find_package(gz-common5 COMPONENTS graphics REQUIRED_BY usd)
-  set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
-
-  ########################################
   # Python interfaces
   if (NOT PYTHON3_FOUND)
     GZ_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
@@ -147,12 +145,7 @@ if (BUILD_SDF)
   	endif()
   endif()
 
-  ########################################
-  # Find PXR
-  gz_find_package(pxr QUIET REQUIRED_BY usd PKGCONFIG pxr)
-
-  gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS
-    COMPONENTS usd)
+  gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
 
   gz_create_packages()
 
