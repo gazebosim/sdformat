@@ -106,8 +106,7 @@ TEST(ErrorOutput, ParamErrorOutput)
   // will make reparse fail
   sdf::Param poseParam("", "pose", "1 2 3 0.4 0.5 0.6", false, "description");
   sdf::ElementPtr poseElem(new sdf::Element);
-  poseElem->AddAttribute(
-    "rotation_format", "string", "invalid_format", false);
+  poseElem->AddAttribute("rotation_format", "string", "invalid_format", false);
   EXPECT_FALSE(poseParam.SetParentElement(poseElem, errors));
   ASSERT_EQ(errors.size(), 2u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARAMETER_ERROR);

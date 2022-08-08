@@ -1875,8 +1875,6 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     std::string output =
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
-    std::cout << GzCommand() + " sdf --inertial-stats " +
-                      path + SdfVersion() << std::endl;
     EXPECT_EQ(expectedOutput, output);
   }
 

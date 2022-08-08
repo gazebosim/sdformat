@@ -690,20 +690,6 @@ namespace sdf
     /// int,...).
     /// \param[in] _defaultValue Default value.
     /// \param[in] _required True if the parameter is required to be set.
-    /// \param[in] _description Description of the parameter.
-    /// \return A pointer to the new Param object.
-    private: ParamPtr CreateParam(const std::string &_key,
-                                  const std::string &_type,
-                                  const std::string &_defaultValue,
-                                  bool _required,
-                                  const std::string &_description = "");
-
-    /// \brief Create a new Param object and return it.
-    /// \param[in] _key Key for the parameter.
-    /// \param[in] _type String name for the value type (double,
-    /// int,...).
-    /// \param[in] _defaultValue Default value.
-    /// \param[in] _required True if the parameter is required to be set.
     /// \param[out] _errors Vector of errors.
     /// \param[in] _description Description of the parameter.
     /// \return A pointer to the new Param object.
@@ -713,36 +699,6 @@ namespace sdf
                                   bool _required,
                                   sdf::Errors &_errors,
                                   const std::string &_description = "");
-
-    /// \brief Add a named element.
-    /// \param[in] _name the name of the element to add.
-    /// \param[out] _errors Pointer to the vector of errors.
-    /// \return A pointer to the newly created Element object.
-    private: ElementPtr AddElementImpl(const std::string &_name,
-                sdf::Errors *const _errorsPtr = nullptr);
-
-    /// \brief Get the element value/attribute as a std::any.
-    /// \param[in] _key The key of the attribute. If empty, get the value of
-    /// the element. Defaults to empty.
-    /// \param[out] _errors Pointer to the vector of errors.
-    /// \return The element as a std::any.
-    public: std::any GetAnyImpl(const std::string &_key = "",
-                sdf::Errors *const _errorsPtr = nullptr) const;
-
-    /// \brief Remove a child element.
-    /// \param[in] _child Pointer to the child to remove.
-    private: void RemoveChildImpl(ElementPtr _child);
-
-    /// \brief Create a copy of this Element.
-    /// \param[out] _errors Vector of errors.
-    /// \return A copy of this Element, NULL if there was an error.
-    private: ElementPtr CloneImpl(sdf::Errors *const _errors = nullptr) const;
-
-    /// \brief Copy values from an Element.
-    /// \param[in] _elem Element to copy value from.
-    /// \param[out] _errors Vector of errors.
-    private: void CopyImpl(const ElementPtr _elem,
-                sdf::Errors *const _errors = nullptr);
 
     /// \brief Private data pointer
     private: std::unique_ptr<ElementPrivate> dataPtr;
