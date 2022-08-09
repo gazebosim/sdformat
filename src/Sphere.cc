@@ -25,7 +25,7 @@ class sdf::SpherePrivate
   public: ignition::math::Sphered sphere{1.0};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -141,7 +141,7 @@ ignition::math::Sphered &Sphere::Shape()
 
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Sphere::Element() const
+ElementPtr Sphere::Element() const
 {
   return this->dataPtr->sdf;
 }

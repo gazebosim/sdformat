@@ -59,7 +59,7 @@ class sdf::LidarPrivate
   public: Noise lidarNoise;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 //////////////////////////////////////////////////
@@ -136,10 +136,10 @@ Errors Lidar::Load(ElementPtr _sdf)
   // Load lidar sensor properties
   if (_sdf->HasElement("scan"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("scan");
+    ElementPtr elem = _sdf->GetElement("scan");
     if (elem->HasElement("horizontal"))
     {
-      sdf::ElementPtr subElem = elem->GetElement("horizontal");
+      ElementPtr subElem = elem->GetElement("horizontal");
       if (subElem->HasElement("samples"))
         this->dataPtr->horizontalScanSamples = subElem->Get<unsigned int>(
           "samples");
@@ -162,7 +162,7 @@ Errors Lidar::Load(ElementPtr _sdf)
 
     if (elem->HasElement("vertical"))
     {
-      sdf::ElementPtr subElem = elem->GetElement("vertical");
+      ElementPtr subElem = elem->GetElement("vertical");
       if (subElem->HasElement("samples"))
         this->dataPtr->verticalScanSamples = subElem->Get<unsigned int>(
           "samples");
@@ -186,7 +186,7 @@ Errors Lidar::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("range"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("range");
+    ElementPtr elem = _sdf->GetElement("range");
     if (elem->HasElement("min"))
       this->dataPtr->minRange = elem->Get<double>("min");
     if (elem->HasElement("max"))
@@ -208,7 +208,7 @@ Errors Lidar::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Lidar::Element() const
+ElementPtr Lidar::Element() const
 {
   return this->dataPtr->sdf;
 }

@@ -57,10 +57,10 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 
 /////////////////////////////////////////////////
-std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
+std::ostream &operator<<(std::ostream &_out, const Error &_err)
 {
   _out << "Error Code "
-    << static_cast<std::underlying_type<sdf::ErrorCode>::type>(_err.Code())
+    << static_cast<std::underlying_type<ErrorCode>::type>(_err.Code())
     << " Msg: " << _err.Message();
   return _out;
 }

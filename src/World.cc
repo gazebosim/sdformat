@@ -83,17 +83,17 @@ class sdf::WorldPrivate
   public: std::vector<Physics> physics;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Linear velocity of wind.
   public: ignition::math::Vector3d windLinearVelocity =
            ignition::math::Vector3d::Zero;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  public: std::shared_ptr<FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::shared_ptr<PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -121,12 +121,12 @@ WorldPrivate::WorldPrivate(const WorldPrivate &_worldPrivate)
   }
   if (_worldPrivate.frameAttachedToGraph)
   {
-    this->frameAttachedToGraph = std::make_shared<sdf::FrameAttachedToGraph>(
+    this->frameAttachedToGraph = std::make_shared<FrameAttachedToGraph>(
         *(_worldPrivate.frameAttachedToGraph));
   }
   if (_worldPrivate.poseRelativeToGraph)
   {
-    this->poseRelativeToGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+    this->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>(
         *(_worldPrivate.poseRelativeToGraph));
   }
   if (_worldPrivate.scene)
@@ -189,7 +189,7 @@ World &World::operator=(World &&_world)
 }
 
 /////////////////////////////////////////////////
-Errors World::Load(sdf::ElementPtr _sdf)
+Errors World::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -223,7 +223,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
   // Read the audio element
   if (_sdf->HasElement("audio"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("audio");
+    ElementPtr elem = _sdf->GetElement("audio");
     this->dataPtr->audioDevice = elem->Get<std::string>("device",
         this->dataPtr->audioDevice).first;
   }
@@ -231,7 +231,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
   // Read the wind element
   if (_sdf->HasElement("wind"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("wind");
+    ElementPtr elem = _sdf->GetElement("wind");
     this->dataPtr->windLinearVelocity =
       elem->Get<ignition::math::Vector3d>("linear_velocity",
           this->dataPtr->windLinearVelocity).first;
@@ -522,7 +522,7 @@ const Model *World::ModelByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-const sdf::Atmosphere *World::Atmosphere() const
+const Atmosphere *World::Atmosphere() const
 {
   return this->dataPtr->atmosphere.get();
 }
@@ -534,7 +534,7 @@ void World::SetAtmosphere(const sdf::Atmosphere &_atmosphere) const
 }
 
 /////////////////////////////////////////////////
-sdf::Gui *World::Gui() const
+Gui *World::Gui() const
 {
   return this->dataPtr->gui.get();
 }
@@ -546,7 +546,7 @@ void World::SetGui(const sdf::Gui &_gui)
 }
 
 /////////////////////////////////////////////////
-const sdf::Scene *World::Scene() const
+const Scene *World::Scene() const
 {
   return this->dataPtr->scene.get();
 }
@@ -558,7 +558,7 @@ void World::SetScene(const sdf::Scene &_scene)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr World::Element() const
+ElementPtr World::Element() const
 {
   return this->dataPtr->sdf;
 }

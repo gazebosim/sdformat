@@ -44,13 +44,13 @@ class sdf::CollisionPrivate
   public: Surface surface;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -164,7 +164,7 @@ void Collision::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-sdf::Surface *Collision::Surface() const
+Surface *Collision::Surface() const
 {
   return &this->dataPtr->surface;
 }
@@ -237,7 +237,7 @@ void Collision::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Collision::SemanticPose() const
+SemanticPose Collision::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -247,7 +247,7 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Collision::Element() const
+ElementPtr Collision::Element() const
 {
   return this->dataPtr->sdf;
 }

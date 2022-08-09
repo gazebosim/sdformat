@@ -30,7 +30,7 @@ class sdf::AirPressurePrivate
   public: double referenceAltitude = 0.0;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
@@ -93,7 +93,7 @@ Errors AirPressure::Load(ElementPtr _sdf)
   // Load the noise values.
   if (_sdf->HasElement("pressure"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("pressure");
+    ElementPtr elem = _sdf->GetElement("pressure");
     if (elem->HasElement("noise"))
       this->dataPtr->noise.Load(elem->GetElement("noise"));
   }
@@ -105,7 +105,7 @@ Errors AirPressure::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr AirPressure::Element() const
+ElementPtr AirPressure::Element() const
 {
   return this->dataPtr->sdf;
 }

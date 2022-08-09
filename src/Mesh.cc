@@ -37,7 +37,7 @@ class sdf::MeshPrivate
   public: bool centerSubmesh = false;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf = nullptr;
+  public: ElementPtr sdf = nullptr;
 };
 
 /////////////////////////////////////////////////
@@ -122,7 +122,7 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("submesh"))
   {
-    sdf::ElementPtr subMesh = _sdf->GetElement("submesh");
+    ElementPtr subMesh = _sdf->GetElement("submesh");
 
     std::pair<std::string, bool> subMeshNamePair =
       subMesh->Get<std::string>("name", this->dataPtr->submesh);
@@ -150,7 +150,7 @@ Errors Mesh::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Mesh::Element() const
+ElementPtr Mesh::Element() const
 {
   return this->dataPtr->sdf;
 }

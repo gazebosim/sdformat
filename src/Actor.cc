@@ -111,7 +111,7 @@ class sdf::ActorPrivate
   public: std::vector<Joint> joints;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -565,7 +565,7 @@ Errors Actor::Load(ElementPtr _sdf)
 
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  sdf::ElementPtr skinElem = _sdf->GetElement("skin");
+  ElementPtr skinElem = _sdf->GetElement("skin");
 
   if (skinElem)
   {
@@ -590,7 +590,7 @@ Errors Actor::Load(ElementPtr _sdf)
   errors.insert(errors.end(), animationLoadErrors.begin(),
                     animationLoadErrors.end());
 
-  sdf::ElementPtr scriptElem = _sdf->GetElement("script");
+  ElementPtr scriptElem = _sdf->GetElement("script");
 
   if (!scriptElem)
   {
@@ -691,7 +691,7 @@ void Actor::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Actor::Element() const
+ElementPtr Actor::Element() const
 {
   return this->dataPtr->sdf;
 }

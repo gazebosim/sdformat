@@ -53,7 +53,7 @@ class sdf::ScenePrivate
   public: std::unique_ptr<Sky> sky;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -224,13 +224,13 @@ void Scene::SetSky(const sdf::Sky &_sky)
 }
 
 /////////////////////////////////////////////////
-const sdf::Sky *Scene::Sky() const
+const Sky *Scene::Sky() const
 {
   return this->dataPtr->sky.get();
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Scene::Element() const
+ElementPtr Scene::Element() const
 {
   return this->dataPtr->sdf;
 }

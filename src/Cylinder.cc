@@ -25,7 +25,7 @@ class sdf::CylinderPrivate
   public: ignition::math::Cylinderd cylinder{1.0, 1.0};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -161,7 +161,7 @@ void Cylinder::SetLength(const double _length)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Cylinder::Element() const
+ElementPtr Cylinder::Element() const
 {
   return this->dataPtr->sdf;
 }

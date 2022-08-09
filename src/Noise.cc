@@ -51,7 +51,7 @@ class sdf::NoisePrivate
   public: double dynamicBiasCorrelationTime = 0.0;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
@@ -255,7 +255,7 @@ void Noise::SetDynamicBiasCorrelationTime(double _time)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Noise::Element() const
+ElementPtr Noise::Element() const
 {
   return this->dataPtr->sdf;
 }

@@ -29,7 +29,7 @@ class sdf::ContactPrivate
   public: uint16_t collideBitmask = 0xff;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 class sdf::SurfacePrivate
@@ -38,7 +38,7 @@ class sdf::SurfacePrivate
   public: Contact contact;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 /////////////////////////////////////////////////
@@ -114,7 +114,7 @@ Errors Contact::Load(ElementPtr _sdf)
   return errors;
 }
 /////////////////////////////////////////////////
-sdf::ElementPtr Contact::Element() const
+ElementPtr Contact::Element() const
 {
   return this->dataPtr->sdf;
 }
@@ -204,13 +204,13 @@ Errors Surface::Load(ElementPtr _sdf)
   return errors;
 }
 /////////////////////////////////////////////////
-sdf::ElementPtr Surface::Element() const
+ElementPtr Surface::Element() const
 {
   return this->dataPtr->sdf;
 }
 
 /////////////////////////////////////////////////
-sdf::Contact *Surface::Contact() const
+Contact *Surface::Contact() const
 {
   return &this->dataPtr->contact;
 }

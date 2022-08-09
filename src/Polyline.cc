@@ -30,7 +30,7 @@ class sdf::PolylinePrivate
   public: std::vector<ignition::math::Vector2d> points;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -185,7 +185,7 @@ const std::vector<ignition::math::Vector2d> &Polyline::Points() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Polyline::Element() const
+ElementPtr Polyline::Element() const
 {
   return this->dataPtr->sdf;
 }

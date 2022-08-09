@@ -53,7 +53,7 @@ class sdf::GeometryPrivate
   public: std::unique_ptr<Heightmap> heightmap;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -77,18 +77,18 @@ Geometry::Geometry(const Geometry &_geometry)
 
   if (_geometry.dataPtr->box)
   {
-    this->dataPtr->box = std::make_unique<sdf::Box>(*_geometry.dataPtr->box);
+    this->dataPtr->box = std::make_unique<Box>(*_geometry.dataPtr->box);
   }
 
   if (_geometry.dataPtr->cylinder)
   {
-    this->dataPtr->cylinder = std::make_unique<sdf::Cylinder>(
+    this->dataPtr->cylinder = std::make_unique<Cylinder>(
         *_geometry.dataPtr->cylinder);
   }
 
   if (_geometry.dataPtr->plane)
   {
-    this->dataPtr->plane = std::make_unique<sdf::Plane>(
+    this->dataPtr->plane = std::make_unique<Plane>(
         *_geometry.dataPtr->plane);
   }
 
@@ -99,7 +99,7 @@ Geometry::Geometry(const Geometry &_geometry)
 
   if (_geometry.dataPtr->sphere)
   {
-    this->dataPtr->sphere = std::make_unique<sdf::Sphere>(
+    this->dataPtr->sphere = std::make_unique<Sphere>(
         *_geometry.dataPtr->sphere);
   }
 
@@ -111,7 +111,7 @@ Geometry::Geometry(const Geometry &_geometry)
   if (_geometry.dataPtr->heightmap)
   {
     this->dataPtr->heightmap =
-        std::make_unique<sdf::Heightmap>(*_geometry.dataPtr->heightmap);
+        std::make_unique<Heightmap>(*_geometry.dataPtr->heightmap);
   }
 
   this->dataPtr->sdf = _geometry.dataPtr->sdf;
@@ -212,7 +212,7 @@ Errors Geometry::Load(ElementPtr _sdf)
          polylineElem != nullptr;
          polylineElem = polylineElem->GetNextElement("polyline"))
     {
-      sdf::Polyline polyline;
+      Polyline polyline;
       auto err = polyline.Load(polylineElem);
       errors.insert(errors.end(), err.begin(), err.end());
       this->dataPtr->polylines.push_back(polyline);
@@ -319,7 +319,7 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Geometry::Element() const
+ElementPtr Geometry::Element() const
 {
   return this->dataPtr->sdf;
 }

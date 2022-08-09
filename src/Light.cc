@@ -38,13 +38,13 @@ class sdf::LightPrivate
   public: LightType type = LightType::POINT;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief True if the light should cast shadows.
   public: bool castShadows = false;
@@ -199,7 +199,7 @@ Errors Light::Load(ElementPtr _sdf)
   this->dataPtr->specular = _sdf->Get<ignition::math::Color>("specular",
       this->dataPtr->specular).first;
 
-  sdf::ElementPtr attenuationElem = _sdf->GetElement("attenuation");
+  ElementPtr attenuationElem = _sdf->GetElement("attenuation");
   if (attenuationElem)
   {
     std::pair<double, bool> doubleValue = attenuationElem->Get<double>(
@@ -237,7 +237,7 @@ Errors Light::Load(ElementPtr _sdf)
     this->dataPtr->direction = dirPair.first;
   }
 
-  sdf::ElementPtr spotElem = _sdf->GetElement("spot");
+  ElementPtr spotElem = _sdf->GetElement("spot");
   if (this->dataPtr->type == LightType::SPOT && spotElem)
   {
     // Check for and set inner_angle
@@ -347,7 +347,7 @@ void Light::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Light::SemanticPose() const
+SemanticPose Light::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -357,7 +357,7 @@ sdf::SemanticPose Light::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Light::Element() const
+ElementPtr Light::Element() const
 {
   return this->dataPtr->sdf;
 }

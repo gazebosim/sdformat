@@ -54,7 +54,7 @@ class sdf::ForceTorquePrivate
       ForceTorqueMeasureDirection::CHILD_TO_PARENT;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
@@ -162,16 +162,16 @@ Errors ForceTorque::Load(ElementPtr _sdf)
     }
   }
 
-  auto loadAxisNoise = [&errors](sdf::ElementPtr _parent,
+  auto loadAxisNoise = [&errors](ElementPtr _parent,
                           const std::string _groupLabel,
                           const std::string _axisLabel,
-                          sdf::Noise& _noise)
+                          Noise& _noise)
   {
     if (_parent->HasElement(_groupLabel) &&
         _parent->GetElement(_groupLabel)->HasElement(_axisLabel))
     {
         auto axis = _parent->GetElement(_groupLabel)->GetElement(_axisLabel);
-        sdf::Errors noiseErrors = _noise.Load(axis->GetElement("noise"));
+        Errors noiseErrors = _noise.Load(axis->GetElement("noise"));
         errors.insert(errors.end(), noiseErrors.begin(), noiseErrors.end());
         return true;
     }
@@ -189,7 +189,7 @@ Errors ForceTorque::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr ForceTorque::Element() const
+ElementPtr ForceTorque::Element() const
 {
   return this->dataPtr->sdf;
 }

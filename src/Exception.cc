@@ -67,7 +67,7 @@ Exception &Exception::operator=(Exception &&_exception) = default;
 //////////////////////////////////////////////////
 void Exception::Print() const
 {
-  sdf::Console::Instance()->ColorMsg("Exception",
+  Console::Instance()->ColorMsg("Exception",
       this->dataPtr->file,
       static_cast<unsigned int>(this->dataPtr->line), 31) << *this;
 }

@@ -39,16 +39,16 @@ class sdf::FramePrivate
   public: std::string poseRelativeTo = "";
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Name of graph source.
   std::string graphSourceName = "";
 
   /// \brief Weak pointer to model's or worlds's Frame Attached-To Graph.
-  public: std::weak_ptr<const sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  public: std::weak_ptr<const FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Weak pointer to model's or world's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -235,7 +235,7 @@ Errors Frame::ResolveAttachedToBody(std::string &_body) const
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Frame::SemanticPose() const
+SemanticPose Frame::SemanticPose() const
 {
   std::string relativeTo = this->dataPtr->poseRelativeTo;
   if (relativeTo.empty())
@@ -250,7 +250,7 @@ sdf::SemanticPose Frame::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Frame::Element() const
+ElementPtr Frame::Element() const
 {
   return this->dataPtr->sdf;
 }

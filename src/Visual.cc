@@ -56,7 +56,7 @@ class sdf::VisualPrivate
   public: Geometry geom;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Pointer to the visual's material properties.
   public: std::unique_ptr<Material> material;
@@ -65,7 +65,7 @@ class sdf::VisualPrivate
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Visibility flags of a visual. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityFlags = 4294967295u;
@@ -307,7 +307,7 @@ void Visual::SetGeom(const Geometry &_geom)
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Visual::SemanticPose() const
+SemanticPose Visual::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -317,13 +317,13 @@ sdf::SemanticPose Visual::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Visual::Element() const
+ElementPtr Visual::Element() const
 {
   return this->dataPtr->sdf;
 }
 
 /////////////////////////////////////////////////
-sdf::Material *Visual::Material() const
+Material *Visual::Material() const
 {
   return this->dataPtr->material.get();
 }

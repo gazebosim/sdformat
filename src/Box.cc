@@ -26,7 +26,7 @@ class sdf::BoxPrivate
   public: ignition::math::Boxd box{ignition::math::Vector3d::One};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -131,7 +131,7 @@ void Box::SetSize(const ignition::math::Vector3d &_size)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Box::Element() const
+ElementPtr Box::Element() const
 {
   return this->dataPtr->sdf;
 }

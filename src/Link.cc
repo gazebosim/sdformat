@@ -61,13 +61,13 @@ class sdf::LinkPrivate
             ignition::math::Pose3d::Zero};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -171,7 +171,7 @@ Errors Link::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("inertial"))
   {
-    sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
+    ElementPtr inertialElem = _sdf->GetElement("inertial");
 
     if (inertialElem->HasElement("pose"))
       loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
@@ -181,7 +181,7 @@ Errors Link::Load(ElementPtr _sdf)
 
     if (inertialElem->HasElement("inertia"))
     {
-      sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+      ElementPtr inertiaElem = inertialElem->GetElement("inertia");
 
       xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
       xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
@@ -442,7 +442,7 @@ void Link::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Link::SemanticPose() const
+SemanticPose Link::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -491,7 +491,7 @@ const Light *Link::LightByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Link::Element() const
+ElementPtr Link::Element() const
 {
   return this->dataPtr->sdf;
 }

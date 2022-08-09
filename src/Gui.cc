@@ -26,7 +26,7 @@ class sdf::GuiPrivate
   public: bool fullscreen = false;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -110,7 +110,7 @@ bool Gui::operator==(const Gui &_gui) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Gui::Element() const
+ElementPtr Gui::Element() const
 {
   return this->dataPtr->sdf;
 }

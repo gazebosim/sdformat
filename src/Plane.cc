@@ -29,7 +29,7 @@ class sdf::PlanePrivate
             ignition::math::Vector2d::One, 0};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -168,7 +168,7 @@ void Plane::SetSize(const ignition::math::Vector2d &_size)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Plane::Element() const
+ElementPtr Plane::Element() const
 {
   return this->dataPtr->sdf;
 }

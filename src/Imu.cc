@@ -63,7 +63,7 @@ class sdf::ImuPrivate
   public: std::string customRpyParentFrame;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
@@ -124,7 +124,7 @@ Errors Imu::Load(ElementPtr _sdf)
   // Load the linear acceleration noise values.
   if (_sdf->HasElement("linear_acceleration"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("linear_acceleration");
+    ElementPtr elem = _sdf->GetElement("linear_acceleration");
     if (elem->HasElement("x"))
     {
       if (elem->GetElement("x")->HasElement("noise"))
@@ -156,7 +156,7 @@ Errors Imu::Load(ElementPtr _sdf)
   // Load the angular velocity noise values.
   if (_sdf->HasElement("angular_velocity"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("angular_velocity");
+    ElementPtr elem = _sdf->GetElement("angular_velocity");
     if (elem->HasElement("x"))
     {
       if (elem->GetElement("x")->HasElement("noise"))
@@ -187,7 +187,7 @@ Errors Imu::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("orientation_reference_frame"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("orientation_reference_frame");
+    ElementPtr elem = _sdf->GetElement("orientation_reference_frame");
     this->dataPtr->localization = elem->Get<std::string>("localization",
         this->dataPtr->localization).first;
 
@@ -214,7 +214,7 @@ Errors Imu::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Imu::Element() const
+ElementPtr Imu::Element() const
 {
   return this->dataPtr->sdf;
 }

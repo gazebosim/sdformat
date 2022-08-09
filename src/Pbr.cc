@@ -77,7 +77,7 @@ class sdf::PbrWorkflowPrivate
   public: double glossiness = 0.0;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 
@@ -88,7 +88,7 @@ class sdf::PbrPrivate
   public: std::map<PbrWorkflowType, PbrWorkflow> workflows;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -158,14 +158,14 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
 }
 
 /////////////////////////////////////////////////
-Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
+Errors PbrWorkflow::Load(ElementPtr _sdf)
 {
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
 
   // Load the workflow element
-  sdf::ElementPtr workflowElem;
+  ElementPtr workflowElem;
   if (_sdf->GetName() == "metal")
   {
     this->dataPtr->type = PbrWorkflowType::METAL;
@@ -221,7 +221,7 @@ Errors PbrWorkflow::Load(sdf::ElementPtr _sdf)
 
   if (_sdf->HasElement("light_map"))
   {
-    sdf::ElementPtr lightMapElem = _sdf->GetElement("light_map");
+    ElementPtr lightMapElem = _sdf->GetElement("light_map");
     this->dataPtr->lightMapFilename = lightMapElem->Get<std::string>();
     this->dataPtr->lightMapUvSet = lightMapElem->Get<unsigned int>("uv_set",
         this->dataPtr->lightMapUvSet).first;
@@ -401,7 +401,7 @@ unsigned int PbrWorkflow::LightMapTexCoordSet() const
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr PbrWorkflow::Element() const
+ElementPtr PbrWorkflow::Element() const
 {
   return this->dataPtr->sdf;
 }
@@ -458,7 +458,7 @@ Pbr &Pbr::operator=(Pbr &&_pbr)
 }
 
 /////////////////////////////////////////////////
-Errors Pbr::Load(sdf::ElementPtr _sdf)
+Errors Pbr::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -475,7 +475,7 @@ Errors Pbr::Load(sdf::ElementPtr _sdf)
   }
 
   // load all workflows
-  sdf::ElementPtr workflowElem = _sdf->GetFirstElement();
+  ElementPtr workflowElem = _sdf->GetFirstElement();
   while (workflowElem)
   {
     PbrWorkflow workflow;

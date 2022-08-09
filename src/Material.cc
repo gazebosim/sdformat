@@ -64,7 +64,7 @@ class sdf::MaterialPrivate
   public: std::unique_ptr<Pbr> pbr;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief The path to the file where this material was defined.
   public: std::string filePath = "";
@@ -124,7 +124,7 @@ Material &Material::operator=(Material &&_material)
 }
 
 /////////////////////////////////////////////////
-Errors Material::Load(sdf::ElementPtr _sdf)
+Errors Material::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -145,7 +145,7 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   // Load the script information
   if (_sdf->HasElement("script"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("script");
+    ElementPtr elem = _sdf->GetElement("script");
     std::pair<std::string, bool> uriPair = elem->Get<std::string>("uri", "");
     if (uriPair.first == "__default__")
       uriPair.first = "";
@@ -174,7 +174,7 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   // Load the shader information
   if (_sdf->HasElement("shader"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("shader");
+    ElementPtr elem = _sdf->GetElement("shader");
 
     std::pair<std::string, bool> typePair =
       elem->Get<std::string>("type", "pixel");
@@ -235,7 +235,7 @@ Errors Material::Load(sdf::ElementPtr _sdf)
   // load pbr param
   if (_sdf->HasElement("pbr"))
   {
-    this->dataPtr->pbr.reset(new sdf::Pbr());
+    this->dataPtr->pbr.reset(new Pbr());
     Errors pbrErrors = this->dataPtr->pbr->Load(_sdf->GetElement("pbr"));
     errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
   }
@@ -328,7 +328,7 @@ void Material::SetDoubleSided(const bool _doubleSided)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Material::Element() const
+ElementPtr Material::Element() const
 {
   return this->dataPtr->sdf;
 }

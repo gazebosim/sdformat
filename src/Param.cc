@@ -160,10 +160,10 @@ bool Param::GetAny(std::any &_anyVal) const
     }
     _anyVal = ret;
   }
-  else if (this->IsType<sdf::Time>())
+  else if (this->IsType<Time>())
   {
-    sdf::Time ret;
-    if (!this->Get<sdf::Time>(ret))
+    Time ret;
+    if (!this->Get<Time>(ret))
     {
       return false;
     }
@@ -368,7 +368,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
              _typeName == "time")
     {
       StringStreamClassicLocale ss(tmp);
-      sdf::Time timetmp;
+      Time timetmp;
 
       ss >> timetmp;
       _valueToSet = timetmp;
@@ -466,7 +466,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
 //////////////////////////////////////////////////
 bool Param::SetFromString(const std::string &_value)
 {
-  std::string str = sdf::trim(_value.c_str());
+  std::string str = trim(_value.c_str());
 
   if (str.empty() && this->dataPtr->required)
   {

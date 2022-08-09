@@ -27,7 +27,7 @@ class sdf::MagnetometerPrivate
   public: std::array<Noise, 3> noise;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
@@ -92,7 +92,7 @@ Errors Magnetometer::Load(ElementPtr _sdf)
   {
     if (_sdf->HasElement(names[i]))
     {
-      sdf::ElementPtr elem = _sdf->GetElement(names[i]);
+      ElementPtr elem = _sdf->GetElement(names[i]);
       if (elem->HasElement("noise"))
         this->dataPtr->noise[i].Load(elem->GetElement("noise"));
     }
@@ -138,7 +138,7 @@ void Magnetometer::SetZNoise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Magnetometer::Element() const
+ElementPtr Magnetometer::Element() const
 {
   return this->dataPtr->sdf;
 }

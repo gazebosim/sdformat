@@ -35,7 +35,7 @@ class sdf::HeightmapTexturePrivate
   public: double size{10.0};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 // Private data class
@@ -48,7 +48,7 @@ class sdf::HeightmapBlendPrivate
   public: double fadeDistance{0.0};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 // Private data class
@@ -79,7 +79,7 @@ class sdf::HeightmapPrivate
   public: std::vector<HeightmapBlend> blends;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 /////////////////////////////////////////////////
@@ -182,7 +182,7 @@ Errors HeightmapTexture::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr HeightmapTexture::Element() const
+ElementPtr HeightmapTexture::Element() const
 {
   return this->dataPtr->sdf;
 }
@@ -313,7 +313,7 @@ Errors HeightmapBlend::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr HeightmapBlend::Element() const
+ElementPtr HeightmapBlend::Element() const
 {
   return this->dataPtr->sdf;
 }
@@ -441,7 +441,7 @@ Errors Heightmap::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Heightmap::Element() const
+ElementPtr Heightmap::Element() const
 {
   return this->dataPtr->sdf;
 }

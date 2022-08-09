@@ -28,7 +28,7 @@ class sdf::PhysicsPrivate
   public: std::string name {""};
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief True indicates that this is the default profile.
   public: bool isDefault {false};
@@ -82,7 +82,7 @@ Physics &Physics::operator=(Physics &&_physics)
 }
 
 /////////////////////////////////////////////////
-Errors Physics::Load(sdf::ElementPtr _sdf)
+Errors Physics::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -161,7 +161,7 @@ void Physics::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Physics::Element() const
+ElementPtr Physics::Element() const
 {
   return this->dataPtr->sdf;
 }

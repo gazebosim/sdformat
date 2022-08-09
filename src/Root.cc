@@ -30,7 +30,7 @@
 
 using namespace sdf;
 
-/// \brief Private data for sdf::Root
+/// \brief Private data for Root
 class sdf::RootPrivate
 {
   /// \brief Version string
@@ -49,7 +49,7 @@ class sdf::RootPrivate
   public: std::vector<Actor> actors;
 
   /// \brief The SDF element pointer generated during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -315,7 +315,7 @@ bool Root::ActorNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Root::Element() const
+ElementPtr Root::Element() const
 {
   return this->dataPtr->sdf;
 }

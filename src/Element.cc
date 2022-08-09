@@ -797,7 +797,7 @@ std::map<std::string, std::size_t> Element::CountNamedElements(
 {
   std::map<std::string, std::size_t> result;
 
-  sdf::ElementPtr elem;
+  ElementPtr elem;
   if (_type.empty())
   {
     elem = this->GetFirstElement();
@@ -926,7 +926,7 @@ void Element::Clear()
 /////////////////////////////////////////////////
 void Element::ClearElements()
 {
-  for (sdf::ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
+  for (ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
       iter != this->dataPtr->elements.end(); ++iter)
   {
     (*iter)->ClearElements();
@@ -938,13 +938,13 @@ void Element::ClearElements()
 /////////////////////////////////////////////////
 void Element::Update()
 {
-  for (sdf::Param_V::iterator iter = this->dataPtr->attributes.begin();
+  for (Param_V::iterator iter = this->dataPtr->attributes.begin();
       iter != this->dataPtr->attributes.end(); ++iter)
   {
     (*iter)->Update();
   }
 
-  for (sdf::ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
+  for (ElementPtr_V::iterator iter = this->dataPtr->elements.begin();
       iter != this->dataPtr->elements.end(); ++iter)
   {
     (*iter)->Update();

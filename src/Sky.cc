@@ -48,7 +48,7 @@ class sdf::SkyPrivate
       ignition::math::Color(0.8f, 0.8f, 0.8f);
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 /////////////////////////////////////////////////
@@ -210,7 +210,7 @@ Errors Sky::Load(ElementPtr _sdf)
 
   if ( _sdf->HasElement("clouds"))
   {
-    sdf::ElementPtr cloudElem = _sdf->GetElement("clouds");
+    ElementPtr cloudElem = _sdf->GetElement("clouds");
     this->dataPtr->cloudSpeed =
         cloudElem->Get<double>("speed", this->dataPtr->cloudSpeed).first;
     this->dataPtr->cloudDirection =
@@ -229,7 +229,7 @@ Errors Sky::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Sky::Element() const
+ElementPtr Sky::Element() const
 {
   return this->dataPtr->sdf;
 }

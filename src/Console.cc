@@ -59,18 +59,18 @@ Console::Console()
               << std::endl;
     return;
   }
-  std::string logDir = sdf::filesystem::append(home, ".sdformat");
-  if (!sdf::filesystem::exists(logDir))
+  std::string logDir = filesystem::append(home, ".sdformat");
+  if (!filesystem::exists(logDir))
   {
-    sdf::filesystem::create_directory(logDir);
+    filesystem::create_directory(logDir);
   }
-  else if (!sdf::filesystem::is_directory(logDir))
+  else if (!filesystem::is_directory(logDir))
   {
     std::cerr << logDir << " exists but is not a directory.  Will not log."
               << std::endl;
     return;
   }
-  std::string logFile = sdf::filesystem::append(logDir, "sdformat.log");
+  std::string logFile = filesystem::append(logDir, "sdformat.log");
   this->dataPtr->logFileStream.open(logFile.c_str(), std::ios::out);
 }
 
@@ -106,13 +106,13 @@ void Console::SetQuiet(bool _quiet)
 }
 
 //////////////////////////////////////////////////
-sdf::Console::ConsoleStream &Console::GetMsgStream()
+Console::ConsoleStream &Console::GetMsgStream()
 {
   return this->dataPtr->msgStream;
 }
 
 //////////////////////////////////////////////////
-sdf::Console::ConsoleStream &Console::GetLogStream()
+Console::ConsoleStream &Console::GetLogStream()
 {
   return this->dataPtr->logStream;
 }

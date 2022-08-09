@@ -72,16 +72,16 @@ class sdf::ModelPrivate
   public: std::vector<Model> models;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Frame Attached-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
+  public: std::shared_ptr<FrameAttachedToGraph> frameAttachedToGraph;
 
   /// \brief Pose Relative-To Graph constructed during Load.
-  public: std::shared_ptr<sdf::PoseRelativeToGraph> poseGraph;
+  public: std::shared_ptr<PoseRelativeToGraph> poseGraph;
 
   /// \brief Pose Relative-To Graph in parent (world or __model__) scope.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> parentPoseGraph;
 
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
   public: std::string parentPoseGraphScopeName;
@@ -107,12 +107,12 @@ Model::Model(const Model &_model)
   if (_model.dataPtr->frameAttachedToGraph)
   {
     this->dataPtr->frameAttachedToGraph =
-        std::make_shared<sdf::FrameAttachedToGraph>(
+        std::make_shared<FrameAttachedToGraph>(
             *_model.dataPtr->frameAttachedToGraph);
   }
   if (_model.dataPtr->poseGraph)
   {
-    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+    this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>(
         *_model.dataPtr->poseGraph);
   }
   for (auto &link : this->dataPtr->links)
@@ -774,7 +774,7 @@ Errors Model::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Model::SemanticPose() const
+SemanticPose Model::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -797,7 +797,7 @@ const Link *Model::LinkByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Model::Element() const
+ElementPtr Model::Element() const
 {
   return this->dataPtr->sdf;
 }

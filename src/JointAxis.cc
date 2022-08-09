@@ -75,13 +75,13 @@ class sdf::JointAxisPrivate
   public: double dissipation = 1.0;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Name of xml parent object.
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 };
 
 /////////////////////////////////////////////////
@@ -157,7 +157,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Load dynamic values, if present
   if (_sdf->HasElement("dynamics"))
   {
-    sdf::ElementPtr dynElement = _sdf->GetElement("dynamics");
+    ElementPtr dynElement = _sdf->GetElement("dynamics");
 
     this->dataPtr->damping = dynElement->Get<double>("damping", 0.0).first;
     this->dataPtr->friction = dynElement->Get<double>("friction", 0.0).first;
@@ -170,7 +170,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Load limit values
   if (_sdf->HasElement("limit"))
   {
-    sdf::ElementPtr limitElement = _sdf->GetElement("limit");
+    ElementPtr limitElement = _sdf->GetElement("limit");
 
     this->dataPtr->lower = limitElement->Get<double>("lower", -1e16).first;
     this->dataPtr->upper = limitElement->Get<double>("upper", 1e16).first;
@@ -415,7 +415,7 @@ Errors JointAxis::ResolveXyz(
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr JointAxis::Element() const
+ElementPtr JointAxis::Element() const
 {
   return this->dataPtr->sdf;
 }

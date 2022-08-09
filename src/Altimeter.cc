@@ -30,7 +30,7 @@ class sdf::AltimeterPrivate
   public: Noise verticalVelocityNoise;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 };
 
 //////////////////////////////////////////////////
@@ -91,14 +91,14 @@ Errors Altimeter::Load(ElementPtr _sdf)
   // Load the noise values.
   if (_sdf->HasElement("vertical_position"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("vertical_position");
+    ElementPtr elem = _sdf->GetElement("vertical_position");
     if (elem->HasElement("noise"))
       this->dataPtr->verticalPositionNoise.Load(elem->GetElement("noise"));
   }
 
   if (_sdf->HasElement("vertical_velocity"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("vertical_velocity");
+    ElementPtr elem = _sdf->GetElement("vertical_velocity");
     if (elem->HasElement("noise"))
       this->dataPtr->verticalVelocityNoise.Load(elem->GetElement("noise"));
   }
@@ -131,7 +131,7 @@ void Altimeter::SetVerticalVelocityNoise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr Altimeter::Element() const
+ElementPtr Altimeter::Element() const
 {
   return this->dataPtr->sdf;
 }

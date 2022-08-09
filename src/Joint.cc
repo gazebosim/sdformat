@@ -71,10 +71,10 @@ class sdf::JointPrivate
   public: std::array<std::unique_ptr<JointAxis>, 2> axis;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief The sensors specified in this joint.
   public: std::vector<Sensor> sensors;
@@ -402,7 +402,7 @@ void Joint::SetPoseRelativeToGraph(
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Joint::SemanticPose() const
+SemanticPose Joint::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -424,7 +424,7 @@ void Joint::SetThreadPitch(double _threadPitch)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Joint::Element() const
+ElementPtr Joint::Element() const
 {
   return this->dataPtr->sdf;
 }

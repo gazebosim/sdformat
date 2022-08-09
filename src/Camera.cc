@@ -49,7 +49,7 @@ static std::array<std::string, 19> kPixelFormatNames =
 class sdf::CameraPrivate
 {
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Name of the camera.
   public: std::string name = "";
@@ -241,7 +241,7 @@ Errors Camera::Load(ElementPtr _sdf)
   // Read the distortion
   if (_sdf->HasElement("distortion"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("distortion");
+    ElementPtr elem = _sdf->GetElement("distortion");
     this->dataPtr->distortionK1 = elem->Get<double>("k1",
       this->dataPtr->distortionK1).first;
     this->dataPtr->distortionK2 = elem->Get<double>("k2",
@@ -260,7 +260,7 @@ Errors Camera::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("image"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("image");
+    ElementPtr elem = _sdf->GetElement("image");
     this->dataPtr->imageWidth = elem->Get<uint32_t>("width",
         this->dataPtr->imageWidth).first;
     this->dataPtr->imageHeight = elem->Get<uint32_t>("height",
@@ -286,11 +286,11 @@ Errors Camera::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("depth_camera"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("depth_camera");
+    ElementPtr elem = _sdf->GetElement("depth_camera");
     this->dataPtr->hasDepthCamera = true;
     if (elem->HasElement("clip"))
     {
-      sdf::ElementPtr func = elem->GetElement("clip");
+      ElementPtr func = elem->GetElement("clip");
       if (func->HasElement("near"))
       {
         this->SetDepthNearClip(func->Get<double>("near"));
@@ -304,7 +304,7 @@ Errors Camera::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("clip"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("clip");
+    ElementPtr elem = _sdf->GetElement("clip");
     this->dataPtr->nearClip = elem->Get<double>("near",
         this->dataPtr->nearClip).first;
     this->dataPtr->farClip = elem->Get<double>("far",
@@ -318,7 +318,7 @@ Errors Camera::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("save"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("save");
+    ElementPtr elem = _sdf->GetElement("save");
     this->dataPtr->save = elem->Get<bool>("enabled", this->dataPtr->save).first;
     if (this->dataPtr->save)
     {
@@ -345,7 +345,7 @@ Errors Camera::Load(ElementPtr _sdf)
   // Load the lens values.
   if (_sdf->HasElement("lens"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("lens");
+    ElementPtr elem = _sdf->GetElement("lens");
 
     this->dataPtr->lensType = elem->Get<std::string>("type",
         this->dataPtr->lensType).first;
@@ -358,7 +358,7 @@ Errors Camera::Load(ElementPtr _sdf)
 
     if (elem->HasElement("custom_function"))
     {
-      sdf::ElementPtr func = elem->GetElement("custom_function");
+      ElementPtr func = elem->GetElement("custom_function");
       this->dataPtr->lensC1 = func->Get<double>("c1",
           this->dataPtr->lensC1).first;
       this->dataPtr->lensC2 = func->Get<double>("c2",
@@ -373,7 +373,7 @@ Errors Camera::Load(ElementPtr _sdf)
 
     if (elem->HasElement("intrinsics"))
     {
-      sdf::ElementPtr intrinsics = elem->GetElement("intrinsics");
+      ElementPtr intrinsics = elem->GetElement("intrinsics");
       this->dataPtr->lensIntrinsicsFx = intrinsics->Get<double>("fx",
           this->dataPtr->lensIntrinsicsFx).first;
       this->dataPtr->lensIntrinsicsFy = intrinsics->Get<double>("fy",
@@ -397,7 +397,7 @@ Errors Camera::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Camera::Element() const
+ElementPtr Camera::Element() const
 {
   return this->dataPtr->sdf;
 }

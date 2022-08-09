@@ -35,7 +35,7 @@ class sdf::NavSatPrivate
   public: Noise verticalVelocityNoise;
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf{nullptr};
+  public: ElementPtr sdf{nullptr};
 };
 
 //////////////////////////////////////////////////
@@ -105,10 +105,10 @@ Errors NavSat::Load(ElementPtr _sdf)
   // Load navsat sensor properties
   if (_sdf->HasElement("position_sensing"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("position_sensing");
+    ElementPtr elem = _sdf->GetElement("position_sensing");
     if (elem->HasElement("horizontal"))
     {
-      sdf::ElementPtr horiz = elem->GetElement("horizontal");
+      ElementPtr horiz = elem->GetElement("horizontal");
       if (horiz->HasElement("noise"))
       {
         this->dataPtr->horizontalPositionNoise.Load(horiz->GetElement("noise"));
@@ -116,7 +116,7 @@ Errors NavSat::Load(ElementPtr _sdf)
     }
     if (elem->HasElement("vertical"))
     {
-      sdf::ElementPtr vert = elem->GetElement("vertical");
+      ElementPtr vert = elem->GetElement("vertical");
       if (vert->HasElement("noise"))
       {
         this->dataPtr->verticalPositionNoise.Load(vert->GetElement("noise"));
@@ -125,10 +125,10 @@ Errors NavSat::Load(ElementPtr _sdf)
   }
   if (_sdf->HasElement("velocity_sensing"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("velocity_sensing");
+    ElementPtr elem = _sdf->GetElement("velocity_sensing");
     if (elem->HasElement("horizontal"))
     {
-      sdf::ElementPtr horiz = elem->GetElement("horizontal");
+      ElementPtr horiz = elem->GetElement("horizontal");
       if (horiz->HasElement("noise"))
       {
         this->dataPtr->horizontalVelocityNoise.Load(horiz->GetElement("noise"));
@@ -136,7 +136,7 @@ Errors NavSat::Load(ElementPtr _sdf)
     }
     if (elem->HasElement("vertical"))
     {
-      sdf::ElementPtr vert = elem->GetElement("vertical");
+      ElementPtr vert = elem->GetElement("vertical");
       if (vert->HasElement("noise"))
       {
         this->dataPtr->verticalVelocityNoise.Load(vert->GetElement("noise"));
@@ -148,7 +148,7 @@ Errors NavSat::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-sdf::ElementPtr NavSat::Element() const
+ElementPtr NavSat::Element() const
 {
   return this->dataPtr->sdf;
 }

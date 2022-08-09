@@ -80,38 +80,38 @@ class sdf::SensorPrivate
   {
     if (_sensor.magnetometer)
     {
-      this->magnetometer = std::make_unique<sdf::Magnetometer>(
+      this->magnetometer = std::make_unique<Magnetometer>(
           *_sensor.magnetometer);
     }
     if (_sensor.navSat)
     {
-      this->navSat = std::make_unique<sdf::NavSat>(*_sensor.navSat);
+      this->navSat = std::make_unique<NavSat>(*_sensor.navSat);
     }
     if (_sensor.altimeter)
     {
-      this->altimeter = std::make_unique<sdf::Altimeter>(*_sensor.altimeter);
+      this->altimeter = std::make_unique<Altimeter>(*_sensor.altimeter);
     }
     if (_sensor.airPressure)
     {
-      this->airPressure = std::make_unique<sdf::AirPressure>(
+      this->airPressure = std::make_unique<AirPressure>(
           *_sensor.airPressure);
     }
     if (_sensor.camera)
     {
-      this->camera = std::make_unique<sdf::Camera>(*_sensor.camera);
+      this->camera = std::make_unique<Camera>(*_sensor.camera);
     }
     if (_sensor.forceTorque)
     {
-      this->forceTorque = std::make_unique<sdf::ForceTorque>(
+      this->forceTorque = std::make_unique<ForceTorque>(
           *_sensor.forceTorque);
     }
     if (_sensor.imu)
     {
-      this->imu = std::make_unique<sdf::Imu>(*_sensor.imu);
+      this->imu = std::make_unique<Imu>(*_sensor.imu);
     }
     if (_sensor.lidar)
     {
-      this->lidar = std::make_unique<sdf::Lidar>(*_sensor.lidar);
+      this->lidar = std::make_unique<Lidar>(*_sensor.lidar);
     }
     // Developer note: If you add a new sensor type, make sure to also
     // update the Sensor::operator== function. Please bump this text down as
@@ -136,7 +136,7 @@ class sdf::SensorPrivate
   public: std::string poseRelativeTo = "";
 
   /// \brief The SDF element pointer used during load.
-  public: sdf::ElementPtr sdf;
+  public: ElementPtr sdf;
 
   /// \brief Performance metrics flag.
   public: bool enableMetrics{false};
@@ -145,7 +145,7 @@ class sdf::SensorPrivate
   public: std::string xmlParentName;
 
   /// \brief Weak pointer to model's Pose Relative-To Graph.
-  public: std::weak_ptr<const sdf::PoseRelativeToGraph> poseRelativeToGraph;
+  public: std::weak_ptr<const PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Pointer to a magnetometer.
   public: std::unique_ptr<Magnetometer> magnetometer;
@@ -552,7 +552,7 @@ void Sensor::SetEnableMetrics(bool _enableMetrics)
 }
 
 /////////////////////////////////////////////////
-sdf::SemanticPose Sensor::SemanticPose() const
+SemanticPose Sensor::SemanticPose() const
 {
   return sdf::SemanticPose(
       this->dataPtr->pose,
@@ -562,7 +562,7 @@ sdf::SemanticPose Sensor::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Sensor::Element() const
+ElementPtr Sensor::Element() const
 {
   return this->dataPtr->sdf;
 }

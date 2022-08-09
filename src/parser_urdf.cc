@@ -263,7 +263,7 @@ bool URDF2SDF::IsURDF(const std::string &_filename)
 /////////////////////////////////////////////////
 urdf::Vector3 ParseVector3(const std::string &_str, double _scale)
 {
-  std::vector<std::string> pieces = sdf::split(_str, " ");
+  std::vector<std::string> pieces = split(_str, " ");
   std::vector<double> vals;
 
   for (unsigned int i = 0; i < pieces.size(); ++i)
