@@ -22,14 +22,19 @@ find_package(gz-cmake3 REQUIRED)
 set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 ########################################
-# Python interfaces vars
-option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
-      "Install python modules in standard system paths in the system"
+option(SKIP_PYBIND11
+      "Skip generating Python bindings via pybind11"
       OFF)
 
-option(USE_DIST_PACKAGES_FOR_PYTHON
+# Python interfaces vars
+include(CMakeDependentOption)
+cmake_dependent_option(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION
+      "Install python modules in standard system paths in the system"
+      OFF "NOT SKIP_PYBIND11" OFF)
+
+cmake_dependent_option(USE_DIST_PACKAGES_FOR_PYTHON
       "Use dist-packages instead of site-package to install python modules"
-      OFF)
+      OFF "NOT SKIP_PYBIND11" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -133,16 +138,20 @@ if (BUILD_SDF)
   else()
     message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
 
-    set(PYBIND11_PYTHON_VERSION 3)
-    find_package(pybind11 2.4 QUIET)
+    if (SKIP_PYBIND11)
+      message(STATUS "SKIP_PYBIND11 set - disabling python bindings")
+    else()
+      set(PYBIND11_PYTHON_VERSION 3)
+      find_package(pybind11 2.4 QUIET)
 
-    if (${pybind11_FOUND})
-      find_package(Python3 ${GZ_PYTHON_VERSION} REQUIRED COMPONENTS Development)
-      message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
-  	else()
-  		GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
-  		message (STATUS "Searching for pybind11 - not found.")
-  	endif()
+      if (${pybind11_FOUND})
+        find_package(Python3 ${GZ_PYTHON_VERSION} REQUIRED COMPONENTS Development)
+        message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
+      else()
+        GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
+        message (STATUS "Searching for pybind11 - not found.")
+      endif()
+    endif()
   endif()
 
   gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
@@ -152,7 +161,7 @@ if (BUILD_SDF)
   add_subdirectory(sdf)
   add_subdirectory(conf)
   add_subdirectory(doc)
-  if (${pybind11_FOUND})
+  if (pybind11_FOUND AND NOT SKIP_PYBIND11)
   	add_subdirectory(python)
   endif()
 endif(BUILD_SDF)
