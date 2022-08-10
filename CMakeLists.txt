@@ -171,3 +171,18 @@ configure_file("${CMAKE_SOURCE_DIR}/cmake/upload_doc.sh.in"
   ${CMAKE_BINARY_DIR}/upload_doc.sh @ONLY)
 
 message(STATUS "Configuration successful. Type make to compile sdf")
+
+#============================================================================
+# Build examples 
+#============================================================================
+if (BUILD_TESTING)
+  gz_build_examples(
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/examples
+    BINARY_DIR ${PROJECT_BINARY_DIR}/examples
+    DEPENDENCIES 
+      gz-cmake${GZ_CMAKE_VER} 
+      gz-math${GZ_MATH_VER}
+      gz-utils${GZ_UTILS_VER}
+      gz-utils${GZ_UTILS_VER}-cli
+  )
+endif()
