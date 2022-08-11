@@ -160,29 +160,30 @@ TEST(ErrorOutput, ElementErrorOutput)
   elem->SetName("testElement");
 
   elem->GetAny(errors, "test");
+  ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_ERROR);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
     "Unable to find value for key [test]"));
-  ASSERT_EQ(errors.size(), 1u);
 
   errors.clear();
   elem->GetElement("missingElement", errors);
+  ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
     "Missing element description for [missingElement]"));
-  ASSERT_EQ(errors.size(), 1u);
 
   errors.clear();
   elem->AddAttribute(
     "invalidAttribute", "int", "invalidFormat", false, errors);
+  ASSERT_EQ(errors.size(), 2u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
     "Invalid argument. Unable to set value [invalidFormat]"
     " for key[invalidAttribute]"));
   EXPECT_NE(std::string::npos, errors[1].Message().find(
     "Invalid parameter"));
-  ASSERT_EQ(errors.size(), 2u);
 
   errors.clear();
   elem->AddValue("type", "value", true, "a", "b", errors);
+  ASSERT_EQ(errors.size(), 9u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
     "Unknown parameter type[type]"));
   EXPECT_NE(std::string::npos, errors[1].Message().find(
@@ -202,19 +203,18 @@ TEST(ErrorOutput, ElementErrorOutput)
     " of name 'testElement', reverting to previous value '0'."));
   EXPECT_NE(std::string::npos, errors[8].Message().find(
     "Cannot set parent Element of value to itself."));
-  ASSERT_EQ(errors.size(), 9u);
   errors.clear();
 
   elem->GetElement("nonExistentElement", errors);
+  ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
     "Missing element description for [nonExistentElement]"));
-  ASSERT_EQ(errors.size(), 1u);
   errors.clear();
 
   elem->RemoveChild(sdf::ElementPtr(), errors);
+  ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
     "Cannot remove a nullptr child pointer"));
-  ASSERT_EQ(errors.size(), 1u);
 
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();

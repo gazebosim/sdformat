@@ -184,7 +184,7 @@ void Element::AddValue(const std::string &_type,
                               _description);
   if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
   {
-    _errors.push_back({ErrorCode::THROW_ERROR,
+    _errors.push_back({ErrorCode::FATAL_ERROR,
         "Cannot set parent Element of value to itself."});
   }
 }
@@ -202,7 +202,7 @@ ParamPtr Element::CreateParam(const std::string &_key,
 
   if(!param->SetParentElement(shared_from_this(), _errors))
   {
-    _errors.push_back({ErrorCode::THROW_ERROR,
+    _errors.push_back({ErrorCode::FATAL_ERROR,
           "Cannot set parent Element of created Param to itself."});
   }
   return param;
@@ -265,7 +265,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
     auto clonedAttribute = (*aiter)->Clone();
     if (!clonedAttribute->SetParentElement(clone, _errors))
     {
-        _errors.push_back({ErrorCode::THROW_ERROR,
+        _errors.push_back({ErrorCode::FATAL_ERROR,
             "Cannot set parent Element of cloned attribute Param to cloned "
             "Element."});
         return nullptr;
@@ -293,7 +293,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
 
     if (!clone->dataPtr->value->SetParentElement(clone, _errors))
     {
-      _errors.push_back({ErrorCode::THROW_ERROR,
+      _errors.push_back({ErrorCode::FATAL_ERROR,
         "Cannot set parent Element of cloned value Param to cloned "
         "Element."});
       return nullptr;
@@ -344,7 +344,7 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
 
     if (!param->SetParentElement(shared_from_this(), _errors))
     {
-      _errors.push_back({ErrorCode::THROW_ERROR,
+      _errors.push_back({ErrorCode::FATAL_ERROR,
           "Cannot set parent Element of copied attribute Param to itself."});
       return;
     }
@@ -362,7 +362,7 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
     }
     if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
     {
-      _errors.push_back({ErrorCode::THROW_ERROR,
+      _errors.push_back({ErrorCode::FATAL_ERROR,
           "Cannot set parent Element of copied attribute Param to itself."});
       return;
     }
@@ -1305,7 +1305,7 @@ void Element::RemoveChild(ElementPtr _child)
 {
   sdf::Errors errors;
   RemoveChild(_child, errors);
-
+  throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
@@ -1313,7 +1313,7 @@ void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
 {
   if (!_child)
   {
-    _errors.push_back({ErrorCode::THROW_ERROR,
+    _errors.push_back({ErrorCode::FATAL_ERROR,
         "Cannot remove a nullptr child pointer"});
     return;
   }
@@ -1333,8 +1333,9 @@ void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
 std::any Element::GetAny(const std::string &_key) const
 {
   sdf::Errors errors;
-  return this->GetAny(errors, _key);
+  std::any result = this->GetAny(errors, _key);
   throwOrPrintErrors(errors);
+  return result;
 }
 
 /////////////////////////////////////////////////
