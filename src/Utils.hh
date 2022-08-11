@@ -86,7 +86,7 @@ namespace sdf
     sdf::Errors &_errors);
 
   /// \brief It will print the errors to sdferr or throw them using
-  /// SDF_ASSERT depeneing on their ErrorCode.
+  /// SDF_ASSERT depending on their ErrorCode.
   /// \param[in] _errors  The vector of errors.
   void throwOrPrintErrors(const sdf::Errors _errors);
 
