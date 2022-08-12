@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -23,6 +24,7 @@
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "sdf/Error.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -63,6 +65,54 @@ std::string custom_exec_str(std::string _cmd)
 
   pclose(pipe);
   return result;
+}
+
+/////////////////////////////////////////////////
+TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  std::string pathBase = PROJECT_SOURCE_PATH;
+  pathBase += "/test/sdf";
+
+  // Check an SDFormat file with unrecognized elements
+  {
+    std::string path = pathBase +"/unrecognized_elements.sdf";
+
+    std::string output =
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Attribute[some_attribute] in element[model] not defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Element[not_a_link_element], child of element[link], not "
+        "defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Element[not_a_model_element], child of element[model], not "
+        "defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Element[not_an_sdf_element], child of element[sdf], not "
+        "defined in SDF."))
+      << output;
+    EXPECT_NE(std::string::npos, output.find("Valid."))
+      << output;
+  }
+
+  // Check an SDFormat file with unrecognized elements with XML namespaces
+  {
+    std::string path = pathBase +"/unrecognized_elements_with_namespace.sdf";
+
+    std::string output =
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
+    EXPECT_NE(std::string::npos, output.find(
+        "XML Attribute[some_attribute] in element[model] not defined in SDF."))
+      << output;
+    EXPECT_EQ(std::string::npos, output.find(
+        "XML Element["))
+      << output;
+    EXPECT_NE(std::string::npos, output.find("Valid."))
+      << output;
+  }
 }
 
 /////////////////////////////////////////////////
@@ -1888,6 +1938,38 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
+  }
+}
+
+//////////////////////////////////////////////////
+/// \brief Check help message and bash completion script for consistent flags
+TEST(HelpVsCompletionFlags, SDF)
+{
+  // Flags in help message
+  std::string helpOutput = custom_exec_str(GzCommand() + " sdf --help");
+
+  // Call the output function in the bash completion script
+  std::string scriptPath = PROJECT_SOURCE_PATH;
+  scriptPath = sdf::filesystem::append(scriptPath, "src", "cmd",
+      "sdf.bash_completion.sh");
+
+  // Equivalent to:
+  // sh -c "bash -c \". /path/to/sdf.bash_completion.sh; _gz_sdf_flags\""
+  std::string cmd = "bash -c \". " + scriptPath +
+    "; _gz_sdf_flags\"";
+  std::string scriptOutput = custom_exec_str(cmd);
+
+  // Tokenize script output
+  std::istringstream iss(scriptOutput);
+  std::vector<std::string> flags((std::istream_iterator<std::string>(iss)),
+    std::istream_iterator<std::string>());
+
+  EXPECT_GT(flags.size(), 0u);
+
+  // Match each flag in script output with help message
+  for (const auto &flag : flags)
+  {
+    EXPECT_NE(std::string::npos, helpOutput.find(flag)) << helpOutput;
   }
 }
 

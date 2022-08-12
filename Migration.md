@@ -20,6 +20,11 @@ but with improved human-readability..
     + Details about the 1.9 to 1.10 transition are explained below in this same
       document
 
+### Modifications
+
+1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
+   elements.
+
 ### Deprecations
 
 - The `ignition` namespace is deprecated and will be removed in future versions.
@@ -51,8 +56,19 @@ but with improved human-readability..
 
 ### Removals
 
+- **sdf/InterfaceElements.hh**: The deprecated data members from the
+   `NestedInclude` class have been removed. Instead use the corresponding
+   member functions.
+
 - **sdf/Types.hh**: The `SDF_DEPRECATED` and `SDF_SUPPRESS_*` macros have been
   removed in favor of `GZ_DEPRECATED` and `GZ_UTILS_WARN_*`.
+
+## libsdformat 12.5.0 to 12.6.0
+
+### Modifications
+
+1. USD component now is living in https://github.com/gazebosim/gz-usd as an
+   independent package.
 
 ## libsdformat 11.x to 12.0
 
@@ -519,6 +535,10 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDFormat specification 1.9 to 1.10
+
+### Modifications
+
+1. **plugin.sdf**: name attribute is now optional with empty default value.
 
 ## SDFormat specification 1.8 to 1.9
 

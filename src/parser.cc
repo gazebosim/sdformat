@@ -513,7 +513,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
   const char *requiredString = _xml->Attribute("required");
   if (!requiredString)
   {
-    sdferr << "Element is missing the required attributed\n";
+    sdferr << "Element is missing the required attribute\n";
     return false;
   }
   _sdf->SetRequired(requiredString);
@@ -2112,8 +2112,8 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
       const std::string &attachedTo = frame->AttachedTo();
 
-      // the attached_to attribute is always permitted to be empty
-      if (attachedTo.empty())
+      // the attached_to attribute is always permitted to be empty or __model__
+      if (attachedTo.empty() || "__model__" == attachedTo)
       {
         continue;
       }
@@ -2185,8 +2185,8 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
       const std::string &attachedTo = frame->AttachedTo();
 
-      // the attached_to attribute is always permitted to be empty
-      if (attachedTo.empty())
+      // the attached_to attribute is always permitted to be empty or world
+      if (attachedTo.empty() || "world" == attachedTo)
       {
         continue;
       }

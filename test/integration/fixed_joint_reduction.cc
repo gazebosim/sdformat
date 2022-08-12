@@ -36,6 +36,8 @@ const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT[] =
     "fixed_joint_reduction_collision_visual_empty_root.urdf";
 const char SDF_TEST_FILE_COLLISION_VISUAL_EXTENSION_EMPTY_ROOT_SDF[] =
     "fixed_joint_reduction_collision_visual_empty_root.sdf";
+const char SDF_TEST_FILE_JOINT_FRAME_EXTENSION[] =
+    "fixed_joint_reduction_joint_frame_extension.urdf";
 const char SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION[] =
     "fixed_joint_reduction_plugin_frame_extension.urdf";
 
@@ -735,6 +737,33 @@ TEST(SDFParser, FixedJointReductionSimple)
     EXPECT_NEAR(ixz, mapIxyIxzIyz[linkName].Y(), gc_tolerance);
     EXPECT_NEAR(iyz, mapIxyIxzIyz[linkName].Z(), gc_tolerance);
   }
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has an SDFormat ball joint embedded in a
+// <gazebo> tag, and the parent link part of a chain of fixed joints
+// that reduces to the base_link.
+// Test to make sure that the parent link name changes appropriately.
+TEST(SDFParser, FixedJointReductionJointFrameExtensionTest)
+{
+  sdf::Root root;
+  auto errors =
+      root.Load(GetFullTestFilePath(SDF_TEST_FILE_JOINT_FRAME_EXTENSION));
+  EXPECT_TRUE(errors.empty()) << errors[0].Message();
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("chained_fixed_joint_links", model->Name());
+
+  EXPECT_EQ(3u, model->JointCount());
+  const std::string ball_joint_name = "sdf_ball_joint";
+  EXPECT_TRUE(model->JointNameExists(ball_joint_name));
+  const sdf::Joint *joint = model->JointByName(ball_joint_name);
+  ASSERT_NE(nullptr, joint);
+
+  EXPECT_EQ("link3", joint->ChildName());
+  EXPECT_EQ("base_link", joint->ParentName());
 }
 
 /////////////////////////////////////////////////

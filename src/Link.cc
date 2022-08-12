@@ -478,6 +478,21 @@ bool Link::SetInertial(const gz::math::Inertiald &_inertial)
 }
 
 /////////////////////////////////////////////////
+Errors Link::ResolveInertial(
+  gz::math::Inertiald &_inertial,
+  const std::string &_resolveTo) const
+{
+  gz::math::Pose3d linkPose;
+  auto errors = this->SemanticPose().Resolve(linkPose, _resolveTo);
+  if (errors.empty())
+  {
+    _inertial = this->dataPtr->inertial;
+    _inertial.SetPose(linkPose * _inertial.Pose());
+  }
+  return errors;
+}
+
+/////////////////////////////////////////////////
 const gz::math::Pose3d &Link::RawPose() const
 {
   return this->dataPtr->pose;
