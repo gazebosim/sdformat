@@ -16,6 +16,7 @@
  */
 #include <algorithm>
 #include <iterator>
+#include <limits>
 
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
@@ -60,18 +61,18 @@ class sdf::JointAxis::Implementation
 
   /// \brief Specifies the lower joint limit (radians for revolute joints,
   /// meters for prismatic joints). Omit if joint is continuous.
-  public: double lower = -1e16;
+  public: double lower = -std::numeric_limits<double>::infinity();
 
   /// \brief Specifies the upper joint limit (radians for revolute joints,
   /// meters for prismatic joints). Omit if joint is continuous.
-  public: double upper = 1e16;
+  public: double upper = std::numeric_limits<double>::infinity();
 
   /// \brief A value for enforcing the maximum joint effort applied.
   /// Limit is not enforced if value is negative.
-  public: double effort = -1;
+  public: double effort = std::numeric_limits<double>::infinity();
 
   /// \brief A value for enforcing the maximum joint velocity.
-  public: double maxVelocity = -1;
+  public: double maxVelocity = std::numeric_limits<double>::infinity();
 
   /// \brief Joint stop stiffness.
   public: double stiffness = 1e8;
@@ -142,11 +143,12 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     sdf::ElementPtr limitElement = _sdf->GetElement("limit");
 
-    this->dataPtr->lower = limitElement->Get<double>("lower", -1e16).first;
-    this->dataPtr->upper = limitElement->Get<double>("upper", 1e16).first;
-    this->dataPtr->effort = limitElement->Get<double>("effort", -1).first;
+    const double kInf = std::numeric_limits<double>::infinity();
+    this->dataPtr->lower = limitElement->Get<double>("lower", -kInf).first;
+    this->dataPtr->upper = limitElement->Get<double>("upper", kInf).first;
+    this->dataPtr->effort = limitElement->Get<double>("effort", kInf).first;
     this->dataPtr->maxVelocity = limitElement->Get<double>(
-        "velocity", -1).first;
+        "velocity", kInf).first;
     this->dataPtr->stiffness = limitElement->Get<double>(
         "stiffness", 1e8).first;
     this->dataPtr->dissipation = limitElement->Get<double>(

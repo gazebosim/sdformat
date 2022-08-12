@@ -538,6 +538,12 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ### Modifications
 
+1. **joint.sdf**: axis limits default values have changed
+    + `//limit/lower`: `-inf` (formerly `-1e16`)
+    + `//limit/upper`: `inf` (formerly `1e16`)
+    + `//limit/velocity`: `inf` (formerly `-1`)
+    + `//limit/effort`: `inf` (formerly `-1`)
+
 1. **plugin.sdf**: name attribute is now optional with empty default value.
 
 ## SDFormat specification 1.8 to 1.9
