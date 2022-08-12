@@ -160,33 +160,13 @@ namespace sdf
     /// \param[in] _out The output stream
     /// \param[in] _plugin Plugin to output
     public: friend std::ostream &operator<<(std::ostream& _out,
-                                            const sdf::Plugin &_plugin)
-    {
-      return _out << _plugin.ToElement()->ToString("");
-    }
+                                            const sdf::Plugin &_plugin);
 
     /// \brief Input stream operator for a Plugin.
     /// \param[in] _out The output stream
     /// \param[in] _plugin Plugin to output
     public: friend std::istream &operator>>(std::istream &_in,
-                                            sdf::Plugin &_plugin)
-    {
-      std::ostringstream stream;
-      stream << "<sdf version='" << SDF_VERSION << "'>";
-      stream << std::string(std::istreambuf_iterator<char>(_in), {});
-      stream << "</sdf>";
-
-      sdf::SDFPtr sdfParsed(new sdf::SDF());
-      sdf::init(sdfParsed);
-      bool result = sdf::readString(stream.str(), sdfParsed);
-      if (!result)
-        return _in;
-
-      _plugin.ClearContents();
-      _plugin.Load(sdfParsed->Root()->GetFirstElement());
-
-      return _in;
-    }
+                                            sdf::Plugin &_plugin);
 
     /// \brief Private data pointer.
     std::unique_ptr<sdf::PluginPrivate> dataPtr;
@@ -194,6 +174,12 @@ namespace sdf
 
   /// \brief A vector of Plugin.
   using Plugins = std::vector<Plugin>;
+
+  SDFORMAT_VISIBLE std::ostream &operator<<(std::ostream& _out,
+                                            const sdf::Plugin &_plugin);
+
+  SDFORMAT_VISIBLE std::istream &operator>>(std::istream &_in,
+                                            sdf::Plugin &_plugin);
 }
 }
 
