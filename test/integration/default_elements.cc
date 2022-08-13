@@ -115,43 +115,46 @@ TEST(ExplicitlySetInFile, EmptyAxis)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   sdf::ElementPtr rootPtr = root.Element();
+  ASSERT_NE(nullptr, rootPtr);
   EXPECT_TRUE(rootPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr modelPtr = rootPtr->GetFirstElement();
+  ASSERT_NE(nullptr, modelPtr);
   EXPECT_TRUE(modelPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr link1Ptr = modelPtr->GetFirstElement();
+  ASSERT_NE(nullptr, link1Ptr);
   EXPECT_TRUE(link1Ptr->GetExplicitlySetInFile());
 
   sdf::ElementPtr link2Ptr = link1Ptr->GetNextElement();
+  ASSERT_NE(nullptr, link2Ptr);
   EXPECT_TRUE(link2Ptr->GetExplicitlySetInFile());
 
   sdf::ElementPtr jointPtr = link2Ptr->GetNextElement();
+  ASSERT_NE(nullptr, jointPtr);
   EXPECT_TRUE(jointPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr parentPtr = jointPtr->GetFirstElement();
+  ASSERT_NE(nullptr, parentPtr);
   EXPECT_TRUE(parentPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr childPtr = parentPtr->GetNextElement();
+  ASSERT_NE(nullptr, childPtr);
   EXPECT_TRUE(childPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr axisPtr = childPtr->GetNextElement();
+  ASSERT_NE(nullptr, axisPtr);
   EXPECT_TRUE(axisPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr xyzPtr = axisPtr->GetFirstElement();
+  ASSERT_NE(nullptr, xyzPtr);
   EXPECT_FALSE(xyzPtr->GetExplicitlySetInFile());
 
   sdf::ElementPtr limitPtr = xyzPtr->GetNextElement();
-  EXPECT_FALSE(limitPtr->GetExplicitlySetInFile());
-
-  sdf::ElementPtr lowerLimitPtr = limitPtr->GetFirstElement();
-  EXPECT_FALSE(lowerLimitPtr->GetExplicitlySetInFile());
-
-  sdf::ElementPtr upperLimitPtr = lowerLimitPtr->GetNextElement();
-  EXPECT_FALSE(upperLimitPtr->GetExplicitlySetInFile());
+  ASSERT_EQ(nullptr, limitPtr);
 }
 
 //////////////////////////////////////////////////

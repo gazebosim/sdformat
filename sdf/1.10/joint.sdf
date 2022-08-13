@@ -72,12 +72,12 @@
         <description>The spring stiffness for this joint axis.</description>
       </element>
     </element> <!-- End Dynamics -->
-    <element name="limit" required="1">
+    <element name="limit" required="0">
       <description>specifies the limits of this joint</description>
-      <element name="lower" type="double" default="-inf" required="1">
+      <element name="lower" type="double" default="-inf" required="0">
         <description>Specifies the lower joint limit (radians for revolute joints, meters for prismatic joints). Omit if joint is continuous.</description>
       </element>
-      <element name="upper" type="double" default="inf" required="1">
+      <element name="upper" type="double" default="inf" required="0">
         <description>Specifies the upper joint limit (radians for revolute joints, meters for prismatic joints). Omit if joint is continuous.</description>
       </element>
       <element name="effort" type="double" default="inf" required="0">
@@ -130,7 +130,7 @@
       </element>
     </element> <!-- End Dynamics -->
 
-    <element name="limit" required="1">
+    <element name="limit" required="0">
       <description></description>
       <element name="lower" type="double" default="-inf" required="0">
         <description>An attribute specifying the lower joint limit (radians for revolute joints, meters for prismatic joints). Omit if joint is continuous.</description>

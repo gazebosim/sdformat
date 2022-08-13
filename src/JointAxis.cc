@@ -154,11 +154,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
     this->dataPtr->dissipation = limitElement->Get<double>(
         "dissipation", 1.0).first;
   }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "A limit element is a required child of a joint axis"});
-  }
 
   return errors;
 }
