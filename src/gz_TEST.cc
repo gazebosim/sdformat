@@ -16,12 +16,15 @@
 */
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
 #include <gz/utils/ExtraTestMacros.hh>
 
+#include "sdf/Error.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -1858,7 +1861,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
 
-  auto expectedOutput =
+  std::string expectedOutput =
     "Inertial statistics for model: test_model\n"
     "---\n"
     "Total mass of the model: 24\n"
@@ -1896,7 +1899,10 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 
   expectedOutput =
-          "Error Code 19: Msg: A link named link has invalid inertia.\n\n"
+          "Error Code " +
+          std::to_string(static_cast<int>(
+              sdf::ErrorCode::LINK_INERTIA_INVALID)) +
+          ": Msg: A link named link has invalid inertia.\n\n"
           "Inertial statistics for model: model\n"
           "---\n"
           "Total mass of the model: 0\n"
@@ -1932,6 +1938,38 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
                       path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
+  }
+}
+
+//////////////////////////////////////////////////
+/// \brief Check help message and bash completion script for consistent flags
+TEST(HelpVsCompletionFlags, SDF)
+{
+  // Flags in help message
+  std::string helpOutput = custom_exec_str(GzCommand() + " sdf --help");
+
+  // Call the output function in the bash completion script
+  std::string scriptPath = PROJECT_SOURCE_PATH;
+  scriptPath = sdf::filesystem::append(scriptPath, "src", "cmd",
+      "sdf.bash_completion.sh");
+
+  // Equivalent to:
+  // sh -c "bash -c \". /path/to/sdf.bash_completion.sh; _gz_sdf_flags\""
+  std::string cmd = "bash -c \". " + scriptPath +
+    "; _gz_sdf_flags\"";
+  std::string scriptOutput = custom_exec_str(cmd);
+
+  // Tokenize script output
+  std::istringstream iss(scriptOutput);
+  std::vector<std::string> flags((std::istream_iterator<std::string>(iss)),
+    std::istream_iterator<std::string>());
+
+  EXPECT_GT(flags.size(), 0u);
+
+  // Match each flag in script output with help message
+  for (const auto &flag : flags)
+  {
+    EXPECT_NE(std::string::npos, helpOutput.find(flag)) << helpOutput;
   }
 }
 

@@ -9,6 +9,9 @@
     <frame name="F1">
       <pose relative_to="F0">2 0 0 0 0 0</pose> <!-- VALID: Indirectly relative_to implicit world frame via frame F0. -->
     </frame>
+    <frame name="F1a" attached_to="F1">
+      <pose relative_to="world">4 0 0 0 0 0</pose> <!-- VALID: Directly relative_to implicit world frame. -->
+    </frame>
 
     <model name="M1">
       <link name="L"/>

@@ -160,23 +160,27 @@ TEST(DOMRoot, CreateMulipleWorlds)
       ASSERT_TRUE(model->FrameNameExists("F0"));
       EXPECT_EQ("L", model->FrameByName("F0")->AttachedTo());
 
-      EXPECT_EQ(4u, world->FrameCount());
+      EXPECT_EQ(5u, world->FrameCount());
       EXPECT_NE(nullptr, world->FrameByIndex(0));
       EXPECT_NE(nullptr, world->FrameByIndex(1));
       EXPECT_NE(nullptr, world->FrameByIndex(2));
       EXPECT_NE(nullptr, world->FrameByIndex(3));
-      EXPECT_EQ(nullptr, world->FrameByIndex(4));
+      EXPECT_NE(nullptr, world->FrameByIndex(4));
+      EXPECT_EQ(nullptr, world->FrameByIndex(5));
       ASSERT_TRUE(world->FrameNameExists("world_frame"));
+      ASSERT_TRUE(world->FrameNameExists("F00"));
       ASSERT_TRUE(world->FrameNameExists("F0"));
       ASSERT_TRUE(world->FrameNameExists("F1"));
       ASSERT_TRUE(world->FrameNameExists("F2"));
 
       EXPECT_TRUE(world->FrameByName("world_frame")->AttachedTo().empty());
       EXPECT_TRUE(world->FrameByName("F0")->AttachedTo().empty());
+      EXPECT_EQ("world", world->FrameByName("F00")->AttachedTo());
       EXPECT_EQ("F0", world->FrameByName("F1")->AttachedTo());
       EXPECT_EQ("M1", world->FrameByName("F2")->AttachedTo());
 
       EXPECT_TRUE(world->FrameByName("world_frame")->PoseRelativeTo().empty());
+      EXPECT_TRUE(world->FrameByName("F00")->PoseRelativeTo().empty());
       EXPECT_TRUE(world->FrameByName("F0")->PoseRelativeTo().empty());
       EXPECT_TRUE(world->FrameByName("F1")->PoseRelativeTo().empty());
       EXPECT_TRUE(world->FrameByName("F2")->PoseRelativeTo().empty());
@@ -184,6 +188,9 @@ TEST(DOMRoot, CreateMulipleWorlds)
       std::string body;
       EXPECT_TRUE(
         world->FrameByName("world_frame")->ResolveAttachedToBody(body).empty());
+      EXPECT_EQ("world", body);
+      EXPECT_TRUE(
+          world->FrameByName("F00")->ResolveAttachedToBody(body).empty());
       EXPECT_EQ("world", body);
       EXPECT_TRUE(
           world->FrameByName("F0")->ResolveAttachedToBody(body).empty());
