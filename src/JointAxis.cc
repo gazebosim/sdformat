@@ -42,10 +42,6 @@ class sdf::JointAxis::Implementation
   /// \brief Frame in which xyz is expressed in.
   public: std::string xyzExpressedIn = "";
 
-  /// \brief Flag to interpret the axis xyz element in the parent model
-  /// frame instead of joint frame.
-  public: bool useParentModelFrame = false;
-
   /// \brief The physical velocity dependent viscous damping coefficient
   /// of the joint.
   public: double damping = 0.0;
@@ -121,10 +117,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "The xyz element in joint axis is required"});
   }
-
-  // Get whether to use the parent model frame.
-  this->dataPtr->useParentModelFrame = _sdf->Get<bool>(
-      "use_parent_model_frame", false).first;
 
   // Load dynamic values, if present
   if (_sdf->HasElement("dynamics"))
@@ -398,11 +390,6 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   {
     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
         this->XyzExpressedIn());
-  }
-  else if (this->dataPtr->useParentModelFrame)
-  {
-     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
-        "__model__");
   }
   sdf::ElementPtr dynElem = axisElem->GetElement("dynamics");
   dynElem->GetElement("damping")->Set<double>(this->Damping());
