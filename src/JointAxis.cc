@@ -16,6 +16,7 @@
  */
 #include <algorithm>
 #include <iterator>
+#include <limits>
 
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
@@ -41,10 +42,6 @@ class sdf::JointAxis::Implementation
   /// \brief Frame in which xyz is expressed in.
   public: std::string xyzExpressedIn = "";
 
-  /// \brief Flag to interpret the axis xyz element in the parent model
-  /// frame instead of joint frame.
-  public: bool useParentModelFrame = false;
-
   /// \brief The physical velocity dependent viscous damping coefficient
   /// of the joint.
   public: double damping = 0.0;
@@ -60,18 +57,18 @@ class sdf::JointAxis::Implementation
 
   /// \brief Specifies the lower joint limit (radians for revolute joints,
   /// meters for prismatic joints). Omit if joint is continuous.
-  public: double lower = -1e16;
+  public: double lower = -std::numeric_limits<double>::infinity();
 
   /// \brief Specifies the upper joint limit (radians for revolute joints,
   /// meters for prismatic joints). Omit if joint is continuous.
-  public: double upper = 1e16;
+  public: double upper = std::numeric_limits<double>::infinity();
 
   /// \brief A value for enforcing the maximum joint effort applied.
   /// Limit is not enforced if value is negative.
-  public: double effort = -1;
+  public: double effort = std::numeric_limits<double>::infinity();
 
   /// \brief A value for enforcing the maximum joint velocity.
-  public: double maxVelocity = -1;
+  public: double maxVelocity = std::numeric_limits<double>::infinity();
 
   /// \brief Joint stop stiffness.
   public: double stiffness = 1e8;
@@ -106,7 +103,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
   if (_sdf->HasElement("xyz"))
   {
     using gz::math::Vector3d;
-    auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz", Vector3d::UnitZ).first);
+    auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz",
+        this->dataPtr->xyz).first);
     std::copy(errs.begin(), errs.end(), std::back_inserter(errors));
     auto e = _sdf->GetElement("xyz");
     if (e->HasAttribute("expressed_in"))
@@ -120,21 +118,19 @@ Errors JointAxis::Load(ElementPtr _sdf)
         "The xyz element in joint axis is required"});
   }
 
-  // Get whether to use the parent model frame.
-  this->dataPtr->useParentModelFrame = _sdf->Get<bool>(
-      "use_parent_model_frame", false).first;
-
   // Load dynamic values, if present
   if (_sdf->HasElement("dynamics"))
   {
     sdf::ElementPtr dynElement = _sdf->GetElement("dynamics");
 
-    this->dataPtr->damping = dynElement->Get<double>("damping", 0.0).first;
-    this->dataPtr->friction = dynElement->Get<double>("friction", 0.0).first;
-    this->dataPtr->springReference =
-      dynElement->Get<double>("spring_reference", 0.0).first;
-    this->dataPtr->springStiffness =
-      dynElement->Get<double>("spring_stiffness", 0.0).first;
+    this->dataPtr->damping = dynElement->Get<double>("damping",
+        this->dataPtr->damping).first;
+    this->dataPtr->friction = dynElement->Get<double>("friction",
+        this->dataPtr->friction).first;
+    this->dataPtr->springReference = dynElement->Get<double>("spring_reference",
+        this->dataPtr->springReference).first;
+    this->dataPtr->springStiffness = dynElement->Get<double>("spring_stiffness",
+        this->dataPtr->springStiffness).first;
   }
 
   // Load limit values
@@ -142,15 +138,18 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     sdf::ElementPtr limitElement = _sdf->GetElement("limit");
 
-    this->dataPtr->lower = limitElement->Get<double>("lower", -1e16).first;
-    this->dataPtr->upper = limitElement->Get<double>("upper", 1e16).first;
-    this->dataPtr->effort = limitElement->Get<double>("effort", -1).first;
-    this->dataPtr->maxVelocity = limitElement->Get<double>(
-        "velocity", -1).first;
-    this->dataPtr->stiffness = limitElement->Get<double>(
-        "stiffness", 1e8).first;
-    this->dataPtr->dissipation = limitElement->Get<double>(
-        "dissipation", 1.0).first;
+    this->dataPtr->lower = limitElement->Get<double>("lower",
+        this->dataPtr->lower).first;
+    this->dataPtr->upper = limitElement->Get<double>("upper",
+        this->dataPtr->upper).first;
+    this->dataPtr->effort = limitElement->Get<double>("effort",
+        this->dataPtr->effort).first;
+    this->dataPtr->maxVelocity = limitElement->Get<double>("velocity",
+        this->dataPtr->maxVelocity).first;
+    this->dataPtr->stiffness = limitElement->Get<double>("stiffness",
+        this->dataPtr->stiffness).first;
+    this->dataPtr->dissipation = limitElement->Get<double>("dissipation",
+        this->dataPtr->dissipation).first;
   }
   else
   {
@@ -391,11 +390,6 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   {
     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
         this->XyzExpressedIn());
-  }
-  else if (this->dataPtr->useParentModelFrame)
-  {
-     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
-        "__model__");
   }
   sdf::ElementPtr dynElem = axisElem->GetElement("dynamics");
   dynElem->GetElement("damping")->Set<double>(this->Damping());
