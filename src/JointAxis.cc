@@ -107,7 +107,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
   if (_sdf->HasElement("xyz"))
   {
     using gz::math::Vector3d;
-    auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz", Vector3d::UnitZ).first);
+    auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz",
+        this->dataPtr->xyz).first);
     std::copy(errs.begin(), errs.end(), std::back_inserter(errors));
     auto e = _sdf->GetElement("xyz");
     if (e->HasAttribute("expressed_in"))
@@ -130,12 +131,14 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     sdf::ElementPtr dynElement = _sdf->GetElement("dynamics");
 
-    this->dataPtr->damping = dynElement->Get<double>("damping", 0.0).first;
-    this->dataPtr->friction = dynElement->Get<double>("friction", 0.0).first;
-    this->dataPtr->springReference =
-      dynElement->Get<double>("spring_reference", 0.0).first;
-    this->dataPtr->springStiffness =
-      dynElement->Get<double>("spring_stiffness", 0.0).first;
+    this->dataPtr->damping = dynElement->Get<double>("damping",
+        this->dataPtr->damping).first;
+    this->dataPtr->friction = dynElement->Get<double>("friction",
+        this->dataPtr->friction).first;
+    this->dataPtr->springReference = dynElement->Get<double>("spring_reference",
+        this->dataPtr->springReference).first;
+    this->dataPtr->springStiffness = dynElement->Get<double>("spring_stiffness",
+        this->dataPtr->springStiffness).first;
   }
 
   // Load limit values
@@ -143,16 +146,18 @@ Errors JointAxis::Load(ElementPtr _sdf)
   {
     sdf::ElementPtr limitElement = _sdf->GetElement("limit");
 
-    const double kInf = std::numeric_limits<double>::infinity();
-    this->dataPtr->lower = limitElement->Get<double>("lower", -kInf).first;
-    this->dataPtr->upper = limitElement->Get<double>("upper", kInf).first;
-    this->dataPtr->effort = limitElement->Get<double>("effort", kInf).first;
-    this->dataPtr->maxVelocity = limitElement->Get<double>(
-        "velocity", kInf).first;
-    this->dataPtr->stiffness = limitElement->Get<double>(
-        "stiffness", 1e8).first;
-    this->dataPtr->dissipation = limitElement->Get<double>(
-        "dissipation", 1.0).first;
+    this->dataPtr->lower = limitElement->Get<double>("lower",
+        this->dataPtr->lower).first;
+    this->dataPtr->upper = limitElement->Get<double>("upper",
+        this->dataPtr->upper).first;
+    this->dataPtr->effort = limitElement->Get<double>("effort",
+        this->dataPtr->effort).first;
+    this->dataPtr->maxVelocity = limitElement->Get<double>("velocity",
+        this->dataPtr->maxVelocity).first;
+    this->dataPtr->stiffness = limitElement->Get<double>("stiffness",
+        this->dataPtr->stiffness).first;
+    this->dataPtr->dissipation = limitElement->Get<double>("dissipation",
+        this->dataPtr->dissipation).first;
   }
   else
   {
