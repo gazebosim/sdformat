@@ -94,7 +94,7 @@ bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
   {
     std::stringstream ss;
     ss << "Interval value to snap to must be larger than 0, and less than "
-       << "or equal to 360.\n";
+       << "or equal to 360.";
     _errors.push_back({ErrorCode::ROTATION_SNAP_CONFIG_ERROR, ss.str()});
     return false;
   }
@@ -104,7 +104,7 @@ bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
   {
     std::stringstream ss;
     ss << "Tolerance must be larger than 0, less than or equal to "
-       << "360, and less than the provided interval.\n";
+       << "360, and less than the provided interval.";
     _errors.push_back({ErrorCode::ROTATION_SNAP_CONFIG_ERROR, ss.str()});
     return false;
   }
