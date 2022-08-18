@@ -546,6 +546,12 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **plugin.sdf**: name attribute is now optional with empty default value.
 
+### Removals
+
+1. **collision_engine.sdf**: unused specification file is removed.
+
+1. **urdf.sdf**: unused specification file is removed.
+
 ## SDFormat specification 1.8 to 1.9
 
 ### Additions
