@@ -4,6 +4,7 @@
     <link name="L"/>
     <frame name="F00"/>                  <!-- VALID: Indirectly attached_to canonical link L via the model frame. -->
     <frame name="F0" attached_to=""/>    <!-- VALID: Indirectly attached_to canonical link L via the model frame. -->
+    <frame name="F000" attached_to="__model__"/> <!-- VALID: Indirectly attached_to canonical link L via the model frame. -->
     <frame name="F1" attached_to="L"/>   <!-- VALID: Directly attached_to link L. -->
     <frame name="F2" attached_to="F1"/>  <!-- VALID: Indirectly attached_to link L via frame F1. -->
   </model>
