@@ -628,29 +628,35 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   const sdf::Model *model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("model_link_relative_to", model->Name());
-  EXPECT_EQ(3u, model->LinkCount());
+  EXPECT_EQ(4u, model->LinkCount());
   EXPECT_NE(nullptr, model->LinkByIndex(0));
   EXPECT_NE(nullptr, model->LinkByIndex(1));
   EXPECT_NE(nullptr, model->LinkByIndex(2));
-  EXPECT_EQ(nullptr, model->LinkByIndex(3));
+  EXPECT_NE(nullptr, model->LinkByIndex(3));
+  EXPECT_EQ(nullptr, model->LinkByIndex(4));
   EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
   EXPECT_EQ("", model->PoseRelativeTo());
 
   ASSERT_TRUE(model->LinkNameExists("L1"));
   ASSERT_TRUE(model->LinkNameExists("L2"));
+  ASSERT_TRUE(model->LinkNameExists("L2a"));
   ASSERT_TRUE(model->LinkNameExists("L3"));
   EXPECT_TRUE(model->LinkByName("L1")->PoseRelativeTo().empty());
   EXPECT_TRUE(model->LinkByName("L2")->PoseRelativeTo().empty());
+  EXPECT_EQ("__model__", model->LinkByName("L2a")->PoseRelativeTo());
   EXPECT_EQ("L1", model->LinkByName("L3")->PoseRelativeTo());
 
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->LinkByName("L1")->RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->LinkByName("L2")->RawPose());
+  EXPECT_EQ(Pose(12, 0, 0, 0, 0, 0), model->LinkByName("L2a")->RawPose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->LinkByName("L3")->RawPose());
 
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
             model->LinkByName("L1")->SemanticPose().RawPose());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
             model->LinkByName("L2")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(12, 0, 0, 0, 0, 0),
+            model->LinkByName("L2a")->SemanticPose().RawPose());
   EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0),
             model->LinkByName("L3")->SemanticPose().RawPose());
 
@@ -663,6 +669,10 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
     model->LinkByName("L2")->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(
+    model->LinkByName("L2a")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(12, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
     model->LinkByName("L3")->SemanticPose().Resolve(pose, "__model__").empty());
   EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
   // test other API too
@@ -670,6 +680,8 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
   EXPECT_TRUE(model->LinkByName("L2")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->LinkByName("L2a")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(12, 0, 0, 0, 0, 0), pose);
   EXPECT_TRUE(model->LinkByName("L3")->SemanticPose().Resolve(pose).empty());
   EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
 

@@ -333,7 +333,7 @@ Errors Model::Load(ElementPtr _sdf)
     std::string frameName = frame.Name();
     if (frameNames.count(frameName) > 0)
     {
-      // This joint has a name collision
+      // This frame has a name collision
       if (sdfVersion < ignition::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming frame
