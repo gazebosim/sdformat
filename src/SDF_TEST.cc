@@ -21,6 +21,9 @@
 #include <gz/utils/Environment.hh>
 #include <gz/utils/SuppressWarning.hh>
 
+#include "test_config.hh"
+#include "test_utils.hh"
+
 #include "sdf/sdf.hh"
 
 class SDFUpdateFixture
@@ -587,10 +590,15 @@ TEST(SDF, EmbeddedSpecNonExistent)
 
   // Capture sdferr output
   std::stringstream stderr_buffer;
-  auto old = std::cerr.rdbuf(stderr_buffer.rdbuf());
-
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &stderr_buffer);
 #ifdef _WIN32
   sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+      sdf::Console::Instance()->SetQuiet(true);
+      });
 #endif
 
   result = sdf::SDF::EmbeddedSpec("unavailable.sdf", false);
@@ -605,12 +613,6 @@ TEST(SDF, EmbeddedSpecNonExistent)
   result = sdf::SDF::EmbeddedSpec("unavailable.sdf", true);
   EXPECT_TRUE(stderr_buffer.str().empty());
   EXPECT_TRUE(result.empty());
-
-  // Revert cerr rdbuf to not interfere with other tests
-  std::cerr.rdbuf(old);
-#ifdef _WIN32
-  sdf::Console::Instance()->SetQuiet(true);
-#endif
 }
 
 /////////////////////////////////////////////////
