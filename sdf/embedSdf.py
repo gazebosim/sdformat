@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import inspect
 from pathlib import Path, PurePosixPath
 
 """"Script for generating a C++ file that contains the content from all SDF files"""
@@ -13,7 +14,8 @@ SUPPORTED_SDF_CONVERSIONS = ['1.9', '1.8', '1.7', '1.6', '1.5', '1.4', '1.3']
 
 # whitespace indentation for C++ code
 INDENTATION = '  '
-
+# newline character
+NEWLINE = '\n'
 
 def get_copyright_notice() -> str:
     """
@@ -21,25 +23,25 @@ def get_copyright_notice() -> str:
 
     :returns: copyright notice
     """
-    res = []
-    res.append('/*')
-    res.append(' * Copyright 2022 Open Source Robotics Foundation')
-    res.append(' *')
-    res.append(' * Licensed under the Apache License, Version 2.0 (the "License");')
-    res.append(' * you may not use this file except in compliance with the License.')
-    res.append(' * You may obtain a copy of the License at')
-    res.append(' *')
-    res.append(' *     http://www.apache.org/licenses/LICENSE-2.0')
-    res.append(' *')
-    res.append(' * Unless required by applicable law or agreed to in writing, software')
-    res.append(' * distributed under the License is distributed on an "AS IS" BASIS,')
-    res.append(' * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.')
-    res.append(' * See the License for the specific language governing permissions and')
-    res.append(' * limitations under the License.')
-    res.append(' *')
-    res.append('*/')
-    res.append('')
-    return '\n'.join(res)
+    res = inspect.cleandoc("""
+    /*
+     * Copyright 2022 Open Source Robotics Foundation
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     *
+    */
+    """)
+    return res + 2*NEWLINE
 
 
 def get_file_header_prolog() -> str:
@@ -48,19 +50,19 @@ def get_file_header_prolog() -> str:
 
     :returns: prolog of the C++ file
     """
-    res = []
-    res.append('#include "EmbeddedSdf.hh"')
-    res.append('')
-    res.append('namespace sdf')
-    res.append('{')
-    res.append('inline namespace SDF_VERSION_NAMESPACE')
-    res.append('{')
-    res.append('/////////////////////////////////////////////////')
-    res.append('const std::map<std::string, std::string> &GetEmbeddedSdf()')
-    res.append('{')
-    res.append(INDENTATION + 'static const std::map<std::string, std::string> result {')
-    res.append('')
-    return '\n'.join(res)
+    res = inspect.cleandoc("""
+    #include "EmbeddedSdf.hh"
+
+    namespace sdf
+    {
+    inline namespace SDF_VERSION_NAMESPACE
+    {
+    /////////////////////////////////////////////////
+    const std::map<std::string, std::string> &GetEmbeddedSdf()
+    {
+        static const std::map<std::string, std::string> result {
+    """)
+    return res + NEWLINE
 
 
 def embed_sdf_content(arg_path: str, arg_file_content: str) -> str:
@@ -80,7 +82,7 @@ def embed_sdf_content(arg_path: str, arg_file_content: str) -> str:
     res.append(')__sdf_literal__"')
     res.append('},')
     res.append('')
-    return '\n'.join(res)
+    return NEWLINE.join(res)
 
 
 def get_map_content(arg_pathlist: Path) -> str:
@@ -112,17 +114,17 @@ def get_file_header_epilog() -> str:
 
     :returns: epilog of the C++ file
     """
-    res = []
-    res.append('')
-    res.append(INDENTATION + '};')
-    res.append('')
-    res.append(INDENTATION + 'return result;')
-    res.append('}')
-    res.append('')
-    res.append('}')
-    res.append('}  // namespace sdf')
-    res.append('')
-    return '\n'.join(res)
+    res = inspect.cleandoc("""
+        };
+
+        return result;
+    }
+
+    }
+    }  // namespace sdf
+
+    """)
+    return NEWLINE + res
 
 
 if __name__ == "__main__":
