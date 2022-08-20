@@ -95,7 +95,7 @@ def get_map_content(arg_pathlist: Path) -> str:
     """
     map_str = ''
     files = []
-    for path in pathlist:
+    for path in arg_pathlist:
         # dir separator is hardcoded to '/' in C++ mapping
         posix_path = PurePosixPath(path)
         files.append(str(posix_path))
