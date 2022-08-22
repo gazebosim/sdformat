@@ -395,8 +395,8 @@ void ReduceVisualToParent(urdf::LinkSharedPtr _parentLink,
 // collision elements of the child link into the parent link
 void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
 {
-  // if child is attached to self by fixed _link first go up the tree,
-  //   check it's children recursively
+  // if child is attached to self by fixed joint first go up the tree,
+  //   check its children recursively
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
     if (FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
