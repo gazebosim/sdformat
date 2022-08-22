@@ -2448,8 +2448,7 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
     for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
          ge != ext->second.end(); ++ge)
     {
-      (*ge)->reductionTransform = TransformToParentFrame(
-          (*ge)->reductionTransform,
+      (*ge)->reductionTransform = CopyPose(
           _link->parent_joint->parent_to_joint_origin_transform);
       // for sensor and projector blocks only
       ReduceSDFExtensionsTransform((*ge));
@@ -3297,24 +3296,51 @@ void ReduceSDFExtensionElementTransformReduction(
     //   sdfdbg << "    " << streamIn.str() << "\n";
     // }
 
+    auto pose {ignition::math::Pose3d::Zero};
     {
+      std::string poseText = "0 0 0 0 0 0";
+
       TiXmlNode* oldPoseKey = element->FirstChild("pose");
-      /// @todo: FIXME:  we should read xyz, rpy and aggregate it to
-      /// reductionTransform instead of just throwing the info away.
       if (oldPoseKey)
       {
+        const auto& poseElemXml = oldPoseKey->ToElement();
+        if (poseElemXml->Attribute("relative_to"))
+        {
+          return;
+        }
+
+        if (poseElemXml->GetText())
+        {
+          poseText = poseElemXml->GetText();
+        }
+
+        // delete the <pose> tag, we'll add a new one at the end
         element->RemoveChild(oldPoseKey);
+      }
+
+      // parse the 6-tuple text into math::Pose3d
+      std::stringstream ss;
+      ss.imbue(std::locale::classic());
+      ss << poseText;
+      ss >> pose;
+      if (ss.fail())
+      {
+        sdferr << "Could not parse <" << _elementName << "><pose>: ["
+               << poseText << "]\n";
+        return;
       }
     }
 
+    pose = _reductionTransform * pose;
+
     // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
-                               _reductionTransform.Pos().Y(),
-                               _reductionTransform.Pos().Z());
-    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
-                              _reductionTransform.Rot().Y(),
-                              _reductionTransform.Rot().Z(),
-                              _reductionTransform.Rot().W());
+    urdf::Vector3 reductionXyz(pose.Pos().X(),
+                               pose.Pos().Y(),
+                               pose.Pos().Z());
+    urdf::Rotation reductionQ(pose.Rot().X(),
+                              pose.Rot().Y(),
+                              pose.Rot().Z(),
+                              pose.Rot().W());
 
     urdf::Vector3 reductionRpy;
     reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
@@ -3324,7 +3350,7 @@ void ReduceSDFExtensionElementTransformReduction(
     poseStream << reductionXyz.x << " " << reductionXyz.y
                << " " << reductionXyz.z << " " << reductionRpy.x
                << " " << reductionRpy.y << " " << reductionRpy.z;
-    TiXmlText* poseTxt = new TiXmlText(poseStream.str());
+    TiXmlText* poseTxt = new TiXmlText(poseStream.str().c_str());
 
     TiXmlElement* poseKey = new TiXmlElement("pose");
     poseKey->LinkEndChild(poseTxt);
