@@ -3282,8 +3282,8 @@ void ReduceSDFExtensionElementTransformReduction(
     const ignition::math::Pose3d &_reductionTransform,
     const std::string &_elementName)
 {
-  // overwrite <xyz> and <rpy> if they exist
-  if ((*_blobIt)->ValueStr() == _elementName)
+  auto element = *_blobIt;
+  if (element->ValueStr() == _elementName)
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
@@ -3298,12 +3298,12 @@ void ReduceSDFExtensionElementTransformReduction(
     // }
 
     {
-      TiXmlNode* oldPoseKey = (*_blobIt)->FirstChild("pose");
+      TiXmlNode* oldPoseKey = element->FirstChild("pose");
       /// @todo: FIXME:  we should read xyz, rpy and aggregate it to
       /// reductionTransform instead of just throwing the info away.
       if (oldPoseKey)
       {
-        (*_blobIt)->RemoveChild(oldPoseKey);
+        element->RemoveChild(oldPoseKey);
       }
     }
 
@@ -3329,7 +3329,7 @@ void ReduceSDFExtensionElementTransformReduction(
     TiXmlElement* poseKey = new TiXmlElement("pose");
     poseKey->LinkEndChild(poseTxt);
 
-    (*_blobIt)->LinkEndChild(poseKey);
+    element->LinkEndChild(poseKey);
   }
 }
 
