@@ -2539,11 +2539,12 @@ void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
   for (std::vector<TiXmlElementPtr>::iterator blobIt = _ge->blobs.begin();
        blobIt != _ge->blobs.end(); ++blobIt)
   {
-    /// @todo make sure we are not missing any additional transform reductions
     ReduceSDFExtensionElementTransformReduction(
-        blobIt, _ge->reductionTransform, "sensor");
+        blobIt, _ge->reductionTransform, "light");
     ReduceSDFExtensionElementTransformReduction(
         blobIt, _ge->reductionTransform, "projector");
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "sensor");
   }
 }
 
