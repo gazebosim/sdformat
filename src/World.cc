@@ -25,6 +25,7 @@
 #include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
+#include "sdf/Joint.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/ParserConfig.hh"
@@ -64,6 +65,9 @@ class sdf::World::Implementation
 
   /// \brief The frames specified in this world.
   public: std::vector<Frame> frames;
+
+  /// \brief The joints specified in this world.
+  public: std::vector<Joint> joints;
 
   /// \brief The lights specified in this world.
   public: std::vector<Light> lights;
@@ -265,6 +269,11 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   Errors actorLoadErrors = loadUniqueRepeated<Actor>(_sdf, "actor",
       this->dataPtr->actors);
   errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
+
+  // Load all the joints.
+  Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
+      this->dataPtr->joints);
+  errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(_sdf, "light",
@@ -570,6 +579,69 @@ Frame *World::FrameByName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+uint64_t World::JointCount() const
+{
+  return this->dataPtr->joints.size();
+}
+
+/////////////////////////////////////////////////
+const Joint *World::JointByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->joints.size())
+    return &this->dataPtr->joints[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Joint *World::JointByIndex(uint64_t _index)
+{
+  return const_cast<Joint*>(
+      static_cast<const World*>(this)->JointByIndex(_index));
+}
+
+/////////////////////////////////////////////////
+const Joint *World::JointByName(const std::string &_name) const
+{
+  auto index = _name.rfind("::");
+  if (index != std::string::npos)
+  {
+    const Model *model = this->ModelByName(_name.substr(0, index));
+    if (nullptr != model)
+    {
+      return model->JointByName(_name.substr(index + 2));
+    }
+
+    // The nested model name preceding the last "::" could not be found.
+    // For now, try to find a link that matches _name exactly.
+    // When "::" are reserved and not allowed in names, then uncomment
+    // the following line to return a nullptr.
+    // return nullptr;
+  }
+
+  for (auto const &f : this->dataPtr->joints)
+  {
+    if (f.Name() == _name)
+    {
+      return &f;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Joint *World::JointByName(const std::string &_name)
+{
+  return const_cast<Joint*>(
+      static_cast<const World*>(this)->JointByName(_name));
+}
+
+/////////////////////////////////////////////////
+bool World::JointNameExists(const std::string &_name) const
+{
+  return nullptr != this->JointByName(_name);
+}
+
+/////////////////////////////////////////////////
 uint64_t World::LightCount() const
 {
   return this->dataPtr->lights.size();
@@ -731,6 +803,10 @@ void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   {
     frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
   }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
   for (auto &light : this->dataPtr->lights)
   {
     light.SetXmlParentName("world");
@@ -747,6 +823,10 @@ void World::SetFrameAttachedToGraph(
   for (auto &frame : this->dataPtr->frames)
   {
     frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
   }
   for (auto &model : this->dataPtr->models)
   {
@@ -923,6 +1003,10 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
   for (const sdf::Actor &actor : this->dataPtr->actors)
     elem->InsertElement(actor.ToElement(), true);
 
+  // Joints
+  for (const sdf::Joint &joint : this->dataPtr->joints)
+    elem->InsertElement(joint.ToElement(), true);
+
   // Lights
   for (const sdf::Light &light : this->dataPtr->lights)
     elem->InsertElement(light.ToElement(), true);
@@ -989,6 +1073,12 @@ void World::ClearActors()
 }
 
 /////////////////////////////////////////////////
+void World::ClearJoints()
+{
+  this->dataPtr->joints.clear();
+}
+
+/////////////////////////////////////////////////
 void World::ClearLights()
 {
   this->dataPtr->lights.clear();
@@ -1021,6 +1111,16 @@ bool World::AddActor(const Actor &_actor)
   if (this->ActorNameExists(_actor.Name()))
     return false;
   this->dataPtr->actors.push_back(_actor);
+
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool World::AddJoint(const Joint &_joint)
+{
+  if (this->JointNameExists(_joint.Name()))
+    return false;
+  this->dataPtr->joints.push_back(_joint);
 
   return true;
 }
