@@ -352,8 +352,8 @@ namespace sdf
     /// object's camera_info message header is expressed.
     /// Note: while Gazebo interprets the camera frame to be looking towards +X,
     /// other tools, such as ROS interprets this frame as looking towards +Z.
-    /// The Camera sensor assumes that the color and depth images are captured at
-    /// the same frame_id.
+    /// The Camera sensor assumes that the color and depth images are captured
+    /// at the same frame_id.
     /// \return The name of the frame this camera uses in its camera_info topic.
     public: const std::string OpticalFrameId() const;
 

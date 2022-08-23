@@ -354,7 +354,7 @@ Errors Camera::Load(ElementPtr _sdf)
   // Load the optional optical_frame_id value.
   if (_sdf->HasElement("optical_frame_id"))
   {
-    this->dataPtr->opticalFrameId = _sdf->Get<std::string>("optical_frame_id", 
+    this->dataPtr->opticalFrameId = _sdf->Get<std::string>("optical_frame_id",
         this->dataPtr->opticalFrameId).first;
   }
 
@@ -1172,7 +1172,8 @@ sdf::ElementPtr Camera::ToElement() const
         this->SegmentationType());
   }
 
-  elem->GetElement("optical_frame_id")->Set<std::string>(this->OpticalFrameId());
+  elem->GetElement("optical_frame_id")->Set<std::string>(
+      this->OpticalFrameId());
 
   return elem;
 }
