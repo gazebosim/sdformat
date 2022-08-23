@@ -3,7 +3,7 @@
   <description>A joint connects two links with kinematic and dynamic properties. By default, the pose of a joint is expressed in the child link frame.</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
-    <description>A unique name for the joint within the scope of the model.</description>
+    <description>A unique name for the joint within its scope.</description>
   </attribute>
 
   <attribute name="type" type="string" default="__default__" required="1">
@@ -25,7 +25,9 @@
   </element> <!-- End Parent -->
 
   <element name="child" type="string" default="__default__" required="1">
-    <description>Name of the child frame. The value "world" may not be specified.</description>
+    <description>Name of the child frame. The value "world" may be specified
+      only if this joint is defined at the world scope as //world/joint. The
+      the value "world" may not be specified for a //model/joint.</description>
   </element> <!-- End Child -->
 
   <element name="gearbox_ratio" type="double" default="1.0" required="0">
