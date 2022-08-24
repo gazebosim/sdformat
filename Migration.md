@@ -12,7 +12,12 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
-## libsdformat 9.8.0 to 9.8.1
+## libsdformat 9.8.0 to 9.9.0
+
+### Additions
+
+1. **sdf/Camera.hh**
+    + Get/Set functions for Camera projection matrix parameters.
 
 ### Modifications
 
