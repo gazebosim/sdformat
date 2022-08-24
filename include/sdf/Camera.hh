@@ -470,8 +470,8 @@ namespace sdf
     /// \param[in] _cy The lens intrinsic matrix Y principal point in pixels.
     public: void SetLensIntrinsicsCy(double _cy);
 
-    /// \brief Get the lens X focal length in pixels.
-    /// \return The lens X focal length in pixels.
+    /// \brief Get the lens projection matrix X focal length in pixels.
+    /// \return The lens projection matrix X focal length in pixels.
     public: double LensProjectionFx() const;
 
     /// \brief Set the lens projection matrix X focal length in pixels.
