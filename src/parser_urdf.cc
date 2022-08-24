@@ -87,17 +87,12 @@ void InsertSDFExtensionJoint(TiXmlElement *_elem,
 ///   option is set
 bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt);
 
-/// reduced fixed joints:  apply transform reduction for ray sensors
+/// reduced fixed joints:  apply transform reduction for named elements
 ///   in extensions when doing fixed joint reduction
-void ReduceSDFExtensionSensorTransformReduction(
+void ReduceSDFExtensionElementTransformReduction(
       std::vector<TiXmlElementPtr>::iterator _blobIt,
-      ignition::math::Pose3d _reductionTransform);
-
-/// reduced fixed joints:  apply transform reduction for projectors in
-///   extensions when doing fixed joint reduction
-void ReduceSDFExtensionProjectorTransformReduction(
-      std::vector<TiXmlElementPtr>::iterator _blobIt,
-      ignition::math::Pose3d _reductionTransform);
+      const ignition::math::Pose3d &_reductionTransform,
+      const std::string &_elementName);
 
 
 /// reduced fixed joints:  apply transform reduction to extensions
@@ -400,8 +395,8 @@ void ReduceVisualToParent(urdf::LinkSharedPtr _parentLink,
 // collision elements of the child link into the parent link
 void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
 {
-  // if child is attached to self by fixed _link first go up the tree,
-  //   check it's children recursively
+  // if child is attached to self by fixed joint first go up the tree,
+  //   check its children recursively
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
     if (FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
@@ -2453,8 +2448,7 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
     for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
          ge != ext->second.end(); ++ge)
     {
-      (*ge)->reductionTransform = TransformToParentFrame(
-          (*ge)->reductionTransform,
+      (*ge)->reductionTransform = CopyPose(
           _link->parent_joint->parent_to_joint_origin_transform);
       // for sensor and projector blocks only
       ReduceSDFExtensionsTransform((*ge));
@@ -2545,11 +2539,12 @@ void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
   for (std::vector<TiXmlElementPtr>::iterator blobIt = _ge->blobs.begin();
        blobIt != _ge->blobs.end(); ++blobIt)
   {
-    /// @todo make sure we are not missing any additional transform reductions
-    ReduceSDFExtensionSensorTransformReduction(blobIt,
-                                               _ge->reductionTransform);
-    ReduceSDFExtensionProjectorTransformReduction(blobIt,
-                                                  _ge->reductionTransform);
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "light");
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "projector");
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "sensor");
   }
 }
 
@@ -3282,12 +3277,13 @@ bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ReduceSDFExtensionSensorTransformReduction(
+void ReduceSDFExtensionElementTransformReduction(
     std::vector<TiXmlElementPtr>::iterator _blobIt,
-    ignition::math::Pose3d _reductionTransform)
+    const ignition::math::Pose3d &_reductionTransform,
+    const std::string &_elementName)
 {
-  // overwrite <xyz> and <rpy> if they exist
-  if ((*_blobIt)->ValueStr() == "sensor")
+  auto element = *_blobIt;
+  if (element->ValueStr() == _elementName)
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
@@ -3298,27 +3294,54 @@ void ReduceSDFExtensionSensorTransformReduction(
     // {
     //   std::ostringstream streamIn;
     //   streamIn << *elIt;
-    //   sdfdbg << "    " << streamIn << "\n";
+    //   sdfdbg << "    " << streamIn.str() << "\n";
     // }
 
+    auto pose {ignition::math::Pose3d::Zero};
     {
-      TiXmlNode* oldPoseKey = (*_blobIt)->FirstChild("pose");
-      /// @todo: FIXME:  we should read xyz, rpy and aggregate it to
-      /// reductionTransform instead of just throwing the info away.
+      std::string poseText = "0 0 0 0 0 0";
+
+      TiXmlNode* oldPoseKey = element->FirstChild("pose");
       if (oldPoseKey)
       {
-        (*_blobIt)->RemoveChild(oldPoseKey);
+        const auto& poseElemXml = oldPoseKey->ToElement();
+        if (poseElemXml->Attribute("relative_to"))
+        {
+          return;
+        }
+
+        if (poseElemXml->GetText())
+        {
+          poseText = poseElemXml->GetText();
+        }
+
+        // delete the <pose> tag, we'll add a new one at the end
+        element->RemoveChild(oldPoseKey);
+      }
+
+      // parse the 6-tuple text into math::Pose3d
+      std::stringstream ss;
+      ss.imbue(std::locale::classic());
+      ss << poseText;
+      ss >> pose;
+      if (ss.fail())
+      {
+        sdferr << "Could not parse <" << _elementName << "><pose>: ["
+               << poseText << "]\n";
+        return;
       }
     }
 
+    pose = _reductionTransform * pose;
+
     // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
-                               _reductionTransform.Pos().Y(),
-                               _reductionTransform.Pos().Z());
-    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
-                              _reductionTransform.Rot().Y(),
-                              _reductionTransform.Rot().Z(),
-                              _reductionTransform.Rot().W());
+    urdf::Vector3 reductionXyz(pose.Pos().X(),
+                               pose.Pos().Y(),
+                               pose.Pos().Z());
+    urdf::Rotation reductionQ(pose.Rot().X(),
+                              pose.Rot().Y(),
+                              pose.Rot().Z(),
+                              pose.Rot().W());
 
     urdf::Vector3 reductionRpy;
     reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
@@ -3328,67 +3351,12 @@ void ReduceSDFExtensionSensorTransformReduction(
     poseStream << reductionXyz.x << " " << reductionXyz.y
                << " " << reductionXyz.z << " " << reductionRpy.x
                << " " << reductionRpy.y << " " << reductionRpy.z;
-    TiXmlText* poseTxt = new TiXmlText(poseStream.str());
+    TiXmlText* poseTxt = new TiXmlText(poseStream.str().c_str());
 
     TiXmlElement* poseKey = new TiXmlElement("pose");
     poseKey->LinkEndChild(poseTxt);
 
-    (*_blobIt)->LinkEndChild(poseKey);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void ReduceSDFExtensionProjectorTransformReduction(
-    std::vector<TiXmlElementPtr>::iterator _blobIt,
-    ignition::math::Pose3d _reductionTransform)
-{
-  // overwrite <pose> (xyz/rpy) if it exists
-  if ((*_blobIt)->ValueStr() == "projector")
-  {
-    // parse it and add/replace the reduction transform
-    // find first instance of xyz and rpy, replace with reduction transform
-    //
-    // for (TiXmlNode* elIt = (*_blobIt)->FirstChild();
-    // elIt; elIt = elIt->NextSibling())
-    // {
-    //   std::ostringstream streamIn;
-    //   streamIn << *elIt;
-    //   sdfdbg << "    " << streamIn << "\n";
-    // }
-
-    // should read <pose>...</pose> and agregate reductionTransform
-    TiXmlNode* poseKey = (*_blobIt)->FirstChild("pose");
-    // read pose and save it
-
-    // remove the tag for now
-    if (poseKey)
-    {
-      (*_blobIt)->RemoveChild(poseKey);
-    }
-
-    // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
-                               _reductionTransform.Pos().Y(),
-                               _reductionTransform.Pos().Z());
-    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
-                              _reductionTransform.Rot().Y(),
-                              _reductionTransform.Rot().Z(),
-                              _reductionTransform.Rot().W());
-
-    urdf::Vector3 reductionRpy;
-    reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
-
-    // output updated pose to text
-    std::ostringstream poseStream;
-    poseStream << reductionXyz.x << " " << reductionXyz.y
-               << " " << reductionXyz.z << " " << reductionRpy.x
-               << " " << reductionRpy.y << " " << reductionRpy.z;
-    TiXmlText* poseTxt = new TiXmlText(poseStream.str());
-
-    poseKey = new TiXmlElement("pose");
-    poseKey->LinkEndChild(poseTxt);
-
-    (*_blobIt)->LinkEndChild(poseKey);
+    element->LinkEndChild(poseKey);
   }
 }
 
