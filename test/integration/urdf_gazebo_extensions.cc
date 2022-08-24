@@ -135,4 +135,170 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
       EXPECT_FALSE(link->HasElement("velocity_decay"));
     }
   }
+
+  sdf::ElementPtr link0;
+  for (sdf::ElementPtr link = model->GetElement("link"); link;
+       link = link->GetNextElement("link"))
+  {
+    const auto& linkName = link->Get<std::string>("name");
+    if (linkName == "link0")
+    {
+      link0 = link;
+      break;
+    }
+  }
+  ASSERT_TRUE(link0);
+
+  auto checkElementPoses = [&](const std::string &_elementName) -> void
+  {
+    bool foundElementNoPose {false};
+    bool foundElementPose {false};
+    bool foundElementPoseRelative {false};
+    bool foundElementPoseTwoLevel {false};
+    bool foundIssue378Element {false};
+    bool foundIssue67Element {false};
+
+    for (sdf::ElementPtr element = link0->GetElement(_elementName); element;
+         element = element->GetNextElement(_elementName))
+    {
+      const auto& elementName = element->Get<std::string>("name");
+      if (elementName == _elementName + "NoPose")
+      {
+        foundElementNoPose = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
+          "", ignition::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), IGN_PI_2, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == _elementName + "Pose")
+      {
+        foundElementPose = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
+          "", ignition::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), IGN_PI_2 - 1, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == _elementName + "PoseRelative")
+      {
+        foundElementPoseRelative = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
+          "", ignition::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 111.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), -1, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == _elementName + "PoseTwoLevel")
+      {
+        foundElementPoseTwoLevel = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
+          "", ignition::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 222.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), IGN_PI_2 - 1, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == "issue378_" + _elementName)
+      {
+        foundIssue378Element = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
+          "", ignition::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 1);
+        EXPECT_DOUBLE_EQ(pose.Y(), 2);
+        EXPECT_DOUBLE_EQ(pose.Z(), 3);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.1);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.2);
+        EXPECT_DOUBLE_EQ(pose.Yaw(), 0.3);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == "issue67_" + _elementName)
+      {
+        foundIssue67Element = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
+          "", ignition::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_GT(std::abs(pose.X() - (-0.20115)), 0.1);
+        EXPECT_GT(std::abs(pose.Y() - 0.42488), 0.1);
+        EXPECT_GT(std::abs(pose.Z() - 0.30943), 0.1);
+        EXPECT_GT(std::abs(pose.Roll() - 1.5708), 0.1);
+        EXPECT_GT(std::abs(pose.Pitch() - (-0.89012)), 0.1);
+        EXPECT_GT(std::abs(pose.Yaw() - 1.5708), 0.1);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+    }
+
+    EXPECT_TRUE(foundElementNoPose) << _elementName;
+    EXPECT_TRUE(foundElementPose) << _elementName;
+    EXPECT_TRUE(foundElementPoseRelative) << _elementName;
+    EXPECT_TRUE(foundElementPoseTwoLevel) << _elementName;
+    EXPECT_TRUE(foundIssue378Element) << _elementName;
+    EXPECT_TRUE(foundIssue67Element) << _elementName;
+  };
+
+  checkElementPoses("light");
+  checkElementPoses("projector");
+  checkElementPoses("sensor");
 }

@@ -12,6 +12,15 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 9.8.0 to 9.8.1
+
+### Modifications
+
+1. URDF parser now properly transforms poses for lights, projectors and sensors
+   from gazebo extension tags that are moved to a new link during fixed joint
+   reduction.
+    + [pull request 1114](https://github.com/osrf/sdformat/pull/1114)
+
 ## libsdformat 9.4 to 9.5
 
 ### Additions
