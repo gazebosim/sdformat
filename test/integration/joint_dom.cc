@@ -357,7 +357,7 @@ TEST(DOMJoint, LoadJointParentFrame)
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0),
             model->FrameByName("parent_frame")->RawPose());
 
-  // Test ResolveFrame to get each link, joint and frame pose in model frame.
+  // Test Resolve to get each link, joint and frame pose in model frame.
   Pose pose;
   EXPECT_TRUE(
     model->LinkByName("parent_link")->
@@ -449,7 +449,7 @@ TEST(DOMJoint, LoadJointChildFrame)
   EXPECT_EQ(Pose(1, 0, 0, 0, 0, 0),
             model->FrameByName("child_frame")->RawPose());
 
-  // Test ResolveFrame to get each link, joint and frame pose in model frame.
+  // Test Resolve to get each link, joint and frame pose in model frame.
   Pose pose;
   EXPECT_TRUE(
     model->LinkByName("parent_link")->
@@ -644,7 +644,7 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
   EXPECT_EQ(Pose(0, 0, 1, 0, 0, 0), model->JointByName("J1")->RawPose());
   EXPECT_EQ(Pose(0, 0, 2, 0, 0, 0), model->JointByName("J2")->RawPose());
 
-  // Test ResolveFrame to get each link and joint pose in the model frame.
+  // Test Resolve to get each link and joint pose in the model frame.
   Pose pose;
   EXPECT_TRUE(
     model->LinkByName("P1")->
@@ -823,7 +823,7 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
   EXPECT_EQ(Pose(0, 0, 3, 0, 0, 0),
       model->JointByName("attachment_joint")->RawPose());
 
-  // Test ResolveFrame to get each link and joint pose in the model frame.
+  // Test Resolve to get each link and joint pose in the model frame.
   Pose pose;
   EXPECT_TRUE(
     model->LinkByName("base")->
