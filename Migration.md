@@ -12,6 +12,13 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 12.5.0 to 12.6.0
+
+### Modifications
+
+1. USD component now is living in https://github.com/gazebosim/gz-usd as an
+   independent package.
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
