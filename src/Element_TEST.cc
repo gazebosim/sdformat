@@ -393,11 +393,13 @@ TEST(Element, GetTemplates)
 /////////////////////////////////////////////////
 TEST(Element, Clone)
 {
+  sdf::ElementPtr root = std::make_shared<sdf::Element>();
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
   sdf::ElementPtr desc = std::make_shared<sdf::Element>();
 
   parent->SetName("parent");
+  parent->SetParent(root);
   child->SetName("child");
 
   parent->InsertElement(child);
@@ -423,6 +425,7 @@ TEST(Element, Clone)
   sdf::ElementPtr newelem = parent->Clone();
 
   EXPECT_EQ("/path/to/file.sdf", newelem->FilePath());
+  EXPECT_EQ(root, newelem->GetParent());
   ASSERT_TRUE(newelem->LineNumber().has_value());
   EXPECT_EQ(12, newelem->LineNumber().value());
   EXPECT_EQ("/sdf/world[@name=\"default\"]", newelem->XmlPath());

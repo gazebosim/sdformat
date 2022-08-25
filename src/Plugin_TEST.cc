@@ -261,6 +261,15 @@ TEST(DOMPlugin, ToElement)
   EXPECT_EQ(plugin.Filename(), plugin2.Filename());
   EXPECT_EQ(1u, plugin2.Contents().size());
   EXPECT_EQ("an-element", plugin2.Contents()[0]->GetName());
+
+  // Test that the element's parent is preserved
+  sdf::ElementPtr parent(new sdf::Element);
+  elem->SetParent(parent);
+
+  sdf::Plugin plugin3;
+  plugin3.Load(elem);
+
+  EXPECT_EQ(parent, plugin3.ToElement()->GetParent());
 }
 
 /////////////////////////////////////////////////
