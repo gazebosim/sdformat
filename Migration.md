@@ -536,6 +536,12 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat specification 1.9 to 1.10
 
+### Additions
+
+1. **world.sdf**: A joint can be specified directly in a world. A
+    //world/joint/child may resolve to the world frame, though a
+    //model/joint/child may not.
+
 ### Modifications
 
 1. **joint.sdf**: axis limits default values have changed
