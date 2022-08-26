@@ -28,7 +28,7 @@
 #include "sdf/parser.hh"
 #include "sdf/system_util.hh"
 
-#include "ignition/math/Inertial.hh"
+#include "gz/math/Inertial.hh"
 
 #include "ign.hh"
 
@@ -200,11 +200,11 @@ extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
             " models will not be included." << std::endl;
   }
 
-  ignition::math::Inertiald totalInertial;
+  gz::math::Inertiald totalInertial;
 
   for (uint64_t i = 0; i < model->LinkCount(); i++)
   {
-    ignition::math::Inertiald currentLinkInertial;
+    gz::math::Inertiald currentLinkInertial;
     model->LinkByIndex(i)->ResolveInertial(currentLinkInertial, "__model__");
 
     totalInertial += currentLinkInertial;

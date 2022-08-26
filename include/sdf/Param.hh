@@ -30,7 +30,7 @@
 #include <variant>
 #include <vector>
 
-#include <ignition/math.hh>
+#include <gz/math.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/sdf_config.h"
@@ -248,13 +248,13 @@ namespace sdf
     /// ParamPrivate::TypeToString and ParamPrivate::ValueFromStringImpl
     public: typedef std::variant<bool, char, std::string, int, std::uint64_t,
                                    unsigned int, double, float, sdf::Time,
-                                   ignition::math::Angle,
-                                   ignition::math::Color,
-                                   ignition::math::Vector2i,
-                                   ignition::math::Vector2d,
-                                   ignition::math::Vector3d,
-                                   ignition::math::Quaterniond,
-                                   ignition::math::Pose3d> ParamVariant;
+                                   gz::math::Angle,
+                                   gz::math::Color,
+                                   gz::math::Vector2i,
+                                   gz::math::Vector2d,
+                                   gz::math::Vector3d,
+                                   gz::math::Quaterniond,
+                                   gz::math::Pose3d> ParamVariant;
 
     /// \brief This parameter's value
     public: ParamVariant value;
@@ -301,19 +301,19 @@ namespace sdf
       return "float";
     else if constexpr (std::is_same_v<T, sdf::Time>)
       return "time";
-    else if constexpr (std::is_same_v<T, ignition::math::Angle>)
+    else if constexpr (std::is_same_v<T, gz::math::Angle>)
       return "angle";
-    else if constexpr (std::is_same_v<T, ignition::math::Color>)
+    else if constexpr (std::is_same_v<T, gz::math::Color>)
       return "color";
-    else if constexpr (std::is_same_v<T, ignition::math::Vector2i>)
+    else if constexpr (std::is_same_v<T, gz::math::Vector2i>)
       return "vector2i";
-    else if constexpr (std::is_same_v<T, ignition::math::Vector2d>)
+    else if constexpr (std::is_same_v<T, gz::math::Vector2d>)
       return "vector2d";
-    else if constexpr (std::is_same_v<T, ignition::math::Vector3d>)
+    else if constexpr (std::is_same_v<T, gz::math::Vector3d>)
       return "vector3";
-    else if constexpr (std::is_same_v<T, ignition::math::Quaterniond>)
+    else if constexpr (std::is_same_v<T, gz::math::Quaterniond>)
       return "quaternion";
-    else if constexpr (std::is_same_v<T, ignition::math::Pose3d>)
+    else if constexpr (std::is_same_v<T, gz::math::Pose3d>)
       return "pose";
     else
       return "";

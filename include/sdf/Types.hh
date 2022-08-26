@@ -96,7 +96,7 @@ namespace sdf
     /// \param[in] _g Green value (range 0 to 1
     /// \param[in] _b Blue value (range 0 to 1
     /// \param[in] _a Alpha value (0=transparent, 1=opaque)
-    /// \deprecated Use ignition::math::Color
+    /// \deprecated Use gz::math::Color
     public: Color(float _r = 0.0f, float _g = 0.0f,
                   float _b = 0.0f, float _a = 1.0f) SDF_DEPRECATED(6.0)
             : r(_r), g(_g), b(_b), a(_a)

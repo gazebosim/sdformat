@@ -79,8 +79,8 @@ TEST(DOMJointAxis, Complete)
   const sdf::JointAxis *axis2 = joint->Axis(1);
   ASSERT_NE(nullptr, axis2);
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, axis->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, axis2->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, axis->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, axis2->Xyz());
 
   EXPECT_EQ("__model__", axis->XyzExpressedIn());
   EXPECT_TRUE(axis2->XyzExpressedIn().empty());
@@ -120,9 +120,9 @@ TEST(DOMJointAxis, XyzExpressedIn)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_TRUE(errors.empty());
 
-  using Pose = ignition::math::Pose3d;
-  using Quaternion = ignition::math::Quaterniond;
-  using Vector3 = ignition::math::Vector3d;
+  using Pose = gz::math::Pose3d;
+  using Quaternion = gz::math::Quaterniond;
+  using Vector3 = gz::math::Vector3d;
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);

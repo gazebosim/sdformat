@@ -17,7 +17,7 @@
 #include "sdf/Lidar.hh"
 
 using namespace sdf;
-using namespace ignition;
+using namespace gz;
 
 /// \brief Private lidar data.
 class sdf::LidarPrivate

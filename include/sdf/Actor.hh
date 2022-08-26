@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -175,11 +175,11 @@ namespace sdf
 
     /// \brief Get the pose to be reached.
     /// \return Pose to be reached.
-    public: ignition::math::Pose3d Pose() const;
+    public: gz::math::Pose3d Pose() const;
 
     /// \brief Set the pose to be reached.
     /// \param[in] _pose Pose to be reached.
-    public: void SetPose(const ignition::math::Pose3d &_pose);
+    public: void SetPose(const gz::math::Pose3d &_pose);
 
     /// \brief Copy waypoint from an Waypoint instance.
     /// \param[in] _waypoint The waypoint to set values from.
@@ -326,14 +326,14 @@ namespace sdf
     /// global coordinate frame.
     /// \return The pose of the actor.
     /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
+    public: const gz::math::Pose3d &Pose() const
         SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the actor.
-    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \sa const gz::math::Pose3d &Pose() const
     /// \param[in] _pose The new actor pose.
     /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
+    public: void SetPose(const gz::math::Pose3d &_pose)
         SDF_DEPRECATED(9.0);
 
     /// \brief Get the pose of the actor. This is the pose of the actor
@@ -341,12 +341,12 @@ namespace sdf
     /// typically used to express the position and rotation of an actor in a
     /// global coordinate frame.
     /// \return The pose of the actor.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the actor.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new actor pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is

@@ -80,37 +80,37 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Ambient color.
-    public: ignition::math::Color Ambient() const;
+    public: gz::math::Color Ambient() const;
 
     /// \brief Set the ambient color. The ambient color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Ambient color.
-    public: void SetAmbient(const ignition::math::Color &_color) const;
+    public: void SetAmbient(const gz::math::Color &_color) const;
 
     /// \brief Get the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Diffuse color.
-    public: ignition::math::Color Diffuse() const;
+    public: gz::math::Color Diffuse() const;
 
     /// \brief Set the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Diffuse color.
-    public: void SetDiffuse(const ignition::math::Color &_color) const;
+    public: void SetDiffuse(const gz::math::Color &_color) const;
 
     /// \brief Get the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Specular color.
-    public: ignition::math::Color Specular() const;
+    public: gz::math::Color Specular() const;
 
     /// \brief Set the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Specular color.
-    public: void SetSpecular(const ignition::math::Color &_color) const;
+    public: void SetSpecular(const gz::math::Color &_color) const;
 
     /// \brief Get the specular exponent.
     /// \return Specular exponent.
@@ -124,13 +124,13 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Emissive color.
-    public: ignition::math::Color Emissive() const;
+    public: gz::math::Color Emissive() const;
 
     /// \brief Set the emissive color. The emissive color is
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \param[in] _color Emissive color.
-    public: void SetEmissive(const ignition::math::Color &_color) const;
+    public: void SetEmissive(const gz::math::Color &_color) const;
 
     /// \brief Get whether dynamic lighting is enabled. The default
     /// value is true.

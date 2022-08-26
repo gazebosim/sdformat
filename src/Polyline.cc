@@ -27,7 +27,7 @@ class sdf::PolylinePrivate
   public: double height{1.0};
 
   /// \brief 2D points.
-  public: std::vector<ignition::math::Vector2d> points;
+  public: std::vector<gz::math::Vector2d> points;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -121,7 +121,7 @@ Errors Polyline::Load(ElementPtr _sdf)
        pointElem != nullptr;
        pointElem = pointElem->GetNextElement("point"))
   {
-    this->dataPtr->points.push_back(pointElem->Get<ignition::math::Vector2d>());
+    this->dataPtr->points.push_back(pointElem->Get<gz::math::Vector2d>());
   }
 
   return errors;
@@ -146,7 +146,7 @@ uint64_t Polyline::PointCount() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Vector2d *Polyline::PointByIndex(uint64_t _index) const
+const gz::math::Vector2d *Polyline::PointByIndex(uint64_t _index) const
 {
   if (_index < this->dataPtr->points.size())
     return &this->dataPtr->points[_index];
@@ -154,7 +154,7 @@ const ignition::math::Vector2d *Polyline::PointByIndex(uint64_t _index) const
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector2d *Polyline::PointByIndex(uint64_t _index)
+gz::math::Vector2d *Polyline::PointByIndex(uint64_t _index)
 {
   if (_index < this->dataPtr->points.size())
     return &this->dataPtr->points[_index];
@@ -162,7 +162,7 @@ ignition::math::Vector2d *Polyline::PointByIndex(uint64_t _index)
 }
 
 /////////////////////////////////////////////////
-bool Polyline::AddPoint(const ignition::math::Vector2d &_point)
+bool Polyline::AddPoint(const gz::math::Vector2d &_point)
 {
   if (this->dataPtr->points.size() == this->dataPtr->points.max_size())
   {
@@ -179,7 +179,7 @@ void Polyline::ClearPoints()
 }
 
 /////////////////////////////////////////////////
-const std::vector<ignition::math::Vector2d> &Polyline::Points() const
+const std::vector<gz::math::Vector2d> &Polyline::Points() const
 {
   return this->dataPtr->points;
 }

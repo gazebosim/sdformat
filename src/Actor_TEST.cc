@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Actor.hh"
 
 /////////////////////////////////////////////////
@@ -145,7 +145,7 @@ TEST(DOMActor, DefaultConstruction)
 {
   sdf::Actor actor;
   EXPECT_EQ("__default__", actor.Name());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, actor.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, actor.RawPose());
   EXPECT_EQ("", actor.PoseRelativeTo());
   EXPECT_EQ(nullptr, actor.Element());
   EXPECT_EQ("__default__", actor.SkinFilename());
@@ -363,7 +363,7 @@ TEST(DOMWaypoint, DefaultConstruction)
 {
   sdf::Waypoint waypoint;
   EXPECT_DOUBLE_EQ(waypoint.Time(), 0.0);
-  EXPECT_EQ(waypoint.Pose(), ignition::math::Pose3d::Zero);
+  EXPECT_EQ(waypoint.Pose(), gz::math::Pose3d::Zero);
 }
 
 //////////////////////////////////////////////////
@@ -395,7 +395,7 @@ TEST(DOMWaypoint, CopyAssignmentOperator)
 TEST(DOMWaypoint, MoveConstructor)
 {
   sdf::Waypoint waypoint1;
-  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
 
@@ -408,7 +408,7 @@ TEST(DOMWaypoint, MoveConstructor)
 TEST(DOMWaypoint, MoveAssignment)
 {
   sdf::Waypoint waypoint1;
-  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
 
@@ -422,11 +422,11 @@ TEST(DOMWaypoint, MoveAssignment)
 TEST(DOMWaypoint, CopyAssignmentAfterMove)
 {
   sdf::Waypoint waypoint1;
-  ignition::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
+  gz::math::Pose3d pose1(3, 2, 1, 0, IGN_PI, 0);
   waypoint1.SetTime(1.23);
   waypoint1.SetPose(pose1);
   sdf::Waypoint waypoint2;
-  ignition::math::Pose3d pose2(1, 2, 3, 1, 2, IGN_PI);
+  gz::math::Pose3d pose2(1, 2, 3, 1, 2, IGN_PI);
   waypoint2.SetTime(3.45);
   waypoint2.SetPose(pose2);
 

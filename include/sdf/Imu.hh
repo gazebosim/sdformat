@@ -138,7 +138,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \return The gravity direction.
-    public: ignition::math::Vector3d &GravityDirX() const;
+    public: gz::math::Vector3d &GravityDirX() const;
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the
@@ -146,7 +146,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \param[in] _grav The gravity direction.
-    public: void SetGravityDirX(const ignition::math::Vector3d  &_grav) const;
+    public: void SetGravityDirX(const gz::math::Vector3d  &_grav) const;
 
     /// \brief Get the name of parent frame which the GravityDirX vector is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -235,11 +235,11 @@ namespace sdf
     ///    +z:up).
     ///    Example sdf: parent_frame="local", custom_rpy="-0.5*M_PI 0 -0.5*M_PI"
     /// \return Custom RPY vectory
-    public: const ignition::math::Vector3d &CustomRpy() const;
+    public: const gz::math::Vector3d &CustomRpy() const;
 
     /// \brief See CustomRpy() const.
     /// \param[in] Custom RPY vectory
-    public: void SetCustomRpy(const ignition::math::Vector3d &_rpy) const;
+    public: void SetCustomRpy(const gz::math::Vector3d &_rpy) const;
 
     /// \brief Get the name of parent frame which the custom_rpy transform is
     /// defined relative to. It can be any valid fully scoped link name or the

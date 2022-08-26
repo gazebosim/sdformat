@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include <sdf/sdf_config.h>
 #include "sdf/Types.hh"
@@ -51,7 +51,7 @@ namespace sdf
 
     // for reducing fixed joints and removing links
     public: std::string oldLinkName;
-    public: ignition::math::Pose3d reductionTransform;
+    public: gz::math::Pose3d reductionTransform;
 
     // visual material
     public: std::string material;

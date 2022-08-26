@@ -20,7 +20,7 @@
 #include <map>
 #include <string>
 
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/SemanticVersion.hh>
 
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
@@ -677,7 +677,7 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
 
   // If a match is not found, use the latest version of the element
   // that is not older than the SDF parser.
-  ignition::math::SemanticVersion sdfParserVersion(SDF_VERSION);
+  gz::math::SemanticVersion sdfParserVersion(SDF_VERSION);
   std::string bestVersionStr = "0.0";
 
   TiXmlElement *sdfSearch = sdfXML;
@@ -686,8 +686,8 @@ std::string getBestSupportedModelVersion(TiXmlElement *_modelXML,
     if (sdfSearch->Attribute("version"))
     {
       auto version = std::string(sdfSearch->Attribute("version"));
-      ignition::math::SemanticVersion modelVersion(version);
-      ignition::math::SemanticVersion bestVersion(bestVersionStr);
+      gz::math::SemanticVersion modelVersion(version);
+      gz::math::SemanticVersion bestVersion(bestVersionStr);
       if (modelVersion > bestVersion)
       {
         // this model is better than the previous one
@@ -1266,8 +1266,8 @@ void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
   ElementPtr elem = modelPtr->GetFirstElement();
   std::map<std::string, std::string> replace;
 
-  ignition::math::Pose3d modelPose =
-    modelPtr->Get<ignition::math::Pose3d>("pose");
+  gz::math::Pose3d modelPose =
+    modelPtr->Get<gz::math::Pose3d>("pose");
 
   std::string modelName = modelPtr->Get<std::string>("name");
 

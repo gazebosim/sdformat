@@ -140,14 +140,14 @@ void ParserStringConverter(const std::string &_version)
 
   sdf::ElementPtr gravityElem = worldElem->GetElement("gravity");
   ASSERT_NE(nullptr, gravityElem);
-  EXPECT_EQ(gravityElem->Get<ignition::math::Vector3d>(),
-            ignition::math::Vector3d(1, 0, -9.8));
+  EXPECT_EQ(gravityElem->Get<gz::math::Vector3d>(),
+            gz::math::Vector3d(1, 0, -9.8));
   EXPECT_EQ(_version, gravityElem->OriginalVersion());
 
   sdf::ElementPtr magElem = worldElem->GetElement("magnetic_field");
   ASSERT_NE(nullptr, magElem);
-  EXPECT_EQ(magElem->Get<ignition::math::Vector3d>(),
-            ignition::math::Vector3d(1, 2, 3));
+  EXPECT_EQ(magElem->Get<gz::math::Vector3d>(),
+            gz::math::Vector3d(1, 2, 3));
   EXPECT_EQ(_version, magElem->OriginalVersion());
 }
 

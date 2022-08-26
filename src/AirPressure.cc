@@ -120,7 +120,7 @@ bool AirPressure::operator!=(const AirPressure &_air) const
 bool AirPressure::operator==(const AirPressure &_air) const
 {
   return this->dataPtr->noise == _air.dataPtr->noise &&
-         ignition::math::equal(this->dataPtr->referenceAltitude,
+         gz::math::equal(this->dataPtr->referenceAltitude,
                                _air.dataPtr->referenceAltitude);
 }
 

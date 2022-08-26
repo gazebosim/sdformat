@@ -48,7 +48,7 @@ class sdf::ImuPrivate
   public: Noise angularVelZNoise;
 
   /// \brief The gravity dir
-  public: ignition::math::Vector3d gravityDirX{ignition::math::Vector3d::UnitX};
+  public: gz::math::Vector3d gravityDirX{gz::math::Vector3d::UnitX};
 
   /// \brief Name of the parent frame for the gravityDirX vector.
   public: std::string gravityDirXParentFrame;
@@ -57,7 +57,7 @@ class sdf::ImuPrivate
   public: std::string localization = "CUSTOM";
 
   /// \brief Custom RPY
-  public: ignition::math::Vector3d customRpy;
+  public: gz::math::Vector3d customRpy;
 
   /// \brief Name of the parent frame for the customRpy vector.
   public: std::string customRpyParentFrame;
@@ -193,7 +193,7 @@ Errors Imu::Load(ElementPtr _sdf)
 
     if (elem->HasElement("grav_dir_x"))
     {
-      this->dataPtr->gravityDirX = elem->Get<ignition::math::Vector3d>(
+      this->dataPtr->gravityDirX = elem->Get<gz::math::Vector3d>(
           "grav_dir_x", this->dataPtr->gravityDirX).first;
       this->dataPtr->gravityDirXParentFrame =
         elem->GetElement("grav_dir_x")->Get<std::string>("parent_frame",
@@ -202,7 +202,7 @@ Errors Imu::Load(ElementPtr _sdf)
 
     if (elem->HasElement("custom_rpy"))
     {
-      this->dataPtr->customRpy = elem->Get<ignition::math::Vector3d>(
+      this->dataPtr->customRpy = elem->Get<gz::math::Vector3d>(
           "custom_rpy", this->dataPtr->customRpy).first;
       this->dataPtr->customRpyParentFrame =
         elem->GetElement("custom_rpy")->Get<std::string>("parent_frame",
@@ -318,7 +318,7 @@ void Imu::SetAngularVelocityZNoise(const Noise &_noise)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d &Imu::GravityDirX() const
+gz::math::Vector3d &Imu::GravityDirX() const
 {
   return this->dataPtr->gravityDirX;
 }
@@ -336,7 +336,7 @@ void Imu::SetGravityDirXParentFrame(const std::string &_frame) const
 }
 
 //////////////////////////////////////////////////
-void Imu::SetGravityDirX(const ignition::math::Vector3d &_grav) const
+void Imu::SetGravityDirX(const gz::math::Vector3d &_grav) const
 {
   this->dataPtr->gravityDirX = _grav;
 }
@@ -354,14 +354,14 @@ void Imu::SetLocalization(const std::string &_localization)
 }
 
 //////////////////////////////////////////////////
-const ignition::math::Vector3d &Imu::CustomRpy() const
+const gz::math::Vector3d &Imu::CustomRpy() const
 {
   return this->dataPtr->customRpy;
 }
 
 //////////////////////////////////////////////////
 void Imu::SetCustomRpy(
-    const ignition::math::Vector3d &_rpy) const
+    const gz::math::Vector3d &_rpy) const
 {
   this->dataPtr->customRpy = _rpy;
 }

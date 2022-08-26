@@ -63,7 +63,7 @@ TEST(DOMGeometry, CopyConstructor)
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);
   sdf::Box boxShape;
-  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  boxShape.SetSize(gz::math::Vector3d(1, 2, 3));
   geometry.SetBoxShape(boxShape);
 
   sdf::Geometry geometry2(geometry);
@@ -76,7 +76,7 @@ TEST(DOMGeometry, AssignmentOperator)
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);
   sdf::Box boxShape;
-  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  boxShape.SetSize(gz::math::Vector3d(1, 2, 3));
   geometry.SetBoxShape(boxShape);
 
   sdf::Geometry geometry2;
@@ -90,7 +90,7 @@ TEST(DOMGeometry, MoveAssignmentOperator)
   sdf::Geometry geometry;
   geometry.SetType(sdf::GeometryType::BOX);
   sdf::Box boxShape;
-  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  boxShape.SetSize(gz::math::Vector3d(1, 2, 3));
   geometry.SetBoxShape(boxShape);
 
   sdf::Geometry geometry2;
@@ -145,12 +145,12 @@ TEST(DOMGeometry, Box)
   geom.SetType(sdf::GeometryType::BOX);
 
   sdf::Box boxShape;
-  boxShape.SetSize(ignition::math::Vector3d(1, 2, 3));
+  boxShape.SetSize(gz::math::Vector3d(1, 2, 3));
   geom.SetBoxShape(boxShape);
 
   EXPECT_EQ(sdf::GeometryType::BOX, geom.Type());
   EXPECT_NE(nullptr, geom.BoxShape());
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), geom.BoxShape()->Size());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), geom.BoxShape()->Size());
 }
 
 /////////////////////////////////////////////////
@@ -192,7 +192,7 @@ TEST(DOMGeometry, Mesh)
   geom.SetType(sdf::GeometryType::MESH);
 
   sdf::Mesh meshShape;
-  meshShape.SetScale(ignition::math::Vector3d(1, 2, 3));
+  meshShape.SetScale(gz::math::Vector3d(1, 2, 3));
   meshShape.SetUri("banana");
   meshShape.SetSubmesh("orange");
   meshShape.SetCenterSubmesh(true);
@@ -200,7 +200,7 @@ TEST(DOMGeometry, Mesh)
 
   EXPECT_EQ(sdf::GeometryType::MESH, geom.Type());
   EXPECT_NE(nullptr, geom.MeshShape());
-  EXPECT_EQ(ignition::math::Vector3d(1, 2, 3), geom.MeshShape()->Scale());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), geom.MeshShape()->Scale());
   EXPECT_EQ("banana", geom.MeshShape()->Uri());
   EXPECT_EQ("orange", geom.MeshShape()->Submesh());
   EXPECT_TRUE(geom.MeshShape()->CenterSubmesh());
@@ -213,12 +213,12 @@ TEST(DOMGeometry, Plane)
   geom.SetType(sdf::GeometryType::PLANE);
 
   sdf::Plane planeShape;
-  planeShape.SetNormal(ignition::math::Vector3d::UnitX);
-  planeShape.SetSize(ignition::math::Vector2d(9, 8));
+  planeShape.SetNormal(gz::math::Vector3d::UnitX);
+  planeShape.SetSize(gz::math::Vector2d(9, 8));
   geom.SetPlaneShape(planeShape);
 
   EXPECT_EQ(sdf::GeometryType::PLANE, geom.Type());
   EXPECT_NE(nullptr, geom.PlaneShape());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, geom.PlaneShape()->Normal());
-  EXPECT_EQ(ignition::math::Vector2d(9, 8), geom.PlaneShape()->Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, geom.PlaneShape()->Normal());
+  EXPECT_EQ(gz::math::Vector2d(9, 8), geom.PlaneShape()->Size());
 }

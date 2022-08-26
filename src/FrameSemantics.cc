@@ -51,16 +51,16 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// source to the starting vertex, or a NullVertex paired with an empty
 /// vector if a cycle or vertex with multiple incoming edges are detected.
 template<typename V, typename E>
-std::pair<const ignition::math::graph::Vertex<V> &,
-          std::vector< ignition::math::graph::DirectedEdge<E> > >
+std::pair<const gz::math::graph::Vertex<V> &,
+          std::vector< gz::math::graph::DirectedEdge<E> > >
 FindSourceVertex(
-    const ignition::math::graph::DirectedGraph<V, E> &_graph,
-    const ignition::math::graph::VertexId _id,
+    const gz::math::graph::DirectedGraph<V, E> &_graph,
+    const gz::math::graph::VertexId _id,
     Errors &_errors)
 {
-  using DirectedEdge = ignition::math::graph::DirectedEdge<E>;
-  using Vertex = ignition::math::graph::Vertex<V>;
-  using VertexId = ignition::math::graph::VertexId;
+  using DirectedEdge = gz::math::graph::DirectedEdge<E>;
+  using Vertex = gz::math::graph::Vertex<V>;
+  using VertexId = gz::math::graph::VertexId;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
@@ -115,16 +115,16 @@ FindSourceVertex(
 /// sink to the starting vertex, or a NullVertex paired with an empty
 /// vector if a cycle or vertex with multiple outgoing edges are detected.
 template<typename V, typename E>
-std::pair<const ignition::math::graph::Vertex<V> &,
-          std::vector< ignition::math::graph::DirectedEdge<E> > >
+std::pair<const gz::math::graph::Vertex<V> &,
+          std::vector< gz::math::graph::DirectedEdge<E> > >
 FindSinkVertex(
-    const ignition::math::graph::DirectedGraph<V, E> &_graph,
-    const ignition::math::graph::VertexId _id,
+    const gz::math::graph::DirectedGraph<V, E> &_graph,
+    const gz::math::graph::VertexId _id,
     Errors &_errors)
 {
-  using DirectedEdge = ignition::math::graph::DirectedEdge<E>;
-  using Vertex = ignition::math::graph::Vertex<V>;
-  using VertexId = ignition::math::graph::VertexId;
+  using DirectedEdge = gz::math::graph::DirectedEdge<E>;
+  using Vertex = gz::math::graph::Vertex<V>;
+  using VertexId = gz::math::graph::VertexId;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
@@ -1271,7 +1271,7 @@ Errors validatePoseRelativeToGraph(const PoseRelativeToGraph &_in)
   // check graph for cycles by resolving pose of each vertex relative to root
   for (auto const &namePair : _in.map)
   {
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     Errors e = resolvePoseRelativeToRoot(pose, _in, namePair.first);
     errors.insert(errors.end(), e.begin(), e.end());
   }
@@ -1360,7 +1360,7 @@ Errors resolveFrameAttachedToBody(
 
 /////////////////////////////////////////////////
 Errors resolvePoseRelativeToRoot(
-      ignition::math::Pose3d &_pose,
+      gz::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
       const std::string &_vertexName)
 {
@@ -1398,7 +1398,7 @@ Errors resolvePoseRelativeToRoot(
     return errors;
   }
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   for (auto const &edge : incomingVertexEdges.second)
   {
     pose = edge.Data() * pose;
@@ -1414,14 +1414,14 @@ Errors resolvePoseRelativeToRoot(
 
 /////////////////////////////////////////////////
 Errors resolvePose(
-    ignition::math::Pose3d &_pose,
+    gz::math::Pose3d &_pose,
     const PoseRelativeToGraph &_graph,
     const std::string &_frameName,
     const std::string &_resolveTo)
 {
   Errors errors = resolvePoseRelativeToRoot(_pose, _graph, _frameName);
 
-  ignition::math::Pose3d poseR;
+  gz::math::Pose3d poseR;
   Errors errorsR = resolvePoseRelativeToRoot(poseR, _graph, _resolveTo);
   errors.insert(errors.end(), errorsR.begin(), errorsR.end());
 

@@ -17,7 +17,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
@@ -130,7 +130,7 @@ class sdf::SensorPrivate
   public: std::string topic = "";
 
   /// \brief Pose of the sensor
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -228,7 +228,7 @@ bool Sensor::operator==(const Sensor &_sensor) const
       this->RawPose() != _sensor.RawPose() ||
       this->PoseRelativeTo() != _sensor.PoseRelativeTo() ||
       this->EnableMetrics() != _sensor.EnableMetrics() ||
-      !ignition::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
+      !gz::math::equal(this->UpdateRate(), _sensor.UpdateRate()))
   {
     return false;
   }
@@ -479,13 +479,13 @@ void Sensor::SetTopic(const std::string &_topic)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Sensor::Pose() const
+const gz::math::Pose3d &Sensor::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Sensor::RawPose() const
+const gz::math::Pose3d &Sensor::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -503,13 +503,13 @@ const std::string &Sensor::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Sensor::SetPose(const ignition::math::Pose3d &_pose)
+void Sensor::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Sensor::SetRawPose(const ignition::math::Pose3d &_pose)
+void Sensor::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -234,14 +234,14 @@ namespace sdf
     /// global coordinate frame.
     /// \return The pose of the model.
     /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
+    public: const gz::math::Pose3d &Pose() const
         SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the model.
-    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \sa const gz::math::Pose3d &Pose() const
     /// \param[in] _pose The new model pose.
     /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
+    public: void SetPose(const gz::math::Pose3d &_pose)
         SDF_DEPRECATED(9.0);
 
     /// \brief Get the pose of the model. This is the pose of the model
@@ -249,12 +249,12 @@ namespace sdf
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the model.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new model pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the model's canonical link
     /// \return An immutable pointer to the canonical link

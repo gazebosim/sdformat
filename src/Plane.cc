@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#include <ignition/math/Vector2.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Plane.hh"
 
 using namespace sdf;
@@ -25,8 +25,8 @@ class sdf::PlanePrivate
 {
   /// \brief A plane with a unit Z normal vector, size of 1x1 meters, and
   /// a zero offest.
-  public: ignition::math::Planed plane{ignition::math::Vector3d::UnitZ,
-            ignition::math::Vector2d::One, 0};
+  public: gz::math::Planed plane{gz::math::Vector3d::UnitZ,
+            gz::math::Vector2d::One, 0};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -99,8 +99,8 @@ Errors Plane::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("normal"))
   {
-    std::pair<ignition::math::Vector3d, bool> pair =
-      _sdf->Get<ignition::math::Vector3d>("normal",
+    std::pair<gz::math::Vector3d, bool> pair =
+      _sdf->Get<gz::math::Vector3d>("normal",
           this->dataPtr->plane.Normal());
 
     if (!pair.second)
@@ -120,8 +120,8 @@ Errors Plane::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("size"))
   {
-    std::pair<ignition::math::Vector2d, bool> pair =
-      _sdf->Get<ignition::math::Vector2d>("size", this->dataPtr->plane.Size());
+    std::pair<gz::math::Vector2d, bool> pair =
+      _sdf->Get<gz::math::Vector2d>("size", this->dataPtr->plane.Size());
 
     if (!pair.second)
     {
@@ -142,25 +142,25 @@ Errors Plane::Load(ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector3d Plane::Normal() const
+gz::math::Vector3d Plane::Normal() const
 {
   return this->dataPtr->plane.Normal();
 }
 
 //////////////////////////////////////////////////
-void Plane::SetNormal(const ignition::math::Vector3d &_normal)
+void Plane::SetNormal(const gz::math::Vector3d &_normal)
 {
   this->dataPtr->plane.Set(_normal.Normalized(), this->dataPtr->plane.Offset());
 }
 
 //////////////////////////////////////////////////
-ignition::math::Vector2d Plane::Size() const
+gz::math::Vector2d Plane::Size() const
 {
   return this->dataPtr->plane.Size();
 }
 
 //////////////////////////////////////////////////
-void Plane::SetSize(const ignition::math::Vector2d &_size)
+void Plane::SetSize(const gz::math::Vector2d &_size)
 {
   this->dataPtr->plane.Set(this->dataPtr->plane.Normal(),
                            _size,
@@ -174,13 +174,13 @@ sdf::ElementPtr Plane::Element() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Planed &Plane::Shape() const
+const gz::math::Planed &Plane::Shape() const
 {
   return this->dataPtr->plane;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Planed &Plane::Shape()
+gz::math::Planed &Plane::Shape()
 {
   return this->dataPtr->plane;
 }

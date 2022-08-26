@@ -20,8 +20,8 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/sdf.hh"
 
@@ -102,8 +102,8 @@ TEST(NestedModel, NestedModel)
   sdf::ElementPtr axisElem = jointElem->GetElement("axis");
 
   EXPECT_TRUE(axisElem->HasElement("xyz"));
-  EXPECT_EQ(axisElem->Get<ignition::math::Vector3d>("xyz"),
-    ignition::math::Vector3d(1, 0, 0));
+  EXPECT_EQ(axisElem->Get<gz::math::Vector3d>("xyz"),
+    gz::math::Vector3d(1, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -162,8 +162,8 @@ TEST(NestedModel, State)
   EXPECT_TRUE(modelStateElem->HasAttribute("name"));
   EXPECT_EQ(modelStateElem->Get<std::string>("name"), "model_00");
   EXPECT_TRUE(modelStateElem->HasElement("pose"));
-  EXPECT_EQ(modelStateElem->Get<ignition::math::Pose3d>("pose"),
-    ignition::math::Pose3d(0, 0, 0.5, 0, 0, 0));
+  EXPECT_EQ(modelStateElem->Get<gz::math::Pose3d>("pose"),
+    gz::math::Pose3d(0, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(!modelStateElem->HasElement("joint"));
 
   // link sdf
@@ -172,17 +172,17 @@ TEST(NestedModel, State)
   EXPECT_TRUE(linkStateElem->HasAttribute("name"));
   EXPECT_EQ(linkStateElem->Get<std::string>("name"), "link_00");
   EXPECT_TRUE(linkStateElem->HasElement("pose"));
-  EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("pose"),
-    ignition::math::Pose3d(0, 0, 0.5, 0, 0, 0));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("pose"),
+    gz::math::Pose3d(0, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(linkStateElem->HasElement("velocity"));
-  EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("velocity"),
-    ignition::math::Pose3d(0.001, 0, 0, 0, 0, 0));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("velocity"),
+    gz::math::Pose3d(0.001, 0, 0, 0, 0, 0));
   EXPECT_TRUE(linkStateElem->HasElement("acceleration"));
-  EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("acceleration"),
-    ignition::math::Pose3d(0, 0.006121, 0, 0.012288, 0, 0.001751));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("acceleration"),
+    gz::math::Pose3d(0, 0.006121, 0, 0.012288, 0, 0.001751));
   EXPECT_TRUE(linkStateElem->HasElement("wrench"));
-  EXPECT_EQ(linkStateElem->Get<ignition::math::Pose3d>("wrench"),
-    ignition::math::Pose3d(0, 0.006121, 0, 0, 0, 0));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("wrench"),
+    gz::math::Pose3d(0, 0.006121, 0, 0, 0, 0));
 
   // nested model sdf
   EXPECT_TRUE(modelStateElem->HasElement("model"));
@@ -191,8 +191,8 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedModelStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedModelStateElem->Get<std::string>("name"), "model_01");
   EXPECT_TRUE(nestedModelStateElem->HasElement("pose"));
-  EXPECT_EQ(nestedModelStateElem->Get<ignition::math::Pose3d>("pose"),
-    ignition::math::Pose3d(1, 0, 0.5, 0, 0, 0));
+  EXPECT_EQ(nestedModelStateElem->Get<gz::math::Pose3d>("pose"),
+    gz::math::Pose3d(1, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(!nestedModelStateElem->HasElement("joint"));
 
   // nested model's link sdf
@@ -202,17 +202,17 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedLinkStateElem->Get<std::string>("name"), "link_01");
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("pose"),
-    ignition::math::Pose3d(1.25, 0, 0.5, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("pose"),
+    gz::math::Pose3d(1.25, 0, 0.5, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("velocity"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("velocity"),
-    ignition::math::Pose3d(0, -0.001, 0, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("velocity"),
+    gz::math::Pose3d(0, -0.001, 0, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("acceleration"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("acceleration"),
-    ignition::math::Pose3d(0, 0.000674, 0, -0.001268, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("acceleration"),
+    gz::math::Pose3d(0, 0.000674, 0, -0.001268, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("wrench"),
-    ignition::math::Pose3d(0, 0.000674, 0, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("wrench"),
+    gz::math::Pose3d(0, 0.000674, 0, 0, 0, 0));
 
   // double nested model sdf
   EXPECT_TRUE(nestedModelStateElem->HasElement("model"));
@@ -220,8 +220,8 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedModelStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedModelStateElem->Get<std::string>("name"), "model_02");
   EXPECT_TRUE(nestedModelStateElem->HasElement("pose"));
-  EXPECT_EQ(nestedModelStateElem->Get<ignition::math::Pose3d>("pose"),
-    ignition::math::Pose3d(1, 1, 0.5, 0, 0, 0));
+  EXPECT_EQ(nestedModelStateElem->Get<gz::math::Pose3d>("pose"),
+    gz::math::Pose3d(1, 1, 0.5, 0, 0, 0));
   EXPECT_TRUE(!nestedModelStateElem->HasElement("joint"));
 
   // double nested model's link sdf
@@ -230,17 +230,17 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedLinkStateElem->Get<std::string>("name"), "link_02");
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("pose"),
-    ignition::math::Pose3d(1.25, 1, 0.5, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("pose"),
+    gz::math::Pose3d(1.25, 1, 0.5, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("velocity"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("velocity"),
-    ignition::math::Pose3d(0, 0, 0.001, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("velocity"),
+    gz::math::Pose3d(0, 0, 0.001, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("acceleration"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("acceleration"),
-    ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("acceleration"),
+    gz::math::Pose3d(0, 0, 0, 0, 0, 0));
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
-  EXPECT_EQ(nestedLinkStateElem->Get<ignition::math::Pose3d>("wrench"),
-    ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("wrench"),
+    gz::math::Pose3d(0, 0, 0, 0, 0, 0));
 }
 
 ////////////////////////////////////////
@@ -307,13 +307,13 @@ TEST(NestedModel, NestedInclude)
   //
   // 1. double_pendulum_with_base is included directly into the world
   //    with the following pose
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
   // 2. it's also included into the model named "include_with_rotation"
   //    with the following pose
-  const ignition::math::Pose3d model2Pose(-10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model2Pose(-10, 0, 0, 0, 0, IGN_PI/2);
   // 3. double_pendulum_with_base_14 is included into
   //    the model named "include_with_rotation_1.4" with the following pose
-  const ignition::math::Pose3d model3Pose(0, 10, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model3Pose(0, 10, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.5";
@@ -362,8 +362,8 @@ TEST(NestedModel, NestedInclude)
   // but model2Pose and model3Pose are applied to the link poses, so those
   // //model/pose values should be identity
   EXPECT_EQ(model1Pose, model1->RawPose());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model2->RawPose());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model3->RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, model2->RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, model3->RawPose());
   // expect empty //pose/@relative_to
   EXPECT_TRUE(model1->PoseRelativeTo().empty());
   EXPECT_TRUE(model2->PoseRelativeTo().empty());
@@ -446,15 +446,15 @@ TEST(NestedModel, NestedInclude)
   ASSERT_NE(nullptr, upperAxis3);
 
   // expect //axis/xyz to be unchanged for model1 and model2
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis1->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis1->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis2->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis2->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, lowerAxis1->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, upperAxis1->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, lowerAxis2->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, upperAxis2->Xyz());
   // For model3, expect //axis/xyz to use the nested model frame in
   // //axis/xyz/@expressed_in since it came from SDFormat 1.4, which implies
   // //axis/xyz/@expressed_in == "__model__" inside the nested model
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, lowerAxis3->Xyz());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, upperAxis3->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, lowerAxis3->Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, upperAxis3->Xyz());
   EXPECT_EQ(name + "_14::__model__", lowerAxis3->XyzExpressedIn());
   EXPECT_EQ(name + "_14::__model__", upperAxis3->XyzExpressedIn());
 }
@@ -467,7 +467,7 @@ TEST(NestedModel, NestedModelWithFrames)
   const std::string modelPath = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -500,8 +500,8 @@ TEST(NestedModel, NestedModelWithFrames)
   const sdf::Model *parentModel = world->ModelByIndex(0);
   ASSERT_NE(nullptr, parentModel);
 
-  using ignition::math::Pose3d;
-  using ignition::math::Vector3d;
+  using gz::math::Pose3d;
+  using gz::math::Vector3d;
   // Expected poses for frames, links and joints after nesting.
   Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI/2, 0, 0);
   Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI/4, 0);
@@ -627,7 +627,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   const std::string modelPath = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -674,7 +674,7 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
   const std::string name = "test_nested_model_with_frames";
   const std::string modelPath = modelRootPath + name;
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -726,8 +726,8 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
-  const ignition::math::Pose3d testFramePose(0, 5, 0, 0, 0, -IGN_PI/2);
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d testFramePose(0, 5, 0, 0, 0, -IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -769,8 +769,8 @@ TEST(NestedModel, NestedModelWithSiblingFrames)
 
   EXPECT_EQ("testFrame", nestedModel1Frame->PoseRelativeTo());
 
-  using ignition::math::Pose3d;
-  using ignition::math::Vector3d;
+  using gz::math::Pose3d;
+  using gz::math::Vector3d;
   // Expected poses
   Pose3d nestedModel1FrameExpPose = testFramePose * model1Pose;
   Pose3d frame1ExpPose =
@@ -825,7 +825,7 @@ TEST(NestedModel, NestedFrameOnlyModel)
   const std::string MODEL_PATH = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const gz::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
   std::string version = "1.7";
@@ -858,8 +858,8 @@ TEST(NestedModel, NestedFrameOnlyModel)
   const sdf::Model *parentModel = world->ModelByIndex(0);
   ASSERT_NE(nullptr, parentModel);
 
-  using ignition::math::Pose3d;
-  using ignition::math::Vector3d;
+  using gz::math::Pose3d;
+  using gz::math::Vector3d;
   // Expected poses for frames after nesting.
   Pose3d frame1ExpPose = model1Pose * Pose3d(0, 0, 0, IGN_PI, 0, 0);
   Pose3d frame2ExpPose = frame1ExpPose * Pose3d(0, 0, 0, 0, IGN_PI, 0);

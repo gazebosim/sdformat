@@ -17,7 +17,7 @@
 #include "sdf/NavSat.hh"
 
 using namespace sdf;
-using namespace ignition;
+using namespace gz;
 
 /// \brief Private navsat data.
 class sdf::NavSatPrivate

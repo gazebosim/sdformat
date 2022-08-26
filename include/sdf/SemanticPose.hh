@@ -19,7 +19,7 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -54,7 +54,7 @@ namespace sdf
   {
     /// \brief Get the raw Pose3 transform.
     /// \return The raw Pose3 transform.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -69,7 +69,7 @@ namespace sdf
     /// \param[in] _resolveTo The pose will be resolved with respect to this
     /// frame. If unset or empty, the default resolve-to frame will be used.
     /// \return Errors in resolving pose.
-    public: Errors Resolve(ignition::math::Pose3d &_pose,
+    public: Errors Resolve(gz::math::Pose3d &_pose,
                            const std::string &_resolveTo = "") const;
 
     /// \brief Private constructor.
@@ -80,7 +80,7 @@ namespace sdf
     /// if no frame is specified.
     /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
     private: SemanticPose(
-        const ignition::math::Pose3d &_pose,
+        const gz::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         std::weak_ptr<const sdf::PoseRelativeToGraph> _graph);

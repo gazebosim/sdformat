@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
@@ -85,19 +85,19 @@ TEST(DOMModel, Construction)
   EXPECT_EQ("link", model.CanonicalLinkName());
   EXPECT_EQ(nullptr, model.CanonicalLink());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, model.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, model.RawPose());
   EXPECT_TRUE(model.PoseRelativeTo().empty());
   {
     auto semanticPose = model.SemanticPose();
     EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
   model.SetRawPose({1, 2, 3, 0, 0, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, IGN_PI), model.RawPose());
 
   model.SetPoseRelativeTo("world");
   EXPECT_EQ("world", model.PoseRelativeTo());
@@ -105,7 +105,7 @@ TEST(DOMModel, Construction)
     auto semanticPose = model.SemanticPose();
     EXPECT_EQ(model.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("world", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }

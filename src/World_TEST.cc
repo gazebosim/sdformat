@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/World.hh"
 
 /////////////////////////////////////////////////
@@ -26,11 +26,11 @@ TEST(DOMWorld, Construction)
   sdf::World world;
   EXPECT_EQ(nullptr, world.Element());
   EXPECT_TRUE(world.Name().empty());
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, -9.80665), world.Gravity());
-  EXPECT_EQ(ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6),
+  EXPECT_EQ(gz::math::Vector3d(0, 0, -9.80665), world.Gravity());
+  EXPECT_EQ(gz::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6),
             world.MagneticField());
   EXPECT_STREQ("default", world.AudioDevice().c_str());
-  EXPECT_EQ(ignition::math::Vector3d::Zero, world.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::Zero, world.WindLinearVelocity());
 
   EXPECT_EQ(0u, world.ModelCount());
   EXPECT_EQ(nullptr, world.ModelByIndex(0));
@@ -94,7 +94,7 @@ TEST(DOMWorld, CopyConstructor)
   ASSERT_TRUE(nullptr != world.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world.Atmosphere()->Pressure());
   EXPECT_EQ("test_audio_device", world.AudioDevice());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, world.Gravity());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, world.Gravity());
 
   ASSERT_TRUE(nullptr != world.Gui());
   EXPECT_EQ(gui.Fullscreen(), world.Gui()->Fullscreen());
@@ -102,14 +102,14 @@ TEST(DOMWorld, CopyConstructor)
   ASSERT_TRUE(nullptr != world.Scene());
   EXPECT_EQ(scene.Grid(), world.Scene()->Grid());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, world.MagneticField());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, world.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, world.WindLinearVelocity());
   EXPECT_EQ("test_world", world.Name());
 
   ASSERT_TRUE(nullptr != world2.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
   EXPECT_EQ("test_audio_device", world2.AudioDevice());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, world2.Gravity());
 
   ASSERT_TRUE(nullptr != world2.Gui());
   EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
@@ -117,8 +117,8 @@ TEST(DOMWorld, CopyConstructor)
   ASSERT_TRUE(nullptr != world2.Scene());
   EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, world2.WindLinearVelocity());
   EXPECT_EQ("test_world", world2.Name());
 }
 
@@ -151,7 +151,7 @@ TEST(DOMWorld, CopyAssignmentOperator)
   ASSERT_TRUE(nullptr != world.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world.Atmosphere()->Pressure());
   EXPECT_EQ("test_audio_device", world.AudioDevice());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, world.Gravity());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, world.Gravity());
 
   ASSERT_TRUE(nullptr != world.Gui());
   EXPECT_EQ(gui.Fullscreen(), world.Gui()->Fullscreen());
@@ -159,14 +159,14 @@ TEST(DOMWorld, CopyAssignmentOperator)
   ASSERT_TRUE(nullptr != world.Scene());
   EXPECT_EQ(scene.Grid(), world.Scene()->Grid());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, world.MagneticField());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, world.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, world.WindLinearVelocity());
   EXPECT_EQ("test_world", world.Name());
 
   ASSERT_TRUE(nullptr != world2.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
   EXPECT_EQ("test_audio_device", world2.AudioDevice());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, world2.Gravity());
 
   ASSERT_TRUE(nullptr != world2.Gui());
   EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
@@ -174,8 +174,8 @@ TEST(DOMWorld, CopyAssignmentOperator)
   ASSERT_TRUE(nullptr != world2.Scene());
   EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, world2.WindLinearVelocity());
   EXPECT_EQ("test_world", world2.Name());
 }
 
@@ -207,7 +207,7 @@ TEST(DOMWorld, MoveConstructor)
   ASSERT_TRUE(nullptr != world2.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
   EXPECT_EQ("test_audio_device", world2.AudioDevice());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, world2.Gravity());
 
   ASSERT_TRUE(nullptr != world2.Gui());
   EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
@@ -215,8 +215,8 @@ TEST(DOMWorld, MoveConstructor)
   ASSERT_TRUE(nullptr != world2.Scene());
   EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, world2.WindLinearVelocity());
   EXPECT_EQ("test_world", world2.Name());
 }
 
@@ -249,7 +249,7 @@ TEST(DOMWorld, MoveAssignmentOperator)
   ASSERT_TRUE(nullptr != world2.Atmosphere());
   EXPECT_DOUBLE_EQ(0.1, world2.Atmosphere()->Pressure());
   EXPECT_EQ("test_audio_device", world2.AudioDevice());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, world2.Gravity());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, world2.Gravity());
 
   ASSERT_TRUE(nullptr != world2.Gui());
   EXPECT_EQ(gui.Fullscreen(), world2.Gui()->Fullscreen());
@@ -257,8 +257,8 @@ TEST(DOMWorld, MoveAssignmentOperator)
   ASSERT_TRUE(nullptr != world2.Scene());
   EXPECT_EQ(scene.Grid(), world2.Scene()->Grid());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, world2.MagneticField());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, world2.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, world2.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, world2.WindLinearVelocity());
   EXPECT_EQ("test_world", world2.Name());
 }
 
@@ -294,13 +294,13 @@ TEST(DOMWorld, Set)
   EXPECT_EQ("/dev/audio", world.AudioDevice());
 
   world.SetWindLinearVelocity({0, 1 , 2});
-  EXPECT_EQ(ignition::math::Vector3d(0, 1, 2), world.WindLinearVelocity());
+  EXPECT_EQ(gz::math::Vector3d(0, 1, 2), world.WindLinearVelocity());
 
   world.SetGravity({1, -2, 4});
-  EXPECT_EQ(ignition::math::Vector3d(1, -2, 4), world.Gravity());
+  EXPECT_EQ(gz::math::Vector3d(1, -2, 4), world.Gravity());
 
   world.SetMagneticField({1.2, -2.3, 4.5});
-  EXPECT_EQ(ignition::math::Vector3d(1.2, -2.3, 4.5), world.MagneticField());
+  EXPECT_EQ(gz::math::Vector3d(1.2, -2.3, 4.5), world.MagneticField());
 }
 
 /////////////////////////////////////////////////
@@ -324,16 +324,16 @@ TEST(DOMWorld, SetScene)
   EXPECT_EQ(nullptr, world.Scene());
 
   sdf::Scene scene;
-  scene.SetAmbient(ignition::math::Color::Blue);
-  scene.SetBackground(ignition::math::Color::Red);
+  scene.SetAmbient(gz::math::Color::Blue);
+  scene.SetBackground(gz::math::Color::Red);
   scene.SetGrid(true);
   scene.SetShadows(true);
   scene.SetOriginVisual(true);
   world.SetScene(scene);
 
   ASSERT_NE(nullptr, world.Scene());
-  EXPECT_EQ(ignition::math::Color::Blue, world.Scene()->Ambient());
-  EXPECT_EQ(ignition::math::Color::Red, world.Scene()->Background());
+  EXPECT_EQ(gz::math::Color::Blue, world.Scene()->Ambient());
+  EXPECT_EQ(gz::math::Color::Red, world.Scene()->Background());
   EXPECT_TRUE(world.Scene()->Grid());
   EXPECT_TRUE(world.Scene()->Shadows());
   EXPECT_TRUE(world.Scene()->OriginVisual());

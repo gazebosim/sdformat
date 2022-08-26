@@ -15,7 +15,7 @@
  *
 */
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Light.hh"
 #include "Utils.hh"
@@ -29,7 +29,7 @@ class sdf::LightPrivate
   public: std::string name = "";
 
   /// \brief Pose of the light
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -62,19 +62,19 @@ class sdf::LightPrivate
   public: double quadraticAttenuation = 0.0;
 
   /// \brief Direction of the light source.
-  public: ignition::math::Vector3d direction {0, 0, -1};
+  public: gz::math::Vector3d direction {0, 0, -1};
 
   /// \brief Light diffuse color.
-  public: ignition::math::Color diffuse;
+  public: gz::math::Color diffuse;
 
   /// \brief Light specular color.
-  public: ignition::math::Color specular;
+  public: gz::math::Color specular;
 
   /// \brief Spot light inner angle.
-  public: ignition::math::Angle spotInnerAngle {0.0};
+  public: gz::math::Angle spotInnerAngle {0.0};
 
   /// \brief Spot light outer angle.
-  public: ignition::math::Angle spotOuterAngle {0.0};
+  public: gz::math::Angle spotOuterAngle {0.0};
 
   /// \brief Spot light falloff.
   public: double spotFalloff = 0.0;
@@ -193,10 +193,10 @@ Errors Light::Load(ElementPtr _sdf)
   this->dataPtr->castShadows = _sdf->Get<bool>("cast_shadows",
       this->dataPtr->castShadows).first;
 
-  this->dataPtr->diffuse = _sdf->Get<ignition::math::Color>("diffuse",
+  this->dataPtr->diffuse = _sdf->Get<gz::math::Color>("diffuse",
       this->dataPtr->diffuse).first;
 
-  this->dataPtr->specular = _sdf->Get<ignition::math::Color>("specular",
+  this->dataPtr->specular = _sdf->Get<gz::math::Color>("specular",
       this->dataPtr->specular).first;
 
   sdf::ElementPtr attenuationElem = _sdf->GetElement("attenuation");
@@ -225,7 +225,7 @@ Errors Light::Load(ElementPtr _sdf)
   if (this->dataPtr->type == LightType::SPOT ||
       this->dataPtr->type == LightType::DIRECTIONAL)
   {
-    std::pair<ignition::math::Vector3d, bool> dirPair =
+    std::pair<gz::math::Vector3d, bool> dirPair =
       _sdf->Get<>("direction", this->dataPtr->direction);
 
     if (!dirPair.second)
@@ -286,13 +286,13 @@ void Light::SetName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Light::Pose() const
+const gz::math::Pose3d &Light::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Light::RawPose() const
+const gz::math::Pose3d &Light::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -310,13 +310,13 @@ const std::string &Light::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Light::SetPose(const ignition::math::Pose3d &_pose)
+void Light::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Light::SetRawPose(const ignition::math::Pose3d &_pose)
+void Light::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -375,25 +375,25 @@ void Light::SetCastShadows(const bool _cast)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color Light::Diffuse() const
+gz::math::Color Light::Diffuse() const
 {
   return this->dataPtr->diffuse;
 }
 
 /////////////////////////////////////////////////
-void Light::SetDiffuse(const ignition::math::Color &_color) const
+void Light::SetDiffuse(const gz::math::Color &_color) const
 {
   this->dataPtr->diffuse = _color;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color Light::Specular() const
+gz::math::Color Light::Specular() const
 {
   return this->dataPtr->specular;
 }
 
 /////////////////////////////////////////////////
-void Light::SetSpecular(const ignition::math::Color &_color) const
+void Light::SetSpecular(const gz::math::Color &_color) const
 {
   this->dataPtr->specular = _color;
 }
@@ -419,7 +419,7 @@ double Light::LinearAttenuationFactor() const
 /////////////////////////////////////////////////
 void Light::SetLinearAttenuationFactor(const double _factor)
 {
-  this->dataPtr->linearAttenuation = ignition::math::clamp(_factor, 0.0, 1.0);
+  this->dataPtr->linearAttenuation = gz::math::clamp(_factor, 0.0, 1.0);
 }
 
 /////////////////////////////////////////////////
@@ -432,7 +432,7 @@ double Light::ConstantAttenuationFactor() const
 void Light::SetConstantAttenuationFactor(const double _factor)
 {
   this->dataPtr->constantAttenuation =
-    ignition::math::clamp(_factor, 0.0, 1.0);
+    gz::math::clamp(_factor, 0.0, 1.0);
 }
 
 /////////////////////////////////////////////////
@@ -448,37 +448,37 @@ void Light::SetQuadraticAttenuationFactor(const double _factor)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d Light::Direction() const
+gz::math::Vector3d Light::Direction() const
 {
   return this->dataPtr->direction;
 }
 
 /////////////////////////////////////////////////
-void Light::SetDirection(const ignition::math::Vector3d  &_dir)
+void Light::SetDirection(const gz::math::Vector3d  &_dir)
 {
   this->dataPtr->direction = _dir;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Angle Light::SpotInnerAngle() const
+gz::math::Angle Light::SpotInnerAngle() const
 {
   return this->dataPtr->spotInnerAngle;
 }
 
 /////////////////////////////////////////////////
-void Light::SetSpotInnerAngle(const ignition::math::Angle &_angle)
+void Light::SetSpotInnerAngle(const gz::math::Angle &_angle)
 {
   this->dataPtr->spotInnerAngle.Radian(std::max(0.0, _angle.Radian()));
 }
 
 /////////////////////////////////////////////////
-ignition::math::Angle Light::SpotOuterAngle() const
+gz::math::Angle Light::SpotOuterAngle() const
 {
   return this->dataPtr->spotOuterAngle;
 }
 
 /////////////////////////////////////////////////
-void Light::SetSpotOuterAngle(const ignition::math::Angle &_angle)
+void Light::SetSpotOuterAngle(const gz::math::Angle &_angle)
 {
   this->dataPtr->spotOuterAngle.Radian(std::max(0.0, _angle.Radian()));
 }

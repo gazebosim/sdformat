@@ -16,8 +16,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Vector3.hh>
-#include <ignition/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
 #include "sdf/Plane.hh"
 
 /////////////////////////////////////////////////
@@ -26,17 +26,17 @@ TEST(DOMPlane, Construction)
   sdf::Plane plane;
   EXPECT_EQ(nullptr, plane.Element());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, plane.Normal());
-  EXPECT_EQ(ignition::math::Vector2d::One, plane.Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, plane.Normal());
+  EXPECT_EQ(gz::math::Vector2d::One, plane.Size());
 
   plane.SetNormal({1, 0, 0});
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane.Normal());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane.Normal());
 
   plane.SetNormal({1, 0, 1});
-  EXPECT_EQ(ignition::math::Vector3d(0.707107, 0, 0.707107), plane.Normal());
+  EXPECT_EQ(gz::math::Vector3d(0.707107, 0, 0.707107), plane.Normal());
 
   plane.SetSize({1.2, 3.4});
-  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane.Size());
+  EXPECT_EQ(gz::math::Vector2d(1.2, 3.4), plane.Size());
 }
 
 /////////////////////////////////////////////////
@@ -47,11 +47,11 @@ TEST(DOMPlane, MoveConstructor)
   plane.SetSize({1.2, 3.4});
 
   sdf::Plane plane2(std::move(plane));
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.2, 3.4), plane2.Size());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Shape().Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Shape().Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane2.Shape().Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.2, 3.4), plane2.Shape().Size());
 }
 
 /////////////////////////////////////////////////
@@ -62,8 +62,8 @@ TEST(DOMPlane, CopyConstructor)
   plane.SetSize({1.2, 3.4});
 
   sdf::Plane plane2(plane);
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.2, 3.4), plane2.Size());
 }
 
 /////////////////////////////////////////////////
@@ -75,8 +75,8 @@ TEST(DOMPlane, CopyAssignmentOperator)
 
   sdf::Plane plane2;
   plane2 = plane;
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.2, 3.4), plane2.Size());
 }
 
 /////////////////////////////////////////////////
@@ -88,18 +88,18 @@ TEST(DOMPlane, MoveAssignmentOperator)
 
   sdf::Plane plane2;
   plane2 = std::move(plane);
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
-  EXPECT_EQ(ignition::math::Vector2d(1.2, 3.4), plane2.Size());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(gz::math::Vector2d(1.2, 3.4), plane2.Size());
 }
 
 /////////////////////////////////////////////////
 TEST(DOMPlane, CopyAssignmentAfterMove)
 {
   sdf::Plane plane1;
-  plane1.SetNormal(ignition::math::Vector3d::UnitX);
+  plane1.SetNormal(gz::math::Vector3d::UnitX);
 
   sdf::Plane plane2;
-  plane2.SetNormal(ignition::math::Vector3d::UnitY);
+  plane2.SetNormal(gz::math::Vector3d::UnitY);
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -107,8 +107,8 @@ TEST(DOMPlane, CopyAssignmentAfterMove)
   plane1 = plane2;
   plane2 = tmp;
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, plane1.Normal());
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, plane2.Normal());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, plane1.Normal());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, plane2.Normal());
 }
 
 /////////////////////////////////////////////////
@@ -147,7 +147,7 @@ TEST(DOMPlane, Load)
   normalDesc->AddValue("vector3", "0 0 1", "1", "normal");
   sdf->AddElementDescription(normalDesc);
   sdf::ElementPtr normalElem = sdf->AddElement("normal");
-  normalElem->Set<ignition::math::Vector3d>({1, 0, 0});
+  normalElem->Set<gz::math::Vector3d>({1, 0, 0});
 
   // Missing <size> element
   sdf->SetName("plane");
@@ -161,9 +161,9 @@ TEST(DOMPlane, Load)
 TEST(DOMPlane, Shape)
 {
   sdf::Plane plane;
-  EXPECT_EQ(ignition::math::Vector2d::One, plane.Size());
+  EXPECT_EQ(gz::math::Vector2d::One, plane.Size());
 
-  plane.Shape().Set(plane.Shape().Normal(), ignition::math::Vector2d(1, 2),
+  plane.Shape().Set(plane.Shape().Normal(), gz::math::Vector2d(1, 2),
       plane.Shape().Offset());
-  EXPECT_EQ(ignition::math::Vector2d(1, 2), plane.Size());
+  EXPECT_EQ(gz::math::Vector2d(1, 2), plane.Size());
 }

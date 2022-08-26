@@ -94,13 +94,13 @@ TEST(DOMCamera, Construction)
   cam.SetDistortionP2(0.2);
   EXPECT_DOUBLE_EQ(0.2, cam.DistortionP2());
 
-  EXPECT_EQ(ignition::math::Vector2d(0.5, 0.5), cam.DistortionCenter());
-  cam.SetDistortionCenter(ignition::math::Vector2d(0.1, 0.2));
-  EXPECT_EQ(ignition::math::Vector2d(0.1, 0.2), cam.DistortionCenter());
+  EXPECT_EQ(gz::math::Vector2d(0.5, 0.5), cam.DistortionCenter());
+  cam.SetDistortionCenter(gz::math::Vector2d(0.1, 0.2));
+  EXPECT_EQ(gz::math::Vector2d(0.1, 0.2), cam.DistortionCenter());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, cam.RawPose());
-  cam.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0, 0, 0));
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cam.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, cam.RawPose());
+  cam.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), cam.RawPose());
 
   EXPECT_TRUE(cam.PoseRelativeTo().empty());
   cam.SetPoseRelativeTo("/frame");

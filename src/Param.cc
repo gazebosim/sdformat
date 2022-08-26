@@ -169,55 +169,55 @@ bool Param::GetAny(std::any &_anyVal) const
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Color>())
+  else if (this->IsType<gz::math::Color>())
   {
-    ignition::math::Color ret;
-    if (!this->Get<ignition::math::Color>(ret))
+    gz::math::Color ret;
+    if (!this->Get<gz::math::Color>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Vector3d>())
+  else if (this->IsType<gz::math::Vector3d>())
   {
-    ignition::math::Vector3d ret;
-    if (!this->Get<ignition::math::Vector3d>(ret))
+    gz::math::Vector3d ret;
+    if (!this->Get<gz::math::Vector3d>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Vector2i>())
+  else if (this->IsType<gz::math::Vector2i>())
   {
-    ignition::math::Vector2i ret;
-    if (!this->Get<ignition::math::Vector2i>(ret))
+    gz::math::Vector2i ret;
+    if (!this->Get<gz::math::Vector2i>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Vector2d>())
+  else if (this->IsType<gz::math::Vector2d>())
   {
-    ignition::math::Vector2d ret;
-    if (!this->Get<ignition::math::Vector2d>(ret))
+    gz::math::Vector2d ret;
+    if (!this->Get<gz::math::Vector2d>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Pose3d>())
+  else if (this->IsType<gz::math::Pose3d>())
   {
-    ignition::math::Pose3d ret;
-    if (!this->Get<ignition::math::Pose3d>(ret))
+    gz::math::Pose3d ret;
+    if (!this->Get<gz::math::Pose3d>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Quaterniond>())
+  else if (this->IsType<gz::math::Quaterniond>())
   {
-    ignition::math::Quaterniond ret;
-    if (!this->Get<ignition::math::Quaterniond>(ret))
+    gz::math::Quaterniond ret;
+    if (!this->Get<gz::math::Quaterniond>(ret))
     {
       return false;
     }
@@ -373,66 +373,66 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
       ss >> timetmp;
       _valueToSet = timetmp;
     }
-    else if (_typeName == "ignition::math::Angle" ||
+    else if (_typeName == "gz::math::Angle" ||
              _typeName == "angle")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Angle angletmp;
+      gz::math::Angle angletmp;
 
       ss >> angletmp;
       _valueToSet = angletmp;
     }
-    else if (_typeName == "ignition::math::Color" ||
+    else if (_typeName == "gz::math::Color" ||
              _typeName == "color")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Color colortmp;
+      gz::math::Color colortmp;
 
       ss >> colortmp;
       _valueToSet = colortmp;
     }
-    else if (_typeName == "ignition::math::Vector2i" ||
+    else if (_typeName == "gz::math::Vector2i" ||
              _typeName == "vector2i")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Vector2i vectmp;
+      gz::math::Vector2i vectmp;
 
       ss >> vectmp;
       _valueToSet = vectmp;
     }
-    else if (_typeName == "ignition::math::Vector2d" ||
+    else if (_typeName == "gz::math::Vector2d" ||
              _typeName == "vector2d")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Vector2d vectmp;
+      gz::math::Vector2d vectmp;
 
       ss >> vectmp;
       _valueToSet = vectmp;
     }
-    else if (_typeName == "ignition::math::Vector3d" ||
+    else if (_typeName == "gz::math::Vector3d" ||
              _typeName == "vector3")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Vector3d vectmp;
+      gz::math::Vector3d vectmp;
 
       ss >> vectmp;
       _valueToSet = vectmp;
     }
-    else if (_typeName == "ignition::math::Pose3d" ||
+    else if (_typeName == "gz::math::Pose3d" ||
              _typeName == "pose" ||
              _typeName == "Pose")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Pose3d posetmp;
+      gz::math::Pose3d posetmp;
 
       ss >> posetmp;
       _valueToSet = posetmp;
     }
-    else if (_typeName == "ignition::math::Quaterniond" ||
+    else if (_typeName == "gz::math::Quaterniond" ||
              _typeName == "quaternion")
     {
       StringStreamClassicLocale ss(tmp);
-      ignition::math::Quaterniond quattmp;
+      gz::math::Quaterniond quattmp;
 
       ss >> quattmp;
       _valueToSet = quattmp;

@@ -19,7 +19,7 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
@@ -176,21 +176,21 @@ namespace sdf
     /// a pose for the inertial reference frame. The units for mass is
     /// kilograms with a default value of 1kg. The 3x3 rotational inertia
     /// matrix is symmetric and only 6 above-diagonal elements of this matrix
-    /// are specified the Interial's ignition::math::MassMatrix3 property.
+    /// are specified the Interial's gz::math::MassMatrix3 property.
     ///
     /// The origin of the inertial reference frame needs to be at the center
     /// of mass expressed in this link's frame.
     /// The axes of the inertial reference frame do not need to
     /// be aligned with the principal axes of the inertia.
     /// \return The link's inertial value.
-    /// \sa void SetInertial(const ignition::math::Inertiald &_inertial)
-    public: const ignition::math::Inertiald &Inertial() const;
+    /// \sa void SetInertial(const gz::math::Inertiald &_inertial)
+    public: const gz::math::Inertiald &Inertial() const;
 
     /// \brief Set the inertial value for this link.
     /// \param[in] _inertial The link's inertial value.
     /// \return True if the inertial is valid, false otherwise.
-    /// \sa const ignition::math::Inertiald &Inertial() const
-    public: bool SetInertial(const ignition::math::Inertiald &_inertial);
+    /// \sa const gz::math::Inertiald &Inertial() const
+    public: bool SetInertial(const gz::math::Inertiald &_inertial);
 
     /// \brief Resolve the Inertial to a specified frame.
     /// If there are any errors resolving the Inertial, the output will not
@@ -199,32 +199,32 @@ namespace sdf
     /// \param[in] _resolveTo The Inertial will be resolved with respect to this
     /// frame. If unset or empty, the default resolve-to frame will be used.
     /// \return Errors in resolving pose.
-    public: Errors ResolveInertial(ignition::math::Inertiald &_inertial,
+    public: Errors ResolveInertial(gz::math::Inertiald &_inertial,
                                    const std::string &_resolveTo = "") const;
 
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
     /// \deprecated See RawPose.
-    public: const ignition::math::Pose3d &Pose() const
+    public: const gz::math::Pose3d &Pose() const
         SDF_DEPRECATED(9.0);
 
     /// \brief Set the pose of the link.
-    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \sa const gz::math::Pose3d &Pose() const
     /// \param[in] _pose The new link pose.
     /// \deprecated See SetRawPose.
-    public: void SetPose(const ignition::math::Pose3d &_pose)
+    public: void SetPose(const gz::math::Pose3d &_pose)
         SDF_DEPRECATED(9.0);
 
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
-    public: const ignition::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the link.
-    /// \sa const ignition::math::Pose3d &RawPose() const
+    /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new link pose.
-    public: void SetRawPose(const ignition::math::Pose3d &_pose);
+    public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
