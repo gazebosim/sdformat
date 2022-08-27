@@ -283,6 +283,15 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
 
+## libsdformat 9.8.0 to 9.8.1
+
+### Modifications
+
+1. URDF parser now properly transforms poses for lights, projectors and sensors
+   from gazebo extension tags that are moved to a new link during fixed joint
+   reduction.
+    + [pull request 1114](https://github.com/osrf/sdformat/pull/1114)
+
 ## libsdformat 9.4 to 9.5
 
 ### Additions
