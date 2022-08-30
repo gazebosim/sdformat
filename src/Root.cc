@@ -436,6 +436,27 @@ bool Root::WorldNameExists(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+const World *Root::WorldByName(const std::string &_name) const
+{
+  for (const sdf::World &w : this->dataPtr->worlds)
+  {
+    if (w.Name() == _name)
+    {
+      return &w;
+    }
+  }
+
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+World *Root::WorldByName(const std::string &_name)
+{
+  return const_cast<World*>(
+      static_cast<const Root*>(this)->WorldByName(_name));
+}
+
+/////////////////////////////////////////////////
 const Model *Root::Model() const
 {
   return std::get_if<sdf::Model>(&this->dataPtr->modelLightOrActor);
