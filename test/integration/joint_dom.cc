@@ -650,15 +650,15 @@ TEST(DOMJoint, LoadLinkJointSameName17Invalid)
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(9u, errors.size());
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_EQ(10u, errors.size());
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos,
-    errors[0].Message().find(
+    errors[1].Message().find(
       "Joint with non-unique name [attachment] detected in model with name "
       "[link_joint_same_name]."));
-  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos,
-    errors[3].Message().find(
+    errors[4].Message().find(
       "Joint with non-unique name [attachment] detected in model with name "
       "[link_joint_same_name]."));
 }
