@@ -30,6 +30,7 @@
 
 #include "Converter.hh"
 #include "EmbeddedSdf.hh"
+#include "Utils.hh"
 #include "XmlUtils.hh"
 
 using namespace sdf;
@@ -53,44 +54,62 @@ bool IsNotFlattenedElement(const std::string &_elemName)
 // used to update //pose/@relative_to in FindNewModelElements()
 void UpdatePose(tinyxml2::XMLElement *_elem,
                 const size_t &_childNameIdx,
-                const std::string &_modelName)
+                const std::string &_modelName,
+                sdf::Errors &_errors)
 {
   tinyxml2::XMLElement *pose = _elem->FirstChildElement("pose");
   if (pose && pose->Attribute("relative_to"))
   {
     std::string poseRelTo = pose->Attribute("relative_to");
 
-    SDF_ASSERT(poseRelTo.compare(0, _modelName.size(), _modelName) == 0,
-      "Error: Pose attribute 'relative_to' does not start with " + _modelName);
+    if (poseRelTo.compare(0, _modelName.size(), _modelName) != 0)
+    {
+      std::stringstream ss;
+      ss << "Error: Pose attribute 'relative_to' does not start with "
+         << _modelName;
+      _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+      return;
+    }
 
     poseRelTo = poseRelTo.substr(_childNameIdx);
     pose->SetAttribute("relative_to", poseRelTo.c_str());
   }
 
   if (_elem->FirstChildElement("camera"))
-    UpdatePose(_elem->FirstChildElement("camera"), _childNameIdx, _modelName);
+  {
+    UpdatePose(_elem->FirstChildElement("camera"), _childNameIdx,
+               _modelName, _errors);
+  }
 }
 }
 
 /////////////////////////////////////////////////
 bool Converter::Convert(tinyxml2::XMLDocument *_doc,
                         const std::string &_toVersion,
+                        sdf::Errors &_errors,
+                        const ParserConfig &_config,
                         bool _quiet)
 {
-  SDF_ASSERT(_doc != nullptr, "SDF XML doc is NULL");
+  if (_doc == nullptr)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF XML doc is NULL"});
+    return false;
+  }
 
   tinyxml2::XMLElement *elem = _doc->FirstChildElement("sdf");
 
   // Check that the <sdf> element exists
   if (!elem)
   {
-    sdferr << "<sdf> element does not exist.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "<sdf> element does not exist."});
     return false;
   }
 
   if (!elem->Attribute("version"))
   {
-    sdferr << "  Unable to determine original SDF version\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Unable to determine original SDF version"});
     return false;
   }
 
@@ -143,18 +162,24 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
     xmlDoc.Parse(convertXml);
     if (xmlDoc.Error())
     {
-      sdferr << "Error parsing XML from string: "
-             << xmlDoc.ErrorStr() << '\n';
+      std::stringstream ss;
+      ss << "Error parsing XML from string: "
+         << xmlDoc.ErrorStr();
+      _errors.push_back({ErrorCode::CONVERSION_ERROR, ss.str()});
       return false;
     }
-    ConvertImpl(elem, xmlDoc.FirstChildElement("convert"));
+    ConvertImpl(elem, xmlDoc.FirstChildElement("convert"), _errors, _config);
   }
 
   // Check that we actually converted to the desired final version.
   if (curVersion != _toVersion)
   {
-    sdferr << "Unable to convert from SDF version " << origVersion
-           << " to " << _toVersion << "\n";
+    std::stringstream ss;
+    ss << "Unable to convert from SDF version "
+       << origVersion
+       << " to "
+       << _toVersion;
+    _errors.push_back({ErrorCode::CONVERSION_ERROR, ss.str()});
     return false;
   }
 
@@ -163,17 +188,30 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
 
 /////////////////////////////////////////////////
 void Converter::Convert(tinyxml2::XMLDocument *_doc,
-                        tinyxml2::XMLDocument *_convertDoc)
+                        tinyxml2::XMLDocument *_convertDoc,
+                        sdf::Errors &_errors,
+                        const ParserConfig &_config)
 {
-  SDF_ASSERT(_doc != NULL, "SDF XML doc is NULL");
-  SDF_ASSERT(_convertDoc != NULL, "Convert XML doc is NULL");
+  if (_doc == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF XML doc is NULL"});
+    return;
+  }
+  if (_convertDoc == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Convert XML doc is NULL"});
+    return;
+  }
 
-  ConvertImpl(_doc->FirstChildElement(), _convertDoc->FirstChildElement());
+  ConvertImpl(_doc->FirstChildElement(), _convertDoc->FirstChildElement(),
+              _errors, _config);
 }
 
 /////////////////////////////////////////////////
 void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
-                                       tinyxml2::XMLElement *_c)
+                                       tinyxml2::XMLElement *_c,
+                                       sdf::Errors &_errors,
+                                       const ParserConfig &_config)
 {
   if (!_c->Attribute("descendant_name"))
   {
@@ -195,21 +233,31 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
   {
     if (strcmp(e->Name(), _c->Attribute("descendant_name")) == 0)
     {
-      ConvertImpl(e, _c);
+      ConvertImpl(e, _c, _errors, _config);
     }
-    ConvertDescendantsImpl(e, _c);
+    ConvertDescendantsImpl(e, _c, _errors, _config);
     e = e->NextSiblingElement();
   }
 }
 
 /////////////////////////////////////////////////
 void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
-                            tinyxml2::XMLElement *_convert)
+                            tinyxml2::XMLElement *_convert,
+                            sdf::Errors &_errors,
+                            const ParserConfig &_config)
 {
-  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_convert != NULL, "Convert element is NULL");
+  if (_elem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is NULL"});
+    return;
+  }
+  if (_elem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Convert element is NULL"});
+    return;
+  }
 
-  CheckDeprecation(_elem, _convert);
+  CheckDeprecation(_elem, _convert, _errors, _config);
 
   for (auto *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
@@ -220,13 +268,13 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
           convertElem->Attribute("name"));
       while (elem)
       {
-        ConvertImpl(elem, convertElem);
+        ConvertImpl(elem, convertElem, _errors, _config);
         elem = elem->NextSiblingElement(convertElem->Attribute("name"));
       }
     }
     if (convertElem->Attribute("descendant_name"))
     {
-      ConvertDescendantsImpl(_elem, convertElem);
+      ConvertDescendantsImpl(_elem, convertElem, _errors, _config);
     }
   }
 
@@ -237,47 +285,55 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
 
     if (name == "rename")
     {
-      Rename(_elem, childElem);
+      Rename(_elem, childElem, _errors);
     }
     else if (name == "copy")
     {
-      Move(_elem, childElem, true);
+      Move(_elem, childElem, true, _errors);
     }
     else if (name == "map")
     {
-      Map(_elem, childElem);
+      Map(_elem, childElem, _errors);
     }
     else if (name == "move")
     {
-      Move(_elem, childElem, false);
+      Move(_elem, childElem, false, _errors);
     }
     else if (name == "add")
     {
-      Add(_elem, childElem);
+      Add(_elem, childElem, _errors);
     }
     else if (name == "remove")
     {
-      Remove(_elem, childElem);
+      Remove(_elem, childElem, _errors);
     }
     else if (name == "remove_empty")
     {
-      Remove(_elem, childElem, true);
+      Remove(_elem, childElem, _errors, true);
     }
     else if (name == "unflatten")
     {
-      Unflatten(_elem);
+      Unflatten(_elem, _errors);
     }
     else if (name != "convert")
     {
-      sdferr << "Unknown convert element[" << name << "]\n";
+      std::stringstream ss;
+      ss << "Unknown convert element["
+         << name
+         << "]";
+      _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
     }
   }
 }
 
 /////////////////////////////////////////////////
-void Converter::Unflatten(tinyxml2::XMLElement *_elem)
+void Converter::Unflatten(tinyxml2::XMLElement *_elem, sdf::Errors &_errors)
 {
-  SDF_ASSERT(_elem != nullptr, "SDF element is nullptr");
+  if (_elem == nullptr)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is nullptr"});
+    return;
+  }
 
   tinyxml2::XMLDocument *doc = _elem->GetDocument();
 
@@ -304,7 +360,7 @@ void Converter::Unflatten(tinyxml2::XMLElement *_elem)
       // recursive unflatten
       if (elemName == "model")
       {
-        Unflatten(elem);
+        Unflatten(elem, _errors);
         break;
       }
 
@@ -315,9 +371,9 @@ void Converter::Unflatten(tinyxml2::XMLElement *_elem)
     tinyxml2::XMLElement *newModel = doc->NewElement("model");
     newModel->SetAttribute("name", newModelName.c_str());
 
-    if (FindNewModelElements(_elem, newModel, found + 2))
+    if (FindNewModelElements(_elem, newModel, found + 2, _errors))
     {
-      Unflatten(newModel);
+      Unflatten(newModel, _errors);
       _elem->InsertEndChild(newModel);
 
       // since newModel is inserted at the end, point back to the top element
@@ -332,7 +388,8 @@ void Converter::Unflatten(tinyxml2::XMLElement *_elem)
 /////////////////////////////////////////////////
 bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
                                     tinyxml2::XMLElement *_newModel,
-                                    const size_t &_childNameIdx)
+                                    const size_t &_childNameIdx,
+                                    sdf::Errors &_errors)
 {
   bool unflattenedNewModel = false;
   std::string newModelName = _newModel->Attribute("name");
@@ -393,9 +450,14 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
       {
         attachedTo = elem->Attribute("attached_to");
 
-        SDF_ASSERT(attachedTo.compare(0, newModelNameSize, newModelName) == 0,
-          "Error: Frame attribute 'attached_to' does not start with " +
-          newModelName);
+        if (attachedTo.compare(0, newModelNameSize, newModelName) != 0)
+        {
+          std::stringstream ss;
+          ss << "Error: Frame attribute 'attached_to' does not start with "
+             << newModelName;
+          _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+          return false;
+        }
 
         // strip new model prefix from attached_to
         attachedTo = attachedTo.substr(_childNameIdx);
@@ -420,7 +482,7 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
           e;
           e = e->NextSiblingElement())
       {
-        UpdatePose(e, _childNameIdx, newModelName);
+        UpdatePose(e, _childNameIdx, newModelName, _errors);
       }
     }  // link
 
@@ -434,8 +496,14 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
       {
         eText = e->GetText();
 
-        SDF_ASSERT(eText.compare(0, newModelNameSize, newModelName) == 0,
-        "Error: Joint's <parent> value does not start with " + newModelName);
+        if (eText.compare(0, newModelNameSize, newModelName) != 0)
+        {
+          std::stringstream ss;
+          ss << "Error: Joint's <parent> value does not start with "
+             << newModelName;
+          _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+          return false;
+        }
 
         e->SetText(eText.substr(_childNameIdx).c_str());
       }
@@ -446,8 +514,14 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
       {
         eText = e->GetText();
 
-        SDF_ASSERT(eText.compare(0, newModelNameSize, newModelName) == 0,
-        "Error: Joint's <child> value does not start with " + newModelName);
+        if (eText.compare(0, newModelNameSize, newModelName) != 0)
+        {
+          std::stringstream ss;
+          ss << "Error: Joint's <child> value does not start with "
+             << newModelName;
+          _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+          return false;
+        }
 
         e->SetText(eText.substr(_childNameIdx).c_str());
       }
@@ -465,10 +539,14 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
             std::string expressIn =
                 axisElem->FirstChildElement("xyz")->Attribute("expressed_in");
 
-            SDF_ASSERT(
-              expressIn.compare(0, newModelNameSize, newModelName) == 0,
-              "Error: <xyz>'s attribute 'expressed_in' does not start with " +
-              newModelName);
+            if (expressIn.compare(0, newModelNameSize, newModelName) != 0)
+            {
+              std::stringstream ss;
+              ss << "Error: <xyz>'s attribute 'expressed_in' does not start with "
+                 << newModelName;
+              _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+              return false;
+            }
 
             expressIn = expressIn.substr(_childNameIdx);
 
@@ -487,7 +565,7 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
           e;
           e = e->NextSiblingElement("sensor"))
       {
-        UpdatePose(e, _childNameIdx, newModelName);
+        UpdatePose(e, _childNameIdx, newModelName, _errors);
       }
     }  // joint
 
@@ -530,9 +608,14 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
       {
         eText = e->GetText();
 
-        SDF_ASSERT(eText.compare(0, newModelNameSize, newModelName) == 0,
-        "Error: Gripper's <palm_link> value does not start with "
-        + newModelName);
+        if (eText.compare(0, newModelNameSize, newModelName) != 0)
+        {
+          std::stringstream ss;
+          ss << "Error: Gripper's <palm_link> value does not start with "
+            << newModelName;
+          _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+          return false;
+        }
 
         e->SetText(eText.substr(_childNameIdx).c_str());
       }
@@ -549,10 +632,19 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
 
 /////////////////////////////////////////////////
 void Converter::Rename(tinyxml2::XMLElement *_elem,
-                       tinyxml2::XMLElement *_renameElem)
+                       tinyxml2::XMLElement *_renameElem,
+                       sdf::Errors &_errors)
 {
-  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_renameElem != NULL, "Rename element is NULL");
+  if (_elem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is NULL"});
+    return;
+  }
+  if (_renameElem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Rename element is NULL"});
+    return;
+  }
 
   auto *fromConvertElem = _renameElem->FirstChildElement("from");
   auto *toConvertElem = _renameElem->FirstChildElement("to");
@@ -571,7 +663,8 @@ void Converter::Rename(tinyxml2::XMLElement *_elem,
 
   if (!toElemName)
   {
-    sdferr << "No 'to' element name specified\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+                       "No 'to' element name specified"});
     return;
   }
 
@@ -601,10 +694,20 @@ void Converter::Rename(tinyxml2::XMLElement *_elem,
 }
 
 /////////////////////////////////////////////////
-void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
+void Converter::Add(tinyxml2::XMLElement *_elem,
+                    tinyxml2::XMLElement *_addElem,
+                    sdf::Errors &_errors)
 {
-  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_addElem != NULL, "Add element is NULL");
+  if (_elem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is NULL"});
+    return;
+  }
+  if (_addElem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Add element is NULL"});
+    return;
+  }
 
   const char *attributeName = _addElem->Attribute("attribute");
   const char *elementName = _addElem->Attribute("element");
@@ -612,8 +715,8 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 
   if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
-    sdferr << "Exactly one 'element' or 'attribute'"
-           << " must be specified in <add>\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Exactly one 'element' or 'attribute' must be specified in <add>"});
     return;
   }
 
@@ -625,7 +728,8 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
     }
     else
     {
-      sdferr << "No 'value' specified in <add>\n";
+      _errors.push_back({ErrorCode::CONVERSION_ERROR,
+                         "No 'value' specified in <add>"});
       return;
     }
   }
@@ -645,18 +749,27 @@ void Converter::Add(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_addElem)
 /////////////////////////////////////////////////
 void Converter::Remove(tinyxml2::XMLElement *_elem,
                        tinyxml2::XMLElement *_removeElem,
+                       sdf::Errors &_errors,
                        bool _removeOnlyEmpty)
 {
-  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_removeElem != NULL, "remove element is NULL");
+  if (_elem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is NULL"});
+    return;
+  }
+  if (_removeElem == NULL)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "remove element is NULL"});
+    return;
+  }
 
   const char *attributeName = _removeElem->Attribute("attribute");
   const char *elementName = _removeElem->Attribute("element");
 
   if (!((attributeName == nullptr) ^ (elementName == nullptr)))
   {
-    sdferr << "Exactly one 'element' or 'attribute'"
-           << " must be specified in <remove>\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Exactly one 'element' or 'attribute' must be specified in <remove>"});
     return;
   }
 
@@ -686,22 +799,34 @@ void Converter::Remove(tinyxml2::XMLElement *_elem,
 }
 
 /////////////////////////////////////////////////
-void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
+void Converter::Map(tinyxml2::XMLElement *_elem,
+                    tinyxml2::XMLElement *_mapElem,
+                    sdf::Errors &_errors)
 {
-  SDF_ASSERT(_elem != nullptr, "SDF element is nullptr");
-  SDF_ASSERT(_mapElem != nullptr, "Map element is nullptr");
+  if (_elem == nullptr)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is nullptr"});
+    return;
+  }
+  if (_mapElem == nullptr)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Map element is nullptr"});
+    return;
+  }
 
   tinyxml2::XMLElement *fromConvertElem = _mapElem->FirstChildElement("from");
   tinyxml2::XMLElement *toConvertElem = _mapElem->FirstChildElement("to");
 
   if (!fromConvertElem)
   {
-    sdferr << "<map> element requires a <from> child element.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "<map> element requires a <from> child element."});
     return;
   }
   if (!toConvertElem)
   {
-    sdferr << "<map> element requires a <to> child element.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "<map> element requires a <to> child element."});
     return;
   }
 
@@ -710,12 +835,14 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 
   if (!fromNameStr || strlen(fromNameStr) == 0)
   {
-    sdferr << "Map: <from> element requires a non-empty name attribute.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: <from> element requires a non-empty name attribute."});
     return;
   }
   if (!toNameStr || strlen(toNameStr) == 0)
   {
-    sdferr << "Map: <to> element requires a non-empty name attribute.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: <to> element requires a non-empty name attribute."});
     return;
   }
 
@@ -725,22 +852,26 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   auto *toValueElem = toConvertElem->FirstChildElement("value");
   if (!fromValueElem)
   {
-    sdferr << "Map: <from> element requires at least one <value> element.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: <from> element requires at least one <value> element"});
     return;
   }
   if (!toValueElem)
   {
-    sdferr << "Map: <to> element requires at least one <value> element.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: <to> element requires at least one <value> element."});
     return;
   }
   if (!fromValueElem->GetText())
   {
-    sdferr << "Map: from value must not be empty.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: from value must not be empty."});
     return;
   }
   if (!toValueElem->GetText())
   {
-    sdferr << "Map: to value must not be empty.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: to value must not be empty."});
     return;
   }
   valueMap[fromValueElem->GetText()] = toValueElem->GetText();
@@ -753,12 +884,14 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
     }
     if (!fromValueElem->GetText())
     {
-      sdferr << "Map: from value must not be empty.\n";
+      _errors.push_back({ErrorCode::CONVERSION_ERROR,
+          "Map: from value must not be empty."});
       return;
     }
     if (!toValueElem->GetText())
     {
-      sdferr << "Map: to value must not be empty.\n";
+      _errors.push_back({ErrorCode::CONVERSION_ERROR,
+          "Map: to value must not be empty."});
       return;
     }
     valueMap[fromValueElem->GetText()] = toValueElem->GetText();
@@ -791,7 +924,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   if (fromLeaf[0] == '\0' ||
       (fromLeaf[0] == '@' && fromLeaf[1] == '\0'))
   {
-    sdferr << "Map: <from> has invalid name attribute\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: <from> has invalid name attribute"});
     return;
   }
   const char *fromValue = nullptr;
@@ -834,7 +968,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
   if (toLeaf[0] == '\0' ||
       (toLeaf[0] == '@' && toLeaf[1] == '\0'))
   {
-    sdferr << "Map: <to> has invalid name attribute\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "Map: <to> has invalid name attribute"});
     return;
   }
   bool toAttribute = toLeaf[0] == '@';
@@ -850,7 +985,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
     {
       if (toTokens[newDirIndex].empty())
       {
-        sdferr << "Map: <to> has invalid name attribute\n";
+        _errors.push_back({ErrorCode::CONVERSION_ERROR,
+            "Map: <to> has invalid name attribute"});
         return;
       }
 
@@ -875,10 +1011,19 @@ void Converter::Map(tinyxml2::XMLElement *_elem, tinyxml2::XMLElement *_mapElem)
 /////////////////////////////////////////////////
 void Converter::Move(tinyxml2::XMLElement *_elem,
                      tinyxml2::XMLElement *_moveElem,
-                     const bool _copy)
+                     const bool _copy,
+                     sdf::Errors &_errors)
 {
-  SDF_ASSERT(_elem != NULL, "SDF element is NULL");
-  SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
+  if (_elem == nullptr)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "SDF element is NULL"});
+    return;
+  }
+  if (_moveElem == nullptr)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Move element is NULL"});
+    return;
+  }
 
   tinyxml2::XMLElement *fromConvertElem = _moveElem->FirstChildElement("from");
   tinyxml2::XMLElement *toConvertElem = _moveElem->FirstChildElement("to");
@@ -1061,7 +1206,9 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
 
 /////////////////////////////////////////////////
 void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem,
-                                 tinyxml2::XMLElement *_convert)
+                                 tinyxml2::XMLElement *_convert,
+                                 sdf::Errors &_errors,
+                                 const ParserConfig &_config)
 {
   // Process deprecated elements
   for (auto *deprecatedElem = _convert->FirstChildElement("deprecated");
@@ -1097,7 +1244,11 @@ void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem,
       }
     }
 
-    sdfwarn << "Deprecated SDF Values in original file:\n"
-            << stream.str() << "\n\n";
+    std::stringstream ss;
+    ss << "Deprecated SDF Values in original file: \n"
+       << stream.str() << "\n";
+    Error err(ErrorCode::WARNING, ss.str());
+    sdf::enforceConfigurablePolicyCondition(_config.WarningsPolicy(),
+                                            err, _errors);
   }
 }

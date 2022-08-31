@@ -20,8 +20,10 @@
 #include <sstream>
 #include "sdf/Exception.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/ParserConfig.hh"
 
 #include "Converter.hh"
+#include "test_utils.hh"
 #include "XmlUtils.hh"
 
 #include "test_config.hh"
@@ -98,7 +100,18 @@ TEST(Converter, MoveElemElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -136,7 +149,18 @@ TEST(Converter, MoveElemAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc2;
   convertXmlDoc2.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc2.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -174,7 +198,18 @@ TEST(Converter, MoveAttrAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -215,7 +250,18 @@ TEST(Converter, MoveAttrElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc4;
   convertXmlDoc4.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc4.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -254,7 +300,18 @@ TEST(Converter, MoveElemElemMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc5;
   convertXmlDoc5.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc5.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -289,7 +346,18 @@ TEST(Converter, MoveAttrAttrMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc6;
   convertXmlDoc6.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc6.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -327,7 +395,18 @@ TEST(Converter, MoveElemAttrMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc7;
   convertXmlDoc7.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc7.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -362,7 +441,18 @@ TEST(Converter, MoveAttrElemMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc8;
   convertXmlDoc8.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc8.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -420,7 +510,18 @@ TEST(Converter, Add)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -463,7 +564,21 @@ TEST(Converter, AddNoElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Exactly one 'element' or 'attribute' must be specified in <add>"));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Verify the xml
   tinyxml2::XMLElement *childElem = xmlDoc.FirstChildElement();
@@ -505,7 +620,21 @@ TEST(Converter, AddNoValue)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find("No 'value' specified in <add>"));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *childElem = xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, childElem);
@@ -557,7 +686,18 @@ TEST(Converter, RemoveElement)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -606,7 +746,18 @@ TEST(Converter, RemoveDescendantElement)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem = xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -658,7 +809,18 @@ TEST(Converter, RemoveEmptyElement)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -722,7 +884,18 @@ TEST(Converter, RemoveEmptyDescendantElement)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem = xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -787,7 +960,19 @@ TEST(Converter, RemoveDescendantNestedElement)
 
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertString.c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   std::string expectedString = R"(
   <sdf>
@@ -846,7 +1031,18 @@ TEST(Converter, DescendantIgnorePluginOrNamespacedElements)
 
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertString.c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Only the elemB directly under the first elemA should be removed
   std::string expectedString = R"(
@@ -909,7 +1105,18 @@ TEST(Converter, RemoveElementSubElement)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -955,7 +1162,18 @@ TEST(Converter, RemoveAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1007,7 +1225,18 @@ TEST(Converter, RemoveEmptyAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1045,7 +1274,21 @@ TEST(Converter, RemoveNoElement)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Exactly one 'element' or 'attribute' must be specified in <remove>"));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *childElem =  xmlDoc.FirstChildElement();
   ASSERT_NE(nullptr, childElem);
@@ -1097,7 +1340,18 @@ TEST(Converter, MoveInvalid)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // In this case, we had an invalid elemC:: in the conversion, which
   // means that the conversion quietly failed.  Make sure the new
@@ -1153,7 +1407,18 @@ TEST(Converter, MoveInvalidPrefix)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // In this case, we had an invalid ::elemC in the conversion, which
   // means that the conversion quietly failed.  Make sure the new
@@ -1210,7 +1475,18 @@ TEST(Converter, CopyElemElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1385,7 +1661,66 @@ TEST(Converter, MapInvalid)
   tinyxml2::XMLPrinter printerBefore;
   xmlDoc.Print(&printerBefore);
 
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 16u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[0].Message().find("<from> has invalid name attribute"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[1].Message().find("<from> has invalid name attribute"));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[2].Message().find("<to> has invalid name attribute"));
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[3].Message().find("<to> has invalid name attribute"));
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[4].Message().find("<to> has invalid name attribute"));
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[5].Message().find(
+      "<map> element requires a <from> child element."));
+  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[6].Message().find(
+      "<map> element requires a <to> child element."));
+  EXPECT_EQ(errors[7].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[7].Message().find(
+      "<from> element requires a non-empty name attribute."));
+  EXPECT_EQ(errors[8].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[8].Message().find(
+      "<from> element requires a non-empty name attribute."));
+  EXPECT_EQ(errors[9].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[9].Message().find(
+      "<to> element requires a non-empty name attribute."));
+  EXPECT_EQ(errors[10].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[10].Message().find(
+      "<from> element requires at least one <value> element"));
+  EXPECT_EQ(errors[11].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[11].Message().find(
+      "<to> element requires at least one <value> element"));
+  EXPECT_EQ(errors[12].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[12].Message().find("from value must not be empty."));
+  EXPECT_EQ(errors[13].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[13].Message().find("to value must not be empty."));
+  EXPECT_EQ(errors[14].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[14].Message().find("from value must not be empty."));
+  EXPECT_EQ(errors[15].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[15].Message().find("to value must not be empty."));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
 
   // Only invalid conversion statements.
   // Make sure the new document is the same as the original.
@@ -1495,7 +1830,18 @@ TEST(Converter, MapElemElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1546,7 +1892,18 @@ TEST(Converter, MapElemAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc2;
   convertXmlDoc2.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc2.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1589,7 +1946,18 @@ TEST(Converter, MapAttrAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1639,7 +2007,18 @@ TEST(Converter, MapAttrElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc4;
   convertXmlDoc4.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc4.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1686,7 +2065,18 @@ TEST(Converter, MapElemElemMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc5;
   convertXmlDoc5.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc5.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1730,7 +2120,18 @@ TEST(Converter, MapAttrAttrMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc6;
   convertXmlDoc6.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc6.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -1777,7 +2178,18 @@ TEST(Converter, MapElemAttrMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc7;
   convertXmlDoc7.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc7.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -1821,7 +2233,18 @@ TEST(Converter, MapAttrElemMultipleLevels)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc8;
   convertXmlDoc8.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc8.FirstChildElement();
   ASSERT_NE(nullptr, convertedElem);
@@ -1882,7 +2305,18 @@ TEST(Converter, RenameElemElem)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1920,7 +2354,18 @@ TEST(Converter, RenameAttrAttr)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1957,7 +2402,18 @@ TEST(Converter, RenameNoFrom)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  EXPECT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -1994,7 +2450,21 @@ TEST(Converter, RenameNoTo)
                 << "</convert>";
   tinyxml2::XMLDocument convertXmlDoc3;
   convertXmlDoc3.Parse(convertStream.str().c_str());
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+      errors[0].Message().find("No 'to' element name specified"));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLElement *convertedElem =  xmlDoc3.FirstChildElement();
   EXPECT_STREQ(convertedElem->Name(), "elemA");
@@ -2019,7 +2489,19 @@ TEST(Converter, GazeboToSDF)
 
   tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
-  EXPECT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3", errors, parserConfig));
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[0].Message().find("<sdf> element does not exist."));
 }
 
 ////////////////////////////////////////////////////
@@ -2028,12 +2510,35 @@ TEST(Converter, NullDoc)
   tinyxml2::XMLDocument xmlDoc;
   tinyxml2::XMLDocument convertXmlDoc;
 
-  ASSERT_THROW(sdf::Converter::Convert(nullptr, &convertXmlDoc),
-               sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(&xmlDoc, nullptr),
-               sdf::AssertionInternalError);
-  ASSERT_THROW(sdf::Converter::Convert(nullptr, "1.4"),
-               sdf::AssertionInternalError);
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  sdf::Converter::Convert(nullptr, &convertXmlDoc, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[0].Message().find("SDF XML doc is NULL"));
+  errors.clear();
+
+  sdf::Converter::Convert(&xmlDoc, nullptr, errors, parserConfig);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[0].Message().find("Convert XML doc is NULL"));
+  errors.clear();
+
+  sdf::Converter::Convert(nullptr, "1.4", errors, parserConfig);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
+  EXPECT_NE(std::string::npos,
+            errors[0].Message().find("SDF XML doc is NULL"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 ////////////////////////////////////////////////////
@@ -2044,7 +2549,21 @@ TEST(Converter, NoVersion)
   tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
-  ASSERT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  ASSERT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3", errors, parserConfig));
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Unable to determine original SDF version"));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 ////////////////////////////////////////////////////
@@ -2058,7 +2577,18 @@ TEST(Converter, SameVersion)
   tinyxml2::XMLPrinter printerBefore;
   xmlDoc.Print(&printerBefore);
 
-  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3"));
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3", errors, parserConfig));
+  ASSERT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   tinyxml2::XMLPrinter printerAfter;
   xmlDoc.Print(&printerAfter);
@@ -2075,7 +2605,18 @@ TEST(Converter, NewerVersion)
   tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
-  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6", errors, parserConfig));
+  ASSERT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 ////////////////////////////////////////////////////
@@ -2086,7 +2627,18 @@ TEST(Converter, MuchNewerVersion)
   tinyxml2::XMLDocument xmlDoc;
   xmlDoc.Parse(xmlString.c_str());
 
-  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6"));
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6", errors, parserConfig));
+  ASSERT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 static std::string ConvertDoc_15_16()
@@ -2139,7 +2691,18 @@ TEST(Converter, IMU_15_to_16)
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.LoadFile(ConvertDoc_15_16().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Check some basic elements
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
@@ -2233,7 +2796,18 @@ TEST(Converter, World_15_to_16)
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.LoadFile(ConvertDoc_15_16().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Check some basic elements
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
@@ -2289,7 +2863,18 @@ TEST(Converter, Pose_16_to_17)
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.LoadFile(ConvertDoc_16_17().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_TRUE(errors.empty());
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Check some basic elements
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
@@ -2374,7 +2959,17 @@ TEST(Converter, World_17_to_18)
   // Convert
   tinyxml2::XMLDocument convertXmlDoc;
   convertXmlDoc.LoadFile(ConvertDoc_17_18().c_str());
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+
+  sdf::Errors errors;
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
   std::string convertedXmlStr = ElementToString(xmlDoc.RootElement());
@@ -2512,7 +3107,8 @@ TEST(Converter, World_17_to_18)
   xmlDoc.Clear();
   xmlDoc.Parse(xmlString.c_str());
 
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
   convertedXmlStr = ElementToString(xmlDoc.RootElement());
@@ -2614,7 +3210,12 @@ TEST(Converter, World_17_to_18)
   xmlDoc.Clear();
   xmlDoc.Parse(xmlString.c_str());
 
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc);
+
+  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  ASSERT_TRUE(errors.empty());
+
+  // Check nothing has been printed during Convert calls
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Compare converted xml with expected
   convertedXmlStr = ElementToString(xmlDoc.RootElement());

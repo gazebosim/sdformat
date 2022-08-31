@@ -168,6 +168,12 @@ namespace sdf
 
     /// \brief Generic warning saved as error due to WarningsPolicy config
     WARNING,
+
+    /// \brief SDF conversion generic error.
+    CONVERSION_ERROR,
+
+    /// \brief Generic error during parsing.
+    PARSING_ERROR,
   };
 
   class SDFORMAT_VISIBLE Error

@@ -952,7 +952,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated source[" << _source << "].\n";
-      Converter::Convert(_xmlDoc, SDF::Version());
+      Converter::Convert(_xmlDoc, SDF::Version(), _errors, _config);
     }
 
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
@@ -1042,7 +1042,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     {
       sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
 
-      Converter::Convert(_xmlDoc, SDF::Version());
+      Converter::Convert(_xmlDoc, SDF::Version(), _errors, _config);
     }
 
     tinyxml2::XMLElement *elemXml = sdfNode;
@@ -1944,17 +1944,33 @@ bool convertFile(const std::string &_filename, const std::string &_version,
 bool convertFile(const std::string &_filename, const std::string &_version,
                  const ParserConfig &_config, SDFPtr _sdf)
 {
+  sdf::Errors errors;
+  bool result = convertFile(_filename, _version, _config, _sdf, errors);
+  throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool convertFile(const std::string &_filename, const std::string &_version,
+                 const ParserConfig &_config, SDFPtr _sdf,
+                 sdf::Errors &_errors)
+{
   std::string filename = sdf::findFile(_filename, true, false, _config);
 
   if (filename.empty())
   {
-    sdferr << "Error finding file [" << _filename << "].\n";
+    std::stringstream ss;
+    ss << "Error finding file ["
+       << _filename
+       << "].";
+    _errors.push_back({ErrorCode::FILE_READ, ss.str()});
     return false;
   }
 
   if (nullptr == _sdf || nullptr == _sdf->Root())
   {
-    sdferr << "SDF pointer or its Root is null.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR,
+        "SDF pointer or its Root is null."});
     return false;
   }
 
@@ -1973,22 +1989,18 @@ bool convertFile(const std::string &_filename, const std::string &_version,
 
     _sdf->SetOriginalVersion(originalVersion);
 
-    if (sdf::Converter::Convert(&xmlDoc, _version, true))
+    if (sdf::Converter::Convert(&xmlDoc, _version, _errors, _config, true))
     {
-      Errors errors;
       bool result =
-          sdf::readDoc(&xmlDoc, _sdf, filename, false, _config, errors);
-
-      // Output errors
-      for (auto const &e : errors)
-        std::cerr << e << std::endl;
-
+          sdf::readDoc(&xmlDoc, _sdf, filename, false, _config, _errors);
       return result;
     }
   }
   else
   {
-    sdferr << "Error parsing file[" << filename << "]\n";
+    std::stringstream ss;
+    ss << "Error parsing file[" << filename << "]";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR, ss.str()});
   }
 
   return false;
@@ -2006,9 +2018,19 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 bool convertString(const std::string &_sdfString, const std::string &_version,
     const ParserConfig &_config, SDFPtr _sdf)
 {
+  sdf::Errors errors;
+  bool result = convertString(_sdfString, _version, _config, _sdf, errors);
+  throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool convertString(const std::string &_sdfString, const std::string &_version,
+    const ParserConfig &_config, SDFPtr _sdf, sdf::Errors &_errors)
+{
   if (_sdfString.empty())
   {
-    sdferr << "SDF string is empty.\n";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR, "SDF string is empty."});
     return false;
   }
 
@@ -2029,22 +2051,20 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 
     _sdf->SetOriginalVersion(originalVersion);
 
-    if (sdf::Converter::Convert(&xmlDoc, _version, true))
+    if (sdf::Converter::Convert(&xmlDoc, _version, _errors, _config, true))
     {
-      Errors errors;
       bool result = sdf::readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource),
-                                 false, _config, errors);
-
-      // Output errors
-      for (auto const &e : errors)
-        std::cerr << e << std::endl;
-
+                                 false, _config, _errors);
       return result;
     }
   }
   else
   {
-    sdferr << "Error parsing XML from string[" << _sdfString << "]\n";
+    std::stringstream ss;
+    ss << "Error parsing XML from string["
+       << _sdfString
+       << "]";
+    _errors.push_back({ErrorCode::CONVERSION_ERROR, ss.str()});
   }
 
   return false;

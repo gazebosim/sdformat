@@ -57,7 +57,8 @@ if (BUILD_TESTING)
     target_sources(UNIT_Converter_TEST PRIVATE
       Converter.cc
       EmbeddedSdf.cc
-      XmlUtils.cc)
+      XmlUtils.cc
+      Utils.cc)
   endif()
 
   if (TARGET UNIT_FrameSemantics_TEST)
