@@ -95,14 +95,6 @@
     <dampingFactor>0.1</dampingFactor>
   </gazebo>
 
-  <joint name="joint13" type="revolute">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
-    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
-    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
-    <parent link="link1"/>
-    <child link="link3"/>
-  </joint>
-
   <joint name="joint23" type="revolute">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="-0.5 0.5 2.5"/>
     <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
@@ -125,7 +117,27 @@
     </visual>
   </link>
 
-  <gazebo reference="joint13">
+  <joint name="joint14" type="revolute">
+    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1"/>
+    <child link="link4"/>
+  </joint>
+  <link name="link4">
+    <inertial>
+      <mass value="400"/>
+      <origin rpy="2 3 4" xyz="0.1 0.2 0.3"/>
+      <inertia ixx="8" ixy="0" ixz="0" iyy="9" iyz="0" izz="10"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.3 0.4 0.5"/>
+      </geometry>
+      <origin rpy="2 3 4" xyz="0.1 0.2 0.3"/>
+    </visual>
+  </link>
+  <gazebo reference="joint14">
     <implicitSpringDamper>true</implicitSpringDamper>
   </gazebo>
 
