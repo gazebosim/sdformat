@@ -86,17 +86,22 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
     else if (jointName == "joint12")
     {
       // cfmDamping not provided
-      ASSERT_TRUE(joint->HasElement("physics"));
+      EXPECT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
-      EXPECT_FALSE(physics->HasElement("implicit_spring_damper"));
+      EXPECT_TRUE(physics->HasElement("ode"));
+      sdf::ElementPtr ode = physics->GetElement("ode");
+      EXPECT_TRUE(ode->HasElement("implicit_spring_damper"));
+      EXPECT_FALSE(ode->Get<bool>("implicit_spring_damper"));
     }
-    else if (jointName == "joint13")
+    else if (jointName == "joint14")
     {
       // implicitSpringDamper = 1
-      ASSERT_TRUE(joint->HasElement("physics"));
+      EXPECT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
-      ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
-      EXPECT_TRUE(physics->Get<bool>("implicit_spring_damper"));
+      EXPECT_TRUE(physics->HasElement("ode"));
+      sdf::ElementPtr ode = physics->GetElement("ode");
+      EXPECT_TRUE(ode->HasElement("implicit_spring_damper"));
+      EXPECT_TRUE(ode->Get<bool>("implicit_spring_damper"));
     }
   }
 
