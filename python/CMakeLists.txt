@@ -36,7 +36,7 @@ function(configure_build_install_location _library_name)
   )
 endfunction()
 
-pybind11_add_module(sdformat SHARED
+pybind11_add_module(sdformat MODULE
   src/sdf/_gz_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
   src/sdf/pyAltimeter.cc
