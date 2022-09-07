@@ -75,6 +75,14 @@
               <cy>124</cy>
               <s>1.2</s>
             </intrinsics>
+            <projection>
+              <p_fx>280</p_fx>
+              <p_fy>281</p_fy>
+              <p_cx>162</p_cx>
+              <p_cy>124</p_cy>
+              <tx>0</tx>
+              <ty>0</ty>
+            </projection>
           </lens>
         </camera>
       </sensor>
