@@ -24,7 +24,9 @@
 #include "sdf/Error.hh"
 #include "sdf/Param.hh"
 #include "sdf/Types.hh"
+#include "sdf/World.hh"
 #include "test_utils.hh"
+#include "test_config.hh"
 
 ////////////////////////////////////////
 // Test Param class for sdf::Errors outputs
@@ -240,6 +242,61 @@ TEST(ErrorOutput, PrintConfigErrorOutput)
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Tolerance must be larger than 0, less than or equal to 360, "
       "and less than the provided interval."));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+////////////////////////////////////////
+// Test Model class for sdf::Errors outputs
+TEST(ErrorOutput, ModelErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+    sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::Errors errors;
+
+  std::function findFileCb = [](const std::string &_uri)
+  {
+    return sdf::testing::TestFile("integration", "model", _uri);
+  };
+
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <world name='test_world'>"
+         << "    <model name='common_name'>"
+         << "      <link name='a'>"
+         << "      </link>"
+         << "    </model>"
+         << "    <model name='common_name'>"
+         << "      <link name='a'>"
+         << "      </link>"
+         << "    </model>"
+         << "    <frame name='common_name'/>"
+         << "  </world>"
+         << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  parserConfig.SetFindCallback(findFileCb);
+  sdf::readString(stream.str(), parserConfig, sdfParsed, errors);
+  EXPECT_TRUE(errors.empty());
+
+  sdf::World world;
+  errors = world.Load(sdfParsed->Root()->GetElement("world"), parserConfig);
+  ASSERT_EQ(errors.size(), 3u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Non-unique name[common_name] detected 3 times in XML children of world"
+    " with name[test_world]."));
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+    "model with name[common_name] already exists."));
+  EXPECT_NE(std::string::npos, errors[2].Message().find(
+    "Frame with name [common_name] in world with name [test_world] has a name"
+    " collision, changing frame name to [common_name_frame]."));
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
