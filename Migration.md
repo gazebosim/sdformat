@@ -283,7 +283,12 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
 
-## libsdformat 9.8.0 to 9.8.1
+## libsdformat 9.8.0 to 9.9.0
+
+### Additions
+
+1. **sdf/Camera.hh**
+    + Get/Set functions for Camera projection matrix parameters.
 
 ### Modifications
 
