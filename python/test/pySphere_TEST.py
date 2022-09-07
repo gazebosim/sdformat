@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import copy
-from gz.math import Sphered
 import math
 from sdformat import Sphere
 import unittest

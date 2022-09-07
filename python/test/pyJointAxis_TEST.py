@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d, Vector3d
+from gz.math import Vector3d
 from sdformat import JointAxis, Error, SDFErrorsException
 import math
 import unittest
