@@ -65,6 +65,10 @@
 PYBIND11_MODULE(sdformat, m) {
   m.doc() = "sdformat Python Library.";
 
+  // Import the gz.math library to automatically add the type conversions
+  // this module requires to pass mathematical types to python code.
+  pybind11::module::import("gz.math");
+
   sdf::python::defineAirPressure(m);
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
