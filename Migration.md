@@ -19,6 +19,11 @@ but with improved human-readability..
 1. USD component now is living in https://github.com/gazebosim/gz-usd as an
    independent package.
 
+1. URDF parser now properly transforms poses for lights, projectors and sensors
+   from gazebo extension tags that are moved to a new link during fixed joint
+   reduction.
+    + [pull request 1114](https://github.com/osrf/sdformat/pull/1114)
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
