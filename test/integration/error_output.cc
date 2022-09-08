@@ -247,19 +247,14 @@ TEST(ErrorOutput, PrintConfigErrorOutput)
 }
 
 ////////////////////////////////////////
-// Test Model class for sdf::Errors outputs
-TEST(ErrorOutput, ModelErrorOutput)
+// Test World class for sdf::Errors outputs
+TEST(ErrorOutput, WorldErrorOutput)
 {
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
     sdf::Console::Instance()->GetMsgStream(), &buffer);
 
   sdf::Errors errors;
-
-  std::function findFileCb = [](const std::string &_uri)
-  {
-    return sdf::testing::TestFile("integration", "model", _uri);
-  };
 
   std::ostringstream stream;
   stream << "<?xml version=\"1.0\"?>"
@@ -282,7 +277,6 @@ TEST(ErrorOutput, ModelErrorOutput)
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
-  parserConfig.SetFindCallback(findFileCb);
   sdf::readString(stream.str(), parserConfig, sdfParsed, errors);
   EXPECT_TRUE(errors.empty());
 
