@@ -1,6 +1,31 @@
 ## libsdformat 9.X
 
-### libsdformat 9.X.X (202X-XX-XX)
+### libsdformat 9.9.0 (2022-09-07)
+
+1. sdf/camera.sdf: fields for projection matrix
+    * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
+
+1. urdf: fix sensor/light pose for links lumped by fixed joints
+    * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. Ensure relocatable config files
+    * [Pull request #419](https://github.com/gazebosim/sdformat/pull/419)
+    * [Pull request #1093](https://github.com/gazebosim/sdformat/pull/1093)
+
+1. Test using `__model__`, `world` in @attached_to, @relative_to
+    * [Pull request #1066](https://github.com/gazebosim/sdformat/pull/1066)
+
+1. Readme: Ignition -> Gazebo
+    * [Pull request #1080](https://github.com/gazebosim/sdformat/pull/1080)
+
+1. Document major and minor SDFormat version numbers
+    * [Pull request #1065](https://github.com/gazebosim/sdformat/pull/1065)
+
+1. Bash completion for flags
+    * [Pull request #1042](https://github.com/gazebosim/sdformat/pull/1042)
+
+1. Add Link::ResolveInertial API
+    * [Pull request #1012](https://github.com/gazebosim/sdformat/pull/1012)
 
 ### libsdformat 9.8.0 (2022-04-26)
 
