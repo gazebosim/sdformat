@@ -165,6 +165,9 @@ namespace sdf
     /// \brief Generic error to be thrown with SDF_ASSERT by the caller.
     /// This has been created to help preserve behavior.
     FATAL_ERROR,
+
+    /// \brief Generic warning saved as error due to WarningsPolicy config
+    WARNING,
   };
 
   class SDFORMAT_VISIBLE Error
