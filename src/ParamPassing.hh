@@ -85,6 +85,8 @@ namespace sdf
     /// \param[in] _elem The sdf (parent) element used to find the matching
     /// child element described in xml
     /// \param[in] _xml The xml element to find
+    /// \param[in] _config Custom parser configuration.
+    /// \param[out] _errors Vector of errros.
     /// \param[in] _isModifyAction Is true if the action is modify, the
     /// attribute 'name' may not be in the sdf element (i.e., may be a
     /// modified/added attribute such as //camera)
@@ -92,6 +94,8 @@ namespace sdf
     /// element could not be found
     ElementPtr getElementByName(const ElementPtr _elem,
                                 const tinyxml2::XMLElement *_xml,
+                                const sdf::ParserConfig _config,
+                                sdf::Errors &_errors,
                                 const bool _isModifyAction = false);
 
     /// \brief Initialize an sdf element description from the xml element
@@ -143,24 +147,31 @@ namespace sdf
     /// \brief Modifies the children elements of the included model
     /// \param[in] _xml Pointer to the xml element which contains the elements
     /// to be modified
+    /// \param[in] _config Custom parser configuration.
     /// \param[out] _elem The element from the included model to modify
+    /// \param[out] _errors Vector of errors.
     void modifyChildren(tinyxml2::XMLElement *_xml,
-                        ElementPtr _elem, Errors &_errors);
+                        const sdf::ParserConfig _config, ElementPtr _elem,
+                        Errors &_errors);
 
     /// \brief Modifies element values and/or attributes of an element from the
     /// included model
     /// \param[in] _xml Pointer to the xml element which contains the elements
     /// to be modified
+    /// \param[in] _config Custom parser configuration.
     /// \param[out] _elem The element from the included model to modify
     /// \param[out] _errors Captures errors found during parsing
-    void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors);
+    void modify(tinyxml2::XMLElement *_xml, const sdf::ParserConfig _config,
+                ElementPtr _elem, Errors &_errors);
 
     /// \brief Removes an element specified in xml
     /// \param[in] _xml Pointer to the xml element(s) to be removed from _elem
+    /// \param[in] _config Custom parser configuration.
     /// \param[out] _elem The element from the included model to remove
     /// elements from
     /// \param[out] _errors Captures errors found during parsing
-    void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem,
+    void remove(const tinyxml2::XMLElement *_xml,
+                const sdf::ParserConfig _config, ElementPtr _elem,
                 Errors &_errors);
 
     /// \brief Replace an element with another element
