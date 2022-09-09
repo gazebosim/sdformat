@@ -369,10 +369,9 @@ TEST(ErrorOutput, ModelErrorOutput)
     " collision. Please rename this frame."));
   errors.clear();
 
-  //Set SDF version to someting lower than 1.7 for extra errors
-  sdfParsed->SetOriginalVersion("1.6.0");
   sdf::Model second_model;
-  sdfParsed->Root()->GetElement("model")->SetOriginalVersion("1.2.0");
+  //Set SDF version to someting lower than 1.7 for extra errors
+  sdfParsed->Root()->GetElement("model")->SetOriginalVersion("1.6");
   errors = second_model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
 
   ASSERT_EQ(errors.size(), 7u);
