@@ -108,7 +108,7 @@ TEST(Converter, MoveElemElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -157,7 +157,7 @@ TEST(Converter, MoveElemAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2, errors, parserConfig);
+  sdf::Converter::Convert(errors,  &xmlDoc2, &convertXmlDoc2, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -206,7 +206,7 @@ TEST(Converter, MoveAttrAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc3, &convertXmlDoc3, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -258,7 +258,7 @@ TEST(Converter, MoveAttrElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc4, &convertXmlDoc4, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -308,7 +308,7 @@ TEST(Converter, MoveElemElemMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc5, &convertXmlDoc5, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -354,7 +354,7 @@ TEST(Converter, MoveAttrAttrMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc6, &convertXmlDoc6, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -403,7 +403,7 @@ TEST(Converter, MoveElemAttrMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc7, &convertXmlDoc7, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -449,7 +449,7 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc8, &convertXmlDoc8, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -518,7 +518,7 @@ TEST(Converter, Add)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -572,7 +572,7 @@ TEST(Converter, AddNoElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
@@ -628,7 +628,7 @@ TEST(Converter, AddNoValue)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos,
@@ -694,7 +694,7 @@ TEST(Converter, RemoveElement)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -754,7 +754,7 @@ TEST(Converter, RemoveDescendantElement)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -817,7 +817,7 @@ TEST(Converter, RemoveEmptyElement)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -892,7 +892,7 @@ TEST(Converter, RemoveEmptyDescendantElement)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -969,7 +969,7 @@ TEST(Converter, RemoveDescendantNestedElement)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1039,7 +1039,7 @@ TEST(Converter, DescendantIgnorePluginOrNamespacedElements)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1113,7 +1113,7 @@ TEST(Converter, RemoveElementSubElement)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1170,7 +1170,7 @@ TEST(Converter, RemoveAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1233,7 +1233,7 @@ TEST(Converter, RemoveEmptyAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1282,7 +1282,7 @@ TEST(Converter, RemoveNoElement)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
@@ -1348,7 +1348,7 @@ TEST(Converter, MoveInvalid)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1415,7 +1415,7 @@ TEST(Converter, MoveInvalidPrefix)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1483,7 +1483,7 @@ TEST(Converter, CopyElemElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1668,7 +1668,7 @@ TEST(Converter, MapInvalid)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_EQ(errors.size(), 16u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos,
@@ -1838,7 +1838,7 @@ TEST(Converter, MapElemElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1900,7 +1900,7 @@ TEST(Converter, MapElemAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc2, &convertXmlDoc2, errors, parserConfig);
+  sdf::Converter::Convert(errors,  &xmlDoc2, &convertXmlDoc2, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -1954,7 +1954,7 @@ TEST(Converter, MapAttrAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc3, &convertXmlDoc3, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2015,7 +2015,7 @@ TEST(Converter, MapAttrElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc4, &convertXmlDoc4, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc4, &convertXmlDoc4, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2073,7 +2073,7 @@ TEST(Converter, MapElemElemMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc5, &convertXmlDoc5, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc5, &convertXmlDoc5, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2128,7 +2128,7 @@ TEST(Converter, MapAttrAttrMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc6, &convertXmlDoc6, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc6, &convertXmlDoc6, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2186,7 +2186,7 @@ TEST(Converter, MapElemAttrMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc7, &convertXmlDoc7, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc7, &convertXmlDoc7, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2241,7 +2241,7 @@ TEST(Converter, MapAttrElemMultipleLevels)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc8, &convertXmlDoc8, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc8, &convertXmlDoc8, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2313,7 +2313,7 @@ TEST(Converter, RenameElemElem)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2362,7 +2362,7 @@ TEST(Converter, RenameAttrAttr)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc3, &convertXmlDoc3, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2410,7 +2410,7 @@ TEST(Converter, RenameNoFrom)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc3, &convertXmlDoc3, parserConfig);
   EXPECT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2458,7 +2458,7 @@ TEST(Converter, RenameNoTo)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc3, &convertXmlDoc3, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc3, &convertXmlDoc3, parserConfig);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos,
@@ -2497,7 +2497,7 @@ TEST(Converter, GazeboToSDF)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  EXPECT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3", errors, parserConfig));
+  EXPECT_FALSE(sdf::Converter::Convert(errors, &xmlDoc, "1.3", parserConfig));
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos,
@@ -2518,21 +2518,21 @@ TEST(Converter, NullDoc)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  sdf::Converter::Convert(nullptr, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, nullptr, &convertXmlDoc, parserConfig);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
   EXPECT_NE(std::string::npos,
             errors[0].Message().find("SDF XML doc is NULL"));
   errors.clear();
 
-  sdf::Converter::Convert(&xmlDoc, nullptr, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, nullptr, parserConfig);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
   EXPECT_NE(std::string::npos,
             errors[0].Message().find("Convert XML doc is NULL"));
   errors.clear();
 
-  sdf::Converter::Convert(nullptr, "1.4", errors, parserConfig);
+  sdf::Converter::Convert(errors, nullptr, "1.4", parserConfig);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
   EXPECT_NE(std::string::npos,
             errors[0].Message().find("SDF XML doc is NULL"));
@@ -2557,7 +2557,7 @@ TEST(Converter, NoVersion)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  ASSERT_FALSE(sdf::Converter::Convert(&xmlDoc, "1.3", errors, parserConfig));
+  ASSERT_FALSE(sdf::Converter::Convert(errors, &xmlDoc, "1.3", parserConfig));
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::CONVERSION_ERROR);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
@@ -2585,7 +2585,7 @@ TEST(Converter, SameVersion)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.3", errors, parserConfig));
+  ASSERT_TRUE(sdf::Converter::Convert(errors, &xmlDoc, "1.3", parserConfig));
   ASSERT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2613,7 +2613,7 @@ TEST(Converter, NewerVersion)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6", errors, parserConfig));
+  ASSERT_TRUE(sdf::Converter::Convert(errors, &xmlDoc, "1.6", parserConfig));
   ASSERT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2635,7 +2635,7 @@ TEST(Converter, MuchNewerVersion)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  ASSERT_TRUE(sdf::Converter::Convert(&xmlDoc, "1.6", errors, parserConfig));
+  ASSERT_TRUE(sdf::Converter::Convert(errors, &xmlDoc, "1.6", parserConfig));
   ASSERT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2699,7 +2699,7 @@ TEST(Converter, IMU_15_to_16)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2804,7 +2804,7 @@ TEST(Converter, World_15_to_16)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2871,7 +2871,7 @@ TEST(Converter, Pose_16_to_17)
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_TRUE(errors.empty());
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
@@ -2968,7 +2968,7 @@ TEST(Converter, World_17_to_18)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
@@ -3107,7 +3107,7 @@ TEST(Converter, World_17_to_18)
   xmlDoc.Clear();
   xmlDoc.Parse(xmlString.c_str());
 
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
@@ -3211,7 +3211,7 @@ TEST(Converter, World_17_to_18)
   xmlDoc.Parse(xmlString.c_str());
 
 
-  sdf::Converter::Convert(&xmlDoc, &convertXmlDoc, errors, parserConfig);
+  sdf::Converter::Convert(errors, &xmlDoc, &convertXmlDoc, parserConfig);
   ASSERT_TRUE(errors.empty());
 
   // Check nothing has been printed during Convert calls

@@ -952,7 +952,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated source[" << _source << "].\n";
-      Converter::Convert(_xmlDoc, SDF::Version(), _errors, _config);
+      Converter::Convert(_errors, _xmlDoc, SDF::Version(), _config);
     }
 
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
@@ -1042,7 +1042,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     {
       sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
 
-      Converter::Convert(_xmlDoc, SDF::Version(), _errors, _config);
+      Converter::Convert(_errors, _xmlDoc, SDF::Version(), _config);
     }
 
     tinyxml2::XMLElement *elemXml = sdfNode;
@@ -1989,7 +1989,7 @@ bool convertFile(const std::string &_filename, const std::string &_version,
 
     _sdf->SetOriginalVersion(originalVersion);
 
-    if (sdf::Converter::Convert(&xmlDoc, _version, _errors, _config, true))
+    if (sdf::Converter::Convert(_errors, &xmlDoc, _version, _config, true))
     {
       bool result =
           sdf::readDoc(&xmlDoc, _sdf, filename, false, _config, _errors);
@@ -2051,7 +2051,7 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
 
     _sdf->SetOriginalVersion(originalVersion);
 
-    if (sdf::Converter::Convert(&xmlDoc, _version, _errors, _config, true))
+    if (sdf::Converter::Convert(_errors, &xmlDoc, _version, _config, true))
     {
       bool result = sdf::readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource),
                                  false, _config, _errors);

@@ -84,9 +84,9 @@ void UpdatePose(tinyxml2::XMLElement *_elem,
 }
 
 /////////////////////////////////////////////////
-bool Converter::Convert(tinyxml2::XMLDocument *_doc,
+bool Converter::Convert(sdf::Errors &_errors,
+                        tinyxml2::XMLDocument *_doc,
                         const std::string &_toVersion,
-                        sdf::Errors &_errors,
                         const ParserConfig &_config,
                         bool _quiet)
 {
@@ -168,7 +168,7 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
       _errors.push_back({ErrorCode::CONVERSION_ERROR, ss.str()});
       return false;
     }
-    ConvertImpl(elem, xmlDoc.FirstChildElement("convert"), _errors, _config);
+    ConvertImpl(elem, xmlDoc.FirstChildElement("convert"), _config, _errors);
   }
 
   // Check that we actually converted to the desired final version.
@@ -187,9 +187,9 @@ bool Converter::Convert(tinyxml2::XMLDocument *_doc,
 }
 
 /////////////////////////////////////////////////
-void Converter::Convert(tinyxml2::XMLDocument *_doc,
+void Converter::Convert(sdf::Errors &_errors,
+                        tinyxml2::XMLDocument *_doc,
                         tinyxml2::XMLDocument *_convertDoc,
-                        sdf::Errors &_errors,
                         const ParserConfig &_config)
 {
   if (_doc == NULL)
@@ -204,14 +204,14 @@ void Converter::Convert(tinyxml2::XMLDocument *_doc,
   }
 
   ConvertImpl(_doc->FirstChildElement(), _convertDoc->FirstChildElement(),
-              _errors, _config);
+              _config, _errors);
 }
 
 /////////////////////////////////////////////////
 void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
                                        tinyxml2::XMLElement *_c,
-                                       sdf::Errors &_errors,
-                                       const ParserConfig &_config)
+                                       const ParserConfig &_config,
+                                       sdf::Errors &_errors)
 {
   if (!_c->Attribute("descendant_name"))
   {
@@ -233,9 +233,9 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
   {
     if (strcmp(e->Name(), _c->Attribute("descendant_name")) == 0)
     {
-      ConvertImpl(e, _c, _errors, _config);
+      ConvertImpl(e, _c, _config, _errors);
     }
-    ConvertDescendantsImpl(e, _c, _errors, _config);
+    ConvertDescendantsImpl(e, _c, _config, _errors);
     e = e->NextSiblingElement();
   }
 }
@@ -243,8 +243,8 @@ void Converter::ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
 /////////////////////////////////////////////////
 void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
                             tinyxml2::XMLElement *_convert,
-                            sdf::Errors &_errors,
-                            const ParserConfig &_config)
+                            const ParserConfig &_config,
+                            sdf::Errors &_errors)
 {
   if (_elem == NULL)
   {
@@ -257,7 +257,7 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     return;
   }
 
-  CheckDeprecation(_elem, _convert, _errors, _config);
+  CheckDeprecation(_elem, _convert, _config, _errors);
 
   for (auto *convertElem = _convert->FirstChildElement("convert");
        convertElem; convertElem = convertElem->NextSiblingElement("convert"))
@@ -268,13 +268,13 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
           convertElem->Attribute("name"));
       while (elem)
       {
-        ConvertImpl(elem, convertElem, _errors, _config);
+        ConvertImpl(elem, convertElem, _config, _errors);
         elem = elem->NextSiblingElement(convertElem->Attribute("name"));
       }
     }
     if (convertElem->Attribute("descendant_name"))
     {
-      ConvertDescendantsImpl(_elem, convertElem, _errors, _config);
+      ConvertDescendantsImpl(_elem, convertElem, _config, _errors);
     }
   }
 
@@ -305,11 +305,11 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     }
     else if (name == "remove")
     {
-      Remove(_elem, childElem, _errors);
+      Remove(_errors, _elem, childElem);
     }
     else if (name == "remove_empty")
     {
-      Remove(_elem, childElem, _errors, true);
+      Remove(_errors, _elem, childElem, true);
     }
     else if (name == "unflatten")
     {
@@ -747,9 +747,9 @@ void Converter::Add(tinyxml2::XMLElement *_elem,
 }
 
 /////////////////////////////////////////////////
-void Converter::Remove(tinyxml2::XMLElement *_elem,
+void Converter::Remove(sdf::Errors &_errors,
+                       tinyxml2::XMLElement *_elem,
                        tinyxml2::XMLElement *_removeElem,
-                       sdf::Errors &_errors,
                        bool _removeOnlyEmpty)
 {
   if (_elem == NULL)
@@ -1207,8 +1207,8 @@ const char *Converter::GetValue(const char *_valueElem, const char *_valueAttr,
 /////////////////////////////////////////////////
 void Converter::CheckDeprecation(tinyxml2::XMLElement *_elem,
                                  tinyxml2::XMLElement *_convert,
-                                 sdf::Errors &_errors,
-                                 const ParserConfig &_config)
+                                 const ParserConfig &_config,
+                                 sdf::Errors &_errors)
 {
   // Process deprecated elements
   for (auto *deprecatedElem = _convert->FirstChildElement("deprecated");

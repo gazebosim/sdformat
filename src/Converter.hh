@@ -36,14 +36,14 @@ namespace sdf
   class Converter
   {
     /// \brief Convert SDF to the specified version.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _doc SDF xml doc
     /// \param[in] _toVersion Version number in string format.
-    /// \param[out] _errors Vector of errors.
     /// \param[in] _config Parser configuration.
     /// \param[in] _quiet False to be more verbose.
-    public: static bool Convert(tinyxml2::XMLDocument *_doc,
+    public: static bool Convert(sdf::Errors &_errors,
+                                tinyxml2::XMLDocument *_doc,
                                 const std::string &_toVersion,
-                                sdf::Errors &_errors,
                                 const ParserConfig &_config,
                                 bool _quiet = false);
 
@@ -51,36 +51,36 @@ namespace sdf
     /// This is an internal function.
     /// \brief Generic convert function that converts the SDF based on the
     /// given Convert file.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _doc SDF xml doc
     /// \param[in] _convertDoc Convert xml doc
-    /// \param[out] _errors Vector of errors.
     /// \param[in] _config Parser configuration.
-    public: static void Convert(tinyxml2::XMLDocument *_doc,
+    public: static void Convert(sdf::Errors &_errors,
+                                tinyxml2::XMLDocument *_doc,
                                 tinyxml2::XMLDocument *_convertDoc,
-                                sdf::Errors &_errors,
                                 const ParserConfig &_config);
     /// \endcond
 
     /// \brief Implementation of Convert functionality.
     /// \param[in] _elem SDF xml element tree to convert.
     /// \param[in] _convert Convert xml element tree.
-    /// \param[out] _errors Vector of errors.
     /// \param[in] _config Parser configuration.
+    /// \param[out] _errors Vector of errors.
     private: static void ConvertImpl(tinyxml2::XMLElement *_elem,
                                      tinyxml2::XMLElement *_convert,
-                                     sdf::Errors &_errors,
-                                     const ParserConfig &_config);
+                                     const ParserConfig &_config,
+                                     sdf::Errors &_errors);
 
     /// \brief Recursive helper function for ConvertImpl that converts
     /// elements named by the descendant_name attribute.
     /// \param[in] _e SDF xml element tree to convert.
     /// \param[in] _c Convert xml element tree.
-    /// \param[out] _errors Vector of errors.
     /// \param[in] _config Parser configuration.
+    /// \param[out] _errors Vector of errors.
     private: static void ConvertDescendantsImpl(tinyxml2::XMLElement *_e,
                                                 tinyxml2::XMLElement *_c,
-                                                sdf::Errors &_errors,
-                                                const ParserConfig &_config);
+                                                const ParserConfig &_config,
+                                                sdf::Errors &_errors);
 
     /// \brief Rename an element or attribute.
     /// \param[in] _elem The element to be renamed, or the element which
@@ -107,8 +107,8 @@ namespace sdf
     /// be moved.
     /// \param[in] _moveElem A 'convert' element that describes the move
     /// operation.
-    /// \param[out] _errors Vector of errors.
     /// \param[in] _copy True to copy the element
+    /// \param[out] _errors Vector of errors.
     private: static void Move(tinyxml2::XMLElement *_elem,
                               tinyxml2::XMLElement *_moveElem,
                               const bool _copy,
@@ -124,15 +124,15 @@ namespace sdf
                              sdf::Errors &_errors);
 
     /// \brief Remove an attribute or elements.
+    /// \param[out] _errors Vector of Errors.
     /// \param[in] _elem The element from which data may be removed.
     /// \param[in] _removeElem The metadata about what to remove.
-    /// \param[out] _errors Vector of Errors.
     /// \param[in] _removeOnlyEmpty If true, only remove an attribute
     /// containing an empty string or elements that contain neither value nor
     /// child elements nor attributes.
-    private: static void Remove(tinyxml2::XMLElement *_elem,
+    private: static void Remove(sdf::Errors &_errors,
+                                tinyxml2::XMLElement *_elem,
                                 tinyxml2::XMLElement *_removeElem,
-                                sdf::Errors &_errors,
                                 bool _removeOnlyEmpty = false);
 
     /// \brief Unflatten an element (conversion from SDFormat <= 1.7 to 1.8)
@@ -159,8 +159,8 @@ namespace sdf
 
     private: static void CheckDeprecation(tinyxml2::XMLElement *_elem,
                                           tinyxml2::XMLElement *_convert,
-                                          sdf::Errors &_errors,
-                                          const ParserConfig &_config);
+                                          const ParserConfig &_config,
+                                          sdf::Errors &_errors);
   };
   }
 }
