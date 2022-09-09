@@ -349,51 +349,134 @@ TEST(ErrorOutput, ModelErrorOutput)
   sdf::Model model;
   errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
   ASSERT_EQ(errors.size(), 7u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
-    "Non-unique name[common_name] detected 7 times in XML children of model"
-    " with name[test_model]."));
+      "Non-unique name[common_name] detected 7 times in XML children of model"
+      " with name[test_model]."));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[1].Message().find(
-    "link with name[common_name] already exists."));
+      "link with name[common_name] already exists."));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[2].Message().find(
-    "Link with name [common_name] in model with name [test_model] has a name"
-    " collision. Please rename this link."));
+      "Link with name [common_name] in model with name [test_model] has a "
+      "name collision. Please rename this link."));
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[3].Message().find(
-    "joint with name[common_name] already exists."));
+      "joint with name[common_name] already exists."));
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[4].Message().find(
-    "Joint with name [common_name] in model with name [test_model] has a name"
-    " collision. Please rename this joint."));
+      "Joint with name [common_name] in model with name [test_model] has a "
+      "name collision. Please rename this joint."));
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[5].Message().find(
-    "frame with name[common_name] already exists."));
+      "frame with name[common_name] already exists."));
+  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[6].Message().find(
-    "Frame with name [common_name] in model with name [test_model] has a name"
-    " collision. Please rename this frame."));
+      "Frame with name [common_name] in model with name [test_model] has a "
+      "name collision. Please rename this frame."));
   errors.clear();
+  model.ClearLinks();
+  model.ClearJoints();
+  model.ClearFrames();
 
-  sdf::Model second_model;
+  // Check warnings are still printed when the policy is not set to error.
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::WARN);
+  errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+  ASSERT_EQ(errors.size(), 6u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "link with name[common_name] already exists."));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Link with name [common_name] in model with name [test_model] has a "
+      "name collision. Please rename this link."));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[2].Message().find(
+      "joint with name[common_name] already exists."));
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[3].Message().find(
+      "Joint with name [common_name] in model with name [test_model] has a "
+      "name collision. Please rename this joint."));
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[4].Message().find(
+      "frame with name[common_name] already exists."));
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[5].Message().find(
+      "Frame with name [common_name] in model with name [test_model] has a "
+      "name collision. Please rename this frame."));
+  // Check printed warnings
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "Non-unique name[common_name] detected 7 times in XML children of model"
+      " with name[test_model]."));
+  buffer.str("");
+  buffer.clear();
+  errors.clear();
+  model.ClearLinks();
+  model.ClearJoints();
+  model.ClearFrames();
+
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   //Set SDF version to someting lower than 1.7 for extra errors
   sdfParsed->Root()->GetElement("model")->SetOriginalVersion("1.6");
-  errors = second_model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+  errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
 
   ASSERT_EQ(errors.size(), 7u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
-    "Non-unique name[common_name] detected 7 times in XML children of model"
-    " with name[test_model]."));
+      "Non-unique name[common_name] detected 7 times in XML children of model"
+      " with name[test_model]."));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[1].Message().find(
-    "link with name[common_name] already exists."));
+      "link with name[common_name] already exists."));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::WARNING);
   EXPECT_NE(std::string::npos, errors[2].Message().find(
-    "Link with name [common_name] in model with name [test_model] has a name"
-    " collision, changing link name to [common_name_link]."));
+      "Link with name [common_name] in model with name [test_model] has a "
+      "name collision, changing link name to [common_name_link]."));
+  EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[3].Message().find(
-    "joint with name[common_name] already exists."));
+      "joint with name[common_name] already exists."));
+  EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::WARNING);
   EXPECT_NE(std::string::npos, errors[4].Message().find(
-    "Joint with name [common_name] in model with name [test_model] has a name"
-    " collision, changing joint name to [common_name_joint]."));
+      "Joint with name [common_name] in model with name [test_model] has a "
+      "name collision, changing joint name to [common_name_joint]."));
+  EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
   EXPECT_NE(std::string::npos, errors[5].Message().find(
-    "frame with name[common_name] already exists."));
+      "frame with name[common_name] already exists."));
+  EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::WARNING);
   EXPECT_NE(std::string::npos, errors[6].Message().find(
-    "Frame with name [common_name] in model with name [test_model] has a name"
-    " collision, changing frame name to [common_name_frame]."));
-
+      "Frame with name [common_name] in model with name [test_model] has a "
+      "name collision, changing frame name to [common_name_frame]."));
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  errors.clear();
+  model.ClearLinks();
+  model.ClearJoints();
+  model.ClearFrames();
+
+  // Check warnings are still printed when the policy is not set to error.
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::WARN);
+  errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+  ASSERT_EQ(errors.size(), 3u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "link with name[common_name] already exists."));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "joint with name[common_name] already exists."));
+  EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+  EXPECT_NE(std::string::npos, errors[2].Message().find(
+      "frame with name[common_name] already exists."));
+  // Check printed warnings
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "Non-unique name[common_name] detected 7 times in XML children of model"
+      " with name[test_model]."));
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "Link with name [common_name] in model with name [test_model] has a "
+      "name collision, changing link name to [common_name_link]."));
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "Joint with name [common_name] in model with name [test_model] has a "
+      "name collision, changing joint name to [common_name_joint]."));
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "Frame with name [common_name] in model with name [test_model] has a "
+      "name collision, changing frame name to [common_name_frame]."));
 }
