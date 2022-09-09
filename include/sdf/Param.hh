@@ -682,7 +682,7 @@ namespace sdf
     try
     {
       std::stringstream ss;
-      ss << _value;
+      ss << ParamStreamer<T>{_value, std::numeric_limits<int>::max()};
       return this->SetFromString(ss.str(), true, _errors);
     }
     catch(...)
@@ -777,7 +777,8 @@ namespace sdf
 
     try
     {
-      ss << ParamStreamer{this->dataPtr->defaultValue};
+      ss << ParamStreamer{this->dataPtr->defaultValue,
+                          std::numeric_limits<int>::max()};
       ss >> _value;
     }
     catch(...)
