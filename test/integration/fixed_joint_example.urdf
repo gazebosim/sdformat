@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<robot name="fixed_joint_example">
+
+  <link name="base">
+    <inertial>
+      <mass value="6"/>
+      <origin rpy="0 0 0" xyz="0 0 0.25"/>
+      <inertia ixx="0.625" ixy="0" ixz="0" iyy="0.625" iyz="0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="1.0 1.0 0.5"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0.25"/>
+    </visual>
+  </link>
+
+  <!-- Intermediate link with fixed joint that will be reduced. -->
+  <joint name="intermediate_joint" type="fixed">
+    <origin rpy="1.57079632679 0 0" xyz="0 0 0.75"/>
+    <parent link="base"/>
+    <child link="intermediate_link"/>
+  </joint>
+  <link name="intermediate_link">
+    <inertial>
+      <mass value="6"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.625" ixy="0" ixz="0" iyy="1.0" iyz="0" izz="0.625"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="1.0 0.5 1.0"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <!-- Continuous joint connected to intermediate_link -->
+  <joint name="rotary_joint" type="continuous">
+    <origin rpy="0 0 1.57079632679" xyz="0 0.75 0"/>
+    <axis xyz="1 0 0"/>
+    <parent link="intermediate_link"/>
+    <child link="rotary_link"/>
+  </joint>
+  <link name="rotary_link">
+    <inertial>
+      <mass value="12"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2" ixy="0" ixz="0" iyy="2" iyz="0" izz="2"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="1.0 1.0 1.0"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+</robot>

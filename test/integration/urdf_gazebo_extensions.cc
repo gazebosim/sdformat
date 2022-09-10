@@ -320,3 +320,47 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
   EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseTwoLevel"));
   EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseTwoLevel2"));
 }
+
+/////////////////////////////////////////////////
+TEST(SDFParser, FixedJointExample)
+{
+  const std::string urdfTestFile =
+      sdf::testing::TestFile("integration", "fixed_joint_example.urdf");
+
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("fixed_joint_example", model->Name());
+
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("base"));
+  EXPECT_TRUE(model->LinkNameExists("rotary_link"));
+
+  // Expect MassMatrix3 values to match for links
+  auto link1 = model->LinkByName("base");
+  auto link2 = model->LinkByName("rotary_link");
+  ASSERT_NE(nullptr, link1);
+  ASSERT_NE(nullptr, link2);
+  auto massMatrix1 = link1->Inertial().MassMatrix();
+  auto massMatrix2 = link2->Inertial().MassMatrix();
+  EXPECT_DOUBLE_EQ(massMatrix1.Mass(), massMatrix2.Mass());
+  EXPECT_EQ(massMatrix1.Moi(), massMatrix2.Moi());
+
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_TRUE(model->JointNameExists("rotary_joint"));
+
+  EXPECT_EQ(2u, model->FrameCount());
+  ASSERT_TRUE(model->FrameNameExists("intermediate_joint"));
+  ASSERT_TRUE(model->FrameNameExists("intermediate_link"));
+
+  const std::string j = "intermediate_joint";
+  const std::string l = "intermediate_link";
+  std::string body;
+  EXPECT_TRUE(model->FrameByName(j)->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("base", body);
+  EXPECT_TRUE(model->FrameByName(l)->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("base", body);
+}
