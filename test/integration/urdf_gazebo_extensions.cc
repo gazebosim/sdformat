@@ -364,3 +364,34 @@ TEST(SDFParser, FixedJointExample)
   EXPECT_TRUE(model->FrameByName(l)->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("base", body);
 }
+
+/////////////////////////////////////////////////
+TEST(SDFParser, FixedJointSimple)
+{
+  const std::string urdfTestFile =
+      sdf::testing::TestFile("integration", "fixed_joint_simple.urdf");
+
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("fixed_joint_simple", model->Name());
+
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("base"));
+
+  // Expect MassMatrix3 values to match for links
+  auto link = model->LinkByName("base");
+  ASSERT_NE(nullptr, link);
+  auto massMatrix = link->Inertial().MassMatrix();
+  EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
+  EXPECT_EQ(2.0 * gz::math::Matrix3d::Identity, massMatrix.Moi());
+
+  EXPECT_EQ(0u, model->JointCount());
+
+  EXPECT_EQ(2u, model->FrameCount());
+  ASSERT_TRUE(model->FrameNameExists("fixed_joint"));
+  ASSERT_TRUE(model->FrameNameExists("child_link"));
+}
