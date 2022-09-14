@@ -587,7 +587,8 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
       continue;
     }
 
-    ElementPtr elemChild = getElementByName(_elem, xmlChild, _config, _errors, true);
+    ElementPtr elemChild = getElementByName(_elem, xmlChild,
+                                            _config, _errors, true);
     ParamPtr paramChild = elemChild->GetValue();
 
     if (xmlChild->GetText())
