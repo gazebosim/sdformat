@@ -29,11 +29,16 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
   const std::string urdfTestFile =
       sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
 
-  sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(urdfTestFile, robot));
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty());
+  for (auto e : errors)
+  {
+    std::cerr << e << std::endl;
+  }
 
-  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  auto modelDom = root.ModelByIndex(0);
+  sdf::ElementPtr model = modelDom->Element();
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {
@@ -306,4 +311,23 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
   checkElementPoses("light");
   checkElementPoses("projector");
   checkElementPoses("sensor");
+
+  // Check that //model/frame elements are added for reduced joints
+  EXPECT_EQ(14u, modelDom->FrameCount());
+
+  EXPECT_TRUE(modelDom->FrameNameExists("issue378_link_joint"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jCamera"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorNoPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPoseRelative"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPoseTwoLevel"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPoseTwoLevel2"));
+
+  EXPECT_TRUE(modelDom->FrameNameExists("issue378_link"));
+  EXPECT_TRUE(modelDom->FrameNameExists("Camera"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorNoPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseRelative"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseTwoLevel"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseTwoLevel2"));
 }
