@@ -542,8 +542,8 @@ bool Converter::FindNewModelElements(tinyxml2::XMLElement *_elem,
             if (expressIn.compare(0, newModelNameSize, newModelName) != 0)
             {
               std::stringstream ss;
-              ss << "Error: <xyz>'s attribute 'expressed_in' does not start with "
-                 << newModelName;
+              ss << "Error: <xyz>'s attribute 'expressed_in' does not start "
+                 << "with " << newModelName;
               _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
               return false;
             }
