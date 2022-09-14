@@ -299,7 +299,7 @@ TEST(ErrorOutput, WorldErrorOutput)
 }
 
 ////////////////////////////////////////
-//Test Sensor class for sdf::Errors outputs
+// Test Sensor class for sdf::Errors outputs
 TEST(ErrorOutput, SensorErrorOutput)
 {
   std::stringstream buffer;
