@@ -38,6 +38,15 @@ TEST(ErrorOutput, ParamErrorOutput)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::Errors errors;
   ASSERT_NO_THROW(sdf::Param param1("key", "not_valid_type", "true", false,
       errors, "description"));
@@ -160,6 +169,15 @@ TEST(ErrorOutput, ElementErrorOutput)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::Errors errors;
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
   elem->SetName("testElement");
@@ -232,6 +250,15 @@ TEST(ErrorOutput, PrintConfigErrorOutput)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::Errors errors;
   sdf::PrintConfig printConfig;
   ASSERT_FALSE(printConfig.SetRotationSnapToDegrees(361, 300, errors));
@@ -257,6 +284,15 @@ TEST(ErrorOutput, WorldErrorOutput)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
     sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::Errors errors;
 
@@ -306,6 +342,15 @@ TEST(ErrorOutput, ModelErrorOutput)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
     sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::Errors errors;
 
