@@ -407,7 +407,8 @@ TEST(ErrorOutput, ModelErrorOutput)
   // Check printed warnings
   EXPECT_NE(std::string::npos, buffer.str().find(
       "Non-unique name[common_name] detected 7 times in XML children of model"
-      " with name[test_model]."));
+      " with name[test_model]."))
+      << buffer.str();
   buffer.str("");
   buffer.clear();
   errors.clear();
@@ -469,14 +470,18 @@ TEST(ErrorOutput, ModelErrorOutput)
   // Check printed warnings
   EXPECT_NE(std::string::npos, buffer.str().find(
       "Non-unique name[common_name] detected 7 times in XML children of model"
-      " with name[test_model]."));
+      " with name[test_model]."))
+      << buffer.str();
   EXPECT_NE(std::string::npos, buffer.str().find(
       "Link with name [common_name] in model with name [test_model] has a "
-      "name collision, changing link name to [common_name_link]."));
+      "name collision, changing link name to [common_name_link]."))
+      << buffer.str();
   EXPECT_NE(std::string::npos, buffer.str().find(
       "Joint with name [common_name] in model with name [test_model] has a "
-      "name collision, changing joint name to [common_name_joint]."));
+      "name collision, changing joint name to [common_name_joint]."))
+      << buffer.str();
   EXPECT_NE(std::string::npos, buffer.str().find(
       "Frame with name [common_name] in model with name [test_model] has a "
-      "name collision, changing frame name to [common_name_frame]."));
+      "name collision, changing frame name to [common_name_frame]."))
+      << buffer.str();
 }
