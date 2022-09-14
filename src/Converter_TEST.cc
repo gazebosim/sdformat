@@ -105,6 +105,15 @@ TEST(Converter, MoveElemElem)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -154,6 +163,15 @@ TEST(Converter, MoveElemAttr)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -202,6 +220,15 @@ TEST(Converter, MoveAttrAttr)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -255,6 +282,15 @@ TEST(Converter, MoveAttrElem)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -305,6 +341,15 @@ TEST(Converter, MoveElemElemMultipleLevels)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -350,6 +395,15 @@ TEST(Converter, MoveAttrAttrMultipleLevels)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -400,6 +454,15 @@ TEST(Converter, MoveElemAttrMultipleLevels)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -445,6 +508,15 @@ TEST(Converter, MoveAttrElemMultipleLevels)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -515,6 +587,15 @@ TEST(Converter, Add)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -568,6 +649,15 @@ TEST(Converter, AddNoElem)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -624,6 +714,15 @@ TEST(Converter, AddNoValue)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -691,6 +790,15 @@ TEST(Converter, RemoveElement)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -750,6 +858,15 @@ TEST(Converter, RemoveDescendantElement)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -813,6 +930,15 @@ TEST(Converter, RemoveEmptyElement)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -888,6 +1014,15 @@ TEST(Converter, RemoveEmptyDescendantElement)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -965,6 +1100,15 @@ TEST(Converter, RemoveDescendantNestedElement)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
@@ -1035,6 +1179,15 @@ TEST(Converter, DescendantIgnorePluginOrNamespacedElements)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -1110,6 +1263,15 @@ TEST(Converter, RemoveElementSubElement)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -1166,6 +1328,15 @@ TEST(Converter, RemoveAttr)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -1230,6 +1401,15 @@ TEST(Converter, RemoveEmptyAttr)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -1278,6 +1458,15 @@ TEST(Converter, RemoveNoElement)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -1344,6 +1533,15 @@ TEST(Converter, MoveInvalid)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -1412,6 +1610,15 @@ TEST(Converter, MoveInvalidPrefix)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -1479,6 +1686,15 @@ TEST(Converter, CopyElemElem)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -1665,6 +1881,15 @@ TEST(Converter, MapInvalid)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -1835,6 +2060,15 @@ TEST(Converter, MapElemElem)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -1897,6 +2131,15 @@ TEST(Converter, MapElemAttr)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -1950,6 +2193,15 @@ TEST(Converter, MapAttrAttr)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2012,6 +2264,15 @@ TEST(Converter, MapAttrElem)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2070,6 +2331,15 @@ TEST(Converter, MapElemElemMultipleLevels)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2124,6 +2394,15 @@ TEST(Converter, MapAttrAttrMultipleLevels)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2183,6 +2462,15 @@ TEST(Converter, MapElemAttrMultipleLevels)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2237,6 +2525,15 @@ TEST(Converter, MapAttrElemMultipleLevels)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2310,6 +2607,15 @@ TEST(Converter, RenameElemElem)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2359,6 +2665,15 @@ TEST(Converter, RenameAttrAttr)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2406,6 +2721,15 @@ TEST(Converter, RenameNoFrom)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2455,6 +2779,15 @@ TEST(Converter, RenameNoTo)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2494,6 +2827,15 @@ TEST(Converter, GazeboToSDF)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2513,6 +2855,15 @@ TEST(Converter, NullDoc)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2553,6 +2904,15 @@ TEST(Converter, NoVersion)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
@@ -2580,6 +2940,15 @@ TEST(Converter, SameVersion)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2609,6 +2978,15 @@ TEST(Converter, NewerVersion)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
@@ -2630,6 +3008,15 @@ TEST(Converter, MuchNewerVersion)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2695,6 +3082,15 @@ TEST(Converter, IMU_15_to_16)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2801,6 +3197,15 @@ TEST(Converter, World_15_to_16)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors;
@@ -2867,6 +3272,15 @@ TEST(Converter, Pose_16_to_17)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
@@ -2963,6 +3377,15 @@ TEST(Converter, World_17_to_18)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
