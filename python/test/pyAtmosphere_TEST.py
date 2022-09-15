@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from gz.math7 import Pose3d, Temperature
-from sdformat import Atmosphere
-import sdformat as sdf
+from sdformat13 import Atmosphere
+import sdformat13 as sdf
 import unittest
 
 class AtmosphereTEST(unittest.TestCase):

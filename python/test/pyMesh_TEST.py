@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import Mesh
+from sdformat13 import Mesh
 from gz.math7 import Vector3d
 import unittest
 

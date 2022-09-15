@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import Polyline
+from sdformat13 import Polyline
 from gz.math7 import Vector2d
 import unittest
 

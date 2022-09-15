@@ -14,7 +14,7 @@
 
 import copy
 from gz.math7 import Pose3d, Vector3d
-from sdformat import JointAxis, Error, SDFErrorsException
+from sdformat13 import JointAxis, Error, SDFErrorsException
 import math
 import unittest
 

@@ -14,9 +14,9 @@
 
 import copy
 from gz.math7 import Pose3d
-from sdformat import (Box, Collision, Contact, Cylinder, Error, Geometry,
+from sdformat13 import (Box, Collision, Contact, Cylinder, Error, Geometry,
                       Plane, Surface, Sphere, SDFErrorsException)
-import sdformat as sdf
+import sdformat13 as sdf
 import unittest
 import math
 

@@ -14,7 +14,7 @@
 
 import copy
 from gz.math7 import Vector3d
-from sdformat import Heightmap, HeightmapBlend, HeightmapTexture
+from sdformat13 import Heightmap, HeightmapBlend, HeightmapTexture
 import unittest
 
 

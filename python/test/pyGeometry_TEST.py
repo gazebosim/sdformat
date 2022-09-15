@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from sdformat import Geometry, Box, Capsule, Cylinder, Ellipsoid, Mesh, Plane, Sphere
+from sdformat13 import Geometry, Box, Capsule, Cylinder, Ellipsoid, Mesh, Plane, Sphere
 from gz.math7 import Vector3d, Vector2d
-import sdformat as sdf
+import sdformat13 as sdf
 import unittest
 
 

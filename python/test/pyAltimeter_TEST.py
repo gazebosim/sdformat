@@ -13,8 +13,8 @@
 # limitations under the License.
 
 from gz.math7 import Vector3d
-from sdformat import Altimeter, Noise
-import sdformat as sdf
+from sdformat13 import Altimeter, Noise
+import sdformat13 as sdf
 import unittest
 
 

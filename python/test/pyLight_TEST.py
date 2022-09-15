@@ -14,8 +14,8 @@
 
 import copy
 from gz.math7 import Angle, Color, Pose3d, Vector3d
-from sdformat import Light, SDFErrorsException
-import sdformat as sdf
+from sdformat13 import Light, SDFErrorsException
+import sdformat13 as sdf
 import math
 import unittest
 

@@ -14,8 +14,8 @@
 
 import copy
 from gz.math7 import Color, Pose3d, Vector3d, SphericalCoordinates
-from sdformat import Atmosphere, Gui, Physics, Plugin, Error, Frame, Light, Model, Scene, World
-import sdformat as sdf
+from sdformat13 import Atmosphere, Gui, Physics, Plugin, Error, Frame, Light, Model, Scene, World
+import sdformat13 as sdf
 import unittest
 import math
 
