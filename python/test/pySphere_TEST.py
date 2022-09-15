@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math import Sphered
+from gz.math7 import Sphered
 import math
 from sdformat import Sphere
 import unittest

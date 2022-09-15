@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math import Color
+from gz.math7 import Color
 from sdformat import Scene, Sky
 import unittest
 

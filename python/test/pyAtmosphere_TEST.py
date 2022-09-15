@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz.math import Pose3d, Temperature
+from gz.math7 import Pose3d, Temperature
 from sdformat import Atmosphere
 import sdformat as sdf
 import unittest

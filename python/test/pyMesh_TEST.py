@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import Mesh
-from gz.math import Vector3d
+from gz.math7 import Vector3d
 import unittest
 
 
