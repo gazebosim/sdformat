@@ -161,10 +161,24 @@ namespace sdf
     /// \param[in] _prefix String value to prefix to the output.
     public: void PrintDescription(const std::string &_prefix) const;
 
+    /// \brief Output Element's description to stdout.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[out] _errors Vector of errors.
+    public: void PrintDescription(const std::string &_prefix,
+                                  sdf::Errors &_errors) const;
+
     /// \brief Output Element's values to stdout.
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _config Configuration for printing the values.
     public: void PrintValues(std::string _prefix,
+                             const PrintConfig &_config = PrintConfig()) const;
+
+    /// \brief Output Element's values to stdout.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _config Configuration for printing the values.
+    public: void PrintValues(sdf::Errors &_errors,
+                             std::string _prefix,
                              const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Output Element's values to stdout.
@@ -173,6 +187,18 @@ namespace sdf
     /// \param[in] _includeDefaultAttributes flag to print default attributes.
     /// \param[in] _config Configuration for printing the values.
     public: void PrintValues(const std::string &_prefix,
+                             bool _includeDefaultElements,
+                             bool _includeDefaultAttributes,
+                             const PrintConfig &_config = PrintConfig()) const;
+
+    /// \brief Output Element's values to stdout.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _includeDefaultElements flag to print default elements.
+    /// \param[in] _includeDefaultAttributes flag to print default attributes.
+    /// \param[in] _config Configuration for printing the values.
+    public: void PrintValues(sdf::Errors &_errors,
+                             const std::string &_prefix,
                              bool _includeDefaultElements,
                              bool _includeDefaultAttributes,
                              const PrintConfig &_config = PrintConfig()) const;
@@ -194,11 +220,30 @@ namespace sdf
     public: void PrintDocRightPane(std::string &_html,
                                   int _spacing, int &_index) const;
 
+    /// \brief Helper function for SDF::PrintDoc
+    ///
+    /// This generates the SDF html documentation.
+    /// \param[out] _html Accumulated HTML for output.
+    /// \param[in] _spacing Amount of spacing for this element.
+    /// \param[out] _errors Vector of errors.
+    public: void PrintDocRightPane(std::string &_html, int _spacing,
+                                   int &_index, sdf::Errors &_errors) const;
+
     /// \brief Convert the element values to a string representation.
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _config Configuration for printing the values.
     /// \return The string representation.
     public: std::string ToString(
+        const std::string &_prefix,
+        const PrintConfig &_config = PrintConfig()) const;
+
+    /// \brief Convert the element values to a string representation.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _config Configuration for printing the values.
+    /// \return The string representation.
+    public: std::string ToString(
+        sdf::Errors &_errors,
         const std::string &_prefix,
         const PrintConfig &_config = PrintConfig()) const;
 
@@ -212,6 +257,23 @@ namespace sdf
     /// \param[in] _config Configuration for converting to string.
     /// \return The string representation.
     public: std::string ToString(
+        const std::string &_prefix,
+        bool _includeDefaultElements,
+        bool _includeDefaultAttributes,
+        const PrintConfig &_config = PrintConfig()) const;
+
+    /// \brief Convert the element values to a string representation.
+    /// Current behavior of ToString(const std::string &_prefix) can be
+    /// achieved by calling this function with _includeDefaultElements=true
+    /// and _includeDefaultAttributes=false
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _prefix String value to prefix to the output.
+    /// \param[in] _includeDefaultElements flag to include default elements.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for converting to string.
+    /// \return The string representation.
+    public: std::string ToString(
+        sdf::Errors &_errors,
         const std::string &_prefix,
         bool _includeDefaultElements,
         bool _includeDefaultAttributes,
@@ -373,6 +435,17 @@ namespace sdf
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _key the name of a child attribute or element.
+    /// \return The value of the _key.
+    /// \sa std::pair<T, bool> Get(const std::string &_key,
+    /// const T &_defaultValue)
+    public: template<typename T>
+            T Get(sdf::Errors &_errors,
+                  const std::string &_key = "") const;
+
+    /// \brief Get the value of a key. This function assumes the _key
+    /// exists.
     /// \param[in] _key the name of a child attribute or element.
     /// \return The value of the _key.
     /// \sa std::pair<T, bool> Get(const std::string &_key,
@@ -380,6 +453,17 @@ namespace sdf
     public: template<typename T>
             T Get(const std::string &_key = "") const;
 
+    /// \brief Get the value of a key.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _key the name of a child attribute or element.
+    /// \param[in] _defaultValue a default value to use if _key is not
+    /// found.
+    /// \return A pair where the first element is the value of _key, and the
+    /// second element is true when the _key was found and false otherwise.
+    public: template<typename T>
+            std::pair<T, bool> Get(sdf::Errors &_errors,
+                                   const std::string &_key,
+                                   const T &_defaultValue) const;
     /// \brief Get the value of a key.
     /// \param[in] _key the name of a child attribute or element.
     /// \param[in] _defaultValue a default value to use if _key is not
@@ -401,11 +485,31 @@ namespace sdf
                      T &_param,
                      const T &_defaultValue) const;
 
+    /// \brief Get the value of a key.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _key the name of a child attribute or element.
+    /// \param[out] _param the parameter output
+    /// \param[in] _defaultValue a default value to use if _key is not
+    /// found.
+    /// \return True when the _key was found and false otherwise.
+    public: template<typename T>
+            bool Get(sdf::Errors &_errors,
+                     const std::string &_key,
+                     T &_param,
+                     const T &_defaultValue) const;
+
     /// \brief Set the value of this element.
     /// \param[in] _value the value to set.
     /// \return True if the value was successfully set, false otherwise.
     public: template<typename T>
             bool Set(const T &_value);
+
+    /// \brief Set the value of this element.
+    /// \param[in] _value the value to set.
+    /// \param[out] _errors Vector of errors.
+    /// \return True if the value was successfully set, false otherwise.
+    public: template<typename T>
+            bool Set(const T &_value, sdf::Errors &_errors);
 
     /// \brief Return true if the named element exists.
     /// \param[in] _name the name of the element to look for.
@@ -443,6 +547,17 @@ namespace sdf
     /// names. Also return true if no elements of the specified type are found.
     public: bool HasUniqueChildNames(const std::string &_type = "") const;
 
+    /// \brief Checks whether any child elements of the specified element type
+    /// have identical name attribute values and returns false if so.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _type The type of Element to check. If empty, check names
+    /// of all child elements.
+    /// \return True if all child elements with name attributes of the
+    /// specified type have unique names, return false if there are duplicated
+    /// names. Also return true if no elements of the specified type are found.
+    public: bool HasUniqueChildNames(sdf::Errors &_errors,
+                const std::string &_type = "") const;
+
     /// \brief Checks whether any child elements of the specified element type,
     /// except those listed in \p _ignoreElements, have identical name attribute
     /// values and returns false if so.
@@ -457,6 +572,22 @@ namespace sdf
                 const std::string &_type,
                 const std::vector<std::string> &_ignoreElements) const;
 
+    /// \brief Checks whether any child elements of the specified element type,
+    /// except those listed in \p _ignoreElements, have identical name attribute
+    /// values and returns false if so.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _type The type of Element to check. If empty, check names
+    /// of all child elements.
+    /// \param[in] _ignoreElements A list of child element types to ignore when
+    /// checking for uniqueness.
+    /// \return True if all child elements with name attributes of the
+    /// specified type have unique names, return false if there are duplicated
+    /// names. Also return true if no elements of the specified type are found.
+    public: bool HasUniqueChildNames(
+                sdf::Errors &_errors,
+                const std::string &_type,
+                const std::vector<std::string> &_ignoreElements) const;
+
     /// \brief Count the number of child elements of the specified element type
     /// that have the same name attribute value.
     /// \param[in] _type The type of Element to check. If empty, count names
@@ -466,6 +597,18 @@ namespace sdf
     /// there are exclusively unique names.
     public: std::map<std::string, std::size_t>
             CountNamedElements(const std::string &_type = "") const;
+
+    /// \brief Count the number of child elements of the specified element type
+    /// that have the same name attribute value.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _type The type of Element to check. If empty, count names
+    /// of all child elements.
+    /// \return Map from Element names to a count of how many times the name
+    /// occurs. The count should never be 0. If all 2nd values are 1, then
+    /// there are exclusively unique names.
+    public: std::map<std::string, std::size_t>
+            CountNamedElements(sdf::Errors &_errors,
+                               const std::string &_type = "") const;
 
     /// \brief Count the number of child elements of the specified element type
     /// that have the same name attribute value with the exception of elements
@@ -478,6 +621,22 @@ namespace sdf
     /// occurs. The count should never be 0. If all 2nd values are 1, then
     /// there are exclusively unique names.
     public: std::map<std::string, std::size_t> CountNamedElements(
+                const std::string &_type,
+                const std::vector<std::string> &_ignoreElements) const;
+
+    /// \brief Count the number of child elements of the specified element type
+    /// that have the same name attribute value with the exception of elements
+    /// listed in \p _ignoreElements.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _type The type of Element to check. If empty, count names
+    /// of all child elements.
+    /// \param[in] _ignoreElements A list of child element types to ignore when
+    /// checking for uniqueness.
+    /// \return Map from Element names to a count of how many times the name
+    /// occurs. The count should never be 0. If all 2nd values are 1, then
+    /// there are exclusively unique names.
+    public: std::map<std::string, std::size_t> CountNamedElements(
+                sdf::Errors &_errors,
                 const std::string &_type,
                 const std::vector<std::string> &_ignoreElements) const;
 
@@ -575,6 +734,11 @@ namespace sdf
     ///        the embedded Param.
     public: void Update();
 
+    /// \brief Call the Update() callback on each element, as well as
+    ///        the embedded Param.
+    /// \param[out] _errors Vector of errors.
+    public: void Update(sdf::Errors &_errors);
+
     /// \brief Call reset on each element and element description
     ///        before deleting all of them.  Also clear out the
     ///        embedded Param.
@@ -661,16 +825,18 @@ namespace sdf
     public: static std::vector<std::string> NameUniquenessExceptions();
 
     /// \brief Generate a string (XML) representation of this object.
+    /// \param[out] _out the std::ostreamstream to write output to.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _prefix arbitrary prefix to put on the string.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for converting to string.
-    /// \param[out] _out the std::ostreamstream to write output to.
-    private: void ToString(const std::string &_prefix,
+    private: void ToString(std::ostringstream &_out,
+                           sdf::Errors &_errors,
+                           const std::string &_prefix,
                            bool _includeDefaultElements,
                            bool _includeDefaultAttributes,
-                           const PrintConfig &_config,
-                           std::ostringstream &_out) const;
+                           const PrintConfig &_config) const;
 
     /// \brief Generate a string (XML) representation of this object.
     /// \param[in] _prefix arbitrary prefix to put on the string.
@@ -678,11 +844,13 @@ namespace sdf
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for printing values.
     /// \param[out] _out the std::ostringstream to write output to.
+    /// \param[out] _errors Vector of errors.
     private: void PrintValuesImpl(const std::string &_prefix,
                                   bool _includeDefaultElements,
                                   bool _includeDefaultAttributes,
                                   const PrintConfig &_config,
-                                  std::ostringstream &_out) const;
+                                  std::ostringstream &_out,
+                                  sdf::Errors &_errors) const;
 
     /// \brief Create a new Param object and return it.
     /// \param[in] _key Key for the parameter.
@@ -782,7 +950,28 @@ namespace sdf
     public: void PrintAttributes(bool _includeDefaultAttributes,
                                  const PrintConfig &_config,
                                  std::ostringstream &_out) const;
+
+    /// \brief Generate the string (XML) for the attributes.
+    /// \param[in] _includeDefaultAttributes flag to include default attributes.
+    /// \param[in] _config Configuration for printing attributes.
+    /// \param[out] _out the std::ostringstream to write output to.
+    /// \param[out] _errors Vector of errors.
+    public: void PrintAttributes(bool _includeDefaultAttributes,
+                                 const PrintConfig &_config,
+                                 std::ostringstream &_out,
+                                 sdf::Errors &_errors) const;
   };
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  T Element::Get(sdf::Errors &_errors, const std::string &_key) const
+  {
+    T result = T();
+
+    std::pair<T, bool> ret = this->Get<T>(_errors, _key, result);
+
+    return ret.first;
+  }
 
   ///////////////////////////////////////////////
   template<typename T>
@@ -793,6 +982,18 @@ namespace sdf
     std::pair<T, bool> ret = this->Get<T>(_key, result);
 
     return ret.first;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  bool Element::Get(sdf::Errors &_errors,
+                    const std::string &_key,
+                    T &_param,
+                    const T &_defaultValue) const
+  {
+    std::pair<T, bool> ret = this->Get<T>(_errors, _key, _defaultValue);
+    _param = ret.first;
+    return ret.second;
   }
 
   ///////////////////////////////////////////////
@@ -811,26 +1012,41 @@ namespace sdf
   std::pair<T, bool> Element::Get(const std::string &_key,
                                   const T &_defaultValue) const
   {
+    sdf::Errors errors;
+    std::pair<T, bool> result = this->Get<T>(errors, _key, _defaultValue);
+    for(auto& error : errors)
+    {
+        sdferr << error.Message();
+    }
+    return result;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  std::pair<T, bool> Element::Get(sdf::Errors &_errors,
+                                  const std::string &_key,
+                                  const T &_defaultValue) const
+  {
     std::pair<T, bool> result(_defaultValue, true);
 
     if (_key.empty() && this->dataPtr->value)
     {
-      this->dataPtr->value->Get<T>(result.first);
+      this->dataPtr->value->Get<T>(result.first, _errors);
     }
     else if (!_key.empty())
     {
       ParamPtr param = this->GetAttribute(_key);
       if (param)
       {
-        param->Get(result.first);
+        param->Get(result.first, _errors);
       }
       else if (this->HasElement(_key))
       {
-        result.first = this->GetElementImpl(_key)->Get<T>();
+        result.first = this->GetElementImpl(_key)->Get<T>(_errors);
       }
       else if (this->HasElementDescription(_key))
       {
-        result.first = this->GetElementDescription(_key)->Get<T>();
+        result.first = this->GetElementDescription(_key)->Get<T>(_errors);
       }
       else
       {
@@ -849,9 +1065,22 @@ namespace sdf
   template<typename T>
   bool Element::Set(const T &_value)
   {
+    sdf::Errors errors;
+    bool result = this->Set<T>(_value, errors);
+    for(auto& error : errors)
+    {
+        sdferr << error.Message();
+    }
+    return result;
+  }
+
+  ///////////////////////////////////////////////
+  template<typename T>
+  bool Element::Set(const T &_value, sdf::Errors &_errors)
+  {
     if (this->dataPtr->value)
     {
-      this->dataPtr->value->Set(_value);
+      this->dataPtr->value->Set(_value, _errors);
       return true;
     }
     return false;
