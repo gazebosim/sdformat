@@ -36,8 +36,8 @@ function(configure_build_install_location _library_name)
   )
 endfunction()
 
-# sdformat13 target already exists, use pysdformat13 + OUTPUT_NAME to get
-# sdformat13 file name generated
+# sdformatX target already exists, use pysdformatX + OUTPUT_NAME to get
+# sdformatX file name generated and map BINDINGS_MODULE_NAME to sdformatX
 set(BINDINGS_MODULE_NAME "pysdformat${PROJECT_VERSION_MAJOR}")
 pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/_gz_sdformat_pybind11.cc
@@ -91,8 +91,10 @@ target_link_libraries(${BINDINGS_MODULE_NAME} PRIVATE
   ${PROJECT_LIBRARY_TARGET_NAME}
 )
 
+# different from the target name since the target name was not able to use
+# sdformatX since it conflicts with the project name
 target_compile_definitions(${BINDINGS_MODULE_NAME} PRIVATE
-  BINDINGS_MODULE_NAME=${BINDINGS_MODULE_NAME})
+  BINDINGS_MODULE_NAME=sdformat${PROJECT_VERSION_MAJOR})
 
 set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
   OUTPUT_NAME "sdformat${PROJECT_VERSION_MAJOR}")
