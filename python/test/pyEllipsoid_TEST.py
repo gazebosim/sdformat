@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math import Vector3d, Ellipsoidd
+from gz.math7 import Vector3d, Ellipsoidd
 import math
 from sdformat import Ellipsoid
 import unittest

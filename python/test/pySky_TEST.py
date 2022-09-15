@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math import Angle, Color
+from gz.math7 import Angle, Color
 from sdformat import Sky
 import unittest
 

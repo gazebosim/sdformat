@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import Polyline
-from gz.math import Vector2d
+from gz.math7 import Vector2d
 import unittest
 
 

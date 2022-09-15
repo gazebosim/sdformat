@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d
+from gz.math7 import Pose3d
 from sdformat import Magnetometer, Noise
 import sdformat as sdf
 import unittest
