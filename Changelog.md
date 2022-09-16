@@ -92,6 +92,7 @@
     * [Pull request #1085](https://github.com/gazebosim/sdformat/pull/1085)
     * [Pull request #1106](https://github.com/gazebosim/sdformat/pull/1106)
     * [Pull request #1127](https://github.com/gazebosim/sdformat/pull/1127)
+    * [Pull request #1143](https://github.com/gazebosim/sdformat/pull/1143)
 
 1. Copy skybox uri field to sdf/1.10/scene.sdf
     * [Pull request #1082](https://github.com/gazebosim/sdformat/pull/1082)
