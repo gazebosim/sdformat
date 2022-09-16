@@ -48,11 +48,27 @@ Plugin::Plugin(const std::string &_filename, const std::string &_name,
                const std::string &_xmlContent)
   : dataPtr(std::make_unique<sdf::PluginPrivate>())
 {
+  sdf::Errors errors;
+  this->Init(errors, _filename, _name, _xmlContent);
+  sdf::throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+Plugin::Plugin(sdf::Errors &_errors, const std::string &_filename,
+               const std::string &_name, const std::string &_xmlContent)
+  : dataPtr(std::make_unique<sdf::PluginPrivate>())
+{
+  this->Init(_errors, _filename, _name, _xmlContent);
+}
+
+void Plugin::Init(sdf::Errors &_errors, const std::string &_filename,
+               const std::string &_name, const std::string &_xmlContent)
+{
   this->SetFilename(_filename);
   this->SetName(_name);
   std::string trimmed = sdf::trim(_xmlContent);
   if (!trimmed.empty())
-    this->InsertContent(trimmed);
+    this->InsertContent(trimmed, _errors);
 }
 
 /////////////////////////////////////////////////
@@ -102,7 +118,7 @@ Errors Plugin::Load(ElementPtr _sdf)
 
   // Read the filename
   std::pair<std::string, bool> filenamePair =
-    _sdf->Get<std::string>("filename", this->dataPtr->filename);
+    _sdf->Get<std::string>(errors, "filename", this->dataPtr->filename);
   this->dataPtr->filename = filenamePair.first;
   if (!filenamePair.second)
   {
@@ -114,7 +130,7 @@ Errors Plugin::Load(ElementPtr _sdf)
   for (sdf::ElementPtr innerElem = _sdf->GetFirstElement();
        innerElem; innerElem = innerElem->GetNextElement(""))
   {
-    this->dataPtr->contents.push_back(innerElem->Clone());
+    this->dataPtr->contents.push_back(innerElem->Clone(errors));
   }
 
   return errors;
@@ -150,14 +166,22 @@ sdf::ElementPtr Plugin::Element() const
   return this->dataPtr->sdf;
 }
 
-/////////////////////////////////////////////////
 sdf::ElementPtr Plugin::ToElement() const
+{
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Plugin::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("plugin.sdf", elem);
 
-  elem->GetAttribute("name")->Set(this->Name());
-  elem->GetAttribute("filename")->Set(this->Filename());
+  elem->GetAttribute("name")->Set(this->Name(), _errors);
+  elem->GetAttribute("filename")->Set(this->Filename(), _errors);
 
   // Insert plugin content
   for (const sdf::ElementPtr &content : this->dataPtr->contents)
@@ -181,18 +205,37 @@ const std::vector<sdf::ElementPtr> &Plugin::Contents() const
 /////////////////////////////////////////////////
 void Plugin::InsertContent(const sdf::ElementPtr _elem)
 {
-  this->dataPtr->contents.push_back(_elem->Clone());
+  sdf::Errors errors;
+  this->dataPtr->contents.push_back(_elem->Clone(errors));
+  sdf::throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Plugin::InsertContent(const sdf::ElementPtr _elem, sdf::Errors &_errors)
+{
+  this->dataPtr->contents.push_back(_elem->Clone(_errors));
 }
 
 /////////////////////////////////////////////////
 bool Plugin::InsertContent(const std::string _content)
 {
+  sdf::Errors errors;
+  bool result = this->InsertContent(_content, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool Plugin::InsertContent(const std::string _content, sdf::Errors &_errors)
+{
   // Read the XML content
-  auto xmlDoc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);;
+  auto xmlDoc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
   xmlDoc.Parse(_content.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
+    std::stringstream ss;
+    ss << "Error parsing XML from string: " << xmlDoc.ErrorStr();
+    _errors.push_back({ErrorCode::PARSING_ERROR, ss.str()});
     return false;
   }
 
@@ -209,20 +252,20 @@ bool Plugin::InsertContent(const std::string _content)
     for (const tinyxml2::XMLAttribute *attribute = xml->FirstAttribute();
         attribute; attribute = attribute->Next())
     {
-      element->AddAttribute(attribute->Name(), "string", "", 1, "");
+      element->AddAttribute(attribute->Name(), "string", "", 1, _errors, "");
       element->GetAttribute(attribute->Name())->SetFromString(
-          attribute->Value());
+          attribute->Value(), _errors);
     }
 
     // Copy the value
     if (xml->GetText() != nullptr)
-      element->AddValue("string", xml->GetText(), true);
+      element->AddValue("string", xml->GetText(), true, _errors);
 
     // Copy all children
     copyChildren(element, xml, false);
 
     // Add the element to this plugin
-    this->InsertContent(element);
+    this->InsertContent(element, _errors);
   }
 
   return true;

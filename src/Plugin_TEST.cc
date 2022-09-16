@@ -19,6 +19,7 @@
 #include "sdf/parser.hh"
 #include "sdf/Plugin.hh"
 #include "sdf/Element.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMPlugin, Construction)
@@ -470,4 +471,32 @@ TEST(DOMPlugin, EqualityOperators)
   EXPECT_NE(plugin, plugin2);
   plugin.SetFilename("new-filename");
   EXPECT_EQ(plugin, plugin2);
+}
+
+///////////////////////////////////////////////
+TEST(DOMPlugin, ErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+    sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Errors errors;
+  sdf::Plugin Plugin(errors, "", "", "Not valid xml");
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARSING_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Error parsing XML from string: Error=XML_ERROR_PARSING_TEXT ErrorID=10"
+      " (0xa) Line number=1"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

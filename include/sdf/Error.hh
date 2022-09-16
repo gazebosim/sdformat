@@ -166,8 +166,11 @@ namespace sdf
     /// This has been created to help preserve behavior.
     FATAL_ERROR,
 
-    /// \brief Generic warning saved as error due to WarningsPolicy config
+    /// \brief Generic warning saved as error due to WarningsPolicy config.
     WARNING,
+
+    /// \brief Generic error that happened during parsing.
+    PARSING_ERROR
   };
 
   class SDFORMAT_VISIBLE Error
