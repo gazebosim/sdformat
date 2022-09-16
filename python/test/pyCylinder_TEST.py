@@ -14,11 +14,11 @@
 
 import copy
 
-from gz.math import Vector3d
+from gz.math7 import Vector3d
 
 import math
 
-from sdformat import Cylinder
+from sdformat13 import Cylinder
 
 import unittest
 

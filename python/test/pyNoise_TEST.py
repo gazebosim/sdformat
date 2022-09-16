@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from sdformat import Noise
-import sdformat as sdf
+from sdformat13 import Noise
+import sdformat13 as sdf
 import math
 import unittest
 

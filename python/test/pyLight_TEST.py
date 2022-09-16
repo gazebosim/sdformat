@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz.math import Angle, Color, Pose3d, Vector3d
-from sdformat import Light, SDFErrorsException
-import sdformat as sdf
+from gz.math7 import Angle, Color, Pose3d, Vector3d
+from sdformat13 import Light, SDFErrorsException
+import sdformat13 as sdf
 import math
 import unittest
 

@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d, Color
-from sdformat import Geometry, Material, Visual, Plugin, SDFErrorsException
-import sdformat as sdf
+from gz.math7 import Pose3d, Color
+from sdformat13 import Geometry, Material, Visual, Plugin, SDFErrorsException
+import sdformat13 as sdf
 import unittest
 import math
 
