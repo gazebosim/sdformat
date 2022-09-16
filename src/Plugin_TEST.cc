@@ -494,8 +494,7 @@ TEST(DOMPlugin, ErrorOutput)
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARSING_ERROR);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
-      "Error parsing XML from string: Error=XML_ERROR_PARSING_TEXT ErrorID=10"
-      " (0xa) Line number=1"));
+      "Error parsing XML from string: "));
 
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
