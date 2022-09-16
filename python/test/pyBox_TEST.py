@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from gz.math7 import Vector3d
-from sdformat import Box
+from sdformat13 import Box
 import unittest
 
 class BoxTEST(unittest.TestCase):

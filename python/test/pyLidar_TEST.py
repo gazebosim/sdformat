@@ -14,7 +14,7 @@
 
 import copy
 from gz.math7 import Angle, Pose3d, Vector3d, Helpers
-from sdformat import Lidar, Error, Noise
+from sdformat13 import Lidar, Error, Noise
 import math
 import unittest
 

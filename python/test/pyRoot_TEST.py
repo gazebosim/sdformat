@@ -14,9 +14,9 @@
 
 import copy
 from gz.math7 import Vector3d, Pose3d
-from sdformat import (Error, Model, Light, Root, SDF_VERSION,
+from sdformat13 import (Error, Model, Light, Root, SDF_VERSION,
                       SDFErrorsException, SDF_PROTOCOL_VERSION, World)
-import sdformat as sdf
+import sdformat13 as sdf
 
 import unittest
 

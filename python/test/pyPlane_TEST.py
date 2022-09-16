@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import Plane
+from sdformat13 import Plane
 from gz.math7 import Vector3d, Vector2d, Planed
 import unittest
 

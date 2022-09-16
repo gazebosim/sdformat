@@ -14,7 +14,7 @@
 
 import copy
 from gz.math7 import Angle, Color
-from sdformat import Sky
+from sdformat13 import Sky
 import unittest
 
 

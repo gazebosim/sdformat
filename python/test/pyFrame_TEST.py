@@ -14,7 +14,7 @@
 
 import copy
 from gz.math7 import Pose3d
-from sdformat import Frame, Error, SDFErrorsException, ErrorCode
+from sdformat13 import Frame, Error, SDFErrorsException, ErrorCode
 import unittest
 import math
 

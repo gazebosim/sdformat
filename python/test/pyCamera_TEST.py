@@ -15,8 +15,8 @@
 import copy
 from gz.math7 import Angle, Pose3d, Vector2d
 import math
-from sdformat import Camera
-import sdformat as sdf
+from sdformat13 import Camera
+import sdformat13 as sdf
 import unittest
 
 class CameraTEST(unittest.TestCase):

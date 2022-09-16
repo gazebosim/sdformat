@@ -14,8 +14,8 @@
 
 import copy
 from gz.math7 import Vector3d
-from sdformat import IMU, Noise
-import sdformat as sdf
+from sdformat13 import IMU, Noise
+import sdformat13 as sdf
 import unittest
 
 class IMUTest(unittest.TestCase):

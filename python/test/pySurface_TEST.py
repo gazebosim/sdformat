@@ -14,7 +14,7 @@
 
 import copy
 from gz.math7 import Vector3d
-from sdformat import Surface, Contact, Friction, ODE
+from sdformat13 import Surface, Contact, Friction, ODE
 import unittest
 
 

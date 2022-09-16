@@ -18,7 +18,7 @@ from gz.math7 import Vector3d, Capsuled
 
 import math
 
-from sdformat import Capsule
+from sdformat13 import Capsule
 
 import unittest
 
