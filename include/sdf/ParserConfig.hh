@@ -174,6 +174,12 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
 
+  /// \brief Set the storeResolvedURIs flag value.
+  public: void SetStoreResovledURIs(bool _resolveURI);
+
+  /// \brief Get the storeResolvedURIs flag value.
+  public: bool StoreResolvedURIs() const;
+
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)
 };

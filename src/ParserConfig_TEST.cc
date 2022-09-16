@@ -51,6 +51,13 @@ TEST(ParserConfig, Construction)
   config.SetFindCallback(testFunc);
   ASSERT_TRUE(config.FindFileCallback());
   EXPECT_EQ("test/dir2", config.FindFileCallback()("empty"));
+
+  // Check default ParserConfig values
+  EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.WarningsPolicy());
+  EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.UnrecognizedElementsPolicy());
+  EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.DeprecatedElementsPolicy());
+  EXPECT_TRUE(config.URDFPreserveFixedJoint());
+  EXPECT_FALSE(config.StoreResolvedURIs());
 }
 
 /////////////////////////////////////////////////
