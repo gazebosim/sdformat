@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d, Vector3d
-from sdformat import (Joint, JointAxis, Error, SemanticPose, Sensor,
+from gz.math7 import Pose3d, Vector3d
+from sdformat13 import (Joint, JointAxis, Error, SemanticPose, Sensor,
                       SDFErrorsException)
-import sdformat as sdf
+import sdformat13 as sdf
 import math
 import unittest
 

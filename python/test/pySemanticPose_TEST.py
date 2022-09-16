@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d
-from sdformat import Link, SemanticPose
+from gz.math7 import Pose3d
+from sdformat13 import Link, SemanticPose
 import unittest
 
 class semantic_poseTEST(unittest.TestCase):

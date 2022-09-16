@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import ParserConfig
+from sdformat13 import ParserConfig
 from sdformattest import source_file, test_file
 import unittest
 
