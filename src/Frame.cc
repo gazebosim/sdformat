@@ -95,7 +95,7 @@ Errors Frame::Load(ElementPtr _sdf)
   // Read the frame's attached_to attribute
   if (_sdf->HasAttribute("attached_to"))
   {
-    auto pair = _sdf->Get<std::string>("attached_to", "");
+    auto pair = _sdf->Get<std::string>(errors, "attached_to", "");
     if (pair.second)
     {
       this->dataPtr->attachedTo = pair.first;
@@ -219,25 +219,34 @@ sdf::ElementPtr Frame::Element() const
   return this->dataPtr->sdf;
 }
 
-/////////////////////////////////////////////////
+///////////////////////////////////////////////
 sdf::ElementPtr Frame::ToElement() const
+{
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Frame::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("frame.sdf", elem);
 
-  elem->GetAttribute("name")->Set(this->dataPtr->name);
+  elem->GetAttribute("name")->Set(this->dataPtr->name, _errors);
 
   if (!this->dataPtr->attachedTo.empty())
-    elem->GetAttribute("attached_to")->Set(this->dataPtr->attachedTo);
+    elem->GetAttribute("attached_to")->Set(this->dataPtr->attachedTo, _errors);
 
   // Set pose
-  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  sdf::ElementPtr poseElem = elem->GetElement("pose", _errors);
   if (!this->dataPtr->poseRelativeTo.empty())
   {
     poseElem->GetAttribute("relative_to")->Set<std::string>(
-        this->dataPtr->poseRelativeTo);
+        this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose(), _errors);
 
   return elem;
 }
