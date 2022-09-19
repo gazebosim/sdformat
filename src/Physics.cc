@@ -86,10 +86,10 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   }
 
   this->dataPtr->isDefault =
-    _sdf->Get<bool>("default", this->dataPtr->isDefault).first;
+    _sdf->Get<bool>(errors, "default", this->dataPtr->isDefault).first;
 
   std::pair<std::string, bool> stringPair =
-    _sdf->Get<std::string>("type", this->dataPtr->type);
+    _sdf->Get<std::string>(errors, "type", this->dataPtr->type);
   if (!stringPair.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -99,7 +99,7 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   this->dataPtr->type = stringPair.first;
 
   std::pair<double, bool> doublePair =
-    _sdf->Get<double>("max_step_size", this->dataPtr->stepSize);
+    _sdf->Get<double>(errors, "max_step_size", this->dataPtr->stepSize);
   if (!doublePair.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -108,7 +108,8 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   }
   this->dataPtr->stepSize = doublePair.first;
 
-  doublePair = _sdf->Get<double>("real_time_factor", this->dataPtr->rtf);
+  doublePair = _sdf->Get<double>(
+      errors, "real_time_factor", this->dataPtr->rtf);
   if (!doublePair.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -118,7 +119,7 @@ Errors Physics::Load(sdf::ElementPtr _sdf)
   this->dataPtr->rtf = doublePair.first;
 
   this->dataPtr->maxContacts =
-    _sdf->Get<int>("max_contacts", this->dataPtr->maxContacts).first;
+    _sdf->Get<int>(errors, "max_contacts", this->dataPtr->maxContacts).first;
 
   return errors;
 }
@@ -204,16 +205,27 @@ void Physics::SetMaxContacts(int _maxContacts)
 /////////////////////////////////////////////////
 sdf::ElementPtr Physics::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Physics::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("physics.sdf", elem);
 
-  elem->GetAttribute("name")->Set(this->Name());
-  elem->GetAttribute("default")->Set(this->IsDefault());
-  elem->GetAttribute("type")->Set(this->EngineType());
+  elem->GetAttribute("name")->Set(this->Name(), _errors);
+  elem->GetAttribute("default")->Set(this->IsDefault(), _errors);
+  elem->GetAttribute("type")->Set(this->EngineType(), _errors);
 
-  elem->GetElement("max_step_size")->Set(this->MaxStepSize());
-  elem->GetElement("real_time_factor")->Set(this->RealTimeFactor());
-  elem->GetElement("max_contacts")->Set(this->MaxContacts());
+  elem->GetElement("max_step_size", _errors)->Set(
+      this->MaxStepSize(), _errors);
+  elem->GetElement("real_time_factor", _errors)->Set(
+      this->RealTimeFactor(), _errors);
+  elem->GetElement("max_contacts", _errors)->Set(this->MaxContacts(), _errors);
 
   /// \todo(nkoenig) Support engine specific parameters.
 
