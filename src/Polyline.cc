@@ -18,6 +18,7 @@
 
 #include "sdf/parser.hh"
 #include "sdf/Polyline.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -66,7 +67,7 @@ Errors Polyline::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("height"))
   {
-    auto height = _sdf->Get<double>("height", this->dataPtr->height);
+    auto height = _sdf->Get<double>(errors, "height", this->dataPtr->height);
 
     if (!height.second)
     {
@@ -83,11 +84,12 @@ Errors Polyline::Load(ElementPtr _sdf)
           "Using a height of " + std::to_string(this->dataPtr->height) + "."});
   }
 
-  for (auto pointElem = _sdf->GetElement("point");
+  for (auto pointElem = _sdf->GetElement("point", errors);
        pointElem != nullptr;
        pointElem = pointElem->GetNextElement("point"))
   {
-    this->dataPtr->points.push_back(pointElem->Get<gz::math::Vector2d>());
+    this->dataPtr->points.push_back(
+        pointElem->Get<gz::math::Vector2d>(errors));
   }
 
   return errors;
@@ -159,16 +161,25 @@ sdf::ElementPtr Polyline::Element() const
 /////////////////////////////////////////////////
 sdf::ElementPtr Polyline::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Polyline::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("polyline_shape.sdf", elem);
 
-  auto heightElem = elem->GetElement("height");
-  heightElem->Set<double>(this->Height());
+  auto heightElem = elem->GetElement("height", _errors);
+  heightElem->Set<double>(this->Height(), _errors);
 
   for (auto &point : this->dataPtr->points)
   {
-    auto pointElem = elem->AddElement("point");
-    pointElem->Set<gz::math::Vector2d>(point);
+    auto pointElem = elem->AddElement("point", _errors);
+    pointElem->Set<gz::math::Vector2d>(point, _errors);
   }
 
   return elem;

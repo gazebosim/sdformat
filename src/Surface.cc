@@ -21,6 +21,7 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -117,11 +118,14 @@ Errors ODE::Load(ElementPtr _sdf)
     return errors;
   }
 
-  this->dataPtr->mu = _sdf->Get<double>("mu", this->dataPtr->mu).first;
-  this->dataPtr->mu2 = _sdf->Get<double>("mu2", this->dataPtr->mu2).first;
-  this->dataPtr->slip1 = _sdf->Get<double>("slip1", this->dataPtr->slip1).first;
-  this->dataPtr->slip2 = _sdf->Get<double>("slip2", this->dataPtr->slip2).first;
-  this->dataPtr->fdir1 = _sdf->Get<gz::math::Vector3d>("fdir1",
+  this->dataPtr->mu = _sdf->Get<double>(errors, "mu", this->dataPtr->mu).first;
+  this->dataPtr->mu2 = _sdf->Get<double>(
+      errors, "mu2", this->dataPtr->mu2).first;
+  this->dataPtr->slip1 = _sdf->Get<double>(
+      errors, "slip1", this->dataPtr->slip1).first;
+  this->dataPtr->slip2 = _sdf->Get<double>(
+      errors, "slip2", this->dataPtr->slip2).first;
+  this->dataPtr->fdir1 = _sdf->Get<gz::math::Vector3d>(errors, "fdir1",
         this->dataPtr->fdir1).first;
 
   return errors;
@@ -227,7 +231,7 @@ Errors Friction::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("ode"))
   {
-    Errors err = this->dataPtr->ode.Load(_sdf->GetElement("ode"));
+    Errors err = this->dataPtr->ode.Load(_sdf->GetElement("ode", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
@@ -287,7 +291,8 @@ Errors Contact::Load(ElementPtr _sdf)
   if (_sdf->HasElement("collide_bitmask"))
   {
     this->dataPtr->collideBitmask =
-        static_cast<uint16_t>(_sdf->Get<unsigned int>("collide_bitmask"));
+        static_cast<uint16_t>(_sdf->Get<unsigned int>(
+        errors, "collide_bitmask"));
   }
 
   // \todo(nkoenig) Parse the remaining collide properties.
@@ -346,13 +351,15 @@ Errors Surface::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("contact"))
   {
-    Errors err = this->dataPtr->contact.Load(_sdf->GetElement("contact"));
+    Errors err = this->dataPtr->contact.Load(
+        _sdf->GetElement("contact", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
   if (_sdf->HasElement("friction"))
   {
-    Errors err = this->dataPtr->friction.Load(_sdf->GetElement("friction"));
+    Errors err = this->dataPtr->friction.Load(
+        _sdf->GetElement("friction", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
@@ -392,16 +399,25 @@ void Surface::SetContact(const sdf::Contact &_contact)
 /////////////////////////////////////////////////
 sdf::ElementPtr Surface::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("surface.sdf", elem);
 
-  sdf::ElementPtr contactElem = elem->GetElement("contact");
-  contactElem->GetElement("collide_bitmask")->Set(
-      this->dataPtr->contact.CollideBitmask());
+  sdf::ElementPtr contactElem = elem->GetElement("contact", _errors);
+  contactElem->GetElement("collide_bitmask", _errors)->Set(
+      this->dataPtr->contact.CollideBitmask(), _errors);
 
-  sdf::ElementPtr frictionElem = elem->GetElement("friction");
-  frictionElem->GetElement("ode")->GetElement("mu")->Set(
-      this->dataPtr->friction.ODE()->Mu());
+  sdf::ElementPtr frictionElem = elem->GetElement("friction", _errors);
+  frictionElem->GetElement("ode", _errors)->GetElement("mu", _errors)->Set(
+      this->dataPtr->friction.ODE()->Mu(), _errors);
 
   return elem;
 }

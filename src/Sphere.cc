@@ -16,6 +16,7 @@
 */
 #include "sdf/parser.hh"
 #include "sdf/Sphere.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -61,7 +62,7 @@ Errors Sphere::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("radius"))
   {
-    std::pair<double, bool> pair = _sdf->Get<double>("radius",
+    std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->sphere.Radius());
 
     if (!pair.second)
@@ -116,11 +117,20 @@ sdf::ElementPtr Sphere::Element() const
 /////////////////////////////////////////////////
 sdf::ElementPtr Sphere::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Sphere::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("sphere_shape.sdf", elem);
 
-  sdf::ElementPtr radiusElem = elem->GetElement("radius");
-  radiusElem->Set<double>(this->Radius());
+  sdf::ElementPtr radiusElem = elem->GetElement("radius", _errors);
+  radiusElem->Set<double>(this->Radius(), _errors);
 
   return elem;
 }

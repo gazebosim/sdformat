@@ -17,6 +17,7 @@
 #include <sstream>
 #include "sdf/Capsule.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -62,7 +63,7 @@ Errors Capsule::Load(ElementPtr _sdf)
   }
 
   {
-    std::pair<double, bool> pair = _sdf->Get<double>("radius",
+    std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->capsule.Radius());
 
     if (!pair.second)
@@ -77,7 +78,7 @@ Errors Capsule::Load(ElementPtr _sdf)
   }
 
   {
-    std::pair<double, bool> pair = _sdf->Get<double>("length",
+    std::pair<double, bool> pair = _sdf->Get<double>(errors, "length",
         this->dataPtr->capsule.Length());
 
     if (!pair.second)
@@ -139,14 +140,23 @@ gz::math::Capsuled &Capsule::Shape()
 /////////////////////////////////////////////////
 sdf::ElementPtr Capsule::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Capsule::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("capsule_shape.sdf", elem);
 
-  sdf::ElementPtr radiusElem = elem->GetElement("radius");
-  radiusElem->Set(this->Radius());
+  sdf::ElementPtr radiusElem = elem->GetElement("radius", _errors);
+  radiusElem->Set(this->Radius(), _errors);
 
-  sdf::ElementPtr lengthElem = elem->GetElement("length");
-  lengthElem->Set(this->Length());
+  sdf::ElementPtr lengthElem = elem->GetElement("length", _errors);
+  lengthElem->Set(this->Length(), _errors);
 
   return elem;
 }

@@ -16,6 +16,7 @@
 */
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -75,7 +76,7 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri", "").first;
+    this->dataPtr->uri = _sdf->Get<std::string>(errors, "uri", "").first;
   }
   else
   {
@@ -85,10 +86,10 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("submesh"))
   {
-    sdf::ElementPtr subMesh = _sdf->GetElement("submesh");
+    sdf::ElementPtr subMesh = _sdf->GetElement("submesh", errors);
 
     std::pair<std::string, bool> subMeshNamePair =
-      subMesh->Get<std::string>("name", this->dataPtr->submesh);
+      subMesh->Get<std::string>(errors, "name", this->dataPtr->submesh);
 
     if (subMeshNamePair.first == "__default__" ||
         subMeshNamePair.first.empty() || !subMeshNamePair.second)
@@ -102,11 +103,11 @@ Errors Mesh::Load(ElementPtr _sdf)
       this->dataPtr->submesh = subMeshNamePair.first;
     }
 
-    this->dataPtr->centerSubmesh = subMesh->Get<bool>("center",
+    this->dataPtr->centerSubmesh = subMesh->Get<bool>(errors, "center",
         this->dataPtr->centerSubmesh).first;
   }
 
-  this->dataPtr->scale = _sdf->Get<gz::math::Vector3d>("scale",
+  this->dataPtr->scale = _sdf->Get<gz::math::Vector3d>(errors, "scale",
       this->dataPtr->scale).first;
 
   return errors;
@@ -181,28 +182,38 @@ void Mesh::SetCenterSubmesh(const bool _center)
 /////////////////////////////////////////////////
 sdf::ElementPtr Mesh::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("mesh_shape.sdf", elem);
 
   // Uri
-  sdf::ElementPtr uriElem = elem->GetElement("uri");
-  uriElem->Set(this->Uri());
+  sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);
+  uriElem->Set(this->Uri(), _errors);
 
   // Submesh
   if (!this->dataPtr->submesh.empty())
   {
-    sdf::ElementPtr subMeshElem = elem->GetElement("submesh");
+    sdf::ElementPtr subMeshElem = elem->GetElement("submesh", _errors);
 
-    sdf::ElementPtr subMeshNameElem = subMeshElem->GetElement("name");
-    subMeshNameElem->Set(this->dataPtr->submesh);
+    sdf::ElementPtr subMeshNameElem = subMeshElem->GetElement("name", _errors);
+    subMeshNameElem->Set(this->dataPtr->submesh, _errors);
 
-    sdf::ElementPtr subMeshCenterElem = subMeshElem->GetElement("center");
-    subMeshCenterElem->Set(this->dataPtr->centerSubmesh);
+    sdf::ElementPtr subMeshCenterElem = subMeshElem->GetElement(
+        "center", _errors);
+    subMeshCenterElem->Set(this->dataPtr->centerSubmesh, _errors);
   }
 
   // Scale
-  sdf::ElementPtr scaleElem = elem->GetElement("scale");
-  scaleElem->Set(this->Scale());
+  sdf::ElementPtr scaleElem = elem->GetElement("scale", _errors);
+  scaleElem->Set(this->Scale(), _errors);
 
   return elem;
 }

@@ -17,6 +17,7 @@
 #include <gz/math/Vector3.hh>
 #include "sdf/Box.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -64,7 +65,7 @@ Errors Box::Load(ElementPtr _sdf)
   if (_sdf->HasElement("size"))
   {
     std::pair<gz::math::Vector3d, bool> pair =
-      _sdf->Get<gz::math::Vector3d>("size", this->dataPtr->box.Size());
+      _sdf->Get<gz::math::Vector3d>(errors, "size", this->dataPtr->box.Size());
 
     if (!pair.second)
     {
@@ -117,11 +118,20 @@ gz::math::Boxd &Box::Shape()
 /////////////////////////////////////////////////
 sdf::ElementPtr Box::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Box::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("box_shape.sdf", elem);
 
-  sdf::ElementPtr sizeElem = elem->GetElement("size");
-  sizeElem->Set(this->Size());
+  sdf::ElementPtr sizeElem = elem->GetElement("size", _errors);
+  sizeElem->Set(this->Size(), _errors);
 
   return elem;
 }

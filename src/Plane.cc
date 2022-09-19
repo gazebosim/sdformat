@@ -18,6 +18,7 @@
 #include <gz/math/Vector3.hh>
 #include "sdf/parser.hh"
 #include "sdf/Plane.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -67,7 +68,7 @@ Errors Plane::Load(ElementPtr _sdf)
   if (_sdf->HasElement("normal"))
   {
     std::pair<gz::math::Vector3d, bool> pair =
-      _sdf->Get<gz::math::Vector3d>("normal",
+      _sdf->Get<gz::math::Vector3d>(errors, "normal",
           this->dataPtr->plane.Normal());
 
     if (!pair.second)
@@ -88,7 +89,8 @@ Errors Plane::Load(ElementPtr _sdf)
   if (_sdf->HasElement("size"))
   {
     std::pair<gz::math::Vector2d, bool> pair =
-      _sdf->Get<gz::math::Vector2d>("size", this->dataPtr->plane.Size());
+      _sdf->Get<gz::math::Vector2d>(
+      errors, "size", this->dataPtr->plane.Size());
 
     if (!pair.second)
     {
@@ -155,14 +157,23 @@ gz::math::Planed &Plane::Shape()
 /////////////////////////////////////////////////
 sdf::ElementPtr Plane::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Plane::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("plane_shape.sdf", elem);
 
-  sdf::ElementPtr normalElem = elem->GetElement("normal");
-  normalElem->Set(this->Normal());
+  sdf::ElementPtr normalElem = elem->GetElement("normal", _errors);
+  normalElem->Set(this->Normal(), _errors);
 
-  sdf::ElementPtr sizeElem = elem->GetElement("size");
-  sizeElem->Set(this->Size());
+  sdf::ElementPtr sizeElem = elem->GetElement("size", _errors);
+  sizeElem->Set(this->Size(), _errors);
 
   return elem;
 }

@@ -113,9 +113,12 @@ TEST(DOMPolyline, Load)
   // Missing <height> element
   sdf->SetName("polyline");
   errors = polyline.Load(sdf);
-  ASSERT_EQ(1u, errors.size());
+  ASSERT_EQ(2u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <height>"));
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_ERROR, errors[1].Code());
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Missing element description for [point]"));
   EXPECT_NE(nullptr, polyline.Element());
 }
 

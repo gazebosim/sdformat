@@ -106,63 +106,68 @@ Errors Geometry::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = GeometryType::BOX;
     this->dataPtr->box.emplace();
-    Errors err = this->dataPtr->box->Load(_sdf->GetElement("box"));
+    Errors err = this->dataPtr->box->Load(_sdf->GetElement("box", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("capsule"))
   {
     this->dataPtr->type = GeometryType::CAPSULE;
     this->dataPtr->capsule.emplace();
-    Errors err = this->dataPtr->capsule->Load(_sdf->GetElement("capsule"));
+    Errors err = this->dataPtr->capsule->Load(
+        _sdf->GetElement("capsule", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("cylinder"))
   {
     this->dataPtr->type = GeometryType::CYLINDER;
     this->dataPtr->cylinder.emplace();
-    Errors err = this->dataPtr->cylinder->Load(_sdf->GetElement("cylinder"));
+    Errors err = this->dataPtr->cylinder->Load(
+        _sdf->GetElement("cylinder", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("ellipsoid"))
   {
     this->dataPtr->type = GeometryType::ELLIPSOID;
     this->dataPtr->ellipsoid.emplace();
-    Errors err = this->dataPtr->ellipsoid->Load(_sdf->GetElement("ellipsoid"));
+    Errors err = this->dataPtr->ellipsoid->Load(
+        _sdf->GetElement("ellipsoid", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("plane"))
   {
     this->dataPtr->type = GeometryType::PLANE;
     this->dataPtr->plane.emplace();
-    Errors err = this->dataPtr->plane->Load(_sdf->GetElement("plane"));
+    Errors err = this->dataPtr->plane->Load(_sdf->GetElement("plane", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("sphere"))
   {
     this->dataPtr->type = GeometryType::SPHERE;
     this->dataPtr->sphere.emplace();
-    Errors err = this->dataPtr->sphere->Load(_sdf->GetElement("sphere"));
+    Errors err = this->dataPtr->sphere->Load(
+        _sdf->GetElement("sphere", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("mesh"))
   {
     this->dataPtr->type = GeometryType::MESH;
     this->dataPtr->mesh.emplace();
-    Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh"));
+    Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("heightmap"))
   {
     this->dataPtr->type = GeometryType::HEIGHTMAP;
     this->dataPtr->heightmap.emplace();
-    Errors err = this->dataPtr->heightmap->Load(_sdf->GetElement("heightmap"));
+    Errors err = this->dataPtr->heightmap->Load(
+        _sdf->GetElement("heightmap", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("polyline"))
   {
     this->dataPtr->type = GeometryType::POLYLINE;
 
-    for (auto polylineElem = _sdf->GetElement("polyline");
+    for (auto polylineElem = _sdf->GetElement("polyline", errors);
          polylineElem != nullptr;
          polylineElem = polylineElem->GetNextElement("polyline"))
     {
@@ -305,46 +310,55 @@ sdf::ElementPtr Geometry::Element() const
 /////////////////////////////////////////////////
 sdf::ElementPtr Geometry::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("geometry.sdf", elem);
 
   switch (this->dataPtr->type)
   {
     case GeometryType::BOX:
-      elem->InsertElement(this->dataPtr->box->ToElement(), true);
+      elem->InsertElement(this->dataPtr->box->ToElement(_errors), true);
       break;
     case GeometryType::CYLINDER:
-      elem->InsertElement(this->dataPtr->cylinder->ToElement(), true);
+      elem->InsertElement(this->dataPtr->cylinder->ToElement(_errors), true);
       break;
     case GeometryType::PLANE:
-      elem->InsertElement(this->dataPtr->plane->ToElement(), true);
+      elem->InsertElement(this->dataPtr->plane->ToElement(_errors), true);
       break;
     case GeometryType::SPHERE:
-      elem->InsertElement(this->dataPtr->sphere->ToElement(), true);
+      elem->InsertElement(this->dataPtr->sphere->ToElement(_errors), true);
       break;
     case GeometryType::MESH:
-      elem->InsertElement(this->dataPtr->mesh->ToElement(), true);
+      elem->InsertElement(this->dataPtr->mesh->ToElement(_errors), true);
       break;
     case GeometryType::HEIGHTMAP:
-      elem->InsertElement(this->dataPtr->heightmap->ToElement(), true);
+      elem->InsertElement(this->dataPtr->heightmap->ToElement(_errors), true);
       break;
     case GeometryType::CAPSULE:
-      elem->InsertElement(this->dataPtr->capsule->ToElement(), true);
+      elem->InsertElement(this->dataPtr->capsule->ToElement(_errors), true);
       break;
     case GeometryType::ELLIPSOID:
-      elem->InsertElement(this->dataPtr->ellipsoid->ToElement(), true);
+      elem->InsertElement(this->dataPtr->ellipsoid->ToElement(_errors), true);
       break;
     case GeometryType::POLYLINE:
     {
       for (const auto &polyline : this->dataPtr->polylines)
       {
-        elem->InsertElement(polyline.ToElement(), true);
+        elem->InsertElement(polyline.ToElement(_errors), true);
       }
       break;
     }
     case GeometryType::EMPTY:
     default:
-      elem->AddElement("empty");
+      elem->AddElement("empty", _errors);
       break;
   }
 
