@@ -19,6 +19,7 @@
 #include "sdf/Noise.hh"
 #include "sdf/parser.hh"
 #include "sdf/Types.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -78,7 +79,8 @@ Errors Noise::Load(ElementPtr _sdf)
     return errors;
   }
 
-  std::pair<std::string, bool> type = _sdf->Get<std::string>("type", "none");
+  std::pair<std::string, bool> type =
+      _sdf->Get<std::string>(errors, "type", "none");
   if (!type.second)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -102,26 +104,26 @@ Errors Noise::Load(ElementPtr _sdf)
     this->dataPtr->type = NoiseType::NONE;
   }
 
-  this->dataPtr->mean = _sdf->Get<double>("mean",
+  this->dataPtr->mean = _sdf->Get<double>(errors, "mean",
       this->dataPtr->mean).first;
 
-  this->dataPtr->stdDev = _sdf->Get<double>("stddev",
+  this->dataPtr->stdDev = _sdf->Get<double>(errors, "stddev",
       this->dataPtr->stdDev).first;
 
-  this->dataPtr->biasMean = _sdf->Get<double>("bias_mean",
+  this->dataPtr->biasMean = _sdf->Get<double>(errors, "bias_mean",
       this->dataPtr->biasMean).first;
 
-  this->dataPtr->biasStdDev = _sdf->Get<double>("bias_stddev",
+  this->dataPtr->biasStdDev = _sdf->Get<double>(errors, "bias_stddev",
       this->dataPtr->biasStdDev).first;
 
-  this->dataPtr->precision = _sdf->Get<double>("precision",
+  this->dataPtr->precision = _sdf->Get<double>(errors, "precision",
       this->dataPtr->precision).first;
 
-  this->dataPtr->dynamicBiasStdDev = _sdf->Get<double>("dynamic_bias_stddev",
-      this->dataPtr->dynamicBiasStdDev).first;
+  this->dataPtr->dynamicBiasStdDev = _sdf->Get<double>(
+      errors, "dynamic_bias_stddev", this->dataPtr->dynamicBiasStdDev).first;
 
   this->dataPtr->dynamicBiasCorrelationTime = _sdf->Get<double>(
-      "dynamic_bias_correlation_time",
+      errors, "dynamic_bias_correlation_time",
       this->dataPtr->dynamicBiasCorrelationTime).first;
 
   return errors;
@@ -253,6 +255,15 @@ bool Noise::operator==(const Noise &_noise) const
 /////////////////////////////////////////////////
 sdf::ElementPtr Noise::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("noise.sdf", elem);
 
@@ -271,18 +282,21 @@ sdf::ElementPtr Noise::ToElement() const
     default:
       noiseType = "none";
   }
-  elem->GetAttribute("type")->Set<std::string>(noiseType);
-  elem->GetElement("mean")->Set<double>(this->Mean());
-  elem->GetElement("stddev")->Set<double>(this->StdDev());
+  elem->GetAttribute("type")->Set<std::string>(noiseType, _errors);
+  elem->GetElement("mean", _errors)->Set<double>(this->Mean(), _errors);
+  elem->GetElement("stddev", _errors)->Set<double>(this->StdDev(), _errors);
 
   // camera and lidar <noise> does not have the sdf params below
-  elem->GetElement("bias_mean")->Set<double>(this->BiasMean());
-  elem->GetElement("bias_stddev")->Set<double>(this->BiasStdDev());
-  elem->GetElement("dynamic_bias_stddev")->Set<double>(
-    this->DynamicBiasStdDev());
-  elem->GetElement("dynamic_bias_correlation_time")->Set<double>(
-      this->DynamicBiasCorrelationTime());
-  elem->GetElement("precision")->Set<double>(this->Precision());
+  elem->GetElement("bias_mean", _errors)->Set<double>(
+      this->BiasMean(), _errors);
+  elem->GetElement("bias_stddev", _errors)->Set<double>(
+      this->BiasStdDev(), _errors);
+  elem->GetElement("dynamic_bias_stddev", _errors)->Set<double>(
+    this->DynamicBiasStdDev(), _errors);
+  elem->GetElement("dynamic_bias_correlation_time", _errors)->Set<double>(
+      this->DynamicBiasCorrelationTime(), _errors);
+  elem->GetElement("precision", _errors)->Set<double>(
+      this->Precision(), _errors);
 
   return elem;
 }
