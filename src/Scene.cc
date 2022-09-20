@@ -71,30 +71,30 @@ Errors Scene::Load(ElementPtr _sdf)
   }
 
   // Get the ambient property
-  this->dataPtr->ambient = _sdf->Get<gz::math::Color>("ambient",
+  this->dataPtr->ambient = _sdf->Get<gz::math::Color>(errors, "ambient",
       this->dataPtr->ambient).first;
 
   // Get the background color property
-  this->dataPtr->background = _sdf->Get<gz::math::Color>("background",
+  this->dataPtr->background = _sdf->Get<gz::math::Color>(errors, "background",
       this->dataPtr->background).first;
 
   // Get the grid property
-  this->dataPtr->grid = _sdf->Get<bool>("grid",
+  this->dataPtr->grid = _sdf->Get<bool>(errors, "grid",
       this->dataPtr->grid).first;
 
   // Get the shadows property
-  this->dataPtr->shadows = _sdf->Get<bool>("shadows",
+  this->dataPtr->shadows = _sdf->Get<bool>(errors, "shadows",
       this->dataPtr->shadows).first;
 
   // Get the origin_visual property
-  this->dataPtr->originVisual = _sdf->Get<bool>("origin_visual",
+  this->dataPtr->originVisual = _sdf->Get<bool>(errors, "origin_visual",
       this->dataPtr->originVisual).first;
 
   // load sky
   if (_sdf->HasElement("sky"))
   {
     this->dataPtr->sky.emplace();
-    Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky"));
+    Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
@@ -181,17 +181,27 @@ sdf::ElementPtr Scene::Element() const
 /////////////////////////////////////////////////
 sdf::ElementPtr Scene::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Scene::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("scene.sdf", elem);
 
-  elem->GetElement("ambient")->Set(this->Ambient());
-  elem->GetElement("background")->Set(this->Background());
-  elem->GetElement("grid")->Set(this->Grid());
-  elem->GetElement("origin_visual")->Set(this->OriginVisual());
-  elem->GetElement("shadows")->Set(this->Shadows());
+  elem->GetElement("ambient", _errors)->Set(this->Ambient(), _errors);
+  elem->GetElement("background", _errors)->Set(this->Background(), _errors);
+  elem->GetElement("grid", _errors)->Set(this->Grid(), _errors);
+  elem->GetElement("origin_visual", _errors)->Set(
+      this->OriginVisual(), _errors);
+  elem->GetElement("shadows", _errors)->Set(this->Shadows(), _errors);
 
   if (this->dataPtr->sky)
-    elem->InsertElement(this->dataPtr->sky->ToElement(), true);
+    elem->InsertElement(this->dataPtr->sky->ToElement(_errors), true);
 
   return elem;
 }
