@@ -98,6 +98,12 @@ target_compile_definitions(${BINDINGS_MODULE_NAME} PRIVATE
 
 set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
   OUTPUT_NAME "sdformat${PROJECT_VERSION_MAJOR}")
+# Deal with naming collision on Windows. It is caused by the both the import
+# library of sdformat library and the import library of the pybind11 bindings
+# library are called sdformat13.lib.
+# See https://github.com/gazebosim/sdformat/issues/1150
+set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
+  ARCHIVE_OUTPUT_NAME "python_sdformat${PROJECT_VERSION_MAJOR}")
 
 configure_build_install_location(${BINDINGS_MODULE_NAME})
 
