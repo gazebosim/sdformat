@@ -36,6 +36,14 @@ namespace sdf
   // Forward declare private data class.
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
+  /// Mimic joint class.
+  class mimicJoint
+  {
+  public:
+    std::string jointName;
+    double multiplier;
+    double offset;
+  };
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
   /// and the axis of translation for prismatic joints.
@@ -68,6 +76,17 @@ namespace sdf
     /// \return Errors will have an entry if the norm of the xyz vector is 0.
     public: [[nodiscard]] sdf::Errors SetXyz(
                 const gz::math::Vector3d &_xyz);
+
+    /// \brief Set the joint to be mimicked.
+    /// \param[in] _mimicJoint The joint name, multiplier, and offset to be used
+    /// for mimicking.
+    /// \sa mimicJoint MimicJoint()
+    public: void SetMimicJoint(const mimicJoint _mimicJoint);
+
+    /// \brief Get the joint to be mimicked.
+    /// \return The joint name, multipler, and offset of the joint to be mimicked.
+    /// \sa void SetMimicJoint(const mimicJoint)
+    public: mimicJoint MimicJoint() const;
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).

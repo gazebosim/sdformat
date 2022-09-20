@@ -84,6 +84,9 @@ class sdf::JointAxis::Implementation
 
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief Joint to be mimicked.
+  public: mimicJoint mimic;
 };
 
 /////////////////////////////////////////////////
@@ -151,6 +154,20 @@ Errors JointAxis::Load(ElementPtr _sdf)
     this->dataPtr->dissipation = limitElement->Get<double>("dissipation",
         this->dataPtr->dissipation).first;
   }
+
+  // Load mimic joint details if provided.
+  if (_sdf->HasElement("mimic"))
+  {
+    sdf::ElementPtr mimicElement = _sdf->GetElement("mimic");
+
+    this->dataPtr->mimic = mimicJoint();
+    this->dataPtr->mimic.jointName = mimicElement->Get<std::string>("joint",
+        "").first;
+    this->dataPtr->mimic.multiplier = mimicElement->Get<double>("multiplier",
+        0).first;
+    this->dataPtr->mimic.offset = mimicElement->Get<double>("offset",
+        0).first;
+  }
   else
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -177,6 +194,19 @@ sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
   this->dataPtr->xyz = _xyz;
   this->dataPtr->xyz.Normalize();
   return sdf::Errors();
+}
+
+/////////////////////////////////////////////////
+void JointAxis::SetMimicJoint(const mimicJoint
+    _mimicJoint)
+{
+  this->dataPtr->mimic = _mimicJoint;
+}
+
+/////////////////////////////////////////////////
+mimicJoint JointAxis::MimicJoint() const
+{
+  return this->dataPtr->mimic;
 }
 
 /////////////////////////////////////////////////

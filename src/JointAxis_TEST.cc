@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <limits>
 #include "sdf/JointAxis.hh"
+#include "sdf/Root.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMJointAxis, Construction)
@@ -79,6 +80,16 @@ TEST(DOMJointAxis, Construction)
 
   axis.SetDissipation(1.5);
   EXPECT_DOUBLE_EQ(1.5, axis.Dissipation());
+
+  sdf::mimicJoint mimic;
+  mimic.jointName = "test_joint";
+  mimic.multiplier = 5.0;
+  mimic.offset = 1.0;
+
+  axis.SetMimicJoint(mimic);
+  EXPECT_EQ(axis.MimicJoint().jointName, mimic.jointName);
+  EXPECT_DOUBLE_EQ(axis.MimicJoint().multiplier, mimic.multiplier);
+  EXPECT_DOUBLE_EQ(axis.MimicJoint().offset, mimic.offset);
 }
 
 /////////////////////////////////////////////////
@@ -155,4 +166,36 @@ TEST(DOMJointAxis, ZeroNormVectorReturnsError)
   sdf::Errors errors = axis.SetXyz(gz::math::Vector3d::Zero);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Message(), "The norm of the xyz vector cannot be zero");
+}
+
+TEST(DOMJointAxis, ParseMimic)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.6'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <joint name='revolute_joint' type='revolute'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='test_joint' multiplier='4' offset='2' />"
+    "      </axis>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  root.LoadSdfString(sdf);
+  auto jointElement = root.Element()->GetElement("model")->GetElement("joint");
+  EXPECT_NE(nullptr, jointElement);
+
+  sdf::JointAxis jointAxis;
+  jointAxis.Load(jointElement->GetElement("axis"));
+  EXPECT_EQ(jointAxis.MimicJoint().jointName, "test_joint");
+  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().multiplier, 4);
+  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().offset, 2);
 }
