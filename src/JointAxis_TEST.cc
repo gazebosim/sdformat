@@ -82,12 +82,12 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(1.5, axis.Dissipation());
 
   sdf::mimicJoint mimic;
-  mimic.jointName = "test_joint";
+  mimic.joint = "test_joint";
   mimic.multiplier = 5.0;
   mimic.offset = 1.0;
 
   axis.SetMimicJoint(mimic);
-  EXPECT_EQ(axis.MimicJoint().jointName, mimic.jointName);
+  EXPECT_EQ(axis.MimicJoint().joint, mimic.joint);
   EXPECT_DOUBLE_EQ(axis.MimicJoint().multiplier, mimic.multiplier);
   EXPECT_DOUBLE_EQ(axis.MimicJoint().offset, mimic.offset);
 }
@@ -195,7 +195,7 @@ TEST(DOMJointAxis, ParseMimic)
 
   sdf::JointAxis jointAxis;
   jointAxis.Load(jointElement->GetElement("axis"));
-  EXPECT_EQ(jointAxis.MimicJoint().jointName, "test_joint");
+  EXPECT_EQ(jointAxis.MimicJoint().joint, "test_joint");
   EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().multiplier, 4);
   EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().offset, 2);
 }

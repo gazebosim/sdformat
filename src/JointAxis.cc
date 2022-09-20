@@ -161,7 +161,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
     sdf::ElementPtr mimicElement = _sdf->GetElement("mimic");
 
     this->dataPtr->mimic = mimicJoint();
-    this->dataPtr->mimic.jointName = mimicElement->Get<std::string>("joint",
+    this->dataPtr->mimic.joint = mimicElement->Get<std::string>("joint",
         "").first;
     this->dataPtr->mimic.multiplier = mimicElement->Get<double>("multiplier",
         0).first;

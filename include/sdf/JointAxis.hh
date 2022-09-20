@@ -40,7 +40,7 @@ namespace sdf
   class mimicJoint
   {
   public:
-    std::string jointName;
+    std::string joint;
     double multiplier;
     double offset;
   };
