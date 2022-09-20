@@ -172,7 +172,7 @@ TEST(DOMJointAxis, ParseMimic)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
-    "<sdf version='1.6'>"
+    "<sdf version='1.10'>"
     "  <model name='test'>"
     "    <link name='link1'/>"
     "    <link name='link2'/>"
@@ -182,7 +182,7 @@ TEST(DOMJointAxis, ParseMimic)
     "      <parent>link2</parent>"
     "      <axis>"
     "        <xyz>0 0 1</xyz>"
-    "        <mimic joint='test_joint' multiplier='4' offset='2' />"
+    "        <mimic joint=\"test_joint\" multiplier=\"4\" offset=\"2\" />"
     "      </axis>"
     "    </joint>"
     "  </model>"
@@ -198,4 +198,11 @@ TEST(DOMJointAxis, ParseMimic)
   EXPECT_EQ(jointAxis.MimicJoint().joint, "test_joint");
   EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().multiplier, 4);
   EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().offset, 2);
+
+  // Test conversion back to sdf element.
+  auto mimicElement = jointAxis.ToElement()->GetElement("mimic");
+  EXPECT_NE(nullptr, mimicElement);
+  EXPECT_EQ(mimicElement->Get<std::string>("joint"), "test_joint");
+  EXPECT_EQ(mimicElement->Get<double>("offset"), 2);
+  EXPECT_EQ(mimicElement->Get<double>("multiplier"), 4);
 }

@@ -436,5 +436,14 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   limitElem->GetElement("velocity")->Set<double>(this->MaxVelocity());
   limitElem->GetElement("stiffness")->Set<double>(this->Stiffness());
   limitElem->GetElement("dissipation")->Set<double>(this->Dissipation());
+
+  sdf::ElementPtr mimicElement = axisElem->GetElement("mimic");
+  mimicElement->GetAttribute("offset")->SetFromString(
+    std::to_string(this->dataPtr->mimic.offset));
+  mimicElement->GetAttribute("multiplier")->SetFromString(
+    std::to_string(this->dataPtr->mimic.multiplier));
+  mimicElement->GetAttribute("joint")->SetFromString(
+    this->dataPtr->mimic.joint);
+
   return axisElem;
 }
