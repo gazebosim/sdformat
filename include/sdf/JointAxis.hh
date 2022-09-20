@@ -84,7 +84,8 @@ namespace sdf
     public: void SetMimicJoint(const mimicJoint _mimicJoint);
 
     /// \brief Get the joint to be mimicked.
-    /// \return The joint name, multipler, and offset of the joint to be mimicked.
+    /// \return The joint name, multipler, and offset of the joint to
+    /// be mimicked.
     /// \sa void SetMimicJoint(const mimicJoint)
     public: mimicJoint MimicJoint() const;
 
