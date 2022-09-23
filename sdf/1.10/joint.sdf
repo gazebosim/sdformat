@@ -36,12 +36,23 @@
     <description>Parameter for gearbox joints.  Gearbox ratio is enforced over two joint angles.  First joint angle (theta_1) is the angle from the gearbox_reference_body to the parent link in the direction of the axis element and the second joint angle (theta_2) is the angle from the gearbox_reference_body to the child link in the direction of the axis2 element.</description>
   </element>
 
-  <element name="thread_pitch" type="double" default="1.0" required="0">
+  <element name="thread_pitch" type="double" default="1.0" required="-1">
     <description>
       Parameter for screw joints representing the ratio between rotation
       and translation of the joint. This parameter has been interpreted by
       gazebo-classic as having units of radians / meter with a positive value
       corresponding to a left-handed thread.
+      The parameter is now deprecated in favor of `screw_thread_pitch`.
+    </description>
+  </element>
+
+  <element name="screw_thread_pitch" type="double" default="1.0" required="0">
+    <description>
+      A parameter for screw joint kinematics, representing the
+      axial distance traveled for each revolution of the joint,
+      with units of meters / revolution with a positive value corresponding
+      to a right-handed thread.
+      This parameter supersedes `thread_pitch`.
     </description>
   </element>
 
