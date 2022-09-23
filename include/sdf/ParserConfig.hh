@@ -169,15 +169,19 @@ class SDFORMAT_VISIBLE ParserConfig
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Set the preserveFixedJoint flag.
+  /// \param[in] _preserveFixedJoint flag value to set
   public: void URDFSetPreserveFixedJoint(bool _preserveFixedJoint);
 
   /// \brief Get the preserveFixedJoint flag value.
+  /// \return Current flag value
   public: bool URDFPreserveFixedJoint() const;
 
   /// \brief Set the storeResolvedURIs flag value.
+  /// \param[in] _resolveURI flag value to set
   public: void SetStoreResovledURIs(bool _resolveURI);
 
   /// \brief Get the storeResolvedURIs flag value.
+  /// \return Current flag value
   public: bool StoreResolvedURIs() const;
 
   /// \brief Private data pointer.
