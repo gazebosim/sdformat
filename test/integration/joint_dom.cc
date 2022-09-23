@@ -157,6 +157,42 @@ TEST(DOMJoint, Complete)
   }
 }
 
+//////////////////////////////////////////////////
+TEST(DOMJoint, ScrewThreadPitch)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_screw_thread_pitch.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("child_link"));
+  EXPECT_TRUE(model->LinkNameExists("parent_link"));
+
+  EXPECT_EQ(4u, model->JointCount());
+  ASSERT_TRUE(model->JointNameExists("default_param"));
+  ASSERT_TRUE(model->JointNameExists("both_params"));
+  ASSERT_TRUE(model->JointNameExists("new_param"));
+  ASSERT_TRUE(model->JointNameExists("old_param"));
+
+  EXPECT_DOUBLE_EQ(1.0, model->JointByName("default_param")->ScrewThreadPitch());
+  EXPECT_DOUBLE_EQ(0.5, model->JointByName("both_params")->ScrewThreadPitch());
+  EXPECT_DOUBLE_EQ(0.5, model->JointByName("new_param")->ScrewThreadPitch());
+  EXPECT_NEAR(0.5, model->JointByName("old_param")->ScrewThreadPitch(), 1e-3);
+
+  EXPECT_DOUBLE_EQ(-2*GZ_PI, model->JointByName("default_param")->ThreadPitch());
+  EXPECT_NEAR(-12.566, model->JointByName("both_params")->ThreadPitch(), 1e-3);
+  EXPECT_NEAR(-12.566, model->JointByName("new_param")->ThreadPitch(), 1e-3);
+  EXPECT_DOUBLE_EQ(-12.566, model->JointByName("old_param")->ThreadPitch());
+}
+
 /////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointParentWorld)
 {

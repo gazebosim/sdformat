@@ -21,7 +21,7 @@
       <child>child_link</child>
       <parent>parent_link</parent>
       <screw_thread_pitch>0.5</screw_thread_pitch>
-      <thread_pitch>12.566</thread_pitch>
+      <thread_pitch>-12.566</thread_pitch>
     </joint>
     <joint name="new_param" type="screw">
       <axis>
@@ -37,7 +37,7 @@
       </axis>
       <child>child_link</child>
       <parent>parent_link</parent>
-      <thread_pitch>12.566</thread_pitch>
+      <thread_pitch>-12.566</thread_pitch>
     </joint>
   </model>
 </sdf>
