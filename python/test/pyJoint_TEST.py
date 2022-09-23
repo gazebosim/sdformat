@@ -98,10 +98,16 @@ class JointTEST(unittest.TestCase):
         self.assertEqual(axis.xyz(), joint.axis(0).xyz())
         self.assertEqual(axis1.xyz(), joint.axis(1).xyz())
 
-        self.assertAlmostEqual(1.0, joint.thread_pitch())
+        # Default thread pitch
+        self.assertAlmostEqual(1.0, joint.screw_thread_pitch())
+        self.assertAlmostEqual(-2*math.pi, joint.thread_pitch())
         threadPitch = 0.1
+        joint.set_screw_thread_pitch(threadPitch)
+        self.assertAlmostEqual(threadPitch, joint.screw_thread_pitch())
+        self.assertAlmostEqual(-2*math.pi / threadPitch, joint.thread_pitch())
         joint.set_thread_pitch(threadPitch)
         self.assertAlmostEqual(threadPitch, joint.thread_pitch())
+        self.assertAlmostEqual(-2*math.pi / threadPitch, joint.screw_thread_pitch())
 
         self.assertEqual(0, joint.sensor_count())
         self.assertEqual(None, joint.sensor_by_index(0))
