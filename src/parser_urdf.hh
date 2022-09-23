@@ -46,7 +46,10 @@ namespace sdf
     /// \param[in] _enable_new_warnings Consider previous issues in debug log as
     ///            warnings.
     public: explicit URDF2SDF(const bool _enable_new_warnings) :
-            URDF2SDF();
+            URDF2SDF()
+      {
+        enable_new_warnings = _enable_new_warnings;
+      };
 
     /// \brief destructor
     public: ~URDF2SDF();
@@ -88,7 +91,7 @@ namespace sdf
     private: void ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml);
 
     /// when to raise new warnings from previous log issues
-    private: bool _enable_new_warnings;
+    private: bool enable_new_warnings;
   };
   }
 }

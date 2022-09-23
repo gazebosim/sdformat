@@ -1095,12 +1095,6 @@ URDF2SDF::URDF2SDF()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-URDF2SDF::URDF2SDF(const bool enable_new_warnings)
-{
-  enable_new_warnings = true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 URDF2SDF::~URDF2SDF()
 {
 }
@@ -3298,13 +3292,13 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
           child = rootLink->child_links.begin();
           child != rootLink->child_links.end(); ++child)
       {
-        CreateSDF(robot, (*child), transform, _enable_new_warnings);
+        CreateSDF(robot, (*child), transform, enable_new_warnings);
       }
     }
     else
     {
       // convert, starting from root link
-      CreateSDF(robot, rootLink, transform, _enable_new_warnings);
+      CreateSDF(robot, rootLink, transform, enable_new_warnings);
     }
 
     // insert the extensions without reference into <robot> root level
