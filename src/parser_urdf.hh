@@ -45,7 +45,8 @@ namespace sdf
     /// \brief constructor
     /// \param[in] _enable_new_warnings Consider previous issues in debug log as
     ///            warnings.
-    public: explicit URDF2SDF(const bool _enable_new_warnings);
+    public: explicit URDF2SDF(const bool _enable_new_warnings) :
+            URDF2SDF();
 
     /// \brief destructor
     public: ~URDF2SDF();

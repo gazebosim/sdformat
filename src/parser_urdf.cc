@@ -1091,21 +1091,19 @@ URDF2SDF::URDF2SDF()
   g_fixedJointsTransformedInRevoluteJoints.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
 
-  _enable_new_warnings = false;
+  enable_new_warnings = false;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 URDF2SDF::URDF2SDF(const bool enable_new_warnings)
 {
-  URDF2SDF();
-  _enable_new_warnings = true;
+  enable_new_warnings = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 URDF2SDF::~URDF2SDF()
 {
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string Values2str(unsigned int _count, const double *_values)
@@ -2696,7 +2694,8 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   if (_link->name != "world" &&
       ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
   {
-    if (_link->inertial && ignition::math::equal(_link->inertial->mass, 0.0)) {
+    if (_link->inertial && ignition::math::equal(_link->inertial->mass, 0.0))
+    {
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
              + "] has mass equal to 0.0, ["
              + "] children links ignored.\n", _enable_new_warnings);
@@ -2744,7 +2743,8 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
-    CreateSDF(_root, _link->child_links[i], _currentTransform, _enable_new_warnings);
+    CreateSDF(_root, _link->child_links[i], _currentTransform,
+        _enable_new_warnings);
   }
 }
 
