@@ -553,6 +553,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//limit/velocity`: `inf` (formerly `-1`)
     + `//limit/effort`: `inf` (formerly `-1`)
 
+1. **joint.sdf**: thread_pitch is deprecated in favor of screw_thread_pitch.
+
 1. **plugin.sdf**: name attribute is now optional with empty default value.
 
 ### Removals
