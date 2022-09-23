@@ -42,6 +42,11 @@ namespace sdf
     /// \brief constructor
     public: URDF2SDF();
 
+    /// \brief constructor
+    /// \param[in] _enable_new_warnings Consider previous issues in debug log as
+    ///            warnings.
+    public: explicit URDF2SDF(const bool _enable_new_warnings);
+
     /// \brief destructor
     public: ~URDF2SDF();
 
@@ -80,6 +85,9 @@ namespace sdf
     /// things that do not belong in urdf but should be mapped into sdf
     /// @todo: do this using sdf definitions, not hard coded stuff
     private: void ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml);
+
+    /// when to raise new warnings from previous log issues
+    private: bool _enable_new_warnings;
   };
   }
 }

@@ -338,6 +338,50 @@ TEST(URDFParser, ParseGazeboLinkFactors)
 }
 
 /////////////////////////////////////////////////
+TEST(URDFParser, EnableNewWarnings)
+{
+  std::ostringstream stream_no_inertial;
+  // Testing no inertia and inertia 0.0
+  stream_no_inertial << "<robot name=\"test\">"
+                     << "  <link name=\"link_no_inertia\">"
+                     << "    <visual>"
+                     << "      <geometry>"
+                     << "         <sphere radius=\"1.0\"/>"
+                     << "      </geometry>"
+                     << "    </visual>"
+                     << "  </link>"
+                     << "</robot>";
+  std::ostringstream stream_no_mass;
+  // Testing mass zero
+  stream_no_mass << "<robot name=\"test\">"
+                 << "  <link name=\"link_no_mass\">"
+                 << "    <visual>"
+                 << "      <geometry>"
+                 << "         <sphere radius=\"1.0\"/>"
+                 << "      </geometry>"
+                 << "    </visual>"
+                 << "    <inertial>"
+                 << "      <mass value=\"0.000001\" />"
+                 << "      <origin xyz=\"0 0 0\" />"
+                 << "      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\""
+                 << "               iyy=\"0.001\" iyz=\"0.0\""
+                 << "               izz=\"0.001\" />"
+                 << "    </inertial>"
+                 << "  </link>"
+                 << "</robot>";
+
+  sdf::URDF2SDF parser_(true);
+  tinyxml2::XMLDocument doc;
+  tinyxml2::XMLDocument sdf_result;
+
+  doc.Parse(stream_no_inertial.str().c_str());
+  ASSERT_NO_THROW(parser_.InitModelDoc(&doc, &sdf_result));
+
+  doc.Parse(stream_no_mass.str().c_str());
+  ASSERT_NO_THROW(parser_.InitModelDoc(&doc, &sdf_result));
+}
+
+/////////////////////////////////////////////////
 TEST(URDFParser, ParseGazeboInvalidDampingFactor)
 {
   std::ostringstream stream;

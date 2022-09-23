@@ -57,12 +57,15 @@ inline namespace SDF_VERSION_NAMESPACE {
 /// \param[in] _sdf Pointer to an SDF object.
 /// \param[in] _convert Convert to the latest version if true.
 /// \param[out] _errors Parsing errors will be appended to this variable.
+/// \param[in] _enable_new_warnings Consider previous issues in debug log as
+///            warnings.
 /// \return True if successful.
 bool readFileInternal(
     const std::string &_filename,
     SDFPtr _sdf,
     const bool _convert,
-    Errors &_errors);
+    Errors &_errors,
+    bool _enable_new_warnings);
 
 /// \brief Internal helper for readString, which populates the SDF values
 /// from a string
@@ -74,12 +77,15 @@ bool readFileInternal(
 /// \param[in] _sdf Pointer to an SDF object.
 /// \param[in] _convert Convert to the latest version if true.
 /// \param[out] _errors Parsing errors will be appended to this variable.
+/// \param[in] _enable_new_warnings Consider previous issues in debug log as
+///            warnings.
 /// \return True if successful.
 bool readStringInternal(
     const std::string &_xmlString,
     SDFPtr _sdf,
     const bool _convert,
-    Errors &_errors);
+    Errors &_errors,
+    bool _enable_new_warnings);
 
 //////////////////////////////////////////////////
 /// \brief Internal helper for creating XMLDocuments
@@ -395,19 +401,26 @@ bool readFile(const std::string &_filename, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readFileInternal(_filename, _sdf, true, _errors);
+  return readFileInternal(_filename, _sdf, true, _errors, false);
+}
+
+//////////////////////////////////////////////////
+bool readFile(const std::string &_filename, SDFPtr _sdf, Errors &_errors,
+    const bool _enable_new_warnings)
+{
+  return readFileInternal(_filename, _sdf, true, _errors, _enable_new_warnings);
 }
 
 //////////////////////////////////////////////////
 bool readFileWithoutConversion(
     const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readFileInternal(_filename, _sdf, false, _errors);
+  return readFileInternal(_filename, _sdf, false, _errors, false);
 }
 
 //////////////////////////////////////////////////
 bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
-      const bool _convert, Errors &_errors)
+      const bool _convert, Errors &_errors, bool _enable_new_warnings)
 {
   auto xmlDoc = makeSdfDoc();
   std::string filename = sdf::findFile(_filename, true, true);
@@ -478,19 +491,19 @@ bool readString(const std::string &_xmlString, SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, SDFPtr _sdf, Errors &_errors)
 {
-  return readStringInternal(_xmlString, _sdf, true, _errors);
+  return readStringInternal(_xmlString, _sdf, true, _errors, false);
 }
 
 //////////////////////////////////////////////////
 bool readStringWithoutConversion(
     const std::string &_filename, SDFPtr _sdf, Errors &_errors)
 {
-  return readStringInternal(_filename, _sdf, false, _errors);
+  return readStringInternal(_filename, _sdf, false, _errors, false);
 }
 
 //////////////////////////////////////////////////
 bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
-    const bool _convert, Errors &_errors)
+    const bool _convert, Errors &_errors, bool _enable_new_warnings)
 {
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(_xmlString.c_str());
@@ -505,9 +518,9 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   }
   else
   {
-    URDF2SDF u2g;
+    URDF2SDF u2g(_enable_new_warnings);
     auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, &doc);
+    u2g.InitModelString(_xmlString, &doc, true);
 
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {

@@ -1090,6 +1090,14 @@ URDF2SDF::URDF2SDF()
   g_initialRobotPoseValid = false;
   g_fixedJointsTransformedInRevoluteJoints.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
+
+  _enable_new_warnings = false;
+}
+
+URDF2SDF::URDF2SDF(const bool enable_new_warnings)
+{
+  URDF2SDF();
+  _enable_new_warnings = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2665,9 +2673,20 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void _DisplayDbgOrWarning(const std::string & _msg,
+    const bool _enable_new_warnings)
+{
+  if (_enable_new_warnings)
+    sdfwarn << _msg;
+  else
+    sdfdbg << _msg;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(tinyxml2::XMLElement *_root,
                urdf::LinkConstSharedPtr _link,
-               const ignition::math::Pose3d &_transform)
+               const ignition::math::Pose3d &_transform,
+               bool _enable_new_warnings)
 {
   ignition::math::Pose3d _currentTransform = _transform;
 
@@ -2677,32 +2696,39 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   if (_link->name != "world" &&
       ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
   {
+    if (_link->inertial && ignition::math::equal(_link->inertial->mass, 0.0)) {
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has mass equal to 0.0, ["
+             + "] children links ignored.\n", _enable_new_warnings);
+      return;
+    }
+
     if (!_link->child_links.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children links ignored.\n";
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, ["
+             + std::to_string(_link->child_links.size())
+             + "] children links ignored.\n", _enable_new_warnings);
     }
 
     if (!_link->child_joints.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children joints ignored.\n";
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, ["
+             + std::to_string(_link->child_links.size())
+             + "] children joints ignored.\n", _enable_new_warnings);
     }
 
     if (_link->parent_joint)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, "
-             << "parent joint [" << _link->parent_joint->name
-             << "] ignored.\n";
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, "
+             + "parent joint [" + _link->parent_joint->name
+             + "] ignored.\n", _enable_new_warnings);
     }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
-           << "] has no inertia, not modeled in sdf\n";
+    _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+           + "] has no inertia, not modeled in sdf\n", _enable_new_warnings);
     return;
   }
 
@@ -2718,7 +2744,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
-    CreateSDF(_root, _link->child_links[i], _currentTransform);
+    CreateSDF(_root, _link->child_links[i], _currentTransform, _enable_new_warnings);
   }
 }
 
@@ -3272,13 +3298,13 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
           child = rootLink->child_links.begin();
           child != rootLink->child_links.end(); ++child)
       {
-        CreateSDF(robot, (*child), transform);
+        CreateSDF(robot, (*child), transform, _enable_new_warnings);
       }
     }
     else
     {
       // convert, starting from root link
-      CreateSDF(robot, rootLink, transform);
+      CreateSDF(robot, rootLink, transform, _enable_new_warnings);
     }
 
     // insert the extensions without reference into <robot> root level
@@ -3317,7 +3343,7 @@ void URDF2SDF::InitModelDoc(const tinyxml2::XMLDocument *_xmlDoc,
   tinyxml2::XMLPrinter printer;
   _xmlDoc->Print(&printer);
   std::string urdfStr = printer.CStr();
-  InitModelString(urdfStr, _sdfXmlDoc);
+  InitModelString(urdfStr, _sdfXmlDoc, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

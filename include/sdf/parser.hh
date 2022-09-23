@@ -115,6 +115,21 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool readFile(const std::string &_filename, SDFPtr _sdf);
 
+  /// \brief Populate the SDF values from a file
+  ///
+  /// This populates the given sdf pointer from a file. If the file is a URDF
+  /// file it is converted to SDF first. All files are converted to the latest
+  /// SDF version
+  /// \param[in] _filename Name of the SDF file
+  /// \param[in] _sdf Pointer to an SDF object.
+  /// \param[in] _enable_new_warnings Consider previous issues in debug log as
+  ///            warnings. This allow to keep log level backwards compatible
+  ///            while providing an option to increase the warnings with new
+  ///            relevant issues.
+  /// \return True if successful.
+  bool readFile(const std::string &_filename, SDFPtr _sdf,
+      bool _enable_new_warnings);
+
   /// \brief Populate the SDF values from a string
   ///
   /// This populates the sdf pointer from a string. If the string is a URDF
