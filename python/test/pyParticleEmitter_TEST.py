@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math import Color, Pose3d, Vector3d, Helpers
-from sdformat import ParticleEmitter
+from gz.math7 import Color, Pose3d, Vector3d, Helpers
+from sdformat13 import ParticleEmitter
 import unittest
 
 

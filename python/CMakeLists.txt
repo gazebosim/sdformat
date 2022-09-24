@@ -36,7 +36,10 @@ function(configure_build_install_location _library_name)
   )
 endfunction()
 
-pybind11_add_module(sdformat MODULE
+# sdformatX target already exists, use pysdformatX + OUTPUT_NAME to get
+# sdformatX file name generated and map BINDINGS_MODULE_NAME to sdformatX
+set(BINDINGS_MODULE_NAME "pysdformat${PROJECT_VERSION_MAJOR}")
+pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/_gz_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
   src/sdf/pyAltimeter.cc
@@ -84,11 +87,19 @@ pybind11_add_module(sdformat MODULE
   src/sdf/pybind11_helpers.cc
 )
 
-target_link_libraries(sdformat PRIVATE
+target_link_libraries(${BINDINGS_MODULE_NAME} PRIVATE
   ${PROJECT_LIBRARY_TARGET_NAME}
 )
 
-configure_build_install_location(sdformat)
+# different from the target name since the target name was not able to use
+# sdformatX since it conflicts with the project name
+target_compile_definitions(${BINDINGS_MODULE_NAME} PRIVATE
+  BINDINGS_MODULE_NAME=sdformat${PROJECT_VERSION_MAJOR})
+
+set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
+  OUTPUT_NAME "sdformat${PROJECT_VERSION_MAJOR}")
+
+configure_build_install_location(${BINDINGS_MODULE_NAME})
 
 if (BUILD_TESTING)
   pybind11_add_module(sdformattest SHARED
