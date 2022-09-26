@@ -388,7 +388,7 @@ TEST(URDFParser, EnableNewWarnings)
                    << "      </geometry>"
                    << "    </visual>"
                    << "    <inertial>"
-                   << "      <mass value=\"0.0000001\" />"
+                   << "      <mass value=\"0.000001\" />"
                    << "      <origin xyz=\"0 0 0\" />"
                    << "      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\""
                    << "               iyy=\"0.001\" iyz=\"0.0\""
@@ -400,7 +400,7 @@ TEST(URDFParser, EnableNewWarnings)
   ASSERT_NO_THROW(parser_.InitModelDoc(&doc));
   // Check warning message
   EXPECT_NE(
-    std::string::npos, buffer.str().find("] has mass equal to 0.0"))
+    std::string::npos, buffer.str().find("] has a mass considered zero ["))
     << buffer.str();
   }
 }

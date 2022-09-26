@@ -2626,8 +2626,9 @@ void CreateSDF(TiXmlElement *_root,
     if (_link->inertial && ignition::math::equal(_link->inertial->mass, 0.0))
     {
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
-             + "] has mass equal to 0.0, ["
-             + "] children links ignored.\n", _enable_new_warnings);
+             + "] has a mass considered zero ["
+             + std::to_string(_link->inertial->mass) +
+             + "].It is ignored.\n", _enable_new_warnings);
       return;
     }
 
