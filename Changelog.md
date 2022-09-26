@@ -1,5 +1,49 @@
 ## libsdformat 12.X
 
+### libsdformat 12.6.0 (2022-09-07)
+
+1. Add camera `optical_frame_id` element
+    * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
+
+1. urdf: fix sensor/light pose for links lumped by fixed joints
+    * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. Removed USD component from SDFormat and move to gz-usd
+    * [Pull request #1094](https://github.com/gazebosim/sdformat/pull/1094)
+
+1. Fix URDF fixed joint reduction of SDF joints
+    * [Pull request #1089](https://github.com/gazebosim/sdformat/pull/1089)
+
+1. Test model name as `placement_frame`
+    * [Pull request #1079](https://github.com/gazebosim/sdformat/pull/1079)
+
+1. Test using `__model__`, `world` in `@attached_to`, `@relative_to`
+    * [Pull request #1066](https://github.com/gazebosim/sdformat/pull/1066)
+
+1. Remove unused sdf.hh.in template
+    * [Pull request #1081](https://github.com/gazebosim/sdformat/pull/1081)
+
+1. Readme: Ignition -> Gazebo
+    * [Pull request #1080](https://github.com/gazebosim/sdformat/pull/1080)
+
+1. Document major and minor SDFormat version numbers
+    * [Pull request #1065](https://github.com/gazebosim/sdformat/pull/1065)
+
+1. Add skybox URI
+    * [Pull request #1037](https://github.com/gazebosim/sdformat/pull/1037)
+
+1. Bash completion for flags
+    * [Pull request #1042](https://github.com/gazebosim/sdformat/pull/1042)
+
+1. Fix bug with resolving poses for joint sensors.
+    * [Pull request #1033](https://github.com/gazebosim/sdformat/pull/1033)
+
+1. sdf::Joint: Mutable versions of SensorByName and SensorByIndex
+    * [Pull request #1031](https://github.com/gazebosim/sdformat/pull/1031)
+
+1. Add Link::ResolveInertial API
+    * [Pull request #1012](https://github.com/gazebosim/sdformat/pull/1012)
+
 ### libsdformat 12.5.0 (2022-05-12)
 
 1. Add visibility mask to Lidar / Ray sensor
@@ -1011,7 +1055,32 @@
 
 ## libsdformat 9.X
 
-### libsdformat 9.X.X (202X-XX-XX)
+### libsdformat 9.9.0 (2022-09-07)
+
+1. sdf/camera.sdf: fields for projection matrix
+    * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
+
+1. urdf: fix sensor/light pose for links lumped by fixed joints
+    * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. Ensure relocatable config files
+    * [Pull request #419](https://github.com/gazebosim/sdformat/pull/419)
+    * [Pull request #1093](https://github.com/gazebosim/sdformat/pull/1093)
+
+1. Test using `__model__`, `world` in @attached_to, @relative_to
+    * [Pull request #1066](https://github.com/gazebosim/sdformat/pull/1066)
+
+1. Readme: Ignition -> Gazebo
+    * [Pull request #1080](https://github.com/gazebosim/sdformat/pull/1080)
+
+1. Document major and minor SDFormat version numbers
+    * [Pull request #1065](https://github.com/gazebosim/sdformat/pull/1065)
+
+1. Bash completion for flags
+    * [Pull request #1042](https://github.com/gazebosim/sdformat/pull/1042)
+
+1. Add Link::ResolveInertial API
+    * [Pull request #1012](https://github.com/gazebosim/sdformat/pull/1012)
 
 ### libsdformat 9.8.0 (2022-04-26)
 
