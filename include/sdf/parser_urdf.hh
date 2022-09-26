@@ -42,6 +42,15 @@ namespace sdf
     /// \brief constructor
     public: URDF2SDF();
 
+    /// \brief constructor
+    /// \param[in] _enable_new_warnings Consider previous issues in debug log as
+    ///            warnings.
+    public: explicit URDF2SDF(const bool _enable_new_warnings) :
+            URDF2SDF()
+      {
+        enable_new_warnings = _enable_new_warnings;
+      };
+
     /// \brief destructor
     public: ~URDF2SDF();
 
@@ -81,6 +90,9 @@ namespace sdf
     // cppcheck-suppress unusedPrivateFunction
     // cppcheck-suppress unmatchedSuppression
     private: void ListSDFExtensions(const std::string &_reference);
+
+    /// when to raise new warnings from previous log issues
+    private: bool enable_new_warnings;
   };
   }
 }

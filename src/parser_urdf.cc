@@ -142,7 +142,8 @@ void AddTransform(TiXmlElement *_elem,
     const ignition::math::Pose3d &_transform);
 
 /// create SDF from URDF link
-void CreateSDF(TiXmlElement *_root, urdf::LinkConstSharedPtr _link);
+void CreateSDF(TiXmlElement *_root, urdf::LinkConstSharedPtr _link,
+    bool _enable_new_warnings);
 
 /// create SDF Link block based on URDF
 void CreateLink(TiXmlElement *_root, urdf::LinkConstSharedPtr _link,
@@ -1066,14 +1067,14 @@ URDF2SDF::URDF2SDF()
   g_initialRobotPoseValid = false;
   g_fixedJointsTransformedInRevoluteJoints.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
+
+  enable_new_warnings = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 URDF2SDF::~URDF2SDF()
 {
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string Values2str(unsigned int _count, const double *_values)
@@ -2602,8 +2603,19 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void _DisplayDbgOrWarning(const std::string & _msg,
+    const bool _enable_new_warnings)
+{
+  if (_enable_new_warnings)
+    sdfwarn << _msg;
+  else
+    sdfdbg << _msg;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(TiXmlElement *_root,
-               urdf::LinkConstSharedPtr _link)
+               urdf::LinkConstSharedPtr _link,
+               bool _enable_new_warnings)
 {
   // must have an <inertial> block and cannot have zero mass.
   //  allow det(I) == zero, in the case of point mass geoms.
@@ -2611,32 +2623,40 @@ void CreateSDF(TiXmlElement *_root,
   if (_link->name != "world" &&
       ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
   {
+    if (_link->inertial && ignition::math::equal(_link->inertial->mass, 0.0))
+    {
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has mass equal to 0.0, ["
+             + "] children links ignored.\n", _enable_new_warnings);
+      return;
+    }
+
     if (!_link->child_links.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children links ignored.\n";
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, ["
+             + std::to_string(_link->child_links.size())
+             + "] children links ignored.\n", _enable_new_warnings);
     }
 
     if (!_link->child_joints.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children joints ignored.\n";
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, ["
+             + std::to_string(_link->child_links.size())
+             + "] children joints ignored.\n", _enable_new_warnings);
     }
 
     if (_link->parent_joint)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, "
-             << "parent joint [" << _link->parent_joint->name
-             << "] ignored.\n";
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, "
+             + "parent joint [" + _link->parent_joint->name
+             + "] ignored.\n", _enable_new_warnings);
     }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
-           << "] has no inertia, not modeled in sdf\n";
+    _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+           + "] has no inertia, not modeled in sdf\n", _enable_new_warnings);
     return;
   }
 
@@ -2652,7 +2672,7 @@ void CreateSDF(TiXmlElement *_root,
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
-    CreateSDF(_root, _link->child_links[i]);
+    CreateSDF(_root, _link->child_links[i], _enable_new_warnings);
   }
 }
 
@@ -3186,13 +3206,13 @@ TiXmlDocument URDF2SDF::InitModelString(const std::string &_urdfStr,
           child = rootLink->child_links.begin();
           child != rootLink->child_links.end(); ++child)
       {
-        CreateSDF(robot, (*child));
+        CreateSDF(robot, (*child), enable_new_warnings);
       }
     }
     else
     {
       // convert, starting from root link
-      CreateSDF(robot, rootLink);
+      CreateSDF(robot, rootLink, enable_new_warnings);
     }
 
     // insert the extensions without reference into <robot> root level
@@ -3234,7 +3254,7 @@ TiXmlDocument URDF2SDF::InitModelDoc(TiXmlDocument* _xmlDoc)
   std::ostringstream stream;
   stream << *_xmlDoc;
   std::string urdfStr = stream.str();
-  return InitModelString(urdfStr);
+  return InitModelString(urdfStr, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
