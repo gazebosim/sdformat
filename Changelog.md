@@ -2,6 +2,9 @@
 
 ### libsdformat 12.6.0 (2022-09-07)
 
+1. Reduce the number of include dirs for sdformat.
+    * [Pull request #1170](https://github.com/gazebosim/sdformat/pull/1170)
+
 1. Add camera `optical_frame_id` element
     * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
 
