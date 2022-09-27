@@ -14,6 +14,8 @@
  * limitations under the License.
  *
 */
+// Disable for arm
+#if !defined __ARM_ARCH
 
 #include <gtest/gtest.h>
 #include <iostream>
@@ -1998,3 +2000,5 @@ int main(int argc, char **argv)
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
+// #if !defined __ARM_ARCH
+#endif
