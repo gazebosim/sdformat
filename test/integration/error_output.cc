@@ -120,12 +120,6 @@ TEST(Error, ErrorOutput)
     "0.59999999999999987' to key [] for new parent element of name '',"
     " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
     "0.59999999999999987'."));
-#else
-  EXPECT_NE(std::string::npos, errors[1].Message().find(
-    "Failed to set value '1 2 3 0.39999999999999997 0.5 "
-    "0.59999999999999987' to key [] for new parent element of name '',"
-    " reverting to previous value '1 2 3 0.39999999999999997 0.5 "
-    "0.59999999999999987'."));
 #endif
 
   errors.clear();

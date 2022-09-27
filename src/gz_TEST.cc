@@ -1854,13 +1854,14 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
   EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
 }
 
+// Disable on arm
+#if !defined __ARM_ARCH
 /////////////////////////////////////////////////
 TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
 
-#if !defined __ARM_ARCH
   auto expectedOutput =
     "Inertial statistics for model: test_model\n"
     "---\n"
@@ -1876,23 +1877,6 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     "0    304  0    \n"
     "0    0    604  \n"
     "---\n";
-#else
-  auto expectedOutput =
-    "Inertial statistics for model: test_model\n"
-    "---\n"
-    "Total mass of the model: 24\n"
-    "---\n"
-    "Centre of mass in model frame: \n"
-    "X: 0\n"
-    "Y: 5.55112e-17\n"
-    "Z: 0\n"
-    "---\n"
-    "Moment of inertia matrix: \n"
-    "304  0    0    \n"
-    "0    304  0    \n"
-    "0    0    604  \n"
-    "---\n";
-#endif
 
   // Check a good SDF file by passing the absolute path
   {
@@ -1954,6 +1938,8 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_EQ(expectedOutput, output);
   }
 }
+// #if !defined __ARM_ARCH
+#endif
 
 //////////////////////////////////////////////////
 /// \brief Check help message and bash completion script for consistent flags
