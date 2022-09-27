@@ -156,10 +156,9 @@ Errors JointAxis::Load(ElementPtr _sdf)
   }
 
   // Load mimic joint details if provided.
-  if (_sdf->HasElement("mimic"))
+  auto mimicElement = _sdf->FindElement("mimic");
+  if (mimicElement)
   {
-    sdf::ElementPtr mimicElement = _sdf->GetElement("mimic");
-
     this->dataPtr->mimic = mimicJoint();
     this->dataPtr->mimic.joint = mimicElement->Get<std::string>("joint",
         "").first;
@@ -167,11 +166,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
         0).first;
     this->dataPtr->mimic.offset = mimicElement->Get<double>("offset",
         0).first;
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "A limit element is a required child of a joint axis"});
   }
 
   return errors;

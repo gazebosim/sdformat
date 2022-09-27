@@ -193,6 +193,7 @@ TEST(DOMJointAxis, ParseMimic)
   auto jointElement = root.Element()->GetElement("model")->GetElement("joint");
   EXPECT_NE(nullptr, jointElement);
 
+  // Test loading from sdf element pointer.
   sdf::JointAxis jointAxis;
   jointAxis.Load(jointElement->GetElement("axis"));
   EXPECT_EQ(jointAxis.MimicJoint().joint, "test_joint");
