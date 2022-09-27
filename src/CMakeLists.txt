@@ -29,7 +29,7 @@ endif()
 
 if (BUILD_TESTING)
   # Build this test file only if Gazebo Tools is installed.
-  if (NOT GZ_PROGRAM OR CMAKE_SYSTEM_PROCESSOR EQUAL "aarch64")
+  if (NOT GZ_PROGRAM)
     list(REMOVE_ITEM gtest_sources gz_TEST.cc)
   endif()
 
