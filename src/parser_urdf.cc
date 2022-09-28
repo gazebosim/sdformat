@@ -432,6 +432,11 @@ void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
     {
       TiXmlDocument xmlNewDoc;
       xmlNewDoc.Parse(_frame.c_str());
+      if (xmlNewDoc.Error())
+      {
+        sdferr << "Error while parsing serialized frames: "
+               << xmlNewDoc.ErrorDesc() << '\n';
+      }
 
       TiXmlElementPtr blob =
           std::make_shared<TiXmlElement>(*xmlNewDoc.FirstChildElement());
@@ -440,15 +445,8 @@ void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
     stringToExtension(ssj.str());
     stringToExtension(ssl.str());
 
-    // Ensure model extension vector is allocated
-    if (g_extensions.find("") == g_extensions.end())
-    {
-      std::vector<SDFExtensionPtr> ge;
-      g_extensions.insert(std::make_pair("", ge));
-    }
-
     // Add //frame tags to model extension vector
-    g_extensions.at("").push_back(sdfExt);
+    g_extensions[""].push_back(sdfExt);
 
     // lump sdf extensions to parent, (give them new reference _link names)
     ReduceSDFExtensionToParent(_link);

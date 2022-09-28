@@ -2,6 +2,7 @@
 <robot name="fixed_joint_example">
 
   <link name="base">
+    <!-- base has inertial and visual geometry of a half-cube -->
     <inertial>
       <mass value="6"/>
       <origin rpy="0 0 0" xyz="0 0 0.25"/>
@@ -22,6 +23,7 @@
     <child link="intermediate_link"/>
   </joint>
   <link name="intermediate_link">
+    <!-- intermediate_link has inertial and visual geometry of a half-cube -->
     <inertial>
       <mass value="6"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -43,6 +45,8 @@
     <child link="rotary_link"/>
   </joint>
   <link name="rotary_link">
+    <!-- rotary_link has inertial and visual geometry of a cube equivalent to the
+         merged properties of base and intermediate_link. -->
     <inertial>
       <mass value="12"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>

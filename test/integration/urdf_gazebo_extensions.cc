@@ -38,6 +38,7 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
   }
 
   auto modelDom = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, modelDom);
   sdf::ElementPtr model = modelDom->Element();
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
@@ -401,7 +402,6 @@ TEST(SDFParser, FixedJointSimple)
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_TRUE(model->LinkNameExists("base"));
 
-  // Expect MassMatrix3 values to match for links
   auto link = model->LinkByName("base");
   ASSERT_NE(nullptr, link);
   auto massMatrix = link->Inertial().MassMatrix();
