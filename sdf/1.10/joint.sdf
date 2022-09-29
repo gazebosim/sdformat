@@ -102,12 +102,16 @@
       <attribute name="joint" type="string" default="" required="1">
         <description>Name of the joint to be mimicked</description>
       </attribute>
-      <attribute name="multiplier" type="double" default="0" required="1">
+      <attribute name="axis" type="string" default="1" required="1">
+        <description>Axis number of the joint to be mimicked, can be
+        either 1 or 2</description>
+      </attribute>
+      <element name="multiplier" type="double" default="0" required="1">
         <description>Multiplying factor to be applied to the input joint state</description>
-      </attribute>
-      <attribute name="offset" type="double" default="0" required="1">
+      </element>
+      <element name="offset" type="double" default="0" required="1">
         <description>Offset to be applied to the input joint state</description>
-      </attribute>
+      </element>
     </element>
   </element> <!-- End Axis -->
 
@@ -173,13 +177,18 @@
       <attribute name="joint" type="string" default="" required="1">
         <description>Name of the joint to be mimicked</description>
       </attribute>
-      <attribute name="multiplier" type="double" default="0" required="1">
+      <attribute name="axis" type="string" default="1" required="1">
+        <description>Axis number of the joint to be mimicked, can be
+        either 1 or 2</description>
+      </attribute>
+      <element name="multiplier" type="double" default="0" required="1">
         <description>Multiplying factor to be applied to the input joint state</description>
-      </attribute>
-      <attribute name="offset" type="double" default="0" required="1">
+      </element>
+      <element name="offset" type="double" default="0" required="1">
         <description>Offset to be applied to the input joint state</description>
-      </attribute>
+      </element>
     </element>
+
   </element> <!-- End Axis2 -->
 
   <element name="physics" required="0">

@@ -83,13 +83,15 @@ TEST(DOMJointAxis, Construction)
 
   sdf::mimicJoint mimic;
   mimic.joint = "test_joint";
+  mimic.axis = "1";
   mimic.multiplier = 5.0;
   mimic.offset = 1.0;
 
   axis.SetMimicJoint(mimic);
-  EXPECT_EQ(axis.MimicJoint().joint, mimic.joint);
-  EXPECT_DOUBLE_EQ(axis.MimicJoint().multiplier, mimic.multiplier);
-  EXPECT_DOUBLE_EQ(axis.MimicJoint().offset, mimic.offset);
+  EXPECT_EQ(axis.MimicJoint().joint, "test_joint");
+  EXPECT_EQ(axis.MimicJoint().axis, "1");
+  EXPECT_DOUBLE_EQ(axis.MimicJoint().multiplier, 5.0);
+  EXPECT_DOUBLE_EQ(axis.MimicJoint().offset, 1.0);
 }
 
 /////////////////////////////////////////////////
@@ -182,7 +184,10 @@ TEST(DOMJointAxis, ParseMimic)
     "      <parent>link2</parent>"
     "      <axis>"
     "        <xyz>0 0 1</xyz>"
-    "        <mimic joint=\"test_joint\" multiplier=\"4\" offset=\"2\" />"
+    "        <mimic joint='test_joint' axis='1'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "        </mimic>"
     "      </axis>"
     "    </joint>"
     "  </model>"
@@ -197,6 +202,7 @@ TEST(DOMJointAxis, ParseMimic)
   sdf::JointAxis jointAxis;
   jointAxis.Load(jointElement->GetElement("axis"));
   EXPECT_EQ(jointAxis.MimicJoint().joint, "test_joint");
+  EXPECT_EQ(jointAxis.MimicJoint().axis, "1");
   EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().multiplier, 4);
   EXPECT_DOUBLE_EQ(jointAxis.MimicJoint().offset, 2);
 
@@ -204,6 +210,7 @@ TEST(DOMJointAxis, ParseMimic)
   auto mimicElement = jointAxis.ToElement()->GetElement("mimic");
   EXPECT_NE(nullptr, mimicElement);
   EXPECT_EQ(mimicElement->Get<std::string>("joint"), "test_joint");
+  EXPECT_EQ(mimicElement->Get<std::string>("axis"), "1");
   EXPECT_EQ(mimicElement->Get<double>("offset"), 2);
   EXPECT_EQ(mimicElement->Get<double>("multiplier"), 4);
 }

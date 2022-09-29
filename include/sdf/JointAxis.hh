@@ -41,6 +41,7 @@ namespace sdf
   {
   public:
     std::string joint;
+    std::string axis;
     double multiplier;
     double offset;
   };

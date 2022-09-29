@@ -162,6 +162,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
     this->dataPtr->mimic = mimicJoint();
     this->dataPtr->mimic.joint = mimicElement->Get<std::string>("joint",
         "").first;
+    this->dataPtr->mimic.axis = mimicElement->Get<std::string>("axis",
+        "1").first;
     this->dataPtr->mimic.multiplier = mimicElement->Get<double>("multiplier",
         0).first;
     this->dataPtr->mimic.offset = mimicElement->Get<double>("offset",
@@ -432,12 +434,14 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   limitElem->GetElement("dissipation")->Set<double>(this->Dissipation());
 
   sdf::ElementPtr mimicElement = axisElem->GetElement("mimic");
-  mimicElement->GetAttribute("offset")->SetFromString(
-    std::to_string(this->dataPtr->mimic.offset));
-  mimicElement->GetAttribute("multiplier")->SetFromString(
-    std::to_string(this->dataPtr->mimic.multiplier));
   mimicElement->GetAttribute("joint")->SetFromString(
     this->dataPtr->mimic.joint);
+  mimicElement->GetAttribute("axis")->SetFromString(
+    this->dataPtr->mimic.axis);
+  mimicElement->GetElement("multiplier")->Set<double>(
+      this->dataPtr->mimic.multiplier);
+  mimicElement->GetElement("offset")->Set<double>(
+      this->dataPtr->mimic.offset);
 
   return axisElem;
 }
