@@ -412,6 +412,42 @@ void ReduceFixedJoints(TiXmlElement *_root, urdf::LinkSharedPtr _link)
     sdfdbg << "Fixed Joint Reduction: extension lumping from ["
            << _link->name << "] to [" << _link->getParent()->name << "]\n";
 
+    // Add //model/frame tag to memorialize reduced joint
+    std::stringstream ssj;
+    ssj << "<frame name='" << _link->parent_joint->name << "'"
+        << " attached_to='" << _link->getParent()->name << "'>\n";
+    ssj << "  <pose>"
+        << CopyPose(_link->parent_joint->parent_to_joint_origin_transform)
+        << "</pose>\n";
+    ssj << "</frame>\n";
+
+    // Add //model/frame tag to memorialize reduced link
+    std::stringstream ssl;
+    ssl << "<frame name='" << _link->name + "'"
+        << " attached_to='" << _link->parent_joint->name << "'/>\n";
+
+    // Serialize sdf::Frame objects to xml and add to SDFExtension
+    SDFExtensionPtr sdfExt = std::make_shared<SDFExtension>();
+    auto stringToExtension = [&sdfExt](const std::string &_frame)
+    {
+      TiXmlDocument xmlNewDoc;
+      xmlNewDoc.Parse(_frame.c_str());
+      if (xmlNewDoc.Error())
+      {
+        sdferr << "Error while parsing serialized frames: "
+               << xmlNewDoc.ErrorDesc() << '\n';
+      }
+
+      TiXmlElementPtr blob =
+          std::make_shared<TiXmlElement>(*xmlNewDoc.FirstChildElement());
+      sdfExt->blobs.push_back(blob);
+    };
+    stringToExtension(ssj.str());
+    stringToExtension(ssl.str());
+
+    // Add //frame tags to model extension vector
+    g_extensions[""].push_back(sdfExt);
+
     // lump sdf extensions to parent, (give them new reference _link names)
     ReduceSDFExtensionToParent(_link);
 
