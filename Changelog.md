@@ -1,6 +1,11 @@
 ## libsdformat 13.X
 
-### libsdformat 13.0.0 (202X-XX-XX)
+### libsdformat 13.0.1 (2022-09-27)
+
+1. Fix arm tests
+    * [Pull request #1173](https://github.com/gazebosim/sdformat/pull/1173)
+
+### libsdformat 13.0.0 (2022-09-23)
 
 1. Add camera `optical_frame_id` element
     * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
