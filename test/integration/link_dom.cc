@@ -347,6 +347,12 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(162, camSensor->LensIntrinsicsCx());
   EXPECT_DOUBLE_EQ(124, camSensor->LensIntrinsicsCy());
   EXPECT_DOUBLE_EQ(1.2, camSensor->LensIntrinsicsSkew());
+  EXPECT_DOUBLE_EQ(280, camSensor->LensProjectionFx());
+  EXPECT_DOUBLE_EQ(281, camSensor->LensProjectionFy());
+  EXPECT_DOUBLE_EQ(162, camSensor->LensProjectionCx());
+  EXPECT_DOUBLE_EQ(124, camSensor->LensProjectionCy());
+  EXPECT_DOUBLE_EQ(0, camSensor->LensProjectionTx());
+  EXPECT_DOUBLE_EQ(0, camSensor->LensProjectionTy());
 
   gz::math::Pose3d pose;
 
