@@ -104,7 +104,8 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
   // Load the geometry
-  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"), _config);
+  Errors geomErr = this->dataPtr->geom.Load(
+      _sdf->GetElement("geometry"), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Load the surface parameters if they are given
