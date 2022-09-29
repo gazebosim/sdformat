@@ -56,7 +56,7 @@ TEST(ParserConfig, Construction)
   EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.WarningsPolicy());
   EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.UnrecognizedElementsPolicy());
   EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.DeprecatedElementsPolicy());
-  EXPECT_TRUE(config.URDFPreserveFixedJoint());
+  EXPECT_FALSE(config.URDFPreserveFixedJoint());
   EXPECT_FALSE(config.StoreResolvedURIs());
 }
 

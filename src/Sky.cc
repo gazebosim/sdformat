@@ -197,8 +197,27 @@ Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
       _sdf->Get<double>("sunset", this->dataPtr->sunset).first;
-  this->dataPtr->cubemapUri =
-      _sdf->Get<std::string>("cubemap_uri", this->dataPtr->cubemapUri).first;
+
+  if (_sdf->HasElement("cubemap_uri"))
+  {
+    auto uri = _sdf->Get<std::string>("cubemap_uri", "").first;
+
+    if (_config.StoreResolvedURIs())
+    {
+      const std::string resolvedUri = sdf::findFile(uri, true, true, _config);
+      if (resolvedUri.empty())
+      {
+        errors.push_back({ErrorCode::URI_LOOKUP,
+            "Parser configurations requested resolved uris, but uri ["
+            + uri + "] could not be resolved."});
+      }
+      else
+      {
+        uri = resolvedUri;
+      }
+    }
+    this->dataPtr->cubemapUri = uri;
+  }
 
   if ( _sdf->HasElement("clouds"))
   {

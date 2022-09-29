@@ -1570,25 +1570,6 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     for (elemXml = _xml->FirstChildElement(); elemXml;
          elemXml = elemXml->NextSiblingElement())
     {
-      // Expand URIs via user-provided callback if specified by configuration
-      if (std::string("uri") == elemXml->Value() && _config.StoreResolvedURIs())
-      {
-        const std::string uri = elemXml->GetText();
-        const std::string resolvedUri = sdf::findFile(uri, true, true, _config);
-
-        if (resolvedUri.empty())
-        {
-          Error err(ErrorCode::URI_LOOKUP, "Unable to resolve uri[" + uri + "]",
-              _source, elemXml->GetLineNum());
-          err.SetXmlPath(_sdf->XmlPath() + "/uri");
-          _errors.push_back(err);
-        }
-        else
-        {
-          elemXml->SetText(resolvedUri.c_str());
-        }
-      }
-
       if (std::string("include") == elemXml->Value())
       {
         validateIncludeElement(elemXml, _sdf, _config, _source, _errors);
