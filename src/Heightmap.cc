@@ -286,6 +286,12 @@ Heightmap::Heightmap()
 /////////////////////////////////////////////////
 Errors Heightmap::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;

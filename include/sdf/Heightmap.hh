@@ -28,6 +28,11 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
+  //
+
+  // Forward declarations.
+  class ParserConfig;
+
   /// \brief Texture to be used on heightmaps.
   class SDFORMAT_VISIBLE HeightmapTexture
   {
@@ -128,6 +133,15 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Load the heightmap geometry based on a element pointer.
+    /// This is *not* the usual entry point. Typical usage of the SDF DOM is
+    /// through the Root object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _config Parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the heightmap's URI.
     /// \return The URI of the heightmap data.

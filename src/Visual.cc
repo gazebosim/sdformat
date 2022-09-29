@@ -82,6 +82,12 @@ Visual::Visual()
 /////////////////////////////////////////////////
 Errors Visual::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Visual::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -143,7 +149,7 @@ Errors Visual::Load(ElementPtr _sdf)
   }
 
   // Load the geometry
-  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"));
+  Errors geomErr = this->dataPtr->geom.Load(_sdf->GetElement("geometry"), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Load the lidar reflective intensity if it is given

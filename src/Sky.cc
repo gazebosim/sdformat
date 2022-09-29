@@ -172,6 +172,12 @@ void Sky::SetCubemapUri(const std::string &_uri)
 /////////////////////////////////////////////////
 Errors Sky::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
