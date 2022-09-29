@@ -116,11 +116,6 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     TINYXML2::TINYXML2
     using_parser_urdf)
 
-#--------------------------------------
-# Find gz-fuel_tools
-gz_find_package(gz-fuel_tools8 REQUIRED)
-set(GZ_FUEL_TOOLS_VER ${gz-fuel_tools8_VERSION_MAJOR})
-
 if (WIN32)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
 endif()
