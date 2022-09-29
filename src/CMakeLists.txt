@@ -4,7 +4,6 @@ gz_get_libsources_and_unittests(sources gtest_sources)
 
 # Add the source file auto-generated into the build folder from sdf/CMakeLists.txt
 list(APPEND sources EmbeddedSdf.cc)
-list(REMOVE_ITEM sources sdf_main.cc)
 
 # Use interface library to deduplicate cmake logic for URDF linking
 add_library(using_parser_urdf INTERFACE)
@@ -121,15 +120,6 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
 # Find gz-fuel_tools
 gz_find_package(gz-fuel_tools8 REQUIRED)
 set(GZ_FUEL_TOOLS_VER ${gz-fuel_tools8_VERSION_MAJOR})
-
-add_executable(sdf_main sdf_main.cc)
-target_link_libraries(sdf_main
-  ${PROJECT_LIBRARY_TARGET_NAME}
-  gz-utils${GZ_UTILS_VER}::cli
-  gz-fuel_tools${GZ_FUEL_TOOLS_VER}::gz-fuel_tools${GZ_FUEL_TOOLS_VER}
-  dw
-  unwind
-)
 
 if (WIN32)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
