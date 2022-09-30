@@ -425,25 +425,25 @@ void ReduceFixedJoints(tinyxml2::XMLElement *_root, urdf::LinkSharedPtr _link)
            << _link->name << "] to [" << _link->getParent()->name << "]\n";
 
     // Add //model/frame tag to memorialize reduced joint
-    std::stringstream ssj;
-    ssj << "<frame name='" << _link->parent_joint->name << "'"
-        << " attached_to='" << _link->getParent()->name << "'>\n";
-    ssj << "  <pose>"
-        << CopyPose(_link->parent_joint->parent_to_joint_origin_transform)
-        << "</pose>\n";
-    ssj << "</frame>\n";
+    sdf::Frame jointFrame;
+    jointFrame.SetName(_link->parent_joint->name);
+    jointFrame.SetAttachedTo(_link->getParent()->name);
+    jointFrame.SetRawPose(
+      CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
 
     // Add //model/frame tag to memorialize reduced link
-    std::stringstream ssl;
-    ssl << "<frame name='" << _link->name + "'"
-        << " attached_to='" << _link->parent_joint->name << "'/>\n";
+    sdf::Frame linkFrame;
+    linkFrame.SetName(_link->name);
+    linkFrame.SetAttachedTo(_link->parent_joint->name);
 
     // Serialize sdf::Frame objects to xml and add to SDFExtension
     SDFExtensionPtr sdfExt = std::make_shared<SDFExtension>();
-    auto stringToExtension = [&sdfExt](const std::string &_frame)
+    auto sdfFrameToExtension = [&sdfExt](const sdf::Frame &_frame)
     {
       XMLDocumentPtr xmlNewDoc = std::make_shared<tinyxml2::XMLDocument>();
-      xmlNewDoc->Parse(_frame.c_str());
+      sdf::PrintConfig config;
+      config.SetOutPrecision(16);
+      xmlNewDoc->Parse(_frame.ToElement()->ToString("", config).c_str());
       if (xmlNewDoc->Error())
       {
         sdferr << "Error while parsing serialized frames: "
@@ -451,8 +451,8 @@ void ReduceFixedJoints(tinyxml2::XMLElement *_root, urdf::LinkSharedPtr _link)
       }
       sdfExt->blobs.push_back(xmlNewDoc);
     };
-    stringToExtension(ssj.str());
-    stringToExtension(ssl.str());
+    sdfFrameToExtension(jointFrame);
+    sdfFrameToExtension(linkFrame);
 
     // Add //frame tags to model extension vector
     g_extensions[""].push_back(sdfExt);

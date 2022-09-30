@@ -31,11 +31,7 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);
-  EXPECT_TRUE(errors.empty());
-  for (auto e : errors)
-  {
-    std::cerr << e << std::endl;
-  }
+  EXPECT_TRUE(errors.empty()) << errors;
 
   auto modelDom = root.Model();
   ASSERT_NE(nullptr, modelDom);
@@ -334,11 +330,7 @@ TEST(SDFParser, FixedJointExample)
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);
-  EXPECT_TRUE(errors.empty());
-  for (auto e : errors)
-  {
-    std::cerr << e << std::endl;
-  }
+  EXPECT_TRUE(errors.empty()) << errors;
 
   auto model = root.Model();
   ASSERT_NE(nullptr, model);
@@ -382,11 +374,7 @@ TEST(SDFParser, FixedJointSimple)
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);
-  EXPECT_TRUE(errors.empty());
-  for (auto e : errors)
-  {
-    std::cerr << e << std::endl;
-  }
+  EXPECT_TRUE(errors.empty()) << errors;
 
   auto model = root.Model();
   ASSERT_NE(nullptr, model);
@@ -399,7 +387,7 @@ TEST(SDFParser, FixedJointSimple)
   ASSERT_NE(nullptr, link);
   auto massMatrix = link->Inertial().MassMatrix();
   EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
-  EXPECT_EQ(2.0 * ignition::math::Matrix3d::Identity, massMatrix.Moi());
+  EXPECT_EQ(2.0 * gz::math::Matrix3d::Identity, massMatrix.Moi());
 
   EXPECT_EQ(0u, model->JointCount());
 
