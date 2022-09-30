@@ -94,17 +94,12 @@ void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
 ///   option is set
 bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt);
 
-/// reduced fixed joints:  apply transform reduction for ray sensors
+/// reduced fixed joints:  apply transform reduction for named elements
 ///   in extensions when doing fixed joint reduction
-void ReduceSDFExtensionSensorTransformReduction(
+void ReduceSDFExtensionElementTransformReduction(
       std::vector<XMLDocumentPtr>::iterator _blobIt,
-      gz::math::Pose3d _reductionTransform);
-
-/// reduced fixed joints:  apply transform reduction for projectors in
-///   extensions when doing fixed joint reduction
-void ReduceSDFExtensionProjectorTransformReduction(
-      std::vector<XMLDocumentPtr>::iterator _blobIt,
-      gz::math::Pose3d _reductionTransform);
+      const gz::math::Pose3d &_reductionTransform,
+      const std::string &_elementName);
 
 
 /// reduced fixed joints:  apply transform reduction to extensions
@@ -136,7 +131,7 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
 
 /// create SDF Joint block based on URDF
 void CreateJoint(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
-                 gz::math::Pose3d &_currentTransform);
+                 const gz::math::Pose3d &_currentTransform);
 
 /// insert extensions into links
 void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
@@ -158,12 +153,11 @@ void AddTransform(tinyxml2::XMLElement *_elem,
     const gz::math::Pose3d &_transform);
 
 /// create SDF from URDF link
-void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
-               const gz::math::Pose3d &_transform);
+void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link);
 
 /// create SDF Link block based on URDF
 void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
-                gz::math::Pose3d &_currentTransform);
+                const gz::math::Pose3d &_currentTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
@@ -412,8 +406,8 @@ void ReduceVisualToParent(urdf::LinkSharedPtr _parentLink,
 // collision elements of the child link into the parent link
 void ReduceFixedJoints(tinyxml2::XMLElement *_root, urdf::LinkSharedPtr _link)
 {
-  // if child is attached to self by fixed _link first go up the tree,
-  //   check it's children recursively
+  // if child is attached to self by fixed joint first go up the tree,
+  //   check its children recursively
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
     if (FixedJointShouldBeReduced(_link->child_links[i]->parent_joint))
@@ -1042,12 +1036,10 @@ void ReduceJointsToParent(urdf::LinkSharedPtr _link)
     {
       // go down the tree until we hit a parent joint that is not fixed
       urdf::LinkSharedPtr newParentLink = _link;
-      gz::math::Pose3d jointAnchorTransform;
       while (newParentLink->parent_joint &&
              newParentLink->getParent()->name != "world" &&
              FixedJointShouldBeReduced(newParentLink->parent_joint) )
       {
-        jointAnchorTransform = jointAnchorTransform * jointAnchorTransform;
         parentJoint->parent_to_joint_origin_transform =
           TransformToParentFrame(
               parentJoint->parent_to_joint_origin_transform,
@@ -2482,8 +2474,7 @@ void ReduceSDFExtensionToParent(urdf::LinkSharedPtr _link)
     for (std::vector<SDFExtensionPtr>::iterator ge = ext->second.begin();
          ge != ext->second.end(); ++ge)
     {
-      (*ge)->reductionTransform = TransformToParentFrame(
-          (*ge)->reductionTransform,
+      (*ge)->reductionTransform = CopyPose(
           _link->parent_joint->parent_to_joint_origin_transform);
       // for sensor and projector blocks only
       ReduceSDFExtensionsTransform((*ge));
@@ -2571,11 +2562,12 @@ void ReduceSDFExtensionsTransform(SDFExtensionPtr _ge)
   for (auto blobIt = _ge->blobs.begin();
          blobIt != _ge->blobs.end(); ++blobIt)
   {
-    /// @todo make sure we are not missing any additional transform reductions
-    ReduceSDFExtensionSensorTransformReduction(blobIt,
-                                               _ge->reductionTransform);
-    ReduceSDFExtensionProjectorTransformReduction(blobIt,
-                                                  _ge->reductionTransform);
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "light");
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "projector");
+    ReduceSDFExtensionElementTransformReduction(
+        blobIt, _ge->reductionTransform, "sensor");
   }
 }
 
@@ -2635,11 +2627,8 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 
 ////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(tinyxml2::XMLElement *_root,
-               urdf::LinkConstSharedPtr _link,
-               const gz::math::Pose3d &_transform)
+               urdf::LinkConstSharedPtr _link)
 {
-  gz::math::Pose3d _currentTransform = _transform;
-
   // must have an <inertial> block and cannot have zero mass.
   //  allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
@@ -2681,13 +2670,13 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       (!_link->parent_joint ||
        !FixedJointShouldBeReduced(_link->parent_joint)))
   {
-    CreateLink(_root, _link, _currentTransform);
+    CreateLink(_root, _link, gz::math::Pose3d::Zero);
   }
 
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
-    CreateSDF(_root, _link->child_links[i], _currentTransform);
+    CreateSDF(_root, _link->child_links[i]);
   }
 }
 
@@ -2722,7 +2711,7 @@ urdf::Pose CopyPose(gz::math::Pose3d _pose)
 ////////////////////////////////////////////////////////////////////////////////
 void CreateLink(tinyxml2::XMLElement *_root,
                 urdf::LinkConstSharedPtr _link,
-                gz::math::Pose3d &_currentTransform)
+                const gz::math::Pose3d &_currentTransform)
 {
   // create new body
   tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("link");
@@ -2901,7 +2890,7 @@ void CreateInertial(tinyxml2::XMLElement *_elem,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateJoint(tinyxml2::XMLElement *_root,
                  urdf::LinkConstSharedPtr _link,
-                 gz::math::Pose3d &/*_currentTransform*/)
+                 const gz::math::Pose3d &/*_currentTransform*/)
 {
   // compute the joint tag
   std::string jtype;
@@ -3236,10 +3225,6 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   // set model name to urdf robot name if not specified
   robot->SetAttribute("name", robotModel->getName().c_str());
 
-  // initialize transform for the model, urdf is recursive,
-  // while sdf defines all links relative to model frame
-  gz::math::Pose3d transform;
-
   // parse sdf extension
   tinyxml2::XMLDocument urdfXml;
   if (urdfXml.Parse(_urdfStr.c_str()))
@@ -3286,13 +3271,13 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
           child = rootLink->child_links.begin();
           child != rootLink->child_links.end(); ++child)
       {
-        CreateSDF(robot, (*child), transform);
+        CreateSDF(robot, (*child));
       }
     }
     else
     {
       // convert, starting from root link
-      CreateSDF(robot, rootLink, transform);
+      CreateSDF(robot, rootLink);
     }
 
     // insert the extensions without reference into <robot> root level
@@ -3366,12 +3351,13 @@ bool FixedJointShouldBeReduced(urdf::JointSharedPtr _jnt)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ReduceSDFExtensionSensorTransformReduction(
+void ReduceSDFExtensionElementTransformReduction(
     std::vector<XMLDocumentPtr>::iterator _blobIt,
-    gz::math::Pose3d _reductionTransform)
+    const gz::math::Pose3d &_reductionTransform,
+    const std::string &_elementName)
 {
-  auto sensorElement = (*_blobIt)->FirstChildElement();
-  if ( strcmp(sensorElement->Name(), "sensor") == 0)
+  auto element = (*_blobIt)->FirstChildElement();
+  if ( strcmp(element->Name(), _elementName.c_str()) == 0)
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
@@ -3385,66 +3371,51 @@ void ReduceSDFExtensionSensorTransformReduction(
     //   sdfdbg << "    " << streamIn.CStr() << "\n";
     // }
 
-    auto sensorPose {gz::math::Pose3d::Zero};
+    auto pose {gz::math::Pose3d::Zero};
     {
-      auto sensorPosText = "0 0 0 0 0 0";
-      const auto& oldPoseKey = sensorElement->FirstChildElement("pose");
+      std::string poseText = "0 0 0 0 0 0";
+
+      const auto& oldPoseKey = element->FirstChildElement("pose");
       if (oldPoseKey)
       {
         const auto& poseElemXml = oldPoseKey->ToElement();
         if (poseElemXml->Attribute("relative_to"))
-          return;
-
-        // see below for explanation; if a sibling element exists, it stores the
-        // original <sensor><pose> tag content
-        const auto& sibling = sensorElement->NextSibling();
-        if (poseElemXml->GetText() && !sibling)
-          sensorPosText = poseElemXml->GetText();
-        else if (sibling && sibling->ToElement()->GetText())
-          sensorPosText = sibling->ToElement()->GetText();
-        else
         {
-          sdferr << "Unexpected case in sensor pose computation\n";
           return;
         }
 
+        if (poseElemXml->GetText())
+        {
+          poseText = poseElemXml->GetText();
+        }
+
         // delete the <pose> tag, we'll add a new one at the end
-        sensorElement->DeleteChild(oldPoseKey);
+        element->DeleteChild(oldPoseKey);
       }
 
       // parse the 6-tuple text into math::Pose3d
-      std::stringstream  ss;
+      std::stringstream ss;
       ss.imbue(std::locale::classic());
-      ss << sensorPosText;
-      ss >> sensorPose;
+      ss << poseText;
+      ss >> pose;
       if (ss.fail())
       {
-        sdferr << "Could not parse <sensor><pose>: [" << sensorPosText << "]\n";
+        sdferr << "Could not parse <" << _elementName << "><pose>: ["
+               << poseText << "]\n";
         return;
       }
-
-      // critical part: we store the original <pose> tag from <sensor> actually
-      // as a sibling of <sensor>... only first element of the blob is processed
-      // further, so its siblings can be used as temporary storage; we store the
-      // original <pose> tag there so that we can use the <sensor><pose> tag
-      // for storing the reduced position
-      auto doc = (*_blobIt)->GetDocument();
-      const auto& poseTxt = doc->NewText(sensorPosText);
-      auto poseKey = doc->NewElement("pose");
-      poseKey->LinkEndChild(poseTxt);
-      (*_blobIt)->LinkEndChild(poseKey);
     }
 
-    _reductionTransform = _reductionTransform * sensorPose;
+    pose = _reductionTransform * pose;
 
     // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
-                               _reductionTransform.Pos().Y(),
-                               _reductionTransform.Pos().Z());
-    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
-                              _reductionTransform.Rot().Y(),
-                              _reductionTransform.Rot().Z(),
-                              _reductionTransform.Rot().W());
+    urdf::Vector3 reductionXyz(pose.Pos().X(),
+                               pose.Pos().Y(),
+                               pose.Pos().Z());
+    urdf::Rotation reductionQ(pose.Rot().X(),
+                              pose.Rot().Y(),
+                              pose.Rot().Z(),
+                              pose.Rot().W());
 
     urdf::Vector3 reductionRpy;
     reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
@@ -3461,106 +3432,7 @@ void ReduceSDFExtensionSensorTransformReduction(
 
     poseKey->LinkEndChild(poseTxt);
 
-    sensorElement->LinkEndChild(poseKey);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void ReduceSDFExtensionProjectorTransformReduction(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
-    gz::math::Pose3d _reductionTransform)
-{
-  auto projectorElement = (*_blobIt)->FirstChildElement();
-  if ( strcmp(projectorElement->Name(), "projector") == 0)
-  {
-    // parse it and add/replace the reduction transform
-    // find first instance of xyz and rpy, replace with reduction transform
-    //
-    // for (tinyxml2::XMLNode* elIt = (*_blobIt)->FirstChildElement();
-    // elIt; elIt = elIt->NextSibling())
-    // {
-    //   std::ostringstream streamIn;
-    //   streamIn << *elIt;
-    //   sdfdbg << "    " << streamIn << "\n";
-    // }
-
-    auto projectorPose {gz::math::Pose3d::Zero};
-    {
-      auto projectorPosText = "0 0 0 0 0 0";
-      const auto& oldPoseKey = projectorElement->FirstChildElement("pose");
-      if (oldPoseKey)
-      {
-        const auto& poseElemXml = oldPoseKey->ToElement();
-        if (poseElemXml->Attribute("relative_to"))
-          return;
-
-        // see below for explanation; if a sibling element exists, it stores the
-        // original <projector><pose> tag content
-        const auto& sibling = projectorElement->NextSibling();
-        if (poseElemXml->GetText() && !sibling)
-          projectorPosText = poseElemXml->GetText();
-        else if (sibling && sibling->ToElement()->GetText())
-          projectorPosText = sibling->ToElement()->GetText();
-        else
-        {
-          sdferr << "Unexpected case in projector pose computation\n";
-          return;
-        }
-
-        // delete the <pose> tag, we'll add a new one at the end
-        projectorElement->DeleteChild(oldPoseKey);
-      }
-
-      // parse the 6-tuple text into math::Pose3d
-      std::stringstream  ss;
-      ss.imbue(std::locale::classic());
-      ss << projectorPosText;
-      ss >> projectorPose;
-      if (ss.fail())
-      {
-        sdferr << "Could not parse <projector><pose>: ["
-               << projectorPosText << "]\n";
-        return;
-      }
-
-      // critical part: we store the original <pose> tag from <projector>
-      // actually as a sibling of <projector>... only first element of the blob
-      // is processed further, so its siblings can be used as temporary storage;
-      // we store the original <pose> tag there so that we can use the
-      // <projector><pose> tag for storing the reduced position
-      auto doc = (*_blobIt)->GetDocument();
-      const auto& poseTxt = doc->NewText(projectorPosText);
-      auto poseKey = doc->NewElement("pose");
-      poseKey->LinkEndChild(poseTxt);
-      (*_blobIt)->LinkEndChild(poseKey);
-    }
-
-    _reductionTransform = _reductionTransform * projectorPose;
-
-    // convert reductionTransform to values
-    urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
-                               _reductionTransform.Pos().Y(),
-                               _reductionTransform.Pos().Z());
-    urdf::Rotation reductionQ(_reductionTransform.Rot().X(),
-                              _reductionTransform.Rot().Y(),
-                              _reductionTransform.Rot().Z(),
-                              _reductionTransform.Rot().W());
-
-    urdf::Vector3 reductionRpy;
-    reductionQ.getRPY(reductionRpy.x, reductionRpy.y, reductionRpy.z);
-
-    // output updated pose to text
-    std::ostringstream poseStream;
-    poseStream << reductionXyz.x << " " << reductionXyz.y
-               << " " << reductionXyz.z << " " << reductionRpy.x
-               << " " << reductionRpy.y << " " << reductionRpy.z;
-
-    auto* doc = (*_blobIt)->GetDocument();
-    tinyxml2::XMLText *poseTxt = doc->NewText(poseStream.str().c_str());
-    auto poseKey = doc->NewElement("pose");
-    poseKey->LinkEndChild(poseTxt);
-
-    projectorElement->LinkEndChild(poseKey);
+    element->LinkEndChild(poseKey);
   }
 }
 

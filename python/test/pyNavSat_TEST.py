@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import NavSat, Noise
+from sdformat13 import NavSat, Noise
 import unittest
 
 class NavSatColor(unittest.TestCase):

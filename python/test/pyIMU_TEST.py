@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz.math import Vector3d
-from sdformat import IMU, Noise
-import sdformat as sdf
+from gz.math7 import Vector3d
+from sdformat13 import IMU, Noise
+import sdformat13 as sdf
 import unittest
 
 class IMUTest(unittest.TestCase):

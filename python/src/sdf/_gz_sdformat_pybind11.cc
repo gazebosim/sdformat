@@ -62,7 +62,7 @@
 #include "pyVisual.hh"
 #include "pyWorld.hh"
 
-PYBIND11_MODULE(sdformat, m) {
+PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   m.doc() = "sdformat Python Library.";
 
   // Import the gz.math library to automatically add the type conversions

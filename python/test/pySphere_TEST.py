@@ -14,7 +14,7 @@
 
 import copy
 import math
-from sdformat import Sphere
+from sdformat13 import Sphere
 import unittest
 
 class SphereTEST(unittest.TestCase):

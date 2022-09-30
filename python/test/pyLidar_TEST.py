@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math import Angle, Helpers
-from sdformat import Lidar, Error, Noise
+from gz.math7 import Angle, Helpers
+from sdformat13 import Lidar, Error, Noise
 import math
 import unittest
 

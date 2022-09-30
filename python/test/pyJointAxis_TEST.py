@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math import Vector3d
-from sdformat import JointAxis, Error, SDFErrorsException
+from gz.math7 import Vector3d
+from sdformat13 import JointAxis, Error, SDFErrorsException
 import math
 import unittest
 
