@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz.math7 import Temperature
-from sdformat13 import Atmosphere
-import sdformat13 as sdf
+from gz_test_deps.math import Temperature
+from gz_test_deps.sdformat import Atmosphere
+import gz_test_deps.sdformat as sdf
 import unittest
 
 class AtmosphereTEST(unittest.TestCase):
