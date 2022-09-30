@@ -16,6 +16,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <gz/math/config.hh>
 
 #include "pyAirPressure.hh"
 #include "pyAltimeter.hh"
@@ -67,7 +68,9 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
 
   // Import the gz.math library to automatically add the type conversions
   // this module requires to pass mathematical types to python code.
-  pybind11::module::import("gz.math");
+  std::string gzMathModule =
+      std::string("gz.math") + std::to_string(GZ_MATH_MAJOR_VERSION);
+  pybind11::module::import(gzMathModule.c_str());
 
   sdf::python::defineAirPressure(m);
   sdf::python::defineAltimeter(m);
