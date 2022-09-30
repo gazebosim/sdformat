@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz.math7 import Pose3d
+from gz_test_deps.math import Pose3d
 from gz_test_deps.sdformat import (Error, Model, Light, Root, SDF_VERSION,
                                    SDFErrorsException, SDF_PROTOCOL_VERSION,
                                    World)
