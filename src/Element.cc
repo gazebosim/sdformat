@@ -22,6 +22,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -137,8 +138,21 @@ void Element::AddValue(const std::string &_type,
                        bool _required,
                        const std::string &_description)
 {
+  sdf::Errors errors;
   this->dataPtr->value = this->CreateParam(this->dataPtr->name,
-      _type, _defaultValue, _required, _description);
+      _type, _defaultValue, _required, errors, _description);
+  throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Element::AddValue(const std::string &_type,
+                       const std::string &_defaultValue,
+                       bool _required,
+                       sdf::Errors &_errors,
+                       const std::string &_description)
+{
+  this->dataPtr->value = this->CreateParam(this->dataPtr->name,
+      _type, _defaultValue, _required, _errors, _description);
 }
 
 /////////////////////////////////////////////////
@@ -149,11 +163,30 @@ void Element::AddValue(const std::string &_type,
                        const std::string &_maxValue,
                        const std::string &_description)
 {
+  sdf::Errors errors;
+  this->AddValue(_type, _defaultValue, _required, _minValue, _maxValue,
+                 errors, _description);
+  throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Element::AddValue(const std::string &_type,
+                       const std::string &_defaultValue,
+                       bool _required,
+                       const std::string &_minValue,
+                       const std::string &_maxValue,
+                       sdf::Errors &_errors,
+                       const std::string &_description)
+{
   this->dataPtr->value =
       std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
-                              _required, _minValue, _maxValue, _description);
-  SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
-      "Cannot set parent Element of value to itself.");
+                              _required, _minValue, _maxValue, _errors,
+                              _description);
+  if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR,
+        "Cannot set parent Element of value to itself."});
+  }
 }
 
 /////////////////////////////////////////////////
@@ -161,12 +194,17 @@ ParamPtr Element::CreateParam(const std::string &_key,
                               const std::string &_type,
                               const std::string &_defaultValue,
                               bool _required,
+                              sdf::Errors &_errors,
                               const std::string &_description)
 {
   ParamPtr param = std::make_shared<Param>(
-      _key, _type, _defaultValue, _required, _description);
-  SDF_ASSERT(param->SetParentElement(shared_from_this()),
-      "Cannot set parent Element of created Param to itself.");
+      _key, _type, _defaultValue, _required, _errors, _description);
+
+  if(!param->SetParentElement(shared_from_this(), _errors))
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR,
+          "Cannot set parent Element of created Param to itself."});
+  }
   return param;
 }
 
@@ -177,12 +215,36 @@ void Element::AddAttribute(const std::string &_key,
                            bool _required,
                            const std::string &_description)
 {
+  sdf::Errors errors;
+  this->AddAttribute(_key, _type, _defaultValue, _required,
+                     errors, _description);
+  throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Element::AddAttribute(const std::string &_key,
+                           const std::string &_type,
+                           const std::string &_defaultValue,
+                           bool _required,
+                           sdf::Errors &_errors,
+                           const std::string &_description)
+{
   this->dataPtr->attributes.push_back(
-      this->CreateParam(_key, _type, _defaultValue, _required, _description));
+      this->CreateParam(_key, _type, _defaultValue,
+                        _required, _errors, _description));
 }
 
 /////////////////////////////////////////////////
 ElementPtr Element::Clone() const
+{
+  sdf::Errors errors;
+  ElementPtr elem = this->Clone(errors);
+  throwOrPrintErrors(errors);
+  return elem;
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::Clone(sdf::Errors &_errors) const
 {
   ElementPtr clone(new Element);
   clone->dataPtr->description = this->dataPtr->description;
@@ -201,9 +263,13 @@ ElementPtr Element::Clone() const
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     auto clonedAttribute = (*aiter)->Clone();
-    SDF_ASSERT(clonedAttribute->SetParentElement(clone),
-        "Cannot set parent Element of cloned attribute Param to cloned "
-        "Element.");
+    if (!clonedAttribute->SetParentElement(clone, _errors))
+    {
+        _errors.push_back({ErrorCode::FATAL_ERROR,
+            "Cannot set parent Element of cloned attribute Param to cloned "
+            "Element."});
+        return nullptr;
+    }
     clone->dataPtr->attributes.push_back(clonedAttribute);
   }
 
@@ -224,13 +290,20 @@ ElementPtr Element::Clone() const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
-    SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
-        "Cannot set parent Element of cloned value Param to cloned Element.");
+
+    if (!clone->dataPtr->value->SetParentElement(clone, _errors))
+    {
+      _errors.push_back({ErrorCode::FATAL_ERROR,
+        "Cannot set parent Element of cloned value Param to cloned "
+        "Element."});
+      return nullptr;
+    }
   }
 
   if (this->dataPtr->includeElement)
   {
-    clone->dataPtr->includeElement = this->dataPtr->includeElement->Clone();
+    clone->dataPtr->includeElement =
+        this->dataPtr->includeElement->Clone(_errors);
   }
 
   return clone;
@@ -239,6 +312,15 @@ ElementPtr Element::Clone() const
 /////////////////////////////////////////////////
 void Element::Copy(const ElementPtr _elem)
 {
+  sdf::Errors errors;
+  this->Copy(_elem, errors);
+  throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
+{
+
   this->dataPtr->name = _elem->GetName();
   this->dataPtr->description = _elem->GetDescription();
   this->dataPtr->required = _elem->GetRequired();
@@ -259,8 +341,13 @@ void Element::Copy(const ElementPtr _elem)
     }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-    SDF_ASSERT(param->SetParentElement(shared_from_this()),
-        "Cannot set parent Element of copied attribute Param to itself.");
+
+    if (!param->SetParentElement(shared_from_this(), _errors))
+    {
+      _errors.push_back({ErrorCode::FATAL_ERROR,
+          "Cannot set parent Element of copied attribute Param to itself."});
+      return;
+    }
   }
 
   if (_elem->GetValue())
@@ -273,8 +360,12 @@ void Element::Copy(const ElementPtr _elem)
     {
       *(this->dataPtr->value) = *(_elem->GetValue());
     }
-    SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
-        "Cannot set parent Element of copied value Param to itself.");
+    if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
+    {
+      _errors.push_back({ErrorCode::FATAL_ERROR,
+          "Cannot set parent Element of copied attribute Param to itself."});
+      return;
+    }
   }
 
   this->dataPtr->elementDescriptions.clear();
@@ -282,15 +373,16 @@ void Element::Copy(const ElementPtr _elem)
        _elem->dataPtr->elementDescriptions.begin();
        iter != _elem->dataPtr->elementDescriptions.end(); ++iter)
   {
-    this->dataPtr->elementDescriptions.push_back((*iter)->Clone());
+    this->dataPtr->elementDescriptions.push_back((*iter)->Clone(_errors));
   }
 
   this->dataPtr->elements.clear();
   for (ElementPtr_V::iterator iter = _elem->dataPtr->elements.begin();
        iter != _elem->dataPtr->elements.end(); ++iter)
   {
-    ElementPtr elem = (*iter)->Clone();
-    elem->Copy(*iter);
+    ElementPtr elem;
+    elem = (*iter)->Clone(_errors);
+    elem->Copy(*iter, _errors);
     elem->SetParent(shared_from_this());
     this->dataPtr->elements.push_back(elem);
   }
@@ -299,11 +391,13 @@ void Element::Copy(const ElementPtr _elem)
   {
     if (!this->dataPtr->includeElement)
     {
-      this->dataPtr->includeElement = _elem->dataPtr->includeElement->Clone();
+      this->dataPtr->includeElement =
+          _elem->dataPtr->includeElement->Clone(_errors);
     }
     else
     {
-      this->dataPtr->includeElement->Copy(_elem->dataPtr->includeElement);
+      this->dataPtr->includeElement->Copy(_elem->dataPtr->includeElement,
+                                          _errors);
     }
   }
 }
@@ -932,10 +1026,19 @@ std::map<std::string, std::size_t> Element::CountNamedElements(
 /////////////////////////////////////////////////
 ElementPtr Element::GetElement(const std::string &_name)
 {
+  sdf::Errors errors;
+  ElementPtr result = this->GetElement(_name, errors);
+  throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::GetElement(const std::string &_name, sdf::Errors &_errors)
+{
   ElementPtr result = this->GetElementImpl(_name);
   if (result == ElementPtr())
   {
-    result = this->AddElement(_name);
+    result = this->AddElement(_name, _errors);
   }
 
   return result;
@@ -976,6 +1079,15 @@ bool Element::HasElementDescription(const std::string &_name) const
 /////////////////////////////////////////////////
 ElementPtr Element::AddElement(const std::string &_name)
 {
+  sdf::Errors errors;
+  ElementPtr elem = this->AddElement(_name, errors);
+  throwOrPrintErrors(errors);
+  return elem;
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
+{
   // if this element is a reference sdf and does not have any element
   // descriptions then get them from its parent
   auto parent = this->dataPtr->parent.lock();
@@ -986,7 +1098,7 @@ ElementPtr Element::AddElement(const std::string &_name)
     for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
       this->dataPtr->elementDescriptions.push_back(
-          parent->GetElementDescription(i)->Clone());
+        parent->GetElementDescription(i)->Clone(_errors));
     }
   }
 
@@ -996,7 +1108,7 @@ ElementPtr Element::AddElement(const std::string &_name)
   {
     if ((*iter)->dataPtr->name == _name)
     {
-      ElementPtr elem = (*iter)->Clone();
+      ElementPtr elem = (*iter)->Clone(_errors);
       elem->SetParent(shared_from_this());
       this->dataPtr->elements.push_back(elem);
 
@@ -1007,15 +1119,15 @@ ElementPtr Element::AddElement(const std::string &_name)
         // Add only required child element
         if ((*iter2)->GetRequired() == "1")
         {
-          elem->AddElement((*iter2)->dataPtr->name);
+          elem->AddElement((*iter2)->dataPtr->name, _errors);
         }
       }
-
       return this->dataPtr->elements.back();
     }
   }
 
-  sdferr << "Missing element description for [" << _name << "]\n";
+  _errors.push_back({ErrorCode::ELEMENT_ERROR,
+      "Missing element description for [" + _name + "]\n"});
   return ElementPtr();
 }
 
@@ -1191,7 +1303,20 @@ void Element::RemoveFromParent()
 /////////////////////////////////////////////////
 void Element::RemoveChild(ElementPtr _child)
 {
-  SDF_ASSERT(_child, "Cannot remove a nullptr child pointer");
+  sdf::Errors errors;
+  RemoveChild(_child, errors);
+  throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
+{
+  if (!_child)
+  {
+    _errors.push_back({ErrorCode::FATAL_ERROR,
+        "Cannot remove a nullptr child pointer"});
+    return;
+  }
 
   ElementPtr_V::iterator iter;
   iter = std::find(this->dataPtr->elements.begin(),
@@ -1207,13 +1332,22 @@ void Element::RemoveChild(ElementPtr _child)
 /////////////////////////////////////////////////
 std::any Element::GetAny(const std::string &_key) const
 {
+  sdf::Errors errors;
+  std::any result = this->GetAny(errors, _key);
+  throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+std::any Element::GetAny(sdf::Errors &_errors, const std::string &_key) const
+{
   std::any result;
   if (_key.empty() && this->dataPtr->value)
   {
     if (!this->dataPtr->value->GetAny(result))
     {
-      sdferr << "Couldn't get element [" << this->GetName()
-             << "] as std::any\n";
+        _errors.push_back({ErrorCode::ELEMENT_ERROR,
+            "Couldn't get element [" + this->GetName() + "] as std::any\n"});
     }
   }
   else if (!_key.empty())
@@ -1221,9 +1355,10 @@ std::any Element::GetAny(const std::string &_key) const
     ParamPtr param = this->GetAttribute(_key);
     if (param)
     {
-      if (!this->GetAttribute(_key)->GetAny(result))
+      if (!this->GetAttribute(_key)->GetAny(result, _errors))
       {
-        sdferr << "Couldn't get attribute [" << _key << "] as std::any\n";
+        _errors.push_back({ErrorCode::ELEMENT_ERROR,
+            "Couldn't get attribute [" + _key + "] as std::any\n"});
       }
     }
     else
@@ -1231,18 +1366,19 @@ std::any Element::GetAny(const std::string &_key) const
       ElementPtr tmp = this->GetElementImpl(_key);
       if (tmp != ElementPtr())
       {
-        result = tmp->GetAny();
+        result = tmp->GetAny(_errors);
       }
       else
       {
         tmp = this->GetElementDescription(_key);
         if (tmp != ElementPtr())
         {
-          result = tmp->GetAny();
+          result = tmp->GetAny(_errors);
         }
         else
         {
-          sdferr << "Unable to find value for key [" << _key << "]\n";
+          _errors.push_back({ErrorCode::ELEMENT_ERROR,
+              "Unable to find value for key [" + _key + "]\n"});
         }
       }
     }
