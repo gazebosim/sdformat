@@ -128,10 +128,10 @@ TEST(ErrorOutput, ParamErrorOutput)
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::PARAMETER_ERROR);
 #if !defined __ARM_ARCH
   EXPECT_NE(std::string::npos, errors[1].Message().find(
-    "Failed to set value '1 2 3 0.40000000000000002 0.5 "
-    "0.59999999999999987' to key [] for new parent element of name '',"
-    " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
-    "0.59999999999999987'."));
+      "Failed to set value '1 2 3 0.40000000000000002 0.5 "
+      "0.59999999999999987' to key [] for new parent element of name '',"
+      " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
+      "0.59999999999999987'."));
 #endif
 
   errors.clear();
@@ -341,7 +341,7 @@ TEST(ErrorOutput, ModelErrorOutput)
 {
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
-    sdf::Console::Instance()->GetMsgStream(), &buffer);
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
 
   #ifdef _WIN32
     sdf::Console::Instance()->SetQuiet(false);
