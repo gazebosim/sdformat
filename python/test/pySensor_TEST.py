@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d
-from sdformat import (AirPressure, Altimeter, Camera, IMU, ForceTorque, Lidar,
+from gz.math7 import Pose3d
+from sdformat13 import (AirPressure, Altimeter, Camera, IMU, ForceTorque, Lidar,
                       Magnetometer, NavSat, Noise, Plugin, SemanticPose,
                       Sensor, SDFErrorsException)
-import sdformat as sdf
+import sdformat13 as sdf
 import unittest
 
 

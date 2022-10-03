@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz.math import Vector3d
-from sdformat import AirPressure, Noise
-import sdformat as sdf
+from sdformat13 import AirPressure, Noise
+import sdformat13 as sdf
 import unittest
 
 class AtmosphereTEST(unittest.TestCase):

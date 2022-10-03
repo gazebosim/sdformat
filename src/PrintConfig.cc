@@ -18,6 +18,7 @@
 
 #include "sdf/PrintConfig.hh"
 #include "sdf/Console.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -76,18 +77,35 @@ bool PrintConfig::PreserveIncludes() const
 bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
                                            double _tolerance)
 {
+  sdf::Errors errors;
+  bool result = this->SetRotationSnapToDegrees(_interval,
+                                               _tolerance,
+                                               errors);
+  throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+bool PrintConfig::SetRotationSnapToDegrees(unsigned int _interval,
+                                           double _tolerance,
+                                           sdf::Errors &_errors)
+{
   if (_interval == 0 || _interval > 360)
   {
-    sdferr << "Interval value to snap to must be larger than 0, and less than "
-           << "or equal to 360.\n";
+    std::stringstream ss;
+    ss << "Interval value to snap to must be larger than 0, and less than "
+       << "or equal to 360.";
+    _errors.push_back({ErrorCode::ROTATION_SNAP_CONFIG_ERROR, ss.str()});
     return false;
   }
 
   if (_tolerance <= 0 || _tolerance > 360 ||
       _tolerance >= static_cast<double>(_interval))
   {
-    sdferr << "Tolerance must be larger than 0, less than or equal to "
-           << "360, and less than the provided interval.\n";
+    std::stringstream ss;
+    ss << "Tolerance must be larger than 0, less than or equal to "
+       << "360, and less than the provided interval.";
+    _errors.push_back({ErrorCode::ROTATION_SNAP_CONFIG_ERROR, ss.str()});
     return false;
   }
 

@@ -319,7 +319,7 @@ TEST(Parser, SyntaxErrorInValues)
 
     sdf::readFile(path, sdf);
     EXPECT_PRED2(contains, buffer.str(),
-                 "Unable to set value [bad ] for key[linear]");
+                 "Unable to set value [bad] for key[linear]");
     EXPECT_PRED2(contains, buffer.str(), "bad_syntax_double.sdf:L7");
     EXPECT_PRED2(contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/"

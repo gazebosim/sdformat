@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat import Physics
+from sdformat13 import Physics
 import unittest
 
 
