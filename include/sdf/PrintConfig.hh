@@ -22,6 +22,7 @@
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+#include "sdf/Types.hh"
 
 namespace sdf
 {
@@ -53,6 +54,19 @@ namespace sdf
     /// \return True, unless any of the provided values are not valid.
     public: bool SetRotationSnapToDegrees(unsigned int _interval,
                                           double _tolerance);
+
+    /// \brief Sets the option for printing pose rotation in degrees as well as
+    /// snapping the rotation to the desired interval, with the provided
+    /// tolerance.
+    /// \param[in] _interval Degrees interval to snap to, this value must be
+    /// larger than 0, and less than or equal to 360.
+    /// \param[in] _tolerance Tolerance which snapping occurs, this value must
+    /// be larger than 0, less than 360, and less than the provided interval.
+    /// \param[out] _errors Vector of Errors.
+    /// \return True, unless any of the provided values are not valid.
+    public: bool SetRotationSnapToDegrees(unsigned int _interval,
+                                          double _tolerance,
+                                          sdf::Errors &_errors);
 
     /// \brief Returns the current degree value that pose rotations will snap to
     /// when printed.

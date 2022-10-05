@@ -987,7 +987,7 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
   {
     _errors.push_back({ErrorCode::PARAMETER_ERROR,
         "Invalid argument. Unable to set value ["
-        + _valueStr + " ] for key["
+        + _valueStr + "] for key["
         + this->key + "]."});
     return false;
   }
