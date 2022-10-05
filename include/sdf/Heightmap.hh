@@ -47,8 +47,8 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Load the heightmap texture geometry based on a element pointer. 
-    /// This is *not* the usual entry point. Typical usage of the SDF DOM is 
+    /// \brief Load the heightmap texture geometry based on a element pointer.
+    /// This is *not* the usual entry point. Typical usage of the SDF DOM is
     /// through the Root object.
     /// \param[in] _sdf The SDF Element pointer
     /// \param[in] _config Parser configuration

@@ -174,7 +174,7 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
         uri = resolvedUri;
       }
     }
-    this->dataPtr->normal = uri; 
+    this->dataPtr->normal = uri;
   }
   else
   {

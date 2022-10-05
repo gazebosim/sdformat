@@ -208,7 +208,7 @@ namespace sdf
   /// is returned if an element is not present.
   /// \param[in] _sdf The SDF element that contains zero or more elements.
   /// \param[in] _sdfName Name of the sdf element, such as "model".
-  /// \param[in] _config Specific parser configuration to use to load 
+  /// \param[in] _config Specific parser configuration to use to load
   /// \param[out] _objs Elements that match _sdfName in _sdf are added to this
   /// vector, unless an error is encountered during load.
   /// \return The vector of errors. An empty vector indicates no errors were

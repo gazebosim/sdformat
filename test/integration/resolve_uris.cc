@@ -32,29 +32,30 @@
 /// 1x cubemapUri callback
 constexpr const int kNumCallbacks = 13;
 
-constexpr const char* kMeshUri = 
+constexpr const char* kMeshUri =
   "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/mesh.dae";
 
-constexpr const char* kHeightmapUri = 
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/heightmap.png";
+constexpr const char* kHeightmapUri =
+  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/heightmap.png";  // NOLINT
 
 constexpr const char* kCubemapUri = "dummyUri";
 
-constexpr const char* kMaterialScriptUri = 
+constexpr const char* kMaterialScriptUri =
   "file://media/materials/scripts/gazebo.material";
 
-constexpr const char* kDiffuseUri = 
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/diffuse0.png";
+constexpr const char* kDiffuseUri =
+  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/diffuse0.png";  // NOLINT
 
-constexpr const char* kNormalUri = 
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/normal0.png";
+constexpr const char* kNormalUri =
+  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/normal0.png";  // NOLINT
 
 /////////////////////////////////////////////////
 TEST(ResolveURIs, StoreResolvedDisabled)
 {
-  // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // the source directory
-  const std::string testFile = sdf::testing::TestFile("sdf", "resolve_uris.sdf");
+  // The directory used in AddURIPath must exist in the filesystem, so we'll
+  // use the source directory
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "resolve_uris.sdf");
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
@@ -78,15 +79,15 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   auto world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
 
-  /// Skybox Cubemap Uri 
+  /// Skybox Cubemap Uri
   auto sky = world->Scene()->Sky();
   auto cubemapUri = sky->CubemapUri();
   auto skyElem = sky->Element();
-  auto cubemapElemUri = 
+  auto cubemapElemUri =
     skyElem->GetElement("cubemap_uri")->GetValue()->GetAsString();
-  
+
   /// Material script uri
-  auto groundPlaneModel = world->ModelByName("ground_plane"); 
+  auto groundPlaneModel = world->ModelByName("ground_plane");
   ASSERT_NE(nullptr, groundPlaneModel);
   auto groundPlaneLink = groundPlaneModel->LinkByName("link");
   ASSERT_NE(nullptr, groundPlaneLink);
@@ -95,7 +96,7 @@ TEST(ResolveURIs, StoreResolvedDisabled)
 
   auto scriptUri = groundPlaneVisual->Material()->ScriptUri();
   auto visualElem = groundPlaneVisual->Material()->Element();
-  auto scriptElemUri= 
+  auto scriptElemUri =
     visualElem->
       GetElement("script")->
       GetElement("uri")->
@@ -111,36 +112,36 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   ASSERT_NE(nullptr, meshVisual);
   auto meshVisualUri = meshVisual->Geom()->MeshShape()->Uri();
   auto meshVisualElem = meshVisual->Geom()->MeshShape()->Element();
-  auto meshVisualElemUri = 
+  auto meshVisualElemUri =
     meshVisualElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto meshCol = shapesLink->CollisionByName("mesh_col");
   ASSERT_NE(nullptr, meshCol);
   auto meshColUri = meshCol->Geom()->MeshShape()->Uri();
   auto meshColElem = meshCol->Geom()->MeshShape()->Element();
-  auto meshColElemUri = 
+  auto meshColElemUri =
     meshColElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto heightmapVis = shapesLink->VisualByName("heightmap_vis");
   ASSERT_NE(nullptr, heightmapVis);
   auto heightmapVisUri = heightmapVis->Geom()->HeightmapShape()->Uri();
   auto heightmapVisElem = heightmapVis->Geom()->HeightmapShape()->Element();
-  auto heightmapVisElemUri = 
+  auto heightmapVisElemUri =
     heightmapVisElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto texture = heightmapVis->Geom()->HeightmapShape()->TextureByIndex(0);
   auto diffuseUri = texture->Diffuse();
   auto normalUri = texture->Normal();
-  auto diffuseElemUri = 
+  auto diffuseElemUri =
     texture->Element()->GetElement("diffuse")->GetValue()->GetAsString();
-  auto normalElemUri = 
+  auto normalElemUri =
     texture->Element()->GetElement("normal")->GetValue()->GetAsString();
 
   auto heightmapCol = shapesLink->CollisionByName("heightmap_col");
   ASSERT_NE(nullptr, heightmapCol);
   auto heightmapColUri = heightmapCol->Geom()->HeightmapShape()->Uri();
   auto heightmapColElem = heightmapCol->Geom()->HeightmapShape()->Element();
-  auto heightmapColElemUri = 
+  auto heightmapColElemUri =
     heightmapColElem->GetElement("uri")->GetValue()->GetAsString();
 
   /// DOM URIs are unmodified
@@ -167,9 +168,10 @@ TEST(ResolveURIs, StoreResolvedDisabled)
 /////////////////////////////////////////////////
 TEST(ResolveURIs, StoreResolvedEnabled)
 {
-  // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // the source directory
-  const std::string testFile = sdf::testing::TestFile("sdf", "resolve_uris.sdf");
+  // The directory used in AddURIPath must exist in the filesystem, so we'll
+  // use the source directory
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "resolve_uris.sdf");
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
@@ -187,7 +189,7 @@ TEST(ResolveURIs, StoreResolvedEnabled)
             _file == "dummyUri")
         {
           return "modified_" + _file;
-        } 
+        }
         else
         {
           return sdf::filesystem::append(sdfDir, _file);
@@ -203,15 +205,15 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   auto world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
 
-  /// Skybox Cubemap Uri 
+  /// Skybox Cubemap Uri
   auto sky = world->Scene()->Sky();
   auto cubemapUri = sky->CubemapUri();
   auto skyElem = sky->Element();
-  auto cubemapElemUri = 
+  auto cubemapElemUri =
     skyElem->GetElement("cubemap_uri")->GetValue()->GetAsString();
-  
+
   /// Material script uri
-  auto groundPlaneModel = world->ModelByName("ground_plane"); 
+  auto groundPlaneModel = world->ModelByName("ground_plane");
   ASSERT_NE(nullptr, groundPlaneModel);
   auto groundPlaneLink = groundPlaneModel->LinkByName("link");
   ASSERT_NE(nullptr, groundPlaneLink);
@@ -220,7 +222,7 @@ TEST(ResolveURIs, StoreResolvedEnabled)
 
   auto scriptUri = groundPlaneVisual->Material()->ScriptUri();
   auto visualElem = groundPlaneVisual->Material()->Element();
-  auto scriptElemUri= 
+  auto scriptElemUri =
     visualElem->
       GetElement("script")->
       GetElement("uri")->
@@ -236,36 +238,36 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   ASSERT_NE(nullptr, meshVisual);
   auto meshVisualUri = meshVisual->Geom()->MeshShape()->Uri();
   auto meshVisualElem = meshVisual->Geom()->MeshShape()->Element();
-  auto meshVisualElemUri = 
+  auto meshVisualElemUri =
     meshVisualElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto meshCol = shapesLink->CollisionByName("mesh_col");
   ASSERT_NE(nullptr, meshCol);
   auto meshColUri = meshCol->Geom()->MeshShape()->Uri();
   auto meshColElem = meshCol->Geom()->MeshShape()->Element();
-  auto meshColElemUri = 
+  auto meshColElemUri =
     meshColElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto heightmapVis = shapesLink->VisualByName("heightmap_vis");
   ASSERT_NE(nullptr, heightmapVis);
   auto heightmapVisUri = heightmapVis->Geom()->HeightmapShape()->Uri();
   auto heightmapVisElem = heightmapVis->Geom()->HeightmapShape()->Element();
-  auto heightmapVisElemUri = 
+  auto heightmapVisElemUri =
     heightmapVisElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto texture = heightmapVis->Geom()->HeightmapShape()->TextureByIndex(0);
   auto diffuseUri = texture->Diffuse();
   auto normalUri = texture->Normal();
-  auto diffuseElemUri = 
+  auto diffuseElemUri =
     texture->Element()->GetElement("diffuse")->GetValue()->GetAsString();
-  auto normalElemUri = 
+  auto normalElemUri =
     texture->Element()->GetElement("normal")->GetValue()->GetAsString();
 
   auto heightmapCol = shapesLink->CollisionByName("heightmap_col");
   ASSERT_NE(nullptr, heightmapCol);
   auto heightmapColUri = heightmapCol->Geom()->HeightmapShape()->Uri();
   auto heightmapColElem = heightmapCol->Geom()->HeightmapShape()->Element();
-  auto heightmapColElemUri = 
+  auto heightmapColElemUri =
     heightmapColElem->GetElement("uri")->GetValue()->GetAsString();
 
   /// DOM URIs are modified
@@ -292,9 +294,10 @@ TEST(ResolveURIs, StoreResolvedEnabled)
 /////////////////////////////////////////////////
 TEST(ResolveURIs, BadCallback)
 {
-  // The directory used in AddURIPath must exist in the filesystem, so we'll use
-  // the source directory
-  const std::string testFile = sdf::testing::TestFile("sdf", "resolve_uris.sdf");
+  // The directory used in AddURIPath must exist in the filesystem, so we'll
+  // use the source directory
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "resolve_uris.sdf");
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
@@ -312,7 +315,7 @@ TEST(ResolveURIs, BadCallback)
             _file == "dummyUri")
         {
           return std::string();
-        } 
+        }
         else
         {
           return sdf::filesystem::append(sdfDir, _file);
@@ -330,15 +333,15 @@ TEST(ResolveURIs, BadCallback)
   auto world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
 
-  /// Skybox Cubemap Uri 
+  /// Skybox Cubemap Uri
   auto sky = world->Scene()->Sky();
   auto cubemapUri = sky->CubemapUri();
   auto skyElem = sky->Element();
-  auto cubemapElemUri = 
+  auto cubemapElemUri =
     skyElem->GetElement("cubemap_uri")->GetValue()->GetAsString();
-  
+
   /// Material script uri
-  auto groundPlaneModel = world->ModelByName("ground_plane"); 
+  auto groundPlaneModel = world->ModelByName("ground_plane");
   ASSERT_NE(nullptr, groundPlaneModel);
   auto groundPlaneLink = groundPlaneModel->LinkByName("link");
   ASSERT_NE(nullptr, groundPlaneLink);
@@ -347,7 +350,7 @@ TEST(ResolveURIs, BadCallback)
 
   auto scriptUri = groundPlaneVisual->Material()->ScriptUri();
   auto visualElem = groundPlaneVisual->Material()->Element();
-  auto scriptElemUri= 
+  auto scriptElemUri =
     visualElem->
       GetElement("script")->
       GetElement("uri")->
@@ -363,36 +366,36 @@ TEST(ResolveURIs, BadCallback)
   ASSERT_NE(nullptr, meshVisual);
   auto meshVisualUri = meshVisual->Geom()->MeshShape()->Uri();
   auto meshVisualElem = meshVisual->Geom()->MeshShape()->Element();
-  auto meshVisualElemUri = 
+  auto meshVisualElemUri =
     meshVisualElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto meshCol = shapesLink->CollisionByName("mesh_col");
   ASSERT_NE(nullptr, meshCol);
   auto meshColUri = meshCol->Geom()->MeshShape()->Uri();
   auto meshColElem = meshCol->Geom()->MeshShape()->Element();
-  auto meshColElemUri = 
+  auto meshColElemUri =
     meshColElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto heightmapVis = shapesLink->VisualByName("heightmap_vis");
   ASSERT_NE(nullptr, heightmapVis);
   auto heightmapVisUri = heightmapVis->Geom()->HeightmapShape()->Uri();
   auto heightmapVisElem = heightmapVis->Geom()->HeightmapShape()->Element();
-  auto heightmapVisElemUri = 
+  auto heightmapVisElemUri =
     heightmapVisElem->GetElement("uri")->GetValue()->GetAsString();
 
   auto texture = heightmapVis->Geom()->HeightmapShape()->TextureByIndex(0);
   auto diffuseUri = texture->Diffuse();
   auto normalUri = texture->Normal();
-  auto diffuseElemUri = 
+  auto diffuseElemUri =
     texture->Element()->GetElement("diffuse")->GetValue()->GetAsString();
-  auto normalElemUri = 
+  auto normalElemUri =
     texture->Element()->GetElement("normal")->GetValue()->GetAsString();
 
   auto heightmapCol = shapesLink->CollisionByName("heightmap_col");
   ASSERT_NE(nullptr, heightmapCol);
   auto heightmapColUri = heightmapCol->Geom()->HeightmapShape()->Uri();
   auto heightmapColElem = heightmapCol->Geom()->HeightmapShape()->Element();
-  auto heightmapColElemUri = 
+  auto heightmapColElemUri =
     heightmapColElem->GetElement("uri")->GetValue()->GetAsString();
 
   /// DOM URIs are modified
