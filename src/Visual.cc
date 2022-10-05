@@ -133,7 +133,8 @@ Errors Visual::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.emplace();
-    Errors err = this->dataPtr->material->Load(_sdf->GetElement("material"));
+    Errors err = this->dataPtr->material->Load(_sdf->GetElement("material"), 
+        _config);
     errors.insert(errors.end(), err.begin(), err.end());
   }
 

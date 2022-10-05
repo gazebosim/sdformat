@@ -92,6 +92,12 @@ HeightmapTexture::HeightmapTexture()
 /////////////////////////////////////////////////
 Errors HeightmapTexture::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -126,8 +132,23 @@ Errors HeightmapTexture::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("diffuse"))
   {
-    this->dataPtr->diffuse = _sdf->Get<std::string>("diffuse",
-        this->dataPtr->diffuse).first;
+    auto uri = _sdf->Get<std::string>("diffuse", this->dataPtr->diffuse).first;
+
+    if (_config.StoreResolvedURIs())
+    {
+      const std::string resolvedUri = sdf::findFile(uri, true, true, _config);
+      if (resolvedUri.empty())
+      {
+        errors.push_back({ErrorCode::URI_LOOKUP,
+            "Parser configurations requested resolved uris, but uri ["
+            + uri + "] could not be resolved."});
+      }
+      else
+      {
+        uri = resolvedUri;
+      }
+    }
+    this->dataPtr->diffuse = uri;
   }
   else
   {
@@ -137,8 +158,23 @@ Errors HeightmapTexture::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("normal"))
   {
-    this->dataPtr->normal = _sdf->Get<std::string>("normal",
-        this->dataPtr->normal).first;
+    auto uri = _sdf->Get<std::string>("normal", this->dataPtr->normal).first;
+
+    if (_config.StoreResolvedURIs())
+    {
+      const std::string resolvedUri = sdf::findFile(uri, true, true, _config);
+      if (resolvedUri.empty())
+      {
+        errors.push_back({ErrorCode::URI_LOOKUP,
+            "Parser configurations requested resolved uris, but uri ["
+            + uri + "] could not be resolved."});
+      }
+      else
+      {
+        uri = resolvedUri;
+      }
+    }
+    this->dataPtr->normal = uri; 
   }
   else
   {
@@ -354,7 +390,7 @@ Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->sampling).first;
 
   Errors textureLoadErrors = loadRepeated<HeightmapTexture>(_sdf,
-    "texture", this->dataPtr->textures);
+    "texture", _config, this->dataPtr->textures);
   errors.insert(errors.end(), textureLoadErrors.begin(),
       textureLoadErrors.end());
 

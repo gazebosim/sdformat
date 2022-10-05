@@ -84,6 +84,12 @@ Material::Material()
 /////////////////////////////////////////////////
 Errors Material::Load(sdf::ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -114,7 +120,24 @@ Errors Material::Load(sdf::ElementPtr _sdf)
           "A <script> element is missing a child <uri> element, or the "
           "<uri> element is empty."});
     }
-    this->dataPtr->scriptUri = uriPair.first;
+
+    auto uri = uriPair.first;
+
+    if (_config.StoreResolvedURIs())
+    {
+      const std::string resolvedUri = sdf::findFile(uri, true, true, _config);
+      if (resolvedUri.empty())
+      {
+        errors.push_back({ErrorCode::URI_LOOKUP,
+            "Parser configurations requested resolved uris, but uri ["
+            + uri + "] could not be resolved."});
+      }
+      else
+      {
+        uri = resolvedUri;
+      }
+    }
+    this->dataPtr->scriptUri = uri;
 
     std::pair<std::string, bool> namePair = elem->Get<std::string>("name", "");
     if (namePair.first == "__default__")
