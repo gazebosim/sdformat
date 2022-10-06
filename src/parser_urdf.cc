@@ -3471,7 +3471,7 @@ void ReduceSDFExtensionPluginFrameReplace(
           (*_blobIt)->RemoveChild(rpyKey);
         }
         TiXmlNode* correctedOffsetKey =
-            (*_blobIt)->FirstChild("gz::corrected_offsets");
+            (*_blobIt)->FirstChild("ignition::corrected_offsets");
         if (correctedOffsetKey)
         {
           (*_blobIt)->RemoveChild(correctedOffsetKey);
@@ -3484,7 +3484,7 @@ void ReduceSDFExtensionPluginFrameReplace(
         // create new offset xml blocks
         xyzKey = new TiXmlElement("xyzOffset");
         rpyKey = new TiXmlElement("rpyOffset");
-        correctedOffsetKey = new TiXmlElement("gz::corrected_offsets");
+        correctedOffsetKey = new TiXmlElement("ignition::corrected_offsets");
 
         // create new offset xml blocks
         urdf::Vector3 reductionXyz(_reductionTransform.Pos().X(),
