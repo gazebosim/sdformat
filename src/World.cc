@@ -609,10 +609,8 @@ const Joint *World::JointByName(const std::string &_name) const
     }
 
     // The nested model name preceding the last "::" could not be found.
-    // For now, try to find a link that matches _name exactly.
-    // When "::" are reserved and not allowed in names, then uncomment
-    // the following line to return a nullptr.
-    // return nullptr;
+    // Since "::" are reserved and not allowed in names, return a nullptr.
+    return nullptr;
   }
 
   for (auto const &f : this->dataPtr->joints)
