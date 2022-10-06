@@ -31,7 +31,6 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-  //
 
   // Forward declare private data class.
   struct PoseRelativeToGraph;
