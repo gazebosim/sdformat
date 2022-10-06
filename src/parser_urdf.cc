@@ -424,6 +424,39 @@ void ReduceFixedJoints(tinyxml2::XMLElement *_root, urdf::LinkSharedPtr _link)
     sdfdbg << "Fixed Joint Reduction: extension lumping from ["
            << _link->name << "] to [" << _link->getParent()->name << "]\n";
 
+    // Add //model/frame tag to memorialize reduced joint
+    sdf::Frame jointFrame;
+    jointFrame.SetName(_link->parent_joint->name);
+    jointFrame.SetAttachedTo(_link->getParent()->name);
+    jointFrame.SetRawPose(
+      CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
+
+    // Add //model/frame tag to memorialize reduced link
+    sdf::Frame linkFrame;
+    linkFrame.SetName(_link->name);
+    linkFrame.SetAttachedTo(_link->parent_joint->name);
+
+    // Serialize sdf::Frame objects to xml and add to SDFExtension
+    SDFExtensionPtr sdfExt = std::make_shared<SDFExtension>();
+    auto sdfFrameToExtension = [&sdfExt](const sdf::Frame &_frame)
+    {
+      XMLDocumentPtr xmlNewDoc = std::make_shared<tinyxml2::XMLDocument>();
+      sdf::PrintConfig config;
+      config.SetOutPrecision(16);
+      xmlNewDoc->Parse(_frame.ToElement()->ToString("", config).c_str());
+      if (xmlNewDoc->Error())
+      {
+        sdferr << "Error while parsing serialized frames: "
+               << xmlNewDoc->ErrorStr() << '\n';
+      }
+      sdfExt->blobs.push_back(xmlNewDoc);
+    };
+    sdfFrameToExtension(jointFrame);
+    sdfFrameToExtension(linkFrame);
+
+    // Add //frame tags to model extension vector
+    g_extensions[""].push_back(sdfExt);
+
     // lump sdf extensions to parent, (give them new reference _link names)
     ReduceSDFExtensionToParent(_link);
 

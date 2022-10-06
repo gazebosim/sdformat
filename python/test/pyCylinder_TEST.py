@@ -14,8 +14,6 @@
 
 import copy
 
-from gz.math7 import Vector3d
-
 import math
 
 from sdformat13 import Cylinder
