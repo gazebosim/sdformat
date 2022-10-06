@@ -335,7 +335,7 @@ namespace sdf
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
     /// \sa uint64_t JointCount() const
-    public: const Joint *JointByIndex(const uint64_t _index) const;
+    public: const Joint *JointByIndex(uint64_t _index) const;
 
     /// \brief Get a mutable joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
