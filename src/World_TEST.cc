@@ -652,8 +652,8 @@ TEST(DOMWorld, ToElement)
     "  <elevation>0</elevation>\n"
     "  <heading_deg>0</heading_deg>\n"
     "  <world_frame_orientation>ENU</world_frame_orientation>\n"
-    "  <surface_axis_equatorial>6378140</surface_axis_equatorial>\n"
-    "  <surface_axis_polar>6356750</surface_axis_polar>\n"
+    "  <surface_axis_equatorial>6378137</surface_axis_equatorial>\n"
+    "  <surface_axis_polar>6356752.3142449996</surface_axis_polar>\n"
     "</spherical_coordinates>\n";
 
   EXPECT_EQ(sphericalCoordsSdf,

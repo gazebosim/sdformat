@@ -17,6 +17,7 @@
 #include <limits>
 #include <string>
 #include <utility>
+#include "sdf/Assert.hh"
 #include "sdf/SDFImpl.hh"
 #include "Utils.hh"
 
@@ -162,6 +163,22 @@ void enforceConfigurablePolicyCondition(
       break;
     default:
       throw std::runtime_error("Unhandled warning policy enum value");
+  }
+}
+
+/////////////////////////////////////////////////
+void throwOrPrintErrors(const sdf::Errors& _errors)
+{
+  for(auto& error : _errors)
+  {
+    if (error.Code() == sdf::ErrorCode::FATAL_ERROR)
+    {
+      SDF_ASSERT(false, error.Message());
+    }
+    else
+    {
+      sdferr << error.Message();
+    }
   }
 }
 

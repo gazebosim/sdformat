@@ -210,20 +210,13 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     if (size > 1)
     {
-      sdfwarn << "Non-unique name[" << name << "] detected " << size
-              << " times in XML children of world with name[" << this->Name()
-              << "].\n";
-    }
-  }
-
-  for (const auto &[name, size] :
-       _sdf->CountNamedElements("", Element::NameUniquenessExceptions()))
-  {
-    if (size > 1)
-    {
-      sdfwarn << "Non-unique name[" << name << "] detected " << size
-              << " times in XML children of world with name[" << this->Name()
-              << "].\n";
+      std::stringstream ss;
+      ss << "Non-unique name[" << name << "] detected " << size
+         << " times in XML children of world with name[" << this->Name()
+         << "].";
+      Error err(ErrorCode::WARNING, ss.str());
+      enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, errors);
     }
   }
 
@@ -297,10 +290,14 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       {
         frameName = frame.Name() + "_frame" + std::to_string(i++);
       }
-      sdfwarn << "Frame with name [" << frame.Name() << "] "
-              << "in world with name [" << this->Name() << "] "
-              << "has a name collision, changing frame name to ["
-              << frameName << "].\n";
+      std::stringstream ss;
+      ss << "Frame with name [" << frame.Name() << "] "
+          << "in world with name [" << this->Name() << "] "
+          << "has a name collision, changing frame name to ["
+          << frameName << "].\n";
+      Error err(ErrorCode::WARNING, ss.str());
+      enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, errors);
       frame.SetName(frameName);
     }
     frameNames.insert(frameName);

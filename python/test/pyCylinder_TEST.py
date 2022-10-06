@@ -14,11 +14,9 @@
 
 import copy
 
-from gz.math import Vector3d
-
 import math
 
-from sdformat import Cylinder
+from sdformat13 import Cylinder
 
 import unittest
 

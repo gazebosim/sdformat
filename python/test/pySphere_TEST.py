@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math import Sphered
 import math
-from sdformat import Sphere
+from sdformat13 import Sphere
 import unittest
 
 class SphereTEST(unittest.TestCase):

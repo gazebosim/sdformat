@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from sdformat import Pbr, PbrWorkflow
-import sdformat as sdf
+from sdformat13 import Pbr, PbrWorkflow
+import sdformat13 as sdf
 import unittest
 
 

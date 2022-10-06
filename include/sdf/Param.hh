@@ -307,14 +307,14 @@ namespace sdf
 
     /// \brief Set the parent Element of this Param.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
-    /// provided to remove the current parent Element.
+    ///  be provided to remove the current parent Element.
     /// \return True if the parent Element was set and the value was reparsed
     /// successfully.
     public: bool SetParentElement(ElementPtr _parentElement);
 
     /// \brief Set the parent Element of this Param.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
-    /// provided to remove the current parent Element.
+    /// be provided to remove the current parent Element.
     /// \param[out] _errors Vector of errors.
     /// \return True if the parent Element was set and the value was reparsed
     /// successfully.
@@ -682,7 +682,7 @@ namespace sdf
     try
     {
       std::stringstream ss;
-      ss << _value;
+      ss << ParamStreamer<T>{_value, std::numeric_limits<int>::max()};
       return this->SetFromString(ss.str(), true, _errors);
     }
     catch(...)
@@ -777,7 +777,8 @@ namespace sdf
 
     try
     {
-      ss << ParamStreamer{this->dataPtr->defaultValue};
+      ss << ParamStreamer{this->dataPtr->defaultValue,
+                          std::numeric_limits<int>::max()};
       ss >> _value;
     }
     catch(...)

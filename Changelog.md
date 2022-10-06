@@ -1,9 +1,243 @@
 ## libsdformat 13.X
 
-### libsdformat 13.0.0 (202X-XX-XX)
+### libsdformat 13.0.1 (2022-09-27)
 
+1. Fix arm tests
+    * [Pull request #1173](https://github.com/gazebosim/sdformat/pull/1173)
+
+### libsdformat 13.0.0 (2022-09-23)
+
+1. Add camera `optical_frame_id` element
+    * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
+
+1. sdf/1.10: remove unused spec files
+    * [Pull request #1113](https://github.com/gazebosim/sdformat/pull/1113)
+
+1. 1.10/joint.sdf: better default limit values
+    * [Pull request #1112](https://github.com/gazebosim/sdformat/pull/1112)
+
+1. Remove unused macros from config.hh
+    * [Pull request #1108](https://github.com/gazebosim/sdformat/pull/1108)
+
+1. Make //plugin/@name optional
+    * [Pull request #1101](https://github.com/gazebosim/sdformat/pull/1101)
+
+1. Add Error enums and update Migration guide
+    * [Pull request #1099](https://github.com/gazebosim/sdformat/pull/1099)
+
+1. Warn by default on unrecognized elements
+    * [Pull request #1096](https://github.com/gazebosim/sdformat/pull/1096)
+
+1. InterfaceElements: remove deprecated data members
+    * [Pull request #1097](https://github.com/gazebosim/sdformat/pull/1097)
+
+1. Add fluid added mass to inertial
+    * [Pull request #1077](https://github.com/gazebosim/sdformat/pull/1077)
+
+1. Change Root to non-unique impl pointer
+    * [Pull request #844](https://github.com/gazebosim/sdformat/pull/844)
+
+1. Add python interfaces
+    * [Pull request #932](https://github.com/gazebosim/sdformat/pull/932)
+    * [Pull request #933](https://github.com/gazebosim/sdformat/pull/933)
+    * [Pull request #934](https://github.com/gazebosim/sdformat/pull/934)
+    * [Pull request #937](https://github.com/gazebosim/sdformat/pull/937)
+    * [Pull request #938](https://github.com/gazebosim/sdformat/pull/938)
+    * [Pull request #940](https://github.com/gazebosim/sdformat/pull/940)
+    * [Pull request #941](https://github.com/gazebosim/sdformat/pull/941)
+    * [Pull request #942](https://github.com/gazebosim/sdformat/pull/942)
+    * [Pull request #944](https://github.com/gazebosim/sdformat/pull/944)
+    * [Pull request #945](https://github.com/gazebosim/sdformat/pull/945)
+    * [Pull request #946](https://github.com/gazebosim/sdformat/pull/946)
+    * [Pull request #947](https://github.com/gazebosim/sdformat/pull/947)
+    * [Pull request #948](https://github.com/gazebosim/sdformat/pull/948)
+    * [Pull request #949](https://github.com/gazebosim/sdformat/pull/949)
+    * [Pull request #950](https://github.com/gazebosim/sdformat/pull/950)
+    * [Pull request #951](https://github.com/gazebosim/sdformat/pull/951)
+    * [Pull request #952](https://github.com/gazebosim/sdformat/pull/952)
+    * [Pull request #953](https://github.com/gazebosim/sdformat/pull/953)
+    * [Pull request #957](https://github.com/gazebosim/sdformat/pull/957)
+    * [Pull request #960](https://github.com/gazebosim/sdformat/pull/960)
+    * [Pull request #961](https://github.com/gazebosim/sdformat/pull/961)
+    * [Pull request #962](https://github.com/gazebosim/sdformat/pull/962)
+    * [Pull request #963](https://github.com/gazebosim/sdformat/pull/963)
+    * [Pull request #964](https://github.com/gazebosim/sdformat/pull/964)
+    * [Pull request #967](https://github.com/gazebosim/sdformat/pull/967)
+    * [Pull request #968](https://github.com/gazebosim/sdformat/pull/968)
+    * [Pull request #969](https://github.com/gazebosim/sdformat/pull/969)
+    * [Pull request #970](https://github.com/gazebosim/sdformat/pull/970)
+    * [Pull request #971](https://github.com/gazebosim/sdformat/pull/971)
+    * [Pull request #972](https://github.com/gazebosim/sdformat/pull/972)
+    * [Pull request #973](https://github.com/gazebosim/sdformat/pull/973)
+    * [Pull request #981](https://github.com/gazebosim/sdformat/pull/981)
+    * [Pull request #982](https://github.com/gazebosim/sdformat/pull/982)
+    * [Pull request #983](https://github.com/gazebosim/sdformat/pull/983)
+    * [Pull request #984](https://github.com/gazebosim/sdformat/pull/984)
+    * [Pull request #988](https://github.com/gazebosim/sdformat/pull/988)
+    * [Pull request #989](https://github.com/gazebosim/sdformat/pull/989)
+    * [Pull request #992](https://github.com/gazebosim/sdformat/pull/992)
+    * [Pull request #993](https://github.com/gazebosim/sdformat/pull/993)
+    * [Pull request #994](https://github.com/gazebosim/sdformat/pull/994)
+    * [Pull request #995](https://github.com/gazebosim/sdformat/pull/995)
+    * [Pull request #996](https://github.com/gazebosim/sdformat/pull/996)
+    * [Pull request #997](https://github.com/gazebosim/sdformat/pull/997)
+    * [Pull request #998](https://github.com/gazebosim/sdformat/pull/998)
+    * [Pull request #999](https://github.com/gazebosim/sdformat/pull/999)
+    * [Pull request #1001](https://github.com/gazebosim/sdformat/pull/1001)
+    * [Pull request #1020](https://github.com/gazebosim/sdformat/pull/1020)
+    * [Pull request #1028](https://github.com/gazebosim/sdformat/pull/1028)
+    * [Pull request #1029](https://github.com/gazebosim/sdformat/pull/1029)
+    * [Pull request #1036](https://github.com/gazebosim/sdformat/pull/1036)
+    * [Pull request #1060](https://github.com/gazebosim/sdformat/pull/1060)
+    * [Pull request #1061](https://github.com/gazebosim/sdformat/pull/1061)
+    * [Pull request #1063](https://github.com/gazebosim/sdformat/pull/1063)
+    * [Pull request #1078](https://github.com/gazebosim/sdformat/pull/1078)
+    * [Pull request #1083](https://github.com/gazebosim/sdformat/pull/1083)
+    * [Pull request #1084](https://github.com/gazebosim/sdformat/pull/1084)
+    * [Pull request #1085](https://github.com/gazebosim/sdformat/pull/1085)
+    * [Pull request #1106](https://github.com/gazebosim/sdformat/pull/1106)
+    * [Pull request #1127](https://github.com/gazebosim/sdformat/pull/1127)
+    * [Pull request #1143](https://github.com/gazebosim/sdformat/pull/1143)
+
+1. Copy skybox uri field to sdf/1.10/scene.sdf
+    * [Pull request #1082](https://github.com/gazebosim/sdformat/pull/1082)
+
+1. Accept moon and custom surfaces in world spherical coordinates
+    * [Pull request #1050](https://github.com/gazebosim/sdformat/pull/1050)
+
+1. Migrate ign -> gz
+    * [Pull request #1008](https://github.com/gazebosim/sdformat/pull/1008)
+    * [Pull request #1022](https://github.com/gazebosim/sdformat/pull/1022)
+    * [Pull request #1040](https://github.com/gazebosim/sdformat/pull/1040)
+    * [Pull request #1045](https://github.com/gazebosim/sdformat/pull/1045)
+    * [Pull request #1047](https://github.com/gazebosim/sdformat/pull/1047)
+    * [Pull request #1048](https://github.com/gazebosim/sdformat/pull/1048)
+    * [Pull request #1052](https://github.com/gazebosim/sdformat/pull/1052)
+    * [Pull request #1057](https://github.com/gazebosim/sdformat/pull/1057)
+    * [Pull request #1058](https://github.com/gazebosim/sdformat/pull/1058)
+    * [Pull request #1067](https://github.com/gazebosim/sdformat/pull/1067)
+    * [Pull request #1074](https://github.com/gazebosim/sdformat/pull/1074)
+    * [Pull request #1078](https://github.com/gazebosim/sdformat/pull/1078)
+    * [Pull request #1092](https://github.com/gazebosim/sdformat/pull/1092)
+
+1. Copy 1.9 spec to 1.10
+    * [Pull request #1073](https://github.com/gazebosim/sdformat/pull/1073)
+    * [Pull request #1076](https://github.com/gazebosim/sdformat/pull/1076)
+
+1. Root: get the world name
+    * [Pull request #1027](https://github.com/gazebosim/sdformat/pull/1027)
+
+1. Add SDF::SetRoot and deprecate non-const SDF::Root
+    * [Pull request #1070](https://github.com/gazebosim/sdformat/pull/1070)
+
+1. Update GoogleTest to latest version
+    * [Pull request #1059](https://github.com/gazebosim/sdformat/pull/1059)
+    * [Pull request #1072](https://github.com/gazebosim/sdformat/pull/1072)
+
+1. Update return types for Plugin's Name and Filename
+    * [Pull request #1055](https://github.com/gazebosim/sdformat/pull/1055)
+
+1. Surface::ToElement: add //friction/ode/mu
+    * [Pull request #1049](https://github.com/gazebosim/sdformat/pull/1049)
+
+1. Joint: rename parent/child `*LinkName` APIs
+    * [Pull request #1053](https://github.com/gazebosim/sdformat/pull/1053)
+    * [Pull request #1103](https://github.com/gazebosim/sdformat/pull/1103)
+
+1. Deprecate sdf::Inertia class
+    * [Pull request #1019](https://github.com/gazebosim/sdformat/pull/1019)
+
+1. Don't include the gz/math.hh header from library code
+    * [Pull request #1043](https://github.com/gazebosim/sdformat/pull/1043)
+
+1. Use pose multiplication instead of subtraction
+    * [Pull request #1039](https://github.com/gazebosim/sdformat/pull/1039)
+
+1. Remove deprecation warnings
+    * [Pull request #1014](https://github.com/gazebosim/sdformat/pull/1014)
+
+1. Added light methods to Link, Root and World
+    * [Pull request #1013](https://github.com/gazebosim/sdformat/pull/1013)
+
+1. Add sdf::Error logging in sdf::Param
+    * [Pull request #939](https://github.com/gazebosim/sdformat/pull/939)
+
+1. Changes for replacing PythonInterp with Python3
+    * [Pull request #907](https://github.com/gazebosim/sdformat/pull/907)
+
+1. Combine find_package(ignition-utils) calls
+    * [Pull request #966](https://github.com/gazebosim/sdformat/pull/966)
+
+1. Change default floating point precision to max
+    * [Pull request #872](https://github.com/gazebosim/sdformat/pull/872)
+
+1. Clean up compiler warnings
+    * [Pull request #882](https://github.com/gazebosim/sdformat/pull/882)
+
+1. Switch to utils version of env functions
+    * [Pull request #854](https://github.com/gazebosim/sdformat/pull/854)
+
+1. Updated tests for ign-math's ostream fix
+    * [Pull request #847](https://github.com/gazebosim/sdformat/pull/847)
+
+1. Infrastructure
+    * [Pull request #803](https://github.com/gazebosim/sdformat/pull/803)
+    * [Pull request #805](https://github.com/gazebosim/sdformat/pull/805)
+    * [Pull request #878](https://github.com/gazebosim/sdformat/pull/878)
+    * [Pull request #980](https://github.com/gazebosim/sdformat/pull/980)
+    * [Pull request #974](https://github.com/gazebosim/sdformat/pull/974)
+
+1. Remove completely unused define
+    * [Pull request #758](https://github.com/gazebosim/sdformat/pull/758)
 
 ## libsdformat 12.X
+
+### libsdformat 12.6.0 (2022-09-07)
+
+1. Reduce the number of include dirs for sdformat.
+    * [Pull request #1170](https://github.com/gazebosim/sdformat/pull/1170)
+
+1. Add camera `optical_frame_id` element
+    * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
+
+1. urdf: fix sensor/light pose for links lumped by fixed joints
+    * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. Removed USD component from SDFormat and move to gz-usd
+    * [Pull request #1094](https://github.com/gazebosim/sdformat/pull/1094)
+
+1. Fix URDF fixed joint reduction of SDF joints
+    * [Pull request #1089](https://github.com/gazebosim/sdformat/pull/1089)
+
+1. Test model name as `placement_frame`
+    * [Pull request #1079](https://github.com/gazebosim/sdformat/pull/1079)
+
+1. Test using `__model__`, `world` in `@attached_to`, `@relative_to`
+    * [Pull request #1066](https://github.com/gazebosim/sdformat/pull/1066)
+
+1. Remove unused sdf.hh.in template
+    * [Pull request #1081](https://github.com/gazebosim/sdformat/pull/1081)
+
+1. Readme: Ignition -> Gazebo
+    * [Pull request #1080](https://github.com/gazebosim/sdformat/pull/1080)
+
+1. Document major and minor SDFormat version numbers
+    * [Pull request #1065](https://github.com/gazebosim/sdformat/pull/1065)
+
+1. Add skybox URI
+    * [Pull request #1037](https://github.com/gazebosim/sdformat/pull/1037)
+
+1. Bash completion for flags
+    * [Pull request #1042](https://github.com/gazebosim/sdformat/pull/1042)
+
+1. Fix bug with resolving poses for joint sensors.
+    * [Pull request #1033](https://github.com/gazebosim/sdformat/pull/1033)
+
+1. sdf::Joint: Mutable versions of SensorByName and SensorByIndex
+    * [Pull request #1031](https://github.com/gazebosim/sdformat/pull/1031)
+
+1. Add Link::ResolveInertial API
+    * [Pull request #1012](https://github.com/gazebosim/sdformat/pull/1012)
 
 ### libsdformat 12.5.0 (2022-05-12)
 
@@ -1016,7 +1250,32 @@
 
 ## libsdformat 9.X
 
-### libsdformat 9.X.X (202X-XX-XX)
+### libsdformat 9.9.0 (2022-09-07)
+
+1. sdf/camera.sdf: fields for projection matrix
+    * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
+
+1. urdf: fix sensor/light pose for links lumped by fixed joints
+    * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. Ensure relocatable config files
+    * [Pull request #419](https://github.com/gazebosim/sdformat/pull/419)
+    * [Pull request #1093](https://github.com/gazebosim/sdformat/pull/1093)
+
+1. Test using `__model__`, `world` in @attached_to, @relative_to
+    * [Pull request #1066](https://github.com/gazebosim/sdformat/pull/1066)
+
+1. Readme: Ignition -> Gazebo
+    * [Pull request #1080](https://github.com/gazebosim/sdformat/pull/1080)
+
+1. Document major and minor SDFormat version numbers
+    * [Pull request #1065](https://github.com/gazebosim/sdformat/pull/1065)
+
+1. Bash completion for flags
+    * [Pull request #1042](https://github.com/gazebosim/sdformat/pull/1042)
+
+1. Add Link::ResolveInertial API
+    * [Pull request #1012](https://github.com/gazebosim/sdformat/pull/1012)
 
 ### libsdformat 9.8.0 (2022-04-26)
 

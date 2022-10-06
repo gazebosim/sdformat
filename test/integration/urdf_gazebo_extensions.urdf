@@ -95,14 +95,6 @@
     <dampingFactor>0.1</dampingFactor>
   </gazebo>
 
-  <joint name="joint13" type="revolute">
-    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
-    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
-    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
-    <parent link="link1"/>
-    <child link="link3"/>
-  </joint>
-
   <joint name="joint23" type="revolute">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="-0.5 0.5 2.5"/>
     <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
@@ -125,7 +117,27 @@
     </visual>
   </link>
 
-  <gazebo reference="joint13">
+  <joint name="joint14" type="revolute">
+    <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 -3.0 0.0"/>
+    <axis xyz="0 1 0"/>  <!-- in child (link1) frame -->
+    <limit lower="0" upper="0" velocity="1000" effort="10000"/>
+    <parent link="link1"/>
+    <child link="link4"/>
+  </joint>
+  <link name="link4">
+    <inertial>
+      <mass value="400"/>
+      <origin rpy="2 3 4" xyz="0.1 0.2 0.3"/>
+      <inertia ixx="8" ixy="0" ixz="0" iyy="9" iyz="0" izz="10"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.3 0.4 0.5"/>
+      </geometry>
+      <origin rpy="2 3 4" xyz="0.1 0.2 0.3"/>
+    </visual>
+  </link>
+  <gazebo reference="joint14">
     <implicitSpringDamper>true</implicitSpringDamper>
   </gazebo>
 
@@ -165,6 +177,8 @@
     <child link="linkSensorNoPose"/>
   </joint>
   <gazebo reference="linkSensorNoPose">
+    <light name="lightNoPose" type="point"/>
+    <projector name="projectorNoPose"/>
     <sensor name="sensorNoPose" type="camera">
       <update_rate>6.0</update_rate>
       <camera name="cam">
@@ -195,6 +209,12 @@
     <child link="linkSensorPose"/>
   </joint>
   <gazebo reference="linkSensorPose">
+    <light name="lightPose" type="point">
+      <pose>111 0 0 0 0 -1</pose>
+    </light>
+    <projector name="projectorPose">
+      <pose>111 0 0 0 0 -1</pose>
+    </projector>
     <sensor name="sensorPose" type="camera">
       <pose>111 0 0 0 0 -1</pose>
       <update_rate>6.0</update_rate>
@@ -226,6 +246,12 @@
     <child link="linkSensorPoseRelative"/>
   </joint>
   <gazebo reference="linkSensorPoseRelative">
+    <light name="lightPoseRelative" type="point">
+      <pose relative_to="link0">111 0 0 0 0 -1</pose>
+    </light>
+    <projector name="projectorPoseRelative">
+      <pose relative_to="link0">111 0 0 0 0 -1</pose>
+    </projector>
     <sensor name="sensorPoseRelative" type="camera">
       <pose relative_to="link0">111 0 0 0 0 -1</pose>
       <update_rate>6.0</update_rate>
@@ -269,8 +295,17 @@
     <child link="linkSensorPoseTwoLevel2"/>
   </joint>
   <gazebo reference="linkSensorPoseTwoLevel2">
+    <light name="lightPoseTwoLevel" type="point">
+      <!-- TwoLevel to link0 -->
+      <pose>111 0 0 0 0 -1</pose>
+    </light>
+    <projector name="projectorPoseTwoLevel">
+      <!-- TwoLevel to link0 -->
+      <pose>111 0 0 0 0 -1</pose>
+    </projector>
     <sensor name="sensorPoseTwoLevel" type="camera">
-      <pose twoLevel_to="link0">111 0 0 0 0 -1</pose>
+      <!-- TwoLevel to link0 -->
+      <pose>111 0 0 0 0 -1</pose>
       <update_rate>6.0</update_rate>
       <camera name="cam">
         <horizontal_fov>1.36869112579</horizontal_fov>
@@ -289,6 +324,12 @@
 
   <!-- Issue 378 setting -->
   <gazebo reference="issue378_link">
+    <light name="issue378_light" type="point">
+      <pose>1.0 2.0 3.0 0.1 0.2 0.3</pose>
+    </light>
+    <projector name="issue378_projector">
+      <pose>1.0 2.0 3.0 0.1 0.2 0.3</pose>
+    </projector>
     <sensor name="issue378_sensor" type="imu">
       <always_on>1</always_on>
       <update_rate>400</update_rate>
@@ -320,6 +361,12 @@
     <axis xyz="0 0 0"/>
   </joint>
   <gazebo reference="Camera">
+    <light name="issue67_light" type="point">
+      <pose>1 1 1 1.570796 1.570796 1.570796</pose>
+    </light>
+    <projector name="issue67_projector">
+      <pose>1 1 1 1.570796 1.570796 1.570796</pose>
+    </projector>
     <sensor name="issue67_sensor" type="camera">
       <visualize>true</visualize>
       <pose>1 1 1 1.570796 1.570796 1.570796</pose>
