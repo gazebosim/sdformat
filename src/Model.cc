@@ -326,15 +326,9 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // Load all the joints.
-  {
-    // Copy the ParserConfig and force PermitWorldAsJointChild to false since
-    // a //model/joint/child cannot be "world"
-    ParserConfig jointConfig {_config};
-    jointConfig.SetPermitWorldAsJointChild(false);
-    Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
-      this->dataPtr->joints, jointConfig);
-    errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
-  }
+  Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
+    this->dataPtr->joints);
+  errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
   // Check joints for name collisions and modify and warn if so.
   for (auto &joint : this->dataPtr->joints)

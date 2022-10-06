@@ -25,9 +25,7 @@
   </element> <!-- End Parent -->
 
   <element name="child" type="string" default="__default__" required="1">
-    <description>Name of the child frame. The value "world" may be specified
-      only if this joint is defined at the world scope as //world/joint. The
-      the value "world" may not be specified for a //model/joint.</description>
+    <description>Name of the child frame. The value "world" may not be specified.</description>
   </element> <!-- End Child -->
 
   <element name="gearbox_ratio" type="double" default="1.0" required="0">

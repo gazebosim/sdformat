@@ -22,7 +22,6 @@
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
-#include "sdf/ParserConfig.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -95,15 +94,6 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
-
-    /// \brief Load the joint based on a element pointer. This is *not* the
-    /// usual entry point. Typical usage of the SDF DOM is through the Root
-    /// object.
-    /// \param[in] _sdf The SDF Element pointer
-    /// \param[in] _config Parser configuration
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no error.
-    public: Errors Load(ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the joint.
     /// The name of the joint must be unique within the scope of a Model.

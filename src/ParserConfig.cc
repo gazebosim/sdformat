@@ -46,9 +46,6 @@ class sdf::ParserConfig::Implementation
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
 
-  /// \brief Flag to explicitly permit the world frame in //world/joint/child.
-  public: bool permitWorldAsJointChild = true;
-
   /// \brief Flag to explicitly preserve fixed joints when
   /// reading the SDF/URDF file.
   public: bool preserveFixedJoint = false;
@@ -163,18 +160,6 @@ void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
 const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 {
   return this->dataPtr->customParsers;
-}
-
-/////////////////////////////////////////////////
-void ParserConfig::SetPermitWorldAsJointChild(bool _permitWorldAsJointChild)
-{
-  this->dataPtr->permitWorldAsJointChild = _permitWorldAsJointChild;
-}
-
-/////////////////////////////////////////////////
-bool ParserConfig::PermitWorldAsJointChild() const
-{
-  return this->dataPtr->permitWorldAsJointChild;
 }
 
 /////////////////////////////////////////////////

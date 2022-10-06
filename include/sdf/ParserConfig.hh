@@ -169,16 +169,6 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \return Vector of registered model parser callbacks.
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
-  /// \brief Set the permitWorldAsJointChild flag value.
-  /// \param[in] _permitWorldAsJointChild True if the world frame is permitted
-  /// in //world/joint/child, false if it is not permitted.
-  public: void SetPermitWorldAsJointChild(bool _permitWorldAsJointChild);
-
-  /// \brief Get the permitWorldAsJointChild flag value.
-  /// \return True if the world frame is permitted in //world/joint/child,
-  /// false if it is not permitted.
-  public: bool PermitWorldAsJointChild() const;
-
   /// \brief Set the preserveFixedJoint flag.
   /// \param[in] _preserveFixedJoint True to preserve fixed joints, false to
   /// reduce the fixed joints and merge the child link into the parent.

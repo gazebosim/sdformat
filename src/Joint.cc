@@ -80,12 +80,6 @@ Joint::Joint()
 /////////////////////////////////////////////////
 Errors Joint::Load(ElementPtr _sdf)
 {
-  return this->Load(_sdf, ParserConfig::GlobalConfig());
-}
-
-/////////////////////////////////////////////////
-Errors Joint::Load(ElementPtr _sdf, const ParserConfig &_config)
-{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -155,8 +149,7 @@ Errors Joint::Load(ElementPtr _sdf, const ParserConfig &_config)
         "The child element is missing."});
   }
 
-  if (!_config.PermitWorldAsJointChild() &&
-      this->dataPtr->childName == "world")
+  if (this->dataPtr->childName == "world")
   {
     errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
         "Joint with name[" + this->dataPtr->name +

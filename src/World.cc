@@ -272,7 +272,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 
   // Load all the joints.
   Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
-      this->dataPtr->joints, _config);
+      this->dataPtr->joints);
   errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
 
   // Load all the lights.
