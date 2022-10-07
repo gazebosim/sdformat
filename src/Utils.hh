@@ -163,10 +163,10 @@ namespace sdf
   /// vector, unless an error is encountered during load.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template <typename Class>
+  template <typename Class, typename... Args>
   sdf::Errors loadRepeated(sdf::ElementPtr _sdf, const std::string &_sdfName,
       std::vector<Class> &_objs,
-      const std::function<void(Class &)> &_beforeLoadFunc = {})
+      Args&&... _args)
   {
     Errors errors;
 
@@ -178,13 +178,9 @@ namespace sdf
       while (elem)
       {
         Class obj;
-        if (_beforeLoadFunc)
-        {
-          _beforeLoadFunc(obj);
-        }
 
         // Load the model and capture the errors.
-        Errors loadErrors = obj.Load(elem);
+        Errors loadErrors = obj.Load(elem, std::forward<Args>(_args)...);
 
         {
           // Add the load errors to the master error list.
@@ -203,58 +199,6 @@ namespace sdf
 
     return errors;
   }
-
-  /// \brief Load all objects of a specific sdf element type. No error
-  /// is returned if an element is not present.
-  /// \param[in] _sdf The SDF element that contains zero or more elements.
-  /// \param[in] _sdfName Name of the sdf element, such as "model".
-  /// \param[in] _config Specific parser configuration to use to load
-  /// \param[out] _objs Elements that match _sdfName in _sdf are added to this
-  /// vector, unless an error is encountered during load.
-  /// \return The vector of errors. An empty vector indicates no errors were
-  /// experienced.
-  template <typename Class>
-  sdf::Errors loadRepeated(sdf::ElementPtr _sdf, const std::string &_sdfName,
-      const ParserConfig &_config,
-      std::vector<Class> &_objs,
-      const std::function<void(Class &)> &_beforeLoadFunc = {})
-  {
-    Errors errors;
-
-    // Check that an element exists.
-    if (_sdf->HasElement(_sdfName))
-    {
-      // Read all the elements.
-      sdf::ElementPtr elem = _sdf->GetElement(_sdfName);
-      while (elem)
-      {
-        Class obj;
-        if (_beforeLoadFunc)
-        {
-          _beforeLoadFunc(obj);
-        }
-
-        // Load the model and capture the errors.
-        Errors loadErrors = obj.Load(elem, _config);
-
-        {
-          // Add the load errors to the master error list.
-          errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
-
-          // but keep object anyway
-          _objs.push_back(std::move(obj));
-        }
-
-        elem = elem->GetNextElement(_sdfName);
-      }
-    }
-    // Do not add an error if the model tag is missing. This is an internal
-    // function that is called by class without checking if an element actually
-    // exists. This is a bit of safe code reduction.
-
-    return errors;
-  }
-
 
   /// \brief Load interface models from //include tags.
   /// \param[in] _sdf sdf::ElementPtr that contains the //include tags.

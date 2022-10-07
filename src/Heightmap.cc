@@ -390,7 +390,7 @@ Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->sampling).first;
 
   Errors textureLoadErrors = loadRepeated<HeightmapTexture>(_sdf,
-    "texture", _config, this->dataPtr->textures);
+    "texture", this->dataPtr->textures, _config);
   errors.insert(errors.end(), textureLoadErrors.begin(),
       textureLoadErrors.end());
 
