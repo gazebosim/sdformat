@@ -381,7 +381,7 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
 }
 
 /////////////////////////////////////////////////
-std::string resolveURI(const std::string &_inputURI, 
+std::string resolveURI(const std::string &_inputURI,
     const sdf::ParserConfig &_config, sdf::Errors &_errors)
 {
   std::string resolvedURI = _inputURI;

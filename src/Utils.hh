@@ -242,7 +242,7 @@ namespace sdf
       const bool _onlyUnknown);
 
   /// \brief Attempt to resolve a URI based on the current parser configuration
-  /// \param[in] _inputURI URI from parsed SDF file to resolve 
+  /// \param[in] _inputURI URI from parsed SDF file to resolve
   /// \param[in] _config Parser configuration to use to resolve
   /// \param[in, out] _errors Error vector to append to if resolution fails
   /// \return Resolved URI or Original URI, depending on parser configuration
