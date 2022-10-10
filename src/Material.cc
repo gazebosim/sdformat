@@ -121,23 +121,7 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
           "<uri> element is empty."});
     }
 
-    auto uri = uriPair.first;
-
-    if (_config.StoreResolvedURIs())
-    {
-      const std::string resolvedUri = sdf::findFile(uri, true, true, _config);
-      if (resolvedUri.empty())
-      {
-        errors.push_back({ErrorCode::URI_LOOKUP,
-            "Parser configurations requested resolved uris, but uri ["
-            + uri + "] could not be resolved."});
-      }
-      else
-      {
-        uri = resolvedUri;
-      }
-    }
-    this->dataPtr->scriptUri = uri;
+    this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors);
 
     std::pair<std::string, bool> namePair = elem->Get<std::string>("name", "");
     if (namePair.first == "__default__")

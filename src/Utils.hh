@@ -240,6 +240,15 @@ namespace sdf
   /// do not have a matching description in the provided sdf element pointer.
   void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
       const bool _onlyUnknown);
+
+  /// \brief Attempt to resolve a URI based on the current parser configuration
+  /// \param[in] _inputURI URI from parsed SDF file to resolve 
+  /// \param[in] _config Parser configuration to use to resolve
+  /// \param[in, out] _errors Error vector to append to if resolution fails
+  /// \return Resolved URI or Original URI, depending on parser configuration
+  std::string resolveURI(const std::string &_inputURI,
+                         const sdf::ParserConfig &_config,
+                         sdf::Errors &_errors);
 }
 }
 #endif
