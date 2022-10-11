@@ -283,7 +283,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 
   // Load all the links.
   Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
-    this->dataPtr->links);
+    this->dataPtr->links, _config);
   errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
 
   // Check links for name collisions and modify and warn if so.
