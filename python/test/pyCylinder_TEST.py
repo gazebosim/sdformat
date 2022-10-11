@@ -16,7 +16,7 @@ import copy
 
 import math
 
-from sdformat13 import Cylinder
+from gz_test_deps.sdformat import Cylinder
 
 import unittest
 
