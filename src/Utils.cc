@@ -379,5 +379,24 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
     }
   }
 }
+
+/////////////////////////////////////////////////
+std::string resolveURI(const std::string &_inputURI,
+    const sdf::ParserConfig &_config, sdf::Errors &_errors)
+{
+  std::string resolvedURI = _inputURI;
+  if (_config.StoreResolvedURIs())
+  {
+    resolvedURI = sdf::findFile(_inputURI, true, true, _config);
+    if (resolvedURI.empty())
+    {
+      _errors.push_back({ErrorCode::URI_LOOKUP,
+          "Parser configurations requested resolved uris, but uri ["
+          + _inputURI + "] could not be resolved."});
+      resolvedURI = _inputURI;
+    }
+  }
+  return resolvedURI;
+}
 }
 }

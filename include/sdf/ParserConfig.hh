@@ -169,10 +169,28 @@ class SDFORMAT_VISIBLE ParserConfig
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Set the preserveFixedJoint flag.
+  /// \param[in] _preserveFixedJoint flag value to set
   public: void URDFSetPreserveFixedJoint(bool _preserveFixedJoint);
 
   /// \brief Get the preserveFixedJoint flag value.
+  /// \return Current flag value
   public: bool URDFPreserveFixedJoint() const;
+
+  /// \brief Set the storeResolvedURIs flag value.
+  /// \param[in] _resolveURI True to make the parser attempt to resolve any
+  /// URIs found and store them.  False to preserve original URIs
+  ///
+  /// The Parser will use the FindFileCallback provided to attempt to resolve
+  /// URIs in the Mesh, Material, Heightmap, and Skybox DOM objects
+  /// If the FindFileCallback provides a non-empty string, the URI will be
+  /// stored in the DOM object, and the original (unresolved) URI will be
+  /// stored in the underlying Element.
+  public: void SetStoreResovledURIs(bool _resolveURI);
+
+  /// \brief Get the storeResolvedURIs flag value.
+  /// \return True if the parser will attempt to resolve any URIs found and
+  /// store them.  False to preserve original URIs
+  public: bool StoreResolvedURIs() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

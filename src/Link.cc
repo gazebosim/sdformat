@@ -87,6 +87,12 @@ Link::Link()
 /////////////////////////////////////////////////
 Errors Link::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -121,12 +127,12 @@ Errors Link::Load(ElementPtr _sdf)
 
   // Load all the visuals.
   Errors visLoadErrors = loadUniqueRepeated<Visual>(_sdf, "visual",
-      this->dataPtr->visuals);
+      this->dataPtr->visuals, _config);
   errors.insert(errors.end(), visLoadErrors.begin(), visLoadErrors.end());
 
   // Load all the collisions.
   Errors collLoadErrors = loadUniqueRepeated<Collision>(_sdf, "collision",
-      this->dataPtr->collisions);
+      this->dataPtr->collisions, _config);
   errors.insert(errors.end(), collLoadErrors.begin(), collLoadErrors.end());
 
   // Load all the lights.
