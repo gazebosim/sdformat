@@ -144,7 +144,7 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   auto heightmapColElemUri =
     heightmapColElem->GetElement("uri")->GetValue()->GetAsString();
 
-  /// DOM URIs are unmodified
+  /// DOM URIs are unmodified as requested by configuration
   EXPECT_EQ(kMaterialScriptUri, scriptUri);
   EXPECT_EQ(kCubemapUri, cubemapUri);
   EXPECT_EQ(kMeshUri, meshVisualUri);
@@ -154,7 +154,7 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   EXPECT_EQ(kDiffuseUri, diffuseUri);
   EXPECT_EQ(kNormalUri, normalUri);
 
-  /// Underlying element URIs are unmodified
+  /// Underlying element URIs are always unmodified
   EXPECT_EQ(kMaterialScriptUri, scriptElemUri);
   EXPECT_EQ(kCubemapUri, cubemapElemUri);
   EXPECT_EQ(kMeshUri, meshVisualElemUri);
@@ -270,7 +270,7 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   auto heightmapColElemUri =
     heightmapColElem->GetElement("uri")->GetValue()->GetAsString();
 
-  /// DOM URIs are modified
+  /// DOM URIs are modified as user callback provides URIs
   EXPECT_EQ("modified_" + std::string(kMaterialScriptUri), scriptUri);
   EXPECT_EQ("modified_" + std::string(kCubemapUri), cubemapUri);
   EXPECT_EQ("modified_" + std::string(kMeshUri), meshVisualUri);
@@ -280,7 +280,7 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   EXPECT_EQ("modified_" + std::string(kDiffuseUri), diffuseUri);
   EXPECT_EQ("modified_" + std::string(kNormalUri), normalUri);
 
-  /// Underlying element URIs are unmodified
+  /// Underlying element URIs are always unmodified
   EXPECT_EQ(kMaterialScriptUri, scriptElemUri);
   EXPECT_EQ(kCubemapUri, cubemapElemUri);
   EXPECT_EQ(kMeshUri, meshVisualElemUri);
@@ -398,7 +398,7 @@ TEST(ResolveURIs, BadCallback)
   auto heightmapColElemUri =
     heightmapColElem->GetElement("uri")->GetValue()->GetAsString();
 
-  /// DOM URIs are modified
+  /// DOM URIs are un-modified as the user callback returns empty strings
   EXPECT_EQ(kMaterialScriptUri, scriptUri);
   EXPECT_EQ(kCubemapUri, cubemapUri);
   EXPECT_EQ(kMeshUri, meshVisualUri);
@@ -408,7 +408,7 @@ TEST(ResolveURIs, BadCallback)
   EXPECT_EQ(kDiffuseUri, diffuseUri);
   EXPECT_EQ(kNormalUri, normalUri);
 
-  /// Underlying element URIs are unmodified
+  /// Underlying element URIs are always unmodified
   EXPECT_EQ(kMaterialScriptUri, scriptElemUri);
   EXPECT_EQ(kCubemapUri, cubemapElemUri);
   EXPECT_EQ(kMeshUri, meshVisualElemUri);
