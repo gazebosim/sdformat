@@ -86,12 +86,14 @@ TEST(DOMJointAxis, Construction)
   mimic.axis = "axis";
   mimic.multiplier = 5.0;
   mimic.offset = 1.0;
+  mimic.reference = 2.0;
 
   axis.SetMimicJoint(mimic);
   EXPECT_EQ(axis.MimicJoint().joint, "test_joint");
   EXPECT_EQ(axis.MimicJoint().axis, "axis");
   EXPECT_DOUBLE_EQ(axis.MimicJoint().multiplier, 5.0);
   EXPECT_DOUBLE_EQ(axis.MimicJoint().offset, 1.0);
+  EXPECT_DOUBLE_EQ(axis.MimicJoint().reference, 2.0);
 }
 
 /////////////////////////////////////////////////
@@ -187,6 +189,7 @@ TEST(DOMJointAxis, ParseMimic)
     "        <mimic joint='test_joint' axis='axis2'>"
     "          <multiplier>4</multiplier>"
     "          <offset>2</offset>"
+    "          <reference>3</reference>"
     "        </mimic>"
     "      </axis>"
     "    </joint>"
@@ -213,4 +216,5 @@ TEST(DOMJointAxis, ParseMimic)
   EXPECT_EQ(mimicElement->Get<std::string>("axis"), "axis2");
   EXPECT_EQ(mimicElement->Get<double>("offset"), 2);
   EXPECT_EQ(mimicElement->Get<double>("multiplier"), 4);
+  EXPECT_EQ(mimicElement->Get<double>("reference"), 3);
 }

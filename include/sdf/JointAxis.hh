@@ -43,6 +43,7 @@ namespace sdf
     std::string axis;
     double multiplier;
     double offset;
+    double reference;
   };
 
   /// \brief Parameters related to the axis of rotation for rotational joints,

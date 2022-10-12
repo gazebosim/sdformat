@@ -99,7 +99,7 @@
 
     <element name="mimic" required="0">
       <description>Specifies a linear equality constraint between the output of two joint
-        axes as mimic_angle = multiplier * other_joint_angle + offset.</description>
+        axes as mimic_angle = multiplier * (other_joint_angle - reference) + offset.</description>
       <attribute name="joint" type="string" default="" required="1">
         <description>Name of the joint to be mimicked</description>
       </attribute>
@@ -112,6 +112,10 @@
       </element>
       <element name="offset" type="double" default="0" required="1">
         <description>Offset to be applied to the input joint state</description>
+      </element>
+      <element name="reference" type="double" default="0" required="1">
+        <description>Reference to be used before applying multiplication factor to
+        the input joint</description>
       </element>
     </element>
   </element> <!-- End Axis -->
@@ -175,7 +179,7 @@
 
     <element name="mimic" required="0">
       <description>Specifies a linear equality constraint between the output of two joint
-        axes as mimic_angle = multiplier * other_joint_angle + offset.</description>
+        axes as mimic_angle = multiplier * (other_joint_angle - reference) + offset.</description>
       <attribute name="joint" type="string" default="" required="1">
         <description>Name of the joint to be mimicked</description>
       </attribute>
@@ -188,6 +192,10 @@
       </element>
       <element name="offset" type="double" default="0" required="1">
         <description>Offset to be applied to the input joint state</description>
+      </element>
+      <element name="reference" type="double" default="0" required="1">
+        <description>Reference to be used before applying multiplication factor to
+        the input joint</description>
       </element>
     </element>
 

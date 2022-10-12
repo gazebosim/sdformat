@@ -175,6 +175,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
         0).first;
     this->dataPtr->mimic.offset = mimicElement->Get<double>("offset",
         0).first;
+    this->dataPtr->mimic.reference = mimicElement->Get<double>("reference",
+        0).first;
   }
 
   return errors;
@@ -449,6 +451,8 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
       this->dataPtr->mimic.multiplier);
   mimicElement->GetElement("offset")->Set<double>(
       this->dataPtr->mimic.offset);
+  mimicElement->GetElement("reference")->Set<double>(
+      this->dataPtr->mimic.reference);
 
   return axisElem;
 }
