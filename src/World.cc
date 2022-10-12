@@ -316,7 +316,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     this->dataPtr->scene.emplace();
     Errors sceneLoadErrors =
-        this->dataPtr->scene->Load(_sdf->GetElement("scene"));
+        this->dataPtr->scene->Load(_sdf->GetElement("scene"), _config);
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
