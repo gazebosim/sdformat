@@ -42,8 +42,10 @@ set(tests
   plugin_bool.cc
   plugin_include.cc
   pose_1_9_sdf.cc
+  precision.cc
   print_config.cc
   provide_feedback.cc
+  resolve_uris.cc
   root_dom.cc
   scene_dom.cc
   sdf_basic.cc

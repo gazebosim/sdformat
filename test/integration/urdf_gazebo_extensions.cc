@@ -29,11 +29,13 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
   const std::string urdfTestFile =
       sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
 
-  sdf::SDFPtr robot(new sdf::SDF());
-  sdf::init(robot);
-  ASSERT_TRUE(sdf::readFile(urdfTestFile, robot));
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
-  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  auto modelDom = root.Model();
+  ASSERT_NE(nullptr, modelDom);
+  sdf::ElementPtr model = modelDom->Element();
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
   {
@@ -86,17 +88,22 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
     else if (jointName == "joint12")
     {
       // cfmDamping not provided
-      ASSERT_TRUE(joint->HasElement("physics"));
+      EXPECT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
-      EXPECT_FALSE(physics->HasElement("implicit_spring_damper"));
+      EXPECT_TRUE(physics->HasElement("ode"));
+      sdf::ElementPtr ode = physics->GetElement("ode");
+      EXPECT_TRUE(ode->HasElement("implicit_spring_damper"));
+      EXPECT_FALSE(ode->Get<bool>("implicit_spring_damper"));
     }
-    else if (jointName == "joint13")
+    else if (jointName == "joint14")
     {
       // implicitSpringDamper = 1
-      ASSERT_TRUE(joint->HasElement("physics"));
+      EXPECT_TRUE(joint->HasElement("physics"));
       sdf::ElementPtr physics = joint->GetElement("physics");
-      ASSERT_TRUE(physics->HasElement("implicit_spring_damper"));
-      EXPECT_TRUE(physics->Get<bool>("implicit_spring_damper"));
+      EXPECT_TRUE(physics->HasElement("ode"));
+      sdf::ElementPtr ode = physics->GetElement("ode");
+      EXPECT_TRUE(ode->HasElement("implicit_spring_damper"));
+      EXPECT_TRUE(ode->Get<bool>("implicit_spring_damper"));
     }
   }
 
@@ -142,149 +149,249 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
   }
   ASSERT_TRUE(link0);
 
-  bool foundSensorNoPose {false};
-  bool foundSensorPose {false};
-  bool foundSensorPoseRelative {false};
-  bool foundSensorPoseTwoLevel {false};
-  bool foundIssue378Sensor {false};
-  bool foundIssue67Sensor {false};
-
-  for (sdf::ElementPtr sensor = link0->GetElement("sensor"); sensor;
-       sensor = sensor->GetNextElement("sensor"))
+  auto checkElementPoses = [&](const std::string &_elementName) -> void
   {
-    const auto& sensorName = sensor->Get<std::string>("name");
-    if (sensorName == "sensorNoPose")
+    bool foundElementNoPose {false};
+    bool foundElementPose {false};
+    bool foundElementPoseRelative {false};
+    bool foundElementPoseTwoLevel {false};
+    bool foundIssue378Element {false};
+    bool foundIssue67Element {false};
+
+    for (sdf::ElementPtr element = link0->GetElement(_elementName); element;
+         element = element->GetNextElement(_elementName))
     {
-      foundSensorNoPose = true;
-      ASSERT_TRUE(sensor->HasElement("pose"));
-      const auto poseElem = sensor->GetElement("pose");
+      const auto& elementName = element->Get<std::string>("name");
+      if (elementName == _elementName + "NoPose")
+      {
+        foundElementNoPose = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
-        "", gz::math::Pose3d::Zero);
-      ASSERT_TRUE(posePair.second);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
 
-      const auto& pose = posePair.first;
+        const auto& pose = posePair.first;
 
-      EXPECT_DOUBLE_EQ(pose.X(), 333.0);
-      EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), GZ_PI_2, 1e-5);
+        EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), GZ_PI_2, 1e-5);
 
-      EXPECT_FALSE(poseElem->GetNextElement("pose"));
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == _elementName + "Pose")
+      {
+        foundElementPose = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), GZ_PI_2 - 1, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == _elementName + "PoseRelative")
+      {
+        foundElementPoseRelative = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 111.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), -1, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == _elementName + "PoseTwoLevel")
+      {
+        foundElementPoseTwoLevel = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 333.0);
+        EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
+        EXPECT_DOUBLE_EQ(pose.Z(), 222.0);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
+        EXPECT_NEAR(pose.Yaw(), GZ_PI_2 - 1, 1e-5);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == "issue378_" + _elementName)
+      {
+        foundIssue378Element = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_DOUBLE_EQ(pose.X(), 1);
+        EXPECT_DOUBLE_EQ(pose.Y(), 2);
+        EXPECT_DOUBLE_EQ(pose.Z(), 3);
+        EXPECT_DOUBLE_EQ(pose.Roll(), 0.1);
+        EXPECT_DOUBLE_EQ(pose.Pitch(), 0.2);
+        EXPECT_DOUBLE_EQ(pose.Yaw(), 0.3);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
+      else if (elementName == "issue67_" + _elementName)
+      {
+        foundIssue67Element = true;
+        EXPECT_TRUE(element->HasElement("pose"));
+        const auto poseElem = element->GetElement("pose");
+
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
+        ASSERT_TRUE(posePair.second);
+
+        const auto& pose = posePair.first;
+
+        EXPECT_GT(std::abs(pose.X() - (-0.20115)), 0.1);
+        EXPECT_GT(std::abs(pose.Y() - 0.42488), 0.1);
+        EXPECT_GT(std::abs(pose.Z() - 0.30943), 0.1);
+        EXPECT_GT(std::abs(pose.Roll() - 1.5708), 0.1);
+        EXPECT_GT(std::abs(pose.Pitch() - (-0.89012)), 0.1);
+        EXPECT_GT(std::abs(pose.Yaw() - 1.5708), 0.1);
+
+        EXPECT_FALSE(poseElem->GetNextElement("pose"));
+      }
     }
-    else if (sensorName == "sensorPose")
-    {
-      foundSensorPose = true;
-      ASSERT_TRUE(sensor->HasElement("pose"));
-      const auto poseElem = sensor->GetElement("pose");
 
-      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
-        "", gz::math::Pose3d::Zero);
-      ASSERT_TRUE(posePair.second);
+    EXPECT_TRUE(foundElementNoPose) << _elementName;
+    EXPECT_TRUE(foundElementPose) << _elementName;
+    EXPECT_TRUE(foundElementPoseRelative) << _elementName;
+    EXPECT_TRUE(foundElementPoseTwoLevel) << _elementName;
+    EXPECT_TRUE(foundIssue378Element) << _elementName;
+    EXPECT_TRUE(foundIssue67Element) << _elementName;
+  };
 
-      const auto& pose = posePair.first;
+  checkElementPoses("light");
+  checkElementPoses("projector");
+  checkElementPoses("sensor");
 
-      EXPECT_DOUBLE_EQ(pose.X(), 333.0);
-      EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
-      EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), GZ_PI_2 - 1, 1e-5);
+  // Check that //model/frame elements are added for reduced joints
+  EXPECT_EQ(14u, modelDom->FrameCount());
 
-      EXPECT_FALSE(poseElem->GetNextElement("pose"));
-    }
-    else if (sensorName == "sensorPoseRelative")
-    {
-      foundSensorPoseRelative = true;
-      ASSERT_TRUE(sensor->HasElement("pose"));
-      const auto poseElem = sensor->GetElement("pose");
+  EXPECT_TRUE(modelDom->FrameNameExists("issue378_link_joint"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jCamera"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorNoPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPoseRelative"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPoseTwoLevel"));
+  EXPECT_TRUE(modelDom->FrameNameExists("jointSensorPoseTwoLevel2"));
 
-      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
-        "", gz::math::Pose3d::Zero);
-      ASSERT_TRUE(posePair.second);
+  EXPECT_TRUE(modelDom->FrameNameExists("issue378_link"));
+  EXPECT_TRUE(modelDom->FrameNameExists("Camera"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorNoPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPose"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseRelative"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseTwoLevel"));
+  EXPECT_TRUE(modelDom->FrameNameExists("linkSensorPoseTwoLevel2"));
+}
 
-      const auto& pose = posePair.first;
+/////////////////////////////////////////////////
+TEST(SDFParser, FixedJointExample)
+{
+  const std::string urdfTestFile =
+      sdf::testing::TestFile("integration", "fixed_joint_example.urdf");
 
-      EXPECT_DOUBLE_EQ(pose.X(), 111.0);
-      EXPECT_DOUBLE_EQ(pose.Y(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Z(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), -1, 1e-5);
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
-      EXPECT_FALSE(poseElem->GetNextElement("pose"));
-    }
-    else if (sensorName == "sensorPoseTwoLevel")
-    {
-      foundSensorPoseTwoLevel = true;
-      ASSERT_TRUE(sensor->HasElement("pose"));
-      const auto poseElem = sensor->GetElement("pose");
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("fixed_joint_example", model->Name());
 
-      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
-        "", gz::math::Pose3d::Zero);
-      ASSERT_TRUE(posePair.second);
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("base"));
+  EXPECT_TRUE(model->LinkNameExists("rotary_link"));
 
-      const auto& pose = posePair.first;
+  // Expect MassMatrix3 values to match for links
+  auto link1 = model->LinkByName("base");
+  auto link2 = model->LinkByName("rotary_link");
+  ASSERT_NE(nullptr, link1);
+  ASSERT_NE(nullptr, link2);
+  auto massMatrix1 = link1->Inertial().MassMatrix();
+  auto massMatrix2 = link2->Inertial().MassMatrix();
+  EXPECT_DOUBLE_EQ(massMatrix1.Mass(), massMatrix2.Mass());
+  EXPECT_EQ(massMatrix1.Moi(), massMatrix2.Moi());
 
-      EXPECT_DOUBLE_EQ(pose.X(), 333.0);
-      EXPECT_DOUBLE_EQ(pose.Y(), 111.0);
-      EXPECT_DOUBLE_EQ(pose.Z(), 222.0);
-      EXPECT_DOUBLE_EQ(pose.Roll(), 0.0);
-      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.0);
-      EXPECT_NEAR(pose.Yaw(), GZ_PI_2 - 1, 1e-5);
+  EXPECT_EQ(1u, model->JointCount());
+  EXPECT_TRUE(model->JointNameExists("rotary_joint"));
 
-      EXPECT_FALSE(poseElem->GetNextElement("pose"));
-    }
-    else if (sensorName == "issue378_sensor")
-    {
-      foundIssue378Sensor = true;
-      ASSERT_TRUE(sensor->HasElement("pose"));
-      const auto poseElem = sensor->GetElement("pose");
+  EXPECT_EQ(2u, model->FrameCount());
+  ASSERT_TRUE(model->FrameNameExists("intermediate_joint"));
+  ASSERT_TRUE(model->FrameNameExists("intermediate_link"));
 
-      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
-        "", gz::math::Pose3d::Zero);
-      ASSERT_TRUE(posePair.second);
+  const std::string j = "intermediate_joint";
+  const std::string l = "intermediate_link";
+  std::string body;
+  EXPECT_TRUE(model->FrameByName(j)->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("base", body);
+  EXPECT_TRUE(model->FrameByName(l)->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("base", body);
+}
 
-      const auto& pose = posePair.first;
+/////////////////////////////////////////////////
+TEST(SDFParser, FixedJointSimple)
+{
+  const std::string urdfTestFile =
+      sdf::testing::TestFile("integration", "fixed_joint_simple.urdf");
 
-      EXPECT_DOUBLE_EQ(pose.X(), 1);
-      EXPECT_DOUBLE_EQ(pose.Y(), 2);
-      EXPECT_DOUBLE_EQ(pose.Z(), 3);
-      EXPECT_DOUBLE_EQ(pose.Roll(), 0.1);
-      EXPECT_DOUBLE_EQ(pose.Pitch(), 0.2);
-      EXPECT_DOUBLE_EQ(pose.Yaw(), 0.3);
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
-      EXPECT_FALSE(poseElem->GetNextElement("pose"));
-    }
-    else if (sensorName == "issue67_sensor")
-    {
-      foundIssue67Sensor = true;
-      ASSERT_TRUE(sensor->HasElement("pose"));
-      const auto poseElem = sensor->GetElement("pose");
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("fixed_joint_simple", model->Name());
 
-      const auto& posePair = poseElem->Get<gz::math::Pose3d>(
-        "", gz::math::Pose3d::Zero);
-      ASSERT_TRUE(posePair.second);
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("base"));
 
-      const auto& pose = posePair.first;
+  auto link = model->LinkByName("base");
+  ASSERT_NE(nullptr, link);
+  auto massMatrix = link->Inertial().MassMatrix();
+  EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
+  EXPECT_EQ(2.0 * gz::math::Matrix3d::Identity, massMatrix.Moi());
 
-      EXPECT_GT(std::abs(pose.X() - (-0.20115)), 0.1);
-      EXPECT_GT(std::abs(pose.Y() - 0.42488), 0.1);
-      EXPECT_GT(std::abs(pose.Z() - 0.30943), 0.1);
-      EXPECT_GT(std::abs(pose.Roll() - 1.5708), 0.1);
-      EXPECT_GT(std::abs(pose.Pitch() - (-0.89012)), 0.1);
-      EXPECT_GT(std::abs(pose.Yaw() - 1.5708), 0.1);
+  EXPECT_EQ(0u, model->JointCount());
 
-      EXPECT_FALSE(poseElem->GetNextElement("pose"));
-    }
-  }
-
-  EXPECT_TRUE(foundSensorNoPose);
-  EXPECT_TRUE(foundSensorPose);
-  EXPECT_TRUE(foundSensorPoseRelative);
-  EXPECT_TRUE(foundSensorPoseTwoLevel);
-  EXPECT_TRUE(foundIssue378Sensor);
-  EXPECT_TRUE(foundIssue67Sensor);
+  EXPECT_EQ(2u, model->FrameCount());
+  ASSERT_TRUE(model->FrameNameExists("fixed_joint"));
+  ASSERT_TRUE(model->FrameNameExists("child_link"));
 }

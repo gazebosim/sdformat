@@ -130,6 +130,10 @@ TEST(DOMCamera, Construction)
   cam.SetPoseRelativeTo("/frame");
   EXPECT_EQ("/frame", cam.PoseRelativeTo());
 
+  EXPECT_TRUE(cam.OpticalFrameId().empty());
+  cam.SetOpticalFrameId("/optical_frame");
+  EXPECT_EQ("/optical_frame", cam.OpticalFrameId());
+
   EXPECT_EQ("stereographic", cam.LensType());
   cam.SetLensType("custom");
   EXPECT_EQ("custom", cam.LensType());
@@ -181,6 +185,30 @@ TEST(DOMCamera, Construction)
   EXPECT_DOUBLE_EQ(120, cam.LensIntrinsicsCy());
   cam.SetLensIntrinsicsCy(123);
   EXPECT_DOUBLE_EQ(123, cam.LensIntrinsicsCy());
+
+  EXPECT_DOUBLE_EQ(277, cam.LensProjectionFx());
+  cam.SetLensProjectionFx(132);
+  EXPECT_DOUBLE_EQ(132, cam.LensProjectionFx());
+
+  EXPECT_DOUBLE_EQ(277, cam.LensProjectionFy());
+  cam.SetLensProjectionFy(456);
+  EXPECT_DOUBLE_EQ(456, cam.LensProjectionFy());
+
+  EXPECT_DOUBLE_EQ(160, cam.LensProjectionCx());
+  cam.SetLensProjectionCx(254);
+  EXPECT_DOUBLE_EQ(254, cam.LensProjectionCx());
+
+  EXPECT_DOUBLE_EQ(120, cam.LensProjectionCy());
+  cam.SetLensProjectionCy(123);
+  EXPECT_DOUBLE_EQ(123, cam.LensProjectionCy());
+
+  EXPECT_DOUBLE_EQ(0, cam.LensProjectionTx());
+  cam.SetLensProjectionTx(1);
+  EXPECT_DOUBLE_EQ(1, cam.LensProjectionTx());
+
+  EXPECT_DOUBLE_EQ(0, cam.LensProjectionTy());
+  cam.SetLensProjectionTy(2);
+  EXPECT_DOUBLE_EQ(2, cam.LensProjectionTy());
 
   EXPECT_DOUBLE_EQ(1.0, cam.LensIntrinsicsSkew());
   cam.SetLensIntrinsicsSkew(2.3);
@@ -240,6 +268,7 @@ TEST(DOMCamera, ToElement)
   cam.SetPoseRelativeTo("/frame");
   cam.SetSaveFrames(true);
   cam.SetSaveFramesPath("/tmp");
+  cam.SetOpticalFrameId("/optical_frame");
 
   sdf::ElementPtr camElem = cam.ToElement();
   EXPECT_NE(nullptr, camElem);
@@ -259,6 +288,7 @@ TEST(DOMCamera, ToElement)
   EXPECT_EQ("/frame", cam2.PoseRelativeTo());
   EXPECT_TRUE(cam2.SaveFrames());
   EXPECT_EQ("/tmp", cam2.SaveFramesPath());
+  EXPECT_EQ("/optical_frame", cam2.OpticalFrameId());
 
   // make changes to DOM and verify ToElement produces updated values
   cam2.SetNearClip(0.33);

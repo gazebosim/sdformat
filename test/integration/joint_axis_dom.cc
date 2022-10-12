@@ -244,8 +244,8 @@ TEST(DOMJointAxis, InfiniteLimits)
     ASSERT_NE(nullptr, joint);
     auto axis = joint->Axis(0);
     ASSERT_NE(nullptr, axis);
-    EXPECT_DOUBLE_EQ(-1e16, axis->Lower());
-    EXPECT_DOUBLE_EQ(1e16, axis->Upper());
+    EXPECT_DOUBLE_EQ(-kInf, axis->Lower());
+    EXPECT_DOUBLE_EQ(kInf, axis->Upper());
     EXPECT_DOUBLE_EQ(kInf, axis->Effort());
     EXPECT_DOUBLE_EQ(kInf, axis->MaxVelocity());
   }

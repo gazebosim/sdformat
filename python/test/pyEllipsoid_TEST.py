@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz.math import Vector3d, Ellipsoidd
+from gz_test_deps.math import Vector3d
 import math
-from sdformat import Ellipsoid
+from gz_test_deps.sdformat import Ellipsoid
 import unittest
 
 

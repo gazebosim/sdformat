@@ -1855,6 +1855,8 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
   EXPECT_EQ(sdf::trim(expected.str()), sdf::trim(output));
 }
 
+// Disable on arm
+#if !defined __ARM_ARCH
 /////////////////////////////////////////////////
 TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
@@ -1940,6 +1942,8 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_EQ(expectedOutput, output);
   }
 }
+// #if !defined __ARM_ARCH
+#endif
 
 //////////////////////////////////////////////////
 /// \brief Check help message and bash completion script for consistent flags

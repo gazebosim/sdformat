@@ -70,6 +70,11 @@ but with improved human-readability..
 1. USD component now is living in https://github.com/gazebosim/gz-usd as an
    independent package.
 
+1. URDF parser now properly transforms poses for lights, projectors and sensors
+   from gazebo extension tags that are moved to a new link during fixed joint
+   reduction.
+    + [pull request 1114](https://github.com/osrf/sdformat/pull/1114)
+
 ## libsdformat 11.x to 12.0
 
 An error is now emitted instead of a warning for a file containing more than
@@ -334,6 +339,20 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + std::optional<std::string> GetMaxValueAsString() const;
     + bool ValidateValue() const;
 
+## libsdformat 9.8.0 to 9.9.0
+
+### Additions
+
+1. **sdf/Camera.hh**
+    + Get/Set functions for Camera projection matrix parameters.
+
+### Modifications
+
+1. URDF parser now properly transforms poses for lights, projectors and sensors
+   from gazebo extension tags that are moved to a new link during fixed joint
+   reduction.
+    + [pull request 1114](https://github.com/osrf/sdformat/pull/1114)
+
 ## libsdformat 9.4 to 9.5
 
 ### Additions
@@ -538,7 +557,19 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ### Modifications
 
+1. **joint.sdf**: axis limits default values have changed
+    + `//limit/lower`: `-inf` (formerly `-1e16`)
+    + `//limit/upper`: `inf` (formerly `1e16`)
+    + `//limit/velocity`: `inf` (formerly `-1`)
+    + `//limit/effort`: `inf` (formerly `-1`)
+
 1. **plugin.sdf**: name attribute is now optional with empty default value.
+
+### Removals
+
+1. **collision_engine.sdf**: unused specification file is removed.
+
+1. **urdf.sdf**: unused specification file is removed.
 
 ## SDFormat specification 1.8 to 1.9
 

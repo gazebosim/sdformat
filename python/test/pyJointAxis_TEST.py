@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d, Vector3d
-from sdformat import JointAxis, Error, SDFErrorsException
+from gz_test_deps.math import Vector3d
+from gz_test_deps.sdformat import JointAxis, Error, SDFErrorsException
 import math
 import unittest
 
@@ -29,8 +29,8 @@ class JointAxisTEST(unittest.TestCase):
         self.assertAlmostEqual(0.0, axis.friction())
         self.assertAlmostEqual(0.0, axis.spring_reference())
         self.assertAlmostEqual(0.0, axis.spring_stiffness())
-        self.assertAlmostEqual(-1e16, axis.lower())
-        self.assertAlmostEqual(1e16, axis.upper())
+        self.assertAlmostEqual(-math.inf, axis.lower())
+        self.assertAlmostEqual(math.inf, axis.upper())
         self.assertAlmostEqual(math.inf, axis.effort())
         self.assertAlmostEqual(math.inf, axis.max_velocity())
         self.assertAlmostEqual(1e8, axis.stiffness())

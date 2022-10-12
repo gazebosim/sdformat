@@ -115,11 +115,13 @@ TEST(ErrorOutput, ParamErrorOutput)
       "Undefined attribute //pose[@rotation_format='invalid_format'], "
       "only 'euler_rpy' and 'quat_xyzw' is supported."));
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::PARAMETER_ERROR);
+#if !defined __ARM_ARCH
   EXPECT_NE(std::string::npos, errors[1].Message().find(
       "Failed to set value '1 2 3 0.40000000000000002 0.5 "
       "0.59999999999999987' to key [] for new parent element of name '',"
       " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
       "0.59999999999999987'."));
+#endif
 
   errors.clear();
   sdf::Param param4("key", "bool", "15", false, "a", "b", errors,
