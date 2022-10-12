@@ -12,7 +12,7 @@
     * [Pull request #1131](https://github.com/gazebosim/sdformat/pull/1131)
 
 1. PrintConfig: add sdf::Errors output to API methods
-    * [Pull request #1095](https://github.com/gazebosim/sdformat/pull/1095)
+    * [Pull request #1098](https://github.com/gazebosim/sdformat/pull/1098)
 
 1. Element: add sdf::Errors output to API methods
     * [Pull request #1095](https://github.com/gazebosim/sdformat/pull/1095)
