@@ -592,10 +592,10 @@ TEST(DOMJoint, LoadWorldJointChildFrame)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMJoint, WorldJointChildWorldNotPermitted)
+TEST(DOMJoint, WorldJointInvalidChildWorld)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_joint_child_world.sdf");
+    sdf::testing::TestFile("sdf", "world_joint_invalid_child_world.sdf");
 
   // Load the SDF file
   sdf::Root root;

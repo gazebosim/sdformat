@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.10">
-  <world name="world_joint_child_world">
+  <world name="world_joint_invalid_child_world">
     <!--
       For ease of unittesting unique values,
       each model's pose is displaced along the z-axis,
