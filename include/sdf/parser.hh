@@ -333,6 +333,7 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertFile(const std::string &_filename, const std::string &_version,
                    const ParserConfig &_config, SDFPtr _sdf);
+
   /// \brief Convert an SDF file to a specific SDF version.
   /// \param[in] _filename Name of the SDF file to convert.
   /// \param[in] _version Version to convert _filename to.
