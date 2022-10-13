@@ -176,23 +176,28 @@ TEST(DOMJoint, ScrewThreadPitch)
   EXPECT_TRUE(model->LinkNameExists("child_link"));
   EXPECT_TRUE(model->LinkNameExists("parent_link"));
 
-  EXPECT_EQ(4u, model->JointCount());
+  EXPECT_EQ(5u, model->JointCount());
   ASSERT_TRUE(model->JointNameExists("default_param"));
   ASSERT_TRUE(model->JointNameExists("both_params"));
   ASSERT_TRUE(model->JointNameExists("new_param"));
   ASSERT_TRUE(model->JointNameExists("old_param"));
+  ASSERT_TRUE(model->JointNameExists("param_precedence"));
 
   EXPECT_DOUBLE_EQ(1.0,
                    model->JointByName("default_param")->ScrewThreadPitch());
   EXPECT_DOUBLE_EQ(0.5, model->JointByName("both_params")->ScrewThreadPitch());
   EXPECT_DOUBLE_EQ(0.5, model->JointByName("new_param")->ScrewThreadPitch());
   EXPECT_NEAR(0.5, model->JointByName("old_param")->ScrewThreadPitch(), 1e-3);
+  EXPECT_DOUBLE_EQ(0.5,
+                   model->JointByName("param_precedence")->ScrewThreadPitch());
 
   EXPECT_DOUBLE_EQ(-2*GZ_PI,
                    model->JointByName("default_param")->ThreadPitch());
   EXPECT_NEAR(-12.566, model->JointByName("both_params")->ThreadPitch(), 1e-3);
   EXPECT_NEAR(-12.566, model->JointByName("new_param")->ThreadPitch(), 1e-3);
   EXPECT_DOUBLE_EQ(-12.566, model->JointByName("old_param")->ThreadPitch());
+  EXPECT_NEAR(-12.566, model->JointByName("param_precedence")->ThreadPitch(),
+              1e-3);
 }
 
 /////////////////////////////////////////////////
