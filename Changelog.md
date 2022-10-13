@@ -4,6 +4,50 @@
 
 ## libsdformat 13.X
 
+### libsdformat 13.1.0 (2022-10-12)
+
+1. Add test helper python package for encapsulating versioned python packages
+    * [Pull request #1180](https://github.com/gazebosim/sdformat/pull/1180)
+
+1. Add a configuration option to resolve URIs
+    * [Pull request #1147](https://github.com/gazebosim/sdformat/pull/1147)
+
+1. World: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
+    * [Pull request #1131](https://github.com/gazebosim/sdformat/pull/1131)
+
+1. PrintConfig: add sdf::Errors output to API methods
+    * [Pull request #1098](https://github.com/gazebosim/sdformat/pull/1098)
+
+1. Element: add sdf::Errors output to API methods
+    * [Pull request #1095](https://github.com/gazebosim/sdformat/pull/1095)
+
+1.  python: Import gz.math at startup to fix #1129
+    * [Pull request #1130](https://github.com/gazebosim/sdformat/pull/#1130)
+    * [Issue 1129](https://github.com/osrf/sdformat/issues/1129)
+
+1. parser_urdf: add //frame for reduced links/joints
+    * [Pull request #1148](https://github.com/gazebosim/sdformat/pull/1148)
+    * [Pull request #1182](https://github.com/gazebosim/sdformat/pull/1182)
+
+1. Param::Set: fix truncation of floating-point values
+    * [Pull request #1137](https://github.com/gazebosim/sdformat/pull/1137)
+
+1. Reduce the number of include dirs for sdformat
+    * [Pull request #1170](https://github.com/gazebosim/sdformat/pull/1170)
+
+1. urdf: fix test and clean up internals
+    * [Pull request #1126](https://github.com/gazebosim/sdformat/pull/1126)
+
+1. sdf/camera.sdf: fields for projection matrix
+    * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
+    * [Pull request #1133](https://github.com/gazebosim/sdformat/pull/1133)
+    * [Pull request #1177](https://github.com/gazebosim/sdformat/pull/1177)
+
+1. Add camera optical_frame_id element
+    * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
+    * [Pull request #1133](https://github.com/gazebosim/sdformat/pull/1133)
+    * [Pull request #1177](https://github.com/gazebosim/sdformat/pull/1177)
+
 ### libsdformat 13.0.1 (2022-09-27)
 
 1. Fix arm tests

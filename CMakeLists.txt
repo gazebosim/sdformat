@@ -162,7 +162,7 @@ if (BUILD_SDF)
   add_subdirectory(conf)
   add_subdirectory(doc)
   if (pybind11_FOUND AND NOT SKIP_PYBIND11)
-  	add_subdirectory(python)
+    add_subdirectory(python)
   endif()
 endif(BUILD_SDF)
 
