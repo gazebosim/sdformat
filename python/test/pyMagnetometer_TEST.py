@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math7 import Pose3d
-from sdformat13 import Magnetometer, Noise
-import sdformat13 as sdf
+from gz_test_deps.sdformat import Magnetometer, Noise
+import gz_test_deps.sdformat as sdf
 import unittest
 
 

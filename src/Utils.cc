@@ -17,6 +17,7 @@
 #include <limits>
 #include <string>
 #include <utility>
+#include "sdf/Assert.hh"
 #include "sdf/SDFImpl.hh"
 #include "Utils.hh"
 
@@ -162,6 +163,22 @@ void enforceConfigurablePolicyCondition(
       break;
     default:
       throw std::runtime_error("Unhandled warning policy enum value");
+  }
+}
+
+/////////////////////////////////////////////////
+void throwOrPrintErrors(const sdf::Errors& _errors)
+{
+  for(auto& error : _errors)
+  {
+    if (error.Code() == sdf::ErrorCode::FATAL_ERROR)
+    {
+      SDF_ASSERT(false, error.Message());
+    }
+    else
+    {
+      sdferr << error.Message();
+    }
   }
 }
 
@@ -361,6 +378,25 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
       _sdf->InsertElement(element);
     }
   }
+}
+
+/////////////////////////////////////////////////
+std::string resolveURI(const std::string &_inputURI,
+    const sdf::ParserConfig &_config, sdf::Errors &_errors)
+{
+  std::string resolvedURI = _inputURI;
+  if (_config.StoreResolvedURIs())
+  {
+    resolvedURI = sdf::findFile(_inputURI, true, true, _config);
+    if (resolvedURI.empty())
+    {
+      _errors.push_back({ErrorCode::URI_LOOKUP,
+          "Parser configurations requested resolved uris, but uri ["
+          + _inputURI + "] could not be resolved."});
+      resolvedURI = _inputURI;
+    }
+  }
+  return resolvedURI;
 }
 }
 }
