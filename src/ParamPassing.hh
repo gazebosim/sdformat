@@ -151,7 +151,7 @@ namespace sdf
     /// \param[out] _elem The element from the included model to modify
     /// \param[out] _errors Vector of errors.
     void modifyChildren(tinyxml2::XMLElement *_xml,
-                        const sdf::ParserConfig _config, ElementPtr _elem,
+                        const sdf::ParserConfig &_config, ElementPtr _elem,
                         Errors &_errors);
 
     /// \brief Modifies element values and/or attributes of an element from the
