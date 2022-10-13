@@ -569,7 +569,7 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
 
 //////////////////////////////////////////////////
 void modifyChildren(tinyxml2::XMLElement *_xml,
-                    const sdf::ParserConfig _config, ElementPtr _elem,
+                    const sdf::ParserConfig &_config, ElementPtr _elem,
                     Errors &_errors)
 {
   for (tinyxml2::XMLElement *xmlChild = _xml->FirstChildElement();
@@ -636,7 +636,7 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
 }
 
 //////////////////////////////////////////////////
-void modify(tinyxml2::XMLElement *_xml,  const sdf::ParserConfig _config,
+void modify(tinyxml2::XMLElement *_xml,  const sdf::ParserConfig &_config,
             ElementPtr _elem, Errors &_errors)
 {
   modifyAttributes(_xml, _elem, _errors);
@@ -662,7 +662,7 @@ void modify(tinyxml2::XMLElement *_xml,  const sdf::ParserConfig _config,
 }
 
 //////////////////////////////////////////////////
-void remove(const tinyxml2::XMLElement *_xml, const sdf::ParserConfig _config,
+void remove(const tinyxml2::XMLElement *_xml, const sdf::ParserConfig &_config,
             ElementPtr _elem, Errors &_errors)
 {
   if (_xml->NoChildren())
