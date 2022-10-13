@@ -161,7 +161,7 @@ namespace sdf
     /// \param[in] _config Custom parser configuration.
     /// \param[out] _elem The element from the included model to modify
     /// \param[out] _errors Captures errors found during parsing
-    void modify(tinyxml2::XMLElement *_xml, const sdf::ParserConfig _config,
+    void modify(tinyxml2::XMLElement *_xml, const sdf::ParserConfig &_config,
                 ElementPtr _elem, Errors &_errors);
 
     /// \brief Removes an element specified in xml
