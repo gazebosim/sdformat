@@ -171,7 +171,7 @@ namespace sdf
     /// elements from
     /// \param[out] _errors Captures errors found during parsing
     void remove(const tinyxml2::XMLElement *_xml,
-                const sdf::ParserConfig _config, ElementPtr _elem,
+                const sdf::ParserConfig &_config, ElementPtr _elem,
                 Errors &_errors);
 
     /// \brief Replace an element with another element
