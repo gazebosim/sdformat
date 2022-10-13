@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d
-from sdformat import (Box, Collision, Contact, Cylinder, Error, Geometry,
-                      Plane, Surface, Sphere, SDFErrorsException)
-import sdformat as sdf
+from gz_test_deps.math import Pose3d
+from gz_test_deps.sdformat import (Box, Collision, Contact, Cylinder, Error,
+                                   Geometry, Plane, Surface, Sphere,
+                                   SDFErrorsException)
+import gz_test_deps.sdformat as sdf
 import unittest
 import math
 

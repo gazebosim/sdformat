@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <limits>
 #include "sdf/JointAxis.hh"
 
 /////////////////////////////////////////////////
@@ -29,8 +30,8 @@ TEST(DOMJointAxis, Construction)
   EXPECT_DOUBLE_EQ(0.0, axis.Friction());
   EXPECT_DOUBLE_EQ(0.0, axis.SpringReference());
   EXPECT_DOUBLE_EQ(0.0, axis.SpringStiffness());
-  EXPECT_DOUBLE_EQ(-1e16, axis.Lower());
-  EXPECT_DOUBLE_EQ(1e16, axis.Upper());
+  EXPECT_DOUBLE_EQ(-std::numeric_limits<double>::infinity(), axis.Lower());
+  EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.Upper());
   EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.Effort());
   EXPECT_DOUBLE_EQ(std::numeric_limits<double>::infinity(), axis.MaxVelocity());
   EXPECT_DOUBLE_EQ(1e8, axis.Stiffness());

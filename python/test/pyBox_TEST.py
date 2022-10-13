@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz.math import Vector3d
-from sdformat import Box
+from gz_test_deps.math import Vector3d
+from gz_test_deps.sdformat import Box
 import unittest
 
 class BoxTEST(unittest.TestCase):

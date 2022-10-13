@@ -99,6 +99,89 @@ TEST(Param, Bool)
 }
 
 ////////////////////////////////////////////////////
+/// Test getting and setting a floating point value
+TEST(Param, Double)
+{
+  sdf::Param doubleParam("key", "double", "0.0", false, "description");
+  double value = -1.0;
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(0.0, value);
+
+  doubleParam.Set(1.0);
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(1.0, value);
+
+  const double sixteenDigits = 12345678.87654321;
+  doubleParam.Set(sixteenDigits);
+  EXPECT_TRUE(doubleParam.Get<double>(value));
+  EXPECT_DOUBLE_EQ(sixteenDigits, value);
+}
+
+////////////////////////////////////////////////////
+/// Test getting and setting a Vector3d
+TEST(Param, Vector3d)
+{
+  sdf::Param vectorParam("key", "vector3", "0 0 0", false, "description");
+  gz::math::Vector3d value{1.0, 2.0, 3.0};
+  EXPECT_TRUE(vectorParam.Get<gz::math::Vector3d>(value));
+  EXPECT_DOUBLE_EQ(0.0, value.X());
+  EXPECT_DOUBLE_EQ(0.0, value.Y());
+  EXPECT_DOUBLE_EQ(0.0, value.Z());
+
+  vectorParam.Set(gz::math::Vector3d::One);
+  EXPECT_TRUE(vectorParam.Get<gz::math::Vector3d>(value));
+  EXPECT_DOUBLE_EQ(1.0, value.X());
+  EXPECT_DOUBLE_EQ(1.0, value.Y());
+  EXPECT_DOUBLE_EQ(1.0, value.Z());
+
+  const double fifteenDigits = 0.123456789012345;
+  const gz::math::Vector3d manyDigits{
+      fifteenDigits, 1.0 + fifteenDigits, 2.0 + fifteenDigits};
+  vectorParam.Set(manyDigits);
+  EXPECT_TRUE(vectorParam.Get<gz::math::Vector3d>(value));
+  EXPECT_DOUBLE_EQ(0.0 + fifteenDigits, value.X());
+  EXPECT_DOUBLE_EQ(1.0 + fifteenDigits, value.Y());
+  EXPECT_DOUBLE_EQ(2.0 + fifteenDigits, value.Z());
+}
+
+////////////////////////////////////////////////////
+/// Test getting and setting a Pose3d
+TEST(Param, Pose3d)
+{
+  sdf::Param poseParam("key", "pose", "0 0 0 0 0 0", false, "description");
+  gz::math::Pose3d value{1.0, 2.0, 3.0, 0.1, 0.2, 0.3};
+  EXPECT_TRUE(poseParam.Get<gz::math::Pose3d>(value));
+  EXPECT_DOUBLE_EQ(0.0, value.Pos().X());
+  EXPECT_DOUBLE_EQ(0.0, value.Pos().Y());
+  EXPECT_DOUBLE_EQ(0.0, value.Pos().Z());
+  EXPECT_DOUBLE_EQ(0.0, value.Rot().Euler().X());
+  EXPECT_DOUBLE_EQ(0.0, value.Rot().Euler().Y());
+  EXPECT_DOUBLE_EQ(0.0, value.Rot().Euler().Z());
+
+  poseParam.Set(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  EXPECT_TRUE(poseParam.Get<gz::math::Pose3d>(value));
+  EXPECT_DOUBLE_EQ(1.0, value.Pos().X());
+  EXPECT_DOUBLE_EQ(2.0, value.Pos().Y());
+  EXPECT_DOUBLE_EQ(3.0, value.Pos().Z());
+  EXPECT_DOUBLE_EQ(0.1, value.Rot().Euler().X());
+  EXPECT_DOUBLE_EQ(0.2, value.Rot().Euler().Y());
+  EXPECT_DOUBLE_EQ(0.3, value.Rot().Euler().Z());
+
+  const double fifteenDigits = 0.123456789012345;
+  const gz::math::Pose3d manyDigits{
+      fifteenDigits, 1.0 + fifteenDigits, 2.0 + fifteenDigits,
+      0.5 * fifteenDigits, fifteenDigits, 2.0 * fifteenDigits};
+  poseParam.Set(manyDigits);
+  EXPECT_TRUE(poseParam.Get<gz::math::Pose3d>(value));
+  EXPECT_DOUBLE_EQ(0.0 + fifteenDigits, value.Pos().X());
+  EXPECT_DOUBLE_EQ(1.0 + fifteenDigits, value.Pos().Y());
+  EXPECT_DOUBLE_EQ(2.0 + fifteenDigits, value.Pos().Z());
+  EXPECT_DOUBLE_EQ(0.5 * fifteenDigits, value.Rot().Euler().X());
+  EXPECT_DOUBLE_EQ(1.0 * fifteenDigits, value.Rot().Euler().Y());
+  EXPECT_DOUBLE_EQ(2.0 * fifteenDigits, value.Rot().Euler().Z());
+}
+
+////////////////////////////////////////////////////
 /// Test decimal number
 TEST(SetFromString, Decimals)
 {

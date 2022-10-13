@@ -142,6 +142,9 @@ class sdf::Camera::Implementation
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
 
+  /// \brief Frame ID the camera_info message header is expressed.
+  public: std::string opticalFrameId{""};
+
   /// \brief Lens type.
   public: std::string lensType{"stereographic"};
 
@@ -180,6 +183,24 @@ class sdf::Camera::Implementation
 
   /// \brief lens instrinsics cy.
   public: double lensIntrinsicsCy{120.0};
+
+  /// \brief lens projection fx
+  public: double lensProjectionFx{277.0};
+
+  /// \brief lens projection fy
+  public: double lensProjectionFy{277.0};
+
+  /// \brief lens projection cx
+  public: double lensProjectionCx{160.0};
+
+  /// \brief lens projection cy
+  public: double lensProjectionCy{120.0};
+
+  /// \brief lens projection tx
+  public: double lensProjectionTx{0.0};
+
+  /// \brief lens projection ty
+  public: double lensProjectionTy{0.0};
 
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
@@ -348,6 +369,13 @@ Errors Camera::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
+  // Load the optional optical_frame_id value.
+  if (_sdf->HasElement("optical_frame_id"))
+  {
+    this->dataPtr->opticalFrameId = _sdf->Get<std::string>("optical_frame_id",
+        this->dataPtr->opticalFrameId).first;
+  }
+
   // Load the lens values.
   if (_sdf->HasElement("lens"))
   {
@@ -391,6 +419,23 @@ Errors Camera::Load(ElementPtr _sdf)
       this->dataPtr->lensIntrinsicsS = intrinsics->Get<double>("s",
           this->dataPtr->lensIntrinsicsS).first;
       this->dataPtr->hasIntrinsics = true;
+    }
+
+    if (elem->HasElement("projection")) {
+      sdf::ElementPtr projection = elem->GetElement("projection");
+      this->dataPtr->lensProjectionFx = projection->Get<double>("p_fx",
+          this->dataPtr->lensProjectionFx).first;
+      this->dataPtr->lensProjectionFy = projection->Get<double>("p_fy",
+          this->dataPtr->lensProjectionFy).first;
+      this->dataPtr->lensProjectionCx = projection->Get<double>("p_cx",
+          this->dataPtr->lensProjectionCx).first;
+      this->dataPtr->lensProjectionCy = projection->Get<double>("p_cy",
+          this->dataPtr->lensProjectionCy).first;
+      this->dataPtr->lensProjectionTx = projection->Get<double>("tx",
+          this->dataPtr->lensProjectionTx).first;
+      this->dataPtr->lensProjectionTy = projection->Get<double>("ty",
+          this->dataPtr->lensProjectionTy).first;
+
     }
   }
 
@@ -692,7 +737,8 @@ bool Camera::operator==(const Camera &_cam) const
     this->SaveFrames() == _cam.SaveFrames() &&
     this->SaveFramesPath() == _cam.SaveFramesPath() &&
     this->ImageNoise() == _cam.ImageNoise() &&
-    this->VisibilityMask() == _cam.VisibilityMask();
+    this->VisibilityMask() == _cam.VisibilityMask() &&
+    this->OpticalFrameId() == _cam.OpticalFrameId();
 }
 
 //////////////////////////////////////////////////
@@ -807,6 +853,18 @@ void Camera::SetRawPose(const gz::math::Pose3d &_pose)
 void Camera::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
+}
+
+/////////////////////////////////////////////////
+const std::string Camera::OpticalFrameId() const
+{
+  return this->dataPtr->opticalFrameId;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetOpticalFrameId(const std::string &_frame)
+{
+  this->dataPtr->opticalFrameId = _frame;
 }
 
 /////////////////////////////////////////////////
@@ -967,6 +1025,78 @@ void Camera::SetLensIntrinsicsCy(double _cy)
 {
   this->dataPtr->lensIntrinsicsCy = _cy;
   this->dataPtr->hasIntrinsics = true;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensProjectionFx() const
+{
+  return this->dataPtr->lensProjectionFx;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensProjectionFx(double _fx_p)
+{
+  this->dataPtr->lensProjectionFx = _fx_p;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensProjectionFy() const
+{
+  return this->dataPtr->lensProjectionFy;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensProjectionFy(double _fy_p)
+{
+  this->dataPtr->lensProjectionFy = _fy_p;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensProjectionCx() const
+{
+  return this->dataPtr->lensProjectionCx;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensProjectionCx(double _cx_p)
+{
+  this->dataPtr->lensProjectionCx = _cx_p;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensProjectionCy() const
+{
+  return this->dataPtr->lensProjectionCy;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensProjectionCy(double _cy_p)
+{
+  this->dataPtr->lensProjectionCy = _cy_p;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensProjectionTx() const
+{
+  return this->dataPtr->lensProjectionTx;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensProjectionTx(double _tx)
+{
+  this->dataPtr->lensProjectionTx = _tx;
+}
+
+/////////////////////////////////////////////////
+double Camera::LensProjectionTy() const
+{
+  return this->dataPtr->lensProjectionTy;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetLensProjectionTy(double _ty)
+{
+  this->dataPtr->lensProjectionTy = _ty;
 }
 
 /////////////////////////////////////////////////
@@ -1148,6 +1278,9 @@ sdf::ElementPtr Camera::ToElement() const
     elem->GetElement("segmentation_type")->Set<std::string>(
         this->SegmentationType());
   }
+
+  elem->GetElement("optical_frame_id")->Set<std::string>(
+      this->OpticalFrameId());
 
   return elem;
 }

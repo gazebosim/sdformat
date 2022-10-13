@@ -79,6 +79,12 @@ Geometry::Geometry()
 /////////////////////////////////////////////////
 Errors Geometry::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Geometry::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -148,14 +154,15 @@ Errors Geometry::Load(ElementPtr _sdf)
   {
     this->dataPtr->type = GeometryType::MESH;
     this->dataPtr->mesh.emplace();
-    Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh"));
+    Errors err = this->dataPtr->mesh->Load(_sdf->GetElement("mesh"), _config);
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("heightmap"))
   {
     this->dataPtr->type = GeometryType::HEIGHTMAP;
     this->dataPtr->heightmap.emplace();
-    Errors err = this->dataPtr->heightmap->Load(_sdf->GetElement("heightmap"));
+    Errors err = this->dataPtr->heightmap->Load(
+        _sdf->GetElement("heightmap"), _config);
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("polyline"))

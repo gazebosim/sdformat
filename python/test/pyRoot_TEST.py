@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import copy
-from gz.math import Vector3d, Pose3d
-from sdformat import (Error, Model, Light, Root, SDF_VERSION,
-                      SDFErrorsException, SDF_PROTOCOL_VERSION, World)
-import sdformat as sdf
+from gz_test_deps.math import Pose3d
+from gz_test_deps.sdformat import (Error, Model, Light, Root, SDF_VERSION,
+                                   SDFErrorsException, SDF_PROTOCOL_VERSION,
+                                   World)
+import gz_test_deps.sdformat as sdf
 
 import unittest
 
