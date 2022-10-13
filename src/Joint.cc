@@ -187,7 +187,8 @@ Errors Joint::Load(ElementPtr _sdf)
   }
   else if (_sdf->HasElement("thread_pitch"))
   {
-    // If thread_pitch is available, convert to meters / radian and fix sign.
+    // If thread_pitch is available, convert to meters / revolution
+    // and fix sign.
     this->dataPtr->threadPitch = -2*GZ_PI / _sdf->Get<double>("thread_pitch");
   }
   // Otherwise the default value of threadPitch will be used
