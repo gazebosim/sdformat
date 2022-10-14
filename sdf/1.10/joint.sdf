@@ -103,10 +103,6 @@
       <attribute name="joint" type="string" default="" required="1">
         <description>Name of the joint to be mimicked</description>
       </attribute>
-      <attribute name="axis" type="string" default="axis" required="0">
-        <description>The axis to be mimicked, can be
-        either 'axis' or 'axis2'</description>
-      </attribute>
       <element name="multiplier" type="double" default="1.0" required="1">
         <description>Multiplying factor to be applied to the input joint state</description>
       </element>
@@ -182,10 +178,6 @@
         axes as mimic_angle = multiplier * (other_joint_angle - reference) + offset.</description>
       <attribute name="joint" type="string" default="" required="1">
         <description>Name of the joint to be mimicked</description>
-      </attribute>
-      <attribute name="axis" type="string" default="axis" required="0">
-        <description>The axis to be mimicked, can be
-        either 'axis' or 'axis2'</description>
       </attribute>
       <element name="multiplier" type="double" default="1.0" required="1">
         <description>Multiplying factor to be applied to the input joint state</description>

@@ -162,15 +162,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
     this->dataPtr->mimic = mimicJoint();
     this->dataPtr->mimic.joint = mimicElement->Get<std::string>("joint",
         "").first;
-    this->dataPtr->mimic.axis = mimicElement->Get<std::string>("axis",
-        "axis").first;
-    if (this->dataPtr->mimic.axis != "axis" &&
-        this->dataPtr->mimic.axis != "axis2")
-    {
-      std::cerr << "Invalid argument found for axis attribute." <<
-        " The value will be set to 'axis'." << std::endl;
-      this->dataPtr->mimic.axis = "axis";
-    }
     this->dataPtr->mimic.multiplier = mimicElement->Get<double>("multiplier",
         0).first;
     this->dataPtr->mimic.offset = mimicElement->Get<double>("offset",
@@ -445,8 +436,6 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   sdf::ElementPtr mimicElement = axisElem->GetElement("mimic");
   mimicElement->GetAttribute("joint")->SetFromString(
     this->dataPtr->mimic.joint);
-  mimicElement->GetAttribute("axis")->SetFromString(
-    this->dataPtr->mimic.axis);
   mimicElement->GetElement("multiplier")->Set<double>(
       this->dataPtr->mimic.multiplier);
   mimicElement->GetElement("offset")->Set<double>(
