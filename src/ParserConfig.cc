@@ -53,6 +53,9 @@ class sdf::ParserConfig::Implementation
   /// \brief Flag to use <include> tags within ToElement methods instead of
   /// the fully included model.
   public: bool toElementUseIncludeTag = true;
+
+  /// \brief Flag to expand URIs where possible store the resolved paths
+  public: bool storeResolvedURIs = false;
 };
 
 
@@ -111,21 +114,25 @@ void ParserConfig::AddURIPath(const std::string &_uri, const std::string &_path)
   }
 }
 
+/////////////////////////////////////////////////
 void ParserConfig::SetWarningsPolicy(EnforcementPolicy policy)
 {
   this->dataPtr->warningsPolicy = policy;
 }
 
+/////////////////////////////////////////////////
 EnforcementPolicy ParserConfig::WarningsPolicy() const
 {
   return this->dataPtr->warningsPolicy;
 }
 
+/////////////////////////////////////////////////
 void ParserConfig::SetUnrecognizedElementsPolicy(EnforcementPolicy _policy)
 {
   this->dataPtr->unrecognizedElementsPolicy = _policy;
 }
 
+/////////////////////////////////////////////////
 EnforcementPolicy ParserConfig::UnrecognizedElementsPolicy() const
 {
   return this->dataPtr->unrecognizedElementsPolicy;
@@ -173,3 +180,16 @@ bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
 }
+
+/////////////////////////////////////////////////
+void ParserConfig::SetStoreResovledURIs(bool _resolveURI)
+{
+  this->dataPtr->storeResolvedURIs = _resolveURI;
+}
+
+/////////////////////////////////////////////////
+bool ParserConfig::StoreResolvedURIs() const
+{
+  return this->dataPtr->storeResolvedURIs;
+}
+
