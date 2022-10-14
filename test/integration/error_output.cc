@@ -22,7 +22,9 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
+#include "sdf/Model.hh"
 #include "sdf/Param.hh"
+#include "sdf/parser.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "test_utils.hh"
@@ -35,6 +37,15 @@ TEST(ErrorOutput, ParamErrorOutput)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::Errors errors;
   ASSERT_NO_THROW(sdf::Param param1("key", "not_valid_type", "true", false,
@@ -117,10 +128,10 @@ TEST(ErrorOutput, ParamErrorOutput)
   EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::PARAMETER_ERROR);
 #if !defined __ARM_ARCH
   EXPECT_NE(std::string::npos, errors[1].Message().find(
-    "Failed to set value '1 2 3 0.40000000000000002 0.5 "
-    "0.59999999999999987' to key [] for new parent element of name '',"
-    " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
-    "0.59999999999999987'."));
+      "Failed to set value '1 2 3 0.40000000000000002 0.5 "
+      "0.59999999999999987' to key [] for new parent element of name '',"
+      " reverting to previous value '1 2 3 0.40000000000000002 0.5 "
+      "0.59999999999999987'."));
 #endif
 
   errors.clear();
@@ -157,6 +168,15 @@ TEST(ErrorOutput, ElementErrorOutput)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::Errors errors;
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
@@ -230,6 +250,15 @@ TEST(ErrorOutput, PrintConfigErrorOutput)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   sdf::Errors errors;
   sdf::PrintConfig printConfig;
   ASSERT_FALSE(printConfig.SetRotationSnapToDegrees(361, 300, errors));
@@ -255,6 +284,15 @@ TEST(ErrorOutput, WorldErrorOutput)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
     sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   sdf::Errors errors;
 
@@ -295,4 +333,202 @@ TEST(ErrorOutput, WorldErrorOutput)
     " collision, changing frame name to [common_name_frame]."));
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+////////////////////////////////////////
+// Test Model class for sdf::Errors outputs
+TEST(ErrorOutput, ModelErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Errors errors;
+
+  std::function findFileCb = [](const std::string &_uri)
+  {
+    return sdf::testing::TestFile("integration", "model", _uri);
+  };
+
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <model name='test_model'>"
+         << "    <include>"
+         << "      <uri>test_model</uri>"
+         << "      <name>common_name</name>"
+         << "    </include>"
+         << "    <link name='common_name'/>"
+         << "    <link name='common_name'/>"
+         << "    <joint name='common_name' type='fixed'>"
+         << "       <parent>world</parent>"
+         << "       <child>child</child>"
+         << "    </joint>"
+         << "    <joint name='common_name' type='fixed'>"
+         << "       <parent>world</parent>"
+         << "       <child>child</child>"
+         << "    </joint>"
+         << "    <frame name='common_name'/>"
+         << "    <frame name='common_name'/>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  parserConfig.SetFindCallback(findFileCb);
+  sdf::readString(stream.str(), parserConfig, sdfParsed, errors);
+  EXPECT_TRUE(errors.empty());
+
+  {
+    sdf::Model model;
+    errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+    ASSERT_EQ(errors.size(), 7u);
+    EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+        "Non-unique name[common_name] detected 7 times in XML children of model"
+        " with name[test_model]."));
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[1].Message().find(
+        "link with name[common_name] already exists."));
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "Link with name [common_name] in model with name [test_model] has a "
+        "name collision. Please rename this link."));
+    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[3].Message().find(
+        "joint with name[common_name] already exists."));
+    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[4].Message().find(
+        "Joint with name [common_name] in model with name [test_model] has a "
+        "name collision. Please rename this joint."));
+    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[5].Message().find(
+        "frame with name[common_name] already exists."));
+    EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[6].Message().find(
+        "Frame with name [common_name] in model with name [test_model] has a "
+        "name collision. Please rename this frame."));
+    errors.clear();
+  }
+
+  {
+    sdf::Model model;
+    // Check warnings are still printed when the policy is not set to error.
+    parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::WARN);
+    errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+    ASSERT_EQ(errors.size(), 6u);
+    EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+        "link with name[common_name] already exists."));
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[1].Message().find(
+        "Link with name [common_name] in model with name [test_model] has a "
+        "name collision. Please rename this link."));
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "joint with name[common_name] already exists."));
+    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[3].Message().find(
+        "Joint with name [common_name] in model with name [test_model] has a "
+        "name collision. Please rename this joint."));
+    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[4].Message().find(
+        "frame with name[common_name] already exists."));
+    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[5].Message().find(
+        "Frame with name [common_name] in model with name [test_model] has a "
+        "name collision. Please rename this frame."));
+    // Check printed warnings
+    EXPECT_NE(std::string::npos, buffer.str().find(
+        "Non-unique name[common_name] detected 7 times in XML children of model"
+        " with name[test_model]."))
+        << buffer.str();
+    buffer.str("");
+    buffer.clear();
+    errors.clear();
+  }
+
+  {
+    sdf::Model model;
+    parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+    // Set SDF version to someting lower than 1.7 for extra errors
+    sdfParsed->Root()->GetElement("model")->SetOriginalVersion("1.6");
+    errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+
+    ASSERT_EQ(errors.size(), 7u);
+    EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+        "Non-unique name[common_name] detected 7 times in XML children of model"
+        " with name[test_model]."));
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[1].Message().find(
+        "link with name[common_name] already exists."));
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::WARNING);
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "Link with name [common_name] in model with name [test_model] has a "
+        "name collision, changing link name to [common_name_link]."));
+    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[3].Message().find(
+        "joint with name[common_name] already exists."));
+    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::WARNING);
+    EXPECT_NE(std::string::npos, errors[4].Message().find(
+        "Joint with name [common_name] in model with name [test_model] has a "
+        "name collision, changing joint name to [common_name_joint]."));
+    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[5].Message().find(
+        "frame with name[common_name] already exists."));
+    EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::WARNING);
+    EXPECT_NE(std::string::npos, errors[6].Message().find(
+        "Frame with name [common_name] in model with name [test_model] has a "
+        "name collision, changing frame name to [common_name_frame]."));
+    // Check nothing has been printed
+    EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+    errors.clear();
+  }
+
+  {
+    sdf::Model model;
+    // Check warnings are still printed when the policy is not set to error.
+    parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::WARN);
+    errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
+    ASSERT_EQ(errors.size(), 3u);
+    EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+        "link with name[common_name] already exists."));
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[1].Message().find(
+        "joint with name[common_name] already exists."));
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "frame with name[common_name] already exists."));
+    // Check printed warnings
+    EXPECT_NE(std::string::npos, buffer.str().find(
+        "Non-unique name[common_name] detected 7 times in XML children of model"
+        " with name[test_model]."))
+        << buffer.str();
+    EXPECT_NE(std::string::npos, buffer.str().find(
+        "Link with name [common_name] in model with name [test_model] has a "
+        "name collision, changing link name to [common_name_link]."))
+        << buffer.str();
+    EXPECT_NE(std::string::npos, buffer.str().find(
+        "Joint with name [common_name] in model with name [test_model] has a "
+        "name collision, changing joint name to [common_name_joint]."))
+        << buffer.str();
+    EXPECT_NE(std::string::npos, buffer.str().find(
+        "Frame with name [common_name] in model with name [test_model] has a "
+        "name collision, changing frame name to [common_name_frame]."))
+        << buffer.str();
+  }
 }

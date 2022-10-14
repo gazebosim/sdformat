@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import copy
-from gz.math7 import Pose3d
-from sdformat13 import (Plugin, Model, Joint, Link, Error, Frame, SemanticPose,
-                      SDFErrorsException)
-import sdformat13 as sdf
+from gz_test_deps.math import Pose3d
+from gz_test_deps.sdformat import (Plugin, Model, Joint, Link, Error, Frame,
+                                   SemanticPose, SDFErrorsException)
+import gz_test_deps.sdformat as sdf
 import math
 import unittest
 
