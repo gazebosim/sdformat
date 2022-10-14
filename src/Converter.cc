@@ -321,7 +321,7 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
       ss << "Unknown convert element["
          << name
          << "]";
-      _errors.push_back({ErrorCode::FATAL_ERROR, ss.str()});
+      _errors.push_back({ErrorCode::CONVERSION_ERROR, ss.str()});
     }
   }
 }

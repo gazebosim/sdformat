@@ -38,6 +38,8 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
+  // TODO(marcoag): Deprecate function overloads that do not use sdf::Errors,
+  // see: https://github.com/gazebosim/sdformat/issues/1186
   class Root;
 
   /// \brief Initialize the SDF interface from the embedded root spec file
