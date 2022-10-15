@@ -154,6 +154,10 @@ TEST(DOMModel, Construction)
     errors[1].Message().find(
       "PoseRelativeToGraph error: scope does not point to a valid graph"))
       << errors[1];
+
+  // model dosn't have graphs, so no names should exist in graphs
+  EXPECT_FALSE(model.NameExistsInFrameAttachedToGraph(""));
+  EXPECT_FALSE(model.NameExistsInFrameAttachedToGraph("link"));
 }
 
 /////////////////////////////////////////////////
@@ -229,6 +233,9 @@ TEST(DOMModel, AddLink)
   EXPECT_EQ(1u, model.LinkCount());
   EXPECT_FALSE(model.AddLink(link));
   EXPECT_EQ(1u, model.LinkCount());
+  // model dosn't have graphs, so no names should exist in graphs
+  EXPECT_FALSE(model.NameExistsInFrameAttachedToGraph(""));
+  EXPECT_FALSE(model.NameExistsInFrameAttachedToGraph("link1"));
 
   model.ClearLinks();
   EXPECT_EQ(0u, model.LinkCount());
