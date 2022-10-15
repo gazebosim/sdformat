@@ -610,6 +610,27 @@ TEST(DOMJoint, WorldJointInvalidChildWorld)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMJoint, WorldJointInvalidResolvedParentSameAsChild)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf",
+      "world_joint_invalid_resolved_parent_same_as_child.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  std::cerr << errors << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_PARENT_SAME_AS_CHILD);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "joint with name[J] in world with name["
+      "joint_invalid_resolved_parent_same_as_child.sdf] specified parent "
+      "frame [child_model] and child frame [child_frame] that both resolve "
+      "to [child_model::L]"));
+}
+
+/////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointPoseRelativeTo)
 {
   const std::string testFile =
