@@ -386,6 +386,9 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   // different frames.
   checkJointParentChildNames(this, errors);
 
+  // Check that //axis*/xyz/@expressed_in values specify valid frames.
+  checkJointAxisExpressedInValues(this, errors);
+
   return errors;
 }
 

@@ -231,6 +231,7 @@ TEST(DOMJointAxis, InvalidExpressedIn)
   for (auto e : errors)
     std::cout << e << std::endl;
   ASSERT_EQ(2u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_AXIS_EXPRESSED_IN_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "axis xyz expressed-in frame with name[invalid] specified by joint with"
