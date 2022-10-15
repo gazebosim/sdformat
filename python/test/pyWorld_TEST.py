@@ -15,7 +15,7 @@
 import copy
 from gz_test_deps.math import Color, Vector3d, SphericalCoordinates
 from gz_test_deps.sdformat import (Atmosphere, Gui, Physics, Plugin, Error,
-                                   Frame, Light, Model, Scene, World)
+                                   Frame, Joint, Light, Model, Scene, World)
 import gz_test_deps.sdformat as sdf
 import unittest
 import math
@@ -52,13 +52,28 @@ class WorldTEST(unittest.TestCase):
         self.assertEqual(None, world.frame_by_index(0))
         self.assertEqual(None, world.frame_by_index(1))
         self.assertFalse(world.frame_name_exists(""))
-        self.assertFalse(world.frame_name_exists("default"))
+        self.assertFalse(world.frame_name_exists("a::b"))
+        self.assertFalse(world.frame_name_exists("a::b::c"))
+        self.assertFalse(world.frame_name_exists("::::"))
+        self.assertEqual(None, world.frame_by_name(""))
+        self.assertEqual(None, world.frame_by_name("default"))
+        self.assertEqual(None, world.frame_by_name("a::b"))
+        self.assertEqual(None, world.frame_by_name("a::b::c"))
+        self.assertEqual(None, world.frame_by_name("::::"))
 
-        self.assertEqual(0, world.frame_count())
-        self.assertEqual(None, world.frame_by_index(0))
-        self.assertEqual(None, world.frame_by_index(1))
-        self.assertFalse(world.frame_name_exists(""))
-        self.assertFalse(world.frame_name_exists("default"))
+        self.assertEqual(0, world.joint_count())
+        self.assertEqual(None, world.joint_by_index(0))
+        self.assertEqual(None, world.joint_by_index(1))
+        self.assertFalse(world.joint_name_exists(""))
+        self.assertFalse(world.joint_name_exists("default"))
+        self.assertFalse(world.joint_name_exists("a::b"))
+        self.assertFalse(world.joint_name_exists("a::b::c"))
+        self.assertFalse(world.joint_name_exists("::::"))
+        self.assertEqual(None, world.joint_by_name(""))
+        self.assertEqual(None, world.joint_by_name("default"))
+        self.assertEqual(None, world.joint_by_name("a::b"))
+        self.assertEqual(None, world.joint_by_name("a::b::c"))
+        self.assertEqual(None, world.joint_by_name("::::"))
 
         self.assertEqual(1, world.physics_count())
 
@@ -318,6 +333,10 @@ class WorldTEST(unittest.TestCase):
         frame.set_name("frame1")
         self.assertTrue(world.add_frame(frame))
 
+        joint = Joint()
+        joint.set_name("joint1")
+        self.assertTrue(world.add_joint(joint))
+
         # Modify the model
         m = world.model_by_index(0)
         self.assertNotEqual(None, m)
@@ -353,6 +372,13 @@ class WorldTEST(unittest.TestCase):
         f.set_name("frame2")
         self.assertEqual("frame2", world.frame_by_index(0).name())
 
+        # Modify the joint
+        j = world.joint_by_index(0)
+        self.assertNotEqual(None, j)
+        self.assertEqual("joint1", j.name())
+        j.set_name("joint2")
+        self.assertEqual("joint2", world.joint_by_index(0).name())
+
     def test_mutable_by_name(self):
         world = World()
 
@@ -363,6 +389,10 @@ class WorldTEST(unittest.TestCase):
         frame = Frame()
         frame.set_name("frame1")
         self.assertTrue(world.add_frame(frame))
+
+        joint = Joint()
+        joint.set_name("joint1")
+        self.assertTrue(world.add_joint(joint))
 
         # Modify the model
         m = world.model_by_name("model1")
@@ -379,6 +409,14 @@ class WorldTEST(unittest.TestCase):
         f.set_name("frame2")
         self.assertFalse(world.frame_by_name("frame1"))
         self.assertTrue(world.frame_by_name("frame2"))
+
+        # Modify the joint
+        j = world.joint_by_name("joint1")
+        self.assertNotEqual(None, j)
+        self.assertEqual("joint1", j.name())
+        j.set_name("joint2")
+        self.assertFalse(world.joint_by_name("joint1"))
+        self.assertTrue(world.joint_by_name("joint2"))
 
     def test_plugins(self):
         world = World()
