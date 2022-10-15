@@ -487,7 +487,8 @@ TEST(DOMJoint, LoadWorldJointChildFrame)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
   using Pose = gz::math::Pose3d;
 
@@ -602,7 +603,7 @@ TEST(DOMJoint, WorldJointInvalidChildWorld)
   auto errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e << std::endl;
-  ASSERT_EQ(2u, errors.size());
+  ASSERT_EQ(3u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(

@@ -107,6 +107,10 @@ void defineWorld(pybind11::object module)
           "index.")
      .def("model_name_exists", &sdf::World::ModelNameExists,
           "Get whether a model name exists.")
+     .def("name_exists_in_frame_attached_to_graph",
+          &sdf::World::NameExistsInFrameAttachedToGraph,
+          "Check if a given name exists in the FrameAttachedTo graph at the "
+          "scope of the world.")
      .def("add_model", &sdf::World::AddModel,
           "Add a model to the world.")
      // .def("add_actor", &sdf::World::AddActor,
