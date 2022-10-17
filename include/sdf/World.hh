@@ -45,6 +45,7 @@ namespace sdf
   class Actor;
   class Frame;
   class InterfaceModel;
+  class Joint;
   class Light;
   class Model;
   class ParserConfig;
@@ -212,6 +213,12 @@ namespace sdf
     /// exists.
     public: bool AddActor(const Actor &_actor);
 
+    /// \brief Add a joint to the world.
+    /// \param[in] _joint Joint to add.
+    /// \return True if successful, false if a joint with the name already
+    /// exists.
+    public: bool AddJoint(const Joint &_joint);
+
     /// \brief Add a light to the world.
     /// \param[in] _light Light to add.
     /// \return True if successful, false if a light with the name already
@@ -233,10 +240,13 @@ namespace sdf
     /// \brief Remove all models.
     public: void ClearModels();
 
-    /// \brief Remove all models.
+    /// \brief Remove all actors.
     public: void ClearActors();
 
-    /// \brief Remove all models.
+    /// \brief Remove all joints.
+    public: void ClearJoints();
+
+    /// \brief Remove all lights.
     public: void ClearLights();
 
     /// \brief Remove all physics.
@@ -315,6 +325,45 @@ namespace sdf
     /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
+
+    /// \brief Get the number of joints.
+    /// \return Number of joints contained in this World object.
+    public: uint64_t JointCount() const;
+
+    /// \brief Get a joint based on an index.
+    /// \param[in] _index Index of the joint. The index should be in the
+    /// range [0..JointCount()).
+    /// \return Pointer to the joint. Nullptr if the index does not exist.
+    /// \sa uint64_t JointCount() const
+    public: const Joint *JointByIndex(uint64_t _index) const;
+
+    /// \brief Get a mutable joint based on an index.
+    /// \param[in] _index Index of the joint. The index should be in the
+    /// range [0..JointCount()).
+    /// \return Pointer to the joint. Nullptr if the index does not exist.
+    /// \sa uint64_t JointCount() const
+    public: Joint *JointByIndex(uint64_t _index);
+
+    /// \brief Get an joint based on a name.
+    /// \param[in] _name Name of the joint.
+    /// To get a joint in a nested model, prefix the joint name with the
+    /// sequence of nested models containing this joint, delimited by "::".
+    /// \return Pointer to the joint. Nullptr if the name does not
+    /// exist.
+    public: const Joint *JointByName(const std::string &_name) const;
+
+    /// \brief Get a mutable joint based on a name.
+    /// \param[in] _name Name of the joint.
+    /// To get a joint in a nested model, prefix the joint name with the
+    /// sequence of nested models containing this joint, delimited by "::".
+    /// \return Pointer to the joint. Nullptr if the name does not
+    /// exist.
+    public: Joint *JointByName(const std::string &_name);
+
+    /// \brief Get whether a joint name exists.
+    /// \param[in] _name Name of the joint to check.
+    /// \return True if there exists a joint with the given name.
+    public: bool JointNameExists(const std::string &_name) const;
 
     /// \brief Get the number of lights.
     /// \return Number of lights contained in this World object.
