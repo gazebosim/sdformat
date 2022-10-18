@@ -117,6 +117,8 @@ void defineWorld(pybind11::object module)
           "Add a physics object to the world.")
      .def("add_frame", &sdf::World::AddFrame,
           "Add a frame object to the world.")
+     .def("add_joint", &sdf::World::AddJoint,
+          "Add a joint to the world.")
      .def("clear_models", &sdf::World::ClearModels,
           "Remove all models.")
      // .def("clear_actors", &sdf::World::ClearActors,
@@ -127,6 +129,8 @@ void defineWorld(pybind11::object module)
           "Remove all physics objects.")
      .def("clear_frames", &sdf::World::ClearFrames,
           "Remove all frames.")
+     .def("clear_joints", &sdf::World::ClearJoints,
+          "Remove all joints.")
      .def("actor_count", &sdf::World::ActorCount,
           "Get the number of actors.")
      .def("frame_count", &sdf::World::FrameCount,
@@ -145,6 +149,20 @@ void defineWorld(pybind11::object module)
           "index.")
      .def("frame_name_exists", &sdf::World::FrameNameExists,
           "Get whether a frame name exists.")
+     .def("joint_count", &sdf::World::JointCount,
+          "Get the number of joints.")
+     .def("joint_by_index",
+          pybind11::overload_cast<uint64_t>(
+            &sdf::World::JointByIndex),
+          pybind11::return_value_policy::reference_internal,
+          "Get a mutable joint based on an index.")
+     .def("joint_by_name",
+          pybind11::overload_cast<const std::string &>(
+            &sdf::World::JointByName),
+          pybind11::return_value_policy::reference_internal,
+          "Get a mutable joint based on name.")
+     .def("joint_name_exists", &sdf::World::JointNameExists,
+          "Get whether a joint name exists.")
      .def("light_count", &sdf::World::LightCount,
           "Get the number of lights.")
      .def("light_by_index",

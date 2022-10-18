@@ -306,6 +306,9 @@ namespace sdf
     /// \brief Allow Model::Load to call SetPoseRelativeToGraph.
     friend class Model;
 
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+    friend class World;
+
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
   };
