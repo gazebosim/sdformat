@@ -79,9 +79,9 @@ macro (sdf_install_library _name)
   install (
     TARGETS ${_name}
     EXPORT ${_name}
-    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     COMPONENT shlib)
 
 # Export and install target
@@ -101,7 +101,7 @@ endmacro ()
 #################################################
 macro (sdf_install_executable _name)
   set_target_properties(${_name} PROPERTIES VERSION ${SDF_VERSION_FULL})
-  install (TARGETS ${_name} DESTINATION ${BIN_INSTALL_DIR})
+  install (TARGETS ${_name} DESTINATION ${CMAKE_INSTALL_BINDIR})
 endmacro ()
 
 #################################################
