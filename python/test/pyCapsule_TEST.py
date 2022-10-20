@@ -14,11 +14,9 @@
 
 import copy
 
-from gz.math import Vector3d, Capsuled
-
 import math
 
-from sdformat import Capsule
+from gz_test_deps.sdformat import Capsule
 
 import unittest
 

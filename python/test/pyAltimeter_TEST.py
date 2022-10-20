@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz.math import Vector3d
-from sdformat import Altimeter, Noise
-import sdformat as sdf
+from gz_test_deps.sdformat import Altimeter, Noise
+import gz_test_deps.sdformat as sdf
 import unittest
 
 

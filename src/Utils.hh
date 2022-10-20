@@ -85,6 +85,11 @@ namespace sdf
     const sdf::Error &_error,
     sdf::Errors &_errors);
 
+  /// \brief It will print the errors to sdferr or throw them using
+  /// SDF_ASSERT depending on their ErrorCode.
+  /// \param[in] _errors  The vector of errors.
+  void throwOrPrintErrors(const sdf::Errors& _errors);
+
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that
   /// an element has a "name" attribute that must be unique.
@@ -158,10 +163,10 @@ namespace sdf
   /// vector, unless an error is encountered during load.
   /// \return The vector of errors. An empty vector indicates no errors were
   /// experienced.
-  template <typename Class>
+  template <typename Class, typename... Args>
   sdf::Errors loadRepeated(sdf::ElementPtr _sdf, const std::string &_sdfName,
       std::vector<Class> &_objs,
-      const std::function<void(Class &)> &_beforeLoadFunc = {})
+      Args&&... _args)
   {
     Errors errors;
 
@@ -173,13 +178,9 @@ namespace sdf
       while (elem)
       {
         Class obj;
-        if (_beforeLoadFunc)
-        {
-          _beforeLoadFunc(obj);
-        }
 
         // Load the model and capture the errors.
-        Errors loadErrors = obj.Load(elem);
+        Errors loadErrors = obj.Load(elem, std::forward<Args>(_args)...);
 
         {
           // Add the load errors to the master error list.
@@ -239,6 +240,15 @@ namespace sdf
   /// do not have a matching description in the provided sdf element pointer.
   void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
       const bool _onlyUnknown);
+
+  /// \brief Attempt to resolve a URI based on the current parser configuration
+  /// \param[in] _inputURI URI from parsed SDF file to resolve
+  /// \param[in] _config Parser configuration to use to resolve
+  /// \param[in, out] _errors Error vector to append to if resolution fails
+  /// \return Resolved URI or Original URI, depending on parser configuration
+  std::string resolveURI(const std::string &_inputURI,
+                         const sdf::ParserConfig &_config,
+                         sdf::Errors &_errors);
 }
 }
 #endif

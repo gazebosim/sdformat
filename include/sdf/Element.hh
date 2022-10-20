@@ -83,9 +83,19 @@ namespace sdf
     /// \return A copy of this Element.
     public: ElementPtr Clone() const;
 
+    /// \brief Create a copy of this Element.
+    /// \param[out] _errors Vector of errors.
+    /// \return A copy of this Element, NULL if there was an error.
+    public: ElementPtr Clone(sdf::Errors &_errors) const;
+
     /// \brief Copy values from an Element.
     /// \param[in] _elem Element to copy value from.
     public: void Copy(const ElementPtr _elem);
+
+    /// \brief Copy values from an Element.
+    /// \param[in] _elem Element to copy value from.
+    /// \param[out] _errors Vector of errors.
+    public: void Copy(const ElementPtr _elem, sdf::Errors &_errors);
 
     /// \brief Get a pointer to this Element's parent.
     /// \return Pointer to this Element's parent, NULL if there is no
@@ -220,6 +230,21 @@ namespace sdf
                               bool _required,
                               const std::string &_description = "");
 
+    /// \brief Add an attribute value.
+    /// \param[in] _key Key value.
+    /// \param[in] _type Type of data the attribute will hold.
+    /// \param[in] _defaultValue Default value for the attribute.
+    /// \param[in] _required Requirement string. \as Element::SetRequired.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _description A text description of the attribute.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
+    public: void AddAttribute(const std::string &_key,
+                              const std::string &_type,
+                              const std::string &_defaultvalue,
+                              bool _required,
+                              sdf::Errors &_errors,
+                              const std::string &_description = "");
+
     /// \brief Add a value to this Element.
     /// \param[in] _type Type of data the parameter will hold.
     /// \param[in] _defaultValue Default value for the parameter.
@@ -228,6 +253,18 @@ namespace sdf
     /// \throws sdf::AssertionInternalError if an invalid type is given.
     public: void AddValue(const std::string &_type,
                           const std::string &_defaultValue, bool _required,
+                          const std::string &_description = "");
+
+    /// \brief Add a value to this Element.
+    /// \param[in] _type Type of data the parameter will hold.
+    /// \param[in] _defaultValue Default value for the parameter.
+    /// \param[in] _required Requirement string. \as Element::SetRequired.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _description A text description of the parameter.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
+    public: void AddValue(const std::string &_type,
+                          const std::string &_defaultValue, bool _required,
+                          sdf::Errors &_errors,
                           const std::string &_description = "");
 
     /// \brief Add a value to this Element. This override allows passing min and
@@ -243,6 +280,23 @@ namespace sdf
                           const std::string &_defaultValue, bool _required,
                           const std::string &_minValue,
                           const std::string &_maxValue,
+                          const std::string &_description = "");
+
+    /// \brief Add a value to this Element. This override allows passing min and
+    /// max values of the parameter.
+    /// \param[in] _type Type of data the parameter will hold.
+    /// \param[in] _defaultValue Default value for the parameter.
+    /// \param[in] _required Requirement string. \as Element::SetRequired.
+    /// \param[in] _minValue Minimum allowed value for the parameter.
+    /// \param[in] _maxValue Maximum allowed value for the parameter.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _description A text description of the parameter.
+    /// \throws sdf::AssertionInternalError if an invalid type is given.
+    public: void AddValue(const std::string &_type,
+                          const std::string &_defaultValue, bool _required,
+                          const std::string &_minValue,
+                          const std::string &_maxValue,
+                          sdf::Errors &_errors,
                           const std::string &_description = "");
 
     /// \brief Get the param of an attribute.
@@ -308,6 +362,14 @@ namespace sdf
     /// the element. Defaults to empty.
     /// \return The element as a std::any.
     public: std::any GetAny(const std::string &_key = "") const;
+
+    /// \brief Get the element value/attribute as a std::any.
+    /// \param[in] _key The key of the attribute. If empty, get the value of
+    /// the element. Defaults to empty.
+    /// \param[out] _errors Vector of errors.
+    /// \return The element as a std::any.
+    public: std::any GetAny(sdf::Errors &_errors,
+                            const std::string &_key = "") const;
 
     /// \brief Get the value of a key. This function assumes the _key
     /// exists.
@@ -433,6 +495,20 @@ namespace sdf
 
     /// \brief Return a pointer to the child element with the provided name.
     ///
+    /// A new child element, with the provided name, is added to this element
+    /// if there is no existing child element. If this is not desired see \ref
+    /// FindElement
+    /// \remarks If there are multiple elements with the given tag, it returns
+    ///          the first one.
+    /// \param[in] _name Name of the child element to retreive.
+    /// \param[out] _errors Vector of errors.
+    /// \return Pointer to the existing child element, or a new child
+    /// element if an existing child element did not exist.
+    public: ElementPtr GetElement(const std::string &_name,
+                sdf::Errors &_errors);
+
+    /// \brief Return a pointer to the child element with the provided name.
+    ///
     /// Unlike \ref GetElement, this does not create a new child element if it
     /// fails to find an existing element.
     /// \remarks If there are multiple elements with the given tag, it returns
@@ -458,6 +534,13 @@ namespace sdf
     /// \return A pointer to the newly created Element object.
     public: ElementPtr AddElement(const std::string &_name);
 
+    /// \brief Add a named element.
+    /// \param[in] _name the name of the element to add.
+    /// \param[out] _errors Vector of errors.
+    /// \return A pointer to the newly created Element object.
+    public: ElementPtr AddElement(const std::string &_name,
+                sdf::Errors &_errors);
+
     /// \brief Add an element object.
     /// \param[in] _elem the element object to add.
     public: void InsertElement(ElementPtr _elem);
@@ -475,6 +558,11 @@ namespace sdf
     /// \brief Remove a child element.
     /// \param[in] _child Pointer to the child to remove.
     public: void RemoveChild(ElementPtr _child);
+
+    /// \brief Remove a child element.
+    /// \param[in] _child Pointer to the child to remove.
+    /// \param[out] _errors Vector of errors.
+    public: void RemoveChild(ElementPtr _child, sdf::Errors &_errors);
 
     /// \brief Remove all child elements.
     public: void ClearElements();
@@ -602,14 +690,15 @@ namespace sdf
     /// int,...).
     /// \param[in] _defaultValue Default value.
     /// \param[in] _required True if the parameter is required to be set.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _description Description of the parameter.
     /// \return A pointer to the new Param object.
     private: ParamPtr CreateParam(const std::string &_key,
                                   const std::string &_type,
                                   const std::string &_defaultValue,
                                   bool _required,
+                                  sdf::Errors &_errors,
                                   const std::string &_description = "");
-
 
     /// \brief Private data pointer
     private: std::unique_ptr<ElementPrivate> dataPtr;
