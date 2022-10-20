@@ -203,12 +203,27 @@ namespace sdf
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
-    /// \brief Get the thread pitch (only valid for screw joints)
-    /// \return The thread pitch
+    /// \brief Get the displacement along the joint axis for each complete
+    /// revolution around the joint axis (only valid for screw joints).
+    /// \return The thread pitch with units of meters per revolution with a
+    /// positive value corresponding to a right-handed thread.
+    public: double ScrewThreadPitch() const;
+
+    /// \brief Set the thread pitch (only valid for screw joints).
+    /// \param[in] _threadPitch The thread pitch with units of meters per
+    /// revolution with a positive value corresponding to a right-handed thread.
+    public: void SetScrewThreadPitch(double _threadPitch);
+
+    /// \brief Get the thread pitch in gazebo-classic format (only valid for
+    /// screw joints). This will be deprecated in a future version.
+    /// \return The thread pitch with units of radians / meters and a positive
+    /// value coresponding to a left-handed thread.
     public: double ThreadPitch() const;
 
-    /// \brief Set the thread pitch (only valid for screw joints)
-    /// \param[in] _threadPitch The thread pitch of the joint
+    /// \brief Set the thread pitch in gazebo-classic format (only valid for
+    /// screw joints). This will be deprecated in a future version.
+    /// \param[in] _threadPitch The thread pitch with units of radians / meters
+    /// and a positive value coresponding to a left-handed thread.
     public: void SetThreadPitch(double _threadPitch);
 
     /// \brief Get a pointer to the SDF element that was used during

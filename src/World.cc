@@ -1092,6 +1092,16 @@ void World::ClearFrames()
 }
 
 /////////////////////////////////////////////////
+bool World::NameExistsInFrameAttachedToGraph(const std::string &_name) const
+{
+  if (!this->dataPtr->frameAttachedToGraph)
+    return false;
+
+  return this->dataPtr->frameAttachedToGraph.VertexIdByName(_name)
+      !=  gz::math::graph::kNullId;
+}
+
+/////////////////////////////////////////////////
 bool World::AddModel(const Model &_model)
 {
   if (this->ModelNameExists(_model.Name()))

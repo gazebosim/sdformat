@@ -158,6 +158,49 @@ TEST(DOMJoint, Complete)
   }
 }
 
+//////////////////////////////////////////////////
+TEST(DOMJoint, ScrewThreadPitch)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_screw_thread_pitch.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // Get the first model
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  EXPECT_EQ(2u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("child_link"));
+  EXPECT_TRUE(model->LinkNameExists("parent_link"));
+
+  EXPECT_EQ(5u, model->JointCount());
+  ASSERT_TRUE(model->JointNameExists("default_param"));
+  ASSERT_TRUE(model->JointNameExists("both_params"));
+  ASSERT_TRUE(model->JointNameExists("new_param"));
+  ASSERT_TRUE(model->JointNameExists("old_param"));
+  ASSERT_TRUE(model->JointNameExists("param_precedence"));
+
+  EXPECT_DOUBLE_EQ(1.0,
+                   model->JointByName("default_param")->ScrewThreadPitch());
+  EXPECT_DOUBLE_EQ(0.5, model->JointByName("both_params")->ScrewThreadPitch());
+  EXPECT_DOUBLE_EQ(0.5, model->JointByName("new_param")->ScrewThreadPitch());
+  EXPECT_NEAR(0.5, model->JointByName("old_param")->ScrewThreadPitch(), 1e-3);
+  EXPECT_DOUBLE_EQ(0.5,
+                   model->JointByName("param_precedence")->ScrewThreadPitch());
+
+  EXPECT_DOUBLE_EQ(-2*GZ_PI,
+                   model->JointByName("default_param")->ThreadPitch());
+  EXPECT_NEAR(-12.566, model->JointByName("both_params")->ThreadPitch(), 1e-3);
+  EXPECT_NEAR(-12.566, model->JointByName("new_param")->ThreadPitch(), 1e-3);
+  EXPECT_DOUBLE_EQ(-12.566, model->JointByName("old_param")->ThreadPitch());
+  EXPECT_NEAR(-12.566, model->JointByName("param_precedence")->ThreadPitch(),
+              1e-3);
+}
+
 /////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointParentWorld)
 {
@@ -487,7 +530,8 @@ TEST(DOMJoint, LoadWorldJointChildFrame)
 
   // Load the SDF file
   sdf::Root root;
-  EXPECT_TRUE(root.Load(testFile).empty());
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
 
   using Pose = gz::math::Pose3d;
 
@@ -602,11 +646,32 @@ TEST(DOMJoint, WorldJointInvalidChildWorld)
   auto errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e << std::endl;
-  ASSERT_EQ(2u, errors.size());
+  ASSERT_EQ(3u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
       "Joint with name[J2] specified invalid child link [world]"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJoint, WorldJointInvalidResolvedParentSameAsChild)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf",
+      "world_joint_invalid_resolved_parent_same_as_child.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  std::cerr << errors << std::endl;
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_PARENT_SAME_AS_CHILD);
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "joint with name[J] in world with name["
+      "joint_invalid_resolved_parent_same_as_child.sdf] specified parent "
+      "frame [child_model] and child frame [child_frame] that both resolve "
+      "to [child_model::L]"));
 }
 
 /////////////////////////////////////////////////
