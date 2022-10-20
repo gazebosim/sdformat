@@ -93,6 +93,10 @@ TEST(DOMWorld, Construction)
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
       "PoseRelativeToGraph error: scope does not point to a valid graph"));
+
+  // world doesn't have graphs, so no names should exist in graphs
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph(""));
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph("model1"));
 }
 
 /////////////////////////////////////////////////
@@ -384,6 +388,9 @@ TEST(DOMWorld, AddModel)
   EXPECT_EQ(1u, world.ModelCount());
   EXPECT_FALSE(world.AddModel(model));
   EXPECT_EQ(1u, world.ModelCount());
+  // world doesn't have graphs, so no names should exist in graphs
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph(""));
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph("model1"));
 
   world.ClearModels();
   EXPECT_EQ(0u, world.ModelCount());
