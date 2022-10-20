@@ -161,6 +161,13 @@ namespace sdf
     /// \brief The specified parameter (values of SDFormat elements
     /// or attributes) type is unknown.
     UNKNOWN_PARAMETER_TYPE,
+
+    /// \brief Generic error to be thrown with SDF_ASSERT by the caller.
+    /// This has been created to help preserve behavior.
+    FATAL_ERROR,
+
+    /// \brief Generic warning saved as error due to WarningsPolicy config
+    WARNING,
   };
 
   class SDFORMAT_VISIBLE Error
