@@ -171,6 +171,16 @@ Errors Joint::Load(ElementPtr _sdf)
     this->dataPtr->axis[0].emplace();
     Errors axisErrors = this->dataPtr->axis[0]->Load(_sdf->GetElement("axis"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
+
+    if (this->dataPtr->axis[0]->MimicJoint())
+    {
+      if (this->dataPtr->axis[0]->MimicJoint()->joint == this->Name())
+      {
+        errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "Joint with name [" + this->dataPtr->name +
+          "] cannot mimic itself."});
+      }
+    }
   }
 
   if (_sdf->HasElement("axis2"))
@@ -178,6 +188,16 @@ Errors Joint::Load(ElementPtr _sdf)
     this->dataPtr->axis[1].emplace();
     Errors axisErrors = this->dataPtr->axis[1]->Load(_sdf->GetElement("axis2"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
+
+    if (this->dataPtr->axis[1]->MimicJoint())
+    {
+      if (this->dataPtr->axis[1]->MimicJoint()->joint == this->Name())
+      {
+        errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "Joint with name [" + this->dataPtr->name +
+          "] cannot mimic itself."});
+      }
+    }
   }
 
   if (_sdf->HasElement("screw_thread_pitch"))

@@ -218,3 +218,37 @@ TEST(DOMJointAxis, ParseMimic)
   EXPECT_EQ(mimicElement->Get<double>("multiplier"), 4);
   EXPECT_EQ(mimicElement->Get<double>("reference"), 3);
 }
+
+TEST(DOMJointAxis, ParseMimicInvalidJointName)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.10'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <joint name='revolute_joint' type='revolute'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='revolute_joint'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  EXPECT_EQ(errors.size(), 1);
+  std::stringstream ss;
+  ss << errors[0];
+  std::string errorMsg = "Error Code 5: Msg: Joint with name "
+    "[revolute_joint] cannot mimic itself.";
+  EXPECT_EQ(ss.str(), errorMsg);
+}
