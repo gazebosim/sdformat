@@ -86,7 +86,7 @@ class sdf::JointAxis::Implementation
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Joint to be mimicked.
-  public: mimicJoint mimic;
+  public: std::optional<mimicJoint> mimic = std::nullopt;
 };
 
 /////////////////////////////////////////////////
@@ -159,15 +159,17 @@ Errors JointAxis::Load(ElementPtr _sdf)
   auto mimicElement = _sdf->FindElement("mimic");
   if (mimicElement)
   {
-    this->dataPtr->mimic = mimicJoint();
-    this->dataPtr->mimic.joint = mimicElement->Get<std::string>("joint",
+    auto newMimicJoint = mimicJoint();
+    newMimicJoint.joint = mimicElement->Get<std::string>("joint",
         "").first;
-    this->dataPtr->mimic.multiplier = mimicElement->Get<double>("multiplier",
+    newMimicJoint.multiplier = mimicElement->Get<double>("multiplier",
         0).first;
-    this->dataPtr->mimic.offset = mimicElement->Get<double>("offset",
+    newMimicJoint.offset = mimicElement->Get<double>("offset",
         0).first;
-    this->dataPtr->mimic.reference = mimicElement->Get<double>("reference",
+    newMimicJoint.reference = mimicElement->Get<double>("reference",
         0).first;
+
+    this->dataPtr->mimic = std::make_optional(newMimicJoint);
   }
 
   return errors;
@@ -196,11 +198,11 @@ sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
 void JointAxis::SetMimicJoint(const mimicJoint
     _mimicJoint)
 {
-  this->dataPtr->mimic = _mimicJoint;
+  this->dataPtr->mimic = std::make_optional(_mimicJoint);
 }
 
 /////////////////////////////////////////////////
-mimicJoint JointAxis::MimicJoint() const
+std::optional<mimicJoint> JointAxis::MimicJoint() const
 {
   return this->dataPtr->mimic;
 }
@@ -433,15 +435,18 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   limitElem->GetElement("stiffness")->Set<double>(this->Stiffness());
   limitElem->GetElement("dissipation")->Set<double>(this->Dissipation());
 
-  sdf::ElementPtr mimicElement = axisElem->GetElement("mimic");
-  mimicElement->GetAttribute("joint")->SetFromString(
-    this->dataPtr->mimic.joint);
-  mimicElement->GetElement("multiplier")->Set<double>(
-      this->dataPtr->mimic.multiplier);
-  mimicElement->GetElement("offset")->Set<double>(
-      this->dataPtr->mimic.offset);
-  mimicElement->GetElement("reference")->Set<double>(
-      this->dataPtr->mimic.reference);
+  if (this->dataPtr->mimic)
+  {
+    sdf::ElementPtr mimicElement = axisElem->GetElement("mimic");
+    mimicElement->GetAttribute("joint")->SetFromString(
+      this->dataPtr->mimic->joint);
+    mimicElement->GetElement("multiplier")->Set<double>(
+        this->dataPtr->mimic->multiplier);
+    mimicElement->GetElement("offset")->Set<double>(
+        this->dataPtr->mimic->offset);
+    mimicElement->GetElement("reference")->Set<double>(
+        this->dataPtr->mimic->reference);
+  }
 
   return axisElem;
 }

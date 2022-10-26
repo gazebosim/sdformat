@@ -87,7 +87,7 @@ namespace sdf
     /// \return The joint name, multipler, and offset of the joint to
     /// be mimicked.
     /// \sa void SetMimicJoint(const mimicJoint)
-    public: mimicJoint MimicJoint() const;
+    public: std::optional<mimicJoint> MimicJoint() const;
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).
