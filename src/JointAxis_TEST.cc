@@ -81,11 +81,7 @@ TEST(DOMJointAxis, Construction)
   axis.SetDissipation(1.5);
   EXPECT_DOUBLE_EQ(1.5, axis.Dissipation());
 
-  sdf::mimicJoint mimic;
-  mimic.joint = "test_joint";
-  mimic.multiplier = 5.0;
-  mimic.offset = 1.0;
-  mimic.reference = 2.0;
+  sdf::mimicJoint mimic("test_joint", 5.0, 1.0, 2.0);
 
   EXPECT_FALSE(axis.MimicJoint());
   axis.SetMimicJoint(mimic);

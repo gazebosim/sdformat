@@ -43,6 +43,14 @@ namespace sdf
     double multiplier;
     double offset;
     double reference;
+
+    mimicJoint() = default;
+
+    mimicJoint(
+      std::string _joint, double _multiplier,
+      double _offset, double _reference) :
+      joint(_joint), multiplier(_multiplier),
+      offset(_offset), reference(_reference){}
   };
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
