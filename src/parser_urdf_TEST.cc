@@ -1011,9 +1011,6 @@ TEST(URDFParser, EnableNewWarnings)
         });
 #endif
 
-  // SDF_SUPPRESS_DEPRECATED_BEGIN
-  // sdf::URDF2SDF parser_(true);
-  // SDF_SUPPRESS_DEPRECATED_END
   sdf::URDF2SDF parser;
   sdf::ParserConfig config_;
   config_.URDFSetNewWarnings(true);
