@@ -150,7 +150,9 @@ void AddTransform(tinyxml2::XMLElement *_elem,
     const ignition::math::Pose3d &_transform);
 
 /// create SDF from URDF link
-void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link);
+void CreateSDF(tinyxml2::XMLElement *_root,
+               urdf::LinkConstSharedPtr _link,
+               const ParserConfig &_config);
 
 /// create SDF Link block based on URDF
 void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
@@ -2656,41 +2658,56 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void _DisplayDbgOrWarning(const std::string &_msg,
+                          const bool _enableNewWarnings) {
+  if (_enableNewWarnings)
+    sdfwarn << _msg;
+  else
+    sdfdbg << _msg;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(tinyxml2::XMLElement *_root,
-               urdf::LinkConstSharedPtr _link)
-{
+               urdf::LinkConstSharedPtr _link,
+               const ParserConfig &_config) {
   // must have an <inertial> block and cannot have zero mass.
   //  allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
   if (_link->name != "world" &&
-      ((!_link->inertial) || ignition::math::equal(_link->inertial->mass, 0.0)))
-  {
-    if (!_link->child_links.empty())
-    {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children links ignored.\n";
+      ((!_link->inertial) ||
+       ignition::math::equal(_link->inertial->mass, 0.0))) {
+
+    if (_link->inertial && ignition::math::equal(_link->inertial->mass, 0.0)) {
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has a mass considered zero ["
+             + std::to_string(_link->inertial->mass) +
+             + "].It is ignored.\n", _config.URDFEnableNewWarnings());
+      return;
     }
 
-    if (!_link->child_joints.empty())
-    {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children joints ignored.\n";
+    if (!_link->child_links.empty()) {
+       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+         + "] has no inertia, ["
+         + std::to_string(_link->child_links.size())
+         + "] children links ignored.\n", _config.URDFEnableNewWarnings());
     }
 
-    if (_link->parent_joint)
-    {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, "
-             << "parent joint [" << _link->parent_joint->name
-             << "] ignored.\n";
+    if (!_link->child_joints.empty()) {
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, ["
+             + std::to_string(_link->child_links.size())
+             + "] children joints ignored.\n", _config.URDFEnableNewWarnings());
     }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
-           << "] has no inertia, not modeled in sdf\n";
+    if (_link->parent_joint) {
+      _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+             + "] has no inertia, "
+             + "parent joint [" + _link->parent_joint->name
+             + "] ignored.\n", _config.URDFEnableNewWarnings());
+    }
+
+    _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
+           + "] has no inertia, not modeled in sdf\n", _config.URDFEnableNewWarnings());
     return;
   }
 
@@ -2706,7 +2723,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
-    CreateSDF(_root, _link->child_links[i]);
+    CreateSDF(_root, _link->child_links[i], _config);
   }
 }
 
@@ -3302,13 +3319,13 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
           child = rootLink->child_links.begin();
           child != rootLink->child_links.end(); ++child)
       {
-        CreateSDF(robot, (*child));
+        CreateSDF(robot, (*child), _config);
       }
     }
     else
     {
       // convert, starting from root link
-      CreateSDF(robot, rootLink);
+      CreateSDF(robot, rootLink, _config);
     }
 
     // insert the extensions without reference into <robot> root level

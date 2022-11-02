@@ -53,6 +53,12 @@ class sdf::ParserConfig::Implementation
   /// \brief Flag to use <include> tags within ToElement methods instead of
   /// the fully included model.
   public: bool toElementUseIncludeTag = true;
+
+  /// \brief Flag to consider previous issues in debug log as
+  /// warnings. This allow to keep log level backwards compatible
+  /// while providing an option to increase the warnings with new
+  /// relevant issues.
+  public: bool enableNewWarnings = false;
 };
 
 
@@ -172,4 +178,13 @@ void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
 bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
+}
+
+void ParserConfig::URDFSetNewWarnings(const bool _enable) {
+  this->dataPtr->enableNewWarnings = _enable;
+}
+
+/////////////////////////////////////////////////
+bool ParserConfig::URDFEnableNewWarnings() const {
+  return this->dataPtr->enableNewWarnings;
 }

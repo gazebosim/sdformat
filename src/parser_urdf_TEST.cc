@@ -21,6 +21,7 @@
 
 #include "sdf/sdf.hh"
 #include "parser_urdf.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 std::string getMinimalUrdfTxt()
@@ -992,6 +993,82 @@ TEST(URDFParser, ParseWhitespace)
 
   EXPECT_EQ("100", std::string(muElem->GetText()));
   EXPECT_EQ("1000", std::string(mu2Elem->GetText()));
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, EnableNewWarnings)
+{
+    // Redirect sdfwarn output (copied from model_dom.cc)
+    std::stringstream buffer;
+    sdf::testing::RedirectConsoleStream redir(
+        sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+          sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
+  // SDF_SUPPRESS_DEPRECATED_BEGIN
+  // sdf::URDF2SDF parser_(true);
+  // SDF_SUPPRESS_DEPRECATED_END
+  sdf::URDF2SDF parser;
+  sdf::ParserConfig config_;
+  config_.URDFSetNewWarnings(true);
+  tinyxml2::XMLDocument sdfResult;
+
+  {
+    tinyxml2::XMLDocument doc;
+    buffer.str("");
+    std::ostringstream stream_no_inertial;
+    // Testing no inertia and inertia 0.0
+    stream_no_inertial << "<robot name=\"test\">"
+                       << "  <link name=\"link_no_inertia\">"
+                       << "    <visual>"
+                       << "      <geometry>"
+                       << "         <sphere radius=\"1.0\"/>"
+                       << "      </geometry>"
+                       << "    </visual>"
+                       << "  </link>"
+                       << "</robot>";
+    doc.Parse(stream_no_inertial.str().c_str());
+    ASSERT_NO_THROW(parser.InitModelDoc(&doc, config_, &sdfResult));
+    // Check warning message
+    EXPECT_NE(
+      std::string::npos, buffer.str().find("] has no inertia"))
+      << buffer.str();
+  }
+
+  {
+    tinyxml2::XMLDocument doc;
+    buffer.str("");
+    std::ostringstream stream_no_mass;
+    // Testing mass zero
+    stream_no_mass << "<robot name=\"test\">"
+                   << "  <link name=\"link_no_mass\">"
+                   << "    <visual>"
+                   << "      <geometry>"
+                   << "         <sphere radius=\"1.0\"/>"
+                   << "      </geometry>"
+                   << "    </visual>"
+                   << "    <inertial>"
+                   << "      <mass value=\"0.000001\" />"
+                   << "      <origin xyz=\"0 0 0\" />"
+                   << "      <inertia ixx=\"0.001\" ixy=\"0.0\" ixz=\"0.0\""
+                   << "               iyy=\"0.001\" iyz=\"0.0\""
+                   << "               izz=\"0.001\" />"
+                   << "    </inertial>"
+                   << "  </link>"
+                   << "</robot>";
+  doc.Parse(stream_no_mass.str().c_str());
+  ASSERT_NO_THROW(parser.InitModelDoc(&doc, config_, &sdfResult));
+  // Check warning message
+  EXPECT_NE(
+    std::string::npos, buffer.str().find("] has a mass considered zero ["))
+    << buffer.str();
+  }
 }
 
 /////////////////////////////////////////////////

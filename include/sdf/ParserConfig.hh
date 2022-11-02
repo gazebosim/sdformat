@@ -174,6 +174,12 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
 
+  /// \brief set the enableNewWarnings flag to _enable value
+  public: void URDFSetNewWarnings(const bool _enable);
+
+  /// \brief get the enableNewWarnings flag value;
+  public: bool URDFEnableNewWarnings() const;
+
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };
