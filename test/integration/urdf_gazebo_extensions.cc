@@ -39,6 +39,10 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 
   auto modelDom = root.ModelByIndex(0);
   ASSERT_NE(nullptr, modelDom);
+
+  // Verify that model is not static
+  EXPECT_FALSE(modelDom->Static());
+
   sdf::ElementPtr model = modelDom->Element();
   for (sdf::ElementPtr joint = model->GetElement("joint"); joint;
        joint = joint->GetNextElement("joint"))
@@ -398,6 +402,7 @@ TEST(SDFParser, FixedJointSimple)
   auto model = root.ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("fixed_joint_simple", model->Name());
+  EXPECT_FALSE(model->Static());
 
   EXPECT_EQ(1u, model->LinkCount());
   EXPECT_TRUE(model->LinkNameExists("base"));
