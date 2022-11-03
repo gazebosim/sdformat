@@ -414,3 +414,39 @@ TEST(SDFParser, FixedJointSimple)
   ASSERT_TRUE(model->FrameNameExists("fixed_joint"));
   ASSERT_TRUE(model->FrameNameExists("child_link"));
 }
+
+/////////////////////////////////////////////////
+TEST(SDFParser, FixedJointStatic)
+{
+  const std::string urdfTestFile =
+      sdf::testing::TestFile("integration", "fixed_joint_static.urdf");
+
+  sdf::Root root;
+  auto errors = root.Load(urdfTestFile);
+  EXPECT_TRUE(errors.empty());
+  for (auto e : errors)
+  {
+    std::cerr << e << std::endl;
+  }
+
+  auto model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("fixed_joint_simple", model->Name());
+
+  EXPECT_TRUE(model->Static());
+
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_TRUE(model->LinkNameExists("base"));
+
+  auto link = model->LinkByName("base");
+  ASSERT_NE(nullptr, link);
+  auto massMatrix = link->Inertial().MassMatrix();
+  EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
+  EXPECT_EQ(2.0 * ignition::math::Matrix3d::Identity, massMatrix.Moi());
+
+  EXPECT_EQ(0u, model->JointCount());
+
+  EXPECT_EQ(2u, model->FrameCount());
+  ASSERT_TRUE(model->FrameNameExists("fixed_joint"));
+  ASSERT_TRUE(model->FrameNameExists("child_link"));
+}
