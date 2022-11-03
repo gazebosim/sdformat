@@ -25,6 +25,7 @@ SDFExtension::SDFExtension()
   this->material.clear();
   this->visual_blobs.clear();
   this->collision_blobs.clear();
+  this->isSetStaticFlag = false;
   this->setStaticFlag = false;
   this->isGravity = false;
   this->gravity = true;
@@ -74,6 +75,7 @@ SDFExtension::SDFExtension(const SDFExtension &_ge)
   this->material = _ge.material;
   this->visual_blobs = _ge.visual_blobs;
   this->collision_blobs = _ge.collision_blobs;
+  this->isSetStaticFlag = _ge.isSetStaticFlag;
   this->setStaticFlag = _ge.setStaticFlag;
   this->isGravity = _ge.isGravity;
   this->gravity = _ge.gravity;

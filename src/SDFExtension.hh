@@ -87,6 +87,7 @@ namespace sdf
     public: std::vector<std::shared_ptr<TiXmlElement> > collision_blobs;
 
     // body, default off
+    public: bool isSetStaticFlag;
     public: bool setStaticFlag;
     public: bool isGravity;
     public: bool gravity;
