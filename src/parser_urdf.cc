@@ -2694,20 +2694,21 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 
     if (!_link->child_joints.empty()) {
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
-             + "] has no inertia, ["
-             + std::to_string(_link->child_links.size())
-             + "] children joints ignored.\n", _config.URDFEnableNewWarnings());
+         + "] has no inertia, ["
+         + std::to_string(_link->child_links.size())
+         + "] children joints ignored.\n", _config.URDFEnableNewWarnings());
     }
 
     if (_link->parent_joint) {
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
-             + "] has no inertia, "
-             + "parent joint [" + _link->parent_joint->name
-             + "] ignored.\n", _config.URDFEnableNewWarnings());
+         + "] has no inertia, "
+         + "parent joint [" + _link->parent_joint->name
+         + "] ignored.\n", _config.URDFEnableNewWarnings());
     }
 
     _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
-           + "] has no inertia, not modeled in sdf\n", _config.URDFEnableNewWarnings());
+       + "] has no inertia, not modeled in sdf\n",
+       _config.URDFEnableNewWarnings());
     return;
   }
 
