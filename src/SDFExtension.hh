@@ -42,13 +42,6 @@ namespace sdf
     /// \brief Constructor
     public: SDFExtension();
 
-    /// \brief Copy constructor
-    /// \param[in] _ge SDFExtension to copy.
-    public: SDFExtension(const SDFExtension &_ge);
-
-    /// \brief Destructor
-    public: virtual ~SDFExtension() = default;
-
     // for reducing fixed joints and removing links
     public: std::string oldLinkName;
     public: ignition::math::Pose3d reductionTransform;
