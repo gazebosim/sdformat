@@ -219,6 +219,25 @@ TEST(DOMJointAxis, XyzExpressedIn)
   EXPECT_EQ(nullptr, model->FrameByIndex(0));
 }
 
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, InvalidExpressedIn)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_axis_invalid_expressed_in.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  ASSERT_EQ(2u, errors.size());
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find(
+      "axis xyz expressed-in frame with name[invalid] specified by joint with"
+      " name[joint] not found in model with"
+      " name[joint_axis_invalid_expressed_in]"));
+}
+
 //////////////////////////////////////////////////
 TEST(DOMJointAxis, InfiniteLimits)
 {
