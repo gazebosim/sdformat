@@ -44,13 +44,6 @@ namespace sdf
     /// \brief Constructor
     public: SDFExtension();
 
-    /// \brief Copy constructor
-    /// \param[in] _ge SDFExtension to copy.
-    public: SDFExtension(const SDFExtension &_ge);
-
-    /// \brief Destructor
-    public: virtual ~SDFExtension() = default;
-
     // for reducing fixed joints and removing links
     public: std::string oldLinkName;
     public: ignition::math::Pose3d reductionTransform;
@@ -89,6 +82,7 @@ namespace sdf
     public: std::vector<XMLDocumentPtr> collision_blobs;
 
     // body, default off
+    public: bool isSetStaticFlag;
     public: bool setStaticFlag;
     public: bool isGravity;
     public: bool gravity;
