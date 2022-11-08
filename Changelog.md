@@ -1323,8 +1323,14 @@
 1. sdf/camera.sdf: fields for projection matrix
     * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
 
+1. urdf: add //frame for reduced links/joints
+    * [Pull request #1148](https://github.com/gazebosim/sdformat/pull/1148)
+
 1. urdf: fix sensor/light pose for links lumped by fixed joints
     * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. urdf: fix test and clean up internals
+    * [Pull request #1126](https://github.com/gazebosim/sdformat/pull/1126)
 
 1. Ensure relocatable config files
     * [Pull request #419](https://github.com/gazebosim/sdformat/pull/419)
