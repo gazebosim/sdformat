@@ -19,6 +19,7 @@
 
 #include <list>
 
+#include "sdf/ParserConfig.hh"
 #include "sdf/sdf.hh"
 #include "parser_urdf.hh"
 #include "test_utils.hh"
@@ -1012,8 +1013,9 @@ TEST(URDFParser, EnableNewWarnings)
 #endif
 
   sdf::URDF2SDF parser;
+  sdf::EnforcementPolicy warn_policy = sdf::EnforcementPolicy::WARN;
   sdf::ParserConfig config_;
-  config_.URDFSetNewWarnings(true);
+  config_.SetURDFEnforcementPolicy(warn_policy);
   tinyxml2::XMLDocument sdfResult;
 
   {

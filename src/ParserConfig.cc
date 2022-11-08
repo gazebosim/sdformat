@@ -58,7 +58,7 @@ class sdf::ParserConfig::Implementation
   /// warnings. This allow to keep log level backwards compatible
   /// while providing an option to increase the warnings with new
   /// relevant issues.
-  public: bool enableNewWarnings = false;
+  public: EnforcementPolicy URDFEnforcementPolicy = EnforcementPolicy::LOG;
 };
 
 
@@ -180,11 +180,20 @@ bool ParserConfig::URDFPreserveFixedJoint() const
   return this->dataPtr->preserveFixedJoint;
 }
 
-void ParserConfig::URDFSetNewWarnings(const bool _enable) {
-  this->dataPtr->enableNewWarnings = _enable;
+void ParserConfig::SetURDFEnforcementPolicy(const EnforcementPolicy _policy)
+{
+  this->dataPtr->URDFEnforcementPolicy = _policy;
+  if (_policy == EnforcementPolicy::ERR)
+  {
+    sdfwarn << "The policies allowed when using SetURDFEnforcementPolicy are "
+               "LOG or WARN. ERR was used but it is considered a WARN not "
+               "to break backwards compatibility. Please change the code to "
+               "use WARN or LOG.\n";
+    this->dataPtr->URDFEnforcementPolicy = EnforcementPolicy::WARN;
+  }
 }
 
 /////////////////////////////////////////////////
-bool ParserConfig::URDFEnableNewWarnings() const {
-  return this->dataPtr->enableNewWarnings;
+EnforcementPolicy ParserConfig::URDFPolicy() const {
+  return this->dataPtr->URDFEnforcementPolicy;
 }

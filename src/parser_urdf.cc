@@ -2659,8 +2659,9 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 
 ////////////////////////////////////////////////////////////////////////////////
 void _DisplayDbgOrWarning(const std::string &_msg,
-                          const bool _enableNewWarnings) {
-  if (_enableNewWarnings)
+                          const EnforcementPolicy &_policy) {
+  SDF_ASSERT(_policy != EnforcementPolicy::ERR, "ERR Policy should not appear in ParserConfig");
+  if (_policy == EnforcementPolicy::WARN)
     sdfwarn << _msg;
   else
     sdfdbg << _msg;
@@ -2681,7 +2682,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
              + "] has a mass considered zero ["
              + std::to_string(_link->inertial->mass) +
-             + "].It is ignored.\n", _config.URDFEnableNewWarnings());
+             + "].It is ignored.\n", _config.URDFPolicy());
       return;
     }
 
@@ -2689,26 +2690,26 @@ void CreateSDF(tinyxml2::XMLElement *_root,
        _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
          + "] has no inertia, ["
          + std::to_string(_link->child_links.size())
-         + "] children links ignored.\n", _config.URDFEnableNewWarnings());
+         + "] children links ignored.\n", _config.URDFPolicy());
     }
 
     if (!_link->child_joints.empty()) {
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
          + "] has no inertia, ["
          + std::to_string(_link->child_links.size())
-         + "] children joints ignored.\n", _config.URDFEnableNewWarnings());
+         + "] children joints ignored.\n", _config.URDFPolicy());
     }
 
     if (_link->parent_joint) {
       _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
          + "] has no inertia, "
          + "parent joint [" + _link->parent_joint->name
-         + "] ignored.\n", _config.URDFEnableNewWarnings());
+         + "] ignored.\n", _config.URDFPolicy());
     }
 
     _DisplayDbgOrWarning(std::string("urdf2sdf: link[" + _link->name)
        + "] has no inertia, not modeled in sdf\n",
-       _config.URDFEnableNewWarnings());
+       _config.URDFPolicy());
     return;
   }
 

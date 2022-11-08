@@ -174,11 +174,13 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
 
-  /// \brief set the enableNewWarnings flag to _enable value
-  public: void URDFSetNewWarnings(const bool _enable);
+  /// \brief Set the policy to display URDF issues. Default is LOG. Only WARN
+  /// and LOG values are allowed since ERR can possibly break existing code.
+  /// ERR will be consider as WARN.
+  public: void SetURDFEnforcementPolicy(const EnforcementPolicy _policy);
 
-  /// \brief get the enableNewWarnings flag value;
-  public: bool URDFEnableNewWarnings() const;
+  /// \brief get the curren  URDFPolicy to display issues
+  public: EnforcementPolicy URDFPolicy() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
