@@ -2660,7 +2660,8 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 ////////////////////////////////////////////////////////////////////////////////
 void _DisplayDbgOrWarning(const std::string &_msg,
                           const EnforcementPolicy &_policy) {
-  SDF_ASSERT(_policy != EnforcementPolicy::ERR, "ERR Policy should not appear in ParserConfig");
+  SDF_ASSERT(_policy != EnforcementPolicy::ERR,
+             "ERR Policy should not appear in ParserConfig");
   if (_policy == EnforcementPolicy::WARN)
     sdfwarn << _msg;
   else
