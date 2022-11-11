@@ -51,6 +51,9 @@ class sdf::CameraPrivate
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Camera info topic.
+  public: std::string cameraInfoTopic = "";
+
   /// \brief Name of the camera.
   public: std::string name = "";
 
@@ -253,6 +256,9 @@ Errors Camera::Load(ElementPtr _sdf)
   // Read the camera's name
   loadName(_sdf, this->dataPtr->name);
 
+  this->dataPtr->cameraInfoTopic = _sdf->Get<std::string>("camera_info_topic",
+      this->dataPtr->cameraInfoTopic).first;
+
   this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
 
@@ -429,6 +435,18 @@ Errors Camera::Load(ElementPtr _sdf)
   }
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::CameraInfoTopic() const
+{
+  return this->dataPtr->cameraInfoTopic;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetCameraInfoTopic(const std::string &_cameraInfoTopic)
+{
+  this->dataPtr->cameraInfoTopic = _cameraInfoTopic;
 }
 
 /////////////////////////////////////////////////

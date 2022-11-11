@@ -273,6 +273,7 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ(ignition::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
             camSensor->RawPose());
   EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
+  EXPECT_EQ("/camera_sensor/camera_info", camSensor->CameraInfoTopic());
   EXPECT_EQ(640u, camSensor->ImageWidth());
   EXPECT_EQ(480u, camSensor->ImageHeight());
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, camSensor->PixelFormat());

@@ -25,6 +25,7 @@
         <enable_metrics>false</enable_metrics>
         <camera name="my_camera">
           <pose>0.1 0.2 0.3 0 0 0</pose>
+          <camera_info_topic>/camera_sensor/camera_info</camera_info_topic>
           <horizontal_fov>.75</horizontal_fov>
           <image>
             <width>640</width>
