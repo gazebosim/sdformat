@@ -109,7 +109,7 @@ namespace sdf
     /// \return Topic for the camera info
     public: std::string CameraInfoTopic() const;
 
-    /// \brief Get the camera info topic
+    /// \brief Set the camera info topic
     /// \param[in] _cameraInfoTopic Topic for the camera info.
     public: void SetCameraInfoTopic(const std::string& _cameraInfoTopic);
 
