@@ -273,6 +273,9 @@ TEST(DOMCamera, ToElement)
   cam.SetSaveFrames(true);
   cam.SetSaveFramesPath("/tmp");
   cam.SetOpticalFrameId("/optical_frame");
+  cam.SetCameraInfoTopic("/camera_info_test");
+  cam.SetTriggerTopic("/trigger_topic_test");
+  cam.SetTriggered(true);
 
   sdf::ElementPtr camElem = cam.ToElement();
   EXPECT_NE(nullptr, camElem);
@@ -293,6 +296,9 @@ TEST(DOMCamera, ToElement)
   EXPECT_TRUE(cam2.SaveFrames());
   EXPECT_EQ("/tmp", cam2.SaveFramesPath());
   EXPECT_EQ("/optical_frame", cam2.OpticalFrameId());
+  EXPECT_EQ("/camera_info_test", cam2.CameraInfoTopic());
+  EXPECT_EQ("/trigger_topic_test", cam2.TriggerTopic());
+  EXPECT_TRUE(cam2.Triggered());
 
   // make changes to DOM and verify ToElement produces updated values
   cam2.SetNearClip(0.33);

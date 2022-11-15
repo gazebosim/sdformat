@@ -1212,6 +1212,12 @@ sdf::ElementPtr Camera::ToElement() const
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
   imageElem->GetElement("anti_aliasing")->Set<uint32_t>(
       this->AntiAliasingValue());
+  elem->GetElement("camera_info_topic")->Set<std::string>(
+      this->CameraInfoTopic());
+  elem->GetElement("trigger_topic")->Set<std::string>(
+      this->TriggerTopic());
+  elem->GetElement("triggered")->Set<bool>(
+      this->Triggered());
 
   sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
