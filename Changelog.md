@@ -1058,6 +1058,14 @@
 
 ## libsdformat 9.X
 
+### libsdformat 9.9.1 (2022-11-08)
+
+1. Fix static URDF models with fixed joints
+    * [Pull request #1193](https://github.com/gazebosim/sdformat/pull/1193)
+
+1. Don't assume `CMAKE_INSTALL_*DIR` variables are relative
+    * [Pull request #1190](https://github.com/gazebosim/sdformat/pull/1190)
+
 ### libsdformat 9.9.0 (2022-09-07)
 
 1. sdf/camera.sdf: fields for projection matrix
