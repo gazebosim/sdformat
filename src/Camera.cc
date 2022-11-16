@@ -258,7 +258,7 @@ Errors Camera::Load(ElementPtr _sdf)
   this->dataPtr->cameraInfoTopic = _sdf->Get<std::string>("camera_info_topic",
       this->dataPtr->cameraInfoTopic).first;
 
-  this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
+  this->dataPtr->hfov = _sdf->Get<gz::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
 
   // Read the distortion
