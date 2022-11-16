@@ -52,6 +52,9 @@ class sdf::Camera::Implementation
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Camera info topic.
+  public: std::string cameraInfoTopic = "";
+
   /// \brief Name of the camera.
   public: std::string name = "";
 
@@ -252,6 +255,9 @@ Errors Camera::Load(ElementPtr _sdf)
   this->dataPtr->triggerTopic = _sdf->Get<std::string>("trigger_topic",
       this->dataPtr->triggerTopic).first;
 
+  this->dataPtr->cameraInfoTopic = _sdf->Get<std::string>("camera_info_topic",
+      this->dataPtr->cameraInfoTopic).first;
+
   this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
 
@@ -446,6 +452,18 @@ Errors Camera::Load(ElementPtr _sdf)
   }
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::CameraInfoTopic() const
+{
+  return this->dataPtr->cameraInfoTopic;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetCameraInfoTopic(const std::string &_cameraInfoTopic)
+{
+  this->dataPtr->cameraInfoTopic = _cameraInfoTopic;
 }
 
 /////////////////////////////////////////////////
@@ -1194,6 +1212,12 @@ sdf::ElementPtr Camera::ToElement() const
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
   imageElem->GetElement("anti_aliasing")->Set<uint32_t>(
       this->AntiAliasingValue());
+  elem->GetElement("camera_info_topic")->Set<std::string>(
+      this->CameraInfoTopic());
+  elem->GetElement("trigger_topic")->Set<std::string>(
+      this->TriggerTopic());
+  elem->GetElement("triggered")->Set<bool>(
+      this->Triggered());
 
   sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
