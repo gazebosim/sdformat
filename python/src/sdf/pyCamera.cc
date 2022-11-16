@@ -42,6 +42,10 @@ void defineCamera(pybind11::object module)
          "Get the name of the camera.")
     .def("set_name", &sdf::Camera::SetName,
          "Set the name of the camera.")
+    .def("set_camera_info_topic", &sdf::Camera::SetCameraInfoTopic,
+         "Set the camera info topic")
+    .def("camera_info_topic", &sdf::Camera::CameraInfoTopic,
+         "Get the camera info topic.")
     .def("triggered", &sdf::Camera::Triggered,
          "Get whether the camera is triggered by a topic.")
     .def("set_triggered", &sdf::Camera::SetTriggered,
