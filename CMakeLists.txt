@@ -28,7 +28,7 @@ set (SDF_PROTOCOL_VERSION 1.7)
 
 set (SDF_MAJOR_VERSION 9)
 set (SDF_MINOR_VERSION 9)
-set (SDF_PATCH_VERSION 0)
+set (SDF_PATCH_VERSION 1)
 
 set (SDF_VERSION ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION})
 set (SDF_VERSION_FULL ${SDF_MAJOR_VERSION}.${SDF_MINOR_VERSION}.${SDF_PATCH_VERSION})
@@ -70,13 +70,20 @@ if(LD_LIBRARY_PATH)
 endif()
 
 set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/sdformat-${SDF_VERSION}/sdf")
-set (LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)")
-set (BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR} CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)")
 set (USE_FULL_RPATH OFF CACHE BOOL "Set to true to enable full rpath")
+
+set (LIB_INSTALL_DIR "" CACHE STRING "Installation directory for libraries (relative to CMAKE_INSTALL_PREFIX)")
+set (BIN_INSTALL_DIR "" CACHE STRING "Installation directory for binaries (relative to CMAKE_INSTALL_PREFIX)")
+if (NOT LIB_INSTALL_DIR STREQUAL "")
+  set(CMAKE_INSTALL_LIBDIR "${LIB_INSTALL_DIR}")
+endif()
+if (NOT BIN_INSTALL_DIR STREQUAL "")
+  set(CMAKE_INSTALL_BINDIR "${BIN_INSTALL_DIR}")
+endif()
 
 set(PKG_NAME SDFormat)
 set(sdf_target sdformat${SDF_MAJOR_VERSION})
-set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
+set(sdf_config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME_LOWER}/")
 set(sdf_import_target_name ${PROJECT_EXPORT_NAME}::${sdf_target})
 set(sdf_target_output_filename "${sdf_target}-targets.cmake")
 
@@ -89,16 +96,16 @@ if (USE_FULL_RPATH)
   # (but later on when installing)
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 
   # add the automatically determined parts of the RPATH
   # which point to directories outside the build tree to the install RPATH
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   # the RPATH to be used when installing, but only if its not a system directory
-  list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" isSystemDir)
+  list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_FULL_LIBDIR}" isSystemDir)
   if("${isSystemDir}" STREQUAL "-1")
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
   endif("${isSystemDir}" STREQUAL "-1")
 endif()
 
@@ -304,12 +311,16 @@ else (build_errors)
 
   ########################################
   # Make the package config file
-  set(PC_CONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/pkgconfig)
+  set(PC_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig)
   file(RELATIVE_PATH
     PC_CONFIG_RELATIVE_PATH_TO_PREFIX
-    "${CMAKE_INSTALL_PREFIX}/${PC_CONFIG_INSTALL_DIR}"
+    "${PC_CONFIG_INSTALL_DIR}"
     "${CMAKE_INSTALL_PREFIX}"
   )
+  string(REPLACE "${CMAKE_INSTALL_PREFIX}" "\${prefix}"
+    SDFORMAT_PKG_CONFIG_LIBDIR "${CMAKE_INSTALL_FULL_LIBDIR}")
+  string(REPLACE "${CMAKE_INSTALL_PREFIX}" "\${prefix}"
+    SDFORMAT_PKG_CONFIG_INCLUDEDIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
   configure_file(${CMAKE_SOURCE_DIR}/cmake/sdformat_pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME_LOWER}.pc @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME_LOWER}.pc DESTINATION
@@ -325,7 +336,7 @@ else (build_errors)
   set(sdf_config_input  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdf_config.cmake.in")
   set(sdf_config_output "cmake/${sdf_target}-config.cmake")
   set(sdf_version_output "cmake/${sdf_target}-config-version.cmake")
-  set(sdf_config_install_dir "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/")
+  set(sdf_config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME_LOWER}/")
 
   #--------------------------------------
   # Configure and install the config file
@@ -333,6 +344,7 @@ else (build_errors)
     ${sdf_config_input}
     ${sdf_config_output}
     INSTALL_DESTINATION ${sdf_config_install_dir}
+    PATH_VARS CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR
     NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
   #--------------------------------------

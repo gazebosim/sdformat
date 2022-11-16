@@ -105,6 +105,14 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
+    /// \brief Get the camera info topic
+    /// \return Topic for the camera info
+    public: std::string CameraInfoTopic() const;
+
+    /// \brief Set the camera info topic
+    /// \param[in] _cameraInfoTopic Topic for the camera info.
+    public: void SetCameraInfoTopic(const std::string& _cameraInfoTopic);
+
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has

@@ -1,6 +1,6 @@
 prefix=${pcfiledir}/@PC_CONFIG_RELATIVE_PATH_TO_PREFIX@
-libdir=${prefix}/@LIB_INSTALL_DIR@
-includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+libdir=@SDFORMAT_PKG_CONFIG_LIBDIR@
+includedir=@SDFORMAT_PKG_CONFIG_INCLUDEDIR@
 
 Name: SDF
 Description: Robot Modeling Language (SDF)
