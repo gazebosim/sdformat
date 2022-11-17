@@ -1,5 +1,11 @@
 ## libsdformat 9.X
 
+### libsdformat 9.10.0 (2022-11-17)
+
+1. Added camera info topic to Camera
+    * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
+    * [Pull request #1201](https://github.com/gazebosim/sdformat/pull/1201)
+
 ### libsdformat 9.9.1 (2022-11-08)
 
 1. Fix static URDF models with fixed joints
