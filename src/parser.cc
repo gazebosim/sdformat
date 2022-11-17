@@ -28,6 +28,7 @@
 #include "sdf/Filesystem.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
@@ -2599,6 +2600,63 @@ void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors)
       checkScopedJointParentChildNames(model, "model", _errors);
     }
     checkScopedJointParentChildNames(world, "world", _errors);
+  }
+}
+
+//////////////////////////////////////////////////
+template <typename TPtr>
+void checkScopedJointAxisExpressedInValues(
+    const TPtr _scope, const std::string &_scopeType, Errors &errors)
+{
+  for (uint64_t j = 0; j < _scope->JointCount(); ++j)
+  {
+    auto joint = _scope->JointByIndex(j);
+    for (uint64_t a = 0; a < 2; ++a)
+    {
+      auto axis = joint->Axis(a);
+      if (axis)
+      {
+        const std::string &xyzExpressedIn = axis->XyzExpressedIn();
+        const std::string xyzExpressedInLocal =
+            sdf::SplitName(xyzExpressedIn).second;
+
+        // If a frame name is specfied, check that the frame exists.
+        if (!xyzExpressedIn.empty() &&
+            !_scope->NameExistsInFrameAttachedToGraph(xyzExpressedIn))
+        {
+          errors.push_back({ErrorCode::JOINT_AXIS_EXPRESSED_IN_INVALID,
+            "axis xyz expressed-in frame with name[" + xyzExpressedIn +
+            "] specified by joint with name[" + joint->Name() +
+            "] not found in " + _scopeType + " with name[" + _scope->Name()
+            + "]."});
+        }
+
+        // Also try resolving the axis to its default frame.
+        gz::math::Vector3d xyz;
+        auto xyzErrors = axis->ResolveXyz(xyz);
+        errors.insert(errors.end(), xyzErrors.begin(), xyzErrors.end());
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void checkJointAxisExpressedInValues(const sdf::Root *_root, Errors &_errors)
+{
+  if (_root->Model())
+  {
+    checkScopedJointAxisExpressedInValues(_root->Model(), "model", _errors);
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      checkScopedJointAxisExpressedInValues(model, "model", _errors);
+    }
+    checkScopedJointAxisExpressedInValues(world, "world", _errors);
   }
 }
 
