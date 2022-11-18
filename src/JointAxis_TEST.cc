@@ -251,13 +251,60 @@ TEST(DOMJointAxis, ParseInvalidSelfMimic)
 
   sdf::Root root;
   auto errors = root.LoadSdfString(sdf);
-  EXPECT_EQ(errors.size(), 2) << errors;
+  EXPECT_EQ(errors.size(), 4) << errors;
   for (const auto &error : errors)
   {
     std::stringstream ss;
     ss << error;
     const std::string errorMsg = "Error Code 39: Msg: Joint with name "
       "[self_mimic] cannot mimic itself.";
+    EXPECT_EQ(ss.str(), errorMsg);
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimicInvalidJointName)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.10'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <joint name='joint' type='universal'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='invalid'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "      <axis2>"
+    "        <xyz>1 0 0</xyz>"
+    "        <mimic joint='invalid'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis2>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  EXPECT_EQ(errors.size(), 2) << errors;
+  for (const auto &error : errors)
+  {
+    std::stringstream ss;
+    ss << error;
+    const std::string errorMsg = "Error Code 39: Msg: A joint with"
+      " name[invalid] specified by an axis mimic in joint with name[joint] not"
+      " found in model with name[test].";
     EXPECT_EQ(ss.str(), errorMsg);
   }
 }

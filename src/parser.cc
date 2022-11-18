@@ -2661,6 +2661,62 @@ void checkJointAxisExpressedInValues(const sdf::Root *_root, Errors &_errors)
 }
 
 //////////////////////////////////////////////////
+template <typename TPtr>
+void checkScopedJointAxisMimicValues(
+    const TPtr _scope, const std::string &_scopeType, Errors &errors)
+{
+  for (uint64_t j = 0; j < _scope->JointCount(); ++j)
+  {
+    auto joint = _scope->JointByIndex(j);
+    for (uint64_t a = 0; a < 2; ++a)
+    {
+      auto axis = joint->Axis(a);
+      if (axis)
+      {
+        auto mimic = axis->MimicJoint();
+        if (mimic)
+        {
+          if (mimic->joint == joint->Name())
+          {
+            errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+              "Joint with name [" + joint->Name() +
+              "] cannot mimic itself."});
+          }
+          else if (!_scope->JointByName(mimic->joint))
+          {
+            errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+              "A joint with name[" + mimic->joint +
+              "] specified by an axis mimic in joint with name[" + joint->Name()
+              + "] not found in " + _scopeType + " with name[" + _scope->Name()
+              + "]."});
+          }
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void checkJointAxisMimicValues(const sdf::Root *_root, Errors &_errors)
+{
+  if (_root->Model())
+  {
+    checkScopedJointAxisMimicValues(_root->Model(), "model", _errors);
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      checkScopedJointAxisMimicValues(model, "model", _errors);
+    }
+    checkScopedJointAxisMimicValues(world, "world", _errors);
+  }
+}
+
+//////////////////////////////////////////////////
 bool shouldValidateElement(sdf::ElementPtr _elem)
 {
   if (_elem->GetName() == "plugin")
