@@ -267,6 +267,8 @@ void defineCamera(pybind11::object module)
          "Set the visibility mask of a camera")
     .def("has_lens_intrinsics", &sdf::Camera::HasLensIntrinsics,
          "Get whether or not the camera has instrinsics values set")
+    .def("has_lens_intrinsics", &sdf::Camera::HasLensProjection,
+         "Get whether or not the camera has proejction values set")
     .def("__copy__", [](const sdf::Camera &self) {
       return sdf::Camera(self);
     })

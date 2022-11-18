@@ -566,6 +566,10 @@ namespace sdf
     /// \return True if the camera has instrinsics values set, false otherwise
     public: bool HasLensIntrinsics() const;
 
+    /// \brief Get whether or not the camera has projection values set
+    /// \return True if the camera has projection values set, false otherwise
+    public: bool HasLensProjection() const;
+
     /// \brief Create and return an SDF element filled with data from this
     /// camera.
     /// Note that parameter passing functionality is not captured with this
