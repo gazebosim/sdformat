@@ -172,6 +172,10 @@ namespace sdf
     /// \brief The joint axis expressed-in value does not match the name of an
     /// existing frame in the current scope.
     JOINT_AXIS_EXPRESSED_IN_INVALID,
+
+    /// \brief The joint axis mimic does not refer to a valid joint in the
+    /// current scope.
+    JOINT_AXIS_MIMIC_INVALID,
   };
 
   class SDFORMAT_VISIBLE Error

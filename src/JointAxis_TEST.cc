@@ -168,6 +168,7 @@ TEST(DOMJointAxis, ZeroNormVectorReturnsError)
   EXPECT_EQ(errors[0].Message(), "The norm of the xyz vector cannot be zero");
 }
 
+/////////////////////////////////////////////////
 TEST(DOMJointAxis, ParseMimic)
 {
   std::string sdf =
@@ -215,7 +216,8 @@ TEST(DOMJointAxis, ParseMimic)
   EXPECT_EQ(mimicElement->Get<double>("reference"), 3);
 }
 
-TEST(DOMJointAxis, ParseMimicInvalidJointName)
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseInvalidSelfMimic)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
@@ -223,28 +225,39 @@ TEST(DOMJointAxis, ParseMimicInvalidJointName)
     "  <model name='test'>"
     "    <link name='link1'/>"
     "    <link name='link2'/>"
-    "    <joint name='revolute_joint' type='revolute'>"
+    "    <joint name='self_mimic' type='universal'>"
     "      <pose>1 0 0 0 0 0</pose>"
     "      <child>link1</child>"
     "      <parent>link2</parent>"
     "      <axis>"
     "        <xyz>0 0 1</xyz>"
-    "        <mimic joint='revolute_joint'>"
+    "        <mimic joint='self_mimic'>"
     "          <multiplier>4</multiplier>"
     "          <offset>2</offset>"
     "          <reference>3</reference>"
     "        </mimic>"
     "      </axis>"
+    "      <axis2>"
+    "        <xyz>1 0 0</xyz>"
+    "        <mimic joint='self_mimic'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis2>"
     "    </joint>"
     "  </model>"
     "</sdf>";
 
   sdf::Root root;
   auto errors = root.LoadSdfString(sdf);
-  EXPECT_EQ(errors.size(), 1);
-  std::stringstream ss;
-  ss << errors[0];
-  std::string errorMsg = "Error Code 5: Msg: Joint with name "
-    "[revolute_joint] cannot mimic itself.";
-  EXPECT_EQ(ss.str(), errorMsg);
+  EXPECT_EQ(errors.size(), 2) << errors;
+  for (const auto &error : errors)
+  {
+    std::stringstream ss;
+    ss << error;
+    const std::string errorMsg = "Error Code 39: Msg: Joint with name "
+      "[self_mimic] cannot mimic itself.";
+    EXPECT_EQ(ss.str(), errorMsg);
+  }
 }
