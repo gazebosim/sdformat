@@ -186,6 +186,9 @@ class sdf::CameraPrivate
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
+  /// \brief True if this camera has custom projection values
+  public: bool hasProjection = false;
+
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityMask{4294967295u};
 };
@@ -426,7 +429,7 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensProjectionTx).first;
       this->dataPtr->lensProjectionTy = projection->Get<double>("ty",
           this->dataPtr->lensProjectionTy).first;
-
+      this->dataPtr->hasProjection = true;
     }
   }
 
@@ -972,6 +975,7 @@ double Camera::LensProjectionFx() const
 void Camera::SetLensProjectionFx(double _fx_p)
 {
   this->dataPtr->lensProjectionFx = _fx_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -984,6 +988,7 @@ double Camera::LensProjectionFy() const
 void Camera::SetLensProjectionFy(double _fy_p)
 {
   this->dataPtr->lensProjectionFy = _fy_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -996,6 +1001,7 @@ double Camera::LensProjectionCx() const
 void Camera::SetLensProjectionCx(double _cx_p)
 {
   this->dataPtr->lensProjectionCx = _cx_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1008,6 +1014,7 @@ double Camera::LensProjectionCy() const
 void Camera::SetLensProjectionCy(double _cy_p)
 {
   this->dataPtr->lensProjectionCy = _cy_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1020,6 +1027,7 @@ double Camera::LensProjectionTx() const
 void Camera::SetLensProjectionTx(double _tx)
 {
   this->dataPtr->lensProjectionTx = _tx;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1032,6 +1040,7 @@ double Camera::LensProjectionTy() const
 void Camera::SetLensProjectionTy(double _ty)
 {
   this->dataPtr->lensProjectionTy = _ty;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1098,4 +1107,10 @@ uint32_t Camera::VisibilityMask() const
 void Camera::SetVisibilityMask(uint32_t _mask)
 {
   this->dataPtr->visibilityMask = _mask;
+}
+
+/////////////////////////////////////////////////
+bool Camera::HasLensProjection() const
+{
+  return this->dataPtr->hasProjection;
 }
