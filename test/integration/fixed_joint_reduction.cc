@@ -760,7 +760,7 @@ TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
   EXPECT_EQ(gz::math::Vector3d(-0.707108, 1.70711, 0), xyzOffset);
   EXPECT_EQ(gz::math::Vector3d(0, 0, 1.5708), rpyOffset);
 
-  bool correctedOffset = plugin->Get<bool>("gz::corrected_offsets");
+  bool correctedOffset = plugin->Get<bool>("ignition::corrected_offsets");
   EXPECT_TRUE(correctedOffset);
 }
 
