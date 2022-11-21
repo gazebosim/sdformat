@@ -196,6 +196,7 @@ class CameraTEST(unittest.TestCase):
       self.assertAlmostEqual(2.3, cam.lens_intrinsics_skew())
 
       self.assertTrue(cam.has_lens_intrinsics())
+      self.assertFalse(cam.has_lens_projection())
 
       self.assertEqual(4294967295, cam.visibility_mask())
       cam.set_visibility_mask(123)
