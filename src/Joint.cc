@@ -176,7 +176,7 @@ Errors Joint::Load(ElementPtr _sdf)
     {
       if (this->dataPtr->axis[0]->MimicJoint()->joint == this->Name())
       {
-        errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+        errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
           "Joint with name [" + this->dataPtr->name +
           "] cannot mimic itself."});
       }
@@ -193,7 +193,7 @@ Errors Joint::Load(ElementPtr _sdf)
     {
       if (this->dataPtr->axis[1]->MimicJoint()->joint == this->Name())
       {
-        errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+        errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
           "Joint with name [" + this->dataPtr->name +
           "] cannot mimic itself."});
       }

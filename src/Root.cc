@@ -389,6 +389,9 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   // Check that //axis*/xyz/@expressed_in values specify valid frames.
   checkJointAxisExpressedInValues(this, errors);
 
+  // Check that //axis*/mimic/@joint values specify valid joints.
+  checkJointAxisMimicValues(this, errors);
+
   return errors;
 }
 
