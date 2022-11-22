@@ -86,7 +86,7 @@ class sdf::JointAxis::Implementation
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Joint to be mimicked.
-  public: std::optional<mimicJoint> mimic = std::nullopt;
+  public: std::optional<MimicJointContainer> mimic = std::nullopt;
 };
 
 /////////////////////////////////////////////////
@@ -159,7 +159,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
   auto mimicElement = _sdf->FindElement("mimic");
   if (mimicElement)
   {
-    auto newMimicJoint = mimicJoint();
+    auto newMimicJoint = MimicJointContainer();
     newMimicJoint.joint = mimicElement->Get<std::string>("joint",
         "").first;
     newMimicJoint.multiplier = mimicElement->Get<double>("multiplier",
@@ -195,14 +195,14 @@ sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetMimicJoint(const mimicJoint
+void JointAxis::SetMimicJoint(const MimicJointContainer
     _mimicJoint)
 {
   this->dataPtr->mimic = std::make_optional(_mimicJoint);
 }
 
 /////////////////////////////////////////////////
-std::optional<mimicJoint> JointAxis::MimicJoint() const
+std::optional<MimicJointContainer> JointAxis::MimicJoint() const
 {
   return this->dataPtr->mimic;
 }
