@@ -57,7 +57,7 @@ namespace sdf
     mimicJoint(
       std::string _joint, double _multiplier,
       double _offset, double _reference) :
-      joint(_joint), multiplier(_multiplier),
+      joint(std::move(_joint)), multiplier(_multiplier),
       offset(_offset), reference(_reference){}
   };
 
