@@ -35,13 +35,20 @@ namespace sdf
   // Forward declare private data class.
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
-  /// Mimic joint class.
-  class mimicJoint
+  /// \brief Helper class to hold contents of the mimic joint tag.
+  /// The parent and child joint positions are related with:
+  /// multiplier * (parentJoint - reference) + offset = childJoint.
+  class SDFORMAT_VISIBLE mimicJoint
   {
   public:
+    /// \brief The joint to be mimicked, i.e. the parent joint.
     std::string joint;
+    /// \brief Multiplication factor to be applied to parent joint's pose.
     double multiplier;
+    /// \brief Offset to be added to parent joint's position after multiplication.
     double offset;
+    /// \brief Position of the parent joint will be measured with respect to this
+    /// reference point.
     double reference;
 
     mimicJoint() = default;
