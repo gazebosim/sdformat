@@ -45,10 +45,11 @@ namespace sdf
     std::string joint;
     /// \brief Multiplication factor to be applied to parent joint's pose.
     double multiplier;
-    /// \brief Offset to be added to parent joint's position after multiplication.
+    /// \brief Offset to be added to parent joint's position after
+    /// multiplication.
     double offset;
-    /// \brief Position of the parent joint will be measured with respect to this
-    /// reference point.
+    /// \brief Position of the parent joint will be measured with
+    /// respect to this reference point.
     double reference;
 
     mimicJoint() = default;
