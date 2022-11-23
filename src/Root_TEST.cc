@@ -35,6 +35,7 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(nullptr, root.Element());
   EXPECT_EQ(SDF_VERSION, root.Version());
   EXPECT_FALSE(root.WorldNameExists("default"));
+  EXPECT_TRUE(root.WorldByName("default") == nullptr);
   EXPECT_FALSE(root.WorldNameExists(""));
   EXPECT_EQ(0u, root.WorldCount());
   EXPECT_TRUE(root.WorldByIndex(0) == nullptr);
@@ -66,6 +67,7 @@ TEST(DOMRoot, MoveAssignmentOperator)
   EXPECT_EQ("test_root", root2.Version());
 }
 
+/////////////////////////////////////////////////
 TEST(DOMRoot, WorldNamesFromFile)
 {
   const auto path = sdf::testing::TestFile("sdf", "basic_shapes.sdf");
@@ -603,4 +605,28 @@ TEST(DOMRoot, CopyConstructor)
     root3.LoadSdfString(elem->ToString(""));
     testFrame1(root3);
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, WorldByName)
+{
+  sdf::Root root;
+  EXPECT_EQ(0u, root.WorldCount());
+
+  sdf::World world;
+  world.SetName("world1");
+  EXPECT_TRUE(root.AddWorld(world).empty());
+  EXPECT_EQ(1u, root.WorldCount());
+
+  EXPECT_TRUE(root.WorldNameExists("world1"));
+  const sdf::World *wPtr = root.WorldByName("world1");
+  EXPECT_NE(nullptr, wPtr);
+
+  // Modify the world
+  sdf::World *w = root.WorldByName("world1");
+  ASSERT_NE(nullptr, w);
+  EXPECT_EQ("world1", w->Name());
+  w->SetName("world2");
+  ASSERT_TRUE(root.WorldNameExists("world2"));
+  EXPECT_EQ("world2", root.WorldByName("world2")->Name());
 }

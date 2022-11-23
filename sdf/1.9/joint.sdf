@@ -37,7 +37,12 @@
   </element>
 
   <element name="thread_pitch" type="double" default="1.0" required="0">
-    <description>Parameter for screw joints.</description>
+    <description>
+      Parameter for screw joints representing the ratio between rotation
+      and translation of the joint. This parameter has been interpreted by
+      gazebo-classic as having units of radians / meter with a positive value
+      corresponding to a left-handed thread.
+    </description>
   </element>
 
   <element name="axis" required="0">

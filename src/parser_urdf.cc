@@ -1363,6 +1363,7 @@ void URDF2SDF::ParseSDFExtension(tinyxml2::XMLDocument &_urdfXml)
       else if (strcmp(childElem->Name(), "static") == 0)
       {
         std::string valueStr = GetKeyValueAsString(childElem);
+        sdf->isSetStaticFlag = true;
 
         // default of setting static flag is false
         if (lowerStr(valueStr) == "true" || lowerStr(valueStr) == "yes" ||
@@ -2311,14 +2312,17 @@ void InsertSDFExtensionRobot(tinyxml2::XMLElement *_elem)
       for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin(); ge != sdfIt->second.end(); ++ge)
       {
-        // insert static flag
-        if ((*ge)->setStaticFlag)
+        if ((*ge)->isSetStaticFlag)
         {
-          AddKeyValue(_elem, "static", "true");
-        }
-        else
-        {
-          AddKeyValue(_elem, "static", "false");
+          // insert static flag
+          if ((*ge)->setStaticFlag)
+          {
+            AddKeyValue(_elem, "static", "true");
+          }
+          else
+          {
+            AddKeyValue(_elem, "static", "false");
+          }
         }
 
         // copy extension containing blobs and without reference

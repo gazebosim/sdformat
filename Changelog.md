@@ -1,5 +1,29 @@
 ## libsdformat 13.X
 
+### libsdformat 13.2.0 (2022-10-20)
+
+1. sdf/1.10/joint.sdf: add `screw_thread_pitch`
+    * [Pull request #1168](https://github.com/gazebosim/sdformat/pull/1168)
+
+1. sdf/1.10: support //world/joint specification
+    * [Pull request #1117](https://github.com/gazebosim/sdformat/pull/1117)
+    * [Pull request #1189](https://github.com/gazebosim/sdformat/pull/1189)
+
+1. Model: add sdf::Errors output to API methods
+    * [Pull request #1122](https://github.com/gazebosim/sdformat/pull/1122)
+
+1. Added Root::WorldByName
+    * [Pull request #1121](https://github.com/gazebosim/sdformat/pull/1121)
+
+1. Python: add OpticalFrameID APIs to pyCamera
+    * [Pull request #1184](https://github.com/gazebosim/sdformat/pull/1184)
+
+1. Fix `GZ_PYTHON_INSTALL_PATH` value
+    * [Pull request #1183](https://github.com/gazebosim/sdformat/pull/1183)
+
+1. Rename python bindings import library for Windows
+    * [Pull request #1165](https://github.com/gazebosim/sdformat/pull/1165)
+
 ### libsdformat 13.1.0 (2022-10-12)
 
 1. Add test helper python package for encapsulating versioned python packages
@@ -1294,13 +1318,27 @@
 
 ## libsdformat 9.X
 
+### libsdformat 9.9.1 (2022-11-08)
+
+1. Fix static URDF models with fixed joints
+    * [Pull request #1193](https://github.com/gazebosim/sdformat/pull/1193)
+
+1. Don't assume `CMAKE_INSTALL_*DIR` variables are relative
+    * [Pull request #1190](https://github.com/gazebosim/sdformat/pull/1190)
+
 ### libsdformat 9.9.0 (2022-09-07)
 
 1. sdf/camera.sdf: fields for projection matrix
     * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
 
+1. urdf: add //frame for reduced links/joints
+    * [Pull request #1148](https://github.com/gazebosim/sdformat/pull/1148)
+
 1. urdf: fix sensor/light pose for links lumped by fixed joints
     * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. urdf: fix test and clean up internals
+    * [Pull request #1126](https://github.com/gazebosim/sdformat/pull/1126)
 
 1. Ensure relocatable config files
     * [Pull request #419](https://github.com/gazebosim/sdformat/pull/419)

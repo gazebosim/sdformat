@@ -166,14 +166,17 @@ class SDFORMAT_VISIBLE ParserConfig
   public: void RegisterCustomModelParser(CustomModelParser _modelParser);
 
   /// \brief Get the registered custom model parsers
+  /// \return Vector of registered model parser callbacks.
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Set the preserveFixedJoint flag.
-  /// \param[in] _preserveFixedJoint flag value to set
+  /// \param[in] _preserveFixedJoint True to preserve fixed joints, false to
+  /// reduce the fixed joints and merge the child link into the parent.
   public: void URDFSetPreserveFixedJoint(bool _preserveFixedJoint);
 
   /// \brief Get the preserveFixedJoint flag value.
-  /// \return Current flag value
+  /// \return True to preserve fixed joints, false to reduce the fixed joints
+  /// and merge the child link into the parent.
   public: bool URDFPreserveFixedJoint() const;
 
   /// \brief Set the storeResolvedURIs flag value.
