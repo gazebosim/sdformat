@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from sdformat13 import Gui, Plugin
+from gz_test_deps.sdformat import Gui, Plugin
 import unittest
 
 

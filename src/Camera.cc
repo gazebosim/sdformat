@@ -52,6 +52,9 @@ class sdf::Camera::Implementation
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
+  /// \brief Camera info topic.
+  public: std::string cameraInfoTopic = "";
+
   /// \brief Name of the camera.
   public: std::string name = "";
 
@@ -205,6 +208,9 @@ class sdf::Camera::Implementation
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
+  /// \brief True if this camera has custom projection values
+  public: bool hasProjection = false;
+
   /// \brief True if this camera has custom intrinsics values
   public: bool hasIntrinsics = false;
 
@@ -251,6 +257,9 @@ Errors Camera::Load(ElementPtr _sdf)
 
   this->dataPtr->triggerTopic = _sdf->Get<std::string>("trigger_topic",
       this->dataPtr->triggerTopic).first;
+
+  this->dataPtr->cameraInfoTopic = _sdf->Get<std::string>("camera_info_topic",
+      this->dataPtr->cameraInfoTopic).first;
 
   this->dataPtr->hfov = _sdf->Get<gz::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
@@ -435,7 +444,7 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensProjectionTx).first;
       this->dataPtr->lensProjectionTy = projection->Get<double>("ty",
           this->dataPtr->lensProjectionTy).first;
-
+      this->dataPtr->hasProjection = true;
     }
   }
 
@@ -446,6 +455,18 @@ Errors Camera::Load(ElementPtr _sdf)
   }
 
   return errors;
+}
+
+/////////////////////////////////////////////////
+std::string Camera::CameraInfoTopic() const
+{
+  return this->dataPtr->cameraInfoTopic;
+}
+
+/////////////////////////////////////////////////
+void Camera::SetCameraInfoTopic(const std::string &_cameraInfoTopic)
+{
+  this->dataPtr->cameraInfoTopic = _cameraInfoTopic;
 }
 
 /////////////////////////////////////////////////
@@ -1037,6 +1058,7 @@ double Camera::LensProjectionFx() const
 void Camera::SetLensProjectionFx(double _fx_p)
 {
   this->dataPtr->lensProjectionFx = _fx_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1049,6 +1071,7 @@ double Camera::LensProjectionFy() const
 void Camera::SetLensProjectionFy(double _fy_p)
 {
   this->dataPtr->lensProjectionFy = _fy_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1061,6 +1084,7 @@ double Camera::LensProjectionCx() const
 void Camera::SetLensProjectionCx(double _cx_p)
 {
   this->dataPtr->lensProjectionCx = _cx_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1073,6 +1097,7 @@ double Camera::LensProjectionCy() const
 void Camera::SetLensProjectionCy(double _cy_p)
 {
   this->dataPtr->lensProjectionCy = _cy_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1085,6 +1110,7 @@ double Camera::LensProjectionTx() const
 void Camera::SetLensProjectionTx(double _tx)
 {
   this->dataPtr->lensProjectionTx = _tx;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1097,6 +1123,7 @@ double Camera::LensProjectionTy() const
 void Camera::SetLensProjectionTy(double _ty)
 {
   this->dataPtr->lensProjectionTy = _ty;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1173,6 +1200,12 @@ bool Camera::HasLensIntrinsics() const
 }
 
 /////////////////////////////////////////////////
+bool Camera::HasLensProjection() const
+{
+  return this->dataPtr->hasProjection;
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Camera::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
@@ -1194,6 +1227,12 @@ sdf::ElementPtr Camera::ToElement() const
   imageElem->GetElement("format")->Set<std::string>(this->PixelFormatStr());
   imageElem->GetElement("anti_aliasing")->Set<uint32_t>(
       this->AntiAliasingValue());
+  elem->GetElement("camera_info_topic")->Set<std::string>(
+      this->CameraInfoTopic());
+  elem->GetElement("trigger_topic")->Set<std::string>(
+      this->TriggerTopic());
+  elem->GetElement("triggered")->Set<bool>(
+      this->Triggered());
 
   sdf::ElementPtr clipElem = elem->GetElement("clip");
   clipElem->GetElement("near")->Set<double>(this->NearClip());
@@ -1271,6 +1310,16 @@ sdf::ElementPtr Camera::ToElement() const
     intrinsicsElem->GetElement("cx")->Set<double>(this->LensIntrinsicsCx());
     intrinsicsElem->GetElement("cy")->Set<double>(this->LensIntrinsicsCy());
     intrinsicsElem->GetElement("s")->Set<double>(this->LensIntrinsicsSkew());
+  }
+  if (this->HasLensProjection())
+  {
+    sdf::ElementPtr projectionElem = lensElem->GetElement("projection");
+    projectionElem->GetElement("p_fx")->Set<double>(this->LensProjectionFx());
+    projectionElem->GetElement("p_fy")->Set<double>(this->LensProjectionFy());
+    projectionElem->GetElement("p_cx")->Set<double>(this->LensProjectionCx());
+    projectionElem->GetElement("p_cy")->Set<double>(this->LensProjectionCy());
+    projectionElem->GetElement("tx")->Set<double>(this->LensProjectionTx());
+    projectionElem->GetElement("ty")->Set<double>(this->LensProjectionTy());
   }
 
   if (this->HasSegmentationType())

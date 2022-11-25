@@ -416,6 +416,15 @@ namespace sdf
   SDFORMAT_VISIBLE
   void checkJointParentChildNames(const sdf::Root *_root, Errors &_errors);
 
+  /// \brief Check that all joint axes in contained joints specify xyz
+  /// expressed-in names that match the names of valid frames.
+  /// This checks recursively and should check the files exhaustively
+  /// rather than terminating early when the first error is found.
+  /// \param[in] _root SDF Root object to check recursively.
+  /// \param[out] _errors Detected errors will be appended to this variable.
+  SDFORMAT_VISIBLE
+  void checkJointAxisExpressedInValues(const sdf::Root *_root, Errors &_errors);
+
   /// \brief For the world and each model, check that the attached_to graphs
   /// build without errors and have no cycles.
   /// Confirm that following directed edges from each vertex in the graph
