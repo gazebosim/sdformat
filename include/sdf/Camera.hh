@@ -553,6 +553,10 @@ namespace sdf
     /// \param[in] _mask visibility mask
     public: void SetVisibilityMask(uint32_t _mask);
 
+    /// \brief Get whether or not the camera has projection values set
+    /// \return True if the camera has projection values set, false otherwise
+    public: bool HasLensProjection() const;
+
     /// \brief Private data pointer.
     private: CameraPrivate *dataPtr = nullptr;
   };
