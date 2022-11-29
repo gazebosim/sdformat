@@ -169,6 +169,10 @@ namespace sdf
     /// \brief Generic warning saved as error due to WarningsPolicy config
     WARNING,
 
+    /// \brief The joint axis expressed-in value does not match the name of an
+    /// existing frame in the current scope.
+    JOINT_AXIS_EXPRESSED_IN_INVALID,
+
     /// \brief SDF conversion generic error.
     CONVERSION_ERROR,
 
