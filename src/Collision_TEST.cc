@@ -30,19 +30,19 @@ TEST(DOMcollision, Construction)
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, collision.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, collision.RawPose());
   EXPECT_TRUE(collision.PoseRelativeTo().empty());
   {
     auto semanticPose = collision.SemanticPose();
     EXPECT_EQ(collision.RawPose(), semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
   collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision.RawPose());
 
   collision.SetPoseRelativeTo("link");
@@ -51,7 +51,7 @@ TEST(DOMcollision, Construction)
     auto semanticPose = collision.SemanticPose();
     EXPECT_EQ(collision.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("link", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -74,7 +74,7 @@ TEST(DOMCollision, MoveConstructor)
   collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2(std::move(collision));
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision2.RawPose());
 }
 
@@ -85,7 +85,7 @@ TEST(DOMCollision, CopyConstructor)
   collision.SetRawPose({-10, -20, -30, IGN_PI, IGN_PI, IGN_PI});
 
   sdf::Collision collision2(collision);
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision2.RawPose());
 }
 
@@ -97,7 +97,7 @@ TEST(DOMCollision, MoveAssignment)
 
   sdf::Collision collision2;
   collision2 = std::move(collision);
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision2.RawPose());
 }
 
@@ -109,7 +109,7 @@ TEST(DOMCollision, CopyAssignment)
 
   sdf::Collision collision2;
   collision2 = collision;
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision2.RawPose());
 }
 
@@ -128,9 +128,9 @@ TEST(DOMCollision, CopyAssignmentAfterMove)
   collision1 = collision2;
   collision2 = tmp;
 
-  EXPECT_EQ(ignition::math::Pose3d(-20, -30, -40, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-20, -30, -40, IGN_PI, IGN_PI, IGN_PI),
             collision1.RawPose());
-  EXPECT_EQ(ignition::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
+  EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, IGN_PI, IGN_PI, IGN_PI),
             collision2.RawPose());
 }
 

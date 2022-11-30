@@ -16,7 +16,7 @@
 */
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
@@ -47,7 +47,7 @@ class sdf::VisualPrivate
   public: float transparency  = 0.0;
 
   /// \brief Pose of the visual object
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -247,13 +247,13 @@ void Visual::SetTransparency(float _transparency)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Visual::Pose() const
+const gz::math::Pose3d &Visual::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Visual::RawPose() const
+const gz::math::Pose3d &Visual::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -271,13 +271,13 @@ const std::string &Visual::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Visual::SetPose(const ignition::math::Pose3d &_pose)
+void Visual::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Visual::SetRawPose(const ignition::math::Pose3d &_pose)
+void Visual::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

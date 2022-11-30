@@ -19,7 +19,7 @@
 
 #include <memory>
 #include <string>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -85,16 +85,16 @@ namespace sdf
     /// \brief Get the x,y,z components of the axis unit vector.
     /// The axis is expressed in the joint frame unless UseParentModelFrame
     /// is true. The vector should be normalized.
-    /// The default value is ignition::math::Vector3d::UnitZ which equals
+    /// The default value is gz::math::Vector3d::UnitZ which equals
     /// (0, 0, 1).
     /// \return The x,y,z components of the axis unit vector.
-    /// \sa void SetXyz(const ignition::math::Vector3d &_xyz)
-    public: ignition::math::Vector3d Xyz() const;
+    /// \sa void SetXyz(const gz::math::Vector3d &_xyz)
+    public: gz::math::Vector3d Xyz() const;
 
     /// \brief Set the x,y,z components of the axis unit vector.
     /// \param[in] _xyz The x,y,z components of the axis unit vector.
-    /// \sa ignition::math::Vector3d Xyz() const
-    public: void SetXyz(const ignition::math::Vector3d &_xyz);
+    /// \sa gz::math::Vector3d Xyz() const
+    public: void SetXyz(const gz::math::Vector3d &_xyz);
 
     /// \brief Get whether to interpret the axis xyz value in the parent model
     /// frame instead of joint frame. The default value is false.
@@ -251,7 +251,7 @@ namespace sdf
     /// xml parent object, which is always a joint frame.
     /// \return Errors.
     public: Errors ResolveXyz(
-        ignition::math::Vector3d &_xyz,
+        gz::math::Vector3d &_xyz,
         const std::string &_resolveTo = "") const;
 
     /// \brief Get a pointer to the SDF element that was used during

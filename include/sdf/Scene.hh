@@ -17,7 +17,7 @@
 #ifndef SDF_SCENE_HH_
 #define SDF_SCENE_HH_
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Sky.hh"
@@ -70,19 +70,19 @@ namespace sdf
 
     /// \brief Get the ambient color of the scene
     /// \return Scene ambient color
-    public: ignition::math::Color Ambient() const;
+    public: gz::math::Color Ambient() const;
 
     /// \brief Set the ambient color of the scene
     /// \param[in] _ambient Ambient color to set to
-    public: void SetAmbient(const ignition::math::Color &_ambient);
+    public: void SetAmbient(const gz::math::Color &_ambient);
 
     /// \brief Get the background color of the scene
     /// \return Scene background color
-    public: ignition::math::Color Background() const;
+    public: gz::math::Color Background() const;
 
     /// \brief Set the background color of the scene
     /// \param[in] _background Background color to set to
-    public: void SetBackground(const ignition::math::Color &_background);
+    public: void SetBackground(const gz::math::Color &_background);
 
     /// \brief Get whether grid is enabled
     /// \return True if grid is enabled

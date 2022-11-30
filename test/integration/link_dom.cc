@@ -18,7 +18,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
@@ -126,10 +126,10 @@ TEST(DOMLink, InertialDoublePendulum)
 
   const sdf::Link *baseLink = model->LinkByIndex(0);
   ASSERT_NE(nullptr, baseLink);
-  EXPECT_EQ(ignition::math::Pose3d::Zero, baseLink->RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, baseLink->RawPose());
   EXPECT_EQ("", baseLink->PoseRelativeTo());
 
-  const ignition::math::Inertiald inertial = baseLink->Inertial();
+  const gz::math::Inertiald inertial = baseLink->Inertial();
   EXPECT_DOUBLE_EQ(100.0, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().X());
   EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().DiagonalMoments().Y());
@@ -140,12 +140,12 @@ TEST(DOMLink, InertialDoublePendulum)
 
   const sdf::Link *upperLink = model->LinkByIndex(1);
   ASSERT_NE(nullptr, upperLink);
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 2.1, -1.5708, 0, 0),
       upperLink->RawPose());
   EXPECT_EQ("", upperLink->PoseRelativeTo());
   EXPECT_TRUE(upperLink->EnableWind());
 
-  const ignition::math::Inertiald inertialUpper = upperLink->Inertial();
+  const gz::math::Inertiald inertialUpper = upperLink->Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().DiagonalMoments().X());
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().DiagonalMoments().Y());
@@ -160,7 +160,7 @@ TEST(DOMLink, InertialDoublePendulum)
 
   const sdf::Link *lowerLink = model->LinkByIndex(2);
   ASSERT_TRUE(lowerLink != nullptr);
-  EXPECT_EQ(ignition::math::Pose3d(0.25, 1.0, 2.1, -2, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(0.25, 1.0, 2.1, -2, 0, 0),
       lowerLink->RawPose());
   EXPECT_EQ("", lowerLink->PoseRelativeTo());
 }
@@ -181,7 +181,7 @@ TEST(DOMLink, InertialComplete)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
 
-  const ignition::math::Inertiald inertial = link->Inertial();
+  const gz::math::Inertiald inertial = link->Inertial();
   EXPECT_DOUBLE_EQ(17.982, inertial.MassMatrix().Mass());
   EXPECT_DOUBLE_EQ(0.125569, inertial.MassMatrix().DiagonalMoments().X());
   EXPECT_DOUBLE_EQ(0.0972062, inertial.MassMatrix().DiagonalMoments().Y());
@@ -249,7 +249,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, altimeterSensor);
   EXPECT_EQ("altimeter_sensor", altimeterSensor->Name());
   EXPECT_EQ(sdf::SensorType::ALTIMETER, altimeterSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, altimeterSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, altimeterSensor->RawPose());
   EXPECT_FALSE(altimeterSensor->EnableMetrics());
   const sdf::Altimeter *altSensor = altimeterSensor->AltimeterSensor();
   ASSERT_NE(nullptr, altSensor);
@@ -265,12 +265,12 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, cameraSensor);
   EXPECT_EQ("camera_sensor", cameraSensor->Name());
   EXPECT_EQ(sdf::SensorType::CAMERA, cameraSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), cameraSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), cameraSensor->RawPose());
   EXPECT_FALSE(cameraSensor->EnableMetrics());
   const sdf::Camera *camSensor = cameraSensor->CameraSensor();
   ASSERT_NE(nullptr, camSensor);
   EXPECT_EQ("my_camera", camSensor->Name());
-  EXPECT_EQ(ignition::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
             camSensor->RawPose());
   EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
   EXPECT_EQ("/camera_sensor/camera_info", camSensor->CameraInfoTopic());
@@ -288,7 +288,7 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0.3, camSensor->DistortionK3());
   EXPECT_DOUBLE_EQ(0.4, camSensor->DistortionP1());
   EXPECT_DOUBLE_EQ(0.5, camSensor->DistortionP2());
-  EXPECT_EQ(ignition::math::Vector2d(0.2, 0.4), camSensor->DistortionCenter());
+  EXPECT_EQ(gz::math::Vector2d(0.2, 0.4), camSensor->DistortionCenter());
   EXPECT_EQ("custom", camSensor->LensType());
   EXPECT_FALSE(camSensor->LensScaleToHfov());
   EXPECT_DOUBLE_EQ(1.1, camSensor->LensC1());
@@ -310,18 +310,18 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(0, camSensor->LensProjectionTx());
   EXPECT_DOUBLE_EQ(0, camSensor->LensProjectionTy());
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
 
   // Get the contact sensor
   const sdf::Sensor *contactSensor = link->SensorByName("contact_sensor");
   ASSERT_NE(nullptr, contactSensor);
   EXPECT_EQ("contact_sensor", contactSensor->Name());
   EXPECT_EQ(sdf::SensorType::CONTACT, contactSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), contactSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), contactSensor->RawPose());
   EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose, "__model__").empty());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), pose);
   EXPECT_TRUE(contactSensor->SemanticPose().Resolve(pose).empty());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 3, 0, 0, 0), pose);
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 3, 0, 0, 0), pose);
   EXPECT_TRUE(contactSensor->EnableMetrics());
 
   // Get the depth sensor
@@ -329,7 +329,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, depthSensor);
   EXPECT_EQ("depth_sensor", depthSensor->Name());
   EXPECT_EQ(sdf::SensorType::DEPTH_CAMERA, depthSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(7, 8, 9, 0, 0, 0), depthSensor->RawPose());
   EXPECT_TRUE(depthSensor->EnableMetrics());
   const sdf::Camera *depthCamSensor = depthSensor->CameraSensor();
   ASSERT_NE(nullptr, depthCamSensor);
@@ -340,7 +340,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, rgbdSensor);
   EXPECT_EQ("rgbd_sensor", rgbdSensor->Name());
   EXPECT_EQ(sdf::SensorType::RGBD_CAMERA, rgbdSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(37, 38, 39, 0, 0, 0), rgbdSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(37, 38, 39, 0, 0, 0), rgbdSensor->RawPose());
   EXPECT_FALSE(rgbdSensor->EnableMetrics());
   const sdf::Camera *rgbdCamSensor = rgbdSensor->CameraSensor();
   ASSERT_NE(nullptr, rgbdCamSensor);
@@ -351,7 +351,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, thermalSensor);
   EXPECT_EQ("thermal_sensor", thermalSensor->Name());
   EXPECT_EQ(sdf::SensorType::THERMAL_CAMERA, thermalSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(37, 38, 39, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(37, 38, 39, 0, 0, 0),
             thermalSensor->RawPose());
   EXPECT_FALSE(thermalSensor->EnableMetrics());
   const sdf::Camera *thermalCamSensor = thermalSensor->CameraSensor();
@@ -364,7 +364,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, forceTorqueSensor);
   EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
   EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
       forceTorqueSensor->RawPose());
   EXPECT_FALSE(forceTorqueSensor->EnableMetrics());
 
@@ -373,7 +373,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, navSatSensor);
   EXPECT_EQ("navsat_sensor", navSatSensor->Name());
   EXPECT_EQ(sdf::SensorType::NAVSAT, navSatSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(13, 14, 15, 0, 0, 0),
       navSatSensor->RawPose());
   EXPECT_FALSE(navSatSensor->EnableMetrics());
   const sdf::NavSat *navSatSensorObj = navSatSensor->NavSatSensor();
@@ -393,7 +393,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, gpuRaySensor);
   EXPECT_EQ("gpu_ray_sensor", gpuRaySensor->Name());
   EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuRaySensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), gpuRaySensor->RawPose());
   EXPECT_FALSE(gpuRaySensor->EnableMetrics());
   const sdf::Lidar *gpuRay = gpuRaySensor->LidarSensor();
   ASSERT_NE(nullptr, gpuRay);
@@ -403,7 +403,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, gpuLidarSensor);
   EXPECT_EQ("gpu_lidar_sensor", gpuLidarSensor->Name());
   EXPECT_EQ(sdf::SensorType::GPU_LIDAR, gpuLidarSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0),
             gpuLidarSensor->RawPose());
   EXPECT_FALSE(gpuLidarSensor->EnableMetrics());
   const sdf::Lidar *gpuLidar = gpuLidarSensor->LidarSensor();
@@ -414,7 +414,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, imuSensor);
   EXPECT_EQ("imu_sensor", imuSensor->Name());
   EXPECT_EQ(sdf::SensorType::IMU, imuSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), imuSensor->RawPose());
   EXPECT_FALSE(imuSensor->EnableMetrics());
   const sdf::Imu *imuSensorObj = imuSensor->ImuSensor();
   ASSERT_NE(nullptr, imuSensorObj);
@@ -465,9 +465,9 @@ TEST(DOMLink, Sensors)
 
   EXPECT_EQ("ENU", imuSensorObj->Localization());
   EXPECT_EQ("linka", imuSensorObj->CustomRpyParentFrame());
-  EXPECT_EQ(ignition::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, imuSensorObj->CustomRpy());
   EXPECT_EQ("linkb", imuSensorObj->GravityDirXParentFrame());
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, imuSensorObj->GravityDirX());
 
   // Get the logical camera sensor
   const sdf::Sensor *logicalCameraSensor =
@@ -475,7 +475,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, logicalCameraSensor);
   EXPECT_EQ("logical_camera_sensor", logicalCameraSensor->Name());
   EXPECT_EQ(sdf::SensorType::LOGICAL_CAMERA, logicalCameraSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(7, 8, 9, 0, 0, 0),
       logicalCameraSensor->RawPose());
   EXPECT_FALSE(logicalCameraSensor->EnableMetrics());
 
@@ -485,7 +485,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, magnetometerSensor);
   EXPECT_EQ("magnetometer_sensor", magnetometerSensor->Name());
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, magnetometerSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
       magnetometerSensor->RawPose());
   EXPECT_FALSE(magnetometerSensor->EnableMetrics());
   const sdf::Magnetometer *magSensor = magnetometerSensor->MagnetometerSensor();
@@ -503,7 +503,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, multicameraSensor);
   EXPECT_EQ("multicamera_sensor", multicameraSensor->Name());
   EXPECT_EQ(sdf::SensorType::MULTICAMERA, multicameraSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(13, 14, 15, 0, 0, 0),
       multicameraSensor->RawPose());
   EXPECT_FALSE(multicameraSensor->EnableMetrics());
 
@@ -512,7 +512,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, raySensor);
   EXPECT_EQ("ray_sensor", raySensor->Name());
   EXPECT_EQ(sdf::SensorType::LIDAR, raySensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), raySensor->RawPose());
   EXPECT_FALSE(raySensor->EnableMetrics());
   const sdf::Lidar *ray = raySensor->LidarSensor();
   ASSERT_NE(nullptr, ray);
@@ -535,7 +535,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, lidarSensor);
   EXPECT_EQ("lidar_sensor", lidarSensor->Name());
   EXPECT_EQ(sdf::SensorType::LIDAR, lidarSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0), lidarSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), lidarSensor->RawPose());
   EXPECT_TRUE(lidarSensor->EnableMetrics());
   const sdf::Lidar *lidar = lidarSensor->LidarSensor();
   ASSERT_NE(nullptr, lidar);
@@ -558,7 +558,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, rfidSensor);
   EXPECT_EQ("rfid_sensor", rfidSensor->Name());
   EXPECT_EQ(sdf::SensorType::RFID, rfidSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(4, 5, 6, 0, 0, 0), rfidSensor->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), rfidSensor->RawPose());
   EXPECT_FALSE(rfidSensor->EnableMetrics());
 
   // Get the rfid tag
@@ -566,7 +566,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, rfidTag);
   EXPECT_EQ("rfid_tag", rfidTag->Name());
   EXPECT_EQ(sdf::SensorType::RFIDTAG, rfidTag->Type());
-  EXPECT_EQ(ignition::math::Pose3d(7, 8, 9, 0, 0, 0), rfidTag->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(7, 8, 9, 0, 0, 0), rfidTag->RawPose());
   EXPECT_FALSE(rfidTag->EnableMetrics());
 
   // Get the sonar sensor
@@ -574,7 +574,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, sonarSensor);
   EXPECT_EQ("sonar_sensor", sonarSensor->Name());
   EXPECT_EQ(sdf::SensorType::SONAR, sonarSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(10, 11, 12, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
             sonarSensor->RawPose());
   EXPECT_FALSE(sonarSensor->EnableMetrics());
 
@@ -583,7 +583,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, wirelessReceiver);
   EXPECT_EQ("wireless_receiver", wirelessReceiver->Name());
   EXPECT_EQ(sdf::SensorType::WIRELESS_RECEIVER, wirelessReceiver->Type());
-  EXPECT_EQ(ignition::math::Pose3d(13, 14, 15, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(13, 14, 15, 0, 0, 0),
       wirelessReceiver->RawPose());
   EXPECT_FALSE(wirelessReceiver->EnableMetrics());
 
@@ -593,7 +593,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, wirelessTransmitter);
   EXPECT_EQ("wireless_transmitter", wirelessTransmitter->Name());
   EXPECT_EQ(sdf::SensorType::WIRELESS_TRANSMITTER, wirelessTransmitter->Type());
-  EXPECT_EQ(ignition::math::Pose3d(1, 2, 3, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0),
       wirelessTransmitter->RawPose());
   EXPECT_FALSE(wirelessTransmitter->EnableMetrics());
 
@@ -603,7 +603,7 @@ TEST(DOMLink, Sensors)
   ASSERT_NE(nullptr, airPressureSensor);
   EXPECT_EQ("air_pressure_sensor", airPressureSensor->Name());
   EXPECT_EQ(sdf::SensorType::AIR_PRESSURE, airPressureSensor->Type());
-  EXPECT_EQ(ignition::math::Pose3d(10, 20, 30, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(10, 20, 30, 0, 0, 0),
       airPressureSensor->RawPose());
   EXPECT_FALSE(airPressureSensor->EnableMetrics());
   const sdf::AirPressure *airSensor = airPressureSensor->AirPressureSensor();
@@ -623,7 +623,7 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);

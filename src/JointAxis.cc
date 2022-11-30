@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 #include "FrameSemantics.hh"
@@ -31,7 +31,7 @@ class sdf::JointAxisPrivate
   /// The axis is expressed in the joint frame unless the
   /// use_parent_model_frame flag is set to true. The vector should be
   /// normalized.
-  public: ignition::math::Vector3d xyz = ignition::math::Vector3d::UnitZ;
+  public: gz::math::Vector3d xyz = gz::math::Vector3d::UnitZ;
 
   /// \brief Frame in which xyz is expressed in.
   public: std::string xyzExpressedIn = "";
@@ -136,8 +136,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Read the xyz values.
   if (_sdf->HasElement("xyz"))
   {
-    this->dataPtr->xyz = _sdf->Get<ignition::math::Vector3d>("xyz",
-        ignition::math::Vector3d::UnitZ).first;
+    this->dataPtr->xyz = _sdf->Get<gz::math::Vector3d>("xyz",
+        gz::math::Vector3d::UnitZ).first;
     auto e = _sdf->GetElement("xyz");
     if (e->HasAttribute("expressed_in"))
     {
@@ -203,13 +203,13 @@ void JointAxis::SetInitialPosition(const double _pos)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d JointAxis::Xyz() const
+gz::math::Vector3d JointAxis::Xyz() const
 {
   return this->dataPtr->xyz;
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
+void JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
 {
   this->dataPtr->xyz = _xyz;
 }
@@ -371,7 +371,7 @@ void JointAxis::SetPoseRelativeToGraph(
 
 /////////////////////////////////////////////////
 Errors JointAxis::ResolveXyz(
-    ignition::math::Vector3d &_xyz,
+    gz::math::Vector3d &_xyz,
     const std::string &_resolveTo) const
 {
   Errors errors;
@@ -403,7 +403,7 @@ Errors JointAxis::ResolveXyz(
     resolveTo = this->dataPtr->xmlParentName;
   }
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   errors = resolvePose(pose, *graph, axisExpressedIn, resolveTo);
 
   if (errors.empty())

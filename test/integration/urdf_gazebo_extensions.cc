@@ -183,8 +183,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
         EXPECT_TRUE(element->HasElement("pose"));
         const auto poseElem = element->GetElement("pose");
 
-        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-          "", ignition::math::Pose3d::Zero);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
         ASSERT_TRUE(posePair.second);
 
         const auto& pose = posePair.first;
@@ -204,8 +204,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
         EXPECT_TRUE(element->HasElement("pose"));
         const auto poseElem = element->GetElement("pose");
 
-        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-          "", ignition::math::Pose3d::Zero);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
         ASSERT_TRUE(posePair.second);
 
         const auto& pose = posePair.first;
@@ -225,8 +225,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
         EXPECT_TRUE(element->HasElement("pose"));
         const auto poseElem = element->GetElement("pose");
 
-        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-          "", ignition::math::Pose3d::Zero);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
         ASSERT_TRUE(posePair.second);
 
         const auto& pose = posePair.first;
@@ -246,8 +246,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
         EXPECT_TRUE(element->HasElement("pose"));
         const auto poseElem = element->GetElement("pose");
 
-        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-          "", ignition::math::Pose3d::Zero);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
         ASSERT_TRUE(posePair.second);
 
         const auto& pose = posePair.first;
@@ -267,8 +267,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
         EXPECT_TRUE(element->HasElement("pose"));
         const auto poseElem = element->GetElement("pose");
 
-        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-          "", ignition::math::Pose3d::Zero);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
         ASSERT_TRUE(posePair.second);
 
         const auto& pose = posePair.first;
@@ -288,8 +288,8 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
         EXPECT_TRUE(element->HasElement("pose"));
         const auto poseElem = element->GetElement("pose");
 
-        const auto& posePair = poseElem->Get<ignition::math::Pose3d>(
-          "", ignition::math::Pose3d::Zero);
+        const auto& posePair = poseElem->Get<gz::math::Pose3d>(
+          "", gz::math::Pose3d::Zero);
         ASSERT_TRUE(posePair.second);
 
         const auto& pose = posePair.first;
@@ -411,7 +411,7 @@ TEST(SDFParser, FixedJointSimple)
   ASSERT_NE(nullptr, link);
   auto massMatrix = link->Inertial().MassMatrix();
   EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
-  EXPECT_EQ(2.0 * ignition::math::Matrix3d::Identity, massMatrix.Moi());
+  EXPECT_EQ(2.0 * gz::math::Matrix3d::Identity, massMatrix.Moi());
 
   EXPECT_EQ(0u, model->JointCount());
 
@@ -447,7 +447,7 @@ TEST(SDFParser, FixedJointStatic)
   ASSERT_NE(nullptr, link);
   auto massMatrix = link->Inertial().MassMatrix();
   EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
-  EXPECT_EQ(2.0 * ignition::math::Matrix3d::Identity, massMatrix.Moi());
+  EXPECT_EQ(2.0 * gz::math::Matrix3d::Identity, massMatrix.Moi());
 
   EXPECT_EQ(0u, model->JointCount());
 

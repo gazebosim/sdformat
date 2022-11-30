@@ -55,17 +55,17 @@ TEST(DOMImu, Construction)
   imu.SetAngularVelocityZNoise(noise);
   EXPECT_EQ(noise, imu.AngularVelocityZNoise());
 
-  EXPECT_EQ(ignition::math::Vector3d::UnitX, imu.GravityDirX());
-  imu.SetGravityDirX(ignition::math::Vector3d::Zero);
-  EXPECT_EQ(ignition::math::Vector3d::Zero, imu.GravityDirX());
+  EXPECT_EQ(gz::math::Vector3d::UnitX, imu.GravityDirX());
+  imu.SetGravityDirX(gz::math::Vector3d::Zero);
+  EXPECT_EQ(gz::math::Vector3d::Zero, imu.GravityDirX());
 
   EXPECT_TRUE(imu.GravityDirXParentFrame().empty());
   imu.SetGravityDirXParentFrame("my_frame");
   EXPECT_EQ("my_frame", imu.GravityDirXParentFrame());
 
-  EXPECT_EQ(ignition::math::Vector3d::Zero, imu.CustomRpy());
-  imu.SetCustomRpy(ignition::math::Vector3d::UnitZ);
-  EXPECT_EQ(ignition::math::Vector3d::UnitZ, imu.CustomRpy());
+  EXPECT_EQ(gz::math::Vector3d::Zero, imu.CustomRpy());
+  imu.SetCustomRpy(gz::math::Vector3d::UnitZ);
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, imu.CustomRpy());
 
   EXPECT_TRUE(imu.CustomRpyParentFrame().empty());
   imu.SetCustomRpyParentFrame("other_frame");

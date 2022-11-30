@@ -15,7 +15,7 @@
  *
 */
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Assert.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Error.hh"
@@ -31,7 +31,7 @@ inline namespace SDF_VERSION_NAMESPACE {
 class SemanticPosePrivate
 {
   /// \brief Raw pose of the SemanticPose object.
-  public: ignition::math::Pose3d rawPose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d rawPose = gz::math::Pose3d::Zero;
 
   /// \brief Name of the relative-to frame.
   public: std::string relativeTo = "";
@@ -45,7 +45,7 @@ class SemanticPosePrivate
 
 /////////////////////////////////////////////////
 SemanticPose::SemanticPose(
-        const ignition::math::Pose3d &_pose,
+        const gz::math::Pose3d &_pose,
         const std::string &_relativeTo,
         const std::string &_defaultResolveTo,
         const std::weak_ptr<const sdf::PoseRelativeToGraph> _graph)
@@ -85,7 +85,7 @@ SemanticPose &SemanticPose::operator=(const SemanticPose &_semanticPose)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &SemanticPose::RawPose() const
+const gz::math::Pose3d &SemanticPose::RawPose() const
 {
   return this->dataPtr->rawPose;
 }
@@ -98,7 +98,7 @@ const std::string &SemanticPose::RelativeTo() const
 
 /////////////////////////////////////////////////
 Errors SemanticPose::Resolve(
-    ignition::math::Pose3d &_pose,
+    gz::math::Pose3d &_pose,
     const std::string &_resolveTo) const
 {
   Errors errors;
@@ -123,7 +123,7 @@ Errors SemanticPose::Resolve(
     resolveTo = this->dataPtr->defaultResolveTo;
   }
 
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   errors = resolvePose(pose, *graph, relativeTo, resolveTo);
   pose *= this->RawPose();
 

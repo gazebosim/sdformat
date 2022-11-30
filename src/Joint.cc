@@ -19,7 +19,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Error.hh"
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
@@ -59,7 +59,7 @@ class sdf::JointPrivate
   public: JointType type = JointType::INVALID;
 
   /// \brief Pose of the joint
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -338,13 +338,13 @@ void Joint::SetAxis(const unsigned int _index, const JointAxis &_axis)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Joint::Pose() const
+const gz::math::Pose3d &Joint::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Joint::RawPose() const
+const gz::math::Pose3d &Joint::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -362,13 +362,13 @@ const std::string &Joint::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Joint::SetPose(const ignition::math::Pose3d &_pose)
+void Joint::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Joint::SetRawPose(const ignition::math::Pose3d &_pose)
+void Joint::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

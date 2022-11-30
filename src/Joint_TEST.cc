@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Joint.hh"
 #include "sdf/JointAxis.hh"
 
@@ -28,20 +28,20 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(sdf::JointType::INVALID, joint.Type());
   EXPECT_TRUE(joint.ParentLinkName().empty());
   EXPECT_TRUE(joint.ChildLinkName().empty());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, joint.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, joint.RawPose());
   EXPECT_TRUE(joint.PoseRelativeTo().empty());
   EXPECT_EQ(nullptr, joint.Element());
   {
     auto semanticPose = joint.SemanticPose();
-    EXPECT_EQ(ignition::math::Pose3d::Zero, semanticPose.RawPose());
+    EXPECT_EQ(gz::math::Pose3d::Zero, semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose without graph
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
   joint.SetRawPose({-1, -2, -3, IGN_PI, IGN_PI, 0});
-  EXPECT_EQ(ignition::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
+  EXPECT_EQ(gz::math::Pose3d(-1, -2, -3, IGN_PI, IGN_PI, 0),
             joint.RawPose());
 
   joint.SetPoseRelativeTo("link");
@@ -50,7 +50,7 @@ TEST(DOMJoint, Construction)
     auto semanticPose = joint.SemanticPose();
     EXPECT_EQ(joint.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("link", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose without graph
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -84,10 +84,10 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(nullptr, joint.Axis(0));
   EXPECT_EQ(nullptr, joint.Axis(1));
   sdf::JointAxis axis;
-  axis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+  axis.SetXyz(gz::math::Vector3d(1, 0, 0));
   joint.SetAxis(0, axis);
   sdf::JointAxis axis1;
-  axis1.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  axis1.SetXyz(gz::math::Vector3d(0, 1, 0));
   joint.SetAxis(1, axis1);
   ASSERT_TRUE(nullptr != joint.Axis(0));
   ASSERT_TRUE(nullptr != joint.Axis(1));
@@ -113,10 +113,10 @@ TEST(DOMJoint, MoveConstructor)
   sdf::Joint joint;
   joint.SetName("test_joint");
   sdf::JointAxis axis;
-  axis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+  axis.SetXyz(gz::math::Vector3d(1, 0, 0));
   joint.SetAxis(0, axis);
   sdf::JointAxis axis1;
-  axis1.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  axis1.SetXyz(gz::math::Vector3d(0, 1, 0));
   joint.SetAxis(1, axis1);
 
   sdf::Joint joint2(std::move(joint));
@@ -134,10 +134,10 @@ TEST(DOMJoint, CopyConstructor)
   sdf::Joint joint;
   joint.SetName("test_joint");
   sdf::JointAxis axis;
-  axis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+  axis.SetXyz(gz::math::Vector3d(1, 0, 0));
   joint.SetAxis(0, axis);
   sdf::JointAxis axis1;
-  axis1.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  axis1.SetXyz(gz::math::Vector3d(0, 1, 0));
   joint.SetAxis(1, axis1);
 
   sdf::Joint joint2(joint);
@@ -161,10 +161,10 @@ TEST(DOMJoint, MoveAssignment)
   sdf::Joint joint;
   joint.SetName("test_joint");
   sdf::JointAxis axis;
-  axis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+  axis.SetXyz(gz::math::Vector3d(1, 0, 0));
   joint.SetAxis(0, axis);
   sdf::JointAxis axis1;
-  axis1.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  axis1.SetXyz(gz::math::Vector3d(0, 1, 0));
   joint.SetAxis(1, axis1);
 
   sdf::Joint joint2;
@@ -183,10 +183,10 @@ TEST(DOMJoint, CopyAssignment)
   sdf::Joint joint;
   joint.SetName("test_joint");
   sdf::JointAxis axis;
-  axis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+  axis.SetXyz(gz::math::Vector3d(1, 0, 0));
   joint.SetAxis(0, axis);
   sdf::JointAxis axis1;
-  axis1.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  axis1.SetXyz(gz::math::Vector3d(0, 1, 0));
   joint.SetAxis(1, axis1);
 
   sdf::Joint joint2;
@@ -211,19 +211,19 @@ TEST(DOMJoint, CopyAssignmentAfterMove)
   sdf::Joint joint1;
   joint1.SetName("test_joint1");
   sdf::JointAxis joint1Axis;
-  joint1Axis.SetXyz(ignition::math::Vector3d(1, 0, 0));
+  joint1Axis.SetXyz(gz::math::Vector3d(1, 0, 0));
   joint1.SetAxis(0, joint1Axis);
   sdf::JointAxis joint1Axis1;
-  joint1Axis1.SetXyz(ignition::math::Vector3d(0, 1, 0));
+  joint1Axis1.SetXyz(gz::math::Vector3d(0, 1, 0));
   joint1.SetAxis(1, joint1Axis1);
 
   sdf::Joint joint2;
   joint2.SetName("test_joint2");
   sdf::JointAxis joint2Axis;
-  joint2Axis.SetXyz(ignition::math::Vector3d(0, 0, 1));
+  joint2Axis.SetXyz(gz::math::Vector3d(0, 0, 1));
   joint2.SetAxis(0, joint2Axis);
   sdf::JointAxis joint2Axis1;
-  joint2Axis1.SetXyz(ignition::math::Vector3d(-1, 0, 0));
+  joint2Axis1.SetXyz(gz::math::Vector3d(-1, 0, 0));
   joint2.SetAxis(1, joint2Axis1);
 
   // This is similar to what std::swap does except it uses std::move for each

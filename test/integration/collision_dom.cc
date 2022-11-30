@@ -79,13 +79,13 @@ TEST(DOMCollision, DoublePendulum)
   const sdf::Collision *plateCol = baseLink->CollisionByIndex(0);
   ASSERT_TRUE(plateCol != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->RawPose());
+  EXPECT_EQ(gz::math::Pose3d(0, 0, 0.01, 0, 0, 0), plateCol->RawPose());
   EXPECT_EQ("", plateCol->PoseRelativeTo());
 
   const sdf::Collision *poleCol = baseLink->CollisionByIndex(1);
   ASSERT_TRUE(poleCol != nullptr);
 
-  EXPECT_EQ(ignition::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
+  EXPECT_EQ(gz::math::Pose3d(-0.275, 0, 1.1, 0, 0, 0),
             poleCol->RawPose());
   EXPECT_EQ("", poleCol->PoseRelativeTo());
 }
@@ -100,7 +100,7 @@ TEST(DOMCollision, LoadModelFramesRelativeToJoint)
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   // Get the first model
   const sdf::Model *model = root.ModelByIndex(0);

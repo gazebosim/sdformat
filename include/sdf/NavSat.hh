@@ -22,7 +22,7 @@
 #include <sdf/Noise.hh>
 #include <sdf/sdf_config.h>
 
-#include <ignition/math/Angle.hh>
+#include <gz/math/Angle.hh>
 
 namespace sdf
 {

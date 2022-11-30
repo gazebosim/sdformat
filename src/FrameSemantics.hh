@@ -20,8 +20,8 @@
 #include <map>
 #include <string>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/graph/Graph.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/graph/Graph.hh>
 
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
@@ -73,11 +73,11 @@ namespace sdf
     /// \brief A DirectedGraph with a vertex for each frame and edges pointing
     /// to the frame to which another frame is attached. Each vertex stores
     /// its FrameType and each edge can store a boolean value.
-    using GraphType = ignition::math::graph::DirectedGraph<FrameType, bool>;
+    using GraphType = gz::math::graph::DirectedGraph<FrameType, bool>;
     GraphType graph;
 
     /// \brief A Map from Vertex names to Vertex Ids.
-    using MapType = std::map<std::string, ignition::math::graph::VertexId>;
+    using MapType = std::map<std::string, gz::math::graph::VertexId>;
     MapType map;
 
     /// \brief Name of scope vertex, either __model__ or world.
@@ -92,12 +92,12 @@ namespace sdf
     /// When well-formed, it should form a directed tree with a root vertex
     /// named __model__ or world. Each vertex stores its FrameType and each edge
     /// stores the Pose3 between those frames.
-    using Pose3d = ignition::math::Pose3d;
-    using GraphType = ignition::math::graph::DirectedGraph<FrameType, Pose3d>;
+    using Pose3d = gz::math::Pose3d;
+    using GraphType = gz::math::graph::DirectedGraph<FrameType, Pose3d>;
     GraphType graph;
 
     /// \brief A Map from Vertex names to Vertex Ids.
-    using MapType = std::map<std::string, ignition::math::graph::VertexId>;
+    using MapType = std::map<std::string, gz::math::graph::VertexId>;
     MapType map;
 
     /// \brief Name of source vertex, either __model__ or world.
@@ -167,7 +167,7 @@ namespace sdf
   /// \param[in] _vertexName Name of vertex whose pose is to be computed.
   /// \return Errors.
   Errors resolvePoseRelativeToRoot(
-      ignition::math::Pose3d &_pose,
+      gz::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
       const std::string &_vertexName);
 
@@ -179,7 +179,7 @@ namespace sdf
   /// to be resolved.
   /// \return Errors.
   Errors resolvePose(
-      ignition::math::Pose3d &_pose,
+      gz::math::Pose3d &_pose,
       const PoseRelativeToGraph &_graph,
       const std::string &_frameName,
       const std::string &_resolveTo);

@@ -18,8 +18,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
@@ -54,7 +54,7 @@ class sdf::ModelPrivate
   public: std::string canonicalLink = "";
 
   /// \brief Pose of the model
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -159,7 +159,7 @@ Errors Model::Load(ElementPtr _sdf)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
-  ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+  gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
 
   // Check that the provided SDF element is a <model>
   // This is an error that cannot be recovered, so return an error.
@@ -250,7 +250,7 @@ Errors Model::Load(ElementPtr _sdf)
     if (frameNames.count(linkName) > 0)
     {
       // This link has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming link
         linkName += "_link";
@@ -297,7 +297,7 @@ Errors Model::Load(ElementPtr _sdf)
     if (frameNames.count(jointName) > 0)
     {
       // This joint has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming joint
         jointName += "_joint";
@@ -334,7 +334,7 @@ Errors Model::Load(ElementPtr _sdf)
     if (frameNames.count(frameName) > 0)
     {
       // This frame has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming frame
         frameName += "_frame";
@@ -706,13 +706,13 @@ void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::Pose() const
+const gz::math::Pose3d &Model::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::RawPose() const
+const gz::math::Pose3d &Model::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -730,13 +730,13 @@ const std::string &Model::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Model::SetPose(const ignition::math::Pose3d &_pose)
+void Model::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Model::SetRawPose(const ignition::math::Pose3d &_pose)
+void Model::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

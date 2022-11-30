@@ -16,7 +16,7 @@
 */
 #include <string>
 #include <vector>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Types.hh"
 #include "sdf/Material.hh"
@@ -46,19 +46,19 @@ class sdf::MaterialPrivate
   public: bool doubleSided = false;
 
   /// \brief Ambient color
-  public: ignition::math::Color ambient {0, 0, 0, 1};
+  public: gz::math::Color ambient {0, 0, 0, 1};
 
   /// \brief Diffuse color
-  public: ignition::math::Color diffuse {0, 0, 0, 1};
+  public: gz::math::Color diffuse {0, 0, 0, 1};
 
   /// \brief Specular color
-  public: ignition::math::Color specular {0, 0, 0, 1};
+  public: gz::math::Color specular {0, 0, 0, 1};
 
   /// \brief Specular exponent
   public: double shininess {0};
 
   /// \brief Emissive color
-  public: ignition::math::Color emissive {0, 0, 0, 1};
+  public: gz::math::Color emissive {0, 0, 0, 1};
 
   /// \brief Physically Based Rendering (PBR) properties
   public: std::unique_ptr<Pbr> pbr;
@@ -211,19 +211,19 @@ Errors Material::Load(sdf::ElementPtr _sdf)
     }
   }
 
-  this->dataPtr->ambient = _sdf->Get<ignition::math::Color>("ambient",
+  this->dataPtr->ambient = _sdf->Get<gz::math::Color>("ambient",
       this->dataPtr->ambient).first;
 
-  this->dataPtr->diffuse = _sdf->Get<ignition::math::Color>("diffuse",
+  this->dataPtr->diffuse = _sdf->Get<gz::math::Color>("diffuse",
       this->dataPtr->diffuse).first;
 
-  this->dataPtr->specular = _sdf->Get<ignition::math::Color>("specular",
+  this->dataPtr->specular = _sdf->Get<gz::math::Color>("specular",
       this->dataPtr->specular).first;
 
   this->dataPtr->shininess = _sdf->Get<double>("shininess",
       this->dataPtr->shininess).first;
 
-  this->dataPtr->emissive = _sdf->Get<ignition::math::Color>("emissive",
+  this->dataPtr->emissive = _sdf->Get<gz::math::Color>("emissive",
       this->dataPtr->emissive).first;
 
   this->dataPtr->lighting = _sdf->Get<bool>("lighting",
@@ -244,37 +244,37 @@ Errors Material::Load(sdf::ElementPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Color Material::Ambient() const
+gz::math::Color Material::Ambient() const
 {
   return this->dataPtr->ambient;
 }
 
 //////////////////////////////////////////////////
-void Material::SetAmbient(const ignition::math::Color &_color) const
+void Material::SetAmbient(const gz::math::Color &_color) const
 {
   this->dataPtr->ambient = _color;
 }
 
 //////////////////////////////////////////////////
-ignition::math::Color Material::Diffuse() const
+gz::math::Color Material::Diffuse() const
 {
   return this->dataPtr->diffuse;
 }
 
 //////////////////////////////////////////////////
-void Material::SetDiffuse(const ignition::math::Color &_color) const
+void Material::SetDiffuse(const gz::math::Color &_color) const
 {
   this->dataPtr->diffuse = _color;
 }
 
 //////////////////////////////////////////////////
-ignition::math::Color Material::Specular() const
+gz::math::Color Material::Specular() const
 {
   return this->dataPtr->specular;
 }
 
 //////////////////////////////////////////////////
-void Material::SetSpecular(const ignition::math::Color &_color) const
+void Material::SetSpecular(const gz::math::Color &_color) const
 {
   this->dataPtr->specular = _color;
 }
@@ -292,13 +292,13 @@ void Material::SetShininess(const double _shininess)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Color Material::Emissive() const
+gz::math::Color Material::Emissive() const
 {
   return this->dataPtr->emissive;
 }
 
 //////////////////////////////////////////////////
-void Material::SetEmissive(const ignition::math::Color &_color) const
+void Material::SetEmissive(const gz::math::Color &_color) const
 {
   this->dataPtr->emissive = _color;
 }

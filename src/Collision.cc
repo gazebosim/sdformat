@@ -16,7 +16,7 @@
 */
 #include <memory>
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
@@ -32,7 +32,7 @@ class sdf::CollisionPrivate
   public: std::string name = "";
 
   /// \brief Pose of the collision object
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -176,13 +176,13 @@ void Collision::SetSurface(const sdf::Surface &_surface)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Collision::Pose() const
+const gz::math::Pose3d &Collision::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Collision::RawPose() const
+const gz::math::Pose3d &Collision::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -200,13 +200,13 @@ const std::string &Collision::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Collision::SetPose(const ignition::math::Pose3d &_pose)
+void Collision::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Collision::SetRawPose(const ignition::math::Pose3d &_pose)
+void Collision::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

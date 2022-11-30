@@ -35,7 +35,7 @@ class sdf::SkyPrivate
   public: double cloudSpeed = 0.6;
 
   /// \brief Cloud direction.
-  public: ignition::math::Angle cloudDirection;
+  public: gz::math::Angle cloudDirection;
 
   /// \brief Cloud humidity
   public: double cloudHumidity = 0.5;
@@ -44,8 +44,8 @@ class sdf::SkyPrivate
   public: double cloudMeanSize = 0.5;
 
   /// \brief Cloud ambient color
-  public: ignition::math::Color cloudAmbient =
-      ignition::math::Color(0.8f, 0.8f, 0.8f);
+  public: gz::math::Color cloudAmbient =
+      gz::math::Color(0.8f, 0.8f, 0.8f);
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -138,13 +138,13 @@ void Sky::SetCloudSpeed(double _speed)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Angle Sky::CloudDirection() const
+gz::math::Angle Sky::CloudDirection() const
 {
   return this->dataPtr->cloudDirection;
 }
 
 /////////////////////////////////////////////////
-void Sky::SetCloudDirection(const ignition::math::Angle &_angle)
+void Sky::SetCloudDirection(const gz::math::Angle &_angle)
 {
   this->dataPtr->cloudDirection = _angle;
 }
@@ -174,13 +174,13 @@ void Sky::SetCloudMeanSize(double _size)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color Sky::CloudAmbient() const
+gz::math::Color Sky::CloudAmbient() const
 {
   return this->dataPtr->cloudAmbient;
 }
 
 /////////////////////////////////////////////////
-void Sky::SetCloudAmbient(const ignition::math::Color &_ambient)
+void Sky::SetCloudAmbient(const gz::math::Color &_ambient)
 {
   this->dataPtr->cloudAmbient = _ambient;
 }
@@ -214,14 +214,14 @@ Errors Sky::Load(ElementPtr _sdf)
     this->dataPtr->cloudSpeed =
         cloudElem->Get<double>("speed", this->dataPtr->cloudSpeed).first;
     this->dataPtr->cloudDirection =
-        cloudElem->Get<ignition::math::Angle>("direction",
+        cloudElem->Get<gz::math::Angle>("direction",
         this->dataPtr->cloudDirection).first;
     this->dataPtr->cloudHumidity =
         cloudElem->Get<double>("humidity", this->dataPtr->cloudHumidity).first;
     this->dataPtr->cloudMeanSize =
         cloudElem->Get<double>("mean_size", this->dataPtr->cloudMeanSize).first;
     this->dataPtr->cloudAmbient =
-        cloudElem->Get<ignition::math::Color>("ambient",
+        cloudElem->Get<gz::math::Color>("ambient",
         this->dataPtr->cloudAmbient).first;
   }
 

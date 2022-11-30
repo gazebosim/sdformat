@@ -15,7 +15,7 @@
  *
 */
 #include <string>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Error.hh"
 #include "sdf/Types.hh"
@@ -33,7 +33,7 @@ class sdf::FramePrivate
   public: std::string attachedTo = "";
 
   /// \brief Pose of the frame object
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Name of the relative-to frame.
   public: std::string poseRelativeTo = "";
@@ -164,7 +164,7 @@ const std::string &Frame::AttachedTo() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Frame::RawPose() const
+const gz::math::Pose3d &Frame::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -182,7 +182,7 @@ void Frame::SetAttachedTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Frame::SetRawPose(const ignition::math::Pose3d &_pose)
+void Frame::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

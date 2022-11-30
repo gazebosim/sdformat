@@ -172,7 +172,7 @@ TEST(Parser, addNestedModel)
 
     EXPECT_EQ(_canonicalLink,
               nestedModelFrame->Get<std::string>("attached_to"));
-    using ignition::math::Pose3d;
+    using gz::math::Pose3d;
     const Pose3d pose(0, 0, 10, 0, 0, 1.57);
     EXPECT_EQ(pose, nestedModelFrame->Get<Pose3d>("pose"));
 
@@ -192,7 +192,7 @@ TEST(Parser, addNestedModel)
 
     EXPECT_EQ(_expressedIn, xyz->Get<std::string>("expressed_in"));
     EXPECT_EQ(
-        ignition::math::Vector3d::UnitX, xyz->Get<ignition::math::Vector3d>());
+        gz::math::Vector3d::UnitX, xyz->Get<gz::math::Vector3d>());
   };
 
   // insert as 1.4, expect rotation of //joint/axis/xyz

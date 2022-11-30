@@ -17,7 +17,7 @@
 #ifndef SDF_ATMOSPHERE_HH_
 #define SDF_ATMOSPHERE_HH_
 
-#include <ignition/math/Temperature.hh>
+#include <gz/math/Temperature.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
@@ -87,11 +87,11 @@ namespace sdf
 
     /// \brief Get the temperature at sea level.
     /// \return The temperature at sea level.
-    public: ignition::math::Temperature Temperature() const;
+    public: gz::math::Temperature Temperature() const;
 
     /// \brief Set the temperature at sea level.
     /// \param[in] _temp The temperature at sea level.
-    public: void SetTemperature(const ignition::math::Temperature &_temp);
+    public: void SetTemperature(const gz::math::Temperature &_temp);
 
     /// \brief Get the temperature gradient with respect to increasing
     /// altitude in units of K/m.

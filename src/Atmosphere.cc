@@ -16,7 +16,7 @@
  */
 
 #include <string>
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 #include "sdf/Atmosphere.hh"
 
 using namespace sdf;
@@ -28,7 +28,7 @@ class sdf::AtmospherePrivate
   public: AtmosphereType type {AtmosphereType::ADIABATIC};
 
   /// \brief Temperature at sea level in kelvins.
-  public: ignition::math::Temperature temperature {288.15};
+  public: gz::math::Temperature temperature {288.15};
 
   /// \brief Temperature gradient with respect to increasing altitude at sea
   /// level in units of K/m.
@@ -135,13 +135,13 @@ void Atmosphere::SetType(const AtmosphereType _type)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Temperature Atmosphere::Temperature() const
+gz::math::Temperature Atmosphere::Temperature() const
 {
   return this->dataPtr->temperature;
 }
 
 //////////////////////////////////////////////////
-void Atmosphere::SetTemperature(const ignition::math::Temperature &_temp)
+void Atmosphere::SetTemperature(const gz::math::Temperature &_temp)
 {
   this->dataPtr->temperature = _temp;
 }
@@ -175,8 +175,8 @@ bool Atmosphere::operator==(const Atmosphere &_atmosphere)
 {
   return this->dataPtr->type == _atmosphere.dataPtr->type &&
     this->dataPtr->temperature == _atmosphere.dataPtr->temperature &&
-    ignition::math::equal(this->dataPtr->temperatureGradient,
+    gz::math::equal(this->dataPtr->temperatureGradient,
                           _atmosphere.dataPtr->temperatureGradient) &&
-    ignition::math::equal(this->dataPtr->pressure,
+    gz::math::equal(this->dataPtr->pressure,
                           _atmosphere.dataPtr->pressure);
 }

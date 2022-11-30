@@ -17,7 +17,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
 #include "sdf/Frame.hh"
@@ -51,8 +51,8 @@ class sdf::WorldPrivate
   public: std::string audioDevice = "default";
 
   /// \brief Gravity vector.
-  public: ignition::math::Vector3d gravity =
-           ignition::math::Vector3d(0, 0, -9.80665);
+  public: gz::math::Vector3d gravity =
+           gz::math::Vector3d(0, 0, -9.80665);
 
   /// \brief Pointer to Gui parameters.
   public: std::unique_ptr<Gui> gui;
@@ -70,8 +70,8 @@ class sdf::WorldPrivate
   public: std::vector<Actor> actors;
 
   /// \brief Magnetic field.
-  public: ignition::math::Vector3d magneticField =
-           ignition::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
+  public: gz::math::Vector3d magneticField =
+           gz::math::Vector3d(5.5645e-6, 22.8758e-6, -42.3884e-6);
 
   /// \brief The models specified in this world.
   public: std::vector<Model> models;
@@ -86,8 +86,8 @@ class sdf::WorldPrivate
   public: sdf::ElementPtr sdf;
 
   /// \brief Linear velocity of wind.
-  public: ignition::math::Vector3d windLinearVelocity =
-           ignition::math::Vector3d::Zero;
+  public: gz::math::Vector3d windLinearVelocity =
+           gz::math::Vector3d::Zero;
 
   /// \brief Frame Attached-To Graph constructed during Load.
   public: std::shared_ptr<sdf::FrameAttachedToGraph> frameAttachedToGraph;
@@ -233,7 +233,7 @@ Errors World::Load(sdf::ElementPtr _sdf)
   {
     sdf::ElementPtr elem = _sdf->GetElement("wind");
     this->dataPtr->windLinearVelocity =
-      elem->Get<ignition::math::Vector3d>("linear_velocity",
+      elem->Get<gz::math::Vector3d>("linear_velocity",
           this->dataPtr->windLinearVelocity).first;
   }
 
@@ -248,12 +248,12 @@ Errors World::Load(sdf::ElementPtr _sdf)
   }
 
   // Read gravity.
-  this->dataPtr->gravity = _sdf->Get<ignition::math::Vector3d>("gravity",
+  this->dataPtr->gravity = _sdf->Get<gz::math::Vector3d>("gravity",
         this->dataPtr->gravity).first;
 
   // Read the magnetic field.
   this->dataPtr->magneticField =
-    _sdf->Get<ignition::math::Vector3d>("magnetic_field",
+    _sdf->Get<gz::math::Vector3d>("magnetic_field",
         this->dataPtr->magneticField).first;
 
   for (const auto &[name, size] :
@@ -446,37 +446,37 @@ void World::SetAudioDevice(const std::string &_device)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d World::WindLinearVelocity() const
+gz::math::Vector3d World::WindLinearVelocity() const
 {
   return this->dataPtr->windLinearVelocity;
 }
 
 /////////////////////////////////////////////////
-void World::SetWindLinearVelocity(const ignition::math::Vector3d &_wind)
+void World::SetWindLinearVelocity(const gz::math::Vector3d &_wind)
 {
   this->dataPtr->windLinearVelocity = _wind;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d World::Gravity() const
+gz::math::Vector3d World::Gravity() const
 {
   return this->dataPtr->gravity;
 }
 
 /////////////////////////////////////////////////
-void World::SetGravity(const ignition::math::Vector3d &_gravity)
+void World::SetGravity(const gz::math::Vector3d &_gravity)
 {
   this->dataPtr->gravity = _gravity;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d World::MagneticField() const
+gz::math::Vector3d World::MagneticField() const
 {
   return this->dataPtr->magneticField;
 }
 
 /////////////////////////////////////////////////
-void World::SetMagneticField(const ignition::math::Vector3d &_mag)
+void World::SetMagneticField(const gz::math::Vector3d &_mag)
 {
   this->dataPtr->magneticField = _mag;
 }

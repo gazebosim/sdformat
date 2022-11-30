@@ -17,9 +17,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <ignition/math/Inertial.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
@@ -38,7 +38,7 @@ class sdf::LinkPrivate
   public: std::string name = "";
 
   /// \brief Pose of the link
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -56,9 +56,9 @@ class sdf::LinkPrivate
   public: std::vector<Sensor> sensors;
 
   /// \brief The inertial information for this link.
-  public: ignition::math::Inertiald inertial {{1.0,
-            ignition::math::Vector3d::One, ignition::math::Vector3d::Zero},
-            ignition::math::Pose3d::Zero};
+  public: gz::math::Inertiald inertial {{1.0,
+            gz::math::Vector3d::One, gz::math::Vector3d::Zero},
+            gz::math::Pose3d::Zero};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -163,9 +163,9 @@ Errors Link::Load(ElementPtr _sdf)
       this->dataPtr->sensors);
   errors.insert(errors.end(), sensorLoadErrors.begin(), sensorLoadErrors.end());
 
-  ignition::math::Vector3d xxyyzz = ignition::math::Vector3d::One;
-  ignition::math::Vector3d xyxzyz = ignition::math::Vector3d::Zero;
-  ignition::math::Pose3d inertiaPose;
+  gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
+  gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
+  gz::math::Pose3d inertiaPose;
   std::string inertiaFrame = "";
   double mass = 1.0;
 
@@ -193,7 +193,7 @@ Errors Link::Load(ElementPtr _sdf)
     }
   }
   if (!this->dataPtr->inertial.SetMassMatrix(
-      ignition::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+      gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
                      "A link named " +
@@ -337,13 +337,13 @@ const Sensor *Link::SensorByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Inertiald &Link::Inertial() const
+const gz::math::Inertiald &Link::Inertial() const
 {
   return this->dataPtr->inertial;
 }
 
 /////////////////////////////////////////////////
-bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
+bool Link::SetInertial(const gz::math::Inertiald &_inertial)
 {
   this->dataPtr->inertial = _inertial;
   return _inertial.MassMatrix().IsValid();
@@ -351,10 +351,10 @@ bool Link::SetInertial(const ignition::math::Inertiald &_inertial)
 
 /////////////////////////////////////////////////
 Errors Link::ResolveInertial(
-  ignition::math::Inertiald &_inertial,
+  gz::math::Inertiald &_inertial,
   const std::string &_resolveTo) const
 {
-  ignition::math::Pose3d linkPose;
+  gz::math::Pose3d linkPose;
   auto errors = this->SemanticPose().Resolve(linkPose, _resolveTo);
   if (errors.empty())
   {
@@ -365,13 +365,13 @@ Errors Link::ResolveInertial(
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Link::Pose() const
+const gz::math::Pose3d &Link::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Link::RawPose() const
+const gz::math::Pose3d &Link::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -389,13 +389,13 @@ const std::string &Link::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Link::SetPose(const ignition::math::Pose3d &_pose)
+void Link::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Link::SetRawPose(const ignition::math::Pose3d &_pose)
+void Link::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

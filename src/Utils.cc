@@ -43,7 +43,7 @@ bool loadName(sdf::ElementPtr _sdf, std::string &_name)
 }
 
 /////////////////////////////////////////////////
-bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
+bool loadPose(sdf::ElementPtr _sdf, gz::math::Pose3d &_pose,
               std::string &_frame)
 {
   sdf::ElementPtr sdf = _sdf;
@@ -60,8 +60,8 @@ bool loadPose(sdf::ElementPtr _sdf, ignition::math::Pose3d &_pose,
       sdf->Get<std::string>("relative_to", "");
 
   // Read the pose value.
-  std::pair<ignition::math::Pose3d, bool> posePair =
-    sdf->Get<ignition::math::Pose3d>("", ignition::math::Pose3d::Zero);
+  std::pair<gz::math::Pose3d, bool> posePair =
+    sdf->Get<gz::math::Pose3d>("", gz::math::Pose3d::Zero);
 
   // Set output, but only if the return value is true.
   if (posePair.second)

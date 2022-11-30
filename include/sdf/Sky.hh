@@ -18,7 +18,7 @@
 #ifndef SDF_SKY_HH_
 #define SDF_SKY_HH_
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
@@ -94,11 +94,11 @@ namespace sdf
 
     /// \brief Get cloud direction angle (angle around up axis)
     /// \return cloud direction angle in world frame
-    public: ignition::math::Angle CloudDirection() const;
+    public: gz::math::Angle CloudDirection() const;
 
     /// \brief Set cloud direction angle (angle around up axis)
     /// \param[in] _angle Cloud direction angle in world frame.
-    public: void SetCloudDirection(const ignition::math::Angle &_angle);
+    public: void SetCloudDirection(const gz::math::Angle &_angle);
 
     /// \brief Get cloud humidity
     /// \return cloud humidity [0..1]
@@ -118,11 +118,11 @@ namespace sdf
 
     /// \brief Get cloud ambient color
     /// \return cloud ambient color
-    public: ignition::math::Color CloudAmbient() const;
+    public: gz::math::Color CloudAmbient() const;
 
     /// \brief Set cloud ambient color
     /// \param[in] _ambient cloud ambient color
-    public: void SetCloudAmbient(const ignition::math::Color &_ambient);
+    public: void SetCloudAmbient(const gz::math::Color &_ambient);
 
     /// \brief Load the sky based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root

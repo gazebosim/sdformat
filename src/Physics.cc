@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Physics.hh"
 #include "Utils.hh"

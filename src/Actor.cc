@@ -16,7 +16,7 @@
 */
 #include <string>
 #include <vector>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Error.hh"
 #include "Utils.hh"
@@ -49,7 +49,7 @@ class sdf::WaypointPrivate
   public: double time = 0.0;
 
   /// \brief Pose to be reached.
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 };
 
 /// \brief Trajectory private data.
@@ -75,7 +75,7 @@ class sdf::ActorPrivate
   public: std::string name = "__default__";
 
   /// \brief Pose of the actor.
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the actor.
   public: std::string poseRelativeTo = "";
@@ -313,7 +313,7 @@ Errors Waypoint::Load(ElementPtr _sdf)
   }
   this->dataPtr->time = timeValue.first;
 
-  std::pair posePair = _sdf->Get<ignition::math::Pose3d>
+  std::pair posePair = _sdf->Get<gz::math::Pose3d>
                         ("pose", this->dataPtr->pose);
   if (!posePair.second)
   {
@@ -338,13 +338,13 @@ void Waypoint::SetTime(double _time)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Pose3d Waypoint::Pose() const
+gz::math::Pose3d Waypoint::Pose() const
 {
   return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
-void Waypoint::SetPose(const ignition::math::Pose3d &_pose)
+void Waypoint::SetPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -643,13 +643,13 @@ void Actor::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Actor::Pose() const
+const gz::math::Pose3d &Actor::Pose() const
 {
   return this->RawPose();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Actor::RawPose() const
+const gz::math::Pose3d &Actor::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -667,13 +667,13 @@ const std::string &Actor::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Actor::SetPose(const ignition::math::Pose3d &_pose)
+void Actor::SetPose(const gz::math::Pose3d &_pose)
 {
   this->SetRawPose(_pose);
 }
 
 /////////////////////////////////////////////////
-void Actor::SetRawPose(const ignition::math::Pose3d &_pose)
+void Actor::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }

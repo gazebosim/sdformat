@@ -16,7 +16,7 @@
 */
 #include <string>
 #include <vector>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/Model.hh"
 #include "sdf/Types.hh"
@@ -149,11 +149,11 @@ bool PbrWorkflow::operator==(const PbrWorkflow &_workflow) const
     && (this->dataPtr->lightMapFilename == _workflow.dataPtr->lightMapFilename)
     && (this->dataPtr->ambientOcclusionMap ==
         _workflow.dataPtr->ambientOcclusionMap)
-    && (ignition::math::equal(
+    && (gz::math::equal(
         this->dataPtr->metalness, _workflow.dataPtr->metalness))
-    && (ignition::math::equal(
+    && (gz::math::equal(
         this->dataPtr->roughness, _workflow.dataPtr->roughness))
-    && (ignition::math::equal(
+    && (gz::math::equal(
         this->dataPtr->glossiness, _workflow.dataPtr->glossiness));
 }
 

@@ -21,9 +21,9 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
 
 #include "sdf/Exception.hh"
 #include "sdf/Param.hh"
@@ -110,17 +110,17 @@ TEST(Param, StringTypeGet)
   sdf::Param stringParam("key", "string", "", false, "description");
 
   // pose type
-  ignition::math::Pose3d pose;
+  gz::math::Pose3d pose;
   EXPECT_TRUE(stringParam.SetFromString("1 1 1 0 0 0"));
-  EXPECT_TRUE(stringParam.Get<ignition::math::Pose3d>(pose));
-  EXPECT_EQ(ignition::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
+  EXPECT_TRUE(stringParam.Get<gz::math::Pose3d>(pose));
+  EXPECT_EQ(gz::math::Pose3d(1, 1, 1, 0, 0, 0), pose);
   EXPECT_EQ("string", stringParam.GetTypeName());
 
   // color type
-  ignition::math::Color color;
+  gz::math::Color color;
   EXPECT_TRUE(stringParam.SetFromString("0 0 1 1"));
-  EXPECT_TRUE(stringParam.Get<ignition::math::Color>(color));
-  EXPECT_EQ(ignition::math::Color(0, 0, 1, 1), color);
+  EXPECT_TRUE(stringParam.Get<gz::math::Color>(color));
+  EXPECT_EQ(gz::math::Color(0, 0, 1, 1), color);
   EXPECT_EQ("string", stringParam.GetTypeName());
 }
 
@@ -301,8 +301,8 @@ TEST(Param, uint64t)
 TEST(Param, UnknownType)
 {
   sdf::Param doubleParam("key", "double", "1.0", false, "description");
-  ignition::math::Angle value;
-  EXPECT_TRUE(doubleParam.Get<ignition::math::Angle>(value));
+  gz::math::Angle value;
+  EXPECT_TRUE(doubleParam.Get<gz::math::Angle>(value));
   EXPECT_DOUBLE_EQ(value.Radian(), 1.0);
 }
 
@@ -310,10 +310,10 @@ TEST(Param, UnknownType)
 TEST(Param, Vector2i)
 {
   sdf::Param vect2iParam("key", "vector2i", "0 0", false, "description");
-  ignition::math::Vector2i value;
+  gz::math::Vector2i value;
 
-  EXPECT_TRUE(vect2iParam.Get<ignition::math::Vector2i>(value));
-  EXPECT_EQ(value, ignition::math::Vector2i(0, 0));
+  EXPECT_TRUE(vect2iParam.Get<gz::math::Vector2i>(value));
+  EXPECT_EQ(value, gz::math::Vector2i(0, 0));
 }
 
 ////////////////////////////////////////////////////

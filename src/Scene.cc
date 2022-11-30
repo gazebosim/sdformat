@@ -42,12 +42,12 @@ class sdf::ScenePrivate
   public: bool originVisual = true;
 
   /// \brief Ambient light color of the scene.
-  public: ignition::math::Color ambient =
-      ignition::math::Color(0.4f, 0.4f, 0.4f);
+  public: gz::math::Color ambient =
+      gz::math::Color(0.4f, 0.4f, 0.4f);
 
   /// \brief Background color of the scene.
-  public: ignition::math::Color background =
-      ignition::math::Color(0.7f, 0.7f, .7f);
+  public: gz::math::Color background =
+      gz::math::Color(0.7f, 0.7f, .7f);
 
   /// \brief Pointer to the sky properties.
   public: std::unique_ptr<Sky> sky;
@@ -128,11 +128,11 @@ Errors Scene::Load(ElementPtr _sdf)
   }
 
   // Get the ambient property
-  this->dataPtr->ambient = _sdf->Get<ignition::math::Color>("ambient",
+  this->dataPtr->ambient = _sdf->Get<gz::math::Color>("ambient",
       this->dataPtr->ambient).first;
 
   // Get the background color property
-  this->dataPtr->background = _sdf->Get<ignition::math::Color>("background",
+  this->dataPtr->background = _sdf->Get<gz::math::Color>("background",
       this->dataPtr->background).first;
 
   // Get the grid property
@@ -159,25 +159,25 @@ Errors Scene::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color Scene::Ambient() const
+gz::math::Color Scene::Ambient() const
 {
   return this->dataPtr->ambient;
 }
 
 /////////////////////////////////////////////////
-void Scene::SetAmbient(const ignition::math::Color &_ambient)
+void Scene::SetAmbient(const gz::math::Color &_ambient)
 {
   this->dataPtr->ambient = _ambient;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color Scene::Background() const
+gz::math::Color Scene::Background() const
 {
   return this->dataPtr->background;
 }
 
 /////////////////////////////////////////////////
-void Scene::SetBackground(const ignition::math::Color &_background)
+void Scene::SetBackground(const gz::math::Color &_background)
 {
   this->dataPtr->background = _background;
 }

@@ -125,10 +125,10 @@ TEST(DOMPolyline, Points)
   sdf::Polyline polyline;
   EXPECT_EQ(0u, polyline.PointCount());
 
-  ignition::math::Vector2d p1{1, 2};
-  ignition::math::Vector2d p2{3, 4};
-  ignition::math::Vector2d p3{5, 6};
-  ignition::math::Vector2d p4{7, 8};
+  gz::math::Vector2d p1{1, 2};
+  gz::math::Vector2d p2{3, 4};
+  gz::math::Vector2d p3{5, 6};
+  gz::math::Vector2d p4{7, 8};
 
   EXPECT_TRUE(polyline.AddPoint(p1));
   EXPECT_TRUE(polyline.AddPoint(p2));
