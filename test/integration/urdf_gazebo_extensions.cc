@@ -411,7 +411,7 @@ TEST(SDFParser, FixedJointSimple)
   ASSERT_NE(nullptr, link);
   auto massMatrix = link->Inertial().MassMatrix();
   EXPECT_DOUBLE_EQ(2.0, massMatrix.Mass());
-  EXPECT_EQ(2.0 * ignition::math::Matrix3d::Identity, massMatrix.Moi());
+  EXPECT_EQ(2.0 * gz::math::Matrix3d::Identity, massMatrix.Moi());
 
   EXPECT_EQ(0u, model->JointCount());
 
