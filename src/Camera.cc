@@ -211,6 +211,9 @@ class sdf::Camera::Implementation
   /// \brief True if this camera has custom intrinsics values
   public: bool hasIntrinsics = false;
 
+  /// \brief True if this camera has custom projection values
+  public: bool hasProjection = false;
+
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityMask{UINT32_MAX};
 };
@@ -257,6 +260,8 @@ Errors Camera::Load(ElementPtr _sdf)
 
   this->dataPtr->cameraInfoTopic = _sdf->Get<std::string>("camera_info_topic",
       this->dataPtr->cameraInfoTopic).first;
+  if (this->dataPtr->cameraInfoTopic == "__default__")
+    this->dataPtr->cameraInfoTopic = "";
 
   this->dataPtr->hfov = _sdf->Get<ignition::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
@@ -441,7 +446,7 @@ Errors Camera::Load(ElementPtr _sdf)
           this->dataPtr->lensProjectionTx).first;
       this->dataPtr->lensProjectionTy = projection->Get<double>("ty",
           this->dataPtr->lensProjectionTy).first;
-
+      this->dataPtr->hasProjection = true;
     }
   }
 
@@ -1055,6 +1060,7 @@ double Camera::LensProjectionFx() const
 void Camera::SetLensProjectionFx(double _fx_p)
 {
   this->dataPtr->lensProjectionFx = _fx_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1067,6 +1073,7 @@ double Camera::LensProjectionFy() const
 void Camera::SetLensProjectionFy(double _fy_p)
 {
   this->dataPtr->lensProjectionFy = _fy_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1079,6 +1086,7 @@ double Camera::LensProjectionCx() const
 void Camera::SetLensProjectionCx(double _cx_p)
 {
   this->dataPtr->lensProjectionCx = _cx_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1091,6 +1099,7 @@ double Camera::LensProjectionCy() const
 void Camera::SetLensProjectionCy(double _cy_p)
 {
   this->dataPtr->lensProjectionCy = _cy_p;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1103,6 +1112,7 @@ double Camera::LensProjectionTx() const
 void Camera::SetLensProjectionTx(double _tx)
 {
   this->dataPtr->lensProjectionTx = _tx;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1115,6 +1125,7 @@ double Camera::LensProjectionTy() const
 void Camera::SetLensProjectionTy(double _ty)
 {
   this->dataPtr->lensProjectionTy = _ty;
+  this->dataPtr->hasProjection = true;
 }
 
 /////////////////////////////////////////////////
@@ -1188,6 +1199,12 @@ void Camera::SetVisibilityMask(uint32_t _mask)
 bool Camera::HasLensIntrinsics() const
 {
   return this->dataPtr->hasIntrinsics;
+}
+
+/////////////////////////////////////////////////
+bool Camera::HasLensProjection() const
+{
+  return this->dataPtr->hasProjection;
 }
 
 /////////////////////////////////////////////////
@@ -1296,6 +1313,17 @@ sdf::ElementPtr Camera::ToElement() const
     intrinsicsElem->GetElement("cy")->Set<double>(this->LensIntrinsicsCy());
     intrinsicsElem->GetElement("s")->Set<double>(this->LensIntrinsicsSkew());
   }
+  if (this->HasLensProjection())
+  {
+    sdf::ElementPtr projectionElem = lensElem->GetElement("projection");
+    projectionElem->GetElement("p_fx")->Set<double>(this->LensProjectionFx());
+    projectionElem->GetElement("p_fy")->Set<double>(this->LensProjectionFy());
+    projectionElem->GetElement("p_cx")->Set<double>(this->LensProjectionCx());
+    projectionElem->GetElement("p_cy")->Set<double>(this->LensProjectionCy());
+    projectionElem->GetElement("tx")->Set<double>(this->LensProjectionTx());
+    projectionElem->GetElement("ty")->Set<double>(this->LensProjectionTy());
+  }
+
 
   if (this->HasSegmentationType())
   {
