@@ -196,7 +196,7 @@ sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
 
 /////////////////////////////////////////////////
 void JointAxis::SetMimicJoint(const MimicJointContainer
-    _mimicJoint)
+    &_mimicJoint)
 {
   this->dataPtr->mimic = std::make_optional(_mimicJoint);
 }

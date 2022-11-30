@@ -33,6 +33,7 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
 
+
   // Forward declare private data class.
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
@@ -42,7 +43,7 @@ namespace sdf
   class SDFORMAT_VISIBLE MimicJointContainer
   {
   public:
-    /// \brief The joint to be mimicked, i.e. the parent joint.
+    /// \brief The name of the joint to be mimicked, i.e. the parent joint.
     std::string joint;
     /// \brief Multiplication factor to be applied to parent joint's pose.
     double multiplier;
@@ -98,7 +99,7 @@ namespace sdf
     /// \param[in] _mimicJoint The joint name, multiplier, and offset to be used
     /// for mimicking.
     /// \sa MimicJointContainer MimicJoint()
-    public: void SetMimicJoint(const MimicJointContainer _mimicJoint);
+    public: void SetMimicJoint(const MimicJointContainer &_mimicJoint);
 
     /// \brief Get the joint to be mimicked.
     /// \return The joint name, multipler, and offset of the joint to
