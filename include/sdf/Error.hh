@@ -172,6 +172,12 @@ namespace sdf
     /// \brief The joint axis expressed-in value does not match the name of an
     /// existing frame in the current scope.
     JOINT_AXIS_EXPRESSED_IN_INVALID,
+
+    /// \brief SDF conversion generic error.
+    CONVERSION_ERROR,
+
+    /// \brief Generic error during parsing.
+    PARSING_ERROR,
   };
 
   class SDFORMAT_VISIBLE Error
