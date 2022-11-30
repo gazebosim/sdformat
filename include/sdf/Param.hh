@@ -376,7 +376,7 @@ namespace sdf
       {
         // this section for handling bool types is to keep backward behavior
         // TODO(anyone) remove for Fortress. For more details:
-        // https://github.com/ignitionrobotics/sdformat/pull/638
+        // https://github.com/gazebosim/sdformat/pull/638
         valueStr = lowercase(valueStr);
 
         std::stringstream tmp;

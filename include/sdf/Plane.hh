@@ -75,7 +75,7 @@ namespace sdf
     /// \return The plane normal vector.
     public: gz::math::Vector3d Normal() const;
 
-    /// \brief Set the plane normal vector. The _normal vector will be
+    /// \brief Set the plane normal vector. The normal vector will be
     /// normalized. See gz::math::Vector3d Normal() for more information
     /// about the normal vector, such as the frame in which it is specified.
     /// \param[in] _normal The plane normal vector.
@@ -95,12 +95,12 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Plane.
-    /// \return A const reference to an gz::math::Planed object.
+    /// \brief Get the Gazebo Math representation of this Plane.
+    /// \return A const reference to a gz::math::Planed object.
     public: const gz::math::Planed &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Plane.
-    /// \return A reference to an gz::math::Planed object.
+    /// \brief Get a mutable Gazebo Math representation of this Plane.
+    /// \return A reference to a gz::math::Planed object.
     public: gz::math::Planed &Shape();
 
     /// \brief Private data pointer.

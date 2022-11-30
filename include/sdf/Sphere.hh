@@ -76,12 +76,12 @@ namespace sdf
     /// \param[in] _radius The radius of the sphere in meters.
     public: void SetRadius(const double _radius);
 
-    /// \brief Get the Ignition Math representation of this Sphere.
-    /// \return A const reference to an gz::math::Sphered object.
+    /// \brief Get the Gazebo Math representation of this Sphere.
+    /// \return A const reference to a gz::math::Sphered object.
     public: const gz::math::Sphered &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Sphere.
-    /// \return A reference to an gz::math::Sphered object.
+    /// \brief Get a mutable Gazebo Math representation of this Sphere.
+    /// \return A reference to a gz::math::Sphered object.
     public: gz::math::Sphered &Shape();
 
     /// \brief Get a pointer to the SDF element that was used during
