@@ -318,6 +318,7 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("", cameraSensor->Topic());
   EXPECT_EQ("my_camera/trigger", camSensor->TriggerTopic());
   EXPECT_TRUE(camSensor->Triggered());
+  EXPECT_EQ("/camera_sensor/camera_info", camSensor->CameraInfoTopic());
   EXPECT_EQ(640u, camSensor->ImageWidth());
   EXPECT_EQ(480u, camSensor->ImageHeight());
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, camSensor->PixelFormat());

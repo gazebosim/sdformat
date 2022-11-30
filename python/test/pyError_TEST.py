@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from sdformat13 import Error
-import sdformat13 as sdf
+from gz_test_deps.sdformat import Error
+import gz_test_deps.sdformat as sdf
 import unittest
 
 class ErrorColor(unittest.TestCase):

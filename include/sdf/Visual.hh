@@ -41,6 +41,7 @@ namespace sdf
 
   // Forward declarations.
   class Geometry;
+  class ParserConfig;
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
@@ -56,6 +57,15 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Load the visual based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _config Parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the visual.
     /// The name of the visual must be unique within the scope of a Link.

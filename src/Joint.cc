@@ -52,7 +52,8 @@ class sdf::Joint::Implementation
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
 
-  /// \brief Thread pitch for screw joints.
+  /// \brief Thread pitch for screw joints in meters / revolution with a
+  /// positive value for right-handed threads.
   public: double threadPitch = 1.0;
 
   /// \brief Joint axis
@@ -179,7 +180,18 @@ Errors Joint::Load(ElementPtr _sdf)
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
   }
 
-  this->dataPtr->threadPitch = _sdf->Get<double>("thread_pitch", 1.0).first;
+  if (_sdf->HasElement("screw_thread_pitch"))
+  {
+    // Prefer the screw_thread_pitch parameter if available.
+    this->dataPtr->threadPitch = _sdf->Get<double>("screw_thread_pitch");
+  }
+  else if (_sdf->HasElement("thread_pitch"))
+  {
+    // If thread_pitch is available, convert to meters / revolution
+    // and fix sign.
+    this->dataPtr->threadPitch = -2*GZ_PI / _sdf->Get<double>("thread_pitch");
+  }
+  // Otherwise the default value of threadPitch will be used
 
   // Read the type
   std::pair<std::string, bool> typePair = _sdf->Get<std::string>("type", "");
@@ -426,15 +438,27 @@ sdf::SemanticPose Joint::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-double Joint::ThreadPitch() const
+double Joint::ScrewThreadPitch() const
 {
   return this->dataPtr->threadPitch;
 }
 
 /////////////////////////////////////////////////
-void Joint::SetThreadPitch(double _threadPitch)
+void Joint::SetScrewThreadPitch(double _threadPitch)
 {
   this->dataPtr->threadPitch = _threadPitch;
+}
+
+/////////////////////////////////////////////////
+double Joint::ThreadPitch() const
+{
+  return -2*GZ_PI / this->dataPtr->threadPitch;
+}
+
+/////////////////////////////////////////////////
+void Joint::SetThreadPitch(double _threadPitch)
+{
+  this->dataPtr->threadPitch = -2*GZ_PI / _threadPitch;
 }
 
 /////////////////////////////////////////////////
