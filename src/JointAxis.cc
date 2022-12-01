@@ -251,7 +251,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
     newMimicJoint.SetReference(mimicElement->Get<double>("reference",
         0).first);
 
-    this->dataPtr->mimic = std::make_optional<MimicJointContainer>(newMimicJoint);
+    this->dataPtr->mimic = std::make_optional<MimicJointContainer>(
+        newMimicJoint);
   }
 
   return errors;
