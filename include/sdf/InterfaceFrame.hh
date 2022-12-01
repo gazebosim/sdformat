@@ -20,8 +20,8 @@
 
 #include <string>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -41,7 +41,7 @@ class SDFORMAT_VISIBLE InterfaceFrame
   /// this frame.
   /// \param[in] _pose The pose of the frame relative to the attached-to frame.
   public: InterfaceFrame(const std::string &_name,
-      const std::string &_attachedTo, const ignition::math::Pose3d &_pose);
+      const std::string &_attachedTo, const gz::math::Pose3d &_pose);
 
   /// \brief Get the name of the frame.
   /// \return Local name of the frame.
@@ -54,7 +54,7 @@ class SDFORMAT_VISIBLE InterfaceFrame
 
   /// \brief Get the pose of this frame relative to the attached-to frame.
   /// \return The pose of this frame in the attached-to frame.
-  public: const ignition::math::Pose3d &PoseInAttachedToFrame() const;
+  public: const gz::math::Pose3d &PoseInAttachedToFrame() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

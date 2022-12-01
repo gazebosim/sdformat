@@ -17,10 +17,10 @@
 #ifndef SDF_PLANE_HH_
 #define SDF_PLANE_HH_
 
-#include <ignition/math/Plane.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/math/Vector2.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Plane.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -50,21 +50,21 @@ namespace sdf
     /// for a Visual or Collision object, then the normal is specified in the
     /// Visual or Collision frame, respectively.
     /// \return The plane normal vector.
-    public: ignition::math::Vector3d Normal() const;
+    public: gz::math::Vector3d Normal() const;
 
-    /// \brief Set the plane normal vector. The _normal vector will be
-    /// normalized. See ignition::math::Vector3d Normal() for more information
+    /// \brief Set the plane normal vector. The normal vector will be
+    /// normalized. See gz::math::Vector3d Normal() for more information
     /// about the normal vector, such as the frame in which it is specified.
     /// \param[in] _normal The plane normal vector.
-    public: void SetNormal(const ignition::math::Vector3d &_normal);
+    public: void SetNormal(const gz::math::Vector3d &_normal);
 
     /// \brief Get the plane size in meters.
     /// \return The plane size in meters.
-    public: ignition::math::Vector2d Size() const;
+    public: gz::math::Vector2d Size() const;
 
     /// \brief Set the plane size in meters.
     /// \param[in] _size The plane size in meters.
-    public: void SetSize(const ignition::math::Vector2d &_size);
+    public: void SetSize(const gz::math::Vector2d &_size);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -72,13 +72,13 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Get the Ignition Math representation of this Plane.
-    /// \return A const reference to an ignition::math::Planed object.
-    public: const ignition::math::Planed &Shape() const;
+    /// \brief Get the Gazebo Math representation of this Plane.
+    /// \return A const reference to a gz::math::Planed object.
+    public: const gz::math::Planed &Shape() const;
 
-    /// \brief Get a mutable Ignition Math representation of this Plane.
-    /// \return A reference to an ignition::math::Planed object.
-    public: ignition::math::Planed &Shape();
+    /// \brief Get a mutable Gazebo Math representation of this Plane.
+    /// \return A reference to a gz::math::Planed object.
+    public: gz::math::Planed &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// plane.

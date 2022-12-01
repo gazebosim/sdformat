@@ -18,7 +18,7 @@
 #define SDF_PRINTCONFIG_HH_
 
 #include <optional>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"

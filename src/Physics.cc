@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/Physics.hh"
@@ -49,7 +49,7 @@ class sdf::Physics::Implementation
 
 /////////////////////////////////////////////////
 Physics::Physics()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

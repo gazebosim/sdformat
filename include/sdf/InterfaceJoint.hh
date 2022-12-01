@@ -20,8 +20,8 @@
 
 #include <string>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
@@ -38,7 +38,7 @@ class SDFORMAT_VISIBLE InterfaceJoint
   /// \param[in] _childName Name of the child link or frame.
   /// \param[in] _pose The pose of the joint relative to the child frame.
   public: InterfaceJoint(const std::string &_name,
-      const std::string &_childName, const ignition::math::Pose3d &_pose);
+      const std::string &_childName, const gz::math::Pose3d &_pose);
 
   /// \brief Get the name of the joint.
   /// \return Local name of the joint.
@@ -50,7 +50,7 @@ class SDFORMAT_VISIBLE InterfaceJoint
 
   /// \brief Get the pose of this joint in the child frame.
   /// \return The pose of this joint in the child frame.
-  public: const ignition::math::Pose3d &PoseInChildFrame() const;
+  public: const gz::math::Pose3d &PoseInChildFrame() const;
 
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)

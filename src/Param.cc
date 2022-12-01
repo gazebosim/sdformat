@@ -221,55 +221,55 @@ bool Param::GetAny(std::any &_anyVal) const
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Color>())
+  else if (this->IsType<gz::math::Color>())
   {
-    ignition::math::Color ret;
-    if (!this->Get<ignition::math::Color>(ret))
+    gz::math::Color ret;
+    if (!this->Get<gz::math::Color>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Vector3d>())
+  else if (this->IsType<gz::math::Vector3d>())
   {
-    ignition::math::Vector3d ret;
-    if (!this->Get<ignition::math::Vector3d>(ret))
+    gz::math::Vector3d ret;
+    if (!this->Get<gz::math::Vector3d>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Vector2i>())
+  else if (this->IsType<gz::math::Vector2i>())
   {
-    ignition::math::Vector2i ret;
-    if (!this->Get<ignition::math::Vector2i>(ret))
+    gz::math::Vector2i ret;
+    if (!this->Get<gz::math::Vector2i>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Vector2d>())
+  else if (this->IsType<gz::math::Vector2d>())
   {
-    ignition::math::Vector2d ret;
-    if (!this->Get<ignition::math::Vector2d>(ret))
+    gz::math::Vector2d ret;
+    if (!this->Get<gz::math::Vector2d>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Pose3d>())
+  else if (this->IsType<gz::math::Pose3d>())
   {
-    ignition::math::Pose3d ret;
-    if (!this->Get<ignition::math::Pose3d>(ret))
+    gz::math::Pose3d ret;
+    if (!this->Get<gz::math::Pose3d>(ret))
     {
       return false;
     }
     _anyVal = ret;
   }
-  else if (this->IsType<ignition::math::Quaterniond>())
+  else if (this->IsType<gz::math::Quaterniond>())
   {
-    ignition::math::Quaterniond ret;
-    if (!this->Get<ignition::math::Quaterniond>(ret))
+    gz::math::Quaterniond ret;
+    if (!this->Get<gz::math::Quaterniond>(ret))
     {
       return false;
     }
@@ -464,7 +464,7 @@ bool ParseColorUsingStringStream(const std::string &_input,
 
   if (isValidColor)
   {
-    _value = ignition::math::Color(colors[0], colors[1], colors[2], colors[3]);
+    _value = gz::math::Color(colors[0], colors[1], colors[2], colors[3]);
   }
   else
   {
@@ -542,7 +542,7 @@ bool ParsePoseUsingStringStream(const std::string &_input,
 
   if (_input.empty())
   {
-    _value = ignition::math::Pose3d::Zero;
+    _value = gz::math::Pose3d::Zero;
     return true;
   }
 
@@ -609,18 +609,18 @@ bool ParsePoseUsingStringStream(const std::string &_input,
   {
     if (parseAsDegrees)
     {
-      _value = ignition::math::Pose3d(values[0], values[1], values[2],
+      _value = gz::math::Pose3d(values[0], values[1], values[2],
           IGN_DTOR(values[3]), IGN_DTOR(values[4]), IGN_DTOR(values[5]));
     }
     else
     {
-      _value = ignition::math::Pose3d(values[0], values[1], values[2],
+      _value = gz::math::Pose3d(values[0], values[1], values[2],
           values[3], values[4], values[5]);
     }
   }
   else
   {
-    _value = ignition::math::Pose3d(values[0], values[1], values[2],
+    _value = gz::math::Pose3d(values[0], values[1], values[2],
         values[6], values[3], values[4], values[5]);
   }
 
@@ -718,36 +718,36 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
       return ParseUsingStringStream<sdf::Time>(tmp, this->key,
                                                _valueToSet);
     }
-    else if (_typeName == "ignition::math::Angle" ||
+    else if (_typeName == "gz::math::Angle" ||
              _typeName == "angle")
     {
-      return ParseUsingStringStream<ignition::math::Angle>(
+      return ParseUsingStringStream<gz::math::Angle>(
           tmp, this->key, _valueToSet);
     }
-    else if (_typeName == "ignition::math::Color" ||
+    else if (_typeName == "gz::math::Color" ||
              _typeName == "color")
     {
       return ParseColorUsingStringStream(tmp, this->key, _valueToSet);
     }
-    else if (_typeName == "ignition::math::Vector2i" ||
+    else if (_typeName == "gz::math::Vector2i" ||
              _typeName == "vector2i")
     {
-      return ParseUsingStringStream<ignition::math::Vector2i>(
+      return ParseUsingStringStream<gz::math::Vector2i>(
           tmp, this->key, _valueToSet);
     }
-    else if (_typeName == "ignition::math::Vector2d" ||
+    else if (_typeName == "gz::math::Vector2d" ||
              _typeName == "vector2d")
     {
-      return ParseUsingStringStream<ignition::math::Vector2d>(
+      return ParseUsingStringStream<gz::math::Vector2d>(
           tmp, this->key, _valueToSet);
     }
-    else if (_typeName == "ignition::math::Vector3d" ||
+    else if (_typeName == "gz::math::Vector3d" ||
              _typeName == "vector3")
     {
-      return ParseUsingStringStream<ignition::math::Vector3d>(
+      return ParseUsingStringStream<gz::math::Vector3d>(
           tmp, this->key, _valueToSet);
     }
-    else if (_typeName == "ignition::math::Pose3d" ||
+    else if (_typeName == "gz::math::Pose3d" ||
              _typeName == "pose" ||
              _typeName == "Pose")
     {
@@ -760,10 +760,10 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
       return ParsePoseUsingStringStream(
           tmp, this->key, {}, _valueToSet);
     }
-    else if (_typeName == "ignition::math::Quaterniond" ||
+    else if (_typeName == "gz::math::Quaterniond" ||
              _typeName == "quaternion")
     {
-      return ParseUsingStringStream<ignition::math::Quaterniond>(
+      return ParseUsingStringStream<gz::math::Quaterniond>(
           tmp, this->key, _valueToSet);
     }
     else
@@ -810,8 +810,8 @@ bool PoseStringFromValue(const PrintConfig &_config,
 {
   StringStreamClassicLocale ss;
 
-  const ignition::math::Pose3d *pose =
-      std::get_if<ignition::math::Pose3d>(&_value);
+  const gz::math::Pose3d *pose =
+      std::get_if<gz::math::Pose3d>(&_value);
   if (!pose)
   {
     sdferr << "Unable to get pose value from variant.\n";
@@ -1004,7 +1004,7 @@ bool ParamPrivate::StringFromValueImpl(
     _valueStr = *val ? "true" : "false";
     return true;
   }
-  else if (_typeName == "ignition::math::Pose3d" ||
+  else if (_typeName == "gz::math::Pose3d" ||
       _typeName == "pose" ||
       _typeName == "Pose")
   {

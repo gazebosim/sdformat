@@ -114,7 +114,7 @@ TEST(IncludesTest, NestedMultipleLightsError)
   const auto * light = root.Light();
   ASSERT_NE(nullptr, light);
   EXPECT_EQ("nested_light", light->Name());
-  EXPECT_EQ(ignition::math::Vector3d(1, 0, 0), light->Direction());
+  EXPECT_EQ(gz::math::Vector3d(1, 0, 0), light->Direction());
 }
 
 //////////////////////////////////////////////////
