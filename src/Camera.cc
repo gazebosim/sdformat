@@ -208,11 +208,11 @@ class sdf::Camera::Implementation
   /// \brief lens instrinsics s.
   public: double lensIntrinsicsS{1.0};
 
-  /// \brief True if this camera has custom projection values
-  public: bool hasProjection = false;
-
   /// \brief True if this camera has custom intrinsics values
   public: bool hasIntrinsics = false;
+
+  /// \brief True if this camera has custom projection values
+  public: bool hasProjection = false;
 
   /// \brief Visibility mask of a camera. Defaults to 0xFFFFFFFF
   public: uint32_t visibilityMask{UINT32_MAX};
@@ -260,6 +260,8 @@ Errors Camera::Load(ElementPtr _sdf)
 
   this->dataPtr->cameraInfoTopic = _sdf->Get<std::string>("camera_info_topic",
       this->dataPtr->cameraInfoTopic).first;
+  if (this->dataPtr->cameraInfoTopic == "__default__")
+    this->dataPtr->cameraInfoTopic = "";
 
   this->dataPtr->hfov = _sdf->Get<gz::math::Angle>("horizontal_fov",
       this->dataPtr->hfov).first;
