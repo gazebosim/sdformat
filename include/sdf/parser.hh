@@ -38,6 +38,8 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
+  // TODO(marcoag): Deprecate function overloads that do not use sdf::Errors,
+  // see: https://github.com/gazebosim/sdformat/issues/1186
   class Root;
 
   /// \brief Initialize the SDF interface from the embedded root spec file
@@ -334,6 +336,17 @@ namespace sdf
   bool convertFile(const std::string &_filename, const std::string &_version,
                    const ParserConfig &_config, SDFPtr _sdf);
 
+  /// \brief Convert an SDF file to a specific SDF version.
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \param[in] _filename Name of the SDF file to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[in] _config Custom parser configuration
+  /// \return Vector of errors, successful when vector is empty.
+  SDFORMAT_VISIBLE
+  sdf::Errors convertFile(
+      SDFPtr _sdf, const std::string &_filename, const std::string &_version,
+      const ParserConfig &_config = ParserConfig::GlobalConfig());
+
   /// \brief Convert an SDF string to a specific SDF version.
   /// \param[in] _sdfString The SDF string to convert.
   /// \param[in] _version Version to convert _filename to.
@@ -352,6 +365,17 @@ namespace sdf
   SDFORMAT_VISIBLE
   bool convertString(const std::string &_sdfString, const std::string &_version,
                      const ParserConfig &_config, SDFPtr _sdf);
+
+  /// \brief Convert an SDF string to a specific SDF version.
+  /// \param[out] _sdf Pointer to the converted SDF document.
+  /// \param[in] _sdfString The SDF string to convert.
+  /// \param[in] _version Version to convert _filename to.
+  /// \param[in] _config Custom parser configuration
+  /// \return Vector of errors, successful when vector is empty.
+  SDFORMAT_VISIBLE
+  sdf::Errors convertString(
+      SDFPtr _sdf, const std::string &_sdfString, const std::string &_version,
+      const ParserConfig &_config = ParserConfig::GlobalConfig());
 
   /// \brief Check that for each model, the canonical_link attribute value
   /// matches the name of a link in the model if the attribute is set and
