@@ -92,17 +92,18 @@ class sdf::JointAxis::Implementation
 /////////////////////////////////////////////////
 MimicJointContainer::MimicJointContainer(const MimicJointContainer& _other)
 {
+  this->dataPtr = std::make_unique<MimicJointImpl>();
   this->SetJoint(_other.Joint());
   this->SetMultiplier(_other.Multiplier());
   this->SetOffset(_other.Offset());
   this->SetReference(_other.Reference());
 }
 
-
 /////////////////////////////////////////////////
 MimicJointContainer& MimicJointContainer::operator=(
     const MimicJointContainer& _other)
 {
+  this->dataPtr = std::make_unique<MimicJointImpl>();
   this->SetJoint(_other.Joint());
   this->SetMultiplier(_other.Multiplier());
   this->SetOffset(_other.Offset());
@@ -165,6 +166,7 @@ MimicJointContainer::MimicJointContainer(std::string _joint,
                                          double _offset,
                                          double _reference)
 {
+  this->dataPtr = std::make_unique<MimicJointImpl>();
   this->SetJoint(_joint);
   this->SetMultiplier(_multiplier);
   this->SetOffset(_offset);
