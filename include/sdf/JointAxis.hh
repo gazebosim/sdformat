@@ -42,23 +42,53 @@ namespace sdf
   /// multiplier * (parentJoint - reference) + offset = childJoint.
   class SDFORMAT_VISIBLE MimicJointContainer
   {
+    /// \brief Default constructor.
     public: MimicJointContainer() = default;
+
+    /// \brief Constructor with arguments.
     public: MimicJointContainer(
               std::string _joint, double _multiplier,
               double _offset, double _reference);
 
+    /// \brief Copy constructor.
     public: MimicJointContainer(const MimicJointContainer& _other);
+
+    /// \brief Copy assignment operator.
     public: MimicJointContainer& operator=(const MimicJointContainer& _other);
+
+    /// \brief Default destructor.
     public: ~MimicJointContainer() = default;
 
+    /// \brief Set the parent joint name.
+    /// \param[in] _joint Joint name of the the parent joint.
     public: void SetJoint(std::string _joint);
+
+    /// \brief Set the joint multiplier.
+    /// \param[in] _multiplier Multiplier for the parent's pose.
     public: void SetMultiplier(double _multiplier);
+
+    /// \brief Set the joint offset.
+    /// \param[in] _offset Offset for the parent's pose.
     public: void SetOffset(double _offset);
+
+    /// \brief Set the joint reference.
+    /// \param[in] _reference Reference for the parent's pose.
     public: void SetReference(double _reference);
 
+    /// \brief Retrieve the name of the parent joint.
+    /// \return Name of the parent joint.
     public: std::string Joint() const;
+
+    /// \brief Retrieve the multiplier for the parent joint pose.
+    /// \return Multiplier for the parent joint pose.
     public: double Multiplier() const;
+
+    /// \brief Retrieve the offset for the parent joint pose.
+    /// \return Offset for the parent joint pose.
     public: double Offset() const;
+
+    /// \brief Retrieve the reference for the parent joint pose.
+    /// \return Reference for the parent joint pose.
     public: double Reference() const;
 
     // Implementation class.
@@ -76,6 +106,7 @@ namespace sdf
         public: double reference;
       };
 
+    /// \brief The implementation pointer.
     private: std::shared_ptr<MimicJointImpl> dataPtr;
   };
 
