@@ -90,6 +90,88 @@ class sdf::JointAxis::Implementation
 };
 
 /////////////////////////////////////////////////
+MimicJointContainer::MimicJointContainer(const MimicJointContainer& _other)
+{
+  this->SetJoint(_other.Joint());
+  this->SetMultiplier(_other.Multiplier());
+  this->SetOffset(_other.Offset());
+  this->SetReference(_other.Reference());
+}
+
+
+/////////////////////////////////////////////////
+MimicJointContainer& MimicJointContainer::operator=(
+    const MimicJointContainer& _other)
+{
+  this->SetJoint(_other.Joint());
+  this->SetMultiplier(_other.Multiplier());
+  this->SetOffset(_other.Offset());
+  this->SetReference(_other.Reference());
+
+  return *this;
+}
+
+/////////////////////////////////////////////////
+void MimicJointContainer::SetJoint(std::string _joint)
+{
+  this->dataPtr->joint = _joint;
+}
+
+/////////////////////////////////////////////////
+std::string MimicJointContainer::Joint() const
+{
+  return this->dataPtr->joint;
+}
+
+/////////////////////////////////////////////////
+void MimicJointContainer::SetMultiplier(double _multiplier)
+{
+  this->dataPtr->multiplier = _multiplier;
+}
+
+/////////////////////////////////////////////////
+double MimicJointContainer::Multiplier() const
+{
+  return this->dataPtr->multiplier;
+}
+
+/////////////////////////////////////////////////
+void MimicJointContainer::SetOffset(double _offset)
+{
+  this->dataPtr->offset = _offset;
+}
+
+/////////////////////////////////////////////////
+double MimicJointContainer::Offset() const
+{
+  return this->dataPtr->offset;
+}
+
+/////////////////////////////////////////////////
+void MimicJointContainer::SetReference(double _reference)
+{
+  this->dataPtr->reference = _reference;
+}
+
+/////////////////////////////////////////////////
+double MimicJointContainer::Reference() const
+{
+  return this->dataPtr->reference;
+}
+
+/////////////////////////////////////////////////
+MimicJointContainer::MimicJointContainer(std::string _joint,
+                                         double _multiplier,
+                                         double _offset,
+                                         double _reference)
+{
+  this->SetJoint(_joint);
+  this->SetMultiplier(_multiplier);
+  this->SetOffset(_offset);
+  this->SetReference(_reference);
+}
+
+/////////////////////////////////////////////////
 JointAxis::JointAxis()
   : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
@@ -160,16 +242,16 @@ Errors JointAxis::Load(ElementPtr _sdf)
   if (mimicElement)
   {
     auto newMimicJoint = MimicJointContainer();
-    newMimicJoint.joint = mimicElement->Get<std::string>("joint",
-        "").first;
-    newMimicJoint.multiplier = mimicElement->Get<double>("multiplier",
-        0).first;
-    newMimicJoint.offset = mimicElement->Get<double>("offset",
-        0).first;
-    newMimicJoint.reference = mimicElement->Get<double>("reference",
-        0).first;
+    newMimicJoint.SetJoint(mimicElement->Get<std::string>("joint",
+        "").first);
+    newMimicJoint.SetMultiplier(mimicElement->Get<double>("multiplier",
+        0).first);
+    newMimicJoint.SetOffset(mimicElement->Get<double>("offset",
+        0).first);
+    newMimicJoint.SetReference(mimicElement->Get<double>("reference",
+        0).first);
 
-    this->dataPtr->mimic = std::make_optional(newMimicJoint);
+    this->dataPtr->mimic = std::make_optional<MimicJointContainer>(newMimicJoint);
   }
 
   return errors;
@@ -439,13 +521,13 @@ sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
   {
     sdf::ElementPtr mimicElement = axisElem->GetElement("mimic");
     mimicElement->GetAttribute("joint")->SetFromString(
-      this->dataPtr->mimic->joint);
+      this->dataPtr->mimic->Joint());
     mimicElement->GetElement("multiplier")->Set<double>(
-        this->dataPtr->mimic->multiplier);
+        this->dataPtr->mimic->Multiplier());
     mimicElement->GetElement("offset")->Set<double>(
-        this->dataPtr->mimic->offset);
+        this->dataPtr->mimic->Offset());
     mimicElement->GetElement("reference")->Set<double>(
-        this->dataPtr->mimic->reference);
+        this->dataPtr->mimic->Reference());
   }
 
   return axisElem;

@@ -42,25 +42,41 @@ namespace sdf
   /// multiplier * (parentJoint - reference) + offset = childJoint.
   class SDFORMAT_VISIBLE MimicJointContainer
   {
-  public:
-    /// \brief The name of the joint to be mimicked, i.e. the parent joint.
-    std::string joint;
-    /// \brief Multiplication factor to be applied to parent joint's pose.
-    double multiplier;
-    /// \brief Offset to be added to parent joint's position after
-    /// multiplication.
-    double offset;
-    /// \brief Position of the parent joint will be measured with
-    /// respect to this reference point.
-    double reference;
+    public: MimicJointContainer() = default;
+    public: MimicJointContainer(
+              std::string _joint, double _multiplier,
+              double _offset, double _reference);
 
-    MimicJointContainer() = default;
+    public: MimicJointContainer(const MimicJointContainer& _other);
+    public: MimicJointContainer& operator=(const MimicJointContainer& _other);
+    public: ~MimicJointContainer() = default;
 
-    MimicJointContainer(
-      std::string _joint, double _multiplier,
-      double _offset, double _reference) :
-      joint(std::move(_joint)), multiplier(_multiplier),
-      offset(_offset), reference(_reference){}
+    public: void SetJoint(std::string _joint);
+    public: void SetMultiplier(double _multiplier);
+    public: void SetOffset(double _offset);
+    public: void SetReference(double _reference);
+
+    public: std::string Joint() const;
+    public: double Multiplier() const;
+    public: double Offset() const;
+    public: double Reference() const;
+
+    // Implementation class.
+    private: class MimicJointImpl
+      {
+        /// \brief The name of the joint to be mimicked, i.e. the parent joint.
+        public: std::string joint;
+        /// \brief Multiplication factor to be applied to parent joint's pose.
+        public: double multiplier;
+        /// \brief Offset to be added to parent joint's position after
+        /// multiplication.
+        public: double offset;
+        /// \brief Position of the parent joint will be measured with
+        /// respect to this reference point.
+        public: double reference;
+      };
+
+    private: std::shared_ptr<MimicJointImpl> dataPtr;
   };
 
   /// \brief Parameters related to the axis of rotation for rotational joints,

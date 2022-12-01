@@ -2676,16 +2676,16 @@ void checkScopedJointAxisMimicValues(
         auto mimic = axis->MimicJoint();
         if (mimic)
         {
-          if (mimic->joint == joint->Name())
+          if (mimic->Joint() == joint->Name())
           {
             errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
               "Joint with name [" + joint->Name() +
               "] cannot mimic itself."});
           }
-          else if (!_scope->JointByName(mimic->joint))
+          else if (!_scope->JointByName(mimic->Joint()))
           {
             errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
-              "A joint with name[" + mimic->joint +
+              "A joint with name[" + mimic->Joint() +
               "] specified by an axis mimic in joint with name[" + joint->Name()
               + "] not found in " + _scopeType + " with name[" + _scope->Name()
               + "]."});

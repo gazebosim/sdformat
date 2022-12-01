@@ -86,10 +86,10 @@ TEST(DOMJointAxis, Construction)
   EXPECT_FALSE(axis.MimicJoint());
   axis.SetMimicJoint(mimic);
   EXPECT_TRUE(axis.MimicJoint());
-  EXPECT_EQ(axis.MimicJoint()->joint, "test_joint");
-  EXPECT_DOUBLE_EQ(axis.MimicJoint()->multiplier, 5.0);
-  EXPECT_DOUBLE_EQ(axis.MimicJoint()->offset, 1.0);
-  EXPECT_DOUBLE_EQ(axis.MimicJoint()->reference, 2.0);
+  EXPECT_EQ(axis.MimicJoint()->Joint(), "test_joint");
+  EXPECT_DOUBLE_EQ(axis.MimicJoint()->Multiplier(), 5.0);
+  EXPECT_DOUBLE_EQ(axis.MimicJoint()->Offset(), 1.0);
+  EXPECT_DOUBLE_EQ(axis.MimicJoint()->Reference(), 2.0);
 }
 
 /////////////////////////////////////////////////
@@ -201,11 +201,11 @@ TEST(DOMJointAxis, ParseMimic)
   // Test loading from sdf element pointer.
   sdf::JointAxis jointAxis;
   jointAxis.Load(jointElement->GetElement("axis"));
-  EXPECT_EQ(jointAxis.MimicJoint()->joint, "test_joint");
+  EXPECT_EQ(jointAxis.MimicJoint()->Joint(), "test_joint");
   EXPECT_TRUE(jointAxis.MimicJoint());
-  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint()->multiplier, 4);
-  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint()->offset, 2);
-  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint()->reference, 3);
+  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint()->Multiplier(), 4);
+  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint()->Offset(), 2);
+  EXPECT_DOUBLE_EQ(jointAxis.MimicJoint()->Reference(), 3);
 
   // Test conversion back to sdf element.
   auto mimicElement = jointAxis.ToElement()->GetElement("mimic");
