@@ -119,7 +119,9 @@ namespace sdf
       };
 
     /// \brief The implementation pointer.
+    GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
     private: std::unique_ptr<MimicJointImpl> dataPtr;
+    GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
   };
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
