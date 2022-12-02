@@ -44,7 +44,7 @@ namespace sdf
   {
     /// \brief Constructor.
     public: MimicJointContainer() :
-    dataPtr(std::make_unique<MimicJointImpl>()){};
+    dataPtr(std::make_unique<MimicJointImpl>()){}
 
     /// \brief Constructor with arguments.
     /// \param[in] _joint Joint name of the parent joint.
