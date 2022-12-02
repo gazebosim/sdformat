@@ -256,7 +256,7 @@ TEST(DOMJointAxis, ParseInvalidSelfMimic)
   {
     std::stringstream ss;
     ss << error;
-    const std::string errorMsg = "Error Code 39: Msg: Joint with name "
+    const std::string errorMsg = "Error Code 41: Msg: Joint with name "
       "[self_mimic] cannot mimic itself.";
     EXPECT_EQ(ss.str(), errorMsg);
   }
