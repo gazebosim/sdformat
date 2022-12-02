@@ -302,7 +302,7 @@ TEST(DOMJointAxis, ParseMimicInvalidJointName)
   {
     std::stringstream ss;
     ss << error;
-    const std::string errorMsg = "Error Code 39: Msg: A joint with"
+    const std::string errorMsg = "Error Code 41: Msg: A joint with"
       " name[invalid] specified by an axis mimic in joint with name[joint] not"
       " found in model with name[test].";
     EXPECT_EQ(ss.str(), errorMsg);
