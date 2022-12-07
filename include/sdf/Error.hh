@@ -118,9 +118,6 @@ namespace sdf
     /// \brief A joint has the same link specified as parent and child.
     JOINT_PARENT_SAME_AS_CHILD,
 
-    /// \brief A joint has a child link that resolved to world.
-    JOINT_CHILD_LINK_RESOLVED_TO_WORLD,
-
     /// \brief The frame attached-to value does not match the name of an
     /// existing frame in the current scope.
     FRAME_ATTACHED_TO_INVALID,

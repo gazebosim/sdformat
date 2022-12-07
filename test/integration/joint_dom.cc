@@ -675,24 +675,6 @@ TEST(DOMJoint, WorldJointInvalidResolvedParentSameAsChild)
 }
 
 /////////////////////////////////////////////////
-/// Test for when resolvedChildLinkName is "world". ResolveChildLink method will
-/// append JOINT_CHILD_LINK_RESOLVED_TO_WORLD error in the Errors vector.
-TEST(DOMJoint, WorldJointChildResolvedToWorld)
-{
-  const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_joint_child_resolved_to_world.sdf");
-
-  // Load the SDF file
-  sdf::Root root;
-  auto errors = root.Load(testFile);
-  std::cerr << errors;
-
-  ASSERT_EQ(1u, errors.size());
-  EXPECT_EQ(errors[0].Code(),
-    sdf::ErrorCode::JOINT_CHILD_LINK_RESOLVED_TO_WORLD);
-}
-
-/////////////////////////////////////////////////
 TEST(DOMJoint, LoadJointPoseRelativeTo)
 {
   const std::string testFile =
