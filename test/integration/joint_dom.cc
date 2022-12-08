@@ -646,7 +646,7 @@ TEST(DOMJoint, WorldJointInvalidChildWorld)
   auto errors = root.Load(testFile);
   for (auto e : errors)
     std::cout << e << std::endl;
-  ASSERT_EQ(3u, errors.size());
+  ASSERT_EQ(4u, errors.size());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::JOINT_CHILD_LINK_INVALID);
   EXPECT_NE(std::string::npos,
     errors[0].Message().find(
