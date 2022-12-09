@@ -24,6 +24,7 @@
 #include "sdf/Error.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
+#include "sdf/Sensor.hh"
 #include "sdf/parser.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
@@ -331,6 +332,28 @@ TEST(ErrorOutput, WorldErrorOutput)
   EXPECT_NE(std::string::npos, errors[2].Message().find(
     "Frame with name [common_name] in world with name [test_world] has a name"
     " collision, changing frame name to [common_name_frame]."));
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+////////////////////////////////////////
+// Test Sensor class for sdf::Errors outputs
+TEST(ErrorOutput, SensorErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+    sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  sdf::Errors errors;
+  sdf::Sensor sensor;
+  sensor.ToElement(errors);
+  ASSERT_EQ(errors.size(), 2u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+    "Empty string used when setting a required parameter. Key[name]"));
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+    "Conversion of sensor type: [none] from SDF DOM to Element is not"
+    " supported yet."));
+
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

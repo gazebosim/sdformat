@@ -214,6 +214,14 @@ namespace sdf
     /// \return SDF element pointer with updated sensor values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// sensor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[in] _errors Vector of errors.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
+
     /// \brief Get the sensor type.
     /// \return The sensor type.
     public: SensorType Type() const;
