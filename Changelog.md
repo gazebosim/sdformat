@@ -1,5 +1,35 @@
 ## libsdformat 13.X
 
+### libsdformat 13.3.0 (2022-12-12)
+
+1. Sensor: add sdf::Errors output to API methods
+    * [Pull request #1138](https://github.com/gazebosim/sdformat/pull/1138)
+
+1. Warn child joint that resolves to world
+    * [Pull request #1211](https://github.com/gazebosim/sdformat/pull/1211)
+
+1. Converter: add sdf::Errors output to API methods
+    * [Pull request #1123](https://github.com/gazebosim/sdformat/pull/1123)
+
+1. ParamPassing: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
+    * [Pull request #1135](https://github.com/gazebosim/sdformat/pull/1135)
+
+1. Camera: added HasLensProjection
+    * [Pull request #1203](https://github.com/gazebosim/sdformat/pull/1203)
+
+1. Change default `camera_info_topic` value to `__default__`
+    * [Pull request #1201](https://github.com/gazebosim/sdformat/pull/1201)
+
+1. Check JointAxis expressed-in values during Load
+    * [Pull request #1195](https://github.com/gazebosim/sdformat/pull/1195)
+
+1. Added camera info topic to Camera
+    * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
+    * [Pull request #1200](https://github.com/gazebosim/sdformat/pull/1200)
+
+1. Fix static URDF models with fixed joints 
+    * [Pull request #1193](https://github.com/gazebosim/sdformat/pull/1193)
+
 ### libsdformat 13.2.0 (2022-10-20)
 
 1. sdf/1.10/joint.sdf: add `screw_thread_pitch`
