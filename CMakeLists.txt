@@ -5,7 +5,7 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat13 VERSION 13.0.1)
+project (sdformat13 VERSION 13.3.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
@@ -43,7 +43,7 @@ if (BUILD_SDF)
   gz_configure_project(
     NO_PROJECT_PREFIX
     REPLACE_INCLUDE_PATH sdf
-    VERSION_SUFFIX)
+    VERSION_SUFFIX pre1)
 
   #################################################
   # Find tinyxml2.

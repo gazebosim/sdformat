@@ -1,5 +1,103 @@
 ## libsdformat 13.X
 
+### libsdformat 13.3.0 (2022-12-12)
+
+1. Sensor: add sdf::Errors output to API methods
+    * [Pull request #1138](https://github.com/gazebosim/sdformat/pull/1138)
+
+1. Warn child joint that resolves to world
+    * [Pull request #1211](https://github.com/gazebosim/sdformat/pull/1211)
+
+1. Converter: add sdf::Errors output to API methods
+    * [Pull request #1123](https://github.com/gazebosim/sdformat/pull/1123)
+
+1. ParamPassing: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
+    * [Pull request #1135](https://github.com/gazebosim/sdformat/pull/1135)
+
+1. Camera: added HasLensProjection
+    * [Pull request #1203](https://github.com/gazebosim/sdformat/pull/1203)
+
+1. Change default `camera_info_topic` value to `__default__`
+    * [Pull request #1201](https://github.com/gazebosim/sdformat/pull/1201)
+
+1. Check JointAxis expressed-in values during Load
+    * [Pull request #1195](https://github.com/gazebosim/sdformat/pull/1195)
+
+1. Added camera info topic to Camera
+    * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
+    * [Pull request #1200](https://github.com/gazebosim/sdformat/pull/1200)
+
+1. Fix static URDF models with fixed joints 
+    * [Pull request #1193](https://github.com/gazebosim/sdformat/pull/1193)
+
+### libsdformat 13.2.0 (2022-10-20)
+
+1. sdf/1.10/joint.sdf: add `screw_thread_pitch`
+    * [Pull request #1168](https://github.com/gazebosim/sdformat/pull/1168)
+
+1. sdf/1.10: support //world/joint specification
+    * [Pull request #1117](https://github.com/gazebosim/sdformat/pull/1117)
+    * [Pull request #1189](https://github.com/gazebosim/sdformat/pull/1189)
+
+1. Model: add sdf::Errors output to API methods
+    * [Pull request #1122](https://github.com/gazebosim/sdformat/pull/1122)
+
+1. Added Root::WorldByName
+    * [Pull request #1121](https://github.com/gazebosim/sdformat/pull/1121)
+
+1. Python: add OpticalFrameID APIs to pyCamera
+    * [Pull request #1184](https://github.com/gazebosim/sdformat/pull/1184)
+
+1. Fix `GZ_PYTHON_INSTALL_PATH` value
+    * [Pull request #1183](https://github.com/gazebosim/sdformat/pull/1183)
+
+1. Rename python bindings import library for Windows
+    * [Pull request #1165](https://github.com/gazebosim/sdformat/pull/1165)
+
+### libsdformat 13.1.0 (2022-10-12)
+
+1. Add test helper python package for encapsulating versioned python packages
+    * [Pull request #1180](https://github.com/gazebosim/sdformat/pull/1180)
+
+1. Add a configuration option to resolve URIs
+    * [Pull request #1147](https://github.com/gazebosim/sdformat/pull/1147)
+
+1. World: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
+    * [Pull request #1131](https://github.com/gazebosim/sdformat/pull/1131)
+
+1. PrintConfig: add sdf::Errors output to API methods
+    * [Pull request #1098](https://github.com/gazebosim/sdformat/pull/1098)
+
+1. Element: add sdf::Errors output to API methods
+    * [Pull request #1095](https://github.com/gazebosim/sdformat/pull/1095)
+
+1.  python: Import gz.math at startup to fix #1129
+    * [Pull request #1130](https://github.com/gazebosim/sdformat/pull/#1130)
+    * [Issue 1129](https://github.com/osrf/sdformat/issues/1129)
+
+1. parser_urdf: add //frame for reduced links/joints
+    * [Pull request #1148](https://github.com/gazebosim/sdformat/pull/1148)
+    * [Pull request #1182](https://github.com/gazebosim/sdformat/pull/1182)
+
+1. Param::Set: fix truncation of floating-point values
+    * [Pull request #1137](https://github.com/gazebosim/sdformat/pull/1137)
+
+1. Reduce the number of include dirs for sdformat
+    * [Pull request #1170](https://github.com/gazebosim/sdformat/pull/1170)
+
+1. urdf: fix test and clean up internals
+    * [Pull request #1126](https://github.com/gazebosim/sdformat/pull/1126)
+
+1. sdf/camera.sdf: fields for projection matrix
+    * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
+    * [Pull request #1133](https://github.com/gazebosim/sdformat/pull/1133)
+    * [Pull request #1177](https://github.com/gazebosim/sdformat/pull/1177)
+
+1. Add camera optical_frame_id element
+    * [Pull request #1109](https://github.com/gazebosim/sdformat/pull/1109)
+    * [Pull request #1133](https://github.com/gazebosim/sdformat/pull/1133)
+    * [Pull request #1177](https://github.com/gazebosim/sdformat/pull/1177)
+
 ### libsdformat 13.0.1 (2022-09-27)
 
 1. Fix arm tests
@@ -1250,13 +1348,33 @@
 
 ## libsdformat 9.X
 
+### libsdformat 9.10.0 (2022-11-17)
+
+1. Added camera info topic to Camera
+    * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
+    * [Pull request #1201](https://github.com/gazebosim/sdformat/pull/1201)
+
+### libsdformat 9.9.1 (2022-11-08)
+
+1. Fix static URDF models with fixed joints
+    * [Pull request #1193](https://github.com/gazebosim/sdformat/pull/1193)
+
+1. Don't assume `CMAKE_INSTALL_*DIR` variables are relative
+    * [Pull request #1190](https://github.com/gazebosim/sdformat/pull/1190)
+
 ### libsdformat 9.9.0 (2022-09-07)
 
 1. sdf/camera.sdf: fields for projection matrix
     * [Pull request #1088](https://github.com/gazebosim/sdformat/pull/1088)
 
+1. urdf: add //frame for reduced links/joints
+    * [Pull request #1148](https://github.com/gazebosim/sdformat/pull/1148)
+
 1. urdf: fix sensor/light pose for links lumped by fixed joints
     * [Pull request #1114](https://github.com/gazebosim/sdformat/pull/1114)
+
+1. urdf: fix test and clean up internals
+    * [Pull request #1126](https://github.com/gazebosim/sdformat/pull/1126)
 
 1. Ensure relocatable config files
     * [Pull request #419](https://github.com/gazebosim/sdformat/pull/419)

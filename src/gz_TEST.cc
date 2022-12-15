@@ -355,6 +355,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     EXPECT_NE(output.find("Joint with name[joint] specified invalid "
                           "child link [world]."),
               std::string::npos) << output;
+    EXPECT_NE(output.find("Child frame with name[world] specified by joint "
+                          "with name[joint] not found in model"),
+              std::string::npos) << output;
   }
 
   // Check an SDF file with the world specified as a parent link.
