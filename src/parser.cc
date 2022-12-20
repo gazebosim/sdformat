@@ -2614,6 +2614,14 @@ void checkScopedJointParentChildNames(
         "] that both resolve to [" + resolvedChildName +
         "], but they should resolve to different values."});
     }
+    // childName == "world" case is handled above
+    if (childName != "world" && resolvedChildName == "world")
+    {
+      errors.push_back({ErrorCode::JOINT_CHILD_LINK_INVALID,
+        "joint with name[" + joint->Name() +
+        "] in " + _scopeType + " has a child with name[" + joint->ChildName() +
+        "] that resolves to world which is invalid."});
+    }
   }
 }
 
