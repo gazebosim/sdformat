@@ -16,6 +16,8 @@ jobs:
     - run: brew config
 
     - name: Install base dependencies
+      env:
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       run: |
         brew tap osrf/simulation;
         brew install --only-dependencies ${PACKAGE};
