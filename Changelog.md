@@ -1348,7 +1348,13 @@
 
 ## libsdformat 9.X
 
-### libsdformat 9.10.0 (2022-11-17)
+### libsdformat 9.10.0 (2022-11-30)
+
+1. Ign to gz header migration.
+    * [Pull request #1118](https://github.com/gazebosim/sdformat/pull/1118)
+
+1. Added HasLensProjection.
+    * [Pull request #1203](https://github.com/gazebosim/sdformat/pull/1203)
 
 1. Added camera info topic to Camera
     * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
