@@ -17,8 +17,8 @@
 #ifndef SDF_ELLIPSOID_HH_
 #define SDF_ELLIPSOID_HH_
 
-#include <ignition/math/Ellipsoid.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Ellipsoid.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -44,11 +44,11 @@ namespace sdf
 
     /// \brief Get the ellipsoid's radii in meters.
     /// \return The radius of the ellipsoid in meters.
-    public: ignition::math::Vector3d Radii() const;
+    public: gz::math::Vector3d Radii() const;
 
     /// \brief Set the ellipsoid's x, y, and z radii in meters.
     /// \param[in] _radius Vector of radii (x, y, z) of the ellipsoid in meters.
-    public: void SetRadii(const ignition::math::Vector3d &_radii);
+    public: void SetRadii(const gz::math::Vector3d &_radii);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -57,12 +57,12 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the Ignition Math representation of this Ellipsoid.
-    /// \return A const reference to an ignition::math::Ellipsoidd object.
-    public: const ignition::math::Ellipsoidd &Shape() const;
+    /// \return A const reference to an gz::math::Ellipsoidd object.
+    public: const gz::math::Ellipsoidd &Shape() const;
 
     /// \brief Get a mutable Ignition Math representation of this Ellipsoid.
-    /// \return A reference to an ignition::math::Ellipsoidd object.
-    public: ignition::math::Ellipsoidd &Shape();
+    /// \return A reference to an gz::math::Ellipsoidd object.
+    public: gz::math::Ellipsoidd &Shape();
 
     /// \brief Create and return an SDF element filled with data from this
     /// ellipsoid.

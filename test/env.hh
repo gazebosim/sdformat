@@ -15,7 +15,7 @@
  *
  */
 
-// Note: this is a direct copy from ignition::common,
+// Note: this is a direct copy from gz::common,
 // and can be removed when sdformat has common as a dependency
 
 #ifndef SDF_TEST_ENV_HH

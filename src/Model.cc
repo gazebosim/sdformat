@@ -18,8 +18,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/SemanticVersion.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/SemanticVersion.hh>
 #include "sdf/Error.hh"
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
@@ -63,7 +63,7 @@ class sdf::Model::Implementation
   public: std::string placementFrameName = "";
 
   /// \brief Pose of the model
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -130,7 +130,7 @@ class sdf::Model::Implementation
 
 /////////////////////////////////////////////////
 Model::Model()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -146,7 +146,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
-  ignition::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
+  gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
 
   // Check that the provided SDF element is a <model>
   // This is an error that cannot be recovered, so return an error.
@@ -289,7 +289,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (frameNames.count(linkName) > 0)
     {
       // This link has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming link
         linkName += "_link";
@@ -337,7 +337,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (frameNames.count(jointName) > 0)
     {
       // This joint has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming joint
         jointName += "_joint";
@@ -374,7 +374,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (frameNames.count(frameName) > 0)
     {
       // This frame has a name collision
-      if (sdfVersion < ignition::math::SemanticVersion(1, 7))
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
         // This came from an old file, so try to workaround by renaming frame
         frameName += "_frame";
@@ -789,7 +789,7 @@ void Model::SetPlacementFrameName(const std::string &_placementFrame)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &Model::RawPose() const
+const gz::math::Pose3d &Model::RawPose() const
 {
   return this->dataPtr->pose;
 }
@@ -801,7 +801,7 @@ const std::string &Model::PoseRelativeTo() const
 }
 
 /////////////////////////////////////////////////
-void Model::SetRawPose(const ignition::math::Pose3d &_pose)
+void Model::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -1031,7 +1031,7 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   // Links
   for (const sdf::Link &link : this->dataPtr->links)
@@ -1119,7 +1119,7 @@ bool Model::NameExistsInFrameAttachedToGraph(const std::string &_name) const
     return false;
 
   return this->dataPtr->frameAttachedToGraph.VertexIdByName(sdf::JoinName(
-             this->Name(), _name)) != ignition::math::graph::kNullId;
+             this->Name(), _name)) != gz::math::graph::kNullId;
 }
 
 /////////////////////////////////////////////////

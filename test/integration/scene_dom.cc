@@ -19,7 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "sdf/Filesystem.hh"
 #include "sdf/parser.hh"
@@ -52,8 +52,8 @@ TEST(DOMScene, LoadScene)
   const sdf::Scene *scene = world->Scene();
   ASSERT_NE(nullptr, scene);
 
-  EXPECT_EQ(ignition::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
-  EXPECT_EQ(ignition::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
+  EXPECT_EQ(gz::math::Color(0.3f, 0.4f, 0.5f), scene->Ambient());
+  EXPECT_EQ(gz::math::Color(0.6f, 0.7f, 0.8f), scene->Background());
   EXPECT_TRUE(scene->Grid());
   EXPECT_TRUE(scene->Shadows());
   EXPECT_TRUE(scene->OriginVisual());
@@ -65,9 +65,9 @@ TEST(DOMScene, LoadScene)
   EXPECT_DOUBLE_EQ(4.0, sky->Sunrise());
   EXPECT_DOUBLE_EQ(21.0, sky->Sunset());
   EXPECT_DOUBLE_EQ(1.2, sky->CloudSpeed());
-  EXPECT_EQ(ignition::math::Angle(1.5), sky->CloudDirection());
+  EXPECT_EQ(gz::math::Angle(1.5), sky->CloudDirection());
   EXPECT_DOUBLE_EQ(0.2, sky->CloudMeanSize());
   EXPECT_DOUBLE_EQ(0.9, sky->CloudHumidity());
-  EXPECT_EQ(ignition::math::Color(0.1f, 0.2f, 0.3f), sky->CloudAmbient());
+  EXPECT_EQ(gz::math::Color(0.1f, 0.2f, 0.3f), sky->CloudAmbient());
   EXPECT_EQ("dummyUri", sky->CubemapUri());
 }

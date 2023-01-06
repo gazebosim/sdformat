@@ -188,7 +188,7 @@ R"(<model name="m2">
   ASSERT_NE(includeMergedModel, nullptr);
 
   // The expected output pose string here still contains a -0 on the pitch value
-  // as it was set using ignition::math::Pose3d::operator<<, this test will have
+  // as it was set using gz::math::Pose3d::operator<<, this test will have
   // to be modified when we start using ignitionrobotics/ign-math#206.
   const std::string expectedIncludeMerge =
 R"(<model name='m2'>

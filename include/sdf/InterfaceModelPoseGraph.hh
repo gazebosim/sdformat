@@ -22,8 +22,8 @@
 #include <memory>
 #include <vector>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Types.hh"
 
@@ -47,12 +47,12 @@ class SDFORMAT_VISIBLE InterfaceModelPoseGraph
   /// \param[out] _pose Resolved pose
   /// \return Errors
   public: sdf::Errors ResolveNestedModelFramePoseInWorldFrame(
-              ignition::math::Pose3d &_pose) const;
+              gz::math::Pose3d &_pose) const;
 
   /// \brief Resolve the pose a frame within the model's scope.
   /// \param[in] relative_to Can be "world", or any frame within the nested
   ///   model's frame graph. (It cannot reach outside of this model).
-  public: sdf::Errors ResolveNestedFramePose(ignition::math::Pose3d &_pose,
+  public: sdf::Errors ResolveNestedFramePose(gz::math::Pose3d &_pose,
               const std::string &_frameName,
               const std::string &_relativeTo = "world") const;
 

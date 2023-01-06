@@ -39,19 +39,19 @@ TEST(DOMVisual, Construction)
   visual.SetTransparency(0.34f);
   EXPECT_FLOAT_EQ(0.34f, visual.Transparency());
 
-  EXPECT_EQ(ignition::math::Pose3d::Zero, visual.RawPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, visual.RawPose());
   EXPECT_TRUE(visual.PoseRelativeTo().empty());
   {
     auto semanticPose = visual.SemanticPose();
     EXPECT_EQ(visual.RawPose(), semanticPose.RawPose());
     EXPECT_TRUE(semanticPose.RelativeTo().empty());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
   visual.SetRawPose({0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2});
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.RawPose());
 
   visual.SetPoseRelativeTo("link");
@@ -60,7 +60,7 @@ TEST(DOMVisual, Construction)
     auto semanticPose = visual.SemanticPose();
     EXPECT_EQ(visual.RawPose(), semanticPose.RawPose());
     EXPECT_EQ("link", semanticPose.RelativeTo());
-    ignition::math::Pose3d pose;
+    gz::math::Pose3d pose;
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
@@ -102,7 +102,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_EQ("test_visual", visual.Name());
   EXPECT_FALSE(visual.CastShadows());
   EXPECT_FLOAT_EQ(0.345f, visual.Transparency());
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.RawPose());
   EXPECT_EQ("link", visual.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual.Material());
@@ -112,7 +112,7 @@ TEST(DOMVisual, CopyConstructor)
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.RawPose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
@@ -142,7 +142,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_EQ("test_visual", visual.Name());
   EXPECT_FALSE(visual.CastShadows());
   EXPECT_FLOAT_EQ(0.345f, visual.Transparency());
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual.RawPose());
   EXPECT_EQ("link", visual.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual.Material());
@@ -152,7 +152,7 @@ TEST(DOMVisual, CopyAssignmentOperator)
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.RawPose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
@@ -181,7 +181,7 @@ TEST(DOMVisual, MoveConstructor)
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.RawPose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
@@ -211,7 +211,7 @@ TEST(DOMVisual, MoveAssignmentOperator)
   EXPECT_EQ("test_visual", visual2.Name());
   EXPECT_FALSE(visual2.CastShadows());
   EXPECT_FLOAT_EQ(0.345f, visual2.Transparency());
-  EXPECT_EQ(ignition::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
+  EXPECT_EQ(gz::math::Pose3d(0, -20, 30, IGN_PI_2, -IGN_PI, IGN_PI_2),
             visual2.RawPose());
   EXPECT_EQ("link", visual2.PoseRelativeTo());
   ASSERT_TRUE(nullptr != visual2.Material());
@@ -262,16 +262,16 @@ TEST(DOMVisual, SetMaterial)
   EXPECT_TRUE(visual.Name().empty());
 
   sdf::Material material;
-  material.SetAmbient(ignition::math::Color(0, 0.5, 0));
-  material.SetDiffuse(ignition::math::Color(1, 0, 0));
-  material.SetSpecular(ignition::math::Color(0.f, 0.1f, 0.9f));
+  material.SetAmbient(gz::math::Color(0, 0.5, 0));
+  material.SetDiffuse(gz::math::Color(1, 0, 0));
+  material.SetSpecular(gz::math::Color(0.f, 0.1f, 0.9f));
 
   visual.SetMaterial(material);
 
   ASSERT_NE(nullptr, visual.Material());
-  EXPECT_EQ(ignition::math::Color(0, 0.5, 0), visual.Material()->Ambient());
-  EXPECT_EQ(ignition::math::Color(1, 0, 0), visual.Material()->Diffuse());
-  EXPECT_EQ(ignition::math::Color(0.f, 0.1f, 0.9f),
+  EXPECT_EQ(gz::math::Color(0, 0.5, 0), visual.Material()->Ambient());
+  EXPECT_EQ(gz::math::Color(1, 0, 0), visual.Material()->Diffuse());
+  EXPECT_EQ(gz::math::Color(0.f, 0.1f, 0.9f),
             visual.Material()->Specular());
 }
 
@@ -295,7 +295,7 @@ TEST(DOMVisual, ToElement)
   visual.SetName("my-visual");
   visual.SetCastShadows(true);
   visual.SetTransparency(0.2f);
-  visual.SetRawPose(ignition::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  visual.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   visual.SetVisibilityFlags(1234u);
   visual.SetHasLaserRetro(true);
   visual.SetLaserRetro(1.2);

@@ -18,8 +18,8 @@
 #define SDF_HEIGHTMAP_HH_
 
 #include <string>
-#include <ignition/math/Vector3.hh>
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/utils/ImplPtr.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>
@@ -147,19 +147,19 @@ namespace sdf
 
     /// \brief Get the heightmap's scaling factor.
     /// \return The heightmap's size.
-    public: ignition::math::Vector3d Size() const;
+    public: gz::math::Vector3d Size() const;
 
     /// \brief Set the heightmap's scaling factor. Defaults to 1x1x1.
     /// \return The heightmap's size factor.
-    public: void SetSize(const ignition::math::Vector3d &_size);
+    public: void SetSize(const gz::math::Vector3d &_size);
 
     /// \brief Get the heightmap's position offset.
     /// \return The heightmap's position offset.
-    public: ignition::math::Vector3d Position() const;
+    public: gz::math::Vector3d Position() const;
 
     /// \brief Set the heightmap's position offset.
     /// \return The heightmap's position offset.
-    public: void SetPosition(const ignition::math::Vector3d &_position);
+    public: void SetPosition(const gz::math::Vector3d &_position);
 
     /// \brief Get whether the heightmap uses terrain paging.
     /// \return True if the heightmap uses terrain paging.

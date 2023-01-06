@@ -18,7 +18,7 @@
 #include "sdf/parser.hh"
 
 using namespace sdf;
-using namespace ignition;
+using namespace gz;
 
 /// \brief Private lidar data.
 class sdf::Lidar::Implementation
@@ -68,7 +68,7 @@ class sdf::Lidar::Implementation
 
 //////////////////////////////////////////////////
 Lidar::Lidar()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 

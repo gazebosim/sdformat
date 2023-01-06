@@ -40,8 +40,8 @@ TEST(CheckFixForLocal, CheckFixForCxxLocal)
                                 "1.5 2.5", true);
 
   // Verify that the default value is correctly parsed
-  ignition::math::Vector2d vectmp;
-  ASSERT_TRUE(param.Get<ignition::math::Vector2d>(vectmp));
+  gz::math::Vector2d vectmp;
+  ASSERT_TRUE(param.Get<gz::math::Vector2d>(vectmp));
   ASSERT_DOUBLE_EQ(1.5, vectmp[0]);
   ASSERT_DOUBLE_EQ(2.5, vectmp[1]);
 

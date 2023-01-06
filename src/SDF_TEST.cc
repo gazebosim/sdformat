@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <any>
-#include <ignition/math.hh>
+#include <gz/math.hh>
 
 #include "sdf/sdf.hh"
 
@@ -25,10 +25,10 @@ class SDFUpdateFixture
 {
   public:  std::string GetName() const {return this->name;}
   public:  bool GetFlag() const {return this->flag;}
-  public:  ignition::math::Pose3d GetPose() const {return this->pose;}
+  public:  gz::math::Pose3d GetPose() const {return this->pose;}
   public:  std::string name;
   public:  bool flag;
-  public:  ignition::math::Pose3d pose;
+  public:  gz::math::Pose3d pose;
 };
 
 ////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ TEST(SDF, UpdateElement)
   // Read pose element value
   ASSERT_TRUE(modelElem->HasElement("pose"));
   sdf::ParamPtr poseParam = modelElem->GetElement("pose")->GetValue();
-  EXPECT_TRUE(poseParam->IsType<ignition::math::Pose3d>());
+  EXPECT_TRUE(poseParam->IsType<gz::math::Pose3d>());
 
   // Set test class variables based on sdf values
   // Set parameter update functions to test class accessors
@@ -115,7 +115,7 @@ TEST(SDF, UpdateElement)
   poseParam->SetUpdateFunc(std::bind(&SDFUpdateFixture::GetPose, &fixture));
 
   bool flagCheck;
-  ignition::math::Pose3d poseCheck;
+  gz::math::Pose3d poseCheck;
   int i;
   for (i = 0; i < 4; i++)
   {
@@ -307,41 +307,41 @@ TEST(SDF, EmptyValues)
   EXPECT_EQ(elem->Get<std::string>(emptyString), "hello");
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
-      ignition::math::Vector2d());
+  EXPECT_EQ(elem->Get<gz::math::Vector2d>(emptyString),
+      gz::math::Vector2d());
   elem->AddValue("vector2d", "1 2", "0", "description");
-  EXPECT_EQ(elem->Get<ignition::math::Vector2d>(emptyString),
-      ignition::math::Vector2d(1, 2));
+  EXPECT_EQ(elem->Get<gz::math::Vector2d>(emptyString),
+      gz::math::Vector2d(1, 2));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
-      ignition::math::Vector3d());
+  EXPECT_EQ(elem->Get<gz::math::Vector3d>(emptyString),
+      gz::math::Vector3d());
   elem->AddValue("vector3", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<ignition::math::Vector3d>(emptyString),
-      ignition::math::Vector3d(1, 2, 3));
+  EXPECT_EQ(elem->Get<gz::math::Vector3d>(emptyString),
+      gz::math::Vector3d(1, 2, 3));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
-            ignition::math::Quaterniond());
+  EXPECT_EQ(elem->Get<gz::math::Quaterniond>(emptyString),
+            gz::math::Quaterniond());
   elem->AddValue("quaternion", "1 2 3", "0", "description");
-  EXPECT_EQ(elem->Get<ignition::math::Quaterniond>(emptyString),
-            ignition::math::Quaterniond(-2.14159, 1.14159, -0.141593));
+  EXPECT_EQ(elem->Get<gz::math::Quaterniond>(emptyString),
+            gz::math::Quaterniond(-2.14159, 1.14159, -0.141593));
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString),
-      ignition::math::Pose3d());
+  EXPECT_EQ(elem->Get<gz::math::Pose3d>(emptyString),
+      gz::math::Pose3d());
   elem->AddValue("pose", "1.0 2.0 3.0 4.0 5.0 6.0", "0", "description");
-  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Pos(),
-      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Pos());
-  EXPECT_EQ(elem->Get<ignition::math::Pose3d>(emptyString).Rot().Euler(),
-      ignition::math::Pose3d(1, 2, 3, 4, 5, 6).Rot().Euler());
+  EXPECT_EQ(elem->Get<gz::math::Pose3d>(emptyString).Pos(),
+      gz::math::Pose3d(1, 2, 3, 4, 5, 6).Pos());
+  EXPECT_EQ(elem->Get<gz::math::Pose3d>(emptyString).Rot().Euler(),
+      gz::math::Pose3d(1, 2, 3, 4, 5, 6).Rot().Euler());
 
   elem.reset(new sdf::Element());
-  EXPECT_EQ(elem->Get<ignition::math::Color>(emptyString),
-      ignition::math::Color());
+  EXPECT_EQ(elem->Get<gz::math::Color>(emptyString),
+      gz::math::Color());
   elem->AddValue("color", ".1 .2 .3 1.0", "0", "description");
-  EXPECT_EQ(elem->Get<ignition::math::Color>(emptyString),
-            ignition::math::Color(.1f, .2f, .3f, 1.0f));
+  EXPECT_EQ(elem->Get<gz::math::Color>(emptyString),
+            gz::math::Color(.1f, .2f, .3f, 1.0f));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time());
@@ -414,8 +414,8 @@ TEST(SDF, GetAny)
     std::any anyValue = poseElem->GetAny();
     try
     {
-      EXPECT_EQ(std::any_cast<ignition::math::Pose3d>(anyValue),
-          ignition::math::Pose3d(0, 1, 2, 0, 0, 0));
+      EXPECT_EQ(std::any_cast<gz::math::Pose3d>(anyValue),
+          gz::math::Pose3d(0, 1, 2, 0, 0, 0));
     }
     catch(std::bad_any_cast &/*_e*/)
     {
@@ -432,8 +432,8 @@ TEST(SDF, GetAny)
     std::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(std::any_cast<ignition::math::Vector3d>(anyValue),
-          ignition::math::Vector3d(0, 0, -7.1));
+      EXPECT_EQ(std::any_cast<gz::math::Vector3d>(anyValue),
+          gz::math::Vector3d(0, 0, -7.1));
     }
     catch(std::bad_any_cast &/*_e*/)
     {
@@ -476,8 +476,8 @@ TEST(SDF, GetAny)
     std::any anyValue = worldElem->GetElement("gravity")->GetAny();
     try
     {
-      EXPECT_EQ(std::any_cast<ignition::math::Vector3d>(anyValue),
-          ignition::math::Vector3d(0, 0, -7.1));
+      EXPECT_EQ(std::any_cast<gz::math::Vector3d>(anyValue),
+          gz::math::Vector3d(0, 0, -7.1));
     }
     catch(std::bad_any_cast &/*_e*/)
     {
@@ -513,8 +513,8 @@ TEST(SDF, GetAny)
     std::any anyValue = materialElem->GetElement("ambient")->GetAny();
     try
     {
-      EXPECT_EQ(std::any_cast<ignition::math::Color>(anyValue),
-          ignition::math::Color(0.1f, 0.1f, 0.1f, 1.0f));
+      EXPECT_EQ(std::any_cast<gz::math::Color>(anyValue),
+          gz::math::Color(0.1f, 0.1f, 0.1f, 1.0f));
     }
     catch(std::bad_any_cast &/*_e*/)
     {

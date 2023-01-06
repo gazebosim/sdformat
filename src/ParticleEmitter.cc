@@ -72,16 +72,16 @@ class sdf::ParticleEmitter::Implementation
   public: double maxVelocity = 1;
 
   /// \brief The size of the emitter where the particles are sampled.
-  public: ignition::math::Vector3d size = ignition::math::Vector3d::One;
+  public: gz::math::Vector3d size = gz::math::Vector3d::One;
 
   /// \brief The size of a particle.
-  public: ignition::math::Vector3d particleSize = ignition::math::Vector3d::One;
+  public: gz::math::Vector3d particleSize = gz::math::Vector3d::One;
 
   /// \brief The starting color for all particle emitted.
-  public: ignition::math::Color colorStart = ignition::math::Color::White;
+  public: gz::math::Color colorStart = gz::math::Color::White;
 
   /// \brief The ending color for all particle emitted.
-  public: ignition::math::Color colorEnd = ignition::math::Color::White;
+  public: gz::math::Color colorEnd = gz::math::Color::White;
 
   /// \brief The color range image
   public: std::string colorRangeImage = "";
@@ -98,7 +98,7 @@ class sdf::ParticleEmitter::Implementation
   public: float scatterRatio = 0.65f;
 
   /// \brief Pose of the emitter
-  public: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
+  public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
@@ -121,7 +121,7 @@ class sdf::ParticleEmitter::Implementation
 
 /////////////////////////////////////////////////
 ParticleEmitter::ParticleEmitter()
-  : dataPtr(ignition::utils::MakeImpl<Implementation>())
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
@@ -192,16 +192,16 @@ Errors ParticleEmitter::Load(ElementPtr _sdf)
   this->dataPtr->maxVelocity = _sdf->Get<double>("max_velocity",
       this->dataPtr->maxVelocity).first;
 
-  this->dataPtr->size = _sdf->Get<ignition::math::Vector3d>("size",
+  this->dataPtr->size = _sdf->Get<gz::math::Vector3d>("size",
       this->dataPtr->size).first;
 
-  this->dataPtr->particleSize = _sdf->Get<ignition::math::Vector3d>(
+  this->dataPtr->particleSize = _sdf->Get<gz::math::Vector3d>(
       "particle_size", this->dataPtr->particleSize).first;
 
-  this->dataPtr->colorStart = _sdf->Get<ignition::math::Color>(
+  this->dataPtr->colorStart = _sdf->Get<gz::math::Color>(
       "color_start", this->dataPtr->colorStart).first;
 
-  this->dataPtr->colorEnd = _sdf->Get<ignition::math::Color>(
+  this->dataPtr->colorEnd = _sdf->Get<gz::math::Color>(
       "color_end", this->dataPtr->colorEnd).first;
 
   this->dataPtr->colorRangeImage = _sdf->Get<std::string>(
@@ -303,7 +303,7 @@ double ParticleEmitter::Lifetime() const
 /////////////////////////////////////////////////
 void ParticleEmitter::SetLifetime(double _lifetime)
 {
-  this->dataPtr->lifetime = std::max(_lifetime, ignition::math::MIN_D);
+  this->dataPtr->lifetime = std::max(_lifetime, gz::math::MIN_D);
 }
 
 /////////////////////////////////////////////////
@@ -355,51 +355,51 @@ void ParticleEmitter::SetMaxVelocity(double _vel)
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d ParticleEmitter::Size() const
+gz::math::Vector3d ParticleEmitter::Size() const
 {
   return this->dataPtr->size;
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetSize(const ignition::math::Vector3d &_size)
+void ParticleEmitter::SetSize(const gz::math::Vector3d &_size)
 {
   this->dataPtr->size = _size;
-  this->dataPtr->size.Max(ignition::math::Vector3d::Zero);
+  this->dataPtr->size.Max(gz::math::Vector3d::Zero);
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d ParticleEmitter::ParticleSize() const
+gz::math::Vector3d ParticleEmitter::ParticleSize() const
 {
   return this->dataPtr->particleSize;
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetParticleSize(const ignition::math::Vector3d &_size)
+void ParticleEmitter::SetParticleSize(const gz::math::Vector3d &_size)
 {
   this->dataPtr->particleSize = _size;
-  this->dataPtr->particleSize.Max(ignition::math::Vector3d::Zero);
+  this->dataPtr->particleSize.Max(gz::math::Vector3d::Zero);
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color ParticleEmitter::ColorStart() const
+gz::math::Color ParticleEmitter::ColorStart() const
 {
   return this->dataPtr->colorStart;
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetColorStart(const ignition::math::Color &_colorStart)
+void ParticleEmitter::SetColorStart(const gz::math::Color &_colorStart)
 {
   this->dataPtr->colorStart = _colorStart;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Color ParticleEmitter::ColorEnd() const
+gz::math::Color ParticleEmitter::ColorEnd() const
 {
   return this->dataPtr->colorEnd;
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetColorEnd(const ignition::math::Color &_colorEnd)
+void ParticleEmitter::SetColorEnd(const gz::math::Color &_colorEnd)
 {
   this->dataPtr->colorEnd = _colorEnd;
 }
@@ -441,13 +441,13 @@ float ParticleEmitter::ScatterRatio() const
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Pose3d &ParticleEmitter::RawPose() const
+const gz::math::Pose3d &ParticleEmitter::RawPose() const
 {
   return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
-void ParticleEmitter::SetRawPose(const ignition::math::Pose3d &_pose)
+void ParticleEmitter::SetRawPose(const gz::math::Pose3d &_pose)
 {
   this->dataPtr->pose = _pose;
 }
@@ -530,7 +530,7 @@ sdf::ElementPtr ParticleEmitter::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
-  poseElem->Set<ignition::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetAttribute("type")->Set(this->TypeStr());

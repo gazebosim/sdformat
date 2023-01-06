@@ -20,9 +20,9 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-#include <ignition/math/Angle.hh>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Angle.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
 #include "sdf/Link.hh"
@@ -37,7 +37,7 @@
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseExpressionFormats)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   const std::string testFile = sdf::testing::TestFile(
       "sdf", "pose_1_9.sdf");
@@ -360,7 +360,7 @@ TEST(Pose1_9, PoseSet8ValuesFail)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseElementSetAndGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -378,7 +378,7 @@ TEST(Pose1_9, PoseElementSetAndGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseElementSetAndParamGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -399,7 +399,7 @@ TEST(Pose1_9, PoseElementSetAndParamGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetAndGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -421,7 +421,7 @@ TEST(Pose1_9, PoseParamSetAndGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetFromStringAndGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -443,7 +443,7 @@ TEST(Pose1_9, PoseParamSetFromStringAndGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetAndElemGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -465,7 +465,7 @@ TEST(Pose1_9, PoseParamSetAndElemGet)
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseParamSetAndParentElemGet)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -494,7 +494,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   // reparsing should not change their values, even when parent elements have
   // been changed.
 
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -563,7 +563,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   // should change their values, when parent elements have been changed.
 
   const double pi = 3.14159265358979323846;
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -635,7 +635,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
 TEST(Pose1_9, ChangingAttributeOfParentElement)
 {
   const double pi = 3.14159265358979323846;
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -712,7 +712,7 @@ TEST(Pose1_9, ChangingAttributeOfParentElement)
 //////////////////////////////////////////////////
 TEST(Pose1_9, QuatXYZWSetDegreesTrueFail)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::ElementPtr poseElem(new sdf::Element);
   poseElem->SetName("pose");
@@ -970,7 +970,7 @@ std::string findFileCb(const std::string &_input)
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludePoseInModelString)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
 
@@ -1007,7 +1007,7 @@ TEST(Pose1_9, IncludePoseInModelString)
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
 
@@ -1046,7 +1046,7 @@ TEST(Pose1_9, IncludeEulerRPYPoseInModelString)
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludeQuatXYZWPoseIn)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
 
@@ -1085,7 +1085,7 @@ TEST(Pose1_9, IncludeQuatXYZWPoseIn)
 //////////////////////////////////////////////////
 TEST(Pose1_9, IncludePoseInWorld)
 {
-  using Pose = ignition::math::Pose3d;
+  using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
   const std::string testFile = sdf::testing::TestFile(

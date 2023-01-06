@@ -1058,7 +1058,13 @@
 
 ## libsdformat 9.X
 
-### libsdformat 9.10.0 (2022-11-17)
+### libsdformat 9.10.0 (2022-11-30)
+
+1. Ign to gz header migration.
+    * [Pull request #1118](https://github.com/gazebosim/sdformat/pull/1118)
+
+1. Added HasLensProjection.
+    * [Pull request #1203](https://github.com/gazebosim/sdformat/pull/1203)
 
 1. Added camera info topic to Camera
     * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
@@ -1108,143 +1114,143 @@
 ### libsdformat 9.8.0 (2022-04-26)
 
 1. Polyline geometry DOM
-    * [Pull request #1000](https://github.com/ignitionrobotics/sdformat/pull/1000)
+    * [Pull request #1000](https://github.com/gazebosim/sdformat/pull/1000)
 
 1. Added `<shininess>` to `<material>`
-    * [Pull request #985](https://github.com/ignitionrobotics/sdformat/pull/985)
+    * [Pull request #985](https://github.com/gazebosim/sdformat/pull/985)
 
 1. Backport ``ign sdf --inertial-stats``
-    * [Pull request #958](https://github.com/ignitionrobotics/sdformat/pull/958)
+    * [Pull request #958](https://github.com/gazebosim/sdformat/pull/958)
 
 1. Add L16 pixel format to Camera pixel format conversion function
-    * [Pull request #487](https://github.com/ignitionrobotics/sdformat/pull/487)
+    * [Pull request #487](https://github.com/gazebosim/sdformat/pull/487)
 
 1. Anti-aliasing element for `<camera><image>`
-    * [Pull request #909](https://github.com/ignitionrobotics/sdformat/pull/909)
+    * [Pull request #909](https://github.com/gazebosim/sdformat/pull/909)
 
 1. Fix loading nested include with custom attributes
-    * [Pull request #789](https://github.com/ignitionrobotics/sdformat/pull/789)
+    * [Pull request #789](https://github.com/gazebosim/sdformat/pull/789)
 
 1. add enable_orientation to 1.6 spec
-    * [Pull request #686](https://github.com/ignitionrobotics/sdformat/pull/686)
+    * [Pull request #686](https://github.com/gazebosim/sdformat/pull/686)
 
 1. Fix xyz and rpy offsets in fixed joint reduction
-    * [Pull request #500](https://github.com/ignitionrobotics/sdformat/pull/500)
+    * [Pull request #500](https://github.com/gazebosim/sdformat/pull/500)
 
 1. 👩‍🌾 Remove bitbucket-pipelines and backport labeler / triage
-    * [Pull request #674](https://github.com/ignitionrobotics/sdformat/pull/674)
+    * [Pull request #674](https://github.com/gazebosim/sdformat/pull/674)
 
 1. Create CODEOWNERS with azeey and scpeters
-    * [Pull request #650](https://github.com/ignitionrobotics/sdformat/pull/650)
+    * [Pull request #650](https://github.com/gazebosim/sdformat/pull/650)
 
 1. Use Ubuntu bionic in CI
-    * [Pull request #626](https://github.com/ignitionrobotics/sdformat/pull/626)
+    * [Pull request #626](https://github.com/gazebosim/sdformat/pull/626)
 
 1. Translate poses of nested models inside other nested models (sdf6)
-    * [Pull request #596](https://github.com/ignitionrobotics/sdformat/pull/596)
+    * [Pull request #596](https://github.com/gazebosim/sdformat/pull/596)
 
 1. Fix flattening logic for nested model names (sdf6)
-    * [Pull request #597](https://github.com/ignitionrobotics/sdformat/pull/597)
+    * [Pull request #597](https://github.com/gazebosim/sdformat/pull/597)
 
 1. Parse rpyOffset as radians
-    * [Pull request #497](https://github.com/ignitionrobotics/sdformat/pull/497)
+    * [Pull request #497](https://github.com/gazebosim/sdformat/pull/497)
 
 1. BitBucket
-    * [Pull request #258](https://github.com/ignitionrobotics/sdformat/pull/258)
-    * [Pull request #237](https://github.com/ignitionrobotics/sdformat/pull/237)
+    * [Pull request #258](https://github.com/gazebosim/sdformat/pull/258)
+    * [Pull request #237](https://github.com/gazebosim/sdformat/pull/237)
 
 ### libsdformat 9.7.0 (2021-11-03)
 
 1. Make exception for plugins when checking for name uniqueness
-    * [Pull request #733](https://github.com/ignitionrobotics/sdformat/pull/733)
+    * [Pull request #733](https://github.com/gazebosim/sdformat/pull/733)
 
 1. Backport test utilities from sdf10
-    * [Pull request #731](https://github.com/ignitionrobotics/sdformat/pull/731)
+    * [Pull request #731](https://github.com/gazebosim/sdformat/pull/731)
 
 1. Added Force Torque Noise functions + Unit tests
-    * [Pull request #669](https://github.com/ignitionrobotics/sdformat/pull/669)
+    * [Pull request #669](https://github.com/gazebosim/sdformat/pull/669)
 
 1. Add Joint DOM API to access joint sensors
-    * [Pull request #517](https://github.com/ignitionrobotics/sdformat/pull/517)
+    * [Pull request #517](https://github.com/gazebosim/sdformat/pull/517)
 
 1. Add force torque sensor
-    * [Pull request #393](https://github.com/ignitionrobotics/sdformat/pull/393)
+    * [Pull request #393](https://github.com/gazebosim/sdformat/pull/393)
 
 ### libsdformat 9.6.1 (2021-09-07)
 
 1. Parse URDF continuous joint effort/velocity limits
-    * [Pull request #684](https://github.com/ignitionrobotics/sdformat/pull/684)
+    * [Pull request #684](https://github.com/gazebosim/sdformat/pull/684)
 
 1. Add a codecheck make target
-    * [Pull request #682](https://github.com/ignitionrobotics/sdformat/pull/682)
+    * [Pull request #682](https://github.com/gazebosim/sdformat/pull/682)
 
 1. Refactor sdf::readXml
-    * [Pull request #681](https://github.com/ignitionrobotics/sdformat/pull/681)
+    * [Pull request #681](https://github.com/gazebosim/sdformat/pull/681)
 
 1. Upgrade cpplint and fix new errors
-    * [Pull request #680](https://github.com/ignitionrobotics/sdformat/pull/680)
+    * [Pull request #680](https://github.com/gazebosim/sdformat/pull/680)
 
 1. BUG: add missing plugin element to include
-    * [Pull request #675](https://github.com/ignitionrobotics/sdformat/pull/675)
+    * [Pull request #675](https://github.com/gazebosim/sdformat/pull/675)
 
 1. Added comment reminder to update functions
-    * [Pull request #677](https://github.com/ignitionrobotics/sdformat/pull/677)
+    * [Pull request #677](https://github.com/gazebosim/sdformat/pull/677)
 
 ### libsdformat 9.6.0 (2021-08-18)
 
 1. Adds `enable_metrics` flag to Sensor.
-    * [Pull request #665](https://github.com/ignitionrobotics/sdformat/pull/665)
+    * [Pull request #665](https://github.com/gazebosim/sdformat/pull/665)
 
 1. Add GPS / NavSat sensor DOM to sdf9
-    * [Pull request #453](https://github.com/ignitionrobotics/sdformat/pull/453)
+    * [Pull request #453](https://github.com/gazebosim/sdformat/pull/453)
 
 1. Support parsing elements that are not part of the schema
-    * [Pull request #638](https://github.com/ignitionrobotics/sdformat/pull/638)
+    * [Pull request #638](https://github.com/gazebosim/sdformat/pull/638)
 
 1. Add lightmap to 1.7 spec and PBR material DOM
-    * [Pull request #429](https://github.com/ignitionrobotics/sdformat/pull/429)
+    * [Pull request #429](https://github.com/gazebosim/sdformat/pull/429)
 
 1. Fix urdf link extension tags
-    * [Pull request #628](https://github.com/ignitionrobotics/sdformat/pull/628)
+    * [Pull request #628](https://github.com/gazebosim/sdformat/pull/628)
 
 1. Updated material spec
-    * [Pull request #644](https://github.com/ignitionrobotics/sdformat/pull/644)
+    * [Pull request #644](https://github.com/gazebosim/sdformat/pull/644)
 
 1. Minor fix to Migration guide
-    * [Pull request #630](https://github.com/ignitionrobotics/sdformat/pull/630)
+    * [Pull request #630](https://github.com/gazebosim/sdformat/pull/630)
 
 1. Error: move << operator from .hh to .cc file
-    * [Pull request #625](https://github.com/ignitionrobotics/sdformat/pull/625)
+    * [Pull request #625](https://github.com/gazebosim/sdformat/pull/625)
 
 1. Update build system to allow overriding CXX flags and using clang on Linux
-    * [Pull request #621](https://github.com/ignitionrobotics/sdformat/pull/621)
+    * [Pull request #621](https://github.com/gazebosim/sdformat/pull/621)
 
 1. Add Element::FindElement as an alternative to Element::GetElement
-    * [Pull request #620](https://github.com/ignitionrobotics/sdformat/pull/620)
+    * [Pull request #620](https://github.com/gazebosim/sdformat/pull/620)
 
 1. Add ValidateGraphs methods to Model/World (sdf9)
-    * [Pull request #602](https://github.com/ignitionrobotics/sdformat/pull/602)
+    * [Pull request #602](https://github.com/gazebosim/sdformat/pull/602)
 
 1. Fix ABI break
-    * [Pull request #605](https://github.com/ignitionrobotics/sdformat/pull/605)
+    * [Pull request #605](https://github.com/gazebosim/sdformat/pull/605)
 
 1. Making PrintValues() and ToString() able to not print default elements
-    * [Pull request #575](https://github.com/ignitionrobotics/sdformat/pull/575)
+    * [Pull request #575](https://github.com/gazebosim/sdformat/pull/575)
 
 1. Add API for determining if an element was set by the user
-    * [Pull request #542](https://github.com/ignitionrobotics/sdformat/pull/542)
+    * [Pull request #542](https://github.com/gazebosim/sdformat/pull/542)
 
 1. Methods for removing attributes from an element
-    * [Pull request #555](https://github.com/ignitionrobotics/sdformat/pull/555)
+    * [Pull request #555](https://github.com/gazebosim/sdformat/pull/555)
 
 1. Improve docs of collision_bitmask.
-    * [Pull request #521](https://github.com/ignitionrobotics/sdformat/pull/521)
+    * [Pull request #521](https://github.com/gazebosim/sdformat/pull/521)
 
 1. Add camera type aliases to docs.
-    * [Pull request #514](https://github.com/ignitionrobotics/sdformat/pull/514)
+    * [Pull request #514](https://github.com/gazebosim/sdformat/pull/514)
 
 1. Add action-ignition-ci
-    * [Pull request #501](https://github.com/ignitionrobotics/sdformat/pull/452)
+    * [Pull request #501](https://github.com/gazebosim/sdformat/pull/452)
 
 ### libsdformat 9.5.0 (2021-02-11)
 
