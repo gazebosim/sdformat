@@ -35,6 +35,10 @@ class CameraTEST(unittest.TestCase):
       cam.set_trigger_topic("my_camera/trigger")
       self.assertEqual("my_camera/trigger", cam.trigger_topic())
 
+      self.assertEqual("", cam.camera_info_topic());
+      cam.set_camera_info_topic("/camera/camera_info");
+      self.assertEqual("/camera/camera_info", cam.camera_info_topic());
+
       self.assertAlmostEqual(1.047, cam.horizontal_fov().radian())
       cam.set_horizontal_fov(Angle(1.45))
       self.assertAlmostEqual(1.45, cam.horizontal_fov().radian())
@@ -131,6 +135,10 @@ class CameraTEST(unittest.TestCase):
       cam.set_pose_relative_to("/frame")
       self.assertEqual("/frame", cam.pose_relative_to())
 
+      self.assertFalse(cam.optical_frame_id());
+      cam.set_optical_frame_id("/optical_frame");
+      self.assertEqual("/optical_frame", cam.optical_frame_id());
+
       self.assertEqual("stereographic", cam.lens_type())
       cam.set_lens_type("custom")
       self.assertEqual("custom", cam.lens_type())
@@ -188,6 +196,7 @@ class CameraTEST(unittest.TestCase):
       self.assertAlmostEqual(2.3, cam.lens_intrinsics_skew())
 
       self.assertTrue(cam.has_lens_intrinsics())
+      self.assertFalse(cam.has_lens_projection())
 
       self.assertEqual(4294967295, cam.visibility_mask())
       cam.set_visibility_mask(123)

@@ -203,9 +203,13 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     if (size > 1)
     {
-      sdfwarn << "Non-unique name[" << name << "] detected " << size
-              << " times in XML children of model with name[" << this->Name()
-              << "].\n";
+      std::stringstream ss;
+      ss << "Non-unique name[" << name << "] detected " << size
+         << " times in XML children of model with name[" << this->Name()
+         << "].";
+      Error err(ErrorCode::WARNING, ss.str());
+      enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, errors);
     }
   }
 
@@ -298,17 +302,23 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         {
           linkName = link.Name() + "_link" + std::to_string(i++);
         }
-        sdfwarn << "Link with name [" << link.Name() << "] "
-                << "in model with name [" << this->Name() << "] "
-                << "has a name collision, changing link name to ["
-                << linkName << "].\n";
+        std::stringstream ss;
+        ss << "Link with name [" << link.Name() << "] "
+           << "in model with name [" << this->Name() << "] "
+           << "has a name collision, changing link name to ["
+           << linkName << "].";
+        Error err(ErrorCode::WARNING, ss.str());
+        enforceConfigurablePolicyCondition(
+            _config.WarningsPolicy(), err, errors);
         link.SetName(linkName);
       }
       else
       {
-        sdferr << "Link with name [" << link.Name() << "] "
-               << "in model with name [" << this->Name() << "] "
-               << "has a name collision. Please rename this link.\n";
+        std::stringstream ss;
+        ss << "Link with name [" << link.Name() << "] "
+           << "in model with name [" << this->Name() << "] "
+           << "has a name collision. Please rename this link.";
+        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
       }
     }
     frameNames.insert(linkName);
@@ -346,17 +356,24 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         {
           jointName = joint.Name() + "_joint" + std::to_string(i++);
         }
-        sdfwarn << "Joint with name [" << joint.Name() << "] "
-                << "in model with name [" << this->Name() << "] "
-                << "has a name collision, changing joint name to ["
-                << jointName << "].\n";
+        std::stringstream ss;
+        ss << "Joint with name [" << joint.Name() << "] "
+           << "in model with name [" << this->Name() << "] "
+           << "has a name collision, changing joint name to ["
+           << jointName << "].";
+        Error err(ErrorCode::WARNING, ss.str());
+        enforceConfigurablePolicyCondition(
+            _config.WarningsPolicy(), err, errors);
+
         joint.SetName(jointName);
       }
       else
       {
-        sdferr << "Joint with name [" << joint.Name() << "] "
-               << "in model with name [" << this->Name() << "] "
-               << "has a name collision. Please rename this joint.\n";
+        std::stringstream ss;
+        ss << "Joint with name [" << joint.Name() << "] "
+           << "in model with name [" << this->Name() << "] "
+           << "has a name collision. Please rename this joint.";
+        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
       }
     }
     frameNames.insert(jointName);
@@ -383,17 +400,24 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         {
           frameName = frame.Name() + "_frame" + std::to_string(i++);
         }
-        sdfwarn << "Frame with name [" << frame.Name() << "] "
-                << "in model with name [" << this->Name() << "] "
-                << "has a name collision, changing frame name to ["
-                << frameName << "].\n";
+        std::stringstream ss;
+        ss << "Frame with name [" << frame.Name() << "] "
+           << "in model with name [" << this->Name() << "] "
+           << "has a name collision, changing frame name to ["
+           << frameName << "].";
+        Error err(ErrorCode::WARNING, ss.str());
+        enforceConfigurablePolicyCondition(
+            _config.WarningsPolicy(), err, errors);
+
         frame.SetName(frameName);
       }
       else
       {
-        sdferr << "Frame with name [" << frame.Name() << "] "
-               << "in model with name [" << this->Name() << "] "
-               << "has a name collision. Please rename this frame.\n";
+        std::stringstream ss;
+        ss << "Frame with name [" << frame.Name() << "] "
+           << "in model with name [" << this->Name() << "] "
+           << "has a name collision. Please rename this frame.";
+        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
       }
     }
     frameNames.insert(frameName);

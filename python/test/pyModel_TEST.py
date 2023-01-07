@@ -145,6 +145,10 @@ class ModelTEST(unittest.TestCase):
         self.assertEqual(errors[1].message(),
             "PoseRelativeToGraph error: scope does not point to a valid graph.")
 
+        # model doesn't have graphs, so no names should exist in graphs
+        self.assertFalse(model.name_exists_in_frame_attached_to_graph(""));
+        self.assertFalse(model.name_exists_in_frame_attached_to_graph("link"));
+
 
     def test_copy_construction(self):
         model = Model()

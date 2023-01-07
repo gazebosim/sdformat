@@ -58,12 +58,28 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(nullptr, world.FrameByIndex(1));
   EXPECT_FALSE(world.FrameNameExists(""));
   EXPECT_FALSE(world.FrameNameExists("default"));
+  EXPECT_FALSE(world.FrameNameExists("a::b"));
+  EXPECT_FALSE(world.FrameNameExists("a::b::c"));
+  EXPECT_FALSE(world.FrameNameExists("::::"));
+  EXPECT_EQ(nullptr, world.FrameByName(""));
+  EXPECT_EQ(nullptr, world.FrameByName("default"));
+  EXPECT_EQ(nullptr, world.FrameByName("a::b"));
+  EXPECT_EQ(nullptr, world.FrameByName("a::b::c"));
+  EXPECT_EQ(nullptr, world.FrameByName("::::"));
 
-  EXPECT_EQ(0u, world.FrameCount());
-  EXPECT_EQ(nullptr, world.FrameByIndex(0));
-  EXPECT_EQ(nullptr, world.FrameByIndex(1));
-  EXPECT_FALSE(world.FrameNameExists(""));
-  EXPECT_FALSE(world.FrameNameExists("default"));
+  EXPECT_EQ(0u, world.JointCount());
+  EXPECT_EQ(nullptr, world.JointByIndex(0));
+  EXPECT_EQ(nullptr, world.JointByIndex(1));
+  EXPECT_FALSE(world.JointNameExists(""));
+  EXPECT_FALSE(world.JointNameExists("default"));
+  EXPECT_FALSE(world.JointNameExists("a::b"));
+  EXPECT_FALSE(world.JointNameExists("a::b::c"));
+  EXPECT_FALSE(world.JointNameExists("::::"));
+  EXPECT_EQ(nullptr, world.JointByName(""));
+  EXPECT_EQ(nullptr, world.JointByName("default"));
+  EXPECT_EQ(nullptr, world.JointByName("a::b"));
+  EXPECT_EQ(nullptr, world.JointByName("a::b::c"));
+  EXPECT_EQ(nullptr, world.JointByName("::::"));
 
   EXPECT_EQ(1u, world.PhysicsCount());
 
@@ -77,6 +93,10 @@ TEST(DOMWorld, Construction)
   EXPECT_NE(std::string::npos,
     errors[1].Message().find(
       "PoseRelativeToGraph error: scope does not point to a valid graph"));
+
+  // world doesn't have graphs, so no names should exist in graphs
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph(""));
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph("model1"));
 }
 
 /////////////////////////////////////////////////
@@ -368,6 +388,9 @@ TEST(DOMWorld, AddModel)
   EXPECT_EQ(1u, world.ModelCount());
   EXPECT_FALSE(world.AddModel(model));
   EXPECT_EQ(1u, world.ModelCount());
+  // world doesn't have graphs, so no names should exist in graphs
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph(""));
+  EXPECT_FALSE(world.NameExistsInFrameAttachedToGraph("model1"));
 
   world.ClearModels();
   EXPECT_EQ(0u, world.ModelCount());
@@ -433,6 +456,29 @@ TEST(DOMWorld, AddActor)
   const sdf::Actor *actorFromWorld = world.ActorByIndex(0);
   ASSERT_NE(nullptr, actorFromWorld);
   EXPECT_EQ(actorFromWorld->Name(), actor.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, AddJoint)
+{
+  sdf::World world;
+  EXPECT_EQ(0u, world.JointCount());
+
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(world.AddJoint(joint));
+  EXPECT_EQ(1u, world.JointCount());
+  EXPECT_FALSE(world.AddJoint(joint));
+  EXPECT_EQ(1u, world.JointCount());
+
+  world.ClearJoints();
+  EXPECT_EQ(0u, world.JointCount());
+
+  EXPECT_TRUE(world.AddJoint(joint));
+  EXPECT_EQ(1u, world.JointCount());
+  const sdf::Joint *jointFromWorld = world.JointByIndex(0);
+  ASSERT_NE(nullptr, jointFromWorld);
+  EXPECT_EQ(jointFromWorld->Name(), joint.Name());
 }
 
 /////////////////////////////////////////////////
@@ -519,6 +565,19 @@ TEST(DOMWorld, ToElement)
   {
     for (int i = 0; i < 4; ++i)
     {
+      sdf::Joint joint;
+      joint.SetName("joint" + std::to_string(i));
+      EXPECT_TRUE(world.AddJoint(joint));
+      EXPECT_FALSE(world.AddJoint(joint));
+    }
+    if (j == 0)
+      world.ClearJoints();
+  }
+
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 4; ++i)
+    {
       sdf::Light light;
       light.SetName("light" + std::to_string(i));
       EXPECT_TRUE(world.AddLight(light));
@@ -571,6 +630,10 @@ TEST(DOMWorld, ToElement)
   EXPECT_EQ(world.ModelCount(), world2.ModelCount());
   for (uint64_t i = 0; i < world2.ModelCount(); ++i)
     EXPECT_NE(nullptr, world2.ModelByIndex(i));
+
+  EXPECT_EQ(world.JointCount(), world2.JointCount());
+  for (uint64_t i = 0; i < world2.JointCount(); ++i)
+    EXPECT_NE(nullptr, world2.JointByIndex(i));
 
   EXPECT_EQ(world.LightCount(), world2.LightCount());
   for (uint64_t i = 0; i < world2.LightCount(); ++i)
@@ -628,6 +691,10 @@ TEST(DOMWorld, MutableByIndex)
   actor.SetName("actor1");
   EXPECT_TRUE(world.AddActor(actor));
 
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(world.AddJoint(joint));
+
   sdf::Light light;
   light.SetName("light1");
   EXPECT_TRUE(world.AddLight(light));
@@ -653,6 +720,13 @@ TEST(DOMWorld, MutableByIndex)
   EXPECT_EQ("actor1", a->Name());
   a->SetName("actor2");
   EXPECT_EQ("actor2", world.ActorByIndex(0)->Name());
+
+  // Modify the joint
+  sdf::Joint *j = world.JointByIndex(0);
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_EQ("joint2", world.JointByIndex(0)->Name());
 
   // Modify the light
   sdf::Light *l = world.LightByIndex(0);
@@ -689,6 +763,10 @@ TEST(DOMWorld, MutableByName)
   frame.SetName("frame1");
   EXPECT_TRUE(world.AddFrame(frame));
 
+  sdf::Joint joint;
+  joint.SetName("joint1");
+  EXPECT_TRUE(world.AddJoint(joint));
+
   // Modify the model
   sdf::Model *m = world.ModelByName("model1");
   ASSERT_NE(nullptr, m);
@@ -704,6 +782,14 @@ TEST(DOMWorld, MutableByName)
   f->SetName("frame2");
   EXPECT_FALSE(world.FrameByName("frame1"));
   EXPECT_TRUE(world.FrameByName("frame2"));
+
+  // Modify the joint
+  sdf::Joint *j = world.JointByName("joint1");
+  ASSERT_NE(nullptr, j);
+  EXPECT_EQ("joint1", j->Name());
+  j->SetName("joint2");
+  EXPECT_FALSE(world.JointByName("joint1"));
+  EXPECT_TRUE(world.JointByName("joint2"));
 }
 
 /////////////////////////////////////////////////
