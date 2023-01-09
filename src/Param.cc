@@ -1473,7 +1473,7 @@ bool Param::ValidateValue(sdf::Errors &_errors) const
               std::ostringstream oss;
               oss << "The value [" << _val
                   << "] is less than the minimum allowed value of ["
-                  << *this->GetMinValueAsString() << "] for key ["
+                  << *this->GetMinValueAsString(_errors) << "] for key ["
                   << this->GetKey() << "]";
               _errors.push_back({ErrorCode::PARAMETER_ERROR, oss.str()});
               return false;
@@ -1486,7 +1486,7 @@ bool Param::ValidateValue(sdf::Errors &_errors) const
               std::ostringstream oss;
               oss << "The value [" << _val
                   << "] is greater than the maximum allowed value of ["
-                  << *this->GetMaxValueAsString() << "] for key ["
+                  << *this->GetMaxValueAsString(_errors) << "] for key ["
                   << this->GetKey() << "]";
               _errors.push_back({ErrorCode::PARAMETER_ERROR, oss.str()});
               return false;
