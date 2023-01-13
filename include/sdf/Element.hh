@@ -825,14 +825,14 @@ namespace sdf
     public: static std::vector<std::string> NameUniquenessExceptions();
 
     /// \brief Generate a string (XML) representation of this object.
-    /// \param[out] _out the std::ostreamstream to write output to.
     /// \param[out] _errors Vector of errors.
+    /// \param[out] _out the std::ostreamstream to write output to.
     /// \param[in] _prefix arbitrary prefix to put on the string.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for converting to string.
-    private: void ToString(std::ostringstream &_out,
-                           sdf::Errors &_errors,
+    private: void ToString(sdf::Errors &_errors,
+                           std::ostringstream &_out,
                            const std::string &_prefix,
                            bool _includeDefaultElements,
                            bool _includeDefaultAttributes,

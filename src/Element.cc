@@ -638,9 +638,9 @@ void Element::PrintValuesImpl(sdf::Errors &_errors,
       for (eiter = this->dataPtr->elements.begin();
            eiter != this->dataPtr->elements.end(); ++eiter)
       {
-        (*eiter)->ToString(_out,
-                           _errors,
-                            _prefix + "  ",
+        (*eiter)->ToString(_errors,
+                           _out,
+                           _prefix + "  ",
                            _includeDefaultElements,
                            _includeDefaultAttributes,
                            _config);
@@ -776,10 +776,10 @@ std::string Element::ToString(const std::string &_prefix,
                               const PrintConfig &_config) const
 {
   sdf::Errors errors;
-  std::ostringstream out;
-  this->ToString(errors, _prefix, _config);
+  std::string out;
+  out = this->ToString(errors, _prefix, _config);
   sdf::throwOrPrintErrors(errors);
-  return out.str();
+  return out;
 }
 
 /////////////////////////////////////////////////
@@ -787,9 +787,7 @@ std::string Element::ToString(sdf::Errors &_errors,
                               const std::string &_prefix,
                               const PrintConfig &_config) const
 {
-  std::ostringstream out;
-  this->ToString(out, _errors, _prefix, true, false, _config);
-  return out.str();
+  return this->ToString(_errors, _prefix, true, false, _config);
 }
 
 /////////////////////////////////////////////////
@@ -800,8 +798,8 @@ std::string Element::ToString(const std::string &_prefix,
 {
   sdf::Errors errors;
   std::ostringstream out;
-  this->ToString(out,
-                 errors,
+  this->ToString(errors,
+                 out,
                  _prefix,
                  _includeDefaultElements,
                  _includeDefaultAttributes,
@@ -818,8 +816,8 @@ std::string Element::ToString(sdf::Errors &_errors,
                               const PrintConfig &_config) const
 {
   std::ostringstream out;
-  this->ToString(out,
-                 _errors,
+  this->ToString(_errors,
+                 out,
                  _prefix,
                  _includeDefaultElements,
                  _includeDefaultAttributes,
@@ -828,8 +826,8 @@ std::string Element::ToString(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
-void Element::ToString(std::ostringstream &_out,
-                       sdf::Errors &_errors,
+void Element::ToString(sdf::Errors &_errors,
+                       std::ostringstream &_out,
                        const std::string &_prefix,
                        bool _includeDefaultElements,
                        bool _includeDefaultAttributes,
