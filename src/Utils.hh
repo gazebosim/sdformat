@@ -88,7 +88,7 @@ namespace sdf
   /// \brief It will print the errors to sdferr or throw them using
   /// SDF_ASSERT depending on their ErrorCode.
   /// \param[in] _errors  The vector of errors.
-  void throwOrPrintErrors(const sdf::Errors& _errors);
+  void throwOrPrintErrors(sdf::Errors& _errors);
 
   /// \brief Load all objects of a specific sdf element type. No error
   /// is returned if an element is not present. This function assumes that

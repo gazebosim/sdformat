@@ -247,6 +247,10 @@ namespace sdf
     /// \sa Element::SetXmlPath
     public: void SetXmlPath(const std::string &_xmlPath);
 
+    /// \brief It will print the error to sdferr or throw it using
+    /// SDF_ASSERT depending on its ErrorCode.
+    public: void throwOrPrintError();
+
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is
     /// true when there is an error.
