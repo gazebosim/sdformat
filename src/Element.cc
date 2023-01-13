@@ -406,13 +406,13 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
 void Element::PrintDescription(const std::string &_prefix) const
 {
   sdf::Errors errors;
-  this->PrintDescription(_prefix, errors);
+  this->PrintDescription(errors, _prefix);
   sdf::throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDescription(const std::string &_prefix,
-                               sdf::Errors &_errors) const
+void Element::PrintDescription(sdf::Errors &_errors,
+                               const std::string &_prefix) const
 {
   std::cout << _prefix << "<element name ='" << this->dataPtr->name
             << "' required ='" << this->dataPtr->required << "'";
@@ -474,7 +474,7 @@ void Element::PrintDescription(const std::string &_prefix,
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    (*eiter)->PrintDescription(_prefix + "  ", _errors);
+    (*eiter)->PrintDescription(_errors, _prefix + "  ");
   }
 
   std::cout << _prefix << "</element>\n";
@@ -485,13 +485,13 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
                                 int &_index) const
 {
   sdf::Errors errors;
-  this->PrintDocRightPane(_html, _spacing, _index, errors);
+  this->PrintDocRightPane(errors, _html, _spacing, _index);
   sdf::throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDocRightPane(std::string &_html, int _spacing,
-                                int &_index, sdf::Errors &_errors) const
+void Element::PrintDocRightPane(sdf::Errors &_errors, std::string &_html,
+                                int _spacing, int &_index) const
 {
   std::ostringstream stream;
   ElementPtr_V::iterator eiter;
@@ -502,7 +502,7 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    (*eiter)->PrintDocRightPane(childHTML, _spacing + 4, _index, _errors);
+    (*eiter)->PrintDocRightPane(_errors, childHTML, _spacing + 4, _index);
   }
 
   stream << "<a name=\"" << this->dataPtr->name << start
@@ -613,12 +613,12 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
 }
 
 /////////////////////////////////////////////////
-void Element::PrintValuesImpl(const std::string &_prefix,
+void Element::PrintValuesImpl(sdf::Errors &_errors,
+                              const std::string &_prefix,
                               bool _includeDefaultElements,
                               bool _includeDefaultAttributes,
                               const PrintConfig &_config,
-                              std::ostringstream &_out,
-                              sdf::Errors &_errors) const
+                              std::ostringstream &_out) const
 {
   if (_config.PreserveIncludes() && this->GetIncludeElement() != nullptr)
   {
@@ -629,7 +629,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
     _out << _prefix << "<" << this->dataPtr->name;
 
     this->dataPtr->PrintAttributes(
-        _includeDefaultAttributes, _config, _out, _errors);
+        _errors, _includeDefaultAttributes, _config, _out);
 
     if (this->dataPtr->elements.size() > 0)
     {
@@ -668,16 +668,16 @@ void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
                                      std::ostringstream &_out) const
 {
   sdf::Errors errors;
-  this->PrintAttributes(_includeDefaultAttributes, _config,
-                        _out, errors);
+  this->PrintAttributes(errors, _includeDefaultAttributes, _config,
+                        _out);
   sdf::throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
-void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
+void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
+                                     bool _includeDefaultAttributes,
                                      const PrintConfig &_config,
-                                     std::ostringstream &_out,
-                                     sdf::Errors &_errors) const
+                                     std::ostringstream &_out) const
 {
   // Attribute exceptions are used in the event of a non-default PrintConfig
   // which modifies the Attributes of this Element that are printed out. The
@@ -725,7 +725,7 @@ void Element::PrintValues(std::string _prefix,
 {
   std::ostringstream ss;
   sdf::Errors errors;
-  PrintValuesImpl(_prefix, true, false, _config, ss, errors);
+  PrintValuesImpl(errors, _prefix, true, false, _config, ss);
   sdf::throwOrPrintErrors(errors);
   std::cout << ss.str();
 }
@@ -735,7 +735,7 @@ void Element::PrintValues(sdf::Errors &_errors, std::string _prefix,
                           const PrintConfig &_config) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, true, false, _config, ss, _errors);
+  PrintValuesImpl(_errors, _prefix, true, false, _config, ss);
   std::cout << ss.str();
 }
 
@@ -745,16 +745,13 @@ void Element::PrintValues(const std::string &_prefix,
                           bool _includeDefaultAttributes,
                           const PrintConfig &_config) const
 {
-  std::ostringstream ss;
   sdf::Errors errors;
-  PrintValuesImpl(_prefix,
-                  _includeDefaultElements,
-                  _includeDefaultAttributes,
-                  _config,
-                  ss,
-                  errors);
+  PrintValues(errors,
+              _prefix,
+              _includeDefaultElements,
+              _includeDefaultAttributes,
+              _config);
   sdf::throwOrPrintErrors(errors);
-  std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
@@ -765,12 +762,12 @@ void Element::PrintValues(sdf::Errors &_errors,
                           const PrintConfig &_config) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix,
+  PrintValuesImpl(_errors,
+                  _prefix,
                   _includeDefaultElements,
                   _includeDefaultAttributes,
                   _config,
-                  ss,
-                  _errors);
+                  ss);
   std::cout << ss.str();
 }
 
@@ -780,7 +777,7 @@ std::string Element::ToString(const std::string &_prefix,
 {
   sdf::Errors errors;
   std::ostringstream out;
-  this->ToString(out, errors, _prefix, true, false, _config);
+  this->ToString(errors, _prefix, _config);
   sdf::throwOrPrintErrors(errors);
   return out.str();
 }
@@ -838,12 +835,12 @@ void Element::ToString(std::ostringstream &_out,
                        bool _includeDefaultAttributes,
                        const PrintConfig &_config) const
 {
-  PrintValuesImpl(_prefix,
+  PrintValuesImpl(_errors,
+                  _prefix,
                   _includeDefaultElements,
                   _includeDefaultAttributes,
                   _config,
-                  _out,
-                  _errors);
+                  _out);
 }
 
 /////////////////////////////////////////////////
