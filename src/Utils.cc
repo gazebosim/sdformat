@@ -171,7 +171,7 @@ void throwOrPrintErrors(const sdf::Errors& _errors)
 {
   for(auto& error : _errors)
   {
-    error.throwOrPrintError(sdferr);
+    error.ThrowOrPrintError(sdferr);
   }
 }
 

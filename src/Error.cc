@@ -120,7 +120,7 @@ void Error::SetXmlPath(const std::string &_xmlPath)
 }
 
 /////////////////////////////////////////////////
-void Error::throwOrPrintError(sdf::Console::ConsoleStream &_out) const
+void Error::ThrowOrPrintError(sdf::Console::ConsoleStream &_out) const
 {
   if (this->dataPtr->code == sdf::ErrorCode::FATAL_ERROR)
   {
