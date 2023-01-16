@@ -16,7 +16,6 @@
 */
 
 #include "sdf/Assert.hh"
-#include "sdf/Console.hh"
 #include "sdf/Error.hh"
 
 using namespace sdf;
@@ -121,7 +120,7 @@ void Error::SetXmlPath(const std::string &_xmlPath)
 }
 
 /////////////////////////////////////////////////
-void Error::throwOrPrintError()
+void Error::throwOrPrintError(sdf::Console::ConsoleStream &_out) const
 {
   if (this->dataPtr->code == sdf::ErrorCode::FATAL_ERROR)
   {
@@ -129,7 +128,7 @@ void Error::throwOrPrintError()
   }
   else
   {
-    sdferr << this->dataPtr->message;
+    _out << this->dataPtr->message;
   }
 }
 

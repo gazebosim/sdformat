@@ -167,11 +167,11 @@ void enforceConfigurablePolicyCondition(
 }
 
 /////////////////////////////////////////////////
-void throwOrPrintErrors(sdf::Errors& _errors)
+void throwOrPrintErrors(const sdf::Errors& _errors)
 {
   for(auto& error : _errors)
   {
-    error.throwOrPrintError();
+    error.throwOrPrintError(sdferr);
   }
 }
 

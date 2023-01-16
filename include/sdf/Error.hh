@@ -22,6 +22,7 @@
 #include <optional>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
+#include "sdf/Console.hh"
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -247,9 +248,10 @@ namespace sdf
     /// \sa Element::SetXmlPath
     public: void SetXmlPath(const std::string &_xmlPath);
 
-    /// \brief It will print the error to sdferr or throw it using
+    /// \brief It will print the error to _out or throw it using
     /// SDF_ASSERT depending on its ErrorCode.
-    public: void throwOrPrintError();
+    /// \param[in] _out ostream to use for printing errors.
+    public: void throwOrPrintError(sdf::Console::ConsoleStream &_out) const;
 
     /// \brief Safe bool conversion.
     /// \return True if this Error's Code() != NONE. In otherwords, this is
