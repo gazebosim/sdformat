@@ -238,6 +238,23 @@ TEST(ErrorOutput, ElementErrorOutput)
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Cannot remove a nullptr child pointer"));
+  errors.clear();
+
+  elem->AddAttribute("key", "std::string", "test", true, errors, "");
+  ASSERT_EQ(errors.size(), 0u);
+  elem->Get<int>(errors, "key");
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Invalid argument. Unable to set value [test] for key[key]."));
+  errors.clear();
+
+  elem->AddValue("int", "0", true, errors, "");
+  ASSERT_EQ(errors.size(), 0u);
+  elem->Get<sdf::Time>(errors, "");
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Unknown error. Unable to set value [0 ] for key[testElement]"));
+
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

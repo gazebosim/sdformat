@@ -20,6 +20,7 @@
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(Element, New)
@@ -509,6 +510,7 @@ TEST(Element, Clear)
 /////////////////////////////////////////////////
 TEST(Element, ToStringElements)
 {
+  sdf::Errors errors;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
 
@@ -523,10 +525,11 @@ TEST(Element, ToStringElements)
 
   // attribute won't print unless it has been set
   EXPECT_FALSE(parent->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+  EXPECT_EQ(parent->ToString(errors, "<!-- prefix -->"),
     "<!-- prefix --><parent>\n"
     "<!-- prefix -->  <child/>\n"
     "<!-- prefix --></parent>\n");
+  EXPECT_TRUE(errors.empty());
 
   sdf::ParamPtr test = parent->GetAttribute("test");
   ASSERT_NE(nullptr, test);
@@ -535,22 +538,25 @@ TEST(Element, ToStringElements)
   EXPECT_TRUE(test->GetSet());
   EXPECT_TRUE(parent->GetAttributeSet("test"));
 
-  EXPECT_EQ(parent->ToString("<!-- prefix -->"),
+  EXPECT_EQ(parent->ToString(errors, "<!-- prefix -->"),
     "<!-- prefix --><parent test='foo'>\n"
     "<!-- prefix -->  <child/>\n"
     "<!-- prefix --></parent>\n");
+  EXPECT_TRUE(errors.empty());
 }
 
 /////////////////////////////////////////////////
 TEST(Element, ToStringRequiredAttributes)
 {
+  sdf::Errors errors;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   parent->AddAttribute("test", "string", "foo", true, "foo description");
   ASSERT_EQ(parent->GetAttributeCount(), 1UL);
 
   // A required attribute should print even if it has not been set
   EXPECT_FALSE(parent->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='foo'/>\n");
+  EXPECT_EQ(parent->ToString(errors, "myprefix"), "myprefix< test='foo'/>\n");
+  EXPECT_TRUE(errors.empty());
 
   sdf::ParamPtr test = parent->GetAttribute("test");
   ASSERT_NE(nullptr, test);
@@ -559,12 +565,14 @@ TEST(Element, ToStringRequiredAttributes)
   EXPECT_TRUE(test->GetSet());
   EXPECT_TRUE(parent->GetAttributeSet("test"));
 
-  EXPECT_EQ(parent->ToString("myprefix"), "myprefix< test='bar'/>\n");
+  EXPECT_EQ(parent->ToString(errors, "myprefix"), "myprefix< test='bar'/>\n");
+  EXPECT_TRUE(errors.empty());
 }
 
 /////////////////////////////////////////////////
 TEST(Element, ToStringValue)
 {
+  sdf::Errors errors;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
 
   parent->AddAttribute("test", "string", "foo", false, "foo description");
@@ -573,8 +581,9 @@ TEST(Element, ToStringValue)
   parent->AddValue("string", "val", false, "val description");
 
   EXPECT_FALSE(parent->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("myprefix"),
+  EXPECT_EQ(parent->ToString(errors, "myprefix"),
             "myprefix<>val</>\n");
+  EXPECT_TRUE(errors.empty());
 
   sdf::ParamPtr test = parent->GetAttribute("test");
   ASSERT_NE(nullptr, test);
@@ -582,13 +591,15 @@ TEST(Element, ToStringValue)
   EXPECT_TRUE(test->SetFromString("foo"));
   EXPECT_TRUE(test->GetSet());
   EXPECT_TRUE(parent->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("myprefix"),
+  EXPECT_EQ(parent->ToString(errors, "myprefix"),
             "myprefix< test='foo'>val</>\n");
+  EXPECT_TRUE(errors.empty());
 }
 
 /////////////////////////////////////////////////
 TEST(Element, ToStringClonedElement)
 {
+  sdf::Errors errors;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
 
   parent->AddAttribute("test", "string", "foo", false, "foo description");
@@ -602,12 +613,15 @@ TEST(Element, ToStringClonedElement)
 
   sdf::ElementPtr parentClone = parent->Clone();
   EXPECT_TRUE(parentClone->GetAttributeSet("test"));
-  EXPECT_EQ(parent->ToString("myprefix"), parentClone->ToString("myprefix"));
+  EXPECT_EQ(parent->ToString(errors, "myprefix"),
+            parentClone->ToString(errors, "myprefix"));
+  EXPECT_TRUE(errors.empty());
 }
 
 /////////////////////////////////////////////////
 TEST(Element, ToStringDefaultElements)
 {
+  sdf::Errors errors;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   parent->SetName("parent");
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
@@ -626,9 +640,9 @@ TEST(Element, ToStringDefaultElements)
     << "  <elem2/>\n"
     << "</parent>\n";
 
-  EXPECT_EQ(parent->ToString("", false, false), stream.str());
-  EXPECT_EQ(parent->ToString(""), stream.str());
-  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+  EXPECT_EQ(parent->ToString(errors, "", false, false), stream.str());
+  EXPECT_EQ(parent->ToString(errors, ""), stream.str());
+  EXPECT_EQ(parent->ToString(errors, "", true, false), stream.str());
 
   elem->SetExplicitlySetInFile(false);
 
@@ -638,40 +652,45 @@ TEST(Element, ToStringDefaultElements)
     << "  <elem2/>\n"
     << "</parent>\n";
 
-  EXPECT_EQ(parent->ToString("", false, false), stream2.str());
-  EXPECT_EQ(parent->ToString(""), stream.str());
-  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+  EXPECT_EQ(parent->ToString(errors, "", false, false), stream2.str());
+  EXPECT_EQ(parent->ToString(errors, ""), stream.str());
+  EXPECT_EQ(parent->ToString(errors, "", true, false), stream.str());
 
   parent->SetExplicitlySetInFile(false);
 
-  EXPECT_EQ(parent->ToString("", false, false), "");
-  EXPECT_EQ(parent->ToString(""), stream.str());
-  EXPECT_EQ(parent->ToString("", true, false), stream.str());
+  EXPECT_EQ(parent->ToString(errors, "", false, false), "");
+  EXPECT_EQ(parent->ToString(errors, ""), stream.str());
+  EXPECT_EQ(parent->ToString(errors, "", true, false), stream.str());
+  EXPECT_TRUE(errors.empty());
 }
 
 /////////////////////////////////////////////////
 TEST(Element, ToStringDefaultAttributes)
 {
+  sdf::Errors errors;
   sdf::ElementPtr element = std::make_shared<sdf::Element>();
   element->SetName("foo");
   element->AddAttribute("test", "string", "foo", false, "foo description");
   element->AddAttribute("test2", "string", "bar", true, "bar description");
 
-  EXPECT_EQ(element->ToString(""), element->ToString("", true, false));
-  EXPECT_EQ(element->ToString(""), element->ToString("", false, false));
+  EXPECT_EQ(element->ToString(errors, ""),
+            element->ToString(errors, "", true, false));
+  EXPECT_EQ(element->ToString(errors, ""),
+            element->ToString(errors, "", false, false));
 
   std::ostringstream stream;
   stream << "<foo test2='bar'/>\n";
 
-  EXPECT_EQ(element->ToString(""), stream.str());
-  EXPECT_EQ(element->ToString("", true, false), stream.str());
-  EXPECT_EQ(element->ToString("", false, false), stream.str());
+  EXPECT_EQ(element->ToString(errors, ""), stream.str());
+  EXPECT_EQ(element->ToString(errors, "", true, false), stream.str());
+  EXPECT_EQ(element->ToString(errors, "", false, false), stream.str());
 
   std::ostringstream stream2;
   stream2 << "<foo test='foo' test2='bar'/>\n";
 
-  EXPECT_EQ(element->ToString("", true, true), stream2.str());
-  EXPECT_EQ(element->ToString("", false, true), stream2.str());
+  EXPECT_EQ(element->ToString(errors, "", true, true), stream2.str());
+  EXPECT_EQ(element->ToString(errors, "", false, true), stream2.str());
+  EXPECT_TRUE(errors.empty());
 }
 
 /////////////////////////////////////////////////
@@ -704,7 +723,9 @@ TEST(Element, DocRightPane)
 
   std::string html;
   int index = 1;
-  elem->PrintDocRightPane(html, 0, index);
+  sdf::Errors errors;
+  elem->PrintDocRightPane(errors, html, 0, index);
+  EXPECT_TRUE(errors.empty());
   ASSERT_EQ(html,
             "<a name=\"1\">&lt&gt</a><div style='padding-left:0px;'>\n"
             "<div style='background-color: #ffffff'>\n"
@@ -745,19 +766,46 @@ TEST(Element, DocRightPane)
 /////////////////////////////////////////////////
 TEST(Element, SetEmpty)
 {
-  sdf::Element elem;
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
 
-  ASSERT_FALSE(elem.Set<std::string>(""));
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  sdf::Errors errors;
+
+  ASSERT_FALSE(elem->Set<std::string>(errors, ""));
+  ASSERT_EQ(errors.size(), 0u);
+
+  elem->AddValue("int", "0", true, errors, "value");
+  ASSERT_EQ(errors.size(), 0u);
+  ASSERT_TRUE(elem->Set<std::string>(errors, ""));
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Empty string used when setting a required parameter. Key[]"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 /////////////////////////////////////////////////
 TEST(Element, Set)
 {
   sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  sdf::Errors errors;
 
   elem->AddValue("string", "val", false, "val description");
 
-  ASSERT_TRUE(elem->Set<std::string>("hello"));
+  ASSERT_TRUE(elem->Set<std::string>(errors, "hello"));
+  ASSERT_EQ(errors.size(), 0u);
 }
 
 /////////////////////////////////////////////////
@@ -897,15 +945,16 @@ sdf::ElementPtr addChildElement(sdf::ElementPtr _parent,
 /////////////////////////////////////////////////
 TEST(Element, CountNamedElements)
 {
+  sdf::Errors errors;
   sdf::ElementPtr parent = std::make_shared<sdf::Element>();
   // expect empty map element with no children
-  EXPECT_TRUE(parent->CountNamedElements().empty());
-  EXPECT_TRUE(parent->CountNamedElements("child").empty());
+  EXPECT_TRUE(parent->CountNamedElements(errors).empty());
+  EXPECT_TRUE(parent->CountNamedElements(errors, "child").empty());
   // expect empty set of element type names
   EXPECT_TRUE(parent->GetElementTypeNames().empty());
   // since there are no child names, they must be unique
-  EXPECT_TRUE(parent->HasUniqueChildNames());
-  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
+  EXPECT_TRUE(parent->HasUniqueChildNames(errors));
+  EXPECT_TRUE(parent->HasUniqueChildNames(errors, "child"));
 
 
   // The following calls should make the following child elements:
@@ -927,19 +976,19 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(typeNames.count("element"), 1u);
 
   // test HasUniqueChildNames
-  EXPECT_TRUE(parent->HasUniqueChildNames("empty"));
-  EXPECT_TRUE(parent->HasUniqueChildNames("child"));
-  EXPECT_TRUE(parent->HasUniqueChildNames("element"));
+  EXPECT_TRUE(parent->HasUniqueChildNames(errors, "empty"));
+  EXPECT_TRUE(parent->HasUniqueChildNames(errors, "child"));
+  EXPECT_TRUE(parent->HasUniqueChildNames(errors, "element"));
   // The following have matching names that are detected when passing
   // default "" to HasUniqueChildNames().
   // <child name="child2"/>
   // <element name="child2"/>
-  EXPECT_FALSE(parent->HasUniqueChildNames());
-  EXPECT_FALSE(parent->HasUniqueChildNames(""));
+  EXPECT_FALSE(parent->HasUniqueChildNames(errors));
+  EXPECT_FALSE(parent->HasUniqueChildNames(errors, ""));
 
-  EXPECT_TRUE(parent->CountNamedElements("empty").empty());
+  EXPECT_TRUE(parent->CountNamedElements(errors, "empty").empty());
 
-  auto childMap = parent->CountNamedElements("child");
+  auto childMap = parent->CountNamedElements(errors, "child");
   EXPECT_FALSE(childMap.empty());
   EXPECT_EQ(childMap.size(), 2u);
   EXPECT_EQ(childMap.count("child1"), 1u);
@@ -947,7 +996,7 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(childMap.at("child1"), 1u);
   EXPECT_EQ(childMap.at("child2"), 1u);
 
-  auto elementMap = parent->CountNamedElements("element");
+  auto elementMap = parent->CountNamedElements(errors, "element");
   EXPECT_FALSE(elementMap.empty());
   EXPECT_EQ(elementMap.size(), 2u);
   EXPECT_EQ(elementMap.count("child2"), 1u);
@@ -955,7 +1004,7 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(elementMap.at("child2"), 1u);
   EXPECT_EQ(elementMap.at("child3"), 1u);
 
-  auto allMap = parent->CountNamedElements("");
+  auto allMap = parent->CountNamedElements(errors, "");
   EXPECT_FALSE(allMap.empty());
   EXPECT_EQ(allMap.size(), 3u);
   EXPECT_EQ(allMap.count("child1"), 1u);
@@ -965,6 +1014,7 @@ TEST(Element, CountNamedElements)
   EXPECT_EQ(allMap.at("child1"), 1u);
   EXPECT_EQ(allMap.at("child2"), 2u);
   EXPECT_EQ(allMap.at("child3"), 1u);
+  EXPECT_TRUE(errors.empty());
 }
 
 TEST(Element, FindElement)
