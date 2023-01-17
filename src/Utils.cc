@@ -171,14 +171,7 @@ void throwOrPrintErrors(const sdf::Errors& _errors)
 {
   for(auto& error : _errors)
   {
-    if (error.Code() == sdf::ErrorCode::FATAL_ERROR)
-    {
-      SDF_ASSERT(false, error.Message());
-    }
-    else
-    {
-      sdferr << error.Message();
-    }
+    error.ThrowOrPrintError(sdferr);
   }
 }
 
