@@ -1016,7 +1016,7 @@ namespace sdf
     std::pair<T, bool> result = this->Get<T>(errors, _key, _defaultValue);
     for(auto& error : errors)
     {
-      sdferr << error.Message();
+      error.ThrowOrPrintError(sdferr);
     }
     return result;
   }
@@ -1069,7 +1069,7 @@ namespace sdf
     bool result = this->Set<T>(errors, _value);
     for(auto& error : errors)
     {
-      sdferr << error.Message();
+      error.ThrowOrPrintError(sdferr);
     }
     return result;
   }
