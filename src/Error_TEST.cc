@@ -18,7 +18,9 @@
 #include <gtest/gtest.h>
 #include <optional>
 #include "sdf/sdf_config.h"
+#include "sdf/Exception.hh"
 #include "sdf/Error.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(Error, DefaultConstruction)
@@ -134,3 +136,26 @@ TEST(Error, ValueConstructionWithXmlPath)
     FAIL();
 }
 
+/////////////////////////////////////////////////
+TEST(Error, ThrowOrPrint)
+{
+  {
+    sdf::Error error(sdf::ErrorCode::DUPLICATE_NAME, "Duplicate found");
+    std::stringstream buffer;
+    sdf::testing::RedirectConsoleStream redir(
+        sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+    sdf::internal::throwOrPrintError(sdferr, error);
+    EXPECT_NE(std::string::npos, buffer.str().find("Duplicate found"))
+        << buffer.str();
+  }
+
+  {
+    std::stringstream buffer;
+    sdf::testing::RedirectConsoleStream redir(
+        sdf::Console::Instance()->GetMsgStream(), &buffer);
+    sdf::Error error(sdf::ErrorCode::FATAL_ERROR, "Fatal Error");
+    EXPECT_THROW(sdf::internal::throwOrPrintError(sdferr, error),
+                 sdf::AssertionInternalError);
+  }
+}
