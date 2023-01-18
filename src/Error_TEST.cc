@@ -139,6 +139,14 @@ TEST(Error, ValueConstructionWithXmlPath)
 /////////////////////////////////////////////////
 TEST(Error, ThrowOrPrint)
 {
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
   {
     sdf::Error error(sdf::ErrorCode::DUPLICATE_NAME, "Duplicate found");
     std::stringstream buffer;
