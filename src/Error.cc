@@ -120,19 +120,6 @@ void Error::SetXmlPath(const std::string &_xmlPath)
 }
 
 /////////////////////////////////////////////////
-void Error::ThrowOrPrintError(sdf::Console::ConsoleStream &_out) const
-{
-  if (this->dataPtr->code == sdf::ErrorCode::FATAL_ERROR)
-  {
-    SDF_ASSERT(false, this->dataPtr->message);
-  }
-  else
-  {
-    _out << this->dataPtr->message;
-  }
-}
-
-/////////////////////////////////////////////////
 Error::operator bool() const
 {
   return this->dataPtr->code != ErrorCode::NONE;
@@ -174,5 +161,22 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
       << "Msg: " << _err.Message();
   return _out;
 }
+
+namespace internal
+{
+
+void throwOrPrintError(sdf::Console::ConsoleStream &_out,
+                       const sdf::Error &_error)
+{
+  if (_error.Code() == sdf::ErrorCode::FATAL_ERROR)
+  {
+    SDF_ASSERT(false, _error.Message());
+  }
+  else
+  {
+    _out << _error.Message();
+  }
 }
-}
+}  // namespace internal
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
