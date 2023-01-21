@@ -1143,8 +1143,13 @@ std::map<std::string, std::size_t> Element::CountNamedElements(
       // Get("name") returns attribute value if it exists before checking
       // for the value of a child element <name>, so it's safe to use
       // here since we've checked HasAttribute("name").
+      std::size_t lastErrorIndex = _errors.size();
       std::string childNameAttributeValue = elem->Get<std::string>(
           _errors, "name");
+      if (hasFatalError(_errors, lastErrorIndex))
+      {
+        return result;
+      }
       if (result.find(childNameAttributeValue) == result.end())
       {
         result[childNameAttributeValue] = 1;
@@ -1235,8 +1240,13 @@ ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
   {
     for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
+      std::size_t lastErrorIndex = _errors.size();
       this->dataPtr->elementDescriptions.push_back(
-        parent->GetElementDescription(i)->Clone(_errors));
+          parent->GetElementDescription(i)->Clone(_errors));
+      if (hasFatalError(_errors, lastErrorIndex))
+      {
+        return ElementPtr();
+      }
     }
   }
 
@@ -1246,7 +1256,13 @@ ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
   {
     if ((*iter)->dataPtr->name == _name)
     {
+      std::size_t lastErrorIndex = _errors.size();
       ElementPtr elem = (*iter)->Clone(_errors);
+      if (hasFatalError(_errors, lastErrorIndex))
+      {
+        return ElementPtr();
+      }
+
       elem->SetParent(shared_from_this());
       this->dataPtr->elements.push_back(elem);
 
@@ -1257,7 +1273,12 @@ ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
         // Add only required child element
         if ((*iter2)->GetRequired() == "1")
         {
+          lastErrorIndex = _errors.size();
           elem->AddElement((*iter2)->dataPtr->name, _errors);
+          if (hasFatalError(_errors, lastErrorIndex))
+          {
+            return ElementPtr();
+          }
         }
       }
       return this->dataPtr->elements.back();

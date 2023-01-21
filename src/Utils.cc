@@ -167,12 +167,25 @@ void enforceConfigurablePolicyCondition(
 }
 
 /////////////////////////////////////////////////
-void throwOrPrintErrors(const sdf::Errors& _errors)
+void throwOrPrintErrors(const sdf::Errors &_errors)
 {
   for(auto& error : _errors)
   {
     internal::throwOrPrintError(sdferr, error);
   }
+}
+
+/////////////////////////////////////////////////
+bool hasFatalError(const sdf::Errors &_errors, std::size_t _startIndex)
+{
+  auto isFatalError = [](const sdf::Error &_err)
+  {
+    return _err.Code() == ErrorCode::FATAL_ERROR;
+  };
+
+  auto start = _errors.begin();
+  std::advance(start, _startIndex);
+  return _errors.end() != std::find_if(start, _errors.end(), isFatalError);
 }
 
 /////////////////////////////////////////////////

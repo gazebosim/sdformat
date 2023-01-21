@@ -1091,3 +1091,65 @@ TEST(Element, FindElement)
     EXPECT_EQ("first_child", childElemB->GetAttribute("name")->GetAsString());
   }
 }
+
+// [x] Get
+// [x] Set
+// [x] ToString
+// [x] PrintValues
+// [ ] HasUniqueChildNames
+// [ ] CountNamedElements
+// [ ] Update
+// [x] PrintAttributes
+/////////////////////////////////////////////////
+TEST(Element, ErrorPropagation)
+{
+  // This test only checks that the `sdf::Errors` parameter is propagated to
+  // each function that could emit an error. The functions that actually emit
+  // the errors are in `sdf::Param`, so just checking if the resulting `errors`
+  // object is non empty is sufficient.
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  {
+    sdf::Errors errors;
+    elem->AddValue("pose", "non_pose_default", true, errors, "");
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    sdf::Errors errors;
+    elem->Set(errors, "non_pose_value");
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    sdf::Errors errors;
+    elem->Get<int>(errors);
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    sdf::Errors errors;
+    elem->ToString(errors, "");
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    sdf::Errors errors;
+    elem->PrintValues(errors, "");
+    EXPECT_FALSE(errors.empty());
+  }
+
+  {
+    sdf::Errors errors;
+    elem->AddAttribute("test_attr", "pose", "non_pose_default", true, errors);
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    sdf::Errors errors;
+    auto attr = elem->GetAttribute("test_attr");
+    ASSERT_NE(nullptr, attr);
+    attr->Set("non_pose_value", errors);
+    EXPECT_FALSE(errors.empty());
+  }
+  {
+    sdf::Errors errors;
+    elem->Update(errors);
+    // Should emit error because update function is not set.
+    EXPECT_FALSE(errors.empty());
+  }
+}
