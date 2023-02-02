@@ -23,7 +23,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 
 class SDFSchemaGenerator : public testing::Test
@@ -31,9 +31,7 @@ class SDFSchemaGenerator : public testing::Test
   public:
     void runXMLlint(const std::string & model)
     {
-      const std::string sdfRootSchema = sdf::filesystem::append(
-          PROJECT_BINARY_DIR, "sdf", SDF_PROTOCOL_VERSION, "root.xsd");
-
+      const auto sdfRootSchema = sdf::filesystem::append(SDF_ROOT_SCHEMA);
       std::string xmllintCmd = "xmllint --noout --schema " +
                                 sdfRootSchema + " " + model;
       std::cout << "CMD[" << xmllintCmd << "]\n";
@@ -52,7 +50,7 @@ class SDFSchemaGenerator : public testing::Test
 TEST_F(SDFSchemaGenerator, TestDoublePendulum)
 {
   const std::string sdfTestPendulum =
-      sdf::testing::TestFile("integration", "model", "double_pendulum.sdf");
+      gz::common::testing::TestFile("integration", "model", "double_pendulum.sdf");
 
   runXMLlint(sdfTestPendulum);
 }
@@ -61,17 +59,16 @@ TEST_F(SDFSchemaGenerator, TestDoublePendulum)
 TEST_F(SDFSchemaGenerator, TestPR2Model)
 {
   const std::string sdfTestPr2 =
-      sdf::testing::TestFile("integration", "model", "pr2.sdf");
+      gz::common::testing::TestFile("integration", "model", "pr2.sdf");
 
   runXMLlint(sdfTestPr2);
 }
-
 
 /////////////////////////////////////////////////
 TEST_F(SDFSchemaGenerator, TestTurtleBotModel)
 {
   const std::string sdfTestTurtlebot =
-      sdf::testing::TestFile("integration", "model", "turtlebot.sdf");
+      gz::common::testing::TestFile("integration", "model", "turtlebot.sdf");
 
   runXMLlint(sdfTestTurtlebot);
 }

@@ -28,13 +28,13 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMSurface, Shapes)
 {
   const auto testFile =
-    sdf::testing::TestFile("sdf", "shapes.sdf");
+    gz::common::testing::TestFile("sdf", "shapes.sdf");
 
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());

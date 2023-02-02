@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 const char SDF_TEST_FILE[] = "fixed_joint_reduction.urdf";
 const char SDF_TEST_FILE_COLLISION[] = "fixed_joint_reduction_collision.urdf";
@@ -43,7 +43,7 @@ const char SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION[] =
 
 static std::string GetFullTestFilePath(const char *_input)
 {
-  return sdf::testing::TestFile("integration", _input);
+  return gz::common::testing::TestFile("integration", _input);
 }
 
 const double gc_tolerance = 1e-6;

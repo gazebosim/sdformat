@@ -21,13 +21,13 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(SDFParser, AudioSDF_FullParameters_noThrow)
 {
   const auto sdfTestFile =
-    sdf::testing::TestFile("integration", "audio.sdf");
+    gz::common::testing::TestFile("integration", "audio.sdf");
 
   sdf::SDFPtr p(new sdf::SDF());
   sdf::init(p);

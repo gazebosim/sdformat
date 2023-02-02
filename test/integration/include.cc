@@ -22,14 +22,14 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 ////////////////////////////////////////////////////
 /// Ensure that include sdf descriptions can be overriden
 TEST(Include, IncludeDescription)
 {
   const std::string SDF_DESCRIPTION_PATH =
-    sdf::testing::TestFile("integration", "include_description.sdf");
+    gz::common::testing::TestFile("integration", "include_description.sdf");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;

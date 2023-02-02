@@ -26,7 +26,7 @@
 #include "test_utils.hh"
 #include "XmlUtils.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 ////////////////////////////////////////////////////
 /// Set up an xml string for testing
@@ -3030,11 +3030,11 @@ TEST(Converter, MuchNewerVersion)
 
 static std::string ConvertDoc_15_16()
 {
-  return sdf::testing::SourceFile("sdf", "1.6", "1_5.convert");
+  return gz::common::testing::SourceFile("sdf", "1.6", "1_5.convert");
 }
 static std::string ConvertDoc_16_17()
 {
-  return sdf::testing::SourceFile("sdf", "1.7", "1_6.convert");
+  return gz::common::testing::SourceFile("sdf", "1.7", "1_6.convert");
 }
 
 /////////////////////////////////////////////////
@@ -3337,7 +3337,7 @@ TEST(Converter, Pose_16_to_17)
 
 static std::string ConvertDoc_17_18()
 {
-  return sdf::testing::SourceFile("sdf", "1.8", "1_7.convert");
+  return gz::common::testing::SourceFile("sdf", "1.8", "1_7.convert");
 }
 
 /////////////////////////////////////////////////

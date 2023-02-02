@@ -21,13 +21,13 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(SDFParser, JointAxisParameters)
 {
   const std::string sdfTestFile =
-      sdf::testing::TestFile("integration", "urdf_joint_parameters.urdf");
+      gz::common::testing::TestFile("integration", "urdf_joint_parameters.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);

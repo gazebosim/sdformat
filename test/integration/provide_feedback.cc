@@ -21,13 +21,13 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(SDFParser, ProvideFeedbackTest)
 {
   const std::string sdfTestFile =
-      sdf::testing::TestFile("integration", "provide_feedback.urdf");
+      gz::common::testing::TestFile("integration", "provide_feedback.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);

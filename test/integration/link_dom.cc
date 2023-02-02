@@ -39,7 +39,9 @@
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
+
 
 //////////////////////////////////////////////////
 TEST(DOMLink, NotALink)
@@ -74,7 +76,7 @@ TEST(DOMLink, NoName)
 TEST(DOMLink, LoadVisualCollision)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "empty.sdf");
+    gz::common::testing::TestFile("sdf", "empty.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -116,7 +118,7 @@ TEST(DOMLink, LoadVisualCollision)
 TEST(DOMLink, InertialDoublePendulum)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "double_pendulum.sdf");
+    gz::common::testing::TestFile("sdf", "double_pendulum.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -172,7 +174,7 @@ TEST(DOMLink, InertialDoublePendulum)
 TEST(DOMLink, InertialComplete)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "inertial_complete.sdf");
+    gz::common::testing::TestFile("sdf", "inertial_complete.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -242,7 +244,7 @@ TEST(DOMLink, InertialComplete)
 TEST(DOMLink, InertialInvalid)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "inertial_invalid.sdf");
+    gz::common::testing::TestFile("sdf", "inertial_invalid.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -266,7 +268,7 @@ TEST(DOMLink, InertialInvalid)
 //////////////////////////////////////////////////
 TEST(DOMLink, Sensors)
 {
-  const std::string testFile = sdf::testing::TestFile("sdf", "sensors.sdf");
+  const std::string testFile = gz::common::testing::TestFile("sdf", "sensors.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -740,7 +742,7 @@ TEST(DOMLink, Sensors)
 /////////////////////////////////////////////////
 TEST(DOMLink, LoadLinkPoseRelativeTo)
 {
-  const std::string testFile = sdf::testing::TestFile("sdf",
+  const std::string testFile = gz::common::testing::TestFile("sdf",
         "model_link_relative_to.sdf");
 
   // Load the SDF file
@@ -828,7 +830,7 @@ TEST(DOMLink, LoadLinkPoseRelativeTo)
 /////////////////////////////////////////////////
 TEST(DOMLink, LoadInvalidLinkPoseRelativeTo)
 {
-  const std::string testFile = sdf::testing::TestFile("sdf",
+  const std::string testFile = gz::common::testing::TestFile("sdf",
         "model_invalid_link_relative_to.sdf");
 
   // Load the SDF file

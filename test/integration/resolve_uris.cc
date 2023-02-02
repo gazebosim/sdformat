@@ -21,7 +21,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /// When enabled, we expect to see:
 /// 1x shapes.sdf (including another SDF file)
@@ -55,8 +55,8 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   // The directory used in AddURIPath must exist in the filesystem, so we'll
   // use the source directory
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "resolve_uris.sdf");
-  const std::string sdfDir = sdf::testing::TestFile("sdf");
+    gz::common::testing::TestFile("sdf", "resolve_uris.sdf");
+  const std::string sdfDir = gz::common::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
   config.SetStoreResovledURIs(false);
@@ -171,8 +171,8 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   // The directory used in AddURIPath must exist in the filesystem, so we'll
   // use the source directory
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "resolve_uris.sdf");
-  const std::string sdfDir = sdf::testing::TestFile("sdf");
+    gz::common::testing::TestFile("sdf", "resolve_uris.sdf");
+  const std::string sdfDir = gz::common::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
   config.SetStoreResovledURIs(true);
@@ -297,8 +297,8 @@ TEST(ResolveURIs, BadCallback)
   // The directory used in AddURIPath must exist in the filesystem, so we'll
   // use the source directory
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "resolve_uris.sdf");
-  const std::string sdfDir = sdf::testing::TestFile("sdf");
+    gz::common::testing::TestFile("sdf", "resolve_uris.sdf");
+  const std::string sdfDir = gz::common::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
   config.SetStoreResovledURIs(true);

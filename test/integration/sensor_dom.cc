@@ -21,14 +21,15 @@
 #include "sdf/Model.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
 #include "test_utils.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMSensor, SensorPlugins)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

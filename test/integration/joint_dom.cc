@@ -32,7 +32,8 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMJoint, NotAJoint)
@@ -67,7 +68,7 @@ TEST(DOMJoint, NoName)
 TEST(DOMJoint, DoublePendulum)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "double_pendulum.sdf");
+    gz::common::testing::TestFile("sdf", "double_pendulum.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -120,7 +121,7 @@ TEST(DOMJoint, DoublePendulum)
 TEST(DOMJoint, Complete)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_complete.sdf");
+    gz::common::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -162,7 +163,7 @@ TEST(DOMJoint, Complete)
 TEST(DOMJoint, ScrewThreadPitch)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_screw_thread_pitch.sdf");
+    gz::common::testing::TestFile("sdf", "joint_screw_thread_pitch.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -205,7 +206,7 @@ TEST(DOMJoint, ScrewThreadPitch)
 TEST(DOMJoint, LoadJointParentWorld)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_parent_world.sdf");
+    gz::common::testing::TestFile("sdf", "joint_parent_world.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -255,7 +256,7 @@ TEST(DOMJoint, LoadJointParentWorld)
 TEST(DOMJoint, LoadInvalidJointChildWorld)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_child_world.sdf");
+    gz::common::testing::TestFile("sdf", "joint_child_world.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -278,7 +279,7 @@ TEST(DOMJoint, LoadInvalidJointChildWorld)
 TEST(DOMJoint, LoadJointParentModelFrame)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_parent_model_frame.sdf");
+    gz::common::testing::TestFile("sdf", "joint_parent_model_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -310,7 +311,7 @@ TEST(DOMJoint, LoadJointParentModelFrame)
 TEST(DOMJoint, LoadJointChildModelFrame)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_child_model_frame.sdf");
+    gz::common::testing::TestFile("sdf", "joint_child_model_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -342,7 +343,7 @@ TEST(DOMJoint, LoadJointChildModelFrame)
 TEST(DOMJoint, LoadJointParentFrame)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_parent_frame.sdf");
+    gz::common::testing::TestFile("sdf", "joint_parent_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -434,7 +435,7 @@ TEST(DOMJoint, LoadJointParentFrame)
 TEST(DOMJoint, LoadJointChildFrame)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_child_frame.sdf");
+    gz::common::testing::TestFile("sdf", "joint_child_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -526,7 +527,7 @@ TEST(DOMJoint, LoadJointChildFrame)
 TEST(DOMJoint, LoadWorldJointChildFrame)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_joint_child_frame.sdf");
+    gz::common::testing::TestFile("sdf", "world_joint_child_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -639,7 +640,7 @@ TEST(DOMJoint, LoadWorldJointChildFrame)
 TEST(DOMJoint, WorldJointInvalidChildWorld)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_joint_invalid_child_world.sdf");
+    gz::common::testing::TestFile("sdf", "world_joint_invalid_child_world.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -657,7 +658,7 @@ TEST(DOMJoint, WorldJointInvalidChildWorld)
 TEST(DOMJoint, WorldJointInvalidResolvedParentSameAsChild)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf",
+    gz::common::testing::TestFile("sdf",
       "world_joint_invalid_resolved_parent_same_as_child.sdf");
 
   // Load the SDF file
@@ -678,7 +679,7 @@ TEST(DOMJoint, WorldJointInvalidResolvedParentSameAsChild)
 TEST(DOMJoint, LoadJointPoseRelativeTo)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_joint_relative_to.sdf");
+    gz::common::testing::TestFile("sdf", "model_joint_relative_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -772,7 +773,7 @@ TEST(DOMJoint, LoadJointPoseRelativeTo)
 TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf",
+    gz::common::testing::TestFile("sdf",
         "model_invalid_joint_relative_to.sdf");
 
   // Load the SDF file
@@ -801,7 +802,7 @@ TEST(DOMJoint, LoadInvalidJointPoseRelativeTo)
 TEST(DOMJoint, LoadInvalidChild)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_invalid_child.sdf");
+    gz::common::testing::TestFile("sdf", "joint_invalid_child.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -832,7 +833,7 @@ TEST(DOMJoint, LoadInvalidChild)
 TEST(DOMJoint, LoadLinkJointSameName17Invalid)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf",
+    gz::common::testing::TestFile("sdf",
         "model_link_joint_same_name.sdf");
 
   // Read with sdf::readFile, which converts from 1.6 to latest
@@ -863,7 +864,7 @@ TEST(DOMJoint, LoadLinkJointSameName17Invalid)
 TEST(DOMJoint, LoadLinkJointSameName16Valid)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
+    gz::common::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -941,7 +942,7 @@ TEST(DOMJoint, LoadLinkJointSameName16Valid)
 TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
 {
   const std::string testFile =
-    sdf::testing::TestFile("integration", "provide_feedback.urdf");
+    gz::common::testing::TestFile("integration", "provide_feedback.urdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -1024,7 +1025,7 @@ TEST(DOMJoint, LoadURDFJointPoseRelativeTo)
 TEST(DOMJoint, LoadJointNestedParentChild)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_nested_parent_child.sdf");
+    gz::common::testing::TestFile("sdf", "joint_nested_parent_child.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -1156,7 +1157,7 @@ TEST(DOMJoint, LoadJointNestedParentChild)
 TEST(DOMJoint, Sensors)
 {
   const std::string testFile =
-      sdf::testing::TestFile("sdf", "joint_sensors.sdf");
+      gz::common::testing::TestFile("sdf", "joint_sensors.sdf");
 
   // Load the SDF file
   sdf::Root root;

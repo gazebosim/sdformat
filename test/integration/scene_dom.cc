@@ -29,13 +29,13 @@
 #include "sdf/Sky.hh"
 #include "sdf/World.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMScene, LoadScene)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "scene_with_sky.sdf");
+    gz::common::testing::TestFile("sdf", "scene_with_sky.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

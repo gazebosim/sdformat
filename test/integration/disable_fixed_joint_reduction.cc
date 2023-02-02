@@ -21,7 +21,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
@@ -46,9 +46,9 @@ bool findJointInModel(const std::string &desired_joint_name, sdf::SDFPtr robot)
 TEST(SDFParser, DisableFixedJointReductionTest)
 {
   const std::string sdfFixedJntFile =
-      sdf::testing::TestFile("integration", "fixed_joint_reduction.urdf");
+      gz::common::testing::TestFile("integration", "fixed_joint_reduction.urdf");
 
-  const std::string sdfFixedJntNoLumpingFile = sdf::testing::TestFile(
+  const std::string sdfFixedJntNoLumpingFile = gz::common::testing::TestFile(
       "integration", "fixed_joint_reduction_disabled.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());

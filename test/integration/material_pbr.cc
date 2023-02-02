@@ -20,13 +20,13 @@
 #include "sdf/sdf.hh"
 #include "sdf/Pbr.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(Material, PbrDOM)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "material_pbr.sdf");
+    gz::common::testing::TestFile("sdf", "material_pbr.sdf");
 
   // Load the SDF file into DOM
   sdf::Root root;
@@ -260,7 +260,7 @@ TEST(Material, PbrDOM)
 TEST(Material, MaterialPBR)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "material_pbr.sdf");
+    gz::common::testing::TestFile("sdf", "material_pbr.sdf");
 
   // load material pbr sdf file
   sdf::Errors errors;

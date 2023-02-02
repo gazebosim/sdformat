@@ -28,13 +28,14 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
 #include "test_utils.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::testing::TestFile("integration", "model", _input);
+  return gz::common::testing::TestFile("integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
@@ -70,7 +71,7 @@ TEST(DOMModel, NoName)
 TEST(DOMModel, NoLinks)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_without_links.sdf");
+    gz::common::testing::TestFile("sdf", "model_without_links.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -90,7 +91,7 @@ TEST(DOMModel, NoLinks)
 TEST(DOMRoot, LoadLinkCheck)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "empty.sdf");
+    gz::common::testing::TestFile("sdf", "empty.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -118,7 +119,7 @@ TEST(DOMRoot, LoadLinkCheck)
 TEST(DOMRoot, LoadDoublePendulum)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "double_pendulum.sdf");
+    gz::common::testing::TestFile("sdf", "double_pendulum.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -156,7 +157,7 @@ TEST(DOMRoot, LoadDoublePendulum)
 TEST(DOMRoot, NestedModel)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "nested_model.sdf");
+    gz::common::testing::TestFile("sdf", "nested_model.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -224,7 +225,7 @@ TEST(DOMRoot, NestedModel)
 TEST(DOMRoot, MultiNestedModel)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_multi_nested_model.sdf");
+    gz::common::testing::TestFile("sdf", "model_multi_nested_model.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -338,7 +339,7 @@ TEST(DOMRoot, MultiNestedModel)
 TEST(DOMLink, NestedModelPoseRelativeTo)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf",
+    gz::common::testing::TestFile("sdf",
         "model_nested_model_relative_to.sdf");
 
   // Load the SDF file
@@ -421,7 +422,7 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
 TEST(DOMRoot, LoadCanonicalLink)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_canonical_link.sdf");
+    gz::common::testing::TestFile("sdf", "model_canonical_link.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -462,7 +463,7 @@ TEST(DOMRoot, LoadCanonicalLink)
 TEST(DOMRoot, LoadNestedCanonicalLink)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "nested_canonical_link.sdf");
+    gz::common::testing::TestFile("sdf", "nested_canonical_link.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -514,7 +515,7 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
 TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "nested_explicit_canonical_link.sdf");
+    gz::common::testing::TestFile("sdf", "nested_explicit_canonical_link.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -561,7 +562,7 @@ TEST(DOMRoot, LoadNestedExplicitCanonicalLink)
 TEST(DOMRoot, ModelPlacementFrameAttribute)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_with_placement_frame_attribute.sdf");
+    gz::common::testing::TestFile("sdf", "model_with_placement_frame_attribute.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -581,7 +582,7 @@ TEST(DOMRoot, ModelPlacementFrameAttribute)
 TEST(DOMRoot, LoadInvalidNestedModelWithoutLinks)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "nested_without_links_invalid.sdf");
+    gz::common::testing::TestFile("sdf", "nested_without_links_invalid.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -623,7 +624,7 @@ TEST(DOMModel, LoadModelWithDuplicateChildNames)
   {
     buffer.str("");
     const std::string testFile =
-      sdf::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
+      gz::common::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
 
     // Load the SDF file
     sdf::Root root;
@@ -642,7 +643,7 @@ TEST(DOMModel, LoadModelWithDuplicateChildNames)
   {
     buffer.str("");
     const std::string testFile =
-      sdf::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
+      gz::common::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
 
     // Load the SDF file
     sdf::Root root;
@@ -656,7 +657,7 @@ TEST(DOMModel, LoadModelWithDuplicateChildNames)
 TEST(DOMModel, ModelPlugins)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -681,7 +682,7 @@ TEST(DOMModel, ModelPlugins)
 TEST(DOMModel, IncludeModelWithPlugin)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "include_model_with_plugin.sdf");
+    gz::common::testing::TestFile("sdf", "include_model_with_plugin.sdf");
 
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);

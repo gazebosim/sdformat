@@ -28,13 +28,14 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMJointAxis, Complete)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_complete.sdf");
+    gz::common::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -114,7 +115,7 @@ TEST(DOMJointAxis, Complete)
 TEST(DOMJointAxis, XyzExpressedIn)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_joint_axis_expressed_in.sdf");
+    gz::common::testing::TestFile("sdf", "model_joint_axis_expressed_in.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -223,7 +224,7 @@ TEST(DOMJointAxis, XyzExpressedIn)
 TEST(DOMJointAxis, InvalidExpressedIn)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_axis_invalid_expressed_in.sdf");
+    gz::common::testing::TestFile("sdf", "joint_axis_invalid_expressed_in.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -243,7 +244,7 @@ TEST(DOMJointAxis, InvalidExpressedIn)
 TEST(DOMJointAxis, InfiniteLimits)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_axis_infinite_limits.sdf");
+    gz::common::testing::TestFile("sdf", "joint_axis_infinite_limits.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -308,7 +309,7 @@ TEST(DOMJointAxis, InfiniteLimits)
 TEST(DOMJointAxis, XyzNormalization)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "joint_axis_xyz_normalization.sdf");
+    gz::common::testing::TestFile("sdf", "joint_axis_xyz_normalization.sdf");
 
   // Load the SDF file
   sdf::Root root;

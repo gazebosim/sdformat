@@ -21,7 +21,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 TEST(ModelVersionsTest, Empty_ModelFilePath)
 {
@@ -33,7 +33,7 @@ TEST(ModelVersionsTest, Empty_ModelFilePath)
 TEST(ModelVersionsTest, NonExistent_ModelFilePath)
 {
   const std::string MODEL_PATH =
-    sdf::testing::TestFile("integration", "model", "non-existent");
+    gz::common::testing::TestFile("integration", "model", "non-existent");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
@@ -43,7 +43,7 @@ TEST(ModelVersionsTest, NonExistent_ModelFilePath)
 TEST(ModelVersionsTest, MalFormed_ModelFilePath)
 {
   const std::string MODEL_PATH =
-    sdf::testing::TestFile("integration", "model", "cococan_malformed");
+    gz::common::testing::TestFile("integration", "model", "cococan_malformed");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
@@ -53,7 +53,7 @@ TEST(ModelVersionsTest, MalFormed_ModelFilePath)
 TEST(ModelVersionsTest, NoVersionTag_ModelFilePath)
 {
   const std::string MODEL_PATH =
-    sdf::testing::TestFile("integration", "model", "cococan_noversiontag");
+    gz::common::testing::TestFile("integration", "model", "cococan_noversiontag");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 
@@ -63,7 +63,7 @@ TEST(ModelVersionsTest, NoVersionTag_ModelFilePath)
 TEST(ModelVersionsTest, Correct_ModelFilePath)
 {
   const std::string MODEL_PATH =
-    sdf::testing::TestFile("integration", "model", "cococan");
+    gz::common::testing::TestFile("integration", "model", "cococan");
 
   std::string modelPath = sdf::getModelFilePath(MODEL_PATH);
 

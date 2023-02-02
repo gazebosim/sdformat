@@ -43,6 +43,18 @@ inline namespace SDF_VERSION_NAMESPACE
 // returns the version string when possible.
 std::string SDF::version = SDF_VERSION;  // NOLINT(runtime/string)
 
+std::string sdfSharePath()
+{
+#ifdef SDF_SHARE_PATH
+  if (std::string(SDF_SHARE_PATH) != "/")
+    return SDF_SHARE_PATH;
+  else
+    return "";
+#endif
+  return "";
+}
+
+
 /////////////////////////////////////////////////
 void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
@@ -97,24 +109,27 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     filename = filename.substr(idx + sep.length());
   }
 
-  // Next check the install path.
-  std::string path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
-  if (sdf::filesystem::exists(path))
+  if (sdfSharePath() != "")
   {
-    return path;
-  }
+    // Next check the install path.
+    std::string path = sdf::filesystem::append(sdfSharePath(), filename);
+    if (sdf::filesystem::exists(path))
+    {
+      return path;
+    }
 
-  // Next check the versioned install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH,
-                                 "sdformat" SDF_MAJOR_VERSION_STR,
-                                 sdf::SDF::Version(), filename);
-  if (sdf::filesystem::exists(path))
-  {
-    return path;
+    // Next check the versioned install path.
+    path = sdf::filesystem::append(sdfSharePath(),
+                                   "sdformat" SDF_MAJOR_VERSION_STR,
+                                   sdf::SDF::Version(), filename);
+    if (sdf::filesystem::exists(path))
+    {
+      return path;
+    }
   }
 
   // Next check to see if the given file exists.
-  path = filename;
+  std::string path = filename;
   if (sdf::filesystem::exists(path))
   {
     return path;

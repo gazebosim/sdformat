@@ -21,13 +21,13 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 {
   const std::string urdfTestFile =
-      sdf::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
+      gz::common::testing::TestFile("integration", "urdf_gazebo_extensions.urdf");
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);
@@ -330,7 +330,7 @@ TEST(SDFParser, UrdfGazeboExtensionURDFTest)
 TEST(SDFParser, FixedJointExample)
 {
   const std::string urdfTestFile =
-      sdf::testing::TestFile("integration", "fixed_joint_example.urdf");
+      gz::common::testing::TestFile("integration", "fixed_joint_example.urdf");
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);
@@ -374,7 +374,7 @@ TEST(SDFParser, FixedJointExample)
 TEST(SDFParser, FixedJointSimple)
 {
   const std::string urdfTestFile =
-      sdf::testing::TestFile("integration", "fixed_joint_simple.urdf");
+      gz::common::testing::TestFile("integration", "fixed_joint_simple.urdf");
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);
@@ -405,7 +405,7 @@ TEST(SDFParser, FixedJointSimple)
 TEST(SDFParser, FixedJointStatic)
 {
   const std::string urdfTestFile =
-      sdf::testing::TestFile("integration", "fixed_joint_static.urdf");
+      gz::common::testing::TestFile("integration", "fixed_joint_static.urdf");
 
   sdf::Root root;
   auto errors = root.Load(urdfTestFile);

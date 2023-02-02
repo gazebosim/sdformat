@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 
 #include "sdf/OutputConfig.hh"
-#include "test_config.hh"
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::OutputConfig.

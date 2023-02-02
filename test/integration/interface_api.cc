@@ -37,8 +37,9 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 
-#include "test_config.hh"
 #include "toml_parser.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 sdf::InterfaceModelPtr parseModel(toml::Value &_doc,
     const std::string &_modelName)
@@ -143,7 +144,7 @@ class InterfaceAPI : public ::testing::Test
 {
   protected: void SetUp() override
   {
-    this->modelDir = sdf::testing::TestFile("integration", "model");
+    this->modelDir = gz::common::testing::TestFile("integration", "model");
 
     this->config.SetFindCallback(
         [=](const std::string &_file)
@@ -362,7 +363,7 @@ void TomlParserTest(const sdf::InterfaceModelConstPtr &_interfaceModel)
 TEST_F(InterfaceAPI, TomlParserWorldInclude)
 {
   using gz::math::Pose3d;
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "world_include_with_interface_api.sdf");
 
   this->config.RegisterCustomModelParser(this->customTomlParser);
@@ -381,7 +382,7 @@ TEST_F(InterfaceAPI, TomlParserWorldInclude)
 TEST_F(InterfaceAPI, TomlParserModelInclude)
 {
   using gz::math::Pose3d;
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "model_include_with_interface_api.sdf");
 
   this->config.RegisterCustomModelParser(this->customTomlParser);
@@ -556,7 +557,7 @@ void InterfaceAPI::CheckFrameSemantics(const sdf::World *world)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPI, FrameSemantics)
 {
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "include_with_interface_api_frame_semantics.sdf");
   this->config.RegisterCustomModelParser(this->customTomlParser);
   {
@@ -593,7 +594,7 @@ TEST_F(InterfaceAPI, FrameSemantics)
 TEST_F(InterfaceAPI, Reposturing)
 {
   using gz::math::Pose3d;
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "include_with_interface_api_reposture.sdf");
 
   std::unordered_map<std::string, sdf::InterfaceModelPtr> models;
@@ -934,7 +935,7 @@ TEST_F(InterfaceAPIMergeInclude, MergeIncludeNotSupported)
 /////////////////////////////////////////////////
 TEST_F(InterfaceAPIMergeInclude, FrameSemantics)
 {
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "merge_include_with_interface_api_frame_semantics.sdf");
   this->config.RegisterCustomModelParser(this->customTomlParser);
   sdf::Root root;
@@ -952,7 +953,7 @@ TEST_F(InterfaceAPIMergeInclude, FrameSemantics)
 TEST_F(InterfaceAPIMergeInclude, Reposturing)
 {
   using gz::math::Pose3d;
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "merge_include_with_interface_api_reposture.sdf");
 
   std::unordered_map<std::string, Pose3d> posesAfterReposture;
@@ -1213,7 +1214,7 @@ TEST_F(InterfaceAPIMergeInclude, PlacementFrame)
 // Tests PrintConfig
 TEST_F(InterfaceAPI, TomlParserModelIncludePrintConfig)
 {
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "model_include_with_interface_api.sdf");
 
   this->config.RegisterCustomModelParser(customTomlParser);

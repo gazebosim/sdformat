@@ -25,14 +25,15 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
 #include "test_utils.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMWorld, NoName)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_noname.sdf");
+    gz::common::testing::TestFile("sdf", "world_noname.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -45,7 +46,7 @@ TEST(DOMWorld, NoName)
 TEST(DOMWorld, Duplicate)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_duplicate.sdf");
+    gz::common::testing::TestFile("sdf", "world_duplicate.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -57,7 +58,7 @@ TEST(DOMWorld, Duplicate)
 TEST(DOMWorld, LoadIncorrectElement)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Errors errors;
   // Read an SDF file, and store the result in sdfParsed.
@@ -79,7 +80,7 @@ TEST(DOMWorld, LoadIncorrectElement)
 TEST(DOMWorld, Load)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   EXPECT_TRUE(root.Load(testFile).empty());
@@ -157,7 +158,7 @@ TEST(DOMWorld, Load)
 TEST(DOMWorld, LoadModelFrameSameName)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_model_frame_same_name.sdf");
+    gz::common::testing::TestFile("sdf", "world_model_frame_same_name.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -231,7 +232,7 @@ TEST(DOMWorld, LoadModelFrameSameName)
 TEST(DOMWorld, NestedModels)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_nested_model.sdf");
+    gz::common::testing::TestFile("sdf", "world_nested_model.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -273,7 +274,7 @@ TEST(DOMWorld, NestedModels)
 TEST(DOMWorld, NestedFrames)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_nested_frame.sdf");
+    gz::common::testing::TestFile("sdf", "world_nested_frame.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -332,7 +333,7 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
   {
     buffer.str("");
     const std::string testFile =
-      sdf::testing::TestFile("sdf", "world_sibling_same_names.sdf");
+      gz::common::testing::TestFile("sdf", "world_sibling_same_names.sdf");
 
     // Load the SDF file
     sdf::Root root;
@@ -349,7 +350,7 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
   {
     buffer.str("");
     const std::string testFile =
-      sdf::testing::TestFile("sdf", "world_duplicate_plugins.sdf");
+      gz::common::testing::TestFile("sdf", "world_duplicate_plugins.sdf");
 
     // Load the SDF file
     sdf::Root root;
@@ -363,7 +364,7 @@ TEST(DOMWorld, LoadWorldWithDuplicateChildNames)
 TEST(DOMWorld, WorldPlugins)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

@@ -19,14 +19,14 @@
 #include <string>
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 ////////////////////////////////////////
 // Test that plugin child elements are available even when nested in an include
 TEST(PluginInclude, PluginChildElements)
 {
   const auto MODEL_PATH =
-    sdf::testing::TestFile("integration", "model", "box");
+    gz::common::testing::TestFile("integration", "model", "box");
 
   std::ostringstream stream;
   stream
@@ -81,7 +81,7 @@ TEST(PluginInclude, PluginChildElements)
 TEST(PluginInclude, PluginMissingFilename)
 {
   const auto MODEL_PATH =
-    sdf::testing::TestFile("integration", "model", "box");
+    gz::common::testing::TestFile("integration", "model", "box");
 
   std::ostringstream stream;
   stream

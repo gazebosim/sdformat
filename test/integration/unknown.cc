@@ -22,7 +22,7 @@
 #include "sdf/sdf.hh"
 #include "sdf/Error.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 /// Test the copy of XML elements that are not part of the specification.
@@ -90,7 +90,7 @@ TEST(Unknown, CopyUnknownElement)
 TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "unrecognized_elements.sdf");
+    gz::common::testing::TestFile("sdf", "unrecognized_elements.sdf");
 
   sdf::ParserConfig config;
 
@@ -124,7 +124,7 @@ TEST(UnrecognizedElements, UnrecognizedElementsWithWarningsPolicies)
 TEST(UnrecognizedElements, UnrecognizedElementsWithNamespaces)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "unrecognized_elements_with_namespace.sdf");
+    gz::common::testing::TestFile("sdf", "unrecognized_elements_with_namespace.sdf");
 
   sdf::ParserConfig config;
   config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);

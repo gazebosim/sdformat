@@ -28,19 +28,20 @@
 #include "sdf/World.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Light.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::testing::TestFile("integration", "model", _input);
+  return gz::common::testing::TestFile("integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
 TEST(ElementTracing, NestedModels)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "nested_model.sdf");
+    gz::common::testing::TestFile("sdf", "nested_model.sdf");
 
   sdf::Root root;
   auto errors = root.Load(testFile);
@@ -152,7 +153,7 @@ TEST(ElementTracing, includes)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile = sdf::testing::TestFile("sdf", "includes.sdf");
+  const auto worldFile = gz::common::testing::TestFile("sdf", "includes.sdf");
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
   EXPECT_TRUE(errors.empty()) << errors;
@@ -177,7 +178,7 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(worldXmlPath, worldElem->XmlPath());
 
   // Actors
-  const std::string actorFilePath = sdf::testing::TestFile(
+  const std::string actorFilePath = gz::common::testing::TestFile(
       "integration", "model", "test_actor", "model.sdf");
   const std::string actorXmlPath = "/sdf/actor[@name=\"actor\"]";
 
@@ -213,7 +214,7 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(overrideActorPluginXmlPath, overrideActorPluginElem->XmlPath());
 
   // Lights
-  const std::string lightFilePath = sdf::testing::TestFile(
+  const std::string lightFilePath = gz::common::testing::TestFile(
       "integration", "model", "test_light", "model.sdf");
   const std::string lightXmlPath = "/sdf/light[@name=\"point_light\"]";
 
@@ -238,7 +239,7 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(overrideLightXmlPath, overrideLightElem->XmlPath());
 
   // Models
-  std::string modelFilePath = sdf::testing::TestFile(
+  std::string modelFilePath = gz::common::testing::TestFile(
       "integration", "model", "test_model", "model.sdf");
   const std::string modelXmlPath = "/sdf/model[@name=\"test_model\"]";
 
@@ -280,7 +281,7 @@ TEST(ElementTracing, includes)
   // '\\path\\to\\integration\\model\\test_model/model.sdf', instead of
   // '\\path\\to\\integration\\model\\test_model\\model.sdf'.
   // Reference issue #572.
-  modelFilePath = sdf::testing::TestFile(
+  modelFilePath = gz::common::testing::TestFile(
       "integration", "model", "test_model/model.sdf");
 #endif
   const std::string overrideModelWithFileXmlPath =
@@ -296,4 +297,3 @@ TEST(ElementTracing, includes)
   EXPECT_EQ(overrideModelWithFileXmlPath,
       overrideModelWithFileElem->XmlPath());
 }
-

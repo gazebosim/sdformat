@@ -21,12 +21,12 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 TEST(URDFParser, AtlasURDF_5runs_performance)
 {
   const std::string URDF_TEST_FILE =
-      sdf::testing::TestFile("performance", "parser_urdf_atlas.urdf");
+      gz::common::testing::TestFile("performance", "parser_urdf_atlas.urdf");
 
   for (int i = 0; i < 5; i++)
   {
