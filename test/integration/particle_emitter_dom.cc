@@ -32,13 +32,15 @@
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Pbr.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
+
 
 //////////////////////////////////////////////////
 TEST(DOMWorld, LoadParticleEmitter)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

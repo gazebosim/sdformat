@@ -38,12 +38,12 @@
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMGeometry, Shapes)
 {
-  const auto testFile = sdf::testing::TestFile("sdf", "shapes.sdf");
+  const auto testFile = gz::common::testing::TestFile("sdf", "shapes.sdf");
 
   // Load the SDF file
   sdf::Root root;

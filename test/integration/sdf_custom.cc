@@ -21,13 +21,13 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(SDFParser, CustomElements)
 {
-  const std::string sdfTestFile =
-      sdf::testing::TestFile("integration", "custom_elems_attrs.sdf");
+  const auto sdfTestFile =
+      gz::common::testing::TestFile("integration", "custom_elems_attrs.sdf");
 
   sdf::Root root;
   EXPECT_TRUE(root.Load(sdfTestFile).empty());
@@ -87,7 +87,7 @@ TEST(SDFParser, CustomElements)
 TEST(SDFParser, ReloadCustomElements)
 {
   const std::string sdfTestFile =
-      sdf::testing::TestFile("integration", "custom_elems_attrs.sdf");
+      gz::common::testing::TestFile("integration", "custom_elems_attrs.sdf");
 
   // load file with custom elements
   sdf::Root root1;
@@ -151,7 +151,7 @@ R"(<mysim:transmission name='simple_trans'>
 /////////////////////////////////////////////////
 TEST(SDFParser, ReloadIncludedCustomElements)
 {
-  const std::string modelPath = sdf::testing::TestFile("integration", "model");
+  const std::string modelPath = gz::common::testing::TestFile("integration", "model");
 
   sdf::setFindCallback(
     [&](const std::string &_file)
@@ -253,7 +253,7 @@ R"(<mysim:transmission name='simple_trans'>
 /////////////////////////////////////////////////
 TEST(SDFParser, ReloadNestedIncludedCustomElements)
 {
-  const std::string modelPath = sdf::testing::TestFile("integration", "model");
+  const std::string modelPath = gz::common::testing::TestFile("integration", "model");
 
   sdf::setFindCallback(
     [&](const std::string &_file)

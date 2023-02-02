@@ -37,13 +37,14 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
 #include "test_utils.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::testing::TestFile("integration", "model", _input);
+  return gz::common::testing::TestFile("integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
@@ -51,7 +52,7 @@ TEST(IncludesTest, Includes)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile = sdf::testing::TestFile("sdf", "includes.sdf");
+  const auto worldFile = gz::common::testing::TestFile("sdf", "includes.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
@@ -78,7 +79,7 @@ TEST(IncludesTest, Includes)
   const auto *actor = world->ActorByIndex(0);
   EXPECT_EQ("1.6", actor->Element()->OriginalVersion());
 
-  const auto actorFile = sdf::testing::TestFile(
+  const auto actorFile = gz::common::testing::TestFile(
       "integration", "model", "test_actor", "model.sdf");
   EXPECT_EQ(actorFile, actor->FilePath());
 
@@ -167,7 +168,7 @@ TEST(IncludesTest, Includes)
   EXPECT_FALSE(model->LinkNameExists("coconut"));
   EXPECT_EQ("1.6", model->Element()->OriginalVersion());
 
-  const auto modelFile = sdf::testing::TestFile(
+  const auto modelFile = gz::common::testing::TestFile(
       "integration", "model", "test_model", "model.sdf");
 
   const auto *link = model->LinkByName("link");
@@ -230,7 +231,7 @@ TEST(IncludesTest, Includes_15)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile = sdf::testing::TestFile("sdf", "includes_1.5.sdf");
+  const auto worldFile = gz::common::testing::TestFile("sdf", "includes_1.5.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
@@ -286,7 +287,7 @@ TEST(IncludesTest, Includes_15_convert)
 {
   sdf::setFindCallback(findFileCb);
 
-  const auto worldFile = sdf::testing::TestFile("sdf", "includes_1.5.sdf");
+  const auto worldFile = gz::common::testing::TestFile("sdf", "includes_1.5.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
@@ -404,7 +405,7 @@ TEST(IncludesTest, MergeInclude)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(
-      sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
+      gz::common::testing::TestFile("integration", "merge_include_model.sdf"), config);
   EXPECT_TRUE(errors.empty()) << errors;
 
   auto world = root.WorldByIndex(0);
@@ -421,7 +422,7 @@ TEST(IncludesTest, MergeInclude)
   {
     sdf::Root includedModel;
     errors = includedModel.Load(
-      sdf::testing::TestFile("integration", "model",
+      gz::common::testing::TestFile("integration", "model",
                              "merge_robot", "model.sdf"));
     EXPECT_TRUE(errors.empty()) << errors;
     ASSERT_NE(nullptr, includedModel.Model());
@@ -564,7 +565,7 @@ TEST(IncludesTest, MergeIncludePlacementFrame)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(
-      sdf::testing::TestFile("integration", "merge_include_model.sdf"), config);
+      gz::common::testing::TestFile("integration", "merge_include_model.sdf"), config);
   ASSERT_TRUE(errors.empty()) << errors;
 
   auto world = root.WorldByIndex(0);
@@ -587,8 +588,8 @@ TEST(IncludesTest, InvalidMergeInclude)
 {
   sdf::ParserConfig config;
   // Using the "file://" URI scheme to allow multiple search paths
-  config.AddURIPath("file://", sdf::testing::TestFile("sdf"));
-  config.AddURIPath("file://", sdf::testing::TestFile("integration", "model"));
+  config.AddURIPath("file://", gz::common::testing::TestFile("sdf"));
+  config.AddURIPath("file://", gz::common::testing::TestFile("integration", "model"));
 
   // Models that are not valid by themselves
   {
@@ -684,7 +685,7 @@ TEST(IncludesTest, InvalidMergeInclude)
         sdf::Console::Instance()->GetMsgStream(), &buffer);
 #ifdef _WIN32
     sdf::Console::Instance()->SetQuiet(false);
-    sdf::testing::ScopeExit revertSetQuiet(
+    gz::common::testing::ScopeExit revertSetQuiet(
         []
         {
         sdf::Console::Instance()->SetQuiet(true);

@@ -27,13 +27,14 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMWorld, LoadLights)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

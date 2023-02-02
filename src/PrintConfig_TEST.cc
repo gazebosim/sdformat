@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 
 #include "sdf/PrintConfig.hh"
-#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(PrintConfig, Construction)

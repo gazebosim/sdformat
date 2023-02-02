@@ -25,13 +25,14 @@
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, InvalidSDF)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "empty_invalid.sdf");
+    gz::common::testing::TestFile("sdf", "empty_invalid.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -43,7 +44,7 @@ TEST(DOMRoot, InvalidSDF)
 TEST(DOMRoot, NoVersion)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "empty_noversion.sdf");
+    gz::common::testing::TestFile("sdf", "empty_noversion.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -55,7 +56,7 @@ TEST(DOMRoot, NoVersion)
 TEST(DOMRoot, Load)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "empty.sdf");
+    gz::common::testing::TestFile("sdf", "empty.sdf");
 
   sdf::Root root;
   EXPECT_EQ(0u, root.WorldCount());
@@ -78,7 +79,7 @@ TEST(DOMRoot, Load)
 TEST(DOMRoot, LoadMultipleModels)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "root_multiple_models.sdf");
+    gz::common::testing::TestFile("sdf", "root_multiple_models.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -98,7 +99,7 @@ TEST(DOMRoot, LoadMultipleModels)
 TEST(DOMRoot, LoadDuplicateModels)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "root_duplicate_models.sdf");
+    gz::common::testing::TestFile("sdf", "root_duplicate_models.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -114,7 +115,7 @@ TEST(DOMRoot, LoadDuplicateModels)
 TEST(DOMRoot, CreateMulipleWorlds)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf",
+    gz::common::testing::TestFile("sdf",
         "world_frame_attached_to.sdf");
 
   // Load the SDF file

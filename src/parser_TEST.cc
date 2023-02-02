@@ -23,9 +23,9 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
 
 #include <gz/utils/Environment.hh>
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -70,7 +70,7 @@ sdf::SDFPtr InitSDF()
 /// Checks emitted warnings for custom/unknown elements in log file
 TEST(Parser, CustomUnknownElements)
 {
-  const auto path = sdf::testing::TestFile(
+  const auto path = gz::common::testing::TestFile(
       "sdf", "custom_and_unknown_elements.sdf");
 
   sdf::SDFPtr sdf = InitSDF();
@@ -102,9 +102,9 @@ TEST(Parser, CustomUnknownElements)
 /////////////////////////////////////////////////
 TEST(Parser, ReusedSDFVersion)
 {
-  const auto path17 = sdf::testing::TestFile(
+  const auto path17 = gz::common::testing::TestFile(
       "sdf", "model_link_relative_to.sdf");
-  const auto path16 = sdf::testing::TestFile("sdf", "joint_complete.sdf");
+  const auto path16 = gz::common::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Call readFile API that always converts
   sdf::SDFPtr sdf = InitSDF();
@@ -124,7 +124,7 @@ TEST(Parser, ReusedSDFVersion)
 /////////////////////////////////////////////////
 TEST(Parser, readFileConversions)
 {
-  const auto path = sdf::testing::TestFile("sdf", "joint_complete.sdf");
+  const auto path = gz::common::testing::TestFile("sdf", "joint_complete.sdf");
 
   // Call readFile API that always converts
   {
@@ -155,7 +155,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf", "world_duplicate.sdf");
+    const auto path = gz::common::testing::TestFile("sdf", "world_duplicate.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
     EXPECT_FALSE(sdf::recursiveSameTypeUniqueNames(sdf->Root()));
@@ -168,7 +168,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of different types (model, light)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "world_sibling_same_names.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -182,7 +182,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (link)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "model_duplicate_links.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -196,7 +196,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (joint)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "model_duplicate_joints.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -210,7 +210,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of different types (link, joint)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "model_link_joint_same_name.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -224,7 +224,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (collision)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "link_duplicate_sibling_collisions.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -238,7 +238,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with sibling elements of the same type (visual)
   // that have duplicate names.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "link_duplicate_sibling_visuals.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -252,7 +252,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with cousin elements of the same type (collision)
   // that have duplicate names. This is a valid file.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "link_duplicate_cousin_collisions.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -267,7 +267,7 @@ TEST(Parser, NameUniqueness)
   // Check an SDF file with cousin elements of the same type (visual)
   // that have duplicate names. This is a valid file.
   {
-    const auto path = sdf::testing::TestFile("sdf",
+    const auto path = gz::common::testing::TestFile("sdf",
         "link_duplicate_cousin_visuals.sdf");
     sdf::SDFPtr sdf = InitSDF();
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -299,7 +299,7 @@ TEST(Parser, SyntaxErrorInValues)
 #endif
 
   {
-    const auto path = sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
+    const auto path = gz::common::testing::TestFile("sdf", "bad_syntax_pose.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -313,7 +313,7 @@ TEST(Parser, SyntaxErrorInValues)
   {
     // clear the contents of the buffer
     buffer.str("");
-    const auto path = sdf::testing::TestFile("sdf", "bad_syntax_double.sdf");
+    const auto path = gz::common::testing::TestFile("sdf", "bad_syntax_double.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -328,7 +328,7 @@ TEST(Parser, SyntaxErrorInValues)
   {
     // clear the contents of the buffer
     buffer.str("");
-    const auto path = sdf::testing::TestFile("sdf", "bad_syntax_vector.sdf");
+    const auto path = gz::common::testing::TestFile("sdf", "bad_syntax_vector.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -361,7 +361,7 @@ TEST(Parser, MissingRequiredAttributesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const auto path = sdf::testing::TestFile("sdf", "box_bad_test.world");
+    const auto path = gz::common::testing::TestFile("sdf", "box_bad_test.world");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -399,7 +399,7 @@ TEST(Parser, IncludesErrors)
     // clear the contents of the buffer
     buffer.str("");
 
-    const auto path = sdf::testing::TestFile("sdf", "includes_missing_uri.sdf");
+    const auto path = gz::common::testing::TestFile("sdf", "includes_missing_uri.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -419,7 +419,7 @@ TEST(Parser, IncludesErrors)
     buffer.str("");
 
     const auto path =
-        sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
+        gz::common::testing::TestFile("sdf", "includes_missing_model.sdf");
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
@@ -439,10 +439,10 @@ TEST(Parser, IncludesErrors)
     buffer.str("");
 
     const auto path =
-        sdf::testing::TestFile("sdf", "includes_model_without_sdf.sdf");
+        gz::common::testing::TestFile("sdf", "includes_model_without_sdf.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
-          return sdf::testing::TestFile("integration", "model", _file);
+          return gz::common::testing::TestFile("integration", "model", _file);
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -465,10 +465,10 @@ TEST(Parser, IncludesErrors)
     buffer.str("");
 
     const auto path =
-        sdf::testing::TestFile("sdf", "includes_without_top_level.sdf");
+        gz::common::testing::TestFile("sdf", "includes_without_top_level.sdf");
     sdf::setFindCallback([&](const std::string &_file)
         {
-          return sdf::testing::TestFile("integration", "model", _file);
+          return gz::common::testing::TestFile("integration", "model", _file);
         });
 
     sdf::SDFPtr sdf(new sdf::SDF());
@@ -497,11 +497,11 @@ TEST(Parser, IncludesErrors)
 TEST(Parser, PlacementFrameMissingPose)
 {
   const std::string testModelPath =
-      sdf::testing::TestFile("sdf", "placement_frame_missing_pose.sdf");
+      gz::common::testing::TestFile("sdf", "placement_frame_missing_pose.sdf");
 
   sdf::setFindCallback([&](const std::string &_file)
       {
-        return sdf::testing::TestFile("integration", "model", _file);
+        return gz::common::testing::TestFile("integration", "model", _file);
       });
   sdf::SDFPtr sdf = InitSDF();
   sdf::Errors errors;
@@ -574,7 +574,7 @@ class ValueConstraintsFixture : public ::testing::Test
 TEST_F(ValueConstraintsFixture, ElementMinMaxValues)
 {
   const auto sdfDescPath =
-    sdf::testing::TestFile("sdf", "stricter_semantics_desc.sdf");
+    gz::common::testing::TestFile("sdf", "stricter_semantics_desc.sdf");
 
   auto sdfTest = std::make_shared<sdf::SDF>();
   sdf::initFile(sdfDescPath, sdfTest);
@@ -724,7 +724,7 @@ TEST(Parser, ElementFilePath)
 {
   auto findFileCb = [](const std::string &_uri)
   {
-    return sdf::testing::TestFile("integration", "model", _uri);
+    return gz::common::testing::TestFile("integration", "model", _uri);
   };
 
   const std::string testString = R"(
@@ -839,8 +839,8 @@ TEST(Parser, ElementRemovedAfterDeprecation)
 int main(int argc, char **argv)
 {
   // temporarily set HOME
-  std::string homeDir;
-  sdf::testing::TestSetHomePath(homeDir);
+  std::string homeDir = gz::common::testing::TempPath("");
+  gz::utils::setenv("HOME", homeDir);
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);

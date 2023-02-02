@@ -28,7 +28,8 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/Types.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMCollision, NotACollision)
@@ -63,8 +64,8 @@ TEST(DOMCollision, NoName)
 //////////////////////////////////////////////////
 TEST(DOMCollision, DoublePendulum)
 {
-  const std::string testFile =
-    sdf::testing::TestFile("sdf", "double_pendulum.sdf");
+  const auto testFile =
+    gz::common::testing::TestFile("sdf", "double_pendulum.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -93,8 +94,8 @@ TEST(DOMCollision, DoublePendulum)
 /////////////////////////////////////////////////
 TEST(DOMCollision, LoadModelFramesRelativeToJoint)
 {
-  const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
+  const auto testFile =
+    gz::common::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
 
   // Load the SDF file
   sdf::Root root;

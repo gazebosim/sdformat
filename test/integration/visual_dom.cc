@@ -29,7 +29,8 @@
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMVisual, NotAVisual)
@@ -65,7 +66,7 @@ TEST(DOMVisual, NoName)
 TEST(DOMVisual, DoublePendulum)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "double_pendulum.sdf");
+    gz::common::testing::TestFile("sdf", "double_pendulum.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -97,7 +98,7 @@ TEST(DOMVisual, DoublePendulum)
 TEST(DOMVisual, Material)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "material.sdf");
+    gz::common::testing::TestFile("sdf", "material.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -146,7 +147,7 @@ TEST(DOMVisual, Material)
 TEST(DOMVisual, MaterialScriptNoUri)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "material_script_no_uri.sdf");
+    gz::common::testing::TestFile("sdf", "material_script_no_uri.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -166,7 +167,7 @@ TEST(DOMVisual, MaterialScriptNoUri)
 TEST(DOMVisual, MaterialScriptNormalMapMissing)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "material_normal_map_missing.sdf");
+    gz::common::testing::TestFile("sdf", "material_normal_map_missing.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -182,7 +183,7 @@ TEST(DOMVisual, MaterialScriptNormalMapMissing)
 TEST(DOMVisual, Transparency)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "shapes.sdf");
+    gz::common::testing::TestFile("sdf", "shapes.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -204,7 +205,7 @@ TEST(DOMVisual, Transparency)
 TEST(DOMVisual, LaserRetro)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "shapes.sdf");
+    gz::common::testing::TestFile("sdf", "shapes.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -227,7 +228,7 @@ TEST(DOMVisual, LaserRetro)
 TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
+    gz::common::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -420,7 +421,7 @@ TEST(DOMVisual, LoadModelFramesRelativeToJoint)
 TEST(DOMVisual, VisibilityFlags)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "shapes.sdf");
+    gz::common::testing::TestFile("sdf", "shapes.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -442,7 +443,7 @@ TEST(DOMVisual, VisibilityFlags)
 TEST(DOMVisual, VisualPlugins)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

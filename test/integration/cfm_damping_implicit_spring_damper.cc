@@ -21,13 +21,13 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 
 /////////////////////////////////////////////////
 TEST(SDFParser, CFMDampingSDFTest)
 {
-  const std::string sdfTestFile = sdf::testing::TestFile(
+  const std::string sdfTestFile = gz::common::testing::TestFile(
       "integration", "cfm_damping_implicit_spring_damper.sdf");
   sdf::SDFPtr robot(new sdf::SDF());
   sdf::init(robot);
@@ -106,7 +106,7 @@ TEST(SDFParser, CFMDampingSDFTest)
 /////////////////////////////////////////////////
 TEST(SDFParser, CFMDampingURDFTest)
 {
-  const std::string urdfTestFile = sdf::testing::TestFile(
+  const std::string urdfTestFile = gz::common::testing::TestFile(
       "integration", "cfm_damping_implicit_spring_damper.urdf");
 
   sdf::SDFPtr robot(new sdf::SDF());

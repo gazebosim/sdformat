@@ -32,12 +32,14 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/Visual.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
+
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::testing::TestFile("integration", "model", _input);
+  return gz::common::testing::TestFile("integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
@@ -46,7 +48,7 @@ TEST(WhitespaceTest, Whitespace)
   sdf::setFindCallback(findFileCb);
 
   const auto worldFile =
-    sdf::testing::TestFile("sdf", "whitespace.sdf");
+    gz::common::testing::TestFile("sdf", "whitespace.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);

@@ -29,7 +29,8 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "test_utils.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 ////////////////////////////////////////
 // Test Param class for sdf::Errors outputs
@@ -379,7 +380,7 @@ TEST(ErrorOutput, ModelErrorOutput)
 
   std::function findFileCb = [](const std::string &_uri)
   {
-    return sdf::testing::TestFile("integration", "model", _uri);
+    return gz::common::testing::TestFile("integration", "model", _uri);
   };
 
   std::ostringstream stream;

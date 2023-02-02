@@ -24,12 +24,12 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(PrintConfig, PreserveIncludes)
 {
-  const std::string modelPath = sdf::testing::TestFile("integration", "model");
+  const std::string modelPath = gz::common::testing::TestFile("integration", "model");
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetFindCallback(
@@ -156,7 +156,7 @@ R"(<model name='test2'>
 // https://github.com/gazebosim/sdformat/issues/769
 TEST(PrintConfig, PreserveIncludesWithMerge)
 {
-  const std::string modelPath = sdf::testing::TestFile("integration", "model");
+  const std::string modelPath = gz::common::testing::TestFile("integration", "model");
 
   sdf::ParserConfig parserConfig;
   parserConfig.SetFindCallback(

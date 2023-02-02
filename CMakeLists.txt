@@ -131,6 +131,11 @@ if (BUILD_SDF)
   set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
   ########################################
+  # Find gz common
+  gz_find_package(gz-common5 REQUIRED COMPONENTS testing)
+  set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
+
+  ########################################
   # Python interfaces
   if (NOT PYTHON3_FOUND)
     GZ_BUILD_WARNING("Python is missing: Python interfaces are disabled.")

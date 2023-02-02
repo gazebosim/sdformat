@@ -31,15 +31,17 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
+
 #include "test_utils.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(Pose1_9, PoseExpressionFormats)
 {
   using Pose = gz::math::Pose3d;
 
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "pose_1_9.sdf");
   const double pi = 3.14159265358979323846;
 
@@ -981,7 +983,7 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
 //////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::testing::TestFile("integration", "model", _input);
+  return gz::common::testing::TestFile("integration", "model", _input);
 }
 
 //////////////////////////////////////////////////
@@ -1105,7 +1107,7 @@ TEST(Pose1_9, IncludePoseInWorld)
   using Pose = gz::math::Pose3d;
 
   sdf::setFindCallback(findFileCb);
-  const std::string testFile = sdf::testing::TestFile(
+  const std::string testFile = gz::common::testing::TestFile(
       "sdf", "include_pose_1_9.sdf");
 
   // Load the SDF file

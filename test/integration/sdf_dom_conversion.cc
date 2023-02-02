@@ -35,7 +35,8 @@
 #include "sdf/Root.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(SDFDomConversion, Sensors)
@@ -45,7 +46,7 @@ TEST(SDFDomConversion, Sensors)
   // 2) loads the Element back to DOM,
   // 3) verify the values
   // Most of the verification code is adapted from link_dom.cc
-  const std::string testFile = sdf::testing::TestFile("sdf", "sensors.sdf");
+  const auto testFile = gz::common::testing::TestFile("sdf", "sensors.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -401,7 +402,7 @@ TEST(SDFDomConversion, Lights)
   // 1) converts Light DOM to Element
   // 2) loads the Element back to DOM,
   // 3) verify the values
-  const std::string testFile = sdf::testing::TestFile("sdf", "lights.sdf");
+  const auto testFile = gz::common::testing::TestFile("sdf", "lights.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -562,8 +563,8 @@ TEST(SDFDomConversion, Joints)
   // 2) loads the Element back to DOM,
   // 3) verify the values
   // Some of the verification code is adapted from joint_dom.cc
-  const std::string testFile =
-      sdf::testing::TestFile("sdf", "joint_sensors.sdf");
+  const auto testFile =
+      gz::common::testing::TestFile("sdf", "joint_sensors.sdf");
 
   // Load the SDF file
   sdf::Root root;

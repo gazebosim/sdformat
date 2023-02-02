@@ -25,7 +25,7 @@
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 /// Test global config
@@ -33,7 +33,7 @@ TEST(ParserConfig, GlobalConfig)
 {
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
   // the source directory
-  const std::string testDir = sdf::testing::SourceFile();
+  const std::string testDir = gz::common::testing::SourceFile();
 
   sdf::addURIPath("file://", testDir);
   sdf::setFindCallback(
@@ -67,7 +67,7 @@ TEST(ParserConfig, NonGlobalConfig)
   sdf::ParserConfig config;
   // The directory used in AddURIPath must exist in the filesystem, so we'll use
   // the source directory
-  const std::string testDir = sdf::testing::SourceFile();
+  const std::string testDir = gz::common::testing::SourceFile();
   config.AddURIPath("file://", testDir);
   config.SetFindCallback(
       [](const std::string &)
@@ -97,11 +97,11 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
 
   // Case 1: Use of sdf::setFindCallback
   {
-    const std::string testFile = sdf::testing::TestFile("sdf", "includes.sdf");
+    const std::string testFile = gz::common::testing::TestFile("sdf", "includes.sdf");
 
     auto findFileCb = [](const std::string &_uri)
     {
-      return sdf::testing::TestFile("integration", "model", _uri);
+      return gz::common::testing::TestFile("integration", "model", _uri);
     };
 
     sdf::ParserConfig config;
@@ -178,7 +178,7 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
 
     sdf::ParserConfig config;
     config.AddURIPath("testScheme://",
-        sdf::testing::TestFile("integration", "model"));
+        gz::common::testing::TestFile("integration", "model"));
 
     // Parsing testSdfString without setting addURIPath on the global
     // ParserConfig should fail
@@ -245,11 +245,11 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
 TEST(ParserConfig, NestedModelIncludesFilePath)
 {
   const auto path =
-      sdf::testing::TestFile("integration", "model", "top_nested", "model.sdf");
+      gz::common::testing::TestFile("integration", "model", "top_nested", "model.sdf");
 
   auto findFileCb = [](const std::string &_uri)
   {
-    return sdf::testing::TestFile("integration", "model", _uri);
+    return gz::common::testing::TestFile("integration", "model", _uri);
   };
   sdf::ParserConfig config;
   config.SetFindCallback(findFileCb);

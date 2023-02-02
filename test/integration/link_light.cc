@@ -20,7 +20,8 @@
 #include <gz/math/Color.hh>
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
+
 
 ////////////////////////////////////////
 // Test parsing a link element that has a child light element

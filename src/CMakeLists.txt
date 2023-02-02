@@ -49,6 +49,7 @@ if (BUILD_TESTING)
     INCLUDE_DIRS
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${PROJECT_SOURCE_DIR}/test
+    LIB_DEPS gz-common${GZ_COMMON_VER}::testing
   )
 
   if (TARGET UNIT_Converter_TEST)
@@ -59,6 +60,13 @@ if (BUILD_TESTING)
       EmbeddedSdf.cc
       Utils.cc
       XmlUtils.cc)
+  endif()
+
+  if (TARGET UNIT_gz_TEST)
+    target_compile_definitions(UNIT_gz_TEST PRIVATE
+      -DGZ_PATH="${GZ_PROGRAM}"
+      -DGZ_CONFIG_PATH="${CMAKE_BINARY_DIR}/test/conf"
+      -DGZ_TEST_LIBRARY_PATH="${PROJECT_BINARY_DIR}/src")
   endif()
 
   if (TARGET UNIT_FrameSemantics_TEST)

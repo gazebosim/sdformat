@@ -33,13 +33,14 @@
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 /////////////////////////////////////////////////
 TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_frame_attached_to.sdf");
+    gz::common::testing::TestFile("sdf", "model_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -106,7 +107,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_Model)
 TEST(FrameSemantics, buildFrameAttachedToGraph_World)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_frame_attached_to.sdf");
+    gz::common::testing::TestFile("sdf", "world_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -207,7 +208,7 @@ TEST(FrameSemantics, buildFrameAttachedToGraph_World)
 TEST(FrameSemantics, buildPoseRelativeToGraph)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
+    gz::common::testing::TestFile("sdf", "model_frame_relative_to_joint.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -301,7 +302,7 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
 TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_nested_frame_attached_to.sdf");
+    gz::common::testing::TestFile("sdf", "model_nested_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -393,7 +394,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_Model)
 TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_nested_frame_attached_to.sdf");
+    gz::common::testing::TestFile("sdf", "world_nested_frame_attached_to.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -579,7 +580,7 @@ TEST(NestedFrameSemantics, buildFrameAttachedToGraph_World)
 TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "model_nested_static_model.sdf");
+    gz::common::testing::TestFile("sdf", "model_nested_static_model.sdf");
 
   // Load the SDF file
   sdf::Root root;
@@ -608,7 +609,7 @@ TEST(NestedFrameSemantics, ModelWithoutLinksWithNestedStaticModel)
 TEST(NestedFrameSemantics, InvalidAttachedToScope)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_frame_invalid_attached_to_scope.sdf");
+    gz::common::testing::TestFile("sdf", "world_frame_invalid_attached_to_scope.sdf");
 
   // Load the SDF file
   sdf::Root root;

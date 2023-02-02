@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 // Windows supports the setlocale call but we can not extract the
 // available locales using the Linux call
@@ -30,7 +30,7 @@
 TEST(CheckFixForLocal, MakeTestToFail)
 {
   const std::string sdfTestFile =
-      sdf::testing::TestFile("integration", "numeric.sdf");
+      gz::common::testing::TestFile("integration", "numeric.sdf");
 
   // Check if any of the latin locales is avilable
   FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");

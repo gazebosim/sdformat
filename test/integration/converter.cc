@@ -22,7 +22,7 @@
 
 #include "sdf/sdf.hh"
 
-#include "test_config.hh"
+#include <gz/common/testing/TestPaths.hh>
 
 /// \brief Use different sdf versions for ParserStringConverter Test.
 void ParserStringConverter(const std::string &_version);
@@ -31,7 +31,7 @@ void ParserStringConverter(const std::string &_version);
 /// Test conversion using the parser sdf file converter interface.
 TEST(ConverterIntegration, ParserFileConverter)
 {
-  const auto filename = sdf::testing::TestFile("integration", "audio.sdf");
+  const auto filename = gz::common::testing::TestFile("integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
@@ -72,7 +72,7 @@ TEST(ConverterIntegration, ParserFileConverter)
 /// Convert to a previous SDF version
 TEST(ConverterIntegration, convertFileToNotLatestVersion)
 {
-  const auto filename = sdf::testing::TestFile(
+  const auto filename = gz::common::testing::TestFile(
       "integration", "audio.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());
@@ -156,7 +156,7 @@ void ParserStringConverter(const std::string &_version)
 TEST(ConverterIntegration, UnflattenConversion)
 {
   const std::string filename =
-  sdf::testing::SourceFile("test", "sdf",
+    gz::common::testing::TestFile("sdf",
                           "flattened_test_nested_model_with_frames.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());

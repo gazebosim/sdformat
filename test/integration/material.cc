@@ -21,7 +21,8 @@
 #include <gz/math/Color.hh>
 
 #include "sdf/sdf.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 void ExpectInvalidWithMessage(sdf::Errors &_errors, std::string _compType)
 {
@@ -39,7 +40,7 @@ void ExpectInvalidWithMessage(sdf::Errors &_errors, std::string _compType)
 TEST(Material, InvalidColors)
 {
   std::string testFile =
-      sdf::testing::TestFile("sdf", "material_invalid.sdf");
+      gz::common::testing::TestFile("sdf", "material_invalid.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -144,7 +145,7 @@ TEST(Material, InvalidColors)
 TEST(Material, ValidColors)
 {
   std::string testFile =
-      sdf::testing::TestFile("sdf", "material_valid.sdf");
+      gz::common::testing::TestFile("sdf", "material_valid.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -172,7 +173,7 @@ TEST(Material, ValidColors)
 TEST(Material, URDFValidColors)
 {
   std::string testFile =
-      sdf::testing::TestFile("sdf", "material_valid.urdf");
+      gz::common::testing::TestFile("sdf", "material_valid.urdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);

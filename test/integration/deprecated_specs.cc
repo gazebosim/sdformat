@@ -21,14 +21,16 @@
 #include "sdf/Error.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/parser.hh"
-#include "test_config.hh"
+
 #include "test_utils.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 ////////////////////////////////////////////////////
 TEST(DeprecatedSpecs, Spec1_0)
 {
   const std::string filename =
-    sdf::testing::TestFile("integration", "deprecated_sdf_1-0.sdf");
+    gz::common::testing::TestFile("integration", "deprecated_sdf_1-0.sdf");
   sdf::SDFPtr sdf(new sdf::SDF());
   EXPECT_FALSE(sdf::initFile(filename, sdf));
 }
@@ -37,7 +39,7 @@ TEST(DeprecatedSpecs, Spec1_0)
 TEST(DeprecatedSpecs, Spec1_2)
 {
   const std::string filename =
-    sdf::testing::TestFile("integration", "deprecated_sdf_1-2.sdf");
+    gz::common::testing::TestFile("integration", "deprecated_sdf_1-2.sdf");
   sdf::SDFPtr sdf(new sdf::SDF());
   EXPECT_FALSE(sdf::initFile(filename, sdf));
 }

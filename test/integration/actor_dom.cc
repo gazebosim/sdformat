@@ -25,13 +25,14 @@
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/World.hh"
-#include "test_config.hh"
+
+#include <gz/common/testing/TestPaths.hh>
 
 //////////////////////////////////////////////////
 TEST(DOMActor, LoadActors)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -144,7 +145,7 @@ TEST(DOMActor, CopySdfLoadedProperties)
   // Verify that copying an actor also copies the underlying ElementPtr
   // Joints and Links
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -164,7 +165,7 @@ TEST(DOMActor, CopySdfLoadedProperties)
 TEST(DOMActor, ActorPlugins)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_complete.sdf");
+    gz::common::testing::TestFile("sdf", "world_complete.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
