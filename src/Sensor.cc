@@ -692,12 +692,21 @@ Imu *Sensor::ImuSensor()
 /////////////////////////////////////////////////
 sdf::ElementPtr Sensor::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("sensor.sdf", elem);
 
-  elem->GetAttribute("type")->Set<std::string>(this->TypeStr());
-  elem->GetAttribute("name")->Set<std::string>(this->Name());
-  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  elem->GetAttribute("type")->Set<std::string>(this->TypeStr(), _errors);
+  elem->GetAttribute("name")->Set<std::string>(this->Name(), _errors);
+  sdf::ElementPtr poseElem = elem->GetElement("pose", _errors);
   if (!this->dataPtr->poseRelativeTo.empty())
   {
     poseElem->GetAttribute("relative_to")->Set<std::string>(
@@ -760,8 +769,10 @@ sdf::ElementPtr Sensor::ToElement() const
   }
   else
   {
-    std::cout << "Conversion of sensor type: [" << this->TypeStr() << "] from "
-      << "SDF DOM to Element is not supported yet." << std::endl;
+    std::stringstream ss;
+    ss << "Conversion of sensor type: [" << this->TypeStr() << "] from SDF "
+       << "DOM to Element is not supported yet." << this->Name();
+    _errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
   }
 
   // Add in the plugins
