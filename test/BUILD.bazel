@@ -1,0 +1,43 @@
+load(
+    "@gz//tools/skylark:build_defs.bzl",
+    "GZ_ROOT",
+)
+
+cc_library(
+    name = "test_utils",
+    hdrs = ["test_utils.hh"],
+    includes = ["."],
+    deps = [
+        GZ_ROOT + "common/testing",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+integration_test_sources = glob(["integration/*.cc"],
+  exclude=[
+    "integration/schema_test.cc",
+    "integration/element_memory_leak.cc"
+  ])
+
+[cc_test(
+    name = src.replace("/", "_").replace(".cc", "").replace("integration_", "INTEGRATION_"),
+    srcs = [src, "integration/toml_parser.hh"],
+    includes = ["integration"],
+    data = [
+        GZ_ROOT + "sdformat:sdf",
+        "sdf",
+        "integration"
+    ],
+    env = {
+        "GZ_BAZEL": "1",
+        "GZ_BAZEL_PATH": "sdformat",
+    },
+    deps = [
+        GZ_ROOT + "sdformat:sdformat",
+        ":test_utils",
+        "@gtest",
+        "@gtest//:gtest_main",
+    ],
+) for src in integration_test_sources]
+
+exports_files(["sdf", "integration"])

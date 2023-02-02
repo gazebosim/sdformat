@@ -369,7 +369,7 @@ TEST_F(InterfaceAPI, TomlParserWorldInclude)
   this->config.RegisterCustomModelParser(this->customTomlParser);
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile, this->config);
-  EXPECT_TRUE(errors.empty()) << errors;
+  ASSERT_TRUE(errors.empty()) << errors;
   const sdf::World *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
   ASSERT_EQ(1u, world->InterfaceModelCount());
@@ -388,7 +388,7 @@ TEST_F(InterfaceAPI, TomlParserModelInclude)
   this->config.RegisterCustomModelParser(this->customTomlParser);
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile, this->config);
-  EXPECT_TRUE(errors.empty()) << errors;
+  ASSERT_TRUE(errors.empty()) << errors;
   const sdf::Model *model = root.Model();
   ASSERT_NE(nullptr, model);
   EXPECT_EQ(1u, model->InterfaceModelCount());
