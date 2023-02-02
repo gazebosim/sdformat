@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Open Source Robotics Foundation
+ * Copyright 2023 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace sdf
   // Inline bracke to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief AirSpeed contains information about a general
-  /// purpose fluid pressure sensor.
+  /// purpose air speed sensor.
   /// This sensor can be attached to a link.
   class SDFORMAT_VISIBLE AirSpeed
   {
@@ -52,11 +52,11 @@ namespace sdf
 
     /// \brief Get the noise values.
     /// \return Noise values for pressure data.
-    public: const Noise &SpeedNoise() const;
+    public: const Noise &PressureNoise() const;
 
     /// \brief Set the noise values related to the pressure data.
     /// \param[in] _noise Noise values for the pressure data.
-    public: void SetSpeedNoise(const Noise &_noise);
+    public: void SetPressureNoise(const Noise &_noise);
 
     /// \brief Return true if both AirSpeed objects contain the
     /// same values.

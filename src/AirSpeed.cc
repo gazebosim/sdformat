@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Open Source Robotics Foundation
+ * Copyright 2023 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,13 +84,13 @@ bool AirSpeed::operator==(const AirSpeed &_air) const
 }
 
 //////////////////////////////////////////////////
-const Noise &AirSpeed::SpeedNoise() const
+const Noise &AirSpeed::PressureNoise() const
 {
   return this->dataPtr->noise;
 }
 
 //////////////////////////////////////////////////
-void AirSpeed::SetSpeedNoise(const Noise &_noise)
+void AirSpeed::SetPressureNoise(const Noise &_noise)
 {
   this->dataPtr->noise = _noise;
 }
