@@ -1,5 +1,18 @@
 ## libsdformat 12.X
 
+### libsdformat 12.7.0 (2023-09-07)
+
+1. Forward port libsdformat9.10.0. This includes the ign to gz headers.
+
+1. Use File.exist? for Ruby 3.2 compatibility.
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
+1. CI workflow: use checkout v3.
+    * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
+
+1. macos workflow: don't upgrade existing packages.
+    * [Pull request #1217](https://github.com/gazebosim/sdformat/pull/1217)
+
 ### libsdformat 12.6.0 (2022-09-07)
 
 1. Reduce the number of include dirs for sdformat.
