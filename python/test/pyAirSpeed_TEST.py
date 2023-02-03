@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Open Source Robotics Foundation
+# Copyright (C) 2023 Open Source Robotics Foundation
 
 # Licensed under the Apache License, Version 2.0 (the "License")
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ from gz_test_deps.sdformat import AirSpeed, Noise
 import gz_test_deps.sdformat as sdf
 import unittest
 
-class AtmosphereTEST(unittest.TestCase):
+class AirSpeedTEST(unittest.TestCase):
 
 
     def test_default_construction(self):

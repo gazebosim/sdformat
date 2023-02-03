@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  */
-#include <array>
-#include <string>
+
 #include "sdf/AirSpeed.hh"
 #include "sdf/parser.hh"
 

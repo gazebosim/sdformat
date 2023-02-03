@@ -62,7 +62,6 @@
   <include filename="pose.sdf" required="0"/>
   <include filename="plugin.sdf" required="*"/>
   <include filename="air_pressure.sdf" required="0"/>
-  <include filename="air_speed.sdf" required="0"/>
   <include filename="altimeter.sdf" required="0"/>
   <include filename="camera.sdf" required="0"/>
   <include filename="contact.sdf" required="0"/>

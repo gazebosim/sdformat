@@ -1,8 +1,6 @@
 set (sdfs
   actor.sdf
   air_pressure.sdf
-  air_speed.sdf
-  air_speed.sdf
   altimeter.sdf
   atmosphere.sdf
   audio_source.sdf

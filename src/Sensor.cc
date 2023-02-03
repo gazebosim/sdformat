@@ -258,7 +258,7 @@ Errors Sensor::Load(ElementPtr _sdf)
         _sdf->GetElement("air_pressure"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
-  if (type == "air_speed")
+  else if (type == "air_speed")
   {
     this->dataPtr->type = SensorType::AIR_SPEED;
     this->dataPtr->airSpeed.emplace();
