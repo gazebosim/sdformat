@@ -9,8 +9,6 @@
   <attribute name="type" type="string" default="__default__" required="1">
     <description>The type name of the sensor. By default, SDFormat supports types
                   air_pressure,
-                  air_speed,
-                  air_speed,
                   altimeter,
                   camera,
                   contact,
