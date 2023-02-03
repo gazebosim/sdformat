@@ -5,7 +5,7 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat12 VERSION 12.6.0)
+project (sdformat12 VERSION 12.7.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
@@ -25,7 +25,7 @@ if (BUILD_SDF)
   ign_configure_project(
     NO_IGNITION_PREFIX
     REPLACE_IGNITION_INCLUDE_PATH sdf
-    VERSION_SUFFIX)
+    VERSION_SUFFIX pre1)
 
   #################################################
   # Find tinyxml2.
