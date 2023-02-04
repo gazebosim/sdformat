@@ -415,7 +415,7 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   {
     URDF2SDF u2g;
     TiXmlDocument doc = u2g.InitModelFile(filename);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
+    if (sdf::readDoc(&doc, _sdf, filename, _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
