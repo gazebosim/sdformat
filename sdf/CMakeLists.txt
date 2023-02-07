@@ -20,8 +20,8 @@ execute_process(
   OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
 )
 
-# Generate aggregated SDF description files for use by the sdformat.org 
-# website. If the description files change, the generated full*.sdf files need 
+# Generate aggregated SDF description files for use by the sdformat.org
+# website. If the description files change, the generated full*.sdf files need
 # to be removed before running this target.
 if (GZ_PROGRAM)
 
