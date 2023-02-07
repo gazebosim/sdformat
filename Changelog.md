@@ -2,6 +2,9 @@
 
 ### libsdformat 13.3.0 (2023-02-07)
 
+1. Add airspeed sensor
+    * [Pull request #1215](https://github.com/gazebosim/sdformat/pull/1215)
+
 1. Use `File.exist?` for Ruby 3.2 compatibility
     * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
 
