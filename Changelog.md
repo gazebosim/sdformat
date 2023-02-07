@@ -1,14 +1,12 @@
 ## libsdformat 13.X
 
-### libsdformat 13.3.0 (2022-02-07)
+### libsdformat 13.3.0 (2023-02-07)
 
 1. Use `File.exist?` for Ruby 3.2 compatibility
     * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
 
 1. Make ThrowOrPrintError a free internal function
     * [Pull request #1221](https://github.com/gazebosim/sdformat/pull/1221)
-
-1. Make throwOrPrintErrors a member of sdf::Error
     * [Pull request #1220](https://github.com/gazebosim/sdformat/pull/1220)
 
 1. macos workflow: don't upgrade existing packages
