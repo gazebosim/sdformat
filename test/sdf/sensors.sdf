@@ -652,12 +652,12 @@
         <update_rate>5.0</update_rate>
         <enable_metrics>false</enable_metrics>
         <air_speed>
-          <airspeed>
+          <pressure>
             <noise type="gaussian">
               <mean>0</mean>
               <stddev>0.01</stddev>
             </noise>
-          </airspeed>
+          </pressure>
         </air_speed>
       </sensor>
 

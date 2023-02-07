@@ -1,9 +1,9 @@
 <element name="air_speed" required="0">
   <description>These elements are specific to an air speed sensor.</description>
 
-  <element name="airspeed" required="0">
+  <element name="pressure" required="0">
     <description>
-      Noise parameters for the airspeed data.
+      Noise parameters for the pressure data.
     </description>
     <include filename="noise.sdf" required="0"/>
   </element>

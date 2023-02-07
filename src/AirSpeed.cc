@@ -43,7 +43,7 @@ Errors AirSpeed::Load(ElementPtr _sdf)
 
   this->dataPtr->sdf = _sdf;
 
-  // Check that the provided SDF element is a <AirSpeed> element.
+  // Check that the provided SDF element is a <air_speed> element.
   // This is an error that cannot be recovered, so return an error.
   if (_sdf->GetName() != "air_speed")
   {
@@ -54,9 +54,9 @@ Errors AirSpeed::Load(ElementPtr _sdf)
   }
 
   // Load the noise values.
-  if (_sdf->HasElement("airspeed"))
+  if (_sdf->HasElement("pressure"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("airspeed");
+    sdf::ElementPtr elem = _sdf->GetElement("pressure");
     if (elem->HasElement("noise"))
       this->dataPtr->noise.Load(elem->GetElement("noise"));
   }
@@ -100,7 +100,7 @@ sdf::ElementPtr AirSpeed::ToElement() const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("air_speed.sdf", elem);
 
-  sdf::ElementPtr pressureElem = elem->GetElement("airspeed");
+  sdf::ElementPtr pressureElem = elem->GetElement("pressure");
   sdf::ElementPtr noiseElem = pressureElem->GetElement("noise");
   noiseElem->Copy(this->dataPtr->noise.ToElement());
 
