@@ -12,10 +12,14 @@ add_subdirectory(1.10)
 add_custom_target(schema)
 add_dependencies(schema schema1_10)
 
+if (NOT Python3_Interpreter_FOUND)
+  gz_build_error("Python is required to generate the C++ file with the SDF content")
+endif()
+
 # Generate the EmbeddedSdf.cc file, which contains all the supported SDF
 # descriptions in a map of strings. The parser.cc file uses EmbeddedSdf.hh.
 execute_process(
-  COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.rb
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
   OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
 )
