@@ -1,5 +1,5 @@
 load(
-    "@gz//tools/skylark:build_defs.bzl",
+    "@gz//bazel/skylark:build_defs.bzl",
     "GZ_FEATURES",
     "GZ_ROOT",
     "GZ_VISIBILITY",
@@ -7,7 +7,7 @@ load(
     "gz_export_header",
     "gz_include_header",
 )
-load("@gz//tools/skylark:gz_py.bzl", "gz_py_binary")
+load("@gz//bazel/skylark:gz_py.bzl", "gz_py_binary")
 
 package(
     default_visibility = GZ_VISIBILITY,
@@ -22,10 +22,10 @@ gz_configure_header(
     name = "config",
     src = "include/sdf/config.hh.in",
     cmakelists = ["CMakeLists.txt"],
-    package = "sdformat",
     defines = {
-      "CMAKE_INSTALL_FULL_DATAROOTDIR": "",
-    }
+        "CMAKE_INSTALL_FULL_DATAROOTDIR": "",
+    },
+    package = "sdformat",
 )
 
 gz_py_binary(
