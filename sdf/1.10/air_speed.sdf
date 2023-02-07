@@ -1,5 +1,5 @@
 <element name="air_speed" required="0">
-  <description>These elements are specific to an air speed sensor.</description>
+  <description>These elements are specific to an air speed sensor. This sensor determines speed based on the differential between static and dynamic pressure.</description>
 
   <element name="pressure" required="0">
     <description>

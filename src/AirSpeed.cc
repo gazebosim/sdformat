@@ -23,7 +23,7 @@ using namespace sdf;
 /// \brief Private AirSpeed data.
 class sdf::AirSpeed::Implementation
 {
-  /// \brief The pressure noise.
+  /// \brief The differential pressure noise.
   public: Noise noise;
 
   /// \brief The SDF element pointer used during load.

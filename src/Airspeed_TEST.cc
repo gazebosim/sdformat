@@ -82,7 +82,7 @@ TEST(DOMAirSpeed, Load)
   // No <noise> element
   sdf::AirSpeed alt;
   sdf::Errors errors = alt.Load(sdf);
-  EXPECT_FALSE(errors.empty());
+  ASSERT_FALSE(errors.empty());
   EXPECT_TRUE(errors[0].Message().find("is not a <air_speed>")
       != std::string::npos) << errors[0].Message();
 

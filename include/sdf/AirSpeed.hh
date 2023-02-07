@@ -51,23 +51,23 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the noise values.
-    /// \return Noise values for pressure data.
+    /// \return Noise values for differential pressure data.
     public: const Noise &PressureNoise() const;
 
-    /// \brief Set the noise values related to the pressure data.
+    /// \brief Set the noise values related to the differential pressure data.
     /// \param[in] _noise Noise values for the pressure data.
     public: void SetPressureNoise(const Noise &_noise);
 
     /// \brief Return true if both AirSpeed objects contain the
     /// same values.
-    /// \param[_in] _mag AirSpeed value to compare.
-    /// \returen True if 'this' == _mag.
+    /// \param[_in] _air AirSpeed value to compare.
+    /// \returen True if 'this' == _air.
     public: bool operator==(const AirSpeed &_air) const;
 
     /// \brief Return true this AirSpeed object does not contain
     /// the same values as the passed in parameter.
-    /// \param[_in] _mag AirSpeed value to compare.
-    /// \returen True if 'this' != _mag.
+    /// \param[_in] _air AirSpeed value to compare.
+    /// \returen True if 'this' != _air.
     public: bool operator!=(const AirSpeed &_air) const;
 
     /// \brief Create and return an SDF element filled with data from this

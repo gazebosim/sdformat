@@ -326,7 +326,7 @@ namespace sdf
     /// \brief Get the air speed sensor, or nullptr if this sensor type
     /// is not an AirSpeed sensor.
     /// \return Pointer to the AirSpeed sensor, or nullptr if this
-    /// Sensor is not a AirPressure sensor.
+    /// Sensor is not a AirSpeed sensor.
     /// \sa SensorType Type() const
     public: const AirSpeed *AirSpeedSensor() const;
 
