@@ -36,6 +36,7 @@ set (sdfs
   mesh_shape.sdf
   model.sdf
   model_state.sdf
+  navsat.sdf
   noise.sdf
   particle_emitter.sdf
   physics.sdf
