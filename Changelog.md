@@ -21,9 +21,6 @@
 1. ign -> gz Migrate Ignition Headers : sdformat
     * [Pull request #1118](https://github.com/gazebosim/sdformat/pull/1118)
 
-1. Don't assume CMAKE_INSTALL_*DIR variables are relative
-    * [Pull request #1190](https://github.com/gazebosim/sdformat/pull/1190)
-
 1. Sensor: add sdf::Errors output to API methods
     * [Pull request #1138](https://github.com/gazebosim/sdformat/pull/1138)
 
