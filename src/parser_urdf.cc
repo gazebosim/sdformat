@@ -2653,7 +2653,7 @@ void CreateSDF(TiXmlElement *_root,
   {
     if (!_link->child_links.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
              << "] has no inertia, ["
              << static_cast<int>(_link->child_links.size())
              << "] children links ignored.\n";
@@ -2661,7 +2661,7 @@ void CreateSDF(TiXmlElement *_root,
 
     if (!_link->child_joints.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
              << "] has no inertia, ["
              << static_cast<int>(_link->child_links.size())
              << "] children joints ignored.\n";
@@ -2669,13 +2669,13 @@ void CreateSDF(TiXmlElement *_root,
 
     if (_link->parent_joint)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
              << "] has no inertia, "
              << "parent joint [" << _link->parent_joint->name
              << "] ignored.\n";
     }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
+    sdfwarn << "urdf2sdf: link[" << _link->name
            << "] has no inertia, not modeled in sdf\n";
     return;
   }

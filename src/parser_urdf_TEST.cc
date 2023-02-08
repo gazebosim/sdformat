@@ -33,6 +33,20 @@ std::string getMinimalUrdfTxt()
 }
 
 /////////////////////////////////////////////////
+/// Check that _a contains _b
+static bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
+/////////////////////////////////////////////////
+/// Check that _a does not contain _b
+static bool not_contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) == std::string::npos;
+}
+
+/////////////////////////////////////////////////
 std::string convertUrdfStrToSdfStr(const std::string &_urdf)
 {
   SDF_SUPPRESS_DEPRECATED_BEGIN
@@ -842,6 +856,253 @@ TEST(URDFParser, OutputPrecision)
   EXPECT_EQ("0", poseValues[2]);
   EXPECT_EQ("0", poseValues[4]);
   EXPECT_EQ("0", poseValues[5]);
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, WarningWhenIgnoringLinksWithNoInertia)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+  #endif
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link'>"
+          << "    <inertial>"
+          << "      <mass value='1.0'/>"
+          << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+          << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+          << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+          << "    </inertial>"
+          << "  </link>"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link' />"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link1' />"
+          << "  <joint name='joint1_2' type='continuous'>"
+          << "    <parent link='link1' />"
+          << "    <child  link='link2' />"
+          << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << IGN_PI*0.5 << "' />"
+          << "  </joint>"
+          << "  <link name='link2'>"
+          << "    <inertial>"
+          << "      <mass value='1.0'/>"
+          << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+          << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+          << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+          << "    </inertial>"
+          << "  </link>"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia, [1] children links ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia, [1] children joints ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link1'>"
+          << "    <inertial>"
+          << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+          << "      <mass value='1.0'/>"
+          << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+          << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+          << "    </inertial>"
+          << "  </link>"
+          << "  <joint name='joint1_2' type='continuous'>"
+          << "    <parent link='link1' />"
+          << "    <child  link='link2' />"
+          << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << IGN_PI*0.5 << "' />"
+          << "  </joint>"
+          << "  <link name='link2' />"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia, parent joint [joint1_2] ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link1' />"
+          << "  <joint name='joint1_2' type='continuous'>"
+          << "    <parent link='link1' />"
+          << "    <child  link='link2' />"
+          << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 " << IGN_PI*0.5 << "' />"
+          << "  </joint>"
+          << "  <link name='link2' />"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia, [1] children links ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia, [1] children joints ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia, not modeled in sdf");
+
+    // It parses in sequence, therefore once ignored, no warnings for link2 will
+    // be issued.
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia, parent joint [joint1_2] will be "
+        "ignored");
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia, not modeled in sdf");
+  }
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(true);
+  #endif
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, WarningWhenIgnoringLinksWithSmallInertia)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+  #endif
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link'>"
+          << "    <inertial>"
+          << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+          << "      <mass value='1e-6'/>"
+          << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+          << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+          << "    </inertial>"
+          << "  </link>"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::ostringstream stream;
+    stream << "<robot name='test'>"
+          << "  <origin xyz='0 foo 0' rpy='0 0 0'/>"
+          << "  <link name='link'>"
+          << "    <inertial>"
+          << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+          << "      <mass value='2e-6'/>"
+          << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+          << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+          << "    </inertial>"
+          << "  </link>"
+          << "</robot>";
+    TiXmlDocument doc;
+    SDF_SUPPRESS_DEPRECATED_BEGIN
+    sdf::URDF2SDF parser_;
+    SDF_SUPPRESS_DEPRECATED_END
+    doc.Parse(stream.str().c_str());
+    TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
+
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+  }
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(true);
+  #endif
 }
 
 /////////////////////////////////////////////////
