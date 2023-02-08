@@ -893,7 +893,7 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithNoInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(not_contains, buffer.str(),
-        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link] has no inertia defined, not modeled in sdf");
   }
 
   {
@@ -913,7 +913,7 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithNoInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link] has no inertia defined, not modeled in sdf");
   }
 
   {
@@ -946,11 +946,13 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithNoInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia, [1] children links ignored");
+        "urdf2sdf: link[link1] has no inertia defined, [1] children links "
+        "ignored");
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia, [1] children joints ignored");
+        "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
+        "ignored");
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
   }
 
   {
@@ -983,9 +985,10 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithNoInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link2] has no inertia, parent joint [joint1_2] ignored");
+        "urdf2sdf: link[link2] has no inertia defined, parent joint [joint1_2] "
+        "ignored");
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link2] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
   }
 
   {
@@ -1011,19 +1014,21 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithNoInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia, [1] children links ignored");
+        "urdf2sdf: link[link1] has no inertia defined, [1] children links "
+        "ignored");
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia, [1] children joints ignored");
+        "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
+        "ignored");
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
 
     // It parses in sequence, therefore once ignored, no warnings for link2 will
     // be issued.
     EXPECT_PRED2(not_contains, buffer.str(),
-        "urdf2sdf: link[link2] has no inertia, parent joint [joint1_2] will be "
-        "ignored");
+        "urdf2sdf: link[link2] has no inertia defined, parent joint [joint1_2] "
+        "will be ignored");
     EXPECT_PRED2(not_contains, buffer.str(),
-        "urdf2sdf: link[link2] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
   }
 
   // Revert cerr rdbug so as to not interfere with other tests
@@ -1068,7 +1073,8 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithSmallInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link] has a mass value of less than 1e-6, not modeled "
+        "in sdf");
   }
 
   {
@@ -1095,7 +1101,8 @@ TEST(URDFParser, WarningWhenIgnoringLinksWithSmallInertia)
     TiXmlDocument sdf_result = parser_.InitModelDoc(&doc);
 
     EXPECT_PRED2(not_contains, buffer.str(),
-        "urdf2sdf: link[link] has no inertia, not modeled in sdf");
+        "urdf2sdf: link[link] has a mass value of less than 1e-6, not modeled "
+        "in sdf");
   }
 
   // Revert cerr rdbug so as to not interfere with other tests

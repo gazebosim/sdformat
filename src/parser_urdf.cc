@@ -2651,10 +2651,17 @@ void CreateSDF(TiXmlElement *_root,
   if (_link->name != "world" &&
       ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0)))
   {
+    const std::string inertia_issue =
+        _link->inertial && gz::math::equal(_link->inertial->mass, 0.0) ?
+        "a mass value of less than 1e-6" :
+        "no inertia defined";
+
     if (!_link->child_links.empty())
     {
       sdfwarn << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
+             << "] has "
+             << inertia_issue
+             << ", ["
              << static_cast<int>(_link->child_links.size())
              << "] children links ignored.\n";
     }
@@ -2662,7 +2669,9 @@ void CreateSDF(TiXmlElement *_root,
     if (!_link->child_joints.empty())
     {
       sdfwarn << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
+             << "] has "
+             << inertia_issue
+             << ", ["
              << static_cast<int>(_link->child_links.size())
              << "] children joints ignored.\n";
     }
@@ -2670,13 +2679,16 @@ void CreateSDF(TiXmlElement *_root,
     if (_link->parent_joint)
     {
       sdfwarn << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, "
-             << "parent joint [" << _link->parent_joint->name
+             << "] has "
+             << inertia_issue
+             << ", parent joint [" << _link->parent_joint->name
              << "] ignored.\n";
     }
 
     sdfwarn << "urdf2sdf: link[" << _link->name
-           << "] has no inertia, not modeled in sdf\n";
+           << "] has "
+           << inertia_issue
+           << ", not modeled in sdf\n";
     return;
   }
 
