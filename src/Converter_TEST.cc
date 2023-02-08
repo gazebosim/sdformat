@@ -2856,8 +2856,8 @@ TEST(Converter, NullDoc)
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  ASSERT_THROW(sdf::Converter::Convert(errors, nullptr, &convertXmlDoc, parserConfig),
-               sdf::AssertionInternalError);
+  ASSERT_THROW(sdf::Converter::Convert(errors, nullptr, &convertXmlDoc,
+               parserConfig), sdf::AssertionInternalError);
   ASSERT_TRUE(errors.empty());
   ASSERT_THROW(sdf::Converter::Convert(errors, &xmlDoc, nullptr, parserConfig),
                sdf::AssertionInternalError);
