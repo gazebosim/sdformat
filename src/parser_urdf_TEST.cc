@@ -23,6 +23,20 @@
 #include "parser_urdf.hh"
 
 /////////////////////////////////////////////////
+/// Check that _a contains _b
+static bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
+/////////////////////////////////////////////////
+/// Check that _a does not contain _b
+static bool not_contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) == std::string::npos;
+}
+
+/////////////////////////////////////////////////
 std::string getMinimalUrdfTxt()
 {
   std::ostringstream stream;
@@ -992,6 +1006,242 @@ TEST(URDFParser, ParseWhitespace)
 
   EXPECT_EQ("100", std::string(muElem->GetText()));
   EXPECT_EQ("1000", std::string(mu2Elem->GetText()));
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+  #endif
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'/>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'/>
+        <link name="link2">
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, [1] children links "
+        "ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
+        "ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <link name="link2"/>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia defined, parent joint [joint1_2] "
+        "ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'/>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name="link2"/>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, [1] children links "
+        "ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
+        "ignored");
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
+
+    // It parses in sequence, therefore once ignored, no warnings for link2 will
+    // be issued.
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia defined, parent joint [joint1_2] "
+        "will be ignored");
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
+  }
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(true);
+  #endif
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+  #endif
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value="11e-7" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(not_contains, buffer.str(),
+        "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-6, "
+        "not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value="1e-6" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-6, "
+        "not modeled in sdf");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value="9e-7" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(contains, buffer.str(),
+        "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-6, "
+        "not modeled in sdf");
+  }
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(true);
+  #endif
 }
 
 /////////////////////////////////////////////////
