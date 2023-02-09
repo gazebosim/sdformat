@@ -45,6 +45,7 @@ set(BINDINGS_MODULE_NAME "pysdformat${PROJECT_VERSION_MAJOR}")
 pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/_gz_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
+  src/sdf/pyAirSpeed.cc
   src/sdf/pyAltimeter.cc
   src/sdf/pyAtmosphere.cc
   src/sdf/pyBox.cc
@@ -122,6 +123,7 @@ if (BUILD_TESTING)
 
   set(python_tests
     pyAirPressure_TEST
+    pyAirSpeed_TEST
     pyAltimeter_TEST
     pyAtmosphere_TEST
     pyBox_TEST

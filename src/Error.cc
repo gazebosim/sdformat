@@ -15,6 +15,7 @@
  *
 */
 
+#include "sdf/Assert.hh"
 #include "sdf/Error.hh"
 
 using namespace sdf;
@@ -160,5 +161,22 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Error &_err)
       << "Msg: " << _err.Message();
   return _out;
 }
+
+namespace internal
+{
+
+void throwOrPrintError(sdf::Console::ConsoleStream &_out,
+                       const sdf::Error &_error)
+{
+  if (_error.Code() == sdf::ErrorCode::FATAL_ERROR)
+  {
+    SDF_ASSERT(false, _error.Message());
+  }
+  else
+  {
+    _out << _error.Message();
+  }
 }
-}
+}  // namespace internal
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf

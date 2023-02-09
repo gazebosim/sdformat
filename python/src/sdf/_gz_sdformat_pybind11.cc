@@ -19,6 +19,7 @@
 #include <gz/math/config.hh>
 
 #include "pyAirPressure.hh"
+#include "pyAirSpeed.hh"
 #include "pyAltimeter.hh"
 #include "pyAtmosphere.hh"
 #include "pyBox.hh"
@@ -73,6 +74,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   pybind11::module::import(gzMathModule.c_str());
 
   sdf::python::defineAirPressure(m);
+  sdf::python::defineAirSpeed(m);
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
