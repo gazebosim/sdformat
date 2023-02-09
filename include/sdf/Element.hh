@@ -559,6 +559,11 @@ namespace sdf
     /// \param[in] _child Pointer to the child to remove.
     public: void RemoveChild(ElementPtr _child);
 
+    /// \brief Remove a child element.
+    /// \param[in] _child Pointer to the child to remove.
+    /// \param[out] _errors Vector of errors.
+    public: void RemoveChild(ElementPtr _child, sdf::Errors &_errors);
+
     /// \brief Remove all child elements.
     public: void ClearElements();
 

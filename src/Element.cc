@@ -1277,6 +1277,14 @@ void Element::RemoveFromParent()
 /////////////////////////////////////////////////
 void Element::RemoveChild(ElementPtr _child)
 {
+  sdf::Errors errors;
+  RemoveChild(_child, errors);
+  throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
+{
   SDF_ASSERT(_child, "Cannot remove a nullptr child pointer");
 
   ElementPtr_V::iterator iter;
