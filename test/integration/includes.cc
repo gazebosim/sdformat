@@ -571,7 +571,6 @@ TEST(IncludesTest, WorldMergeInclude)
   auto *world = root.WorldByIndex(0);
   ASSERT_NE(nullptr, world);
 
-
   std::string proxyFrameName;
     proxyFrameName = "_merged__model_for_world_merge_include__model__";
 
