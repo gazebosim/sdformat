@@ -22,6 +22,7 @@
 #include <optional>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/sdf_config.h>
+#include "sdf/Console.hh"
 #include "sdf/system_util.hh"
 
 #ifdef _WIN32
@@ -271,8 +272,20 @@ namespace sdf
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
   };
-  }
-}
+
+  /// \brief Internal namespace. Functions and classes defined in this namespace
+  /// are for internal use only and maybe removed without a deprecation cycle.
+  namespace internal
+  {
+  /// \brief Prints the error to _out or throw using SDF_ASSERT depending on the
+  /// ErrorCode in _error.
+  /// \param[out] _out ostream to use for printing errors.
+  /// \param[in] _error _error The error object to be printed
+  void SDFORMAT_VISIBLE throwOrPrintError(sdf::Console::ConsoleStream &_out,
+                                          const sdf::Error &_error);
+  }  // namespace internal
+  }  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
 #ifdef _WIN32
 #pragma warning(pop)
 #endif
