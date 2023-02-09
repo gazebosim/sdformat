@@ -724,6 +724,27 @@ TEST(IncludesTest, InvalidMergeInclude)
     EXPECT_EQ(4, *errors[0].LineNumber());
   }
 
+  // merge-include can only be used directly under //model or //world
+  {
+    const std::string sdfString = R"(
+    <sdf version="1.9">
+      <world name="default">
+        <frame name="test_frame">
+          <include merge="true">
+            <uri>file://merge_robot</uri> <!-- NOLINT -->
+          </include>
+        </frame>
+      </world>
+    </sdf>)";
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(sdfString, config);
+    ASSERT_FALSE(errors.empty());
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
+    EXPECT_EQ("Merge-include does not support parent element of type frame",
+              errors[0].Message());
+    EXPECT_EQ(5, errors[0].LineNumber());
+  }
+
   // Syntax error in included file
   {
     // Redirect sdferr output
