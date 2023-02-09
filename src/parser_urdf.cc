@@ -2669,32 +2669,44 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   if (_link->name != "world" &&
       ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0)))
   {
+    const std::string inertia_issue =
+        _link->inertial && gz::math::equal(_link->inertial->mass, 0.0) ?
+        "a mass value of less than or equal to 1e-6" :
+        "no inertia defined";
+
     if (!_link->child_links.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
+      sdfwarn << "urdf2sdf: link[" << _link->name
+             << "] has "
+             << inertia_issue
+             << ", ["
              << static_cast<int>(_link->child_links.size())
              << "] children links ignored.\n";
     }
 
     if (!_link->child_joints.empty())
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
+      sdfwarn << "urdf2sdf: link[" << _link->name
+             << "] has "
+             << inertia_issue
+             << ", ["
              << static_cast<int>(_link->child_links.size())
              << "] children joints ignored.\n";
     }
 
     if (_link->parent_joint)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, "
-             << "parent joint [" << _link->parent_joint->name
+      sdfwarn << "urdf2sdf: link[" << _link->name
+             << "] has "
+             << inertia_issue
+             << ", parent joint [" << _link->parent_joint->name
              << "] ignored.\n";
     }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
-           << "] has no inertia, not modeled in sdf\n";
+    sdfwarn << "urdf2sdf: link[" << _link->name
+           << "] has "
+           << inertia_issue
+           << ", not modeled in sdf\n";
     return;
   }
 
