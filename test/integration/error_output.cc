@@ -237,7 +237,10 @@ TEST(ErrorOutput, ElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
+  // Check both RemoveChild methods behave in the same way
   ASSERT_THROW(elem->RemoveChild(sdf::ElementPtr()),
+               sdf::AssertionInternalError);
+  ASSERT_THROW(elem->RemoveChild(sdf::ElementPtr(), errors),
                sdf::AssertionInternalError);
 }
 
