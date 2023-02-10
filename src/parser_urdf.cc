@@ -150,11 +150,18 @@ void AddTransform(tinyxml2::XMLElement *_elem,
     const gz::math::Pose3d &_transform);
 
 /// create SDF from URDF link
-void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link);
+void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
+    const ParserConfig& _parserConfig);
 
 /// create SDF Link block based on URDF
 void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                 const gz::math::Pose3d &_currentTransform);
+
+/// create SDF Frame block based on a URDF link with small (less than 1e-6) or
+/// no mass
+void CreateFrameFromLink(tinyxml2::XMLElement *_root,
+                         urdf::LinkConstSharedPtr _link,
+                         const gz::math::Pose3d &_currentTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
@@ -2661,13 +2668,15 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 
 ////////////////////////////////////////////////////////////////////////////////
 void CreateSDF(tinyxml2::XMLElement *_root,
-               urdf::LinkConstSharedPtr _link)
+               urdf::LinkConstSharedPtr _link,
+               const ParserConfig& _parserConfig)
 {
   // must have an <inertial> block and cannot have zero mass.
   //  allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
   if (_link->name != "world" &&
-      ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0)))
+      ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0)) &&
+      !_parserConfig.URDFConvertLinkWithNoMassToFrame())
   {
     const std::string inertia_issue =
         _link->inertial && gz::math::equal(_link->inertial->mass, 0.0) ?
@@ -2716,13 +2725,21 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       (!_link->parent_joint ||
        !FixedJointShouldBeReduced(_link->parent_joint)))
   {
-    CreateLink(_root, _link, gz::math::Pose3d::Zero);
+    if ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0) &&
+        _parserConfig.URDFConvertLinkWithNoMassToFrame())
+    {
+      CreateFrameFromLink(_root, _link, gz::math::Pose3d::Zero);
+    }
+    else
+    {
+      CreateLink(_root, _link, gz::math::Pose3d::Zero);
+    }
   }
 
   // recurse into children
   for (unsigned int i = 0 ; i < _link->child_links.size() ; ++i)
   {
-    CreateSDF(_root, _link->child_links[i]);
+    CreateSDF(_root, _link->child_links[i], _parserConfig);
   }
 }
 
@@ -2797,6 +2814,45 @@ void CreateLink(tinyxml2::XMLElement *_root,
 
   // copy sdf extensions data
   InsertSDFExtensionLink(elem, _link->name);
+
+  // make a <joint:...> block
+  CreateJoint(_root, _link, _currentTransform);
+
+  // add body to document
+  _root->LinkEndChild(elem);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void CreateFrameFromLink(tinyxml2::XMLElement *_root,
+                         urdf::LinkConstSharedPtr _link,
+                         const gz::math::Pose3d &_currentTransform)
+{
+  // create new body
+  tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("frame");
+
+  // set body name
+  elem->SetAttribute("name", _link->name.c_str());
+
+  // compute global transform
+  gz::math::Pose3d localTransform;
+  // this is the transform from parent link to current _link
+  // this transform does not exist for the root link
+  if (_link->parent_joint)
+  {
+    tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
+    pose->SetAttribute("relative_to", _link->parent_joint->name.c_str());
+    elem->LinkEndChild(pose);
+  }
+  else
+  {
+    sdfdbg << "[" << _link->name << "] has no parent joint\n";
+
+    if (_currentTransform != gz::math::Pose3d::Zero)
+    {
+      // create origin tag for this element
+      AddTransform(elem, _currentTransform);
+    }
+  }
 
   // make a <joint:...> block
   CreateJoint(_root, _link, _currentTransform);
@@ -3318,13 +3374,13 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
           child = rootLink->child_links.begin();
           child != rootLink->child_links.end(); ++child)
       {
-        CreateSDF(robot, (*child));
+        CreateSDF(robot, (*child), _config);
       }
     }
     else
     {
       // convert, starting from root link
-      CreateSDF(robot, rootLink);
+      CreateSDF(robot, rootLink, _config);
     }
 
     // insert the extensions without reference into <robot> root level
