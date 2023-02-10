@@ -1498,7 +1498,7 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
     EXPECT_PRED2(contains, buffer.str(),
         "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-6, "
         "converting to a frame in sdf");
-    
+
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
     tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
