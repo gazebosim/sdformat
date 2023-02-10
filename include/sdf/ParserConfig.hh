@@ -174,6 +174,13 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
 
+  /// @brief Set the convertLinkWithNoMassToFrame flag value.
+  public: void URDFSetConvertLinkWithNoMassToFrame(
+      bool _convertLinkWithNoMassToFrame);
+
+  /// @brief Get the convertLinkWithNoMassToFrame flag value.
+  public: bool URDFConvertLinkWithNoMassToFrame() const;
+
   /// \brief Private data pointer.
   IGN_UTILS_IMPL_PTR(dataPtr)
 };
