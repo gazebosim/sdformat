@@ -207,7 +207,7 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
     EXPECT_FALSE(errors.empty()) << errors;
 
     bool foundMissingLinkError = false;
-    for (const auto &e: errors)
+    for (const auto &e : errors)
     {
       if (e.Code() == sdf::ErrorCode::MODEL_WITHOUT_LINK)
       {
@@ -273,7 +273,7 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     EXPECT_FALSE(errors.empty());
 
     bool foundJointParentSameAsChildError = false;
-    for (const auto &e: errors)
+    for (const auto &e : errors)
     {
       if (e.Code() == sdf::ErrorCode::JOINT_PARENT_SAME_AS_CHILD)
       {
@@ -325,7 +325,7 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     EXPECT_FALSE(errors.empty());
 
     bool foundJointParentSameAsChildError = false;
-    for (const auto &e: errors)
+    for (const auto &e : errors)
     {
       if (e.Code() == sdf::ErrorCode::JOINT_PARENT_SAME_AS_CHILD)
       {
@@ -374,7 +374,7 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     EXPECT_FALSE(errors.empty());
 
     bool foundJointParentSameAsChildError = false;
-    for (const auto &e: errors)
+    for (const auto &e : errors)
     {
       if (e.Code() == sdf::ErrorCode::JOINT_PARENT_SAME_AS_CHILD)
       {
