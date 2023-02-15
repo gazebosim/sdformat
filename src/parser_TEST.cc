@@ -23,9 +23,9 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
 
 #include <gz/utils/Environment.hh>
+#include "test_config.hh"
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -840,7 +840,8 @@ int main(int argc, char **argv)
 {
   // temporarily set HOME
   std::string homeDir;
-  sdf::testing::TestSetHomePath(homeDir);
+  sdf::testing::TestTmpPath(homeDir);
+  gz::utils::setenv("HOME", homeDir);
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);

@@ -135,7 +135,7 @@ struct Document: public Value
 
 Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
 {
-  std::fstream fs;
+  std::ifstream fs;
   fs.open(_filePath);
   if (!fs.good())
   {
