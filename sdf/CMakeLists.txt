@@ -12,13 +12,28 @@ add_subdirectory(1.10)
 add_custom_target(schema)
 add_dependencies(schema schema1_10)
 
+# Optionally use the python script (default in sdf14+)
+if (EMBEDSDF_PY)
+  if (NOT Python3_Interpreter_FOUND)
+    gz_build_error("Python is required to generate the C++ file with the SDF content")
+  endif()
+
 # Generate the EmbeddedSdf.cc file, which contains all the supported SDF
 # descriptions in a map of strings. The parser.cc file uses EmbeddedSdf.hh.
-execute_process(
-  COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.rb
-  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
-  OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
-)
+  execute_process(
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py
+      --output-file "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
+    OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
+  )
+else()
+  execute_process(
+    COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
+    OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
+  )
+endif()
+
 
 # Generate aggregated SDF description files for use by the sdformat.org
 # website. If the description files change, the generated full*.sdf files need
