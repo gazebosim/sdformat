@@ -558,7 +558,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 ### Additions
 
 1. **world.sdf**: A joint can be specified directly in a world.
-1. **world.sdf**: Merge-includes are now allowed in worlds. The included models must not contain links or grippers.
+1. **world.sdf**: Merge-includes are now allowed in worlds. The included models must not contain top-level links or grippers.
 
 ### Modifications
 
