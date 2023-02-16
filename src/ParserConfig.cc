@@ -50,8 +50,11 @@ class sdf::ParserConfig::Implementation
   /// reading the SDF/URDF file.
   public: bool preserveFixedJoint = false;
 
-  /// @brief Flag to convert of links with small (equal to or less than 1e-6) or
-  /// no mass in URDF to frames in SDF.
+  /// \brief Minimum allowed URDF link mass when converting to SDF.
+  public: double minimumAllowedLinkMass = 1e-6;
+
+  /// \brief Flag to convert of links with small (equal to or less than
+  /// minimumAllowedLinkMass) or no mass in URDF to frames in SDF.
   public: bool convertLinkWithNoMassToFrame = false;
 
   /// \brief Flag to use <include> tags within ToElement methods instead of
@@ -176,6 +179,18 @@ void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
 bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::URDFSetMinimumAllowedLinkMass(double _minimumAllowedLinkMass)
+{
+  this->dataPtr->minimumAllowedLinkMass = _minimumAllowedLinkMass;
+}
+
+/////////////////////////////////////////////////
+double ParserConfig::URDFMinimumAllowedLinkMass() const
+{
+  return this->dataPtr->minimumAllowedLinkMass;
 }
 
 /////////////////////////////////////////////////

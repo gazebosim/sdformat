@@ -174,11 +174,23 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
 
-  /// @brief Set the convertLinkWithNoMassToFrame flag value.
+  /// \brief Set the minimum allowed URDF link mass when converting to SDF.
+  /// Default value as 1e-6.
+  public: void URDFSetMinimumAllowedLinkMass(double _minimumAllowedLinkMass);
+
+  /// \brief Get the minimum allowed URDF link mass when converting to SDF.
+  /// Default value as 1e-6.
+  public: double URDFMinimumAllowedLinkMass() const;
+
+  /// \brief Set the convertLinkWithNoMassToFrame flag value, which determines
+  /// whether to convert URDF links with small (equal to or less than
+  /// URDFMinimumAllowedLinkMass) or no mass to frames in SDF.
   public: void URDFSetConvertLinkWithNoMassToFrame(
       bool _convertLinkWithNoMassToFrame);
 
-  /// @brief Get the convertLinkWithNoMassToFrame flag value.
+  /// \brief Get the convertLinkWithNoMassToFrame flag value, which determines
+  /// whether to convert URDF links with small (equal to or less than
+  /// URDFMinimumAllowedLinkMass) or no mass to frames in SDF.
   public: bool URDFConvertLinkWithNoMassToFrame() const;
 
   /// \brief Private data pointer.
