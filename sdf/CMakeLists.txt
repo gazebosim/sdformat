@@ -28,7 +28,7 @@ if (EMBEDSDF_PY)
   )
 else()
   execute_process(
-    COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py
+    COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.rb
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
     OUTPUT_FILE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
   )
