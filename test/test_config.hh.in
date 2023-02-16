@@ -22,8 +22,8 @@
 
 #include <sdf/Filesystem.hh>
 
-#cmakedefine PROJECT_SOURCE_DIR
-#cmakedefine PROJECT_BINARY_DIR
+#cmakedefine PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
+#cmakedefine PROJECT_BINARY_DIR "@PROJECT_BINARY_DIR@"
 
 #ifdef PROJECT_SOURCE_DIR
 constexpr const char* kProjectSourceDir = PROJECT_SOURCE_DIR;

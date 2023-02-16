@@ -5,16 +5,19 @@ load(
 )
 
 cmake_configure_file(
-  name = "config",
-  src = "test_config.hh.in",
-  out = "test_config.hh",
-  cmakelists = ["CMakeLists.txt"],
-  defines = []
+    name = "config",
+    src = "test_config.hh.in",
+    out = "test_config.hh",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [],
 )
 
 cc_library(
     name = "test_utils",
-    hdrs = ["test_utils.hh", "test_config.hh"],
+    hdrs = [
+        "test_config.hh",
+        "test_utils.hh",
+    ],
     includes = ["."],
     visibility = ["//visibility:public"],
 )

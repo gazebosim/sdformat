@@ -8,6 +8,7 @@ load(
     "gz_include_header",
 )
 load("@gz//bazel/skylark:gz_py.bzl", "gz_py_binary")
+load("@gz//bazel/lint:lint.bzl", "add_lint_tests")
 
 package(
     default_visibility = GZ_VISIBILITY,
@@ -40,7 +41,7 @@ genrule(
         "sdf/**/*.convert",
     ]),
     outs = ["EmbeddedSdf.cc"],
-    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root ./sdformat/sdf --input-files $(SRCS)", # noqa
+    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root ./sdformat/sdf --input-files $(SRCS)",  # noqa
     tools = [":embed_sdf"],
 )
 
@@ -107,13 +108,13 @@ cc_library(
     name = "sdformat",
     srcs = sources + private_headers + ["EmbeddedSdf.cc"],
     hdrs = public_headers,
+    defines = [
+        'SDF_SHARE_PATH=\\".\\"',
+        'SDF_VERSION_PATH=\\"sdformat\\"',
+    ],
     includes = [
         "include",
         "src",
-    ],
-    defines = [
-      'SDF_SHARE_PATH=\\".\\"',
-      'SDF_VERSION_PATH=\\"sdformat\\"',
     ],
     deps = [
         ":urdf",
@@ -149,3 +150,5 @@ test_sources = glob(
 ) for src in test_sources]
 
 exports_files(["sdf"])
+
+add_lint_tests()
