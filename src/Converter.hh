@@ -108,11 +108,9 @@ namespace sdf
     /// \param[in] _moveElem A 'convert' element that describes the move
     /// operation.
     /// \param[in] _copy True to copy the element
-    /// \param[out] _errors Vector of errors.
     private: static void Move(tinyxml2::XMLElement *_elem,
                               tinyxml2::XMLElement *_moveElem,
-                              const bool _copy,
-                              sdf::Errors &_errors);
+                              const bool _copy);
 
     /// \brief Add an element or attribute to an element.
     /// \param[in] _elem The element to receive the value.

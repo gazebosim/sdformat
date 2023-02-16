@@ -22,6 +22,7 @@
 
 #include "sdf/Element.hh"
 #include "sdf/Error.hh"
+#include "sdf/Exception.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
 #include "sdf/Sensor.hh"
@@ -205,9 +206,14 @@ TEST(ErrorOutput, ElementErrorOutput)
   EXPECT_NE(std::string::npos, errors[1].Message().find(
       "Invalid parameter"));
 
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
   errors.clear();
-  elem->AddValue("type", "value", true, "a", "b", errors);
-  ASSERT_EQ(errors.size(), 9u);
+  ASSERT_THROW(elem->AddValue("type", "value", true, "a", "b", errors),
+               sdf::AssertionInternalError);
+  ASSERT_EQ(errors.size(), 6u);
+
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Unknown parameter type[type]"));
   EXPECT_NE(std::string::npos, errors[1].Message().find(
@@ -220,27 +226,22 @@ TEST(ErrorOutput, ElementErrorOutput)
       "Unknown parameter type[type]"));
   EXPECT_NE(std::string::npos, errors[5].Message().find(
       "Invalid [max] parameter in SDFormat description of [testElement]"));
-  EXPECT_NE(std::string::npos, errors[6].Message().find(
-      "Unknown parameter type[type]"));
-  EXPECT_NE(std::string::npos, errors[7].Message().find(
-      "Failed to set value '0' to key [testElement] for new parent element"
-      " of name 'testElement', reverting to previous value '0'."));
-  EXPECT_NE(std::string::npos, errors[8].Message().find(
-      "Cannot set parent Element of value to itself."));
   errors.clear();
+  buffer.str(std::string());
 
   elem->GetElement("nonExistentElement", errors);
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Missing element description for [nonExistentElement]"));
-  errors.clear();
 
-  elem->RemoveChild(sdf::ElementPtr(), errors);
-  ASSERT_EQ(errors.size(), 1u);
-  EXPECT_NE(std::string::npos, errors[0].Message().find(
-      "Cannot remove a nullptr child pointer"));
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
+  // Check both RemoveChild methods behave in the same way
+  ASSERT_THROW(elem->RemoveChild(sdf::ElementPtr()),
+               sdf::AssertionInternalError);
+  ASSERT_THROW(elem->RemoveChild(sdf::ElementPtr(), errors),
+               sdf::AssertionInternalError);
 }
 
 ////////////////////////////////////////

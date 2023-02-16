@@ -182,11 +182,8 @@ void Element::AddValue(const std::string &_type,
       std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
                               _required, _minValue, _maxValue, _errors,
                               _description);
-  if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
-  {
-    _errors.push_back({ErrorCode::FATAL_ERROR,
-        "Cannot set parent Element of value to itself."});
-  }
+  SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+      "Cannot set parent Element of value to itself.");
 }
 
 /////////////////////////////////////////////////
@@ -199,12 +196,8 @@ ParamPtr Element::CreateParam(const std::string &_key,
 {
   ParamPtr param = std::make_shared<Param>(
       _key, _type, _defaultValue, _required, _errors, _description);
-
-  if(!param->SetParentElement(shared_from_this(), _errors))
-  {
-    _errors.push_back({ErrorCode::FATAL_ERROR,
-          "Cannot set parent Element of created Param to itself."});
-  }
+  SDF_ASSERT(param->SetParentElement(shared_from_this()),
+      "Cannot set parent Element of created Param to itself.");
   return param;
 }
 
@@ -263,13 +256,9 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     auto clonedAttribute = (*aiter)->Clone();
-    if (!clonedAttribute->SetParentElement(clone, _errors))
-    {
-        _errors.push_back({ErrorCode::FATAL_ERROR,
-            "Cannot set parent Element of cloned attribute Param to cloned "
-            "Element."});
-        return nullptr;
-    }
+    SDF_ASSERT(clonedAttribute->SetParentElement(clone),
+        "Cannot set parent Element of cloned attribute Param to cloned "
+        "Element.");
     clone->dataPtr->attributes.push_back(clonedAttribute);
   }
 
@@ -290,14 +279,8 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
-
-    if (!clone->dataPtr->value->SetParentElement(clone, _errors))
-    {
-      _errors.push_back({ErrorCode::FATAL_ERROR,
-        "Cannot set parent Element of cloned value Param to cloned "
-        "Element."});
-      return nullptr;
-    }
+    SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
+        "Cannot set parent Element of cloned value Param to cloned Element.");
   }
 
   if (this->dataPtr->includeElement)
@@ -341,13 +324,8 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
     }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-
-    if (!param->SetParentElement(shared_from_this(), _errors))
-    {
-      _errors.push_back({ErrorCode::FATAL_ERROR,
-          "Cannot set parent Element of copied attribute Param to itself."});
-      return;
-    }
+    SDF_ASSERT(param->SetParentElement(shared_from_this()),
+        "Cannot set parent Element of copied attribute Param to itself.");
   }
 
   if (_elem->GetValue())
@@ -360,12 +338,8 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
     {
       *(this->dataPtr->value) = *(_elem->GetValue());
     }
-    if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
-    {
-      _errors.push_back({ErrorCode::FATAL_ERROR,
-          "Cannot set parent Element of copied attribute Param to itself."});
-      return;
-    }
+    SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+        "Cannot set parent Element of copied value Param to itself.");
   }
 
   this->dataPtr->elementDescriptions.clear();
@@ -1309,14 +1283,9 @@ void Element::RemoveChild(ElementPtr _child)
 }
 
 /////////////////////////////////////////////////
-void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
+void Element::RemoveChild(ElementPtr _child, sdf::Errors &)
 {
-  if (!_child)
-  {
-    _errors.push_back({ErrorCode::FATAL_ERROR,
-        "Cannot remove a nullptr child pointer"});
-    return;
-  }
+  SDF_ASSERT(_child, "Cannot remove a nullptr child pointer");
 
   ElementPtr_V::iterator iter;
   iter = std::find(this->dataPtr->elements.begin(),
