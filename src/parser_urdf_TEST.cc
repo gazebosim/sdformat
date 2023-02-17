@@ -21,20 +21,7 @@
 
 #include "sdf/sdf.hh"
 #include "parser_urdf.hh"
-
-/////////////////////////////////////////////////
-/// Check that _a contains _b
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
-/////////////////////////////////////////////////
-/// Check that _a does not contain _b
-static bool not_contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) == std::string::npos;
-}
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 std::string getMinimalUrdfTxt()
@@ -1033,7 +1020,7 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
   }
 
@@ -1063,13 +1050,13 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children links "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
   }
 
@@ -1099,10 +1086,10 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, parent joint [joint1_2] "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
   }
 
@@ -1126,21 +1113,21 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children links "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
 
     // It parses in sequence, therefore once ignored, no warnings for link2 will
     // be issued.
-    EXPECT_PRED2(not_contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, parent joint [joint1_2] "
         "will be ignored");
-    EXPECT_PRED2(not_contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
   }
 
@@ -1182,7 +1169,7 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(not_contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
         " not modeled in sdf");
   }
@@ -1207,7 +1194,7 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
         " not modeled in sdf");
   }
@@ -1232,7 +1219,7 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
         " not modeled in sdf");
   }

@@ -22,6 +22,7 @@
 #include "sdf/parser.hh"
 #include "sdf/ParserConfig.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 sdf::SDFPtr InitSDF()
@@ -29,13 +30,6 @@ sdf::SDFPtr InitSDF()
   sdf::SDFPtr sdf(new sdf::SDF());
   sdf::init(sdf);
   return sdf;
-}
-
-/////////////////////////////////////////////////
-/// Check that _a contains _b
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
 }
 
 //////////////////////////////////////////////////
@@ -152,7 +146,7 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
     sdf::Errors errors;
 
     ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
     EXPECT_TRUE(errors.empty()) << errors;
 
@@ -192,13 +186,13 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
     sdf::Errors errors;
 
     EXPECT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children links "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children joints "
         "ignored");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
     ASSERT_TRUE(errors.empty()) << errors;
 
