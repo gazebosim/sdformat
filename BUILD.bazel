@@ -24,7 +24,7 @@ gz_configure_header(
     src = "include/sdf/config.hh.in",
     cmakelists = ["CMakeLists.txt"],
     defines = {
-        "CMAKE_INSTALL_FULL_DATAROOTDIR": "",
+        "CMAKE_INSTALL_FULL_DATAROOTDIR": "unused",
     },
     package = "sdformat",
 )
