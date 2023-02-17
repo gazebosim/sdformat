@@ -2689,7 +2689,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     if (_link->inertial && gz::math::equal(_link->inertial->mass, 0.0,
         _parserConfig.URDFMinimumAllowedLinkMass()))
     {
-      inertiaIssue << "a mass value of less than or equal to"
+      inertiaIssue << "a mass value of less than or equal to "
                     << _parserConfig.URDFMinimumAllowedLinkMass();
     }
     else

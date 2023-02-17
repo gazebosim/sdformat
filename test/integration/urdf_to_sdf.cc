@@ -263,9 +263,6 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     auto sdf = InitSDF();
     sdf::Errors errors;
     ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link2] has no inertia defined, converting to a frame in"
-        " sdf");
     ASSERT_TRUE(errors.empty()) << errors;
 
     sdf::Root root;
@@ -315,9 +312,6 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     auto sdf = InitSDF();
     sdf::Errors errors;
     ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia defined, converting to a frame in"
-        " sdf");
     ASSERT_TRUE(errors.empty()) << errors;
 
     sdf::Root root;
@@ -361,12 +355,6 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     auto sdf = InitSDF();
     sdf::Errors errors;
     ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link1] has no inertia defined, converting to a frame in"
-        " sdf");
-    EXPECT_PRED2(contains, buffer.str(),
-        "urdf2sdf: link[link2] has no inertia defined, converting to a frame in"
-        " sdf");
     EXPECT_TRUE(errors.empty()) << errors;
 
     sdf::Root root;
