@@ -998,13 +998,18 @@ TEST(URDFParser, ParseWhitespace)
 /////////////////////////////////////////////////
 TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
 {
-  // Capture sdferr output
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-  #endif
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
 
   {
     // clear the contents of the buffer
@@ -1130,24 +1135,23 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithNoInertia)
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(true);
-  #endif
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
 {
-  // Capture sdferr output
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-  #endif
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
 
   {
     // clear the contents of the buffer
@@ -1223,24 +1227,23 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
         "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
         " not modeled in sdf");
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(true);
-  #endif
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
 {
-  // Capture sdferr output
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-  #endif
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
 
   {
     // clear the contents of the buffer
@@ -1397,24 +1400,23 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
     ASSERT_NE(nullptr, joint->Attribute("name"));
     EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(true);
-  #endif
 }
 
 /////////////////////////////////////////////////
 TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
 {
-  // Capture sdferr output
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-  #endif
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
 
   {
     // clear the contents of the buffer
@@ -1503,12 +1505,6 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
     tinyxml2::XMLElement *link = model->FirstChildElement("link");
     ASSERT_EQ(nullptr, link);
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(true);
-  #endif
 }
 
 /////////////////////////////////////////////////

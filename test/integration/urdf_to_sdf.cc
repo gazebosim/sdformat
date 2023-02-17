@@ -111,13 +111,18 @@ TEST(URDF2SDF, ValidJointedURDF)
 //////////////////////////////////////////////////
 TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
 {
-  // Capture sdferr output
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-  #endif
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
 
   sdf::ParserConfig config;
 
@@ -211,24 +216,23 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
     }
     EXPECT_TRUE(foundMissingLinkError);
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(true);
-  #endif
 }
 
 //////////////////////////////////////////////////
 TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
 {
-  // Capture sdferr output
+  // Redirect sdfwarn output
   std::stringstream buffer;
-  auto old = std::cerr.rdbuf(buffer.rdbuf());
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-  #endif
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
 
   sdf::ParserConfig config;
   config.URDFSetConvertLinkWithNoMassToFrame(true);
@@ -374,10 +378,4 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
     EXPECT_TRUE(model->FrameNameExists("link2"));
     EXPECT_TRUE(model->JointNameExists("joint1_2"));
   }
-
-  // Revert cerr rdbug so as to not interfere with other tests
-  std::cerr.rdbuf(old);
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(true);
-  #endif
 }
