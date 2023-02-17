@@ -2861,8 +2861,6 @@ void CreateFrameFromLink(tinyxml2::XMLElement *_root,
   }
   else
   {
-    sdfdbg << "[" << _link->name << "] has no parent joint\n";
-
     if (_currentTransform != gz::math::Pose3d::Zero)
     {
       // create origin tag for this element
