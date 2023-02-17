@@ -46,16 +46,10 @@ TEST(URDF2SDF, ValidBasicURDF)
       </link>
     </robot>)";
 
-  auto sdf = InitSDF();
   sdf::ParserConfig config;
-  sdf::Errors errors;
-
-  ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-  ASSERT_TRUE(errors.empty()) << errors;
-  ASSERT_TRUE(sdf);
 
   sdf::Root root;
-  errors = root.Load(sdf);
+  sdf::Errors errors = root.LoadSdfString(urdfXml, config);
   ASSERT_TRUE(errors.empty()) << errors;
 
   const sdf::Model *model = root.Model();
@@ -89,16 +83,10 @@ TEST(URDF2SDF, ValidJointedURDF)
       </joint>
     </robot>)";
 
-  auto sdf = InitSDF();
   sdf::ParserConfig config;
-  sdf::Errors errors;
-
-  ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-  ASSERT_TRUE(errors.empty()) << errors;
-  ASSERT_TRUE(sdf);
 
   sdf::Root root;
-  errors = root.Load(sdf);
+  sdf::Errors errors = root.LoadSdfString(urdfXml, config);
   ASSERT_TRUE(errors.empty()) << errors;
 
   const sdf::Model *model = root.Model();
@@ -147,16 +135,10 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
         </joint>
       </robot>)";
 
-    auto sdf = InitSDF();
-    sdf::Errors errors;
-
-    ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link2] has no inertia defined, not modeled in sdf");
-    EXPECT_TRUE(errors.empty()) << errors;
-
-    sdf::Root root;
-    errors = root.Load(sdf);
     ASSERT_TRUE(errors.empty()) << errors;
 
     const sdf::Model *model = root.Model();
@@ -187,10 +169,8 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
         </joint>
       </robot>)";
 
-    auto sdf = InitSDF();
-    sdf::Errors errors;
-
-    EXPECT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
+    sdf::Root root;
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, [1] children links "
         "ignored");
@@ -199,10 +179,6 @@ TEST(URDF2SDF, WarnURDFLinkWithoutInertial)
         "ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no inertia defined, not modeled in sdf");
-    ASSERT_TRUE(errors.empty()) << errors;
-
-    sdf::Root root;
-    errors = root.Load(sdf);
     EXPECT_FALSE(errors.empty()) << errors;
 
     bool foundMissingLinkError = false;
@@ -258,13 +234,8 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
         </joint>
       </robot>)";
 
-    auto sdf = InitSDF();
-    sdf::Errors errors;
-    ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    ASSERT_TRUE(errors.empty()) << errors;
-
     sdf::Root root;
-    errors = root.Load(sdf);
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
     EXPECT_FALSE(errors.empty());
 
     bool foundJointParentSameAsChildError = false;
@@ -307,13 +278,8 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
         </joint>
       </robot>)";
 
-    auto sdf = InitSDF();
-    sdf::Errors errors;
-    ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    ASSERT_TRUE(errors.empty()) << errors;
-
     sdf::Root root;
-    errors = root.Load(sdf);
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
     EXPECT_FALSE(errors.empty());
 
     bool foundJointParentSameAsChildError = false;
@@ -350,13 +316,8 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
         </joint>
       </robot>)";
 
-    auto sdf = InitSDF();
-    sdf::Errors errors;
-    ASSERT_TRUE(sdf::readString(urdfXml, config, sdf, errors));
-    EXPECT_TRUE(errors.empty()) << errors;
-
     sdf::Root root;
-    errors = root.Load(sdf);
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
     EXPECT_FALSE(errors.empty());
 
     bool foundJointParentSameAsChildError = false;
