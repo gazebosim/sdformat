@@ -1161,31 +1161,6 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
       <robot name='test_robot'>
         <link name='link1'>
           <inertial>
-            <mass value="11e-7" />
-            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
-            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
-          </inertial>
-        </link>
-      </robot>)";
-
-    sdf::URDF2SDF parser;
-    sdf::ParserConfig config_;
-    tinyxml2::XMLDocument sdfResult;
-    parser.InitModelString(str, config_, &sdfResult);
-
-    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
-        " not modeled in sdf");
-  }
-
-  {
-    // clear the contents of the buffer
-    buffer.str("");
-
-    std::string str = R"(
-      <robot name='test_robot'>
-        <link name='link1'>
-          <inertial>
             <mass value="1e-6" />
             <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
             <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
@@ -1198,9 +1173,9 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
 
-    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
-        " not modeled in sdf");
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "urdf2sdf: link[link1] has a mass value of less than 1e-06, not "
+        "modeled in sdf");
   }
 
   {
@@ -1224,8 +1199,8 @@ TEST(URDFParser, DefaultWarnsWhenIgnoringLinksWithSmallMass)
     parser.InitModelString(str, config_, &sdfResult);
 
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link1] has a mass value of less than or equal to 1e-06,"
-        " not modeled in sdf");
+        "urdf2sdf: link[link1] has a mass value of less than 1e-06, not "
+        "modeled in sdf");
   }
 }
 
@@ -1249,6 +1224,7 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
     // clear the contents of the buffer
     buffer.str("");
 
+    // No fixed joints present, conversion does not occur
     std::string str = R"(
       <robot name='test_robot'>
         <link name='link1'/>
@@ -1256,26 +1232,30 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
 
     sdf::URDF2SDF parser;
     sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
     config_.URDFSetConvertLinkWithNoMassToFrame(true);
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
+        "fixed child joints, unable to convert to frame in sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
     tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
     ASSERT_NE(nullptr, model);
     tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
-    ASSERT_NE(nullptr, frame);
-    ASSERT_NE(nullptr, frame->Attribute("name"));
-    EXPECT_EQ("link1", std::string(frame->Attribute("name")));
+    EXPECT_EQ(nullptr, frame);
     tinyxml2::XMLElement *link = model->FirstChildElement("link");
-    ASSERT_EQ(nullptr, link);
+    EXPECT_EQ(nullptr, link);
   }
 
   {
     // clear the contents of the buffer
     buffer.str("");
 
+    // continuous joint, conversion of parent link to frame does not occur
     std::string str = R"(
       <robot name='test_robot'>
         <link name='link1'/>
@@ -1295,9 +1275,63 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
 
     sdf::URDF2SDF parser;
     sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
     config_.URDFSetConvertLinkWithNoMassToFrame(true);
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
+        "fixed child joints, unable to convert to frame in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    while (link)
+    {
+      ASSERT_NE(nullptr, link->Attribute("name"));
+      EXPECT_NE("link1", std::string(link->Attribute("name")));
+      link = link->NextSiblingElement("link");
+    }
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    // fixed joint, with PreserveFixedJoint set to true, conversion of parent
+    // link to frame occurs
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'/>
+        <link name="link2">
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
+    config_.URDFSetConvertLinkWithNoMassToFrame(true);
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
+        "fixed child joints, unable to convert to frame in sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1307,20 +1341,20 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link1", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
     tinyxml2::XMLElement *link = model->FirstChildElement("link");
     ASSERT_NE(nullptr, link);
     ASSERT_NE(nullptr, link->Attribute("name"));
     EXPECT_EQ("link2", std::string(link->Attribute("name")));
-    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
   }
 
   {
     // clear the contents of the buffer
     buffer.str("");
 
+    // fixed joint, with PreserveFixedJoint set to true, conversion of child
+    // link to frame occurs
     std::string str = R"(
       <robot name='test_robot'>
         <link name='link1'>
@@ -1331,7 +1365,7 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
           </inertial>
         </link>
         <link name="link2"/>
-        <joint name='joint1_2' type='continuous'>
+        <joint name='joint1_2' type='fixed'>
           <parent link='link1' />
           <child  link='link2' />
           <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
@@ -1340,9 +1374,14 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
 
     sdf::URDF2SDF parser;
     sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
     config_.URDFSetConvertLinkWithNoMassToFrame(true);
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
+        "fixed child joints, unable to convert to frame in sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1356,6 +1395,8 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link2", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
     tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
     ASSERT_NE(nullptr, joint);
     ASSERT_NE(nullptr, joint->Attribute("name"));
@@ -1366,10 +1407,12 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
     // clear the contents of the buffer
     buffer.str("");
 
+    // fixed joint, with PreserveFixedJoint set to true, conversion of parent
+    // and child links to frames occurs
     std::string str = R"(
       <robot name='test_robot'>
         <link name='link1'/>
-        <joint name='joint1_2' type='continuous'>
+        <joint name='joint1_2' type='fixed'>
           <parent link='link1' />
           <child  link='link2' />
           <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
@@ -1379,6 +1422,7 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
 
     sdf::URDF2SDF parser;
     sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
     config_.URDFSetConvertLinkWithNoMassToFrame(true);
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
@@ -1391,10 +1435,14 @@ TEST(URDFParser, ConvertLinksWithNoInertiaToFrames)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link1", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
     frame = frame->NextSiblingElement("frame");
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link2", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
     tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
     ASSERT_NE(nullptr, joint);
     ASSERT_NE(nullptr, joint->Attribute("name"));
@@ -1422,28 +1470,9 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
     // clear the contents of the buffer
     buffer.str("");
 
-    std::string str = R"(
-      <robot name='test_robot'>
-        <link name='link1'>
-          <inertial>
-            <mass value="11e-7" />
-            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
-            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
-          </inertial>
-        </link>
-      </robot>)";
-
-    sdf::URDF2SDF parser;
-    sdf::ParserConfig config_;
-    config_.URDFSetConvertLinkWithNoMassToFrame(true);
-    tinyxml2::XMLDocument sdfResult;
-    parser.InitModelString(str, config_, &sdfResult);
-  }
-
-  {
-    // clear the contents of the buffer
-    buffer.str("");
-
+    // fixed joint, with PreserveFixedJoint set to true, minimum allowed link
+    // mass set to 1e-6, link1 mass set to 1e-6, conversion of link1 to frame
+    // does not occur
     std::string str = R"(
       <robot name='test_robot'>
         <link name='link1'>
@@ -1453,10 +1482,24 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
             <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
           </inertial>
         </link>
+        <link name="link2">
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
       </robot>)";
 
     sdf::URDF2SDF parser;
     sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
+    config_.URDFSetMinimumAllowedLinkMass(1e-6);
     config_.URDFSetConvertLinkWithNoMassToFrame(true);
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
@@ -1465,18 +1508,23 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
     ASSERT_NE(nullptr, sdf);
     tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
     ASSERT_NE(nullptr, model);
-    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
-    ASSERT_NE(nullptr, frame);
-    ASSERT_NE(nullptr, frame->Attribute("name"));
-    EXPECT_EQ("link1", std::string(frame->Attribute("name")));
     tinyxml2::XMLElement *link = model->FirstChildElement("link");
-    ASSERT_EQ(nullptr, link);
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
   }
 
   {
     // clear the contents of the buffer
     buffer.str("");
 
+    // fixed joint, with PreserveFixedJoint set to true, minimum allowed link
+    // mass set to 1e-6, link1 mass set to 9e-7, conversion of link1 to frame
+    // occurs
     std::string str = R"(
       <robot name='test_robot'>
         <link name='link1'>
@@ -1486,10 +1534,24 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
             <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
           </inertial>
         </link>
+        <link name="link2">
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
       </robot>)";
 
     sdf::URDF2SDF parser;
     sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
+    config_.URDFSetMinimumAllowedLinkMass(1e-6);
     config_.URDFSetConvertLinkWithNoMassToFrame(true);
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config_, &sdfResult);
@@ -1502,8 +1564,123 @@ TEST(URDFParser, ConvertLinksWithSmallMassToFrames)
     ASSERT_NE(nullptr, frame);
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link1", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
     tinyxml2::XMLElement *link = model->FirstChildElement("link");
-    ASSERT_EQ(nullptr, link);
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    // fixed joint, with PreserveFixedJoint set to true, minimum allowed link
+    // mass set to 1e-6, link2 mass set to 1e-6, conversion of link2 to frame
+    // does not occur
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value="0.1" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <link name="link2">
+          <inertial>
+            <mass value="1e-6" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
+    config_.URDFSetMinimumAllowedLinkMass(1e-6);
+    config_.URDFSetConvertLinkWithNoMassToFrame(true);
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    // fixed joint, with PreserveFixedJoint set to true, minimum allowed link
+    // mass set to 1e-5, link1 mass set to 1e-5, link2 mass set to 1e-6,
+    // conversion of link1 to frame does not occur while link2 to frame
+    // occurs
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value="1e-5" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <link name="link2">
+          <inertial>
+            <mass value="1e-6" />
+            <origin rpy="1.570796326794895 0 0" xyz="0.123456789123456 0 0.0" />
+            <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    sdf::ParserConfig config_;
+    config_.URDFSetPreserveFixedJoint(true);
+    config_.URDFSetMinimumAllowedLinkMass(1e-5);
+    config_.URDFSetConvertLinkWithNoMassToFrame(true);
+    tinyxml2::XMLDocument sdfResult;
+    parser.InitModelString(str, config_, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
+        "fixed child joints, unable to convert to frame in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("link2", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
   }
 }
 

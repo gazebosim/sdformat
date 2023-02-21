@@ -158,9 +158,11 @@ void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                 const gz::math::Pose3d &_currentTransform);
 
 /// create SDF Frame block based on a URDF link with small (less than
-/// ParserConfig::URDFMinimumAllowedLinkMass) or no mass
+/// ParserConfig::URDFMinimumAllowedLinkMass) or no mass, attached to the
+/// designated joint
 void CreateFrameFromLink(tinyxml2::XMLElement *_root,
                          urdf::LinkConstSharedPtr _link,
+                         urdf::JointSharedPtr _jointToAttachTo,
                          const gz::math::Pose3d &_currentTransform);
 
 /// reduced fixed joints:  apply appropriate frame updates in joint
@@ -2671,25 +2673,24 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                urdf::LinkConstSharedPtr _link,
                const ParserConfig& _parserConfig)
 {
-  // Links with a mass of less than or equal to
-  // ParserConfig::URDFMinimumAllowedLinkMass will considered a link with zero
-  // mass.
+  // Links with a mass of less than ParserConfig::URDFMinimumAllowedLinkMass
+  // will considered a link with zero mass.
+  const bool linkHasZeroMass = !_link->inertial ||
+      _link->inertial->mass < _parserConfig.URDFMinimumAllowedLinkMass();
+
   // Links with zero mass or without an <inertial> block will be ignored, unless
   // ParserConfig::URDFConvertLinkWithNoMassToFrame is true, in which case they
   // will be converted into frames.
   // allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
-  if (_link->name != "world" &&
-      ((!_link->inertial) ||
-          gz::math::equal(_link->inertial->mass, 0.0,
-              _parserConfig.URDFMinimumAllowedLinkMass())) &&
+  if (_link->name != "world" && linkHasZeroMass &&
       !_parserConfig.URDFConvertLinkWithNoMassToFrame())
   {
     std::stringstream inertiaIssue;
-    if (_link->inertial && gz::math::equal(_link->inertial->mass, 0.0,
-        _parserConfig.URDFMinimumAllowedLinkMass()))
+    if (_link->inertial &&
+        _link->inertial->mass < _parserConfig.URDFMinimumAllowedLinkMass())
     {
-      inertiaIssue << "a mass value of less than or equal to "
+      inertiaIssue << "a mass value of less than "
                     << _parserConfig.URDFMinimumAllowedLinkMass();
     }
     else
@@ -2736,17 +2737,50 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   // create <body:...> block for non fixed joint attached bodies
   if ((_link->getParent() && _link->getParent()->name == "world") ||
       !g_reduceFixedJoints ||
-      (!_link->parent_joint ||
-       !FixedJointShouldBeReduced(_link->parent_joint)))
+      (!_link->parent_joint || !FixedJointShouldBeReduced(_link->parent_joint)))
   {
-    if (((!_link->inertial) ||
-            gz::math::equal(_link->inertial->mass, 0.0,
-                _parserConfig.URDFMinimumAllowedLinkMass())) &&
+    // convert links with zero mass to frames if needed
+    if (linkHasZeroMass && !g_reduceFixedJoints &&
         _parserConfig.URDFConvertLinkWithNoMassToFrame())
     {
-      CreateFrameFromLink(_root, _link, gz::math::Pose3d::Zero);
+      // This conversion can only happen if the parent joint or one of the child
+      // joints are fixed and is not to be reduced.
+      urdf::JointSharedPtr jointToAttachTo =
+          _link->parent_joint &&
+              _link->parent_joint->type == urdf::Joint::FIXED ?
+          _link->parent_joint :
+          nullptr;
+
+      for (const auto &childJoint : _link->child_joints)
+      {
+        if (jointToAttachTo)
+        {
+          break;
+        }
+
+        if (childJoint && childJoint->type == urdf::Joint::FIXED)
+        {
+          jointToAttachTo = childJoint;
+        }
+      }
+
+      if (!jointToAttachTo)
+      {
+        sdfwarn << "urdf2sdf: link[" << _link->name
+                << "] does not have a fixed parent joint, nor any fixed child "
+                << "joints, unable to convert to frame in sdf\n";
+        return;
+      }
+
+      CreateFrameFromLink(
+          _root, _link, jointToAttachTo, gz::math::Pose3d::Zero);
     }
-    else
+    // else if (linkHasZeroMass && g_reduceFixedJoints &&
+    //     _parserConfig.URDFConvertLinkWithNoMassToFrame())
+    // {
+    //   sdfwarn <<
+    // }
+    else if (!linkHasZeroMass)
     {
       CreateLink(_root, _link, gz::math::Pose3d::Zero);
     }
@@ -2841,6 +2875,7 @@ void CreateLink(tinyxml2::XMLElement *_root,
 ////////////////////////////////////////////////////////////////////////////////
 void CreateFrameFromLink(tinyxml2::XMLElement *_root,
                          urdf::LinkConstSharedPtr _link,
+                         urdf::JointSharedPtr _jointToAttachTo,
                          const gz::math::Pose3d &_currentTransform)
 {
   // create new body
@@ -2848,6 +2883,7 @@ void CreateFrameFromLink(tinyxml2::XMLElement *_root,
 
   // set body name
   elem->SetAttribute("name", _link->name.c_str());
+  elem->SetAttribute("attached_to", _jointToAttachTo->name.c_str());
 
   // compute global transform
   gz::math::Pose3d localTransform;
