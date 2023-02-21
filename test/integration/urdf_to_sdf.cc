@@ -493,9 +493,9 @@ TEST(URDF2SDF, URDFConvertLinkWithNoInertiaToFrame)
 
     // link2 has no inertia defined, it will be converted to a frame, attached
     // to the fixed child joint joint2_3
-    // when converting to sdf, we expect there to be a cycle error to occur, as
-    // the converted frame has attached_to on the joint, while the joint is
-    // already a child joint,
+    // when converting to sdf, we expect there to be a an error where the child
+    // link, link3 and the parent link, link2, resolve to the same pose, as
+    // link2 gets attached_to the joint
     std::string urdfXml = R"(
       <robot name='test_robot'>
         <link name='link1'>
@@ -786,9 +786,9 @@ TEST(URDF2SDF, URDFConvertLinkWitSmallMassToFrame)
 
     // link2 has a mass of 1e-6, it will be converted to a frame, attached
     // to the fixed child joint joint2_3
-    // when converting to sdf, we expect there to be a cycle error to occur, as
-    // the converted frame has attached_to on the joint, while the joint is
-    // already a child joint,
+    // when converting to sdf, we expect there to be a an error where the child
+    // link, link3 and the parent link, link2, resolve to the same pose, as
+    // link2 gets attached_to the joint
     std::string urdfXml = R"(
       <robot name='test_robot'>
         <link name='link1'>
