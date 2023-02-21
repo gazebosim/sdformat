@@ -2775,11 +2775,6 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       CreateFrameFromLink(
           _root, _link, jointToAttachTo, gz::math::Pose3d::Zero);
     }
-    // else if (linkHasZeroMass && g_reduceFixedJoints &&
-    //     _parserConfig.URDFConvertLinkWithNoMassToFrame())
-    // {
-    //   sdfwarn <<
-    // }
     else if (!linkHasZeroMass)
     {
       CreateLink(_root, _link, gz::math::Pose3d::Zero);
