@@ -2673,64 +2673,60 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                urdf::LinkConstSharedPtr _link,
                const ParserConfig& _parserConfig)
 {
-  // Links with a mass of less than ParserConfig::URDFMinimumAllowedLinkMass
-  // will considered a link with zero mass.
-  const bool linkHasZeroMass = !_link->inertial ||
-      _link->inertial->mass < _parserConfig.URDFMinimumAllowedLinkMass();
+  // Links without an <inertial> block will be considered to have zero mass.
+  const bool linkHasZeroMass = !_link->inertial || _link->inertial->mass <= 0;
 
-  // Links with zero mass or without an <inertial> block will be ignored, unless
-  // ParserConfig::URDFConvertLinkWithNoMassToFrame is true, in which case they
-  // will be converted into frames.
+  // Links with zero mass or without an <inertial> block will be converted into
+  // frames, unless ParserConfig::URDFConvertLinkWithNoMassToFrame is set to
+  // false.
   // allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
   if (_link->name != "world" && linkHasZeroMass &&
       !_parserConfig.URDFConvertLinkWithNoMassToFrame())
   {
     std::stringstream inertiaIssue;
-    if (_link->inertial &&
-        _link->inertial->mass < _parserConfig.URDFMinimumAllowedLinkMass())
+    if (!_link->inertial)
     {
-      inertiaIssue << "a mass value of less than "
-                    << _parserConfig.URDFMinimumAllowedLinkMass();
+      inertiaIssue << "no <inertial> block defined";
     }
     else
     {
-      inertiaIssue << "no inertia defined";
+      inertiaIssue << "a mass value of less than or equal to zero";
     }
 
     if (!_link->child_links.empty())
     {
-      sdfwarn << "urdf2sdf: link[" << _link->name
-              << "] has "
-              << inertiaIssue.str()
-              << ", ["
-              << static_cast<int>(_link->child_links.size())
-              << "] children links ignored.\n";
+      sdferr << "urdf2sdf: link[" << _link->name
+             << "] has "
+             << inertiaIssue.str()
+             << ", ["
+             << static_cast<int>(_link->child_links.size())
+             << "] children links ignored.\n";
     }
 
     if (!_link->child_joints.empty())
     {
-      sdfwarn << "urdf2sdf: link[" << _link->name
-              << "] has "
-              << inertiaIssue.str()
-              << ", ["
-              << static_cast<int>(_link->child_links.size())
-              << "] children joints ignored.\n";
+      sdferr << "urdf2sdf: link[" << _link->name
+             << "] has "
+             << inertiaIssue.str()
+             << ", ["
+             << static_cast<int>(_link->child_links.size())
+             << "] children joints ignored.\n";
     }
 
     if (_link->parent_joint)
     {
-      sdfwarn << "urdf2sdf: link[" << _link->name
-              << "] has "
-              << inertiaIssue.str()
-              << ", parent joint [" << _link->parent_joint->name
-              << "] ignored.\n";
+      sdferr << "urdf2sdf: link[" << _link->name
+             << "] has "
+             << inertiaIssue.str()
+             << ", parent joint [" << _link->parent_joint->name
+             << "] ignored.\n";
     }
 
-    sdfwarn << "urdf2sdf: link[" << _link->name
-            << "] has "
-            << inertiaIssue.str()
-            << ", not modeled in sdf\n";
+    sdferr << "urdf2sdf: link[" << _link->name
+           << "] has "
+           << inertiaIssue.str()
+           << ", not modeled in sdf\n";
     return;
   }
 
@@ -2740,14 +2736,15 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       (!_link->parent_joint || !FixedJointShouldBeReduced(_link->parent_joint)))
   {
     // convert links with zero mass to frames if needed
-    if (linkHasZeroMass && !g_reduceFixedJoints &&
-        _parserConfig.URDFConvertLinkWithNoMassToFrame())
+    if (linkHasZeroMass && _parserConfig.URDFConvertLinkWithNoMassToFrame())
     {
       // This conversion can only happen if the parent joint or one of the child
       // joints are fixed and is not to be reduced.
       urdf::JointSharedPtr jointToAttachTo =
           _link->parent_joint &&
-              _link->parent_joint->type == urdf::Joint::FIXED ?
+              _link->parent_joint->type == urdf::Joint::FIXED &&
+              !FixedJointShouldBeReduced(_link->parent_joint) &&
+              !g_reduceFixedJoints ?
           _link->parent_joint :
           nullptr;
 
@@ -2758,7 +2755,8 @@ void CreateSDF(tinyxml2::XMLElement *_root,
           break;
         }
 
-        if (childJoint && childJoint->type == urdf::Joint::FIXED)
+        if (childJoint && childJoint->type == urdf::Joint::FIXED &&
+            !FixedJointShouldBeReduced(childJoint) && !g_reduceFixedJoints)
         {
           jointToAttachTo = childJoint;
         }
@@ -2766,9 +2764,11 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 
       if (!jointToAttachTo)
       {
-        sdfwarn << "urdf2sdf: link[" << _link->name
-                << "] does not have a fixed parent joint, nor any fixed child "
-                << "joints, unable to convert to frame in sdf\n";
+        sdferr << "urdf2sdf: link[" << _link->name
+               << "] does not have a fixed parent joint, nor any fixed child "
+               << "joints, unable to convert to frame in sdf. Any fixed joints "
+               << "defined could have been converted into a revolute joint "
+               << "with min 0 max 0, or the lumped into the parent link.\n";
         return;
       }
 
@@ -2778,6 +2778,10 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     else if (!linkHasZeroMass)
     {
       CreateLink(_root, _link, gz::math::Pose3d::Zero);
+    }
+    else
+    {
+      sdferr << "this is the else case\n";
     }
   }
 
@@ -3455,6 +3459,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   }
 
   _sdfXmlOut->LinkEndChild(sdf);
+  _sdfXmlOut->Print();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
