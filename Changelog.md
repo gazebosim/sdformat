@@ -1,5 +1,10 @@
 ## libsdformat 12.X
 
+### libsdformat 12.7.1 (2023-02-28)
+
+1. Fix camera info topic default value
+    * [Pull request #1241](https://github.com/gazebosim/sdformat/pull/1241)
+
 ### libsdformat 12.7.0 (2023-02-03)
 
 1. Forward port libsdformat9.10.0. This includes the ign to gz headers.
@@ -10,7 +15,7 @@
 1. Infrastructure
   1. CI workflow: use checkout v3.
       * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
-  
+
   1. macos workflow: don't upgrade existing packages.
       * [Pull request #1217](https://github.com/gazebosim/sdformat/pull/1217)
 
