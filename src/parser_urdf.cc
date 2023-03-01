@@ -2747,10 +2747,10 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       {
         sdferr << "urdf2sdf: link[" << _link->name
                << "] has " << inertiaIssue.str()
-               << ", but not a fixed parent joint, unable to be converted into "
-               << "a frame in sdf. Note that any fixed joints defined could "
-               << "have been converted into a revolute joint with min 0 max 0, "
-               << "or lumped into the parent link.\n";
+               << ", but does not have a fixed parent joint, unable to be "
+               << "converted into a frame in sdf. Note that any fixed joints "
+               << "defined might have been converted into a revolute joint "
+               << "with min 0 max 0, or lumped into the parent link.\n";
         return;
       }
 

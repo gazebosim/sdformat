@@ -1084,7 +1084,7 @@ TEST(URDFParser, NotConvertingLinksWithNoInertialBlockOrZeroMass)
   }
 }
 
-TEST(URDFParser, ConvertRootLinkWithZeroMassToFrame)
+TEST(URDFParser, ConvertRootLinkWithZeroMassToFrameFails)
 {
   // Redirect sdfwarn output
   std::stringstream buffer;
@@ -1127,8 +1127,9 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrame)
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1169,8 +1170,9 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrame)
 
     // lumping occurs therefore conversion of link1 to a frame does not happen
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1227,10 +1229,12 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
-    // joint gets converted to a revolute joint with min 0, max 0
+    // joint gets converted to a revolute joint with min 0, max 0, conversion to
+    // frame still fails
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1278,10 +1282,12 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
-    // fixed joints to be reduced, so there are no fixed joints to attach to
+    // fixed joints to be reduced, but link1 is a root link with no fixed parent
+    // joint, conversion to frame still fails
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1331,31 +1337,23 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrame)
 
     parser.InitModelString(str, config, &sdfResult);
 
-    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link1] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+    // Fixed joints are preserved, however link1 is a root joint and has no
+    // fixed parent joint, conversion to frame fails
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
     tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
     ASSERT_NE(nullptr, model);
-
     tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
-    ASSERT_NE(nullptr, frame);
-    ASSERT_NE(nullptr, frame->Attribute("name"));
-    EXPECT_EQ("link1", std::string(frame->Attribute("name")));
-
-    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
-    ASSERT_NE(nullptr, joint->Attribute("type"));
-    EXPECT_EQ("fixed", std::string(joint->Attribute("type")));
-
+    EXPECT_EQ(nullptr, frame);
     tinyxml2::XMLElement *link = model->FirstChildElement("link");
-    ASSERT_NE(nullptr, link);
-    ASSERT_NE(nullptr, link->Attribute("name"));
-    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+    EXPECT_EQ(nullptr, link);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
   }
 }
 
@@ -1413,10 +1411,11 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
-    // no fixed joints are found, conversion to frame will fail
+    // parent joint is not fixed, conversion to frame will fail
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1474,8 +1473,9 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     // lumping occurs therefore conversion of link2 to a frame does not need to
     // happen
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1528,7 +1528,7 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
         <joint name='joint1_2' type='fixed'>
           <parent link='link1' />
           <child  link='link2' />
-          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+          <origin xyz='1 2 3' rpy='0.0 0.0 1.57'/>
         </joint>
         <link name='link3'>
           <inertial>
@@ -1556,10 +1556,12 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config, &sdfResult);
 
-    // link2 will be converted to a frame
+    // link2 will be converted to a frame, relative to link1, joint1_2 will be
+    // left out
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1576,99 +1578,23 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link2", std::string(frame->Attribute("name")));
     ASSERT_NE(nullptr, frame->Attribute("attached_to"));
-    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
+    EXPECT_EQ("link1", std::string(frame->Attribute("attached_to")));
+    tinyxml2::XMLElement *framePose = frame->FirstChildElement("pose");
+    ASSERT_NE(nullptr, framePose);
+    ASSERT_NE(nullptr, framePose->Attribute("relative_to"));
+    EXPECT_EQ("link1", std::string(framePose->Attribute("relative_to")));
 
     tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
     ASSERT_NE(nullptr, joint);
     ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
+    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
+    joint = joint->NextSiblingElement("joint");
+    EXPECT_EQ(nullptr, joint);
 
     link = link->NextSiblingElement("link");
     ASSERT_NE(nullptr, link);
     ASSERT_NE(nullptr, link->Attribute("name"));
     EXPECT_EQ("link3", std::string(link->Attribute("name")));
-
-    joint = joint->NextSiblingElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
-  }
-
-  // intermediate link with child fixed joint
-  {
-    // clear the contents of the buffer
-    buffer.str("");
-
-    std::string str = R"(
-      <robot name='test_robot'>
-        <link name='link1'>
-          <inertial>
-            <mass value='0.1' />
-            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
-            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
-          </inertial>
-        </link>
-        <link name='link2'/>
-        <joint name='joint1_2' type='continuous'>
-          <parent link='link1' />
-          <child  link='link2' />
-          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
-        </joint>
-        <link name='link3'>
-          <inertial>
-            <mass value='0.1' />
-            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
-            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
-          </inertial>
-        </link>
-        <joint name='joint2_3' type='fixed'>
-          <parent link='link2' />
-          <child  link='link3' />
-          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
-        </joint>
-      </robot>)";
-
-    sdf::URDF2SDF parser;
-    sdf::ParserConfig defaultConfig;
-    tinyxml2::XMLDocument sdfResult;
-    parser.InitModelString(str, defaultConfig, &sdfResult);
-
-    // lumping occurs therefore conversion of link2 to a frame does not need to
-    // happen
-    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
-
-    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
-    ASSERT_NE(nullptr, sdf);
-    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
-    ASSERT_NE(nullptr, model);
-
-    tinyxml2::XMLElement *link = model->FirstChildElement("link");
-    ASSERT_NE(nullptr, link);
-    ASSERT_NE(nullptr, link->Attribute("name"));
-    EXPECT_EQ("link1", std::string(link->Attribute("name")));
-
-    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
-
-    // lumping occurs
-    link = link->NextSiblingElement("link");
-    ASSERT_NE(nullptr, link);
-    ASSERT_NE(nullptr, link->Attribute("name"));
-    EXPECT_EQ("link2", std::string(link->Attribute("name")));
-
-    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
-    ASSERT_NE(nullptr, frame);
-    ASSERT_NE(nullptr, frame->Attribute("name"));
-    EXPECT_EQ("joint2_3", std::string(frame->Attribute("name")));
-
-    frame = frame->NextSiblingElement("frame");
-    ASSERT_NE(nullptr, frame);
-    ASSERT_NE(nullptr, frame->Attribute("name"));
-    EXPECT_EQ("link3", std::string(frame->Attribute("name")));
   }
 
   // intermediate link with child fixed joint, with lumping turned off, don't
@@ -1718,10 +1644,11 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config, &sdfResult);
 
-    // link2 will be converted to a frame, attached to child joint joint2_3
-    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+    // link2 will not be converted into a frame, as parent joint is not fixed
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1732,28 +1659,14 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     ASSERT_NE(nullptr, link);
     ASSERT_NE(nullptr, link->Attribute("name"));
     EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
 
     tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
-    ASSERT_NE(nullptr, frame);
-    ASSERT_NE(nullptr, frame->Attribute("name"));
-    EXPECT_EQ("link2", std::string(frame->Attribute("name")));
-    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
-    EXPECT_EQ("joint2_3", std::string(frame->Attribute("attached_to")));
+    EXPECT_EQ(nullptr, frame);
 
     tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
-
-    link = link->NextSiblingElement("link");
-    ASSERT_NE(nullptr, link);
-    ASSERT_NE(nullptr, link->Attribute("name"));
-    EXPECT_EQ("link3", std::string(link->Attribute("name")));
-
-    joint = joint->NextSiblingElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
+    EXPECT_EQ(nullptr, joint);
   }
 
   // intermediate link with both fixed joint, with lumping turned off, don't
@@ -1809,11 +1722,12 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config, &sdfResult);
 
-    // link2 will be converted to a frame, attached to parent joint1_2,
-    // preferred over child joint2_3
+    // link2 will be converted to a frame, attached to link1, pose relative to
+    // link1, with joint1_2 dropped
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1830,22 +1744,23 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link2", std::string(frame->Attribute("name")));
     ASSERT_NE(nullptr, frame->Attribute("attached_to"));
-    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
+    EXPECT_EQ("link1", std::string(frame->Attribute("attached_to")));
+    tinyxml2::XMLElement *framePose = frame->FirstChildElement("pose");
+    ASSERT_NE(nullptr, framePose);
+    ASSERT_NE(nullptr, framePose->Attribute("relative_to"));
+    EXPECT_EQ("link1", std::string(framePose->Attribute("relative_to")));
 
     tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
     ASSERT_NE(nullptr, joint);
     ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
+    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
+    joint = joint->NextSiblingElement("joint");
+    EXPECT_EQ(nullptr, joint);
 
     link = link->NextSiblingElement("link");
     ASSERT_NE(nullptr, link);
     ASSERT_NE(nullptr, link->Attribute("name"));
     EXPECT_EQ("link3", std::string(link->Attribute("name")));
-
-    joint = joint->NextSiblingElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
   }
 }
 
@@ -1905,8 +1820,9 @@ TEST(URDFParser, ConvertLeafLinkWithZeroMassToFrame)
 
     // link3 will not be converted to a frame, as the parent joint is not fixed
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link3] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link3] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1977,8 +1893,9 @@ TEST(URDFParser, ConvertLeafLinkWithZeroMassToFrame)
     // lumping occurs therefore conversion of link3 to a frame does not need to
     // happen
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link3] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link3] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -2059,11 +1976,12 @@ TEST(URDFParser, ConvertLeafLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, config, &sdfResult);
 
-    // link2 will be converted to a frame, attached to parent joint1_2,
-    // preferred over child joint2_3
+    // link3 will be converted to a frame, attached to link2, pose relative to
+    // link2, with joint2_3 dropped
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "urdf2sdf: link[link2] does not have a fixed parent joint, nor any "
-        "fixed child joints, unable to convert to frame in sdf");
+        "urdf2sdf: link[link3] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -2090,12 +2008,14 @@ TEST(URDFParser, ConvertLeafLinkWithZeroMassToFrame)
     ASSERT_NE(nullptr, frame->Attribute("name"));
     EXPECT_EQ("link3", std::string(frame->Attribute("name")));
     ASSERT_NE(nullptr, frame->Attribute("attached_to"));
-    EXPECT_EQ("joint2_3", std::string(frame->Attribute("attached_to")));
+    EXPECT_EQ("link2", std::string(frame->Attribute("attached_to")));
+    tinyxml2::XMLElement *framePose = frame->FirstChildElement("pose");
+    ASSERT_NE(nullptr, framePose);
+    ASSERT_NE(nullptr, framePose->Attribute("relative_to"));
+    EXPECT_EQ("link2", std::string(framePose->Attribute("relative_to")));
 
     joint = joint->NextSiblingElement("joint");
-    ASSERT_NE(nullptr, joint);
-    ASSERT_NE(nullptr, joint->Attribute("name"));
-    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
+    EXPECT_EQ(nullptr, joint);
   }
 }
 
