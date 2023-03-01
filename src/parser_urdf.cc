@@ -157,13 +157,11 @@ void CreateSDF(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
 void CreateLink(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
                 const gz::math::Pose3d &_currentTransform);
 
-/// create SDF Frame block based on a URDF link with small (less than
-/// ParserConfig::URDFMinimumAllowedLinkMass) or no mass, attached to the
-/// designated joint
+/// create SDF Frame block based on a URDF link with zero mass with a fixed
+/// parent joint, attaching directly to the parent link, with transformed
+/// relative pose to the parent link, dropping the fixed joint entirely
 void CreateFrameFromLink(tinyxml2::XMLElement *_root,
-                         urdf::LinkConstSharedPtr _link,
-                         urdf::JointSharedPtr _jointToAttachTo,
-                         const gz::math::Pose3d &_currentTransform);
+                         urdf::LinkConstSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in joint
 ///   inside urdf extensions when doing fixed joint reduction
@@ -2675,6 +2673,15 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 {
   // Links without an <inertial> block will be considered to have zero mass.
   const bool linkHasZeroMass = !_link->inertial || _link->inertial->mass <= 0;
+  std::stringstream inertiaIssue;
+  if (!_link->inertial)
+  {
+    inertiaIssue << "no <inertial> block defined";
+  }
+  else
+  {
+    inertiaIssue << "a mass value of less than or equal to zero";
+  }
 
   // Links with zero mass or without an <inertial> block will be converted into
   // frames, unless ParserConfig::URDFConvertLinkWithNoMassToFrame is set to
@@ -2684,16 +2691,6 @@ void CreateSDF(tinyxml2::XMLElement *_root,
   if (_link->name != "world" && linkHasZeroMass &&
       !_parserConfig.URDFConvertLinkWithNoMassToFrame())
   {
-    std::stringstream inertiaIssue;
-    if (!_link->inertial)
-    {
-      inertiaIssue << "no <inertial> block defined";
-    }
-    else
-    {
-      inertiaIssue << "a mass value of less than or equal to zero";
-    }
-
     if (!_link->child_links.empty())
     {
       sdferr << "urdf2sdf: link[" << _link->name
@@ -2738,42 +2735,26 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     // convert links with zero mass to frames if needed
     if (linkHasZeroMass && _parserConfig.URDFConvertLinkWithNoMassToFrame())
     {
-      // This conversion can only happen if the parent joint or one of the child
-      // joints are fixed and is not to be reduced.
-      urdf::JointSharedPtr jointToAttachTo =
+      // This conversion can only happen if the parent joint is fixed, and is
+      // not to be reduced
+      bool canBeConvertedIntoFrame =
           _link->parent_joint &&
-              _link->parent_joint->type == urdf::Joint::FIXED &&
-              !FixedJointShouldBeReduced(_link->parent_joint) &&
-              !g_reduceFixedJoints ?
-          _link->parent_joint :
-          nullptr;
+          _link->parent_joint->type == urdf::Joint::FIXED &&
+          !FixedJointShouldBeReduced(_link->parent_joint) &&
+          !g_reduceFixedJoints;
 
-      for (const auto &childJoint : _link->child_joints)
-      {
-        if (jointToAttachTo)
-        {
-          break;
-        }
-
-        if (childJoint && childJoint->type == urdf::Joint::FIXED &&
-            !FixedJointShouldBeReduced(childJoint) && !g_reduceFixedJoints)
-        {
-          jointToAttachTo = childJoint;
-        }
-      }
-
-      if (!jointToAttachTo)
+      if (!canBeConvertedIntoFrame)
       {
         sdferr << "urdf2sdf: link[" << _link->name
-               << "] does not have a fixed parent joint, nor any fixed child "
-               << "joints, unable to convert to frame in sdf. Any fixed joints "
-               << "defined could have been converted into a revolute joint "
-               << "with min 0 max 0, or the lumped into the parent link.\n";
+               << "] has " << inertiaIssue.str()
+               << ", but not a fixed parent joint, unable to be converted into "
+               << "a frame in sdf. Note that any fixed joints defined could "
+               << "have been converted into a revolute joint with min 0 max 0, "
+               << "or lumped into the parent link.\n";
         return;
       }
 
-      CreateFrameFromLink(
-          _root, _link, jointToAttachTo, gz::math::Pose3d::Zero);
+      CreateFrameFromLink(_root, _link);
     }
     else if (!linkHasZeroMass)
     {
@@ -2873,38 +2854,25 @@ void CreateLink(tinyxml2::XMLElement *_root,
 
 ////////////////////////////////////////////////////////////////////////////////
 void CreateFrameFromLink(tinyxml2::XMLElement *_root,
-                         urdf::LinkConstSharedPtr _link,
-                         urdf::JointSharedPtr _jointToAttachTo,
-                         const gz::math::Pose3d &_currentTransform)
+                         urdf::LinkConstSharedPtr _link)
 {
   // create new body
   tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("frame");
 
   // set body name
   elem->SetAttribute("name", _link->name.c_str());
-  elem->SetAttribute("attached_to", _jointToAttachTo->name.c_str());
+  elem->SetAttribute("attached_to", _link->getParent()->name.c_str());
 
-  // compute global transform
-  gz::math::Pose3d localTransform;
-  // this is the transform from parent link to current _link
-  // this transform does not exist for the root link
-  if (_link->parent_joint)
-  {
-    tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
-    pose->SetAttribute("relative_to", _link->parent_joint->name.c_str());
-    elem->LinkEndChild(pose);
-  }
-  else
-  {
-    if (_currentTransform != gz::math::Pose3d::Zero)
-    {
-      // create origin tag for this element
-      AddTransform(elem, _currentTransform);
-    }
-  }
-
-  // make a <joint:...> block
-  CreateJoint(_root, _link, _currentTransform);
+  // compute relative pose for frame, relative_to parent_link
+  tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
+  elem->LinkEndChild(pose);
+  gz::math::Pose3d transformRelativeToParentJoint = _link->inertial ?
+      CopyPose(_link->inertial->origin) : gz::math::Pose3d::Zero;
+  gz::math::Pose3d transformRelativeToParentLink = TransformToParentFrame(
+      transformRelativeToParentJoint,
+      CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
+  AddTransform(elem, transformRelativeToParentLink);
+  pose->SetAttribute("relative_to", _link->getParent()->name.c_str());
 
   // add body to document
   _root->LinkEndChild(elem);
