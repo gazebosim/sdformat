@@ -1213,8 +1213,8 @@ TEST(URDF2SDF, URDFConvertForceTorqueSensorModels)
         "urdf2sdf: link[link_1] has no <inertial> block defined, parent joint "
         "[joint_1] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "urdf2sdf: link[link_1] has no <inertial> block defined, not modeled in "
-        "sdf");
+        "urdf2sdf: link[link_1] has no <inertial> block defined, not modeled "
+        "in sdf");
     EXPECT_TRUE(errors.empty()) << errors;
 
     const sdf::Model *model = root.Model();
