@@ -747,7 +747,7 @@ TEST(URDF2SDF, URDFConvertIntermediateLinkWithZeroMassToFrame)
     EXPECT_TRUE(model->FrameNameExists("link2"));
     EXPECT_TRUE(model->FrameNameExists("joint1_2"));
     const sdf::Joint *joint = model->JointByName("joint2_3");
-    ASSERT_TRUE(joint);
+    ASSERT_NE(nullptr, joint);
     EXPECT_EQ(std::string("link1"), joint->ParentLinkName());
     EXPECT_EQ(std::string("link3"), joint->ChildLinkName());
     EXPECT_TRUE(model->LinkNameExists("link3"));
@@ -1159,5 +1159,106 @@ TEST(URDF2SDF, URDFConvertLeafLinkWithZeroMassToFrame)
     EXPECT_TRUE(model->FrameNameExists("link3"));
     EXPECT_FALSE(model->FrameNameExists("joint2_3"));
     EXPECT_FALSE(model->JointNameExists("joint2_3"));
+  }
+}
+
+//////////////////////////////////////////////////
+TEST(URDF2SDF, URDFConvertForceTorqueSensorModels)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  // valid force torque sensor
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    const std::string sdfTestFile =
+        sdf::testing::TestFile("integration", "force_torque_sensor.urdf");
+    sdf::Root root;
+    sdf::ParserConfig defaultConfig;
+    sdf::Errors errors = root.Load(sdfTestFile, defaultConfig);
+    EXPECT_TRUE(errors.empty()) << errors;
+  }
+
+  // invalid force torque sensor, with massless child link, revolute joint
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    const std::string sdfTestFile =
+        sdf::testing::TestFile(
+            "integration",
+            "invalid_force_torque_sensor_massless_child_link.urdf");
+    sdf::Root root;
+    sdf::ParserConfig defaultConfig;
+    sdf::Errors errors = root.Load(sdfTestFile, defaultConfig);
+
+    // parent joint is not fixed, conversion fails
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link_1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link_1] has no <inertial> block defined, parent joint "
+        "[joint_1] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link_1] has no <inertial> block defined, not modeled in "
+        "sdf");
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    const sdf::Model *model = root.Model();
+    ASSERT_NE(nullptr, model);
+    EXPECT_TRUE(model->LinkNameExists("base_link"));
+    EXPECT_TRUE(model->LinkNameExists("link_2"));
+    EXPECT_TRUE(model->JointNameExists("joint_2"));
+    EXPECT_FALSE(model->FrameNameExists("link_1"));
+    EXPECT_FALSE(model->LinkNameExists("link_1"));
+    EXPECT_FALSE(model->FrameNameExists("joint_1"));
+    EXPECT_FALSE(model->JointNameExists("joint_1"));
+  }
+
+  // invalid force torque sensor, with massless child link, fixed parent joint
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    const std::string sdfTestFile =
+        sdf::testing::TestFile(
+            "integration",
+            "invalid_force_torque_sensor_massless_child_link_converted_to_frame"
+            ".urdf");
+    sdf::Root root;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    sdf::Errors errors = root.Load(sdfTestFile, config);
+
+    // link_1 converted to frame, attached to base_link, joint_1 dropped
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "urdf2sdf: link[link_1] has no <inertial> block defined, but does not "
+        "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
+    EXPECT_TRUE(errors.empty()) << errors;
+
+    const sdf::Model *model = root.Model();
+    ASSERT_NE(nullptr, model);
+    EXPECT_TRUE(model->LinkNameExists("base_link"));
+    EXPECT_TRUE(model->LinkNameExists("link_2"));
+    EXPECT_TRUE(model->JointNameExists("joint_2"));
+    const sdf::Frame *frame = model->FrameByName("link_1");
+    ASSERT_NE(nullptr, frame);
+    EXPECT_EQ(std::string("base_link"), frame->AttachedTo());
+    EXPECT_FALSE(model->JointNameExists("joint_1"));
+    EXPECT_FALSE(model->FrameNameExists("joint_1"));
   }
 }
