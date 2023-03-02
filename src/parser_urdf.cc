@@ -31,7 +31,9 @@
 #include <urdf_model/link.h>
 #include <urdf_parser/urdf_parser.h>
 
+#include "sdf/Error.hh"
 #include "sdf/sdf.hh"
+#include "sdf/Types.hh"
 
 #include "XmlUtils.hh"
 #include "SDFExtension.hh"
@@ -2673,58 +2675,77 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 {
   // Links without an <inertial> block will be considered to have zero mass.
   const bool linkHasZeroMass = !_link->inertial || _link->inertial->mass <= 0;
-  std::stringstream inertiaIssue;
-  if (!_link->inertial)
-  {
-    inertiaIssue << "no <inertial> block defined";
-  }
-  else
-  {
-    inertiaIssue << "a mass value of less than or equal to zero";
-  }
 
   // Links with zero mass or without an <inertial> block will be converted into
   // frames, unless ParserConfig::URDFConvertLinkWithNoMassToFrame is set to
   // false.
   // allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
-  if (_link->name != "world" && linkHasZeroMass &&
-      !_parserConfig.URDFConvertLinkWithNoMassToFrame())
+  Errors zeroMassErrors;
+  std::stringstream inertialIssue;
+  if (_link->name != "world" && linkHasZeroMass)
   {
+    if (!_link->inertial)
+    {
+      inertialIssue << "no <inertial> block defined";
+    }
+    else
+    {
+      inertialIssue << "a mass value of less than or equal to zero";
+    }
+
+    std::stringstream errorStream;
     if (!_link->child_links.empty())
     {
-      sdferr << "urdf2sdf: link[" << _link->name
-             << "] has "
-             << inertiaIssue.str()
-             << ", ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children links ignored.\n";
+      errorStream << "urdf2sdf: link[" << _link->name
+                  << "] has "
+                  << inertialIssue.str()
+                  << ", ["
+                  << static_cast<int>(_link->child_links.size())
+                  << "] children links ignored.";
+      zeroMassErrors.push_back(
+          Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str()));
+      errorStream.str(std::string());
     }
 
     if (!_link->child_joints.empty())
     {
-      sdferr << "urdf2sdf: link[" << _link->name
-             << "] has "
-             << inertiaIssue.str()
-             << ", ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children joints ignored.\n";
+      errorStream << "urdf2sdf: link[" << _link->name
+                  << "] has "
+                  << inertialIssue.str()
+                  << ", ["
+                  << static_cast<int>(_link->child_links.size())
+                  << "] children joints ignored.";
+      zeroMassErrors.push_back(
+          Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str()));
+      errorStream.str(std::string());
     }
 
     if (_link->parent_joint)
     {
-      sdferr << "urdf2sdf: link[" << _link->name
-             << "] has "
-             << inertiaIssue.str()
-             << ", parent joint [" << _link->parent_joint->name
-             << "] ignored.\n";
+      errorStream << "urdf2sdf: link[" << _link->name
+                  << "] has "
+                  << inertialIssue.str()
+                  << ", parent joint [" << _link->parent_joint->name
+                  << "] ignored.";
+      zeroMassErrors.push_back(
+          Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str()));
+      errorStream.str(std::string());
     }
 
-    sdferr << "urdf2sdf: link[" << _link->name
-           << "] has "
-           << inertiaIssue.str()
-           << ", not modeled in sdf\n";
-    return;
+    errorStream << "urdf2sdf: link[" << _link->name
+                << "] has "
+                << inertialIssue.str()
+                << ", not modeled in sdf.";
+    zeroMassErrors.push_back(
+        Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str()));
+
+    // fail here if conversion is not allowed
+    if (!_parserConfig.URDFConvertLinkWithNoMassToFrame())
+    {
+      sdferr << zeroMassErrors;
+      return;
+    }
   }
 
   // create <body:...> block for non fixed joint attached bodies
@@ -2737,7 +2758,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     {
       // This conversion can only happen if the parent joint is fixed, and is
       // not to be reduced
-      bool canBeConvertedIntoFrame =
+      const bool canBeConvertedIntoFrame =
           _link->parent_joint &&
           _link->parent_joint->type == urdf::Joint::FIXED &&
           !FixedJointShouldBeReduced(_link->parent_joint) &&
@@ -2745,12 +2766,17 @@ void CreateSDF(tinyxml2::XMLElement *_root,
 
       if (!canBeConvertedIntoFrame)
       {
-        sdferr << "urdf2sdf: link[" << _link->name
-               << "] has " << inertiaIssue.str()
-               << ", but does not have a fixed parent joint, unable to be "
-               << "converted into a frame in sdf. Note that any fixed joints "
-               << "defined might have been converted into a revolute joint "
-               << "with min 0 max 0, or lumped into the parent link.\n";
+        std::stringstream errorStream;
+        errorStream << "urdf2sdf: link[" << _link->name
+                    << "] has " << inertialIssue.str()
+                    << ", but does not have a fixed parent joint, unable to "
+                    << "be converted into a frame in sdf. Note that any fixed "
+                    << "joints defined might have been converted into a "
+                    << "revolute joint with min 0 max 0, or lumped into the "
+                    << "parent link.";
+        zeroMassErrors.push_back(
+            Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str()));
+        sdferr << zeroMassErrors;
         return;
       }
 
@@ -2759,10 +2785,6 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     else if (!linkHasZeroMass)
     {
       CreateLink(_root, _link, gz::math::Pose3d::Zero);
-    }
-    else
-    {
-      sdferr << "this is the else case\n";
     }
   }
 
@@ -3427,7 +3449,6 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   }
 
   _sdfXmlOut->LinkEndChild(sdf);
-  _sdfXmlOut->Print();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

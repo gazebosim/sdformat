@@ -1130,6 +1130,15 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrameFails)
         "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
         "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, not modeled in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1168,7 +1177,7 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrameFails)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
-    // lumping occurs therefore conversion of link1 to a frame does not happen
+    // lumping occurs so no conversion is considered
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
@@ -1235,6 +1244,15 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrameFails)
         "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
         "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, not modeled in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1287,6 +1305,15 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrameFails)
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, not modeled in "
         "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
@@ -1342,6 +1369,15 @@ TEST(URDFParser, ConvertRootLinkWithZeroMassToFrameFails)
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "urdf2sdf: link[link1] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
+        "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, [1] children "
+        "joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link1] has no <inertial> block defined, not modeled in "
         "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
@@ -1416,6 +1452,18 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
         "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
         "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, [1] children "
+        "links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, [1] children "
+        "joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, parent joint "
+        "[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, not modeled in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1470,8 +1518,8 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
-    // lumping occurs therefore conversion of link2 to a frame does not need to
-    // happen
+    // lumping occurs therefore conversion of link2 to a frame was not
+    // considered
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
@@ -1649,6 +1697,18 @@ TEST(URDFParser, ConvertIntermediateLinkWithZeroMassToFrame)
         "urdf2sdf: link[link2] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
         "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, [1] children "
+        "links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, [1] children "
+        "joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, parent joint "
+        "[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link2] has no <inertial> block defined, not modeled in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1823,6 +1883,12 @@ TEST(URDFParser, ConvertLeafLinkWithZeroMassToFrame)
         "urdf2sdf: link[link3] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
         "sdf");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link3] has no <inertial> block defined, parent joint "
+        "[joint2_3] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "urdf2sdf: link[link3] has no <inertial> block defined, not modeled in "
+        "sdf");
 
     tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
     ASSERT_NE(nullptr, sdf);
@@ -1890,8 +1956,8 @@ TEST(URDFParser, ConvertLeafLinkWithZeroMassToFrame)
     tinyxml2::XMLDocument sdfResult;
     parser.InitModelString(str, defaultConfig, &sdfResult);
 
-    // lumping occurs therefore conversion of link3 to a frame does not need to
-    // happen
+    // lumping occurs therefore conversion of link3 to a frame was not
+    // considered
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "urdf2sdf: link[link3] has no <inertial> block defined, but does not "
         "have a fixed parent joint, unable to be converted into a frame in "
