@@ -1,5 +1,28 @@
 ## libsdformat 13.X
 
+### libsdformat 13.4.0 (2023-03-03)
+
+1. Fix camera info topic default value
+    * [Pull request #1241](https://github.com/gazebosim/sdformat/pull/1241)
+
+1. Add support for merge-includes in worlds
+    * [Pull request #1233](https://github.com/gazebosim/sdformat/pull/1233)
+
+1. Backport the python3 embedSdf script variant
+    * [Pull request #1240](https://github.com/gazebosim/sdformat/pull/1240)
+
+1. Go back to SDF_ASSERT instead of FATAL_ERROR
+    * [Pull request #1235](https://github.com/gazebosim/sdformat/pull/1235)
+
+1. Add missing sdf files from xsd generation
+    * [Pull request #1231](https://github.com/gazebosim/sdformat/pull/1231)
+
+1. CI workflow: use checkout v3
+    * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
+
+1. Use `File.exist?` for Ruby 3.2 compatibility
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
 ### libsdformat 13.3.0 (2023-02-07)
 
 1. Add airspeed sensor
