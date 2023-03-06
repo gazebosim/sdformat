@@ -2901,25 +2901,39 @@ void CreateFrameFromLink(tinyxml2::XMLElement *_root,
                          urdf::LinkConstSharedPtr _link)
 {
   // create new body
-  tinyxml2::XMLElement *elem = _root->GetDocument()->NewElement("frame");
-
-  // set body name
-  elem->SetAttribute("name", _link->name.c_str());
-  elem->SetAttribute("attached_to", _link->getParent()->name.c_str());
+  tinyxml2::XMLElement *linkFrame = _root->GetDocument()->NewElement("frame");
+  linkFrame->SetAttribute("name", _link->name.c_str());
+  linkFrame->SetAttribute("attached_to", _link->getParent()->name.c_str());
 
   // compute relative pose for frame, relative_to parent_link
   tinyxml2::XMLElement *pose = _root->GetDocument()->NewElement("pose");
-  elem->LinkEndChild(pose);
+  linkFrame->LinkEndChild(pose);
   gz::math::Pose3d transformRelativeToParentJoint = _link->inertial ?
       CopyPose(_link->inertial->origin) : gz::math::Pose3d::Zero;
   gz::math::Pose3d transformRelativeToParentLink = TransformToParentFrame(
       transformRelativeToParentJoint,
       CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
-  AddTransform(elem, transformRelativeToParentLink);
+  AddTransform(linkFrame, transformRelativeToParentLink);
   pose->SetAttribute("relative_to", _link->getParent()->name.c_str());
 
-  // add body to document
-  _root->LinkEndChild(elem);
+  // add link-converted frame to document
+  _root->LinkEndChild(linkFrame);
+
+  // convert parent joint to frame and attach to this link-converted frame
+  tinyxml2::XMLElement *jointFrame = _root->GetDocument()->NewElement("frame");
+  jointFrame->SetAttribute("name", _link->parent_joint->name.c_str());
+  jointFrame->SetAttribute("attached_to", _link->name.c_str());
+
+  // compute relative pose from joint-frame, relative to parent link
+  pose = _root->GetDocument()->NewElement("pose");
+  jointFrame->LinkEndChild(pose);
+  AddTransform(
+      jointFrame,
+      CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
+  pose->SetAttribute("relative_to", _link->getParent()->name.c_str());
+
+  // add joint-converted frame to document
+  _root->LinkEndChild(jointFrame);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3471,7 +3485,6 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   }
 
   _sdfXmlOut->LinkEndChild(sdf);
-  _sdfXmlOut->Print();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
