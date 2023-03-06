@@ -1371,7 +1371,7 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithFixedParentJoint)
     EXPECT_EQ("joint2_3", std::string(linkPose->Attribute("relative_to")));
   }
 
-  // conversion to frame, by setting in ParserConfig
+  // conversion to frame, by preserving fixed joints in ParserConfig
   {
     // clear the contents of the buffer
     buffer.str("");
