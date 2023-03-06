@@ -2736,7 +2736,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     // fail here if conversion is not allowed
     if (!_parserConfig.URDFConvertLinkWithNoMassToFrame())
     {
-      sdferr << zeroMassErrors;
+      sdfwarn << zeroMassErrors;
       return;
     }
   }
