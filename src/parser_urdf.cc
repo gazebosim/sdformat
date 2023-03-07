@@ -2798,7 +2798,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                     << "be converted into a frame in sdf.";
         zeroMassErrors.emplace_back(
             ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-        sdferr << zeroMassErrors;
+        sdfwarn << zeroMassErrors;
         return;
       }
 
