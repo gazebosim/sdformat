@@ -2760,21 +2760,6 @@ void CreateSDF(tinyxml2::XMLElement *_root,
       if (!canBeConvertedIntoFrame)
       {
         std::stringstream errorStream;
-        if (_link->parent_joint &&
-            g_fixedJointsTransformedInRevoluteJoints.find(
-                _link->parent_joint->name) !=
-                    g_fixedJointsTransformedInRevoluteJoints.end())
-        {
-          errorStream << "urdf2sdf: fixed parent joint["
-                      << _link->parent_joint->name << "] is converted into a "
-                      << "revolute joint, setting gazebo tag "
-                      << "<preserveFixedJoint> to true could help resolve this "
-                      << "error.";
-          zeroMassErrors.emplace_back(
-              ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-          errorStream.str(std::string());
-        }
-
         for (const auto &cj : _link->child_joints)
         {
           if (cj->type == urdf::Joint::FIXED &&
