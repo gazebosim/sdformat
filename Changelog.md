@@ -1,5 +1,13 @@
 ## libsdformat 13.X
 
+### libsdformat 13.4.1 (2023-03-08)
+
+1. Fix camera_info_topic default value
+    * [Pull request #1247](https://github.com/gazebosim/sdformat/pull/1247)
+
+1. CI workflow: use checkout v3
+    * [Pull request #1245](https://github.com/gazebosim/sdformat/pull/1245)
+
 ### libsdformat 13.4.0 (2023-03-03)
 
 1. Fix camera info topic default value
