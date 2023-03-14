@@ -30,13 +30,6 @@
     </inertial>
   </link>
 
-  <gazebo reference='joint_1'>
-    <disableFixedJointLumping>true</disableFixedJointLumping>
-  </gazebo>
-  <gazebo reference='joint_1'>
-    <preserveFixedJoint>true</preserveFixedJoint>
-  </gazebo>
-
   <gazebo reference="joint_1">
     <provideFeedback>true</provideFeedback>
     <sensor name="gzft_sensor" type="force_torque">

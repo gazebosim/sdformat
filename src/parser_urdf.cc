@@ -3425,7 +3425,6 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
   }
 
   _sdfXmlOut->LinkEndChild(sdf);
-  _sdfXmlOut->Print();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
