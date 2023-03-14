@@ -2705,9 +2705,8 @@ void CreateSDF(tinyxml2::XMLElement *_root,
         errorStream << "urdf2sdf: allowing joint lumping by removing the "
                     << "<disableFixedJointLumping> tag or setting it to false "
                     << "on fixed parent joint["
-                    << _link->parent_joint->name << "], or setting "
-                    << "ParserConfig::URDFPreserveFixedJoint to true, "
-                    << "could help resolve this warning.";
+                    << _link->parent_joint->name
+                    << "] could help resolve this warning.";
         nonJointReductionErrors.emplace_back(
             ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
         errorStream.str(std::string());
@@ -2737,9 +2736,8 @@ void CreateSDF(tinyxml2::XMLElement *_root,
           errorStream << "urdf2sdf: allowing joint lumping by removing the "
                       << "<disableFixedJointLumping> tag or setting it to "
                       << "false on fixed child joint["
-                      << cj->name << "], or setting "
-                      << "ParserConfig::URDFPreserveFixedJoint to true, "
-                      << "could help resolve this warning.";
+                      << cj->name
+                      << "] could help resolve this warning.";
           nonJointReductionErrors.emplace_back(
               ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
           errorStream.str(std::string());
