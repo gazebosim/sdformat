@@ -778,7 +778,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
     u2g.InitModelFile(filename, _config, &doc);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
+    if (sdf::readDoc(&doc, _sdf, filename, _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;
