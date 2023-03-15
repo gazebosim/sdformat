@@ -250,11 +250,106 @@ TEST(URDF2SDF, ZeroMassIntermediateLinkWithFixedParentJoint)
     // no sdf errors, however we expect warnings and ignored joints and links
     ASSERT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "link[link2] has no <inertial> block defined");
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "allowing joint lumping by removing the <disableFixedJointLumping> tag "
-        "or setting it to false on fixed parent joint[joint1_2] could help "
-        "resolve this warning");
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning. See [URL_HERE] for more "
+        "information about this behavior");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    const sdf::Model *model = root.Model();
+    ASSERT_NE(nullptr, model);
+    const sdf::Link *link = model->LinkByName("link1");
+    ASSERT_NE(nullptr, link);
+
+    // expect everything below joint1_2 to be ignored
+    EXPECT_FALSE(model->LinkNameExists("link2"));
+    EXPECT_FALSE(model->JointNameExists("joint1_2"));
+    EXPECT_FALSE(model->LinkNameExists("link3"));
+    EXPECT_FALSE(model->JointNameExists("joint2_3"));
+
+    // expect no visual or collision from link2 lumped into link1
+    EXPECT_FALSE(
+        link->VisualNameExists("link1_fixed_joint_lump__link2_visual"));
+    EXPECT_FALSE(
+        link->CollisionNameExists("link1_fixed_joint_lump__link2_collision"));
+  }
+
+  // Disabling lumping using ParserConfig::URDFPreserveFixedJoint, fails with
+  // warnings suggesting to set to false
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string urdfXml = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='continuous'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::Root root;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
+
+    // no sdf errors, however we expect warnings and ignored joints and links
+    ASSERT_TRUE(errors.empty()) << errors;
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning. See [URL_HERE] for more "
+        "information about this behavior");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint1_2] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -353,7 +448,9 @@ TEST(URDF2SDF, ZeroMassIntermediateLinkWithFixedChildJoint)
     // lumping and reduction occurs, no warnings or errors should be present
     ASSERT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "link[link2] has no <inertial> block defined");
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "link[link2] is not modeled in sdf");
 
@@ -443,13 +540,104 @@ TEST(URDF2SDF, ZeroMassIntermediateLinkWithFixedChildJoint)
     // expected with suggestion to remove gazebo tag
     ASSERT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "link[link2] has no <inertial> block defined");
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint1_2] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "allowing joint lumping by removing the <disableFixedJointLumping> tag "
-        "or setting it to false on fixed child joint[joint2_3] could help "
-        "resolve this warning");
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning. See [URL_HERE] for more "
+        "information about this behavior");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    const sdf::Model *model = root.Model();
+    ASSERT_NE(nullptr, model);
+    EXPECT_TRUE(model->LinkNameExists("link1"));
+    EXPECT_FALSE(model->LinkNameExists("link2"));
+    EXPECT_FALSE(model->FrameNameExists("link2"));
+    EXPECT_FALSE(model->JointNameExists("joint1_2"));
+    EXPECT_FALSE(model->FrameNameExists("joint1_2"));
+    EXPECT_FALSE(model->LinkNameExists("link3"));
+    EXPECT_FALSE(model->FrameNameExists("link3"));
+    EXPECT_FALSE(model->JointNameExists("joint2_3"));
+    EXPECT_FALSE(model->FrameNameExists("joint2_3"));
+  }
+
+  // Disabling lumping using ParserConfig::URDFPreserveFixedJoint, fails with
+  // warnings suggesting to set to false
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string urdfXml = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::Root root;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
+
+    // Everything beneath joint1_2 is ignored, no sdf errors, but warnings
+    // expected with suggestion to remove gazebo tag
+    ASSERT_TRUE(errors.empty()) << errors;
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning. See [URL_HERE] for more "
+        "information about this behavior");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "[1] child joints ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -540,7 +728,9 @@ TEST(URDFParser, ZeroMassLeafLink)
     // lumping and reduction occurs, no warnings should be present
     ASSERT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "link[link3] has no <inertial> block defined");
+        "link[link3] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "link[link3] is not modeled in sdf");
 
@@ -633,11 +823,110 @@ TEST(URDFParser, ZeroMassLeafLink)
     // gazebo tags
     ASSERT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "link[link3] has no <inertial> block defined");
+        "link[link3] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "allowing joint lumping by removing the <disableFixedJointLumping> tag "
-        "or setting it to false on fixed parent joint[joint2_3] could help "
-        "resolve this warning");
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning. See [URL_HERE] for more "
+        "information about this behavior");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint2_3] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link3] is not modeled in sdf");
+
+    const sdf::Model *model = root.Model();
+    ASSERT_NE(nullptr, model);
+    EXPECT_TRUE(model->LinkNameExists("link1"));
+
+    // link2
+    const sdf::Link *link = model->LinkByName("link2");
+    ASSERT_NE(nullptr, link);
+    EXPECT_TRUE(model->JointNameExists("joint1_2"));
+
+    // joint1_2
+    EXPECT_TRUE(model->JointNameExists("joint1_2"));
+
+    // link3 visual and collision not lumped into link2
+    EXPECT_FALSE(
+        link->VisualNameExists("link2_fixed_joint_lump__link3_visual"));
+    EXPECT_FALSE(
+        link->CollisionNameExists("link2_fixed_joint_lump__link3_collision"));
+
+    // joint2_3 and link3 ignored
+    EXPECT_FALSE(model->LinkNameExists("link3"));
+    EXPECT_FALSE(model->FrameNameExists("link3"));
+    EXPECT_FALSE(model->JointNameExists("joint2_3"));
+    EXPECT_FALSE(model->FrameNameExists("joint2_3"));
+  }
+
+  // ParserConfig::URDFSetPreserveFixedJoint set to true, expect link3 and
+  // joint2_3 to be ignored and warnings suggesting to remove gazebo tag
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string urdfXml = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::Root root;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    sdf::Errors errors = root.LoadSdfString(urdfXml, config);
+
+    // joint2_3 and link3 will be ignored, and warnings suggesting to remove
+    // gazebo tags
+    ASSERT_TRUE(errors.empty()) << errors;
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link3] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning. See [URL_HERE] for more "
+        "information about this behavior");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint2_3] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -717,7 +1006,9 @@ TEST(URDF2SDF, URDFConvertForceTorqueSensorModels)
     // lumping and reduction occurs, we expect no warnings or errors
     EXPECT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
-        "link[link_1] has no <inertial> block defined");
+        "link[link_1] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
         "link[link_1] is not modeled in sdf");
 
@@ -747,7 +1038,9 @@ TEST(URDF2SDF, URDFConvertForceTorqueSensorModels)
     // lumping and reduction does not occur, joint_1 and link_1 ignored
     EXPECT_TRUE(errors.empty()) << errors;
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "link[link_1] has no <inertial> block defined");
+        "link[link_1] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint_1] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
