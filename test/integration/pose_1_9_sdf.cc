@@ -207,12 +207,6 @@ TEST(Pose1_9, PoseStringOutput)
 }
 
 //////////////////////////////////////////////////
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
-//////////////////////////////////////////////////
 TEST(Pose1_9, BadModelPoses)
 {
   // Redirect sdferr output
@@ -246,7 +240,7 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "Undefined attribute //pose[@rotation_format='bad_rotation_format']");
   }
 
@@ -269,7 +263,7 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "//pose[@rotation_format='euler_rpy'] must have 6 values, "
         "but 3 were found");
   }
@@ -293,7 +287,7 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "//pose[@rotation_format='quat_xyzw'] must have 7 values, "
         "but 4 were found");
   }
@@ -317,7 +311,7 @@ TEST(Pose1_9, BadModelPoses)
     EXPECT_FALSE(sdf::readString(stream.str(), sdfParsed, errors));
     EXPECT_FALSE(errors.empty());
 
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "//pose[@degrees='true'] does not apply when parsing quaternions");
   }
 }
@@ -352,7 +346,7 @@ TEST(Pose1_9, PoseSet8ValuesFail)
   ASSERT_NE(nullptr, poseValueParam);
   EXPECT_FALSE(poseValueParam->SetFromString(
       "1 2 3   0.7071068 0.7071068 0 0   0"));
-  EXPECT_PRED2(contains, buffer.str(),
+  EXPECT_PRED2(sdf::testing::contains, buffer.str(),
       "The value for //pose[@rotation_format='quat_xyzw'] must have 7 values, "
       "but more than that were found in '1 2 3   0.7071068 0.7071068 0 0   0'");
 }
@@ -765,7 +759,7 @@ TEST(Pose1_9, ToStringWithoutAttrib)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 }
 
 //////////////////////////////////////////////////
@@ -787,8 +781,8 @@ TEST(Pose1_9, ToStringWithDegreesFalse)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='false'");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "degrees='false'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 }
 
 //////////////////////////////////////////////////
@@ -810,8 +804,8 @@ TEST(Pose1_9, ToStringWithDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='true'");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "degrees='true'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 }
 
 //////////////////////////////////////////////////
@@ -834,8 +828,8 @@ TEST(Pose1_9, ToStringWithEulerRPY)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "rotation_format='euler_rpy'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 }
 
 //////////////////////////////////////////////////
@@ -862,9 +856,9 @@ TEST(Pose1_9, ToStringWithEulerRPYDegreesTrue)
   EXPECT_TRUE(poseValueParam->SetFromString("1 2 3  0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='true'");
-  EXPECT_PRED2(contains, elemStr, "rotation_format='euler_rpy'");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "degrees='true'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "rotation_format='euler_rpy'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 }
 
 //////////////////////////////////////////////////
@@ -889,8 +883,8 @@ TEST(Pose1_9, ToStringWithQuatXYZ)
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
-  EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "rotation_format='quat_xyzw'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.707107 0 0 0.707107");
 }
 
 //////////////////////////////////////////////////
@@ -919,9 +913,9 @@ TEST(Pose1_9, ToStringWithQuatXYZWDegreesFalse)
   // The string output has changed as it was parsed from the value, instead of
   // the original string.
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='false'");
-  EXPECT_PRED2(contains, elemStr, "rotation_format='quat_xyzw'");
-  EXPECT_PRED2(contains, elemStr, "0.707107 0 0 0.707107");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "degrees='false'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "rotation_format='quat_xyzw'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.707107 0 0 0.707107");
 }
 
 //////////////////////////////////////////////////
@@ -940,7 +934,7 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   ASSERT_TRUE(valParam->SetFromString("1 2 3 0.4 0.5 0.6"));
 
   std::string elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 
   // Changing to attribute to degrees, however this does not modify the
   // value of the underlying Param. Reparse needs to be called, which uses
@@ -951,14 +945,14 @@ TEST(Pose1_9, ToStringAfterChangingDegreeAttribute)
   EXPECT_TRUE(valParam->Reparse());
 
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='true'");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "degrees='true'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 
   // Changing back to radians
   ASSERT_TRUE(degreesAttrib->Set<bool>(false));
   elemStr = poseElem->ToString("");
-  EXPECT_PRED2(contains, elemStr, "degrees='false'");
-  EXPECT_PRED2(contains, elemStr, "0.4 0.5 0.6");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "degrees='false'");
+  EXPECT_PRED2(sdf::testing::contains, elemStr, "0.4 0.5 0.6");
 }
 
 //////////////////////////////////////////////////
