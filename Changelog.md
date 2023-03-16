@@ -1,6 +1,56 @@
 ## libsdformat 13.X
 
-### libsdformat 13.3.0 (2022-12-12)
+### libsdformat 13.4.1 (2023-03-08)
+
+1. Fix camera_info_topic default value
+    * [Pull request #1247](https://github.com/gazebosim/sdformat/pull/1247)
+
+1. CI workflow: use checkout v3
+    * [Pull request #1245](https://github.com/gazebosim/sdformat/pull/1245)
+
+### libsdformat 13.4.0 (2023-03-03)
+
+1. Fix camera info topic default value
+    * [Pull request #1241](https://github.com/gazebosim/sdformat/pull/1241)
+
+1. Add support for merge-includes in worlds
+    * [Pull request #1233](https://github.com/gazebosim/sdformat/pull/1233)
+
+1. Backport the python3 embedSdf script variant
+    * [Pull request #1240](https://github.com/gazebosim/sdformat/pull/1240)
+
+1. Go back to SDF_ASSERT instead of FATAL_ERROR
+    * [Pull request #1235](https://github.com/gazebosim/sdformat/pull/1235)
+
+1. Add missing sdf files from xsd generation
+    * [Pull request #1231](https://github.com/gazebosim/sdformat/pull/1231)
+
+1. CI workflow: use checkout v3
+    * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
+
+1. Use `File.exist?` for Ruby 3.2 compatibility
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
+### libsdformat 13.3.0 (2023-02-07)
+
+1. Add airspeed sensor
+    * [Pull request #1215](https://github.com/gazebosim/sdformat/pull/1215)
+
+1. Use `File.exist?` for Ruby 3.2 compatibility
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
+1. Make ThrowOrPrintError a free internal function
+    * [Pull request #1221](https://github.com/gazebosim/sdformat/pull/1221)
+    * [Pull request #1220](https://github.com/gazebosim/sdformat/pull/1220)
+
+1. macos workflow: don't upgrade existing packages
+    * [Pull request #1217](https://github.com/gazebosim/sdformat/pull/1217)
+
+1. update Param calls to use error vectors parameters
+    * [Pull request #1140](https://github.com/gazebosim/sdformat/pull/1140)
+
+1. ign -> gz Migrate Ignition Headers : sdformat
+    * [Pull request #1118](https://github.com/gazebosim/sdformat/pull/1118)
 
 1. Sensor: add sdf::Errors output to API methods
     * [Pull request #1138](https://github.com/gazebosim/sdformat/pull/1138)
@@ -27,7 +77,7 @@
     * [Pull request #1198](https://github.com/gazebosim/sdformat/pull/1198)
     * [Pull request #1200](https://github.com/gazebosim/sdformat/pull/1200)
 
-1. Fix static URDF models with fixed joints 
+1. Fix static URDF models with fixed joints
     * [Pull request #1193](https://github.com/gazebosim/sdformat/pull/1193)
 
 ### libsdformat 13.2.0 (2022-10-20)
@@ -289,6 +339,25 @@
     * [Pull request #758](https://github.com/gazebosim/sdformat/pull/758)
 
 ## libsdformat 12.X
+
+### libsdformat 12.7.1 (2023-02-28)
+
+1. Fix camera info topic default value
+    * [Pull request #1241](https://github.com/gazebosim/sdformat/pull/1241)
+
+### libsdformat 12.7.0 (2023-02-03)
+
+1. Forward port libsdformat9.10.0. This includes the ign to gz headers.
+
+1. Use File.exist? for Ruby 3.2 compatibility.
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
+1. Infrastructure
+  1. CI workflow: use checkout v3.
+      * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
+
+  1. macos workflow: don't upgrade existing packages.
+      * [Pull request #1217](https://github.com/gazebosim/sdformat/pull/1217)
 
 ### libsdformat 12.6.0 (2022-09-07)
 

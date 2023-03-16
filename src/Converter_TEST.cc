@@ -2852,44 +2852,19 @@ TEST(Converter, NullDoc)
   tinyxml2::XMLDocument xmlDoc;
   tinyxml2::XMLDocument convertXmlDoc;
 
-  std::stringstream buffer;
-  sdf::testing::RedirectConsoleStream redir(
-      sdf::Console::Instance()->GetMsgStream(), &buffer);
-
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-    sdf::testing::ScopeExit revertSetQuiet(
-      []
-      {
-        sdf::Console::Instance()->SetQuiet(true);
-      });
-  #endif
-
   sdf::ParserConfig parserConfig;
   parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
 
   sdf::Errors errors;
-  sdf::Converter::Convert(errors, nullptr, &convertXmlDoc, parserConfig);
-  ASSERT_EQ(errors.size(), 1u);
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
-  EXPECT_NE(std::string::npos,
-            errors[0].Message().find("SDF XML doc is NULL"));
-  errors.clear();
-
-  sdf::Converter::Convert(errors, &xmlDoc, nullptr, parserConfig);
-  ASSERT_EQ(errors.size(), 1u);
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
-  EXPECT_NE(std::string::npos,
-            errors[0].Message().find("Convert XML doc is NULL"));
-  errors.clear();
-
-  sdf::Converter::Convert(errors, nullptr, "1.4", parserConfig);
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FATAL_ERROR);
-  EXPECT_NE(std::string::npos,
-            errors[0].Message().find("SDF XML doc is NULL"));
-
-  // Check nothing has been printed
-  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  ASSERT_THROW(sdf::Converter::Convert(errors, nullptr, &convertXmlDoc,
+               parserConfig), sdf::AssertionInternalError);
+  ASSERT_TRUE(errors.empty());
+  ASSERT_THROW(sdf::Converter::Convert(errors, &xmlDoc, nullptr, parserConfig),
+               sdf::AssertionInternalError);
+  ASSERT_TRUE(errors.empty());
+  ASSERT_THROW(sdf::Converter::Convert(errors, nullptr, "1.4", parserConfig),
+               sdf::AssertionInternalError);
+  ASSERT_TRUE(errors.empty());
 }
 
 ////////////////////////////////////////////////////
