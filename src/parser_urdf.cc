@@ -2708,8 +2708,9 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                     << _link->parent_joint->name
                     << "], as well as ensuring that "
                     << "ParserConfig::URDFPreserveFixedJoint is false, could "
-                    << "help resolve this warning. See [URL_HERE] for more "
-                    << "information about this behavior.";
+                    << "help resolve this warning. See http://sdformat.org/tuto"
+                    << "rials?tut=sdformat_urdf_extensions&cat=specification& "
+                    << "for more information about this behavior.";
         nonJointReductionErrors.emplace_back(
             ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
         errorStream.str(std::string());
@@ -2741,8 +2742,9 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                       << cj->name
                       << "], as well as ensuring that "
                       << "ParserConfig::URDFPreserveFixedJoint is false, could "
-                      << "help resolve this warning. See [URL_HERE] for more "
-                      << "information about this behavior.";
+                      << "help resolve this warning. See http://sdformat.org/tu"
+                      << "torials?tut=sdformat_urdf_extensions&cat=specificatio"
+                      << "n& for more information about this behavior.";
           nonJointReductionErrors.emplace_back(
               ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
           errorStream.str(std::string());
