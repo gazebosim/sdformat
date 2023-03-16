@@ -233,12 +233,14 @@ TEST(ErrorOutput, ElementErrorOutput)
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Missing element description for [nonExistentElement]"));
-
-  elem->RemoveChild(sdf::ElementPtr(), errors);
-  ASSERT_EQ(errors.size(), 1u);
-  EXPECT_NE(std::string::npos, errors[0].Message().find(
-      "Cannot remove a nullptr child pointer"));
   errors.clear();
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
+  ASSERT_THROW(elem->RemoveChild(sdf::ElementPtr(), errors),
+               sdf::AssertionInternalError);
+  ASSERT_EQ(errors.size(), 0u);
+  buffer.str(std::string());
 
   elem->AddAttribute("key", "std::string", "test", true, errors, "");
   ASSERT_EQ(errors.size(), 0u);

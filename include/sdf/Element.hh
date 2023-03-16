@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "sdf/Error.hh"
 #include "sdf/Param.hh"
 #include "sdf/PrintConfig.hh"
 #include "sdf/sdf_config.h"
@@ -1016,7 +1017,7 @@ namespace sdf
     std::pair<T, bool> result = this->Get<T>(errors, _key, _defaultValue);
     for(auto& error : errors)
     {
-      error.ThrowOrPrintError(sdferr);
+      internal::throwOrPrintError(sdferr, error);
     }
     return result;
   }
@@ -1069,7 +1070,7 @@ namespace sdf
     bool result = this->Set<T>(errors, _value);
     for(auto& error : errors)
     {
-      error.ThrowOrPrintError(sdferr);
+      internal::throwOrPrintError(sdferr, error);
     }
     return result;
   }
