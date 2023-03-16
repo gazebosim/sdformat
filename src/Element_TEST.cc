@@ -724,8 +724,7 @@ TEST(Element, DocRightPane)
   std::string html;
   int index = 1;
   sdf::Errors errors;
-  elem->PrintDocRightPane(errors, html, 0, index);
-  EXPECT_TRUE(errors.empty());
+  elem->PrintDocRightPane(html, 0, index);
   ASSERT_EQ(html,
             "<a name=\"1\">&lt&gt</a><div style='padding-left:0px;'>\n"
             "<div style='background-color: #ffffff'>\n"

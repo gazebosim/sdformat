@@ -458,15 +458,6 @@ void Element::PrintDescription(sdf::Errors &_errors,
 void Element::PrintDocRightPane(std::string &_html, int _spacing,
                                 int &_index) const
 {
-  sdf::Errors errors;
-  this->PrintDocRightPane(errors, _html, _spacing, _index);
-  sdf::throwOrPrintErrors(errors);
-}
-
-/////////////////////////////////////////////////
-void Element::PrintDocRightPane(sdf::Errors &_errors, std::string &_html,
-                                int _spacing, int &_index) const
-{
   std::ostringstream stream;
   ElementPtr_V::iterator eiter;
 
@@ -476,7 +467,7 @@ void Element::PrintDocRightPane(sdf::Errors &_errors, std::string &_html,
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    (*eiter)->PrintDocRightPane(_errors, childHTML, _spacing + 4, _index);
+    (*eiter)->PrintDocRightPane(childHTML, _spacing + 4, _index);
   }
 
   stream << "<a name=\"" << this->dataPtr->name << start
@@ -505,7 +496,7 @@ void Element::PrintDocRightPane(sdf::Errors &_errors, std::string &_html,
     stream << this->dataPtr->value->GetTypeName()
            << "&nbsp;&nbsp;&nbsp;\n"
            << "<font style='font-weight:bold'>Default: </font>"
-           << this->dataPtr->value->GetDefaultAsString(_errors) << '\n';
+           << this->dataPtr->value->GetDefaultAsString() << '\n';
   }
   else
   {
@@ -545,7 +536,7 @@ void Element::PrintDocRightPane(sdf::Errors &_errors, std::string &_html,
       stream << "<font style='font-weight:bold'>Type: </font>"
              << (*aiter)->GetTypeName() << "&nbsp;&nbsp;&nbsp;"
              << "<font style='font-weight:bold'>Default: </font>"
-             << (*aiter)->GetDefaultAsString(_errors) << "<br>";
+             << (*aiter)->GetDefaultAsString() << "<br>";
       stream << "</div>\n";
 
       stream << "</div>\n";
