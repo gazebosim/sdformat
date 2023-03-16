@@ -2700,9 +2700,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     // check if parent joint can be lumped and reduced
     if (!jointReductionHappens && _link->parent_joint)
     {
-      if (_link->parent_joint->type == urdf::Joint::FIXED &&
-          (!FixedJointShouldBeReduced(_link->parent_joint) ||
-              !g_reduceFixedJoints))
+      if (_link->parent_joint->type == urdf::Joint::FIXED)
       {
         errorStream << "urdf2sdf: allowing joint lumping by removing any "
                     << "<disableFixedJointLumping> or <preserveFixedJoint> "
@@ -2735,8 +2733,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
           jointReductionHappens = true;
           break;
         }
-        else if (cj->type == urdf::Joint::FIXED &&
-            (!FixedJointShouldBeReduced(cj) || !g_reduceFixedJoints))
+        else if (cj->type == urdf::Joint::FIXED)
         {
           errorStream << "urdf2sdf: allowing joint lumping by removing any "
                       << "<disableFixedJointLumping> or <preserveFixedJoint> "
