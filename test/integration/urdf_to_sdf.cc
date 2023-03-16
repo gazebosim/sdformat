@@ -24,14 +24,6 @@
 #include "test_config.h"
 #include "test_utils.hh"
 
-/////////////////////////////////////////////////
-sdf::SDFPtr InitSDF()
-{
-  sdf::SDFPtr sdf(new sdf::SDF());
-  sdf::init(sdf);
-  return sdf;
-}
-
 //////////////////////////////////////////////////
 TEST(URDF2SDF, ValidBasicURDF)
 {
@@ -991,6 +983,8 @@ TEST(URDF2SDF, URDFConvertForceTorqueSensorModels)
   // lumping and reduction occurs, no errors or warning will be emitted, but
   // force torque sensor won't be able to attach to joint-converted frame, this
   // is the case where users need to be wary about
+  // TODO(aaronchongth): To provide warning when joint is dropped/converted
+  // during lumping and reduction
   {
     // clear the contents of the buffer
     buffer.str("");
