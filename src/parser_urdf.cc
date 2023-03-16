@@ -2771,10 +2771,7 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     // accumulated will be emitted
     if (!jointReductionHappens)
     {
-      for (const auto &e : nonJointReductionErrors)
-      {
-        sdfwarn << e;
-      }
+      sdfwarn << nonJointReductionErrors;
 
       errorStream << "urdf2sdf: link[" << _link->name
                   << "] is not modeled in sdf.";
