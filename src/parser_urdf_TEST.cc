@@ -1488,9 +1488,7 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithFixedParentJoint)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint1_2] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -1580,9 +1578,7 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithFixedParentJoint)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint1_2] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -1800,9 +1796,7 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithFixedChildJoint)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "[1] child joints ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -1891,9 +1885,7 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithFixedChildJoint)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "[1] child joints ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -2002,18 +1994,14 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithAllFixedJointsButLumpingOff)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint1_2] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "[1] child joints ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -2100,18 +2088,14 @@ TEST(URDFParser, ZeroMassIntermediateLinkWithAllFixedJointsButLumpingOff)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint1_2] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "[1] child joints ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -2328,9 +2312,7 @@ TEST(URDFParser, ZeroMassLeafLink)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed parent joint[joint2_3], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint2_3] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
@@ -2435,9 +2417,7 @@ TEST(URDFParser, ZeroMassLeafLink)
         "allowing joint lumping by removing any <disableFixedJointLumping> or "
         "<preserveFixedJoint> gazebo tag on fixed parent joint[joint2_3], as "
         "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
-        "could help resolve this warning. See http://sdformat.org/tutorials?tut"
-        "=sdformat_urdf_extensions&cat=specification& for more information "
-        "about this behavior");
+        "could help resolve this warning");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
         "parent joint[joint2_3] ignored");
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),

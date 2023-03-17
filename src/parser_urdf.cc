@@ -63,7 +63,8 @@ bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsTransformedInRevoluteJoints;
 std::set<std::string> g_fixedJointsTransformedInFixedJoints;
 const int g_outputDecimalPrecision = 16;
-
+const char kSdformatUrdfExtensionUrl[] =
+    "http://sdformat.org/tutorials?tut=sdformat_urdf_extensions";
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
@@ -2708,9 +2709,9 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                     << _link->parent_joint->name
                     << "], as well as ensuring that "
                     << "ParserConfig::URDFPreserveFixedJoint is false, could "
-                    << "help resolve this warning. See http://sdformat.org/tuto"
-                    << "rials?tut=sdformat_urdf_extensions&cat=specification& "
-                    << "for more information about this behavior.";
+                    << "help resolve this warning. See "
+                    << std::string(kSdformatUrdfExtensionUrl)
+                    << " for more information about this behavior.";
         nonJointReductionErrors.emplace_back(
             ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
         errorStream.str(std::string());
@@ -2742,9 +2743,9 @@ void CreateSDF(tinyxml2::XMLElement *_root,
                       << cj->name
                       << "], as well as ensuring that "
                       << "ParserConfig::URDFPreserveFixedJoint is false, could "
-                      << "help resolve this warning. See http://sdformat.org/tu"
-                      << "torials?tut=sdformat_urdf_extensions&cat=specificatio"
-                      << "n& for more information about this behavior.";
+                      << "help resolve this warning. See "
+                      << std::string(kSdformatUrdfExtensionUrl)
+                      << " for more information about this behavior.";
           nonJointReductionErrors.emplace_back(
               ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
           errorStream.str(std::string());
