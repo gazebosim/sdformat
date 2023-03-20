@@ -2692,54 +2692,23 @@ void CreateSDF(tinyxml2::XMLElement *_root,
         ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
     errorStream.str(std::string());
 
-    // If joint reduction happens and resolves the issue of this link with no
-    // mass, no warnings will be emitted
-    bool jointReductionHappens = _link->parent_joint &&
+    // if the parent joint is reduced, which resolves the massless issue of this
+    // link, no warnings will be emitted
+    bool parentJointReduced = _link->parent_joint &&
         FixedJointShouldBeReduced(_link->parent_joint) &&
         g_reduceFixedJoints;
 
-    // check if parent joint can be lumped and reduced
-    if (!jointReductionHappens && _link->parent_joint)
+    if (!parentJointReduced)
     {
-      if (_link->parent_joint->type == urdf::Joint::FIXED)
+      // check if joint lumping was turned off for the parent joint
+      if (_link->parent_joint)
       {
-        errorStream << "urdf2sdf: allowing joint lumping by removing any "
-                    << "<disableFixedJointLumping> or <preserveFixedJoint> "
-                    << "gazebo tag on fixed parent joint["
-                    << _link->parent_joint->name
-                    << "], as well as ensuring that "
-                    << "ParserConfig::URDFPreserveFixedJoint is false, could "
-                    << "help resolve this warning. See "
-                    << std::string(kSdformatUrdfExtensionUrl)
-                    << " for more information about this behavior.";
-        nonJointReductionErrors.emplace_back(
-            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-        errorStream.str(std::string());
-      }
-
-      errorStream << "urdf2sdf: parent joint["
-                  << _link->parent_joint->name
-                  << "] ignored.";
-      nonJointReductionErrors.emplace_back(
-          ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-      errorStream.str(std::string());
-    }
-
-    // check child joints for any possibility of joint lumping and reduction
-    if (!jointReductionHappens && !_link->child_joints.empty())
-    {
-      for (const auto &cj : _link->child_joints)
-      {
-        // Lumping child joints occur before CreateSDF, so if it does occur this
-        // link would already contain the lumped mass from the child link. If a
-        // child joint is still fixed at this point, it means joint lumping has
-        // been disabled.
-        if (cj->type == urdf::Joint::FIXED)
+        if (_link->parent_joint->type == urdf::Joint::FIXED)
         {
           errorStream << "urdf2sdf: allowing joint lumping by removing any "
                       << "<disableFixedJointLumping> or <preserveFixedJoint> "
-                      << "gazebo tag on fixed child joint["
-                      << cj->name
+                      << "gazebo tag on fixed parent joint["
+                      << _link->parent_joint->name
                       << "], as well as ensuring that "
                       << "ParserConfig::URDFPreserveFixedJoint is false, could "
                       << "help resolve this warning. See "
@@ -2749,28 +2718,57 @@ void CreateSDF(tinyxml2::XMLElement *_root,
               ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
           errorStream.str(std::string());
         }
+
+        errorStream << "urdf2sdf: parent joint["
+                    << _link->parent_joint->name
+                    << "] ignored.";
+        nonJointReductionErrors.emplace_back(
+            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+        errorStream.str(std::string());
       }
 
-      errorStream << "urdf2sdf: ["
-                  << static_cast<int>(_link->child_joints.size())
-                  << "] child joints ignored.";
-      nonJointReductionErrors.emplace_back(
-          ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-      errorStream.str(std::string());
-      errorStream << "urdf2sdf: ["
-                  << static_cast<int>(_link->child_links.size())
-                  << "] child links ignored.";
-      nonJointReductionErrors.emplace_back(
-          ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-      errorStream.str(std::string());
-    }
+      // check if joint lumping was turned off for child joints
+      if (!_link->child_joints.empty())
+      {
+        for (const auto &cj : _link->child_joints)
+        {
+          // Lumping child joints occur before CreateSDF, so if it does occur
+          // this link would already contain the lumped mass from the child
+          // link. If a child joint is still fixed at this point, it means joint
+          // lumping has been disabled.
+          if (cj->type == urdf::Joint::FIXED)
+          {
+            errorStream << "urdf2sdf: allowing joint lumping by removing any "
+                        << "<disableFixedJointLumping> or <preserveFixedJoint> "
+                        << "gazebo tag on fixed child joint["
+                        << cj->name
+                        << "], as well as ensuring that "
+                        << "ParserConfig::URDFPreserveFixedJoint is false, "
+                        << "could help resolve this warning. See "
+                        << std::string(kSdformatUrdfExtensionUrl)
+                        << " for more information about this behavior.";
+            nonJointReductionErrors.emplace_back(
+                ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+            errorStream.str(std::string());
+          }
+        }
 
-    // there is no way to resolve this link with no mass, all warnings
-    // accumulated will be emitted
-    if (!jointReductionHappens)
-    {
+        errorStream << "urdf2sdf: ["
+                    << static_cast<int>(_link->child_joints.size())
+                    << "] child joints ignored.";
+        nonJointReductionErrors.emplace_back(
+            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+        errorStream.str(std::string());
+        errorStream << "urdf2sdf: ["
+                    << static_cast<int>(_link->child_links.size())
+                    << "] child links ignored.";
+        nonJointReductionErrors.emplace_back(
+            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+        errorStream.str(std::string());
+      }
+
+      // Emit all accumulated warnings and return
       sdfwarn << nonJointReductionErrors;
-
       errorStream << "urdf2sdf: link[" << _link->name
                   << "] is not modeled in sdf.";
       sdfwarn << Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
