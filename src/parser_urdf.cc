@@ -2730,12 +2730,11 @@ void CreateSDF(tinyxml2::XMLElement *_root,
     {
       for (const auto &cj : _link->child_joints)
       {
-        if (FixedJointShouldBeReduced(cj) && g_reduceFixedJoints)
-        {
-          jointReductionHappens = true;
-          break;
-        }
-        else if (cj->type == urdf::Joint::FIXED)
+        // Lumping child joints occur before CreateSDF, so if it does occur this
+        // link would already contain the lumped mass from the child link. If a
+        // child joint is still fixed at this point, it means joint lumping has
+        // been disabled.
+        if (cj->type == urdf::Joint::FIXED)
         {
           errorStream << "urdf2sdf: allowing joint lumping by removing any "
                       << "<disableFixedJointLumping> or <preserveFixedJoint> "
@@ -2752,22 +2751,18 @@ void CreateSDF(tinyxml2::XMLElement *_root,
         }
       }
 
-      // none of the child joints can be lumped and reduced
-      if (!jointReductionHappens)
-      {
-        errorStream << "urdf2sdf: ["
-                    << static_cast<int>(_link->child_joints.size())
-                    << "] child joints ignored.";
-        nonJointReductionErrors.emplace_back(
-            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-        errorStream.str(std::string());
-        errorStream << "urdf2sdf: ["
-                    << static_cast<int>(_link->child_links.size())
-                    << "] child links ignored.";
-        nonJointReductionErrors.emplace_back(
-            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
-        errorStream.str(std::string());
-      }
+      errorStream << "urdf2sdf: ["
+                  << static_cast<int>(_link->child_joints.size())
+                  << "] child joints ignored.";
+      nonJointReductionErrors.emplace_back(
+          ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+      errorStream.str(std::string());
+      errorStream << "urdf2sdf: ["
+                  << static_cast<int>(_link->child_links.size())
+                  << "] child links ignored.";
+      nonJointReductionErrors.emplace_back(
+          ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+      errorStream.str(std::string());
     }
 
     // there is no way to resolve this link with no mass, all warnings
