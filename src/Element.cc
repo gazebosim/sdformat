@@ -688,11 +688,9 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
 void Element::PrintValues(std::string _prefix,
                           const PrintConfig &_config) const
 {
-  std::ostringstream ss;
   sdf::Errors errors;
-  PrintValuesImpl(errors, _prefix, true, false, _config, ss);
+  PrintValues(errors, _prefix, true, false, _config);
   sdf::throwOrPrintErrors(errors);
-  std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
@@ -741,8 +739,7 @@ std::string Element::ToString(const std::string &_prefix,
                               const PrintConfig &_config) const
 {
   sdf::Errors errors;
-  std::string out;
-  out = this->ToString(errors, _prefix, _config);
+  std::string out = this->ToString(errors, _prefix, _config);
   sdf::throwOrPrintErrors(errors);
   return out;
 }

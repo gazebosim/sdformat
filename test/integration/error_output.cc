@@ -246,6 +246,8 @@ TEST(ErrorOutput, ElementErrorOutput)
   ASSERT_EQ(errors.size(), 0u);
   elem->Get<int>(errors, "key");
   ASSERT_EQ(errors.size(), 1u);
+  // When trying to Get a parameter with the wrong type it will
+  // try to set it with the new type and fail
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Invalid argument. Unable to set value [test] for key[key]."));
   errors.clear();
@@ -254,6 +256,8 @@ TEST(ErrorOutput, ElementErrorOutput)
   ASSERT_EQ(errors.size(), 0u);
   elem->Get<sdf::Time>(errors, "");
   ASSERT_EQ(errors.size(), 1u);
+  // When trying to Get a parameter with the wrong type it will
+  // try to set it with the new type and fail
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Unknown error. Unable to set value [0 ] for key[testElement]"));
 

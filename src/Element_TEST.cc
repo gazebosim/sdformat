@@ -786,7 +786,7 @@ TEST(Element, SetEmpty)
 
   elem->AddValue("int", "0", true, errors, "value");
   ASSERT_EQ(errors.size(), 0u);
-  ASSERT_TRUE(elem->Set<std::string>(errors, ""));
+  ASSERT_FALSE(elem->Set<std::string>(errors, ""));
   ASSERT_EQ(errors.size(), 1u);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
       "Empty string used when setting a required parameter. Key[]"));

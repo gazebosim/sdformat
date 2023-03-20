@@ -1072,8 +1072,7 @@ namespace sdf
   {
     if (this->dataPtr->value)
     {
-      this->dataPtr->value->Set(_value, _errors);
-      return true;
+      return this->dataPtr->value->Set(_value, _errors);
     }
     return false;
   }
