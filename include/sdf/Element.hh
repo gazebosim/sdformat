@@ -653,8 +653,7 @@ namespace sdf
   {
     if (this->dataPtr->value)
     {
-      this->dataPtr->value->Set(_value);
-      return true;
+      return this->dataPtr->value->Set(_value);
     }
     return false;
   }
