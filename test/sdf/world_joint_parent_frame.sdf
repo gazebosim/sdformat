@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<sdf version="1.10">
+  <world name="world_joint_parent_frame">
+    <!--
+      For ease of unittesting unique values,
+      each model's pose is displaced along the z-axis,
+      frames are displaced along the y-axis,
+      and joints are displaced along the x-axis.
+    -->
+    <model name="parent_model">
+      <pose>0 0 1 0 0 0</pose>
+      <link name="L"/>
+    </model>
+    <model name="child_model">
+      <pose>0 0 10 0 0 0</pose>
+      <link name="L"/>
+    </model>
+    <frame name="parent_frame" attached_to="parent_model">
+      <pose>0 1 0 0 0 0</pose>
+    </frame>
+    <joint name="J1" type="ball">
+      <pose>1 0 0 0 0 0</pose>
+      <parent>parent_frame</parent>
+      <child>child_model::L</child>
+    </joint>
+    <joint name="J2" type="ball">
+      <pose>10 0 0 0 0 0</pose>
+      <parent>parent_model::L</parent>
+      <child>child_model::L</child>
+    </joint>
+  </world>
+</sdf>

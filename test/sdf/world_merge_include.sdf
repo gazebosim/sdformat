@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<sdf version="1.10">
+  <world name="world_merge_include">
+    <include merge="true">
+      <!-- The path for this model has to be added by the test -->
+      <uri>model_for_world_merge_include.sdf</uri>
+      <pose>100 0 0   0 0 0</pose>
+    </include>
+  </world>
+</sdf>

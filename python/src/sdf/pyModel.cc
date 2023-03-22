@@ -175,7 +175,7 @@ void defineModel(pybind11::object module)
      .def("name_exists_in_frame_attached_to_graph",
           &sdf::Model::NameExistsInFrameAttachedToGraph,
           "Check if a given name exists in the FrameAttachedTo graph at the "
-          "scope of the model..")
+          "scope of the model.")
      .def("add_link", &sdf::Model::AddLink,
           "Add a link to the model.")
      .def("add_joint", &sdf::Model::AddJoint,

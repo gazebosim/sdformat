@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<sdf version="1.10">
+  <model name="joint_screw_thread_pitch">
+    <link name="parent_link">
+      <pose>0 0 1 0 0 0</pose>
+    </link>
+    <link name="child_link">
+      <pose>0 0 10 0 0 0</pose>
+    </link>
+    <joint name="default_param" type="screw">
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+      <child>child_link</child>
+      <parent>parent_link</parent>
+    </joint>
+    <joint name="both_params" type="screw">
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+      <child>child_link</child>
+      <parent>parent_link</parent>
+      <screw_thread_pitch>0.5</screw_thread_pitch>
+      <thread_pitch>-12.566</thread_pitch>
+    </joint>
+    <joint name="new_param" type="screw">
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+      <child>child_link</child>
+      <parent>parent_link</parent>
+      <screw_thread_pitch>0.5</screw_thread_pitch>
+    </joint>
+    <joint name="old_param" type="screw">
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+      <child>child_link</child>
+      <parent>parent_link</parent>
+      <thread_pitch>-12.566</thread_pitch>
+    </joint>
+    <joint name="param_precedence" type="screw">
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+      <child>child_link</child>
+      <parent>parent_link</parent>
+      <screw_thread_pitch>0.5</screw_thread_pitch>
+      <thread_pitch>0.5</thread_pitch>
+    </joint>
+  </model>
+</sdf>
