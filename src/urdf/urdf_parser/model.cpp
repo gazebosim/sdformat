@@ -36,7 +36,7 @@
 #pragma warning(push, 0)
 
 #include <vector>
-#include "urdf_parser/urdf_parser.h"
+#include "../urdf_parser/urdf_parser.h"
 // #include <console_bridge/console.h>
 #include <fstream>
 
