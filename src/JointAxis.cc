@@ -395,7 +395,7 @@ sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors,
     axisElemName += std::to_string(_index + 1);
   sdf::ElementPtr axisElem = elem->GetElement(axisElemName, _errors);
   sdf::ElementPtr xyzElem = axisElem->GetElement("xyz", _errors);
-  xyzElem->Set<gz::math::Vector3d>(this->Xyz(), _errors);
+  xyzElem->Set<gz::math::Vector3d>(_errors, this->Xyz());
   if (!this->XyzExpressedIn().empty())
   {
     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
@@ -403,26 +403,26 @@ sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors,
   }
   sdf::ElementPtr dynElem = axisElem->GetElement("dynamics", _errors);
   dynElem->GetElement("damping", _errors)->Set<double>(
-      this->Damping(), _errors);
+      this->Damping());
   dynElem->GetElement("friction", _errors)->Set<double>(
-      this->Friction(), _errors);
+      this->Friction());
   dynElem->GetElement("spring_reference", _errors)->Set<double>(
-      this->SpringReference(), _errors);
+      _errors, this->SpringReference());
   dynElem->GetElement("spring_stiffness", _errors)->Set<double>(
-      this->SpringStiffness(), _errors);
+      _errors, this->SpringStiffness());
 
   sdf::ElementPtr limitElem = axisElem->GetElement("limit", _errors);
   limitElem->GetElement("lower", _errors)->Set<double>(
-      this->Lower(), _errors);
+      _errors, this->Lower());
   limitElem->GetElement("upper", _errors)->Set<double>(
-      this->Upper(), _errors);
+      _errors, this->Upper());
   limitElem->GetElement("effort", _errors)->Set<double>(
-      this->Effort(), _errors);
+      _errors, this->Effort());
   limitElem->GetElement("velocity", _errors)->Set<double>(
-      this->MaxVelocity(), _errors);
+      _errors, this->MaxVelocity());
   limitElem->GetElement("stiffness", _errors)->Set<double>(
-      this->Stiffness(), _errors);
+      _errors, this->Stiffness());
   limitElem->GetElement("dissipation", _errors)->Set<double>(
-      this->Dissipation(), _errors);
+      _errors, this->Dissipation());
   return axisElem;
 }
