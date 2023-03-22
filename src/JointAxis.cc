@@ -125,13 +125,13 @@ Errors JointAxis::Load(ElementPtr _sdf)
     sdf::ElementPtr dynElement = _sdf->GetElement("dynamics", errors);
 
     this->dataPtr->damping = dynElement->Get<double>(errors,
-	"damping", this->dataPtr->damping).first;
+        "damping", this->dataPtr->damping).first;
     this->dataPtr->friction = dynElement->Get<double>(errors,
-	 "friction", this->dataPtr->friction).first;
+        "friction", this->dataPtr->friction).first;
     this->dataPtr->springReference = dynElement->Get<double>(errors,
-	"spring_reference", this->dataPtr->springReference).first;
+        "spring_reference", this->dataPtr->springReference).first;
     this->dataPtr->springStiffness = dynElement->Get<double>(errors,
-	"spring_stiffness", this->dataPtr->springStiffness).first;
+        "spring_stiffness", this->dataPtr->springStiffness).first;
   }
 
   // Load limit values
