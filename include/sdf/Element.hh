@@ -221,15 +221,6 @@ namespace sdf
     public: void PrintDocRightPane(std::string &_html,
                                   int _spacing, int &_index) const;
 
-    /// \brief Helper function for SDF::PrintDoc
-    ///
-    /// This generates the SDF html documentation.
-    /// \param[out] _html Accumulated HTML for output.
-    /// \param[in] _spacing Amount of spacing for this element.
-    /// \param[out] _errors Vector of errors.
-    public: void PrintDocRightPane(std::string &_html, int _spacing,
-                                   int &_index, sdf::Errors &_errors) const;
-
     /// \brief Convert the element values to a string representation.
     /// \param[in] _prefix String value to prefix to the output.
     /// \param[in] _config Configuration for printing the values.
