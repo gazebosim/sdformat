@@ -375,6 +375,17 @@ TEST(NestedModel, NestedInclude)
   ASSERT_NE(nullptr, upperJoint1);
   ASSERT_NE(nullptr, upperJoint2);
   ASSERT_NE(nullptr, upperJoint3);
+  // test World::JointByName
+  EXPECT_EQ(lowerJoint1, world->JointByName(name + "::lower_joint"));
+  EXPECT_EQ(lowerJoint2, world->JointByName(
+      "include_with_rotation::" + name + "::lower_joint"));
+  EXPECT_EQ(lowerJoint3, world->JointByName(
+      "include_with_rotation_1.4::" + name + "_14::lower_joint"));
+  EXPECT_EQ(upperJoint1, world->JointByName(name + "::upper_joint"));
+  EXPECT_EQ(upperJoint2, world->JointByName(
+      "include_with_rotation::" + name + "::upper_joint"));
+  EXPECT_EQ(upperJoint3, world->JointByName(
+      "include_with_rotation_1.4::" + name + "_14::upper_joint"));
 
   const sdf::JointAxis *lowerAxis1 = lowerJoint1->Axis(0);
   const sdf::JointAxis *lowerAxis2 = lowerJoint2->Axis(0);

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="joint_axis_invalid_expressed_in">
+    <link name="link">
+      <pose>0 0 1 0 0 0</pose>
+    </link>
+    <joint name="joint" type="revolute">
+      <pose>0 0 3 0 0 0</pose>
+      <parent>world</parent>
+      <child>link</child>
+      <axis>
+        <xyz expressed_in="invalid">0 0 1</xyz>
+      </axis>
+    </joint>
+  </model>
+</sdf>
