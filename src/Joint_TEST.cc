@@ -119,10 +119,18 @@ TEST(DOMJoint, Construction)
   EXPECT_EQ(axis.Xyz(), joint.Axis(0)->Xyz());
   EXPECT_EQ(axis1.Xyz(), joint.Axis(1)->Xyz());
 
-  EXPECT_DOUBLE_EQ(1.0, joint.ThreadPitch());
+  // Default thread pitch
+  EXPECT_DOUBLE_EQ(1.0, joint.ScrewThreadPitch());
+  EXPECT_DOUBLE_EQ(-2*GZ_PI, joint.ThreadPitch());
+
+  // Set and check thread pitch
   const double threadPitch = 0.1;
+  joint.SetScrewThreadPitch(threadPitch);
+  EXPECT_DOUBLE_EQ(threadPitch, joint.ScrewThreadPitch());
+  EXPECT_DOUBLE_EQ(-2*GZ_PI / threadPitch, joint.ThreadPitch());
   joint.SetThreadPitch(threadPitch);
   EXPECT_DOUBLE_EQ(threadPitch, joint.ThreadPitch());
+  EXPECT_DOUBLE_EQ(-2*GZ_PI / threadPitch, joint.ScrewThreadPitch());
 
   EXPECT_EQ(0u, joint.SensorCount());
   EXPECT_EQ(nullptr, joint.SensorByIndex(0));

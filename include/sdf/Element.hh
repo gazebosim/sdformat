@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "sdf/Error.hh"
 #include "sdf/Param.hh"
 #include "sdf/PrintConfig.hh"
 #include "sdf/sdf_config.h"
@@ -162,10 +163,10 @@ namespace sdf
     public: void PrintDescription(const std::string &_prefix) const;
 
     /// \brief Output Element's description to stdout.
-    /// \param[in] _prefix String value to prefix to the output.
     /// \param[out] _errors Vector of errors.
-    public: void PrintDescription(const std::string &_prefix,
-                                  sdf::Errors &_errors) const;
+    /// \param[in] _prefix String value to prefix to the output.
+    public: void PrintDescription(sdf::Errors &_errors,
+                                  const std::string &_prefix) const;
 
     /// \brief Output Element's values to stdout.
     /// \param[in] _prefix String value to prefix to the output.
@@ -505,11 +506,11 @@ namespace sdf
             bool Set(const T &_value);
 
     /// \brief Set the value of this element.
-    /// \param[in] _value the value to set.
     /// \param[out] _errors Vector of errors.
+    /// \param[in] _value the value to set.
     /// \return True if the value was successfully set, false otherwise.
     public: template<typename T>
-            bool Set(const T &_value, sdf::Errors &_errors);
+            bool Set(sdf::Errors &_errors, const T &_value);
 
     /// \brief Return true if the named element exists.
     /// \param[in] _name the name of the element to look for.
@@ -825,32 +826,32 @@ namespace sdf
     public: static std::vector<std::string> NameUniquenessExceptions();
 
     /// \brief Generate a string (XML) representation of this object.
-    /// \param[out] _out the std::ostreamstream to write output to.
     /// \param[out] _errors Vector of errors.
+    /// \param[out] _out the std::ostreamstream to write output to.
     /// \param[in] _prefix arbitrary prefix to put on the string.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for converting to string.
-    private: void ToString(std::ostringstream &_out,
-                           sdf::Errors &_errors,
+    private: void ToString(sdf::Errors &_errors,
+                           std::ostringstream &_out,
                            const std::string &_prefix,
                            bool _includeDefaultElements,
                            bool _includeDefaultAttributes,
                            const PrintConfig &_config) const;
 
     /// \brief Generate a string (XML) representation of this object.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _prefix arbitrary prefix to put on the string.
     /// \param[in] _includeDefaultElements flag to include default elements.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for printing values.
     /// \param[out] _out the std::ostringstream to write output to.
-    /// \param[out] _errors Vector of errors.
-    private: void PrintValuesImpl(const std::string &_prefix,
+    private: void PrintValuesImpl(sdf::Errors &_errors,
+                                  const std::string &_prefix,
                                   bool _includeDefaultElements,
                                   bool _includeDefaultAttributes,
                                   const PrintConfig &_config,
-                                  std::ostringstream &_out,
-                                  sdf::Errors &_errors) const;
+                                  std::ostringstream &_out) const;
 
     /// \brief Create a new Param object and return it.
     /// \param[in] _key Key for the parameter.
@@ -952,14 +953,14 @@ namespace sdf
                                  std::ostringstream &_out) const;
 
     /// \brief Generate the string (XML) for the attributes.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _includeDefaultAttributes flag to include default attributes.
     /// \param[in] _config Configuration for printing attributes.
     /// \param[out] _out the std::ostringstream to write output to.
-    /// \param[out] _errors Vector of errors.
-    public: void PrintAttributes(bool _includeDefaultAttributes,
+    public: void PrintAttributes(sdf::Errors &_errors,
+                                 bool _includeDefaultAttributes,
                                  const PrintConfig &_config,
-                                 std::ostringstream &_out,
-                                 sdf::Errors &_errors) const;
+                                 std::ostringstream &_out) const;
   };
 
   ///////////////////////////////////////////////
@@ -1016,7 +1017,7 @@ namespace sdf
     std::pair<T, bool> result = this->Get<T>(errors, _key, _defaultValue);
     for(auto& error : errors)
     {
-        sdferr << error.Message();
+      internal::throwOrPrintError(sdferr, error);
     }
     return result;
   }
@@ -1066,22 +1067,21 @@ namespace sdf
   bool Element::Set(const T &_value)
   {
     sdf::Errors errors;
-    bool result = this->Set<T>(_value, errors);
+    bool result = this->Set<T>(errors, _value);
     for(auto& error : errors)
     {
-        sdferr << error.Message();
+      internal::throwOrPrintError(sdferr, error);
     }
     return result;
   }
 
   ///////////////////////////////////////////////
   template<typename T>
-  bool Element::Set(const T &_value, sdf::Errors &_errors)
+  bool Element::Set(sdf::Errors &_errors, const T &_value)
   {
     if (this->dataPtr->value)
     {
-      this->dataPtr->value->Set(_value, _errors);
-      return true;
+      return this->dataPtr->value->Set(_value, _errors);
     }
     return false;
   }
