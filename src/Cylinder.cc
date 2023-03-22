@@ -153,10 +153,10 @@ sdf::ElementPtr Cylinder::ToElement(sdf::Errors &_errors) const
   sdf::initFile("cylinder_shape.sdf", elem);
 
   sdf::ElementPtr radiusElem = elem->GetElement("radius", _errors);
-  radiusElem->Set<double>(this->Radius(), _errors);
+  radiusElem->Set<double>(_errors, this->Radius());
 
   sdf::ElementPtr lengthElem = elem->GetElement("length", _errors);
-  lengthElem->Set<double>(this->Length(), _errors);
+  lengthElem->Set<double>(_errors, this->Length());
 
   return elem;
 }

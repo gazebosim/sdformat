@@ -174,12 +174,12 @@ sdf::ElementPtr Polyline::ToElement(sdf::Errors &_errors) const
   sdf::initFile("polyline_shape.sdf", elem);
 
   auto heightElem = elem->GetElement("height", _errors);
-  heightElem->Set<double>(this->Height(), _errors);
+  heightElem->Set<double>(_errors, this->Height());
 
   for (auto &point : this->dataPtr->points)
   {
     auto pointElem = elem->AddElement("point", _errors);
-    pointElem->Set<gz::math::Vector2d>(point, _errors);
+    pointElem->Set<gz::math::Vector2d>(_errors, point);
   }
 
   return elem;

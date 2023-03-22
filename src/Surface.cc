@@ -413,11 +413,11 @@ sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
 
   sdf::ElementPtr contactElem = elem->GetElement("contact", _errors);
   contactElem->GetElement("collide_bitmask", _errors)->Set(
-      this->dataPtr->contact.CollideBitmask(), _errors);
+      _errors, this->dataPtr->contact.CollideBitmask());
 
   sdf::ElementPtr frictionElem = elem->GetElement("friction", _errors);
   frictionElem->GetElement("ode", _errors)->GetElement("mu", _errors)->Set(
-      this->dataPtr->friction.ODE()->Mu(), _errors);
+      _errors, this->dataPtr->friction.ODE()->Mu());
 
   return elem;
 }

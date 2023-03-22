@@ -170,10 +170,10 @@ sdf::ElementPtr Plane::ToElement(sdf::Errors &_errors) const
   sdf::initFile("plane_shape.sdf", elem);
 
   sdf::ElementPtr normalElem = elem->GetElement("normal", _errors);
-  normalElem->Set(this->Normal(), _errors);
+  normalElem->Set(_errors, this->Normal());
 
   sdf::ElementPtr sizeElem = elem->GetElement("size", _errors);
-  sizeElem->Set(this->Size(), _errors);
+  sizeElem->Set(_errors, this->Size());
 
   return elem;
 }

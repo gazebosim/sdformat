@@ -131,7 +131,7 @@ sdf::ElementPtr Box::ToElement(sdf::Errors &_errors) const
   sdf::initFile("box_shape.sdf", elem);
 
   sdf::ElementPtr sizeElem = elem->GetElement("size", _errors);
-  sizeElem->Set(this->Size(), _errors);
+  sizeElem->Set(_errors, this->Size());
 
   return elem;
 }

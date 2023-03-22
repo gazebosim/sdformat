@@ -153,10 +153,10 @@ sdf::ElementPtr Capsule::ToElement(sdf::Errors &_errors) const
   sdf::initFile("capsule_shape.sdf", elem);
 
   sdf::ElementPtr radiusElem = elem->GetElement("radius", _errors);
-  radiusElem->Set(this->Radius(), _errors);
+  radiusElem->Set(_errors, this->Radius());
 
   sdf::ElementPtr lengthElem = elem->GetElement("length", _errors);
-  lengthElem->Set(this->Length(), _errors);
+  lengthElem->Set(_errors, this->Length());
 
   return elem;
 }

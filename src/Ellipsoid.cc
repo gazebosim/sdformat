@@ -132,7 +132,7 @@ sdf::ElementPtr Ellipsoid::ToElement(sdf::Errors &_errors) const
   sdf::initFile("ellipsoid_shape.sdf", elem);
 
   sdf::ElementPtr radiiElem = elem->GetElement("radii", _errors);
-  radiiElem->Set(this->Radii(), _errors);
+  radiiElem->Set(_errors, this->Radii());
 
   return elem;
 }
