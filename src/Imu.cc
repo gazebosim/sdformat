@@ -389,17 +389,17 @@ sdf::ElementPtr Imu::ToElement(sdf::Errors &_errors) const
     elem->GetElement("orientation_reference_frame", _errors);
   orientationRefFrameElem->GetElement(
       "localization", _errors)->Set<std::string>(
-      this->Localization(), _errors);
+      _errors, this->Localization());
 
   sdf::ElementPtr customRPY =
     orientationRefFrameElem->GetElement("custom_rpy", _errors);
-  customRPY->Set<gz::math::Vector3d>(this->CustomRpy(), _errors);
+  customRPY->Set<gz::math::Vector3d>(_errors, this->CustomRpy());
   customRPY->GetAttribute("parent_frame")->Set<std::string>(
       this->CustomRpyParentFrame(), _errors);
 
   sdf::ElementPtr gravDirX =
     orientationRefFrameElem->GetElement("grav_dir_x", _errors);
-  gravDirX->Set<gz::math::Vector3d>(this->GravityDirX(), _errors);
+  gravDirX->Set<gz::math::Vector3d>(_errors, this->GravityDirX());
   gravDirX->GetAttribute("parent_frame")->Set<std::string>(
       this->GravityDirXParentFrame(), _errors);
 
@@ -444,7 +444,7 @@ sdf::ElementPtr Imu::ToElement(sdf::Errors &_errors) const
       _errors), _errors);
 
   elem->GetElement("enable_orientation", _errors)->Set<bool>(
-      this->OrientationEnabled(), _errors);
+      _errors, this->OrientationEnabled());
 
   return elem;
 }
