@@ -53,6 +53,7 @@ set(tests
   unknown.cc
   urdf_gazebo_extensions.cc
   urdf_joint_parameters.cc
+  urdf_to_sdf.cc
   visual_dom.cc
   whitespace.cc
   world_dom.cc

@@ -24,6 +24,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.h"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -278,13 +279,6 @@ TEST(Parser, NameUniqueness)
 }
 
 /////////////////////////////////////////////////
-/// Check that _a contains _b
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
-/////////////////////////////////////////////////
 TEST(Parser, SyntaxErrorInValues)
 {
   // Capture sdferr output
@@ -301,10 +295,11 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to set value [bad 0 0 0 0 0] for key [pose]");
-    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_pose.sdf:L5");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "bad_syntax_pose.sdf:L5");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/pose:");
   }
   {
@@ -315,10 +310,11 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to set value [bad ] for key[linear]");
-    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_double.sdf:L7");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "bad_syntax_double.sdf:L7");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/"
                  "link[@name=\"link\"]/velocity_decay/linear:");
   }
@@ -330,10 +326,11 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to set value [0 1 bad ] for key[gravity]");
-    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_vector.sdf:L4");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "bad_syntax_vector.sdf:L4");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/gravity:");
   }
 
@@ -363,15 +360,15 @@ TEST(Parser, MissingRequiredAttributesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Required attribute[name] in element[link] is not specified "
                  "in SDF.");
-    EXPECT_PRED2(contains, buffer.str(), "box_bad_test.world:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(), "box_bad_test.world:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"box\"]/link:");
   }
 
@@ -401,14 +398,15 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "<include> element missing 'uri' attribute");
-    EXPECT_PRED2(contains, buffer.str(), "includes_missing_uri.sdf:L5");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_missing_uri.sdf:L5");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]:");
   }
   {
@@ -421,14 +419,15 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to find uri[missing_model]");
-    EXPECT_PRED2(contains, buffer.str(), "includes_missing_model.sdf:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_missing_model.sdf:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
   {
@@ -446,15 +445,16 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to resolve uri[box_missing_config]");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "since it does not contain a model.config");
-    EXPECT_PRED2(contains, buffer.str(), "includes_model_without_sdf.sdf:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_model_without_sdf.sdf:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
   {
@@ -472,15 +472,16 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ELEMENT_MISSING)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Failed to find top level <model> / <actor> / <light> for "
                  "<include>\n");
-    EXPECT_PRED2(contains, buffer.str(), "includes_without_top_level.sdf:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_without_top_level.sdf:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
 
