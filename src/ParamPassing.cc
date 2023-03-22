@@ -24,6 +24,7 @@
 
 #include "ParamPassing.hh"
 #include "parser_private.hh"
+#include "Utils.hh"
 #include "XmlUtils.hh"
 
 namespace sdf
@@ -176,11 +177,11 @@ void updateParams(const ParserConfig &_config,
     }
     else if (actionStr == "modify")
     {
-      modify(childElemXml, elem, _errors);
+      modify(childElemXml, _config, elem, _errors);
     }
     else if (actionStr == "remove")
     {
-      remove(childElemXml, elem, _errors);
+      remove(childElemXml, _config, elem, _errors);
     }
     else if (actionStr == "replace")
     {
@@ -292,6 +293,8 @@ bool isValidAction(const std::string &_action)
 //////////////////////////////////////////////////
 ElementPtr getElementByName(const ElementPtr _elem,
                             const tinyxml2::XMLElement *_xml,
+                            const sdf::ParserConfig _config,
+                            sdf::Errors &_errors,
                             const bool _isModifyAction)
 {
   std::string elemName = _xml->Name();
@@ -324,10 +327,14 @@ ElementPtr getElementByName(const ElementPtr _elem,
   else if (elem->HasAttribute("name")
             && elem->GetAttribute("name")->GetRequired())
   {
-    sdfwarn << "The original element [" << elemName << "] contains the "
-            << "attribute 'name' but none was provided in the element modifier."
-            << " The assumed element to be modified is: <" << elemName
-            << " name='" << elem->Get<std::string>("name") << "'>\n";
+    std::stringstream ss;
+    ss << "The original element [" << elemName << "] contains the "
+       << "attribute 'name' but none was provided in the element modifier."
+       << " The assumed element to be modified is: <" << elemName
+       << " name='" << elem->Get<std::string>("name") << "'>";
+    Error err(ErrorCode::WARNING, ss.str());
+    enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), err, _errors);
   }
 
   return elem;
@@ -397,7 +404,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
 
     if (actionStr == "remove")
     {
-      ElementPtr e = getElementByName(_elem, xmlChild);
+      ElementPtr e = getElementByName(_elem, xmlChild, _config, _errors);
       if (e == nullptr)
       {
         _errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -409,14 +416,14 @@ void handleIndividualChildActions(const ParserConfig &_config,
       }
       else
       {
-        remove(xmlChild, e, _errors);
+        remove(xmlChild, _config, e, _errors);
       }
 
       continue;
     }
     else if (actionStr == "modify")
     {
-      ElementPtr e = getElementByName(_elem, xmlChild, true);
+      ElementPtr e = getElementByName(_elem, xmlChild, _config, _errors, true);
       if (e == nullptr)
       {
         _errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -428,7 +435,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
       }
       else
       {
-        modify(xmlChild, e, _errors);
+        modify(xmlChild, _config, e, _errors);
       }
 
       continue;
@@ -472,7 +479,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
     }
     else if (actionStr == "replace")
     {
-      ElementPtr e = getElementByName(_elem, xmlChild);
+      ElementPtr e = getElementByName(_elem, xmlChild, _config, _errors);
       if (e == nullptr)
       {
         _errors.push_back({ErrorCode::ELEMENT_MISSING,
@@ -562,7 +569,8 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
 
 //////////////////////////////////////////////////
 void modifyChildren(tinyxml2::XMLElement *_xml,
-                    ElementPtr _elem, Errors &_errors)
+                    const sdf::ParserConfig &_config, ElementPtr _elem,
+                    Errors &_errors)
 {
   for (tinyxml2::XMLElement *xmlChild = _xml->FirstChildElement();
        xmlChild;
@@ -579,7 +587,8 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
       continue;
     }
 
-    ElementPtr elemChild = getElementByName(_elem, xmlChild, true);
+    ElementPtr elemChild = getElementByName(_elem, xmlChild,
+                                            _config, _errors, true);
     ParamPtr paramChild = elemChild->GetValue();
 
     if (xmlChild->GetText())
@@ -609,21 +618,26 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
       else
       {
         // sdf has child elements but no children were specified in xml
-        sdfwarn << "No modifications for element "
-                << ElementToString(xmlChild)
-                << " provided, skipping modification for:\n"
-                << ElementToString(_xml) << "\n";
+        std::stringstream ss;
+        ss << "No modifications for element "
+           << ElementToString(xmlChild)
+           << " provided, skipping modification for:\n"
+           << ElementToString(_xml);
+        Error err(ErrorCode::WARNING, ss.str());
+        enforceConfigurablePolicyCondition(
+            _config.WarningsPolicy(), err, _errors);
       }
     }
     else
     {
-      modify(xmlChild, elemChild, _errors);
+      modify(xmlChild, _config, elemChild, _errors);
     }
   }
 }
 
 //////////////////////////////////////////////////
-void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
+void modify(tinyxml2::XMLElement *_xml,  const sdf::ParserConfig &_config,
+            ElementPtr _elem, Errors &_errors)
 {
   modifyAttributes(_xml, _elem, _errors);
 
@@ -643,12 +657,13 @@ void modify(tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
   else
   {
     // modify children elements
-    modifyChildren(_xml, _elem, _errors);
+    modifyChildren(_xml, _config, _elem, _errors);
   }
 }
 
 //////////////////////////////////////////////////
-void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
+void remove(const tinyxml2::XMLElement *_xml, const sdf::ParserConfig &_config,
+            ElementPtr _elem, Errors &_errors)
 {
   if (_xml->NoChildren())
   {
@@ -663,7 +678,7 @@ void remove(const tinyxml2::XMLElement *_xml, ElementPtr _elem, Errors &_errors)
          xmlChild;
          xmlChild = xmlChild->NextSiblingElement())
     {
-      elemChild = getElementByName(_elem, xmlChild);
+      elemChild = getElementByName(_elem, xmlChild, _config, _errors);
       if (elemChild == nullptr)
       {
         const tinyxml2::XMLElement *xmlParent = _xml->Parent()->ToElement();

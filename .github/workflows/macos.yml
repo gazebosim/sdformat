@@ -9,14 +9,24 @@ jobs:
       PACKAGE: sdformat13
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Homebrew
       id: set-up-homebrew
       uses: Homebrew/actions/setup-homebrew@master
     - run: brew config
     - run: brew list
 
+    # Workaround for https://github.com/actions/setup-python/issues/577
+    - name: Clean up python binaries
+      run: |
+        rm /usr/local/bin/2to3;
+        rm /usr/local/bin/idle3;
+        rm /usr/local/bin/pydoc3;
+        rm /usr/local/bin/python3;
+        rm /usr/local/bin/python3-config;
     - name: Install base dependencies
+      env:
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       run: |
         brew tap osrf/simulation;
         # check for ci_matching_branch

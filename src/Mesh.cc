@@ -51,6 +51,12 @@ Mesh::Mesh()
 /////////////////////////////////////////////////
 Errors Mesh::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -76,7 +82,9 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>(errors, "uri", "").first;
+    this->dataPtr->uri = resolveURI(
+      _sdf->Get<std::string>(errors, "uri", "").first,
+      _config, errors);
   }
   else
   {
@@ -196,7 +204,7 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);
-  uriElem->Set(this->Uri(), _errors);
+  uriElem->Set(_errors, this->Uri());
 
   // Submesh
   if (!this->dataPtr->submesh.empty())
@@ -204,16 +212,16 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
     sdf::ElementPtr subMeshElem = elem->GetElement("submesh", _errors);
 
     sdf::ElementPtr subMeshNameElem = subMeshElem->GetElement("name", _errors);
-    subMeshNameElem->Set(this->dataPtr->submesh, _errors);
+    subMeshNameElem->Set(_errors, this->dataPtr->submesh);
 
     sdf::ElementPtr subMeshCenterElem = subMeshElem->GetElement(
         "center", _errors);
-    subMeshCenterElem->Set(this->dataPtr->centerSubmesh, _errors);
+    subMeshCenterElem->Set(_errors, this->dataPtr->centerSubmesh);
   }
 
   // Scale
   sdf::ElementPtr scaleElem = elem->GetElement("scale", _errors);
-  scaleElem->Set(this->Scale(), _errors);
+  scaleElem->Set(_errors, this->Scale());
 
   return elem;
 }

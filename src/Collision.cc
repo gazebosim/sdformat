@@ -65,6 +65,12 @@ Collision::Collision()
 /////////////////////////////////////////////////
 Errors Collision::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -99,7 +105,7 @@ Errors Collision::Load(ElementPtr _sdf)
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(
-      _sdf->GetElement("geometry", errors));
+      _sdf->GetElement("geometry", errors), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Load the surface parameters if they are given
@@ -223,7 +229,7 @@ sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose(), _errors);
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   // Set the geometry
   elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);

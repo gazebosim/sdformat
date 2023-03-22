@@ -182,11 +182,8 @@ void Element::AddValue(const std::string &_type,
       std::make_shared<Param>(this->dataPtr->name, _type, _defaultValue,
                               _required, _minValue, _maxValue, _errors,
                               _description);
-  if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
-  {
-    _errors.push_back({ErrorCode::FATAL_ERROR,
-        "Cannot set parent Element of value to itself."});
-  }
+  SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+      "Cannot set parent Element of value to itself.");
 }
 
 /////////////////////////////////////////////////
@@ -199,12 +196,8 @@ ParamPtr Element::CreateParam(const std::string &_key,
 {
   ParamPtr param = std::make_shared<Param>(
       _key, _type, _defaultValue, _required, _errors, _description);
-
-  if(!param->SetParentElement(shared_from_this(), _errors))
-  {
-    _errors.push_back({ErrorCode::FATAL_ERROR,
-          "Cannot set parent Element of created Param to itself."});
-  }
+  SDF_ASSERT(param->SetParentElement(shared_from_this()),
+      "Cannot set parent Element of created Param to itself.");
   return param;
 }
 
@@ -263,13 +256,9 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     auto clonedAttribute = (*aiter)->Clone();
-    if (!clonedAttribute->SetParentElement(clone, _errors))
-    {
-        _errors.push_back({ErrorCode::FATAL_ERROR,
-            "Cannot set parent Element of cloned attribute Param to cloned "
-            "Element."});
-        return nullptr;
-    }
+    SDF_ASSERT(clonedAttribute->SetParentElement(clone),
+        "Cannot set parent Element of cloned attribute Param to cloned "
+        "Element.");
     clone->dataPtr->attributes.push_back(clonedAttribute);
   }
 
@@ -290,14 +279,8 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
-
-    if (!clone->dataPtr->value->SetParentElement(clone, _errors))
-    {
-      _errors.push_back({ErrorCode::FATAL_ERROR,
-        "Cannot set parent Element of cloned value Param to cloned "
-        "Element."});
-      return nullptr;
-    }
+    SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
+        "Cannot set parent Element of cloned value Param to cloned Element.");
   }
 
   if (this->dataPtr->includeElement)
@@ -341,13 +324,8 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
     }
     ParamPtr param = this->GetAttribute((*iter)->GetKey());
     (*param) = (**iter);
-
-    if (!param->SetParentElement(shared_from_this(), _errors))
-    {
-      _errors.push_back({ErrorCode::FATAL_ERROR,
-          "Cannot set parent Element of copied attribute Param to itself."});
-      return;
-    }
+    SDF_ASSERT(param->SetParentElement(shared_from_this()),
+        "Cannot set parent Element of copied attribute Param to itself.");
   }
 
   if (_elem->GetValue())
@@ -360,12 +338,8 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
     {
       *(this->dataPtr->value) = *(_elem->GetValue());
     }
-    if (!this->dataPtr->value->SetParentElement(shared_from_this(), _errors))
-    {
-      _errors.push_back({ErrorCode::FATAL_ERROR,
-          "Cannot set parent Element of copied attribute Param to itself."});
-      return;
-    }
+    SDF_ASSERT(this->dataPtr->value->SetParentElement(shared_from_this()),
+        "Cannot set parent Element of copied value Param to itself.");
   }
 
   this->dataPtr->elementDescriptions.clear();
@@ -406,13 +380,13 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
 void Element::PrintDescription(const std::string &_prefix) const
 {
   sdf::Errors errors;
-  this->PrintDescription(_prefix, errors);
+  this->PrintDescription(errors, _prefix);
   sdf::throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
-void Element::PrintDescription(const std::string &_prefix,
-                               sdf::Errors &_errors) const
+void Element::PrintDescription(sdf::Errors &_errors,
+                               const std::string &_prefix) const
 {
   std::cout << _prefix << "<element name ='" << this->dataPtr->name
             << "' required ='" << this->dataPtr->required << "'";
@@ -474,7 +448,7 @@ void Element::PrintDescription(const std::string &_prefix,
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    (*eiter)->PrintDescription(_prefix + "  ", _errors);
+    (*eiter)->PrintDescription(_errors, _prefix + "  ");
   }
 
   std::cout << _prefix << "</element>\n";
@@ -483,15 +457,6 @@ void Element::PrintDescription(const std::string &_prefix,
 /////////////////////////////////////////////////
 void Element::PrintDocRightPane(std::string &_html, int _spacing,
                                 int &_index) const
-{
-  sdf::Errors errors;
-  this->PrintDocRightPane(_html, _spacing, _index, errors);
-  sdf::throwOrPrintErrors(errors);
-}
-
-/////////////////////////////////////////////////
-void Element::PrintDocRightPane(std::string &_html, int _spacing,
-                                int &_index, sdf::Errors &_errors) const
 {
   std::ostringstream stream;
   ElementPtr_V::iterator eiter;
@@ -502,7 +467,7 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    (*eiter)->PrintDocRightPane(childHTML, _spacing + 4, _index, _errors);
+    (*eiter)->PrintDocRightPane(childHTML, _spacing + 4, _index);
   }
 
   stream << "<a name=\"" << this->dataPtr->name << start
@@ -531,7 +496,7 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
     stream << this->dataPtr->value->GetTypeName()
            << "&nbsp;&nbsp;&nbsp;\n"
            << "<font style='font-weight:bold'>Default: </font>"
-           << this->dataPtr->value->GetDefaultAsString(_errors) << '\n';
+           << this->dataPtr->value->GetDefaultAsString() << '\n';
   }
   else
   {
@@ -571,7 +536,7 @@ void Element::PrintDocRightPane(std::string &_html, int _spacing,
       stream << "<font style='font-weight:bold'>Type: </font>"
              << (*aiter)->GetTypeName() << "&nbsp;&nbsp;&nbsp;"
              << "<font style='font-weight:bold'>Default: </font>"
-             << (*aiter)->GetDefaultAsString(_errors) << "<br>";
+             << (*aiter)->GetDefaultAsString() << "<br>";
       stream << "</div>\n";
 
       stream << "</div>\n";
@@ -613,12 +578,12 @@ void Element::PrintDocLeftPane(std::string &_html, int _spacing,
 }
 
 /////////////////////////////////////////////////
-void Element::PrintValuesImpl(const std::string &_prefix,
+void Element::PrintValuesImpl(sdf::Errors &_errors,
+                              const std::string &_prefix,
                               bool _includeDefaultElements,
                               bool _includeDefaultAttributes,
                               const PrintConfig &_config,
-                              std::ostringstream &_out,
-                              sdf::Errors &_errors) const
+                              std::ostringstream &_out) const
 {
   if (_config.PreserveIncludes() && this->GetIncludeElement() != nullptr)
   {
@@ -629,7 +594,7 @@ void Element::PrintValuesImpl(const std::string &_prefix,
     _out << _prefix << "<" << this->dataPtr->name;
 
     this->dataPtr->PrintAttributes(
-        _includeDefaultAttributes, _config, _out, _errors);
+        _errors, _includeDefaultAttributes, _config, _out);
 
     if (this->dataPtr->elements.size() > 0)
     {
@@ -638,9 +603,9 @@ void Element::PrintValuesImpl(const std::string &_prefix,
       for (eiter = this->dataPtr->elements.begin();
            eiter != this->dataPtr->elements.end(); ++eiter)
       {
-        (*eiter)->ToString(_out,
-                           _errors,
-                            _prefix + "  ",
+        (*eiter)->ToString(_errors,
+                           _out,
+                           _prefix + "  ",
                            _includeDefaultElements,
                            _includeDefaultAttributes,
                            _config);
@@ -668,16 +633,16 @@ void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
                                      std::ostringstream &_out) const
 {
   sdf::Errors errors;
-  this->PrintAttributes(_includeDefaultAttributes, _config,
-                        _out, errors);
+  this->PrintAttributes(errors, _includeDefaultAttributes, _config,
+                        _out);
   sdf::throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
-void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
+void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
+                                     bool _includeDefaultAttributes,
                                      const PrintConfig &_config,
-                                     std::ostringstream &_out,
-                                     sdf::Errors &_errors) const
+                                     std::ostringstream &_out) const
 {
   // Attribute exceptions are used in the event of a non-default PrintConfig
   // which modifies the Attributes of this Element that are printed out. The
@@ -723,11 +688,9 @@ void ElementPrivate::PrintAttributes(bool _includeDefaultAttributes,
 void Element::PrintValues(std::string _prefix,
                           const PrintConfig &_config) const
 {
-  std::ostringstream ss;
   sdf::Errors errors;
-  PrintValuesImpl(_prefix, true, false, _config, ss, errors);
+  PrintValues(errors, _prefix, true, false, _config);
   sdf::throwOrPrintErrors(errors);
-  std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
@@ -735,7 +698,7 @@ void Element::PrintValues(sdf::Errors &_errors, std::string _prefix,
                           const PrintConfig &_config) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix, true, false, _config, ss, _errors);
+  PrintValuesImpl(_errors, _prefix, true, false, _config, ss);
   std::cout << ss.str();
 }
 
@@ -745,16 +708,13 @@ void Element::PrintValues(const std::string &_prefix,
                           bool _includeDefaultAttributes,
                           const PrintConfig &_config) const
 {
-  std::ostringstream ss;
   sdf::Errors errors;
-  PrintValuesImpl(_prefix,
-                  _includeDefaultElements,
-                  _includeDefaultAttributes,
-                  _config,
-                  ss,
-                  errors);
+  PrintValues(errors,
+              _prefix,
+              _includeDefaultElements,
+              _includeDefaultAttributes,
+              _config);
   sdf::throwOrPrintErrors(errors);
-  std::cout << ss.str();
 }
 
 /////////////////////////////////////////////////
@@ -765,12 +725,12 @@ void Element::PrintValues(sdf::Errors &_errors,
                           const PrintConfig &_config) const
 {
   std::ostringstream ss;
-  PrintValuesImpl(_prefix,
+  PrintValuesImpl(_errors,
+                  _prefix,
                   _includeDefaultElements,
                   _includeDefaultAttributes,
                   _config,
-                  ss,
-                  _errors);
+                  ss);
   std::cout << ss.str();
 }
 
@@ -779,10 +739,9 @@ std::string Element::ToString(const std::string &_prefix,
                               const PrintConfig &_config) const
 {
   sdf::Errors errors;
-  std::ostringstream out;
-  this->ToString(out, errors, _prefix, true, false, _config);
+  std::string out = this->ToString(errors, _prefix, _config);
   sdf::throwOrPrintErrors(errors);
-  return out.str();
+  return out;
 }
 
 /////////////////////////////////////////////////
@@ -790,9 +749,7 @@ std::string Element::ToString(sdf::Errors &_errors,
                               const std::string &_prefix,
                               const PrintConfig &_config) const
 {
-  std::ostringstream out;
-  this->ToString(out, _errors, _prefix, true, false, _config);
-  return out.str();
+  return this->ToString(_errors, _prefix, true, false, _config);
 }
 
 /////////////////////////////////////////////////
@@ -803,8 +760,8 @@ std::string Element::ToString(const std::string &_prefix,
 {
   sdf::Errors errors;
   std::ostringstream out;
-  this->ToString(out,
-                 errors,
+  this->ToString(errors,
+                 out,
                  _prefix,
                  _includeDefaultElements,
                  _includeDefaultAttributes,
@@ -821,8 +778,8 @@ std::string Element::ToString(sdf::Errors &_errors,
                               const PrintConfig &_config) const
 {
   std::ostringstream out;
-  this->ToString(out,
-                 _errors,
+  this->ToString(_errors,
+                 out,
                  _prefix,
                  _includeDefaultElements,
                  _includeDefaultAttributes,
@@ -831,19 +788,19 @@ std::string Element::ToString(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
-void Element::ToString(std::ostringstream &_out,
-                       sdf::Errors &_errors,
+void Element::ToString(sdf::Errors &_errors,
+                       std::ostringstream &_out,
                        const std::string &_prefix,
                        bool _includeDefaultElements,
                        bool _includeDefaultAttributes,
                        const PrintConfig &_config) const
 {
-  PrintValuesImpl(_prefix,
+  PrintValuesImpl(_errors,
+                  _prefix,
                   _includeDefaultElements,
                   _includeDefaultAttributes,
                   _config,
-                  _out,
-                  _errors);
+                  _out);
 }
 
 /////////////////////////////////////////////////
@@ -1461,14 +1418,9 @@ void Element::RemoveChild(ElementPtr _child)
 }
 
 /////////////////////////////////////////////////
-void Element::RemoveChild(ElementPtr _child, sdf::Errors &_errors)
+void Element::RemoveChild(ElementPtr _child, sdf::Errors &)
 {
-  if (!_child)
-  {
-    _errors.push_back({ErrorCode::FATAL_ERROR,
-        "Cannot remove a nullptr child pointer"});
-    return;
-  }
+  SDF_ASSERT(_child, "Cannot remove a nullptr child pointer");
 
   ElementPtr_V::iterator iter;
   iter = std::find(this->dataPtr->elements.begin(),

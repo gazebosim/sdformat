@@ -9,6 +9,7 @@ set (sdfs
   box_shape.sdf
   camera.sdf
   collision.sdf
+  collision_engine.sdf
   contact.sdf
   cylinder_shape.sdf
   frame.sdf
@@ -33,6 +34,7 @@ set (sdfs
   mesh_shape.sdf
   model.sdf
   model_state.sdf
+  navsat.sdf
   noise.sdf
   particle_emitter.sdf
   physics.sdf
@@ -55,6 +57,7 @@ set (sdfs
   state.sdf
   surface.sdf
   transceiver.sdf
+  urdf.sdf
   visual.sdf
   world.sdf
 )

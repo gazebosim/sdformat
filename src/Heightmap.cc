@@ -92,6 +92,12 @@ HeightmapTexture::HeightmapTexture()
 /////////////////////////////////////////////////
 Errors HeightmapTexture::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -127,8 +133,9 @@ Errors HeightmapTexture::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("diffuse"))
   {
-    this->dataPtr->diffuse = _sdf->Get<std::string>(errors, "diffuse",
-        this->dataPtr->diffuse).first;
+    this->dataPtr->diffuse = resolveURI(
+        _sdf->Get<std::string>(errors, "diffuse", this->dataPtr->diffuse).first,
+        _config, errors);
   }
   else
   {
@@ -138,8 +145,9 @@ Errors HeightmapTexture::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("normal"))
   {
-    this->dataPtr->normal = _sdf->Get<std::string>(errors, "normal",
-        this->dataPtr->normal).first;
+    this->dataPtr->normal = resolveURI(
+        _sdf->Get<std::string>(errors, "normal", this->dataPtr->normal).first,
+        _config, errors);
   }
   else
   {
@@ -287,6 +295,12 @@ Heightmap::Heightmap()
 /////////////////////////////////////////////////
 Errors Heightmap::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -312,7 +326,9 @@ Errors Heightmap::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>(errors, "uri", "").first;
+    this->dataPtr->uri = resolveURI(
+      _sdf->Get<std::string>(errors, "uri", "").first,
+      _config, errors);
   }
   else
   {
@@ -333,7 +349,7 @@ Errors Heightmap::Load(ElementPtr _sdf)
       this->dataPtr->sampling).first;
 
   Errors textureLoadErrors = loadRepeated<HeightmapTexture>(_sdf,
-    "texture", this->dataPtr->textures);
+    "texture", this->dataPtr->textures, _config);
   errors.insert(errors.end(), textureLoadErrors.begin(),
       textureLoadErrors.end());
 
@@ -479,31 +495,31 @@ sdf::ElementPtr Heightmap::ToElement(sdf::Errors &_errors) const
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);
-  uriElem->Set(this->Uri(), _errors);
+  uriElem->Set(_errors, this->Uri());
 
   // Size
   sdf::ElementPtr sizeElem = elem->GetElement("size", _errors);
-  sizeElem->Set(this->Size(), _errors);
+  sizeElem->Set(_errors, this->Size());
 
   // Position
   sdf::ElementPtr posElem = elem->GetElement("pos", _errors);
-  posElem->Set(this->Position(), _errors);
+  posElem->Set(_errors, this->Position());
 
   // Terrain paging
   sdf::ElementPtr pagingElem = elem->GetElement("use_terrain_paging", _errors);
-  pagingElem->Set(this->UseTerrainPaging(), _errors);
+  pagingElem->Set(_errors, this->UseTerrainPaging());
 
   // Sampling
   sdf::ElementPtr samplingElem = elem->GetElement("sampling", _errors);
-  samplingElem->Set(this->Sampling(), _errors);
+  samplingElem->Set(_errors, this->Sampling());
 
   // Textures
   for (const HeightmapTexture &tex : this->dataPtr->textures)
   {
     sdf::ElementPtr texElem = elem->AddElement("texture", _errors);
-    texElem->GetElement("size", _errors)->Set(tex.Size(), _errors);
-    texElem->GetElement("diffuse", _errors)->Set(tex.Diffuse(), _errors);
-    texElem->GetElement("normal", _errors)->Set(tex.Normal(), _errors);
+    texElem->GetElement("size", _errors)->Set(_errors, tex.Size());
+    texElem->GetElement("diffuse", _errors)->Set(_errors, tex.Diffuse());
+    texElem->GetElement("normal", _errors)->Set(_errors, tex.Normal());
   }
 
   // Blends
@@ -511,9 +527,9 @@ sdf::ElementPtr Heightmap::ToElement(sdf::Errors &_errors) const
   {
     sdf::ElementPtr blendElem = elem->AddElement("blend", _errors);
     blendElem->GetElement("min_height", _errors)->Set(
-        blend.MinHeight(), _errors);
+        _errors, blend.MinHeight());
     blendElem->GetElement("fade_dist", _errors)->Set(
-        blend.FadeDistance(), _errors);
+        _errors, blend.FadeDistance());
   }
 
   return elem;
