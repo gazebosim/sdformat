@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include <limits>
 #include "sdf/JointAxis.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMJointAxis, Construction)
@@ -155,4 +156,109 @@ TEST(DOMJointAxis, ZeroNormVectorReturnsError)
   sdf::Errors errors = axis.SetXyz(gz::math::Vector3d::Zero);
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Message(), "The norm of the xyz vector cannot be zero");
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ToElement)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::JointAxis axis;
+  sdf::Errors errors;
+
+  errors = axis.SetXyz(gz::math::Vector3d(0, 1, 0));
+  ASSERT_TRUE(errors.empty());
+  axis.SetXyzExpressedIn("test");
+  ASSERT_TRUE(errors.empty());
+
+  axis.SetDamping(0.2);
+  axis.SetFriction(1.3);
+  axis.SetSpringReference(2.4);
+  axis.SetSpringStiffness(-1.2);
+  axis.SetLower(-10.8);
+  axis.SetUpper(123.4);
+  axis.SetEffort(3.2);
+  axis.SetMaxVelocity(54.2);
+  axis.SetStiffness(1e2);
+  axis.SetDissipation(1.5);
+
+  sdf::ElementPtr elem = axis.ToElement(errors);
+  ASSERT_TRUE(errors.empty());
+
+  sdf::ElementPtr xyzElem = elem->GetElement("xyz", errors);
+  ASSERT_TRUE(errors.empty());
+  gz::math::Vector3d xyz = elem->Get<gz::math::Vector3d>(errors, "xyz", xyz).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, axis.Xyz());
+  std::string expressedIn = elem->GetElement("xyz", errors)->Get<std::string>(errors, "expressed_in");
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ("test", expressedIn);
+
+  sdf::ElementPtr dynElem = elem->GetElement("dynamics", errors);
+  ASSERT_TRUE(errors.empty());
+
+  double damping;
+  damping = dynElem->Get<double>(errors, "damping", damping).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(0.2, damping);
+
+  double friction;
+  friction = dynElem->Get<double>(errors, "friction", friction).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(1.3, friction);
+
+  double springReference;
+  springReference = dynElem->Get<double>(errors, "spring_reference", springReference).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(2.4, springReference);
+
+  double springStiffness;
+  springStiffness = dynElem->Get<double>(errors, "spring_stiffness", springStiffness).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(-1.2, springStiffness);
+
+  sdf::ElementPtr limitElem = elem->GetElement("limit", errors);
+  double lower;
+  lower = limitElem->Get<double>(errors, "lower", lower).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(-10.8, lower);
+
+  double upper;
+  upper = limitElem->Get<double>(errors, "upper", upper).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(123.4, upper);
+
+  double effort;
+  effort = limitElem->Get<double>(errors, "effort", effort).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(3.2, effort);
+
+  double maxVel;
+  maxVel = limitElem->Get<double>(errors, "velocity", maxVel).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(54.2, maxVel);
+
+  double stiffness;
+  stiffness = limitElem->Get<double>(errors, "stiffness", stiffness).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(1e2, stiffness);
+
+  double dissipation;
+  dissipation = limitElem->Get<double>(errors, "dissipation", dissipation).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(1.5, dissipation);
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
