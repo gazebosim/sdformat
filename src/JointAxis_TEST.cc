@@ -198,10 +198,12 @@ TEST(DOMJointAxis, ToElement)
 
   sdf::ElementPtr xyzElem = elem->GetElement("xyz", errors);
   ASSERT_TRUE(errors.empty());
-  gz::math::Vector3d xyz = elem->Get<gz::math::Vector3d>(errors, "xyz", xyz).first;
+  gz::math::Vector3d xyz = elem->Get<gz::math::Vector3d>(
+      errors, "xyz", xyz).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ(gz::math::Vector3d::UnitY, axis.Xyz());
-  std::string expressedIn = elem->GetElement("xyz", errors)->Get<std::string>(errors, "expressed_in");
+  std::string expressedIn = elem->GetElement("xyz", errors)->Get<std::string>(
+      errors, "expressed_in");
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("test", expressedIn);
 
@@ -219,12 +221,14 @@ TEST(DOMJointAxis, ToElement)
   EXPECT_DOUBLE_EQ(1.3, friction);
 
   double springReference;
-  springReference = dynElem->Get<double>(errors, "spring_reference", springReference).first;
+  springReference = dynElem->Get<double>(
+      errors, "spring_reference", springReference).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(2.4, springReference);
 
   double springStiffness;
-  springStiffness = dynElem->Get<double>(errors, "spring_stiffness", springStiffness).first;
+  springStiffness = dynElem->Get<double>(
+      errors, "spring_stiffness", springStiffness).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(-1.2, springStiffness);
 
@@ -255,7 +259,8 @@ TEST(DOMJointAxis, ToElement)
   EXPECT_DOUBLE_EQ(1e2, stiffness);
 
   double dissipation;
-  dissipation = limitElem->Get<double>(errors, "dissipation", dissipation).first;
+  dissipation = limitElem->Get<double>(
+      errors, "dissipation", dissipation).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1.5, dissipation);
 
