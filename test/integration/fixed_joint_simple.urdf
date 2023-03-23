@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<robot name="fixed_joint_simple">
+
+  <link name="base">
+    <inertial>
+      <mass value="1"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+  </link>
+
+  <!-- Intermediate fixed joint that will be reduced. -->
+  <joint name="fixed_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="base"/>
+    <child link="child_link"/>
+  </joint>
+
+  <!-- Child link with visual that will be merged to base link -->
+  <link name="child_link">
+    <inertial>
+      <mass value="1"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1.0" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="1.0 1.0 1.0"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+</robot>

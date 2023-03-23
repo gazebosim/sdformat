@@ -599,6 +599,10 @@ struct WorldWrapper : public WrapperBase
     {
       this->frames.emplace_back(*_world.FrameByIndex(i));
     }
+    for (uint64_t i = 0; i < _world.JointCount(); ++i)
+    {
+      this->joints.emplace_back(*_world.JointByIndex(i));
+    }
     for (uint64_t i = 0; i < _world.ModelCount(); ++i)
     {
       this->models.emplace_back(*_world.ModelByIndex(i));
@@ -612,6 +616,8 @@ struct WorldWrapper : public WrapperBase
 
   /// \brief Children frames.
   std::vector<FrameWrapper> frames;
+  /// \brief Children joints.
+  std::vector<JointWrapper> joints;
   /// \brief Children models and interface models.
   std::vector<ModelWrapper> models;
 };
@@ -755,11 +761,11 @@ void addEdgesToGraph(ScopedGraph<PoseRelativeToGraph> &_out,
 /// \param[in,out] _out The FrameAttachedTo graph to which edges will be added.
 /// \param[in] _joints List of joints for which edges will be created in the
 /// graph.
-/// \param[in] _model Parent model of the items in `_items`.
+/// \param[in] _parent Parent of the joints in `_joints`.
 /// \param[out] _errors Errors encountered while adding edges.
 void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
                      const std::vector<JointWrapper> &_joints,
-                     const ModelWrapper &_model, Errors &_errors)
+                     const WrapperBase &_parent, Errors &_errors)
 {
   for (const auto &joint : _joints)
   {
@@ -771,7 +777,8 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
           {ErrorCode::JOINT_CHILD_LINK_INVALID,
            "Child frame with name[" + joint.childName + "] specified by " +
                lowercase(joint.elementType) + " with name[" + joint.name +
-               "] not found in model with name[" + _model.name + "]."});
+               "] not found in " + lowercase(_parent.elementType) +
+               " with name[" + _parent.name + "]."});
       continue;
     }
     auto childFrameId = _out.VertexIdByName(joint.childName);
@@ -784,7 +791,7 @@ void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
 /// \param[in,out] _out The FrameAttachedTo graph to which edges will be added.
 /// \param[in] _frames List of frames for which edges will be created in the
 /// graph.
-/// \param[in] _model Parent model of the items in `_items`.
+/// \param[in] _parent Parent of the frames in `_frames`.
 /// \param[out] _errors Errors encountered while adding edges.
 void addEdgesToGraph(ScopedGraph<FrameAttachedToGraph> &_out,
                      const std::vector<FrameWrapper> &_frames,
@@ -991,8 +998,14 @@ Errors buildFrameAttachedToGraph(
   // add model vertices
   addVerticesToGraph(_out, _world.models, _world, errors);
 
+  // add joint vertices
+  addVerticesToGraph(_out, _world.joints, _world, errors);
+
   // add frame vertices
   addVerticesToGraph(_out, _world.frames, _world, errors);
+
+  // add edges from joint to child frames
+  addEdgesToGraph(_out, _world.joints, _world, errors);
 
   // add frame edges
   addEdgesToGraph(_out, _world.frames, _world, errors);
@@ -1161,6 +1174,9 @@ Errors wrapperBuildPoseRelativeToGraph(
   // add model vertices
   addVerticesToGraph(_out, _world.models, _world, errors);
 
+  // add joint vertices
+  addVerticesToGraph(_out, _world.joints, _world, errors);
+
   // add frame vertices
   addVerticesToGraph(_out, _world.frames, _world, errors);
 
@@ -1168,6 +1184,9 @@ Errors wrapperBuildPoseRelativeToGraph(
   // add the edges that reference other vertices
   // add model edges
   addEdgesToGraph(_out, _world.models, _world, errors);
+
+  // add joint edges
+  addEdgesToGraph(_out, _world.joints, _world, errors);
 
   // add frame edges
   addEdgesToGraph(_out, _world.frames, _world, errors);

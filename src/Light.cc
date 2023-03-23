@@ -525,34 +525,34 @@ sdf::ElementPtr Light::ToElement(sdf::Errors &_errors) const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose(), _errors);
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   elem->GetElement("cast_shadows", _errors)->Set<bool>(
-      this->CastShadows(), _errors);
+      _errors, this->CastShadows());
   elem->GetElement("intensity", _errors)->Set<double>(
-      this->Intensity(), _errors);
+      _errors, this->Intensity());
   elem->GetElement("direction", _errors)->Set<gz::math::Vector3d>(
-      this->Direction(), _errors);
+      _errors, this->Direction());
   elem->GetElement("diffuse", _errors)->Set<gz::math::Color>(
-      this->Diffuse(), _errors);
+      _errors, this->Diffuse());
   elem->GetElement("specular", _errors)->Set<gz::math::Color>(
-      this->Specular(), _errors);
+      _errors, this->Specular());
   sdf::ElementPtr attenuationElem = elem->GetElement("attenuation", _errors);
   attenuationElem->GetElement("linear", _errors)->Set<double>(
-      this->LinearAttenuationFactor(), _errors);
+      _errors, this->LinearAttenuationFactor());
   attenuationElem->GetElement("constant", _errors)->Set<double>(
-      this->ConstantAttenuationFactor(), _errors);
+      _errors, this->ConstantAttenuationFactor());
   attenuationElem->GetElement("quadratic", _errors)->Set<double>(
-      this->QuadraticAttenuationFactor(), _errors);
+      _errors, this->QuadraticAttenuationFactor());
   attenuationElem->GetElement("range", _errors)->Set<double>(
-      this->AttenuationRange(), _errors);
+      _errors, this->AttenuationRange());
 
   sdf::ElementPtr spotElem = elem->GetElement("spot", _errors);
   spotElem->GetElement("inner_angle", _errors)->Set<double>(
-      this->SpotInnerAngle().Radian(), _errors);
+      _errors, this->SpotInnerAngle().Radian());
   spotElem->GetElement("outer_angle", _errors)->Set<double>(
-      this->SpotOuterAngle().Radian(), _errors);
+      _errors, this->SpotOuterAngle().Radian());
   spotElem->GetElement("falloff", _errors)->Set<double>(
-      this->SpotFalloff(), _errors);
+      _errors, this->SpotFalloff());
   return elem;
 }

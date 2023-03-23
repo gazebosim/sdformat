@@ -92,10 +92,18 @@ void defineJoint(pybind11::object module)
          "Set the name of the coordinate frame relative to which this "
          "object's pose is expressed. An empty value indicates that the frame "
          "is relative to the child link frame.")
+    .def("screw_thread_pitch", &sdf::Joint::ScrewThreadPitch,
+         "Get the thread pitch in meters per revolution with a positive value "
+         "for right-handed threads (only valid for screw joints)")
+    .def("set_screw_thread_pitch", &sdf::Joint::SetScrewThreadPitch,
+         "Set the thread pitch in meters per revolution with a positive value "
+         "for right-handed threads (only valid for screw joints)")
     .def("thread_pitch", &sdf::Joint::ThreadPitch,
-         "Get the thread pitch (only valid for screw joints)")
+         "Get the thread pitch in gazebo-classic format (only valid for screw "
+         "joints)")
     .def("set_thread_pitch", &sdf::Joint::SetThreadPitch,
-         "Set the thread pitch (only valid for screw joints)")
+         "Get the thread pitch in gazebo-classic format (only valid for screw "
+         "joints)")
     .def("semantic_pose", &sdf::Joint::SemanticPose,
          "Get SemanticPose object of this object to aid in resolving "
          "poses.")
