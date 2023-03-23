@@ -102,8 +102,9 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("x", errors)->HasElement("noise"))
       {
-        this->dataPtr->linearAccelXNoise.Load(
+        sdf::Errors loadErrors = this->dataPtr->linearAccelXNoise.Load(
             elem->GetElement("x", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
       }
     }
 
@@ -111,8 +112,9 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("y", errors)->HasElement("noise"))
       {
-        this->dataPtr->linearAccelYNoise.Load(
+        sdf::Errors loadErrors = this->dataPtr->linearAccelYNoise.Load(
             elem->GetElement("y", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
       }
     }
 
@@ -120,8 +122,9 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("z", errors)->HasElement("noise"))
       {
-        this->dataPtr->linearAccelZNoise.Load(
+        sdf::Errors loadErrors = this->dataPtr->linearAccelZNoise.Load(
             elem->GetElement("z", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
       }
     }
   }
@@ -134,8 +137,9 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("x", errors)->HasElement("noise"))
       {
-        this->dataPtr->angularVelXNoise.Load(
+        sdf::Errors loadErrors = this->dataPtr->angularVelXNoise.Load(
             elem->GetElement("x", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
       }
     }
 
@@ -143,8 +147,9 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("y", errors)->HasElement("noise"))
       {
-        this->dataPtr->angularVelYNoise.Load(
+        sdf::Errors loadErrors = this->dataPtr->angularVelYNoise.Load(
             elem->GetElement("y", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
       }
     }
 
@@ -152,8 +157,9 @@ Errors Imu::Load(ElementPtr _sdf)
     {
       if (elem->GetElement("z", errors)->HasElement("noise"))
       {
-        this->dataPtr->angularVelZNoise.Load(
+        sdf::Errors loadErrors = this->dataPtr->angularVelZNoise.Load(
             elem->GetElement("z", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
       }
     }
   }
