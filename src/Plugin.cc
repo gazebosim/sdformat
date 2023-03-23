@@ -68,7 +68,7 @@ void Plugin::Init(sdf::Errors &_errors, const std::string &_filename,
   this->SetName(_name);
   std::string trimmed = sdf::trim(_xmlContent);
   if (!trimmed.empty())
-    this->InsertContent(trimmed, _errors);
+    this->InsertContent(_errors, trimmed);
 }
 
 /////////////////////////////////////////////////
@@ -206,12 +206,12 @@ const std::vector<sdf::ElementPtr> &Plugin::Contents() const
 void Plugin::InsertContent(const sdf::ElementPtr _elem)
 {
   sdf::Errors errors;
-  this->dataPtr->contents.push_back(_elem->Clone(errors));
+  this->InsertContent(errors, _elem);
   sdf::throwOrPrintErrors(errors);
 }
 
 /////////////////////////////////////////////////
-void Plugin::InsertContent(const sdf::ElementPtr _elem, sdf::Errors &_errors)
+void Plugin::InsertContent(sdf::Errors &_errors, const sdf::ElementPtr _elem)
 {
   this->dataPtr->contents.push_back(_elem->Clone(_errors));
 }
@@ -220,13 +220,13 @@ void Plugin::InsertContent(const sdf::ElementPtr _elem, sdf::Errors &_errors)
 bool Plugin::InsertContent(const std::string _content)
 {
   sdf::Errors errors;
-  bool result = this->InsertContent(_content, errors);
+  bool result = this->InsertContent(errors, _content);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 /////////////////////////////////////////////////
-bool Plugin::InsertContent(const std::string _content, sdf::Errors &_errors)
+bool Plugin::InsertContent(sdf::Errors &_errors, const std::string _content)
 {
   // Read the XML content
   auto xmlDoc = tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
@@ -265,7 +265,7 @@ bool Plugin::InsertContent(const std::string _content, sdf::Errors &_errors)
     copyChildren(element, xml, false);
 
     // Add the element to this plugin
-    this->InsertContent(element, _errors);
+    this->InsertContent(_errors, element);
   }
 
   return true;

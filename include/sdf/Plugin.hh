@@ -122,10 +122,10 @@ namespace sdf
     /// \brief Insert an element into the plugin content. This does not
     /// modify the values in the sdf::ElementPtr returned by the `Element()`
     /// function.
-    /// \param[in] _elem Element to insert.
     /// \param[out] _errors Vector of errors.
-    public: void InsertContent(const sdf::ElementPtr _elem,
-                               sdf::Errors &_errors);
+    /// \param[in] _elem Element to insert.
+    public: void InsertContent(sdf::Errors &_errors,
+                               const sdf::ElementPtr _elem);
 
     /// \brief Insert XML content into this plugin. This function does not
     /// modify the values in the sdf::ElementPtr returned by the `Element()`
@@ -139,13 +139,13 @@ namespace sdf
     /// \brief Insert XML content into this plugin. This function does not
     /// modify the values in the sdf::ElementPtr returned by the `Element()`
     /// function. The provided content must be valid XML.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _content A string that contains valid XML. The XML is
     /// inserted into this plugin if it is valid.
-    /// \param[out] _errors Vector of errors.
     /// \return False if the provided content was invalid, in which case the
     /// content of this plugin is not modified. True otherwise
-    public: bool InsertContent(const std::string _content,
-                               sdf::Errors &_errors);
+    public: bool InsertContent(sdf::Errors &_errors,
+                               const std::string _content);
 
     /// \brief Set the filename of the shared library.
     /// \param[in] _filename Filename of the shared library associated with
@@ -238,7 +238,7 @@ namespace sdf
                     const std::string &_name, const std::string &_xmlContent);
 
     /// \brief Private data pointer.
-    std::unique_ptr<sdf::PluginPrivate> dataPtr;
+    public: std::unique_ptr<sdf::PluginPrivate> dataPtr;
   };
 
   /// \brief A vector of Plugin.
