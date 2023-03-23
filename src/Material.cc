@@ -84,6 +84,12 @@ Material::Material()
 /////////////////////////////////////////////////
 Errors Material::Load(sdf::ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -115,7 +121,8 @@ Errors Material::Load(sdf::ElementPtr _sdf)
           "A <script> element is missing a child <uri> element, or the "
           "<uri> element is empty."});
     }
-    this->dataPtr->scriptUri = uriPair.first;
+
+    this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors);
 
     std::pair<std::string, bool> namePair =
         elem->Get<std::string>(errors, "name", "");

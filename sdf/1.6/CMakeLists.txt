@@ -9,6 +9,7 @@ set (sdfs
   box_shape.sdf
   camera.sdf
   collision.sdf
+  collision_engine.sdf
   contact.sdf
   cylinder_shape.sdf
   frame.sdf
@@ -55,6 +56,7 @@ set (sdfs
   state.sdf
   surface.sdf
   transceiver.sdf
+  urdf.sdf
   visual.sdf
   world.sdf
 )
