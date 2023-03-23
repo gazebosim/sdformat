@@ -246,7 +246,7 @@ sdf::ElementPtr Frame::ToElement(sdf::Errors &_errors) const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose(), _errors);
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   return elem;
 }

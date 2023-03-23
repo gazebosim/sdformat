@@ -9,6 +9,10 @@
     <description>If the camera will be triggered by a topic</description>
   </element> <!-- End Triggered -->
 
+  <element name="camera_info_topic" type="string" default="__default__" required="0">
+    <description>Name of the camera info</description>
+  </element> <!-- End Trigger_Topic -->
+
   <element name="trigger_topic" type="string" default="" required="0">
     <description>Name of the topic that will trigger the camera if enabled</description>
   </element> <!-- End Trigger_Topic -->
