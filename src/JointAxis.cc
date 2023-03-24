@@ -403,9 +403,9 @@ sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors,
   }
   sdf::ElementPtr dynElem = axisElem->GetElement("dynamics", _errors);
   dynElem->GetElement("damping", _errors)->Set<double>(
-      this->Damping());
+      _errors, this->Damping());
   dynElem->GetElement("friction", _errors)->Set<double>(
-      this->Friction());
+      _errors, this->Friction());
   dynElem->GetElement("spring_reference", _errors)->Set<double>(
       _errors, this->SpringReference());
   dynElem->GetElement("spring_stiffness", _errors)->Set<double>(
