@@ -172,6 +172,12 @@ void Sky::SetCubemapUri(const std::string &_uri)
 /////////////////////////////////////////////////
 Errors Sky::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -191,8 +197,13 @@ Errors Sky::Load(ElementPtr _sdf)
       _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
       _sdf->Get<double>("sunset", this->dataPtr->sunset).first;
-  this->dataPtr->cubemapUri =
-      _sdf->Get<std::string>("cubemap_uri", this->dataPtr->cubemapUri).first;
+
+  if (_sdf->HasElement("cubemap_uri"))
+  {
+    this->dataPtr->cubemapUri = resolveURI(
+      _sdf->Get<std::string>("cubemap_uri", "").first,
+      _config, errors);
+  }
 
   if ( _sdf->HasElement("clouds"))
   {

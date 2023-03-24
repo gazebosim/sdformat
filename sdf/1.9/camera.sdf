@@ -5,6 +5,10 @@
     <description>An optional name for the camera.</description>
   </attribute>
 
+  <element name="camera_info_topic" type="string" default="__default__" required="0">
+    <description>Name of the camera info</description>
+  </element> <!-- End camera Info topic -->
+
   <element name="triggered" type="bool" default="false" required="0">
     <description>If the camera will be triggered by a topic</description>
   </element> <!-- End Triggered -->
