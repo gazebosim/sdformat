@@ -20,6 +20,7 @@
 #include "ParamPassing.hh"
 #include "sdf/Element.hh"
 #include "sdf/parser.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(ParamPassing, GetElement)
@@ -90,4 +91,126 @@ TEST(ParamPassing, GetElement)
                                  "collision",
                                  "model::test_link::test_visual");
   EXPECT_EQ(nullptr, paramPassElem);
+}
+
+////////////////////////////////////////
+// Test warnings outputs for GetElementByName
+TEST(ParamPassing, GetElementByNameWarningOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <model name='test_model'>"
+         << "    <link name='link_name'/>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+
+  sdf::Errors errors;
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::readString(stream.str(), parserConfig, sdfParsed, errors);
+  EXPECT_TRUE(errors.empty());
+
+  std::ostringstream stream2;
+  stream2 << "  <model>"
+          << "  </model>";
+  tinyxml2::XMLDocument doc;
+  doc.Parse(stream2.str().c_str());
+
+  sdf::ParamPassing::getElementByName(sdfParsed->Root(),
+                        doc.FirstChildElement("model"),
+                        parserConfig,
+                        errors);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "The original element [model] contains the attribute 'name' but none was"
+      " provided in the element modifier. The assumed element to be modified "
+      "is: <model name='test_model'>"));
+  errors.clear();
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::WARN);
+  sdf::ParamPassing::getElementByName(sdfParsed->Root(),
+                        doc.FirstChildElement("model"),
+                        parserConfig,
+                        errors);
+  EXPECT_TRUE(errors.empty());
+  // Check the warning has been printed
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "The original element [model] contains the attribute 'name' but none "
+      "was provided in the element modifier. The assumed element to be "
+      "modified is: <model name='test_model'>"));
+}
+
+////////////////////////////////////////
+// Test warnings outputs for GetElementByName
+TEST(ParamPassing, ModifyChildrenNameWarningOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  std::ostringstream stream;
+  stream << "<?xml version=\"1.0\"?>"
+         << "<sdf version='1.8'>"
+         << "  <model name='test_model'>"
+         << "    <link name='link_name'/>"
+         << "  </model>"
+         << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+
+  sdf::Errors errors;
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  sdf::readString(stream.str(), parserConfig, sdfParsed, errors);
+  EXPECT_TRUE(errors.empty());
+
+  std::ostringstream stream2;
+  stream2 << "<sdf version='1.8'>"
+          << "  <model name='test'>"
+          << "  </model>"
+          << "</sdf>";
+  tinyxml2::XMLDocument doc;
+  doc.Parse(stream2.str().c_str());
+
+  sdf::ParamPassing::modifyChildren(
+                        doc.FirstChildElement("sdf"),
+                        parserConfig,
+                        sdfParsed->Root(),
+                        errors);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "No modifications for element <model name=\"test\"/>\n provided, "
+      "skipping modification for:\n<sdf version=\"1.8\">\n"
+      "    <model name=\"test\"/>\n</sdf>"));
+  errors.clear();
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::WARN);
+  sdf::ParamPassing::modifyChildren(
+                        doc.FirstChildElement("sdf"),
+                        parserConfig,
+                        sdfParsed->Root(),
+                        errors);
+  EXPECT_TRUE(errors.empty());
+  // Check the warning has been printed
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "No modifications for element <model name=\"test\"/>\n provided, "
+      "skipping modification for:\n<sdf version=\"1.8\">\n"
+      "    <model name=\"test\"/>\n</sdf>"));
 }

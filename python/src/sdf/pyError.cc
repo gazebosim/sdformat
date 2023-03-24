@@ -105,6 +105,7 @@ void defineError(pybind11::object module)
     .value("ELEMENT_DEPRECATED", sdf::ErrorCode::ELEMENT_DEPRECATED)
     .value("ELEMENT_INCORRECT_TYPE",
            sdf::ErrorCode::ELEMENT_INCORRECT_TYPE)
+    .value("ELEMENT_ERROR", sdf::ErrorCode::ELEMENT_ERROR)
     .value("URI_INVALID", sdf::ErrorCode::URI_INVALID)
     .value("URI_LOOKUP", sdf::ErrorCode::URI_LOOKUP)
     .value("DIRECTORY_NONEXISTANT",
@@ -133,6 +134,8 @@ void defineError(pybind11::object module)
            sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE)
     .value("POSE_RELATIVE_TO_GRAPH_ERROR",
            sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR)
+    .value("ROTATION_SNAP_CONFIG_ERROR",
+           sdf::ErrorCode::ROTATION_SNAP_CONFIG_ERROR)
     .value("STRING_READ", sdf::ErrorCode::STRING_READ)
     .value("MODEL_PLACEMENT_FRAME_INVALID",
            sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID)

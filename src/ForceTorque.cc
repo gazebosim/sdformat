@@ -315,7 +315,7 @@ sdf::ElementPtr ForceTorque::ToElement(sdf::Errors &_errors) const
       break;
   }
   if (!frame.empty())
-    elem->GetElement("frame", _errors)->Set<std::string>(frame, _errors);
+    elem->GetElement("frame", _errors)->Set<std::string>(_errors, frame);
 
   std::string measureDirection;
   switch (this->MeasureDirection())
@@ -333,7 +333,7 @@ sdf::ElementPtr ForceTorque::ToElement(sdf::Errors &_errors) const
   if (!measureDirection.empty())
   {
     elem->GetElement("measure_direction", _errors)->Set<std::string>(
-        measureDirection, _errors);
+        _errors, measureDirection);
   }
 
   sdf::ElementPtr forceElem = elem->GetElement("force", _errors);

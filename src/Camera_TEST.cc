@@ -34,6 +34,10 @@ TEST(DOMCamera, Construction)
   cam.SetTriggerTopic("my_camera/trigger");
   EXPECT_EQ("my_camera/trigger", cam.TriggerTopic());
 
+  EXPECT_EQ("", cam.CameraInfoTopic());
+  cam.SetCameraInfoTopic("/camera/camera_info");
+  EXPECT_EQ("/camera/camera_info", cam.CameraInfoTopic());
+
   EXPECT_DOUBLE_EQ(1.047, cam.HorizontalFov().Radian());
   cam.SetHorizontalFov(1.45);
   EXPECT_DOUBLE_EQ(1.45, cam.HorizontalFov().Radian());
@@ -215,6 +219,7 @@ TEST(DOMCamera, Construction)
   EXPECT_DOUBLE_EQ(2.3, cam.LensIntrinsicsSkew());
 
   EXPECT_TRUE(cam.HasLensIntrinsics());
+  EXPECT_TRUE(cam.HasLensProjection());
 
   EXPECT_EQ(UINT32_MAX, cam.VisibilityMask());
   cam.SetVisibilityMask(123u);
@@ -269,6 +274,9 @@ TEST(DOMCamera, ToElement)
   cam.SetSaveFrames(true);
   cam.SetSaveFramesPath("/tmp");
   cam.SetOpticalFrameId("/optical_frame");
+  cam.SetCameraInfoTopic("/camera_info_test");
+  cam.SetTriggerTopic("/trigger_topic_test");
+  cam.SetTriggered(true);
 
   sdf::ElementPtr camElem = cam.ToElement();
   EXPECT_NE(nullptr, camElem);
@@ -289,6 +297,9 @@ TEST(DOMCamera, ToElement)
   EXPECT_TRUE(cam2.SaveFrames());
   EXPECT_EQ("/tmp", cam2.SaveFramesPath());
   EXPECT_EQ("/optical_frame", cam2.OpticalFrameId());
+  EXPECT_EQ("/camera_info_test", cam2.CameraInfoTopic());
+  EXPECT_EQ("/trigger_topic_test", cam2.TriggerTopic());
+  EXPECT_TRUE(cam2.Triggered());
 
   // make changes to DOM and verify ToElement produces updated values
   cam2.SetNearClip(0.33);

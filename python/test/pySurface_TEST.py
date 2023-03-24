@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz.math7 import Vector3d
-from sdformat13 import Surface, Contact, Friction, ODE
+from gz_test_deps.math import Vector3d
+from gz_test_deps.sdformat import Surface, Contact, Friction, ODE
 import unittest
 
 

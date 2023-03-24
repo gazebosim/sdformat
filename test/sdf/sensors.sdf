@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.7">
+<sdf version="1.10">
   <model name="model">
     <link name="link">
       <pose> 0 0 3  0 0 0</pose>
@@ -25,6 +25,7 @@
         <enable_metrics>false</enable_metrics>
         <camera name="my_camera">
           <pose>0.1 0.2 0.3 0 0 0</pose>
+          <camera_info_topic>/camera_sensor/camera_info</camera_info_topic>
           <horizontal_fov>.75</horizontal_fov>
           <triggered>true</triggered>
           <trigger_topic>my_camera/trigger</trigger_topic>
@@ -643,6 +644,21 @@
             </noise>
           </pressure>
         </air_pressure>
+      </sensor>
+
+      <sensor name="air_speed_sensor" type="air_speed">
+        <pose>11 22 33 0 0 0</pose>
+        <always_on>1</always_on>
+        <update_rate>5.0</update_rate>
+        <enable_metrics>false</enable_metrics>
+        <air_speed>
+          <pressure>
+            <noise type="gaussian">
+              <mean>0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </pressure>
+        </air_speed>
       </sensor>
 
       <sensor name="wide_angle_camera_sensor" type="wideanglecamera">
