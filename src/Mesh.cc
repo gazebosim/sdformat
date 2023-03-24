@@ -16,6 +16,7 @@
 */
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -50,6 +51,12 @@ Mesh::Mesh()
 /////////////////////////////////////////////////
 Errors Mesh::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -75,7 +82,9 @@ Errors Mesh::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("uri"))
   {
-    this->dataPtr->uri = _sdf->Get<std::string>("uri", "").first;
+    this->dataPtr->uri = resolveURI(
+      _sdf->Get<std::string>("uri", "").first,
+      _config, errors);
   }
   else
   {

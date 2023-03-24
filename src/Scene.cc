@@ -56,6 +56,12 @@ Scene::Scene()
 /////////////////////////////////////////////////
 Errors Scene::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Scene::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -94,7 +100,8 @@ Errors Scene::Load(ElementPtr _sdf)
   if (_sdf->HasElement("sky"))
   {
     this->dataPtr->sky.emplace();
-    Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky", errors));
+    Errors err = this->dataPtr->sky->Load(_sdf->GetElement(
+                                            "sky", errors), _config);
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
@@ -193,12 +200,12 @@ sdf::ElementPtr Scene::ToElement(sdf::Errors &_errors) const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("scene.sdf", elem);
 
-  elem->GetElement("ambient", _errors)->Set(this->Ambient(), _errors);
-  elem->GetElement("background", _errors)->Set(this->Background(), _errors);
-  elem->GetElement("grid", _errors)->Set(this->Grid(), _errors);
+  elem->GetElement("ambient", _errors)->Set(_errors, this->Ambient());
+  elem->GetElement("background", _errors)->Set(_errors, this->Background());
+  elem->GetElement("grid", _errors)->Set(_errors, this->Grid());
   elem->GetElement("origin_visual", _errors)->Set(
-      this->OriginVisual(), _errors);
-  elem->GetElement("shadows", _errors)->Set(this->Shadows(), _errors);
+      _errors, this->OriginVisual());
+  elem->GetElement("shadows", _errors)->Set(_errors, this->Shadows());
 
   if (this->dataPtr->sky)
     elem->InsertElement(this->dataPtr->sky->ToElement(_errors), true);

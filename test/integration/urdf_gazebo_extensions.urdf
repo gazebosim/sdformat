@@ -1,6 +1,11 @@
 <?xml version="1.0" ?>
 <robot name="urdf_gazebo_extension_test">
 
+  <gazebo>
+    <!-- Explicitly declare that model is not static. -->
+    <static>0</static>
+  </gazebo>
+
   <link name="world"/>
 
   <joint name="jointw0" type="continuous">
