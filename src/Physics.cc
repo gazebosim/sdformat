@@ -222,10 +222,11 @@ sdf::ElementPtr Physics::ToElement(sdf::Errors &_errors) const
   elem->GetAttribute("type")->Set(this->EngineType(), _errors);
 
   elem->GetElement("max_step_size", _errors)->Set(
-      this->MaxStepSize(), _errors);
+      _errors, this->MaxStepSize());
   elem->GetElement("real_time_factor", _errors)->Set(
-      this->RealTimeFactor(), _errors);
-  elem->GetElement("max_contacts", _errors)->Set(this->MaxContacts(), _errors);
+      _errors, this->RealTimeFactor());
+  elem->GetElement("max_contacts", _errors)->Set(
+      _errors, this->MaxContacts());
 
   /// \todo(nkoenig) Support engine specific parameters.
 
