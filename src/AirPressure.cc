@@ -132,7 +132,7 @@ sdf::ElementPtr AirPressure::ToElement(sdf::Errors &_errors) const
   sdf::initFile("air_pressure.sdf", elem);
 
   elem->GetElement("reference_altitude", _errors)->Set<double>(
-      this->ReferenceAltitude(), _errors);
+      _errors, this->ReferenceAltitude());
   sdf::ElementPtr pressureElem = elem->GetElement("pressure", _errors);
   sdf::ElementPtr noiseElem = pressureElem->GetElement("noise", _errors);
   noiseElem->Copy(this->dataPtr->noise.ToElement(_errors), _errors);

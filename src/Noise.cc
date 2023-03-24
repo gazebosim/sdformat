@@ -283,20 +283,20 @@ sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
       noiseType = "none";
   }
   elem->GetAttribute("type")->Set<std::string>(noiseType, _errors);
-  elem->GetElement("mean", _errors)->Set<double>(this->Mean(), _errors);
-  elem->GetElement("stddev", _errors)->Set<double>(this->StdDev(), _errors);
+  elem->GetElement("mean", _errors)->Set<double>(_errors, this->Mean());
+  elem->GetElement("stddev", _errors)->Set<double>(_errors, this->StdDev());
 
   // camera and lidar <noise> does not have the sdf params below
   elem->GetElement("bias_mean", _errors)->Set<double>(
-      this->BiasMean(), _errors);
+      _errors, this->BiasMean());
   elem->GetElement("bias_stddev", _errors)->Set<double>(
-      this->BiasStdDev(), _errors);
+      _errors, this->BiasStdDev());
   elem->GetElement("dynamic_bias_stddev", _errors)->Set<double>(
-    this->DynamicBiasStdDev(), _errors);
+      _errors, this->DynamicBiasStdDev());
   elem->GetElement("dynamic_bias_correlation_time", _errors)->Set<double>(
-      this->DynamicBiasCorrelationTime(), _errors);
+      _errors, this->DynamicBiasCorrelationTime());
   elem->GetElement("precision", _errors)->Set<double>(
-      this->Precision(), _errors);
+      _errors, this->Precision());
 
   return elem;
 }

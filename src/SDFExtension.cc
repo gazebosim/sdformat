@@ -25,6 +25,7 @@ SDFExtension::SDFExtension()
   this->material.clear();
   this->visual_blobs.clear();
   this->collision_blobs.clear();
+  this->isSetStaticFlag = false;
   this->setStaticFlag = false;
   this->isGravity = false;
   this->gravity = true;
@@ -66,53 +67,4 @@ SDFExtension::SDFExtension()
 
   this->provideFeedback = false;
   this->implicitSpringDamper = false;
-}
-
-/////////////////////////////////////////////////
-SDFExtension::SDFExtension(const SDFExtension &_ge)
-{
-  this->material = _ge.material;
-  this->visual_blobs = _ge.visual_blobs;
-  this->collision_blobs = _ge.collision_blobs;
-  this->setStaticFlag = _ge.setStaticFlag;
-  this->isGravity = _ge.isGravity;
-  this->gravity = _ge.gravity;
-  this->isDampingFactor = _ge.isDampingFactor;
-  this->isMaxContacts = _ge.isMaxContacts;
-  this->isMaxVel = _ge.isMaxVel;
-  this->isMinDepth = _ge.isMinDepth;
-  this->fdir1 = _ge.fdir1;
-  this->isMu1 = _ge.isMu1;
-  this->isMu2 = _ge.isMu2;
-  this->isKp = _ge.isKp;
-  this->isKd = _ge.isKd;
-  this->selfCollide = _ge.selfCollide;
-  this->isLaserRetro = _ge.isLaserRetro;
-  this->isSpringReference = _ge.isSpringReference;
-  this->isSpringStiffness = _ge.isSpringStiffness;
-  this->isStopCfm = _ge.isStopCfm;
-  this->isStopErp = _ge.isStopErp;
-  this->isFudgeFactor = _ge.isFudgeFactor;
-  this->isProvideFeedback = _ge.isProvideFeedback;
-  this->isImplicitSpringDamper = _ge.isImplicitSpringDamper;
-  this->provideFeedback = _ge.provideFeedback;
-  this->implicitSpringDamper = _ge.implicitSpringDamper;
-  this->oldLinkName = _ge.oldLinkName;
-  this->reductionTransform = _ge.reductionTransform;
-  this->blobs = _ge.blobs;
-
-  this->dampingFactor = _ge.dampingFactor;
-  this->maxContacts = _ge.maxContacts;
-  this->maxVel = _ge.maxVel;
-  this->minDepth = _ge.minDepth;
-  this->mu1 = _ge.mu1;
-  this->mu2 = _ge.mu2;
-  this->kp = _ge.kp;
-  this->kd = _ge.kd;
-  this->laserRetro = _ge.laserRetro;
-  this->springReference = _ge.springReference;
-  this->springStiffness = _ge.springStiffness;
-  this->stopCfm = _ge.stopCfm;
-  this->stopErp = _ge.stopErp;
-  this->fudgeFactor = _ge.fudgeFactor;
 }

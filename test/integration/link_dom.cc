@@ -21,6 +21,7 @@
 
 #include <gz/math/Pose3.hh>
 #include "sdf/AirPressure.hh"
+#include "sdf/AirSpeed.hh"
 #include "sdf/Altimeter.hh"
 #include "sdf/Camera.hh"
 #include "sdf/Collision.hh"
@@ -284,7 +285,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(26u, link->SensorCount());
+  EXPECT_EQ(27u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -318,6 +319,7 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("", cameraSensor->Topic());
   EXPECT_EQ("my_camera/trigger", camSensor->TriggerTopic());
   EXPECT_TRUE(camSensor->Triggered());
+  EXPECT_EQ("/camera_sensor/camera_info", camSensor->CameraInfoTopic());
   EXPECT_EQ(640u, camSensor->ImageWidth());
   EXPECT_EQ(480u, camSensor->ImageHeight());
   EXPECT_EQ(sdf::PixelFormatType::RGB_INT8, camSensor->PixelFormat());
@@ -700,6 +702,20 @@ TEST(DOMLink, Sensors)
   EXPECT_DOUBLE_EQ(3.4, airSensor->PressureNoise().Mean());
   EXPECT_DOUBLE_EQ(5.6, airSensor->PressureNoise().StdDev());
   EXPECT_DOUBLE_EQ(123.4, airSensor->ReferenceAltitude());
+
+  // Get the air_speed sensor
+  const sdf::Sensor *airSpeedSensor = link->SensorByName(
+      "air_speed_sensor");
+  ASSERT_NE(nullptr, airSpeedSensor);
+  EXPECT_EQ("air_speed_sensor", airSpeedSensor->Name());
+  EXPECT_EQ(sdf::SensorType::AIR_SPEED, airSpeedSensor->Type());
+  EXPECT_EQ(gz::math::Pose3d(11, 22, 33, 0, 0, 0),
+      airSpeedSensor->RawPose());
+  EXPECT_FALSE(airSpeedSensor->EnableMetrics());
+  const sdf::AirSpeed *airSpeedSensorSDF = airSpeedSensor->AirSpeedSensor();
+  ASSERT_NE(nullptr, airSpeedSensorSDF);
+  EXPECT_DOUBLE_EQ(0.0, airSpeedSensorSDF->PressureNoise().Mean());
+  EXPECT_DOUBLE_EQ(0.01, airSpeedSensorSDF->PressureNoise().StdDev());
 
   // Get the wide angle camera sensor
   EXPECT_TRUE(link->SensorNameExists("wide_angle_camera_sensor"));
