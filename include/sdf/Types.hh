@@ -35,7 +35,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  const std::string kSdfScopeDelimiter = "::";
+  constexpr char kSdfScopeDelimiter[] = "::";
 
   /// \brief The source path replacement if it was parsed from a string,
   /// instead of a file.
