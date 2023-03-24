@@ -37,6 +37,7 @@ namespace sdf
   // Forward declarations.
   class Collision;
   class Light;
+  class ParserConfig;
   class ParticleEmitter;
   class Sensor;
   class Visual;
@@ -55,6 +56,15 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Load the link based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _config Parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the name of the link.
     /// The name of a link must be unique within the scope of a Model.

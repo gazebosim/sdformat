@@ -31,6 +31,7 @@ namespace sdf
   //
 
   // Forward declarations.
+  class ParserConfig;
   class Pbr;
 
   enum class ShaderType : int
@@ -54,6 +55,15 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Load the material based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \param[in] _config Parser configuration
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
     /// \brief Get the ambient color. The ambient color is
     /// specified by a set of three numbers representing red/green/blue,

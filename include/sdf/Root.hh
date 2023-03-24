@@ -146,6 +146,20 @@ namespace sdf
     /// \sa uint64_t WorldCount() const
     public: World *WorldByIndex(const uint64_t _index);
 
+    /// \brief Get a world based on a name.
+    /// \param[in] _name Name of the world.
+    /// \return Pointer to the world. Nullptr if a world with the given name
+    /// does not exist.
+    /// \sa bool WorldNameExists(const std::string &_name) const
+    public: const World *WorldByName(const std::string &_name) const;
+
+    /// \brief Get a world based on a name.
+    /// \param[in] _name Name of the world.
+    /// \return Pointer to the world. Nullptr if a world with the given name
+    /// does not exist.
+    /// \sa bool WorldNameExists(const std::string &_name) const
+    public: World *WorldByName(const std::string &_name);
+
     /// \brief Get whether a world name exists.
     /// \param[in] _name Name of the world to check.
     /// \return True if there exists a world with the given name.

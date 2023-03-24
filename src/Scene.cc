@@ -56,6 +56,12 @@ Scene::Scene()
 /////////////////////////////////////////////////
 Errors Scene::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Scene::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -94,7 +100,7 @@ Errors Scene::Load(ElementPtr _sdf)
   if (_sdf->HasElement("sky"))
   {
     this->dataPtr->sky.emplace();
-    Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky"));
+    Errors err = this->dataPtr->sky->Load(_sdf->GetElement("sky"), _config);
     errors.insert(errors.end(), err.begin(), err.end());
   }
 

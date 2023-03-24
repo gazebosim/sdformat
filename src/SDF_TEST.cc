@@ -21,6 +21,9 @@
 #include <gz/utils/Environment.hh>
 #include <gz/utils/SuppressWarning.hh>
 
+#include "test_config.hh"
+#include "test_utils.hh"
+
 #include "sdf/sdf.hh"
 
 class SDFUpdateFixture
@@ -557,6 +560,59 @@ TEST(SDF, Version)
   // for the other tests in this file.
   sdf::SDF::Version(SDF_VERSION);
   EXPECT_STREQ(SDF_VERSION, sdf::SDF::Version().c_str());
+}
+
+/////////////////////////////////////////////////
+TEST(SDF, EmbeddedSpec)
+{
+  std::string result;
+
+  result = sdf::SDF::EmbeddedSpec("actor.sdf", false);
+  EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
+  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"),
+      std::string::npos);
+  result = sdf::SDF::EmbeddedSpec("actor.sdf", true);
+  EXPECT_NE(result.find("<!-- Actor -->"), std::string::npos);
+  EXPECT_NE(result.find("<element name=\"actor\" required=\"*\">"),
+      std::string::npos);
+
+  result = sdf::SDF::EmbeddedSpec("root.sdf", false);
+  EXPECT_NE(result.find("SDFormat base element"), std::string::npos);
+  EXPECT_NE(result.find("name=\"version\" type=\"string\""), std::string::npos);
+  result = sdf::SDF::EmbeddedSpec("root.sdf", true);
+  EXPECT_NE(result.find("SDFormat base element"), std::string::npos);
+  EXPECT_NE(result.find("name=\"version\" type=\"string\""), std::string::npos);
+}
+
+TEST(SDF, EmbeddedSpecNonExistent)
+{
+  std::string result;
+
+  // Capture sdferr output
+  std::stringstream stderr_buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &stderr_buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+      sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  result = sdf::SDF::EmbeddedSpec("unavailable.sdf", false);
+  EXPECT_NE(stderr_buffer.str().find("Unable to find SDF filename"),
+      std::string::npos);
+  EXPECT_NE(stderr_buffer.str().find("with version"), std::string::npos);
+  EXPECT_TRUE(result.empty());
+
+  // clear the contents of the buffer
+  stderr_buffer.str("");
+
+  result = sdf::SDF::EmbeddedSpec("unavailable.sdf", true);
+  EXPECT_TRUE(stderr_buffer.str().empty());
+  EXPECT_TRUE(result.empty());
 }
 
 /////////////////////////////////////////////////

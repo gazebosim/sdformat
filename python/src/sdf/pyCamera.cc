@@ -42,6 +42,10 @@ void defineCamera(pybind11::object module)
          "Get the name of the camera.")
     .def("set_name", &sdf::Camera::SetName,
          "Set the name of the camera.")
+    .def("set_camera_info_topic", &sdf::Camera::SetCameraInfoTopic,
+         "Set the camera info topic")
+    .def("camera_info_topic", &sdf::Camera::CameraInfoTopic,
+         "Get the camera info topic.")
     .def("triggered", &sdf::Camera::Triggered,
          "Get whether the camera is triggered by a topic.")
     .def("set_triggered", &sdf::Camera::SetTriggered,
@@ -171,6 +175,16 @@ void defineCamera(pybind11::object module)
          "Set the name of the coordinate frame relative to which this "
          "object's pose is expressed. An empty value indicates that the frame "
          "is relative to the parent link.")
+    .def("optical_frame_id", &sdf::Camera::OpticalFrameId,
+         "Get the name of the coordinate frame relative to which this "
+         "object's camera_info message header is expressed. "
+         "Note: while Gazebo interprets the camera frame to be looking towards "
+         "+X, other tools, such as ROS interprets this frame as looking "
+         "towards +Z.  The Camera sensor assumes that the color and depth "
+         "images are captured at the same frame_id.")
+    .def("set_optical_frame_id", &sdf::Camera::SetOpticalFrameId,
+         "Set the name of the coordinate frame relative to which this "
+         "object's camera_info is expressed.")
     .def("lens_type", &sdf::Camera::LensType,
          "Get the lens type. This is the type of the lens mapping. "
          "Supported values are gnomonical, stereographic, equidistant, "
@@ -253,6 +267,8 @@ void defineCamera(pybind11::object module)
          "Set the visibility mask of a camera")
     .def("has_lens_intrinsics", &sdf::Camera::HasLensIntrinsics,
          "Get whether or not the camera has instrinsics values set")
+    .def("has_lens_projection", &sdf::Camera::HasLensProjection,
+         "Get whether or not the camera has proejction values set")
     .def("__copy__", [](const sdf::Camera &self) {
       return sdf::Camera(self);
     })
