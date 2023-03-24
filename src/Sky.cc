@@ -172,6 +172,12 @@ void Sky::SetCubemapUri(const std::string &_uri)
 /////////////////////////////////////////////////
 Errors Sky::Load(ElementPtr _sdf)
 {
+  return this->Load(_sdf, ParserConfig::GlobalConfig());
+}
+
+/////////////////////////////////////////////////
+Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
+{
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
@@ -192,8 +198,13 @@ Errors Sky::Load(ElementPtr _sdf)
       _sdf->Get<double>(errors, "sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
       _sdf->Get<double>(errors, "sunset", this->dataPtr->sunset).first;
-  this->dataPtr->cubemapUri = _sdf->Get<std::string>(
-      errors, "cubemap_uri", this->dataPtr->cubemapUri).first;
+
+  if (_sdf->HasElement("cubemap_uri"))
+  {
+    this->dataPtr->cubemapUri = resolveURI(
+      _sdf->Get<std::string>(errors, "cubemap_uri", "").first,
+      _config, errors);
+  }
 
   if ( _sdf->HasElement("clouds"))
   {
@@ -236,21 +247,21 @@ sdf::ElementPtr Sky::ToElement(sdf::Errors &_errors) const
   sdf::initFile("scene.sdf", sceneElem);
   sdf::ElementPtr elem = sceneElem->GetElement("sky", _errors);
 
-  elem->GetElement("time", _errors)->Set(this->Time(), _errors);
-  elem->GetElement("sunrise", _errors)->Set(this->Sunrise(), _errors);
-  elem->GetElement("sunset", _errors)->Set(this->Sunset(), _errors);
-  elem->GetElement("cubemap_uri", _errors)->Set(this->CubemapUri(), _errors);
+  elem->GetElement("time", _errors)->Set(_errors, this->Time());
+  elem->GetElement("sunrise", _errors)->Set(_errors, this->Sunrise());
+  elem->GetElement("sunset", _errors)->Set(_errors, this->Sunset());
+  elem->GetElement("cubemap_uri", _errors)->Set(_errors, this->CubemapUri());
 
   sdf::ElementPtr cloudElem = elem->GetElement("clouds", _errors);
-  cloudElem->GetElement("speed", _errors)->Set(this->CloudSpeed(), _errors);
+  cloudElem->GetElement("speed", _errors)->Set(_errors, this->CloudSpeed());
   cloudElem->GetElement("direction", _errors)->Set(
-      this->CloudDirection().Radian(), _errors);
+      _errors, this->CloudDirection().Radian());
   cloudElem->GetElement("humidity", _errors)->Set(
-      this->CloudHumidity(), _errors);
+      _errors, this->CloudHumidity());
   cloudElem->GetElement("mean_size", _errors)->Set(
-      this->CloudMeanSize(), _errors);
+      _errors, this->CloudMeanSize());
   cloudElem->GetElement("ambient", _errors)->Set(
-      this->CloudAmbient(), _errors);
+      _errors, this->CloudAmbient());
 
   return elem;
 }

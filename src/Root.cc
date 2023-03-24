@@ -386,6 +386,9 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   // different frames.
   checkJointParentChildNames(this, errors);
 
+  // Check that //axis*/xyz/@expressed_in values specify valid frames.
+  checkJointAxisExpressedInValues(this, errors);
+
   return errors;
 }
 
@@ -433,6 +436,27 @@ bool Root::WorldNameExists(const std::string &_name) const
     }
   }
   return false;
+}
+
+/////////////////////////////////////////////////
+const World *Root::WorldByName(const std::string &_name) const
+{
+  for (const sdf::World &w : this->dataPtr->worlds)
+  {
+    if (w.Name() == _name)
+    {
+      return &w;
+    }
+  }
+
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+World *Root::WorldByName(const std::string &_name)
+{
+  return const_cast<World*>(
+      static_cast<const Root*>(this)->WorldByName(_name));
 }
 
 /////////////////////////////////////////////////

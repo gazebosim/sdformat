@@ -555,6 +555,11 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat specification 1.9 to 1.10
 
+### Additions
+
+1. **world.sdf**: A joint can be specified directly in a world.
+1. **world.sdf**: Merge-includes are now allowed in worlds. The included models must not contain top-level links or grippers.
+
 ### Modifications
 
 1. **joint.sdf**: axis limits default values have changed
@@ -562,6 +567,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//limit/upper`: `inf` (formerly `1e16`)
     + `//limit/velocity`: `inf` (formerly `-1`)
     + `//limit/effort`: `inf` (formerly `-1`)
+
+1. **joint.sdf**: thread_pitch is deprecated in favor of screw_thread_pitch.
 
 1. **plugin.sdf**: name attribute is now optional with empty default value.
 
