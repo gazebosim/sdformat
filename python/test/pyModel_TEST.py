@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import copy
-from gz.math7 import Pose3d
-from sdformat13 import (Plugin, Model, Joint, Link, Error, Frame, SemanticPose,
-                      SDFErrorsException)
-import sdformat13 as sdf
+from gz_test_deps.math import Pose3d
+from gz_test_deps.sdformat import (Plugin, Model, Joint, Link, Error, Frame,
+                                   SemanticPose, SDFErrorsException)
+import gz_test_deps.sdformat as sdf
 import math
 import unittest
 
@@ -144,6 +144,10 @@ class ModelTEST(unittest.TestCase):
         self.assertEqual(errors[1].code(), sdf.ErrorCode.POSE_RELATIVE_TO_GRAPH_ERROR)
         self.assertEqual(errors[1].message(),
             "PoseRelativeToGraph error: scope does not point to a valid graph.")
+
+        # model doesn't have graphs, so no names should exist in graphs
+        self.assertFalse(model.name_exists_in_frame_attached_to_graph(""));
+        self.assertFalse(model.name_exists_in_frame_attached_to_graph("link"));
 
 
     def test_copy_construction(self):
