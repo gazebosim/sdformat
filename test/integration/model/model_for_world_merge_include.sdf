@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<sdf version="1.10">
+  <model name="model_for_world_merge_include">
+    <include>
+      <uri>test_model</uri>
+      <name>M1</name>
+    </include>
+    <include>
+      <uri>test_model</uri>
+      <name>M2</name>
+      <pose>0 10 0  0 0 0</pose>
+    </include>
+    <frame name="F1"/>
+    <frame name="F2" attached_to="M2"/>
+
+    <joint name="J1" type="fixed">
+      <parent>F1</parent>
+      <child>F2</child>
+    </joint>
+  </model>
+</sdf>

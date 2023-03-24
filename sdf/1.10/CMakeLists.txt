@@ -1,6 +1,7 @@
 set (sdfs
   actor.sdf
   air_pressure.sdf
+  air_speed.sdf
   altimeter.sdf
   atmosphere.sdf
   audio_source.sdf
@@ -35,6 +36,7 @@ set (sdfs
   mesh_shape.sdf
   model.sdf
   model_state.sdf
+  navsat.sdf
   noise.sdf
   particle_emitter.sdf
   physics.sdf

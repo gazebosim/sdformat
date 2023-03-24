@@ -165,10 +165,10 @@ sdf::ElementPtr Atmosphere::ToElement(sdf::Errors &_errors) const
 
   elem->GetAttribute("type")->Set("adiabatic", _errors);
   elem->GetElement("temperature", _errors)->Set(
-      this->Temperature().Kelvin(), _errors);
-  elem->GetElement("pressure", _errors)->Set(this->Pressure(), _errors);
+      _errors, this->Temperature().Kelvin());
+  elem->GetElement("pressure", _errors)->Set(_errors, this->Pressure());
   elem->GetElement("temperature_gradient", _errors)->Set(
-      this->TemperatureGradient(), _errors);
+      _errors, this->TemperatureGradient());
 
   return elem;
 }

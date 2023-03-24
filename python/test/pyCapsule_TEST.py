@@ -16,7 +16,7 @@ import copy
 
 import math
 
-from sdformat13 import Capsule
+from gz_test_deps.sdformat import Capsule
 
 import unittest
 
