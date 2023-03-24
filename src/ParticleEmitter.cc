@@ -540,27 +540,27 @@ sdf::ElementPtr ParticleEmitter::ToElement(sdf::Errors &_errors) const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose(), _errors);
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   elem->GetAttribute("name")->Set(this->Name(), _errors);
   elem->GetAttribute("type")->Set(this->TypeStr(), _errors);
-  elem->GetElement("emitting", _errors)->Set(this->Emitting(), _errors);
-  elem->GetElement("duration", _errors)->Set(this->Duration(), _errors);
-  elem->GetElement("size", _errors)->Set(this->Size(), _errors);
+  elem->GetElement("emitting", _errors)->Set(_errors, this->Emitting());
+  elem->GetElement("duration", _errors)->Set(_errors, this->Duration());
+  elem->GetElement("size", _errors)->Set(_errors, this->Size());
   elem->GetElement("particle_size", _errors)->Set(
-      this->ParticleSize(), _errors);
-  elem->GetElement("lifetime", _errors)->Set(this->Lifetime(), _errors);
-  elem->GetElement("rate", _errors)->Set(this->Rate(), _errors);
-  elem->GetElement("min_velocity", _errors)->Set(this->MinVelocity(), _errors);
-  elem->GetElement("max_velocity", _errors)->Set(this->MaxVelocity(), _errors);
-  elem->GetElement("scale_rate", _errors)->Set(this->ScaleRate(), _errors);
-  elem->GetElement("color_start", _errors)->Set(this->ColorStart(), _errors);
-  elem->GetElement("color_end", _errors)->Set(this->ColorEnd(), _errors);
+      _errors, this->ParticleSize());
+  elem->GetElement("lifetime", _errors)->Set(_errors, this->Lifetime());
+  elem->GetElement("rate", _errors)->Set(_errors, this->Rate());
+  elem->GetElement("min_velocity", _errors)->Set(_errors, this->MinVelocity());
+  elem->GetElement("max_velocity", _errors)->Set(_errors, this->MaxVelocity());
+  elem->GetElement("scale_rate", _errors)->Set(_errors, this->ScaleRate());
+  elem->GetElement("color_start", _errors)->Set(_errors, this->ColorStart());
+  elem->GetElement("color_end", _errors)->Set(_errors, this->ColorEnd());
   elem->GetElement("color_range_image", _errors)->Set(
-      this->ColorRangeImage(), _errors);
-  elem->GetElement("topic", _errors)->Set(this->Topic(), _errors);
+      _errors, this->ColorRangeImage());
+  elem->GetElement("topic", _errors)->Set(_errors, this->Topic());
   elem->GetElement("particle_scatter_ratio", _errors)->Set(
-      this->ScatterRatio(), _errors);
+      _errors, this->ScatterRatio());
 
   if (this->dataPtr->material)
   {
