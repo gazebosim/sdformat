@@ -137,7 +137,7 @@ Errors JointAxis::Load(ElementPtr _sdf)
   // Load limit values
   if (_sdf->HasElement("limit"))
   {
-    sdf::ElementPtr limitElement = _sdf->GetElement("limit");
+    sdf::ElementPtr limitElement = _sdf->GetElement("limit", errors);
 
     this->dataPtr->lower = limitElement->Get<double>(errors, "lower",
         this->dataPtr->lower).first;
@@ -375,6 +375,7 @@ sdf::ElementPtr JointAxis::Element() const
   return this->dataPtr->sdf;
 }
 
+/////////////////////////////////////////////////
 sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
 {
   sdf::Errors errors;
