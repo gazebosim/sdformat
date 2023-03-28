@@ -16,6 +16,7 @@
 */
 #include <memory>
 #include <string>
+#include <string_view>
 #include <optional>
 #include <vector>
 #include <gz/math/Pose3.hh>
@@ -40,7 +41,7 @@ using namespace sdf;
 
 /// Sensor type strings. These should match the data in
 /// `enum class SensorType` located in Sensor.hh.
-const std::vector<std::string> sensorTypeStrs =
+constexpr std::array<std::string_view, 27> kSensorTypeStrs =
 {
   "none",
   "altimeter",
@@ -528,9 +529,9 @@ void Sensor::SetType(const SensorType _type)
 /////////////////////////////////////////////////
 bool Sensor::SetType(const std::string &_typeStr)
 {
-  for (size_t i = 0; i < sensorTypeStrs.size(); ++i)
+  for (size_t i = 0; i < kSensorTypeStrs.size(); ++i)
   {
-    if (_typeStr == sensorTypeStrs[i])
+    if (_typeStr == kSensorTypeStrs[i])
     {
       this->dataPtr->type = static_cast<SensorType>(i);
       return true;
@@ -645,8 +646,8 @@ void Sensor::SetUpdateRate(double _hz)
 std::string Sensor::TypeStr() const
 {
   size_t index = static_cast<int>(this->dataPtr->type);
-  if (index > 0 && index < sensorTypeStrs.size())
-    return sensorTypeStrs[index];
+  if (index > 0 && index < kSensorTypeStrs.size())
+    return std::string(kSensorTypeStrs[index]);
   return "none";
 }
 
