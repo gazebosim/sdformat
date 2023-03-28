@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -35,7 +36,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  constexpr char kSdfScopeDelimiter[] = "::";
+  constexpr std::string_view kSdfScopeDelimiter = "::";
 
   /// \brief The source path replacement if it was parsed from a string,
   /// instead of a file.

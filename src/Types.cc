@@ -96,13 +96,12 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
 std::pair<std::string, std::string> SplitName(
     const std::string &_absoluteName)
 {
-  const std::string sdfScopeDelimiterStr(kSdfScopeDelimiter);
-  const auto pos = _absoluteName.rfind(sdfScopeDelimiterStr);
+  const auto pos = _absoluteName.rfind(kSdfScopeDelimiter);
   if (pos != std::string::npos)
   {
     const std::string first = _absoluteName.substr(0, pos);
     const std::string second =
-        _absoluteName.substr(pos + sdfScopeDelimiterStr.size());
+        _absoluteName.substr(pos + kSdfScopeDelimiter.size());
     return {first, second};
   }
   return {"", _absoluteName};
@@ -110,22 +109,20 @@ std::pair<std::string, std::string> SplitName(
 
 static bool EndsWithDelimiter(const std::string &_s)
 {
-  const std::string sdfScopeDelimiterStr(kSdfScopeDelimiter);
-  if (_s.size() < sdfScopeDelimiterStr.size())
+  if (_s.size() < kSdfScopeDelimiter.size())
     return false;
 
-  const size_t startPosition = _s.size() - sdfScopeDelimiterStr.size();
+  const size_t startPosition = _s.size() - kSdfScopeDelimiter.size();
   return _s.compare(
-    startPosition, sdfScopeDelimiterStr.size(), sdfScopeDelimiterStr) == 0;
+    startPosition, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
 }
 
 static bool StartsWithDelimiter(const std::string &_s)
 {
-  const std::string sdfScopeDelimiterStr(kSdfScopeDelimiter);
-  if (_s.size() < sdfScopeDelimiterStr.size())
+  if (_s.size() < kSdfScopeDelimiter.size())
     return false;
 
-  return _s.compare(0, sdfScopeDelimiterStr.size(), sdfScopeDelimiterStr) == 0;
+  return _s.compare(0, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
 }
 
 // Join a scope name prefix with a local name using the scope delimeter
@@ -140,13 +137,12 @@ std::string JoinName(
   const bool scopeNameEndsWithDelimiter = EndsWithDelimiter(_scopeName);
   const bool localNameStartsWithDelimiter = StartsWithDelimiter(_localName);
 
-  const std::string sdfScopeDelimiterStr(kSdfScopeDelimiter);
   if (scopeNameEndsWithDelimiter && localNameStartsWithDelimiter)
-    return _scopeName + _localName.substr(sdfScopeDelimiterStr.size());
+    return _scopeName + _localName.substr(kSdfScopeDelimiter.size());
   else if (scopeNameEndsWithDelimiter || localNameStartsWithDelimiter)
     return _scopeName + _localName;
   else
-    return _scopeName + sdfScopeDelimiterStr + _localName;
+    return _scopeName + std::string(kSdfScopeDelimiter) + _localName;
 }
 }
 }
