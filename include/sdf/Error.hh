@@ -167,7 +167,7 @@ namespace sdf
     /// This has been created to help preserve behavior.
     FATAL_ERROR,
 
-    /// \brief Generic warning saved as error due to WarningsPolicy config
+    /// \brief Generic warning saved as error due to WarningsPolicy config.
     WARNING,
 
     /// \brief The joint axis expressed-in value does not match the name of an
