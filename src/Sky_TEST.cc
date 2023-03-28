@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Sky.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMSky, Construction)
@@ -229,4 +230,55 @@ TEST(DOMSky, ToElement)
   EXPECT_DOUBLE_EQ(sky.CloudMeanSize(), sky2.CloudMeanSize());
   EXPECT_EQ(sky.CloudAmbient(), sky2.CloudAmbient());
   EXPECT_EQ(sky.CubemapUri(), sky2.CubemapUri());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSky, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Sky sky;
+  sdf::Errors errors;
+
+  sky.SetTime(1.2);
+  sky.SetSunrise(0.5);
+  sky.SetSunset(10.2);
+  sky.SetCloudSpeed(100.2);
+  sky.SetCloudDirection(1.56);
+  sky.SetCloudHumidity(0.2);
+  sky.SetCloudMeanSize(0.5);
+  sky.SetCloudAmbient(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  sky.SetCubemapUri("dummyUri");
+
+  sdf::ElementPtr elem = sky.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Sky sky2;
+  errors = sky2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(sky.Time(), sky2.Time());
+  EXPECT_DOUBLE_EQ(sky.Sunrise(), sky2.Sunrise());
+  EXPECT_DOUBLE_EQ(sky.Sunset(), sky2.Sunset());
+  EXPECT_DOUBLE_EQ(sky.CloudSpeed(), sky2.CloudSpeed());
+  EXPECT_EQ(sky.CloudDirection(), sky2.CloudDirection());
+  EXPECT_DOUBLE_EQ(sky.CloudHumidity(), sky2.CloudHumidity());
+  EXPECT_DOUBLE_EQ(sky.CloudMeanSize(), sky2.CloudMeanSize());
+  EXPECT_EQ(sky.CloudAmbient(), sky2.CloudAmbient());
+  EXPECT_EQ(sky.CubemapUri(), sky2.CubemapUri());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
