@@ -19,6 +19,7 @@
 #include <gz/math/Helpers.hh>
 #include "sdf/Atmosphere.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -61,7 +62,7 @@ Errors Atmosphere::Load(ElementPtr _sdf)
   }
 
   // Read the type
-  std::string type = _sdf->Get<std::string>("type", "adiabatic").first;
+  std::string type = _sdf->Get<std::string>(errors, "type", "adiabatic").first;
   if (type == "adiabatic")
   {
     this->dataPtr->type = AtmosphereType::ADIABATIC;
@@ -73,16 +74,17 @@ Errors Atmosphere::Load(ElementPtr _sdf)
   }
 
   // Read the temperature
-  this->dataPtr->temperature = _sdf->Get<double>("temperature",
+  this->dataPtr->temperature = _sdf->Get<double>(errors, "temperature",
         this->dataPtr->temperature.Kelvin()).first;
 
   // Read the pressure
-  this->dataPtr->pressure = _sdf->Get<double>("pressure",
+  this->dataPtr->pressure = _sdf->Get<double>(errors, "pressure",
         this->dataPtr->pressure).first;
 
   // Read the temperature gradient
-  this->dataPtr->temperatureGradient = _sdf->Get<double>("temperature_gradient",
-        this->dataPtr->temperatureGradient).first;
+  this->dataPtr->temperatureGradient = _sdf->Get<double>(errors,
+      "temperature_gradient",
+      this->dataPtr->temperatureGradient).first;
 
   return errors;
 }
@@ -149,13 +151,24 @@ bool Atmosphere::operator==(const Atmosphere &_atmosphere) const
 /////////////////////////////////////////////////
 sdf::ElementPtr Atmosphere::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Atmosphere::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("atmosphere.sdf", elem);
 
-  elem->GetAttribute("type")->Set("adiabatic");
-  elem->GetElement("temperature")->Set(this->Temperature().Kelvin());
-  elem->GetElement("pressure")->Set(this->Pressure());
-  elem->GetElement("temperature_gradient")->Set(this->TemperatureGradient());
+  elem->GetAttribute("type")->Set("adiabatic", _errors);
+  elem->GetElement("temperature", _errors)->Set(
+      _errors, this->Temperature().Kelvin());
+  elem->GetElement("pressure", _errors)->Set(_errors, this->Pressure());
+  elem->GetElement("temperature_gradient", _errors)->Set(
+      _errors, this->TemperatureGradient());
 
   return elem;
 }
