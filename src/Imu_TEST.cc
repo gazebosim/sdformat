@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Imu.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMImu, Construction)
@@ -180,4 +181,70 @@ TEST(DOMImu, ToElement)
   sdf::Imu imu3;
   imu3.Load(imu2Elem);
   EXPECT_EQ(gz::math::Vector3d(1, 2, 3), imu3.GravityDirX());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMImu, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Imu imu;
+  sdf::Noise noise;
+  sdf::Errors errors;
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  imu.SetLinearAccelerationXNoise(noise);
+  imu.SetLinearAccelerationYNoise(noise);
+  imu.SetLinearAccelerationZNoise(noise);
+  imu.SetAngularVelocityXNoise(noise);
+  imu.SetAngularVelocityYNoise(noise);
+  imu.SetAngularVelocityZNoise(noise);
+  imu.SetGravityDirX(gz::math::Vector3d::Zero);
+  imu.SetGravityDirXParentFrame("my_frame");
+  imu.SetCustomRpy(gz::math::Vector3d::UnitZ);
+  imu.SetCustomRpyParentFrame("other_frame");
+  imu.SetLocalization("NED");
+  imu.SetOrientationEnabled(false);
+
+  sdf::ElementPtr imuElem = imu.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, imuElem);
+  EXPECT_EQ(nullptr, imu.Element());
+
+  // verify values after loading the element back
+  sdf::Imu imu2;
+  errors = imu2.Load(imuElem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(noise, imu2.LinearAccelerationXNoise());
+  EXPECT_EQ(noise, imu2.LinearAccelerationYNoise());
+  EXPECT_EQ(noise, imu2.LinearAccelerationZNoise());
+  EXPECT_EQ(noise, imu2.AngularVelocityXNoise());
+  EXPECT_EQ(noise, imu2.AngularVelocityYNoise());
+  EXPECT_EQ(noise, imu2.AngularVelocityZNoise());
+  EXPECT_EQ(gz::math::Vector3d::Zero, imu2.GravityDirX());
+  EXPECT_EQ("my_frame", imu2.GravityDirXParentFrame());
+  EXPECT_EQ(gz::math::Vector3d::UnitZ, imu2.CustomRpy());
+  EXPECT_EQ("other_frame", imu2.CustomRpyParentFrame());
+  EXPECT_EQ("NED", imu2.Localization());
+  EXPECT_FALSE(imu2.OrientationEnabled());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
