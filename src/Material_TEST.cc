@@ -20,6 +20,7 @@
 #include <gz/math/Color.hh>
 #include "sdf/Material.hh"
 #include "sdf/Pbr.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMMaterial, Construction)
@@ -417,4 +418,141 @@ TEST(DOMMaterial, ToElement)
     EXPECT_EQ(flow1->LightMap(), flow2->LightMap());
     EXPECT_EQ(flow1->Type(), flow2->Type());
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMaterial, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Material material;
+  sdf::Errors errors;
+
+  material.SetAmbient(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  material.SetDiffuse(gz::math::Color(0.4f, 0.5f, 0.6f, 0.5f));
+  material.SetSpecular(gz::math::Color(0.6f, 0.4f, 0.8f, 0.8f));
+  material.SetEmissive(gz::math::Color(0.2f, 0.7f, 0.9f, 0.1f));
+
+  material.SetRenderOrder(0.5);
+  material.SetLighting(false);
+  material.SetDoubleSided(true);
+  material.SetScriptUri("my-uri");
+  material.SetScriptName("my-script-name");
+  material.SetShader(sdf::ShaderType::VERTEX);
+  material.SetNormalMap("my-normal-map");
+
+  sdf::PbrWorkflow workflow;
+  workflow.SetAlbedoMap("albedo");
+  workflow.SetNormalMap("normal");
+  workflow.SetEnvironmentMap("env");
+  workflow.SetAmbientOcclusionMap("ambient");
+  workflow.SetRoughnessMap("rough");
+  workflow.SetMetalnessMap("metalness");
+  workflow.SetEmissiveMap("emissive");
+  workflow.SetGlossinessMap("gloss");
+  workflow.SetSpecularMap("gloss");
+  workflow.SetLightMap("light", 1u);
+  workflow.SetMetalness(1.0);
+  workflow.SetRoughness(0.1);
+
+  // Testing using METAL workflow
+  {
+    sdf::Pbr pbr;
+    workflow.SetType(sdf::PbrWorkflowType::METAL);
+    pbr.SetWorkflow(sdf::PbrWorkflowType::METAL, workflow);
+    material.SetPbrMaterial(pbr);
+
+    sdf::ElementPtr elem = material.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Material material2;
+    errors = material2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(material.Ambient(), material2.Ambient());
+    EXPECT_EQ(material.Diffuse(), material2.Diffuse());
+    EXPECT_EQ(material.Specular(), material2.Specular());
+    EXPECT_EQ(material.Emissive(), material2.Emissive());
+    EXPECT_DOUBLE_EQ(material.RenderOrder(), material2.RenderOrder());
+    EXPECT_EQ(material.Lighting(), material2.Lighting());
+    EXPECT_EQ(material.DoubleSided(), material2.DoubleSided());
+    EXPECT_EQ(material.ScriptUri(), material2.ScriptUri());
+    EXPECT_EQ(material.ScriptName(), material2.ScriptName());
+    EXPECT_EQ(material.Shader(), material2.Shader());
+    EXPECT_EQ(material.NormalMap(), material2.NormalMap());
+
+    const sdf::Pbr *pbr2 = material2.PbrMaterial();
+    const sdf::PbrWorkflow *flow1 = pbr.Workflow(sdf::PbrWorkflowType::METAL);
+    const sdf::PbrWorkflow *flow2 = pbr2->Workflow(sdf::PbrWorkflowType::METAL);
+    EXPECT_EQ(flow1->AlbedoMap(), flow2->AlbedoMap());
+    EXPECT_EQ(flow1->NormalMap(), flow2->NormalMap());
+    EXPECT_EQ(flow1->AmbientOcclusionMap(),
+              flow2->AmbientOcclusionMap());
+    EXPECT_EQ(flow1->RoughnessMap(), flow2->RoughnessMap());
+    EXPECT_EQ(flow1->MetalnessMap(), flow2->MetalnessMap());
+    EXPECT_EQ(flow1->EmissiveMap(), flow2->EmissiveMap());
+    EXPECT_EQ(flow1->LightMap(), flow2->LightMap());
+    EXPECT_DOUBLE_EQ(flow1->Metalness(), flow2->Metalness());
+    EXPECT_DOUBLE_EQ(flow1->Roughness(), flow2->Roughness());
+    EXPECT_EQ(flow1->Type(), flow2->Type());
+  }
+
+  // Testing using SPECULAR workflow
+  {
+    sdf::Pbr pbr;
+    workflow.SetType(sdf::PbrWorkflowType::SPECULAR);
+    pbr.SetWorkflow(sdf::PbrWorkflowType::SPECULAR, workflow);
+    material.SetPbrMaterial(pbr);
+
+    sdf::ElementPtr elem = material.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Material material2;
+    errors = material2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(material.Ambient(), material2.Ambient());
+    EXPECT_EQ(material.Diffuse(), material2.Diffuse());
+    EXPECT_EQ(material.Specular(), material2.Specular());
+    EXPECT_EQ(material.Emissive(), material2.Emissive());
+    EXPECT_DOUBLE_EQ(material.RenderOrder(), material2.RenderOrder());
+    EXPECT_EQ(material.Lighting(), material2.Lighting());
+    EXPECT_EQ(material.DoubleSided(), material2.DoubleSided());
+    EXPECT_EQ(material.ScriptUri(), material2.ScriptUri());
+    EXPECT_EQ(material.ScriptName(), material2.ScriptName());
+    EXPECT_EQ(material.Shader(), material2.Shader());
+    EXPECT_EQ(material.NormalMap(), material2.NormalMap());
+
+    const sdf::Pbr *pbr2 = material2.PbrMaterial();
+    const sdf::PbrWorkflow *flow1 =
+      pbr.Workflow(sdf::PbrWorkflowType::SPECULAR);
+    const sdf::PbrWorkflow *flow2 =
+      pbr2->Workflow(sdf::PbrWorkflowType::SPECULAR);
+    EXPECT_EQ(flow1->AlbedoMap(), flow2->AlbedoMap());
+    EXPECT_EQ(flow1->NormalMap(), flow2->NormalMap());
+    EXPECT_EQ(flow1->EnvironmentMap(), flow2->EnvironmentMap());
+    EXPECT_EQ(flow1->AmbientOcclusionMap(),
+              flow2->AmbientOcclusionMap());
+    EXPECT_EQ(flow1->EmissiveMap(), flow2->EmissiveMap());
+    EXPECT_EQ(flow1->GlossinessMap(), flow2->GlossinessMap());
+    EXPECT_EQ(flow1->SpecularMap(), flow2->SpecularMap());
+    EXPECT_EQ(flow1->LightMap(), flow2->LightMap());
+    EXPECT_EQ(flow1->Type(), flow2->Type());
+  }
+
+ // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
