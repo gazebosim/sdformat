@@ -131,6 +131,14 @@ namespace sdf
     /// \return SDF element pointer with updated frame values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// frame.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated frame values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
+
     /// \brief Give a scoped FrameAttachedToGraph to be used for resolving
     /// attached bodies. This is private and is intended to be called by
     /// Model::Load or World::Load.
