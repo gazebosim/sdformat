@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <array>
 #include <memory>
 #include <string>
 #include <optional>
