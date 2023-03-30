@@ -19,6 +19,7 @@
 #include <gz/math/Temperature.hh>
 #include <gz/math/Vector3.hh>
 #include "sdf/World.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMAtmosphere, Construction)
@@ -152,4 +153,45 @@ TEST(DOMAtmosphere, ToElement)
   EXPECT_DOUBLE_EQ(atmosphere.TemperatureGradient(),
       atmosphere2.TemperatureGradient());
   EXPECT_DOUBLE_EQ(atmosphere.Pressure(), atmosphere2.Pressure());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAtmosphere, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Atmosphere atmosphere;
+  sdf::Errors errors;
+  atmosphere.SetType(sdf::AtmosphereType::ADIABATIC);
+  atmosphere.SetTemperature(gz::math::Temperature(123));
+  atmosphere.SetTemperatureGradient(1.34);
+  atmosphere.SetPressure(2.65);
+
+  sdf::ElementPtr elem = atmosphere.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Atmosphere atmosphere2;
+  errors = atmosphere2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  // verify values after loading the element back
+  EXPECT_EQ(atmosphere.Temperature(), atmosphere2.Temperature());
+  EXPECT_DOUBLE_EQ(atmosphere.TemperatureGradient(),
+      atmosphere2.TemperatureGradient());
+  EXPECT_DOUBLE_EQ(atmosphere.Pressure(), atmosphere2.Pressure());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
