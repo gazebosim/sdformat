@@ -162,7 +162,7 @@ Errors ParticleEmitter::Load(ElementPtr _sdf)
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
-  if (!this->SetType(_sdf->Get<std::string>("type",
+  if (!this->SetType(_sdf->Get<std::string>(errors, "type",
           this->TypeStr()).first))
   {
     errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
@@ -171,52 +171,53 @@ Errors ParticleEmitter::Load(ElementPtr _sdf)
     return errors;
   }
 
-  this->dataPtr->emitting = _sdf->Get<bool>("emitting",
+  this->dataPtr->emitting = _sdf->Get<bool>(errors, "emitting",
       this->dataPtr->emitting).first;
 
-  this->dataPtr->duration = _sdf->Get<double>("duration",
+  this->dataPtr->duration = _sdf->Get<double>(errors, "duration",
       this->dataPtr->duration).first;
 
-  this->dataPtr->lifetime = _sdf->Get<double>("lifetime",
+  this->dataPtr->lifetime = _sdf->Get<double>(errors, "lifetime",
       this->dataPtr->lifetime).first;
 
-  this->dataPtr->rate = _sdf->Get<double>("rate",
+  this->dataPtr->rate = _sdf->Get<double>(errors, "rate",
       this->dataPtr->rate).first;
 
-  this->dataPtr->scaleRate = _sdf->Get<double>("scale_rate",
+  this->dataPtr->scaleRate = _sdf->Get<double>(errors, "scale_rate",
       this->dataPtr->scaleRate).first;
 
-  this->dataPtr->minVelocity = _sdf->Get<double>("min_velocity",
+  this->dataPtr->minVelocity = _sdf->Get<double>(errors, "min_velocity",
       this->dataPtr->minVelocity).first;
 
-  this->dataPtr->maxVelocity = _sdf->Get<double>("max_velocity",
+  this->dataPtr->maxVelocity = _sdf->Get<double>(errors, "max_velocity",
       this->dataPtr->maxVelocity).first;
 
-  this->dataPtr->size = _sdf->Get<gz::math::Vector3d>("size",
+  this->dataPtr->size = _sdf->Get<gz::math::Vector3d>(errors, "size",
       this->dataPtr->size).first;
 
   this->dataPtr->particleSize = _sdf->Get<gz::math::Vector3d>(
-      "particle_size", this->dataPtr->particleSize).first;
+      errors, "particle_size", this->dataPtr->particleSize).first;
 
   this->dataPtr->colorStart = _sdf->Get<gz::math::Color>(
-      "color_start", this->dataPtr->colorStart).first;
+      errors, "color_start", this->dataPtr->colorStart).first;
 
   this->dataPtr->colorEnd = _sdf->Get<gz::math::Color>(
-      "color_end", this->dataPtr->colorEnd).first;
+      errors, "color_end", this->dataPtr->colorEnd).first;
 
   this->dataPtr->colorRangeImage = _sdf->Get<std::string>(
-      "color_range_image", this->dataPtr->colorRangeImage).first;
+      errors, "color_range_image", this->dataPtr->colorRangeImage).first;
 
   this->dataPtr->topic = _sdf->Get<std::string>(
-      "topic", this->dataPtr->topic).first;
+      errors, "topic", this->dataPtr->topic).first;
 
   this->dataPtr->scatterRatio = _sdf->Get<float>(
-      "particle_scatter_ratio", this->dataPtr->scatterRatio).first;
+      errors, "particle_scatter_ratio", this->dataPtr->scatterRatio).first;
 
   if (_sdf->HasElement("material"))
   {
     this->dataPtr->material.emplace();
-    Errors err = this->dataPtr->material->Load(_sdf->GetElement("material"));
+    Errors err = this->dataPtr->material->Load(
+        _sdf->GetElement("material", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
 
@@ -520,38 +521,50 @@ void ParticleEmitter::SetPoseRelativeToGraph(
 /////////////////////////////////////////////////
 sdf::ElementPtr ParticleEmitter::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr ParticleEmitter::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("particle_emitter.sdf", elem);
 
   // Set pose
-  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  sdf::ElementPtr poseElem = elem->GetElement("pose", _errors);
   if (!this->dataPtr->poseRelativeTo.empty())
   {
     poseElem->GetAttribute("relative_to")->Set<std::string>(
-        this->dataPtr->poseRelativeTo);
+        this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
-  elem->GetAttribute("name")->Set(this->Name());
-  elem->GetAttribute("type")->Set(this->TypeStr());
-  elem->GetElement("emitting")->Set(this->Emitting());
-  elem->GetElement("duration")->Set(this->Duration());
-  elem->GetElement("size")->Set(this->Size());
-  elem->GetElement("particle_size")->Set(this->ParticleSize());
-  elem->GetElement("lifetime")->Set(this->Lifetime());
-  elem->GetElement("rate")->Set(this->Rate());
-  elem->GetElement("min_velocity")->Set(this->MinVelocity());
-  elem->GetElement("max_velocity")->Set(this->MaxVelocity());
-  elem->GetElement("scale_rate")->Set(this->ScaleRate());
-  elem->GetElement("color_start")->Set(this->ColorStart());
-  elem->GetElement("color_end")->Set(this->ColorEnd());
-  elem->GetElement("color_range_image")->Set(this->ColorRangeImage());
-  elem->GetElement("topic")->Set(this->Topic());
-  elem->GetElement("particle_scatter_ratio")->Set(this->ScatterRatio());
+  elem->GetAttribute("name")->Set(this->Name(), _errors);
+  elem->GetAttribute("type")->Set(this->TypeStr(), _errors);
+  elem->GetElement("emitting", _errors)->Set(_errors, this->Emitting());
+  elem->GetElement("duration", _errors)->Set(_errors, this->Duration());
+  elem->GetElement("size", _errors)->Set(_errors, this->Size());
+  elem->GetElement("particle_size", _errors)->Set(
+      _errors, this->ParticleSize());
+  elem->GetElement("lifetime", _errors)->Set(_errors, this->Lifetime());
+  elem->GetElement("rate", _errors)->Set(_errors, this->Rate());
+  elem->GetElement("min_velocity", _errors)->Set(_errors, this->MinVelocity());
+  elem->GetElement("max_velocity", _errors)->Set(_errors, this->MaxVelocity());
+  elem->GetElement("scale_rate", _errors)->Set(_errors, this->ScaleRate());
+  elem->GetElement("color_start", _errors)->Set(_errors, this->ColorStart());
+  elem->GetElement("color_end", _errors)->Set(_errors, this->ColorEnd());
+  elem->GetElement("color_range_image", _errors)->Set(
+      _errors, this->ColorRangeImage());
+  elem->GetElement("topic", _errors)->Set(_errors, this->Topic());
+  elem->GetElement("particle_scatter_ratio", _errors)->Set(
+      _errors, this->ScatterRatio());
 
   if (this->dataPtr->material)
   {
-    elem->InsertElement(this->dataPtr->material->ToElement(), true);
+    elem->InsertElement(this->dataPtr->material->ToElement(_errors), true);
   }
 
   return elem;

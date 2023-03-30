@@ -83,6 +83,14 @@ namespace sdf
     /// \return SDF element pointer with updated sensor values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// altimeter sensor.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated sensor values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
+
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
   };

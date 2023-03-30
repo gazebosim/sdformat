@@ -18,6 +18,7 @@
 #include <string>
 #include "sdf/Altimeter.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -60,16 +61,24 @@ Errors Altimeter::Load(ElementPtr _sdf)
   // Load the noise values.
   if (_sdf->HasElement("vertical_position"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("vertical_position");
+    sdf::ElementPtr elem = _sdf->GetElement("vertical_position", errors);
     if (elem->HasElement("noise"))
-      this->dataPtr->verticalPositionNoise.Load(elem->GetElement("noise"));
+    {
+      sdf::Errors noiseErrors = this->dataPtr->verticalPositionNoise.Load(
+          elem->GetElement("noise", errors));
+      errors.insert(errors.end(), noiseErrors.begin(), noiseErrors.end());
+    }
   }
 
   if (_sdf->HasElement("vertical_velocity"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("vertical_velocity");
+    sdf::ElementPtr elem = _sdf->GetElement("vertical_velocity", errors);
     if (elem->HasElement("noise"))
-      this->dataPtr->verticalVelocityNoise.Load(elem->GetElement("noise"));
+    {
+      sdf::Errors noiseErrors = this->dataPtr->verticalVelocityNoise.Load(
+          elem->GetElement("noise", errors));
+      errors.insert(errors.end(), noiseErrors.begin(), noiseErrors.end());
+    }
   }
 
   return errors;
@@ -132,16 +141,31 @@ bool Altimeter::operator==(const Altimeter &_alt) const
 /////////////////////////////////////////////////
 sdf::ElementPtr Altimeter::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Altimeter::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("altimeter.sdf", elem);
 
-  sdf::ElementPtr verticalPosElem = elem->GetElement("vertical_position");
-  sdf::ElementPtr verticalPosNoiseElem = verticalPosElem->GetElement("noise");
-  verticalPosNoiseElem->Copy(this->dataPtr->verticalPositionNoise.ToElement());
+  sdf::ElementPtr verticalPosElem = elem->GetElement(
+      "vertical_position", _errors);
+  sdf::ElementPtr verticalPosNoiseElem = verticalPosElem->GetElement(
+      "noise", _errors);
+  verticalPosNoiseElem->Copy(
+      this->dataPtr->verticalPositionNoise.ToElement(_errors), _errors);
 
-  sdf::ElementPtr verticalVelElem = elem->GetElement("vertical_velocity");
-  sdf::ElementPtr verticalVelNoiseElem = verticalVelElem->GetElement("noise");
-  verticalVelNoiseElem->Copy(this->dataPtr->verticalVelocityNoise.ToElement());
+  sdf::ElementPtr verticalVelElem = elem->GetElement(
+      "vertical_velocity", _errors);
+  sdf::ElementPtr verticalVelNoiseElem = verticalVelElem->GetElement(
+      "noise", _errors);
+  verticalVelNoiseElem->Copy(this->dataPtr->verticalVelocityNoise.ToElement(
+      _errors), _errors);
 
   return elem;
 }
