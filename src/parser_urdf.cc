@@ -56,9 +56,9 @@ typedef std::map<std::string, std::vector<SDFExtensionPtr> >
 StringSDFExtensionPtrMap g_extensions;
 bool g_reduceFixedJoints;
 bool g_enforceLimits;
-constexpr char kCollisionExt[] = "_collision";
-constexpr char kVisualExt[] = "_visual";
-constexpr char kLumpPrefix[] = "_fixed_joint_lump__";
+const char kCollisionExt[] = "_collision";
+const char kVisualExt[] = "_visual";
+const char kLumpPrefix[] = "_fixed_joint_lump__";
 urdf::Pose g_initialRobotPose;
 bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsTransformedInRevoluteJoints;
