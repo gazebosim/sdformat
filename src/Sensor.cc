@@ -41,7 +41,7 @@ using namespace sdf;
 /// Sensor type strings. These should match the data in
 /// `enum class SensorType` located in Sensor.hh, and the size template
 /// parameter should match the number of elements as well.
-constexpr std::array<const char *, 27> kSensorTypeStrs =
+static const std::array<const char *, 27> kSensorTypeStrs =
 {
   "none",
   "altimeter",

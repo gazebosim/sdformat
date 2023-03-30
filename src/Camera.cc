@@ -24,7 +24,7 @@ using namespace sdf;
 
 /// \brief String names for the pixel formats.
 /// \sa Image::PixelFormat.
-constexpr std::array<const char *, 19> kPixelFormatNames =
+static const std::array<const char *, 19> kPixelFormatNames =
 {
   "UNKNOWN_PIXEL_FORMAT",
   "L_INT8",
