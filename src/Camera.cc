@@ -15,7 +15,6 @@
  *
 */
 #include <array>
-#include <string_view>
 
 #include "sdf/Camera.hh"
 #include "sdf/parser.hh"
@@ -25,7 +24,7 @@ using namespace sdf;
 
 /// \brief String names for the pixel formats.
 /// \sa Image::PixelFormat.
-constexpr std::array<std::string_view, 19> kPixelFormatNames =
+constexpr std::array<const char *, 19> kPixelFormatNames =
 {
   "UNKNOWN_PIXEL_FORMAT",
   "L_INT8",
