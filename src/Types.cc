@@ -142,7 +142,7 @@ std::string JoinName(
   else if (scopeNameEndsWithDelimiter || localNameStartsWithDelimiter)
     return _scopeName + _localName;
   else
-    return _scopeName + std::string(kSdfScopeDelimiter) + _localName;
+    return _scopeName + kSdfScopeDelimiter + _localName;
 }
 }
 }

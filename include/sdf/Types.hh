@@ -22,10 +22,10 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
+#include <gz/utils/NeverDestroyed.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
@@ -36,7 +36,12 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  constexpr std::string_view kSdfScopeDelimiter = "::";
+  static const std::string &SdfScopeDelimiter()
+  {
+    static const gz::utils::NeverDestroyed<std::string> delimiter{"::"};
+    return delimiter.Access();
+  }
+  static const std::string &kSdfScopeDelimiter = SdfScopeDelimiter();
 
   /// \brief The source path replacement if it was parsed from a string,
   /// instead of a file.
