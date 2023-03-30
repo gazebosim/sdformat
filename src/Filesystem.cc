@@ -90,7 +90,7 @@ class DirIter::Implementation
 
 #ifndef _WIN32
 
-constexpr char kSdfFileSystemPreferredSeparator = '/';
+static const char kSdfFileSystemPreferredSeparator = '/';
 
 //////////////////////////////////////////////////
 bool exists(const std::string &_path)
@@ -210,7 +210,7 @@ void DirIter::close_handle()
 
 #else  // Windows
 
-constexpr char kSdfFileSystemPreferredSeparator[] = '\\';
+static const char kSdfFileSystemPreferredSeparator = '\\';
 
 //////////////////////////////////////////////////
 static bool not_found_error(int _errval)
