@@ -17,6 +17,7 @@
 #include <string>
 #include "sdf/ForceTorque.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -83,7 +84,7 @@ Errors ForceTorque::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("frame"))
   {
-    std::string frame = _sdf->Get<std::string>("frame", "child").first;
+    std::string frame = _sdf->Get<std::string>(errors, "frame", "child").first;
 
     if (frame == "parent")
     {
@@ -109,7 +110,8 @@ Errors ForceTorque::Load(ElementPtr _sdf)
   if (_sdf->HasElement("measure_direction"))
   {
     std::string direction =
-        _sdf->Get<std::string>("measure_direction", "child_to_parent").first;
+        _sdf->Get<std::string>(errors, "measure_direction",
+                               "child_to_parent").first;
 
     if (direction == "parent_to_child")
     {
@@ -137,10 +139,12 @@ Errors ForceTorque::Load(ElementPtr _sdf)
                           sdf::Noise& _noise)
   {
     if (_parent->HasElement(_groupLabel) &&
-        _parent->GetElement(_groupLabel)->HasElement(_axisLabel))
+        _parent->GetElement(_groupLabel, errors)->HasElement(_axisLabel))
     {
-        auto axis = _parent->GetElement(_groupLabel)->GetElement(_axisLabel);
-        sdf::Errors noiseErrors = _noise.Load(axis->GetElement("noise"));
+        auto axis = _parent->GetElement(_groupLabel, errors)->GetElement(
+            _axisLabel, errors);
+        sdf::Errors noiseErrors = _noise.Load(
+            axis->GetElement("noise", errors));
         errors.insert(errors.end(), noiseErrors.begin(), noiseErrors.end());
         return true;
     }
@@ -282,6 +286,15 @@ void ForceTorque::SetMeasureDirection(
 /////////////////////////////////////////////////
 sdf::ElementPtr ForceTorque::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr ForceTorque::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("forcetorque.sdf", elem);
 
@@ -302,7 +315,7 @@ sdf::ElementPtr ForceTorque::ToElement() const
       break;
   }
   if (!frame.empty())
-    elem->GetElement("frame")->Set<std::string>(frame);
+    elem->GetElement("frame", _errors)->Set<std::string>(_errors, frame);
 
   std::string measureDirection;
   switch (this->MeasureDirection())
@@ -319,34 +332,38 @@ sdf::ElementPtr ForceTorque::ToElement() const
   }
   if (!measureDirection.empty())
   {
-    elem->GetElement("measure_direction")->Set<std::string>(measureDirection);
+    elem->GetElement("measure_direction", _errors)->Set<std::string>(
+        _errors, measureDirection);
   }
 
-  sdf::ElementPtr forceElem = elem->GetElement("force");
-  sdf::ElementPtr forceXElem = forceElem->GetElement("x");
-  sdf::ElementPtr forceXNoiseElem = forceXElem->GetElement("noise");
-  forceXNoiseElem->Copy(this->dataPtr->forceXNoise.ToElement());
+  sdf::ElementPtr forceElem = elem->GetElement("force", _errors);
+  sdf::ElementPtr forceXElem = forceElem->GetElement("x", _errors);
+  sdf::ElementPtr forceXNoiseElem = forceXElem->GetElement("noise", _errors);
+  forceXNoiseElem->Copy(this->dataPtr->forceXNoise.ToElement(_errors), _errors);
 
-  sdf::ElementPtr forceYElem = forceElem->GetElement("y");
-  sdf::ElementPtr forceYNoiseElem = forceYElem->GetElement("noise");
-  forceYNoiseElem->Copy(this->dataPtr->forceYNoise.ToElement());
+  sdf::ElementPtr forceYElem = forceElem->GetElement("y", _errors);
+  sdf::ElementPtr forceYNoiseElem = forceYElem->GetElement("noise", _errors);
+  forceYNoiseElem->Copy(this->dataPtr->forceYNoise.ToElement(_errors), _errors);
 
-  sdf::ElementPtr forceZElem = forceElem->GetElement("z");
-  sdf::ElementPtr forceZNoiseElem = forceZElem->GetElement("noise");
-  forceZNoiseElem->Copy(this->dataPtr->forceZNoise.ToElement());
+  sdf::ElementPtr forceZElem = forceElem->GetElement("z", _errors);
+  sdf::ElementPtr forceZNoiseElem = forceZElem->GetElement("noise", _errors);
+  forceZNoiseElem->Copy(this->dataPtr->forceZNoise.ToElement(_errors), _errors);
 
-  sdf::ElementPtr torqueElem = elem->GetElement("torque");
-  sdf::ElementPtr torqueXElem = torqueElem->GetElement("x");
-  sdf::ElementPtr torqueXNoiseElem = torqueXElem->GetElement("noise");
-  torqueXNoiseElem->Copy(this->dataPtr->torqueXNoise.ToElement());
+  sdf::ElementPtr torqueElem = elem->GetElement("torque", _errors);
+  sdf::ElementPtr torqueXElem = torqueElem->GetElement("x", _errors);
+  sdf::ElementPtr torqueXNoiseElem = torqueXElem->GetElement("noise", _errors);
+  torqueXNoiseElem->Copy(this->dataPtr->torqueXNoise.ToElement(_errors),
+                         _errors);
 
-  sdf::ElementPtr torqueYElem = torqueElem->GetElement("y");
-  sdf::ElementPtr torqueYNoiseElem = torqueYElem->GetElement("noise");
-  torqueYNoiseElem->Copy(this->dataPtr->torqueYNoise.ToElement());
+  sdf::ElementPtr torqueYElem = torqueElem->GetElement("y", _errors);
+  sdf::ElementPtr torqueYNoiseElem = torqueYElem->GetElement("noise", _errors);
+  torqueYNoiseElem->Copy(this->dataPtr->torqueYNoise.ToElement(_errors),
+                         _errors);
 
-  sdf::ElementPtr torqueZElem = torqueElem->GetElement("z");
-  sdf::ElementPtr torqueZNoiseElem = torqueZElem->GetElement("noise");
-  torqueZNoiseElem->Copy(this->dataPtr->torqueZNoise.ToElement());
+  sdf::ElementPtr torqueZElem = torqueElem->GetElement("z", _errors);
+  sdf::ElementPtr torqueZNoiseElem = torqueZElem->GetElement("noise", _errors);
+  torqueZNoiseElem->Copy(this->dataPtr->torqueZNoise.ToElement(_errors),
+                         _errors);
 
   return elem;
 }
