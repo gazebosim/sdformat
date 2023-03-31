@@ -207,7 +207,7 @@ static std::optional<std::string> computeAbsoluteName(
     std::advance(it, 1);
     for (; it != names.rend(); ++it)
     {
-      absoluteParentName.append(kSdfScopeDelimiter);
+      absoluteParentName.append(kScopeDelimiter);
       absoluteParentName.append(*it);
     }
 
