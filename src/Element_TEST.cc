@@ -758,6 +758,9 @@ TEST(Element, Set)
   elem->AddValue("string", "val", false, "val description");
 
   ASSERT_TRUE(elem->Set<std::string>("hello"));
+
+  elem.AddValue("int", "0", true, "value");
+  ASSERT_FALSE(elem.Set<std::string>(""));
 }
 
 /////////////////////////////////////////////////
