@@ -220,7 +220,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     _errors.push_back(unsupportedError);
     return;
   }
-  else if (_parent->GetName() != "model")
+  else if (_parent->GetName() != "model" && _parent->GetName() != "world")
   {
     Error unsupportedError(
         ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
@@ -281,11 +281,18 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   // //include/pose/@relative_to.
   std::string modelPoseRelativeTo = model->PoseRelativeTo();
 
-  // If empty, use "__model__", since leaving it empty would make it
+  // If empty, use "__model__" or "world", since leaving it empty would make it
   // relative_to the canonical link frame specified in //frame/@attached_to.
   if (modelPoseRelativeTo.empty())
   {
-    modelPoseRelativeTo = "__model__";
+    if (_parent->GetName() == "model")
+    {
+      modelPoseRelativeTo = "__model__";
+    }
+    else
+    {
+      modelPoseRelativeTo = "world";
+    }
   }
 
   proxyModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
@@ -363,6 +370,17 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
         (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
         (elem->GetName().find(':') != std::string::npos))
     {
+      if (_parent->GetName() == "world" &&
+          (elem->GetName() == "link" || elem->GetName() == "gripper"))
+      {
+        Error unsupportedError(
+            ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+            "Merge-include for <world> does not support element of type " +
+                elem->GetName() + " in included model");
+        _sourceLoc.SetSourceLocationOnError(unsupportedError);
+        _errors.push_back(unsupportedError);
+        continue;
+      }
       _parent->InsertElement(elem, true);
     }
   }
@@ -760,7 +778,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     URDF2SDF u2g;
     auto doc = makeSdfDoc();
     u2g.InitModelFile(filename, _config, &doc);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
+    if (sdf::readDoc(&doc, _sdf, filename, _convert, _config, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
       return true;

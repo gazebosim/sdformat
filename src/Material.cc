@@ -109,8 +109,9 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
   // Load the script information
   if (_sdf->HasElement("script"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("script");
-    std::pair<std::string, bool> uriPair = elem->Get<std::string>("uri", "");
+    sdf::ElementPtr elem = _sdf->GetElement("script", errors);
+    std::pair<std::string, bool> uriPair =
+        elem->Get<std::string>(errors, "uri", "");
     if (uriPair.first == "__default__")
       uriPair.first = "";
 
@@ -123,7 +124,8 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
 
     this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors);
 
-    std::pair<std::string, bool> namePair = elem->Get<std::string>("name", "");
+    std::pair<std::string, bool> namePair =
+        elem->Get<std::string>(errors, "name", "");
     if (namePair.first == "__default__")
       namePair.first = "";
 
@@ -139,10 +141,10 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
   // Load the shader information
   if (_sdf->HasElement("shader"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("shader");
+    sdf::ElementPtr elem = _sdf->GetElement("shader", errors);
 
     std::pair<std::string, bool> typePair =
-      elem->Get<std::string>("type", "pixel");
+      elem->Get<std::string>(errors, "type", "pixel");
     if (typePair.first == "pixel")
       this->dataPtr->shader = ShaderType::PIXEL;
     else if (typePair.first == "vertex")
@@ -162,7 +164,8 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
           "not supported"});
     }
 
-    this->dataPtr->normalMap = elem->Get<std::string>("normal_map", "").first;
+    this->dataPtr->normalMap =
+        elem->Get<std::string>(errors, "normal_map", "").first;
     if (this->dataPtr->normalMap == "__default__")
       this->dataPtr->normalMap = "";
 
@@ -176,35 +179,36 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
     }
   }
 
-  this->dataPtr->renderOrder = _sdf->Get<float>("render_order",
+  this->dataPtr->renderOrder = _sdf->Get<float>(errors, "render_order",
       this->dataPtr->renderOrder).first;
 
-  this->dataPtr->ambient = _sdf->Get<gz::math::Color>("ambient",
+  this->dataPtr->ambient = _sdf->Get<gz::math::Color>(errors, "ambient",
       this->dataPtr->ambient).first;
 
-  this->dataPtr->diffuse = _sdf->Get<gz::math::Color>("diffuse",
+  this->dataPtr->diffuse = _sdf->Get<gz::math::Color>(errors, "diffuse",
       this->dataPtr->diffuse).first;
 
-  this->dataPtr->specular = _sdf->Get<gz::math::Color>("specular",
+  this->dataPtr->specular = _sdf->Get<gz::math::Color>(errors, "specular",
       this->dataPtr->specular).first;
 
-  this->dataPtr->shininess = _sdf->Get<double>("shininess",
+  this->dataPtr->shininess = _sdf->Get<double>(errors, "shininess",
       this->dataPtr->shininess).first;
 
-  this->dataPtr->emissive = _sdf->Get<gz::math::Color>("emissive",
+  this->dataPtr->emissive = _sdf->Get<gz::math::Color>(errors, "emissive",
       this->dataPtr->emissive).first;
 
-  this->dataPtr->lighting = _sdf->Get<bool>("lighting",
+  this->dataPtr->lighting = _sdf->Get<bool>(errors, "lighting",
       this->dataPtr->lighting).first;
 
-  this->dataPtr->doubleSided = _sdf->Get<bool>("double_sided",
+  this->dataPtr->doubleSided = _sdf->Get<bool>(errors, "double_sided",
       this->dataPtr->doubleSided).first;
 
   // load pbr param
   if (_sdf->HasElement("pbr"))
   {
     this->dataPtr->pbr.emplace();
-    Errors pbrErrors = this->dataPtr->pbr->Load(_sdf->GetElement("pbr"));
+    Errors pbrErrors = this->dataPtr->pbr->Load(
+        _sdf->GetElement("pbr", errors));
     errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
   }
 
@@ -388,101 +392,128 @@ void Material::SetFilePath(const std::string &_filePath)
 /////////////////////////////////////////////////
 sdf::ElementPtr Material::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Material::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("material.sdf", elem);
 
-  elem->GetElement("ambient")->Set(this->Ambient());
-  elem->GetElement("diffuse")->Set(this->Diffuse());
-  elem->GetElement("specular")->Set(this->Specular());
-  elem->GetElement("emissive")->Set(this->Emissive());
-  elem->GetElement("render_order")->Set(this->RenderOrder());
-  elem->GetElement("lighting")->Set(this->Lighting());
-  elem->GetElement("double_sided")->Set(this->DoubleSided());
+  elem->GetElement("ambient", _errors)->Set(_errors, this->Ambient());
+  elem->GetElement("diffuse", _errors)->Set(_errors, this->Diffuse());
+  elem->GetElement("specular", _errors)->Set(_errors, this->Specular());
+  elem->GetElement("emissive", _errors)->Set(_errors, this->Emissive());
+  elem->GetElement("render_order", _errors)->Set(_errors, this->RenderOrder());
+  elem->GetElement("lighting", _errors)->Set(_errors, this->Lighting());
+  elem->GetElement("double_sided", _errors)->Set(_errors, this->DoubleSided());
 
   // Script, if set
   if (!this->ScriptName().empty() && !this->ScriptUri().empty())
   {
-    sdf::ElementPtr scriptElem = elem->GetElement("script");
-    scriptElem->GetElement("uri")->Set(this->ScriptUri());
-    scriptElem->GetElement("name")->Set(this->ScriptName());
+    sdf::ElementPtr scriptElem = elem->GetElement("script", _errors);
+    scriptElem->GetElement("uri", _errors)->Set(_errors, this->ScriptUri());
+    scriptElem->GetElement("name", _errors)->Set(_errors, this->ScriptName());
   }
 
   // Shader properties
-  sdf::ElementPtr shaderElem = elem->GetElement("shader");
+  sdf::ElementPtr shaderElem = elem->GetElement("shader", _errors);
   switch (this->dataPtr->shader)
   {
     default:
     case ShaderType::PIXEL:
-      shaderElem->GetAttribute("type")->Set("pixel");
+      shaderElem->GetAttribute("type")->Set("pixel", _errors);
       break;
     case ShaderType::VERTEX:
-      shaderElem->GetAttribute("type")->Set("vertex");
+      shaderElem->GetAttribute("type")->Set("vertex", _errors);
       break;
     case ShaderType::NORMAL_MAP_OBJECTSPACE:
-      shaderElem->GetAttribute("type")->Set("normal_map_object_space");
+      shaderElem->GetAttribute("type")->Set(
+          "normal_map_object_space", _errors);
       break;
     case ShaderType::NORMAL_MAP_TANGENTSPACE:
-      shaderElem->GetAttribute("type")->Set("normal_map_tangent_space");
+      shaderElem->GetAttribute("type")->Set(
+          "normal_map_tangent_space", _errors);
       break;
   }
   if (!this->NormalMap().empty())
-    shaderElem->GetElement("normal_map")->Set(this->NormalMap());
+    shaderElem->GetElement("normal_map", _errors)->Set(
+        _errors, this->NormalMap());
 
   // PBR material
   if (this->dataPtr->pbr)
   {
     const PbrWorkflow *workflow = this->dataPtr->pbr->Workflow(
         PbrWorkflowType::METAL);
-    sdf::ElementPtr pbrElem = elem->GetElement("pbr");
+    sdf::ElementPtr pbrElem = elem->GetElement("pbr", _errors);
     if (workflow && workflow->Type() == PbrWorkflowType::METAL)
     {
-      sdf::ElementPtr metalElem = pbrElem->GetElement("metal");
-      metalElem->GetElement("albedo_map")->Set(workflow->AlbedoMap());
-      metalElem->GetElement("roughness_map")->Set(workflow->RoughnessMap());
-      metalElem->GetElement("roughness")->Set(workflow->Roughness());
-      metalElem->GetElement("metalness_map")->Set(workflow->MetalnessMap());
-      metalElem->GetElement("metalness")->Set(workflow->Metalness());
-      metalElem->GetElement("ambient_occlusion_map")->Set(
-          workflow->AmbientOcclusionMap());
-      sdf::ElementPtr normalElem = metalElem->GetElement("normal_map");
+      sdf::ElementPtr metalElem = pbrElem->GetElement("metal", _errors);
+      metalElem->GetElement("albedo_map", _errors)->Set(
+          _errors, workflow->AlbedoMap());
+      metalElem->GetElement("roughness_map", _errors)->Set(
+          _errors, workflow->RoughnessMap());
+      metalElem->GetElement("roughness", _errors)->Set(
+          _errors, workflow->Roughness());
+      metalElem->GetElement("metalness_map", _errors)->Set(
+          _errors, workflow->MetalnessMap());
+      metalElem->GetElement("metalness", _errors)->Set(
+          _errors, workflow->Metalness());
+      metalElem->GetElement("ambient_occlusion_map", _errors)->Set(
+          _errors, workflow->AmbientOcclusionMap());
+      sdf::ElementPtr normalElem = metalElem->GetElement(
+          "normal_map", _errors);
       if (workflow->NormalMapType() == NormalMapSpace::TANGENT)
-        normalElem->GetAttribute("type")->Set("tangent");
+        normalElem->GetAttribute("type")->Set("tangent", _errors);
       else
-        normalElem->GetAttribute("type")->Set("object");
-      normalElem->Set(workflow->NormalMap());
+        normalElem->GetAttribute("type")->Set("object", _errors);
+      normalElem->Set(_errors, workflow->NormalMap());
 
-      metalElem->GetElement("emissive_map")->Set(workflow->EmissiveMap());
+      metalElem->GetElement("emissive_map", _errors)->Set(
+          _errors, workflow->EmissiveMap());
 
-      sdf::ElementPtr lightElem = metalElem->GetElement("light_map");
-      lightElem->GetAttribute("uv_set")->Set(workflow->LightMapTexCoordSet());
-      lightElem->Set(workflow->LightMap());
+      sdf::ElementPtr lightElem = metalElem->GetElement("light_map", _errors);
+      lightElem->GetAttribute("uv_set")->Set(
+          workflow->LightMapTexCoordSet(), _errors);
+      lightElem->Set(_errors, workflow->LightMap());
     }
 
     workflow = this->dataPtr->pbr->Workflow(PbrWorkflowType::SPECULAR);
     if (workflow && workflow->Type() == PbrWorkflowType::SPECULAR)
     {
-      sdf::ElementPtr specularElem = pbrElem->GetElement("specular");
-      specularElem->GetElement("albedo_map")->Set(workflow->AlbedoMap());
-      specularElem->GetElement("specular_map")->Set(workflow->SpecularMap());
-      specularElem->GetElement("environment_map")->Set(
-          workflow->EnvironmentMap());
-      specularElem->GetElement("ambient_occlusion_map")->Set(
-          workflow->AmbientOcclusionMap());
-      specularElem->GetElement("emissive_map")->Set(workflow->EmissiveMap());
-      specularElem->GetElement("glossiness_map")->Set(
-          workflow->GlossinessMap());
-      specularElem->GetElement("glossiness")->Set(workflow->Glossiness());
+      sdf::ElementPtr specularElem = pbrElem->GetElement("specular", _errors);
+      specularElem->GetElement("albedo_map", _errors)->Set(
+          _errors, workflow->AlbedoMap());
+      specularElem->GetElement("specular_map", _errors)->Set(
+          _errors, workflow->SpecularMap());
+      specularElem->GetElement("environment_map", _errors)->Set(
+          _errors, workflow->EnvironmentMap());
+      specularElem->GetElement("ambient_occlusion_map", _errors)->Set(
+          _errors, workflow->AmbientOcclusionMap());
+      specularElem->GetElement("emissive_map", _errors)->Set(
+          _errors, workflow->EmissiveMap());
+      specularElem->GetElement("glossiness_map", _errors)->Set(
+          _errors, workflow->GlossinessMap());
+      specularElem->GetElement("glossiness", _errors)->Set(
+          _errors, workflow->Glossiness());
 
-      sdf::ElementPtr normalElem = specularElem->GetElement("normal_map");
+      sdf::ElementPtr normalElem = specularElem->GetElement(
+          "normal_map", _errors);
       if (workflow->NormalMapType() == NormalMapSpace::TANGENT)
-        normalElem->GetAttribute("type")->Set("tangent");
+        normalElem->GetAttribute("type")->Set("tangent", _errors);
       else
-        normalElem->GetAttribute("type")->Set("object");
-      normalElem->Set(workflow->NormalMap());
+        normalElem->GetAttribute("type")->Set("object", _errors);
+      normalElem->Set(_errors, workflow->NormalMap());
 
-      sdf::ElementPtr lightElem = specularElem->GetElement("light_map");
-      lightElem->GetAttribute("uv_set")->Set(workflow->LightMapTexCoordSet());
-      lightElem->Set(workflow->LightMap());
+      sdf::ElementPtr lightElem = specularElem->GetElement(
+          "light_map", _errors);
+      lightElem->GetAttribute("uv_set")->Set(
+          workflow->LightMapTexCoordSet(), _errors);
+      lightElem->Set(_errors, workflow->LightMap());
     }
   }
 

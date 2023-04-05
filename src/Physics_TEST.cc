@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Physics.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMPhysics, DefaultConstruction)
@@ -130,4 +131,49 @@ TEST(DOMPhysics, ToElement)
   EXPECT_DOUBLE_EQ(physics.MaxStepSize(), physics2.MaxStepSize());
   EXPECT_DOUBLE_EQ(physics.RealTimeFactor(), physics2.RealTimeFactor());
   EXPECT_EQ(physics.MaxContacts(), physics2.MaxContacts());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPhysics, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Physics physics;
+  sdf::Errors errors;
+  physics.SetName("my-bullet-engine");
+  physics.SetDefault(true);
+  physics.SetEngineType("bullet");
+  physics.SetMaxStepSize(0.1);
+  physics.SetRealTimeFactor(20.4);
+  physics.SetMaxContacts(42);
+
+  sdf::ElementPtr elem = physics.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Physics physics2;
+  errors = physics2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  // verify values after loading the element back
+  EXPECT_EQ(physics.Name(), physics2.Name());
+  EXPECT_EQ(physics.IsDefault(), physics2.IsDefault());
+  EXPECT_EQ(physics.EngineType(), physics2.EngineType());
+  EXPECT_DOUBLE_EQ(physics.MaxStepSize(), physics2.MaxStepSize());
+  EXPECT_DOUBLE_EQ(physics.RealTimeFactor(), physics2.RealTimeFactor());
+  EXPECT_EQ(physics.MaxContacts(), physics2.MaxContacts());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

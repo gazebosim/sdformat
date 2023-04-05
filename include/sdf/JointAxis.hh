@@ -328,6 +328,16 @@ namespace sdf
     /// \return SDF element pointer with updated joint values.
     public: sdf::ElementPtr ToElement(unsigned int _index = 0u) const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// joint axis.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _index Index of this joint axis
+    /// \return SDF element pointer with updated joint values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors,
+                                      unsigned int _index = 0u) const;
+
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.

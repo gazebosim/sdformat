@@ -18,6 +18,7 @@
 #include <string>
 #include "sdf/AirPressure.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -60,13 +61,13 @@ Errors AirPressure::Load(ElementPtr _sdf)
   // Load the noise values.
   if (_sdf->HasElement("pressure"))
   {
-    sdf::ElementPtr elem = _sdf->GetElement("pressure");
+    sdf::ElementPtr elem = _sdf->GetElement("pressure", errors);
     if (elem->HasElement("noise"))
-      this->dataPtr->noise.Load(elem->GetElement("noise"));
+      this->dataPtr->noise.Load(elem->GetElement("noise", errors));
   }
 
-  this->dataPtr->referenceAltitude = _sdf->Get<double>("reference_altitude",
-      this->dataPtr->referenceAltitude).first;
+  this->dataPtr->referenceAltitude = _sdf->Get<double>(
+      errors, "reference_altitude", this->dataPtr->referenceAltitude).first;
 
   return errors;
 }
@@ -118,14 +119,23 @@ void AirPressure::SetPressureNoise(const Noise &_noise)
 /////////////////////////////////////////////////
 sdf::ElementPtr AirPressure::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr AirPressure::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("air_pressure.sdf", elem);
 
-  elem->GetElement("reference_altitude")->Set<double>(
-      this->ReferenceAltitude());
-  sdf::ElementPtr pressureElem = elem->GetElement("pressure");
-  sdf::ElementPtr noiseElem = pressureElem->GetElement("noise");
-  noiseElem->Copy(this->dataPtr->noise.ToElement());
+  elem->GetElement("reference_altitude", _errors)->Set<double>(
+      _errors, this->ReferenceAltitude());
+  sdf::ElementPtr pressureElem = elem->GetElement("pressure", _errors);
+  sdf::ElementPtr noiseElem = pressureElem->GetElement("noise", _errors);
+  noiseElem->Copy(this->dataPtr->noise.ToElement(_errors), _errors);
 
   return elem;
 }
