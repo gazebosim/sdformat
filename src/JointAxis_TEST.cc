@@ -345,9 +345,13 @@ TEST(DOMJointAxis, ToElement)
   axis.SetStiffness(1e2);
   axis.SetDissipation(1.5);
 
+  sdf::MimicJointContainer mimic("test_joint", 5.0, 1.0, 2.0);
+  axis.SetMimicJoint(mimic);
+
   sdf::ElementPtr elem = axis.ToElement(errors);
   ASSERT_TRUE(errors.empty());
 
+  // Check //axis/xyz
   sdf::ElementPtr xyzElem = elem->GetElement("xyz", errors);
   ASSERT_TRUE(errors.empty());
   gz::math::Vector3d xyz = elem->Get<gz::math::Vector3d>(
@@ -359,6 +363,7 @@ TEST(DOMJointAxis, ToElement)
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("test", expressedIn);
 
+  // Check //axis/dynamics
   sdf::ElementPtr dynElem = elem->GetElement("dynamics", errors);
   ASSERT_TRUE(errors.empty());
 
@@ -384,6 +389,7 @@ TEST(DOMJointAxis, ToElement)
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(-1.2, springStiffness);
 
+  // Check //axis/limit
   sdf::ElementPtr limitElem = elem->GetElement("limit", errors);
   double lower;
   lower = limitElem->Get<double>(errors, "lower", lower).first;
@@ -415,6 +421,32 @@ TEST(DOMJointAxis, ToElement)
       errors, "dissipation", dissipation).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1.5, dissipation);
+
+  // Check //axis/mimic
+  sdf::ElementPtr mimicElem = elem->GetElement("mimic", errors);
+  std::string mimicJointName;
+  mimicJointName = mimicElem->Get<std::string>(
+      errors, "joint", mimicJointName).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ("test_joint", mimicJointName);
+
+  double multiplier;
+  multiplier = mimicElem->Get<double>(
+      errors, "multiplier", multiplier).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(5.0, multiplier);
+
+  double offset;
+  offset = mimicElem->Get<double>(
+      errors, "offset", offset).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(1.0, offset);
+
+  double reference;
+  reference = mimicElem->Get<double>(
+      errors, "reference", reference).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(2.0, reference);
 
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
