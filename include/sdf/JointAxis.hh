@@ -32,11 +32,12 @@ namespace sdf
 {
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
-
+  //
 
   // Forward declare private data class.
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
+
   /// \brief Helper class to hold contents of the mimic joint tag.
   /// The parent and child joint positions are related with:
   /// multiplier * (parentJoint - reference) + offset = childJoint.
