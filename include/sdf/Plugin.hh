@@ -189,7 +189,7 @@ namespace sdf
     }
 
     /// \brief Private data pointer.
-    std::unique_ptr<sdf::PluginPrivate> dataPtr;
+    private: std::unique_ptr<sdf::PluginPrivate> dataPtr;
   };
 
   /// \brief A vector of Plugin.
