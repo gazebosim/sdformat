@@ -15,13 +15,21 @@ jobs:
       uses: Homebrew/actions/setup-homebrew@master
     - run: brew config
 
-    # Use --overwrite as a workaround for https://github.com/actions/setup-python/issues/577
+    # Workaround for https://github.com/actions/setup-python/issues/577
+    - name: Clean up python binaries
+      run: |
+        rm /usr/local/bin/2to3;
+        rm /usr/local/bin/2to3-*;
+        rm /usr/local/bin/idle3;
+        rm /usr/local/bin/pydoc3;
+        rm /usr/local/bin/python3;
+        rm /usr/local/bin/python3-config;
     - name: Install base dependencies
       env:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       run: |
         brew tap osrf/simulation;
-        brew install --only-dependencies --overwrite ${PACKAGE};
+        brew install --only-dependencies ${PACKAGE};
 
     - run: mkdir build
     - name: cmake
