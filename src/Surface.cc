@@ -400,8 +400,13 @@ sdf::ElementPtr Surface::ToElement() const
       this->dataPtr->contact.CollideBitmask());
 
   sdf::ElementPtr frictionElem = elem->GetElement("friction");
-  frictionElem->GetElement("ode")->GetElement("mu")->Set(
-      this->dataPtr->friction.ODE()->Mu());
+
+  sdf::ElementPtr ode = frictionElem->GetElement("ode");
+  ode->GetElement("mu")->Set(this->dataPtr->friction.ODE()->Mu());
+  ode->GetElement("mu2")->Set(this->dataPtr->friction.ODE()->Mu2());
+  ode->GetElement("slip1")->Set(this->dataPtr->friction.ODE()->Slip1());
+  ode->GetElement("slip2")->Set(this->dataPtr->friction.ODE()->Slip2());
+  ode->GetElement("fdir1")->Set(this->dataPtr->friction.ODE()->Fdir1());
 
   return elem;
 }
