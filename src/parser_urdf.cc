@@ -3058,9 +3058,9 @@ void CreateJoint(tinyxml2::XMLElement *_root,
             *highstop = tmp;
           }
           AddKeyValue(jointAxisLimit, "lower",
-                      Values2str(1, &_link->parent_joint->limits->lower));
+                      Values2str(1, *lowstop));
           AddKeyValue(jointAxisLimit, "upper",
-                      Values2str(1, &_link->parent_joint->limits->upper));
+                      Values2str(1, *highstop));
         }
         AddKeyValue(jointAxisLimit, "effort",
                     Values2str(1, &_link->parent_joint->limits->effort));
