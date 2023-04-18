@@ -34,7 +34,9 @@
 #include <urdf_model/link.h>
 #include <urdf_parser/urdf_parser.h>
 
+#include "sdf/Error.hh"
 #include "sdf/sdf.hh"
+#include "sdf/Types.hh"
 
 #include "XmlUtils.hh"
 #include "SDFExtension.hh"
@@ -64,7 +66,8 @@ bool g_initialRobotPoseValid = false;
 std::set<std::string> g_fixedJointsTransformedInRevoluteJoints;
 std::set<std::string> g_fixedJointsTransformedInFixedJoints;
 const int g_outputDecimalPrecision = 16;
-
+const char kSdformatUrdfExtensionUrl[] =
+    "http://sdformat.org/tutorials?tut=sdformat_urdf_extensions";
 
 /// \brief parser xml string into urdf::Vector3
 /// \param[in] _key XML key where vector3 value might be
@@ -2666,48 +2669,126 @@ void URDF2SDF::ListSDFExtensions(const std::string &_reference)
 void CreateSDF(tinyxml2::XMLElement *_root,
                urdf::LinkConstSharedPtr _link)
 {
-  // must have an <inertial> block and cannot have zero mass.
-  //  allow det(I) == zero, in the case of point mass geoms.
+  // Links without an <inertial> block will be considered to have zero mass.
+  const bool linkHasZeroMass = !_link->inertial || _link->inertial->mass <= 0;
+
+  // link must have an <inertial> block and cannot have zero mass, if its parent
+  // joint and none of its child joints are reduced.
+  // allow det(I) == zero, in the case of point mass geoms.
   // @todo:  keyword "world" should be a constant defined somewhere else
-  if (_link->name != "world" &&
-      ((!_link->inertial) || gz::math::equal(_link->inertial->mass, 0.0)))
+  if (_link->name != "world" && linkHasZeroMass)
   {
-    if (!_link->child_links.empty())
+    Errors nonJointReductionErrors;
+    std::stringstream errorStream;
+    errorStream << "urdf2sdf: link[" << _link->name << "] has ";
+    if (!_link->inertial)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children links ignored.\n";
+      errorStream << "no <inertial> block defined. ";
     }
-
-    if (!_link->child_joints.empty())
+    else
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, ["
-             << static_cast<int>(_link->child_links.size())
-             << "] children joints ignored.\n";
+      errorStream << "a mass value of less than or equal to zero. ";
     }
+    errorStream << "Please ensure this link has a valid mass to prevent any "
+                << "missing links or joints in the resulting SDF model.";
+    nonJointReductionErrors.emplace_back(
+        ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+    errorStream.str(std::string());
 
-    if (_link->parent_joint)
+    // if the parent joint is reduced, which resolves the massless issue of this
+    // link, no warnings will be emitted
+    bool parentJointReduced = _link->parent_joint &&
+        FixedJointShouldBeReduced(_link->parent_joint) &&
+        g_reduceFixedJoints;
+
+    if (!parentJointReduced)
     {
-      sdfdbg << "urdf2sdf: link[" << _link->name
-             << "] has no inertia, "
-             << "parent joint [" << _link->parent_joint->name
-             << "] ignored.\n";
-    }
+      // check if joint lumping was turned off for the parent joint
+      if (_link->parent_joint)
+      {
+        if (_link->parent_joint->type == urdf::Joint::FIXED)
+        {
+          errorStream << "urdf2sdf: allowing joint lumping by removing any "
+                      << "<disableFixedJointLumping> or <preserveFixedJoint> "
+                      << "gazebo tag on fixed parent joint["
+                      << _link->parent_joint->name
+                      << "], as well as ensuring that "
+                      << "ParserConfig::URDFPreserveFixedJoint is false, could "
+                      << "help resolve this warning. See "
+                      << std::string(kSdformatUrdfExtensionUrl)
+                      << " for more information about this behavior.";
+          nonJointReductionErrors.emplace_back(
+              ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+          errorStream.str(std::string());
+        }
 
-    sdfdbg << "urdf2sdf: link[" << _link->name
-           << "] has no inertia, not modeled in sdf\n";
-    return;
+        errorStream << "urdf2sdf: parent joint["
+                    << _link->parent_joint->name
+                    << "] ignored.";
+        nonJointReductionErrors.emplace_back(
+            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+        errorStream.str(std::string());
+      }
+
+      // check if joint lumping was turned off for child joints
+      if (!_link->child_joints.empty())
+      {
+        for (const auto &cj : _link->child_joints)
+        {
+          // Lumping child joints occur before CreateSDF, so if it does occur
+          // this link would already contain the lumped mass from the child
+          // link. If a child joint is still fixed at this point, it means joint
+          // lumping has been disabled.
+          if (cj->type == urdf::Joint::FIXED)
+          {
+            errorStream << "urdf2sdf: allowing joint lumping by removing any "
+                        << "<disableFixedJointLumping> or <preserveFixedJoint> "
+                        << "gazebo tag on fixed child joint["
+                        << cj->name
+                        << "], as well as ensuring that "
+                        << "ParserConfig::URDFPreserveFixedJoint is false, "
+                        << "could help resolve this warning. See "
+                        << std::string(kSdformatUrdfExtensionUrl)
+                        << " for more information about this behavior.";
+            nonJointReductionErrors.emplace_back(
+                ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+            errorStream.str(std::string());
+          }
+        }
+
+        errorStream << "urdf2sdf: ["
+                    << static_cast<int>(_link->child_joints.size())
+                    << "] child joints ignored.";
+        nonJointReductionErrors.emplace_back(
+            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+        errorStream.str(std::string());
+        errorStream << "urdf2sdf: ["
+                    << static_cast<int>(_link->child_links.size())
+                    << "] child links ignored.";
+        nonJointReductionErrors.emplace_back(
+            ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+        errorStream.str(std::string());
+      }
+
+      // Emit all accumulated warnings and return
+      sdfwarn << nonJointReductionErrors;
+      errorStream << "urdf2sdf: link[" << _link->name
+                  << "] is not modeled in sdf.";
+      sdfwarn << Error(ErrorCode::LINK_INERTIA_INVALID, errorStream.str());
+      return;
+    }
   }
 
-  // create <body:...> block for non fixed joint attached bodies
+  // create <body:...> block for non fixed joint attached bodies that have mass
   if ((_link->getParent() && _link->getParent()->name == "world") ||
       !g_reduceFixedJoints ||
       (!_link->parent_joint ||
        !FixedJointShouldBeReduced(_link->parent_joint)))
   {
-    CreateLink(_root, _link, gz::math::Pose3d::Zero);
+    if (!linkHasZeroMass)
+    {
+      CreateLink(_root, _link, gz::math::Pose3d::Zero);
+    }
   }
 
   // recurse into children
