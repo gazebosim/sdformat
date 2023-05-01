@@ -254,8 +254,8 @@ namespace sdf
     /// \sa bool ParticleEmitterNameExists(const std::string &_name) const
     public: ParticleEmitter *ParticleEmitterByName(const std::string &_name);
 
-    /// \brief Get the number of particle projectors.
-    /// \return Number of particle projectors contained in this Link object.
+    /// \brief Get the number of projectors.
+    /// \return Number of projectors contained in this Link object.
     public: uint64_t ProjectorCount() const;
 
     /// \brief Get a projector based on an index.
@@ -408,13 +408,13 @@ namespace sdf
     /// \param[in] _emitter Particle emitter to add.
     /// \return True if successful, false if a particle emitter with the name
     /// already exists.
-    public: bool AddParticleEmitter(const ParticleEmitter &_sensor);
+    public: bool AddParticleEmitter(const ParticleEmitter &_emitter);
 
     /// \brief Add a projector to the link.
-    /// \param[in] _emitter Projector to add.
+    /// \param[in] _projector Projector to add.
     /// \return True if successful, false if a projector with the name
     /// already exists.
-    public: bool AddProjector(const Projector &_sensor);
+    public: bool AddProjector(const Projector &_projector);
 
     /// \brief Remove all collisions
     public: void ClearCollisions();

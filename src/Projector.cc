@@ -50,7 +50,7 @@ class sdf::Projector::Implementation
   /// \brief Texture used by the projector
   public: std::string texture;
 
-  /// \brief Pose of the emitter
+  /// \brief Pose of the projector
   public: gz::math::Pose3d pose = gz::math::Pose3d::Zero;
 
   /// \brief Frame of the pose.
@@ -62,7 +62,7 @@ class sdf::Projector::Implementation
   /// \brief Name of xml parent object.
   public: std::string xmlParentName = "";
 
-  /// \brief The path to the file where this emitter was defined.
+  /// \brief The path to the file where this projector was defined.
   public: std::string filePath = "";
 
   /// \brief Sensor plugins.

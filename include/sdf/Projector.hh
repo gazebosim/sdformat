@@ -125,8 +125,8 @@ namespace sdf
     public: void AddPlugin(const Plugin &_plugin);
 
     /// \brief Get the pose of the projector. This is the pose of the
-    /// emitter as specified in SDF
-    /// (<particle_emitter><pose> ... </pose></particle_emitter>).
+    /// projector as specified in SDF
+    /// (<projector><pose> ... </pose></emitter>).
     /// \return The pose of the projector.
     public: const gz::math::Pose3d &RawPose() const;
 
@@ -136,19 +136,19 @@ namespace sdf
     public: void SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
-    /// emitter's pose is expressed. An empty value indicates that the frame is
+    /// projector's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \return The name of the pose relative-to frame.
     public: const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
-    /// emitter's pose is expressed. An empty value indicates that the frame is
+    /// projector's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get SemanticPose object of this object to aid in resolving poses.
-    /// \return SemanticPose object for this emitter.
+    /// \return SemanticPose object for this projector.
     public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get a pointer to the SDF element that was used during load.
