@@ -415,14 +415,19 @@ sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
   contactElem->GetElement("collide_bitmask", _errors)->Set(
       _errors, this->dataPtr->contact.CollideBitmask());
 
-  sdf::ElementPtr frictionElem = elem->GetElement("friction");
+  sdf::ElementPtr frictionElem = elem->GetElement("friction", _errors);
 
-  sdf::ElementPtr ode = frictionElem->GetElement("ode");
-  ode->GetElement("mu")->Set(this->dataPtr->friction.ODE()->Mu());
-  ode->GetElement("mu2")->Set(this->dataPtr->friction.ODE()->Mu2());
-  ode->GetElement("slip1")->Set(this->dataPtr->friction.ODE()->Slip1());
-  ode->GetElement("slip2")->Set(this->dataPtr->friction.ODE()->Slip2());
-  ode->GetElement("fdir1")->Set(this->dataPtr->friction.ODE()->Fdir1());
+  sdf::ElementPtr ode = frictionElem->GetElement("ode", _errors);
+  ode->GetElement("mu", _errors)->Set(
+      _errors, this->dataPtr->friction.ODE()->Mu());
+  ode->GetElement("mu2", _errors)->Set(
+      _errors, this->dataPtr->friction.ODE()->Mu2());
+  ode->GetElement("slip1", _errors)->Set(
+      _errors, this->dataPtr->friction.ODE()->Slip1());
+  ode->GetElement("slip2", _errors)->Set(
+      _errors, this->dataPtr->friction.ODE()->Slip2());
+  ode->GetElement("fdir1", _errors)->Set(
+      _errors, this->dataPtr->friction.ODE()->Fdir1());
 
   return elem;
 }

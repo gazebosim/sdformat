@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Mesh.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMMesh, Construction)
@@ -200,4 +201,45 @@ TEST(DOMMesh, ToElement)
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
   EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
   EXPECT_EQ(mesh.CenterSubmesh(), mesh2.CenterSubmesh());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Mesh mesh;
+  sdf::Errors errors;
+
+  mesh.SetUri("mesh-uri");
+  mesh.SetScale(gz::math::Vector3d(1, 2, 3));
+  mesh.SetSubmesh("submesh");
+  mesh.SetCenterSubmesh(false);
+
+  sdf::ElementPtr elem = mesh.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Mesh mesh2;
+  errors = mesh2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(mesh.Uri(), mesh2.Uri());
+  EXPECT_EQ(mesh.Scale(), mesh2.Scale());
+  EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
+  EXPECT_EQ(mesh.CenterSubmesh(), mesh2.CenterSubmesh());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

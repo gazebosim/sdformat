@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Polyline.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMPolyline, Construction)
@@ -176,4 +177,47 @@ TEST(DOMPolyline, ToElement)
 
   EXPECT_EQ(*polyline.PointByIndex(0), *polyline2.PointByIndex(0));
   EXPECT_EQ(*polyline.PointByIndex(1), *polyline2.PointByIndex(1));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPolyline, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Polyline polyline;
+  sdf::Errors errors;
+  polyline.SetHeight(1.2);
+
+  gz::math::Vector2d p1{1, 2};
+  gz::math::Vector2d p2{3, 4};
+  EXPECT_TRUE(polyline.AddPoint(p1));
+  EXPECT_TRUE(polyline.AddPoint(p2));
+
+  auto elem = polyline.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Polyline polyline2;
+  errors = polyline2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(polyline.Height(), polyline2.Height());
+  ASSERT_EQ(polyline.PointCount(), polyline2.PointCount());
+
+  EXPECT_EQ(*polyline.PointByIndex(0), *polyline2.PointByIndex(0));
+  EXPECT_EQ(*polyline.PointByIndex(1), *polyline2.PointByIndex(1));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
