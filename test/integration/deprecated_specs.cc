@@ -61,11 +61,6 @@ TEST(DeprecatedElements, CanEmitErrors)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_DEPRECATED, errors[0].Code());
 }
 
-bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
 ////////////////////////////////////////////////////
 TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
 {
@@ -98,7 +93,8 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_PRED2(contains, buffer.str(), "SDF Element[testElem] is deprecated");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "SDF Element[testElem] is deprecated");
   }
   // Flip the order of calling SetDeprecatedElementsPolicy and
   // SetWarningsPolicy.
@@ -112,7 +108,8 @@ TEST(DeprecatedElements, CanEmitWarningWithErrorEnforcmentPolicy)
     EXPECT_TRUE(sdf::readString(
           "<sdf version='1.8'><testElem/></sdf>", config, sdf, errors));
     EXPECT_TRUE(errors.empty());
-    EXPECT_PRED2(contains, buffer.str(), "SDF Element[testElem] is deprecated");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "SDF Element[testElem] is deprecated");
   }
   // Test ResetDeprecatedElementsPolicy
   {

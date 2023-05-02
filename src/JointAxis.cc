@@ -99,8 +99,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
 
   this->dataPtr->sdf = _sdf;
 
-  // Read the xyz values.
-  if (_sdf->HasElement("xyz"))
+  // Read the xyz values. The xyz element is required, so it will always be
+  // present, populated from default values if necessary.
   {
     using gz::math::Vector3d;
     auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz",
@@ -112,11 +112,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
       this->dataPtr->xyzExpressedIn = e->Get<std::string>(
           errors, "expressed_in");
     }
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "The xyz element in joint axis is required"});
   }
 
   // Load dynamic values, if present
@@ -134,8 +129,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
         "spring_stiffness", this->dataPtr->springStiffness).first;
   }
 
-  // Load limit values
-  if (_sdf->HasElement("limit"))
+  // Load limit values. The limit element is required, so it will always be
+  // present, populated from default values if necessary.
   {
     sdf::ElementPtr limitElement = _sdf->GetElement("limit", errors);
 
@@ -151,11 +146,6 @@ Errors JointAxis::Load(ElementPtr _sdf)
         this->dataPtr->stiffness).first;
     this->dataPtr->dissipation = limitElement->Get<double>(errors,
         "dissipation", this->dataPtr->dissipation).first;
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "A limit element is a required child of a joint axis"});
   }
 
   return errors;
