@@ -19,6 +19,7 @@
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
 #include "sdf/Surface.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)
@@ -207,4 +208,63 @@ TEST(DOMCollision, ToElement)
   ASSERT_NE(nullptr, surface2->Friction());
   ASSERT_NE(nullptr, surface2->Friction()->ODE());
   EXPECT_DOUBLE_EQ(1.23, surface2->Friction()->ODE()->Mu());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Collision collision;
+  sdf::Errors errors;
+
+  collision.SetName("my-collision");
+
+  sdf::Geometry geom;
+  collision.SetGeom(geom);
+  collision.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+
+  sdf::Surface surface;
+  sdf::Contact contact;
+  contact.SetCollideBitmask(123u);
+  surface.SetContact(contact);
+  sdf::Friction friction;
+  sdf::ODE ode;
+  ode.SetMu(1.23);
+  friction.SetODE(ode);
+  surface.SetFriction(friction);
+  collision.SetSurface(surface);
+
+  sdf::ElementPtr elem = collision.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Collision collision2;
+  errors = collision2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+  const sdf::Surface *surface2 = collision2.Surface();
+
+  EXPECT_EQ(collision.Name(), collision2.Name());
+  EXPECT_EQ(collision.RawPose(), collision2.RawPose());
+  EXPECT_NE(nullptr, collision2.Geom());
+  ASSERT_NE(nullptr, surface2);
+  ASSERT_NE(nullptr, surface2->Contact());
+  EXPECT_EQ(123u, surface2->Contact()->CollideBitmask());
+  ASSERT_NE(nullptr, surface2->Friction());
+  ASSERT_NE(nullptr, surface2->Friction()->ODE());
+  EXPECT_DOUBLE_EQ(1.23, surface2->Friction()->ODE()->Mu());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

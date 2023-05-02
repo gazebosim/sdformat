@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Sphere.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMSphere, Construction)
@@ -148,4 +149,39 @@ TEST(DOMSphere, ToElement)
   sphere2.Load(elem);
 
   EXPECT_DOUBLE_EQ(sphere.Radius(), sphere2.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Sphere sphere;
+  sdf::Errors errors;
+
+  sphere.SetRadius(1.2);
+
+  sdf::ElementPtr elem = sphere.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Sphere sphere2;
+  errors = sphere2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(sphere.Radius(), sphere2.Radius());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
