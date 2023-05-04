@@ -32,7 +32,7 @@
 using namespace sdf;
 
 /////////////////////////////////////////////////
-class sdf::MimicJointContainer::Implementation
+class sdf::MimicConstraint::Implementation
 {
   /// \brief The name of the joint to be mimicked, i.e. the parent joint.
   public: std::string joint;
@@ -105,62 +105,62 @@ class sdf::JointAxis::Implementation
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 
   /// \brief Joint to be mimicked.
-  public: std::optional<MimicJointContainer> mimic = std::nullopt;
+  public: std::optional<MimicConstraint> mimic = std::nullopt;
 };
 
 /////////////////////////////////////////////////
-void MimicJointContainer::SetJoint(const std::string &_joint)
+void MimicConstraint::SetJoint(const std::string &_joint)
 {
   this->dataPtr->joint = _joint;
 }
 
 /////////////////////////////////////////////////
-const std::string &MimicJointContainer::Joint() const
+const std::string &MimicConstraint::Joint() const
 {
   return this->dataPtr->joint;
 }
 
 /////////////////////////////////////////////////
-void MimicJointContainer::SetMultiplier(double _multiplier)
+void MimicConstraint::SetMultiplier(double _multiplier)
 {
   this->dataPtr->multiplier = _multiplier;
 }
 
 /////////////////////////////////////////////////
-double MimicJointContainer::Multiplier() const
+double MimicConstraint::Multiplier() const
 {
   return this->dataPtr->multiplier;
 }
 
 /////////////////////////////////////////////////
-void MimicJointContainer::SetOffset(double _offset)
+void MimicConstraint::SetOffset(double _offset)
 {
   this->dataPtr->offset = _offset;
 }
 
 /////////////////////////////////////////////////
-double MimicJointContainer::Offset() const
+double MimicConstraint::Offset() const
 {
   return this->dataPtr->offset;
 }
 
 /////////////////////////////////////////////////
-void MimicJointContainer::SetReference(double _reference)
+void MimicConstraint::SetReference(double _reference)
 {
   this->dataPtr->reference = _reference;
 }
 
 /////////////////////////////////////////////////
-double MimicJointContainer::Reference() const
+double MimicConstraint::Reference() const
 {
   return this->dataPtr->reference;
 }
 
 /////////////////////////////////////////////////
-MimicJointContainer::MimicJointContainer(const std::string &_joint,
-                                         double _multiplier,
-                                         double _offset,
-                                         double _reference)
+MimicConstraint::MimicConstraint(const std::string &_joint,
+                                 double _multiplier,
+                                 double _offset,
+                                 double _reference)
   : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->SetJoint(_joint);
@@ -235,18 +235,17 @@ Errors JointAxis::Load(ElementPtr _sdf)
   auto mimicElement = _sdf->FindElement("mimic");
   if (mimicElement)
   {
-    auto newMimicJoint = MimicJointContainer();
-    newMimicJoint.SetJoint(mimicElement->Get<std::string>(
+    auto newMimic = MimicConstraint();
+    newMimic.SetJoint(mimicElement->Get<std::string>(
         errors, "joint", "").first);
-    newMimicJoint.SetMultiplier(mimicElement->Get<double>(
+    newMimic.SetMultiplier(mimicElement->Get<double>(
         errors, "multiplier", 0).first);
-    newMimicJoint.SetOffset(mimicElement->Get<double>(
+    newMimic.SetOffset(mimicElement->Get<double>(
         errors, "offset", 0).first);
-    newMimicJoint.SetReference(mimicElement->Get<double>(
+    newMimic.SetReference(mimicElement->Get<double>(
         errors, "reference", 0).first);
 
-    this->dataPtr->mimic = std::make_optional<MimicJointContainer>(
-        newMimicJoint);
+    this->dataPtr->mimic = std::make_optional<MimicConstraint>(newMimic);
   }
 
   return errors;
@@ -272,14 +271,14 @@ sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
 }
 
 /////////////////////////////////////////////////
-void JointAxis::SetMimicJoint(const MimicJointContainer
-    &_mimicJoint)
+void JointAxis::SetMimic(const MimicConstraint
+    &_mimic)
 {
-  this->dataPtr->mimic = std::make_optional(_mimicJoint);
+  this->dataPtr->mimic = std::make_optional(_mimic);
 }
 
 /////////////////////////////////////////////////
-std::optional<MimicJointContainer> JointAxis::MimicJoint() const
+std::optional<MimicConstraint> JointAxis::Mimic() const
 {
   return this->dataPtr->mimic;
 }

@@ -41,14 +41,14 @@ namespace sdf
   /// \brief Helper class to hold contents of the mimic joint tag.
   /// The parent and child joint positions are related with:
   /// multiplier * (parentJoint - reference) + offset = childJoint.
-  class SDFORMAT_VISIBLE MimicJointContainer
+  class SDFORMAT_VISIBLE MimicConstraint
   {
     /// \brief Constructor with arguments.
     /// \param[in] _joint Joint name of the parent joint.
     /// \param[in] _multiplier Multiplier for the parent joint pose.
     /// \param[in] _offset Offset for the parent joint pose.
     /// \param[in] _reference Reference for the parent joint pose.
-    public: MimicJointContainer(
+    public: MimicConstraint(
               const std::string &_joint = "",
               double _multiplier = 0.0,
               double _offset = 0.0,
@@ -123,16 +123,16 @@ namespace sdf
                 const gz::math::Vector3d &_xyz);
 
     /// \brief Set the joint to be mimicked.
-    /// \param[in] _mimicJoint The joint name, multiplier, and offset to be used
+    /// \param[in] _mimic The joint name, multiplier, and offset to be used
     /// for mimicking.
-    /// \sa MimicJointContainer MimicJoint()
-    public: void SetMimicJoint(const MimicJointContainer &_mimicJoint);
+    /// \sa MimicConstraint Mimic()
+    public: void SetMimic(const MimicConstraint &_mimic);
 
     /// \brief Get the joint to be mimicked.
     /// \return The joint name, multipler, and offset of the joint to
     /// be mimicked.
-    /// \sa void SetMimicJoint(const MimicJointContainer)
-    public: std::optional<MimicJointContainer> MimicJoint() const;
+    /// \sa void SetMimic(const MimicConstraint)
+    public: std::optional<MimicConstraint> Mimic() const;
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).

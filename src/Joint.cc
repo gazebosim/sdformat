@@ -172,9 +172,9 @@ Errors Joint::Load(ElementPtr _sdf)
     Errors axisErrors = this->dataPtr->axis[0]->Load(_sdf->GetElement("axis"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
 
-    if (this->dataPtr->axis[0]->MimicJoint())
+    if (this->dataPtr->axis[0]->Mimic())
     {
-      if (this->dataPtr->axis[0]->MimicJoint()->Joint() == this->Name())
+      if (this->dataPtr->axis[0]->Mimic()->Joint() == this->Name())
       {
         errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
           "Joint with name [" + this->dataPtr->name +
@@ -189,9 +189,9 @@ Errors Joint::Load(ElementPtr _sdf)
     Errors axisErrors = this->dataPtr->axis[1]->Load(_sdf->GetElement("axis2"));
     errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
 
-    if (this->dataPtr->axis[1]->MimicJoint())
+    if (this->dataPtr->axis[1]->Mimic())
     {
-      if (this->dataPtr->axis[1]->MimicJoint()->Joint() == this->Name())
+      if (this->dataPtr->axis[1]->Mimic()->Joint() == this->Name())
       {
         errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
           "Joint with name [" + this->dataPtr->name +

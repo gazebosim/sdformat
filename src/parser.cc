@@ -2733,7 +2733,7 @@ void checkScopedJointAxisMimicValues(
       auto axis = joint->Axis(a);
       if (axis)
       {
-        auto mimic = axis->MimicJoint();
+        auto mimic = axis->Mimic();
         if (mimic)
         {
           if (mimic->Joint() == joint->Name())

@@ -400,7 +400,7 @@ TEST(DOMJointAxis, ParseMimic)
   ASSERT_NE(nullptr, joint);
   auto jointAxis = joint->Axis();
   ASSERT_NE(nullptr, jointAxis);
-  auto mimicJoint = jointAxis->MimicJoint();
+  auto mimicJoint = jointAxis->Mimic();
   ASSERT_NE(std::nullopt, mimicJoint);
 
   EXPECT_EQ(mimicJoint->Joint(), "source_joint");
