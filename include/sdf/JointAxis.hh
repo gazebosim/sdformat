@@ -56,7 +56,7 @@ namespace sdf
 
     /// \brief Set the parent joint name.
     /// \param[in] _joint Joint name of the the parent joint.
-    public: void SetJoint(std::string _joint);
+    public: void SetJoint(const std::string &_joint);
 
     /// \brief Set the joint multiplier.
     /// \param[in] _multiplier Multiplier for the parent's pose.
@@ -72,7 +72,7 @@ namespace sdf
 
     /// \brief Retrieve the name of the parent joint.
     /// \return Name of the parent joint.
-    public: std::string Joint() const;
+    public: const std::string &Joint() const;
 
     /// \brief Retrieve the multiplier for the parent joint pose.
     /// \return Multiplier for the parent joint pose.

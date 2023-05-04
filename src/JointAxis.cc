@@ -109,13 +109,13 @@ class sdf::JointAxis::Implementation
 };
 
 /////////////////////////////////////////////////
-void MimicJointContainer::SetJoint(std::string _joint)
+void MimicJointContainer::SetJoint(const std::string &_joint)
 {
   this->dataPtr->joint = _joint;
 }
 
 /////////////////////////////////////////////////
-std::string MimicJointContainer::Joint() const
+const std::string &MimicJointContainer::Joint() const
 {
   return this->dataPtr->joint;
 }
