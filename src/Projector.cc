@@ -133,7 +133,7 @@ Errors Projector::Load(ElementPtr _sdf)
   if (this->dataPtr->texture == "__default__")
     this->dataPtr->texture = "";
 
-  // Load the sensor plugins
+  // Load the projector plugins
   Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
     this->dataPtr->plugins);
   errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());

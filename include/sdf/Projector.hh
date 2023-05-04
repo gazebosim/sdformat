@@ -89,11 +89,11 @@ namespace sdf
     /// \param[in] _hfov The horizontal field of view in radians.
     public: void SetHorizontalFov(const gz::math::Angle &_hfov);
 
-    /// \brief Get the visibility flags of a visual
+    /// \brief Get the visibility flags of a projector
     /// \return visibility flags
     public: uint32_t VisibilityFlags() const;
 
-    /// \brief Set the visibility flags of a visual
+    /// \brief Set the visibility flags of a projector
     /// \param[in] _flags visibility flags
     public: void SetVisibilityFlags(uint32_t _flags);
 
@@ -126,7 +126,7 @@ namespace sdf
 
     /// \brief Get the pose of the projector. This is the pose of the
     /// projector as specified in SDF
-    /// (<projector><pose> ... </pose></emitter>).
+    /// (<projector><pose> ... </pose></projector>).
     /// \return The pose of the projector.
     public: const gz::math::Pose3d &RawPose() const;
 

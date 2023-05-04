@@ -57,6 +57,10 @@ TEST(DOMProjector, Construction)
   projector.SetPoseRelativeTo("/test/relative");
   EXPECT_EQ("/test/relative", projector.PoseRelativeTo());
 
+  EXPECT_TRUE(projector.FilePath().empty());
+  projector.SetFilePath("/test/path");
+  EXPECT_EQ("/test/path", projector.FilePath());
+
   EXPECT_TRUE(projector.Plugins().empty());
   sdf::Plugin plugin;
   plugin.SetName("name1");
@@ -88,6 +92,7 @@ TEST(DOMProjector, ToElement)
   projector.SetVisibilityFlags(0x01);
   projector.SetTexture("test_texture.png");
   projector.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
+  projector.SetPoseRelativeTo("link");
 
   sdf::Plugin plugin;
   plugin.SetName("name1");
@@ -107,6 +112,7 @@ TEST(DOMProjector, ToElement)
   EXPECT_EQ(projector.HorizontalFov(), projector2.HorizontalFov());
   EXPECT_EQ(projector.Texture(), projector2.Texture());
   EXPECT_EQ(projector.RawPose(), projector2.RawPose());
+  EXPECT_EQ("link", projector2.PoseRelativeTo());
 
   ASSERT_EQ(1u, projector2.Plugins().size());
   EXPECT_EQ("name1", projector2.Plugins()[0].Name());

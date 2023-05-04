@@ -79,4 +79,5 @@ TEST(DOMWorld, LoadProjector)
   ASSERT_EQ(1u, linkProjector->Plugins().size());
   EXPECT_EQ("projector_plugin", linkProjector->Plugins()[0].Name());
   EXPECT_EQ("test/file/projector", linkProjector->Plugins()[0].Filename());
+  EXPECT_EQ(testFile, linkProjector->FilePath());
 }
