@@ -21,6 +21,7 @@
 
 #include "sdf/sdf.hh"
 #include "parser_urdf.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 std::string getMinimalUrdfTxt()
@@ -699,6 +700,108 @@ TEST(URDFParser,
 }
 
 /////////////////////////////////////////////////
+TEST(URDFParser, ParserConfigSetPreserveFixedJointTrueOverridesGazeboTags)
+{
+  {
+    std::ostringstream fixedJointShouldBeLumped;
+    fixedJointShouldBeLumped << "<robot name='test_robot'>"
+      << "  <link name='link1'>"
+      << "    <inertial>"
+      << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+      << "      <mass value='1.0'/>"
+      << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+      << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+      << "    </inertial>"
+      << "  </link>"
+      << "  <link name='link2'>"
+      << "    <inertial>"
+      << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+      << "      <mass value='1.0'/>"
+      << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+      << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+      << "    </inertial>"
+      << "  </link>"
+      << "  <joint name='joint1_2' type='fixed'>"
+      << "    <parent link='link1' />"
+      << "    <child  link='link2' />"
+      << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+      << "  </joint>"
+      << "  <gazebo reference='joint1_2'>"
+      << "    <disableFixedJointLumping>false</disableFixedJointLumping>"
+      << "  </gazebo>"
+      << "</robot>";
+
+    // Set the config option to preserve fixed joints, this should override the
+    // gazebo tag <disableFixedJointLumping>false<disableFixedJointLumping/>
+    // and disable lumping.
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+
+    // Check that there is a fixed joint in the converted SDF
+    sdf::SDF fixedJointShouldBeLumpedSDF;
+    convertUrdfStrToSdf(fixedJointShouldBeLumped.str(),
+        fixedJointShouldBeLumpedSDF, config);
+    sdf::ElementPtr elem = fixedJointShouldBeLumpedSDF.Root();
+    ASSERT_NE(nullptr, elem);
+    ASSERT_TRUE(elem->HasElement("model"));
+    elem = elem->GetElement("model");
+    ASSERT_TRUE(elem->HasElement("joint"));
+    elem = elem->GetElement("joint");
+    std::string jointType = elem->Get<std::string>("type");
+    ASSERT_EQ(jointType, "fixed");
+  }
+
+  {
+    std::ostringstream fixedJointPreserveFixedJoint;
+    fixedJointPreserveFixedJoint << "<robot name='test_robot'>"
+      << "  <link name='link1'>"
+      << "    <inertial>"
+      << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+      << "      <mass value='1.0'/>"
+      << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+      << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+      << "    </inertial>"
+      << "  </link>"
+      << "  <link name='link2'>"
+      << "    <inertial>"
+      << "      <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0'/>"
+      << "      <mass value='1.0'/>"
+      << "      <inertia ixx='1.0' ixy='0.0' ixz='0.0'"
+      << "               iyy='1.0' iyz='0.0' izz='1.0'/>"
+      << "    </inertial>"
+      << "  </link>"
+      << "  <joint name='joint1_2' type='fixed'>"
+      << "    <parent link='link1' />"
+      << "    <child  link='link2' />"
+      << "    <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 0.0' />"
+      << "  </joint>"
+      << "  <gazebo reference='joint1_2'>"
+      << "    <preserveFixedJoint>false</preserveFixedJoint>"
+      << "  </gazebo>"
+      << "</robot>";
+
+    // Set the config option to preserve fixed joints, this should override the
+    // gazebo tag <preserveFixedJoint>false<preserveFixedJoint/> and disable
+    // lumping.
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+
+    // Check that there is a fixed joint in the converted SDF
+    sdf::SDF fixedJointPreserveFixedJointSDF;
+    convertUrdfStrToSdf(fixedJointPreserveFixedJoint.str(),
+        fixedJointPreserveFixedJointSDF, config);
+    sdf::ElementPtr elem = fixedJointPreserveFixedJointSDF.Root();
+    ASSERT_NE(nullptr, elem);
+    ASSERT_TRUE(elem->HasElement("model"));
+    elem = elem->GetElement("model");
+    ASSERT_TRUE(elem->HasElement("joint"));
+    elem = elem->GetElement("joint");
+    std::string jointType = elem->Get<std::string>("type");
+    ASSERT_EQ(jointType, "fixed");
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(URDFParser, CheckFixedJointOptions_NoOption_Repeated)
 {
   // Convert a fixed joint with no options (i.e. it will be lumped)
@@ -992,4 +1095,1375 @@ TEST(URDFParser, ParseWhitespace)
 
   EXPECT_EQ("100", std::string(muElem->GetText()));
   EXPECT_EQ("1000", std::string(mu2Elem->GetText()));
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, LinksWithMassIssuesIdentified)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  // explicitly zero mass
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link1] has a mass value of less than or equal to zero. Please "
+        "ensure this link has a valid mass to prevent any missing links or "
+        "joints in the resulting SDF model");
+  }
+
+  // no <inertial> block defined
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'/>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link1] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+  }
+
+  // negative mass
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='-0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link1] has a mass value of less than or equal to zero. Please "
+        "ensure this link has a valid mass to prevent any missing links or "
+        "joints in the resulting SDF model");
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ZeroMassIntermediateLinkWithNoFixedJoints)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='continuous'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    // conversion fails
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ZeroMassIntermediateLinkWithFixedParentJoint)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  // joint lumping and reduction occurs
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='continuous'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    // lumping and reduction occurs, no warnings should be present
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+
+    // link2 visual lumps into link1
+    tinyxml2::XMLElement *lumpedVisual = link->FirstChildElement("visual");
+    ASSERT_NE(nullptr, lumpedVisual);
+    ASSERT_NE(nullptr, lumpedVisual->Attribute("name"));
+    EXPECT_EQ("link1_fixed_joint_lump__link2_visual",
+        std::string(lumpedVisual->Attribute("name")));
+
+    // link2 collision lumps into link1
+    tinyxml2::XMLElement *lumpedCollision =
+        link->FirstChildElement("collision");
+    ASSERT_NE(nullptr, lumpedCollision);
+    ASSERT_NE(nullptr, lumpedCollision->Attribute("name"));
+    EXPECT_EQ("link1_fixed_joint_lump__link2_collision",
+        std::string(lumpedCollision->Attribute("name")));
+
+    // joint1_2 converted into frame, attached to link1
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("link1", std::string(frame->Attribute("attached_to")));
+
+    // link2 converted into frame, attached to joint1_2
+    frame = frame->NextSiblingElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("link2", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint1_2", std::string(frame->Attribute("attached_to")));
+
+    // joint2_3 will change to be relative to link1
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    ASSERT_NE(nullptr, joint);
+    ASSERT_NE(nullptr, joint->Attribute("name"));
+    EXPECT_EQ("joint2_3", std::string(joint->Attribute("name")));
+    tinyxml2::XMLElement *jointPose = joint->FirstChildElement("pose");
+    ASSERT_NE(nullptr, jointPose);
+    ASSERT_NE(nullptr, jointPose->Attribute("relative_to"));
+    EXPECT_EQ("link1", std::string(jointPose->Attribute("relative_to")));
+
+    // link3
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link3", std::string(link->Attribute("name")));
+    tinyxml2::XMLElement *linkPose = link->FirstChildElement("pose");
+    ASSERT_NE(nullptr, linkPose);
+    ASSERT_NE(nullptr, linkPose->Attribute("relative_to"));
+    EXPECT_EQ("joint2_3", std::string(linkPose->Attribute("relative_to")));
+  }
+
+  // Disabling lumping using gazebo tags, fails with warnings suggesting to
+  // remove gazebo tags
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='continuous'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <gazebo reference='joint1_2'>
+          <disableFixedJointLumping>true</disableFixedJointLumping>
+        </gazebo>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    // conversion fails
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+
+  // Disabling lumping using ParserConfig::URDFPreserveFixedJoint, fails with
+  // warnings suggesting to set to false
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='continuous'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    parser.InitModelString(str, config, &sdfResult);
+
+    // conversion fails
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ZeroMassIntermediateLinkWithFixedChildJoint)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  // lumping and reduction occurs, mass of link3 lumped into link2
+  // link3 and joint2_3 converted into frames
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    // lumping and reduction occurs, no warnings should be present
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+
+    // mass of link3 lumped into link2, link2 not converted to frame
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+
+    // link2 visual and collision remain
+    tinyxml2::XMLElement *visual = link->FirstChildElement("visual");
+    ASSERT_NE(nullptr, visual);
+    ASSERT_NE(nullptr, visual->Attribute("name"));
+    EXPECT_EQ("link2_visual", std::string(visual->Attribute("name")));
+    tinyxml2::XMLElement *collision = link->FirstChildElement("collision");
+    ASSERT_NE(nullptr, collision);
+    ASSERT_NE(nullptr, collision->Attribute("name"));
+    EXPECT_EQ("link2_collision", std::string(collision->Attribute("name")));
+
+    // joint1_2
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    ASSERT_NE(nullptr, joint);
+    ASSERT_NE(nullptr, joint->Attribute("name"));
+    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
+
+    // joint2_3 converted into a frame
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("joint2_3", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("link2", std::string(frame->Attribute("attached_to")));
+
+    // link3 converted into a frame
+    frame = frame->NextSiblingElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("link3", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint2_3", std::string(frame->Attribute("attached_to")));
+  }
+
+  // turn off lumping with gazebo tag, conversion fails with warnings to suggest
+  // removing gazebo tags
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <gazebo reference='joint2_3'>
+          <disableFixedJointLumping>true</disableFixedJointLumping>
+        </gazebo>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+
+  // Disabling lumping using ParserConfig::URDFPreserveFixedJoint, fails with
+  // warnings suggesting to set to false
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    parser.InitModelString(str, config, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ZeroMassIntermediateLinkWithAllFixedJointsButLumpingOff)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  // turn off all lumping with gazebo tags, conversion fails with suggestions to
+  // remove gazebo tags
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <gazebo reference='joint1_2'>
+          <disableFixedJointLumping>true</disableFixedJointLumping>
+        </gazebo>
+        <gazebo reference='joint2_3'>
+          <disableFixedJointLumping>true</disableFixedJointLumping>
+        </gazebo>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+
+  // Disabling lumping using ParserConfig::URDFPreserveFixedJoint, fails with
+  // warnings suggesting to set to false
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint1_2' type='fixed'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    parser.InitModelString(str, config, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint1_2], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint1_2] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed child joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child joints ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "[1] child links ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link2] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+
+    // no other frames and joints
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    EXPECT_EQ(nullptr, joint);
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(URDFParser, ZeroMassLeafLink)
+{
+  // Redirect sdfwarn output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+#endif
+
+  // lumping and reduction occurs
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    // lumping and reduction occurs, no warnings should be present
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "link[link3] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::notContains, buffer.str(),
+        "link[link3] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+
+    // link2
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+
+    // joint1_2
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    ASSERT_NE(nullptr, joint);
+    ASSERT_NE(nullptr, joint->Attribute("name"));
+    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
+
+    // link3 visual and collision lumped into link2
+    tinyxml2::XMLElement *visual = link->FirstChildElement("visual");
+    ASSERT_NE(nullptr, visual);
+    ASSERT_NE(nullptr, visual->Attribute("name"));
+    EXPECT_EQ("link2_fixed_joint_lump__link3_visual",
+        std::string(visual->Attribute("name")));
+    tinyxml2::XMLElement *collision = link->FirstChildElement("collision");
+    ASSERT_NE(nullptr, collision);
+    ASSERT_NE(nullptr, collision->Attribute("name"));
+    EXPECT_EQ("link2_fixed_joint_lump__link3_collision",
+        std::string(collision->Attribute("name")));
+
+    // joint2_3 converted into a frame
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("joint2_3", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("link2", std::string(frame->Attribute("attached_to")));
+
+    // link3 converted into a frame
+    frame = frame->NextSiblingElement("frame");
+    ASSERT_NE(nullptr, frame);
+    ASSERT_NE(nullptr, frame->Attribute("name"));
+    EXPECT_EQ("link3", std::string(frame->Attribute("name")));
+    ASSERT_NE(nullptr, frame->Attribute("attached_to"));
+    EXPECT_EQ("joint2_3", std::string(frame->Attribute("attached_to")));
+  }
+
+  // lumping and reduction turned off with gazebo tag, expect link3 and joint2_3
+  // to be ignored and warnings suggesting to remove gazebo tag
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <gazebo reference='joint2_3'>
+          <disableFixedJointLumping>true</disableFixedJointLumping>
+        </gazebo>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig defaultConfig;
+    parser.InitModelString(str, defaultConfig, &sdfResult);
+
+    // joint2_3 and link3 will be ignored, and warnings suggesting to remove
+    // gazebo tags
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link3] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint2_3] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link3] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+
+    // link2
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+
+    // joint1_2
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    ASSERT_NE(nullptr, joint);
+    ASSERT_NE(nullptr, joint->Attribute("name"));
+    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
+
+    // link3 visual and collision not lumped into link2
+    tinyxml2::XMLElement *visual = link->FirstChildElement("visual");
+    EXPECT_EQ(nullptr, visual);
+    tinyxml2::XMLElement *collision = link->FirstChildElement("collision");
+    EXPECT_EQ(nullptr, collision);
+
+    // joint2_3 ignored
+    joint = joint->NextSiblingElement("joint");
+    EXPECT_EQ(nullptr, joint);
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+  }
+
+  // ParserConfig::URDFSetPreserveFixedJoint set to true, expect link3 and
+  // joint2_3 to be ignored and warnings suggesting to remove gazebo tag
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name='test_robot'>
+        <link name='link1'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <link name='link2'>
+          <inertial>
+            <mass value='0.1' />
+            <origin rpy='1.570796326794895 0 0' xyz='0.123456789123456 0 0.0' />
+            <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01' />
+          </inertial>
+        </link>
+        <joint name='joint1_2' type='continuous'>
+          <parent link='link1' />
+          <child  link='link2' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+        <link name='link3'> <!-- zero mass link -->
+          <visual>
+            <origin rpy="3 -0 0" xyz="0 0 0"/>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </visual>
+          <collision>
+            <geometry>
+              <sphere radius="2.0"/>
+            </geometry>
+          </collision>
+        </link>
+        <joint name='joint2_3' type='fixed'>
+          <parent link='link2' />
+          <child  link='link3' />
+          <origin xyz='0.0 0.0 0.0' rpy='0.0 0.0 1.57'/>
+        </joint>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    config.URDFSetPreserveFixedJoint(true);
+    parser.InitModelString(str, config, &sdfResult);
+
+    // joint2_3 and link3 will be ignored, and warnings suggesting to remove
+    // gazebo tags
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link3] has no <inertial> block defined. Please ensure this link "
+        "has a valid mass to prevent any missing links or joints in the "
+        "resulting SDF model");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "allowing joint lumping by removing any <disableFixedJointLumping> or "
+        "<preserveFixedJoint> gazebo tag on fixed parent joint[joint2_3], as "
+        "well as ensuring that ParserConfig::URDFPreserveFixedJoint is false, "
+        "could help resolve this warning");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "parent joint[joint2_3] ignored");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "link[link3] is not modeled in sdf");
+
+    tinyxml2::XMLElement *sdf = sdfResult.FirstChildElement("sdf");
+    ASSERT_NE(nullptr, sdf);
+    tinyxml2::XMLElement *model = sdf->FirstChildElement("model");
+    ASSERT_NE(nullptr, model);
+    tinyxml2::XMLElement *link = model->FirstChildElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link1", std::string(link->Attribute("name")));
+
+    // link2
+    link = link->NextSiblingElement("link");
+    ASSERT_NE(nullptr, link);
+    ASSERT_NE(nullptr, link->Attribute("name"));
+    EXPECT_EQ("link2", std::string(link->Attribute("name")));
+
+    // joint1_2
+    tinyxml2::XMLElement *joint = model->FirstChildElement("joint");
+    ASSERT_NE(nullptr, joint);
+    ASSERT_NE(nullptr, joint->Attribute("name"));
+    EXPECT_EQ("joint1_2", std::string(joint->Attribute("name")));
+
+    // link3 visual and collision not lumped into link2
+    tinyxml2::XMLElement *visual = link->FirstChildElement("visual");
+    EXPECT_EQ(nullptr, visual);
+    tinyxml2::XMLElement *collision = link->FirstChildElement("collision");
+    EXPECT_EQ(nullptr, collision);
+
+    // joint2_3 ignored
+    joint = joint->NextSiblingElement("joint");
+    EXPECT_EQ(nullptr, joint);
+    link = link->NextSiblingElement("link");
+    EXPECT_EQ(nullptr, link);
+    tinyxml2::XMLElement *frame = model->FirstChildElement("frame");
+    EXPECT_EQ(nullptr, frame);
+  }
+}
+
+/////////////////////////////////////////////////
+/// Main
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

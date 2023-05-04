@@ -17,6 +17,7 @@
 #include <sstream>
 #include "sdf/Ellipsoid.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -65,7 +66,7 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
   {
     std::pair<gz::math::Vector3d, bool> pair =
       _sdf->Get<gz::math::Vector3d>(
-        "radii", this->dataPtr->ellipsoid.Radii());
+        errors, "radii", this->dataPtr->ellipsoid.Radii());
 
     if (!pair.second)
     {
@@ -118,11 +119,20 @@ gz::math::Ellipsoidd &Ellipsoid::Shape()
 /////////////////////////////////////////////////
 sdf::ElementPtr Ellipsoid::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Ellipsoid::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("ellipsoid_shape.sdf", elem);
 
-  sdf::ElementPtr radiiElem = elem->GetElement("radii");
-  radiiElem->Set(this->Radii());
+  sdf::ElementPtr radiiElem = elem->GetElement("radii", _errors);
+  radiiElem->Set(_errors, this->Radii());
 
   return elem;
 }

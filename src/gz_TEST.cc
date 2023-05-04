@@ -29,6 +29,7 @@
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
 #include "test_config.hh"
+#include "test_utils.hh"
 
 #ifdef _WIN32
   #define popen  _popen
@@ -1002,12 +1003,6 @@ TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 }
 
-//////////////////////////////////////////////////
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
 /////////////////////////////////////////////////
 TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
@@ -1018,7 +1013,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
@@ -1026,7 +1021,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1035,7 +1030,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1044,7 +1039,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1053,7 +1048,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1062,7 +1057,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1071,7 +1066,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1086,7 +1081,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
 
   // Printing with in_degrees
@@ -1094,7 +1089,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.0087</pose>");
 
@@ -1103,7 +1098,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1112,7 +1107,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1121,7 +1116,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1130,7 +1125,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.0087</pose>");
 
@@ -1139,7 +1134,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1154,7 +1149,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose rotation_format='quat_xyzw'>"
                "1 2 3   0.391948 0.200425 -0.532046 0.723279</pose>");
 
@@ -1163,7 +1158,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1172,7 +1167,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1181,7 +1176,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1190,7 +1185,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1199,7 +1194,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1208,7 +1203,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1226,7 +1221,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
@@ -1234,7 +1229,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1243,7 +1238,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1252,7 +1247,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1261,7 +1256,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1270,7 +1265,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1279,7 +1274,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1297,7 +1292,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
 
   // Printing with in_degrees
@@ -1305,7 +1300,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.0087</pose>");
 
@@ -1314,7 +1309,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1323,7 +1318,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1332,7 +1327,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1341,7 +1336,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.0087</pose>");
 
@@ -1350,7 +1345,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1369,7 +1364,7 @@ TEST(print_includes_rotations_in_quaternions,
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose rotation_format='quat_xyzw'>"
                "1 2 3   0.391948 0.200425 -0.532046 0.723279</pose>");
 
@@ -1378,7 +1373,7 @@ TEST(print_includes_rotations_in_quaternions,
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1387,7 +1382,7 @@ TEST(print_includes_rotations_in_quaternions,
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1396,7 +1391,7 @@ TEST(print_includes_rotations_in_quaternions,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1405,7 +1400,7 @@ TEST(print_includes_rotations_in_quaternions,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1414,7 +1409,7 @@ TEST(print_includes_rotations_in_quaternions,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1423,7 +1418,7 @@ TEST(print_includes_rotations_in_quaternions,
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1442,7 +1437,7 @@ TEST(print_rotations_in_unnormalized_degrees,
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
@@ -1450,7 +1445,7 @@ TEST(print_rotations_in_unnormalized_degrees,
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1459,7 +1454,7 @@ TEST(print_rotations_in_unnormalized_degrees,
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1468,7 +1463,7 @@ TEST(print_rotations_in_unnormalized_degrees,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.991 -60</pose>");
 
@@ -1477,7 +1472,7 @@ TEST(print_rotations_in_unnormalized_degrees,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60</pose>");
 
@@ -1486,7 +1481,7 @@ TEST(print_rotations_in_unnormalized_degrees,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.991 -60.009</pose>");
 
@@ -1495,7 +1490,7 @@ TEST(print_rotations_in_unnormalized_degrees,
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1511,7 +1506,7 @@ TEST(print_rotations_in_unnormalized_radians,
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose>1 2 3 0.523755 0.785251 -1.04736</pose>");
 
   // Printing with in_degrees
@@ -1519,7 +1514,7 @@ TEST(print_rotations_in_unnormalized_radians,
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60.009</pose>");
 
@@ -1528,7 +1523,7 @@ TEST(print_rotations_in_unnormalized_radians,
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1537,7 +1532,7 @@ TEST(print_rotations_in_unnormalized_radians,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 44.9915 -60</pose>");
 
@@ -1546,7 +1541,7 @@ TEST(print_rotations_in_unnormalized_radians,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60</pose>");
 
@@ -1555,7 +1550,7 @@ TEST(print_rotations_in_unnormalized_radians,
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
       + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60.009</pose>");
 
@@ -1564,7 +1559,7 @@ TEST(print_rotations_in_unnormalized_radians,
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1580,7 +1575,7 @@ TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60.009</pose>");
 
@@ -1588,7 +1583,7 @@ TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   output = custom_exec_str(
       GzCommand() + " sdf --degrees -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60.009</pose>");
 
@@ -1597,7 +1592,7 @@ TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1605,7 +1600,7 @@ TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   output = custom_exec_str(
       GzCommand() + " sdf -p --snap-to-degrees 5 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 
@@ -1613,7 +1608,7 @@ TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   output = custom_exec_str(
       GzCommand() + " sdf --snap-to-degrees 5 -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 45 -60</pose>");
 }
@@ -1631,7 +1626,7 @@ TEST(print_snap_to_degrees_tolerance_too_high,
       " --snap-to-degrees 5 " + " --snap-tolerance 4" +
       SdfVersion());
   ASSERT_FALSE(output.empty());
-  EXPECT_PRED2(contains, output,
+  EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 50 60</pose>");
 }
