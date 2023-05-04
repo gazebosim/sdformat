@@ -31,6 +31,25 @@
 
 using namespace sdf;
 
+/////////////////////////////////////////////////
+class sdf::MimicJointContainer::Implementation
+{
+  /// \brief The name of the joint to be mimicked, i.e. the parent joint.
+  public: std::string joint;
+
+  /// \brief Multiplication factor to be applied to parent joint's pose.
+  public: double multiplier;
+
+  /// \brief Offset to be added to parent joint's position after
+  /// multiplication.
+  public: double offset;
+
+  /// \brief Position of the parent joint will be measured with
+  /// respect to this reference point.
+  public: double reference;
+};
+
+/////////////////////////////////////////////////
 class sdf::JointAxis::Implementation
 {
   /// \brief Represents the x,y,z components of the axis unit vector.
@@ -90,29 +109,6 @@ class sdf::JointAxis::Implementation
 };
 
 /////////////////////////////////////////////////
-MimicJointContainer::MimicJointContainer(const MimicJointContainer& _other)
-{
-  this->dataPtr = std::make_unique<MimicJointImpl>();
-  this->SetJoint(_other.Joint());
-  this->SetMultiplier(_other.Multiplier());
-  this->SetOffset(_other.Offset());
-  this->SetReference(_other.Reference());
-}
-
-/////////////////////////////////////////////////
-MimicJointContainer& MimicJointContainer::operator=(
-    const MimicJointContainer& _other)
-{
-  this->dataPtr = std::make_unique<MimicJointImpl>();
-  this->SetJoint(_other.Joint());
-  this->SetMultiplier(_other.Multiplier());
-  this->SetOffset(_other.Offset());
-  this->SetReference(_other.Reference());
-
-  return *this;
-}
-
-/////////////////////////////////////////////////
 void MimicJointContainer::SetJoint(std::string _joint)
 {
   this->dataPtr->joint = _joint;
@@ -161,12 +157,12 @@ double MimicJointContainer::Reference() const
 }
 
 /////////////////////////////////////////////////
-MimicJointContainer::MimicJointContainer(std::string _joint,
+MimicJointContainer::MimicJointContainer(const std::string &_joint,
                                          double _multiplier,
                                          double _offset,
                                          double _reference)
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
-  this->dataPtr = std::make_unique<MimicJointImpl>();
   this->SetJoint(_joint);
   this->SetMultiplier(_multiplier);
   this->SetOffset(_offset);
