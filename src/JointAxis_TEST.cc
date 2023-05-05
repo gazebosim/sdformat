@@ -81,12 +81,13 @@ TEST(DOMJointAxis, Construction)
   axis.SetDissipation(1.5);
   EXPECT_DOUBLE_EQ(1.5, axis.Dissipation());
 
-  sdf::MimicConstraint mimic("test_joint", 5.0, 1.0, 2.0);
+  sdf::MimicConstraint mimic("test_joint", "axis", 5.0, 1.0, 2.0);
 
   EXPECT_FALSE(axis.Mimic());
   axis.SetMimic(mimic);
   EXPECT_TRUE(axis.Mimic());
   EXPECT_EQ(axis.Mimic()->Joint(), "test_joint");
+  EXPECT_EQ(axis.Mimic()->Axis(), "axis");
   EXPECT_DOUBLE_EQ(axis.Mimic()->Multiplier(), 5.0);
   EXPECT_DOUBLE_EQ(axis.Mimic()->Offset(), 1.0);
   EXPECT_DOUBLE_EQ(axis.Mimic()->Reference(), 2.0);
@@ -203,7 +204,7 @@ TEST(DOMJointAxis, ToElement)
   axis.SetStiffness(1e2);
   axis.SetDissipation(1.5);
 
-  sdf::MimicConstraint mimic("test_joint", 5.0, 1.0, 2.0);
+  sdf::MimicConstraint mimic("test_joint", "axis2", 5.0, 1.0, 2.0);
   axis.SetMimic(mimic);
 
   sdf::ElementPtr elem = axis.ToElement(errors);
@@ -287,6 +288,12 @@ TEST(DOMJointAxis, ToElement)
       errors, "joint", mimicJointName).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("test_joint", mimicJointName);
+
+  std::string mimicAxisName;
+  mimicAxisName = mimicElem->Get<std::string>(
+      errors, "axis", mimicAxisName).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ("axis2", mimicAxisName);
 
   double multiplier;
   multiplier = mimicElem->Get<double>(

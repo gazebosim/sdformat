@@ -404,6 +404,7 @@ TEST(DOMJointAxis, ParseMimic)
   ASSERT_NE(std::nullopt, mimicJoint);
 
   EXPECT_EQ(mimicJoint->Joint(), "source_joint");
+  EXPECT_EQ(mimicJoint->Axis(), "axis");
   EXPECT_DOUBLE_EQ(mimicJoint->Multiplier(), 4);
   EXPECT_DOUBLE_EQ(mimicJoint->Offset(), 2);
   EXPECT_DOUBLE_EQ(mimicJoint->Reference(), 3);

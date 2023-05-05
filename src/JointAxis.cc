@@ -34,8 +34,12 @@ using namespace sdf;
 /////////////////////////////////////////////////
 class sdf::MimicConstraint::Implementation
 {
-  /// \brief The name of the joint to be mimicked, i.e. the parent joint.
+  /// \brief The name of the joint to be mimicked, i.e. the leader joint.
   public: std::string joint;
+
+  /// \brief The name of the axis to be mimicked (either "axis" or "axis2"),
+  /// i.e. the leader axis.
+  public: std::string axis;
 
   /// \brief Multiplication factor to be applied to parent joint's pose.
   public: double multiplier;
@@ -121,6 +125,18 @@ const std::string &MimicConstraint::Joint() const
 }
 
 /////////////////////////////////////////////////
+void MimicConstraint::SetAxis(const std::string &_axis)
+{
+  this->dataPtr->axis = _axis;
+}
+
+/////////////////////////////////////////////////
+const std::string &MimicConstraint::Axis() const
+{
+  return this->dataPtr->axis;
+}
+
+/////////////////////////////////////////////////
 void MimicConstraint::SetMultiplier(double _multiplier)
 {
   this->dataPtr->multiplier = _multiplier;
@@ -158,12 +174,14 @@ double MimicConstraint::Reference() const
 
 /////////////////////////////////////////////////
 MimicConstraint::MimicConstraint(const std::string &_joint,
+                                 const std::string &_axis,
                                  double _multiplier,
                                  double _offset,
                                  double _reference)
   : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->SetJoint(_joint);
+  this->SetAxis(_axis);
   this->SetMultiplier(_multiplier);
   this->SetOffset(_offset);
   this->SetReference(_reference);
@@ -238,6 +256,8 @@ Errors JointAxis::Load(ElementPtr _sdf)
     auto newMimic = MimicConstraint();
     newMimic.SetJoint(mimicElement->Get<std::string>(
         errors, "joint", "").first);
+    newMimic.SetAxis(mimicElement->Get<std::string>(
+        errors, "axis", "").first);
     newMimic.SetMultiplier(mimicElement->Get<double>(
         errors, "multiplier", 0).first);
     newMimic.SetOffset(mimicElement->Get<double>(
@@ -534,6 +554,8 @@ sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors,
     sdf::ElementPtr mimicElement = axisElem->GetElement("mimic", _errors);
     mimicElement->GetAttribute("joint")->SetFromString(
         this->dataPtr->mimic->Joint(), _errors);
+    mimicElement->GetAttribute("axis")->SetFromString(
+        this->dataPtr->mimic->Axis(), _errors);
     mimicElement->GetElement("multiplier", _errors)->Set<double>(
         _errors, this->dataPtr->mimic->Multiplier());
     mimicElement->GetElement("offset", _errors)->Set<double>(
