@@ -433,7 +433,7 @@ TEST(DOMJointAxis, ParseInvalidSelfMimic)
     "      </axis>"
     "      <axis2>"
     "        <xyz>1 0 0</xyz>"
-    "        <mimic joint='self_mimic'>"
+    "        <mimic joint='self_mimic' axis='axis2'>"
     "          <multiplier>4</multiplier>"
     "          <offset>2</offset>"
     "          <reference>3</reference>"
@@ -445,19 +445,19 @@ TEST(DOMJointAxis, ParseInvalidSelfMimic)
 
   sdf::Root root;
   auto errors = root.LoadSdfString(sdf);
-  EXPECT_EQ(errors.size(), 4) << errors;
-  for (const auto &error : errors)
-  {
-    std::stringstream ss;
-    ss << error;
-    const std::string errorMsg = "Error Code 41: Msg: Joint with name "
-      "[self_mimic] cannot mimic itself.";
-    EXPECT_EQ(ss.str(), errorMsg);
-  }
+  ASSERT_EQ(errors.size(), 4) << errors;
+  const std::string errorMsg = "Axis with name [axis] "
+    "in joint with name [self_mimic] cannot mimic itself.";
+  const std::string errorMsg2 = "Axis with name [axis2] "
+    "in joint with name [self_mimic] cannot mimic itself.";
+  EXPECT_EQ(errors[0].Message(), errorMsg) << errors[0];
+  EXPECT_EQ(errors[1].Message(), errorMsg2) << errors[1];
+  EXPECT_EQ(errors[2].Message(), errorMsg) << errors[2];
+  EXPECT_EQ(errors[3].Message(), errorMsg2) << errors[3];
 }
 
 /////////////////////////////////////////////////
-TEST(DOMJointAxis, ParseMimicInvalidJointName)
+TEST(DOMJointAxis, ParseMimicInvalidLeaderJointName)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
@@ -501,4 +501,63 @@ TEST(DOMJointAxis, ParseMimicInvalidJointName)
       " found in model with name[test].";
     EXPECT_EQ(ss.str(), errorMsg);
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimicInvalidLeaderAxis)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.10'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <link name='link3'/>"
+    "    <joint name='leader' type='revolute'>"
+    "      <pose>0 0 1 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "      </axis>"
+    "    </joint>"
+    "    <joint name='follower' type='universal'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link2</child>"
+    "      <parent>link3</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='leader' axis='invalid'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "      <axis2>"
+    "        <xyz>1 0 0</xyz>"
+    "        <mimic joint='leader' axis='axis2'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis2>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  ASSERT_EQ(errors.size(), 4) << errors;
+  const std::string errorMsg1 = "Axis with name [axis] in joint with name "
+    "[follower] specified an invalid leader axis name [invalid].";
+  const std::string errorMsg2 = "Axis with name [axis] in joint with name "
+    "[follower] specified a leader axis name [invalid] that is not found in "
+    "the leader joint with name [leader].";
+  const std::string errorMsg3 = "Axis with name [axis2] in joint with name "
+    "[follower] specified a leader axis name [axis2] that is not found in "
+    "the leader joint with name [leader].";
+  EXPECT_EQ(errors[0].Message(), errorMsg1) << errors[0];
+  EXPECT_EQ(errors[1].Message(), errorMsg1) << errors[1];
+  EXPECT_EQ(errors[2].Message(), errorMsg2) << errors[2];
+  EXPECT_EQ(errors[3].Message(), errorMsg3) << errors[3];
 }

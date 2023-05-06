@@ -2725,6 +2725,7 @@ template <typename TPtr>
 void checkScopedJointAxisMimicValues(
     const TPtr _scope, const std::string &_scopeType, Errors &errors)
 {
+  const std::vector<std::string> followerAxisNames = {"axis", "axis2"};
   for (uint64_t j = 0; j < _scope->JointCount(); ++j)
   {
     auto joint = _scope->JointByIndex(j);
@@ -2733,14 +2734,16 @@ void checkScopedJointAxisMimicValues(
       auto axis = joint->Axis(a);
       if (axis)
       {
+        const std::string &followerAxis = followerAxisNames[a];
         auto mimic = axis->Mimic();
         if (mimic)
         {
-          if (mimic->Joint() == joint->Name())
+          if (mimic->Joint() == joint->Name() &&
+              mimic->Axis() == followerAxis)
           {
             errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
-              "Joint with name [" + joint->Name() +
-              "] cannot mimic itself."});
+              "Axis with name [" + followerAxis + "] in joint with name [" +
+              joint->Name() + "] cannot mimic itself."});
           }
           else if (!_scope->JointByName(mimic->Joint()))
           {
@@ -2750,10 +2753,38 @@ void checkScopedJointAxisMimicValues(
               + "] not found in " + _scopeType + " with name[" + _scope->Name()
               + "]."});
           }
+          else
+          {
+            auto leaderJoint = _scope->JointByName(mimic->Joint());
+            const sdf::JointAxis *leaderAxis = nullptr;
+            if ("axis" == mimic->Axis())
+            {
+              leaderAxis = leaderJoint->Axis(0);
+            }
+            else if ("axis2" == mimic->Axis())
+            {
+              leaderAxis = leaderJoint->Axis(1);
+            }
+            else
+            {
+              errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+                "Axis with name [" + followerAxis + "] in " +
+                "joint with name [" + joint->Name() + "] specified "
+                "an invalid leader axis name [" + mimic->Axis() + "]."});
+            }
+            if (!leaderAxis)
+            {
+              errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+                "Axis with name [" + followerAxis + "] in " +
+                "joint with name [" + joint->Name() + "] specified "
+                "a leader axis name [" + mimic->Axis() + "] that is not found "
+                "in the leader joint with name [" + mimic->Joint() + "]."});
+            }
+          }
         }
       }
     }
-  }
+    }
 }
 
 //////////////////////////////////////////////////
