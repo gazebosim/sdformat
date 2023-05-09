@@ -179,6 +179,9 @@ namespace sdf
 
     /// \brief Generic error during parsing.
     PARSING_ERROR,
+
+    /// \brief File not found error.
+    FILE_NOT_FOUND,
   };
 
   class SDFORMAT_VISIBLE Error
