@@ -310,7 +310,7 @@ class LinkTEST(unittest.TestCase):
         # self.assertEqual("pe2", link.ParticleEmitterByIndex(0).name())
 
         # Modify the projector
-        pr = link.projector_b_index(0)
+        pr = link.projector_by_index(0)
         self.assertNotEqual(None, pr)
         self.assertEqual("projector1", pr.name())
         pr.set_name("projector2");
