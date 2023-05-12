@@ -40,8 +40,8 @@ void defineProjector(pybind11::object module)
     .def("name", &sdf::Projector::Name,
          "Name of the projector.")
     .def("set_name", &sdf::Projector::SetName,
-         "The name of the projector should be unique within the scope of "
-         "a Link.")
+         "Set the name of the projector, which should be unique "
+         "within the scope of a Link.")
     .def("near_clip", &sdf::Projector::NearClip,
          "The near clip distance.")
     .def("set_near_clip", &sdf::Projector::SetNearClip,
