@@ -141,7 +141,14 @@ void defineError(pybind11::object module)
            sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID)
     .value("VERSION_DEPRECATED", sdf::ErrorCode::VERSION_DEPRECATED)
     .value("MERGE_INCLUDE_UNSUPPORTED",
-           sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED);
+           sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED)
+    .value("PARAMETER_ERROR", sdf::ErrorCode::PARAMETER_ERROR)
+    .value("UNKNOWN_PARAMETER_TYPE", sdf::ErrorCode::UNKNOWN_PARAMETER_TYPE)
+    .value("FATAL_ERROR", sdf::ErrorCode::FATAL_ERROR)
+    .value("WARNING", sdf::ErrorCode::WARNING)
+    .value("JOINT_AXIS_EXPRESSED_IN_INVALID", sdf::ErrorCode::JOINT_AXIS_EXPRESSED_IN_INVALID)
+    .value("CONVERSION_ERROR", sdf::ErrorCode::CONVERSION_ERROR)
+    .value("PARSING_ERROR", sdf::ErrorCode::PARSING_ERROR);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
