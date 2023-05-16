@@ -89,7 +89,7 @@ void defineLink(pybind11::object module)
          pybind11::return_value_policy::reference_internal,
          "Get a mutable light based on a name.")
     .def("projector_count", &sdf::Link::ProjectorCount,
-         "Get the number of projector.")
+         "Get the number of projectors.")
     .def("projector_by_index",
          pybind11::overload_cast<const uint64_t>(
            &sdf::Link::ProjectorByIndex),
@@ -179,7 +179,7 @@ void defineLink(pybind11::object module)
     //      "Add a particle emitter to the link.")
     .def("add_projector",
          &sdf::Link::AddProjector,
-         "Add a particle projector to the link.")
+         "Add a projector to the link.")
     .def("clear_collisions",
          &sdf::Link::ClearCollisions,
          "Remove all collisions")
@@ -197,7 +197,7 @@ void defineLink(pybind11::object module)
     //      "Remove all particle emitters")
     .def("clear_projector",
          &sdf::Link::ClearProjectors,
-         "Remove all projector")
+         "Remove all projectors")
     .def("__copy__", [](const sdf::Link &self) {
       return sdf::Link(self);
     })
