@@ -79,6 +79,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
   src/sdf/pyPolyline.cc
+  src/sdf/pyProjector.cc
   src/sdf/pyRoot.cc
   src/sdf/pyScene.cc
   src/sdf/pySemanticPose.cc
@@ -157,6 +158,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyPlane_TEST
     pyPlugin_TEST
     pyPolyline_TEST
+    pyProjector_TEST
     pyRoot_TEST
     pyScene_TEST
     pySemanticPose_TEST
