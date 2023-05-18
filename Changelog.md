@@ -38,7 +38,7 @@
 1. Sky: update calls to use sdf::Errors output
     * [Pull request #1162](https://github.com/gazebosim/sdformat/pull/1162)
 
-1. Add missing values in Surace ToElement method
+1. Add missing values in Surface ToElement method
     * [Pull request #1263](https://github.com/gazebosim/sdformat/pull/1263)
 
 1. Atmosphere: update calls to use sdf::Errors output
