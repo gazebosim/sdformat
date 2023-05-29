@@ -182,6 +182,9 @@ namespace sdf
 
     /// \brief Error trying to find a file.
     FILE_NOT_FOUND,
+
+    /// \brief Error trying to access a pointe.
+    POINTER_ERROR,
   };
 
   class SDFORMAT_VISIBLE Error
@@ -221,6 +224,10 @@ namespace sdf
     /// \brief Get the error message, which is a description of the error.
     /// \return Error message.
     public: std::string Message() const;
+
+    /// \brief Sets the message associated with this error.
+    /// \param [in] _message Message that describes this error.
+    public: void SetMessage(const std::string &_message);
 
     /// \brief Get the file path associated with this error.
     /// \return Returns the path of the file that this error is related to,

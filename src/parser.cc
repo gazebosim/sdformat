@@ -403,7 +403,7 @@ bool init(sdf::Errors &_errors, SDFPtr _sdf)
 bool init(SDFPtr _sdf, const ParserConfig &_config)
 {
   sdf::Errors errors;
-  bool result = init(_sdf, _config);
+  bool result = init(_sdf, errors, _config);
   sdf::throwOrPrintErrors(errors);
   return result;
 
@@ -1093,7 +1093,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
     gz::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
     if (sdfVersion >= gz::math::SemanticVersion(1, 8)
-        && !recursiveSiblingNoDoubleColonInNames(_sdf->Root()))
+        && !recursiveSiblingNoDoubleColonInNames(_sdf->Root(), _errors))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
           "Delimiter '::' found in attribute names of element <"
@@ -1188,7 +1188,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
     gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
     if (sdfVersion >= gz::math::SemanticVersion(1, 8)
-        && !recursiveSiblingNoDoubleColonInNames(_sdf))
+        && !recursiveSiblingNoDoubleColonInNames(_sdf, _errors))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
           "Delimiter '::' found in attribute names of element <"
@@ -2221,27 +2221,35 @@ sdf::Errors convertString(SDFPtr _sdf, const std::string &_sdfString,
 //////////////////////////////////////////////////
 bool checkCanonicalLinkNames(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkCanonicalLinkNames(_root, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkCanonicalLinkNames(const sdf::Root *_root, sdf::Errors &_errors)
+{
   if (!_root)
   {
-    std::cerr << "Error: invalid sdf::Root pointer, unable to "
-              << "check canonical link names."
-              << std::endl;
+    _errors.push_back({ErrorCode::POINTER_ERROR, "Error: invalid sdf::Root "
+                      "pointer, unable to check canonical link names."});
     return false;
   }
 
   bool result = true;
 
-  auto checkModelCanonicalLinkName = [](
+  auto checkModelCanonicalLinkName = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
     std::string canonicalLink = _model->CanonicalLinkName();
     if (!canonicalLink.empty() && !_model->LinkNameExists(canonicalLink))
     {
-      std::cerr << "Error: canonical_link with name[" << canonicalLink
-                << "] not found in model with name[" << _model->Name()
-                << "]."
-                << std::endl;
+      _errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+                        "Error: canonical_link with name[" + canonicalLink +
+                        "] not found in model with name[" + _model->Name() +
+                        "]."});
       modelResult = false;
     }
     return modelResult;
@@ -2268,9 +2276,18 @@ bool checkCanonicalLinkNames(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkFrameAttachedToNames(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkFrameAttachedToNames(_root, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToNames(const sdf::Root *_root, sdf::Errors &_errors)
+{
   bool result = true;
 
-  auto checkModelFrameAttachedToNames = [](
+  auto checkModelFrameAttachedToNames = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
@@ -2288,12 +2305,11 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
       if (attachedTo == frame->Name())
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] is identical to frame name[" << frame->Name()
-                  << "], causing a graph cycle "
-                  << "in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+                          "Error: attached_to name[" + attachedTo +
+                          "] is identical to frame name[" + frame->Name() +
+                          "], causing a graph cycle in model with name[" +
+                          _model->Name() + "]."});
         modelResult = false;
       }
       else if (!_model->LinkNameExists(attachedTo) &&
@@ -2301,19 +2317,19 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
                !_model->JointNameExists(attachedTo) &&
                !_model->FrameNameExists(attachedTo))
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a nested model, link, joint, "
-                  << "or frame name in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+                          "Error: attached_to name[" + attachedTo +
+                          "] specified by frame with name[" + frame->Name() +
+                          "] does not match a nested model, link, joint, "
+                          "or frame name in model with name[" +
+                          _model->Name() + "]."});
         modelResult = false;
       }
     }
     return modelResult;
   };
 
-  auto checkWorldFrameAttachedToNames = [](
+  auto checkWorldFrameAttachedToNames = [&_errors](
       const sdf::World *_world) -> bool
   {
     auto findNameInWorld = [](const sdf::World *_inWorld,
@@ -2361,22 +2377,20 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
       if (attachedTo == frame->Name())
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] is identical to frame name[" << frame->Name()
-                  << "], causing a graph cycle "
-                  << "in world with name[" << _world->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+                          "Error: attached_to name[" + attachedTo +
+                          "] is identical to frame name[" + frame->Name() +
+                          "], causing a graph cycle in world with name[" +
+                          _world->Name() + "]."});
         worldResult = false;
       }
       else if (!findNameInWorld(_world, attachedTo))
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a model or frame name "
-                  << "in world with name[" << _world->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+                          "Error: attached_to name[" + attachedTo +
+                          "] specified by frame with name[" + frame->Name() +
+                          "] does not match a model or frame name in world "
+                          "with name[" + _world->Name() + "]."});
         worldResult = false;
       }
     }
@@ -2401,9 +2415,16 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
   return result;
 }
+bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
+{
+  sdf::Errors errors;
+  bool result = recursiveSameTypeUniqueNames(_elem, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
 
 //////////////////////////////////////////////////
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
+bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
 {
   if (!shouldValidateElement(_elem))
     return true;
@@ -2414,10 +2435,9 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
   {
     if (!_elem->HasUniqueChildNames(typeName))
     {
-      std::cerr << "Error: Non-unique names detected in type "
-                << typeName << " in\n"
-                << _elem->ToString("")
-                << std::endl;
+      _errors.push_back({ErrorCode::DUPLICATE_NAME,
+                        "Error: Non-unique names detected in type " +
+                        typeName +" in\n" + _elem->ToString("")});
       result = false;
     }
   }
@@ -2425,15 +2445,23 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSameTypeUniqueNames(child) && result;
+    result = recursiveSameTypeUniqueNames(child, _errors) && result;
     child = child->GetNextElement();
   }
 
   return result;
 }
-
 //////////////////////////////////////////////////
 bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
+{
+  sdf::Errors errors;
+  bool result = recursiveSiblingUniqueNames(_elem, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
 {
   if (!shouldValidateElement(_elem))
     return true;
@@ -2442,9 +2470,9 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
       _elem->HasUniqueChildNames("", Element::NameUniquenessExceptions());
   if (!result)
   {
-    std::cerr << "Error: Non-unique names detected in "
-              << _elem->ToString("")
-              << std::endl;
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "Error: Non-unique names detected in " +
+                      _elem->ToString("")});
     result = false;
   }
 
@@ -2461,6 +2489,15 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 //////////////////////////////////////////////////
 bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
 {
+  sdf::Errors errors;
+  bool result = recursiveSiblingNoDoubleColonInNames(_elem, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
+{
   if (!shouldValidateElement(_elem))
     return true;
 
@@ -2468,16 +2505,16 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
   if (_elem->HasAttribute("name")
       && _elem->Get<std::string>("name").find("::") != std::string::npos)
   {
-    std::cerr << "Error: Detected delimiter '::' in element name in\n"
-             << _elem->ToString("")
-             << std::endl;
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "Error: Detected delimiter '::' in element name in" +
+                      _elem->ToString("")});
     result = false;
   }
 
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSiblingNoDoubleColonInNames(child) && result;
+    result = recursiveSiblingNoDoubleColonInNames(child, _errors) && result;
     child = child->GetNextElement();
   }
 
@@ -2487,60 +2524,71 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
 //////////////////////////////////////////////////
 bool checkFrameAttachedToGraph(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkFrameAttachedToGraph(_root, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToGraph(const sdf::Root *_root, sdf::Errors &_errors)
+{
   bool result = true;
 
-  auto checkModelFrameAttachedToGraph = [](
+  auto checkModelFrameAttachedToGraph = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
     auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
     sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
-    auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildFrameAttachedToGraph(graph, _model);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
-    errors = sdf::validateFrameAttachedToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validateFrameAttachedToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validateFrameAttachedToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validateFrameAttachedToGraph: " +
+                  error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
     return modelResult;
   };
 
-  auto checkWorldFrameAttachedToGraph = [](
+  auto checkWorldFrameAttachedToGraph = [&_errors](
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
     auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
     sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
-    auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildFrameAttachedToGraph(graph, _world);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
+        _errors.push_back(error);
       }
       worldResult = false;
     }
-    errors = sdf::validateFrameAttachedToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validateFrameAttachedToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validateFrameAttachedToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validateFrameAttachedToGraph: " +
+                  error.Message());
+        _errors.push_back(error);
       }
       worldResult = false;
     }
@@ -2569,60 +2617,70 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkPoseRelativeToGraph(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkPoseRelativeToGraph(_root, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkPoseRelativeToGraph(const sdf::Root *_root, sdf::Errors &_errors)
+{
   bool result = true;
 
-  auto checkModelPoseRelativeToGraph = [](
+  auto checkModelPoseRelativeToGraph = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
     auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
     sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
-    auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildPoseRelativeToGraph(graph, _model);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
-    errors = sdf::validatePoseRelativeToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validatePoseRelativeToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validatePoseRelativeToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validatePoseRelativeToGraph: " +
+                          error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
     return modelResult;
   };
 
-  auto checkWorldPoseRelativeToGraph = [](
+  auto checkWorldPoseRelativeToGraph = [&_errors](
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
     auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
     sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
-    auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildPoseRelativeToGraph(graph, _world);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
       }
       worldResult = false;
     }
-    errors = sdf::validatePoseRelativeToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validatePoseRelativeToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validatePoseRelativeToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validatePoseRelativeToGraph: " +
+                          error.Message());
+        _errors.push_back(error);
       }
       worldResult = false;
     }
