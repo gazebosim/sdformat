@@ -1308,7 +1308,8 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   if (!sdfXML->Attribute("version"))
   {
-    _errors.push_back({ErrorCode::WARNING, "Can not find the XML attribute 'version'"
+    _errors.push_back({ErrorCode::WARNING,
+            "Can not find the XML attribute 'version'"
             " in sdf XML tag for model: " +
             std::string(nameSearch->GetText()) + "."
             " Please specify the SDF protocol supported in the model"
@@ -1330,7 +1331,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 }
 
 //////////////////////////////////////////////////
-std::string getModelFilePath(const std::string &_modelDirPath, sdf::Errors &_errors)
+std::string getModelFilePath(const std::string &_modelDirPath,
+                             sdf::Errors &_errors)
 {
   std::string configFilePath;
 
