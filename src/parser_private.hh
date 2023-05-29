@@ -37,9 +37,11 @@ namespace sdf
   /// \param[in] _modelXML XML element from config file pointing to the
   ///            model XML tag
   /// \param[out] _modelFileName file name of the best model file
+  /// \param[out] _errors Vector of errors.
   /// \return string with the best SDF version supported
-  std::string getBestSupportedModelVersion(
-      tinyxml2::XMLElement *_modelXML, std::string &_modelFileName);
+  std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
+                                           std::string &_modelFileName,
+                                           sdf::Errors &_errors);
 
   /// \brief Initialize the SDF interface using a TinyXML2 document.
   ///
@@ -48,10 +50,12 @@ namespace sdf
   /// file that corresponds with the input SDFPtr
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf SDF interface to be initialized
+  /// \param[out] _errors Vector of errors.
   /// \return True on success, false on error.
   bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
                const ParserConfig &_config,
-               SDFPtr _sdf);
+               SDFPtr _sdf,
+               sdf::Errors &_errors);
 
   /// \brief Initialize the SDF Element using a TinyXML2 document
   ///
@@ -60,10 +64,12 @@ namespace sdf
   /// file that corresponds with the input ElementPtr
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf SDF Element to be initialized
+  /// \param[out] _errors Vector of errors.
   /// \return True on success, false on error.
   bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
                const ParserConfig &_config,
-               ElementPtr _sdf);
+               ElementPtr _sdf,
+               sdf::Errors &_errors);
 
   /// \brief Initialize the SDF Element by parsing the SDFormat description in
   /// the input TinyXML2 element. This is where SDFormat spec/description files
@@ -73,10 +79,12 @@ namespace sdf
   /// file that corresponds with the input ElementPtr
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf SDF ElementPtr to be initialized
+  /// \param[out] _errors Vector of errors.
   /// \return True on success, false on error.
   bool initXml(tinyxml2::XMLElement *_xml,
                const ParserConfig &_config,
-               ElementPtr _sdf);
+               ElementPtr _sdf,
+               sdf::Errors &_errors);
 
   /// \brief Populate the SDF values from a TinyXML document
   bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
