@@ -103,6 +103,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineMagnetometer(m);
   sdf::python::defineMaterial(m);
   sdf::python::defineMesh(m);
+  sdf::python::defineMimicConstraint(m);
   sdf::python::defineModel(m);
   sdf::python::defineNavSat(m);
   sdf::python::defineNoise(m);

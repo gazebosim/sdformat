@@ -14,7 +14,7 @@
 
 import copy
 from gz_test_deps.math import Vector3d
-from gz_test_deps.sdformat import JointAxis, Error, SDFErrorsException
+from gz_test_deps.sdformat import JointAxis, MimicConstraint, Error, SDFErrorsException
 import math
 import unittest
 
@@ -75,6 +75,17 @@ class JointAxisTEST(unittest.TestCase):
 
         axis.set_dissipation(1.5)
         self.assertAlmostEqual(1.5, axis.dissipation())
+
+        mimic = MimicConstraint("test_joint", "axis", 5.0, 1.0, 2.0)
+
+        self.assertEqual(None, axis.mimic())
+        axis.set_mimic(mimic)
+        self.assertNotEqual(None, axis.mimic())
+        self.assertEqual("test_joint", axis.mimic().joint())
+        self.assertEqual("axis", axis.mimic().axis())
+        self.assertAlmostEqual(5.0, axis.mimic().multiplier())
+        self.assertAlmostEqual(1.0, axis.mimic().offset())
+        self.assertAlmostEqual(2.0, axis.mimic().reference())
 
 
     def test_copy_construction(self):
