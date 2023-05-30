@@ -148,7 +148,8 @@ void defineError(pybind11::object module)
     .value("WARNING", sdf::ErrorCode::WARNING)
     .value("JOINT_AXIS_EXPRESSED_IN_INVALID", sdf::ErrorCode::JOINT_AXIS_EXPRESSED_IN_INVALID)
     .value("CONVERSION_ERROR", sdf::ErrorCode::CONVERSION_ERROR)
-    .value("PARSING_ERROR", sdf::ErrorCode::PARSING_ERROR);
+    .value("PARSING_ERROR", sdf::ErrorCode::PARSING_ERROR)
+    .value("JOINT_AXIS_MIMIC_INVALID", sdf::ErrorCode::JOINT_AXIS_MIMIC_INVALID);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
