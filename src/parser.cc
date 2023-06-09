@@ -773,20 +773,28 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   {
     return true;
   }
-  else if (URDF2SDF::IsURDF(filename))
+  else
   {
-    URDF2SDF u2g;
-    auto doc = makeSdfDoc();
-    u2g.InitModelFile(filename, _config, &doc);
-    if (sdf::readDoc(&doc, _sdf, filename, _convert, _config, _errors))
+    tinyxml2::XMLElement *robotXml = xmlDoc.FirstChildElement("robot");
+    if (robotXml && URDF2SDF::IsURDF(filename))
     {
-      sdfdbg << "parse from urdf file [" << _filename << "].\n";
-      return true;
+      URDF2SDF u2g;
+      auto doc = makeSdfDoc();
+      u2g.InitModelFile(filename, _config, &doc);
+      if (sdf::readDoc(&doc, _sdf, filename, _convert, _config, _errors))
+      {
+        sdfdbg << "parse from urdf file [" << _filename << "].\n";
+        return true;
+      }
+      else
+      {
+        sdferr << "parse as old deprecated model file failed.\n";
+        return false;
+      }
     }
     else
     {
-      sdferr << "parse as old deprecated model file failed.\n";
-      return false;
+      sdferr << "XML does not seem to be an SDF or an URDF file.\n";
     }
   }
 
@@ -852,20 +860,28 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   }
   else
   {
-    URDF2SDF u2g;
-    auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, _config, &doc);
-
-    if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
-                    _config, _errors))
+    tinyxml2::XMLElement *robotXml = xmlDoc.FirstChildElement("robot");
+    if (robotXml)
     {
-      sdfdbg << "Parsing from urdf.\n";
-      return true;
+      URDF2SDF u2g;
+      auto doc = makeSdfDoc();
+      u2g.InitModelString(_xmlString, _config, &doc);
+
+      if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
+                      _config, _errors))
+      {
+        sdfdbg << "Parsing from urdf.\n";
+        return true;
+      }
+      else
+      {
+        sdferr << "parse as old deprecated model file failed.\n";
+        return false;
+      }
     }
     else
     {
-      sdferr << "parse as old deprecated model file failed.\n";
-      return false;
+      sdferr << "XML does not seem to be an SDF or an URDF string.\n";
     }
   }
 
