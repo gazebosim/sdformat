@@ -768,15 +768,16 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     return false;
   }
 
-  // Suppress deprecation for sdf::URDF2SDF
-  if (readDoc(&xmlDoc, _sdf, filename, _convert, _config, _errors))
+  tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
+  if (sdfXml)
   {
-    return true;
+    // Suppress deprecation for sdf::URDF2SDF
+    return readDoc(&xmlDoc, _sdf, filename, _convert, _config, _errors);
   }
   else
   {
     tinyxml2::XMLElement *robotXml = xmlDoc.FirstChildElement("robot");
-    if (robotXml && URDF2SDF::IsURDF(filename))
+    if (robotXml)
     {
       URDF2SDF u2g;
       auto doc = makeSdfDoc();
@@ -794,7 +795,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     }
     else
     {
-      sdferr << "XML does not seem to be an SDF or an URDF file.\n";
+      sdferr << "XML does not seem to be an SDFormat or an URDF file.\n";
     }
   }
 
@@ -853,10 +854,11 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert, _config,
-              _errors))
+  tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
+  if (sdfXml)
   {
-    return true;
+    return readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert,
+                   _config, _errors);
   }
   else
   {
@@ -881,10 +883,10 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     }
     else
     {
-      sdferr << "XML does not seem to be an SDF or an URDF string.\n";
+      sdferr << "XML does not seem to be an SDFormat or an URDF string.\n";
+      return false;
     }
   }
-
   return false;
 }
 
