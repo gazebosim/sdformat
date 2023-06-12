@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/Box.hh"
 #include "sdf/Element.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMBox, Construction)
@@ -158,4 +159,40 @@ TEST(DOMBox, ToElement)
   box2.Load(elem);
 
   EXPECT_EQ(box.Size(), box2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMBox, ToElementErrorOutput)
+{
+
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Box box;
+  sdf::Errors errors;
+
+  box.SetSize(gz::math::Vector3d(1, 2, 3));
+
+  sdf::ElementPtr elem = box.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Box box2;
+  errors = box2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(box.Size(), box2.Size());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
