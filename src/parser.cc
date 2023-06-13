@@ -784,12 +784,14 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
       u2g.InitModelFile(filename, _config, &doc);
       if (sdf::readDoc(&doc, _sdf, filename, _convert, _config, _errors))
       {
-        sdfdbg << "parse from urdf file [" << _filename << "].\n";
+        sdfdbg << "Converting URDF file [" << _filename << "] to SDFormat"
+               << " and parsing it.\n";
         return true;
       }
       else
       {
-        sdferr << "parse as old deprecated model file failed.\n";
+        sdferr << "Failed to parse the URDF file after converting to"
+               << " SDFormat.\n";
         return false;
       }
     }
@@ -872,12 +874,13 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
       if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
                       _config, _errors))
       {
-        sdfdbg << "Parsing from urdf.\n";
+        sdfdbg << "Converting URDF to SDFormat and parsing it.\n";
         return true;
       }
       else
       {
-        sdferr << "parse as old deprecated model file failed.\n";
+        sdferr << "Failed to parse the URDF file after converting to"
+               << " SDFormat\n";
         return false;
       }
     }
