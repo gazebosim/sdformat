@@ -891,6 +891,34 @@ TEST(Parser, ReadFileErrorNotSDForURDF)
 }
 
 /////////////////////////////////////////////////
+/// Check that malformed SDF files do not throw confusing error
+TEST(Parser, ReadFileMalformedSDFNoRobotError)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  // Check the old error is not printed anymore
+  EXPECT_EQ(std::string::npos, buffer.str().find(
+      "Could not find the 'robot' element in the xml file"));
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
