@@ -101,7 +101,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   if (_searchLocalPath)
   {
     std::string path = sdf::filesystem::append(sdf::filesystem::current_path(),
-                                                filename);
+                                               filename);
     if (sdf::filesystem::exists(path))
     {
       return path;
