@@ -8,6 +8,7 @@ add_subdirectory(1.7)
 add_subdirectory(1.8)
 add_subdirectory(1.9)
 add_subdirectory(1.10)
+add_subdirectory(1.11)
 
 add_custom_target(schema)
 add_dependencies(schema schema1_10)
@@ -30,7 +31,7 @@ execute_process(
 if (GZ_PROGRAM)
 
   # Update this list as new sdformat spec versions are added.
-  set(sdf_desc_versions 1.4 1.5 1.6 1.7 1.8 1.9 1.10)
+  set(sdf_desc_versions 1.4 1.5 1.6 1.7 1.8 1.9 1.10 1.11)
 
   set(description_targets)
   foreach(desc_ver ${sdf_desc_versions})
