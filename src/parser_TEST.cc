@@ -836,6 +836,89 @@ TEST(Parser, ElementRemovedAfterDeprecation)
 }
 
 /////////////////////////////////////////////////
+/// Check for non SDF non URDF error on a string
+TEST(Parser, ReadStringErrorNotSDForURDF)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::SDFPtr sdf = InitSDF();
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <foo>
+    </foo>)";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+  ASSERT_EQ(errors.size(), 0u);
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "XML does not seem to be an SDFormat or an URDF string."));
+}
+
+/////////////////////////////////////////////////
+/// Check for non SDF non URDF error on a file
+TEST(Parser, ReadFileErrorNotSDForURDF)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "box.dae");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  ASSERT_EQ(errors.size(), 0u);
+  EXPECT_NE(std::string::npos, buffer.str().find(
+      "XML does not seem to be an SDFormat or an URDF file."));
+}
+
+/////////////////////////////////////////////////
+/// Check that malformed SDF files do not throw confusing error
+TEST(Parser, ReadFileMalformedSDFNoRobotError)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  // Check the old error is not printed anymore
+  EXPECT_EQ(std::string::npos, buffer.str().find(
+      "Could not find the 'robot' element in the xml file"));
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
