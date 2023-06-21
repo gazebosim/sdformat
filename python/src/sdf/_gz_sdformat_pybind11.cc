@@ -54,6 +54,7 @@
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyPolyline.hh"
+#include "pyProjector.hh"
 #include "pyRoot.hh"
 #include "pyScene.hh"
 #include "pySemanticPose.hh"
@@ -114,6 +115,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::definePlane(m);
   sdf::python::definePlugin(m);
   sdf::python::definePolyline(m);
+  sdf::python::defineProjector(m);
   sdf::python::defineRoot(m);
   sdf::python::defineScene(m);
   sdf::python::defineSemanticPose(m);

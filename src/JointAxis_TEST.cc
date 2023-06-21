@@ -199,9 +199,9 @@ TEST(DOMJointAxis, ToElement)
   sdf::ElementPtr xyzElem = elem->GetElement("xyz", errors);
   ASSERT_TRUE(errors.empty());
   gz::math::Vector3d xyz = elem->Get<gz::math::Vector3d>(
-      errors, "xyz", xyz).first;
+      errors, "xyz", gz::math::Vector3d()).first;
   ASSERT_TRUE(errors.empty());
-  EXPECT_EQ(gz::math::Vector3d::UnitY, axis.Xyz());
+  EXPECT_EQ(gz::math::Vector3d::UnitY, xyz);
   std::string expressedIn = elem->GetElement("xyz", errors)->Get<std::string>(
       errors, "expressed_in");
   ASSERT_TRUE(errors.empty());
@@ -210,55 +210,55 @@ TEST(DOMJointAxis, ToElement)
   sdf::ElementPtr dynElem = elem->GetElement("dynamics", errors);
   ASSERT_TRUE(errors.empty());
 
-  double damping;
+  double damping = 0;
   damping = dynElem->Get<double>(errors, "damping", damping).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(0.2, damping);
 
-  double friction;
+  double friction = 0;
   friction = dynElem->Get<double>(errors, "friction", friction).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1.3, friction);
 
-  double springReference;
+  double springReference = 0;
   springReference = dynElem->Get<double>(
       errors, "spring_reference", springReference).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(2.4, springReference);
 
-  double springStiffness;
+  double springStiffness = 0;
   springStiffness = dynElem->Get<double>(
       errors, "spring_stiffness", springStiffness).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(-1.2, springStiffness);
 
   sdf::ElementPtr limitElem = elem->GetElement("limit", errors);
-  double lower;
+  double lower = 0;
   lower = limitElem->Get<double>(errors, "lower", lower).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(-10.8, lower);
 
-  double upper;
+  double upper = 0;
   upper = limitElem->Get<double>(errors, "upper", upper).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(123.4, upper);
 
-  double effort;
+  double effort = 0;
   effort = limitElem->Get<double>(errors, "effort", effort).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(3.2, effort);
 
-  double maxVel;
+  double maxVel = 0;
   maxVel = limitElem->Get<double>(errors, "velocity", maxVel).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(54.2, maxVel);
 
-  double stiffness;
+  double stiffness = 0;
   stiffness = limitElem->Get<double>(errors, "stiffness", stiffness).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1e2, stiffness);
 
-  double dissipation;
+  double dissipation = 0;
   dissipation = limitElem->Get<double>(
       errors, "dissipation", dissipation).first;
   ASSERT_TRUE(errors.empty());
