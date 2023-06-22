@@ -183,7 +183,7 @@ namespace sdf
     /// \brief Error trying to find a file.
     FILE_NOT_FOUND,
 
-    /// \brief Error trying to access a pointe.
+    /// \brief Error trying to access a pointer.
     POINTER_ERROR,
   };
 
