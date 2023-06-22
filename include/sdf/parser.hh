@@ -607,7 +607,8 @@ namespace sdf
   /// \return True if all contained elements have do not share a name with
   /// sibling elements of the same type.
   SDFORMAT_VISIBLE
-  bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors);
+  bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem,
+                                    sdf::Errors &_errors);
 
   /// \brief Check that all sibling elements of the any type have unique names.
   /// This checks recursively and should check the files exhaustively
@@ -647,7 +648,8 @@ namespace sdf
   /// \param[out] _errors Vector of errors.
   /// \return True if all contained element names do not have the delimiter '::'
   SDFORMAT_VISIBLE
-  bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem, sdf::Errors &_errors);
+  bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem,
+                                            sdf::Errors &_errors);
 
   /// \brief Check whether the element should be validated. If this returns
   /// false, validators such as the unique name and reserve name checkers should

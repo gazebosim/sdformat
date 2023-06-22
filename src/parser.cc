@@ -879,14 +879,14 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
       else
       {
         _errors.push_back({ErrorCode::PARSING_ERROR,
-              "Failed to parse the URDF file after converting to SDFormat."});
+            "Failed to parse the URDF file after converting to SDFormat."});
         return false;
       }
     }
     else
     {
       _errors.push_back({ErrorCode::PARSING_ERROR,
-                        "XML does not seem to be an SDFormat or an URDF file."});
+          "XML does not seem to be an SDFormat or an URDF file."});
       return false;
     }
   }
@@ -972,14 +972,14 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
       else
       {
         _errors.push_back({ErrorCode::PARSING_ERROR,
-              "Failed to parse the URDF file after converting to SDFormat."});
+            "Failed to parse the URDF file after converting to SDFormat."});
         return false;
       }
     }
     else
     {
       _errors.push_back({ErrorCode::PARSING_ERROR,
-                        "XML does not seem to be an SDFormat or an URDF string."});
+          "XML does not seem to be an SDFormat or an URDF string."});
       return false;
     }
   }
@@ -2516,7 +2516,8 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
 }
 
 //////////////////////////////////////////////////
-bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
+bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem,
+                                          sdf::Errors &_errors)
 {
   if (!shouldValidateElement(_elem))
     return true;
