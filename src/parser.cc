@@ -878,8 +878,8 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
       }
       else
       {
-        sdferr << "Failed to parse the URDF file after converting to"
-               << " SDFormat.\n";
+        _errors.push_back({ErrorCode::PARSING_ERROR,
+              "Failed to parse the URDF file after converting to SDFormat."});
         return false;
       }
     }
@@ -971,8 +971,8 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
       }
       else
       {
-        sdferr << "Failed to parse the URDF file after converting to"
-               << " SDFormat\n";
+        _errors.push_back({ErrorCode::PARSING_ERROR,
+              "Failed to parse the URDF file after converting to SDFormat."});
         return false;
       }
     }
@@ -1141,7 +1141,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
 {
   if (!_xmlDoc)
   {
-    sdfwarn << "Could not parse the xml\n";
+    _errors.push_back({ErrorCode::WARNING, "Could not parse the xml."});
     return false;
   }
 
@@ -1179,7 +1179,6 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
-
       Converter::Convert(_errors, _xmlDoc, SDF::Version(), _config);
     }
 
@@ -1213,9 +1212,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
         && !recursiveSiblingNoDoubleColonInNames(_sdf, _errors))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
-          "Delimiter '::' found in attribute names of element <"
-          + _sdf->GetName() +
-          ">, which is not allowed in SDFormat >= 1.8"});
+          "Delimiter '::' found in attribute names of element <" +
+          _sdf->GetName() + ">, which is not allowed in SDFormat >= 1.8"});
       return false;
     }
   }
@@ -1763,7 +1761,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           {
             Error err(
                 ErrorCode::FILE_READ,
-                "Unable to read file[" + filename + "]",
+                "Unable to read file: [" + filename + "]",
                 _source,
                 uriElement->GetLineNum());
             err.SetXmlPath(uriXmlPath);
@@ -2527,7 +2525,7 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem, sdf::Errors &_e
   if (_elem->HasAttribute("name")
       && _elem->Get<std::string>("name").find("::") != std::string::npos)
   {
-    _errors.push_back({ErrorCode::PARSING_ERROR,
+    _errors.push_back({ErrorCode::RESERVED_NAME,
                       "Error: Detected delimiter '::' in element name in" +
                       _elem->ToString("")});
     result = false;
