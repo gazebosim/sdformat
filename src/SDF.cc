@@ -68,7 +68,8 @@ std::string findFile(
     bool _useCallback)
 {
   return findFile(
-      _errors, _filename, _searchLocalPath, _useCallback, ParserConfig::GlobalConfig());
+      _errors, _filename, _searchLocalPath,
+      _useCallback, ParserConfig::GlobalConfig());
 }
 
 /////////////////////////////////////////////////
