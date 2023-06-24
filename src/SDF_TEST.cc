@@ -772,7 +772,6 @@ TEST(SDF, ErrorOutput)
   EXPECT_NE(std::string::npos,
     errors[0].Message().find("Unable to parse sdf string[banana]"))
       << errors[0].Message();
-  std::cout << buffer.str() << std::endl;
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
