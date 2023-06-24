@@ -514,6 +514,19 @@ ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf, sdf::Errors &_errors)
 const std::string &SDF::EmbeddedSpec(
     const std::string &_filename, const bool _quiet)
 {
+  sdf::Errors errors;
+  const std::string &result = EmbeddedSpec(_filename, errors);
+  if (!_quiet)
+  {
+    sdf::throwOrPrintErrors(errors);
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+const std::string &SDF::EmbeddedSpec(
+    const std::string &_filename, sdf::Errors &_errors)
+{
   try
   {
     const std::string pathname = SDF::Version() + "/" + _filename;
@@ -521,9 +534,9 @@ const std::string &SDF::EmbeddedSpec(
   }
   catch(const std::out_of_range &)
   {
-    if (!_quiet)
-      sdferr << "Unable to find SDF filename[" << _filename << "] with "
-        << "version " << SDF::Version() << "\n";
+      _errors.push_back({sdf::ErrorCode::FILE_NOT_FOUND,
+          "Unable to find SDF filename[" + _filename + "] with " +
+          "version " + SDF::Version()});
   }
 
   // An empty SDF string is returned if a query into the embeddedSdf map fails.

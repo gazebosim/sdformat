@@ -276,6 +276,22 @@ namespace sdf
     public: static const std::string &EmbeddedSpec(
                 const std::string &_filename, const bool _quiet);
 
+    /// \brief Get a string representation of an SDF specification file.
+    /// This function uses a built-in version of a .sdf file located in
+    /// the sdf directory. The parser.cc code uses this function, which avoids
+    /// touching the filesystem.
+    ///
+    /// Most people should not use this function.
+    ///
+    /// \param[in] _filename Base name of the SDF specification file to
+    /// load. For example "root.sdf" or "world.sdf".
+    /// \param[out] _errors Vector of errors.
+    /// \return A string that contains the contents of the specified
+    /// _filename. An empty string is returned if the _filename could not be
+    /// found.
+    public: static const std::string &EmbeddedSpec(
+                const std::string &_filename, sdf::Errors &_errors);
+
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<SDFPrivate> dataPtr;
