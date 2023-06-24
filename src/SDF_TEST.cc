@@ -788,4 +788,32 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
+
+/////////////////////////////////////////////////
+TEST(SDF, FindFileModelSDFCurrDir)
+{
+  std::string currDir;
+
+  // Get current directory path from $PWD env variable
+  currDir = sdf::filesystem::current_path();
+
+  // A file named model.sdf in current directory
+  auto tempFile = currDir + "/model.sdf";
+
+  sdf::SDF tempSDF;
+  tempSDF.Write(tempFile);
+
+  // Check file was created
+  auto fp = fopen(tempFile.c_str(), "r");
+  ASSERT_NE(nullptr, fp);
+
+  // Get path of the file returned from findFile()
+  std::string foundFile = sdf::findFile("model.sdf", true, true);
+
+  // Check that the returned file is model.sdf from curr directory
+  ASSERT_EQ(tempFile, foundFile);
+
+  // Cleanup
+  ASSERT_EQ(std::remove(tempFile.c_str()), 0);
+}
 #endif  // _WIN32
