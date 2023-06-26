@@ -808,7 +808,7 @@ TEST(SDF, FindFileModelSDFCurrDir)
   ASSERT_NE(nullptr, fp);
 
   // Get path of the file returned from findFile()
-  std::string foundFile = sdf::findFile("model.sdf", true, true);
+  std::string foundFile = sdf::findFile("model.sdf", true, false);
 
   // Check that the returned file is model.sdf from curr directory
   ASSERT_EQ(tempFile, foundFile);
