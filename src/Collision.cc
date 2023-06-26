@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
+#include <gz/math/Material.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
@@ -45,6 +46,9 @@ class sdf::Collision::Implementation
 
   /// \brief The collision's surface parameters.
   public: sdf::Surface surface;
+
+  /// \brief The collision's material parameters.
+  public: gz::math::Material material;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -107,6 +111,16 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   Errors geomErr = this->dataPtr->geom.Load(
       _sdf->GetElement("geometry"), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
+
+  if (_sdf->HasElement("material_density"))
+  {
+    double density = _sdf->Get<double>("material_density");
+    this->dataPtr->material.SetDensity(density);
+  }
+  else
+  {
+    this->dataPtr->material.SetDensity(1.0);
+  }
 
   // Load the surface parameters if they are given
   if (_sdf->HasElement("surface"))
