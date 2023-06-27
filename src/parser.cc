@@ -2414,6 +2414,8 @@ bool checkFrameAttachedToNames(const sdf::Root *_root, sdf::Errors &_errors)
 
   return result;
 }
+
+//////////////////////////////////////////////////
 bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
   sdf::Errors errors;
