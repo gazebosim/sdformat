@@ -157,7 +157,8 @@ void updateParams(const ParserConfig &_config,
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element <" + std::string(childElemXml->Name())
         + " element_id='" + childElemXml->Attribute("element_id") + "'>. " +
-        "Skipping element modification:\n" + ElementToString(childElemXml, _errors)
+        "Skipping element modification:\n" +
+        ElementToString(childElemXml, _errors)
       });
       continue;
     }
@@ -557,7 +558,8 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
           "Attribute [" + attrName + "] is invalid. "
-          "Skipping attribute modification in:\n" + ElementToString(_xml, _errors)
+          "Skipping attribute modification in:\n" +
+          ElementToString(_xml, _errors)
         });
         continue;
       }
