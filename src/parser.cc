@@ -2452,6 +2452,7 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
 
   return result;
 }
+
 //////////////////////////////////////////////////
 bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 {
