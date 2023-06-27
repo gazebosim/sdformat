@@ -164,8 +164,9 @@ static inline bool _initFile(const std::string &_filename,
   auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
-    _errors.push_back({ErrorCode::FILE_READ, "Unable to load file[" +
-                      _filename + xmlDoc.ErrorStr() + "]"});
+    _errors.emplace_back(sdf::Error(ErrorCode::FILE_READ,
+                         "Unable to load file[" + _filename +
+                         xmlDoc.ErrorStr() + "]"));
     return false;
   }
 

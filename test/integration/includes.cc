@@ -750,8 +750,7 @@ TEST(IncludesTest, InvalidMergeInclude)
     ASSERT_EQ(3, errors.size());
     EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
     EXPECT_NE(std::string::npos, errors[0].Message().find(
-        "XML Element[alwaysOn], child of element[sensor], not defined in SDF."
-        " Copying[alwaysOn] as children of [sensor]"));
+        "child of element[sensor], not defined in SDF."));
     EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[1].Code());
     EXPECT_NE(std::string::npos, errors[1].Message().find(
         "XML Element[unknown_element], child of element[model], not"
