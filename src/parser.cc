@@ -425,12 +425,6 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initFile(const std::string &_filename, SDFPtr _sdf, sdf::Errors _errors)
-{
-  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf, _errors);
-}
-
-//////////////////////////////////////////////////
 bool initFile(const std::string &_filename, const ParserConfig &_config,
               SDFPtr _sdf)
 {
@@ -438,7 +432,6 @@ bool initFile(const std::string &_filename, const ParserConfig &_config,
   bool result = initFile(_filename, _config, _sdf, errors);
   sdf::throwOrPrintErrors(errors);
   return result;
-
 }
 
 //////////////////////////////////////////////////
@@ -460,13 +453,6 @@ bool initFile(const std::string &_filename, const ParserConfig &_config,
 bool initFile(const std::string &_filename, ElementPtr _sdf)
 {
   return initFile(_filename, ParserConfig::GlobalConfig(), _sdf);
-}
-
-//////////////////////////////////////////////////
-bool initFile(const std::string &_filename, ElementPtr _sdf,
-              sdf::Errors &_errors)
-{
-  return initFile(_filename, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -527,13 +513,6 @@ bool initString(const std::string &_xmlString, SDFPtr _sdf)
                            _sdf, errors);
   sdf::throwOrPrintErrors(errors);
   return result;
-}
-
-//////////////////////////////////////////////////
-bool initString(const std::string &_xmlString, SDFPtr _sdf,
-                sdf::Errors &_errors)
-{
-  return initString(_xmlString, ParserConfig::GlobalConfig(), _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -1366,7 +1345,7 @@ std::string getModelFilePath(const std::string &_modelDirPath,
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      _errors.push_back({ErrorCode::FILE_NOT_FOUND,
+      _errors.push_back({ErrorCode::FILE_READ,
               "Could not find model.config or manifest.xml in [" +
               _modelDirPath + "]"});
       return std::string();
@@ -1682,7 +1661,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, _config, refSDF);
+    initFile(refFilename, _config, refSDF, _errors);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 

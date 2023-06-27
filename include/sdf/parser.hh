@@ -79,15 +79,6 @@ namespace sdf
 
   /// \brief Initialize the SDF interface using a file
   /// \param[in] _filename Name of the SDF file
-  /// \param[out] _sdf Pointer to an SDF object.
-  /// \param[out] _errors Vector of errors.
-  /// \return True if successful.
-  SDFORMAT_VISIBLE
-  bool initFile(const std::string &_filename, SDFPtr _sdf,
-                sdf::Errors &_errors);
-
-  /// \brief Initialize the SDF interface using a file
-  /// \param[in] _filename Name of the SDF file
   /// \param[in] _config Custom parser configuration
   /// \param[out] _sdf Pointer to an SDF object.
   /// \return True if successful.
@@ -112,15 +103,6 @@ namespace sdf
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool initFile(const std::string &_filename, ElementPtr _sdf);
-
-  /// \brief Initialize an SDF Element interface using a file
-  /// \param[in] _filename Name of the SDF file
-  /// \param[out] _sdf Pointer to an SDF Element object.
-  /// \param[out] _errors Vector of errors.
-  /// \return True if successful.
-  SDFORMAT_VISIBLE
-  bool initFile(const std::string &_filename, ElementPtr _sdf,
-                sdf::Errors &_errors);
 
   /// \brief Initialize an SDFElement interface using a file
   /// \param[in] _filename Name of the SDF file
@@ -147,15 +129,6 @@ namespace sdf
   /// \return True if successful.
   SDFORMAT_VISIBLE
   bool initString(const std::string &_xmlString, SDFPtr _sdf);
-
-  /// \brief Initialize the SDF interface using a string
-  /// \param[in] _xmlString XML string to be parsed.
-  /// \param[out] _sdf Pointer to an SDF object.
-  /// \param[out] _errors Vector of errors.
-  /// \return True if successful.
-  SDFORMAT_VISIBLE
-  bool initString(const std::string &_xmlString, SDFPtr _sdf,
-                  sdf::Errors &_errors);
 
   /// \brief Initialize the SDF interface using a string
   /// \param[in] _xmlString XML string to be parsed.

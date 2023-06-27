@@ -180,9 +180,6 @@ namespace sdf
     /// \brief Generic error during parsing.
     PARSING_ERROR,
 
-    /// \brief Error trying to find a file.
-    FILE_NOT_FOUND,
-
     /// \brief Error trying to access a pointer.
     POINTER_ERROR,
   };
