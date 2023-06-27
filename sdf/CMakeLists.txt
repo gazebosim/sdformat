@@ -11,7 +11,7 @@ add_subdirectory(1.10)
 add_subdirectory(1.11)
 
 add_custom_target(schema)
-add_dependencies(schema schema1_10)
+add_dependencies(schema schema1_11)
 
 if (NOT Python3_Interpreter_FOUND)
   gz_build_error("Python is required to generate the C++ file with the SDF content")
