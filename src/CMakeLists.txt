@@ -90,7 +90,7 @@ if (BUILD_TESTING)
   if (TARGET UNIT_XmlUtils_TEST)
     target_link_libraries(UNIT_XmlUtils_TEST
       TINYXML2::TINYXML2)
-    target_sources(UNIT_XmlUtils_TEST PRIVATE XmlUtils.cc)
+    target_sources(UNIT_XmlUtils_TEST PRIVATE XmlUtils.cc Utils.cc)
   endif()
 
   if (TARGET UNIT_parser_urdf_TEST)
@@ -100,7 +100,8 @@ if (BUILD_TESTING)
     target_sources(UNIT_parser_urdf_TEST PRIVATE
       SDFExtension.cc
       XmlUtils.cc
-      parser_urdf.cc)
+      parser_urdf.cc
+      Utils.cc)
   endif()
 endif()
 
