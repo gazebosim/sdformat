@@ -55,7 +55,7 @@ TEST(IncludesTest, Includes)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   ASSERT_NE(nullptr, root.Element());
   EXPECT_EQ(worldFile, root.Element()->FilePath());
