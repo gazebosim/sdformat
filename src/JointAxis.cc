@@ -99,62 +99,53 @@ Errors JointAxis::Load(ElementPtr _sdf)
 
   this->dataPtr->sdf = _sdf;
 
-  // Read the xyz values.
-  if (_sdf->HasElement("xyz"))
+  // Read the xyz values. The xyz element is required, so it will always be
+  // present, populated from default values if necessary.
   {
     using gz::math::Vector3d;
     auto errs = this->SetXyz(_sdf->Get<Vector3d>("xyz",
         this->dataPtr->xyz).first);
     std::copy(errs.begin(), errs.end(), std::back_inserter(errors));
-    auto e = _sdf->GetElement("xyz");
+    auto e = _sdf->GetElement("xyz", errors);
     if (e->HasAttribute("expressed_in"))
     {
-      this->dataPtr->xyzExpressedIn = e->Get<std::string>("expressed_in");
+      this->dataPtr->xyzExpressedIn = e->Get<std::string>(
+          errors, "expressed_in");
     }
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "The xyz element in joint axis is required"});
   }
 
   // Load dynamic values, if present
   if (_sdf->HasElement("dynamics"))
   {
-    sdf::ElementPtr dynElement = _sdf->GetElement("dynamics");
+    sdf::ElementPtr dynElement = _sdf->GetElement("dynamics", errors);
 
-    this->dataPtr->damping = dynElement->Get<double>("damping",
-        this->dataPtr->damping).first;
-    this->dataPtr->friction = dynElement->Get<double>("friction",
-        this->dataPtr->friction).first;
-    this->dataPtr->springReference = dynElement->Get<double>("spring_reference",
-        this->dataPtr->springReference).first;
-    this->dataPtr->springStiffness = dynElement->Get<double>("spring_stiffness",
-        this->dataPtr->springStiffness).first;
+    this->dataPtr->damping = dynElement->Get<double>(errors,
+        "damping", this->dataPtr->damping).first;
+    this->dataPtr->friction = dynElement->Get<double>(errors,
+        "friction", this->dataPtr->friction).first;
+    this->dataPtr->springReference = dynElement->Get<double>(errors,
+        "spring_reference", this->dataPtr->springReference).first;
+    this->dataPtr->springStiffness = dynElement->Get<double>(errors,
+        "spring_stiffness", this->dataPtr->springStiffness).first;
   }
 
-  // Load limit values
-  if (_sdf->HasElement("limit"))
+  // Load limit values. The limit element is required, so it will always be
+  // present, populated from default values if necessary.
   {
-    sdf::ElementPtr limitElement = _sdf->GetElement("limit");
+    sdf::ElementPtr limitElement = _sdf->GetElement("limit", errors);
 
-    this->dataPtr->lower = limitElement->Get<double>("lower",
+    this->dataPtr->lower = limitElement->Get<double>(errors, "lower",
         this->dataPtr->lower).first;
-    this->dataPtr->upper = limitElement->Get<double>("upper",
+    this->dataPtr->upper = limitElement->Get<double>(errors, "upper",
         this->dataPtr->upper).first;
-    this->dataPtr->effort = limitElement->Get<double>("effort",
+    this->dataPtr->effort = limitElement->Get<double>(errors, "effort",
         this->dataPtr->effort).first;
-    this->dataPtr->maxVelocity = limitElement->Get<double>("velocity",
+    this->dataPtr->maxVelocity = limitElement->Get<double>(errors, "velocity",
         this->dataPtr->maxVelocity).first;
-    this->dataPtr->stiffness = limitElement->Get<double>("stiffness",
+    this->dataPtr->stiffness = limitElement->Get<double>(errors, "stiffness",
         this->dataPtr->stiffness).first;
-    this->dataPtr->dissipation = limitElement->Get<double>("dissipation",
-        this->dataPtr->dissipation).first;
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "A limit element is a required child of a joint axis"});
+    this->dataPtr->dissipation = limitElement->Get<double>(errors,
+        "dissipation", this->dataPtr->dissipation).first;
   }
 
   return errors;
@@ -377,34 +368,52 @@ sdf::ElementPtr JointAxis::Element() const
 /////////////////////////////////////////////////
 sdf::ElementPtr JointAxis::ToElement(unsigned int _index) const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors, _index);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors,
+                                     unsigned int _index) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("joint.sdf", elem);
 
   std::string axisElemName = "axis";
   if (_index > 0u)
     axisElemName += std::to_string(_index + 1);
-  sdf::ElementPtr axisElem = elem->GetElement(axisElemName);
-  sdf::ElementPtr xyzElem = axisElem->GetElement("xyz");
-  xyzElem->Set<gz::math::Vector3d>(this->Xyz());
+  sdf::ElementPtr axisElem = elem->GetElement(axisElemName, _errors);
+  sdf::ElementPtr xyzElem = axisElem->GetElement("xyz", _errors);
+  xyzElem->Set<gz::math::Vector3d>(_errors, this->Xyz());
   if (!this->XyzExpressedIn().empty())
   {
     xyzElem->GetAttribute("expressed_in")->Set<std::string>(
-        this->XyzExpressedIn());
+        this->XyzExpressedIn(), _errors);
   }
-  sdf::ElementPtr dynElem = axisElem->GetElement("dynamics");
-  dynElem->GetElement("damping")->Set<double>(this->Damping());
-  dynElem->GetElement("friction")->Set<double>(this->Friction());
-  dynElem->GetElement("spring_reference")->Set<double>(
-      this->SpringReference());
-  dynElem->GetElement("spring_stiffness")->Set<double>(
-      this->SpringStiffness());
+  sdf::ElementPtr dynElem = axisElem->GetElement("dynamics", _errors);
+  dynElem->GetElement("damping", _errors)->Set<double>(
+      _errors, this->Damping());
+  dynElem->GetElement("friction", _errors)->Set<double>(
+      _errors, this->Friction());
+  dynElem->GetElement("spring_reference", _errors)->Set<double>(
+      _errors, this->SpringReference());
+  dynElem->GetElement("spring_stiffness", _errors)->Set<double>(
+      _errors, this->SpringStiffness());
 
-  sdf::ElementPtr limitElem = axisElem->GetElement("limit");
-  limitElem->GetElement("lower")->Set<double>(this->Lower());
-  limitElem->GetElement("upper")->Set<double>(this->Upper());
-  limitElem->GetElement("effort")->Set<double>(this->Effort());
-  limitElem->GetElement("velocity")->Set<double>(this->MaxVelocity());
-  limitElem->GetElement("stiffness")->Set<double>(this->Stiffness());
-  limitElem->GetElement("dissipation")->Set<double>(this->Dissipation());
+  sdf::ElementPtr limitElem = axisElem->GetElement("limit", _errors);
+  limitElem->GetElement("lower", _errors)->Set<double>(
+      _errors, this->Lower());
+  limitElem->GetElement("upper", _errors)->Set<double>(
+      _errors, this->Upper());
+  limitElem->GetElement("effort", _errors)->Set<double>(
+      _errors, this->Effort());
+  limitElem->GetElement("velocity", _errors)->Set<double>(
+      _errors, this->MaxVelocity());
+  limitElem->GetElement("stiffness", _errors)->Set<double>(
+      _errors, this->Stiffness());
+  limitElem->GetElement("dissipation", _errors)->Set<double>(
+      _errors, this->Dissipation());
   return axisElem;
 }
