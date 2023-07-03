@@ -164,20 +164,39 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
     if (inertialElem->HasElement("pose"))
       loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
 
-    // Get the mass.
-    mass = inertialElem->Get<double>("mass", 1.0).first;
-
     if (inertialElem->HasElement("inertia"))
     {
       sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
 
-      xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
-      xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
-      xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
+      if (inertiaElem->Get<bool>("auto"))
+      {
+        std::cout << "Inertia is set to automatic" << std::endl;
+        for(auto collision : this->dataPtr->collisions)
+        {
+          std::cout << "Density of the collision is: " << collision.Density();
+          std::cout << std::endl;
+          Errors inertiaErrors = collision.MassMatrix(xxyyzz, xyxzyz, mass);
+          std::cout << "Inertia of " << this->dataPtr->name << std::endl;
+          std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
+          std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+          std::cout << "Mass of " << this->dataPtr->name << " is " << mass << std::endl;
+          errors.insert(errors.end(), inertiaErrors.begin(), 
+              inertiaErrors.end());
+        }
+      }
+      else
+      {
+        std::cout << "Inertia is not set to automatic" << std::endl;
+        // Get the mass.
+        mass = inertialElem->Get<double>("mass", 1.0).first;
+        xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
+        xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
+        xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
 
-      xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
-      xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
-      xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+        xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
+        xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
+        xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+      }
     }
 
     if (inertialElem->HasElement("fluid_added_mass"))
@@ -236,6 +255,12 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       }
     }
   }
+  std::cout << "--------------------------------------" << std::endl;
+  std::cout << "Inertia of " << this->dataPtr->name << std::endl;
+  std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
+  std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+  std::cout << "Mass of " << this->dataPtr->name << " is " << mass << std::endl;
+
   if (!this->dataPtr->inertial.SetMassMatrix(
       gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
