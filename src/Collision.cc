@@ -17,7 +17,6 @@
 #include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
-#include <gz/math/Material.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
@@ -47,8 +46,8 @@ class sdf::Collision::Implementation
   /// \brief The collision's surface parameters.
   public: sdf::Surface surface;
 
-  /// \brief The collision's material parameters.
-  public: gz::math::Material material;
+  /// \brief Density of the collision. Default is 1.0
+  public: double density;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -112,14 +111,17 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
       _sdf->GetElement("geometry"), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
+  // Set the density value for the collision material
   if (_sdf->HasElement("material_density"))
   {
-    double density = _sdf->Get<double>("material_density");
-    this->dataPtr->material.SetDensity(density);
+    this->dataPtr->density = _sdf->Get<double>("material_density");
   }
   else
   {
-    this->dataPtr->material.SetDensity(1.0);
+    this->dataPtr->density = 1.0;
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Collision is missing a <material_density> child "
+        "element. Using a density of 1.0"});
   }
 
   // Load the surface parameters if they are given
