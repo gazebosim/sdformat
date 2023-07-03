@@ -14,7 +14,11 @@
  * limitations under the License.
  *
 */
+#include <optional>
 #include <sstream>
+
+#include <gz/math/Material.hh>
+#include <gz/math/MassMatrix3.hh>
 #include "sdf/Capsule.hh"
 #include "sdf/parser.hh"
 
@@ -134,6 +138,14 @@ const gz::math::Capsuled &Capsule::Shape() const
 gz::math::Capsuled &Capsule::Shape()
 {
   return this->dataPtr->capsule;
+}
+
+/////////////////////////////////////////////////
+std::optional< gz::math::MassMatrix3d > Capsule::MassMatrix(const double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->capsule.SetMat(material);
+  return this->dataPtr->capsule.MassMatrix();
 }
 
 /////////////////////////////////////////////////

@@ -14,7 +14,11 @@
  * limitations under the License.
  *
 */
+#include <optional>
+
 #include <gz/math/Vector3.hh>
+#include <gz/math/Material.hh>
+#include <gz/math/MassMatrix3.hh>
 #include "sdf/Box.hh"
 #include "sdf/parser.hh"
 
@@ -112,6 +116,14 @@ const gz::math::Boxd &Box::Shape() const
 gz::math::Boxd &Box::Shape()
 {
   return this->dataPtr->box;
+}
+
+/////////////////////////////////////////////////
+std::optional< gz::math::MassMatrix3d > Box::MassMatrix(const double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->box.SetMaterial(material);
+  return this->dataPtr->box.MassMatrix();
 }
 
 /////////////////////////////////////////////////

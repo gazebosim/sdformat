@@ -17,7 +17,10 @@
 #ifndef SDF_CYLINDER_HH_
 #define SDF_CYLINDER_HH_
 
+#include <optional>
+
 #include <gz/math/Cylinder.hh>
+#include <gz/math/MassMatrix3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -71,6 +74,9 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Cylinder.
     /// \return A reference to a gz::math::Cylinderd object.
     public: gz::math::Cylinderd &Shape();
+
+    /// \brief Calculate an return the Mass Matrix values for the Cylinder
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// cylinder.

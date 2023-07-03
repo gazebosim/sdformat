@@ -17,7 +17,10 @@
 #ifndef SDF_CAPSULE_HH_
 #define SDF_CAPSULE_HH_
 
+#include <optional>
+
 #include <gz/math/Capsule.hh>
+#include <gz/math/MassMatrix3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -71,6 +74,9 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Capsule.
     /// \return A reference to a gz::math::Capsuled object.
     public: gz::math::Capsuled &Shape();
+
+    /// \brief Calculate an return the Mass Matrix values for the Capsule
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.

@@ -116,6 +116,14 @@ gz::math::Ellipsoidd &Ellipsoid::Shape()
 }
 
 /////////////////////////////////////////////////
+std::optional< gz::math::MassMatrix3d > Ellipsoid::MassMatrix(const double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->ellipsoid.SetMat(material);
+  return this->dataPtr->ellipsoid.MassMatrix();
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Ellipsoid::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);

@@ -17,8 +17,11 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
+#include <optional>
+
 #include <gz/math/Box.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/math/MassMatrix3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -64,6 +67,9 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Box.
     /// \return A reference to a gz::math::Boxd object.
     public: gz::math::Boxd &Shape();
+
+    /// \brief Calculate an return the Mass Matrix values for the Box
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// box.

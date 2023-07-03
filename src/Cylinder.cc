@@ -136,6 +136,13 @@ gz::math::Cylinderd &Cylinder::Shape()
   return this->dataPtr->cylinder;
 }
 
+std::optional< gz::math::MassMatrix3d > Cylinder::MassMatrix(const double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->cylinder.SetMat(material);
+  return this->dataPtr->cylinder.MassMatrix();
+}
+
 /////////////////////////////////////////////////
 sdf::ElementPtr Cylinder::ToElement() const
 {

@@ -114,6 +114,14 @@ sdf::ElementPtr Sphere::Element() const
 }
 
 /////////////////////////////////////////////////
+std::optional< gz::math::MassMatrix3d > Sphere::MassMatrix(const double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->sphere.SetMaterial(material);
+  return this->dataPtr->sphere.MassMatrix();
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Sphere::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);

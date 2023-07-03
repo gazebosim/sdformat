@@ -17,6 +17,9 @@
 #ifndef SDF_ELLIPSOID_HH_
 #define SDF_ELLIPSOID_HH_
 
+#include <optional>
+
+#include <gz/math/MassMatrix3.hh>
 #include <gz/math/Ellipsoid.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
@@ -63,6 +66,9 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Ellipsoid.
     /// \return A reference to a gz::math::Ellipsoidd object.
     public: gz::math::Ellipsoidd &Shape();
+
+    /// \brief Calculate an return the Mass Matrix values for the Cylinder
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// ellipsoid.

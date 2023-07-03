@@ -17,6 +17,9 @@
 #ifndef SDF_SPHERE_HH_
 #define SDF_SPHERE_HH_
 
+#include <optional>
+
+#include <gz/math/MassMatrix3.hh>
 #include <gz/math/Sphere.hh>
 #include <gz/utils/ImplPtr.hh>
 
@@ -64,6 +67,9 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Calculate an return the Mass Matrix values for the Cylinder
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// sphere.
