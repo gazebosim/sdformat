@@ -17,6 +17,7 @@
 
 #include <optional>
 
+#include <gz/math/MassMatrix3.hh>
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -301,6 +302,34 @@ const std::vector<Polyline> &Geometry::PolylineShape() const
 void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
 {
   this->dataPtr->polylines = _polylines;
+}
+
+std::optional< gz::math::MassMatrix3d > Geometry::MassMatrix(const double _density)
+{
+  std::optional< gz::math::MassMatrix3d > massMat;
+
+  switch (this->dataPtr->type)
+  {
+    case GeometryType::BOX:
+      massMat = this->dataPtr->box->MassMatrix(_density);
+      break;
+    case GeometryType::CYLINDER:
+      massMat = this->dataPtr->cylinder->MassMatrix(_density);
+      break;
+    case GeometryType::SPHERE:
+      massMat = this->dataPtr->sphere->MassMatrix(_density);
+      break;
+    case GeometryType::CAPSULE:
+      massMat = this->dataPtr->capsule->MassMatrix(_density);
+      break;
+    case GeometryType::ELLIPSOID:
+      massMat = this->dataPtr->ellipsoid->MassMatrix(_density);
+      break;
+    default:
+      break;
+  }
+  
+  return massMat;
 }
 
 /////////////////////////////////////////////////
