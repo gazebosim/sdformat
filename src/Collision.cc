@@ -229,6 +229,36 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
+Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz, 
+        gz::math::Vector3d &_xyxzyx, double &_mass)
+{
+  Errors errors;
+
+  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density);
+
+  if (!massMat)
+  {
+    errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+        "Inertia Calculated for collision: " +
+        this->dataPtr->name + " seems invalid."});
+  }
+  else
+  {
+    _xxyyzz.X(massMat.value().Ixx());
+    _xxyyzz.Y(massMat.value().Iyy());
+    _xxyyzz.Z(massMat.value().Izz());
+
+    _xyxzyx.X(massMat.value().Ixy());
+    _xyxzyx.Y(massMat.value().Ixz());
+    _xyxzyx.Z(massMat.value().Iyz());
+
+    _mass = massMat.value().Mass();
+  }
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Collision::Element() const
 {
   return this->dataPtr->sdf;

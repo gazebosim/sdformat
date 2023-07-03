@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
@@ -128,6 +129,16 @@ namespace sdf
     /// poses.
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Calculate and return the MassMatrix for the collision
+    /// \param[in] _xxyyzz A vector 3d representing the diagonal elements
+    /// of the mass matrix
+    /// \param[in] _xyxzyx A vector 3d representing the off-diagonal elements
+    /// of the mass matrix
+    /// \param[in] _mass A double representing the mass of the collision
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error
+    public: Errors MassMatrix(gz::math::Vector3d &_xxyyzz, gz::math::Vector3d &_xyxzyz, double &_mass);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
