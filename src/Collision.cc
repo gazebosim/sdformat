@@ -146,6 +146,18 @@ void Collision::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+double Collision::Density() const
+{
+  return this->dataPtr->density;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetDensity(const double _density)
+{
+  this->dataPtr->density = _density;
+}
+
+/////////////////////////////////////////////////
 const Geometry *Collision::Geom() const
 {
   return &this->dataPtr->geom;

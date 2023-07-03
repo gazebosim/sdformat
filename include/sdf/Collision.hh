@@ -75,6 +75,16 @@ namespace sdf
     /// \param[in] _name Name of the collision.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get the density of the collision.
+    /// The density of the collision must be unique within the scope of a Link.
+    /// \return Density of the collision.
+    public: double Density() const;
+
+    /// \brief Set the density of the collision.
+    /// The density of the collision must be unique within the scope of a Link.
+    /// \param[in] _name Density of the collision.
+    public: void SetDensity(const double density);
+
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
