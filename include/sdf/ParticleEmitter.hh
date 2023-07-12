@@ -37,7 +37,7 @@ namespace sdf
 
   /// \enum ParticleEmitterType
   /// \brief The set of particle emitter types.
-  // Developer note: Make sure to update emitterTypeStrs in the source
+  // Developer note: Make sure to update kEmitterTypeStrs in the source
   // file when changing this enum.
   enum class ParticleEmitterType
   {

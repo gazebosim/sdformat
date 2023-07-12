@@ -90,7 +90,7 @@ class DirIter::Implementation
 
 #ifndef _WIN32
 
-static const char preferred_separator = '/';
+static const char kSdfFileSystemPreferredSeparator = '/';
 
 //////////////////////////////////////////////////
 bool exists(const std::string &_path)
@@ -210,7 +210,7 @@ void DirIter::close_handle()
 
 #else  // Windows
 
-static const char preferred_separator = '\\';
+static const char kSdfFileSystemPreferredSeparator = '\\';
 
 //////////////////////////////////////////////////
 static bool not_found_error(int _errval)
@@ -496,7 +496,7 @@ void DirIter::close_handle()
 //////////////////////////////////////////////////
 const std::string separator(const std::string &_p)
 {
-  return _p + preferred_separator;
+  return _p + kSdfFileSystemPreferredSeparator;
 }
 
 //////////////////////////////////////////////////
@@ -509,7 +509,7 @@ std::string basename(const std::string &_path)
 
   for (size_t i = 0; i < _path.length(); ++i)
   {
-    if (_path[i] == preferred_separator)
+    if (_path[i] == kSdfFileSystemPreferredSeparator)
     {
       if (i == (_path.length() - 1))
       {
@@ -519,7 +519,7 @@ std::string basename(const std::string &_path)
         // basename is empty, we return just a "/".
         if (basename.size() == 0)
         {
-          basename.push_back(preferred_separator);
+          basename.push_back(kSdfFileSystemPreferredSeparator);
         }
         break;
       }
@@ -556,7 +556,7 @@ DirIter::DirIter() : dataPtr(gz::utils::MakeUniqueImpl<Implementation>())
 //////////////////////////////////////////////////
 std::string DirIter::operator*() const
 {
-  return this->dataPtr->dirname + preferred_separator +
+  return this->dataPtr->dirname + kSdfFileSystemPreferredSeparator +
     this->dataPtr->current;
 }
 

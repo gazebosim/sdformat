@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include <gz/utils/NeverDestroyed.hh>
 #include <sdf/sdf_config.h>
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
@@ -35,7 +36,21 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  const std::string kSdfScopeDelimiter = "::";
+  namespace internal
+  {
+    /// \brief Initializes the scope delimiter as a function-local static
+    /// variable so it can be used to initialize kSdfScopeDelimiter.
+    /// \note This should not be used directly in user code. It will likely be
+    /// removed in libsdformat 15 with kSdfScopeDelimiter.
+    SDFORMAT_VISIBLE const std::string &SdfScopeDelimiter();
+  }  // namespace internal
+
+  constexpr std::string_view kScopeDelimiter{"::"};
+
+  // Deprecated because it violates the Google Style Guide as it is not
+  // trivially destructible. Please use sdf::kScopeDelimiter instead.
+  GZ_DEPRECATED(14)
+  inline const std::string &kSdfScopeDelimiter = internal::SdfScopeDelimiter();
 
   /// \brief The source path replacement if it was parsed from a string,
   /// instead of a file.
