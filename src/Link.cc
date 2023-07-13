@@ -170,13 +170,51 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
 
       if (inertiaElem->Get<bool>("auto"))
       {
+        std::cout << "Inertia is set to automatic" << std::endl;
+        gz::math::Inertiald totalInertia;
+
         for(auto collision : this->dataPtr->collisions)
         {
-
-          Errors inertiaErrors = collision.MassMatrix(xxyyzz, xyxzyz, mass);
+          gz::math::Inertiald collisionInertia;
+          std::cout << "Density of the collision is: " << collision.Density();
+          std::cout << std::endl;
+          Errors inertiaErrors = collision.MassMatrix(collisionInertia);
+          
+          // Get pose of collision w.r.t inertial frame
+          collisionInertia.SetPose(inertiaPose);
+          std::string collisionName = collision.Name();
+          Errors resolvePoseErrors = this->ResolveInertial(collisionInertia, collisionName);
+          std::cout << "Pose of Inertia w.r.t Collision: ";
+          std::cout << collisionInertia.Pose() << std::endl;
+          std::cout << "Pose of collision w.r.t Inertial: ";
+          std::cout << collisionInertia.Pose().Inverse() << std::endl;
+          collisionInertia.SetPose(collisionInertia.Pose().Inverse());
+          errors.insert(errors.end(), resolvePoseErrors.begin(), resolvePoseErrors.end());
+          
+          std::cout << "Inertia of " << collision.Name() << std::endl;
+          std::cout << collisionInertia.MassMatrix().Ixx() << " , " << collisionInertia.MassMatrix().Iyy() << " , " << collisionInertia.MassMatrix().Izz() << std::endl;
+          std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+          std::cout << "Mass of " << collision.Name() << " is " << collisionInertia.MassMatrix().Mass() << std::endl;
           errors.insert(errors.end(), inertiaErrors.begin(), 
               inertiaErrors.end());
+          
+          totalInertia = totalInertia + collisionInertia;
         }
+        
+        std::cout << "--------------------------------------" << std::endl;
+        mass = totalInertia.MassMatrix().Mass();
+        xxyyzz.X() = totalInertia.MassMatrix().Ixx();
+        xxyyzz.Y() = totalInertia.MassMatrix().Iyy();
+        xxyyzz.Z() = totalInertia.MassMatrix().Izz();
+
+        xyxzyz.X() = totalInertia.MassMatrix().Ixy();
+        xyxzyz.Y() = totalInertia.MassMatrix().Ixz();
+        xyxzyz.Z() = totalInertia.MassMatrix().Iyz();
+
+        std::cout << "Total Inertia of " << this->dataPtr->name << std::endl;
+        std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
+        std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+        std::cout << "Total Mass of " << this->dataPtr->name << " is " << mass << std::endl;
       }
       else
       {
@@ -505,7 +543,9 @@ Errors Link::ResolveInertial(
   auto errors = this->SemanticPose().Resolve(linkPose, _resolveTo);
   if (errors.empty())
   {
-    _inertial = this->dataPtr->inertial;
+    //_inertial = this->dataPtr->inertial;
+    std::cout << "linkPose: " << linkPose << std::endl;
+    std::cout << "inertial.Pose(): " << _inertial.Pose() << std::endl;
     _inertial.SetPose(linkPose * _inertial.Pose());
   }
   return errors;
