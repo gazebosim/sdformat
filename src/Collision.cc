@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
@@ -228,8 +229,7 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz, 
-        gz::math::Vector3d &_xyxzyx, double &_mass)
+Errors Collision::MassMatrix(gz::math::Inertiald &_inertial)
 {
   Errors errors;
 
@@ -243,15 +243,12 @@ Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz,
   }
   else
   {
-    _xxyyzz.X(massMat.value().Ixx());
-    _xxyyzz.Y(massMat.value().Iyy());
-    _xxyyzz.Z(massMat.value().Izz());
-
-    _xyxzyx.X(massMat.value().Ixy());
-    _xyxzyx.Y(massMat.value().Ixz());
-    _xyxzyx.Z(massMat.value().Iyz());
-
-    _mass = massMat.value().Mass();
+    if(!_inertial.SetMassMatrix(massMat.value()))
+    {
+      errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+          "Inertia Calculated for collision: " + 
+          this->dataPtr->name + " seems invalid"});
+    }
   }
 
   return errors;
