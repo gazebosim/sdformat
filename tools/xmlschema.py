@@ -122,11 +122,13 @@ def print_include_ref(element: ElementTree.Element, sdf_root_dir: str) -> List[s
     filename = get_attribute(element, "filename")
     if filename is not None:
         sdf_path = os.path.join(sdf_root_dir, filename)
-        if os.path.exists(sdf_path):
-            include_tree = ElementTree.parse(sdf_path)
-            root = include_tree.getroot()
-            include_element_name = root.attrib["name"]
-            lines.append(f"<xsd:element ref='{include_element_name}'/>")
+        if not os.path.exists(sdf_path):
+            raise RuntimeError(f"Attempted to include non-existent file: {sdf_path}")
+
+        include_tree = ElementTree.parse(sdf_path)
+        root = include_tree.getroot()
+        include_element_name = root.attrib["name"]
+        lines.append(f"<xsd:element ref='{include_element_name}'/>")
     return lines
 
 
@@ -158,9 +160,11 @@ def print_element(element: ElementTree.Element) -> List[str]:
     if elem_type and is_std_type(elem_type):
         elem_type = xsd_type_string(elem_type)
 
-    if elem_reqd:
-        min_occurs, max_occurs = SDF_REQUIRED_TO_MIN_MAX_OCCURS[elem_reqd]
-        lines.append(f"<xsd:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>")
+    if not elem_reqd:
+        raise RuntimeError("Cannot process element missing 'required' attribute")
+
+    min_occurs, max_occurs = SDF_REQUIRED_TO_MIN_MAX_OCCURS[elem_reqd]
+    lines.append(f"<xsd:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>")
 
     if elem_type is None:
         lines.append(f"<xsd:element name='{elem_name}'>")
@@ -269,7 +273,7 @@ def print_xsd(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
         lines.append("</xsd:element>")
     else:
         if elem_type and is_std_type(elem_type):
-            elem_type = xsd_type_string(elem_type)
+            elem_type = f' type={xsd_type_string(elem_type)}'
         else:
             elem_type = ""
 
