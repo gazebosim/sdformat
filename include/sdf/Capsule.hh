@@ -75,8 +75,10 @@ namespace sdf
     /// \return A reference to a gz::math::Capsuled object.
     public: gz::math::Capsuled &Shape();
 
-    /// \brief Calculate an return the Mass Matrix values for the Capsule
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
+    /// \brief Calculate and return the Mass Matrix values for the Capsule
+    /// \param[in] density Density of the capsule in kg/m^3
+    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.

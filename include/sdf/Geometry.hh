@@ -212,12 +212,8 @@ namespace sdf
     public: void SetHeightmapShape(const Heightmap &_heightmap);
 
     /// \brief Calculate and return the Mass Matrix values for the Geometry
-    /// \param[in] _xxyyzz A vector 3d representing the diagonal elements
-    /// of the mass matrix
-    /// \param[in] _xyxzyx A vector 3d representing the off-diagonal elements
-    /// of the mass matrix
     /// \param[in] _density The density of the geometry element.
-    /// \return Boolean that indicates whether the calculation was successfull
+    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
     public: std::optional< gz::math::MassMatrix3d > MassMatrix(const double _density);
 
     /// \brief Get a pointer to the SDF element that was used during

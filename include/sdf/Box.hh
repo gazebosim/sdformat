@@ -68,8 +68,10 @@ namespace sdf
     /// \return A reference to a gz::math::Boxd object.
     public: gz::math::Boxd &Shape();
 
-    /// \brief Calculate an return the Mass Matrix values for the Box
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
+    /// \brief Calculate and return the Mass Matrix values for the Box
+    /// \param[in] density Density of the box in kg/m^3
+    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// box.

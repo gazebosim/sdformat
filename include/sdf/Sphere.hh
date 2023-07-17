@@ -68,8 +68,10 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Calculate an return the Mass Matrix values for the Cylinder
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
+    /// \brief Calculate and return the Mass Matrix values for the Sphere
+    /// \param[in] density Density of the sphere in kg/m^3
+    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
+    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// sphere.
