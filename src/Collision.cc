@@ -46,7 +46,7 @@ class sdf::Collision::Implementation
   /// \brief The collision's surface parameters.
   public: sdf::Surface surface;
 
-  /// \brief Density of the collision. Default is 1.0
+  /// \brief Density of the collision. Default is 1000.0
   public: double density;
 
   /// \brief The SDF element pointer used during load.
@@ -118,10 +118,10 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   }
   else
   {
-    this->dataPtr->density = 1.0;
+    this->dataPtr->density = 1000.0;
     errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Collision is missing a <material_density> child "
-        "element. Using a density of 1.0"});
+        "element. Using a density of 1000.0"});
   }
 
   // Load the surface parameters if they are given
