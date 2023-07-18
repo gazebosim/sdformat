@@ -169,6 +169,15 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \return Vector of registered model parser callbacks.
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
+  /// \brief Registers a custom Moment of Inertia Calculator for Meshes
+  /// \param[in] _moiCalculator Callback as described in
+  /// sdf/InterfaceElements.hh.
+  public: void RegisterCustomMoiCalculator(CustomMOICalculator _moiCalculator);
+
+  /// \brief Get the registered custom mesh MOI Calculator
+  /// \return registered mesh MOI Calculator.
+  public: const CustomMOICalculator &CustomMoiCalculator() const;
+
   /// \brief Set the preserveFixedJoint flag.
   /// \param[in] _preserveFixedJoint True to preserve fixed joints, false to
   /// reduce the fixed joints and merge the child link into the parent.
