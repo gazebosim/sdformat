@@ -218,7 +218,7 @@ namespace sdf
     /// of the mass matrix
     /// \param[in] _density The density of the geometry element.
     /// \return Boolean that indicates whether the calculation was successfull
-    public: std::optional< gz::math::MassMatrix3d > MassMatrix(const double _density);
+    public: std::optional< gz::math::MassMatrix3d > MassMatrix(const double _density, const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

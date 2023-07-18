@@ -138,7 +138,7 @@ namespace sdf
     /// \param[in] _mass A double representing the mass of the collision
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error
-    public: Errors MassMatrix(gz::math::Vector3d &_xxyyzz, gz::math::Vector3d &_xyxzyz, double &_mass);
+    public: Errors MassMatrix(gz::math::Vector3d &_xxyyzz, gz::math::Vector3d &_xyxzyz, double &_mass, const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

@@ -172,8 +172,13 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       {
         for(auto collision : this->dataPtr->collisions)
         {
-
-          Errors inertiaErrors = collision.MassMatrix(xxyyzz, xyxzyz, mass);
+          std::cout << "Density of the collision is: " << collision.Density();
+          std::cout << std::endl;
+          Errors inertiaErrors = collision.MassMatrix(xxyyzz, xyxzyz, mass, _config);
+          std::cout << "Inertia of " << this->dataPtr->name << std::endl;
+          std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
+          std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+          std::cout << "Mass of " << this->dataPtr->name << " is " << mass << std::endl;
           errors.insert(errors.end(), inertiaErrors.begin(), 
               inertiaErrors.end());
         }

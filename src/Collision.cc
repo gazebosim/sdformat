@@ -230,11 +230,11 @@ sdf::SemanticPose Collision::SemanticPose() const
 
 /////////////////////////////////////////////////
 Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz, 
-        gz::math::Vector3d &_xyxzyx, double &_mass)
+        gz::math::Vector3d &_xyxzyx, double &_mass, const ParserConfig &_config)
 {
   Errors errors;
 
-  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density);
+  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density, _config);
 
   if (!massMat)
   {
