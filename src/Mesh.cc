@@ -14,6 +14,10 @@
  * limitations under the License.
  *
 */
+
+#include <optional>
+
+#include <gz/math/MassMatrix3.hh>
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
 #include "Utils.hh"
@@ -186,6 +190,14 @@ void Mesh::SetCenterSubmesh(const bool _center)
 {
   this->dataPtr->centerSubmesh = _center;
 }
+
+//////////////////////////////////////////////////
+std::optional< gz::math::MassMatrix3d >  Mesh::MassMatrix(const double _density, const ParserConfig &_config)
+{
+  std::cout << "In Mesh:MassMatrix function" << std::endl;
+  const auto &customCalculator = _config.CustomMoiCalculator();
+  return customCalculator(_density);
+} 
 
 /////////////////////////////////////////////////
 sdf::ElementPtr Mesh::ToElement() const
