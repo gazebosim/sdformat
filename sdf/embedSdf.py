@@ -8,7 +8,7 @@ from typing import List, Optional
 import argparse
 import inspect
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 # The list of supported SDF specification versions. This will let us drop
@@ -164,7 +164,9 @@ def generate_map_content(paths: List[Path], relative_to: Optional[str] = None) -
             # Strip relative path if requested
             if relative_to is not None:
                 path = path.relative_to(relative_to)
-            content.append(embed_sdf_content(str(path), file_content))
+            # dir separator is hardcoded to '/' in C++ mapping
+            posix_path = PurePosixPath(path)
+            content.append(embed_sdf_content(str(posix_path), file_content))
     return ",".join(content)
 
 
