@@ -304,7 +304,8 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
   this->dataPtr->polylines = _polylines;
 }
 
-std::optional< gz::math::MassMatrix3d > Geometry::MassMatrix(const double _density, const ParserConfig &_config)
+std::optional< gz::math::MassMatrix3d > Geometry::MassMatrix(const double _density, 
+    const sdf::ElementPtr _calculatorParams, const ParserConfig &_config)
 {
   std::optional< gz::math::MassMatrix3d > massMat;
 
@@ -326,7 +327,7 @@ std::optional< gz::math::MassMatrix3d > Geometry::MassMatrix(const double _densi
       massMat = this->dataPtr->ellipsoid->MassMatrix(_density);
       break;
     case GeometryType::MESH:
-      massMat = this->dataPtr->mesh->MassMatrix(_density, _config);
+      massMat = this->dataPtr->mesh->MassMatrix(_density, _calculatorParams, _config);
       break;
     default:
       break;
