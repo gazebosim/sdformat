@@ -18,6 +18,10 @@
     <description>Density of the collision geometry. Default is the density of water 1.0 kg/m^3</description>
   </element>
 
+  <element name="moi_calculator_params" required="0">
+    <description>Parent tag to hold user-defined custom params for mesh inertia calculator</description>
+  </element>
+
   <include filename="pose.sdf" required="0"/>
 
   <include filename="geometry.sdf" required="1"/>

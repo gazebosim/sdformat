@@ -86,6 +86,10 @@ namespace sdf
     /// \param[in] _name Density of the collision.
     public: void SetDensity(const double density);
 
+    public: sdf::ElementPtr MoiCalulatorParams() const;
+
+    public: void SetMoiCalculatorParams(const sdf::ElementPtr _calculatorParams);
+
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;

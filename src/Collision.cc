@@ -49,6 +49,9 @@ class sdf::Collision::Implementation
   /// \brief Density of the collision. Default is 1.0
   public: double density;
 
+  /// \brief SDF element pointer to <moi_calculator_params> tag
+  public: sdf::ElementPtr moiCalculatorParams;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
@@ -130,6 +133,17 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->dataPtr->surface.Load(_sdf->GetElement("surface"));
   }
 
+  if (_sdf->HasElement("moi_calculator_params"))
+  {
+    this->dataPtr->moiCalculatorParams = _sdf->GetElement("moi_calculator_params");
+  }
+  else
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Collision is missing a <moi_calculator_params> child "
+        "element for Inertia Caluclations of Meshes"});
+  }
+
   return errors;
 }
 
@@ -155,6 +169,18 @@ double Collision::Density() const
 void Collision::SetDensity(const double _density)
 {
   this->dataPtr->density = _density;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Collision::MoiCalulatorParams() const
+{
+  return this->dataPtr->moiCalculatorParams;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetMoiCalculatorParams(const sdf::ElementPtr _calculatorParams)
+{
+  this->dataPtr->moiCalculatorParams = _calculatorParams;
 }
 
 /////////////////////////////////////////////////
@@ -233,8 +259,7 @@ Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz,
         gz::math::Vector3d &_xyxzyx, double &_mass, const ParserConfig &_config)
 {
   Errors errors;
-
-  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density, _config);
+  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density, this->dataPtr->moiCalculatorParams, _config);
 
   if (!massMat)
   {
