@@ -18,6 +18,7 @@
 #include <optional>
 
 #include <gz/math/MassMatrix3.hh>
+#include "sdf/InterafaceMoiCalculator.hh"
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
 #include "Utils.hh"
@@ -192,11 +193,18 @@ void Mesh::SetCenterSubmesh(const bool _center)
 }
 
 //////////////////////////////////////////////////
-std::optional< gz::math::MassMatrix3d >  Mesh::MassMatrix(const double _density, const ParserConfig &_config)
+std::optional< gz::math::MassMatrix3d >  Mesh::MassMatrix(const double _density, 
+    const sdf::ElementPtr _calculatorParams, const ParserConfig &_config)
 {
-  std::cout << "In Mesh:MassMatrix function" << std::endl;
+  sdf::Errors errors;
+
+  std::cout << "In Mesh:MassMatrix function: " << std::endl;
   const auto &customCalculator = _config.CustomMoiCalculator();
-  return customCalculator(_density);
+
+  sdf::InterfaceMoiCalculator calcInterface = InterfaceMoiCalculator(
+    _density, *this, _calculatorParams);
+
+  return customCalculator(errors, calcInterface);
 } 
 
 /////////////////////////////////////////////////
