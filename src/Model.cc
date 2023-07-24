@@ -755,7 +755,7 @@ std::pair<const Link*, std::string> Model::CanonicalLinkAndRelativeName() const
       auto firstModel = this->ModelByIndex(0);
       auto canonicalLinkAndName = firstModel->CanonicalLinkAndRelativeName();
       // Prepend firstModelName if a valid link is found.
-      if (nullptr != canonicalLinkAndName.first)
+      if (canonicalLinkAndName.second != "")
       {
         canonicalLinkAndName.second =
             firstModel->Name() + "::" + canonicalLinkAndName.second;
