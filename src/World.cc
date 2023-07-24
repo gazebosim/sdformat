@@ -26,6 +26,7 @@
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/ParserConfig.hh"
@@ -87,8 +88,8 @@ class sdf::World::Implementation
   public: std::vector<Model> models;
 
   /// \brief The interface models specified in this world.
-  public: std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
-      interfaceModels;
+  public: std::vector<std::pair<sdf::NestedInclude,
+          sdf::InterfaceModelConstPtr>> interfaceModels;
 
   /// \brief Name of the world.
   public: std::string name = "";
@@ -220,22 +221,26 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     }
   }
 
+  std::unordered_set<std::string> nestedModelNames;
+  std::unordered_set<std::string> jointNames;
+  std::unordered_set<std::string> explicitFrameNames;
+  auto recordUniqueName = [&errors](std::unordered_set<std::string>& nameList,
+                                      const std::string &_elementName,
+                                      const std::string &_name)
+  {
+    if (nameList.count(_name) > 0)
+    {
+      errors.emplace_back(ErrorCode::DUPLICATE_NAME,
+          _elementName + " with name[" + _name + "] already exists.");
+      return false;
+    }
+    nameList.insert(_name);
+    return true;
+  };
+
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
-  std::unordered_set<std::string> frameNames;
-
-  // Load all the models.
-  Errors modelLoadErrors =
-      loadUniqueRepeated<Model>(_sdf, "model", this->dataPtr->models, _config);
-  errors.insert(errors.end(), modelLoadErrors.begin(), modelLoadErrors.end());
-
-  // Models are loaded first, and loadUniqueRepeated ensures there are no
-  // duplicate names, so these names can be added to frameNames without
-  // checking uniqueness.
-  for (const auto &model : this->dataPtr->models)
-  {
-    frameNames.insert(model.Name());
-  }
+  std::unordered_set<std::string> implicitFrameNames;
 
   // Load included models via the interface API
   Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
@@ -245,7 +250,65 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
 
   for (const auto &ifaceModelPair : this->dataPtr->interfaceModels)
   {
-    frameNames.insert(ifaceModelPair.second->Name());
+    implicitFrameNames.insert(ifaceModelPair.second->Name());
+  }
+
+  for (auto elem = _sdf->GetFirstElement(); elem; elem = elem->GetNextElement())
+  {
+    const std::string elementName = elem->GetName();
+    if (elementName == "model")
+    {
+      auto model = loadSingle<Model>(errors, elem, _config);
+      if (!recordUniqueName(nestedModelNames, elementName, model.Name()))
+      {
+        continue;
+      }
+      implicitFrameNames.insert(model.Name());
+      this->dataPtr->models.push_back(std::move(model));
+    }
+    else if (elementName == "joint")
+    {
+      auto joint = loadSingle<Joint>(errors, elem);
+      if (!recordUniqueName(jointNames, elementName, joint.Name()))
+      {
+        continue;
+      }
+      this->dataPtr->joints.push_back(std::move(joint));
+    }
+    else if (elementName == "frame")
+    {
+      auto frame = loadSingle<Frame>(errors, elem);
+      if (!recordUniqueName(explicitFrameNames, elementName, frame.Name()))
+      {
+        continue;
+      }
+      this->dataPtr->frames.push_back(std::move(frame));
+    }
+  }
+
+  // Check frames for name collisions and modify and warn if so.
+  for (auto &frame : this->dataPtr->frames)
+  {
+    std::string frameName = frame.Name();
+    if (implicitFrameNames.count(frameName) > 0)
+    {
+      frameName += "_frame";
+      int i = 0;
+      while (implicitFrameNames.count(frameName) > 0)
+      {
+        frameName = frame.Name() + "_frame" + std::to_string(i++);
+      }
+      std::stringstream ss;
+      ss << "Frame with name [" << frame.Name() << "] "
+          << "in world with name [" << this->Name() << "] "
+          << "has a name collision, changing frame name to ["
+          << frameName << "].\n";
+      Error err(ErrorCode::WARNING, ss.str());
+      enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, errors);
+      frame.SetName(frameName);
+    }
+    implicitFrameNames.insert(frameName);
   }
 
   // Load all the physics.
@@ -263,45 +326,11 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->actors);
   errors.insert(errors.end(), actorLoadErrors.begin(), actorLoadErrors.end());
 
-  // Load all the joints.
-  Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
-      this->dataPtr->joints);
-  errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
-
   // Load all the lights.
   Errors lightLoadErrors = loadUniqueRepeated<Light>(_sdf, "light",
       this->dataPtr->lights);
   errors.insert(errors.end(), lightLoadErrors.begin(), lightLoadErrors.end());
 
-  // Load all the frames.
-  Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
-      this->dataPtr->frames);
-  errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
-
-  // Check frames for name collisions and modify and warn if so.
-  for (auto &frame : this->dataPtr->frames)
-  {
-    std::string frameName = frame.Name();
-    if (frameNames.count(frameName) > 0)
-    {
-      frameName += "_frame";
-      int i = 0;
-      while (frameNames.count(frameName) > 0)
-      {
-        frameName = frame.Name() + "_frame" + std::to_string(i++);
-      }
-      std::stringstream ss;
-      ss << "Frame with name [" << frame.Name() << "] "
-          << "in world with name [" << this->Name() << "] "
-          << "has a name collision, changing frame name to ["
-          << frameName << "].\n";
-      Error err(ErrorCode::WARNING, ss.str());
-      enforceConfigurablePolicyCondition(
-          _config.WarningsPolicy(), err, errors);
-      frame.SetName(frameName);
-    }
-    frameNames.insert(frameName);
-  }
 
   // Load the Gui
   if (_sdf->HasElement("gui"))

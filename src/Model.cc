@@ -27,6 +27,7 @@
 #include "sdf/InterfaceModel.hh"
 #include "sdf/InterfaceModelPoseGraph.hh"
 #include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/ParserConfig.hh"
@@ -212,29 +213,30 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
           _config.WarningsPolicy(), err, errors);
     }
   }
+  std::unordered_set<std::string> nestedModelNames;
+  std::unordered_set<std::string> linkNames;
+  std::unordered_set<std::string> jointNames;
+  std::unordered_set<std::string> explicitFrameNames;
+  auto recordUniqueName = [&errors](std::unordered_set<std::string>& nameList,
+                                      const std::string &_elementName,
+                                      const std::string &_name)
+  {
+    if (nameList.count(_name) > 0)
+    {
+      errors.emplace_back(ErrorCode::DUPLICATE_NAME,
+          _elementName + " with name[" + _name + "] already exists.");
+      return false;
+    }
+    nameList.insert(_name);
+    return true;
+  };
 
   // Set of implicit and explicit frame names in this model for tracking
   // name collisions
-  std::unordered_set<std::string> frameNames;
-
-  // Load nested models.
-  Errors nestedModelLoadErrors = loadUniqueRepeated<Model>(_sdf, "model",
-    this->dataPtr->models, _config);
-  errors.insert(errors.end(),
-                nestedModelLoadErrors.begin(),
-                nestedModelLoadErrors.end());
-
-  // Nested models are loaded first, and loadUniqueRepeated ensures there are no
-  // duplicate names, so these names can be added to frameNames without
-  // checking uniqueness.
-  for (const auto &model : this->dataPtr->models)
-  {
-    frameNames.insert(model.Name());
-  }
-
+  std::unordered_set<std::string> implicitFrameNames;
   // Load InterfaceModels into a temporary container so we can have special
   // handling for merged InterfaceModels.
-  std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelPtr>>
+  std::vector<std::pair<sdf::NestedInclude, sdf::InterfaceModelConstPtr>>
       tmpInterfaceModels;
   // Load included models via the interface API
   Errors interfaceModelLoadErrors = loadIncludedInterfaceModels(
@@ -246,7 +248,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   {
     if (!ifaceInclude.IsMerge().value_or(false))
     {
-      frameNames.insert(ifaceModel->Name());
+      implicitFrameNames.insert(ifaceModel->Name());
       this->dataPtr->interfaceModels.emplace_back(ifaceInclude, ifaceModel);
     }
     else
@@ -281,48 +283,158 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     }
   }
 
-  // Load all the links.
-  Errors linkLoadErrors = loadUniqueRepeated<Link>(_sdf, "link",
-    this->dataPtr->links, _config);
-  errors.insert(errors.end(), linkLoadErrors.begin(), linkLoadErrors.end());
-
-  // Check links for name collisions and modify and warn if so.
-  for (auto &link : this->dataPtr->links)
+  for (auto elem = _sdf->GetFirstElement(); elem; elem = elem->GetNextElement())
   {
-    std::string linkName = link.Name();
-    if (frameNames.count(linkName) > 0)
+    const std::string &elementName = elem->GetName();
+    if (elementName == "model")
     {
-      // This link has a name collision
-      if (sdfVersion < gz::math::SemanticVersion(1, 7))
+      auto model = loadSingle<Model>(errors, elem, _config);
+      if (!recordUniqueName(nestedModelNames, elementName, model.Name()))
       {
-        // This came from an old file, so try to workaround by renaming link
-        linkName += "_link";
-        int i = 0;
-        while (frameNames.count(linkName) > 0)
-        {
-          linkName = link.Name() + "_link" + std::to_string(i++);
-        }
-        std::stringstream ss;
-        ss << "Link with name [" << link.Name() << "] "
-           << "in model with name [" << this->Name() << "] "
-           << "has a name collision, changing link name to ["
-           << linkName << "].";
-        Error err(ErrorCode::WARNING, ss.str());
-        enforceConfigurablePolicyCondition(
-            _config.WarningsPolicy(), err, errors);
-        link.SetName(linkName);
+        continue;
       }
-      else
-      {
-        std::stringstream ss;
-        ss << "Link with name [" << link.Name() << "] "
-           << "in model with name [" << this->Name() << "] "
-           << "has a name collision. Please rename this link.";
-        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
-      }
+      implicitFrameNames.insert(model.Name());
+      this->dataPtr->models.push_back(std::move(model));
     }
-    frameNames.insert(linkName);
+    else if (elementName == "link")
+    {
+      auto link = loadSingle<Link>(errors, elem, _config);
+      std::string linkName = link.Name();
+      if (!recordUniqueName(linkNames, elementName, linkName))
+      {
+        continue;
+      }
+
+      // Check links for name collisions and modify and warn if so.
+      if (implicitFrameNames.count(linkName) > 0)
+      {
+        // This link has a name collision
+        if (sdfVersion < gz::math::SemanticVersion(1, 7))
+        {
+          // This came from an old file, so try to workaround by renaming link
+          linkName += "_link";
+          int i = 0;
+          while (implicitFrameNames.count(linkName) > 0)
+          {
+            linkName = link.Name() + "_link" + std::to_string(i++);
+          }
+          std::stringstream ss;
+          ss << "Link with name [" << link.Name() << "] "
+             << "in model with name [" << this->Name() << "] "
+             << "has a name collision, changing link name to [" << linkName
+             << "].";
+          Error err(ErrorCode::WARNING, ss.str());
+          enforceConfigurablePolicyCondition(_config.WarningsPolicy(), err,
+                                             errors);
+          link.SetName(linkName);
+        }
+        else
+        {
+          std::stringstream ss;
+          ss << "Link with name [" << link.Name() << "] "
+             << "in model with name [" << this->Name() << "] "
+             << "has a name collision. Please rename this link.";
+          errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
+        }
+      }
+      implicitFrameNames.insert(linkName);
+      this->dataPtr->links.push_back(std::move(link));
+    }
+    else if (elementName == "joint")
+    {
+      auto joint = loadSingle<Joint>(errors, elem);
+      std::string jointName = joint.Name();
+      if (!recordUniqueName(jointNames, elementName, jointName))
+      {
+        continue;
+      }
+      // Check joints for name collisions and modify and warn if so.
+      if (implicitFrameNames.count(jointName) > 0)
+      {
+        // This joint has a name collision
+        if (sdfVersion < gz::math::SemanticVersion(1, 7))
+        {
+          // This came from an old file, so try to workaround by renaming joint
+          jointName += "_joint";
+          int i = 0;
+          while (implicitFrameNames.count(jointName) > 0)
+          {
+            jointName = joint.Name() + "_joint" + std::to_string(i++);
+          }
+          std::stringstream ss;
+          ss << "Joint with name [" << joint.Name() << "] "
+             << "in model with name [" << this->Name() << "] "
+             << "has a name collision, changing joint name to [" << jointName
+             << "].";
+          Error err(ErrorCode::WARNING, ss.str());
+          enforceConfigurablePolicyCondition(_config.WarningsPolicy(), err,
+                                             errors);
+
+          joint.SetName(jointName);
+        }
+        else
+        {
+          std::stringstream ss;
+          ss << "Joint with name [" << joint.Name() << "] "
+             << "in model with name [" << this->Name() << "] "
+             << "has a name collision. Please rename this joint.";
+          errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
+        }
+      }
+
+      implicitFrameNames.insert(jointName);
+      this->dataPtr->joints.push_back(std::move(joint));
+    }
+    else if (elementName == "frame")
+    {
+      auto frame = loadSingle<Frame>(errors, elem);
+      std::string frameName = frame.Name();
+      if (!recordUniqueName(explicitFrameNames, elementName, frameName))
+      {
+        continue;
+      }
+      // Check frames for name collisions and modify and warn if so.
+      if (implicitFrameNames.count(frameName) > 0)
+      {
+        // This frame has a name collision
+        if (sdfVersion < gz::math::SemanticVersion(1, 7))
+        {
+          // This came from an old file, so try to workaround by renaming frame
+          frameName += "_frame";
+          int i = 0;
+          while (implicitFrameNames.count(frameName) > 0)
+          {
+            frameName = frame.Name() + "_frame" + std::to_string(i++);
+          }
+          std::stringstream ss;
+          ss << "Frame with name [" << frame.Name() << "] "
+             << "in model with name [" << this->Name() << "] "
+             << "has a name collision, changing frame name to [" << frameName
+             << "].";
+          Error err(ErrorCode::WARNING, ss.str());
+          enforceConfigurablePolicyCondition(_config.WarningsPolicy(), err,
+                                             errors);
+
+          frame.SetName(frameName);
+        }
+        else
+        {
+          std::stringstream ss;
+          ss << "Frame with name [" << frame.Name() << "] "
+             << "in model with name [" << this->Name() << "] "
+             << "has a name collision. Please rename this frame.";
+          errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
+        }
+      }
+      implicitFrameNames.insert(frameName);
+      this->dataPtr->frames.push_back(std::move(frame));
+    }
   }
+
+  // Load the model plugins
+  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
+    this->dataPtr->plugins);
+  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   // If the model is not static and has no nested models:
   // Require at least one (interface) link so the implicit model frame can be
@@ -334,99 +446,6 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     errors.push_back({ErrorCode::MODEL_WITHOUT_LINK,
                      "A model must have at least one link."});
   }
-
-  // Load all the joints.
-  Errors jointLoadErrors = loadUniqueRepeated<Joint>(_sdf, "joint",
-    this->dataPtr->joints);
-  errors.insert(errors.end(), jointLoadErrors.begin(), jointLoadErrors.end());
-
-  // Check joints for name collisions and modify and warn if so.
-  for (auto &joint : this->dataPtr->joints)
-  {
-    std::string jointName = joint.Name();
-    if (frameNames.count(jointName) > 0)
-    {
-      // This joint has a name collision
-      if (sdfVersion < gz::math::SemanticVersion(1, 7))
-      {
-        // This came from an old file, so try to workaround by renaming joint
-        jointName += "_joint";
-        int i = 0;
-        while (frameNames.count(jointName) > 0)
-        {
-          jointName = joint.Name() + "_joint" + std::to_string(i++);
-        }
-        std::stringstream ss;
-        ss << "Joint with name [" << joint.Name() << "] "
-           << "in model with name [" << this->Name() << "] "
-           << "has a name collision, changing joint name to ["
-           << jointName << "].";
-        Error err(ErrorCode::WARNING, ss.str());
-        enforceConfigurablePolicyCondition(
-            _config.WarningsPolicy(), err, errors);
-
-        joint.SetName(jointName);
-      }
-      else
-      {
-        std::stringstream ss;
-        ss << "Joint with name [" << joint.Name() << "] "
-           << "in model with name [" << this->Name() << "] "
-           << "has a name collision. Please rename this joint.";
-        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
-      }
-    }
-    frameNames.insert(jointName);
-  }
-
-  // Load all the frames.
-  Errors frameLoadErrors = loadUniqueRepeated<Frame>(_sdf, "frame",
-    this->dataPtr->frames);
-  errors.insert(errors.end(), frameLoadErrors.begin(), frameLoadErrors.end());
-
-  // Check frames for name collisions and modify and warn if so.
-  for (auto &frame : this->dataPtr->frames)
-  {
-    std::string frameName = frame.Name();
-    if (frameNames.count(frameName) > 0)
-    {
-      // This frame has a name collision
-      if (sdfVersion < gz::math::SemanticVersion(1, 7))
-      {
-        // This came from an old file, so try to workaround by renaming frame
-        frameName += "_frame";
-        int i = 0;
-        while (frameNames.count(frameName) > 0)
-        {
-          frameName = frame.Name() + "_frame" + std::to_string(i++);
-        }
-        std::stringstream ss;
-        ss << "Frame with name [" << frame.Name() << "] "
-           << "in model with name [" << this->Name() << "] "
-           << "has a name collision, changing frame name to ["
-           << frameName << "].";
-        Error err(ErrorCode::WARNING, ss.str());
-        enforceConfigurablePolicyCondition(
-            _config.WarningsPolicy(), err, errors);
-
-        frame.SetName(frameName);
-      }
-      else
-      {
-        std::stringstream ss;
-        ss << "Frame with name [" << frame.Name() << "] "
-           << "in model with name [" << this->Name() << "] "
-           << "has a name collision. Please rename this frame.";
-        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
-      }
-    }
-    frameNames.insert(frameName);
-  }
-
-  // Load the model plugins
-  Errors pluginErrors = loadRepeated<Plugin>(_sdf, "plugin",
-    this->dataPtr->plugins);
-  errors.insert(errors.end(), pluginErrors.begin(), pluginErrors.end());
 
   // Check whether the model was loaded from an <include> tag. If so, set
   // the URI and capture the plugins.

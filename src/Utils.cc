@@ -221,7 +221,7 @@ static std::optional<std::string> computeAbsoluteName(
 // cppcheck-suppress unusedFunction
 sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config,
-    std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models)
+    std::vector<std::pair<NestedInclude, InterfaceModelConstPtr>> &_models)
 {
   sdf::Errors allErrors;
   for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
