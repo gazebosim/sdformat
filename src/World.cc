@@ -264,7 +264,42 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         continue;
       }
       implicitFrameNames.insert(model.Name());
-      this->dataPtr->models.push_back(std::move(model));
+      if (model.IsMerged())
+      {
+        sdf::Frame proxyFrame = model.PrepareForMerge(errors, "world");
+        this->AddFrame(proxyFrame);
+
+        for (uint64_t fi = 0; fi < model.FrameCount(); ++fi)
+        {
+          this->dataPtr->frames.push_back(std::move(*model.FrameByIndex(fi)));
+        }
+
+        for (uint64_t ji = 0; ji < model.JointCount(); ++ji)
+        {
+          this->dataPtr->joints.push_back(std::move(*model.JointByIndex(ji)));
+        }
+
+        for (uint64_t mi = 0; mi < model.ModelCount(); ++mi)
+        {
+          this->dataPtr->models.push_back(std::move(*model.ModelByIndex(mi)));
+        }
+
+        for (uint64_t imi = 0; imi < model.InterfaceModelCount(); ++imi)
+        {
+          InterfaceModelConstPtr ifaceModel = model.InterfaceModelByIndex(imi);
+          NestedInclude nestedInclude =
+              *model.InterfaceModelNestedIncludeByIndex(imi);
+          this->dataPtr->interfaceModels.emplace_back(std::move(nestedInclude),
+                                                      ifaceModel);
+        }
+
+        // TODO(azeey) Support Merge-included interface models when `World`
+        // supports them.
+      }
+      else
+      {
+        this->dataPtr->models.push_back(std::move(model));
+      }
     }
     else if (elementName == "joint")
     {

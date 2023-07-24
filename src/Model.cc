@@ -127,6 +127,10 @@ class sdf::Model::Implementation
   /// ToElement() function to output only the plugin specified in the
   /// <include> tag when the ToElementUseIncludeTag policy is true..
   public: std::vector<Plugin> includePlugins;
+
+  /// \brief Whether the model was merge-included and needs to be processed to
+  /// carry out the merge.
+  public: bool isMerged{false};
 };
 
 /////////////////////////////////////////////////
@@ -183,6 +187,11 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->canonicalLink = pair.first;
     }
   }
+
+  // Note: this attribute is not defined in the spec. It is used internally for
+  // implementing merge-includes when custom parsers are present.
+  this->dataPtr->isMerged =
+    _sdf->Get<bool>("merge", this->dataPtr->isMerged).first;
 
   this->dataPtr->placementFrameName = _sdf->Get<std::string>("placement_frame",
                              this->dataPtr->placementFrameName).first;
@@ -293,8 +302,29 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       {
         continue;
       }
-      implicitFrameNames.insert(model.Name());
-      this->dataPtr->models.push_back(std::move(model));
+      if (model.IsMerged())
+      {
+        sdf::Frame proxyFrame = model.PrepareForMerge(errors, "__model__");
+        this->AddFrame(proxyFrame);
+
+        auto moveElements = [](const auto &_src, auto &_dest)
+        {
+          std::move(_src.begin(), _src.end(), std::back_inserter(_dest));
+        };
+        moveElements(model.dataPtr->links, this->dataPtr->links);
+        moveElements(model.dataPtr->frames, this->dataPtr->frames);
+        moveElements(model.dataPtr->joints, this->dataPtr->joints);
+        moveElements(model.dataPtr->models, this->dataPtr->models);
+        moveElements(model.dataPtr->interfaceModels,
+                     this->dataPtr->interfaceModels);
+        moveElements(model.dataPtr->mergedInterfaceModels,
+                     this->dataPtr->mergedInterfaceModels);
+      }
+      else
+      {
+        implicitFrameNames.insert(model.Name());
+        this->dataPtr->models.push_back(std::move(model));
+      }
     }
     else if (elementName == "link")
     {
@@ -1191,4 +1221,159 @@ void Model::ClearPlugins()
 void Model::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
+}
+
+/////////////////////////////////////////////////
+bool Model::IsMerged() const
+{
+  return this->dataPtr->isMerged;
+}
+
+/////////////////////////////////////////////////
+sdf::Frame Model::PrepareForMerge(sdf::Errors &_errors,
+                                  const std::string &_parentOfProxyFrame)
+{
+  // Build the pose graph of the model so we can adjust the pose of the proxy
+  // frame to take the placement frame into account.
+  auto poseGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+  sdf::ScopedGraph<sdf::PoseRelativeToGraph> scopedPoseGraph(poseGraph);
+  sdf::Errors poseGraphErrors =
+      sdf::buildPoseRelativeToGraph(scopedPoseGraph, this);
+  _errors.insert(_errors.end(), poseGraphErrors.begin(), poseGraphErrors.end());
+  sdf::Errors poseValidationErrors =
+      validatePoseRelativeToGraph(scopedPoseGraph);
+  _errors.insert(_errors.end(), poseValidationErrors.begin(),
+                 poseValidationErrors.end());
+
+  auto frameGraph = std::make_shared<sdf::FrameAttachedToGraph>();
+  sdf::ScopedGraph<sdf::FrameAttachedToGraph> scopedFrameGraph(frameGraph);
+  sdf::Errors frameGraphErrors =
+      sdf::buildFrameAttachedToGraph(scopedFrameGraph, this);
+  _errors.insert(_errors.end(), frameGraphErrors.begin(),
+                 frameGraphErrors.end());
+  sdf::Errors frameValidationErrors =
+      validateFrameAttachedToGraph(scopedFrameGraph);
+  _errors.insert(_errors.end(), frameValidationErrors.begin(),
+                 frameValidationErrors.end());
+
+  this->SetPoseRelativeToGraph(scopedPoseGraph);
+  this->SetFrameAttachedToGraph(scopedFrameGraph);
+
+  const std::string proxyModelFrameName =
+      computeMergedModelProxyFrameName(this->Name());
+
+  sdf::Frame proxyFrame;
+  proxyFrame.SetName(proxyModelFrameName);
+  proxyFrame.SetAttachedTo(this->CanonicalLinkAndRelativeName().second);
+  gz::math::Pose3d modelPose = this->RawPose();
+  if (!this->PlacementFrameName().empty())
+  {
+    // Build the pose graph of the model so we can adjust the pose of the proxy
+    // frame to take the placement frame into account.
+    if (poseGraphErrors.empty())
+    {
+      // M - model frame (__model__)
+      // R - The `relative_to` frame of the placement frame's //pose element.
+      // See resolveModelPoseWithPlacementFrame in FrameSemantics.cc for
+      // notation and documentation
+      // Note, when the frame graph is built for a model with placement frame,
+      // it is built with an pose offset to take into account the placement
+      // frame. Therefore, we only need to resolve the pose of the model
+      // relative to `R` here. We could manually compute it as
+      // X_RM = X_RL * X_LM; where `L` is the link specified in the placement
+      // frame attribute.
+      gz::math::Pose3d X_RM = this->RawPose();
+      sdf::Errors resolveErrors = this->SemanticPose().Resolve(X_RM);
+      _errors.insert(_errors.end(), resolveErrors.begin(), resolveErrors.end());
+      modelPose = X_RM;
+    }
+  }
+
+  proxyFrame.SetRawPose(modelPose);
+  proxyFrame.SetPoseRelativeTo(this->PoseRelativeTo().empty()
+                                   ? _parentOfProxyFrame
+                                   : this->PoseRelativeTo());
+
+  auto isEmptyOrModelFrame = [](const std::string &_attr)
+  {
+    return _attr.empty() || _attr == "__model__";
+  };
+
+  // Merge links, frames, joints, and nested models.
+  for (auto &link : this->dataPtr->links)
+  {
+    if (isEmptyOrModelFrame(link.PoseRelativeTo()))
+    {
+      link.SetPoseRelativeTo(proxyModelFrameName);
+    }
+  }
+
+  for (auto &frame : this->dataPtr->frames)
+  {
+    if (isEmptyOrModelFrame(frame.AttachedTo()))
+    {
+      frame.SetAttachedTo(proxyModelFrameName);
+    }
+    if (frame.PoseRelativeTo() == "__model__")
+    {
+      frame.SetPoseRelativeTo(proxyModelFrameName);
+    }
+  }
+
+  for (auto &joint : this->dataPtr->joints)
+  {
+    if (joint.PoseRelativeTo() == "__model__")
+    {
+      joint.SetPoseRelativeTo(proxyModelFrameName);
+    }
+    if (joint.ParentName() == "__model__")
+    {
+      joint.SetParentName(proxyModelFrameName);
+    }
+    if (joint.ChildName() == "__model__")
+    {
+      joint.SetChildName(proxyModelFrameName);
+    }
+    for (unsigned int ai : {0, 1})
+    {
+      const sdf::JointAxis *axis = joint.Axis(ai);
+      if (axis && axis->XyzExpressedIn() == "__model__")
+      {
+        sdf::JointAxis axisCopy = *axis;
+        axisCopy.SetXyzExpressedIn(proxyModelFrameName);
+        joint.SetAxis(ai, axisCopy);
+      }
+    }
+  }
+
+  for (auto &nestedModel : this->dataPtr->models)
+  {
+    if (isEmptyOrModelFrame(nestedModel.PoseRelativeTo()))
+    {
+      nestedModel.SetPoseRelativeTo(proxyModelFrameName);
+    }
+  }
+  // Note: Since Model::Load is called recursively, all merge-include nested
+  // models would already have been merged by this point, so there is no need
+  // to call PrepareForMerge recursively here.
+
+  for (auto &ifaceModel : this->dataPtr->interfaceModels)
+  {
+    if (isEmptyOrModelFrame(
+            ifaceModel.first->IncludePoseRelativeTo().value_or("")))
+    {
+      ifaceModel.first->SetIncludePoseRelativeTo(proxyModelFrameName);
+    }
+  }
+
+  for (auto &ifaceModel : this->dataPtr->mergedInterfaceModels)
+  {
+    if (isEmptyOrModelFrame(
+            ifaceModel.first->IncludePoseRelativeTo().value_or("")))
+    {
+      ifaceModel.first->SetIncludePoseRelativeTo(proxyModelFrameName);
+    }
+  }
+
+  return proxyFrame;
 }

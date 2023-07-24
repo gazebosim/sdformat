@@ -191,6 +191,13 @@ static std::optional<std::string> computeAbsoluteName(
   {
     if (parent->HasAttribute("name"))
     {
+      // Ignore this parent model if it's a merged model, since the child will
+      // be merged into the grand parent model/world.
+      if (parent->GetName() == "model" &&
+          parent->Get<bool>("merge", false).first)
+      {
+        continue;
+      }
       names.push_back(parent->GetAttribute("name")->GetAsString());
     }
     else
