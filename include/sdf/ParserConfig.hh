@@ -27,6 +27,7 @@
 
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
+#include "sdf/InterafaceMoiCalculator.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
