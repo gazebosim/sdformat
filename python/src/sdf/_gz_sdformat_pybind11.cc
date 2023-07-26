@@ -27,6 +27,7 @@
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
 #include "pyCylinder.hh"
+#include "pyElement.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
 #include "pyExceptions.hh"
@@ -84,6 +85,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineCollision(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
+  sdf::python::defineElement(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
   sdf::python::defineForceTorque(m);

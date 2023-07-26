@@ -53,6 +53,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyCapsule.cc
   src/sdf/pyCollision.cc
   src/sdf/pyCylinder.cc
+  src/sdf/pyElement.cc
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
   src/sdf/pyForceTorque.cc
@@ -132,6 +133,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyCapsule_TEST
     pyCollision_TEST
     pyCylinder_TEST
+    pyElement_TEST
     pyEllipsoid_TEST
     pyError_TEST
     pyForceTorque_TEST
