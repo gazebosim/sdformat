@@ -105,6 +105,7 @@ void defineError(pybind11::object module)
     .value("ELEMENT_DEPRECATED", sdf::ErrorCode::ELEMENT_DEPRECATED)
     .value("ELEMENT_INCORRECT_TYPE",
            sdf::ErrorCode::ELEMENT_INCORRECT_TYPE)
+    .value("ELEMENT_ERROR", sdf::ErrorCode::ELEMENT_ERROR)
     .value("URI_INVALID", sdf::ErrorCode::URI_INVALID)
     .value("URI_LOOKUP", sdf::ErrorCode::URI_LOOKUP)
     .value("DIRECTORY_NONEXISTANT",
@@ -133,12 +134,21 @@ void defineError(pybind11::object module)
            sdf::ErrorCode::POSE_RELATIVE_TO_CYCLE)
     .value("POSE_RELATIVE_TO_GRAPH_ERROR",
            sdf::ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR)
+    .value("ROTATION_SNAP_CONFIG_ERROR",
+           sdf::ErrorCode::ROTATION_SNAP_CONFIG_ERROR)
     .value("STRING_READ", sdf::ErrorCode::STRING_READ)
     .value("MODEL_PLACEMENT_FRAME_INVALID",
            sdf::ErrorCode::MODEL_PLACEMENT_FRAME_INVALID)
     .value("VERSION_DEPRECATED", sdf::ErrorCode::VERSION_DEPRECATED)
     .value("MERGE_INCLUDE_UNSUPPORTED",
-           sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED);
+           sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED)
+    .value("PARAMETER_ERROR", sdf::ErrorCode::PARAMETER_ERROR)
+    .value("UNKNOWN_PARAMETER_TYPE", sdf::ErrorCode::UNKNOWN_PARAMETER_TYPE)
+    .value("FATAL_ERROR", sdf::ErrorCode::FATAL_ERROR)
+    .value("WARNING", sdf::ErrorCode::WARNING)
+    .value("JOINT_AXIS_EXPRESSED_IN_INVALID", sdf::ErrorCode::JOINT_AXIS_EXPRESSED_IN_INVALID)
+    .value("CONVERSION_ERROR", sdf::ErrorCode::CONVERSION_ERROR)
+    .value("PARSING_ERROR", sdf::ErrorCode::PARSING_ERROR);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

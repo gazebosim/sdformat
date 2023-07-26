@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Altimeter.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMAltimeter, Construction)
@@ -138,4 +139,62 @@ TEST(DOMAltimeter, ToElement)
   sdf::Altimeter alt3;
   alt3.Load(alt2Elem);
   EXPECT_EQ(noise, alt3.VerticalPositionNoise());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAltimeter, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::Altimeter alt;
+  sdf::Errors errors;
+  sdf::Noise defaultNoise, noise;
+  EXPECT_EQ(defaultNoise, alt.VerticalPositionNoise());
+  EXPECT_EQ(defaultNoise, alt.VerticalVelocityNoise());
+
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  alt.SetVerticalPositionNoise(noise);
+  alt.SetVerticalVelocityNoise(noise);
+
+  sdf::ElementPtr altElem = alt.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, altElem);
+  EXPECT_EQ(nullptr, alt.Element());
+
+  // verify values after loading the element back
+  sdf::Altimeter alt2;
+  errors = alt2.Load(altElem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(noise, alt2.VerticalPositionNoise());
+  EXPECT_EQ(noise, alt2.VerticalVelocityNoise());
+
+  // make changes to DOM and verify ToElement produces updated values
+  noise.SetMean(2.3);
+  alt2.SetVerticalPositionNoise(noise);
+  sdf::ElementPtr alt2Elem = alt2.ToElement();
+  EXPECT_NE(nullptr, alt2Elem);
+  sdf::Altimeter alt3;
+  alt3.Load(alt2Elem);
+  EXPECT_EQ(noise, alt3.VerticalPositionNoise());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
