@@ -24,6 +24,7 @@ but with improved human-readability..
 
 1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
    elements.
+2. Updated search order for `sdf::findFile()` making local path (current directory) the first to be searched. 
 
 ### Deprecations
 
@@ -558,6 +559,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 ### Additions
 
 1. **world.sdf**: A joint can be specified directly in a world.
+1. **world.sdf**: Merge-includes are now allowed in worlds. The included models must not contain top-level links or grippers.
 
 ### Modifications
 

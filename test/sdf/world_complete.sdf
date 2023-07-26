@@ -104,6 +104,16 @@
           <particle_scatter_ratio>0.2</particle_scatter_ratio>
         </particle_emitter>
 
+        <projector name="projector">
+          <pose>1 2 3 0 0 0</pose>
+          <near_clip>0.03</near_clip>
+          <far_clip>3</far_clip>
+          <fov>0.8</fov>
+          <visibility_flags>0x01</visibility_flags>
+          <texture>materials/textures/projector.png</texture>
+          <plugin name="projector_plugin" filename="test/file/projector"/>
+        </projector>
+
         <light name="spot_light" type="spot">
           <pose relative_to="frame2">7 8 9 0 0 0</pose>
           <cast_shadows>true</cast_shadows>

@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Heightmap.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMHeightmap, Construction)
@@ -456,4 +457,73 @@ TEST(DOMHeightmap, ToElement)
                    heightmap2.BlendByIndex(0)->MinHeight());
   EXPECT_DOUBLE_EQ(heightmap.BlendByIndex(0)->FadeDistance(),
                    heightmap2.BlendByIndex(0)->FadeDistance());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMHeightmap, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Heightmap heightmap;
+  sdf::Errors errors;
+
+  heightmap.SetUri("https://test-uri.org");
+  heightmap.SetSize(gz::math::Vector3d(1, 2, 3));
+  heightmap.SetPosition(gz::math::Vector3d(4, 5, 6));
+  heightmap.SetUseTerrainPaging(true);
+  heightmap.SetSampling(2);
+
+  sdf::HeightmapTexture texture;
+  texture.SetSize(1.2);
+  texture.SetDiffuse("diffuse_map");
+  texture.SetNormal("normal_map");
+  heightmap.AddTexture(texture);
+
+  sdf::HeightmapBlend blend;
+  blend.SetMinHeight(1.2);
+  blend.SetFadeDistance(3.4);
+  heightmap.AddBlend(blend);
+
+  sdf::ElementPtr elem = heightmap.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Heightmap heightmap2;
+  errors = heightmap2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(heightmap.Uri(), heightmap2.Uri());
+  EXPECT_EQ(heightmap.Size(), heightmap2.Size());
+  EXPECT_EQ(heightmap.Position(), heightmap2.Position());
+  EXPECT_EQ(heightmap.UseTerrainPaging(), heightmap2.UseTerrainPaging());
+  EXPECT_EQ(heightmap.Sampling(), heightmap2.Sampling());
+  EXPECT_EQ(heightmap.TextureCount(), heightmap2.TextureCount());
+  ASSERT_EQ(1u, heightmap2.TextureCount());
+  EXPECT_DOUBLE_EQ(heightmap.TextureByIndex(0)->Size(),
+                   heightmap2.TextureByIndex(0)->Size());
+  EXPECT_EQ(heightmap.TextureByIndex(0)->Diffuse(),
+            heightmap2.TextureByIndex(0)->Diffuse());
+  EXPECT_EQ(heightmap.TextureByIndex(0)->Normal(),
+            heightmap2.TextureByIndex(0)->Normal());
+
+  EXPECT_EQ(heightmap.BlendCount(), heightmap2.BlendCount());
+  ASSERT_EQ(1u, heightmap2.BlendCount());
+  EXPECT_DOUBLE_EQ(heightmap.BlendByIndex(0)->MinHeight(),
+                   heightmap2.BlendByIndex(0)->MinHeight());
+  EXPECT_DOUBLE_EQ(heightmap.BlendByIndex(0)->FadeDistance(),
+                   heightmap2.BlendByIndex(0)->FadeDistance());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

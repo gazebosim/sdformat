@@ -126,6 +126,18 @@ bool LoadSdfFile(const std::string &_fileName, sdf::Root &_root)
   return true;
 }
 
+/// \brief Checks that string _a contains string _b
+inline bool contains(const std::string &_a, const std::string &_b)
+{
+  return _a.find(_b) != std::string::npos;
+}
+
+/// \brief Check that string _a does not contain string _b
+inline bool notContains(const std::string &_a, const std::string &_b)
+{
+  return !contains(_a, _b);;
+}
+
 } // namespace testing
 } // namespace sdf
 

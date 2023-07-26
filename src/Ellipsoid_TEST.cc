@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Ellipsoid.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMEllipsoid, Construction)
@@ -154,4 +155,39 @@ TEST(DOMEllipsoid, ToElement)
   ellipsoid2.Load(elem);
 
   EXPECT_EQ(ellipsoid.Radii(), ellipsoid2.Radii());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMEllipsoid, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Ellipsoid ellipsoid;
+  sdf::Errors errors;
+
+  ellipsoid.SetRadii(gz::math::Vector3d(0.1, 1.2, 3.4));
+
+  sdf::ElementPtr elem = ellipsoid.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Ellipsoid ellipsoid2;
+
+  errors = ellipsoid2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_EQ(ellipsoid.Radii(), ellipsoid2.Radii());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

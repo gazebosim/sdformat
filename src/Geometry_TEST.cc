@@ -26,6 +26,7 @@
 #include "sdf/Plane.hh"
 #include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMGeometry, Construction)
@@ -533,4 +534,286 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(nullptr, geom2.HeightmapShape());
     EXPECT_FALSE(geom2.PolylineShape().empty());
   }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Errors errors;
+
+  // Box
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::BOX);
+    sdf::Box box;
+    geom.SetBoxShape(box);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_NE(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Capsule
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::CAPSULE);
+    sdf::Capsule capsule;
+    geom.SetCapsuleShape(capsule);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_NE(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Cylinder
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::CYLINDER);
+    sdf::Cylinder cylinder;
+    geom.SetCylinderShape(cylinder);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_NE(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Ellipsoid
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::ELLIPSOID);
+    sdf::Ellipsoid ellipsoid;
+    geom.SetEllipsoidShape(ellipsoid);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_NE(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Sphere
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::SPHERE);
+    sdf::Sphere sphere;
+    geom.SetSphereShape(sphere);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_NE(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Plane
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::PLANE);
+    sdf::Plane plane;
+    geom.SetPlaneShape(plane);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_NE(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Mesh
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::MESH);
+    sdf::Mesh mesh;
+    geom.SetMeshShape(mesh);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    // Required uri is not set so an Error is expected
+    ASSERT_EQ(errors.size(), 1u);
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Empty string used when setting a required parameter. Key[uri]"));
+    errors.clear();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_NE(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Heightmap
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::HEIGHTMAP);
+    sdf::Heightmap heightmap;
+    geom.SetHeightmapShape(heightmap);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    // Required uri is not set so an Error is expected
+    ASSERT_EQ(errors.size(), 1u);
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Empty string used when setting a required parameter. Key[uri]"));
+    errors.clear();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_NE(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Polyline
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::POLYLINE);
+    sdf::Polyline polyline;
+    geom.SetPolylineShape({polyline});
+
+    auto elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_FALSE(geom2.PolylineShape().empty());
+  }
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
