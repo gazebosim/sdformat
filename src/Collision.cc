@@ -47,7 +47,7 @@ class sdf::Collision::Implementation
   public: sdf::Surface surface;
 
   /// \brief Density of the collision. Default is 1000.0
-  public: double density;
+  public: double density{1000.0};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -112,15 +112,14 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Set the density value for the collision material
-  if (_sdf->HasElement("material_density"))
+  if (_sdf->HasElement("density"))
   {
-    this->dataPtr->density = _sdf->Get<double>("material_density");
+    this->dataPtr->density = _sdf->Get<double>("density");
   }
   else
   {
-    this->dataPtr->density = 1000.0;
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Collision is missing a <material_density> child "
+        "Collision is missing a <density> child "
         "element. Using a density of 1000.0"});
   }
 
