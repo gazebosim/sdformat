@@ -220,7 +220,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     _errors.push_back(unsupportedError);
     return;
   }
-  else if (_parent->GetName() != "model")
+  else if (_parent->GetName() != "model" && _parent->GetName() != "world")
   {
     Error unsupportedError(
         ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
@@ -281,11 +281,18 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   // //include/pose/@relative_to.
   std::string modelPoseRelativeTo = model->PoseRelativeTo();
 
-  // If empty, use "__model__", since leaving it empty would make it
+  // If empty, use "__model__" or "world", since leaving it empty would make it
   // relative_to the canonical link frame specified in //frame/@attached_to.
   if (modelPoseRelativeTo.empty())
   {
-    modelPoseRelativeTo = "__model__";
+    if (_parent->GetName() == "model")
+    {
+      modelPoseRelativeTo = "__model__";
+    }
+    else
+    {
+      modelPoseRelativeTo = "world";
+    }
   }
 
   proxyModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
@@ -363,6 +370,17 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
         (elem->GetName() == "gripper") || (elem->GetName() == "plugin") ||
         (elem->GetName().find(':') != std::string::npos))
     {
+      if (_parent->GetName() == "world" &&
+          (elem->GetName() == "link" || elem->GetName() == "gripper"))
+      {
+        Error unsupportedError(
+            ErrorCode::MERGE_INCLUDE_UNSUPPORTED,
+            "Merge-include for <world> does not support element of type " +
+                elem->GetName() + " in included model");
+        _sourceLoc.SetSourceLocationOnError(unsupportedError);
+        _errors.push_back(unsupportedError);
+        continue;
+      }
       _parent->InsertElement(elem, true);
     }
   }
@@ -750,25 +768,36 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
     return false;
   }
 
-  // Suppress deprecation for sdf::URDF2SDF
-  if (readDoc(&xmlDoc, _sdf, filename, _convert, _config, _errors))
+  tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
+  if (sdfXml)
   {
-    return true;
+    // Suppress deprecation for sdf::URDF2SDF
+    return readDoc(&xmlDoc, _sdf, filename, _convert, _config, _errors);
   }
-  else if (URDF2SDF::IsURDF(filename))
+  else
   {
-    URDF2SDF u2g;
-    auto doc = makeSdfDoc();
-    u2g.InitModelFile(filename, _config, &doc);
-    if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _config, _errors))
+    tinyxml2::XMLElement *robotXml = xmlDoc.FirstChildElement("robot");
+    if (robotXml)
     {
-      sdfdbg << "parse from urdf file [" << _filename << "].\n";
-      return true;
+      URDF2SDF u2g;
+      auto doc = makeSdfDoc();
+      u2g.InitModelFile(filename, _config, &doc);
+      if (sdf::readDoc(&doc, _sdf, filename, _convert, _config, _errors))
+      {
+        sdfdbg << "Converting URDF file [" << _filename << "] to SDFormat"
+               << " and parsing it.\n";
+        return true;
+      }
+      else
+      {
+        sdferr << "Failed to parse the URDF file after converting to"
+               << " SDFormat.\n";
+        return false;
+      }
     }
     else
     {
-      sdferr << "parse as old deprecated model file failed.\n";
-      return false;
+      sdferr << "XML does not seem to be an SDFormat or an URDF file.\n";
     }
   }
 
@@ -827,30 +856,40 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
     sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
     return false;
   }
-  if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert, _config,
-              _errors))
+  tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
+  if (sdfXml)
   {
-    return true;
+    return readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert,
+                   _config, _errors);
   }
   else
   {
-    URDF2SDF u2g;
-    auto doc = makeSdfDoc();
-    u2g.InitModelString(_xmlString, _config, &doc);
-
-    if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
-                    _config, _errors))
+    tinyxml2::XMLElement *robotXml = xmlDoc.FirstChildElement("robot");
+    if (robotXml)
     {
-      sdfdbg << "Parsing from urdf.\n";
-      return true;
+      URDF2SDF u2g;
+      auto doc = makeSdfDoc();
+      u2g.InitModelString(_xmlString, _config, &doc);
+
+      if (sdf::readDoc(&doc, _sdf, std::string(kUrdfStringSource), _convert,
+                      _config, _errors))
+      {
+        sdfdbg << "Converting URDF to SDFormat and parsing it.\n";
+        return true;
+      }
+      else
+      {
+        sdferr << "Failed to parse the URDF file after converting to"
+               << " SDFormat\n";
+        return false;
+      }
     }
     else
     {
-      sdferr << "parse as old deprecated model file failed.\n";
+      sdferr << "XML does not seem to be an SDFormat or an URDF string.\n";
       return false;
     }
   }
-
   return false;
 }
 

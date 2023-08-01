@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Scene.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMScene, Construction)
@@ -199,4 +200,53 @@ TEST(DOMScene, ToElement)
 
   const sdf::Sky *sky2 = scene2.Sky();
   ASSERT_NE(nullptr, sky2);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMScene, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Scene scene;
+  sdf::Errors errors;
+
+  scene.SetAmbient(gz::math::Color(0.1f, 0.2f, 0.3f, 1.0f));
+  scene.SetBackground(gz::math::Color(0.2f, 0.3f, 0.4f, 1.0f));
+  scene.SetGrid(true);
+  scene.SetOriginVisual(true);
+  scene.SetShadows(true);
+
+  sdf::Sky sky;
+  scene.SetSky(sky);
+
+  sdf::ElementPtr elem = scene.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Scene scene2;
+  errors = scene2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(scene.Ambient(), scene2.Ambient());
+  EXPECT_EQ(scene.Background(), scene2.Background());
+  EXPECT_EQ(scene.Grid(), scene2.Grid());
+  EXPECT_EQ(scene.OriginVisual(), scene2.OriginVisual());
+  EXPECT_EQ(scene.Shadows(), scene2.Shadows());
+
+  const sdf::Sky *sky2 = scene2.Sky();
+  ASSERT_NE(nullptr, sky2);
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

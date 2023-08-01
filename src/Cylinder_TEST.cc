@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Cylinder.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMCylinder, Construction)
@@ -192,4 +193,41 @@ TEST(DOMCylinder, ToElement)
 
   EXPECT_DOUBLE_EQ(cylinder.Radius(), cylinder2.Radius());
   EXPECT_DOUBLE_EQ(cylinder.Length(), cylinder2.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Cylinder cylinder;
+  sdf::Errors errors;
+
+  cylinder.SetRadius(1.2);
+  cylinder.SetLength(0.5);
+
+  sdf::ElementPtr elem = cylinder.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Cylinder cylinder2;
+  errors = cylinder2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(cylinder.Radius(), cylinder2.Radius());
+  EXPECT_DOUBLE_EQ(cylinder.Length(), cylinder2.Length());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
