@@ -18,8 +18,8 @@ set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
 # Find gz-cmake
-find_package(gz-cmake4 REQUIRED)
-set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
+find_package(gz-cmake3 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 ########################################
 option(SKIP_PYBIND11
@@ -122,13 +122,13 @@ if (BUILD_SDF)
   ########################################
   # Find gz math
   # Set a variable for generating ProjectConfig.cmake
-  gz_find_package(gz-math8 VERSION REQUIRED)
-  set(GZ_MATH_VER ${gz-math8_VERSION_MAJOR})
+  gz_find_package(gz-math7 VERSION REQUIRED)
+  set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
 
   ########################################
   # Find gz utils
-  gz_find_package(gz-utils3 REQUIRED COMPONENTS cli)
-  set(GZ_UTILS_VER ${gz-utils3_VERSION_MAJOR})
+  gz_find_package(gz-utils2 REQUIRED COMPONENTS cli)
+  set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
   ########################################
   # Python interfaces
