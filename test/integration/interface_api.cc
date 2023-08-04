@@ -418,8 +418,10 @@ TEST_F(InterfaceAPI, DeeplyNestedModel)
   EXPECT_TRUE(errors.empty()) << errors;
   const sdf::Model *grandParentModel = root.Model();
   ASSERT_NE(nullptr, grandParentModel);
+  EXPECT_EQ("grand_parent_model", grandParentModel->Name());
   const sdf::Model *parentModel = grandParentModel->ModelByIndex(0);
   ASSERT_NE(nullptr, parentModel);
+  EXPECT_EQ("parent_model", parentModel->Name());
   auto interfaceModel = parentModel->InterfaceModelByIndex(0);
   ASSERT_NE(nullptr, interfaceModel);
   SCOPED_TRACE("DeeplyNestedModel");
@@ -433,14 +435,15 @@ gz::math::Pose3d resolvePoseNoErrors(const sdf::SemanticPose &_semPose,
   sdf::Errors resolveErrors = _semPose.Resolve(pose, _relativeTo);
   EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
   return pose;
-};
+}
+
 std::string resolveAttachedToNoErrors(const sdf::Frame &_frame)
 {
   std::string resolvedBody;
   sdf::Errors resolveErrors = _frame.ResolveAttachedToBody(resolvedBody);
   EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
   return resolvedBody;
-};
+}
 
 void InterfaceAPI::CheckFrameSemantics(const sdf::World *world)
 {
@@ -1320,7 +1323,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeInclude1a)
     <model name="parent_model">
       <link name="link1"/>
       <include>
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <pose>0 10 0   0 0 0</pose>
       </include>
     </model>
@@ -1357,7 +1360,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeInclude1b)
   <sdf version="1.10">
     <model name="parent_model">
       <include merge="true">
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <pose>0 10 0   0 0 0</pose>
       </include>
     </model>
@@ -1392,7 +1395,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeInclude2)
   <sdf version="1.10">
     <model name="parent_model">
       <include merge="true">
-        <uri>merge_include_with_interface_api_2.sdf</uri>
+        <uri>intermediate_model_with_interface_api_2.sdf</uri>
         <pose>0 10 0   0 0 0</pose>
       </include>
     </model>
@@ -1419,7 +1422,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludePlacementFrame)
   <sdf version="1.10">
     <model name="parent_model">
       <include merge="true">
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <placement_frame>double_pendulum::lower_link</placement_frame>
         <pose>0 10 0   0 0 0</pose>
       </include>
@@ -1448,7 +1451,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeInWorldPlacementFrame)
     <world name="default">
       <frame name="world_frame"/>
       <include merge="true">
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <placement_frame>double_pendulum::lower_link</placement_frame>
         <pose>0 10 0   0 0 0</pose>
       </include>
@@ -1482,7 +1485,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeInWorld)
   <sdf version="1.10">
     <world name="merge_world">
       <include merge="true">
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <pose>0 10 0   0 0 0</pose>
       </include>
       <frame name="world_frame"/>
@@ -1527,7 +1530,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeElementOrder)
         <uri>test_model_with_frames</uri>
       </include>
       <include>
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <pose>0 10 0   0 0 0</pose>
       </include>
     </model>
@@ -1574,7 +1577,7 @@ TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeElementOrderInWorld)
         <uri>model_for_world_merge_include.sdf</uri>
       </include>
       <include>
-        <uri>merge_include_with_interface_api_1.sdf</uri>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
         <pose>0 10 0   0 0 0</pose>
       </include>
     </world>

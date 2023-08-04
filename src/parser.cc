@@ -246,9 +246,9 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     // since that requires building a frame graph for the model.
     // So instead we add a hidden flag here to tell `sdf::Model` or `sdf::World`
     // that this model is meant to be merged.
-    firstElem->AddAttribute("merge", "bool", "false", false,
+    firstElem->AddAttribute("__merge__", "bool", "false", false,
                             "Indicates whether this is a merge included model");
-    firstElem->GetAttribute("merge")->Set<bool>(true);
+    firstElem->GetAttribute("__merge__")->Set<bool>(true);
     _parent->InsertElement(firstElem, true);
     return;
   }

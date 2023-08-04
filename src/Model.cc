@@ -191,7 +191,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Note: this attribute is not defined in the spec. It is used internally for
   // implementing merge-includes when custom parsers are present.
   this->dataPtr->isMerged =
-    _sdf->Get<bool>("merge", this->dataPtr->isMerged).first;
+    _sdf->Get<bool>("__merge__", this->dataPtr->isMerged).first;
 
   this->dataPtr->placementFrameName = _sdf->Get<std::string>("placement_frame",
                              this->dataPtr->placementFrameName).first;
