@@ -445,7 +445,7 @@ TEST(DOMModel, Uri)
   std::string name = "my-model";
   gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
-    "https://fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model";
+    "https://fuel.gazebosim.org/1.0/openrobotics/models/my-model";
 
   model.SetName(name);
   model.SetRawPose(pose);

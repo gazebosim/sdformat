@@ -123,7 +123,7 @@
         <collision name="collision">
           <geometry>
             <mesh>
-              <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+              <uri>https://fuel.gazebosim.org/an_org/models/a_model/mesh/mesh.dae</uri>
               <submesh>
                 <name>my_submesh</name>
                 <center>true</center>
@@ -136,7 +136,7 @@
         <visual name="visual">
           <geometry>
             <mesh>
-              <uri>https://ignitionfuel.org/an_org/models/a_model/mesh/mesh.dae</uri>
+              <uri>https://fuel.gazebosim.org/an_org/models/a_model/mesh/mesh.dae</uri>
               <submesh>
                 <name>another_submesh</name>
                 <center>false</center>
