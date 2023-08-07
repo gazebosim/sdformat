@@ -114,6 +114,8 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
                      "A link name is required, but the name is not set."});
   }
 
+    std::cout << "Load called for link: " << this->dataPtr->name << std::endl;
+
   // Check that the link's name is valid
   if (isReservedName(this->dataPtr->name))
   {
@@ -161,74 +163,74 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
-    if (inertialElem->HasElement("pose"))
-      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+    // if (inertialElem->HasElement("pose"))
+    //   loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
 
-    if (inertialElem->HasElement("inertia"))
-    {
-      sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+    // if (inertialElem->HasElement("inertia"))
+    // {
+    //   sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
 
-      if (inertiaElem->Get<bool>("auto"))
-      {
-        std::cout << "Inertia is set to automatic" << std::endl;
-        gz::math::Inertiald totalInertia;
+    //   if (inertiaElem->Get<bool>("auto"))
+    //   {
+    //     std::cout << "Inertia is set to automatic" << std::endl;
+    //     gz::math::Inertiald totalInertia;
 
-        for(auto collision : this->dataPtr->collisions)
-        {
-          gz::math::Inertiald collisionInertia;
-          std::cout << "Density of the collision is: " << collision.Density();
-          std::cout << std::endl;
-          Errors inertiaErrors = collision.MassMatrix(collisionInertia);
+    //     for(auto collision : this->dataPtr->collisions)
+    //     {
+    //       gz::math::Inertiald collisionInertia;
+    //       std::cout << "Density of the collision is: " << collision.Density();
+    //       std::cout << std::endl;
+    //       Errors inertiaErrors = collision.MassMatrix(collisionInertia);
           
-          // Get pose of collision w.r.t inertial frame
-          collisionInertia.SetPose(inertiaPose);
-          std::string collisionName = collision.Name();
-          Errors resolvePoseErrors = this->ResolveInertial(collisionInertia, collisionName);
-          std::cout << "Pose of Inertia w.r.t Collision: ";
-          std::cout << collisionInertia.Pose() << std::endl;
-          std::cout << "Pose of collision w.r.t Inertial: ";
-          std::cout << collisionInertia.Pose().Inverse() << std::endl;
-          collisionInertia.SetPose(collisionInertia.Pose().Inverse());
-          errors.insert(errors.end(), resolvePoseErrors.begin(), resolvePoseErrors.end());
+    //       // Get pose of collision w.r.t inertial frame
+    //       collisionInertia.SetPose(inertiaPose);
+    //       std::string collisionName = collision.Name();
+    //       Errors resolvePoseErrors = this->ResolveInertial(collisionInertia, collisionName);
+    //       std::cout << "Pose of Inertia w.r.t Collision: ";
+    //       std::cout << collisionInertia.Pose() << std::endl;
+    //       std::cout << "Pose of collision w.r.t Inertial: ";
+    //       std::cout << collisionInertia.Pose().Inverse() << std::endl;
+    //       collisionInertia.SetPose(collisionInertia.Pose().Inverse());
+    //       errors.insert(errors.end(), resolvePoseErrors.begin(), resolvePoseErrors.end());
           
-          std::cout << "Inertia of " << collision.Name() << std::endl;
-          std::cout << collisionInertia.MassMatrix().Ixx() << " , " << collisionInertia.MassMatrix().Iyy() << " , " << collisionInertia.MassMatrix().Izz() << std::endl;
-          std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
-          std::cout << "Mass of " << collision.Name() << " is " << collisionInertia.MassMatrix().Mass() << std::endl;
-          errors.insert(errors.end(), inertiaErrors.begin(), 
-              inertiaErrors.end());
+    //       std::cout << "Inertia of " << collision.Name() << std::endl;
+    //       std::cout << collisionInertia.MassMatrix().Ixx() << " , " << collisionInertia.MassMatrix().Iyy() << " , " << collisionInertia.MassMatrix().Izz() << std::endl;
+    //       std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+    //       std::cout << "Mass of " << collision.Name() << " is " << collisionInertia.MassMatrix().Mass() << std::endl;
+    //       errors.insert(errors.end(), inertiaErrors.begin(), 
+    //           inertiaErrors.end());
           
-          totalInertia = totalInertia + collisionInertia;
-        }
+    //       totalInertia = totalInertia + collisionInertia;
+    //     }
         
-        std::cout << "--------------------------------------" << std::endl;
-        mass = totalInertia.MassMatrix().Mass();
-        xxyyzz.X() = totalInertia.MassMatrix().Ixx();
-        xxyyzz.Y() = totalInertia.MassMatrix().Iyy();
-        xxyyzz.Z() = totalInertia.MassMatrix().Izz();
+    //     std::cout << "--------------------------------------" << std::endl;
+    //     mass = totalInertia.MassMatrix().Mass();
+    //     xxyyzz.X() = totalInertia.MassMatrix().Ixx();
+    //     xxyyzz.Y() = totalInertia.MassMatrix().Iyy();
+    //     xxyyzz.Z() = totalInertia.MassMatrix().Izz();
 
-        xyxzyz.X() = totalInertia.MassMatrix().Ixy();
-        xyxzyz.Y() = totalInertia.MassMatrix().Ixz();
-        xyxzyz.Z() = totalInertia.MassMatrix().Iyz();
+    //     xyxzyz.X() = totalInertia.MassMatrix().Ixy();
+    //     xyxzyz.Y() = totalInertia.MassMatrix().Ixz();
+    //     xyxzyz.Z() = totalInertia.MassMatrix().Iyz();
 
-        std::cout << "Total Inertia of " << this->dataPtr->name << std::endl;
-        std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
-        std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
-        std::cout << "Total Mass of " << this->dataPtr->name << " is " << mass << std::endl;
-      }
-      else
-      {
-        // Get the mass.
-        mass = inertialElem->Get<double>("mass", 1.0).first;
-        xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
-        xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
-        xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
+    //     std::cout << "Total Inertia of " << this->dataPtr->name << std::endl;
+    //     std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
+    //     std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
+    //     std::cout << "Total Mass of " << this->dataPtr->name << " is " << mass << std::endl;
+    //   }
+    //   else
+    //   {
+    //     // Get the mass.
+    //     mass = inertialElem->Get<double>("mass", 1.0).first;
+    //     xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
+    //     xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
+    //     xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
 
-        xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
-        xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
-        xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
-      }
-    }
+    //     xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
+    //     xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
+    //     xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+    //   }
+    // }
 
     if (inertialElem->HasElement("fluid_added_mass"))
     {
@@ -549,6 +551,92 @@ Errors Link::ResolveInertial(
     _inertial.SetPose(linkPose * _inertial.Pose());
   }
   return errors;
+}
+
+/////////////////////////////////////////////////
+void Link::CalculateInertials(sdf::Errors &_errors)
+{
+  std::cout << "CalculateInertial() called for " << this->dataPtr->name << std::endl;
+  if (this->dataPtr->sdf->HasElement("inertial"))
+  {
+    sdf::ElementPtr inertialElem = this->dataPtr->sdf->GetElement("inertial");
+
+    if (inertialElem->Get<bool>("auto"))
+    {
+      std::cout << "Inertia is set to automatic" << std::endl;
+      gz::math::Inertiald totalInertia;
+
+      for(auto collision : this->dataPtr->collisions)
+      {
+        gz::math::Inertiald collisionInertia;
+        std::cout << "Density of the collision is: " << collision.Density();
+        std::cout << std::endl;
+        Errors inertiaErrors = collision.MassMatrix(collisionInertia);
+        
+        // Get pose of collision w.r.t inertial frame
+        std::string collisionName = collision.Name();
+
+        // Errors resolvePoseErrors = this->ResolveInertial(collisionInertia, collisionName);
+
+        // std::cout << "Pose of Inertia w.r.t Collision: ";
+        // std::cout << collisionInertia.Pose() << std::endl;
+        // std::cout << "Pose of collision w.r.t Inertial: ";
+        // std::cout << collisionInertia.Pose().Inverse() << std::endl;
+
+        // collisionInertia.SetPose(collisionInertia.Pose().Inverse());
+
+        // _errors.insert(_errors.end(), resolvePoseErrors.begin(), resolvePoseErrors.end());
+        _errors.insert(_errors.end(), inertiaErrors.begin(), inertiaErrors.end());
+        
+        totalInertia = totalInertia + collisionInertia;
+      }
+
+      std::cout << totalInertia.MassMatrix().Ixx() << ", " << totalInertia.MassMatrix().Iyy() << ", " << totalInertia.MassMatrix().Izz() << std::endl;
+      std::cout << "Total Mass is " << totalInertia.MassMatrix().Mass() << std::endl;
+
+      this->dataPtr->inertial = totalInertia;
+    }
+    else
+    {
+      if (inertialElem->HasElement("inertia"))
+      {
+        sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+
+        gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
+        gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
+        double mass = 1.0;
+        gz::math::Pose3d inertiaPose;
+        std::string inertiaFrame = "";
+    
+        if (inertialElem->HasElement("pose"))
+          loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+
+        mass = inertialElem->Get<double>("mass", 1.0).first;
+        xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
+        xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
+        xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
+
+        xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
+        xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
+        xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+
+        if (this->dataPtr->inertial.SetMassMatrix(
+              gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+        {
+          _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+                            "A link named " +
+                            this->Name() +
+                            " has invalid inertia."});
+        }
+      }
+    }
+  }
+  else
+  {
+    _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                      "<inertial> element is missing. "
+                      "Using default inertial values for the link"});
+  }
 }
 
 /////////////////////////////////////////////////

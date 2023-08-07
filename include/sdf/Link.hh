@@ -284,6 +284,13 @@ namespace sdf
     public: Errors ResolveInertial(gz::math::Inertiald &_inertial,
                                    const std::string &_resolveTo = "") const;
 
+    /// \brief Calculate and set inertial values (mass, mass matrix & inertial pose)
+    /// for the link. Inertial values can be provided by the user through the SDF
+    /// or can be calculated automatically by setting the auto attribute to true.
+    /// \param[out] _errors A vector of Errors object. Each object would contain an 
+    /// error code and an error message.
+    public: void CalculateInertials(sdf::Errors &_errors);
+
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
