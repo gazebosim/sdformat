@@ -249,6 +249,20 @@ Errors Collision::MassMatrix(gz::math::Inertiald &_inertial)
           "Inertia Calculated for collision: " + 
           this->dataPtr->name + " seems invalid"});
     }
+    
+    // If collision pose is in Link Frame then set that as inertial pose
+    // Else resolve collision pose in Link Frame and then set as inertial pose
+    if (this->dataPtr->poseRelativeTo.empty())
+    {
+      _inertial.SetPose(this->dataPtr->pose);
+    }
+    else
+    {
+      gz::math::Pose3d collisionPoseLinkFrame;
+      Errors poseConvErrors = this->SemanticPose().Resolve(collisionPoseLinkFrame);
+      errors.insert(errors.end(), poseConvErrors.begin(), poseConvErrors.end());
+      _inertial.SetPose(collisionPoseLinkFrame);
+    }
   }
 
   return errors;
