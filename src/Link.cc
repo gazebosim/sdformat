@@ -564,28 +564,26 @@ void Link::CalculateInertials(sdf::Errors &_errors)
     if (inertialElem->Get<bool>("auto"))
     {
       std::cout << "Inertia is set to automatic" << std::endl;
+
+      // Return an error if auto is set to true but there are no
+      // collision elements in the link
+      if (this->dataPtr->collisions.empty())
+      {
+        _errors.push_back({ErrorCode::ELEMENT_MISSING, 
+                          "Inertial is set to auto but there are no " 
+                          "<collision> elements for the link."});
+        return;
+      }
+
       gz::math::Inertiald totalInertia;
 
-      for(auto collision : this->dataPtr->collisions)
+      for(sdf::Collision &collision : this->dataPtr->collisions)
       {
         gz::math::Inertiald collisionInertia;
         std::cout << "Density of the collision is: " << collision.Density();
         std::cout << std::endl;
+
         Errors inertiaErrors = collision.MassMatrix(collisionInertia);
-        
-        // Get pose of collision w.r.t inertial frame
-        std::string collisionName = collision.Name();
-
-        // Errors resolvePoseErrors = this->ResolveInertial(collisionInertia, collisionName);
-
-        // std::cout << "Pose of Inertia w.r.t Collision: ";
-        // std::cout << collisionInertia.Pose() << std::endl;
-        // std::cout << "Pose of collision w.r.t Inertial: ";
-        // std::cout << collisionInertia.Pose().Inverse() << std::endl;
-
-        // collisionInertia.SetPose(collisionInertia.Pose().Inverse());
-
-        // _errors.insert(_errors.end(), resolvePoseErrors.begin(), resolvePoseErrors.end());
         _errors.insert(_errors.end(), inertiaErrors.begin(), inertiaErrors.end());
         
         totalInertia = totalInertia + collisionInertia;
@@ -598,20 +596,21 @@ void Link::CalculateInertials(sdf::Errors &_errors)
     }
     else
     {
+      gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
+      gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
+      double mass = 1.0;
+      gz::math::Pose3d inertiaPose;
+      std::string inertiaFrame = "";
+
+      if (inertialElem->HasElement("pose"))
+        loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+      
+      mass = inertialElem->Get<double>("mass", 1.0).first;
+
       if (inertialElem->HasElement("inertia"))
       {
         sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
 
-        gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
-        gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
-        double mass = 1.0;
-        gz::math::Pose3d inertiaPose;
-        std::string inertiaFrame = "";
-    
-        if (inertialElem->HasElement("pose"))
-          loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
-
-        mass = inertialElem->Get<double>("mass", 1.0).first;
         xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
         xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
         xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
@@ -619,15 +618,15 @@ void Link::CalculateInertials(sdf::Errors &_errors)
         xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
         xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
         xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+      }
 
-        if (this->dataPtr->inertial.SetMassMatrix(
-              gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
-        {
-          _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
-                            "A link named " +
-                            this->Name() +
-                            " has invalid inertia."});
-        }
+      if (!this->dataPtr->inertial.SetMassMatrix(
+          gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
+      {
+        _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+                          "A link named " +
+                          this->Name() +
+                          " has invalid inertia."});
       }
     }
   }
@@ -635,7 +634,8 @@ void Link::CalculateInertials(sdf::Errors &_errors)
   {
     _errors.push_back({ErrorCode::ELEMENT_MISSING,
                       "<inertial> element is missing. "
-                      "Using default inertial values for the link"});
+                      "Using default inertial values for the link: " +
+                      this->dataPtr->name});
   }
 }
 
