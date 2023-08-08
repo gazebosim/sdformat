@@ -286,6 +286,8 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
       this->dataPtr->UpdateGraphs(world, worldErrors);
 
+      world.CalculateInertials(worldErrors);
+
       // Attempt to load the world
       if (worldErrors.empty())
       {
