@@ -146,7 +146,7 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // that have duplicate names.
   {
     const auto path =
-      sdf::testing::TestFile("sdf", "world_duplicate.world");
+      sdf::testing::TestFile("sdf", "world_duplicate.sdf");
 
     // Check world_duplicate.sdf
     std::string output =
@@ -219,7 +219,7 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF model file is allowed to have duplicate plugin names
   {
     const auto path =
-      sdf::testing::TestFile("sdf", "model_link_duplicate_plugins.sdf");
+      sdf::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -524,7 +524,7 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   {
     const auto path =
       sdf::testing::TestFile("sdf",
-          "nested_invalid_reserved_names.sdf");
+          "model_invalid_reserved_names.sdf");
 
     // Check model_invalid_reserved_names.sdf
     std::string output =
