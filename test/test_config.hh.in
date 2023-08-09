@@ -80,6 +80,7 @@ namespace sdf
       else
       {
         _tmpDir = sdf::filesystem::append(kProjectBinaryDir, "sdf-tmp");
+        sdf::filesystem::create_directory(_tmpDir);
         return true;
       }
     }

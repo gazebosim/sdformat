@@ -419,10 +419,18 @@ TEST(Parser, IncludesErrors)
 
     const auto path =
         sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
+    sdf::setFindCallback([&](const std::string &/*_file*/)
+        {
+          return "";
+        });
+
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
+
+    std::cout << buffer.str() << std::endl;
+
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
