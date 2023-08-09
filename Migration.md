@@ -24,6 +24,7 @@ but with improved human-readability..
 
 1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
    elements.
+2. Updated search order for `sdf::findFile()` making local path (current directory) the first to be searched. 
 
 ### Deprecations
 
