@@ -16,9 +16,13 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <sstream>
+#include <utility>
+
+#include <sdf/Atmosphere.hh>
 #include <gz/math/Temperature.hh>
 #include <gz/math/Vector3.hh>
-#include "sdf/World.hh"
 #include "test_utils.hh"
 
 /////////////////////////////////////////////////

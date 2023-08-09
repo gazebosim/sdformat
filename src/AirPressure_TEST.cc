@@ -16,6 +16,11 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <memory>
+#include <sstream>
+#include <utility>
+
 #include "sdf/AirPressure.hh"
 #include "test_utils.hh"
 

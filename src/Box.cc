@@ -14,6 +14,9 @@
  * limitations under the License.
  *
 */
+
+#include <utility>
+
 #include <gz/math/Vector3.hh>
 #include "sdf/Box.hh"
 #include "sdf/parser.hh"

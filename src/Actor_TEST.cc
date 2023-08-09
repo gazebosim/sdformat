@@ -16,6 +16,11 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <cstdlib>
+#include <string>
+#include <utility>
+
 #include <gz/math/Pose3.hh>
 #include "sdf/Actor.hh"
 #include "sdf/Plugin.hh"
@@ -69,8 +74,8 @@ bool TrajectoriesEqual(const sdf::Trajectory &_traj1,
   }
   for (uint64_t wp_idx = 0; wp_idx < _traj1.WaypointCount(); ++wp_idx)
   {
-    auto wp1 = _traj1.WaypointByIndex(wp_idx);
-    auto wp2 = _traj2.WaypointByIndex(wp_idx);
+    const auto *wp1 = _traj1.WaypointByIndex(wp_idx);
+    const auto *wp2 = _traj2.WaypointByIndex(wp_idx);
     waypointsEqual &= (std::abs(wp1->Time() - wp2->Time()) < EPS) &&
       wp1->Pose() == wp2->Pose();
   }

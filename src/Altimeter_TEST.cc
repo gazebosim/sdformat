@@ -16,6 +16,10 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <memory>
+#include <utility>
+
 #include "sdf/Altimeter.hh"
 #include "test_utils.hh"
 

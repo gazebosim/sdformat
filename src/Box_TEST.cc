@@ -16,6 +16,9 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <sstream>
+
 #include "sdf/Box.hh"
 #include "sdf/Element.hh"
 #include "test_utils.hh"
