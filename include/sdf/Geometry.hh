@@ -21,7 +21,7 @@
 #include <optional>
 
 #include <gz/utils/ImplPtr.hh>
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -213,8 +213,8 @@ namespace sdf
 
     /// \brief Calculate and return the Mass Matrix values for the Geometry
     /// \param[in] _density The density of the geometry element.
-    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
-    public: std::optional< gz::math::MassMatrix3d > MassMatrix(const double _density);
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional< gz::math::Inertiald > CalculateInertial(const double _density);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

@@ -17,7 +17,7 @@
 
 #include <optional>
 
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -304,32 +304,32 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
   this->dataPtr->polylines = _polylines;
 }
 
-std::optional< gz::math::MassMatrix3d > Geometry::MassMatrix(const double _density)
+std::optional< gz::math::Inertiald > Geometry::CalculateInertial(const double _density)
 {
-  std::optional< gz::math::MassMatrix3d > massMat;
+  std::optional< gz::math::Inertiald > geomInertial;
 
   switch (this->dataPtr->type)
   {
     case GeometryType::BOX:
-      massMat = this->dataPtr->box->MassMatrix(_density);
-      break;
-    case GeometryType::CYLINDER:
-      massMat = this->dataPtr->cylinder->MassMatrix(_density);
-      break;
-    case GeometryType::SPHERE:
-      massMat = this->dataPtr->sphere->MassMatrix(_density);
+      geomInertial = this->dataPtr->box->CalculateInertial(_density);
       break;
     case GeometryType::CAPSULE:
-      massMat = this->dataPtr->capsule->MassMatrix(_density);
+      geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
+      break;
+    case GeometryType::CYLINDER:
+      geomInertial = this->dataPtr->cylinder->CalculateInertial(_density);
       break;
     case GeometryType::ELLIPSOID:
-      massMat = this->dataPtr->ellipsoid->MassMatrix(_density);
+      geomInertial = this->dataPtr->ellipsoid->CalculateInertial(_density);
+      break;
+    case GeometryType::SPHERE:
+      geomInertial = this->dataPtr->sphere->CalculateInertial(_density);
       break;
     default:
       break;
   }
   
-  return massMat;
+  return geomInertial;
 }
 
 /////////////////////////////////////////////////
