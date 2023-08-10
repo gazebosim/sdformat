@@ -119,9 +119,16 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   }
   else
   {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Collision is missing a <density> child "
-        "element. Using a density of 1000.0"});
+    // If the density element is missing, let the user know that a default
+    // value would be used according to the policy 
+    Error densityMissingErr(
+      ErrorCode::ELEMENT_MISSING,
+      "Collision is missing a <density> child element. "
+      "Using a default density value of 1000.0 kg/m^3. "
+    );
+    enforceConfigurablePolicyCondition(
+      _config.WarningsPolicy(), densityMissingErr, errors
+    );
   }
 
   // Load the surface parameters if they are given
