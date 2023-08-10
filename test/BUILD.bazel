@@ -1,8 +1,16 @@
 load(
     "@gz//bazel/skylark:build_defs.bzl",
     "GZ_ROOT",
+    "GZ_VISIBILITY",
+    "GZ_FEATURES",
     "cmake_configure_file",
 )
+
+package(
+    default_visibility = GZ_VISIBILITY,
+    features = GZ_FEATURES,
+)
+
 
 licenses(["notice"])
 
@@ -21,7 +29,10 @@ cc_library(
         "test_utils.hh",
     ],
     includes = ["."],
-    visibility = ["//visibility:public"],
+    deps = [
+      GZ_ROOT + "utils:utils",
+      GZ_ROOT + "sdformat:sdformat"
+    ]
 )
 
 integration_test_sources = glob(
