@@ -548,7 +548,7 @@ void Link::CalculateInertials(sdf::Errors &_errors)
         std::cout << "Density of the collision is: " << collision.Density();
         std::cout << std::endl;
 
-        Errors inertiaErrors = collision.MassMatrix(collisionInertia);
+        Errors inertiaErrors = collision.CalculateInertial(collisionInertia);
         _errors.insert(_errors.end(), inertiaErrors.begin(), inertiaErrors.end());
         
         totalInertia = totalInertia + collisionInertia;
