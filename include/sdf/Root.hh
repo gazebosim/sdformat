@@ -226,12 +226,14 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors UpdateGraphs();
 
-    /// \brief Calculate and set the inertial properties (mass, mass matrix 
-    /// and inertial pose) for all the worlds and models that are children of this
-    /// Root object. This function can be called after calling UpdateGraphs() since
-    /// it uses frame graphs to resolve inertial pose for links.
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no error.
+    /// \brief Calculate & set the inertial properties (mass, mass matrix
+    /// and inertial pose) for all the worlds & models that are children
+    /// of this Root object. This function can be called after calling
+    /// UpdateGraphs() since it uses frame graphs to resolve inertial pose
+    /// for links.
+    /// \return Errors, which is a vector of Error objects.
+    /// Each Error includes an error code and message. An empty vector
+    /// indicates no error.
     public: Errors CalculateInertials();
 
     /// \brief Create and return an SDF element filled with data from this

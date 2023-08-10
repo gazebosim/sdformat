@@ -120,7 +120,7 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   else
   {
     // If the density element is missing, let the user know that a default
-    // value would be used according to the policy 
+    // value would be used according to the policy
     Error densityMissingErr(
       ErrorCode::ELEMENT_MISSING,
       "Collision is missing a <density> child element. "
@@ -240,7 +240,8 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial)
 {
   Errors errors;
 
-  auto geomInertial = this->dataPtr->geom.CalculateInertial(this->dataPtr->density);
+  auto geomInertial =
+    this->dataPtr->geom.CalculateInertial(this->dataPtr->density);
 
   if (!geomInertial)
   {
@@ -251,13 +252,13 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial)
   else
   {
     _inertial = geomInertial.value();
-    
+
     // If geometry type is not mesh than calculate inertial pose in Link frame
     // considering collision frame to be same as inertial frame
-    // In case of mesh the custom inertia calculator should return the inertial object
-    // with the pose already set
+    // In case of mesh the custom inertia calculator should return
+    // the inertial object with the pose already set
     if (this->dataPtr->geom.Type() != GeometryType::MESH)
-    {    
+    {
       // If collision pose is in Link Frame then set that as inertial pose
       // Else resolve collision pose in Link Frame and then set as inertial pose
       if (this->dataPtr->poseRelativeTo.empty())
@@ -267,8 +268,11 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial)
       else
       {
         gz::math::Pose3d collisionPoseLinkFrame;
-        Errors poseConvErrors = this->SemanticPose().Resolve(collisionPoseLinkFrame);
-        errors.insert(errors.end(), poseConvErrors.begin(), poseConvErrors.end());
+        Errors poseConvErrors =
+          this->SemanticPose().Resolve(collisionPoseLinkFrame);
+        errors.insert(errors.end(),
+                      poseConvErrors.begin(),
+                      poseConvErrors.end());
         _inertial.SetPose(collisionPoseLinkFrame);
       }
     }

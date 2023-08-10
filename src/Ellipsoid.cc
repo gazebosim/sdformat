@@ -117,7 +117,8 @@ gz::math::Ellipsoidd &Ellipsoid::Shape()
 }
 
 /////////////////////////////////////////////////
-std::optional< gz::math::Inertiald > Ellipsoid::CalculateInertial(const double _density)
+std::optional<gz::math::Inertiald> Ellipsoid::CalculateInertial(
+  const double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->ellipsoid.SetMat(material);

@@ -245,7 +245,8 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
     Error inertialMissingErr(
       ErrorCode::ELEMENT_MISSING,
       "<inertial> element is missing. "
-      "Using default values for the inertial for the link: " + this->dataPtr->name
+      "Using default values for the inertial "
+      "for the link: " + this->dataPtr->name
     );
     enforceConfigurablePolicyCondition(
       _config.WarningsPolicy(), inertialMissingErr, errors
@@ -527,8 +528,8 @@ void Link::CalculateInertials(sdf::Errors &_errors)
       // collision elements in the link
       if (this->dataPtr->collisions.empty())
       {
-        _errors.push_back({ErrorCode::ELEMENT_MISSING, 
-                          "Inertial is set to auto but there are no " 
+        _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                          "Inertial is set to auto but there are no "
                           "<collision> elements for the link."});
         return;
       }
@@ -539,14 +540,16 @@ void Link::CalculateInertials(sdf::Errors &_errors)
       {
         gz::math::Inertiald collisionInertia;
         Errors inertiaErrors = collision.CalculateInertial(collisionInertia);
-        _errors.insert(_errors.end(), inertiaErrors.begin(), inertiaErrors.end());
+        _errors.insert(_errors.end(),
+                      inertiaErrors.begin(),
+                      inertiaErrors.end());
         totalInertia = totalInertia + collisionInertia;
       }
 
       this->dataPtr->inertial = totalInertia;
     }
-    // If auto is false, this means inertial values were set from user given values 
-    // in Link::Load(), therefore we can return
+    // If auto is false, this means inertial values were set
+    // from user given values in Link::Load(), therefore we can return
     else
     {
       return;

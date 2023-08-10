@@ -508,7 +508,7 @@ namespace sdf
     /// \param[in] _plugin Plugin to add.
     public: void AddPlugin(const Plugin &_plugin);
 
-    /// \brief Calculate and set the inertials for all the links belonging 
+    /// \brief Calculate and set the inertials for all the links belonging
     /// to the model object
     /// \param[out] _errrors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors

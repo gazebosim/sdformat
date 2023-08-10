@@ -304,7 +304,8 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
   this->dataPtr->polylines = _polylines;
 }
 
-std::optional< gz::math::Inertiald > Geometry::CalculateInertial(const double _density)
+std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
+  const double _density)
 {
   std::optional< gz::math::Inertiald > geomInertial;
 
@@ -328,7 +329,7 @@ std::optional< gz::math::Inertiald > Geometry::CalculateInertial(const double _d
     default:
       break;
   }
-  
+
   return geomInertial;
 }
 

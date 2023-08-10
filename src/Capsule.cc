@@ -141,7 +141,8 @@ gz::math::Capsuled &Capsule::Shape()
 }
 
 /////////////////////////////////////////////////
-std::optional< gz::math::Inertiald > Capsule::CalculateInertial(const double _density)
+std::optional<gz::math::Inertiald> Capsule::CalculateInertial(
+  const double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->capsule.SetMat(material);
