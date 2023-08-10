@@ -18,6 +18,7 @@
 #include <gz/math/Inertial.hh>
 #include "sdf/Cylinder.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -63,7 +64,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
   }
 
   {
-    std::pair<double, bool> pair = _sdf->Get<double>("radius",
+    std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->cylinder.Radius());
 
     if (!pair.second)
@@ -78,7 +79,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
   }
 
   {
-    std::pair<double, bool> pair = _sdf->Get<double>("length",
+    std::pair<double, bool> pair = _sdf->Get<double>(errors, "length",
         this->dataPtr->cylinder.Length());
 
     if (!pair.second)
@@ -160,14 +161,23 @@ std::optional<gz::math::Inertiald> Cylinder::CalculateInertial(
 /////////////////////////////////////////////////
 sdf::ElementPtr Cylinder::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Cylinder::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("cylinder_shape.sdf", elem);
 
-  sdf::ElementPtr radiusElem = elem->GetElement("radius");
-  radiusElem->Set<double>(this->Radius());
+  sdf::ElementPtr radiusElem = elem->GetElement("radius", _errors);
+  radiusElem->Set<double>(_errors, this->Radius());
 
-  sdf::ElementPtr lengthElem = elem->GetElement("length");
-  lengthElem->Set<double>(this->Length());
+  sdf::ElementPtr lengthElem = elem->GetElement("length", _errors);
+  lengthElem->Set<double>(_errors, this->Length());
 
   return elem;
 }

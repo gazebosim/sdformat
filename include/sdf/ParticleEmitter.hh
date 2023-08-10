@@ -323,6 +323,14 @@ namespace sdf
     /// \return SDF element pointer with updated particle emitter values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// particle emitter.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated particle emitter values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
+
     /// \brief Set the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by
     /// Link::SetPoseRelativeToGraph.

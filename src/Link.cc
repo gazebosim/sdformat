@@ -27,6 +27,7 @@
 #include "sdf/Link.hh"
 #include "sdf/parser.hh"
 #include "sdf/ParticleEmitter.hh"
+#include "sdf/Projector.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
@@ -62,6 +63,9 @@ class sdf::Link::Implementation
 
   /// \brief The particle emitters specified in this link.
   public: std::vector<ParticleEmitter> emitters;
+
+  /// \brief The projectors specified in this link.
+  public: std::vector<Projector> projectors;
 
   /// \brief The inertial information for this link.
   public: gz::math::Inertiald inertial {{1.0,
@@ -150,6 +154,12 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       "particle_emitter", this->dataPtr->emitters);
   errors.insert(errors.end(), emitterLoadErrors.begin(),
       emitterLoadErrors.end());
+
+  // Load all the projectors
+  Errors projectorLoadErrors = loadUniqueRepeated<Projector>(_sdf,
+      "projector", this->dataPtr->projectors);
+  errors.insert(errors.end(), projectorLoadErrors.begin(),
+      projectorLoadErrors.end());
 
   gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
   gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
@@ -488,6 +498,61 @@ ParticleEmitter *Link::ParticleEmitterByName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+uint64_t Link::ProjectorCount() const
+{
+  return this->dataPtr->projectors.size();
+}
+
+/////////////////////////////////////////////////
+const Projector *Link::ProjectorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->projectors.size())
+    return &this->dataPtr->projectors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Projector *Link::ProjectorByIndex(uint64_t _index)
+{
+  return const_cast<Projector*>(
+      static_cast<const Link*>(this)->ProjectorByIndex(_index));
+}
+
+/////////////////////////////////////////////////
+bool Link::ProjectorNameExists(const std::string &_name) const
+{
+  for (auto const &e : this->dataPtr->projectors)
+  {
+    if (e.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Projector *Link::ProjectorByName(
+    const std::string &_name) const
+{
+  for (auto const &e : this->dataPtr->projectors)
+  {
+    if (e.Name() == _name)
+    {
+      return &e;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Projector *Link::ProjectorByName(const std::string &_name)
+{
+  return const_cast<Projector *>(
+      static_cast<const Link*>(this)->ProjectorByName(_name));
+}
+
+/////////////////////////////////////////////////
 const gz::math::Inertiald &Link::Inertial() const
 {
   return this->dataPtr->inertial;
@@ -612,6 +677,12 @@ void Link::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   {
     emitter.SetXmlParentName(this->dataPtr->name);
     emitter.SetPoseRelativeToGraph(_graph);
+  }
+
+  for (auto &projector : this->dataPtr->projectors)
+  {
+    projector.SetXmlParentName(this->dataPtr->name);
+    projector.SetPoseRelativeToGraph(_graph);
   }
 }
 
@@ -751,6 +822,15 @@ bool Link::AddParticleEmitter(const ParticleEmitter &_emitter)
 }
 
 //////////////////////////////////////////////////
+bool Link::AddProjector(const Projector &_projector)
+{
+  if (this->ProjectorNameExists(_projector.Name()))
+    return false;
+  this->dataPtr->projectors.push_back(_projector);
+  return true;
+}
+
+//////////////////////////////////////////////////
 void Link::ClearCollisions()
 {
   this->dataPtr->collisions.clear();
@@ -778,6 +858,12 @@ void Link::ClearSensors()
 void Link::ClearParticleEmitters()
 {
   this->dataPtr->emitters.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearProjectors()
+{
+  this->dataPtr->projectors.clear();
 }
 
 /////////////////////////////////////////////////
@@ -858,6 +944,12 @@ sdf::ElementPtr Link::ToElement() const
   for (const sdf::ParticleEmitter &emitter : this->dataPtr->emitters)
   {
     elem->InsertElement(emitter.ToElement(), true);
+  }
+
+  // Projectors
+  for (const sdf::Projector &projector : this->dataPtr->projectors)
+  {
+    elem->InsertElement(projector.ToElement(), true);
   }
 
   // Sensors

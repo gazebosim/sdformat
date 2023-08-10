@@ -122,7 +122,8 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("size"))
   {
-    this->dataPtr->size = _sdf->Get<double>("size", this->dataPtr->size).first;
+    this->dataPtr->size = _sdf->Get<double>(
+        errors, "size", this->dataPtr->size).first;
   }
   else
   {
@@ -133,7 +134,7 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("diffuse"))
   {
     this->dataPtr->diffuse = resolveURI(
-        _sdf->Get<std::string>("diffuse", this->dataPtr->diffuse).first,
+        _sdf->Get<std::string>(errors, "diffuse", this->dataPtr->diffuse).first,
         _config, errors);
   }
   else
@@ -145,7 +146,7 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("normal"))
   {
     this->dataPtr->normal = resolveURI(
-        _sdf->Get<std::string>("normal", this->dataPtr->normal).first,
+        _sdf->Get<std::string>(errors, "normal", this->dataPtr->normal).first,
         _config, errors);
   }
   else
@@ -232,7 +233,7 @@ Errors HeightmapBlend::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("min_height"))
   {
-    this->dataPtr->minHeight = _sdf->Get<double>("min_height",
+    this->dataPtr->minHeight = _sdf->Get<double>(errors, "min_height",
         this->dataPtr->minHeight).first;
   }
   else
@@ -243,7 +244,7 @@ Errors HeightmapBlend::Load(ElementPtr _sdf)
 
   if (_sdf->HasElement("fade_dist"))
   {
-    this->dataPtr->fadeDistance = _sdf->Get<double>("fade_dist",
+    this->dataPtr->fadeDistance = _sdf->Get<double>(errors, "fade_dist",
         this->dataPtr->fadeDistance).first;
   }
   else
@@ -326,7 +327,7 @@ Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("uri"))
   {
     this->dataPtr->uri = resolveURI(
-      _sdf->Get<std::string>("uri", "").first,
+      _sdf->Get<std::string>(errors, "uri", "").first,
       _config, errors);
   }
   else
@@ -335,16 +336,16 @@ Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
         "Heightmap geometry is missing a <uri> child element."});
   }
 
-  this->dataPtr->size = _sdf->Get<gz::math::Vector3d>("size",
+  this->dataPtr->size = _sdf->Get<gz::math::Vector3d>(errors, "size",
       this->dataPtr->size).first;
 
-  this->dataPtr->position = _sdf->Get<gz::math::Vector3d>("pos",
+  this->dataPtr->position = _sdf->Get<gz::math::Vector3d>(errors, "pos",
       this->dataPtr->position).first;
 
-  this->dataPtr->useTerrainPaging = _sdf->Get<bool>("use_terrain_paging",
-      this->dataPtr->useTerrainPaging).first;
+  this->dataPtr->useTerrainPaging = _sdf->Get<bool>(
+      errors, "use_terrain_paging", this->dataPtr->useTerrainPaging).first;
 
-  this->dataPtr->sampling = _sdf->Get<unsigned int>("sampling",
+  this->dataPtr->sampling = _sdf->Get<unsigned int>(errors, "sampling",
       this->dataPtr->sampling).first;
 
   Errors textureLoadErrors = loadRepeated<HeightmapTexture>(_sdf,
@@ -480,44 +481,55 @@ void Heightmap::AddBlend(const HeightmapBlend &_blend)
 /////////////////////////////////////////////////
 sdf::ElementPtr Heightmap::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Heightmap::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("heightmap_shape.sdf", elem);
 
   // Uri
-  sdf::ElementPtr uriElem = elem->GetElement("uri");
-  uriElem->Set(this->Uri());
+  sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);
+  uriElem->Set(_errors, this->Uri());
 
   // Size
-  sdf::ElementPtr sizeElem = elem->GetElement("size");
-  sizeElem->Set(this->Size());
+  sdf::ElementPtr sizeElem = elem->GetElement("size", _errors);
+  sizeElem->Set(_errors, this->Size());
 
   // Position
-  sdf::ElementPtr posElem = elem->GetElement("pos");
-  posElem->Set(this->Position());
+  sdf::ElementPtr posElem = elem->GetElement("pos", _errors);
+  posElem->Set(_errors, this->Position());
 
   // Terrain paging
-  sdf::ElementPtr pagingElem = elem->GetElement("use_terrain_paging");
-  pagingElem->Set(this->UseTerrainPaging());
+  sdf::ElementPtr pagingElem = elem->GetElement("use_terrain_paging", _errors);
+  pagingElem->Set(_errors, this->UseTerrainPaging());
 
   // Sampling
-  sdf::ElementPtr samplingElem = elem->GetElement("sampling");
-  samplingElem->Set(this->Sampling());
+  sdf::ElementPtr samplingElem = elem->GetElement("sampling", _errors);
+  samplingElem->Set(_errors, this->Sampling());
 
   // Textures
   for (const HeightmapTexture &tex : this->dataPtr->textures)
   {
-    sdf::ElementPtr texElem = elem->AddElement("texture");
-    texElem->GetElement("size")->Set(tex.Size());
-    texElem->GetElement("diffuse")->Set(tex.Diffuse());
-    texElem->GetElement("normal")->Set(tex.Normal());
+    sdf::ElementPtr texElem = elem->AddElement("texture", _errors);
+    texElem->GetElement("size", _errors)->Set(_errors, tex.Size());
+    texElem->GetElement("diffuse", _errors)->Set(_errors, tex.Diffuse());
+    texElem->GetElement("normal", _errors)->Set(_errors, tex.Normal());
   }
 
   // Blends
   for (const HeightmapBlend &blend : this->dataPtr->blends)
   {
-    sdf::ElementPtr blendElem = elem->AddElement("blend");
-    blendElem->GetElement("min_height")->Set(blend.MinHeight());
-    blendElem->GetElement("fade_dist")->Set(blend.FadeDistance());
+    sdf::ElementPtr blendElem = elem->AddElement("blend", _errors);
+    blendElem->GetElement("min_height", _errors)->Set(
+        _errors, blend.MinHeight());
+    blendElem->GetElement("fade_dist", _errors)->Set(
+        _errors, blend.FadeDistance());
   }
 
   return elem;

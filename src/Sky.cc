@@ -192,34 +192,34 @@ Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
     return errors;
   }
 
-  this->dataPtr->time = _sdf->Get<double>("time", this->dataPtr->time).first;
+  this->dataPtr->time = _sdf->Get<double>(
+      errors, "time", this->dataPtr->time).first;
   this->dataPtr->sunrise =
-      _sdf->Get<double>("sunrise", this->dataPtr->sunrise).first;
+      _sdf->Get<double>(errors, "sunrise", this->dataPtr->sunrise).first;
   this->dataPtr->sunset =
-      _sdf->Get<double>("sunset", this->dataPtr->sunset).first;
+      _sdf->Get<double>(errors, "sunset", this->dataPtr->sunset).first;
 
   if (_sdf->HasElement("cubemap_uri"))
   {
     this->dataPtr->cubemapUri = resolveURI(
-      _sdf->Get<std::string>("cubemap_uri", "").first,
+      _sdf->Get<std::string>(errors, "cubemap_uri", "").first,
       _config, errors);
   }
 
   if ( _sdf->HasElement("clouds"))
   {
-    sdf::ElementPtr cloudElem = _sdf->GetElement("clouds");
-    this->dataPtr->cloudSpeed =
-        cloudElem->Get<double>("speed", this->dataPtr->cloudSpeed).first;
+    sdf::ElementPtr cloudElem = _sdf->GetElement("clouds", errors);
+    this->dataPtr->cloudSpeed = cloudElem->Get<double>(
+        errors, "speed", this->dataPtr->cloudSpeed).first;
     this->dataPtr->cloudDirection =
-        cloudElem->Get<gz::math::Angle>("direction",
+        cloudElem->Get<gz::math::Angle>(errors, "direction",
         this->dataPtr->cloudDirection).first;
-    this->dataPtr->cloudHumidity =
-        cloudElem->Get<double>("humidity", this->dataPtr->cloudHumidity).first;
-    this->dataPtr->cloudMeanSize =
-        cloudElem->Get<double>("mean_size", this->dataPtr->cloudMeanSize).first;
-    this->dataPtr->cloudAmbient =
-        cloudElem->Get<gz::math::Color>("ambient",
-        this->dataPtr->cloudAmbient).first;
+    this->dataPtr->cloudHumidity = cloudElem->Get<double>(
+        errors, "humidity", this->dataPtr->cloudHumidity).first;
+    this->dataPtr->cloudMeanSize = cloudElem->Get<double>(
+        errors, "mean_size", this->dataPtr->cloudMeanSize).first;
+    this->dataPtr->cloudAmbient = cloudElem->Get<gz::math::Color>(
+        errors, "ambient", this->dataPtr->cloudAmbient).first;
   }
 
   return errors;
@@ -234,21 +234,34 @@ sdf::ElementPtr Sky::Element() const
 /////////////////////////////////////////////////
 sdf::ElementPtr Sky::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Sky::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr sceneElem(new sdf::Element);
   sdf::initFile("scene.sdf", sceneElem);
-  sdf::ElementPtr elem = sceneElem->GetElement("sky");
+  sdf::ElementPtr elem = sceneElem->GetElement("sky", _errors);
 
-  elem->GetElement("time")->Set(this->Time());
-  elem->GetElement("sunrise")->Set(this->Sunrise());
-  elem->GetElement("sunset")->Set(this->Sunset());
-  elem->GetElement("cubemap_uri")->Set(this->CubemapUri());
+  elem->GetElement("time", _errors)->Set(_errors, this->Time());
+  elem->GetElement("sunrise", _errors)->Set(_errors, this->Sunrise());
+  elem->GetElement("sunset", _errors)->Set(_errors, this->Sunset());
+  elem->GetElement("cubemap_uri", _errors)->Set(_errors, this->CubemapUri());
 
-  sdf::ElementPtr cloudElem = elem->GetElement("clouds");
-  cloudElem->GetElement("speed")->Set(this->CloudSpeed());
-  cloudElem->GetElement("direction")->Set(this->CloudDirection().Radian());
-  cloudElem->GetElement("humidity")->Set(this->CloudHumidity());
-  cloudElem->GetElement("mean_size")->Set(this->CloudMeanSize());
-  cloudElem->GetElement("ambient")->Set(this->CloudAmbient());
+  sdf::ElementPtr cloudElem = elem->GetElement("clouds", _errors);
+  cloudElem->GetElement("speed", _errors)->Set(_errors, this->CloudSpeed());
+  cloudElem->GetElement("direction", _errors)->Set(
+      _errors, this->CloudDirection().Radian());
+  cloudElem->GetElement("humidity", _errors)->Set(
+      _errors, this->CloudHumidity());
+  cloudElem->GetElement("mean_size", _errors)->Set(
+      _errors, this->CloudMeanSize());
+  cloudElem->GetElement("ambient", _errors)->Set(
+      _errors, this->CloudAmbient());
 
   return elem;
 }

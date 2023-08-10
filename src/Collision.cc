@@ -109,7 +109,7 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(
-      _sdf->GetElement("geometry"), _config);
+      _sdf->GetElement("geometry", errors), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Set the density value for the collision material
@@ -134,7 +134,7 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   // Load the surface parameters if they are given
   if (_sdf->HasElement("surface"))
   {
-    this->dataPtr->surface.Load(_sdf->GetElement("surface"));
+    this->dataPtr->surface.Load(_sdf->GetElement("surface", errors));
   }
 
   return errors;
@@ -287,28 +287,36 @@ sdf::ElementPtr Collision::Element() const
   return this->dataPtr->sdf;
 }
 
-/////////////////////////////////////////////////
 sdf::ElementPtr Collision::ToElement() const
+{
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("collision.sdf", elem);
 
-  elem->GetAttribute("name")->Set(this->Name());
+  elem->GetAttribute("name")->Set(this->Name(), _errors);
 
   // Set pose
-  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  sdf::ElementPtr poseElem = elem->GetElement("pose", _errors);
   if (!this->dataPtr->poseRelativeTo.empty())
   {
     poseElem->GetAttribute("relative_to")->Set<std::string>(
-        this->dataPtr->poseRelativeTo);
+        this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   // Set the geometry
-  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
+  elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);
 
   // Set the surface
-  elem->InsertElement(this->dataPtr->surface.ToElement(), true);
+  elem->InsertElement(this->dataPtr->surface.ToElement(_errors), true);
 
   return elem;
 }

@@ -79,6 +79,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
   src/sdf/pyPolyline.cc
+  src/sdf/pyProjector.cc
   src/sdf/pyRoot.cc
   src/sdf/pyScene.cc
   src/sdf/pySemanticPose.cc
@@ -111,7 +112,7 @@ set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
 
 configure_build_install_location(${BINDINGS_MODULE_NAME})
 
-if (BUILD_TESTING)
+if (BUILD_TESTING AND NOT WIN32)
   pybind11_add_module(sdformattest SHARED
     test/_gz_sdformattest_pybind11.cc
   )
@@ -157,6 +158,7 @@ if (BUILD_TESTING)
     pyPlane_TEST
     pyPlugin_TEST
     pyPolyline_TEST
+    pyProjector_TEST
     pyRoot_TEST
     pyScene_TEST
     pySemanticPose_TEST

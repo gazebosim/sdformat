@@ -543,7 +543,7 @@ TEST(DOMRoot, CopyConstructor)
 
   auto testFrame1 = [](const sdf::Root &_root)
   {
-    EXPECT_EQ("1.10", _root.Version());
+    EXPECT_EQ("1.11", _root.Version());
 
     const sdf::World *world = _root.WorldByIndex(0);
     ASSERT_NE(nullptr, world);

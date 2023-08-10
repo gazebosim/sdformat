@@ -39,6 +39,7 @@ namespace sdf
   class Light;
   class ParserConfig;
   class ParticleEmitter;
+  class Projector;
   class Sensor;
   class Visual;
   struct PoseRelativeToGraph;
@@ -253,6 +254,47 @@ namespace sdf
     /// \sa bool ParticleEmitterNameExists(const std::string &_name) const
     public: ParticleEmitter *ParticleEmitterByName(const std::string &_name);
 
+    /// \brief Get the number of projectors.
+    /// \return Number of projectors contained in this Link object.
+    public: uint64_t ProjectorCount() const;
+
+    /// \brief Get a projector based on an index.
+    /// \param[in] _index Index of the projector.
+    /// The index should be in the range [0..ProjectorCount()).
+    /// \return Pointer to the projector. Nullptr if the index does
+    /// not exist.
+    /// \sa uint64_t ProjectorCount() const
+    public: const Projector *ProjectorByIndex(
+                const uint64_t _index) const;
+
+    /// \brief Get a mutable projector based on an index.
+    /// \param[in] _index Index of the projector.
+    /// The index should be in the range [0..ProjectorCount()).
+    /// \return Pointer to the projector. Nullptr if the index does
+    /// not exist.
+    /// \sa uint64_t ProjectorCount() const
+    public: Projector *ProjectorByIndex(uint64_t _index);
+
+    /// \brief Get whether a projector name exists.
+    /// \param[in] _name Name of the projector to check.
+    /// \return True if there exists a projector with the given name.
+    public: bool ProjectorNameExists(const std::string &_name) const;
+
+    /// \brief Get a projector based on a name.
+    /// \param[in] _name Name of the projector.
+    /// \return Pointer to the projector. Nullptr if a projector
+    /// with the given name does not exist.
+    /// \sa bool ProjectorNameExists(const std::string &_name) const
+    public: const Projector *ProjectorByName(
+                const std::string &_name) const;
+
+    /// \brief Get a mutable projector based on a name.
+    /// \param[in] _name Name of the projector.
+    /// \return Pointer to the projector. Nullptr if a projector
+    /// with the given name does not exist.
+    /// \sa bool ProjectorNameExists(const std::string &_name) const
+    public: Projector *ProjectorByName(const std::string &_name);
+
     /// \brief Get the inertial value for this link. The inertial object
     /// consists of the link's mass, a 3x3 rotational inertia matrix, and
     /// a pose for the inertial reference frame. The units for mass is
@@ -374,7 +416,13 @@ namespace sdf
     /// \param[in] _emitter Particle emitter to add.
     /// \return True if successful, false if a particle emitter with the name
     /// already exists.
-    public: bool AddParticleEmitter(const ParticleEmitter &_sensor);
+    public: bool AddParticleEmitter(const ParticleEmitter &_emitter);
+
+    /// \brief Add a projector to the link.
+    /// \param[in] _projector Projector to add.
+    /// \return True if successful, false if a projector with the name
+    /// already exists.
+    public: bool AddProjector(const Projector &_projector);
 
     /// \brief Remove all collisions
     public: void ClearCollisions();
@@ -390,6 +438,9 @@ namespace sdf
 
     /// \brief Remove all particle emitters
     public: void ClearParticleEmitters();
+
+    /// \brief Remove all projectors
+    public: void ClearProjectors();
 
     /// \brief Create and return an SDF element filled with data from this
     /// link.

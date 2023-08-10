@@ -19,6 +19,7 @@
 #include <gz/math/Vector3.hh>
 #include <gz/math/Vector2.hh>
 #include "sdf/Plane.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMPlane, Construction)
@@ -184,4 +185,41 @@ TEST(DOMPlane, ToElement)
 
   EXPECT_EQ(plane.Normal(), plane2.Normal());
   EXPECT_EQ(plane.Size(), plane2.Size());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMPlane, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Plane plane;
+  sdf::Errors errors;
+
+  plane.SetNormal(gz::math::Vector3d(0, 1, 0));
+  plane.SetSize(gz::math::Vector2d(2, 4));
+
+  sdf::ElementPtr elem = plane.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Plane plane2;
+  errors = plane2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(plane.Normal(), plane2.Normal());
+  EXPECT_EQ(plane.Size(), plane2.Size());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
