@@ -18,7 +18,7 @@
 #include <sstream>
 
 #include <gz/math/Material.hh>
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/Capsule.hh"
 #include "sdf/parser.hh"
 
@@ -141,11 +141,23 @@ gz::math::Capsuled &Capsule::Shape()
 }
 
 /////////////////////////////////////////////////
-std::optional< gz::math::MassMatrix3d > Capsule::MassMatrix(const double _density)
+std::optional< gz::math::Inertiald > Capsule::CalculateInertial(const double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->capsule.SetMat(material);
-  return this->dataPtr->capsule.MassMatrix();
+
+  auto capsuleMassMatrix = this->dataPtr->capsule.MassMatrix();
+
+  if(!capsuleMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald capsuleInertial;
+    capsuleInertial.SetMassMatrix(capsuleMassMatrix.value());
+    return std::make_optional(capsuleInertial);
+  }
 }
 
 /////////////////////////////////////////////////

@@ -15,6 +15,7 @@
  *
 */
 #include <sstream>
+#include <gz/math/Inertial.hh>
 #include "sdf/Cylinder.hh"
 #include "sdf/parser.hh"
 
@@ -136,11 +137,23 @@ gz::math::Cylinderd &Cylinder::Shape()
   return this->dataPtr->cylinder;
 }
 
-std::optional< gz::math::MassMatrix3d > Cylinder::MassMatrix(const double _density)
+std::optional< gz::math::Inertiald > Cylinder::CalculateInertial(const double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->cylinder.SetMat(material);
-  return this->dataPtr->cylinder.MassMatrix();
+
+  auto cylinderMassMatrix = this->dataPtr->cylinder.MassMatrix();
+
+  if (!cylinderMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald cylinderInertial;
+    cylinderInertial.SetMassMatrix(cylinderMassMatrix.value());
+    return std::make_optional(cylinderInertial);
+  }
 }
 
 /////////////////////////////////////////////////

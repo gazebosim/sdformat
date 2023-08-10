@@ -20,7 +20,7 @@
 #include <optional>
 
 #include <gz/math/Capsule.hh>
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -77,8 +77,8 @@ namespace sdf
 
     /// \brief Calculate and return the Mass Matrix values for the Capsule
     /// \param[in] density Density of the capsule in kg/m^3
-    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double _density);
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional< gz::math::Inertiald >  CalculateInertial(const double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.
