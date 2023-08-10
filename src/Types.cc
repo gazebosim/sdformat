@@ -149,7 +149,7 @@ std::string JoinName(
 const std::string &internal::SdfScopeDelimiter()
 {
   static const gz::utils::NeverDestroyed<std::string> delimiter{
-      std::string()};
+      kScopeDelimiter};
   return delimiter.Access();
 }
 }

@@ -5,6 +5,13 @@
     properties, and optionally its fluid added mass.
   </description>
 
+  <attribute name="auto" type="bool" default="false" required="0">
+    <description>
+      Set to true if you want automatic computation for the moments of inertia (ixx, iyy, izz) 
+      and products of inertia(ixy, iyz, ixz). Default value is false.
+    </description>
+  </attribute>
+
   <element name="mass" type="double" default="1.0" required="0">
     <description>The mass of the link.</description>
   </element>
@@ -51,12 +58,6 @@
       MathWorks documentation for working with CAD tools:
       https://www.mathworks.com/help/releases/R2021b/physmod/sm/ug/specify-custom-inertia.html#mw_b043ec69-835b-4ca9-8769-af2e6f1b190c
     </description>
-    <attribute name="auto" type="bool" default="false" required="0">
-      <description>
-        Set to true if you want automatic computation for the moments of inertia (ixx, iyy, izz) 
-        and products of inertia(ixy, iyz, ixz). Defaul value is false.
-      </description>
-    </attribute>
     <element name="ixx" type="double" default="1.0" required="1">
       <description>
         The link's moment of inertia about Co (the link's center of mass) for Ĉx.

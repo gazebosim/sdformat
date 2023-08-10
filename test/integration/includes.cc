@@ -556,6 +556,72 @@ TEST(IncludesTest, MergeInclude)
 }
 
 //////////////////////////////////////////////////
+TEST(IncludesTest, WorldMergeInclude)
+{
+  using gz::math::Pose3d;
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(
+      sdf::testing::TestFile("sdf", "world_merge_include.sdf"),
+      config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  std::string proxyFrameName;
+    proxyFrameName = "_merged__model_for_world_merge_include__model__";
+
+  auto *proxyFrame = world->FrameByName(proxyFrameName);
+  ASSERT_NE(nullptr, proxyFrame);
+
+  EXPECT_EQ(Pose3d(100, 0, 0, 0, 0, 0), proxyFrame->RawPose());
+
+  // Expect that the merged models have poses relative to the proxy frame
+  ASSERT_EQ(2, world->ModelCount());
+  auto *model1 = world->ModelByIndex(0);
+  ASSERT_NE(nullptr, model1);
+  EXPECT_EQ(proxyFrameName, model1->PoseRelativeTo());
+
+  auto *model2 = world->ModelByIndex(1);
+  ASSERT_NE(nullptr, model2);
+  EXPECT_EQ(proxyFrameName, model2->PoseRelativeTo());
+
+  // F1, since it had an empty attached_to in the original model, once it's
+  // merged, it should be attached to the proxy frame
+  auto *frame1 = world->FrameByName("F1");
+  ASSERT_NE(nullptr, frame1);
+  EXPECT_EQ(proxyFrameName, frame1->AttachedTo());
+
+  // Check that the joint was also merged
+  auto *joint1 = world->JointByName("J1");
+  ASSERT_NE(nullptr, joint1);
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, WorldMergeIncludeInvalidElements)
+{
+  std::string sdfString = R"(
+  <sdf version="1.10">
+    <world name="invalid_world">
+      <include merge="true">
+        <uri>test_model</uri>
+      </include>
+    </world>
+  </sdf>)";
+
+  sdf::ParserConfig config;
+  config.SetFindCallback(findFileCb);
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(sdfString, config);
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED);
+}
+
+//////////////////////////////////////////////////
 TEST(IncludesTest, MergeIncludePlacementFrame)
 {
   using gz::math::Pose3d;
@@ -657,23 +723,25 @@ TEST(IncludesTest, InvalidMergeInclude)
     EXPECT_EQ(4, *errors[0].LineNumber());
   }
 
-  // merge-include cannot be used directly under //world
+  // merge-include can only be used directly under //model or //world
   {
     const std::string sdfString = R"(
     <sdf version="1.9">
       <world name="default">
-        <include merge="true">
-          <uri>file://merge_robot</uri> <!-- NOLINT -->
-        </include>
+        <frame name="test_frame">
+          <include merge="true">
+            <uri>file://merge_robot</uri> <!-- NOLINT -->
+          </include>
+        </frame>
       </world>
     </sdf>)";
     sdf::Root root;
     sdf::Errors errors = root.LoadSdfString(sdfString, config);
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
-    EXPECT_EQ("Merge-include does not support parent element of type world",
+    EXPECT_EQ("Merge-include does not support parent element of type frame",
               errors[0].Message());
-    EXPECT_EQ(4, errors[0].LineNumber());
+    EXPECT_EQ(5, errors[0].LineNumber());
   }
 
   // Syntax error in included file

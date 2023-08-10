@@ -255,7 +255,7 @@ class ModelTEST(unittest.TestCase):
 
     def test_uri(self):
         model = Model()
-        uri = "https:#fuel.ignitionrobotics.org/1.0/openrobotics/models/my-model"
+        uri = "https:#fuel.gazebosim.org/1.0/openrobotics/models/my-model"
 
         model.set_uri(uri)
         self.assertEqual(uri, model.uri())

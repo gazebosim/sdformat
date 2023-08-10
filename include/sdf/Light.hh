@@ -291,6 +291,14 @@ namespace sdf
     /// \return SDF element pointer with updated light values.
     public: sdf::ElementPtr ToElement() const;
 
+    /// \brief Create and return an SDF element filled with data from this
+    /// light object.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated light values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
+
     /// \brief Allow Link::SetPoseRelativeToGraph or World::Load to call
     /// SetXmlParentName and SetPoseRelativeToGraph,
     /// but Link::SetPoseRelativeToGraph is a private function, so we need

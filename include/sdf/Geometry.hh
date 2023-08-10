@@ -21,7 +21,7 @@
 #include <optional>
 
 #include <gz/utils/ImplPtr.hh>
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
@@ -212,13 +212,10 @@ namespace sdf
     public: void SetHeightmapShape(const Heightmap &_heightmap);
 
     /// \brief Calculate and return the Mass Matrix values for the Geometry
-    /// \param[in] _xxyyzz A vector 3d representing the diagonal elements
-    /// of the mass matrix
-    /// \param[in] _xyxzyx A vector 3d representing the off-diagonal elements
-    /// of the mass matrix
     /// \param[in] _density The density of the geometry element.
-    /// \return Boolean that indicates whether the calculation was successfull
-    public: std::optional< gz::math::MassMatrix3d > MassMatrix(const double _density, const sdf::ElementPtr _calculatorParams, const ParserConfig &_config);
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald> CalculateInertial(
+      const double _density);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -232,6 +229,14 @@ namespace sdf
     /// function.
     /// \return SDF element pointer with updated geometry values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// geometry.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated geometry values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

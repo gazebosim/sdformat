@@ -286,6 +286,8 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
       this->dataPtr->UpdateGraphs(world, worldErrors);
 
+      world.CalculateInertials(worldErrors);
+
       // Attempt to load the world
       if (worldErrors.empty())
       {
@@ -326,6 +328,7 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
     this->dataPtr->modelLightOrActor = std::move(models.front());
     sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
     this->dataPtr->UpdateGraphs(model, errors);
+    model.CalculateInertials(errors);
   }
 
   // Load all the lights.
@@ -585,6 +588,27 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 
   this->modelPoseRelativeToGraph = createPoseRelativeToGraph(_model, _errors);
   _model.SetPoseRelativeToGraph(this->modelPoseRelativeToGraph);
+}
+
+/////////////////////////////////////////////////
+Errors Root::CalculateInertials()
+{
+  sdf::Errors errors;
+
+  // Calculate and set Inertials for all the worlds
+  for (sdf::World &world : this->dataPtr->worlds)
+  {
+    world.CalculateInertials(errors);
+  }
+
+  // Calculate and set Inertials for the model, if it is present
+  if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
+  {
+    sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+    model.CalculateInertials(errors);
+  }
+
+  return errors;
 }
 
 /////////////////////////////////////////////////

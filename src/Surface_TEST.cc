@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Surface.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMsurface, DefaultConstruction)
@@ -134,6 +135,91 @@ TEST(DOMsurface, CopyAssignmentAfterMove)
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip2(), 4);
   EXPECT_EQ(surface2.Friction()->ODE()->Fdir1(),
             gz::math::Vector3d(1, 2, 3));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMsurface, ToElement)
+{
+  sdf::Contact contact;
+  sdf::Friction friction;
+  sdf::Surface surface1;
+  sdf::ODE ode;
+  ode.SetMu(0.1);
+  ode.SetMu2(0.2);
+  ode.SetSlip1(3);
+  ode.SetSlip2(4);
+  ode.SetFdir1(gz::math::Vector3d(1, 2, 3));
+  friction.SetODE(ode);
+  contact.SetCollideBitmask(0x12);
+  surface1.SetContact(contact);
+  surface1.SetFriction(friction);
+
+  sdf::ElementPtr elem = surface1.ToElement();
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Surface surface2;
+  surface2.Load(elem);
+
+  EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu(), 0.1);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu2(), 0.2);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip1(), 3);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip2(), 4);
+  EXPECT_EQ(surface2.Friction()->ODE()->Fdir1(),
+            gz::math::Vector3d(1, 2, 3));
+
+}
+
+/////////////////////////////////////////////////
+TEST(DOMsurface, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Errors errors;
+  sdf::Contact contact;
+  sdf::Friction friction;
+  sdf::Surface surface1;
+  sdf::ODE ode;
+  ode.SetMu(0.1);
+  ode.SetMu2(0.2);
+  ode.SetSlip1(3);
+  ode.SetSlip2(4);
+  ode.SetFdir1(gz::math::Vector3d(1, 2, 3));
+  friction.SetODE(ode);
+  contact.SetCollideBitmask(0x12);
+  surface1.SetContact(contact);
+  surface1.SetFriction(friction);
+
+  sdf::ElementPtr elem = surface1.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Surface surface2;
+  errors = surface2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu(), 0.1);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu2(), 0.2);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip1(), 3);
+  EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip2(), 4);
+  EXPECT_EQ(surface2.Friction()->ODE()->Fdir1(),
+            gz::math::Vector3d(1, 2, 3));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+
 }
 
 /////////////////////////////////////////////////

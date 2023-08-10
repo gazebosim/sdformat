@@ -837,6 +837,27 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
+void Model::CalculateInertials(sdf::Errors &_errors)
+{
+  // Check if there are nested models. If yes then call
+  // CalculateInertials() for each model
+  if (!this->dataPtr->models.empty())
+  {
+    for (sdf::Model &model : this->dataPtr->models)
+    {
+      model.CalculateInertials(_errors);
+    }
+  }
+
+  // Calculate and set inertials for all the links in the model
+  for (sdf::Link &link : this->dataPtr->links)
+  {
+    link.CalculateInertials(_errors);
+  }
+
+}
+
+/////////////////////////////////////////////////
 void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseGraph = _graph;

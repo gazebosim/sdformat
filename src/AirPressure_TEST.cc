@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/AirPressure.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMAirPressure, Construction)
@@ -130,4 +131,62 @@ TEST(DOMAirPressure, ToElement)
   sdf::AirPressure air3;
   air3.Load(air2Elem);
   EXPECT_DOUBLE_EQ(111.0, air3.ReferenceAltitude());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMAirPressure, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  // test calling ToElement on a DOM object constructed without calling Load
+  sdf::AirPressure air;
+  sdf::Noise noise;
+  sdf::Errors errors;
+  air.SetReferenceAltitude(10.2);
+  noise.SetType(sdf::NoiseType::GAUSSIAN);
+  noise.SetMean(1.2);
+  noise.SetStdDev(2.3);
+  noise.SetBiasMean(4.5);
+  noise.SetBiasStdDev(6.7);
+  noise.SetPrecision(8.9);
+  air.SetPressureNoise(noise);
+
+  sdf::ElementPtr airElem = air.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, airElem);
+  EXPECT_EQ(nullptr, air.Element());
+
+  // verify values after loading the element back
+  sdf::AirPressure air2;
+  errors = air2.Load(airElem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(noise.Mean(), air2.PressureNoise().Mean());
+  EXPECT_DOUBLE_EQ(noise.StdDev(), air2.PressureNoise().StdDev());
+  EXPECT_DOUBLE_EQ(noise.BiasMean(), air2.PressureNoise().BiasMean());
+  EXPECT_DOUBLE_EQ(noise.BiasStdDev(), air2.PressureNoise().BiasStdDev());
+  EXPECT_DOUBLE_EQ(noise.Precision(), air2.PressureNoise().Precision());
+  EXPECT_DOUBLE_EQ(10.2, air2.ReferenceAltitude());
+
+  // make changes to DOM and verify ToElement produces updated values
+  air2.SetReferenceAltitude(111);
+  sdf::ElementPtr air2Elem = air2.ToElement();
+  EXPECT_NE(nullptr, air2Elem);
+  sdf::AirPressure air3;
+  air3.Load(air2Elem);
+  EXPECT_DOUBLE_EQ(111.0, air3.ReferenceAltitude());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

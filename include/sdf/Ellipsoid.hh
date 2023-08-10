@@ -19,7 +19,7 @@
 
 #include <optional>
 
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/math/Ellipsoid.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
@@ -67,8 +67,11 @@ namespace sdf
     /// \return A reference to a gz::math::Ellipsoidd object.
     public: gz::math::Ellipsoidd &Shape();
 
-    /// \brief Calculate an return the Mass Matrix values for the Cylinder
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
+    /// \brief Calculate and return the Mass Matrix values for the Ellipsoid
+    /// \param[in] density Density of the ellipsoid in kg/m^3
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald> CalculateInertial(
+      const double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// ellipsoid.
@@ -76,6 +79,14 @@ namespace sdf
     /// function.
     /// \return SDF element pointer with updated ellipsoid values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// ellipsoid.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated ellipsoid values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

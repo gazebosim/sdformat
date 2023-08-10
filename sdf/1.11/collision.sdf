@@ -14,8 +14,12 @@
     <description>Maximum number of contacts allowed between two entities. This value overrides the max_contacts element defined in physics.</description>
   </element>
 
-  <element name="material_density" type="double" default="1.0" required="0">
-    <description>Density of the collision geometry. Default is the density of water 1.0 kg/m^3</description>
+  <element name="density" type="double" default="1000.0" required="0">
+    <description>
+      Mass Density of the collision geometry. 
+      This is used to determine mass and inertia values during automatic calculation.
+      Default is the density of water 1000 kg/m^3.
+    </description>
   </element>
 
   <element name="moi_calculator_params" required="0">

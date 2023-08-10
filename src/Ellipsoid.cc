@@ -15,8 +15,10 @@
  *
 */
 #include <sstream>
+#include <gz/math/Inertial.hh>
 #include "sdf/Ellipsoid.hh"
 #include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 
@@ -65,7 +67,7 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
   {
     std::pair<gz::math::Vector3d, bool> pair =
       _sdf->Get<gz::math::Vector3d>(
-        "radii", this->dataPtr->ellipsoid.Radii());
+        errors, "radii", this->dataPtr->ellipsoid.Radii());
 
     if (!pair.second)
     {
@@ -116,21 +118,43 @@ gz::math::Ellipsoidd &Ellipsoid::Shape()
 }
 
 /////////////////////////////////////////////////
-std::optional< gz::math::MassMatrix3d > Ellipsoid::MassMatrix(const double _density)
+std::optional<gz::math::Inertiald> Ellipsoid::CalculateInertial(
+  const double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->ellipsoid.SetMat(material);
-  return this->dataPtr->ellipsoid.MassMatrix();
+
+  auto ellipsoidMassMatrix = this->dataPtr->ellipsoid.MassMatrix();
+
+  if(!ellipsoidMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald ellipsoidInertial;
+    ellipsoidInertial.SetMassMatrix(ellipsoidMassMatrix.value());
+    return std::make_optional(ellipsoidInertial);
+  }
 }
 
 /////////////////////////////////////////////////
 sdf::ElementPtr Ellipsoid::ToElement() const
 {
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Ellipsoid::ToElement(sdf::Errors &_errors) const
+{
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("ellipsoid_shape.sdf", elem);
 
-  sdf::ElementPtr radiiElem = elem->GetElement("radii");
-  radiiElem->Set(this->Radii());
+  sdf::ElementPtr radiiElem = elem->GetElement("radii", _errors);
+  radiiElem->Set(_errors, this->Radii());
 
   return elem;
 }

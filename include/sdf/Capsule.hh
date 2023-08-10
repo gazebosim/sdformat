@@ -20,7 +20,7 @@
 #include <optional>
 
 #include <gz/math/Capsule.hh>
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -75,8 +75,11 @@ namespace sdf
     /// \return A reference to a gz::math::Capsuled object.
     public: gz::math::Capsuled &Shape();
 
-    /// \brief Calculate an return the Mass Matrix values for the Capsule
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double density);
+    /// \brief Calculate and return the Mass Matrix values for the Capsule
+    /// \param[in] density Density of the capsule in kg/m^3
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald> CalculateInertial(
+      const double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.
@@ -84,6 +87,14 @@ namespace sdf
     /// function.
     /// \return SDF element pointer with updated capsule values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// capsule.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated capsule values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

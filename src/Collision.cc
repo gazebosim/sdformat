@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/Collision.hh"
 #include "sdf/Error.hh"
 #include "sdf/Geometry.hh"
@@ -46,8 +47,8 @@ class sdf::Collision::Implementation
   /// \brief The collision's surface parameters.
   public: sdf::Surface surface;
 
-  /// \brief Density of the collision. Default is 1.0
-  public: double density;
+  /// \brief Density of the collision. Default is 1000.0
+  public: double density{1000.0};
 
   /// \brief SDF element pointer to <moi_calculator_params> tag
   public: sdf::ElementPtr moiCalculatorParams;
@@ -111,26 +112,32 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   // Load the geometry
   Errors geomErr = this->dataPtr->geom.Load(
-      _sdf->GetElement("geometry"), _config);
+      _sdf->GetElement("geometry", errors), _config);
   errors.insert(errors.end(), geomErr.begin(), geomErr.end());
 
   // Set the density value for the collision material
-  if (_sdf->HasElement("material_density"))
+  if (_sdf->HasElement("density"))
   {
-    this->dataPtr->density = _sdf->Get<double>("material_density");
+    this->dataPtr->density = _sdf->Get<double>("density");
   }
   else
   {
-    this->dataPtr->density = 1.0;
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Collision is missing a <material_density> child "
-        "element. Using a density of 1.0"});
+    // If the density element is missing, let the user know that a default
+    // value would be used according to the policy
+    Error densityMissingErr(
+      ErrorCode::ELEMENT_MISSING,
+      "Collision is missing a <density> child element. "
+      "Using a default density value of 1000.0 kg/m^3. "
+    );
+    enforceConfigurablePolicyCondition(
+      _config.WarningsPolicy(), densityMissingErr, errors
+    );
   }
 
   // Load the surface parameters if they are given
   if (_sdf->HasElement("surface"))
   {
-    this->dataPtr->surface.Load(_sdf->GetElement("surface"));
+    this->dataPtr->surface.Load(_sdf->GetElement("surface", errors));
   }
 
   if (_sdf->HasElement("moi_calculator_params"))
@@ -255,13 +262,14 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz, 
-        gz::math::Vector3d &_xyxzyx, double &_mass, const ParserConfig &_config)
+Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial)
 {
   Errors errors;
-  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density, this->dataPtr->moiCalculatorParams, _config);
 
-  if (!massMat)
+  auto geomInertial =
+    this->dataPtr->geom.CalculateInertial(this->dataPtr->density);
+
+  if (!geomInertial)
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
         "Inertia Calculated for collision: " +
@@ -269,15 +277,31 @@ Errors Collision::MassMatrix(gz::math::Vector3d &_xxyyzz,
   }
   else
   {
-    _xxyyzz.X(massMat.value().Ixx());
-    _xxyyzz.Y(massMat.value().Iyy());
-    _xxyyzz.Z(massMat.value().Izz());
+    _inertial = geomInertial.value();
 
-    _xyxzyx.X(massMat.value().Ixy());
-    _xyxzyx.Y(massMat.value().Ixz());
-    _xyxzyx.Z(massMat.value().Iyz());
-
-    _mass = massMat.value().Mass();
+    // If geometry type is not mesh than calculate inertial pose in Link frame
+    // considering collision frame to be same as inertial frame
+    // In case of mesh the custom inertia calculator should return
+    // the inertial object with the pose already set
+    if (this->dataPtr->geom.Type() != GeometryType::MESH)
+    {
+      // If collision pose is in Link Frame then set that as inertial pose
+      // Else resolve collision pose in Link Frame and then set as inertial pose
+      if (this->dataPtr->poseRelativeTo.empty())
+      {
+        _inertial.SetPose(this->dataPtr->pose);
+      }
+      else
+      {
+        gz::math::Pose3d collisionPoseLinkFrame;
+        Errors poseConvErrors =
+          this->SemanticPose().Resolve(collisionPoseLinkFrame);
+        errors.insert(errors.end(),
+                      poseConvErrors.begin(),
+                      poseConvErrors.end());
+        _inertial.SetPose(collisionPoseLinkFrame);
+      }
+    }
   }
 
   return errors;
@@ -289,28 +313,36 @@ sdf::ElementPtr Collision::Element() const
   return this->dataPtr->sdf;
 }
 
-/////////////////////////////////////////////////
 sdf::ElementPtr Collision::ToElement() const
+{
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("collision.sdf", elem);
 
-  elem->GetAttribute("name")->Set(this->Name());
+  elem->GetAttribute("name")->Set(this->Name(), _errors);
 
   // Set pose
-  sdf::ElementPtr poseElem = elem->GetElement("pose");
+  sdf::ElementPtr poseElem = elem->GetElement("pose", _errors);
   if (!this->dataPtr->poseRelativeTo.empty())
   {
     poseElem->GetAttribute("relative_to")->Set<std::string>(
-        this->dataPtr->poseRelativeTo);
+        this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   // Set the geometry
-  elem->InsertElement(this->dataPtr->geom.ToElement(), true);
+  elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);
 
   // Set the surface
-  elem->InsertElement(this->dataPtr->surface.ToElement(), true);
+  elem->InsertElement(this->dataPtr->surface.ToElement(_errors), true);
 
   return elem;
 }

@@ -21,6 +21,7 @@
 #include <string>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
@@ -83,8 +84,8 @@ namespace sdf
 
     /// \brief Set the density of the collision.
     /// The density of the collision must be unique within the scope of a Link.
-    /// \param[in] _name Density of the collision.
-    public: void SetDensity(const double density);
+    /// \param[in] _density Density of the collision.
+    public: void SetDensity(const double _density);
 
     public: sdf::ElementPtr MoiCalulatorParams() const;
 
@@ -135,14 +136,11 @@ namespace sdf
     public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Calculate and return the MassMatrix for the collision
-    /// \param[in] _xxyyzz A vector 3d representing the diagonal elements
-    /// of the mass matrix
-    /// \param[in] _xyxzyx A vector 3d representing the off-diagonal elements
-    /// of the mass matrix
-    /// \param[in] _mass A double representing the mass of the collision
+    /// \param[out] _inertial An inertial object which will be set with the
+    /// calculated inertial values
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error
-    public: Errors MassMatrix(gz::math::Vector3d &_xxyyzz, gz::math::Vector3d &_xyxzyz, double &_mass, const ParserConfig &_config);
+    public: Errors CalculateInertial(gz::math::Inertiald &_inertial);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
@@ -156,6 +154,14 @@ namespace sdf
     /// function.
     /// \return SDF element pointer with updated collision values.
     public: sdf::ElementPtr ToElement() const;
+
+    /// \brief Create and return an SDF element filled with data from this
+    /// collision.
+    /// Note that parameter passing functionality is not captured with this
+    /// function.
+    /// \param[out] _errors Vector of errors.
+    /// \return SDF element pointer with updated collision values.
+    public: sdf::ElementPtr ToElement(sdf::Errors &_errors) const;
 
     /// \brief Give the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by

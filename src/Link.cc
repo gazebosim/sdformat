@@ -27,6 +27,7 @@
 #include "sdf/Link.hh"
 #include "sdf/parser.hh"
 #include "sdf/ParticleEmitter.hh"
+#include "sdf/Projector.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
@@ -62,6 +63,9 @@ class sdf::Link::Implementation
 
   /// \brief The particle emitters specified in this link.
   public: std::vector<ParticleEmitter> emitters;
+
+  /// \brief The projectors specified in this link.
+  public: std::vector<Projector> projectors;
 
   /// \brief The inertial information for this link.
   public: gz::math::Inertiald inertial {{1.0,
@@ -151,6 +155,12 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   errors.insert(errors.end(), emitterLoadErrors.begin(),
       emitterLoadErrors.end());
 
+  // Load all the projectors
+  Errors projectorLoadErrors = loadUniqueRepeated<Projector>(_sdf,
+      "projector", this->dataPtr->projectors);
+  errors.insert(errors.end(), projectorLoadErrors.begin(),
+      projectorLoadErrors.end());
+
   gz::math::Vector3d xxyyzz = gz::math::Vector3d::One;
   gz::math::Vector3d xyxzyz = gz::math::Vector3d::Zero;
   gz::math::Pose3d inertiaPose;
@@ -161,32 +171,19 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
-    if (inertialElem->HasElement("pose"))
-      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
-
-    if (inertialElem->HasElement("inertia"))
+    // If auto is set to false or not specified
+    if (!inertialElem->Get<bool>("auto"))
     {
-      sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+      if (inertialElem->HasElement("pose"))
+        loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
 
-      if (inertiaElem->Get<bool>("auto"))
+      // Get the mass.
+      mass = inertialElem->Get<double>("mass", 1.0).first;
+
+      if (inertialElem->HasElement("inertia"))
       {
-        for(auto collision : this->dataPtr->collisions)
-        {
-          std::cout << "Density of the collision is: " << collision.Density();
-          std::cout << std::endl;
-          Errors inertiaErrors = collision.MassMatrix(xxyyzz, xyxzyz, mass, _config);
-          std::cout << "Inertia of " << this->dataPtr->name << std::endl;
-          std::cout << xxyyzz.X() << " , " << xxyyzz.Y() << " , " << xxyyzz.Z() << std::endl;
-          std::cout << xyxzyz.X() << " , " << xyxzyz.Y() << " , " << xyxzyz.Z() << std::endl;
-          std::cout << "Mass of " << this->dataPtr->name << " is " << mass << std::endl;
-          errors.insert(errors.end(), inertiaErrors.begin(), 
-              inertiaErrors.end());
-        }
-      }
-      else
-      {
-        // Get the mass.
-        mass = inertialElem->Get<double>("mass", 1.0).first;
+        sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+
         xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
         xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
         xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
@@ -252,6 +249,18 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
                          " has invalid fluid added mass."});
       }
     }
+  }
+  else
+  {
+    Error inertialMissingErr(
+      ErrorCode::ELEMENT_MISSING,
+      "<inertial> element is missing. "
+      "Using default values for the inertial "
+      "for the link: " + this->dataPtr->name
+    );
+    enforceConfigurablePolicyCondition(
+      _config.WarningsPolicy(), inertialMissingErr, errors
+    );
   }
 
   if (!this->dataPtr->inertial.SetMassMatrix(
@@ -489,6 +498,61 @@ ParticleEmitter *Link::ParticleEmitterByName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+uint64_t Link::ProjectorCount() const
+{
+  return this->dataPtr->projectors.size();
+}
+
+/////////////////////////////////////////////////
+const Projector *Link::ProjectorByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->projectors.size())
+    return &this->dataPtr->projectors[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Projector *Link::ProjectorByIndex(uint64_t _index)
+{
+  return const_cast<Projector*>(
+      static_cast<const Link*>(this)->ProjectorByIndex(_index));
+}
+
+/////////////////////////////////////////////////
+bool Link::ProjectorNameExists(const std::string &_name) const
+{
+  for (auto const &e : this->dataPtr->projectors)
+  {
+    if (e.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Projector *Link::ProjectorByName(
+    const std::string &_name) const
+{
+  for (auto const &e : this->dataPtr->projectors)
+  {
+    if (e.Name() == _name)
+    {
+      return &e;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Projector *Link::ProjectorByName(const std::string &_name)
+{
+  return const_cast<Projector *>(
+      static_cast<const Link*>(this)->ProjectorByName(_name));
+}
+
+/////////////////////////////////////////////////
 const gz::math::Inertiald &Link::Inertial() const
 {
   return this->dataPtr->inertial;
@@ -514,6 +578,48 @@ Errors Link::ResolveInertial(
     _inertial.SetPose(linkPose * _inertial.Pose());
   }
   return errors;
+}
+
+/////////////////////////////////////////////////
+void Link::CalculateInertials(sdf::Errors &_errors)
+{
+  if (this->dataPtr->sdf->HasElement("inertial"))
+  {
+    sdf::ElementPtr inertialElem = this->dataPtr->sdf->GetElement("inertial");
+
+    if (inertialElem->Get<bool>("auto"))
+    {
+      // Return an error if auto is set to true but there are no
+      // collision elements in the link
+      if (this->dataPtr->collisions.empty())
+      {
+        _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                          "Inertial is set to auto but there are no "
+                          "<collision> elements for the link."});
+        return;
+      }
+
+      gz::math::Inertiald totalInertia;
+
+      for (sdf::Collision &collision : this->dataPtr->collisions)
+      {
+        gz::math::Inertiald collisionInertia;
+        Errors inertiaErrors = collision.CalculateInertial(collisionInertia);
+        _errors.insert(_errors.end(),
+                      inertiaErrors.begin(),
+                      inertiaErrors.end());
+        totalInertia = totalInertia + collisionInertia;
+      }
+
+      this->dataPtr->inertial = totalInertia;
+    }
+    // If auto is false, this means inertial values were set
+    // from user given values in Link::Load(), therefore we can return
+    else
+    {
+      return;
+    }
+  }
 }
 
 /////////////////////////////////////////////////
@@ -571,6 +677,12 @@ void Link::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
   {
     emitter.SetXmlParentName(this->dataPtr->name);
     emitter.SetPoseRelativeToGraph(_graph);
+  }
+
+  for (auto &projector : this->dataPtr->projectors)
+  {
+    projector.SetXmlParentName(this->dataPtr->name);
+    projector.SetPoseRelativeToGraph(_graph);
   }
 }
 
@@ -710,6 +822,15 @@ bool Link::AddParticleEmitter(const ParticleEmitter &_emitter)
 }
 
 //////////////////////////////////////////////////
+bool Link::AddProjector(const Projector &_projector)
+{
+  if (this->ProjectorNameExists(_projector.Name()))
+    return false;
+  this->dataPtr->projectors.push_back(_projector);
+  return true;
+}
+
+//////////////////////////////////////////////////
 void Link::ClearCollisions()
 {
   this->dataPtr->collisions.clear();
@@ -737,6 +858,12 @@ void Link::ClearSensors()
 void Link::ClearParticleEmitters()
 {
   this->dataPtr->emitters.clear();
+}
+
+//////////////////////////////////////////////////
+void Link::ClearProjectors()
+{
+  this->dataPtr->projectors.clear();
 }
 
 /////////////////////////////////////////////////
@@ -817,6 +944,12 @@ sdf::ElementPtr Link::ToElement() const
   for (const sdf::ParticleEmitter &emitter : this->dataPtr->emitters)
   {
     elem->InsertElement(emitter.ToElement(), true);
+  }
+
+  // Projectors
+  for (const sdf::Projector &projector : this->dataPtr->projectors)
+  {
+    elem->InsertElement(projector.ToElement(), true);
   }
 
   // Sensors

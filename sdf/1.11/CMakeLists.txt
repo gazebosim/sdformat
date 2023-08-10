@@ -73,8 +73,8 @@ foreach(FIL ${sdfs})
 
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.xsd"
-    COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/tools/xmlschema.rb
-    ARGS -s ${CMAKE_CURRENT_SOURCE_DIR} -i ${ABS_FIL} -o ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/xmlschema.py
+    ARGS --sdf-dir ${CMAKE_CURRENT_SOURCE_DIR} --input-file ${ABS_FIL} --output-dir ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${ABS_FIL}
     COMMENT "Running xml schema compiler on ${FIL}"
     VERBATIM)

@@ -781,6 +781,16 @@ const NestedInclude *World::InterfaceModelNestedIncludeByIndex(
 }
 
 /////////////////////////////////////////////////
+void World::CalculateInertials(sdf::Errors &_errors)
+{
+  // Call CalculateInertials() function for all the models
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    model.CalculateInertials(_errors);
+  }
+}
+
+/////////////////////////////////////////////////
 void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;

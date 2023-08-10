@@ -136,7 +136,7 @@ struct Document: public Value
 Document parseToml(const std::string &_filePath, sdf::Errors &_errors)
 {
   std::fstream fs;
-  fs.open(_filePath);
+  fs.open(_filePath, std::fstream::in);
   if (!fs.good())
   {
     _errors.emplace_back(sdf::ErrorCode::FILE_READ,
