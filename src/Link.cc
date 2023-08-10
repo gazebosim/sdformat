@@ -114,8 +114,6 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
                      "A link name is required, but the name is not set."});
   }
 
-    std::cout << "Load called for link: " << this->dataPtr->name << std::endl;
-
   // Check that the link's name is valid
   if (isReservedName(this->dataPtr->name))
   {
@@ -510,9 +508,7 @@ Errors Link::ResolveInertial(
   auto errors = this->SemanticPose().Resolve(linkPose, _resolveTo);
   if (errors.empty())
   {
-    //_inertial = this->dataPtr->inertial;
-    std::cout << "linkPose: " << linkPose << std::endl;
-    std::cout << "inertial.Pose(): " << _inertial.Pose() << std::endl;
+    _inertial = this->dataPtr->inertial;
     _inertial.SetPose(linkPose * _inertial.Pose());
   }
   return errors;
@@ -521,15 +517,12 @@ Errors Link::ResolveInertial(
 /////////////////////////////////////////////////
 void Link::CalculateInertials(sdf::Errors &_errors)
 {
-  std::cout << "CalculateInertial() called for " << this->dataPtr->name << std::endl;
   if (this->dataPtr->sdf->HasElement("inertial"))
   {
     sdf::ElementPtr inertialElem = this->dataPtr->sdf->GetElement("inertial");
 
     if (inertialElem->Get<bool>("auto"))
     {
-      std::cout << "Inertia is set to automatic" << std::endl;
-
       // Return an error if auto is set to true but there are no
       // collision elements in the link
       if (this->dataPtr->collisions.empty())
@@ -542,20 +535,13 @@ void Link::CalculateInertials(sdf::Errors &_errors)
 
       gz::math::Inertiald totalInertia;
 
-      for(sdf::Collision &collision : this->dataPtr->collisions)
+      for (sdf::Collision &collision : this->dataPtr->collisions)
       {
         gz::math::Inertiald collisionInertia;
-        std::cout << "Density of the collision is: " << collision.Density();
-        std::cout << std::endl;
-
         Errors inertiaErrors = collision.CalculateInertial(collisionInertia);
         _errors.insert(_errors.end(), inertiaErrors.begin(), inertiaErrors.end());
-        
         totalInertia = totalInertia + collisionInertia;
       }
-
-      std::cout << totalInertia.MassMatrix().Ixx() << ", " << totalInertia.MassMatrix().Iyy() << ", " << totalInertia.MassMatrix().Izz() << std::endl;
-      std::cout << "Total Mass is " << totalInertia.MassMatrix().Mass() << std::endl;
 
       this->dataPtr->inertial = totalInertia;
     }
