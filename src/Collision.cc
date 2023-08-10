@@ -236,13 +236,13 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-Errors Collision::MassMatrix(gz::math::Inertiald &_inertial)
+Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial)
 {
   Errors errors;
 
-  auto massMat = this->dataPtr->geom.MassMatrix(this->dataPtr->density);
+  auto geomInertial = this->dataPtr->geom.CalculateInertial(this->dataPtr->density);
 
-  if (!massMat)
+  if (!geomInertial)
   {
     errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
         "Inertia Calculated for collision: " +
@@ -250,25 +250,27 @@ Errors Collision::MassMatrix(gz::math::Inertiald &_inertial)
   }
   else
   {
-    if(!_inertial.SetMassMatrix(massMat.value()))
-    {
-      errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
-          "Inertia Calculated for collision: " + 
-          this->dataPtr->name + " seems invalid"});
-    }
+    _inertial = geomInertial.value();
     
-    // If collision pose is in Link Frame then set that as inertial pose
-    // Else resolve collision pose in Link Frame and then set as inertial pose
-    if (this->dataPtr->poseRelativeTo.empty())
-    {
-      _inertial.SetPose(this->dataPtr->pose);
-    }
-    else
-    {
-      gz::math::Pose3d collisionPoseLinkFrame;
-      Errors poseConvErrors = this->SemanticPose().Resolve(collisionPoseLinkFrame);
-      errors.insert(errors.end(), poseConvErrors.begin(), poseConvErrors.end());
-      _inertial.SetPose(collisionPoseLinkFrame);
+    // If geometry type is not mesh than calculate inertial pose in Link frame
+    // considering collision frame to be same as inertial frame
+    // In case of mesh the custom inertia calculator should return the inertial object
+    // with the pose already set
+    if (this->dataPtr->geom.Type() != GeometryType::MESH)
+    {    
+      // If collision pose is in Link Frame then set that as inertial pose
+      // Else resolve collision pose in Link Frame and then set as inertial pose
+      if (this->dataPtr->poseRelativeTo.empty())
+      {
+        _inertial.SetPose(this->dataPtr->pose);
+      }
+      else
+      {
+        gz::math::Pose3d collisionPoseLinkFrame;
+        Errors poseConvErrors = this->SemanticPose().Resolve(collisionPoseLinkFrame);
+        errors.insert(errors.end(), poseConvErrors.begin(), poseConvErrors.end());
+        _inertial.SetPose(collisionPoseLinkFrame);
+      }
     }
   }
 

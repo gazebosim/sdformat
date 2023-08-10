@@ -132,14 +132,11 @@ namespace sdf
     public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Calculate and return the MassMatrix for the collision
-    /// \param[in] _xxyyzz A vector 3d representing the diagonal elements
-    /// of the mass matrix
-    /// \param[in] _xyxzyx A vector 3d representing the off-diagonal elements
-    /// of the mass matrix
-    /// \param[in] _mass A double representing the mass of the collision
+    /// \param[out] _inertial An inertial object which will be set with the 
+    /// calculated inertial values
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error
-    public: Errors MassMatrix(gz::math::Inertiald &_inertial);
+    public: Errors CalculateInertial(gz::math::Inertiald &_inertial);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
