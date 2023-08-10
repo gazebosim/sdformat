@@ -16,7 +16,10 @@
 */
 
 #include <gtest/gtest.h>
+
 #include <any>
+#include <filesystem>
+
 #include <gz/math.hh>
 #include <gz/utils/Environment.hh>
 #include <gz/utils/SuppressWarning.hh>
@@ -788,17 +791,17 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
-
 /////////////////////////////////////////////////
 TEST(SDF, FindFileModelSDFCurrDir)
 {
-  std::string currDir;
-
-  // Get current directory path from $PWD env variable
-  currDir = sdf::filesystem::current_path();
+  // Change to a temporary directory before running test
+  auto prevPath = std::filesystem::current_path();
+  std::string tmpDir;
+  ASSERT_TRUE(sdf::testing::TestTmpPath(tmpDir));
+  std::filesystem::current_path(tmpDir);
 
   // A file named model.sdf in current directory
-  auto tempFile = currDir + "/model.sdf";
+  auto tempFile = tmpDir + "/model.sdf";
 
   sdf::SDF tempSDF;
   tempSDF.Write(tempFile);
@@ -815,5 +818,6 @@ TEST(SDF, FindFileModelSDFCurrDir)
 
   // Cleanup
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
+  std::filesystem::current_path(prevPath);
 }
 #endif  // _WIN32
