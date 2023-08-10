@@ -4,6 +4,8 @@ load(
     "cmake_configure_file",
 )
 
+licenses(["notice"])
+
 cmake_configure_file(
     name = "config",
     src = "test_config.hh.in",

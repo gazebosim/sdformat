@@ -3,19 +3,19 @@ load(
     "GZ_FEATURES",
     "GZ_ROOT",
     "GZ_VISIBILITY",
+    "add_lint_tests",
     "gz_configure_header",
     "gz_export_header",
     "gz_include_header",
+    "gz_py_binary",
 )
-load("@gz//bazel/skylark:gz_py.bzl", "gz_py_binary")
-load("@gz//bazel/lint:lint.bzl", "add_lint_tests")
 
 package(
     default_visibility = GZ_VISIBILITY,
     features = GZ_FEATURES,
 )
 
-licenses(["notice"])  # Apache-2.0
+licenses(["notice"])
 
 exports_files(["LICENSE"])
 
@@ -32,6 +32,7 @@ gz_configure_header(
 gz_py_binary(
     name = "embed_sdf",
     srcs = ["sdf/embedSdf.py"],
+    main = "sdf/embedSdf.py",
 )
 
 genrule(
