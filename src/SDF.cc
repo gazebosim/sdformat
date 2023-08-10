@@ -126,7 +126,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
 
   // Next check the versioned install path.
   path = sdf::filesystem::append(sdfSharePath(),
-                                 "sdformat" SDF_MAJOR_VERSION_STR,
+                                 "sdformat" + std::string(SDF_MAJOR_VERSION_STR),
                                  sdf::SDF::Version(), filename);
   if (sdf::filesystem::exists(path))
   {
