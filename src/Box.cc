@@ -121,8 +121,7 @@ gz::math::Boxd &Box::Shape()
 }
 
 /////////////////////////////////////////////////
-std::optional<gz::math::Inertiald> Box::CalculateInertial(
-  const double _density)
+std::optional<gz::math::Inertiald> Box::CalculateInertial(double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->box.SetMaterial(material);

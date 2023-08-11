@@ -138,8 +138,7 @@ gz::math::Cylinderd &Cylinder::Shape()
   return this->dataPtr->cylinder;
 }
 
-std::optional<gz::math::Inertiald> Cylinder::CalculateInertial(
-  const double _density)
+std::optional<gz::math::Inertiald> Cylinder::CalculateInertial(double _density)
 {
   gz::math::Material material = gz::math::Material(_density);
   this->dataPtr->cylinder.SetMat(material);
