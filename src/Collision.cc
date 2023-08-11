@@ -140,7 +140,7 @@ double Collision::Density() const
 }
 
 /////////////////////////////////////////////////
-void Collision::SetDensity(const double _density)
+void Collision::SetDensity(double _density)
 {
   this->dataPtr->density = _density;
 }
