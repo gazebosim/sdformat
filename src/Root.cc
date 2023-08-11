@@ -286,8 +286,6 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
       this->dataPtr->UpdateGraphs(world, worldErrors);
 
-      world.CalculateInertials(worldErrors);
-
       // Attempt to load the world
       if (worldErrors.empty())
       {
@@ -328,7 +326,6 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
     this->dataPtr->modelLightOrActor = std::move(models.front());
     sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
     this->dataPtr->UpdateGraphs(model, errors);
-    model.CalculateInertials(errors);
   }
 
   // Load all the lights.
@@ -391,6 +388,10 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
   // Check that //axis*/xyz/@expressed_in values specify valid frames.
   checkJointAxisExpressedInValues(this, errors);
+
+  // Calculate Inertials for all worlds and models belonging to this root object
+  Errors inertialErrors = CalculateInertials(_config);
+  errors.insert(errors.end(), inertialErrors.begin(), inertialErrors.end());
 
   return errors;
 }
@@ -591,21 +592,21 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-Errors Root::CalculateInertials()
+Errors Root::CalculateInertials(const ParserConfig &_config)
 {
   sdf::Errors errors;
 
   // Calculate and set Inertials for all the worlds
   for (sdf::World &world : this->dataPtr->worlds)
   {
-    world.CalculateInertials(errors);
+    world.CalculateInertials(errors, _config);
   }
 
   // Calculate and set Inertials for the model, if it is present
   if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
   {
     sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
-    model.CalculateInertials(errors);
+    model.CalculateInertials(errors, _config);
   }
 
   return errors;
