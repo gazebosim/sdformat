@@ -85,7 +85,7 @@ namespace sdf
     /// \brief Set the density of the collision.
     /// The density of the collision must be unique within the scope of a Link.
     /// \param[in] _density Density of the collision.
-    public: void SetDensity(const double _density);
+    public: void SetDensity(double _density);
 
     public: sdf::ElementPtr MoiCalulatorParams() const;
 
