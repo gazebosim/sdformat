@@ -137,7 +137,8 @@ namespace sdf
     /// calculated inertial values
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error
-    public: Errors CalculateInertial(gz::math::Inertiald &_inertial, const ParserConfig &_config);
+    public: Errors CalculateInertial(gz::math::Inertiald &_inertial,
+                                    const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

@@ -837,7 +837,8 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
-void Model::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
+void Model::CalculateInertials(sdf::Errors &_errors,
+                              const ParserConfig &_config)
 {
   // Loop through all the nested models, if there are any
   for (sdf::Model &model : this->dataPtr->models)

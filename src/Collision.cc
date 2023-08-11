@@ -217,7 +217,8 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial, const ParserConfig &_config)
+Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
+                                    const ParserConfig &_config)
 {
   Errors errors;
 

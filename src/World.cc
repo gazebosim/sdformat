@@ -781,7 +781,8 @@ const NestedInclude *World::InterfaceModelNestedIncludeByIndex(
 }
 
 /////////////////////////////////////////////////
-void World::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
+void World::CalculateInertials(sdf::Errors &_errors,
+                              const ParserConfig &_config)
 {
   // Call CalculateInertials() function for all the models
   for (sdf::Model &model : this->dataPtr->models)

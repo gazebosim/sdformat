@@ -604,7 +604,8 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
       for (sdf::Collision &collision : this->dataPtr->collisions)
       {
         gz::math::Inertiald collisionInertia;
-        Errors inertiaErrors = collision.CalculateInertial(collisionInertia, _config);
+        Errors inertiaErrors =
+          collision.CalculateInertial(collisionInertia, _config);
         _errors.insert(_errors.end(),
                       inertiaErrors.begin(),
                       inertiaErrors.end());

@@ -333,7 +333,8 @@ namespace sdf
     /// \param[in] _config Custom parser configuration
     /// \param[out] _errors A vector of Errors object. Each object
     /// would contain an error code and an error message.
-    public: void CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config);
+    public: void CalculateInertials(sdf::Errors &_errors,
+                                    const ParserConfig &_config);
 
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
