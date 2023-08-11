@@ -231,10 +231,11 @@ namespace sdf
     /// of this Root object. This function can be called after calling
     /// UpdateGraphs() since it uses frame graphs to resolve inertial pose
     /// for links.
+    /// \param[in] _config Custom parser configuration
     /// \return Errors, which is a vector of Error objects.
     /// Each Error includes an error code and message. An empty vector
     /// indicates no error.
-    public: Errors CalculateInertials();
+    public: Errors CalculateInertials(const ParserConfig &_config);
 
     /// \brief Create and return an SDF element filled with data from this
     /// root.

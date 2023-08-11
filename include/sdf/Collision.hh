@@ -132,6 +132,7 @@ namespace sdf
     public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Calculate and return the MassMatrix for the collision
+    /// \param[in] _config Custom parser configuration
     /// \param[out] _inertial An inertial object which will be set with the
     /// calculated inertial values
     /// \return Errors, which is a vector of Error objects. Each Error includes

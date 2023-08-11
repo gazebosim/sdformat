@@ -592,21 +592,21 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-Errors Root::CalculateInertials()
+Errors Root::CalculateInertials(const ParserConfig &_config)
 {
   sdf::Errors errors;
 
   // Calculate and set Inertials for all the worlds
   for (sdf::World &world : this->dataPtr->worlds)
   {
-    world.CalculateInertials(errors);
+    world.CalculateInertials(errors, _config);
   }
 
   // Calculate and set Inertials for the model, if it is present
   if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
   {
     sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
-    model.CalculateInertials(errors);
+    model.CalculateInertials(errors, _config);
   }
 
   return errors;

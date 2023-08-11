@@ -510,9 +510,10 @@ namespace sdf
 
     /// \brief Calculate and set the inertials for all the links belonging
     /// to the model object
+    /// \param[in] _config Custom parser configuration
     /// \param[out] _errrors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
-    public: void CalculateInertials(sdf::Errors &_errors);
+    public: void CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config);
 
     /// \brief Give the scoped PoseRelativeToGraph to be used for resolving
     /// poses. This is private and is intended to be called by Root::Load or
