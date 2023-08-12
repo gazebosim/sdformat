@@ -119,6 +119,19 @@ class ElementTEST(unittest.TestCase):
         # clonedAttribs = newelem.get_attributes()
         # self.assertEqual(newelem, clonedAttribs[0].get_parent_element())
 
+    def test_add_value(self):
+        elem = Element()
+        elem.set_name("test")
+        elem.add_value("string", "foo", False, "foo description")
+
+        param = elem.get_value()
+        # ASSERT_EQ(param->GetKey(), "test")
+        # ASSERT_EQ(param->GetTypeName(), "string")
+        self.assertEqual(param.get_default_as_string(), "foo")
+        # ASSERT_EQ(param->GetDescription(), "foo description")
+        self.assertNotEqual(param.get_parent_element(), None)
+        self.assertEqual(param.get_parent_element(), elem)
+
     def test_find_element(self):
         root = Element()
         root.set_name("root")

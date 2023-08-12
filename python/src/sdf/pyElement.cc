@@ -18,11 +18,14 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
 #include <memory>
 
-#include "sdf/Element.hh"
 #include "pybind11_helpers.hh"
-
+#include "pyParam.hh"
+#include "sdf/Element.hh"
+#include "sdf/Param.hh"
+#include "sdf/PrintConfig.hh"
 #include "sdf/config.hh"
 
 using namespace pybind11::literals;
@@ -34,68 +37,40 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
 
-using PyClassElement = py::class_<sdf::Element, sdf::ElementPtr>;
 
 template <typename T>
-std::string computeSuffix()
+struct DefineGetSetImpl
 {
-  // TypeToString returns a value with a space, which would not be a valid 
-  // python function name, so we override that here.
-  if constexpr (std::is_same_v<T, unsigned int>)
-    return "unsigned_int";
-  return ParamPrivate::TypeToString<T>();
-}
-
-template <typename T>
-struct DefineElementGetSet
-{
-  void operator()(PyClassElement &_cls)
+  template <typename Class, typename ...Options>
+  void operator()(py::class_<Class, Options...> &_cls)
   {
     const std::string getFuncName = "get_" + computeSuffix<T>();
     const std::string setFuncName = "set_" + computeSuffix<T>();
-    _cls.def(
-            getFuncName.c_str(),
-            [](const sdf::Element &_self, const std::string &_key)
-            {
-              sdf::Errors errors;
-              T val = _self.Get<T>(errors, _key);
-              ThrowIfErrors(errors);
-              return val;
-            },
-            "Get the value of a key. This function assumes the _key exists.")
-        .def(
-            getFuncName.c_str(),
-            [](const sdf::Element &_self, const std::string &_key,
-               const T &_defaultValue)
-            {
-              sdf::Errors errors;
-              std::pair<T, bool> val =
-                  _self.Get<T>(errors, _key, _defaultValue);
-              ThrowIfErrors(errors);
-              return val;
-            },
-            "Get the value of a key. This function assumes the _key exists.")
-        .def(
-            setFuncName.c_str(),
-            [](sdf::Element &_self, const T &_value)
-            {
-              sdf::Errors errors;
-              bool result = _self.Set<T>(errors, _value);
-              ThrowIfErrors(errors);
-              return result;
-            },
-            "Get the value of a key. This function assumes the _key exists.");
+    _cls.def(getFuncName.c_str(),
+             ErrorWrappedCast<const std::string &>(&Class::template Get<T>,
+                                                   py::const_),
+             "Get the value of a key. This function assumes the _key exists.")
+        .def(getFuncName.c_str(),
+             ErrorWrappedCast<const std::string &, const T &>(
+                 &Class::template Get<T>, py::const_),
+             "Get the value of a key. This function assumes the _key exists.")
+        .def(setFuncName.c_str(),
+             ErrorWrappedCast<const T &>(&Class::template Set<T>),
+             "Get the value of a key. This function assumes the _key exists.");
   }
 };
 
 template<typename ...Ts>
-struct DefineElementGetSet<std::variant<Ts...>>
+struct DefineGetSetImpl<std::variant<Ts...>>
 {
-  void operator()(PyClassElement &_cls)
+  template <typename PyClass>
+  void operator()(PyClass &_cls) const noexcept
   {
-    (DefineElementGetSet<Ts>()(_cls), ...);
+    (DefineGetSetImpl<Ts>()(_cls), ...);
   }
 };
+
+static constexpr DefineGetSetImpl<ParamPrivate::ParamVariant> defineGetSet = {};
 
 /////////////////////////////////////////////////
 // TODO(azeey) Interspersed between the `.def` calls is a list of
@@ -128,58 +103,49 @@ struct DefineElementGetSet<std::variant<Ts...>>
 // - NameUniquenessExceptions (Used for error checking by the parser)
 void defineElement(py::object module)
 {
+  using PyClassElement = py::class_<Element, ElementPtr>;
   auto elemClass =
       PyClassElement(module, "Element")
           .def(py::init<>())
-          .def(
-              "clone",
-              [](const sdf::Element &_self)
-              {
-                sdf::Errors errors;
-                sdf::ElementPtr elem = _self.Clone(errors);
-                ThrowIfErrors(errors);
-                return elem;
-              },
-              "Create a copy of this Element.")
-          .def("get_parent", &sdf::Element::GetParent,
+          .def("clone", ErrorWrappedCast<>(&Element::Clone, py::const_),
+               "Create a copy of this Element.")
+          .def("get_parent", &Element::GetParent,
                "Get a pointer to this Element's parent.")
-          .def("set_parent", &sdf::Element::SetParent,
+          .def("set_parent", &Element::SetParent,
                "Set the parent of this Element.")
-          .def("set_name", &sdf::Element::SetName,
-               "Set the name of the Element")
-          .def("get_name", &sdf::Element::GetName, "Get the Element's name.")
-          .def("set_required", &sdf::Element::SetRequired,
+          .def("set_name", &Element::SetName, "Set the name of the Element")
+          .def("get_name", &Element::GetName, "Get the Element's name.")
+          .def("set_required", &Element::SetRequired,
                "Set the requirement type.")
-          .def("get_required", &sdf::Element::GetRequired,
+          .def("get_required", &Element::GetRequired,
                "Get the requirement string.")
           // print_description
-          .def("set_explicitly_set_in_file",
-               &sdf::Element::SetExplicitlySetInFile,
+          .def("set_explicitly_set_in_file", &Element::SetExplicitlySetInFile,
                "Set if the element and children where set or default in the "
                "original file")
-          .def("get_explicitly_set_in_file",
-               &sdf::Element::GetExplicitlySetInFile,
+          .def("get_explicitly_set_in_file", &Element::GetExplicitlySetInFile,
                "Return if the element was been explicitly set in the file")
           // to_string
           .def(
               "add_attribute",
-              [](sdf::Element &_self, const std::string &_key,
+              [](Element &_self, const std::string &_key,
                  const std::string &_type, const std::string &_defaultvalue,
                  bool _required, const std::string &_description = "")
               {
-                sdf::Errors errors;
+                Errors errors;
                 _self.AddAttribute(_key, _type, _defaultvalue, _required,
                                    errors, _description);
                 ThrowIfErrors(errors);
               },
-              "Add an attribute value.")
+              "Add an attribute value.", "key"_a, "type"_a, "default_value"_a,
+              "required"_a, "description"_a = "")
           .def(
               "add_value",
-              [](sdf::Element &_self, const std::string &_type,
+              [](Element &_self, const std::string &_type,
                  const std::string &_defaultValue, bool _required,
                  const std::string &_description = "")
               {
-                sdf::Errors errors;
+                Errors errors;
                 _self.AddValue(_type, _defaultValue, _required, errors,
                                _description);
                 ThrowIfErrors(errors);
@@ -187,19 +153,20 @@ void defineElement(py::object module)
               "Add a value to this Element")
           .def(
               "add_value",
-              [](sdf::Element &_self, const std::string &_type,
+              [](Element &_self, const std::string &_type,
                  const std::string &_defaultValue, bool _required,
                  const std::string &_minValue, const std::string &_maxValue,
                  const std::string &_description = "")
               {
-                sdf::Errors errors;
+                Errors errors;
                 _self.AddValue(_type, _defaultValue, _required, _minValue,
                                _maxValue, errors, _description);
                 ThrowIfErrors(errors);
               },
-              "Add a value to this Element")
+              "Add a value to this Element", "type"_a, "default_value"_a,
+              "required"_a, "min_value"_a, "max_value"_a, "description"_a = "")
           // get_attribute (string)
-          .def("get_attribute_count", &sdf::Element::GetAttributeCount,
+          .def("get_attribute_count", &Element::GetAttributeCount,
                "Get the number of attributes.")
           // get_attributes
           // get_attribute (index)
@@ -207,47 +174,33 @@ void defineElement(py::object module)
           // get_element_description (index)
           // get_element_description (string)
           // has_element_description
-          .def("has_attribute", &sdf::Element::HasAttribute,
+          .def("has_attribute", &Element::HasAttribute,
                "Return true if an attribute exists.")
-          .def("get_attribute_set", &sdf::Element::GetAttributeSet,
+          .def("get_attribute_set", &Element::GetAttributeSet,
                "Return true if the attribute was set (i.e. not default value)")
           // remove_attribute
           // remove_all_attributes
-          // get_value
-          .def(
-              "get_any",
-              [](sdf::Element &_self, const std::string &_key = "")
-              {
-                sdf::Errors errors;
-                auto output = _self.GetAny(errors,_key);
-                ThrowIfErrors(errors);
-                return output;
-              },
-              "Add a value to this Element")
-          .def("has_element", &sdf::Element::HasElement,
+          .def("get_value", &Element::GetValue,
+               "Get the param of the elements value")
+          .def("get_any",
+               ErrorWrappedCast<const std::string &>(&Element::GetAny,
+                                                     py::const_),
+               "Add a value to this Element")
+          .def("has_element", &Element::HasElement,
                "Return true if the named element exists.")
-          .def("get_first_element", &sdf::Element::GetFirstElement,
+          .def("get_first_element", &Element::GetFirstElement,
                "Get the first child element")
-          .def("get_next_element", &sdf::Element::GetNextElement,
+          .def("get_next_element", &Element::GetNextElement,
                "Get the first child Get the next sibling of this element.")
           // get_element_type_names
           .def("find_element",
-               py::overload_cast<const std::string &>(
-                   &sdf::Element::FindElement),
+               py::overload_cast<const std::string &>(&Element::FindElement),
                "Return a pointer to the child element with the provided name.")
-          .def(
-              "add_element",
-              [](sdf::Element &_self, const std::string &_name)
-              {
-                sdf::Errors errors;
-                auto output = _self.AddElement(_name, errors);
-                ThrowIfErrors(errors);
-                return output;
-              },
-              "Add a value to this Element")
+          .def("add_element",
+               ErrorWrappedCast<const std::string &>(&Element::AddElement),
+               "Add a value to this Element")
           .def("insert_element",
-               py::overload_cast<sdf::ElementPtr, bool>(
-                   &sdf::Element::InsertElement),
+               py::overload_cast<ElementPtr, bool>(&Element::InsertElement),
                "Add an element object, and optionally set the given element's "
                "parent to this object",
                "elem"_a, "set_parent_to_self"_a = false)
@@ -257,28 +210,28 @@ void defineElement(py::object module)
           // clear
           // update
           // reset
-          .def("set_include_element", &sdf::Element::SetIncludeElement,
+          .def("set_include_element", &Element::SetIncludeElement,
                "Set the `<include>` element that was used to load this element")
           .def(
-              "get_include_element", &sdf::Element::GetIncludeElement,
+              "get_include_element", &Element::GetIncludeElement,
               "Get the `<include>` element that was used to load this element.")
-          .def("set_file_path", &sdf::Element::SetFilePath,
+          .def("set_file_path", &Element::SetFilePath,
                "Set the path to the SDF document where this element came from.")
-          .def("file_path", &sdf::Element::FilePath,
+          .def("file_path", &Element::FilePath,
                "Get the path to the SDF document where this element came from")
-          .def("set_line_number", &sdf::Element::SetLineNumber,
+          .def("set_line_number", &Element::SetLineNumber,
                "Set the line number of this element within the SDF document.")
-          .def("line_number", &sdf::Element::LineNumber,
+          .def("line_number", &Element::LineNumber,
                "Get the line number of this element within the SDF document.")
-          .def("set_xml_path", &sdf::Element::SetXmlPath,
+          .def("set_xml_path", &Element::SetXmlPath,
                "Set the XML path of this element.")
-          .def("xml_path", &sdf::Element::XmlPath,
+          .def("xml_path", &Element::XmlPath,
                "Get the XML path of this element.")
-          .def("set_original_version", &sdf::Element::SetOriginalVersion,
+          .def("set_original_version", &Element::SetOriginalVersion,
                "Set the spec version that this was originally parsed from.")
-          .def("original_version", &sdf::Element::OriginalVersion,
+          .def("original_version", &Element::OriginalVersion,
                "Get the spec version that this was originally parsed from.");
-  DefineElementGetSet<ParamPrivate::ParamVariant>()(elemClass);
+  defineGetSet(elemClass);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
