@@ -121,17 +121,6 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->dataPtr->surface.Load(_sdf->GetElement("surface", errors));
   }
 
-  if (_sdf->HasElement("moi_calculator_params"))
-  {
-    this->dataPtr->moiCalculatorParams = _sdf->GetElement("moi_calculator_params");
-  }
-  else
-  {
-    errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Collision is missing a <moi_calculator_params> child "
-        "element for Inertia Caluclations of Meshes"});
-  }
-
   return errors;
 }
 
@@ -267,8 +256,15 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
     );
   }
 
+  if (this->dataPtr->sdf->HasElement("moi_calculator_params"))
+  {
+    this->dataPtr->moiCalculatorParams =
+      this->dataPtr->sdf->GetElement("moi_calculator_params");
+  }
+
   auto geomInertial =
-    this->dataPtr->geom.CalculateInertial(this->dataPtr->density);
+    this->dataPtr->geom.CalculateInertial(this->dataPtr->density, _config, 
+                                          this->dataPtr->moiCalculatorParams);
 
   if (!geomInertial)
   {
