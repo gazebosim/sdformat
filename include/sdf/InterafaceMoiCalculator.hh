@@ -19,6 +19,7 @@
 #define SDF_INTERFACE_MOI_CALCULATOR_HH_
 
 #include <gz/utils/ImplPtr.hh>
+#include <gz/math/Inertial.hh>
 
 #include "sdf/Element.hh"
 #include "sdf/Mesh.hh"
@@ -72,7 +73,7 @@ class SDFORMAT_VISIBLE InterfaceMoiCalculator
 };
 
 using CustomMOICalculator =
-    std::function<std::optional<gz::math::MassMatrix3d>(sdf::Errors &, 
+    std::function<std::optional<gz::math::Inertiald>(sdf::Errors &, 
         const sdf::InterfaceMoiCalculator &)>;
 }
 }
