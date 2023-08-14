@@ -47,8 +47,8 @@ class sdf::World::Implementation
   /// \return Errors, if any.
   public: Errors LoadSphericalCoordinates(sdf::ElementPtr _elem);
 
-  /// \brief Optional atmosphere model.
-  public: std::optional<sdf::Atmosphere> atmosphere;
+  /// \brief Required atmosphere model.
+  public: sdf::Atmosphere atmosphere;
 
   /// \brief Audio device name
   public: std::string audioDevice = "default";
@@ -60,8 +60,8 @@ class sdf::World::Implementation
   /// \brief Optional Gui parameters.
   public: std::optional<sdf::Gui> gui;
 
-  /// \brief Optional Scene parameters.
-  public: std::optional<sdf::Scene> scene;
+  /// \brief Required scene parameters.
+  public: sdf::Scene scene;
 
   /// \brief The frames specified in this world.
   public: std::vector<Frame> frames;
@@ -180,9 +180,8 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Read the atmosphere element
   if (_sdf->HasElement("atmosphere"))
   {
-    this->dataPtr->atmosphere.emplace();
     Errors atmosphereLoadErrors =
-      this->dataPtr->atmosphere->Load(_sdf->GetElement("atmosphere"));
+      this->dataPtr->atmosphere.Load(_sdf->GetElement("atmosphere"));
     errors.insert(errors.end(), atmosphereLoadErrors.begin(),
         atmosphereLoadErrors.end());
   }
@@ -314,9 +313,8 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Load the Scene
   if (_sdf->HasElement("scene"))
   {
-    this->dataPtr->scene.emplace();
     Errors sceneLoadErrors =
-        this->dataPtr->scene->Load(_sdf->GetElement("scene"), _config);
+        this->dataPtr->scene.Load(_sdf->GetElement("scene"), _config);
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
@@ -459,7 +457,7 @@ Model *World::ModelByName(const std::string &_name)
 /////////////////////////////////////////////////
 const sdf::Atmosphere *World::Atmosphere() const
 {
-  return optionalToPointer(this->dataPtr->atmosphere);
+  return &(this->dataPtr->atmosphere);
 }
 
 /////////////////////////////////////////////////
@@ -497,7 +495,7 @@ void World::SetGui(const sdf::Gui &_gui)
 /////////////////////////////////////////////////
 const sdf::Scene *World::Scene() const
 {
-  return optionalToPointer(this->dataPtr->scene);
+  return &(this->dataPtr->scene);
 }
 
 /////////////////////////////////////////////////
@@ -1033,16 +1031,14 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
   }
 
   // Atmosphere
-  if (this->dataPtr->atmosphere)
-    elem->InsertElement(this->dataPtr->atmosphere->ToElement(), true);
+  elem->InsertElement(this->dataPtr->atmosphere.ToElement(), true);
 
   // Gui
   if (this->dataPtr->gui)
     elem->InsertElement(this->dataPtr->gui->ToElement(), true);
 
   // Scene
-  if (this->dataPtr->scene)
-    elem->InsertElement(this->dataPtr->scene->ToElement(), true);
+  elem->InsertElement(this->dataPtr->scene.ToElement(), true);
 
   // Audio
   if (this->dataPtr->audioDevice != "default")
