@@ -112,7 +112,7 @@ namespace sdf
     /// \param[in] density Density of the mesh in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald> CalculateInertial(const double _density, 
-        const sdf::ElementPtr _calculatorParams, const ParserConfig &_config);
+        const sdf::ElementPtr _autoInertiaParams, const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has

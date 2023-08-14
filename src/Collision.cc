@@ -51,7 +51,7 @@ class sdf::Collision::Implementation
   public: double density{1000.0};
 
   /// \brief SDF element pointer to <moi_calculator_params> tag
-  public: sdf::ElementPtr moiCalculatorParams;
+  public: sdf::ElementPtr autoInertiaParams;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
@@ -149,15 +149,15 @@ void Collision::SetDensity(double _density)
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Collision::MoiCalulatorParams() const
+sdf::ElementPtr Collision::AutoInertiaParams() const
 {
-  return this->dataPtr->moiCalculatorParams;
+  return this->dataPtr->autoInertiaParams;
 }
 
 /////////////////////////////////////////////////
-void Collision::SetMoiCalculatorParams(const sdf::ElementPtr _calculatorParams)
+void Collision::SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams)
 {
-  this->dataPtr->moiCalculatorParams = _calculatorParams;
+  this->dataPtr->autoInertiaParams = _autoInertiaParams;
 }
 
 /////////////////////////////////////////////////
@@ -256,15 +256,15 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
     );
   }
 
-  if (this->dataPtr->sdf->HasElement("moi_calculator_params"))
+  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
   {
-    this->dataPtr->moiCalculatorParams =
-      this->dataPtr->sdf->GetElement("moi_calculator_params");
+    this->dataPtr->autoInertiaParams =
+      this->dataPtr->sdf->GetElement("auto_inertia_params");
   }
 
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(this->dataPtr->density, _config, 
-                                          this->dataPtr->moiCalculatorParams);
+                                          this->dataPtr->autoInertiaParams);
 
   if (!geomInertial)
   {

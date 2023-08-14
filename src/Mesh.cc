@@ -194,7 +194,7 @@ void Mesh::SetCenterSubmesh(const bool _center)
 
 //////////////////////////////////////////////////
 std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density, 
-    const sdf::ElementPtr _calculatorParams, const ParserConfig &_config)
+    const sdf::ElementPtr _autoInertiaParams, const ParserConfig &_config)
 {
   sdf::Errors errors;
 
@@ -204,7 +204,7 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density
   const auto &customCalculator = _config.CustomMoiCalculator();
 
   sdf::InterfaceMoiCalculator calcInterface = InterfaceMoiCalculator(
-    _density, *this, _calculatorParams);
+    _density, *this, _autoInertiaParams);
 
   return customCalculator(errors, calcInterface);
 } 

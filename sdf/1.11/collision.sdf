@@ -22,7 +22,7 @@
     </description>
   </element>
 
-  <element name="moi_calculator_params" required="0">
+  <element name="auto_inertia_params" required="0">
     <description>Parent tag to hold user-defined custom params for mesh inertia calculator</description>
   </element>
 
