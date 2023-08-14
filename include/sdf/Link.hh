@@ -330,9 +330,9 @@ namespace sdf
     /// & inertial pose) for the link. Inertial values can be provided
     /// by the user through the SDF or can be calculated automatically
     /// by setting the auto attribute to true.
-    /// \param[in] _config Custom parser configuration
     /// \param[out] _errors A vector of Errors object. Each object
     /// would contain an error code and an error message.
+    /// \param[in] _config Custom parser configuration
     public: void CalculateInertials(sdf::Errors &_errors,
                                     const ParserConfig &_config);
 

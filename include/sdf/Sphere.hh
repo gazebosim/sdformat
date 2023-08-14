@@ -69,7 +69,7 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Calculate and return the Mass Matrix values for the Sphere
-    /// \param[in] density Density of the sphere in kg/m^3
+    /// \param[in] _density Density of the sphere in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>
             CalculateInertial(double _density);
