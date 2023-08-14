@@ -215,7 +215,8 @@ namespace sdf
     /// \param[in] _density The density of the geometry element.
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>
-            CalculateInertial(double _density);
+            CalculateInertial(double _density, const ParserConfig &_config,
+                              sdf::ElementPtr _calculatorParams);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
