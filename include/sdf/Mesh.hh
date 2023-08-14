@@ -21,7 +21,7 @@
 #include <optional>
 
 #include <gz/math/Vector3.hh>
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/InterafaceMoiCalculator.hh"
 #include <sdf/Element.hh>
@@ -110,8 +110,8 @@ namespace sdf
 
     /// \brief Calculate and return the Mass Matrix values for the Mesh
     /// \param[in] density Density of the mesh in kg/m^3
-    /// \return A std::optional with gz::math::MassMatrix3d object or std::nullopt
-    public: std::optional< gz::math::MassMatrix3d >  MassMatrix(const double _density, 
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald> CalculateInertial(const double _density, 
         const sdf::ElementPtr _calculatorParams, const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during load.

@@ -17,7 +17,7 @@
 
 #include <optional>
 
-#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/InterafaceMoiCalculator.hh"
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
@@ -193,12 +193,14 @@ void Mesh::SetCenterSubmesh(const bool _center)
 }
 
 //////////////////////////////////////////////////
-std::optional< gz::math::MassMatrix3d >  Mesh::MassMatrix(const double _density, 
+std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density, 
     const sdf::ElementPtr _calculatorParams, const ParserConfig &_config)
 {
   sdf::Errors errors;
 
-  std::cout << "In Mesh:MassMatrix function: " << std::endl;
+  // todo: Add check for mesh object to see if it exists or not
+
+  std::cout << "In Mesh:CalculateInertial function: " << std::endl;
   const auto &customCalculator = _config.CustomMoiCalculator();
 
   sdf::InterfaceMoiCalculator calcInterface = InterfaceMoiCalculator(
