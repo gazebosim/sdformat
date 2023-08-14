@@ -76,7 +76,7 @@ namespace sdf
     public: gz::math::Cylinderd &Shape();
 
     /// \brief Calculate and return the Mass Matrix values for the Cylinder
-    /// \param[in] density Density of the cylinder in kg/m^3
+    /// \param[in] _density Density of the cylinder in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>
             CalculateInertial(double _density);

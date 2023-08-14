@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <optional>
 #include <gz/math/Inertial.hh>
 
 #include "sdf/parser.hh"

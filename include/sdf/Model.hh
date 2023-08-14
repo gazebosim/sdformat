@@ -510,9 +510,9 @@ namespace sdf
 
     /// \brief Calculate and set the inertials for all the links belonging
     /// to the model object
-    /// \param[in] _config Custom parser configuration
     /// \param[out] _errrors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
+    /// \param[in] _config Custom parser configuration
     public: void CalculateInertials(sdf::Errors &_errors,
                                     const ParserConfig &_config);
 

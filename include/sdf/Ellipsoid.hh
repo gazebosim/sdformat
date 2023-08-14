@@ -68,7 +68,7 @@ namespace sdf
     public: gz::math::Ellipsoidd &Shape();
 
     /// \brief Calculate and return the Mass Matrix values for the Ellipsoid
-    /// \param[in] density Density of the ellipsoid in kg/m^3
+    /// \param[in] _density Density of the ellipsoid in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>
             CalculateInertial(double _density);
