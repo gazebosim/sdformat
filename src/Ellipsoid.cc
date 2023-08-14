@@ -15,6 +15,8 @@
  *
 */
 #include <sstream>
+#include <optional>
+
 #include <gz/math/Inertial.hh>
 #include "sdf/Ellipsoid.hh"
 #include "sdf/parser.hh"

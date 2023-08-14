@@ -15,6 +15,8 @@
  *
 */
 #include <sstream>
+#include <optional>
+
 #include <gz/math/Inertial.hh>
 #include "sdf/Cylinder.hh"
 #include "sdf/parser.hh"
