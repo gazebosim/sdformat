@@ -147,8 +147,7 @@ void defineParam(py::object module)
       .def("update", ErrorWrappedCast<>(&Param::Update),
            "Set the parameter's value using the update_func.")
       // set is defined below
-      .def("get_any", ErrorWrappedCast<std::any &>(&Param::GetAny, py::const_),
-           "Get the value as a string.")
+      // get_any is not supported since std::any is not supported in pybind11.
       // get is defined below
       .def("set_description", &Param::SetDescription,
            "Set the description of the parameter.")
@@ -164,7 +163,8 @@ void defineParam(py::object module)
       {
         using T = std::decay_t<decltype(arg)>;
         const std::string nameWithSuffix = "is_type_" + computeSuffix<T>();
-        paramClass.def(nameWithSuffix.c_str(), &Param::IsType<T>, "");
+        paramClass.def(nameWithSuffix.c_str(), &Param::IsType<T>,
+                       "Return true if the param is a particular type");
       });
 
   forEachParamType(
@@ -200,17 +200,17 @@ void defineParam(py::object module)
               ThrowIfErrors(errors);
               return py::make_tuple(value, rc);
             },
-            "Get the value of the parameter.");
+            "Get the default value of the parameter.");
       });
 
   forEachParamType(
       [&paramClass](auto &&arg)
       {
         using T = std::decay_t<decltype(arg)>;
-        const std::string nameWithSuffix = "set" + computeSuffix<T>();
+        const std::string nameWithSuffix = "set_" + computeSuffix<T>();
         paramClass.def(nameWithSuffix.c_str(),
                        ErrorWrappedCast<const T &>(&Param::Set<T>),
-                       "Get the value of the parameter.");
+                       "Set the value of the parameter.");
       });
 }
 }  // namespace python
