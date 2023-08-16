@@ -198,7 +198,10 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density
 {
   sdf::Errors errors;
 
-  // todo: Add check for mesh object to see if it exists or not
+  if (this->dataPtr->filePath.empty())
+  {
+    return std::nullopt;
+  }
 
   std::cout << "In Mesh:CalculateInertial function: " << std::endl;
   const auto &customCalculator = _config.CustomInertiaCalc();
