@@ -119,13 +119,16 @@ void defineElement(py::object module)
                "Set the requirement type.")
           .def("get_required", &Element::GetRequired,
                "Get the requirement string.")
-          // print_description
           .def("set_explicitly_set_in_file", &Element::SetExplicitlySetInFile,
                "Set if the element and children where set or default in the "
                "original file")
           .def("get_explicitly_set_in_file", &Element::GetExplicitlySetInFile,
                "Return if the element was been explicitly set in the file")
-          // to_string
+          .def("to_string",
+               ErrorWrappedCast<const std::string &, const PrintConfig &>(
+                   &Element::ToString, py::const_),
+               "Convert the element values to a string representation.",
+               "prefix"_a, "config"_a = PrintConfig())
           .def(
               "add_attribute",
               [](Element &_self, const std::string &_key,
@@ -150,7 +153,8 @@ void defineElement(py::object module)
                                _description);
                 ThrowIfErrors(errors);
               },
-              "Add a value to this Element")
+              "Add a value to this Element", "type"_a, "default_value"_a,
+              "required"_a, "description"_a = "")
           .def(
               "add_value",
               [](Element &_self, const std::string &_type,
@@ -165,11 +169,18 @@ void defineElement(py::object module)
               },
               "Add a value to this Element", "type"_a, "default_value"_a,
               "required"_a, "min_value"_a, "max_value"_a, "description"_a = "")
-          // get_attribute (string)
+          .def("get_attribute",
+               py::overload_cast<const std::string &>(&Element::GetAttribute,
+                                                      py::const_),
+               "Get the param of an attribute.")
           .def("get_attribute_count", &Element::GetAttributeCount,
                "Get the number of attributes.")
-          // get_attributes
-          // get_attribute (index)
+          .def("get_attributes", &Element::GetAttributes,
+               "Get all the attribute params.")
+          .def("get_attribute",
+               py::overload_cast<unsigned int>(&Element::GetAttribute,
+                                               py::const_),
+               "Get the param of an attribute.")
           // get_element_description_count
           // get_element_description (index)
           // get_element_description (string)
@@ -178,8 +189,10 @@ void defineElement(py::object module)
                "Return true if an attribute exists.")
           .def("get_attribute_set", &Element::GetAttributeSet,
                "Return true if the attribute was set (i.e. not default value)")
-          // remove_attribute
-          // remove_all_attributes
+          .def("remove_attribute", &Element::RemoveAttribute,
+               "Remove an attribute.")
+          .def("remove_all_attributes", &Element::RemoveAllAttributes,
+               "Removes all attributes.")
           .def("get_value", &Element::GetValue,
                "Get the param of the elements value")
           .def("get_any",
@@ -206,8 +219,11 @@ void defineElement(py::object module)
                "elem"_a, "set_parent_to_self"_a = false)
           // remove_from_parent
           // remove_child
-          // clear_elements
-          // clear
+          .def("clear_elements", &Element::ClearElements,
+               "Remove all child elements.")
+          .def("clear", &Element::Clear,
+               "Remove all child elements and reset file path and original "
+               "version.")
           // update
           // reset
           .def("set_include_element", &Element::SetIncludeElement,

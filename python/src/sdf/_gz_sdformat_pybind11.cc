@@ -87,6 +87,9 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineCollision(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
+  // PrintConfig has to be defined before Param and Element because it's used as
+  // a default argument.
+  sdf::python::definePrintConfig(m);
   sdf::python::defineElement(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
@@ -111,9 +114,6 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineNavSat(m);
   sdf::python::defineNoise(m);
   sdf::python::defineODE(m);
-  // PrintConfig has to be defined before Param and Element because it's used as
-  // a default argument.
-  sdf::python::definePrintConfig(m);
   sdf::python::defineParam(m);
   sdf::python::defineParserConfig(m);
   sdf::python::defineParticleEmitter(m);
