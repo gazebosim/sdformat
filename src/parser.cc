@@ -817,7 +817,7 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
 
   if (filesystem::is_directory(filename))
   {
-    filename = getModelFilePath(filename, _errors);
+    filename = getModelFilePath(_errors, filename);
   }
 
   if (!filesystem::exists(filename))
@@ -1095,7 +1095,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
     gz::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
     if (sdfVersion >= gz::math::SemanticVersion(1, 8)
-        && !recursiveSiblingNoDoubleColonInNames(_sdf->Root(), _errors))
+        && !recursiveSiblingNoDoubleColonInNames(_errors, _sdf->Root()))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
           "Delimiter '::' found in attribute names of element <"
@@ -1189,7 +1189,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
     gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
     if (sdfVersion >= gz::math::SemanticVersion(1, 8)
-        && !recursiveSiblingNoDoubleColonInNames(_sdf, _errors))
+        && !recursiveSiblingNoDoubleColonInNames(_errors, _sdf))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
           "Delimiter '::' found in attribute names of element <" +
@@ -1325,14 +1325,14 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 std::string getModelFilePath(const std::string &_modelDirPath)
 {
   sdf::Errors errors;
-  std::string result = getModelFilePath(_modelDirPath, errors);
+  std::string result = getModelFilePath(errors, _modelDirPath);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-std::string getModelFilePath(const std::string &_modelDirPath,
-                             sdf::Errors &_errors)
+std::string getModelFilePath(sdf::Errors &_errors,
+                             const std::string &_modelDirPath)
 {
   std::string configFilePath;
 
@@ -1546,7 +1546,7 @@ static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
       if (sdf::filesystem::is_directory(modelPath))
       {
         // Get the model.config filename
-        _fileName = getModelFilePath(modelPath);
+        _fileName = getModelFilePath(_errors, modelPath);
 
         if (_fileName.empty())
         {
@@ -2222,17 +2222,17 @@ sdf::Errors convertString(SDFPtr _sdf, const std::string &_sdfString,
 bool checkCanonicalLinkNames(const sdf::Root *_root)
 {
   sdf::Errors errors;
-  bool result = checkCanonicalLinkNames(_root, errors);
+  bool result = checkCanonicalLinkNames(errors, _root);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool checkCanonicalLinkNames(const sdf::Root *_root, sdf::Errors &_errors)
+bool checkCanonicalLinkNames(sdf::Errors &_errors, const sdf::Root *_root)
 {
   if (!_root)
   {
-    _errors.push_back({ErrorCode::POINTER_ERROR, "Error: invalid sdf::Root "
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Error: invalid sdf::Root "
                       "pointer, unable to check canonical link names."});
     return false;
   }
@@ -2277,13 +2277,13 @@ bool checkCanonicalLinkNames(const sdf::Root *_root, sdf::Errors &_errors)
 bool checkFrameAttachedToNames(const sdf::Root *_root)
 {
   sdf::Errors errors;
-  bool result = checkFrameAttachedToNames(_root, errors);
+  bool result = checkFrameAttachedToNames(errors, _root);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool checkFrameAttachedToNames(const sdf::Root *_root, sdf::Errors &_errors)
+bool checkFrameAttachedToNames(sdf::Errors &_errors, const sdf::Root *_root)
 {
   bool result = true;
 
@@ -2420,13 +2420,13 @@ bool checkFrameAttachedToNames(const sdf::Root *_root, sdf::Errors &_errors)
 bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
   sdf::Errors errors;
-  bool result = recursiveSameTypeUniqueNames(_elem, errors);
+  bool result = recursiveSameTypeUniqueNames(errors, _elem);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
+bool recursiveSameTypeUniqueNames(sdf::Errors &_errors, sdf::ElementPtr _elem)
 {
   if (!shouldValidateElement(_elem))
     return true;
@@ -2447,7 +2447,7 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSameTypeUniqueNames(child, _errors) && result;
+    result = recursiveSameTypeUniqueNames(_errors, child) && result;
     child = child->GetNextElement();
   }
 
@@ -2458,13 +2458,13 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
 bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 {
   sdf::Errors errors;
-  bool result = recursiveSiblingUniqueNames(_elem, errors);
+  bool result = recursiveSiblingUniqueNames(errors, _elem);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
+bool recursiveSiblingUniqueNames(sdf::Errors &_errors, sdf::ElementPtr _elem)
 {
   if (!shouldValidateElement(_elem))
     return true;
@@ -2482,7 +2482,7 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSiblingUniqueNames(child) && result;
+    result = recursiveSiblingUniqueNames(_errors, child) && result;
     child = child->GetNextElement();
   }
 
@@ -2493,14 +2493,14 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors)
 bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
 {
   sdf::Errors errors;
-  bool result = recursiveSiblingNoDoubleColonInNames(_elem, errors);
+  bool result = recursiveSiblingNoDoubleColonInNames(errors, _elem);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem,
-                                          sdf::Errors &_errors)
+bool recursiveSiblingNoDoubleColonInNames(sdf::Errors &_errors,
+                                          sdf::ElementPtr _elem)
 {
   if (!shouldValidateElement(_elem))
     return true;
@@ -2518,7 +2518,7 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem,
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSiblingNoDoubleColonInNames(child, _errors) && result;
+    result = recursiveSiblingNoDoubleColonInNames(_errors, child) && result;
     child = child->GetNextElement();
   }
 
@@ -2529,13 +2529,13 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem,
 bool checkFrameAttachedToGraph(const sdf::Root *_root)
 {
   sdf::Errors errors;
-  bool result = checkFrameAttachedToGraph(_root, errors);
+  bool result = checkFrameAttachedToGraph(errors, _root);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool checkFrameAttachedToGraph(const sdf::Root *_root, sdf::Errors &_errors)
+bool checkFrameAttachedToGraph(sdf::Errors &_errors, const sdf::Root *_root)
 {
   bool result = true;
 
@@ -2622,13 +2622,13 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root, sdf::Errors &_errors)
 bool checkPoseRelativeToGraph(const sdf::Root *_root)
 {
   sdf::Errors errors;
-  bool result = checkPoseRelativeToGraph(_root, errors);
+  bool result = checkPoseRelativeToGraph(errors, _root);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 //////////////////////////////////////////////////
-bool checkPoseRelativeToGraph(const sdf::Root *_root, sdf::Errors &_errors)
+bool checkPoseRelativeToGraph(sdf::Errors &_errors, const sdf::Root *_root)
 {
   bool result = true;
 

@@ -179,9 +179,6 @@ namespace sdf
 
     /// \brief Generic error during parsing.
     PARSING_ERROR,
-
-    /// \brief Error trying to access a pointer.
-    POINTER_ERROR,
   };
 
   class SDFORMAT_VISIBLE Error

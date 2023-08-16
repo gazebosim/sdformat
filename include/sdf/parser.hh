@@ -364,14 +364,14 @@ namespace sdf
   std::string getModelFilePath(const std::string &_modelDirPath);
 
   /// \brief Get the file path to the model file
-  /// \param[in] _modelDirPath directory system path of the model
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _modelDirPath directory system path of the model
   /// \return string with the full filesystem path to the best version (greater
   ///         SDF protocol supported by this sdformat version) of the .sdf
   ///         model files hosted by _modelDirPath.
   SDFORMAT_VISIBLE
-  std::string getModelFilePath(const std::string &_modelDirPath,
-                               sdf::Errors &_errors);
+  std::string getModelFilePath(sdf::Errors &_errors,
+                               const std::string &_modelDirPath);
 
   /// \brief Convert an SDF file to a specific SDF version.
   /// \param[in] _filename Name of the SDF file to convert.
@@ -448,11 +448,11 @@ namespace sdf
   /// not empty.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first error is found.
-  /// \param[in] _root SDF Root object to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all models have valid canonical_link attributes.
   SDFORMAT_VISIBLE
-  bool checkCanonicalLinkNames(const sdf::Root *_root, sdf::Errors &_errors);
+  bool checkCanonicalLinkNames(sdf::Errors &_errors, const sdf::Root *_root);
 
   /// \brief For the world and each model, check that the attached_to graphs
   /// build without errors and have no cycles.
@@ -471,11 +471,11 @@ namespace sdf
   /// leads to a model, link, or world frame.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first error is found.
-  /// \param[in] _root SDF Root object to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all attached_to graphs are valid.
   SDFORMAT_VISIBLE
-  bool checkFrameAttachedToGraph(const sdf::Root *_root, sdf::Errors &_errors);
+  bool checkFrameAttachedToGraph(sdf::Errors &_errors, const sdf::Root *_root);
 
   /// \brief Check that for each frame, the attached_to attribute value
   /// does not match its own frame name but does match the name of a
@@ -494,11 +494,11 @@ namespace sdf
   /// not empty.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first error is found.
-  /// \param[in] _root SDF Root object to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all frames have valid attached_to attributes.
   SDFORMAT_VISIBLE
-  bool checkFrameAttachedToNames(const sdf::Root *_root, sdf::Errors &_errors);
+  bool checkFrameAttachedToNames(sdf::Errors &_errors, const sdf::Root *_root);
 
   /// \brief Check that all joints in contained models specify parent
   /// and child link names that match the names of sibling links.
@@ -557,11 +557,11 @@ namespace sdf
   /// leads to a model, link, or world frame.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first error is found.
-  /// \param[in] _root SDF Root object to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all attached_to graphs are valid.
   SDFORMAT_VISIBLE
-  bool checkPoseRelativeToGraph(const sdf::Root *_root, sdf::Errors &_errors);
+  bool checkPoseRelativeToGraph( sdf::Errors &_errors, const sdf::Root *_root);
 
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
@@ -575,13 +575,13 @@ namespace sdf
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first duplicate name is found.
-  /// \param[in] _elem SDF Element to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained elements have do not share a name with
   /// sibling elements of the same type.
   SDFORMAT_VISIBLE
-  bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem,
-                                    sdf::Errors &_errors);
+  bool recursiveSameTypeUniqueNames(sdf::Errors &_errors,
+                                    sdf::ElementPtr _elem);
 
   /// \brief Check that all sibling elements of the any type have unique names.
   /// This checks recursively and should check the files exhaustively
@@ -595,12 +595,12 @@ namespace sdf
   /// \brief Check that all sibling elements of the any type have unique names.
   /// This checks recursively and should check the files exhaustively
   /// rather than terminating early when the first duplicate name is found.
-  /// \param[in] _elem SDF Element to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained elements have do not share a name with
   /// sibling elements of any type.
   SDFORMAT_VISIBLE
-  bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem, sdf::Errors &_errors);
+  bool recursiveSiblingUniqueNames(sdf::Errors &_errors, sdf::ElementPtr _elem);
 
   /// \brief Check that all sibling elements do not contain the delimiter
   /// double colons '::' in element names, which is reserved for forming scopes
@@ -617,12 +617,12 @@ namespace sdf
   /// in SDFormat 1.8. This checks recursively and should check the files
   /// exhaustively rather than terminating early when the first name
   /// containing '::' is found.
-  /// \param[in] _elem SDF Element to check recursively.
   /// \param[out] _errors Vector of errors.
+  /// \param[in] _elem SDF Element to check recursively.
   /// \return True if all contained element names do not have the delimiter '::'
   SDFORMAT_VISIBLE
-  bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem,
-                                            sdf::Errors &_errors);
+  bool recursiveSiblingNoDoubleColonInNames(sdf::Errors &_errors,
+                                            sdf::ElementPtr _elem);
 
   /// \brief Check whether the element should be validated. If this returns
   /// false, validators such as the unique name and reserve name checkers should
