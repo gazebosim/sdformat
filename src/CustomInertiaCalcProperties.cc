@@ -26,11 +26,12 @@ class CustomInertiaCalcProperties::Implementation
   /// \brief Density of the mesh
   public: double density;
 
-  /// \brief SDF mesh object 
+  /// \brief SDF mesh object
   public: sdf::Mesh mesh;
 
-  /// \brief SDF element pointer to <moi_calculator_params> tag. This can be used 
-  /// to access custom params for the Mesh Intertia Caluclator 
+  /// \brief SDF element pointer to <auto_inertia_params> tag.
+  /// This can be used to access custom params for the
+  /// Inertia Caluclator
   public: sdf::ElementPtr inertiaCalculatorParams;
 };
 
@@ -76,7 +77,8 @@ const sdf::ElementPtr CustomInertiaCalcProperties::AutoInertiaParams() const
 }
 
 /////////////////////////////////////////////////
-void CustomInertiaCalcProperties::SetAutoInertiaParams(sdf::ElementPtr _autoInertiaParams)
+void CustomInertiaCalcProperties::SetAutoInertiaParams(
+    sdf::ElementPtr _autoInertiaParamsElem)
 {
-  this->dataPtr->inertiaCalculatorParams = _autoInertiaParams;
+  this->dataPtr->inertiaCalculatorParams = _autoInertiaParamsElem;
 }

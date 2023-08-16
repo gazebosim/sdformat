@@ -171,9 +171,10 @@ class SDFORMAT_VISIBLE ParserConfig
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Registers a custom Moment of Inertia Calculator for Meshes
-  /// \param[in] _inertiaCalculator Callback as described in
-  /// sdf/InterfaceElements.hh.
-  public: void RegisterCustomInertiaCalc(CustomInertiaCalculator _inertiaCalculator);
+  /// \param[in] _inertiaCalculator Callback with signature as described in
+  /// sdf/CustomInertiaCalcProperties.hh.
+  public: void RegisterCustomInertiaCalc(
+      CustomInertiaCalculator _inertiaCalculator);
 
   /// \brief Get the registered custom mesh MOI Calculator
   /// \return registered mesh MOI Calculator.
