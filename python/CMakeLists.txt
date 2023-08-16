@@ -163,6 +163,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyPlane_TEST
     pyPlugin_TEST
     pyPolyline_TEST
+    pyPrintConfig_TEST
     pyProjector_TEST
     pyRoot_TEST
     pyScene_TEST
