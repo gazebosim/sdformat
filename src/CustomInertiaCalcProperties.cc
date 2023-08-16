@@ -24,7 +24,7 @@ using namespace sdf;
 class CustomInertiaCalcProperties::Implementation
 {
   /// \brief Density of the mesh
-  public: double density;
+  public: double density{1000.0};
 
   /// \brief SDF mesh object
   public: sdf::Mesh mesh;
@@ -32,7 +32,7 @@ class CustomInertiaCalcProperties::Implementation
   /// \brief SDF element pointer to <auto_inertia_params> tag.
   /// This can be used to access custom params for the
   /// Inertia Caluclator
-  public: sdf::ElementPtr inertiaCalculatorParams;
+  public: sdf::ElementPtr inertiaCalculatorParams{nullptr};
 };
 
 /////////////////////////////////////////////////
