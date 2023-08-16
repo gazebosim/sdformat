@@ -23,7 +23,7 @@
 #include <gz/math/Vector3.hh>
 #include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
-#include "sdf/InterafaceMoiCalculator.hh"
+#include <sdf/CustomInertiaCalcProperties.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>

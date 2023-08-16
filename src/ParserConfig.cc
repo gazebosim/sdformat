@@ -20,7 +20,7 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
-#include "sdf/InterafaceMoiCalculator.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 
 using namespace sdf;
 

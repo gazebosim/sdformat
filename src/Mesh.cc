@@ -18,7 +18,7 @@
 #include <optional>
 
 #include <gz/math/Inertial.hh>
-#include "sdf/InterafaceMoiCalculator.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
 #include "Utils.hh"
@@ -206,7 +206,7 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density
   std::cout << "In Mesh:CalculateInertial function: " << std::endl;
   const auto &customCalculator = _config.CustomInertiaCalc();
 
-  sdf::InterfaceMoiCalculator calcInterface = InterfaceMoiCalculator(
+  sdf::CustomInertiaCalcProperties calcInterface = CustomInertiaCalcProperties(
     _density, *this, _autoInertiaParams);
 
   return customCalculator(errors, calcInterface);

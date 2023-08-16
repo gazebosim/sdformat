@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Open Source Robotics Foundation
+ * Copyright 2023 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  *
  */
 
-#include "sdf/InterafaceMoiCalculator.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Element.hh"
 
 using namespace sdf;
 
-class InterfaceMoiCalculator::Implementation
+class CustomInertiaCalcProperties::Implementation
 {
   /// \brief Density of the mesh
   public: double density;
@@ -31,45 +31,52 @@ class InterfaceMoiCalculator::Implementation
 
   /// \brief SDF element pointer to <moi_calculator_params> tag. This can be used 
   /// to access custom params for the Mesh Intertia Caluclator 
-  public: sdf::ElementPtr calculatorParams;
+  public: sdf::ElementPtr inertiaCalculatorParams;
 };
 
-InterfaceMoiCalculator::InterfaceMoiCalculator(const double _density,
+/////////////////////////////////////////////////
+CustomInertiaCalcProperties::CustomInertiaCalcProperties(const double _density,
     const sdf::Mesh _mesh,
     const sdf::ElementPtr _calculatorParams)
     : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
   this->dataPtr->density = _density;
   this->dataPtr->mesh = _mesh;
-  this->dataPtr->calculatorParams = _calculatorParams;
+  this->dataPtr->inertiaCalculatorParams = _calculatorParams;
 }
 
-const double InterfaceMoiCalculator::Density() const
+/////////////////////////////////////////////////
+const double CustomInertiaCalcProperties::Density() const
 {
   return this->dataPtr->density;
 }
 
-void InterfaceMoiCalculator::SetDensity(const double _density)
+/////////////////////////////////////////////////
+void CustomInertiaCalcProperties::SetDensity(const double _density)
 {
   this->dataPtr->density = _density;
 }
 
-const sdf::Mesh &InterfaceMoiCalculator::Mesh() const
+/////////////////////////////////////////////////
+const sdf::Mesh &CustomInertiaCalcProperties::Mesh() const
 {
   return this->dataPtr->mesh;
 }
 
-void InterfaceMoiCalculator::SetMesh(sdf::Mesh &_mesh)
+/////////////////////////////////////////////////
+void CustomInertiaCalcProperties::SetMesh(sdf::Mesh &_mesh)
 {
   this->dataPtr->mesh = _mesh;
 }
 
-const sdf::ElementPtr InterfaceMoiCalculator::MoiCalculatorParams() const
+/////////////////////////////////////////////////
+const sdf::ElementPtr CustomInertiaCalcProperties::AutoInertiaParams() const
 {
-  return this->dataPtr->calculatorParams;
+  return this->dataPtr->inertiaCalculatorParams;
 }
 
-void InterfaceMoiCalculator::SetMoiCalculatorParams(sdf::ElementPtr _calculatorParams)
+/////////////////////////////////////////////////
+void CustomInertiaCalcProperties::SetAutoInertiaParams(sdf::ElementPtr _autoInertiaParams)
 {
-  this->dataPtr->calculatorParams = _calculatorParams;
+  this->dataPtr->inertiaCalculatorParams = _autoInertiaParams;
 }

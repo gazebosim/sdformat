@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Open Source Robotics Foundation
+ * Copyright 2023 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef SDF_INTERFACE_MOI_CALCULATOR_HH_
-#define SDF_INTERFACE_MOI_CALCULATOR_HH_
+#ifndef SDF_CUSTOM_INERTIA_CALC_PROPERTIES_HH_
+#define SDF_CUSTOM_INERTIA_CALC_PROPERTIES_HH_
 
 #include <gz/utils/ImplPtr.hh>
 #include <gz/math/Inertial.hh>
@@ -33,13 +33,13 @@ inline namespace SDF_VERSION_NAMESPACE
 // Forward Declarations
 class Mesh;
 
-class SDFORMAT_VISIBLE InterfaceMoiCalculator
+class SDFORMAT_VISIBLE CustomInertiaCalcProperties
 {
   /// \brief Constructor
   /// \param[in] _density Double density value
   /// \param[in] _mesh sdf::Mesh object
   /// \param[in] _calculatorParamElem sdf::ElementPtr for calculator params element
-  public: InterfaceMoiCalculator(const double _density,
+  public: CustomInertiaCalcProperties(const double _density,
               const sdf::Mesh _mesh,
               const sdf::ElementPtr _calculatorParams);
   
@@ -62,11 +62,11 @@ class SDFORMAT_VISIBLE InterfaceMoiCalculator
   /// \brief Get the reference to the <moi_calculator_params> sdf element.
   /// User defined custom calculator params can be accessed through this element 
   /// \return sdf::ElementPtr for the tag
-  public: const sdf::ElementPtr MoiCalculatorParams() const;
+  public: const sdf::ElementPtr AutoInertiaParams() const;
 
   /// \brief Function to set the calculator params sdf element object 
   /// \param[in] _calculatorParamElem sdf::ElementPtr for calculator params element
-  public: void SetMoiCalculatorParams(sdf::ElementPtr _calculatorParamElem);
+  public: void SetAutoInertiaParams(sdf::ElementPtr _calculatorParamElem);
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)
@@ -74,7 +74,7 @@ class SDFORMAT_VISIBLE InterfaceMoiCalculator
 
 using CustomInertiaCalculator =
     std::function<std::optional<gz::math::Inertiald>(sdf::Errors &, 
-        const sdf::InterfaceMoiCalculator &)>;
+        const sdf::CustomInertiaCalcProperties &)>;
 }
 }
 
