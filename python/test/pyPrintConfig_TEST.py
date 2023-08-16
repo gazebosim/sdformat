@@ -14,7 +14,6 @@
 
 from gz_test_deps.sdformat import PrintConfig, SDFErrorsException
 import unittest
-import sys
 
 
 class PrintConfigTEST(unittest.TestCase):

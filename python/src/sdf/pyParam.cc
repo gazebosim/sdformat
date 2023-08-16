@@ -20,6 +20,7 @@
 #include <pybind11/stl.h>
 
 #include <memory>
+#include <string>
 
 #include "pybind11_helpers.hh"
 #include "sdf/Element.hh"
@@ -35,34 +36,6 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
-
-
-
-template <typename T>
-struct ForEachParamTypeImpl;
-
-template<typename ...Ts>
-struct ForEachParamTypeImpl<std::variant<Ts...>>
-{
-  template <typename Func>
-  void operator()(Func _func) const
-  {
-    (ForEachParamTypeImpl<Ts>{}(_func), ...);
-  }
-};
-
-template<typename T>
-struct ForEachParamTypeImpl
-{
-  template <typename Func>
-  void operator()(Func _func) const
-  {
-    _func(T{});
-  }
-};
-
-static constexpr ForEachParamTypeImpl<ParamPrivate::ParamVariant>
-    forEachParamType = {};
 
 void defineParam(py::object module)
 {
@@ -157,60 +130,45 @@ void defineParam(py::object module)
            ErrorWrappedCast<>(&Param::ValidateValue, py::const_),
            "Validate the value against minimum and maximum allowed values");
 
-  // Definitions for `is_type`, `get`, `get_default`, and `set`
+  // Definitions for `IsType<T>`, `Get<T>`, `GetDefault<T>`, and `Set<T>`, which
+  // will bind to `is_type_bool`, `is_type_int`, etc.
   forEachParamType(
       [&paramClass](auto &&arg)
       {
         using T = std::decay_t<decltype(arg)>;
-        const std::string nameWithSuffix = "is_type_" + computeSuffix<T>();
-        paramClass.def(nameWithSuffix.c_str(), &Param::IsType<T>,
-                       "Return true if the param is a particular type");
-      });
-
-  forEachParamType(
-      [&paramClass](auto &&arg)
-      {
-        using T = std::decay_t<decltype(arg)>;
-        const std::string nameWithSuffix = "get_" + computeSuffix<T>();
-        paramClass.def(
-            nameWithSuffix.c_str(),
-            [](const Param &_self)
-            {
-              sdf::Errors errors;
-              T value;
-              bool rc = _self.Get<T>(value, errors);
-              ThrowIfErrors(errors);
-              return py::make_tuple(value, rc);
-            },
-            "Get the value of the parameter.");
-      });
-
-  forEachParamType(
-      [&paramClass](auto &&arg)
-      {
-        using T = std::decay_t<decltype(arg)>;
-        const std::string nameWithSuffix = "get_default_" + computeSuffix<T>();
-        paramClass.def(
-            nameWithSuffix.c_str(),
-            [](const Param &_self)
-            {
-              sdf::Errors errors;
-              T value;
-              bool rc = _self.GetDefault<T>(value, errors);
-              ThrowIfErrors(errors);
-              return py::make_tuple(value, rc);
-            },
-            "Get the default value of the parameter.");
-      });
-
-  forEachParamType(
-      [&paramClass](auto &&arg)
-      {
-        using T = std::decay_t<decltype(arg)>;
-        const std::string nameWithSuffix = "set_" + computeSuffix<T>();
-        paramClass.def(nameWithSuffix.c_str(),
-                       ErrorWrappedCast<const T &>(&Param::Set<T>),
-                       "Set the value of the parameter.");
+        const std::string isTypeFuncName = "is_type_" + computeSuffix<T>();
+        const std::string getFuncName = "get_" + computeSuffix<T>();
+        const std::string getDefaultFuncName =
+            "get_default_" + computeSuffix<T>();
+        const std::string setFuncName = "set_" + computeSuffix<T>();
+        paramClass
+            .def(isTypeFuncName.c_str(), &Param::IsType<T>,
+                 "Return true if the param is a particular type")
+            .def(
+                getFuncName.c_str(),
+                [](const Param &_self)
+                {
+                  sdf::Errors errors;
+                  T value;
+                  bool rc = _self.Get<T>(value, errors);
+                  ThrowIfErrors(errors);
+                  return py::make_tuple(value, rc);
+                },
+                "Get the value of the parameter.")
+            .def(
+                getDefaultFuncName.c_str(),
+                [](const Param &_self)
+                {
+                  sdf::Errors errors;
+                  T value;
+                  bool rc = _self.GetDefault<T>(value, errors);
+                  ThrowIfErrors(errors);
+                  return py::make_tuple(value, rc);
+                },
+                "Get the default value of the parameter.")
+            .def(setFuncName.c_str(),
+                 ErrorWrappedCast<const T &>(&Param::Set<T>),
+                 "Set the value of the parameter.");
       });
 }
 }  // namespace python

@@ -20,9 +20,10 @@
 #include <pybind11/stl.h>
 
 #include <memory>
+#include <string>
 
-#include "pybind11_helpers.hh"
 #include "pyParam.hh"
+#include "pybind11_helpers.hh"
 #include "sdf/Element.hh"
 #include "sdf/Param.hh"
 #include "sdf/PrintConfig.hh"
@@ -37,60 +38,22 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
 
-
-template <typename T>
-struct DefineGetSetImpl
-{
-  template <typename Class, typename ...Options>
-  void operator()(py::class_<Class, Options...> &_cls)
-  {
-    const std::string getFuncName = "get_" + computeSuffix<T>();
-    const std::string setFuncName = "set_" + computeSuffix<T>();
-    _cls.def(getFuncName.c_str(),
-             ErrorWrappedCast<const std::string &>(&Class::template Get<T>,
-                                                   py::const_),
-             "Get the value of a key. This function assumes the _key exists.",
-             "key"_a = "")
-        .def(getFuncName.c_str(),
-             ErrorWrappedCast<const std::string &, const T &>(
-                 &Class::template Get<T>, py::const_),
-             "Get the value of a key.")
-        .def(setFuncName.c_str(),
-             ErrorWrappedCast<const T &>(&Class::template Set<T>),
-             "Get the value of a key. This function assumes the _key exists.");
-  }
-};
-
-template<typename ...Ts>
-struct DefineGetSetImpl<std::variant<Ts...>>
-{
-  template <typename PyClass>
-  void operator()(PyClass &_cls) const noexcept
-  {
-    (DefineGetSetImpl<Ts>()(_cls), ...);
-  }
-};
-
-static constexpr DefineGetSetImpl<ParamPrivate::ParamVariant> defineGetSet = {};
-
 /////////////////////////////////////////////////
-// The following functions have been excluded from the bindings because they're 
+// The following functions have been excluded from the bindings because they're
 // mainly used internally by the parser or there are better alternatives.
 // - GetCopyChildren (Used by the parser for handling unknown elements)
 // - SetCopyChildren (Used by the parser for handling unknown elements)
 // - SetReferenceSDF (Used only by the parser)
 // - ReferenceSDF (Used only by the parser)
-// - PrintDescription (Until https://github.com/gazebosim/sdformat/issues/1302
-// is resolved)
+// - PrintDescription (Use GetDescription() and print)
 // - PrintValues (Because ToString is available)
 // - PrintDocLeftPane (Helper function for generating documentation)
 // - PrintDocRightPane (Helper function for generating documentation)
 // - HasUniqueChildNames (Used for error checking by the parser)
 // - CountNamedElements (Used for error checking by the parser)
 // - GetElement (FindElement and AddElement should be used instead)
-// resolved)
 // - GetElementImpl (Use FindElement instead)
-// - GetElementTypeNames
+// - GetElementTypeNames (Used for error checking by the parser)
 // - NameUniquenessExceptions (Used for error checking by the parser)
 void defineElement(py::object module)
 {
@@ -238,8 +201,7 @@ void defineElement(py::object module)
                "deleting all of them.  Also clear out the embedded Param.")
           .def("set_include_element", &Element::SetIncludeElement,
                "Set the `<include>` element that was used to load this element")
-          .def(
-              "get_include_element", &Element::GetIncludeElement,
+          .def("get_include_element", &Element::GetIncludeElement,
               "Get the `<include>` element that was used to load this element.")
           .def("set_file_path", &Element::SetFilePath,
                "Set the path to the SDF document where this element came from.")
@@ -263,7 +225,31 @@ void defineElement(py::object module)
                "Set a text description for the element.")
           .def("add_element_description", &Element::AddElementDescription,
                "Add a new element description");
-  defineGetSet(elemClass);
+
+  // Definitions for `Get<T>`, and `Set<T>` which will bind to `get_bool`, 
+  // `get_int`, etc.
+  forEachParamType(
+      [&elemClass](auto &&arg)
+      {
+        using T = std::decay_t<decltype(arg)>;
+        const std::string getFuncName = "get_" + computeSuffix<T>();
+        const std::string setFuncName = "set_" + computeSuffix<T>();
+        elemClass
+            .def(getFuncName.c_str(),
+                 ErrorWrappedCast<const std::string &>(&Element::Get<T>,
+                                                       py::const_),
+                 "Get the value of a key. This function assumes the _key "
+                 "exists.",
+                 "key"_a = "")
+            .def(getFuncName.c_str(),
+                 ErrorWrappedCast<const std::string &, const T &>(
+                     &Element::Get<T>, py::const_),
+                 "Get the value of a key.")
+            .def(setFuncName.c_str(),
+                 ErrorWrappedCast<const T &>(&Element::Set<T>),
+                 "Get the value of a key. This function assumes the _key "
+                 "exists.");
+      });
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

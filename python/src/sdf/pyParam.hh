@@ -19,8 +19,9 @@
 
 #include <pybind11/pybind11.h>
 
-#include "sdf/Param.hh"
+#include <variant>
 
+#include "sdf/Param.hh"
 #include "sdf/config.hh"
 
 namespace sdf
@@ -35,15 +36,72 @@ namespace python
  */
 void defineParam(pybind11::object module);
 
+/// \brief Compute the suffix for `get_` and `set_` functions that are defined
+/// for a set of types defined in ParamPrivate::ParamVariant
 template <typename T>
 std::string computeSuffix()
 {
-  // TypeToString returns a value with a space, which would not be a valid 
+  // TypeToString returns a value with a space, which would not be a valid
   // python function name, so we override that here.
   if constexpr (std::is_same_v<T, unsigned int>)
     return "unsigned_int";
   return ParamPrivate::TypeToString<T>();
 }
+
+/// \brief Implementation for forEachParamType
+///
+/// Base template for a single type. See specialization below
+template<typename T>
+struct ForEachParamTypeImpl
+{
+  /// \brief Calls the passed in function with a default constructed `T` object,
+  /// which is used to determine the type within the callback lambda.
+  /// \tparam Func Callback function type (usually a lambda)
+  /// \param[in] _func Callback function
+  template <typename Func>
+  void operator()(Func _func) const
+  {
+    _func(T{});
+  }
+};
+
+
+/// \brief specialization of ForEachParamTypeImpl for std::variant
+///
+/// This template will call the passed in function for each type in std::variant
+template<typename ...Ts>
+struct ForEachParamTypeImpl<std::variant<Ts...>>
+{
+  /// \brief Passes the passed in function to the single type specialization of
+  /// ForEachParamTypeImpl.
+  /// \tparam Func Callback function type (usually a lambda)
+  /// \param[in] _func Callback function
+  template <typename Func>
+  void operator()(Func _func) const
+  {
+    (ForEachParamTypeImpl<Ts>{}(_func), ...);
+  }
+};
+/// \brief Helper template for creating bindings for template functions in
+/// `sdf::Param` and `sdf::Element`.
+///
+/// Since only the types in `ParamPrivate::ParamVariant` are supported by
+/// libsdformat, we only create bindings for the types in that `std::variant`.
+///
+/// \sa ForEachParamTypeImpl
+/// Usage:
+/// To define a binding for Foo::Bar<T> on cls where cls is a pybind11::class_
+/// ```
+///   forEachParamType(
+///       [&cls](auto &&arg)
+///       {
+///         using T = std::decay_t<decltype(arg)>;
+///         const std::string funcName = "bar_" + computeSuffix<T>()
+///         cls.def(funcName.c_str, &Foo::Bar<T>)
+///       });
+/// ```
+static constexpr ForEachParamTypeImpl<ParamPrivate::ParamVariant>
+    forEachParamType = {};
 
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
