@@ -48,7 +48,7 @@ class sdf::ParserConfig::Implementation
   public: std::vector<CustomModelParser> customParsers;
 
   /// \brief Collection of custom model parsers.
-  public: CustomMOICalculator customMoiCalculator;
+  public: CustomInertiaCalculator customInertiaCalculator;
 
   /// \brief Flag to explicitly preserve fixed joints when
   /// reading the SDF/URDF file.
@@ -174,16 +174,16 @@ const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 }
 
 /////////////////////////////////////////////////
-void ParserConfig::RegisterCustomMoiCalculator(CustomMOICalculator _moiCalculator)
+void ParserConfig::RegisterCustomInertiaCalc(CustomInertiaCalculator _inertiaCalculator)
 {
   std::cout << "Registered Custom Calculator" << std::endl;
-  this->dataPtr->customMoiCalculator = _moiCalculator;
+  this->dataPtr->customInertiaCalculator = _inertiaCalculator;
 }
 
 /////////////////////////////////////////////////
-const CustomMOICalculator &ParserConfig::CustomMoiCalculator() const
+const CustomInertiaCalculator &ParserConfig::CustomInertiaCalc() const
 {
-  return this->dataPtr->customMoiCalculator;
+  return this->dataPtr->customInertiaCalculator;
 }
 
 /////////////////////////////////////////////////

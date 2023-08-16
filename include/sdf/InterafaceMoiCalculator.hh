@@ -72,7 +72,7 @@ class SDFORMAT_VISIBLE InterfaceMoiCalculator
   GZ_UTILS_IMPL_PTR(dataPtr)
 };
 
-using CustomMOICalculator =
+using CustomInertiaCalculator =
     std::function<std::optional<gz::math::Inertiald>(sdf::Errors &, 
         const sdf::InterfaceMoiCalculator &)>;
 }

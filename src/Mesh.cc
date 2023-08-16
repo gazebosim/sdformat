@@ -201,7 +201,7 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density
   // todo: Add check for mesh object to see if it exists or not
 
   std::cout << "In Mesh:CalculateInertial function: " << std::endl;
-  const auto &customCalculator = _config.CustomMoiCalculator();
+  const auto &customCalculator = _config.CustomInertiaCalc();
 
   sdf::InterfaceMoiCalculator calcInterface = InterfaceMoiCalculator(
     _density, *this, _autoInertiaParams);
