@@ -95,7 +95,8 @@ namespace sdf
 
     /// \brief Function to set the auto inertia params using a
     /// sdf ElementPtr object
-    /// \param[in] _density Density of the collision.
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
+    /// element
     public: void SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get a pointer to the collisions's geometry.
