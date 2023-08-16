@@ -170,7 +170,7 @@ static inline bool _initFile(const std::string &_filename,
     return false;
   }
 
-  return initDoc(&xmlDoc, _config, _sdf, _errors);
+  return initDoc(_sdf, _errors, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -416,7 +416,7 @@ bool init(SDFPtr _sdf, sdf::Errors &_errors, const ParserConfig &_config)
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, _config, _sdf, _errors);
+  return initDoc(_sdf, _errors, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -444,7 +444,7 @@ bool initFile(const std::string &_filename, const ParserConfig &_config,
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _config, _sdf, _errors);
+    return initDoc(_sdf, _errors, &xmlDoc, _config);
   }
   return _initFile(sdf::findFile(_filename, true, false, _config), _config,
                    _sdf, _errors);
@@ -475,7 +475,7 @@ bool initFile(const std::string &_filename, const ParserConfig &_config,
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _config, _sdf, _errors);
+    return initDoc(_sdf, _errors, &xmlDoc, _config);
   }
   return _initFile(sdf::findFile(_filename, true, false, _config), _config,
                    _sdf, _errors);
@@ -503,7 +503,7 @@ bool initString(const std::string &_xmlString, const ParserConfig &_config,
     return false;
   }
 
-  return initDoc(&xmlDoc, _config, _sdf, _errors);
+  return initDoc(_sdf, _errors, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -538,10 +538,10 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc,
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
-             const ParserConfig &_config,
-             SDFPtr _sdf,
-             sdf::Errors &_errors)
+bool initDoc(SDFPtr _sdf,
+             sdf::Errors &_errors,
+             tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config)
 {
   auto element = _initDocGetElement(_xmlDoc, _errors);
   if (!element)
@@ -549,14 +549,14 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
     return false;
   }
 
-  return initXml(element, _config, _sdf->Root(), _errors);
+  return initXml(_sdf->Root(), _errors, element, _config);
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
-             const ParserConfig &_config,
-             ElementPtr _sdf,
-             sdf::Errors &_errors)
+bool initDoc(ElementPtr _sdf,
+             sdf::Errors &_errors,
+             tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config)
 {
   auto element = _initDocGetElement(_xmlDoc, _errors);
   if (!element)
@@ -564,14 +564,14 @@ bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
     return false;
   }
 
-  return initXml(element, _config, _sdf, _errors);
+  return initXml(_sdf, _errors, element, _config);
 }
 
 //////////////////////////////////////////////////
-bool initXml(tinyxml2::XMLElement *_xml,
-             const ParserConfig &_config,
-             ElementPtr _sdf,
-             sdf::Errors &_errors)
+bool initXml(ElementPtr _sdf,
+             sdf::Errors &_errors,
+             tinyxml2::XMLElement *_xml,
+             const ParserConfig &_config)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -696,7 +696,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
     else
     {
       ElementPtr element(new Element);
-      initXml(child, _config, element, _errors);
+      initXml(element, _errors, child, _config);
       _sdf->AddElementDescription(element);
     }
   }
@@ -1254,9 +1254,9 @@ bool checkXmlFromRoot(tinyxml2::XMLElement *_xmlRoot,
 }
 
 //////////////////////////////////////////////////
-std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
-                                         std::string &_modelFileName,
-                                         sdf::Errors &_errors)
+std::string getBestSupportedModelVersion(std::string &_modelFileName,
+                                         sdf::Errors &_errors,
+                                         tinyxml2::XMLElement *_modelXML)
 {
   tinyxml2::XMLElement *sdfXML = _modelXML->FirstChildElement("sdf");
   tinyxml2::XMLElement *nameSearch = _modelXML->FirstChildElement("name");
@@ -1380,7 +1380,7 @@ std::string getModelFilePath(sdf::Errors &_errors,
   }
 
   std::string modelFileName;
-  if (getBestSupportedModelVersion(modelXML, modelFileName, _errors).empty())
+  if (getBestSupportedModelVersion(modelFileName, _errors, modelXML).empty())
   {
     return std::string();
   }
