@@ -203,7 +203,6 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(const double _density
     return std::nullopt;
   }
 
-  std::cout << "In Mesh:CalculateInertial function: " << std::endl;
   const auto &customCalculator = _config.CustomInertiaCalc();
 
   sdf::CustomInertiaCalcProperties calcInterface = CustomInertiaCalcProperties(

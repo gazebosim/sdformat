@@ -176,7 +176,6 @@ const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 /////////////////////////////////////////////////
 void ParserConfig::RegisterCustomInertiaCalc(CustomInertiaCalculator _inertiaCalculator)
 {
-  std::cout << "Registered Custom Calculator" << std::endl;
   this->dataPtr->customInertiaCalculator = _inertiaCalculator;
 }
 
