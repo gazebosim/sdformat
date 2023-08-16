@@ -46,13 +46,13 @@ CustomInertiaCalcProperties::CustomInertiaCalcProperties(const double _density,
 }
 
 /////////////////////////////////////////////////
-const double CustomInertiaCalcProperties::Density() const
+double CustomInertiaCalcProperties::Density() const
 {
   return this->dataPtr->density;
 }
 
 /////////////////////////////////////////////////
-void CustomInertiaCalcProperties::SetDensity(const double _density)
+void CustomInertiaCalcProperties::SetDensity(double _density)
 {
   this->dataPtr->density = _density;
 }

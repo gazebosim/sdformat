@@ -45,11 +45,11 @@ class SDFORMAT_VISIBLE CustomInertiaCalcProperties
   
   /// \brief Get the density of the mesh.
   /// \return Double density of the mesh.
-  public: const double Density() const;
+  public: double Density() const;
 
   /// \brief Function to set the density of the interface object 
   /// \param[in] _density Double density value
-  public: void SetDensity(const double _density);
+  public: void SetDensity(double _density);
 
   /// \brief Get the reference to the mesh oject being used.
   /// \return Reference to the sdf::Mesh object.
