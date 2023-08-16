@@ -19,17 +19,6 @@ import unittest
 
 class ElementTEST(unittest.TestCase):
 
-    def add_child_element(self, parent: Element, element_name: str,
-                          add_name_attribute: bool, child_name: str):
-        child = Element()
-        child.set_parent(parent)
-        child.set_name(element_name)
-        parent.insert_element(child)
-        if add_name_attribute:
-            child.add_attribute("name", "string", child_name, False,
-                                "description")
-        return child
-
     def test_child(self):
         child = Element()
         parent = Element()
@@ -118,8 +107,8 @@ class ElementTEST(unittest.TestCase):
         self.assertFalse(child2.get_explicitly_set_in_file())
         self.assertFalse(grandChild.get_explicitly_set_in_file())
 
-        # SetExplicitlySetInFile(False) is be called only on `elem`. We expect
-        # get_explicitly_set_in_file() to be False for all children and
+        # set_explicitly_set_in_file(False) is be called only on `elem`. We
+        # expect get_explicitly_set_in_file() to be False for all children and
         # grandchildren of `elem`, but True for `elem2`, which is a sibling of
         # `elem`.
         self.assertTrue(elem2.get_explicitly_set_in_file())
@@ -140,10 +129,10 @@ class ElementTEST(unittest.TestCase):
         elem.add_value("string", "foo", False, "foo description")
 
         param = elem.get_value()
-        # self.assertEqual(param.get_key(), "test")
-        # self.assertEqual(param.get_type_name(), "string")
+        self.assertEqual(param.get_key(), "test")
+        self.assertEqual(param.get_type_name(), "string")
         self.assertEqual(param.get_default_as_string(), "foo")
-        # self.assertEqual(param.get_description(), "foo description")
+        self.assertEqual(param.get_description(), "foo description")
         self.assertNotEqual(param.get_parent_element(), None)
         self.assertEqual(param.get_parent_element(), elem)
 
@@ -213,21 +202,21 @@ class ElementTEST(unittest.TestCase):
     def test_include(self):
         elem = Element()
 
-        # includeElemToStore = Element()
-        # includeElemToStore.set_name("include")
-        # uriDesc = Element()
-        # uriDesc.set_name("uri")
-        # uriDesc.add_value("string", "", True)
-        # # includeElemToStore.add_element_description(uriDesc)
-        #
-        # includeElemToStore.find_element("uri").set("foo.txt")
-        # elem.SetIncludeElement(includeElemToStore)
-        #
-        # includeElem = elem.get_include_element()
-        # self.assertNotEqual(None, includeElem)
-        # self.assertTrue(includeElem.has_element("uri"))
-        # self.assertEqual("foo.txt",
-        #                  includeElem.find_element("uri").get_string())
+        include_elem_to_store = Element()
+        include_elem_to_store.set_name("include")
+        uri_desc = Element()
+        uri_desc.set_name("uri")
+        uri_desc.add_value("string", "", True)
+        include_elem_to_store.add_element_description(uri_desc)
+
+        include_elem_to_store.add_element("uri").set_string("foo.txt")
+        elem.set_include_element(include_elem_to_store)
+
+        include_elem = elem.get_include_element()
+        self.assertNotEqual(None, include_elem)
+        self.assertTrue(include_elem.has_element("uri"))
+        self.assertEqual("foo.txt",
+                         include_elem.find_element("uri").get_string())
 
     def test_get_templates(self):
         elem = Element()
@@ -272,9 +261,9 @@ class ElementTEST(unittest.TestCase):
         parent.set_xml_path("/sdf/world[@name=\"default\"]")
         parent.set_original_version("1.5")
 
-        includeElemToStore = Element()
-        includeElemToStore.set_name("include")
-        parent.set_include_element(includeElemToStore)
+        include_elem_to_store = Element()
+        include_elem_to_store.set_name("include")
+        parent.set_include_element(include_elem_to_store)
 
         newelem = parent.clone()
 
@@ -290,14 +279,14 @@ class ElementTEST(unittest.TestCase):
         self.assertEqual("include", newelem.get_include_element().get_name())
         self.assertTrue(newelem.get_explicitly_set_in_file())
 
-        # self.assertIsNotNone(parent.get_value().get_parent_element())
-        # self.assertEqual(parent, parent.get_value().get_parent_element())
-        #
-        # self.assertIsNotNone(newelem.get_value().get_parent_element())
-        # self.assertEqual(newelem, newelem.get_value().get_parent_element())
+        self.assertIsNotNone(parent.get_value().get_parent_element())
+        self.assertEqual(parent, parent.get_value().get_parent_element())
 
-        # clonedAttribs = newelem.get_attributes()
-        # self.assertEqual(newelem, clonedAttribs[0].get_parent_element())
+        self.assertIsNotNone(newelem.get_value().get_parent_element())
+        self.assertEqual(newelem, newelem.get_value().get_parent_element())
+
+        clonedAttribs = newelem.get_attributes()
+        self.assertEqual(newelem, clonedAttribs[0].get_parent_element())
 
     def test_clear_elements(self):
         parent = Element()
@@ -394,6 +383,74 @@ class ElementTEST(unittest.TestCase):
 
         self.assertTrue(elem.set_string("hello"))
 
+    def test_copy(self):
+        src = Element()
+        dest = Element()
+
+        src.set_name("test")
+        src.set_file_path("/path/to/file.sdf")
+        src.set_line_number(12)
+        src.set_xml_path("/sdf/world[@name=\"default\"]")
+        src.set_original_version("1.5")
+        src.add_value("string", "val", False, "val description")
+        src.add_attribute("test", "string", "foo", False, "foo description")
+        src.insert_element(Element())
+
+        include_elem_to_store = Element()
+        include_elem_to_store.set_name("include")
+        src.set_include_element(include_elem_to_store)
+
+        dest.copy(src)
+
+        self.assertEqual("/path/to/file.sdf", dest.file_path())
+        self.assertEqual(12, dest.line_number())
+        self.assertEqual("/sdf/world[@name=\"default\"]", dest.xml_path())
+        self.assertEqual("1.5", dest.original_version())
+
+        param = dest.get_value()
+        self.assertTrue(param.is_type_string())
+        self.assertEqual(param.get_key(), "test")
+        self.assertEqual(param.get_type_name(), "string")
+        self.assertEqual(param.get_default_as_string(), "val")
+        self.assertEqual(param.get_description(), "val description")
+        self.assertNotEqual(param.get_parent_element(), None)
+        self.assertEqual(param.get_parent_element(), dest)
+
+        self.assertEqual(dest.get_attribute_count(), 1)
+        self.assertTrue(dest.get_explicitly_set_in_file())
+        param = dest.get_attribute("test")
+        self.assertTrue(param.is_type_string())
+        self.assertEqual(param.get_key(), "test")
+        self.assertEqual(param.get_type_name(), "string")
+        self.assertEqual(param.get_default_as_string(), "foo")
+        self.assertEqual(param.get_description(), "foo description")
+        self.assertNotEqual(param.get_parent_element(), None)
+        self.assertEqual(param.get_parent_element(), dest)
+
+        self.assertNotEqual(dest.get_first_element(), None)
+        self.assertNotEqual(dest.get_include_element(), None)
+        self.assertEqual("include", dest.get_include_element().get_name())
+
+    def test_get_next_element(self):
+        child = Element()
+        parent = Element()
+
+        child.set_parent(parent)
+
+        self.assertEqual(child.get_next_element("foo"), None)
+
+    # Helper used in test_find_element
+    def add_child_element(self, parent: Element, element_name: str,
+                          add_name_attribute: bool, child_name: str):
+        child = Element()
+        child.set_parent(parent)
+        child.set_name(element_name)
+        parent.insert_element(child)
+        if add_name_attribute:
+            child.add_attribute("name", "string", child_name, False,
+                                "description")
+        return child
+
     def test_find_element(self):
         root = Element()
         root.set_name("root")
@@ -414,8 +471,8 @@ class ElementTEST(unittest.TestCase):
         # attribute
         child_elem_b = elem_b.find_element("child_elem_B")
         self.assertTrue(child_elem_b.has_attribute("name"))
-        # self.assertEqual("first_child",
-        # child_elem_b.get_attribute("name").get_as_string())
+        self.assertEqual("first_child",
+                         child_elem_b.get_attribute("name").get_as_string())
 
 
 if __name__ == '__main__':

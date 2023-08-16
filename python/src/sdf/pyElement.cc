@@ -49,11 +49,12 @@ struct DefineGetSetImpl
     _cls.def(getFuncName.c_str(),
              ErrorWrappedCast<const std::string &>(&Class::template Get<T>,
                                                    py::const_),
-             "Get the value of a key. This function assumes the _key exists.")
+             "Get the value of a key. This function assumes the _key exists.",
+             "key"_a = "")
         .def(getFuncName.c_str(),
              ErrorWrappedCast<const std::string &, const T &>(
                  &Class::template Get<T>, py::const_),
-             "Get the value of a key. This function assumes the _key exists.")
+             "Get the value of a key.")
         .def(setFuncName.c_str(),
              ErrorWrappedCast<const T &>(&Class::template Set<T>),
              "Get the value of a key. This function assumes the _key exists.");
@@ -73,33 +74,23 @@ struct DefineGetSetImpl<std::variant<Ts...>>
 static constexpr DefineGetSetImpl<ParamPrivate::ParamVariant> defineGetSet = {};
 
 /////////////////////////////////////////////////
-// TODO(azeey) Interspersed between the `.def` calls is a list of
-// functions that need to be implemented. I'm not 100% sure if all of them need
-// to be implemented since some of them are mainly used internally by the
-// parser. I've already excluded the following functions on this criteria:
-// - SetReferenceSDF
-// - ReferenceSDF
+// The following functions have been excluded from the bindings because they're 
+// mainly used internally by the parser or there are better alternatives.
+// - GetCopyChildren (Used by the parser for handling unknown elements)
+// - SetCopyChildren (Used by the parser for handling unknown elements)
+// - SetReferenceSDF (Used only by the parser)
+// - ReferenceSDF (Used only by the parser)
 // - PrintDescription (Until https://github.com/gazebosim/sdformat/issues/1302
 // is resolved)
 // - PrintValues (Because ToString is available)
 // - PrintDocLeftPane (Helper function for generating documentation)
 // - PrintDocRightPane (Helper function for generating documentation)
-// - GetElementDescriptionCount (Until
-// https://github.com/gazebosim/sdformat/issues/1302 is resolved)
-// - GetElementDescription (Until
-// https://github.com/gazebosim/sdformat/issues/1302 is resolved)
-// - HasElementDescription (Until
-// https://github.com/gazebosim/sdformat/issues/1302 is resolved)
 // - HasUniqueChildNames (Used for error checking by the parser)
 // - CountNamedElements (Used for error checking by the parser)
 // - GetElement (FindElement and AddElement should be used instead)
-// - GetDescription (Until https://github.com/gazebosim/sdformat/issues/1302 is
 // resolved)
-// - SetDescription (Until https://github.com/gazebosim/sdformat/issues/1302 is
-// resolved)
-// - AddElementDescription (Until
-// https://github.com/gazebosim/sdformat/issues/1302 is resolved)
 // - GetElementImpl (Use FindElement instead)
+// - GetElementTypeNames
 // - NameUniquenessExceptions (Used for error checking by the parser)
 void defineElement(py::object module)
 {
@@ -109,6 +100,8 @@ void defineElement(py::object module)
           .def(py::init<>())
           .def("clone", ErrorWrappedCast<>(&Element::Clone, py::const_),
                "Create a copy of this Element.")
+          .def("copy", ErrorWrappedCast<ElementPtr>(&Element::Copy),
+               "Copy values from an Element.")
           .def("get_parent", &Element::GetParent,
                "Get a pointer to this Element's parent.")
           .def("set_parent", &Element::SetParent,
@@ -181,10 +174,19 @@ void defineElement(py::object module)
                py::overload_cast<unsigned int>(&Element::GetAttribute,
                                                py::const_),
                "Get the param of an attribute.")
-          // get_element_description_count
-          // get_element_description (index)
-          // get_element_description (string)
-          // has_element_description
+          .def("get_element_description_count",
+               &Element::GetElementDescriptionCount,
+               "Get the number of element descriptions.")
+          .def("get_element_description",
+               py::overload_cast<unsigned int>(&Element::GetElementDescription,
+                                               py::const_),
+               "Get an element description using an index")
+          .def("get_element_description",
+               py::overload_cast<const std::string &>(
+                   &Element::GetElementDescription, py::const_),
+               "Get an element description using a key")
+          .def("has_element_description", &Element::HasElementDescription,
+               "Return true if an element description exists.")
           .def("has_attribute", &Element::HasAttribute,
                "Return true if an attribute exists.")
           .def("get_attribute_set", &Element::GetAttributeSet,
@@ -205,7 +207,6 @@ void defineElement(py::object module)
                "Get the first child element")
           .def("get_next_element", &Element::GetNextElement,
                "Get the first child Get the next sibling of this element.")
-          // get_element_type_names
           .def("find_element",
                py::overload_cast<const std::string &>(&Element::FindElement),
                "Return a pointer to the child element with the provided name.")
@@ -213,19 +214,28 @@ void defineElement(py::object module)
                ErrorWrappedCast<const std::string &>(&Element::AddElement),
                "Add a value to this Element")
           .def("insert_element",
+               py::overload_cast<ElementPtr>(&Element::InsertElement),
+               "Add an element object.")
+          .def("insert_element",
                py::overload_cast<ElementPtr, bool>(&Element::InsertElement),
                "Add an element object, and optionally set the given element's "
-               "parent to this object",
-               "elem"_a, "set_parent_to_self"_a = false)
-          // remove_from_parent
-          // remove_child
+               "parent to this object")
+          .def("remove_from_parent", &Element::RemoveFromParent,
+               "Remove this element from its parent.")
+          .def("remove_child",
+               ErrorWrappedCast<ElementPtr>(&Element::RemoveChild),
+               "Remove a child element.")
           .def("clear_elements", &Element::ClearElements,
                "Remove all child elements.")
           .def("clear", &Element::Clear,
                "Remove all child elements and reset file path and original "
                "version.")
-          // update
-          // reset
+          .def("update", ErrorWrappedCast<>(&Element::Update),
+               "Call the Update() callback on each element, as well as the "
+               "embedded Param.")
+          .def("reset", &Element::Reset,
+               "Call reset on each element and element description before "
+               "deleting all of them.  Also clear out the embedded Param.")
           .def("set_include_element", &Element::SetIncludeElement,
                "Set the `<include>` element that was used to load this element")
           .def(
@@ -246,7 +256,13 @@ void defineElement(py::object module)
           .def("set_original_version", &Element::SetOriginalVersion,
                "Set the spec version that this was originally parsed from.")
           .def("original_version", &Element::OriginalVersion,
-               "Get the spec version that this was originally parsed from.");
+               "Get the spec version that this was originally parsed from.")
+          .def("get_description", &Element::GetDescription,
+               "Get a text description of the element.")
+          .def("set_description", &Element::SetDescription,
+               "Set a text description for the element.")
+          .def("add_element_description", &Element::AddElementDescription,
+               "Add a new element description");
   defineGetSet(elemClass);
 }
 }  // namespace python
