@@ -389,10 +389,6 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   // Check that //axis*/xyz/@expressed_in values specify valid frames.
   checkJointAxisExpressedInValues(this, errors);
 
-  // Calculate Inertials for all worlds and models belonging to this root object
-  Errors inertialErrors = CalculateInertials(_config);
-  errors.insert(errors.end(), inertialErrors.begin(), inertialErrors.end());
-
   return errors;
 }
 
