@@ -250,18 +250,6 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       }
     }
   }
-  else
-  {
-    Error inertialMissingErr(
-      ErrorCode::ELEMENT_MISSING,
-      "<inertial> element is missing. "
-      "Using default values for the inertial "
-      "for the link: " + this->dataPtr->name
-    );
-    enforceConfigurablePolicyCondition(
-      _config.WarningsPolicy(), inertialMissingErr, errors
-    );
-  }
 
   if (!this->dataPtr->inertial.SetMassMatrix(
       gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
