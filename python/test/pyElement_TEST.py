@@ -240,7 +240,7 @@ class ElementTEST(unittest.TestCase):
     def test_clone(self):
         parent = Element()
         child = Element()
-        # desc = Element()
+        desc = Element()
 
         parent.set_name("parent")
         child.set_name("child")
@@ -248,8 +248,8 @@ class ElementTEST(unittest.TestCase):
         parent.insert_element(child)
         self.assertIsNotNone(parent.get_first_element())
 
-        # parent.add_element_description(desc)
-        # self.assertEqual(parent.get_element_description_count(), 1)
+        parent.add_element_description(desc)
+        self.assertEqual(parent.get_element_description_count(), 1)
 
         parent.add_attribute("test", "string", "foo", False, "foo description")
         self.assertEqual(parent.get_attribute_count(), 1)
@@ -273,7 +273,7 @@ class ElementTEST(unittest.TestCase):
         self.assertEqual("/sdf/world[@name=\"default\"]", newelem.xml_path())
         self.assertEqual("1.5", newelem.original_version())
         self.assertIsNotNone(newelem.get_first_element())
-        # self.assertEqual(newelem.get_element_description_count(), 1)
+        self.assertEqual(newelem.get_element_description_count(), 1)
         self.assertEqual(newelem.get_attribute_count(), 1)
         self.assertIsNotNone(newelem.get_include_element())
         self.assertEqual("include", newelem.get_include_element().get_name())
@@ -382,6 +382,7 @@ class ElementTEST(unittest.TestCase):
         elem.add_value("string", "val", False, "val description")
 
         self.assertTrue(elem.set_string("hello"))
+        self.assertEqual(elem.get_string(), "hello")
 
     def test_copy(self):
         src = Element()
