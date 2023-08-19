@@ -241,7 +241,7 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
     // will be called again later when we construct the final `sdf::Root`
     // object. We also can't do the merge here since we'd be doing so without
     // validating the model.
-    // We could forego validating the model and just merge all it's children to
+    // We could forego validating the model and just merge all its children to
     // the parent element, but we wouldn't be able to handle placement frames
     // since that requires building a frame graph for the model.
     // So instead we add a hidden flag here to tell `sdf::Model` or `sdf::World`

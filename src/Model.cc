@@ -286,6 +286,7 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         nestedInclude.SetIncludePoseRelativeTo(proxyModelFrameName);
         nestedInclude.SetIncludeRawPose(
             ifaceNestedModel->ModelFramePoseInParentFrame());
+        implicitFrameNames.insert(ifaceNestedModel->Name());
         this->dataPtr->interfaceModels.emplace_back(nestedInclude,
                                                     ifaceNestedModel);
       }
@@ -314,6 +315,24 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
         moveElements(model.dataPtr->links, this->dataPtr->links);
         moveElements(model.dataPtr->frames, this->dataPtr->frames);
         moveElements(model.dataPtr->joints, this->dataPtr->joints);
+        for (const auto &nestedModel : model.dataPtr->models)
+        {
+          implicitFrameNames.insert(nestedModel.Name());
+        }
+        for (const auto &nestedInterfaceModel : model.dataPtr->interfaceModels)
+        {
+          implicitFrameNames.insert(nestedInterfaceModel.second->Name());
+        }
+        for (const auto &nestedMergedInterfaceModel :
+             model.dataPtr->mergedInterfaceModels)
+        {
+          for (const auto &nestedModel :
+               nestedMergedInterfaceModel.second->NestedModels())
+          {
+            implicitFrameNames.insert(nestedModel->Name());
+          }
+        }
+
         moveElements(model.dataPtr->models, this->dataPtr->models);
         moveElements(model.dataPtr->interfaceModels,
                      this->dataPtr->interfaceModels);

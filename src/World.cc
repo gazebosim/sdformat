@@ -220,7 +220,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     }
   }
 
-  std::unordered_set<std::string> nestedModelNames;
+  std::unordered_set<std::string> modelNames;
   std::unordered_set<std::string> jointNames;
   std::unordered_set<std::string> explicitFrameNames;
   auto recordUniqueName = [&errors](std::unordered_set<std::string>& nameList,
@@ -258,7 +258,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     if (elementName == "model")
     {
       auto model = loadSingle<Model>(errors, elem, _config);
-      if (!recordUniqueName(nestedModelNames, elementName, model.Name()))
+      if (!recordUniqueName(modelNames, elementName, model.Name()))
       {
         continue;
       }
