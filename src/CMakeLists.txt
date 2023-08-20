@@ -27,6 +27,9 @@ else()
     GzURDFDOM::GzURDFDOM)
 endif()
 
+# add for vcpkg recognize the using_parser_urdf target. it fix for linux and mac. need to fix for windows as well.
+install(TARGETS using_parser_urdf EXPORT ${PROJECT_LIBRARY_TARGET_NAME} COMPONENT libraries)
+
 if (BUILD_TESTING)
   # Build this test file only if Gazebo Tools is installed.
   if (NOT GZ_PROGRAM)
