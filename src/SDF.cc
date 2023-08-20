@@ -108,22 +108,6 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     }
   }
 
-  // Next check the install path.
-  std::string path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
-  if (sdf::filesystem::exists(path))
-  {
-    return path;
-  }
-
-  // Next check the versioned install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH,
-                                 "sdformat" SDF_MAJOR_VERSION_STR,
-                                 sdf::SDF::Version(), filename);
-  if (sdf::filesystem::exists(path))
-  {
-    return path;
-  }
-
   // Finally check to see if the given file exists.
   path = filename;
   if (sdf::filesystem::exists(path))
