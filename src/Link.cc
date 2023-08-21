@@ -173,7 +173,7 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
 
     if (inertialElem->Get<bool>("auto"))
     {
-      // If auto is to true but user has still provided 
+      // If auto is to true but user has still provided
       // inertial values
       if (inertialElem->HasElement("pose") ||
           inertialElem->HasElement("mass") ||
@@ -181,9 +181,9 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       {
         Error err(
           ErrorCode::WARNING,
-          "Inertial was used with auto=true for link, " + 
-          this->dataPtr->name + " but user defined inertial values were found. " 
-          "They would be overwritten by computed ones."
+          "Inertial was used with auto=true for link, " +
+          this->dataPtr->name + " but user defined inertial values "
+          "were found. They would be overwritten by computed ones."
         );
         enforceConfigurablePolicyCondition(
           _config.WarningsPolicy(), err, errors);
