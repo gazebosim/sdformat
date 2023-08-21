@@ -228,6 +228,22 @@ TEST(DOMWorld, LoadModelFrameSameName)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMWorld, LoadModelFrameSameName_1_7)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "world_model_frame_same_name.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(10u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMWorld, NestedModels)
 {
   const std::string testFile =
