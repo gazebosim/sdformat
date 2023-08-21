@@ -157,7 +157,7 @@ TEST(DOMWorld, Load)
 TEST(DOMWorld, LoadModelFrameSameName)
 {
   const std::string testFile =
-    sdf::testing::TestFile("sdf", "world_model_frame_same_name.sdf");
+    sdf::testing::TestFile("sdf", "world_model_frame_same_name_1_6.sdf");
 
   // Load the SDF file
   sdf::Root root;
