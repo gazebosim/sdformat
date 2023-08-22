@@ -189,13 +189,14 @@ TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
   sdf::Geometry geom;
   sdf::Box box;
 
-  // Invalid Inertial test  
+  // Invalid Inertial test
   box.SetSize(gz::math::Vector3d(-1, 1, 0));
   geom.SetType(sdf::GeometryType::BOX);
   geom.SetBoxShape(box);
   collision.SetGeom(geom);
 
-  sdf::Errors errors = collision.CalculateInertial(collisionInertial, sdfParserConfig);
+  sdf::Errors errors =
+    collision.CalculateInertial(collisionInertial, sdfParserConfig);
   ASSERT_FALSE(errors.empty());
 }
 
@@ -237,7 +238,8 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   expectedInertial.SetMassMatrix(expectedMassMat);
   expectedInertial.SetPose(gz::math::Pose3d::Zero);
 
-  sdf::Errors error2 = collision.CalculateInertial(collisionInertial, sdfParserConfig);
+  sdf::Errors error2 =
+    collision.CalculateInertial(collisionInertial, sdfParserConfig);
   ASSERT_TRUE(error2.empty());
   EXPECT_EQ(expectedInertial.MassMatrix(), collisionInertial.MassMatrix());
   EXPECT_EQ(expectedInertial.Pose(), collisionInertial.Pose());
