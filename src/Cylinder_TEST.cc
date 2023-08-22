@@ -184,6 +184,14 @@ TEST(DOMCylinder, CalculateInertial)
 
   // density of aluminium
   double density = 2170;
+
+  // Invalid dimensions leading to std::nullopt return
+  // CalculateInertials()
+  cylinder.SetLength(-1);
+  cylinder.SetRadius(0);
+  auto invalidCylinderInertial = cylinder.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidCylinderInertial);
+
   double l = 2.0;
   double r = 0.1;
 

@@ -148,6 +148,13 @@ TEST(DOMEllipsoid, CalculateInertial)
 
   // density of aluminium
   double density = 2170;
+
+  // Invalid dimensions leading to std::nullopt return
+  // CalculateInertials()
+  ellipsoid.SetRadii(gz::math::Vector3d(-1, 2, 0));
+  auto invalidEllipsoidInertial = ellipsoid.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidEllipsoidInertial);
+
   double a = 1.0;
   double b = 10.0;
   double c = 100.0;
