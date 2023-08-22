@@ -27,6 +27,7 @@
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
 #include "pyCylinder.hh"
+#include "pyElement.hh"
 #include "pyEllipsoid.hh"
 #include "pyError.hh"
 #include "pyExceptions.hh"
@@ -47,6 +48,7 @@
 #include "pyModel.hh"
 #include "pyNavSat.hh"
 #include "pyNoise.hh"
+#include "pyParam.hh"
 #include "pyParserConfig.hh"
 #include "pyParticleEmitter.hh"
 #include "pyPbr.hh"
@@ -54,6 +56,7 @@
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyPolyline.hh"
+#include "pyPrintConfig.hh"
 #include "pyProjector.hh"
 #include "pyRoot.hh"
 #include "pyScene.hh"
@@ -84,6 +87,10 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineCollision(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
+  // PrintConfig has to be defined before Param and Element because it's used as
+  // a default argument.
+  sdf::python::definePrintConfig(m);
+  sdf::python::defineElement(m);
   sdf::python::defineEllipsoid(m);
   sdf::python::defineError(m);
   sdf::python::defineForceTorque(m);
@@ -107,6 +114,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineNavSat(m);
   sdf::python::defineNoise(m);
   sdf::python::defineODE(m);
+  sdf::python::defineParam(m);
   sdf::python::defineParserConfig(m);
   sdf::python::defineParticleEmitter(m);
   sdf::python::definePbr(m);

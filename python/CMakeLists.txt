@@ -53,6 +53,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyCapsule.cc
   src/sdf/pyCollision.cc
   src/sdf/pyCylinder.cc
+  src/sdf/pyElement.cc
   src/sdf/pyEllipsoid.cc
   src/sdf/pyError.cc
   src/sdf/pyForceTorque.cc
@@ -72,6 +73,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyModel.cc
   src/sdf/pyNavSat.cc
   src/sdf/pyNoise.cc
+  src/sdf/pyParam.cc
   src/sdf/pyParserConfig.cc
   src/sdf/pyParticleEmitter.cc
   src/sdf/pyPbr.cc
@@ -79,6 +81,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyPlane.cc
   src/sdf/pyPlugin.cc
   src/sdf/pyPolyline.cc
+  src/sdf/pyPrintConfig.cc
   src/sdf/pyProjector.cc
   src/sdf/pyRoot.cc
   src/sdf/pyScene.cc
@@ -132,6 +135,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyCapsule_TEST
     pyCollision_TEST
     pyCylinder_TEST
+    pyElement_TEST
     pyEllipsoid_TEST
     pyError_TEST
     pyForceTorque_TEST
@@ -151,6 +155,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyModel_TEST
     pyNoise_TEST
     pyNavSat_TEST
+    pyParam_TEST
     pyParserConfig_TEST
     pyParticleEmitter_TEST
     pyPbr_TEST
@@ -158,6 +163,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyPlane_TEST
     pyPlugin_TEST
     pyPolyline_TEST
+    pyPrintConfig_TEST
     pyProjector_TEST
     pyRoot_TEST
     pyScene_TEST
