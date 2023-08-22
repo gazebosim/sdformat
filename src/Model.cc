@@ -241,7 +241,8 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   };
 
   // Set of implicit and explicit frame names in this model for tracking
-  // name collisions
+  // name collisions. This is used to handle name clashes in old versions of
+  // SDFormat where sibling elements were allowed to have duplicate names.
   std::unordered_set<std::string> implicitFrameNames;
   // Load InterfaceModels into a temporary container so we can have special
   // handling for merged InterfaceModels.

@@ -237,8 +237,9 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     return true;
   };
 
-  // Set of implicit and explicit frame names in this model for tracking
-  // name collisions
+  // Set of implicit and explicit frame names in this world for tracking
+  // name collisions. This is used to handle name clashes in old versions of
+  // SDFormat where sibling elements were allowed to have duplicate names.
   std::unordered_set<std::string> implicitFrameNames;
 
   // Load included models via the interface API
