@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Box.hh"
 #include "sdf/Surface.hh"
 #include "test_utils.hh"
 
@@ -172,6 +173,74 @@ TEST(DOMcollision, SetSurface)
   ASSERT_NE(nullptr, collision.Surface());
   ASSERT_NE(nullptr, collision.Surface()->Contact());
   EXPECT_EQ(collision.Surface()->Contact()->CollideBitmask(), 0x2);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
+{
+  sdf::Collision collision;
+  EXPECT_DOUBLE_EQ(1000.0, collision.Density());
+
+  sdf::ElementPtr sdf(new sdf::Element());
+  collision.Load(sdf);
+
+  gz::math::Inertiald collisionInertial;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Geometry geom;
+  sdf::Box box;
+
+  // Invalid Inertial test  
+  box.SetSize(gz::math::Vector3d(-1, 1, 0));
+  geom.SetType(sdf::GeometryType::BOX);
+  geom.SetBoxShape(box);
+  collision.SetGeom(geom);
+
+  sdf::Errors errors = collision.CalculateInertial(collisionInertial, sdfParserConfig);
+  ASSERT_FALSE(errors.empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
+{
+  sdf::Collision collision;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Geometry geom;
+  sdf::Box box;
+  sdf::ElementPtr sdf(new sdf::Element());
+
+  gz::math::Inertiald collisionInertial;
+
+  sdf->AddElement("density");
+  sdf::ElementPtr densityElem = sdf->GetElement("density");
+  collision.Load(sdf);
+
+  double l = 2;
+  double w = 2;
+  double h = 2;
+  box.SetSize(gz::math::Vector3d(l, w, h));
+  geom.SetType(sdf::GeometryType::BOX);
+  geom.SetBoxShape(box);
+  collision.SetGeom(geom);
+
+  double expectedMass = box.Shape().Volume() * collision.Density();
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  sdf::Errors error2 = collision.CalculateInertial(collisionInertial, sdfParserConfig);
+  ASSERT_TRUE(error2.empty());
+  EXPECT_EQ(expectedInertial.MassMatrix(), collisionInertial.MassMatrix());
+  EXPECT_EQ(expectedInertial.Pose(), collisionInertial.Pose());
 }
 
 /////////////////////////////////////////////////
