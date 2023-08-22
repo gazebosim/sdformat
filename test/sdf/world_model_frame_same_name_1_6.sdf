@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<sdf version='1.6'>
+  <world name="world_model_frame_same_name">
+
+    <model name="base">
+      <pose>1 0 0 0 0 0</pose>
+      <link name="L"/>
+    </model>
+
+    <model name="ground">
+      <pose>0 2 0 0 0 0</pose>
+      <link name="L"/>
+    </model>
+
+    <frame name="ground">
+      <pose>0 0 3 0 0 0</pose>
+    </frame>
+
+  </world>
+</sdf>
