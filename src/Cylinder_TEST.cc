@@ -178,6 +178,44 @@ TEST(DOMCylinder, Shape)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMCylinder, CalculateInertial)
+{
+  sdf::Cylinder cylinder;
+
+  // density of aluminium
+  double density = 2170;
+  double l = 2.0;
+  double r = 0.1;
+
+  cylinder.SetLength(l);
+  cylinder.SetRadius(r);
+
+  double expectedMass = cylinder.Shape().Volume() * density;
+  double ixxIyy = (1/12.0) * expectedMass * (3*r*r + l*l);
+  double izz = 0.5 * expectedMass * r * r;
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixxIyy, ixxIyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto cylinderInertial = cylinder.CalculateInertial(density);
+  EXPECT_EQ(cylinder.Shape().Mat().Density(), density);
+  ASSERT_NE(std::nullopt, cylinderInertial);
+  EXPECT_EQ(expectedInertial, *cylinderInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    cylinderInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    cylinderInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), cylinderInertial->Pose());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMCylinder, ToElement)
 {
   sdf::Cylinder cylinder;

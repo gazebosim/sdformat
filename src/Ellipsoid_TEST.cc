@@ -142,6 +142,45 @@ TEST(DOMEllipsoid, Shape)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMEllipsoid, CalculateInertial)
+{
+  sdf::Ellipsoid ellipsoid;
+
+  // density of aluminium
+  double density = 2170;
+  double a = 1.0;
+  double b = 10.0;
+  double c = 100.0;
+
+  ellipsoid.SetRadii(gz::math::Vector3d(a, b, c));
+
+  double expectedMass = ellipsoid.Shape().Volume() * density;
+  double ixx = (expectedMass / 5.0) * (b*b + c*c);
+  double iyy = (expectedMass / 5.0) * (a*a + c*c);
+  double izz = (expectedMass / 5.0) * (a*a + b*b);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto ellipsoidInertial = ellipsoid.CalculateInertial(density);
+  EXPECT_EQ(ellipsoid.Shape().Mat().Density(), density);
+  ASSERT_NE(std::nullopt, ellipsoidInertial);
+  EXPECT_EQ(expectedInertial, *ellipsoidInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    ellipsoidInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    ellipsoidInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), ellipsoidInertial->Pose());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMEllipsoid, ToElement)
 {
   sdf::Ellipsoid ellipsoid;
