@@ -356,7 +356,7 @@ TEST(DOMGeometry, CalculateInertial)
     double ixxIyy = (1/12.0) * cylinderMass * (3*r*r + l*l)
       + sphereMass * (0.4*r*r + 0.375*r*l + 0.25*l*l);
     double izz = r*r * (0.5 * cylinderMass + 0.4 * sphereMass);
-    
+
     expectedMassMat.SetMass(expectedMass);
     expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixxIyy, ixxIyy, izz));
     expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
@@ -367,7 +367,7 @@ TEST(DOMGeometry, CalculateInertial)
     geom.SetType(sdf::GeometryType::CAPSULE);
     geom.SetCapsuleShape(capsule);
     auto capsuleInertial = geom.CalculateInertial(density);
-    
+
     ASSERT_NE(std::nullopt, capsuleInertial);
     EXPECT_EQ(expectedInertial, *capsuleInertial);
     EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);

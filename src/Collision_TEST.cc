@@ -27,6 +27,7 @@ TEST(DOMcollision, Construction)
   sdf::Collision collision;
   EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
+  EXPECT_EQ(collision.Density(), 1000.0);
 
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
@@ -41,6 +42,9 @@ TEST(DOMcollision, Construction)
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
+
+  collision.SetDensity(1240.0);
+  EXPECT_DOUBLE_EQ(collision.Density(), 1240.0);
 
   collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
   EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
