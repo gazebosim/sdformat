@@ -361,7 +361,7 @@ TEST(DOMJointAxis, ParseMimic)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
-    "<sdf version='1.10'>"
+    "<sdf version='1.11'>"
     "  <model name='test'>"
     "    <link name='link1'/>"
     "    <link name='link2'/>"
@@ -415,7 +415,7 @@ TEST(DOMJointAxis, ParseInvalidSelfMimic)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
-    "<sdf version='1.10'>"
+    "<sdf version='1.11'>"
     "  <model name='test'>"
     "    <link name='link1'/>"
     "    <link name='link2'/>"
@@ -461,7 +461,7 @@ TEST(DOMJointAxis, ParseMimicInvalidLeaderJointName)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
-    "<sdf version='1.10'>"
+    "<sdf version='1.11'>"
     "  <model name='test'>"
     "    <link name='link1'/>"
     "    <link name='link2'/>"
@@ -508,7 +508,7 @@ TEST(DOMJointAxis, ParseMimicInvalidLeaderAxis)
 {
   std::string sdf =
     "<?xml version='1.0' ?>"
-    "<sdf version='1.10'>"
+    "<sdf version='1.11'>"
     "  <model name='test'>"
     "    <link name='link1'/>"
     "    <link name='link2'/>"

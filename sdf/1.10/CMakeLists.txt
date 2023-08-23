@@ -34,7 +34,6 @@ set (sdfs
   magnetometer.sdf
   material.sdf
   mesh_shape.sdf
-  mimic.sdf
   model.sdf
   model_state.sdf
   navsat.sdf
