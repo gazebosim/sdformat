@@ -30,6 +30,8 @@
 #include "sdf/Frame.hh"
 #include "sdf/InterfaceElements.hh"
 #include "sdf/InterfaceModel.hh"
+#include "sdf/Joint.hh"
+#include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/Param.hh"
 #include "sdf/PrintConfig.hh"
@@ -397,25 +399,55 @@ TEST_F(InterfaceAPI, TomlParserModelInclude)
   TomlParserTest(interfaceModel);
 }
 
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPI, DeeplyNestedModel)
+{
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <model name="grand_parent_model">
+      <include>
+        <uri>model://model_include_with_interface_api.sdf</uri>
+      </include>
+    </model>
+  </sdf>)";
+
+  this->config.AddURIPath("model://", sdf::testing::TestFile("sdf"));
+  this->config.RegisterCustomModelParser(this->customTomlParser);
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const sdf::Model *grandParentModel = root.Model();
+  ASSERT_NE(nullptr, grandParentModel);
+  EXPECT_EQ("grand_parent_model", grandParentModel->Name());
+  const sdf::Model *parentModel = grandParentModel->ModelByIndex(0);
+  ASSERT_NE(nullptr, parentModel);
+  EXPECT_EQ("parent_model", parentModel->Name());
+  auto interfaceModel = parentModel->InterfaceModelByIndex(0);
+  ASSERT_NE(nullptr, interfaceModel);
+  SCOPED_TRACE("DeeplyNestedModel");
+  TomlParserTest(interfaceModel);
+}
+
+gz::math::Pose3d resolvePoseNoErrors(const sdf::SemanticPose &_semPose,
+                                     const std::string &_relativeTo = "")
+{
+  gz::math::Pose3d pose;
+  sdf::Errors resolveErrors = _semPose.Resolve(pose, _relativeTo);
+  EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+  return pose;
+}
+
+std::string resolveAttachedToNoErrors(const sdf::Frame &_frame)
+{
+  std::string resolvedBody;
+  sdf::Errors resolveErrors = _frame.ResolveAttachedToBody(resolvedBody);
+  EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
+  return resolvedBody;
+}
+
 void InterfaceAPI::CheckFrameSemantics(const sdf::World *world)
 {
   using gz::math::Pose3d;
-
-  auto resolvePoseNoErrors =
-      [](const sdf::SemanticPose &_semPose, const std::string &_relativeTo = "")
-  {
-    Pose3d pose;
-    sdf::Errors resolveErrors = _semPose.Resolve(pose, _relativeTo);
-    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
-    return pose;
-  };
-  auto resolveAttachedToNoErrors = [](const sdf::Frame &_frame)
-  {
-    std::string resolvedBody;
-    sdf::Errors resolveErrors = _frame.ResolveAttachedToBody(resolvedBody);
-    EXPECT_TRUE(resolveErrors.empty()) << resolveErrors;
-    return resolvedBody;
-  };
 
   {
     const sdf::Frame *frame = world->FrameByName("F0");
@@ -908,6 +940,7 @@ TEST_F(InterfaceAPI, NameCollision)
   }
 }
 
+/////////////////////////////////////////////////
 class InterfaceAPIMergeInclude : public InterfaceAPI
 {
 };
@@ -1270,6 +1303,297 @@ TEST_F(InterfaceAPIMergeInclude, JointModelChild)
     frame->ResolveAttachedToBody(body);
     EXPECT_EQ("base", body);
   }
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeInclude1a)
+{
+  auto checkParentNameParser =
+      [this](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    EXPECT_EQ("parent_model::intermediate_model",
+              _include.AbsoluteParentName());
+    return this->customTomlParser(_include, _errors);
+  };
+
+  this->config.RegisterCustomModelParser(checkParentNameParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <model name="parent_model">
+      <link name="link1"/>
+      <include>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </model>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto* parentModel = root.Model();
+  ASSERT_NE(nullptr, parentModel);
+  EXPECT_NE(nullptr, parentModel->ModelByName("intermediate_model"));
+  using gz::math::Pose3d;
+  EXPECT_EQ(
+      Pose3d(0, 10, 10, 0, 0, 0),
+      resolvePoseNoErrors(parentModel->SemanticPose(),
+                          "parent_model::intermediate_model::double_pendulum")
+          .Inverse());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeInclude1b)
+{
+  auto checkParentNameParser =
+      [this](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    EXPECT_EQ("parent_model",
+              _include.AbsoluteParentName());
+    return this->customTomlParser(_include, _errors);
+  };
+
+  this->config.RegisterCustomModelParser(checkParentNameParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <model name="parent_model">
+      <include merge="true">
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </model>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto* parentModel = root.Model();
+  ASSERT_NE(nullptr, parentModel);
+  EXPECT_EQ(nullptr, parentModel->ModelByName("intermediate_model"));
+  using gz::math::Pose3d;
+  EXPECT_EQ(Pose3d(0, 10, 10, 0, 0, 0),
+            resolvePoseNoErrors(parentModel->SemanticPose(),
+                                "parent_model::double_pendulum")
+                .Inverse());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeInclude2)
+{
+  auto checkParentNameParser =
+      [this](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    EXPECT_EQ("parent_model", _include.AbsoluteParentName());
+    return this->customTomlParser(_include, _errors);
+  };
+
+  this->config.RegisterCustomModelParser(checkParentNameParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <model name="parent_model">
+      <include merge="true">
+        <uri>intermediate_model_with_interface_api_2.sdf</uri>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </model>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto* parentModel = root.Model();
+  ASSERT_NE(nullptr, parentModel);
+  using gz::math::Pose3d;
+  EXPECT_EQ(
+      Pose3d(1, 10, 10.5, 0, 0, 0),
+      resolvePoseNoErrors(parentModel->SemanticPose(), "parent_model::base")
+          .Inverse());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludePlacementFrame)
+{
+  this->config.RegisterCustomModelParser(this->customTomlParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <model name="parent_model">
+      <include merge="true">
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <placement_frame>double_pendulum::lower_link</placement_frame>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </model>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto* parentModel = root.Model();
+  ASSERT_NE(nullptr, parentModel);
+  using gz::math::Pose3d;
+  EXPECT_EQ(Pose3d(0, 10, 0, 0, 0, 0),
+            resolvePoseNoErrors(parentModel->SemanticPose(),
+                                "parent_model::double_pendulum::lower_link")
+                .Inverse());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeInWorldPlacementFrame)
+{
+  this->config.RegisterCustomModelParser(this->customTomlParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <world name="default">
+      <frame name="world_frame"/>
+      <include merge="true">
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <placement_frame>double_pendulum::lower_link</placement_frame>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </world>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  const auto *worldFrame = world->FrameByName("world_frame");
+  ASSERT_NE(nullptr, worldFrame);
+  using gz::math::Pose3d;
+  EXPECT_EQ(Pose3d(0, 10, 0, 0, 0, 0),
+            resolvePoseNoErrors(worldFrame->SemanticPose(),
+                                "double_pendulum::lower_link")
+                .Inverse());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeInWorld)
+{
+  auto checkParentNameParser =
+      [this](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  { return this->customTomlParser(_include, _errors); };
+
+  this->config.RegisterCustomModelParser(checkParentNameParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <world name="merge_world">
+      <include merge="true">
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+      <frame name="world_frame"/>
+    </world>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto *world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_EQ(nullptr, world->ModelByName("intermediate_model"));
+  const auto *worldFrame = world->FrameByName("world_frame");
+  ASSERT_NE(nullptr, worldFrame);
+  using gz::math::Pose3d;
+  EXPECT_EQ(Pose3d(0, 10, 10, 0, 0, 0),
+            resolvePoseNoErrors(worldFrame->SemanticPose(), "double_pendulum")
+                .Inverse());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeElementOrder)
+{
+  auto checkParentNameParser =
+      [this](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    return this->customTomlParser(_include, _errors);
+  };
+
+  this->config.RegisterCustomModelParser(checkParentNameParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <model name="parent_model">
+      <link name="L0"/>
+      <frame name="F0"/>
+      <joint name="J0" type="fixed">
+        <parent>world</parent>
+        <child>L0</child>
+      </joint>
+      <include merge="true">
+        <uri>test_model_with_frames</uri>
+      </include>
+      <include>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </model>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto* parentModel = root.Model();
+  ASSERT_NE(nullptr, parentModel);
+  EXPECT_NE(nullptr, parentModel->ModelByName("M2"));
+  EXPECT_NE(nullptr, parentModel->ModelByName("intermediate_model"));
+  ASSERT_GE(parentModel->LinkCount(), 2u);
+  EXPECT_EQ("L0", parentModel->LinkByIndex(0)->Name());
+  EXPECT_EQ("L1", parentModel->LinkByIndex(1)->Name());
+  EXPECT_NE(nullptr, parentModel->CanonicalLinkAndRelativeName().first);
+  EXPECT_EQ("L0", parentModel->CanonicalLinkAndRelativeName().second);
+  ASSERT_GE(parentModel->FrameCount(), 1u);
+  EXPECT_EQ("F0", parentModel->FrameByIndex(0)->Name());
+  ASSERT_GE(parentModel->JointCount(), 1u);
+  EXPECT_EQ("J0", parentModel->JointByIndex(0)->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_F(InterfaceAPIMergeInclude, DeeplyNestedMergeIncludeElementOrderInWorld)
+{
+  auto checkParentNameParser =
+      [this](const sdf::NestedInclude &_include, sdf::Errors &_errors)
+  {
+    return this->customTomlParser(_include, _errors);
+  };
+
+  this->config.RegisterCustomModelParser(checkParentNameParser);
+
+  const std::string testSdf = R"(
+  <sdf version="1.10">
+    <world name="default">
+      <frame name="F0"/>
+      <joint name="J0" type="fixed">
+        <parent>world</parent>
+        <child>M1</child>
+      </joint>
+      <include merge="true">
+        <uri>model_for_world_merge_include.sdf</uri>
+      </include>
+      <include>
+        <uri>intermediate_model_with_interface_api_1.sdf</uri>
+        <pose>0 10 0   0 0 0</pose>
+      </include>
+    </world>
+  </sdf>)";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(testSdf, this->config);
+  EXPECT_TRUE(errors.empty()) << errors;
+  const auto* world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+  EXPECT_NE(nullptr, world->ModelByName("M1"));
+  EXPECT_NE(nullptr, world->ModelByName("intermediate_model"));
+  ASSERT_GE(world->FrameCount(), 1u);
+  EXPECT_EQ("F0", world->FrameByIndex(0)->Name());
+  ASSERT_GE(world->JointCount(), 1u);
+  EXPECT_EQ("J0", world->JointByIndex(0)->Name());
 }
 
 /////////////////////////////////////////////////

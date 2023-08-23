@@ -39,6 +39,11 @@ TEST(DOMWorld, Construction)
   EXPECT_STREQ("default", world.AudioDevice().c_str());
   EXPECT_EQ(gz::math::Vector3d::Zero, world.WindLinearVelocity());
 
+  // The scene and atmosphere are requred, per the SDF spec. Make sure
+  // that they have been created.
+  EXPECT_TRUE(world.Scene());
+  EXPECT_TRUE(world.Atmosphere());
+
   EXPECT_EQ(0u, world.ModelCount());
   EXPECT_EQ(nullptr, world.ModelByIndex(0));
   EXPECT_EQ(nullptr, world.ModelByIndex(1));
@@ -358,7 +363,7 @@ TEST(DOMWorld, SetGui)
 TEST(DOMWorld, SetScene)
 {
   sdf::World world;
-  EXPECT_EQ(nullptr, world.Scene());
+  EXPECT_NE(nullptr, world.Scene());
 
   sdf::Scene scene;
   scene.SetAmbient(gz::math::Color::Blue);

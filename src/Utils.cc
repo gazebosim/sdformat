@@ -191,6 +191,13 @@ static std::optional<std::string> computeAbsoluteName(
   {
     if (parent->HasAttribute("name"))
     {
+      // Ignore this parent model if it's a merged model, since the child will
+      // be merged into the grand parent model/world.
+      if (parent->GetName() == "model" &&
+          parent->Get<bool>("__merge__", false).first)
+      {
+        continue;
+      }
       names.push_back(parent->GetAttribute("name")->GetAsString());
     }
     else
@@ -221,7 +228,7 @@ static std::optional<std::string> computeAbsoluteName(
 // cppcheck-suppress unusedFunction
 sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config,
-    std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models)
+    std::vector<std::pair<NestedInclude, InterfaceModelConstPtr>> &_models)
 {
   sdf::Errors allErrors;
   for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
