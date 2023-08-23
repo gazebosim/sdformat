@@ -170,7 +170,7 @@ static inline bool _initFile(const std::string &_filename,
     return false;
   }
 
-  return initDoc(_sdf, _errors, &xmlDoc, _config);
+  return initDoc(_errors, _sdf, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -395,28 +395,22 @@ bool init(SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool init(sdf::Errors &_errors, SDFPtr _sdf)
-{
-  return init(_sdf, _errors, ParserConfig::GlobalConfig());
-}
-
-//////////////////////////////////////////////////
 bool init(SDFPtr _sdf, const ParserConfig &_config)
 {
   sdf::Errors errors;
-  bool result = init(_sdf, errors, _config);
+  bool result = init(errors, _sdf, _config);
   sdf::throwOrPrintErrors(errors);
   return result;
 
 }
 
 //////////////////////////////////////////////////
-bool init(SDFPtr _sdf, sdf::Errors &_errors, const ParserConfig &_config)
+bool init(sdf::Errors &_errors, SDFPtr _sdf, const ParserConfig &_config)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(_sdf, _errors, &xmlDoc, _config);
+  return initDoc(_errors, _sdf, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -444,7 +438,7 @@ bool initFile(const std::string &_filename, const ParserConfig &_config,
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(_sdf, _errors, &xmlDoc, _config);
+    return initDoc(_errors, _sdf, &xmlDoc, _config);
   }
   return _initFile(sdf::findFile(_filename, true, false, _config), _config,
                    _sdf, _errors);
@@ -475,7 +469,7 @@ bool initFile(const std::string &_filename, const ParserConfig &_config,
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(_sdf, _errors, &xmlDoc, _config);
+    return initDoc(_errors, _sdf, &xmlDoc, _config);
   }
   return _initFile(sdf::findFile(_filename, true, false, _config), _config,
                    _sdf, _errors);
@@ -503,7 +497,7 @@ bool initString(const std::string &_xmlString, const ParserConfig &_config,
     return false;
   }
 
-  return initDoc(_sdf, _errors, &xmlDoc, _config);
+  return initDoc(_errors, _sdf, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -538,8 +532,8 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc,
 }
 
 //////////////////////////////////////////////////
-bool initDoc(SDFPtr _sdf,
-             sdf::Errors &_errors,
+bool initDoc(sdf::Errors &_errors,
+             SDFPtr _sdf,
              tinyxml2::XMLDocument *_xmlDoc,
              const ParserConfig &_config)
 {
@@ -549,12 +543,12 @@ bool initDoc(SDFPtr _sdf,
     return false;
   }
 
-  return initXml(_sdf->Root(), _errors, element, _config);
+  return initXml(_errors, _sdf->Root(), element, _config);
 }
 
 //////////////////////////////////////////////////
-bool initDoc(ElementPtr _sdf,
-             sdf::Errors &_errors,
+bool initDoc(sdf::Errors &_errors,
+             ElementPtr _sdf,
              tinyxml2::XMLDocument *_xmlDoc,
              const ParserConfig &_config)
 {
@@ -564,12 +558,12 @@ bool initDoc(ElementPtr _sdf,
     return false;
   }
 
-  return initXml(_sdf, _errors, element, _config);
+  return initXml(_errors, _sdf, element, _config);
 }
 
 //////////////////////////////////////////////////
-bool initXml(ElementPtr _sdf,
-             sdf::Errors &_errors,
+bool initXml(sdf::Errors &_errors,
+             ElementPtr _sdf,
              tinyxml2::XMLElement *_xml,
              const ParserConfig &_config)
 {
@@ -696,7 +690,7 @@ bool initXml(ElementPtr _sdf,
     else
     {
       ElementPtr element(new Element);
-      initXml(element, _errors, child, _config);
+      initXml(_errors, element, child, _config);
       _sdf->AddElementDescription(element);
     }
   }

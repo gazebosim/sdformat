@@ -49,13 +49,6 @@ namespace sdf
   bool init(SDFPtr _sdf);
 
   /// \brief Initialize the SDF interface from the embedded root spec file
-  /// \param[out] _errors Vector of errors.
-  /// \param[out] _sdf Pointer to an SDF object.
-  /// \return True if successful.
-  SDFORMAT_VISIBLE
-  bool init(sdf::Errors &_errors, SDFPtr _sdf);
-
-  /// \brief Initialize the SDF interface from the embedded root spec file
   /// \param[out] _sdf Pointer to an SDF object.
   /// \param[in] _config Custom parser configuration
   /// \return True if successful.
@@ -63,12 +56,12 @@ namespace sdf
   bool init(SDFPtr _sdf, const ParserConfig &_config);
 
   /// \brief Initialize the SDF interface from the embedded root spec file
-  /// \param[out] _sdf Pointer to an SDF object.
   /// \param[out] _errors Vector of errors.
+  /// \param[out] _sdf Pointer to an SDF object.
   /// \param[in] _config Custom parser configuration
   /// \return True if successful.
   SDFORMAT_VISIBLE
-  bool init(SDFPtr _sdf, sdf::Errors &_errors, const ParserConfig &_config);
+  bool init(sdf::Errors &_errors, SDFPtr _sdf, const ParserConfig &_config);
 
   /// \brief Initialize the SDF interface using a file
   /// \param[in] _filename Name of the SDF file
@@ -561,7 +554,7 @@ namespace sdf
   /// \param[in] _root SDF Root object to check recursively.
   /// \return True if all attached_to graphs are valid.
   SDFORMAT_VISIBLE
-  bool checkPoseRelativeToGraph( sdf::Errors &_errors, const sdf::Root *_root);
+  bool checkPoseRelativeToGraph(sdf::Errors &_errors, const sdf::Root *_root);
 
   /// \brief Check that all sibling elements of the same type have unique names.
   /// This checks recursively and should check the files exhaustively
