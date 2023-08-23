@@ -5,11 +5,11 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat13 VERSION 13.5.0)
+project (sdformat14 VERSION 14.0.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
-set (SDF_PROTOCOL_VERSION 1.10)
+set (SDF_PROTOCOL_VERSION 1.11)
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
@@ -162,7 +162,7 @@ if (BUILD_SDF)
   add_subdirectory(conf)
   add_subdirectory(doc)
   if (pybind11_FOUND AND NOT SKIP_PYBIND11)
-  	add_subdirectory(python)
+    add_subdirectory(python)
   endif()
 endif(BUILD_SDF)
 

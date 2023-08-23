@@ -238,7 +238,7 @@ namespace sdf
                     const std::string &_name, const std::string &_xmlContent);
 
     /// \brief Private data pointer.
-    public: std::unique_ptr<sdf::PluginPrivate> dataPtr;
+    private: std::unique_ptr<sdf::PluginPrivate> dataPtr;
   };
 
   /// \brief A vector of Plugin.

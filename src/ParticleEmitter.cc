@@ -14,10 +14,11 @@
  * limitations under the License.
  *
 */
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
+#include <string_view>
 
 #include "sdf/Error.hh"
 #include "sdf/parser.hh"
@@ -31,8 +32,9 @@
 using namespace sdf;
 
 /// Particle emitter type strings. These should match the data in
-/// `enum class ParticleEmitterType` located in ParticleEmitter.hh.
-const std::vector<std::string> emitterTypeStrs =
+/// `enum class ParticleEmitterType` located in ParticleEmitter.hh, and the size
+/// template parameter should match the number of elements as well.
+constexpr std::array<const std::string_view, 4> kEmitterTypeStrs =
 {
   "point",
   "box",
@@ -251,9 +253,9 @@ void ParticleEmitter::SetType(const ParticleEmitterType _type)
 /////////////////////////////////////////////////
 bool ParticleEmitter::SetType(const std::string &_typeStr)
 {
-  for (size_t i = 0; i < emitterTypeStrs.size(); ++i)
+  for (size_t i = 0; i < kEmitterTypeStrs.size(); ++i)
   {
-    if (_typeStr == emitterTypeStrs[i])
+    if (_typeStr == kEmitterTypeStrs[i])
     {
       this->dataPtr->type = static_cast<ParticleEmitterType>(i);
       return true;
@@ -266,8 +268,8 @@ bool ParticleEmitter::SetType(const std::string &_typeStr)
 std::string ParticleEmitter::TypeStr() const
 {
   size_t index = static_cast<int>(this->dataPtr->type);
-  if (index < emitterTypeStrs.size())
-    return emitterTypeStrs[index];
+  if (index < kEmitterTypeStrs.size())
+    return std::string(kEmitterTypeStrs[index]);
   return "point";
 }
 

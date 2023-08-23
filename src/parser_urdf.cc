@@ -3212,9 +3212,9 @@ void CreateCollision(tinyxml2::XMLElement* _elem,
   AddKeyValue(sdfCollision, "pose", Values2str(6, pose));
 
   // add geometry block
-  if (!_collision || !_collision->geometry)
+  if (!_collision->geometry)
   {
-    sdfdbg << "urdf2sdf: collision of link [" << _link->name
+    sdfmsg << "urdf2sdf: collision of link [" << _link->name
            << "] has no <geometry>.\n";
   }
   else
@@ -3258,9 +3258,9 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
   AddKeyValue(sdfVisual, "pose", Values2str(6, pose));
 
   // insert geometry
-  if (!_visual || !_visual->geometry)
+  if (!_visual->geometry)
   {
-    sdfdbg << "urdf2sdf: visual of link [" << _link->name
+    sdfmsg << "urdf2sdf: visual of link [" << _link->name
            << "] has no <geometry>.\n";
   }
   else
