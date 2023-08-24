@@ -260,6 +260,7 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
 }
 
+/////////////////////////////////////////////////
 TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
