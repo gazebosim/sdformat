@@ -389,6 +389,15 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   // Check that //axis*/xyz/@expressed_in values specify valid frames.
   checkJointAxisExpressedInValues(this, errors);
 
+  // Check if CalculateInertialConfiguration() is not set to skip in load
+  if (_config.CalculateInertialConfiguration() !=
+    ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD)
+  {
+    Errors inertialErrors = this->CalculateInertials(_config);
+    errors.insert(errors.end(), 
+      inertialErrors.begin(), inertialErrors.end());
+  }
+
   return errors;
 }
 
