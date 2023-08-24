@@ -595,7 +595,7 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
   {
     sdf::ElementPtr inertialElem = this->dataPtr->sdf->GetElement("inertial");
 
-    if (inertialElem->Get<bool>("auto"))
+    if (inertialElem->Get<bool>("auto") && !this->dataPtr->autoInertiaSaved)
     {
       // Return an error if auto is set to true but there are no
       // collision elements in the link
@@ -606,7 +606,7 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
                           "<collision> elements for the link."});
         return;
       }
-
+      
       gz::math::Inertiald totalInertia;
 
       for (sdf::Collision &collision : this->dataPtr->collisions)
@@ -621,6 +621,14 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
       }
 
       this->dataPtr->inertial = totalInertia;
+
+      // If CalculateInertial() was called with SAVE_CALCULATION
+      // configuration then set autoInertiaSaved to true
+      if (_config.CalculateInertialConfiguration() ==
+        ConfigureCalculateInertial::SAVE_CALCULATION)
+      {
+        this->dataPtr->autoInertiaSaved = true;
+      }
     }
     // If auto is false, this means inertial values were set
     // from user given values in Link::Load(), therefore we can return
