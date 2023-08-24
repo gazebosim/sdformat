@@ -393,9 +393,8 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   if (_config.CalculateInertialConfiguration() !=
     ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD)
   {
-    Errors inertialErrors = this->CalculateInertials(_config);
-    errors.insert(errors.end(), 
-      inertialErrors.begin(), inertialErrors.end());
+    Errors inertialErr = this->CalculateInertials(_config);
+    errors.insert(errors.end(), inertialErr.begin(), inertialErr.end());
   }
 
   return errors;

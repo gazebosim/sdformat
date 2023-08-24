@@ -59,7 +59,7 @@ enum class ConfigureCalculateInertial
 
   /// \brief If this values is used, CalculateInertial() would be 
   /// called and the computed inertial values would be saved 
-  CALCULATE_AND_SAVE
+  SAVE_CALCULATION
 };
 
 // Forward declare private data class.
