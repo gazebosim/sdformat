@@ -308,6 +308,16 @@ TEST(DOMGeometry, CalculateInertial)
   double expectedMass;
   gz::math::MassMatrix3d expectedMassMat;
   gz::math::Inertiald expectedInertial;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors;
+
+  // Not supported geom type
+  {
+    geom.SetType(sdf::GeometryType::EMPTY);
+    auto notSupportedInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+    ASSERT_EQ(notSupportedInertial, std::nullopt);
+  }
 
   // Box
   {
@@ -331,7 +341,8 @@ TEST(DOMGeometry, CalculateInertial)
 
     geom.SetType(sdf::GeometryType::BOX);
     geom.SetBoxShape(box);
-    auto boxInertial = geom.CalculateInertial(density);
+    auto boxInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
 
     ASSERT_NE(std::nullopt, boxInertial);
     EXPECT_EQ(expectedInertial, *boxInertial);
@@ -366,7 +377,8 @@ TEST(DOMGeometry, CalculateInertial)
 
     geom.SetType(sdf::GeometryType::CAPSULE);
     geom.SetCapsuleShape(capsule);
-    auto capsuleInertial = geom.CalculateInertial(density);
+    auto capsuleInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
 
     ASSERT_NE(std::nullopt, capsuleInertial);
     EXPECT_EQ(expectedInertial, *capsuleInertial);
@@ -396,7 +408,8 @@ TEST(DOMGeometry, CalculateInertial)
 
     geom.SetType(sdf::GeometryType::CYLINDER);
     geom.SetCylinderShape(cylinder);
-    auto cylinderInertial = geom.CalculateInertial(density);
+    auto cylinderInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
 
     ASSERT_NE(std::nullopt, cylinderInertial);
     EXPECT_EQ(expectedInertial, *cylinderInertial);
@@ -428,7 +441,8 @@ TEST(DOMGeometry, CalculateInertial)
 
     geom.SetType(sdf::GeometryType::ELLIPSOID);
     geom.SetEllipsoidShape(ellipsoid);
-    auto ellipsoidInertial = geom.CalculateInertial(density);
+    auto ellipsoidInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
 
     ASSERT_NE(std::nullopt, ellipsoidInertial);
     EXPECT_EQ(expectedInertial, *ellipsoidInertial);
@@ -456,7 +470,8 @@ TEST(DOMGeometry, CalculateInertial)
 
     geom.SetType(sdf::GeometryType::SPHERE);
     geom.SetSphereShape(sphere);
-    auto sphereInertial = geom.CalculateInertial(density);
+    auto sphereInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
 
     ASSERT_NE(std::nullopt, sphereInertial);
     EXPECT_EQ(expectedInertial, *sphereInertial);
