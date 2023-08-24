@@ -213,9 +213,13 @@ namespace sdf
 
     /// \brief Calculate and return the Mass Matrix values for the Geometry
     /// \param[in] _density The density of the geometry element.
+    /// \param[in] _config Parser Config
+    /// \param[out] _errors A vector of Errors object. Each object
+    /// would contain an error code and an error message.
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>
-            CalculateInertial(double _density);
+            CalculateInertial(double _density, const sdf::ParserConfig &_config, 
+              sdf::Errors &_errors);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
