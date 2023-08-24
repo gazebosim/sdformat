@@ -16,6 +16,14 @@
     <description>The mass of the link.</description>
   </element>
 
+  <element name="density" type="double" default="1000.0" required="0">
+    <description>
+      Mass Density of the collision geometry. 
+      This is used to determine mass and inertia values during automatic calculation.
+      Default is the density of water 1000 kg/m^3.
+    </description>
+  </element>
+
   <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
     <description>
       This pose (translation, rotation) describes the position and orientation
