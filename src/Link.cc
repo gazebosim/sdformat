@@ -606,7 +606,7 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
                           "<collision> elements for the link."});
         return;
       }
-      
+
       gz::math::Inertiald totalInertia;
 
       for (sdf::Collision &collision : this->dataPtr->collisions)

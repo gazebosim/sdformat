@@ -53,12 +53,12 @@ enum class EnforcementPolicy
 /// would be used
 enum class ConfigureCalculateInertial
 {
-  /// \brief If this value is used, CalculateInertial() won't be 
+  /// \brief If this value is used, CalculateInertial() won't be
   /// called from inside the Root::Load() function
   SKIP_CALCULATION_IN_LOAD,
 
-  /// \brief If this values is used, CalculateInertial() would be 
-  /// called and the computed inertial values would be saved 
+  /// \brief If this values is used, CalculateInertial() would be
+  /// called and the computed inertial values would be saved
   SAVE_CALCULATION
 };
 
@@ -174,14 +174,14 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \return The deperacted elements policy enum value
   public: EnforcementPolicy DeprecatedElementsPolicy() const;
 
-  /// \brief Get the current configuration for the CalculateInertial() 
+  /// \brief Get the current configuration for the CalculateInertial()
   /// function
   /// \return Current set value of the ConfigureCalculateInertial enum
   public: ConfigureCalculateInertial CalculateInertialConfiguration() const;
 
   /// \brief Set the configuration for the CalculateInertial() function
-  /// \param[in] _configuration The configuration to set for the CalculateInertial()
-  /// function
+  /// \param[in] _configuration The configuration to set for the
+  /// CalculateInertial() function
   public: void SetCalculateInertialConfiguration(
     ConfigureCalculateInertial _configuration);
 
