@@ -242,7 +242,8 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
   }
 
   auto geomInertial =
-    this->dataPtr->geom.CalculateInertial(this->dataPtr->density, _config, errors);
+    this->dataPtr->geom.CalculateInertial(this->dataPtr->density,
+                                          _config, errors);
 
   if (!geomInertial)
   {

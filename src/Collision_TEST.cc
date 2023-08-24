@@ -252,7 +252,7 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   gz::math::Inertiald expectedInertial;
   expectedInertial.SetMassMatrix(expectedMassMat);
   expectedInertial.SetPose(gz::math::Pose3d::Zero);
-  
+
   ASSERT_TRUE(inertialErr.empty());
   EXPECT_DOUBLE_EQ(1240.0, collision->Density());
   EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
@@ -313,7 +313,7 @@ TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
   gz::math::Inertiald expectedInertial;
   expectedInertial.SetMassMatrix(expectedMassMat);
   expectedInertial.SetPose(gz::math::Pose3d::Zero);
-  
+
   ASSERT_TRUE(inertialErr.empty());
   EXPECT_DOUBLE_EQ(1240.0, collision->Density());
   EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
