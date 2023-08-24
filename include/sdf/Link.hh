@@ -390,6 +390,19 @@ namespace sdf
     /// \sa Model::SetEnableWind(bool)
     public: void SetEnableWind(bool _enableWind);
 
+    /// \brief Check if the inertial values for this link were saved.
+    /// If true, the inertial values for this link wont be calculated
+    /// when CalculateInertial() is called. This value is set to true
+    /// when CalculateInertial() is called with SAVE_CALCULATION 
+    /// configuration.
+    /// \return True if CalculateInertial() was called with SAVE_CALCULATION
+    /// configuration, false otherwise. 
+    public: bool AutoInertiaSaved() const;
+
+    /// \brief Set the autoInertiaSaved() values
+    /// \param _autoInertiaSaved True or False
+    public: void SetAutoInertiaSaved(bool _autoInertiaSaved);
+
     /// \brief Add a collision to the link.
     /// \param[in] _collision Collision to add.
     /// \return True if successful, false if a collision with the name already

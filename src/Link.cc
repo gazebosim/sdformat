@@ -78,6 +78,8 @@ class sdf::Link::Implementation
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  public: bool autoInertiaSaved = false;
+
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
@@ -781,6 +783,18 @@ bool Link::EnableWind() const
 void Link::SetEnableWind(const bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
+}
+
+/////////////////////////////////////////////////
+bool Link::AutoInertiaSaved() const
+{
+  return this->dataPtr->autoInertiaSaved;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertiaSaved(bool _autoInertiaSaved)
+{
+  this->dataPtr->autoInertiaSaved = _autoInertiaSaved;
 }
 
 //////////////////////////////////////////////////
