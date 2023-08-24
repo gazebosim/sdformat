@@ -398,6 +398,35 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMLink, CalculateInertialCalledWithAutoFalse)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='false' />"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  EXPECT_TRUE(inertialErr.empty());
+
+  // Default Inertial values set during load
+  EXPECT_EQ(1.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Vector3d::One,
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMLink, AddCollision)
 {
   sdf::Link link;
