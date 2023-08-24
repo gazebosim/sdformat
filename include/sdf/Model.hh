@@ -529,6 +529,24 @@ namespace sdf
     private: const std::vector<std::pair<std::optional<sdf::NestedInclude>,
              sdf::InterfaceModelConstPtr>> &MergedInterfaceModels() const;
 
+    /// \brief Get whether the model was merge-included and needs to be
+    /// processed to carry out the merge.
+    /// \return True if the model was merge-included.
+    private: bool IsMerged() const;
+
+    /// \brief Prepare the model to be merged into the parent model or world.
+    /// As part of the perparation, this will create the proxy frame that would
+    /// be need to be added to the parent object.
+    /// \param[out] _errors A list of errors encountered during the operation.
+    /// \param[in] _parentOfProxyFrame Name of parent of the proxy frame that
+    /// will be created. This can only be "__model__" or "world".
+    /// \return The proxy frame for the merged model that will need to be added
+    /// to the parent object.
+    /// \note This is a destructive call. After this call, the model will be in
+    /// an invalid state unless it is merged into the parent object.
+    private: sdf::Frame PrepareForMerge(sdf::Errors &_errors,
+                                        const std::string &_parentOfProxyFrame);
+
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph

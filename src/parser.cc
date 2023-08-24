@@ -232,6 +232,26 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   }
 
   // Validate included model's frame semantics
+  if (!_config.CustomModelParsers().empty())
+  {
+    // Since we have custom parsers, we can't create a throwaway sdf::Root
+    // object to validate the merge-included model. This is because calling
+    // `sdf::Root::Load` here would call the custom parsers if this model
+    // contains a nested model that is custom parsed. But the custom parsers
+    // will be called again later when we construct the final `sdf::Root`
+    // object. We also can't do the merge here since we'd be doing so without
+    // validating the model.
+    // We could forego validating the model and just merge all its children to
+    // the parent element, but we wouldn't be able to handle placement frames
+    // since that requires building a frame graph for the model.
+    // So instead we add a hidden flag here to tell `sdf::Model` or `sdf::World`
+    // that this model is meant to be merged.
+    firstElem->AddAttribute("__merge__", "bool", "false", false,
+                            "Indicates whether this is a merge included model");
+    firstElem->GetAttribute("__merge__")->Set<bool>(true);
+    _parent->InsertElement(firstElem, true);
+    return;
+  }
   // We create a throwaway sdf::Root object in order to validate the
   // included entity.
   sdf::Root includedRoot;
