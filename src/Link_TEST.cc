@@ -22,6 +22,8 @@
 #include "sdf/Collision.hh"
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
+#include "sdf/Root.hh"
+#include "sdf/Model.hh"
 #include "sdf/ParticleEmitter.hh"
 #include "sdf/Projector.hh"
 #include "sdf/Sensor.hh"
@@ -67,6 +69,10 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.EnableWind());
   link.SetEnableWind(true);
   EXPECT_TRUE(link.EnableWind());
+
+  EXPECT_FALSE(link.AutoInertiaSaved());
+  link.SetAutoInertiaSaved(true);
+  EXPECT_TRUE(link.AutoInertiaSaved());
 
   EXPECT_EQ(0u, link.SensorCount());
   EXPECT_EQ(nullptr, link.SensorByIndex(0));
@@ -264,6 +270,131 @@ TEST(DOMLink, InvalidInertia)
   EXPECT_DOUBLE_EQ(2.3, link.Inertial().MassMatrix().OffDiagonalMoments().Y());
   EXPECT_DOUBLE_EQ(3.4, link.Inertial().MassMatrix().OffDiagonalMoments().Z());
   EXPECT_FALSE(link.Inertial().MassMatrix().IsValid());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CalculateInertialWithNoCollisionsInLink)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  ASSERT_FALSE(inertialErr.empty());
+
+  // Default Inertial values set during load
+  EXPECT_EQ(1.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Vector3d::One,
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, CalculateInertialWithMultipleCollisions)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='compound_model'>"
+  "   <pose>0 0 1.0 0 0 0</pose>"
+  "   <link name='compound_link'>"
+  "     <inertial auto='true' />"
+  "     <collision name='box_collision'>"
+  "      <pose>0 0 -0.5 0 0 0</pose>"
+	"      <density>2.0</density>"
+  "      <geometry>"
+  "        <box>"
+  "          <size>1 1 1</size>"
+  "        </box>"
+  "        </geometry>"
+  "      </collision>"
+  "      <collision name='cylinder_compound_collision'>"
+  "        <pose>0 0 0.5 0 0 0</pose>"
+  "        <density>4</density>"
+  "        <geometry>"
+  "          <cylinder>"
+  "            <radius>0.5</radius>"
+  "            <length>1.0</length>"
+  "          </cylinder>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "   </model>"
+  "  </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  EXPECT_TRUE(inertialErr.empty());
+
+  // Mass of cube(volume * density) + mass of cylinder(volume * density)
+  double expectedMass = 1.0 * 2.0 + GZ_PI * 0.5 * 0.5 * 1 * 4.0;
+
+  EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Vector3d(2.013513, 2.013513, 0.72603),
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='compound_model'>"
+  "   <link name='compound_link'>"
+  "     <inertial auto='true'>"
+  "       <mass>4.0</mass>"
+  "       <pose>1 1 1 2 2 2</pose>"
+  "       <inertia>"
+  "         <ixx>1</ixx>"
+  "         <iyy>1</iyy>"
+  "         <izz>1</izz>"
+  "       </inertia>"
+  "     </inertial>"
+  "     <collision name='box_collision'>"
+	"      <density>2.0</density>"
+  "      <geometry>"
+  "        <box>"
+  "          <size>1 1 1</size>"
+  "        </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "   </model>"
+  "  </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  EXPECT_TRUE(inertialErr.empty());
+
+  EXPECT_NE(4.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
+  EXPECT_EQ(gz::math::Vector3d(0.33333, 0.33333, 0.33333),
+    link->Inertial().MassMatrix().DiagonalMoments());
 }
 
 /////////////////////////////////////////////////
