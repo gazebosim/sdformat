@@ -136,6 +136,46 @@ TEST(DOMSphere, Shape)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMSphere, CalculateInertial)
+{
+  sdf::Sphere sphere;
+
+  // density of aluminium
+  double density = 2170;
+
+  sphere.SetRadius(-2);
+  auto invalidSphereInertial = sphere.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidSphereInertial);
+
+  double r = 0.1;
+
+  sphere.SetRadius(r);
+
+  double expectedMass = sphere.Shape().Volume() * density;
+  double ixxIyyIzz = 0.4 * expectedMass * r * r;
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixxIyyIzz, ixxIyyIzz, ixxIyyIzz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto sphereInertial = sphere.CalculateInertial(density);
+  EXPECT_EQ(sphere.Shape().Material().Density(), density);
+  ASSERT_NE(std::nullopt, sphereInertial);
+  EXPECT_EQ(expectedInertial, *sphereInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    sphereInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    sphereInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), sphereInertial->Pose());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMSphere, ToElement)
 {
   sdf::Sphere sphere;

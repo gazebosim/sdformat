@@ -299,6 +299,188 @@ TEST(DOMGeometry, Polyline)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGeometry, CalculateInertial)
+{
+  sdf::Geometry geom;
+
+  // Density of Aluminimum
+  double density = 2170.0;
+  double expectedMass;
+  gz::math::MassMatrix3d expectedMassMat;
+  gz::math::Inertiald expectedInertial;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors;
+
+  // Not supported geom type
+  {
+    geom.SetType(sdf::GeometryType::EMPTY);
+    auto notSupportedInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+    ASSERT_EQ(notSupportedInertial, std::nullopt);
+  }
+
+  // Box
+  {
+    sdf::Box box;
+    double l = 2;
+    double w = 2;
+    double h = 2;
+    box.SetSize(gz::math::Vector3d(l, w, h));
+
+    expectedMass = box.Shape().Volume() * density;
+    double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+    double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+    double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixx, iyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::BOX);
+    geom.SetBoxShape(box);
+    auto boxInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+
+    ASSERT_NE(std::nullopt, boxInertial);
+    EXPECT_EQ(expectedInertial, *boxInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), boxInertial->Pose());
+  }
+
+  // Capsule
+  {
+    sdf::Capsule capsule;
+    double l = 2.0;
+    double r = 0.1;
+    capsule.SetLength(l);
+    capsule.SetRadius(r);
+
+    expectedMass = capsule.Shape().Volume() * density;
+    const double cylinderVolume = GZ_PI * r*r * l;
+    const double sphereVolume = GZ_PI * 4. / 3. * r*r*r;
+    const double volume = cylinderVolume + sphereVolume;
+    const double cylinderMass = expectedMass * cylinderVolume / volume;
+    const double sphereMass = expectedMass * sphereVolume / volume;
+    double ixxIyy = (1/12.0) * cylinderMass * (3*r*r + l*l)
+      + sphereMass * (0.4*r*r + 0.375*r*l + 0.25*l*l);
+    double izz = r*r * (0.5 * cylinderMass + 0.4 * sphereMass);
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixxIyy, ixxIyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::CAPSULE);
+    geom.SetCapsuleShape(capsule);
+    auto capsuleInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+
+    ASSERT_NE(std::nullopt, capsuleInertial);
+    EXPECT_EQ(expectedInertial, *capsuleInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), capsuleInertial->Pose());
+  }
+
+  // Cylinder
+  {
+    sdf::Cylinder cylinder;
+    double l = 2.0;
+    double r = 0.1;
+
+    cylinder.SetLength(l);
+    cylinder.SetRadius(r);
+
+    expectedMass = cylinder.Shape().Volume() * density;
+    double ixxIyy = (1/12.0) * expectedMass * (3*r*r + l*l);
+    double izz = 0.5 * expectedMass * r * r;
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixxIyy, ixxIyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::CYLINDER);
+    geom.SetCylinderShape(cylinder);
+    auto cylinderInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+
+    ASSERT_NE(std::nullopt, cylinderInertial);
+    EXPECT_EQ(expectedInertial, *cylinderInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), cylinderInertial->Pose());
+  }
+
+  // Ellipsoid
+  {
+    sdf::Ellipsoid ellipsoid;
+
+    double a = 1.0;
+    double b = 10.0;
+    double c = 100.0;
+
+    ellipsoid.SetRadii(gz::math::Vector3d(a, b, c));
+
+    expectedMass = ellipsoid.Shape().Volume() * density;
+    double ixx = (expectedMass / 5.0) * (b*b + c*c);
+    double iyy = (expectedMass / 5.0) * (a*a + c*c);
+    double izz = (expectedMass / 5.0) * (a*a + b*b);
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixx, iyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::ELLIPSOID);
+    geom.SetEllipsoidShape(ellipsoid);
+    auto ellipsoidInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+
+    ASSERT_NE(std::nullopt, ellipsoidInertial);
+    EXPECT_EQ(expectedInertial, *ellipsoidInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), ellipsoidInertial->Pose());
+  }
+
+  // Sphere
+  {
+    sdf::Sphere sphere;
+    double r = 0.1;
+
+    sphere.SetRadius(r);
+
+    expectedMass = sphere.Shape().Volume() * density;
+    double ixxIyyIzz = 0.4 * expectedMass * r * r;
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(
+      gz::math::Vector3d(ixxIyyIzz, ixxIyyIzz, ixxIyyIzz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::SPHERE);
+    geom.SetSphereShape(sphere);
+    auto sphereInertial = geom.CalculateInertial(density,
+      sdfParserConfig, errors);
+
+    ASSERT_NE(std::nullopt, sphereInertial);
+    EXPECT_EQ(expectedInertial, *sphereInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), sphereInertial->Pose());
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGeometry, ToElement)
 {
   // Box

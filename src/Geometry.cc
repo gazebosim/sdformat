@@ -311,7 +311,7 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
 
 std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
   double _density, const ParserConfig &_config,
-  sdf::ElementPtr _autoInertiaParams)
+  sdf::ElementPtr _autoInertiaParams, sdf::Errors &_errors)
 {
   std::optional<gz::math::Inertiald> geomInertial;
 
@@ -339,6 +339,15 @@ std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
                                               _config);
       break;
     default:
+      Error invalidGeomTypeErr(
+        ErrorCode::WARNING,
+        "Automatic inertia calculations are not supported for the given"
+        " Geometry type. "
+      );
+      enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), invalidGeomTypeErr, _errors
+      );
+      geomInertial = std::nullopt;
       break;
   }
 

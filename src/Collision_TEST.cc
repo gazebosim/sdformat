@@ -18,6 +18,9 @@
 #include <gtest/gtest.h>
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Box.hh"
+#include "sdf/Model.hh"
+#include "sdf/Link.hh"
 #include "sdf/Surface.hh"
 #include "test_utils.hh"
 
@@ -27,6 +30,7 @@ TEST(DOMcollision, Construction)
   sdf::Collision collision;
   EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
+  EXPECT_EQ(collision.Density(), 1000.0);
 
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
@@ -41,6 +45,9 @@ TEST(DOMcollision, Construction)
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
+
+  collision.SetDensity(1240.0);
+  EXPECT_DOUBLE_EQ(collision.Density(), 1240.0);
 
   collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
   EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
@@ -168,6 +175,151 @@ TEST(DOMcollision, SetSurface)
   ASSERT_NE(nullptr, collision.Surface());
   ASSERT_NE(nullptr, collision.Surface()->Contact());
   EXPECT_EQ(collision.Surface()->Contact()->CollideBitmask(), 0x2);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
+{
+  sdf::Collision collision;
+  EXPECT_DOUBLE_EQ(1000.0, collision.Density());
+
+  sdf::ElementPtr sdf(new sdf::Element());
+  collision.Load(sdf);
+
+  gz::math::Inertiald collisionInertial;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Geometry geom;
+  sdf::Box box;
+
+  // Invalid Inertial test
+  box.SetSize(gz::math::Vector3d(-1, 1, 0));
+  geom.SetType(sdf::GeometryType::BOX);
+  geom.SetBoxShape(box);
+  collision.SetGeom(geom);
+
+  sdf::Errors errors =
+    collision.CalculateInertial(collisionInertial, sdfParserConfig);
+  ASSERT_FALSE(errors.empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+
+  double l = 2;
+  double w = 2;
+  double h = 2;
+
+  double expectedMass = l*w*h * collision->Density();
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  ASSERT_TRUE(inertialErr.empty());
+  EXPECT_DOUBLE_EQ(1240.0, collision->Density());
+  EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.MassMatrix(), link->Inertial().MassMatrix());
+  EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <frame name='arbitrary_frame'>"
+  "       <pose>0 0 1 0 0 0</pose>"
+  "     </frame>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <pose relative_to='arbitrary_frame'>0 0 -1 0 0 0</pose>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+
+  double l = 2;
+  double w = 2;
+  double h = 2;
+
+  double expectedMass = l*w*h * collision->Density();
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  ASSERT_TRUE(inertialErr.empty());
+  EXPECT_DOUBLE_EQ(1240.0, collision->Density());
+  EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.MassMatrix(), link->Inertial().MassMatrix());
+  EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
 }
 
 /////////////////////////////////////////////////

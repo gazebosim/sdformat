@@ -146,6 +146,51 @@ TEST(DOMBox, Shape)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMBox, CalculateInertial)
+{
+  sdf::Box box;
+
+  // density of aluminium
+  double density = 2710;
+
+  // Invalid dimensions leading to std::nullopt return
+  // CalculateInertials()
+  box.SetSize(gz::math::Vector3d(-1, 1, 0));
+  auto invalidBoxInertial = box.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidBoxInertial);
+
+  double l = 2;
+  double w = 2;
+  double h = 2;
+  box.SetSize(gz::math::Vector3d(l, w, h));
+
+  double expectedMass = box.Shape().Volume() * density;
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto boxInertial = box.CalculateInertial(density);
+  EXPECT_EQ(box.Shape().Material().Density(), density);
+  ASSERT_NE(std::nullopt, boxInertial);
+  EXPECT_EQ(expectedInertial, *boxInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    boxInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    boxInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), boxInertial->Pose());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMBox, ToElement)
 {
   sdf::Box box;

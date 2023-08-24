@@ -182,6 +182,51 @@ TEST(DOMCapsule, Shape)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMCapsule, CalculateInertial)
+{
+  sdf::Capsule capsule;
+
+  // density of aluminium
+  double density = 2710;
+  double l = 2.0;
+  double r = 0.1;
+
+  capsule.SetLength(l);
+  capsule.SetRadius(r);
+
+  double expectedMass = capsule.Shape().Volume() * density;
+  const double cylinderVolume = GZ_PI * r*r * l;
+  const double sphereVolume = GZ_PI * 4. / 3. * r*r*r;
+  const double volume = cylinderVolume + sphereVolume;
+  const double cylinderMass = expectedMass * cylinderVolume / volume;
+  const double sphereMass = expectedMass * sphereVolume / volume;
+
+  double ixxIyy = (1/12.0) * cylinderMass * (3*r*r + l*l)
+    + sphereMass * (0.4*r*r + 0.375*r*l + 0.25*l*l);
+  double izz = r*r * (0.5 * cylinderMass + 0.4 * sphereMass);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixxIyy, ixxIyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto capsuleInertial = capsule.CalculateInertial(density);
+  EXPECT_EQ(capsule.Shape().Mat().Density(), density);
+  ASSERT_NE(std::nullopt, capsuleInertial);
+  EXPECT_EQ(expectedInertial, *capsuleInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    capsuleInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    capsuleInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), capsuleInertial->Pose());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMCapsule, ToElement)
 {
   sdf::Capsule capsule;

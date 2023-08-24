@@ -44,6 +44,12 @@ class sdf::ParserConfig::Implementation
   /// to behave behave differently than the `warningsPolicy`.
   public: std::optional<EnforcementPolicy> deprecatedElementsPolicy;
 
+  /// \brief Configuration that is set for the CalculateInertial() function
+  /// By default it is set to SKIP_CALCULATION_IN_LOAD which would cause
+  /// Root::Load() to not call CalculateInertial()
+  public: ConfigureCalculateInertial calculateInertialConfiguration =
+    ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD;
+
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
 
@@ -159,6 +165,19 @@ EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
 {
   return this->dataPtr->deprecatedElementsPolicy.value_or(
       this->dataPtr->warningsPolicy);
+}
+
+/////////////////////////////////////////////////
+ConfigureCalculateInertial ParserConfig::CalculateInertialConfiguration() const
+{
+  return this->dataPtr->calculateInertialConfiguration;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetCalculateInertialConfiguration(
+  ConfigureCalculateInertial _configuration)
+{
+  this->dataPtr->calculateInertialConfiguration = _configuration;
 }
 
 /////////////////////////////////////////////////

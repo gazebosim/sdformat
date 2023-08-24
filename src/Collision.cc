@@ -264,7 +264,8 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
 
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(this->dataPtr->density, _config,
-                                          this->dataPtr->autoInertiaParams);
+                                          this->dataPtr->autoInertiaParams,
+                                          errors);
 
   if (!geomInertial)
   {
@@ -334,6 +335,10 @@ sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
         this->dataPtr->poseRelativeTo, _errors);
   }
   poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
+
+  // Set the density
+  sdf::ElementPtr densityElem = elem->GetElement("density", _errors);
+  densityElem->Set<double>(this->Density());
 
   // Set the geometry
   elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);

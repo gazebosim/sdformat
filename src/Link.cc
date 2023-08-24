@@ -78,6 +78,8 @@ class sdf::Link::Implementation
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  public: bool autoInertiaSaved = false;
+
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
 };
@@ -171,8 +173,26 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
+    if (inertialElem->Get<bool>("auto"))
+    {
+      // If auto is to true but user has still provided
+      // inertial values
+      if (inertialElem->HasElement("pose") ||
+          inertialElem->HasElement("mass") ||
+          inertialElem->HasElement("inertia"))
+      {
+        Error err(
+          ErrorCode::WARNING,
+          "Inertial was used with auto=true for link, " +
+          this->dataPtr->name + " but user defined inertial values "
+          "were found. They would be overwritten by computed ones."
+        );
+        enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, errors);
+      }
+    }
     // If auto is set to false or not specified
-    if (!inertialElem->Get<bool>("auto"))
+    else
     {
       if (inertialElem->HasElement("pose"))
         loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
@@ -249,18 +269,6 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
                          " has invalid fluid added mass."});
       }
     }
-  }
-  else
-  {
-    Error inertialMissingErr(
-      ErrorCode::ELEMENT_MISSING,
-      "<inertial> element is missing. "
-      "Using default values for the inertial "
-      "for the link: " + this->dataPtr->name
-    );
-    enforceConfigurablePolicyCondition(
-      _config.WarningsPolicy(), inertialMissingErr, errors
-    );
   }
 
   if (!this->dataPtr->inertial.SetMassMatrix(
@@ -587,7 +595,7 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
   {
     sdf::ElementPtr inertialElem = this->dataPtr->sdf->GetElement("inertial");
 
-    if (inertialElem->Get<bool>("auto"))
+    if (inertialElem->Get<bool>("auto") && !this->dataPtr->autoInertiaSaved)
     {
       // Return an error if auto is set to true but there are no
       // collision elements in the link
@@ -613,6 +621,14 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
       }
 
       this->dataPtr->inertial = totalInertia;
+
+      // If CalculateInertial() was called with SAVE_CALCULATION
+      // configuration then set autoInertiaSaved to true
+      if (_config.CalculateInertialConfiguration() ==
+        ConfigureCalculateInertial::SAVE_CALCULATION)
+      {
+        this->dataPtr->autoInertiaSaved = true;
+      }
     }
     // If auto is false, this means inertial values were set
     // from user given values in Link::Load(), therefore we can return
@@ -775,6 +791,18 @@ bool Link::EnableWind() const
 void Link::SetEnableWind(const bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
+}
+
+/////////////////////////////////////////////////
+bool Link::AutoInertiaSaved() const
+{
+  return this->dataPtr->autoInertiaSaved;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertiaSaved(bool _autoInertiaSaved)
+{
+  this->dataPtr->autoInertiaSaved = _autoInertiaSaved;
 }
 
 //////////////////////////////////////////////////
