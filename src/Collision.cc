@@ -313,6 +313,10 @@ sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
   }
   poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
+  // Set the density
+  sdf::ElementPtr densityElem = elem->GetElement("density", _errors);
+  densityElem->Set<double>(this->Density());
+
   // Set the geometry
   elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);
 
