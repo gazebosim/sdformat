@@ -170,21 +170,18 @@ Errors Joint::Load(ElementPtr _sdf)
   // The keys of this map are also the only valid leader axis names
   const std::map<std::string, std::size_t>
       followerAxisNames = {{"axis", 0}, {"axis2", 1}};
-  for (const auto &followerAxisNameToIndex : followerAxisNames)
+  for (const auto &[followerAxis, i] : followerAxisNames)
   {
-    const std::string followerAxis = followerAxisNameToIndex.first;
-    const std::size_t i = followerAxisNameToIndex.second;
     if (_sdf->HasElement(followerAxis))
     {
-      this->dataPtr->axis[i].emplace();
-      Errors axisErrors =
-          this->dataPtr->axis[i]->Load(_sdf->GetElement(followerAxis));
+      auto &axis = this->dataPtr->axis[i].emplace();
+      Errors axisErrors = axis.Load(_sdf->GetElement(followerAxis));
       errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
 
-      if (this->dataPtr->axis[i]->Mimic())
+      if (axis.Mimic())
       {
-        const auto leaderAxis = this->dataPtr->axis[i]->Mimic()->Axis();
-        if (this->dataPtr->axis[i]->Mimic()->Joint() == this->Name() &&
+        const auto leaderAxis = axis.Mimic()->Axis();
+        if (axis.Mimic()->Joint() == this->Name() &&
             leaderAxis == followerAxis)
         {
           errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,

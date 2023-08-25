@@ -282,7 +282,8 @@ TEST(DOMJointAxis, ToElement)
   EXPECT_DOUBLE_EQ(1.5, dissipation);
 
   // Check //axis/mimic
-  sdf::ElementPtr mimicElem = elem->GetElement("mimic", errors);
+  sdf::ElementPtr mimicElem = elem->FindElement("mimic");
+  ASSERT_NE(nullptr, mimicElem);
   std::string mimicJointName;
   mimicJointName = mimicElem->Get<std::string>(
       errors, "joint", mimicJointName).first;
