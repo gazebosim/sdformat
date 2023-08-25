@@ -24,6 +24,10 @@
     </description>
   </element>
 
+  <element name="auto_inertia_params" required="0">
+    <description>Parent tag to hold user-defined custom params for mesh inertia calculator</description>
+  </element>
+
   <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
     <description>
       This pose (translation, rotation) describes the position and orientation
