@@ -52,7 +52,7 @@ TEST(DOMCustomInertiaCalcProperties, Construction)
 TEST(DOMCustomInertiaCalcProperties, ConstructionWithMeshConstructor)
 {
   double density = 1240.0;
-  
+
    sdf::Mesh mesh;
    mesh.SetScale(gz::math::Vector3d(2, 2, 2));
 
@@ -77,7 +77,8 @@ TEST(DOMCustomInertiaCalcProperties, CopyConstructor)
   sdf::CustomInertiaCalcProperties customInertiaCalcProps;
   customInertiaCalcProps.SetDensity(1240.0);
 
-  sdf::CustomInertiaCalcProperties customInertiaCalcProps2(customInertiaCalcProps);
+  sdf::CustomInertiaCalcProperties customInertiaCalcProps2(
+    customInertiaCalcProps);
   EXPECT_DOUBLE_EQ(customInertiaCalcProps2.Density(),
     customInertiaCalcProps.Density());
 }
@@ -90,6 +91,7 @@ TEST(DOMCustomInertiaCalcProperties, CopyAssignmentOperator)
 
   sdf::CustomInertiaCalcProperties customInertiaCalcProps2;
   customInertiaCalcProps2 = customInertiaCalcProps;
+
   EXPECT_DOUBLE_EQ(customInertiaCalcProps2.Density(),
     customInertiaCalcProps.Density());
 }
@@ -114,6 +116,7 @@ TEST(DOMCustomInertiaCalcProperties, MoveAssignmentOperator)
 
   sdf::CustomInertiaCalcProperties customInertiaCalcProps2;
   customInertiaCalcProps2 = std::move(customInertiaCalcProps);
+
   EXPECT_DOUBLE_EQ(customInertiaCalcProps2.Density(), 1240.0);
 }
 

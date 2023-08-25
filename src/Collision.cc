@@ -53,7 +53,7 @@ class sdf::Collision::Implementation
   public: double density{1000.0};
 
   /// \brief SDF element pointer to <moi_calculator_params> tag
-  public: sdf::ElementPtr autoInertiaParams;
+  public: sdf::ElementPtr autoInertiaParams{nullptr};
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
