@@ -14,10 +14,19 @@
  * limitations under the License.
  *
 */
+#include <optional>
 
 #include <gtest/gtest.h>
 #include "sdf/Mesh.hh"
 #include "test_utils.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
+#include "sdf/Types.hh"
+#include "sdf/Error.hh"
+
+#include <gz/math/Vector3.hh>
+#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMMesh, Construction)
@@ -179,6 +188,110 @@ TEST(DOMMesh, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <uri>"));
   EXPECT_NE(nullptr, mesh.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CalcualteInertial)
+{
+  sdf::Mesh mesh;
+  sdf::ParserConfig config;
+  sdf::Errors errors;
+  sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+  double density = 0;
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+
+  // File Path needs to be considered as a valid mesh
+  mesh.SetFilePath("/some_path");
+
+  // Test Lambda function for registering as custom inertia calculator
+  auto customMeshInertiaCalculator = [](
+    sdf::Errors &_errors,
+    const sdf::CustomInertiaCalcProperties &_inertiaProps
+  ) -> std::optional<gz::math::Inertiald>
+  {
+    if (_inertiaProps.Density() <= 0)
+    {
+      _errors.push_back(
+        {sdf::ErrorCode::LINK_INERTIA_INVALID,
+        "Inertia is invalid"});
+      return std::nullopt;
+    }
+
+    gz::math::Inertiald meshInerial;
+
+    meshInerial.SetMassMatrix(
+      gz::math::MassMatrix3d(
+        1.0,
+        gz::math::Vector3d::One,
+        gz::math::Vector3d::Zero
+      )
+    );
+
+    return meshInerial;
+  };
+
+  config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+  auto meshInertial = mesh.CalculateInertial(density,
+    autoInertiaParamsElem, config, errors);
+  ASSERT_FALSE(errors.empty());
+  ASSERT_EQ(meshInertial, std::nullopt);
+
+  density = 1240.0;
+  sdf::Errors errors2;
+  auto meshInertial2 = mesh.CalculateInertial(density,
+  autoInertiaParamsElem, config, errors2);
+  ASSERT_TRUE(errors2.empty());
+  EXPECT_DOUBLE_EQ(meshInertial2->MassMatrix().Mass(), 1.0);
+  EXPECT_EQ(meshInertial2->MassMatrix().DiagonalMoments(),
+    gz::math::Vector3d::One);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CalculateInertiaWithEmptyFilePath)
+{
+  sdf::Mesh mesh;
+  sdf::ParserConfig config;
+  sdf::Errors errors;
+  sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+  double density = 0;
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+
+  // Test Lambda function for registering as custom inertia calculator
+  auto customMeshInertiaCalculator = [](
+    sdf::Errors &_errors,
+    const sdf::CustomInertiaCalcProperties &_inertiaProps
+  ) -> std::optional<gz::math::Inertiald>
+  {
+    if (_inertiaProps.Density() <= 0)
+    {
+      _errors.push_back(
+        {sdf::ErrorCode::LINK_INERTIA_INVALID,
+        "Inertia is invalid"});
+      return std::nullopt;
+    }
+
+    gz::math::Inertiald meshInerial;
+
+    meshInerial.SetMassMatrix(
+      gz::math::MassMatrix3d(
+        1.0,
+        gz::math::Vector3d::One,
+        gz::math::Vector3d::Zero
+      )
+    );
+
+    return meshInerial;
+  };
+
+  config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+  auto meshInertial = mesh.CalculateInertial(density,
+    autoInertiaParamsElem, config, errors);
+  ASSERT_FALSE(errors.empty());
+  ASSERT_EQ(meshInertial, std::nullopt);
 }
 
 /////////////////////////////////////////////////
