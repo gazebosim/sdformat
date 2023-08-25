@@ -19,10 +19,15 @@
 #include <gz/math/Color.hh>
 #include <gz/math/SphericalCoordinates.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Light.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Model.hh"
+#include "sdf/Link.hh"
+#include "sdf/Types.hh"
 #include "sdf/Physics.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"

@@ -26,6 +26,8 @@
 #include "sdf/World.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Root.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
 #include "test_config.hh"
 
 /////////////////////////////////////////////////

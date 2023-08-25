@@ -22,7 +22,15 @@
 #include "sdf/Model.hh"
 #include "sdf/Link.hh"
 #include "sdf/Surface.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
+#include "sdf/Root.hh"
+#include "sdf/Model.hh"
 #include "test_utils.hh"
+#include <gz/math/Inertial.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/MassMatrix3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)

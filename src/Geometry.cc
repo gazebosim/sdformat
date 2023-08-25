@@ -29,6 +29,9 @@
 #include "sdf/Plane.hh"
 #include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/Element.hh"
+#include "sdf/Types.hh"
+#include "sdf/Error.hh"
 
 #include "Utils.hh"
 

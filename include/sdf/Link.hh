@@ -27,6 +27,8 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Error.hh"
 
 namespace sdf
 {
