@@ -196,12 +196,14 @@ void Mesh::SetCenterSubmesh(const bool _center)
 
 //////////////////////////////////////////////////
 std::optional<gz::math::Inertiald> Mesh::CalculateInertial(double _density,
-    const sdf::ElementPtr _autoInertiaParams, const ParserConfig &_config)
+    const sdf::ElementPtr _autoInertiaParams, const ParserConfig &_config,
+    sdf::Errors &_errors)
 {
-  sdf::Errors errors;
-
   if (this->dataPtr->filePath.empty())
   {
+    _errors.push_back({
+      sdf::ErrorCode::WARNING,
+      "File Path for the mesh was empty. Could not calculate inertia"});
     return std::nullopt;
   }
 
@@ -210,7 +212,7 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(double _density,
   sdf::CustomInertiaCalcProperties calcInterface = CustomInertiaCalcProperties(
     _density, *this, _autoInertiaParams);
 
-  return customCalculator(errors, calcInterface);
+  return customCalculator(_errors, calcInterface);
 }
 
 /////////////////////////////////////////////////
