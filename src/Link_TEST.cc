@@ -28,6 +28,8 @@
 #include "sdf/Projector.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Visual.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMLink, Construction)

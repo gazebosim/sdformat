@@ -24,6 +24,8 @@
 #include "sdf/parser.hh"
 #include "sdf/Surface.hh"
 #include "sdf/Types.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Element.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"

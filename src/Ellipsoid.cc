@@ -18,6 +18,7 @@
 #include <optional>
 
 #include <gz/math/Inertial.hh>
+#include <gz/math/Material.hh>
 #include "sdf/Ellipsoid.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"

@@ -31,6 +31,8 @@
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Element.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"

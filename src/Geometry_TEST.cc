@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-
+#include <optional>
 #include <gtest/gtest.h>
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -26,7 +26,14 @@
 #include "sdf/Plane.hh"
 #include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
+#include "sdf/Element.hh"
 #include "test_utils.hh"
+#include <gz/math/Inertial.hh>
+#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMGeometry, Construction)

@@ -16,6 +16,7 @@
 */
 #include <optional>
 #include <gz/math/Inertial.hh>
+#include <gz/math/Material.hh>
 
 #include "sdf/parser.hh"
 #include "sdf/Sphere.hh"

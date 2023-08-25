@@ -15,9 +15,14 @@
  *
 */
 
+#include <optional>
 #include <gtest/gtest.h>
 #include "sdf/Ellipsoid.hh"
 #include "test_utils.hh"
+#include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/MassMatrix3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMEllipsoid, Construction)
