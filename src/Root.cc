@@ -197,7 +197,7 @@ Errors Root::Load(const std::string &_filename, const ParserConfig &_config)
   if (!sdfParsed)
   {
     errors.push_back(
-        {ErrorCode::FILE_READ, "Unable to read file:" + _filename});
+        {ErrorCode::FILE_READ, "Unable to read file: [" + _filename + "]"});
     return errors;
   }
 
