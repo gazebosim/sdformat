@@ -317,13 +317,14 @@ TEST(DOMCollision, CalculateInertialWithAutoInertiaParamsElement)
 
   sdf::ElementPtr autoInertiaParamsElem = collision->AutoInertiaParams();
 
-  // <auto_inertial_params> element is used as parent element for custom 
-  // intertia calculator params. Custom elements have to be defined with a 
-  // namespace prefix(gz in this case). More about this can be found in the 
+  // <auto_inertial_params> element is used as parent element for custom
+  // intertia calculator params. Custom elements have to be defined with a
+  // namespace prefix(gz in this case). More about this can be found in the
   // following proposal:
   // http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal&cat=pose_semantics_docs&
   double voxelSize = autoInertiaParamsElem->Get<double>("gz:voxel_size");
-  std::string voxelGridType = autoInertiaParamsElem->Get<std::string>("gz:voxel_grid_type");
+  std::string voxelGridType =
+    autoInertiaParamsElem->Get<std::string>("gz:voxel_grid_type");
   EXPECT_EQ("float", voxelGridType);
   EXPECT_DOUBLE_EQ(0.01, voxelSize);
 }
