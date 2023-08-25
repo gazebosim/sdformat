@@ -24,6 +24,8 @@
 #include "sdf/Element.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/config.hh"
+#include "sdf/Types.hh"
+#include "sdf/Error.hh"
 
 namespace sdf
 {

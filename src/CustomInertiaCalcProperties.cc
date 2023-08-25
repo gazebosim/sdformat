@@ -18,6 +18,7 @@
 #include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Element.hh"
+#include <gz/utils/ImplPtr.hh>
 
 using namespace sdf;
 

@@ -21,6 +21,8 @@
 #include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
+#include "sdf/Element.hh"
+#include "sdf/ParserConfig.hh"
 #include "Utils.hh"
 
 using namespace sdf;
