@@ -445,15 +445,13 @@ TEST(DOMJointAxis, ParseInvalidSelfMimic)
 
   sdf::Root root;
   auto errors = root.LoadSdfString(sdf);
-  ASSERT_EQ(errors.size(), 4) << errors;
+  ASSERT_EQ(errors.size(), 2) << errors;
   const std::string errorMsg = "Axis with name [axis] "
     "in joint with name [self_mimic] cannot mimic itself.";
   const std::string errorMsg2 = "Axis with name [axis2] "
     "in joint with name [self_mimic] cannot mimic itself.";
   EXPECT_EQ(errors[0].Message(), errorMsg) << errors[0];
   EXPECT_EQ(errors[1].Message(), errorMsg2) << errors[1];
-  EXPECT_EQ(errors[2].Message(), errorMsg) << errors[2];
-  EXPECT_EQ(errors[3].Message(), errorMsg2) << errors[3];
 }
 
 /////////////////////////////////////////////////

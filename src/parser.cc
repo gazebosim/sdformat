@@ -2779,14 +2779,7 @@ void checkScopedJointAxisMimicValues(
         auto mimic = axis->Mimic();
         if (mimic)
         {
-          if (mimic->Joint() == joint->Name() &&
-              mimic->Axis() == followerAxis)
-          {
-            errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
-              "Axis with name [" + followerAxis + "] in joint with name [" +
-              joint->Name() + "] cannot mimic itself."});
-          }
-          else if (!_scope->JointByName(mimic->Joint()))
+          if (!_scope->JointByName(mimic->Joint()))
           {
             errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
               "A joint with name[" + mimic->Joint() +
