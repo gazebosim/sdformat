@@ -25,7 +25,6 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 #include "sdf/Root.hh"
-#include "sdf/Model.hh"
 #include "test_utils.hh"
 #include <gz/math/Inertial.hh>
 #include <gz/math/Vector3.hh>
@@ -38,7 +37,6 @@ TEST(DOMcollision, Construction)
   sdf::Collision collision;
   EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
-  EXPECT_EQ(collision.Density(), 1000.0);
 
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
@@ -54,8 +52,17 @@ TEST(DOMcollision, Construction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
+  EXPECT_EQ(collision.Density(), 1000.0);
   collision.SetDensity(1240.0);
   EXPECT_DOUBLE_EQ(collision.Density(), 1240.0);
+
+  EXPECT_EQ(collision.AutoInertiaParams(), nullptr);
+  sdf::ElementPtr autoInertialParamsElem(new sdf::Element());
+  autoInertialParamsElem->SetName("auto_inertial_params");
+  collision.SetAutoInertiaParams(autoInertialParamsElem);
+  EXPECT_EQ(collision.AutoInertiaParams(), autoInertialParamsElem);
+  EXPECT_EQ(collision.AutoInertiaParams()->GetName(),
+    autoInertialParamsElem->GetName());
 
   collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
   EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
@@ -266,6 +273,59 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
   EXPECT_EQ(expectedInertial.MassMatrix(), link->Inertial().MassMatrix());
   EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CalculateInertialWithAutoInertiaParamsElement)
+{
+  // This example considers a custom voxel-based inertia calculator
+  // <auto_inertial_params> element is used to provide properties
+  // for the custom calculator like voxel size, grid type, etc.
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <auto_inertia_params>"
+  "           <gz:voxel_size>0.01</gz:voxel_size>"
+  "           <gz:voxel_grid_type>float</gz:voxel_grid_type>"
+  "         </auto_inertia_params>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+
+  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  EXPECT_TRUE(inertialErr.empty());
+
+  sdf::ElementPtr autoInertiaParamsElem = collision->AutoInertiaParams();
+
+  // <auto_inertial_params> element is used as parent element for custom 
+  // intertia calculator params. Custom elements have to be defined with a 
+  // namespace prefix(gz in this case). More about this can be found in the 
+  // following proposal:
+  // http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal&cat=pose_semantics_docs&
+  double voxelSize = autoInertiaParamsElem->Get<double>("gz:voxel_size");
+  std::string voxelGridType = autoInertiaParamsElem->Get<std::string>("gz:voxel_grid_type");
+  EXPECT_EQ("float", voxelGridType);
+  EXPECT_DOUBLE_EQ(0.01, voxelSize);
 }
 
 /////////////////////////////////////////////////
