@@ -18,6 +18,8 @@
 #ifndef SDF_CUSTOM_INERTIA_CALC_PROPERTIES_HH_
 #define SDF_CUSTOM_INERTIA_CALC_PROPERTIES_HH_
 
+#include <optional>
+
 #include <gz/utils/ImplPtr.hh>
 #include <gz/math/Inertial.hh>
 
@@ -37,7 +39,10 @@ class Mesh;
 
 class SDFORMAT_VISIBLE CustomInertiaCalcProperties
 {
-  /// \brief Constructor
+  /// \brief Default Constructor
+  public: CustomInertiaCalcProperties();
+
+  /// \brief Constructor with mesh properties
   /// \param[in] _density Double density value
   /// \param[in] _mesh sdf::Mesh object
   /// \param[in] _calculatorParams sdf::ElementPtr for calculator params element
@@ -55,7 +60,7 @@ class SDFORMAT_VISIBLE CustomInertiaCalcProperties
 
   /// \brief Get the reference to the mesh oject being used.
   /// \return Reference to the sdf::Mesh object.
-  public: const sdf::Mesh &Mesh() const;
+  public: const std::optional<sdf::Mesh> &Mesh() const;
 
   /// \brief Function to set the mesh object
   /// \param[in] _mesh sdf::Mesh object

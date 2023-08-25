@@ -15,26 +15,35 @@
  *
  */
 
+#include <optional>
+
 #include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Element.hh"
+
 #include <gz/utils/ImplPtr.hh>
 
 using namespace sdf;
 
 class CustomInertiaCalcProperties::Implementation
 {
-  /// \brief Density of the mesh
+  /// \brief Density of the mesh. 1000 kg/m^3 by default
   public: double density{1000.0};
 
-  /// \brief SDF mesh object
-  public: sdf::Mesh mesh;
+  /// \brief Optional SDF mesh object. Default is std::nullopt
+  public: std::optional<sdf::Mesh> mesh{std::nullopt};
 
   /// \brief SDF element pointer to <auto_inertia_params> tag.
   /// This can be used to access custom params for the
   /// Inertia Caluclator
   public: sdf::ElementPtr inertiaCalculatorParams{nullptr};
 };
+
+/////////////////////////////////////////////////
+CustomInertiaCalcProperties::CustomInertiaCalcProperties()
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
+{
+}
 
 /////////////////////////////////////////////////
 CustomInertiaCalcProperties::CustomInertiaCalcProperties(const double _density,
@@ -60,7 +69,7 @@ void CustomInertiaCalcProperties::SetDensity(double _density)
 }
 
 /////////////////////////////////////////////////
-const sdf::Mesh &CustomInertiaCalcProperties::Mesh() const
+const std::optional<sdf::Mesh> &CustomInertiaCalcProperties::Mesh() const
 {
   return this->dataPtr->mesh;
 }
