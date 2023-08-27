@@ -179,6 +179,10 @@ namespace sdf
 
     /// \brief Generic error during parsing.
     PARSING_ERROR,
+
+    /// \brief The joint axis mimic does not refer to a valid joint in the
+    /// current scope.
+    JOINT_AXIS_MIMIC_INVALID,
   };
 
   class SDFORMAT_VISIBLE Error

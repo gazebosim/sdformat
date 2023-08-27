@@ -572,6 +572,19 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ### Additions
 
+1. **mimic.sdf**, **joint.sdf**: a mimic tag can be added to `//joint/axis` and
+    `//joint/axis2` to specify a linear relationship between the position of two
+    joint axes according to the following equation:
+    `follower_position = multiplier * (leader_position - reference) + offset`.
+    The joint axis containing the mimic tag is the follwer and the leader is
+    specified using the `@joint` and `@axis` attributes.
+    + `//mimic/@joint`: name of joint containing the leader axis.
+    + `//mimic/@axis`: name of the leader axis. Only valid values are "axis" or "axis2".
+    + `//mimic/multiplier`: parameter representing ratio between changes in follower axis position relative to changes in leader axis position.
+    + `//mimic/offset`: parameter representing offset to follower position.
+    + `//mimic/reference`: parameter representing reference for leader position before applying the multiplier.
+
+1. **joint.sdf**:
 ## SDFormat specification 1.9 to 1.10
 
 ### Additions

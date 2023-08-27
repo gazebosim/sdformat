@@ -112,6 +112,9 @@
       </element>
 
     </element> <!-- End Limit -->
+
+    <include filename="mimic.sdf" required="0"/>
+
   </element> <!-- End Axis -->
 
   <element name="axis2" required="0">
@@ -170,6 +173,9 @@
       </element>
 
     </element> <!-- End Limit -->
+
+    <include filename="mimic.sdf" required="0"/>
+
   </element> <!-- End Axis2 -->
 
   <element name="physics" required="0">

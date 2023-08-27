@@ -29,6 +29,12 @@ namespace sdf
 inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
+/// Define a pybind11 wrapper for an sdf::MimicConstraint
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineMimicConstraint(pybind11::object module);
+
 /// Define a pybind11 wrapper for an sdf::JointAxis
 /**
  * \param[in] module a pybind11 module to add the definition to
