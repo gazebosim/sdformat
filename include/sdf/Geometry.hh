@@ -214,15 +214,15 @@ namespace sdf
     public: void SetHeightmapShape(const Heightmap &_heightmap);
 
     /// \brief Calculate and return the Mass Matrix values for the Geometry
-    /// \param[in] _density The density of the geometry element.
-    /// \param[in] _config Parser Configuration
-    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
     /// \param[out] _errors A vector of Errors object. Each object
     /// would contain an error code and an error message.
+    /// \param[in] _config Parser Config
+    /// \param[in] _density The density of the geometry element.
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald> CalculateInertial(
-      double _density, const ParserConfig &_config,
-      sdf::ElementPtr _autoInertiaParams, sdf::Errors &_errors);
+      sdf::Errors &_errors, const ParserConfig &_config,
+      double _density, sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

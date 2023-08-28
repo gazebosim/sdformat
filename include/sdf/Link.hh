@@ -392,6 +392,19 @@ namespace sdf
     /// \sa Model::SetEnableWind(bool)
     public: void SetEnableWind(bool _enableWind);
 
+    /// \brief Check if the automatic calculation for the link inertial
+    /// is enabled or not.
+    /// \return True if automatic calculation is enabled. This can be done
+    /// setting the auto attribute of the <inertial> element of the link to
+    /// true or by setting the autoInertia member to true
+    /// using SetAutoInertia().
+    public: bool AutoInertia() const;
+
+    /// \brief Enable automatic inertial calculations by setting autoInertia
+    /// to true.
+    /// \param[in] _autoInertia True or False
+    public: void SetAutoInertia(bool _autoInertia);
+
     /// \brief Check if the inertial values for this link were saved.
     /// If true, the inertial values for this link wont be calculated
     /// when CalculateInertial() is called. This value is set to true
@@ -402,7 +415,7 @@ namespace sdf
     public: bool AutoInertiaSaved() const;
 
     /// \brief Set the autoInertiaSaved() values
-    /// \param _autoInertiaSaved True or False
+    /// \param[in] _autoInertiaSaved True or False
     public: void SetAutoInertiaSaved(bool _autoInertiaSaved);
 
     /// \brief Add a collision to the link.

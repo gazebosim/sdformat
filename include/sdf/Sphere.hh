@@ -68,7 +68,9 @@ namespace sdf
     /// not been called.
     public: sdf::ElementPtr Element() const;
 
-    /// \brief Calculate and return the Mass Matrix values for the Sphere
+    /// \brief Calculate and return the Inertial values for the Sphere. In
+    /// order to calculate the inertial properties, the function mutates the
+    /// object by updating its material properties.
     /// \param[in] _density Density of the sphere in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>

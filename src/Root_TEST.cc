@@ -356,7 +356,8 @@ TEST(DOMRoot, CalculateInertialWithSaveCalculationConfiguration)
   sdfParserConfig.SetCalculateInertialConfiguration(
     sdf::ConfigureCalculateInertial::SAVE_CALCULATION);
 
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  sdf::Errors inertialErr;
+  root.CalculateInertials(inertialErr, sdfParserConfig);
   EXPECT_TRUE(inertialErr.empty());
   ASSERT_TRUE(link->AutoInertiaSaved());
 }

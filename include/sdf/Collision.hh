@@ -79,12 +79,10 @@ namespace sdf
     public: void SetName(const std::string &_name);
 
     /// \brief Get the density of the collision.
-    /// The density of the collision must be unique within the scope of a Link.
     /// \return Density of the collision.
     public: double Density() const;
 
     /// \brief Set the density of the collision.
-    /// The density of the collision must be unique within the scope of a Link.
     /// \param[in] _density Density of the collision.
     public: void SetDensity(double _density);
 
@@ -145,13 +143,14 @@ namespace sdf
     public: sdf::SemanticPose SemanticPose() const;
 
     /// \brief Calculate and return the MassMatrix for the collision
+    /// \param[out] _errors A vector of Errors objects. Each errors contains an
+    /// Error code and a message. An empty errors vector indicates no errors
+    /// \param[in] _config Custom parser configuration
     /// \param[out] _inertial An inertial object which will be set with the
     /// calculated inertial values
-    /// \param[in] _config Custom parser configuration
-    /// \return Errors, which is a vector of Error objects. Each Error includes
-    /// an error code and message. An empty vector indicates no error
-    public: Errors CalculateInertial(gz::math::Inertiald &_inertial,
-                                     const ParserConfig &_config);
+    public: void CalculateInertial(sdf::Errors &_errors,
+                                  const ParserConfig &_config,
+                                  gz::math::Inertiald &_inertial);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

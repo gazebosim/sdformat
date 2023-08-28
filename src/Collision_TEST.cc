@@ -212,8 +212,10 @@ TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
   geom.SetBoxShape(box);
   collision.SetGeom(geom);
 
-  sdf::Errors errors =
-    collision.CalculateInertial(collisionInertial, sdfParserConfig);
+  sdf::Errors errors;
+
+  collision.CalculateInertial(errors, sdfParserConfig,
+    collisionInertial);
   ASSERT_FALSE(errors.empty());
 }
 
@@ -247,7 +249,8 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   const sdf::Link *link = model->LinkByIndex(0);
   const sdf::Collision *collision = link->CollisionByIndex(0);
 
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  sdf::Errors inertialErr;
+  root.CalculateInertials(inertialErr, sdfParserConfig);
 
   double l = 2;
   double w = 2;
@@ -363,7 +366,8 @@ TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
   const sdf::Link *link = model->LinkByIndex(0);
   const sdf::Collision *collision = link->CollisionByIndex(0);
 
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  sdf::Errors inertialErr;
+  root.CalculateInertials(inertialErr, sdfParserConfig);
 
   double l = 2;
   double w = 2;

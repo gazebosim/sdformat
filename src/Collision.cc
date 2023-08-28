@@ -52,6 +52,9 @@ class sdf::Collision::Implementation
   /// \brief Density of the collision. Default is 1000.0
   public: double density{1000.0};
 
+  /// \brief True if density was set during load from sdf.
+  public: bool densitySetAtLoad = false;
+
   /// \brief SDF element pointer to <moi_calculator_params> tag
   public: sdf::ElementPtr autoInertiaParams{nullptr};
 
@@ -121,6 +124,13 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("surface"))
   {
     this->dataPtr->surface.Load(_sdf->GetElement("surface", errors));
+  }
+
+  // Load the density value if given
+  if (_sdf->HasElement("density"))
+  {
+    this->dataPtr->density = _sdf->Get<double>("density");
+    this->dataPtr->densitySetAtLoad = true;
   }
 
   return errors;
@@ -234,27 +244,22 @@ sdf::SemanticPose Collision::SemanticPose() const
 }
 
 /////////////////////////////////////////////////
-Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
-                                    const ParserConfig &_config)
+void Collision::CalculateInertial(
+  sdf::Errors &_errors,
+  const ParserConfig &_config,
+  gz::math::Inertiald &_inertial)
 {
-  Errors errors;
-
-  // Set the density value for the collision material
-  if (this->dataPtr->sdf->HasElement("density"))
+  // Check if density was not set during load & send a warning
+  // about the default value being used
+  if (!this->dataPtr->densitySetAtLoad)
   {
-    this->dataPtr->density = this->dataPtr->sdf->Get<double>("density");
-  }
-  else
-  {
-    // If the density element is missing, let the user know that a default
-    // value would be used according to the policy
     Error densityMissingErr(
       ErrorCode::ELEMENT_MISSING,
       "Collision is missing a <density> child element. "
       "Using a default density value of 1000.0 kg/m^3. "
     );
     enforceConfigurablePolicyCondition(
-      _config.WarningsPolicy(), densityMissingErr, errors
+      _config.WarningsPolicy(), densityMissingErr, _errors
     );
   }
 
@@ -265,15 +270,14 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
   }
 
   auto geomInertial =
-    this->dataPtr->geom.CalculateInertial(this->dataPtr->density, _config,
-                                          this->dataPtr->autoInertiaParams,
-                                          errors);
+    this->dataPtr->geom.CalculateInertial(_errors, _config,
+      this->dataPtr->density, this->dataPtr->autoInertiaParams);
 
   if (!geomInertial)
   {
-    errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+    _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
         "Inertia Calculated for collision: " +
-        this->dataPtr->name + " seems invalid."});
+        this->dataPtr->name + " is invalid."});
   }
   else
   {
@@ -296,15 +300,13 @@ Errors Collision::CalculateInertial(gz::math::Inertiald &_inertial,
         gz::math::Pose3d collisionPoseLinkFrame;
         Errors poseConvErrors =
           this->SemanticPose().Resolve(collisionPoseLinkFrame);
-        errors.insert(errors.end(),
+        _errors.insert(_errors.end(),
                       poseConvErrors.begin(),
                       poseConvErrors.end());
         _inertial.SetPose(collisionPoseLinkFrame);
       }
     }
   }
-
-  return errors;
 }
 
 /////////////////////////////////////////////////
