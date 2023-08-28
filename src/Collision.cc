@@ -52,6 +52,9 @@ class sdf::Collision::Implementation
   /// \brief Density of the collision. Default is 1000.0
   public: double density{1000.0};
 
+  /// \brief True if density was set during load from sdf.
+  public: bool densitySetAtLoad = false;
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
@@ -118,6 +121,13 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("surface"))
   {
     this->dataPtr->surface.Load(_sdf->GetElement("surface", errors));
+  }
+
+  // Load the density value if given
+  if (_sdf->HasElement("density"))
+  {
+    this->dataPtr->density = _sdf->Get<double>("density");
+    this->dataPtr->densitySetAtLoad = true;
   }
 
   return errors;
@@ -224,15 +234,10 @@ void Collision::CalculateInertial(
   const ParserConfig &_config,
   gz::math::Inertiald &_inertial)
 {
-  // Set the density value for the collision material
-  if (this->dataPtr->sdf->HasElement("density"))
+  // Check if density was not set during load & send a warning
+  // about the default value being used
+  if (!this->dataPtr->densitySetAtLoad)
   {
-    this->dataPtr->density = this->dataPtr->sdf->Get<double>("density");
-  }
-  else
-  {
-    // If the density element is missing, let the user know that a default
-    // value would be used according to the policy
     Error densityMissingErr(
       ErrorCode::ELEMENT_MISSING,
       "Collision is missing a <density> child element. "
