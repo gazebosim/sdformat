@@ -75,7 +75,9 @@ namespace sdf
     /// \return A reference to a gz::math::Capsuled object.
     public: gz::math::Capsuled &Shape();
 
-    /// \brief Calculate and return the Mass Matrix values for the Capsule
+    /// \brief Calculate and return the Inertial values for the Capsule. In order
+    /// to calculate the inertial properties, the function mutates the object 
+    /// by updating its material properties.
     /// \param[in] _density Density of the capsule in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald> CalculateInertial(
