@@ -80,6 +80,8 @@ class sdf::Link::Implementation
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief This variable is used to track whether the inertia values for
+  /// link was saved in CalculateInertial()
   public: bool autoInertiaSaved = false;
 
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
