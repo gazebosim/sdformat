@@ -20,6 +20,7 @@
     <description>
       Mass Density of the collision geometry. 
       This is used to determine mass and inertia values during automatic calculation.
+      This density value would be overwritten by the density value in <collision>.
       Default is the density of water 1000 kg/m^3.
     </description>
   </element>
