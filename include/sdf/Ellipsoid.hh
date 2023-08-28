@@ -67,8 +67,8 @@ namespace sdf
     /// \return A reference to a gz::math::Ellipsoidd object.
     public: gz::math::Ellipsoidd &Shape();
 
-    /// \brief Calculate and return the Inertial values for the Ellipsoid. In 
-    /// order to calculate the inertial properties, the function mutates the 
+    /// \brief Calculate and return the Inertial values for the Ellipsoid. In
+    /// order to calculate the inertial properties, the function mutates the
     /// object by updating its material properties.
     /// \param[in] _density Density of the ellipsoid in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt

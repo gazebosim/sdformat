@@ -221,7 +221,7 @@ namespace sdf
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald> CalculateInertial(
       sdf::Errors &_errors,
-      const sdf::ParserConfig &_config,  
+      const sdf::ParserConfig &_config,
       double _density);
 
     /// \brief Get a pointer to the SDF element that was used during

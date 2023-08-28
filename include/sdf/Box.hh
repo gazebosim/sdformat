@@ -69,7 +69,7 @@ namespace sdf
     public: gz::math::Boxd &Shape();
 
     /// \brief Calculate and return the Inertial values for the Box. In order
-    /// to calculate the inertial properties, the function mutates the object 
+    /// to calculate the inertial properties, the function mutates the object
     /// by updating its material properties.
     /// \param[in] _density Density of the box in kg/m^3
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt

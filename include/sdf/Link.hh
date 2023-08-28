@@ -396,7 +396,7 @@ namespace sdf
     /// is enabled or not.
     /// \return True if automatic calculation is enabled. This can be done
     /// setting the auto attribute of the <inertial> element of the link to
-    /// true or by setting the autoInertia member to true 
+    /// true or by setting the autoInertia member to true
     /// using SetAutoInertia().
     public: bool AutoInertia() const;
 
