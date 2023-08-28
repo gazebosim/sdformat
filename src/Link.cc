@@ -80,6 +80,9 @@ class sdf::Link::Implementation
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief True if automatic caluclation for the link inertial is enabled
+  public: bool autoInertia = false;
+
   /// \brief This variable is used to track whether the inertia values for
   /// link was saved in CalculateInertial()
   public: bool autoInertiaSaved = false;
@@ -179,6 +182,7 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
 
     if (inertialElem->Get<bool>("auto"))
     {
+      this->dataPtr->autoInertia = true;
       // If auto is to true but user has still provided
       // inertial values
       if (inertialElem->HasElement("pose") ||
@@ -595,47 +599,44 @@ Errors Link::ResolveInertial(
 /////////////////////////////////////////////////
 void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
 {
-  if (this->dataPtr->sdf->HasElement("inertial"))
+  // If inertial calculations is set to automatic & the inertial values for the
+  // link was not saved previously
+  if (this->dataPtr->autoInertia && !this->dataPtr->autoInertiaSaved)
   {
-    sdf::ElementPtr inertialElem = this->dataPtr->sdf->GetElement("inertial");
-
-    if (inertialElem->Get<bool>("auto") && !this->dataPtr->autoInertiaSaved)
+    // Return an error if auto is set to true but there are no
+    // collision elements in the link
+    if (this->dataPtr->collisions.empty())
     {
-      // Return an error if auto is set to true but there are no
-      // collision elements in the link
-      if (this->dataPtr->collisions.empty())
-      {
-        _errors.push_back({ErrorCode::ELEMENT_MISSING,
-                          "Inertial is set to auto but there are no "
-                          "<collision> elements for the link."});
-        return;
-      }
-
-      gz::math::Inertiald totalInertia;
-
-      for (sdf::Collision &collision : this->dataPtr->collisions)
-      {
-        gz::math::Inertiald collisionInertia;
-        collision.CalculateInertial(_errors, _config, collisionInertia);
-        totalInertia = totalInertia + collisionInertia;
-      }
-
-      this->dataPtr->inertial = totalInertia;
-
-      // If CalculateInertial() was called with SAVE_CALCULATION
-      // configuration then set autoInertiaSaved to true
-      if (_config.CalculateInertialConfiguration() ==
-        ConfigureCalculateInertial::SAVE_CALCULATION)
-      {
-        this->dataPtr->autoInertiaSaved = true;
-      }
-    }
-    // If auto is false, this means inertial values were set
-    // from user given values in Link::Load(), therefore we can return
-    else
-    {
+      _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                        "Inertial is set to auto but there are no "
+                        "<collision> elements for the link."});
       return;
     }
+
+    gz::math::Inertiald totalInertia;
+
+    for (sdf::Collision &collision : this->dataPtr->collisions)
+    {
+      gz::math::Inertiald collisionInertia;
+      collision.CalculateInertial(_errors, _config, collisionInertia);
+      totalInertia = totalInertia + collisionInertia;
+    }
+
+    this->dataPtr->inertial = totalInertia;
+
+    // If CalculateInertial() was called with SAVE_CALCULATION
+    // configuration then set autoInertiaSaved to true
+    if (_config.CalculateInertialConfiguration() ==
+      ConfigureCalculateInertial::SAVE_CALCULATION)
+    {
+      this->dataPtr->autoInertiaSaved = true;
+    }
+  }
+  // If auto is false, this means inertial values were set
+  // from user given values in Link::Load(), therefore we can return
+  else
+  {
+    return;
   }
 }
 
@@ -791,6 +792,18 @@ bool Link::EnableWind() const
 void Link::SetEnableWind(const bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
+}
+
+/////////////////////////////////////////////////
+bool Link::AutoInertia() const
+{
+  return this->dataPtr->autoInertia;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertia(bool _autoInertia)
+{
+  this->dataPtr->autoInertia = _autoInertia;
 }
 
 /////////////////////////////////////////////////

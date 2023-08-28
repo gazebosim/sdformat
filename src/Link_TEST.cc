@@ -76,6 +76,10 @@ TEST(DOMLink, Construction)
   link.SetAutoInertiaSaved(true);
   EXPECT_TRUE(link.AutoInertiaSaved());
 
+  EXPECT_FALSE(link.AutoInertia());
+  link.SetAutoInertia(true);
+  EXPECT_TRUE(link.AutoInertia());
+
   EXPECT_EQ(0u, link.SensorCount());
   EXPECT_EQ(nullptr, link.SensorByIndex(0));
   EXPECT_EQ(nullptr, link.SensorByIndex(1));
