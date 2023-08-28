@@ -294,8 +294,8 @@ TEST(DOMLink, CalculateInertialWithNoCollisionsInLink)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
-  ASSERT_FALSE(inertialErr.empty());
+  root.CalculateInertials(errors, sdfParserConfig);
+  ASSERT_FALSE(errors.empty());
 
   // Default Inertial values set during load
   EXPECT_EQ(1.0, link->Inertial().MassMatrix().Mass());
@@ -343,8 +343,8 @@ TEST(DOMLink, CalculateInertialWithMultipleCollisions)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
-  EXPECT_TRUE(inertialErr.empty());
+  root.CalculateInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
 
   // Mass of cube(volume * density) + mass of cylinder(volume * density)
   double expectedMass = 1.0 * 2.0 + GZ_PI * 0.5 * 0.5 * 1 * 4.0;
@@ -390,8 +390,8 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
-  EXPECT_TRUE(inertialErr.empty());
+  root.CalculateInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
 
   EXPECT_NE(4.0, link->Inertial().MassMatrix().Mass());
   EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
@@ -419,8 +419,8 @@ TEST(DOMLink, CalculateInertialCalledWithAutoFalse)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
-  EXPECT_TRUE(inertialErr.empty());
+  root.CalculateInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
 
   // Default Inertial values set during load
   EXPECT_EQ(1.0, link->Inertial().MassMatrix().Mass());

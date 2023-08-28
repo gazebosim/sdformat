@@ -396,8 +396,7 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   if (_config.CalculateInertialConfiguration() !=
     ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD)
   {
-    Errors inertialErr = this->CalculateInertials(_config);
-    errors.insert(errors.end(), inertialErr.begin(), inertialErr.end());
+    this->CalculateInertials(errors, _config);
   }
 
   return errors;
@@ -599,24 +598,20 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-Errors Root::CalculateInertials(const ParserConfig &_config)
+void Root::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
 {
-  sdf::Errors errors;
-
   // Calculate and set Inertials for all the worlds
   for (sdf::World &world : this->dataPtr->worlds)
   {
-    world.CalculateInertials(errors, _config);
+    world.CalculateInertials(_errors, _config);
   }
 
   // Calculate and set Inertials for the model, if it is present
   if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
   {
     sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
-    model.CalculateInertials(errors, _config);
+    model.CalculateInertials(_errors, _config);
   }
-
-  return errors;
 }
 
 /////////////////////////////////////////////////

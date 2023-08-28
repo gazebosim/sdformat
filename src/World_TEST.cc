@@ -547,7 +547,7 @@ TEST(DOMWorld, CalculateInertial)
   const sdf::Model *model = world->ModelByIndex(0);
   const sdf::Link *link = model->LinkByIndex(0);
 
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
+  root.CalculateInertials(errors, sdfParserConfig);
 
   double l = 2;
   double w = 2;
@@ -568,7 +568,7 @@ TEST(DOMWorld, CalculateInertial)
   expectedInertial.SetMassMatrix(expectedMassMat);
   expectedInertial.SetPose(gz::math::Pose3d::Zero);
 
-  ASSERT_TRUE(inertialErr.empty());
+  ASSERT_TRUE(errors.empty());
   EXPECT_EQ(expectedInertial, link->Inertial());
 }
 

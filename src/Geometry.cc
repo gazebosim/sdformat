@@ -313,7 +313,7 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
 }
 
 std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
-  double _density, const sdf::ParserConfig &_config, sdf::Errors &_errors)
+  sdf::Errors &_errors, const sdf::ParserConfig &_config, double _density)
 {
   std::optional<gz::math::Inertiald> geomInertial;
 
