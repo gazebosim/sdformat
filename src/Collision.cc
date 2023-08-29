@@ -231,8 +231,8 @@ sdf::SemanticPose Collision::SemanticPose() const
 /////////////////////////////////////////////////
 void Collision::CalculateInertial(
   sdf::Errors &_errors,
-  const ParserConfig &_config,
-  gz::math::Inertiald &_inertial)
+  gz::math::Inertiald &_inertial,
+  const ParserConfig &_config)
 {
   // Check if density was not set during load & send a warning
   // about the default value being used

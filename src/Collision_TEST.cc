@@ -206,8 +206,8 @@ TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
 
   sdf::Errors errors;
 
-  collision.CalculateInertial(errors, sdfParserConfig,
-    collisionInertial);
+  collision.CalculateInertial(errors, collisionInertial,
+    sdfParserConfig);
   ASSERT_FALSE(errors.empty());
 }
 
