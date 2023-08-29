@@ -315,8 +315,8 @@ TEST(DOMCollision, CalculateInertialWithAutoInertiaParamsElement)
   const sdf::Link *link = model->LinkByIndex(0);
   const sdf::Collision *collision = link->CollisionByIndex(0);
 
-  sdf::Errors inertialErr = root.CalculateInertials(sdfParserConfig);
-  EXPECT_TRUE(inertialErr.empty());
+  root.CalculateInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
 
   sdf::ElementPtr autoInertiaParamsElem = collision->AutoInertiaParams();
 

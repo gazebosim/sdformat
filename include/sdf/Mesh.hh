@@ -108,7 +108,7 @@ namespace sdf
     /// \param[in] _center True to center the submesh.
     public: void SetCenterSubmesh(const bool _center);
 
-    /// \brief Calculate and return the Mass Matrix values for the Mesh
+    /// \brief Calculate and return the Inertial values for the Mesh
     /// \param[in] density Density of the mesh in kg/m^3
     /// \param[in] _autoInertiaParams ElementPtr to
     /// <auto_inertia_params> element

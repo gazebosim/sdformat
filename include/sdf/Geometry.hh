@@ -213,7 +213,7 @@ namespace sdf
     /// \param[in] _heightmap The heightmap shape.
     public: void SetHeightmapShape(const Heightmap &_heightmap);
 
-    /// \brief Calculate and return the Mass Matrix values for the Geometry
+    /// \brief Calculate and return the Inertial values for the Geometry
     /// \param[out] _errors A vector of Errors object. Each object
     /// would contain an error code and an error message.
     /// \param[in] _config Parser Config
