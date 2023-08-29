@@ -164,9 +164,9 @@ TEST(DOMBox, CalculateInertial)
   auto invalidBoxInertial = box.CalculateInertial(density);
   ASSERT_EQ(std::nullopt, invalidBoxInertial);
 
-  double l = 2;
-  double w = 2;
-  double h = 2;
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
   box.SetSize(gz::math::Vector3d(l, w, h));
 
   double expectedMass = box.Shape().Volume() * density;

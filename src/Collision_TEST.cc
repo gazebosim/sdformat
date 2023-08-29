@@ -214,8 +214,8 @@ TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
 
   sdf::Errors errors;
 
-  collision.CalculateInertial(errors, sdfParserConfig,
-    collisionInertial);
+  collision.CalculateInertial(errors, collisionInertial,
+    sdfParserConfig);
   ASSERT_FALSE(errors.empty());
 }
 
@@ -252,9 +252,9 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   sdf::Errors inertialErr;
   root.CalculateInertials(inertialErr, sdfParserConfig);
 
-  double l = 2;
-  double w = 2;
-  double h = 2;
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
 
   double expectedMass = l*w*h * collision->Density();
   double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
@@ -369,9 +369,9 @@ TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
   sdf::Errors inertialErr;
   root.CalculateInertials(inertialErr, sdfParserConfig);
 
-  double l = 2;
-  double w = 2;
-  double h = 2;
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
 
   double expectedMass = l*w*h * collision->Density();
   double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);

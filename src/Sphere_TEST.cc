@@ -145,13 +145,13 @@ TEST(DOMSphere, CalculateInertial)
   sdf::Sphere sphere;
 
   // density of aluminium
-  double density = 2170;
+  const double density = 2170;
 
   sphere.SetRadius(-2);
   auto invalidSphereInertial = sphere.CalculateInertial(density);
   ASSERT_EQ(std::nullopt, invalidSphereInertial);
 
-  double r = 0.1;
+  const double r = 0.1;
 
   sphere.SetRadius(r);
 

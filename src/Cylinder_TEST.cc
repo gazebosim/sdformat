@@ -188,7 +188,7 @@ TEST(DOMCylinder, CalculateInertial)
   sdf::Cylinder cylinder;
 
   // density of aluminium
-  double density = 2170;
+  const double density = 2170;
 
   // Invalid dimensions leading to std::nullopt return
   // CalculateInertials()
@@ -197,8 +197,8 @@ TEST(DOMCylinder, CalculateInertial)
   auto invalidCylinderInertial = cylinder.CalculateInertial(density);
   ASSERT_EQ(std::nullopt, invalidCylinderInertial);
 
-  double l = 2.0;
-  double r = 0.1;
+  const double l = 2.0;
+  const double r = 0.1;
 
   cylinder.SetLength(l);
   cylinder.SetRadius(r);

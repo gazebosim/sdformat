@@ -149,8 +149,8 @@ namespace sdf
     /// \param[out] _inertial An inertial object which will be set with the
     /// calculated inertial values
     public: void CalculateInertial(sdf::Errors &_errors,
-                                  const ParserConfig &_config,
-                                  gz::math::Inertiald &_inertial);
+                                  gz::math::Inertiald &_inertial,
+                                  const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

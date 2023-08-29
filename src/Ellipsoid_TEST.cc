@@ -152,7 +152,7 @@ TEST(DOMEllipsoid, CalculateInertial)
   sdf::Ellipsoid ellipsoid;
 
   // density of aluminium
-  double density = 2170;
+  const double density = 2170;
 
   // Invalid dimensions leading to std::nullopt return
   // CalculateInertials()
@@ -160,9 +160,9 @@ TEST(DOMEllipsoid, CalculateInertial)
   auto invalidEllipsoidInertial = ellipsoid.CalculateInertial(density);
   ASSERT_EQ(std::nullopt, invalidEllipsoidInertial);
 
-  double a = 1.0;
-  double b = 10.0;
-  double c = 100.0;
+  const double a = 1.0;
+  const double b = 10.0;
+  const double c = 100.0;
 
   ellipsoid.SetRadii(gz::math::Vector3d(a, b, c));
 
