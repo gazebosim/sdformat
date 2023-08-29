@@ -261,29 +261,22 @@ void Collision::CalculateInertial(
   else
   {
     _inertial = geomInertial.value();
-
-    // If geometry type is not mesh than calculate inertial pose in Link frame
-    // considering collision frame to be same as inertial frame
-    // In case of mesh the custom inertia calculator should return
-    // the inertial object with the pose already set
-    if (this->dataPtr->geom.Type() != GeometryType::MESH)
+    
+    // If collision pose is in Link Frame then set that as inertial pose
+    // Else resolve collision pose in Link Frame and then set as inertial pose
+    if (this->dataPtr->poseRelativeTo.empty())
     {
-      // If collision pose is in Link Frame then set that as inertial pose
-      // Else resolve collision pose in Link Frame and then set as inertial pose
-      if (this->dataPtr->poseRelativeTo.empty())
-      {
-        _inertial.SetPose(this->dataPtr->pose);
-      }
-      else
-      {
-        gz::math::Pose3d collisionPoseLinkFrame;
-        Errors poseConvErrors =
-          this->SemanticPose().Resolve(collisionPoseLinkFrame);
-        _errors.insert(_errors.end(),
-                      poseConvErrors.begin(),
-                      poseConvErrors.end());
-        _inertial.SetPose(collisionPoseLinkFrame);
-      }
+      _inertial.SetPose(this->dataPtr->pose);
+    }
+    else
+    {
+      gz::math::Pose3d collisionPoseLinkFrame;
+      Errors poseConvErrors =
+        this->SemanticPose().Resolve(collisionPoseLinkFrame);
+      _errors.insert(_errors.end(),
+                    poseConvErrors.begin(),
+                    poseConvErrors.end());
+      _inertial.SetPose(collisionPoseLinkFrame);
     }
   }
 }
