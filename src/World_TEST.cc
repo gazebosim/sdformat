@@ -549,9 +549,9 @@ TEST(DOMWorld, CalculateInertial)
 
   root.CalculateInertials(errors, sdfParserConfig);
 
-  double l = 2;
-  double w = 2;
-  double h = 2;
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
 
   double expectedMass = l*w*h * 1240.0;
   double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);

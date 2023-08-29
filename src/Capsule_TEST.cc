@@ -192,9 +192,9 @@ TEST(DOMCapsule, CalculateInertial)
   sdf::Capsule capsule;
 
   // density of aluminium
-  double density = 2710;
-  double l = 2.0;
-  double r = 0.1;
+  const double density = 2710;
+  const double l = 2.0;
+  const double r = 0.1;
 
   capsule.SetLength(l);
   capsule.SetRadius(r);

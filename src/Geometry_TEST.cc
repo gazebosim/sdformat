@@ -311,7 +311,7 @@ TEST(DOMGeometry, CalculateInertial)
   sdf::Geometry geom;
 
   // Density of Aluminimum
-  double density = 2170.0;
+  const double density = 2170.0;
   double expectedMass;
   gz::math::MassMatrix3d expectedMassMat;
   gz::math::Inertiald expectedInertial;
@@ -329,9 +329,9 @@ TEST(DOMGeometry, CalculateInertial)
   // Box
   {
     sdf::Box box;
-    double l = 2;
-    double w = 2;
-    double h = 2;
+    const double l = 2;
+    const double w = 2;
+    const double h = 2;
     box.SetSize(gz::math::Vector3d(l, w, h));
 
     expectedMass = box.Shape().Volume() * density;
@@ -360,8 +360,8 @@ TEST(DOMGeometry, CalculateInertial)
   // Capsule
   {
     sdf::Capsule capsule;
-    double l = 2.0;
-    double r = 0.1;
+    const double l = 2.0;
+    const double r = 0.1;
     capsule.SetLength(l);
     capsule.SetRadius(r);
 
@@ -396,8 +396,8 @@ TEST(DOMGeometry, CalculateInertial)
   // Cylinder
   {
     sdf::Cylinder cylinder;
-    double l = 2.0;
-    double r = 0.1;
+    const double l = 2.0;
+    const double r = 0.1;
 
     cylinder.SetLength(l);
     cylinder.SetRadius(r);
@@ -428,9 +428,9 @@ TEST(DOMGeometry, CalculateInertial)
   {
     sdf::Ellipsoid ellipsoid;
 
-    double a = 1.0;
-    double b = 10.0;
-    double c = 100.0;
+    const double a = 1.0;
+    const double b = 10.0;
+    const double c = 100.0;
 
     ellipsoid.SetRadii(gz::math::Vector3d(a, b, c));
 
@@ -460,7 +460,7 @@ TEST(DOMGeometry, CalculateInertial)
   // Sphere
   {
     sdf::Sphere sphere;
-    double r = 0.1;
+    const double r = 0.1;
 
     sphere.SetRadius(r);
 

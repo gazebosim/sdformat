@@ -261,7 +261,7 @@ void Collision::CalculateInertial(
   else
   {
     _inertial = geomInertial.value();
-    
+
     // If collision pose is in Link Frame then set that as inertial pose
     // Else resolve collision pose in Link Frame and then set as inertial pose
     if (this->dataPtr->poseRelativeTo.empty())

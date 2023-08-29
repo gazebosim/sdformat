@@ -229,7 +229,7 @@ namespace sdf
     /// \brief Calculate & set the inertial properties (mass, mass matrix
     /// and inertial pose) for all the worlds & models that are children
     /// of this Root object. This function must be called after calling
-    /// Root::Load() or UpdateGraphs() since it uses frame graphs to 
+    /// Root::Load() or UpdateGraphs() since it uses frame graphs to
     /// resolve inertial pose for links and they would be automatically built
     /// \param[out] _errors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
