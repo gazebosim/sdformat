@@ -133,6 +133,13 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->dataPtr->densitySetAtLoad = true;
   }
 
+  // Load the auto_inertia_params element
+  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
+  {
+    this->dataPtr->autoInertiaParams =
+      this->dataPtr->sdf->GetElement("auto_inertia_params");
+  }
+
   return errors;
 }
 
@@ -261,12 +268,6 @@ void Collision::CalculateInertial(
     enforceConfigurablePolicyCondition(
       _config.WarningsPolicy(), densityMissingErr, _errors
     );
-  }
-
-  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
-  {
-    this->dataPtr->autoInertiaParams =
-      this->dataPtr->sdf->GetElement("auto_inertia_params");
   }
 
   auto geomInertial =
