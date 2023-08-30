@@ -287,7 +287,7 @@ void Collision::CalculateInertial(
     // Else resolve collision pose in Link Frame and then set as inertial pose
     if (this->dataPtr->poseRelativeTo.empty())
     {
-      _inertial.SetPose(this->dataPtr->pose);
+      _inertial.SetPose(_inertial.Pose() + this->dataPtr->pose);
     }
     else
     {
@@ -297,7 +297,7 @@ void Collision::CalculateInertial(
       _errors.insert(_errors.end(),
                     poseConvErrors.begin(),
                     poseConvErrors.end());
-      _inertial.SetPose(collisionPoseLinkFrame);
+      _inertial.SetPose(_inertial.Pose() + collisionPoseLinkFrame);
     }
   }
 }
