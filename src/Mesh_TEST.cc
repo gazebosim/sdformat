@@ -233,7 +233,7 @@ TEST(DOMMesh, CalcualteInertial)
 
   config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
 
-  auto meshInertial = mesh.CalculateInertial(errors, 
+  auto meshInertial = mesh.CalculateInertial(errors,
   density, autoInertiaParamsElem, config);
   ASSERT_FALSE(errors.empty());
   ASSERT_EQ(meshInertial, std::nullopt);
