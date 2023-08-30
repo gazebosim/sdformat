@@ -270,6 +270,12 @@ void Collision::CalculateInertial(
     );
   }
 
+  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
+  {
+    this->dataPtr->autoInertiaParams =
+      this->dataPtr->sdf->GetElement("auto_inertia_params");
+  }
+
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(_errors, _config,
       this->dataPtr->density, this->dataPtr->autoInertiaParams);
