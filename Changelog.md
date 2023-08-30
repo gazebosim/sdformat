@@ -11,6 +11,9 @@
 1. Fix deeply nested merge-include for custom parsed files
     * [Pull request #1293](https://github.com/gazebosim/sdformat/pull/1293)
 
+1. Updated findfile() to search localpath first
+    * [Pull request #1292](https://github.com/gazebosim/sdformat/pull/1292)
+
 1. World requires a scene and atmosphere
     * [Pull request #1308](https://github.com/gazebosim/sdformat/pull/1308)
 
