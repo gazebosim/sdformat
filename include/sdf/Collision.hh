@@ -86,6 +86,18 @@ namespace sdf
     /// \param[in] _density Density of the collision.
     public: void SetDensity(double _density);
 
+    /// \brief Get the ElementPtr to the <auto_inertia_params> element
+    /// This element can be used as a parent element to hold user-defined
+    /// params for the custom moment of inertia calculator.
+    /// \return ElementPtr object for the <auto_inertia_params> element.
+    public: sdf::ElementPtr AutoInertiaParams() const;
+
+    /// \brief Function to set the auto inertia params using a
+    /// sdf ElementPtr object
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
+    /// element
+    public: void SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams);
+
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;

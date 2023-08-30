@@ -598,7 +598,8 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-void Root::ResolveAutoInertials(sdf::Errors &_errors, const ParserConfig &_config)
+void Root::ResolveAutoInertials(sdf::Errors &_errors,
+  const ParserConfig &_config)
 {
   // Calculate and set Inertials for all the worlds
   for (sdf::World &world : this->dataPtr->worlds)

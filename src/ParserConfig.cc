@@ -20,6 +20,7 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 
 using namespace sdf;
 
@@ -51,6 +52,9 @@ class sdf::ParserConfig::Implementation
 
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
+
+  /// \brief Collection of custom model parsers.
+  public: CustomInertiaCalculator customInertiaCalculator;
 
   /// \brief Flag to explicitly preserve fixed joints when
   /// reading the SDF/URDF file.
@@ -164,7 +168,8 @@ EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
 }
 
 /////////////////////////////////////////////////
-ConfigureResolveAutoInertials ParserConfig::CalculateInertialConfiguration() const
+ConfigureResolveAutoInertials
+  ParserConfig::CalculateInertialConfiguration() const
 {
   return this->dataPtr->resolveAutoInertialsConfig;
 }
@@ -186,6 +191,19 @@ void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
 const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 {
   return this->dataPtr->customParsers;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::RegisterCustomInertiaCalc(
+    CustomInertiaCalculator _inertiaCalculator)
+{
+  this->dataPtr->customInertiaCalculator = _inertiaCalculator;
+}
+
+/////////////////////////////////////////////////
+const CustomInertiaCalculator &ParserConfig::CustomInertiaCalc() const
+{
+  return this->dataPtr->customInertiaCalculator;
 }
 
 /////////////////////////////////////////////////

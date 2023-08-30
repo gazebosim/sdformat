@@ -22,6 +22,10 @@
     </description>
   </element>
 
+  <element name="auto_inertia_params" required="0">
+    <description>Parent tag to hold user-defined custom params for mesh inertia calculator</description>
+  </element>
+
   <include filename="pose.sdf" required="0"/>
 
   <include filename="geometry.sdf" required="1"/>

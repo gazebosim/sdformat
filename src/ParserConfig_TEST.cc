@@ -63,7 +63,6 @@ TEST(ParserConfig, Construction)
     sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
   EXPECT_EQ(sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION,
     config.CalculateInertialConfiguration());
-
   EXPECT_FALSE(config.URDFPreserveFixedJoint());
   EXPECT_FALSE(config.StoreResolvedURIs());
 }

@@ -27,6 +27,7 @@
 
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
@@ -193,6 +194,16 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the registered custom model parsers
   /// \return Vector of registered model parser callbacks.
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
+
+  /// \brief Registers a custom Moment of Inertia Calculator for Meshes
+  /// \param[in] _inertiaCalculator Callback with signature as described in
+  /// sdf/CustomInertiaCalcProperties.hh.
+  public: void RegisterCustomInertiaCalc(
+      CustomInertiaCalculator _inertiaCalculator);
+
+  /// \brief Get the registered custom mesh MOI Calculator
+  /// \return registered mesh MOI Calculator.
+  public: const CustomInertiaCalculator &CustomInertiaCalc() const;
 
   /// \brief Set the preserveFixedJoint flag.
   /// \param[in] _preserveFixedJoint True to preserve fixed joints, false to

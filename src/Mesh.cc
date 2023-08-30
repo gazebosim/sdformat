@@ -14,8 +14,15 @@
  * limitations under the License.
  *
 */
+
+#include <optional>
+
+#include <gz/math/Inertial.hh>
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
+#include "sdf/Element.hh"
+#include "sdf/ParserConfig.hh"
 #include "Utils.hh"
 
 using namespace sdf;
@@ -185,6 +192,27 @@ bool Mesh::CenterSubmesh() const
 void Mesh::SetCenterSubmesh(const bool _center)
 {
   this->dataPtr->centerSubmesh = _center;
+}
+
+//////////////////////////////////////////////////
+std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
+  double _density, const sdf::ElementPtr _autoInertiaParams,
+  const ParserConfig &_config)
+{
+  if (this->dataPtr->filePath.empty())
+  {
+    _errors.push_back({
+      sdf::ErrorCode::WARNING,
+      "File Path for the mesh was empty. Could not calculate inertia"});
+    return std::nullopt;
+  }
+
+  const auto &customCalculator = _config.CustomInertiaCalc();
+
+  sdf::CustomInertiaCalcProperties calcInterface = CustomInertiaCalcProperties(
+    _density, *this, _autoInertiaParams);
+
+  return customCalculator(_errors, calcInterface);
 }
 
 /////////////////////////////////////////////////

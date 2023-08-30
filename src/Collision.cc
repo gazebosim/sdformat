@@ -55,6 +55,9 @@ class sdf::Collision::Implementation
   /// \brief True if density was set during load from sdf.
   public: bool densitySetAtLoad = false;
 
+  /// \brief SDF element pointer to <moi_calculator_params> tag
+  public: sdf::ElementPtr autoInertiaParams{nullptr};
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf;
 
@@ -158,6 +161,18 @@ void Collision::SetDensity(double _density)
 }
 
 /////////////////////////////////////////////////
+sdf::ElementPtr Collision::AutoInertiaParams() const
+{
+  return this->dataPtr->autoInertiaParams;
+}
+
+/////////////////////////////////////////////////
+void Collision::SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams)
+{
+  this->dataPtr->autoInertiaParams = _autoInertiaParams;
+}
+
+/////////////////////////////////////////////////
 const Geometry *Collision::Geom() const
 {
   return &this->dataPtr->geom;
@@ -248,9 +263,15 @@ void Collision::CalculateInertial(
     );
   }
 
+  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
+  {
+    this->dataPtr->autoInertiaParams =
+      this->dataPtr->sdf->GetElement("auto_inertia_params");
+  }
+
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(_errors, _config,
-      this->dataPtr->density);
+      this->dataPtr->density, this->dataPtr->autoInertiaParams);
 
   if (!geomInertial)
   {

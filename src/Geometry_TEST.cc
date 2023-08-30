@@ -29,6 +29,7 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/Types.hh"
 #include "sdf/Element.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "test_utils.hh"
 #include <gz/math/Inertial.hh>
 #include <gz/math/MassMatrix3.hh>
@@ -315,14 +316,15 @@ TEST(DOMGeometry, CalculateInertial)
   double expectedMass;
   gz::math::MassMatrix3d expectedMassMat;
   gz::math::Inertiald expectedInertial;
-  const sdf::ParserConfig sdfParserConfig;
+  sdf::ParserConfig sdfParserConfig;
+  sdf::ElementPtr autoInertiaParams;
   sdf::Errors errors;
 
   // Not supported geom type
   {
     geom.SetType(sdf::GeometryType::EMPTY);
     auto notSupportedInertial = geom.CalculateInertial(errors,
-      sdfParserConfig, density);
+      sdfParserConfig, density, autoInertiaParams);
     ASSERT_EQ(notSupportedInertial, std::nullopt);
   }
 
@@ -349,7 +351,7 @@ TEST(DOMGeometry, CalculateInertial)
     geom.SetType(sdf::GeometryType::BOX);
     geom.SetBoxShape(box);
     auto boxInertial = geom.CalculateInertial(errors,
-      sdfParserConfig, density);
+      sdfParserConfig, density, autoInertiaParams);
 
     ASSERT_NE(std::nullopt, boxInertial);
     EXPECT_EQ(expectedInertial, *boxInertial);
@@ -385,7 +387,7 @@ TEST(DOMGeometry, CalculateInertial)
     geom.SetType(sdf::GeometryType::CAPSULE);
     geom.SetCapsuleShape(capsule);
     auto capsuleInertial = geom.CalculateInertial(errors,
-      sdfParserConfig, density);
+      sdfParserConfig, density, autoInertiaParams);
 
     ASSERT_NE(std::nullopt, capsuleInertial);
     EXPECT_EQ(expectedInertial, *capsuleInertial);
@@ -416,7 +418,7 @@ TEST(DOMGeometry, CalculateInertial)
     geom.SetType(sdf::GeometryType::CYLINDER);
     geom.SetCylinderShape(cylinder);
     auto cylinderInertial = geom.CalculateInertial(errors,
-      sdfParserConfig, density);
+      sdfParserConfig, density, autoInertiaParams);
 
     ASSERT_NE(std::nullopt, cylinderInertial);
     EXPECT_EQ(expectedInertial, *cylinderInertial);
@@ -449,7 +451,7 @@ TEST(DOMGeometry, CalculateInertial)
     geom.SetType(sdf::GeometryType::ELLIPSOID);
     geom.SetEllipsoidShape(ellipsoid);
     auto ellipsoidInertial = geom.CalculateInertial(errors,
-      sdfParserConfig, density);
+      sdfParserConfig, density, autoInertiaParams);
 
     ASSERT_NE(std::nullopt, ellipsoidInertial);
     EXPECT_EQ(expectedInertial, *ellipsoidInertial);
@@ -478,12 +480,64 @@ TEST(DOMGeometry, CalculateInertial)
     geom.SetType(sdf::GeometryType::SPHERE);
     geom.SetSphereShape(sphere);
     auto sphereInertial = geom.CalculateInertial(errors,
-      sdfParserConfig, density);
+      sdfParserConfig, density, autoInertiaParams);
 
     ASSERT_NE(std::nullopt, sphereInertial);
     EXPECT_EQ(expectedInertial, *sphereInertial);
     EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
     EXPECT_EQ(expectedInertial.Pose(), sphereInertial->Pose());
+  }
+
+  // Mesh
+  {
+    sdf::Mesh mesh;
+    sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+    sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+
+    // Test Lambda function for registering as custom inertia calculator
+    auto customMeshInertiaCalculator = [](
+      sdf::Errors &_errors,
+      const sdf::CustomInertiaCalcProperties &_inertiaProps
+    ) -> std::optional<gz::math::Inertiald>
+    {
+      if (_inertiaProps.Density() <= 0)
+      {
+        _errors.push_back(
+          {sdf::ErrorCode::LINK_INERTIA_INVALID,
+          "Inertia is invalid"});
+        return std::nullopt;
+      }
+
+      gz::math::Inertiald meshInerial;
+
+      meshInerial.SetMassMatrix(
+        gz::math::MassMatrix3d(
+          1.0,
+          gz::math::Vector3d::One,
+          gz::math::Vector3d::Zero
+        )
+      );
+
+      return meshInerial;
+    };
+
+    // Register the lambda function as Custom Inertia Calculator
+    sdfParserConfig.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+    // File Path needs to be considered as a valid mesh
+    mesh.SetFilePath("/some_path");
+
+    geom.SetType(sdf::GeometryType::MESH);
+    geom.SetMeshShape(mesh);
+
+    auto meshInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    EXPECT_TRUE(errors.empty());
+    EXPECT_DOUBLE_EQ(meshInertial->MassMatrix().Mass(), 1.0);
+    EXPECT_EQ(meshInertial->MassMatrix().DiagonalMoments(),
+      gz::math::Vector3d::One);
   }
 }
 
