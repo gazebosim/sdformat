@@ -17,6 +17,7 @@
 
 #include <optional>
 
+#include <gz/math/Inertial.hh>
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
@@ -28,6 +29,9 @@
 #include "sdf/Plane.hh"
 #include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/Element.hh"
+#include "sdf/Types.hh"
+#include "sdf/Error.hh"
 
 #include "Utils.hh"
 
@@ -306,6 +310,44 @@ const std::vector<Polyline> &Geometry::PolylineShape() const
 void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
 {
   this->dataPtr->polylines = _polylines;
+}
+
+std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
+  sdf::Errors &_errors, const sdf::ParserConfig &_config, double _density)
+{
+  std::optional<gz::math::Inertiald> geomInertial;
+
+  switch (this->dataPtr->type)
+  {
+    case GeometryType::BOX:
+      geomInertial = this->dataPtr->box->CalculateInertial(_density);
+      break;
+    case GeometryType::CAPSULE:
+      geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
+      break;
+    case GeometryType::CYLINDER:
+      geomInertial = this->dataPtr->cylinder->CalculateInertial(_density);
+      break;
+    case GeometryType::ELLIPSOID:
+      geomInertial = this->dataPtr->ellipsoid->CalculateInertial(_density);
+      break;
+    case GeometryType::SPHERE:
+      geomInertial = this->dataPtr->sphere->CalculateInertial(_density);
+      break;
+    default:
+      Error invalidGeomTypeErr(
+        ErrorCode::WARNING,
+        "Automatic inertia calculations are not supported for the given"
+        " Geometry type. "
+      );
+      enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), invalidGeomTypeErr, _errors
+      );
+      geomInertial = std::nullopt;
+      break;
+  }
+
+  return geomInertial;
 }
 
 /////////////////////////////////////////////////

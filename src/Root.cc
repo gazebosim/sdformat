@@ -392,6 +392,13 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
   // Check that //axis*/mimic/@joint values specify valid joints.
   checkJointAxisMimicValues(this, errors);
 
+  // Check if CalculateInertialConfiguration() is not set to skip in load
+  if (_config.CalculateInertialConfiguration() !=
+    ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD)
+  {
+    this->ResolveAutoInertials(errors, _config);
+  }
+
   return errors;
 }
 
@@ -588,6 +595,23 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 
   this->modelPoseRelativeToGraph = createPoseRelativeToGraph(_model, _errors);
   _model.SetPoseRelativeToGraph(this->modelPoseRelativeToGraph);
+}
+
+/////////////////////////////////////////////////
+void Root::ResolveAutoInertials(sdf::Errors &_errors, const ParserConfig &_config)
+{
+  // Calculate and set Inertials for all the worlds
+  for (sdf::World &world : this->dataPtr->worlds)
+  {
+    world.ResolveAutoInertials(_errors, _config);
+  }
+
+  // Calculate and set Inertials for the model, if it is present
+  if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
+  {
+    sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
+    model.ResolveAutoInertials(_errors, _config);
+  }
 }
 
 /////////////////////////////////////////////////

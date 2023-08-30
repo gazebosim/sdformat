@@ -15,6 +15,10 @@
  *
 */
 #include <sstream>
+#include <optional>
+
+#include <gz/math/Inertial.hh>
+#include <gz/math/Material.hh>
 #include "sdf/Ellipsoid.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -114,6 +118,26 @@ const gz::math::Ellipsoidd &Ellipsoid::Shape() const
 gz::math::Ellipsoidd &Ellipsoid::Shape()
 {
   return this->dataPtr->ellipsoid;
+}
+
+/////////////////////////////////////////////////
+std::optional<gz::math::Inertiald> Ellipsoid::CalculateInertial(double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->ellipsoid.SetMat(material);
+
+  auto ellipsoidMassMatrix = this->dataPtr->ellipsoid.MassMatrix();
+
+  if(!ellipsoidMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald ellipsoidInertial;
+    ellipsoidInertial.SetMassMatrix(ellipsoidMassMatrix.value());
+    return std::make_optional(ellipsoidInertial);
+  }
 }
 
 /////////////////////////////////////////////////

@@ -18,11 +18,15 @@
 #define SDF_GEOMETRY_HH_
 
 #include <vector>
+#include <optional>
 
 #include <gz/utils/ImplPtr.hh>
+#include <gz/math/Inertial.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
+#include <sdf/ParserConfig.hh>
+#include <sdf/Types.hh>
 
 namespace sdf
 {
@@ -208,6 +212,17 @@ namespace sdf
     /// \brief Set the heightmap shape.
     /// \param[in] _heightmap The heightmap shape.
     public: void SetHeightmapShape(const Heightmap &_heightmap);
+
+    /// \brief Calculate and return the Mass Matrix values for the Geometry
+    /// \param[out] _errors A vector of Errors object. Each object
+    /// would contain an error code and an error message.
+    /// \param[in] _config Parser Config
+    /// \param[in] _density The density of the geometry element.
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald> CalculateInertial(
+      sdf::Errors &_errors,
+      const sdf::ParserConfig &_config,
+      double _density);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

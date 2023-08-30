@@ -48,6 +48,20 @@ enum class EnforcementPolicy
   LOG,
 };
 
+/// \enum ConfigureResolveAutoInertials
+/// \brief Configuration options of how CalculateInertial() function
+/// would be used
+enum class ConfigureResolveAutoInertials
+{
+  /// \brief If this value is used, CalculateInertial() won't be
+  /// called from inside the Root::Load() function
+  SKIP_CALCULATION_IN_LOAD,
+
+  /// \brief If this values is used, CalculateInertial() would be
+  /// called and the computed inertial values would be saved
+  SAVE_CALCULATION
+};
+
 // Forward declare private data class.
 class ParserConfigPrivate;
 
@@ -159,6 +173,17 @@ class SDFORMAT_VISIBLE ParserConfig
   /// unless ResetDeprecatedElementsPolicy is called.
   /// \return The deperacted elements policy enum value
   public: EnforcementPolicy DeprecatedElementsPolicy() const;
+
+  /// \brief Get the current configuration for the CalculateInertial()
+  /// function
+  /// \return Current set value of the ConfigureResolveAutoInertials enum
+  public: ConfigureResolveAutoInertials CalculateInertialConfiguration() const;
+
+  /// \brief Set the configuration for the CalculateInertial() function
+  /// \param[in] _configuration The configuration to set for the
+  /// CalculateInertial() function
+  public: void SetCalculateInertialConfiguration(
+    ConfigureResolveAutoInertials _configuration);
 
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described in

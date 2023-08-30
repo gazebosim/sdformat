@@ -15,9 +15,14 @@
  *
 */
 
+#include <optional>
 #include <gtest/gtest.h>
 #include "sdf/Cylinder.hh"
 #include "test_utils.hh"
+#include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/MassMatrix3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMCylinder, Construction)
@@ -175,6 +180,52 @@ TEST(DOMCylinder, Shape)
   cylinder.Shape().SetLength(0.456);
   EXPECT_DOUBLE_EQ(0.123, cylinder.Radius());
   EXPECT_DOUBLE_EQ(0.456, cylinder.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, CalculateInertial)
+{
+  sdf::Cylinder cylinder;
+
+  // density of aluminium
+  const double density = 2170;
+
+  // Invalid dimensions leading to std::nullopt return in
+  // CalculateInertial()
+  cylinder.SetLength(-1);
+  cylinder.SetRadius(0);
+  auto invalidCylinderInertial = cylinder.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidCylinderInertial);
+
+  const double l = 2.0;
+  const double r = 0.1;
+
+  cylinder.SetLength(l);
+  cylinder.SetRadius(r);
+
+  double expectedMass = cylinder.Shape().Volume() * density;
+  double ixxIyy = (1/12.0) * expectedMass * (3*r*r + l*l);
+  double izz = 0.5 * expectedMass * r * r;
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixxIyy, ixxIyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto cylinderInertial = cylinder.CalculateInertial(density);
+  EXPECT_EQ(cylinder.Shape().Mat().Density(), density);
+  ASSERT_NE(std::nullopt, cylinderInertial);
+  EXPECT_EQ(expectedInertial, *cylinderInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    cylinderInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    cylinderInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), cylinderInertial->Pose());
 }
 
 /////////////////////////////////////////////////

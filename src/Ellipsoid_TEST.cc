@@ -15,9 +15,14 @@
  *
 */
 
+#include <optional>
 #include <gtest/gtest.h>
 #include "sdf/Ellipsoid.hh"
 #include "test_utils.hh"
+#include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/MassMatrix3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMEllipsoid, Construction)
@@ -139,6 +144,52 @@ TEST(DOMEllipsoid, Shape)
   const gz::math::Vector3d expectedRadii(1.0, 2.0, 3.0);
   ellipsoid.Shape().SetRadii(expectedRadii);
   EXPECT_EQ(expectedRadii, ellipsoid.Radii());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMEllipsoid, CalculateInertial)
+{
+  sdf::Ellipsoid ellipsoid;
+
+  // density of aluminium
+  const double density = 2170;
+
+  // Invalid dimensions leading to std::nullopt return in
+  // CalculateInertial()
+  ellipsoid.SetRadii(gz::math::Vector3d(-1, 2, 0));
+  auto invalidEllipsoidInertial = ellipsoid.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidEllipsoidInertial);
+
+  const double a = 1.0;
+  const double b = 10.0;
+  const double c = 100.0;
+
+  ellipsoid.SetRadii(gz::math::Vector3d(a, b, c));
+
+  double expectedMass = ellipsoid.Shape().Volume() * density;
+  double ixx = (expectedMass / 5.0) * (b*b + c*c);
+  double iyy = (expectedMass / 5.0) * (a*a + c*c);
+  double izz = (expectedMass / 5.0) * (a*a + b*b);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto ellipsoidInertial = ellipsoid.CalculateInertial(density);
+  EXPECT_EQ(ellipsoid.Shape().Mat().Density(), density);
+  ASSERT_NE(std::nullopt, ellipsoidInertial);
+  EXPECT_EQ(expectedInertial, *ellipsoidInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    ellipsoidInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    ellipsoidInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), ellipsoidInertial->Pose());
 }
 
 /////////////////////////////////////////////////

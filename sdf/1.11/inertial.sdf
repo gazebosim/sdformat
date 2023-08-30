@@ -5,8 +5,24 @@
     properties, and optionally its fluid added mass.
   </description>
 
+  <attribute name="auto" type="bool" default="false" required="0">
+    <description>
+      Set to true if you want automatic computation for the moments of inertia (ixx, iyy, izz) 
+      and products of inertia(ixy, iyz, ixz). Default value is false.
+    </description>
+  </attribute>
+
   <element name="mass" type="double" default="1.0" required="0">
     <description>The mass of the link.</description>
+  </element>
+
+  <element name="density" type="double" default="1000.0" required="0">
+    <description>
+      Mass Density of the collision geometry. 
+      This is used to determine mass and inertia values during automatic calculation.
+      This density value would be overwritten by the density value in collision.
+      Default is the density of water 1000 kg/m^3.
+    </description>
   </element>
 
   <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">

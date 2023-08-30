@@ -14,6 +14,10 @@
  * limitations under the License.
  *
 */
+#include <optional>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Material.hh>
+
 #include "sdf/parser.hh"
 #include "sdf/Sphere.hh"
 #include "Utils.hh"
@@ -112,6 +116,26 @@ gz::math::Sphered &Sphere::Shape()
 sdf::ElementPtr Sphere::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+std::optional<gz::math::Inertiald> Sphere::CalculateInertial(double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->sphere.SetMaterial(material);
+
+  auto sphereMassMatrix = this->dataPtr->sphere.MassMatrix();
+
+  if (!sphereMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald sphereInertial;
+    sphereInertial.SetMassMatrix(sphereMassMatrix.value());
+    return std::make_optional(sphereInertial);
+  }
 }
 
 /////////////////////////////////////////////////

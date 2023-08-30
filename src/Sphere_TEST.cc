@@ -14,10 +14,14 @@
  * limitations under the License.
  *
 */
-
+#include <optional>
 #include <gtest/gtest.h>
 #include "sdf/Sphere.hh"
 #include "test_utils.hh"
+#include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/MassMatrix3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMSphere, Construction)
@@ -133,6 +137,46 @@ TEST(DOMSphere, Shape)
 
   sphere.Shape().SetRadius(0.123);
   EXPECT_DOUBLE_EQ(0.123, sphere.Radius());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, CalculateInertial)
+{
+  sdf::Sphere sphere;
+
+  // density of aluminium
+  const double density = 2170;
+
+  sphere.SetRadius(-2);
+  auto invalidSphereInertial = sphere.CalculateInertial(density);
+  ASSERT_EQ(std::nullopt, invalidSphereInertial);
+
+  const double r = 0.1;
+
+  sphere.SetRadius(r);
+
+  double expectedMass = sphere.Shape().Volume() * density;
+  double ixxIyyIzz = 0.4 * expectedMass * r * r;
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixxIyyIzz, ixxIyyIzz, ixxIyyIzz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  auto sphereInertial = sphere.CalculateInertial(density);
+  EXPECT_EQ(sphere.Shape().Material().Density(), density);
+  ASSERT_NE(std::nullopt, sphereInertial);
+  EXPECT_EQ(expectedInertial, *sphereInertial);
+  EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
+    sphereInertial->MassMatrix().DiagonalMoments());
+  EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
+    sphereInertial->MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.Pose(), sphereInertial->Pose());
 }
 
 /////////////////////////////////////////////////

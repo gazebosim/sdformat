@@ -14,6 +14,14 @@
     <description>Maximum number of contacts allowed between two entities. This value overrides the max_contacts element defined in physics.</description>
   </element>
 
+  <element name="density" type="double" default="1000.0" required="0">
+    <description>
+      Mass Density of the collision geometry. 
+      This is used to determine mass and inertia values during automatic calculation.
+      Default is the density of water 1000 kg/m^3.
+    </description>
+  </element>
+
   <include filename="pose.sdf" required="0"/>
 
   <include filename="geometry.sdf" required="1"/>

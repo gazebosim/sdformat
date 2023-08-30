@@ -14,7 +14,11 @@
  * limitations under the License.
  *
 */
+#include <optional>
 #include <sstream>
+
+#include <gz/math/Material.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/Capsule.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -135,6 +139,26 @@ const gz::math::Capsuled &Capsule::Shape() const
 gz::math::Capsuled &Capsule::Shape()
 {
   return this->dataPtr->capsule;
+}
+
+/////////////////////////////////////////////////
+std::optional<gz::math::Inertiald> Capsule::CalculateInertial(double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->capsule.SetMat(material);
+
+  auto capsuleMassMatrix = this->dataPtr->capsule.MassMatrix();
+
+  if(!capsuleMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald capsuleInertial;
+    capsuleInertial.SetMassMatrix(capsuleMassMatrix.value());
+    return std::make_optional(capsuleInertial);
+  }
 }
 
 /////////////////////////////////////////////////
