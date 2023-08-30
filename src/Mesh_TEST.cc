@@ -233,15 +233,15 @@ TEST(DOMMesh, CalcualteInertial)
 
   config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
 
-  auto meshInertial = mesh.CalculateInertial(density,
-    autoInertiaParamsElem, config, errors);
+  auto meshInertial = mesh.CalculateInertial(errors, 
+  density, autoInertiaParamsElem, config);
   ASSERT_FALSE(errors.empty());
   ASSERT_EQ(meshInertial, std::nullopt);
 
   density = 1240.0;
   sdf::Errors errors2;
-  auto meshInertial2 = mesh.CalculateInertial(density,
-  autoInertiaParamsElem, config, errors2);
+  auto meshInertial2 = mesh.CalculateInertial(errors2,
+  density, autoInertiaParamsElem, config);
   ASSERT_TRUE(errors2.empty());
   EXPECT_DOUBLE_EQ(meshInertial2->MassMatrix().Mass(), 1.0);
   EXPECT_EQ(meshInertial2->MassMatrix().DiagonalMoments(),
@@ -288,8 +288,8 @@ TEST(DOMMesh, CalculateInertiaWithEmptyFilePath)
 
   config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
 
-  auto meshInertial = mesh.CalculateInertial(density,
-    autoInertiaParamsElem, config, errors);
+  auto meshInertial = mesh.CalculateInertial(errors,
+    density, autoInertiaParamsElem, config);
   ASSERT_FALSE(errors.empty());
   ASSERT_EQ(meshInertial, std::nullopt);
 }

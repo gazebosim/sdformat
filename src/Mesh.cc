@@ -195,9 +195,9 @@ void Mesh::SetCenterSubmesh(const bool _center)
 }
 
 //////////////////////////////////////////////////
-std::optional<gz::math::Inertiald> Mesh::CalculateInertial(double _density,
-    const sdf::ElementPtr _autoInertiaParams, const ParserConfig &_config,
-    sdf::Errors &_errors)
+std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
+  double _density, const sdf::ElementPtr _autoInertiaParams,
+  const ParserConfig &_config)
 {
   if (this->dataPtr->filePath.empty())
   {

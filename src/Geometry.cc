@@ -337,9 +337,9 @@ std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
       break;
     case GeometryType::MESH:
       geomInertial =
-        this->dataPtr->mesh->CalculateInertial(_density,
+        this->dataPtr->mesh->CalculateInertial(_errors, _density,
                                               _autoInertiaParams,
-                                              _config, _errors);
+                                              _config);
       break;
     default:
       Error invalidGeomTypeErr(
