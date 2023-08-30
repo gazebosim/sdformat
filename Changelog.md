@@ -1,5 +1,32 @@
 ## libsdformat 13.X
 
+### libsdformat 13.6.0 (2023-08-30)
+
+1. Use relative path in an urdf include to avoid confusion between internal and system headers
+    * [Pull request #1259](https://github.com/gazebosim/sdformat/pull/1259)
+
+1. parser.cc update calls to use sdf::Errors output
+    * [Pull request #1294](https://github.com/gazebosim/sdformat/pull/1294)
+
+1. Fix deeply nested merge-include for custom parsed files
+    * [Pull request #1293](https://github.com/gazebosim/sdformat/pull/1293)
+
+1. World requires a scene and atmosphere
+    * [Pull request #1308](https://github.com/gazebosim/sdformat/pull/1308)
+
+1. Infrastructure
+    * [Pull request #1307](https://github.com/gazebosim/sdformat/pull/1307)
+    * [Pull request #1306](https://github.com/gazebosim/sdformat/pull/1306)
+
+1. Remove robot not found error when parsing fails
+    * [Pull request #1290](https://github.com/gazebosim/sdformat/pull/1290)
+
+1. Make some sdfdbg messages sdfmsgs
+    * [Pull request #1288](https://github.com/gazebosim/sdformat/pull/1288)
+
+1. Minor clean up of tests
+    * [Pull request #1289](https://github.com/gazebosim/sdformat/pull/1289)
+
 ### libsdformat 13.5.0 (2023-05-18)
 
 1. Added projector Python wrapper
