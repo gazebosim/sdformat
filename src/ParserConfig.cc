@@ -168,7 +168,8 @@ EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
 }
 
 /////////////////////////////////////////////////
-ConfigureResolveAutoInertials ParserConfig::CalculateInertialConfiguration() const
+ConfigureResolveAutoInertials
+  ParserConfig::CalculateInertialConfiguration() const
 {
   return this->dataPtr->resolveAutoInertialsConfig;
 }

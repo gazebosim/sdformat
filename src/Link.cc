@@ -597,7 +597,8 @@ Errors Link::ResolveInertial(
 }
 
 /////////////////////////////////////////////////
-void Link::ResolveAutoInertials(sdf::Errors &_errors, const ParserConfig &_config)
+void Link::ResolveAutoInertials(sdf::Errors &_errors,
+  const ParserConfig &_config)
 {
   // If inertial calculations is set to automatic & the inertial values for the
   // link was not saved previously
