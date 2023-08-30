@@ -110,6 +110,7 @@ namespace sdf
     friend class Light;
     friend class Link;
     friend class ParticleEmitter;
+    friend class Projector;
     friend class Model;
     friend class Sensor;
     friend class Visual;

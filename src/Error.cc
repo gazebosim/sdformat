@@ -85,6 +85,12 @@ std::string Error::Message() const
 }
 
 /////////////////////////////////////////////////
+void Error::SetMessage(const std::string &_message)
+{
+  this->dataPtr->message = _message;
+}
+
+/////////////////////////////////////////////////
 std::optional<std::string> Error::FilePath() const
 {
   return this->dataPtr->filePath;

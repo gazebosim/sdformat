@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include "sdf/Capsule.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMCapsule, Construction)
@@ -196,4 +197,41 @@ TEST(DOMCapsule, ToElement)
 
   EXPECT_DOUBLE_EQ(capsule.Radius(), capsule2.Radius());
   EXPECT_DOUBLE_EQ(capsule.Length(), capsule2.Length());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCapsule, ToElementErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::Capsule capsule;
+  sdf::Errors errors;
+
+  capsule.SetRadius(1.2);
+  capsule.SetLength(0.5);
+
+  sdf::ElementPtr elem = capsule.ToElement(errors);
+  EXPECT_TRUE(errors.empty());
+  ASSERT_NE(nullptr, elem);
+
+  sdf::Capsule capsule2;
+  errors = capsule2.Load(elem);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(capsule.Radius(), capsule2.Radius());
+  EXPECT_DOUBLE_EQ(capsule.Length(), capsule2.Length());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

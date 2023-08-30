@@ -23,6 +23,7 @@
 #include "sdf/Light.hh"
 #include "sdf/Link.hh"
 #include "sdf/ParticleEmitter.hh"
+#include "sdf/Projector.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Visual.hh"
 
@@ -55,6 +56,13 @@ TEST(DOMLink, Construction)
   EXPECT_FALSE(link.ParticleEmitterNameExists(""));
   EXPECT_FALSE(link.ParticleEmitterNameExists("default"));
   EXPECT_EQ(nullptr, link.ParticleEmitterByName("no_such_emitter"));
+
+  EXPECT_EQ(0u, link.ProjectorCount());
+  EXPECT_EQ(nullptr, link.ProjectorByIndex(0));
+  EXPECT_EQ(nullptr, link.ProjectorByIndex(1));
+  EXPECT_FALSE(link.ProjectorNameExists(""));
+  EXPECT_FALSE(link.ProjectorNameExists("default"));
+  EXPECT_EQ(nullptr, link.ProjectorByName("no_such_projector"));
 
   EXPECT_FALSE(link.EnableWind());
   link.SetEnableWind(true);
@@ -436,6 +444,20 @@ TEST(DOMLink, ToElement)
       link.ClearParticleEmitters();
   }
 
+  for (int j = 0; j <= 1; ++j)
+  {
+    for (int i = 0; i < 3; i++)
+    {
+      sdf::Projector projector;
+      projector.SetName("projector" + std::to_string(i));
+      projector.SetTexture("projector.png");
+      EXPECT_TRUE(link.AddProjector(projector));
+      EXPECT_FALSE(link.AddProjector(projector));
+    }
+    if (j == 0)
+      link.ClearProjectors();
+  }
+
   sdf::ElementPtr elem = link.ToElement();
   ASSERT_NE(nullptr, elem);
 
@@ -465,6 +487,10 @@ TEST(DOMLink, ToElement)
   EXPECT_EQ(link.ParticleEmitterCount(), link2.ParticleEmitterCount());
   for (uint64_t i = 0; i < link2.ParticleEmitterCount(); ++i)
     EXPECT_NE(nullptr, link2.ParticleEmitterByIndex(i));
+
+  EXPECT_EQ(link.ProjectorCount(), link2.ProjectorCount());
+  for (uint64_t i = 0; i < link2.ProjectorCount(); ++i)
+    EXPECT_NE(nullptr, link2.ProjectorByIndex(i));
 }
 
 /////////////////////////////////////////////////
@@ -492,6 +518,10 @@ TEST(DOMLink, MutableByIndex)
   sdf::ParticleEmitter pe;
   pe.SetName("pe1");
   EXPECT_TRUE(link.AddParticleEmitter(pe));
+
+  sdf::Projector projector;
+  projector.SetName("projector1");
+  EXPECT_TRUE(link.AddProjector(projector));
 
   // Modify the visual
   sdf::Visual *v = link.VisualByIndex(0);
@@ -527,6 +557,13 @@ TEST(DOMLink, MutableByIndex)
   EXPECT_EQ("pe1", p->Name());
   p->SetName("pe2");
   EXPECT_EQ("pe2", link.ParticleEmitterByIndex(0)->Name());
+
+  // Modify the projector
+  sdf::Projector *pr = link.ProjectorByIndex(0);
+  ASSERT_NE(nullptr, pr);
+  EXPECT_EQ("projector1", pr->Name());
+  pr->SetName("projector2");
+  EXPECT_EQ("projector2", link.ProjectorByIndex(0)->Name());
 }
 
 /////////////////////////////////////////////////
@@ -554,6 +591,10 @@ TEST(DOMLink, MutableByName)
   sdf::ParticleEmitter pe;
   pe.SetName("pe1");
   EXPECT_TRUE(link.AddParticleEmitter(pe));
+
+  sdf::Projector projector;
+  projector.SetName("projector1");
+  EXPECT_TRUE(link.AddProjector(projector));
 
   // Modify the visual
   sdf::Visual *v = link.VisualByName("visual1");
@@ -594,4 +635,12 @@ TEST(DOMLink, MutableByName)
   p->SetName("pe2");
   EXPECT_FALSE(link.ParticleEmitterNameExists("pe1"));
   EXPECT_TRUE(link.ParticleEmitterNameExists("pe2"));
+
+  // Modify the projector
+  sdf::Projector *pr = link.ProjectorByName("projector1");
+  ASSERT_NE(nullptr, pr);
+  EXPECT_EQ("projector1", pr->Name());
+  pr->SetName("projector2");
+  EXPECT_FALSE(link.ProjectorNameExists("projector1"));
+  EXPECT_TRUE(link.ProjectorNameExists("projector2"));
 }

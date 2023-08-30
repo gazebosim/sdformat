@@ -24,6 +24,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "test_config.hh"
+#include "test_utils.hh"
 
 #include <gz/utils/Environment.hh>
 
@@ -281,13 +282,6 @@ TEST(Parser, NameUniqueness)
 }
 
 /////////////////////////////////////////////////
-/// Check that _a contains _b
-static bool contains(const std::string &_a, const std::string &_b)
-{
-  return _a.find(_b) != std::string::npos;
-}
-
-/////////////////////////////////////////////////
 TEST(Parser, SyntaxErrorInValues)
 {
   // Capture sdferr output
@@ -304,10 +298,11 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to set value [bad 0 0 0 0 0] for key [pose]");
-    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_pose.sdf:L5");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "bad_syntax_pose.sdf:L5");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/pose:");
   }
   {
@@ -318,10 +313,11 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to set value [bad] for key[linear]");
-    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_double.sdf:L7");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "bad_syntax_double.sdf:L7");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"robot1\"]/"
                  "link[@name=\"link\"]/velocity_decay/linear:");
   }
@@ -333,10 +329,11 @@ TEST(Parser, SyntaxErrorInValues)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to set value [0 1 bad ] for key[gravity]");
-    EXPECT_PRED2(contains, buffer.str(), "bad_syntax_vector.sdf:L4");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "bad_syntax_vector.sdf:L4");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/gravity:");
   }
 
@@ -366,15 +363,15 @@ TEST(Parser, MissingRequiredAttributesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Required attribute[name] in element[link] is not specified "
                  "in SDF.");
-    EXPECT_PRED2(contains, buffer.str(), "box_bad_test.world:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(), "box_bad_test.world:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/model[@name=\"box\"]/link:");
   }
 
@@ -404,14 +401,15 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ATTRIBUTE_MISSING)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "<include> element missing 'uri' attribute");
-    EXPECT_PRED2(contains, buffer.str(), "includes_missing_uri.sdf:L5");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_missing_uri.sdf:L5");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]:");
   }
   {
@@ -424,14 +422,15 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to find uri[missing_model]");
-    EXPECT_PRED2(contains, buffer.str(), "includes_missing_model.sdf:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_missing_model.sdf:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
   {
@@ -449,15 +448,16 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(static_cast<int>(sdf::ErrorCode::URI_LOOKUP)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Unable to resolve uri[box_missing_config]");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "since it does not contain a model.config");
-    EXPECT_PRED2(contains, buffer.str(), "includes_model_without_sdf.sdf:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_model_without_sdf.sdf:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
   {
@@ -475,15 +475,16 @@ TEST(Parser, IncludesErrors)
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
                     static_cast<int>(sdf::ErrorCode::ELEMENT_MISSING)));
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Failed to find top level <model> / <actor> / <light> for "
                  "<include>\n");
-    EXPECT_PRED2(contains, buffer.str(), "includes_without_top_level.sdf:L6");
-    EXPECT_PRED2(contains, buffer.str(),
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "includes_without_top_level.sdf:L6");
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "/sdf/world[@name=\"default\"]/include[0]/uri:");
   }
 
@@ -525,8 +526,14 @@ TEST(Parser, DoubleColonNameAttrError)
 
   sdf::Errors errors;
   EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
-  ASSERT_EQ(errors.size(), 1u);
+  ASSERT_EQ(errors.size(), 2u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::RESERVED_NAME);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Detected delimiter '::' in element name in<link name='A::B'/>"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::RESERVED_NAME);
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Delimiter '::' found in attribute names of element <sdf>,"
+      " which is not allowed in SDFormat >= 1.8"));
 
   sdf = InitSDF();
   stream.str("");
@@ -832,6 +839,96 @@ TEST(Parser, ElementRemovedAfterDeprecation)
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::ELEMENT_INCORRECT_TYPE);
   ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 10);
+}
+
+/////////////////////////////////////////////////
+/// Check for non SDF non URDF error on a string
+TEST(Parser, ReadStringErrorNotSDForURDF)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::SDFPtr sdf = InitSDF();
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <foo>
+    </foo>)";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "XML does not seem to be an SDFormat or an URDF string."));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+/////////////////////////////////////////////////
+/// Check for non SDF non URDF error on a file
+TEST(Parser, ReadFileErrorNotSDForURDF)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "box.dae");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARSING_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "XML does not seem to be an SDFormat or an URDF file."));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+/////////////////////////////////////////////////
+/// Check that malformed SDF files do not throw confusing error
+TEST(Parser, ReadFileMalformedSDFNoRobotError)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  // Check the old error is not printed anymore
+  EXPECT_EQ(std::string::npos, buffer.str().find(
+      "Could not find the 'robot' element in the xml file"));
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
 }
 
 /////////////////////////////////////////////////

@@ -97,6 +97,17 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     filename = filename.substr(idx + sep.length());
   }
 
+  // First check the local path, if the flag is set.
+  if (_searchLocalPath)
+  {
+    std::string path = sdf::filesystem::append(sdf::filesystem::current_path(),
+                                               filename);
+    if (sdf::filesystem::exists(path))
+    {
+      return path;
+    }
+  }
+
   // Next check the install path.
   std::string path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
   if (sdf::filesystem::exists(path))
@@ -113,7 +124,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     return path;
   }
 
-  // Next check to see if the given file exists.
+  // Finally check to see if the given file exists.
   path = filename;
   if (sdf::filesystem::exists(path))
   {
@@ -132,16 +143,6 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
       {
         return path;
       }
-    }
-  }
-
-  // Finally check the local path, if the flag is set.
-  if (_searchLocalPath)
-  {
-    path = sdf::filesystem::append(sdf::filesystem::current_path(), filename);
-    if (sdf::filesystem::exists(path))
-    {
-      return path;
     }
   }
 
