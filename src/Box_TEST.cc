@@ -158,8 +158,8 @@ TEST(DOMBox, CalculateInertial)
   // density of aluminium
   double density = 2710;
 
-  // Invalid dimensions leading to std::nullopt return
-  // CalculateInertials()
+  // Invalid dimensions leading to std::nullopt return in
+  // CalculateInertial()
   box.SetSize(gz::math::Vector3d(-1, 1, 0));
   auto invalidBoxInertial = box.CalculateInertial(density);
   ASSERT_EQ(std::nullopt, invalidBoxInertial);

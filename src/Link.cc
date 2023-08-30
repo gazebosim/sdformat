@@ -597,7 +597,7 @@ Errors Link::ResolveInertial(
 }
 
 /////////////////////////////////////////////////
-void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
+void Link::ResolveAutoInertials(sdf::Errors &_errors, const ParserConfig &_config)
 {
   // If inertial calculations is set to automatic & the inertial values for the
   // link was not saved previously
@@ -627,7 +627,7 @@ void Link::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
     // If CalculateInertial() was called with SAVE_CALCULATION
     // configuration then set autoInertiaSaved to true
     if (_config.CalculateInertialConfiguration() ==
-      ConfigureCalculateInertial::SAVE_CALCULATION)
+      ConfigureResolveAutoInertials::SAVE_CALCULATION)
     {
       this->dataPtr->autoInertiaSaved = true;
     }

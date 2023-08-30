@@ -250,7 +250,7 @@ TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
   const sdf::Collision *collision = link->CollisionByIndex(0);
 
   sdf::Errors inertialErr;
-  root.CalculateInertials(inertialErr, sdfParserConfig);
+  root.ResolveAutoInertials(inertialErr, sdfParserConfig);
 
   const double l = 2;
   const double w = 2;
@@ -367,7 +367,7 @@ TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
   const sdf::Collision *collision = link->CollisionByIndex(0);
 
   sdf::Errors inertialErr;
-  root.CalculateInertials(inertialErr, sdfParserConfig);
+  root.ResolveAutoInertials(inertialErr, sdfParserConfig);
 
   const double l = 2;
   const double w = 2;

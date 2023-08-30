@@ -521,7 +521,7 @@ namespace sdf
     /// \param[out] _errrors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
     /// \param[in] _config Custom parser configuration
-    public: void CalculateInertials(sdf::Errors &_errors,
+    public: void ResolveAutoInertials(sdf::Errors &_errors,
                                     const ParserConfig &_config);
 
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child

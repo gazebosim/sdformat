@@ -325,7 +325,7 @@ TEST(DOMRoot, FrameSemanticsOnMove)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMRoot, CalculateInertialWithSaveCalculationConfiguration)
+TEST(DOMRoot, ResolveAutoInertialsWithSaveCalculationConfiguration)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
   " <sdf version=\"1.11\">"
@@ -354,10 +354,10 @@ TEST(DOMRoot, CalculateInertialWithSaveCalculationConfiguration)
   const sdf::Link *link = model->LinkByIndex(0);
 
   sdfParserConfig.SetCalculateInertialConfiguration(
-    sdf::ConfigureCalculateInertial::SAVE_CALCULATION);
+    sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
 
   sdf::Errors inertialErr;
-  root.CalculateInertials(inertialErr, sdfParserConfig);
+  root.ResolveAutoInertials(inertialErr, sdfParserConfig);
   EXPECT_TRUE(inertialErr.empty());
   ASSERT_TRUE(link->AutoInertiaSaved());
 }

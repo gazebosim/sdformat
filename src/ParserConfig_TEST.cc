@@ -57,11 +57,11 @@ TEST(ParserConfig, Construction)
   EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.UnrecognizedElementsPolicy());
   EXPECT_EQ(sdf::EnforcementPolicy::WARN, config.DeprecatedElementsPolicy());
 
-  EXPECT_EQ(sdf::ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD,
+  EXPECT_EQ(sdf::ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD,
     config.CalculateInertialConfiguration());
   config.SetCalculateInertialConfiguration(
-    sdf::ConfigureCalculateInertial::SAVE_CALCULATION);
-  EXPECT_EQ(sdf::ConfigureCalculateInertial::SAVE_CALCULATION,
+    sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
+  EXPECT_EQ(sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION,
     config.CalculateInertialConfiguration());
   EXPECT_FALSE(config.URDFPreserveFixedJoint());
   EXPECT_FALSE(config.StoreResolvedURIs());

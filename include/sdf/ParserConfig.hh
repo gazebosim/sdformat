@@ -49,10 +49,10 @@ enum class EnforcementPolicy
   LOG,
 };
 
-/// \enum ConfigureCalculateInertial
+/// \enum ConfigureResolveAutoInertials
 /// \brief Configuration options of how CalculateInertial() function
 /// would be used
-enum class ConfigureCalculateInertial
+enum class ConfigureResolveAutoInertials
 {
   /// \brief If this value is used, CalculateInertial() won't be
   /// called from inside the Root::Load() function
@@ -177,14 +177,14 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the current configuration for the CalculateInertial()
   /// function
-  /// \return Current set value of the ConfigureCalculateInertial enum
-  public: ConfigureCalculateInertial CalculateInertialConfiguration() const;
+  /// \return Current set value of the ConfigureResolveAutoInertials enum
+  public: ConfigureResolveAutoInertials CalculateInertialConfiguration() const;
 
   /// \brief Set the configuration for the CalculateInertial() function
   /// \param[in] _configuration The configuration to set for the
   /// CalculateInertial() function
   public: void SetCalculateInertialConfiguration(
-    ConfigureCalculateInertial _configuration);
+    ConfigureResolveAutoInertials _configuration);
 
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described in

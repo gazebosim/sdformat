@@ -47,8 +47,8 @@ class sdf::ParserConfig::Implementation
   /// \brief Configuration that is set for the CalculateInertial() function
   /// By default it is set to SKIP_CALCULATION_IN_LOAD which would cause
   /// Root::Load() to not call CalculateInertial()
-  public: ConfigureCalculateInertial calculateInertialConfiguration =
-    ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD;
+  public: ConfigureResolveAutoInertials resolveAutoInertialsConfig =
+    ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD;
 
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
@@ -168,16 +168,16 @@ EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
 }
 
 /////////////////////////////////////////////////
-ConfigureCalculateInertial ParserConfig::CalculateInertialConfiguration() const
+ConfigureResolveAutoInertials ParserConfig::CalculateInertialConfiguration() const
 {
-  return this->dataPtr->calculateInertialConfiguration;
+  return this->dataPtr->resolveAutoInertialsConfig;
 }
 
 /////////////////////////////////////////////////
 void ParserConfig::SetCalculateInertialConfiguration(
-  ConfigureCalculateInertial _configuration)
+  ConfigureResolveAutoInertials _configuration)
 {
-  this->dataPtr->calculateInertialConfiguration = _configuration;
+  this->dataPtr->resolveAutoInertialsConfig = _configuration;
 }
 
 /////////////////////////////////////////////////
