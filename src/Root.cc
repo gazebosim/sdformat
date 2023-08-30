@@ -394,9 +394,9 @@ Errors Root::Load(SDFPtr _sdf, const ParserConfig &_config)
 
   // Check if CalculateInertialConfiguration() is not set to skip in load
   if (_config.CalculateInertialConfiguration() !=
-    ConfigureCalculateInertial::SKIP_CALCULATION_IN_LOAD)
+    ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD)
   {
-    this->CalculateInertials(errors, _config);
+    this->ResolveAutoInertials(errors, _config);
   }
 
   return errors;
@@ -598,19 +598,19 @@ void Root::Implementation::UpdateGraphs(sdf::Model &_model,
 }
 
 /////////////////////////////////////////////////
-void Root::CalculateInertials(sdf::Errors &_errors, const ParserConfig &_config)
+void Root::ResolveAutoInertials(sdf::Errors &_errors, const ParserConfig &_config)
 {
   // Calculate and set Inertials for all the worlds
   for (sdf::World &world : this->dataPtr->worlds)
   {
-    world.CalculateInertials(_errors, _config);
+    world.ResolveAutoInertials(_errors, _config);
   }
 
   // Calculate and set Inertials for the model, if it is present
   if (std::holds_alternative<sdf::Model>(this->dataPtr->modelLightOrActor))
   {
     sdf::Model &model = std::get<sdf::Model>(this->dataPtr->modelLightOrActor);
-    model.CalculateInertials(_errors, _config);
+    model.ResolveAutoInertials(_errors, _config);
   }
 }
 

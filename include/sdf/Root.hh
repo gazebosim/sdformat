@@ -234,7 +234,7 @@ namespace sdf
     /// \param[out] _errors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
     /// \param[in] _config Custom parser configuration
-    public: void CalculateInertials(sdf::Errors &_errors,
+    public: void ResolveAutoInertials(sdf::Errors &_errors,
       const ParserConfig &_config);
 
     /// \brief Create and return an SDF element filled with data from this

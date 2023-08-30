@@ -279,7 +279,7 @@ TEST(DOMLink, InvalidInertia)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMLink, CalculateInertialWithNoCollisionsInLink)
+TEST(DOMLink, ResolveAutoInertialsWithNoCollisionsInLink)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
   " <sdf version=\"1.11\">"
@@ -298,7 +298,7 @@ TEST(DOMLink, CalculateInertialWithNoCollisionsInLink)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  root.CalculateInertials(errors, sdfParserConfig);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
   ASSERT_FALSE(errors.empty());
 
   // Default Inertial values set during load
@@ -308,7 +308,7 @@ TEST(DOMLink, CalculateInertialWithNoCollisionsInLink)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMLink, CalculateInertialWithMultipleCollisions)
+TEST(DOMLink, ResolveAutoInertialsWithMultipleCollisions)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
   "<sdf version=\"1.11\">"
@@ -347,7 +347,7 @@ TEST(DOMLink, CalculateInertialWithMultipleCollisions)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  root.CalculateInertials(errors, sdfParserConfig);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
   EXPECT_TRUE(errors.empty());
 
   // Mass of cube(volume * density) + mass of cylinder(volume * density)
@@ -394,7 +394,7 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  root.CalculateInertials(errors, sdfParserConfig);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
   EXPECT_TRUE(errors.empty());
 
   EXPECT_NE(4.0, link->Inertial().MassMatrix().Mass());
@@ -404,7 +404,7 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMLink, CalculateInertialCalledWithAutoFalse)
+TEST(DOMLink, ResolveAutoInertialsCalledWithAutoFalse)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
   " <sdf version=\"1.11\">"
@@ -423,7 +423,7 @@ TEST(DOMLink, CalculateInertialCalledWithAutoFalse)
 
   const sdf::Model *model = root.Model();
   const sdf::Link *link = model->LinkByIndex(0);
-  root.CalculateInertials(errors, sdfParserConfig);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
   EXPECT_TRUE(errors.empty());
 
   // Default Inertial values set during load

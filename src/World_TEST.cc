@@ -516,7 +516,7 @@ TEST(DOMWorld, AddLight)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMWorld, CalculateInertial)
+TEST(DOMWorld, ResolveAutoInertials)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
   " <sdf version=\"1.11\">"
@@ -547,7 +547,7 @@ TEST(DOMWorld, CalculateInertial)
   const sdf::Model *model = world->ModelByIndex(0);
   const sdf::Link *link = model->LinkByIndex(0);
 
-  root.CalculateInertials(errors, sdfParserConfig);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
 
   const double l = 2;
   const double w = 2;
