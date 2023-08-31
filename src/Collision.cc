@@ -133,6 +133,13 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->dataPtr->densitySetAtLoad = true;
   }
 
+  // Load the auto_inertia_params element
+  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
+  {
+    this->dataPtr->autoInertiaParams =
+      this->dataPtr->sdf->GetElement("auto_inertia_params");
+  }
+
   return errors;
 }
 
@@ -263,12 +270,6 @@ void Collision::CalculateInertial(
     );
   }
 
-  if (this->dataPtr->sdf->HasElement("auto_inertia_params"))
-  {
-    this->dataPtr->autoInertiaParams =
-      this->dataPtr->sdf->GetElement("auto_inertia_params");
-  }
-
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(_errors, _config,
       this->dataPtr->density, this->dataPtr->autoInertiaParams);
@@ -287,7 +288,7 @@ void Collision::CalculateInertial(
     // Else resolve collision pose in Link Frame and then set as inertial pose
     if (this->dataPtr->poseRelativeTo.empty())
     {
-      _inertial.SetPose(this->dataPtr->pose);
+      _inertial.SetPose(this->dataPtr->pose * _inertial.Pose());
     }
     else
     {
@@ -297,7 +298,7 @@ void Collision::CalculateInertial(
       _errors.insert(_errors.end(),
                     poseConvErrors.begin(),
                     poseConvErrors.end());
-      _inertial.SetPose(collisionPoseLinkFrame);
+      _inertial.SetPose(collisionPoseLinkFrame * _inertial.Pose());
     }
   }
 }
