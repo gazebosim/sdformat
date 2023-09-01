@@ -1,5 +1,29 @@
 ## libsdformat 12.X
 
+### libsdformat 12.7.2 (2023-09-01)
+
+1. Fixed 1.9/light.sdf
+    * [Pull request #1281](https://github.com/gazebosim/sdformat/pull/1281)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
+1. Fix Element::Set method return value
+    * [Pull request #1256](https://github.com/gazebosim/sdformat/pull/1256)
+
+1. Add missing values in Surace ToElement method
+    * [Pull request #1263](https://github.com/gazebosim/sdformat/pull/1263)
+
+1. Rename COPYING to LICENSE
+    * [Pull request #1252](https://github.com/gazebosim/sdformat/pull/1252)
+
+1. Infrastructure
+    * [Pull request #1245](https://github.com/gazebosim/sdformat/pull/1245)
+    * [Pull request #1271](https://github.com/gazebosim/sdformat/pull/1271)
+
+1. Allow relative paths in URDF
+    * [Pull request #1213](https://github.com/gazebosim/sdformat/pull/1213)
+
 ### libsdformat 12.7.1 (2023-02-28)
 
 1. Fix camera info topic default value
