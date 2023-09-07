@@ -120,12 +120,22 @@ is recommended for most users.
 
 ## UNIX
 
-#### Build from Source
+### Prerequisites
+
+Clone the repository
+```sh
+git clone https://github.com/gazebosim/sdformat -b sdf<#>
+```
+Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+which version you need.
+
+### Build from Source
 
 Standard installation can be performed in UNIX systems using the following
 steps:
 
 ```sh
+cd sdformat
 mkdir build
 cd build
 cmake ..  # Consider specifying -DCMAKE_INSTALL_PREFIX=...
