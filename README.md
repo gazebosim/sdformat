@@ -213,7 +213,7 @@ conda activate gz-ws
 
 Install prerequisites:
 ```
-conda install urdfdom --channel conda-forge
+conda install tinyxml2 urdfdom --channel conda-forge
 ```
 
 Install Gazebo dependencies:
@@ -225,7 +225,7 @@ conda search libsdformat --channel conda-forge --info
 
 Install dependencies, replacing `<#>` with the desired versions:
 ```
-conda install libgz-math<#> libgz-tools<#> --channel conda-forge
+conda install libgz-cmake<#> libgz-math<#> libgz-tools<#> libgz-utils<#> --channel conda-forge
 ```
 
 ### Build from Source
