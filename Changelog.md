@@ -2,6 +2,66 @@
 
 ### libsdformat 14.0.0 (202X-XX-XX)
 
+1. Add missing conda dependencies
+    * [Pull request #1324](https://github.com/gazebosim/sdformat/pull/1324)
+
+1. Correct spelling of Python variable in CMake
+    * [Pull request #1319](https://github.com/gazebosim/sdformat/pull/1319)
+
+1. Remove hard dependence on ruby
+    * [Pull request #1323](https://github.com/gazebosim/sdformat/pull/1323)
+
+1. Documentation fixes
+    * [Pull request #1322](https://github.com/gazebosim/sdformat/pull/1322)
+
+1. Automatic Moment of Inertia Calculations for Basic Shapes
+    * [Pull request #1299](https://github.com/gazebosim/sdformat/pull/1299)
+    * [Pull request #1304](https://github.com/gazebosim/sdformat/pull/1304)
+    * [Pull request #1317](https://github.com/gazebosim/sdformat/pull/1317)
+
+1. Joint axis mimic constraints: add `sdf` element
+    * [Pull request #1166](https://github.com/gazebosim/sdformat/pull/1166)
+
+1. Add python bindings for `sdf::Element` and `sdf::Param`
+    * [Pull request #1303](https://github.com/gazebosim/sdformat/pull/1303)
+
+1. World: handle name collisions like Model
+    * [Pull request #1311](https://github.com/gazebosim/sdformat/pull/1311)
+
+1. ign -> gz
+    * [Pull request #1301](https://github.com/gazebosim/sdformat/pull/1301)
+
+1. Copy 1.10 spec to 1.11 for sdformat14
+    * [Pull request #1298](https://github.com/gazebosim/sdformat/pull/1298)
+
+1. Make sure the deprecated kSdfScopeDelimiter still works
+    * [Pull request #1305](https://github.com/gazebosim/sdformat/pull/1305)
+
+1. Python script to replace ruby xmlschema generator
+    * [Pull request #1232](https://github.com/gazebosim/sdformat/pull/1232)
+
+1. embedSdf.py: use posix paths
+    * [Pull request #1297](https://github.com/gazebosim/sdformat/pull/1297)
+
+1. Make dataPtr private in sdf::Plugin
+    * [Pull request #1268](https://github.com/gazebosim/sdformat/pull/1268)
+
+1. Fix GSG violations on non-trivially destructible types
+    * [Pull request #1264](https://github.com/gazebosim/sdformat/pull/1264)
+
+1. Port embedSdf script from Ruby to Python3 and provide unittests
+    * [Pull request #884](https://github.com/gazebosim/sdformat/pull/884)
+
+1. World: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
+    * [Pull request #1131](https://github.com/gazebosim/sdformat/pull/1131)
+
+1. Add sdf::Errors output to API methods
+    * [Pull request #1098](https://github.com/gazebosim/sdformat/pull/1098)
+    * [Pull request #1095](https://github.com/gazebosim/sdformat/pull/1095)
+
+1. ⬆️  Bump main to 14.0.0~pre1
+    * [Pull request #1104](https://github.com/gazebosim/sdformat/pull/1104)
+
 ## libsdformat 13.X
 
 ### libsdformat 13.6.0 (2023-08-30)
