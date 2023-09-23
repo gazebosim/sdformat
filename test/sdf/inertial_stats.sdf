@@ -1,25 +1,25 @@
 <?xml version="1.0" ?>
-<!---
-Model consists of 4 cubes places symmetrically
-in the XY plane. This model is used to verify the
-"gz sdf --inertial-stats" tool .
-            +y
-            │
-          ┌─┼─┐
-       L3 │ │ │(0,5,0)
-          └─┼─┘
-            │
-  L2┌───┐   │     ┌───┐L1
-────┼┼┼┼┼───┼─────┼┼┼┼┼─── +x
-    └───┘   │     └───┘
-  (-5,0,0)  │     (5,0,0)
-          ┌─┼─┐
-          │ │ │(0,-5,0)
-          └─┼─┘
-          L4│
--->
 <sdf version="1.6">
-
+  <!---
+  Model consists of 4 cubes places symmetrically in the XY plane.
+              +y
+              │
+            ┌─┼─┐
+         L3 │ │ │(0,5,0)
+            └─┼─┘
+              │
+    L2┌───┐   │     ┌───┐L1
+  ────┼┼┼┼┼───┼─────┼┼┼┼┼─── +x
+      └───┘   │     └───┘
+    (-5,0,0)  │     (5,0,0)
+            ┌─┼─┐
+            │ │ │(0,-5,0)
+            └─┼─┘
+            L4│
+  -->
+  <![CDATA[
+  This model is used to verify the "gz sdf --inertial-stats" tool.
+  ]]>
     <model name="test_model">
       <pose>0 0 0 0 0 0</pose>
 
