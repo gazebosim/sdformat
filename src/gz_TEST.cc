@@ -1889,7 +1889,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check a good SDF file from the same folder by passing a relative path
   {
-    std::string path = "inertial_stats.sdf";
+    std::string path = "inertial_stats_auto.sdf";
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
