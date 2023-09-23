@@ -191,9 +191,9 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       {
         Error err(
           ErrorCode::WARNING,
-          "Inertial was used with auto=true for link, " +
-          this->dataPtr->name + " but user defined inertial values "
-          "were found. They would be overwritten by computed ones."
+          "Inertial was used with auto=true for the link named " +
+          this->dataPtr->name + ", but user-defined inertial values were "
+          "found, which will be overwritten by the computed inertial values."
         );
         enforceConfigurablePolicyCondition(
           _config.WarningsPolicy(), err, errors);
@@ -610,7 +610,8 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
     {
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
                         "Inertial is set to auto but there are no "
-                        "<collision> elements for the link."});
+                        "<collision> elements for the link named " +
+                        this->Name() + "."});
       return;
     }
 

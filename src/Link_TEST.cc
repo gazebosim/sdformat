@@ -293,18 +293,13 @@ TEST(DOMLink, ResolveAutoInertialsWithNoCollisionsInLink)
   sdf::Root root;
   const sdf::ParserConfig sdfParserConfig;
   sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
-  EXPECT_TRUE(errors.empty());
+  ASSERT_EQ(1u, errors.size()) << errors;
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_NE(std::string::npos,
+            errors[0].Message().find(
+                "Inertial is set to auto but there are no <collision> elements "
+                "for the link named link."));
   EXPECT_NE(nullptr, root.Element());
-
-  const sdf::Model *model = root.Model();
-  const sdf::Link *link = model->LinkByIndex(0);
-  root.ResolveAutoInertials(errors, sdfParserConfig);
-  ASSERT_FALSE(errors.empty());
-
-  // Default Inertial values set during load
-  EXPECT_EQ(1.0, link->Inertial().MassMatrix().Mass());
-  EXPECT_EQ(gz::math::Vector3d::One,
-    link->Inertial().MassMatrix().DiagonalMoments());
 }
 
 /////////////////////////////////////////////////
