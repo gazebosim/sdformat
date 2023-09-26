@@ -3148,6 +3148,18 @@ void CreateJoint(tinyxml2::XMLElement *_root,
         AddKeyValue(jointAxisLimit, "velocity",
                     Values2str(1, &_link->parent_joint->limits->velocity));
       }
+
+      if (_link->parent_joint->mimic)
+      {
+        tinyxml2::XMLElement *jointAxisMimic = doc->NewElement("mimic");
+        jointAxisMimic->SetAttribute(
+            "joint", _link->parent_joint->mimic->joint_name.c_str());
+        AddKeyValue(jointAxisMimic, "multiplier",
+                    Values2str(1, &_link->parent_joint->mimic->multiplier));
+        AddKeyValue(jointAxisMimic, "offset",
+                    Values2str(1, &_link->parent_joint->mimic->offset));
+        jointAxis->LinkEndChild(jointAxisMimic);
+      }
     }
 
     if (jtype == "fixed" && !fixedJointConvertedToRevoluteJoint)
@@ -3410,7 +3422,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
     {
       // URDF is compatible with version 1.7. The automatic conversion script
       // will up-convert URDF to SDF.
-      sdf->SetAttribute("version", "1.7");
+      sdf->SetAttribute("version", "1.11");
       // add robot to sdf
       sdf->LinkEndChild(robot);
     }
