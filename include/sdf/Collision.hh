@@ -18,6 +18,7 @@
 #define SDF_COLLISION_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
@@ -145,12 +146,16 @@ namespace sdf
     /// \brief Calculate and return the MassMatrix for the collision
     /// \param[out] _errors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
-    /// \param[in] _config Custom parser configuration
     /// \param[out] _inertial An inertial object which will be set with the
     /// calculated inertial values
-    public: void CalculateInertial(sdf::Errors &_errors,
-                                  gz::math::Inertiald &_inertial,
-                                  const ParserConfig &_config);
+    /// \param[in] _config Custom parser configuration
+    /// \param[in] _density An optional density value to override this
+    /// collision's density.
+    public: void CalculateInertial(
+                    sdf::Errors &_errors,
+                    gz::math::Inertiald &_inertial,
+                    const ParserConfig &_config,
+                    const std::optional<double> &_density = std::nullopt);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
