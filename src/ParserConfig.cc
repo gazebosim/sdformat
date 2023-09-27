@@ -45,10 +45,10 @@ class sdf::ParserConfig::Implementation
   public: std::optional<EnforcementPolicy> deprecatedElementsPolicy;
 
   /// \brief Configuration that is set for the CalculateInertial() function
-  /// By default it is set to SKIP_CALCULATION_IN_LOAD which would cause
-  /// Root::Load() to not call CalculateInertial()
+  /// By default it is set to SAVE_CALCULATION to preserve the behavior of
+  /// Root::Load() generating complete inertial information.
   public: ConfigureResolveAutoInertials resolveAutoInertialsConfig =
-    ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD;
+    ConfigureResolveAutoInertials::SAVE_CALCULATION;
 
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;

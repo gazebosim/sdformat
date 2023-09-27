@@ -209,6 +209,22 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
 
   const auto &customCalculator = _config.CustomInertiaCalc();
 
+  if (!customCalculator)
+  {
+    Error err(
+        sdf::ErrorCode::WARNING,
+        "Custom moment of inertia calculator for meshes not set via "
+        "sdf::ParserConfig::RegisterCustomInertiaCalc, using default "
+        "inertial values.");
+    enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, _errors);
+
+    using namespace gz::math;
+    return Inertiald(
+        MassMatrix3d(1, Vector3d::One, Vector3d::Zero),
+        Pose3d::Zero);
+  }
+
   sdf::CustomInertiaCalcProperties calcInterface = CustomInertiaCalcProperties(
     _density, *this, _autoInertiaParams);
 
