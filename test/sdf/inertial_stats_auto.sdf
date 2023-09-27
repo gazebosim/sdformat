@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.11">
   <!---
   Model consists of 4 cubes places symmetrically in the XY plane.
               +y
@@ -25,15 +25,9 @@
 
       <link name="link_1">
         <pose>5 0 0 0 0 0</pose>
-        <inertial>
-          <mass>6.0</mass>
-          <inertia>
-            <ixx>1</ixx>
-            <iyy>1</iyy>
-            <izz>1</izz>
-          </inertia>
-        </inertial>
+        <inertial auto='true' />
         <collision name="collision_1">
+          <density>6</density>
           <geometry>
             <box>
               <size>1 1 1</size>
@@ -51,15 +45,9 @@
 
       <link name="link_2">
         <pose>-5 0 0 0 0 0</pose>
-        <inertial>
-          <mass>6.0</mass>
-          <inertia>
-            <ixx>1</ixx>
-            <iyy>1</iyy>
-            <izz>1</izz>
-          </inertia>
-        </inertial>
+        <inertial auto='true' />
         <collision name="collision_2">
+          <density>6</density>
           <geometry>
             <box>
               <size>1 1 1</size>
@@ -77,15 +65,9 @@
 
       <link name="link_3">
         <pose>0 5 0 0 0 0</pose>
-        <inertial>
-          <mass>6.0</mass>
-          <inertia>
-            <ixx>1</ixx>
-            <iyy>1</iyy>
-            <izz>1</izz>
-          </inertia>
-        </inertial>
+        <inertial auto='true' />
         <collision name="collision_3">
+          <density>6</density>
           <geometry>
             <box>
               <size>1 1 1</size>
@@ -103,15 +85,9 @@
 
       <link name="link_4">
         <pose>0 -5 0 0 0 0</pose>
-        <inertial>
-          <mass>6.0</mass>
-          <inertia>
-            <ixx>1</ixx>
-            <iyy>1</iyy>
-            <izz>1</izz>
-          </inertia>
-        </inertial>
+        <inertial auto='true' />
         <collision name="collision_4">
+          <density>6</density>
           <geometry>
             <box>
               <size>1 1 1</size>
