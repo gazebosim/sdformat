@@ -532,6 +532,15 @@ TEST(DOMWorld, ResolveAutoInertials)
   "           </box>"
   "         </geometry>"
   "       </collision>"
+  "       <collision name='box_col_zero_density'>"
+  "         <pose>3 0 0 0 0 0</pose>"
+  "         <density>0.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
   "     </link>"
   "   </model>"
   "  </world>"
@@ -540,7 +549,7 @@ TEST(DOMWorld, ResolveAutoInertials)
   sdf::Root root;
   const sdf::ParserConfig sdfParserConfig;
   sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_NE(nullptr, root.Element());
 
   const sdf::World *world = root.WorldByIndex(0);
@@ -568,7 +577,7 @@ TEST(DOMWorld, ResolveAutoInertials)
   expectedInertial.SetMassMatrix(expectedMassMat);
   expectedInertial.SetPose(gz::math::Pose3d::Zero);
 
-  ASSERT_TRUE(errors.empty());
+  ASSERT_TRUE(errors.empty()) << errors;
   EXPECT_EQ(expectedInertial, link->Inertial());
 }
 
