@@ -18,6 +18,7 @@
     * [Pull request #1299](https://github.com/gazebosim/sdformat/pull/1299)
     * [Pull request #1304](https://github.com/gazebosim/sdformat/pull/1304)
     * [Pull request #1317](https://github.com/gazebosim/sdformat/pull/1317)
+    * [Pull request #1325](https://github.com/gazebosim/sdformat/pull/1325)
 
 1. Joint axis mimic constraints: add `sdf` element
     * [Pull request #1166](https://github.com/gazebosim/sdformat/pull/1166)
@@ -40,9 +41,6 @@
 1. Python script to replace ruby xmlschema generator
     * [Pull request #1232](https://github.com/gazebosim/sdformat/pull/1232)
 
-1. embedSdf.py: use posix paths
-    * [Pull request #1297](https://github.com/gazebosim/sdformat/pull/1297)
-
 1. Make dataPtr private in sdf::Plugin
     * [Pull request #1268](https://github.com/gazebosim/sdformat/pull/1268)
 
@@ -51,6 +49,7 @@
 
 1. Port embedSdf script from Ruby to Python3 and provide unittests
     * [Pull request #884](https://github.com/gazebosim/sdformat/pull/884)
+    * [Pull request #1297](https://github.com/gazebosim/sdformat/pull/1297)
 
 1. World: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
     * [Pull request #1131](https://github.com/gazebosim/sdformat/pull/1131)
