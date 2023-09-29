@@ -1,6 +1,6 @@
 ## libsdformat 14.X
 
-### libsdformat 14.0.0 (202X-XX-XX)
+### libsdformat 14.0.0 (2023-09-29)
 
 1. Add missing conda dependencies
     * [Pull request #1324](https://github.com/gazebosim/sdformat/pull/1324)
