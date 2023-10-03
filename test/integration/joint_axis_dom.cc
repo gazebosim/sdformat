@@ -559,3 +559,29 @@ TEST(DOMJointAxis, ParseMimicInvalidLeaderAxis)
   EXPECT_EQ(errors[2].Message(), errorMsg2) << errors[2];
   EXPECT_EQ(errors[3].Message(), errorMsg3) << errors[3];
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimicURDF)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_mimic_rack_pinion.urdf");
+
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  auto followerJoint = model->JointByName("rack_joint");
+  ASSERT_NE(nullptr, followerJoint);
+  auto followerJointAxis = followerJoint->Axis();
+  ASSERT_NE(nullptr, followerJointAxis);
+  auto mimicJoint = followerJointAxis->Mimic();
+  ASSERT_NE(std::nullopt, mimicJoint);
+
+  EXPECT_EQ(mimicJoint->Joint(), "upper_joint");
+  EXPECT_EQ(mimicJoint->Axis(), "axis");
+  EXPECT_DOUBLE_EQ(mimicJoint->Multiplier(), 0.105);
+  EXPECT_DOUBLE_EQ(mimicJoint->Offset(), 0);
+  EXPECT_DOUBLE_EQ(mimicJoint->Reference(), 0);
+}
