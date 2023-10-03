@@ -3420,7 +3420,7 @@ void URDF2SDF::InitModelString(const std::string &_urdfStr,
 
     try
     {
-      // URDF is compatible with version 1.7. The automatic conversion script
+      // URDF is compatible with version 1.11. The automatic conversion script
       // will up-convert URDF to SDF.
       sdf->SetAttribute("version", "1.11");
       // add robot to sdf
