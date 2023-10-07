@@ -125,6 +125,8 @@ TEST(DOMLink, Construction)
   EXPECT_EQ(inertial.BodyMatrix(), inertial.SpatialMatrix());
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 
+  EXPECT_FALSE(link.Density().has_value());
+
   EXPECT_EQ(0u, link.CollisionCount());
   EXPECT_EQ(nullptr, link.CollisionByIndex(0));
   EXPECT_EQ(nullptr, link.CollisionByIndex(1));
@@ -300,6 +302,155 @@ TEST(DOMLink, ResolveAutoInertialsWithNoCollisionsInLink)
                 "Inertial is set to auto but there are no <collision> elements "
                 "for the link named link."));
   EXPECT_NE(nullptr, root.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, ResolveAutoInertialsWithDifferentDensity)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='multilink_model'>"
+  "    <pose>0 0 1.0 0 0 0</pose>"
+  "    <link name='link_density'>"
+  "      <pose>0 1.0 0 0 0 0</pose>"
+  "      <inertial auto='true'>"
+  "        <density>12.0</density>"
+  "      </inertial>"
+  "      <collision name='box_collision'>"
+  "        <pose>1.0 0 0 0 0 0</pose>"
+  "        <geometry>"
+  "          <box>"
+  "            <size>1 1 1</size>"
+  "          </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "    <link name='collision_density'>"
+  "      <pose>0 2.0 0 0 0 0</pose>"
+  "      <inertial auto='true'/>"
+  "      <collision name='box_collision'>"
+  "        <pose>1.0 0 0 0 0 0</pose>"
+  "        <density>24.0</density>"
+  "        <geometry>"
+  "          <box>"
+  "            <size>1 1 1</size>"
+  "          </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "    <link name='collision_density_overrides_link_density'>"
+  "      <pose>0 3.0 0 0 0 0</pose>"
+  "      <inertial auto='true'>"
+  "        <density>12.0</density>"
+  "      </inertial>"
+  "      <collision name='box_collision'>"
+  "        <pose>1.0 0 0 0 0 0</pose>"
+  "        <density>24.0</density>"
+  "        <geometry>"
+  "          <box>"
+  "            <size>1 1 1</size>"
+  "          </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "    <link name='default_density'>"
+  "      <pose>0 4.0 0 0 0 0</pose>"
+  "      <inertial auto='true'/>"
+  "      <collision name='box_collision'>"
+  "        <pose>1.0 0 0 0 0 0</pose>"
+  "        <geometry>"
+  "          <box>"
+  "            <size>1 1 1</size>"
+  "          </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "  </model>"
+  "</sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ(4u, model->LinkCount());
+
+  // ResolveAutoInertials should run by default during Root::Load.
+
+  {
+    const sdf::Link *link = model->LinkByName("link_density");
+    ASSERT_NE(nullptr, link);
+    auto linkDensity = link->Density();
+    ASSERT_TRUE(linkDensity.has_value());
+    EXPECT_DOUBLE_EQ(12.0, *linkDensity);
+    // Expected inertial
+    auto inertial = link->Inertial();
+    EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), inertial.Pose());
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(12.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(2, 2, 2),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+  }
+
+  {
+    const sdf::Link *link = model->LinkByName("collision_density");
+    ASSERT_NE(nullptr, link);
+    auto linkDensity = link->Density();
+    EXPECT_FALSE(linkDensity.has_value());
+    // assume Collision density is properly set to 24
+    // Expected inertial
+    auto inertial = link->Inertial();
+    EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), inertial.Pose());
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(24.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(4, 4, 4),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+  }
+
+  {
+    const sdf::Link *link =
+      model->LinkByName("collision_density_overrides_link_density");
+    ASSERT_NE(nullptr, link);
+    auto linkDensity = link->Density();
+    ASSERT_TRUE(linkDensity.has_value());
+    EXPECT_DOUBLE_EQ(12.0, *linkDensity);
+    // assume Collision density is properly set to 24 and overrides the link
+    // density
+    // Expected inertial
+    auto inertial = link->Inertial();
+    EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), inertial.Pose());
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(24.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(4, 4, 4),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+  }
+
+  {
+    const sdf::Link *link =
+      model->LinkByName("default_density");
+    ASSERT_NE(nullptr, link);
+    auto linkDensity = link->Density();
+    EXPECT_FALSE(linkDensity.has_value());
+    // assume density is the default value of 1000.0
+    // Expected inertial
+    auto inertial = link->Inertial();
+    EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), inertial.Pose());
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(1000.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d::One * 500.0 / 3.0,
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+  }
 }
 
 /////////////////////////////////////////////////

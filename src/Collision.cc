@@ -49,11 +49,8 @@ class sdf::Collision::Implementation
   /// \brief The collision's surface parameters.
   public: sdf::Surface surface;
 
-  /// \brief Density of the collision. Default is 1000.0
-  public: double density{1000.0};
-
-  /// \brief True if density was set during load from sdf.
-  public: bool densitySetAtLoad = false;
+  /// \brief Density of the collision if it has been set.
+  public: std::optional<double> density;
 
   /// \brief SDF element pointer to <moi_calculator_params> tag
   public: sdf::ElementPtr autoInertiaParams{nullptr};
@@ -130,7 +127,6 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("density"))
   {
     this->dataPtr->density = _sdf->Get<double>("density");
-    this->dataPtr->densitySetAtLoad = true;
   }
 
   // Load the auto_inertia_params element
@@ -156,9 +152,19 @@ void Collision::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+double Collision::DensityDefault()
+{
+  return 1000.0;
+}
+
+/////////////////////////////////////////////////
 double Collision::Density() const
 {
-  return this->dataPtr->density;
+  if (this->dataPtr->density)
+  {
+    return *this->dataPtr->density;
+  }
+  return DensityDefault();
 }
 
 /////////////////////////////////////////////////
@@ -256,14 +262,41 @@ void Collision::CalculateInertial(
   gz::math::Inertiald &_inertial,
   const ParserConfig &_config)
 {
-  // Check if density was not set during load & send a warning
-  // about the default value being used
-  if (!this->dataPtr->densitySetAtLoad)
+  this->CalculateInertial(_errors, _inertial, _config, std::nullopt);
+}
+
+/////////////////////////////////////////////////
+void Collision::CalculateInertial(
+  sdf::Errors &_errors,
+  gz::math::Inertiald &_inertial,
+  const ParserConfig &_config,
+  const std::optional<double> &_density)
+{
+  // Order of precedence for density:
+  double density;
+  // 1. Density explicitly set in this collision, either from the
+  // `//collision/density` element or from Collision::SetDensity.
+  if (this->dataPtr->density)
   {
+    density = *this->dataPtr->density;
+  }
+  // 2. Density passed into this function, which likely comes from the
+  // `//link/inertial/density` element or from Link::SetDensity.
+  else if (_density)
+  {
+    density = *_density;
+  }
+  // 3. DensityDefault value.
+  else
+  {
+    // If density was not explicitly set, send a warning
+    // about the default value being used
+    density = DensityDefault();
     Error densityMissingErr(
       ErrorCode::ELEMENT_MISSING,
       "Collision is missing a <density> child element. "
-      "Using a default density value of 1000.0 kg/m^3. "
+      "Using a default density value of " +
+      std::to_string(DensityDefault()) + " kg/m^3. "
     );
     enforceConfigurablePolicyCondition(
       _config.WarningsPolicy(), densityMissingErr, _errors
@@ -272,7 +305,7 @@ void Collision::CalculateInertial(
 
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(_errors, _config,
-      this->dataPtr->density, this->dataPtr->autoInertiaParams);
+      density, this->dataPtr->autoInertiaParams);
 
   if (!geomInertial)
   {

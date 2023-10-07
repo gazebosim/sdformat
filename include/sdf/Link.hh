@@ -18,6 +18,7 @@
 #define SDF_LINK_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <gz/math/Inertial.hh>
 #include <gz/math/Pose3.hh>
@@ -78,6 +79,15 @@ namespace sdf
     /// The name of a link must be unique within the scope of a Model.
     /// \param[in] _name Name of the link.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the density of the inertial if it has been set.
+    /// \return Density of the inertial if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<double> Density() const;
+
+    /// \brief Set the density of the inertial.
+    /// \param[in] _density Density of the inertial.
+    public: void SetDensity(double _density);
 
     /// \brief Get the number of visuals.
     /// \return Number of visuals contained in this Link object.
