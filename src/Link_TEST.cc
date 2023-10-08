@@ -126,6 +126,10 @@ TEST(DOMLink, Construction)
   EXPECT_TRUE(inertial.MassMatrix().IsValid());
 
   EXPECT_FALSE(link.Density().has_value());
+  const double density = 123.0;
+  link.SetDensity(density);
+  ASSERT_TRUE(link.Density().has_value());
+  EXPECT_DOUBLE_EQ(density, *link.Density());
 
   EXPECT_EQ(0u, link.CollisionCount());
   EXPECT_EQ(nullptr, link.CollisionByIndex(0));
