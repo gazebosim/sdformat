@@ -1,3 +1,7 @@
+## libsdformat 15.X
+
+### libsdformat 15.X.X (202X-XX-XX)
+
 ## libsdformat 14.X
 
 ### libsdformat 14.0.0 (2023-09-29)
