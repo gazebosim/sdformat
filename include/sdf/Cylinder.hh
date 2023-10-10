@@ -17,7 +17,10 @@
 #ifndef SDF_CYLINDER_HH_
 #define SDF_CYLINDER_HH_
 
+#include <optional>
+
 #include <gz/math/Cylinder.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -71,6 +74,14 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Cylinder.
     /// \return A reference to a gz::math::Cylinderd object.
     public: gz::math::Cylinderd &Shape();
+
+    /// \brief Calculate and return the Inertial values for the Cylinder. In
+    /// order to calculate the inertial properties, the function mutates the
+    /// object by updating its material properties.
+    /// \param[in] _density Density of the cylinder in kg/m^3
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald>
+            CalculateInertial(double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// cylinder.

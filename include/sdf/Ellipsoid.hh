@@ -17,6 +17,9 @@
 #ifndef SDF_ELLIPSOID_HH_
 #define SDF_ELLIPSOID_HH_
 
+#include <optional>
+
+#include <gz/math/Inertial.hh>
 #include <gz/math/Ellipsoid.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
@@ -63,6 +66,14 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Ellipsoid.
     /// \return A reference to a gz::math::Ellipsoidd object.
     public: gz::math::Ellipsoidd &Shape();
+
+    /// \brief Calculate and return the Inertial values for the Ellipsoid. In
+    /// order to calculate the inertial properties, the function mutates the
+    /// object by updating its material properties.
+    /// \param[in] _density Density of the ellipsoid in kg/m^3
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald>
+            CalculateInertial(double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// ellipsoid.

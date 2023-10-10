@@ -860,6 +860,17 @@ const NestedInclude *World::InterfaceModelNestedIncludeByIndex(
 }
 
 /////////////////////////////////////////////////
+void World::ResolveAutoInertials(sdf::Errors &_errors,
+                              const ParserConfig &_config)
+{
+  // Call ResolveAutoInertials() function for all the models
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    model.ResolveAutoInertials(_errors, _config);
+  }
+}
+
+/////////////////////////////////////////////////
 void World::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseRelativeToGraph = _graph;

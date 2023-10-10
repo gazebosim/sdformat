@@ -18,8 +18,12 @@
 #define SDF_MESH_HH_
 
 #include <string>
+#include <optional>
+
 #include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
+#include <sdf/CustomInertiaCalcProperties.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>
@@ -103,6 +107,20 @@ namespace sdf
     /// for more information.
     /// \param[in] _center True to center the submesh.
     public: void SetCenterSubmesh(const bool _center);
+
+    /// \brief Calculate and return the Inertial values for the Mesh
+    /// \param[out] _errors A vector of Errors object. Each object
+    /// would contain an error code and an error message.
+    /// \param[in] _density Density of the mesh in kg/m^3
+    /// \param[in] _autoInertiaParams ElementPtr to
+    /// <auto_inertia_params> element
+    /// \param[in] _config Parser Configuration
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald>
+            CalculateInertial(sdf::Errors &_errors,
+                              double _density,
+                              const sdf::ElementPtr _autoInertiaParams,
+                              const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has

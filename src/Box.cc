@@ -14,7 +14,12 @@
  * limitations under the License.
  *
 */
+#include <optional>
+
 #include <gz/math/Vector3.hh>
+#include <gz/math/Material.hh>
+#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
 #include "sdf/Box.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -113,6 +118,26 @@ const gz::math::Boxd &Box::Shape() const
 gz::math::Boxd &Box::Shape()
 {
   return this->dataPtr->box;
+}
+
+/////////////////////////////////////////////////
+std::optional<gz::math::Inertiald> Box::CalculateInertial(double _density)
+{
+  gz::math::Material material = gz::math::Material(_density);
+  this->dataPtr->box.SetMaterial(material);
+
+  auto boxMassMatrix = this->dataPtr->box.MassMatrix();
+
+  if (!boxMassMatrix)
+  {
+    return std::nullopt;
+  }
+  else
+  {
+    gz::math::Inertiald boxInertial;
+    boxInertial.SetMassMatrix(boxMassMatrix.value());
+    return std::make_optional(boxInertial);
+  }
 }
 
 /////////////////////////////////////////////////

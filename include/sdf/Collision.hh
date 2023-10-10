@@ -20,12 +20,15 @@
 #include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+#include "sdf/ParserConfig.hh"
 
 namespace sdf
 {
@@ -75,6 +78,26 @@ namespace sdf
     /// \param[in] _name Name of the collision.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get the density of the collision.
+    /// \return Density of the collision.
+    public: double Density() const;
+
+    /// \brief Set the density of the collision.
+    /// \param[in] _density Density of the collision.
+    public: void SetDensity(double _density);
+
+    /// \brief Get the ElementPtr to the <auto_inertia_params> element
+    /// This element can be used as a parent element to hold user-defined
+    /// params for the custom moment of inertia calculator.
+    /// \return ElementPtr object for the <auto_inertia_params> element.
+    public: sdf::ElementPtr AutoInertiaParams() const;
+
+    /// \brief Function to set the auto inertia params using a
+    /// sdf ElementPtr object
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
+    /// element
+    public: void SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams);
+
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
     public: const Geometry *Geom() const;
@@ -118,6 +141,16 @@ namespace sdf
     /// poses.
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
+
+    /// \brief Calculate and return the MassMatrix for the collision
+    /// \param[out] _errors A vector of Errors objects. Each errors contains an
+    /// Error code and a message. An empty errors vector indicates no errors
+    /// \param[in] _config Custom parser configuration
+    /// \param[out] _inertial An inertial object which will be set with the
+    /// calculated inertial values
+    public: void CalculateInertial(sdf::Errors &_errors,
+                                  gz::math::Inertiald &_inertial,
+                                  const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

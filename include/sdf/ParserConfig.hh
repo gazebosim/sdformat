@@ -27,6 +27,7 @@
 
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
 
@@ -46,6 +47,20 @@ enum class EnforcementPolicy
 
   /// \brief Ignore condition in favor of best effort parsing
   LOG,
+};
+
+/// \enum ConfigureResolveAutoInertials
+/// \brief Configuration options of how CalculateInertial() function
+/// would be used
+enum class ConfigureResolveAutoInertials
+{
+  /// \brief If this value is used, CalculateInertial() won't be
+  /// called from inside the Root::Load() function
+  SKIP_CALCULATION_IN_LOAD,
+
+  /// \brief If this values is used, CalculateInertial() would be
+  /// called and the computed inertial values would be saved
+  SAVE_CALCULATION
 };
 
 // Forward declare private data class.
@@ -160,6 +175,17 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \return The deperacted elements policy enum value
   public: EnforcementPolicy DeprecatedElementsPolicy() const;
 
+  /// \brief Get the current configuration for the CalculateInertial()
+  /// function
+  /// \return Current set value of the ConfigureResolveAutoInertials enum
+  public: ConfigureResolveAutoInertials CalculateInertialConfiguration() const;
+
+  /// \brief Set the configuration for the CalculateInertial() function
+  /// \param[in] _configuration The configuration to set for the
+  /// CalculateInertial() function
+  public: void SetCalculateInertialConfiguration(
+    ConfigureResolveAutoInertials _configuration);
+
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described in
   /// sdf/InterfaceElements.hh.
@@ -168,6 +194,16 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the registered custom model parsers
   /// \return Vector of registered model parser callbacks.
   public: const std::vector<CustomModelParser> &CustomModelParsers() const;
+
+  /// \brief Registers a custom Moment of Inertia Calculator for Meshes
+  /// \param[in] _inertiaCalculator Callback with signature as described in
+  /// sdf/CustomInertiaCalcProperties.hh.
+  public: void RegisterCustomInertiaCalc(
+      CustomInertiaCalculator _inertiaCalculator);
+
+  /// \brief Get the registered custom mesh MOI Calculator
+  /// \return registered mesh MOI Calculator.
+  public: const CustomInertiaCalculator &CustomInertiaCalc() const;
 
   /// \brief Set the preserveFixedJoint flag.
   /// \param[in] _preserveFixedJoint True to preserve fixed joints, false to

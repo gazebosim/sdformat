@@ -110,15 +110,6 @@ if (BUILD_SDF)
     gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
   endif()
 
-  ################################################
-  # Find ruby executable to produce xml schemas
-  find_program(RUBY ruby)
-  if (NOT RUBY)
-    gz_build_error ("Ruby version 1.9 is needed to build xml schemas")
-  else()
-    message(STATUS "Found ruby executable: ${RUBY}")
-  endif()
-
   ########################################
   # Find gz math
   # Set a variable for generating ProjectConfig.cmake
@@ -133,8 +124,7 @@ if (BUILD_SDF)
   ########################################
   # Python interfaces
   if (NOT PYTHON3_FOUND)
-    GZ_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
-    message (STATUS "Searching for Python - not found.")
+    GZ_BUILD_ERROR("Python is missing - Needed to build/embed xml schemas")
   else()
     message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
 

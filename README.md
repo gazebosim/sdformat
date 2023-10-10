@@ -120,12 +120,22 @@ is recommended for most users.
 
 ## UNIX
 
-#### Build from Source
+### Prerequisites
+
+Clone the repository
+```sh
+git clone https://github.com/gazebosim/sdformat -b sdf<#>
+```
+Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+which version you need.
+
+### Build from Source
 
 Standard installation can be performed in UNIX systems using the following
 steps:
 
 ```sh
+cd sdformat
 mkdir build
 cd build
 cmake ..  # Consider specifying -DCMAKE_INSTALL_PREFIX=...
@@ -203,7 +213,7 @@ conda activate gz-ws
 
 Install prerequisites:
 ```
-conda install urdfdom --channel conda-forge
+conda install tinyxml2 urdfdom --channel conda-forge
 ```
 
 Install Gazebo dependencies:
@@ -215,7 +225,7 @@ conda search libsdformat --channel conda-forge --info
 
 Install dependencies, replacing `<#>` with the desired versions:
 ```
-conda install libgz-math<#> libgz-tools<#> --channel conda-forge
+conda install libgz-cmake<#> libgz-math<#> libgz-tools<#> libgz-utils<#> --channel conda-forge
 ```
 
 ### Build from Source

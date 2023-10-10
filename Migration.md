@@ -23,8 +23,16 @@ but with improved human-readability..
 ### Modifications
 
 1. World class only renames frames with name collisions if original file version
-   is 1.6 or earlier. Name collisions in newer files will cause DUPLICATE_NAME
+   is 1.6 or earlier. Name collisions in newer files will cause `DUPLICATE_NAME`
    errors, which now matches the behavior of the Model class.
+
+1. Python is now required to build libsdformat instead of Ruby.
+
+1. **sdf/ParserConfig.hh** The following new functions were added to support automatic calculation of moments of inertia.
+    + ConfigureResolveAutoInertials CalculateInertialConfiguration() const
+    + void SetCalculateInertialConfiguration(ConfigureResolveAutoInertials)
+    + void RegisterCustomInertiaCalc(CustomInertiaCalculator)
+    + const CustomInertiaCalculator &CustomInertiaCalc() const
 
 ## libsdformat 12.x to 13.x
 
@@ -38,7 +46,7 @@ but with improved human-readability..
 
 1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
    elements.
-2. Updated search order for `sdf::findFile()` making local path (current directory) the first to be searched. 
+2. Updated search order for `sdf::findFile()` making local path (current directory) the first to be searched.
 
 ### Deprecations
 
@@ -584,7 +592,20 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//mimic/offset`: parameter representing offset to follower position.
     + `//mimic/reference`: parameter representing reference for leader position before applying the multiplier.
 
-1. **joint.sdf**:
+1. **inertial.sdf**: A new attribute `//inertial/@auto` has been added
+   to specify whether the moment of inertia of a link should be calculated
+   automatically. In addition, the following elements have been added:
+   + `//inertial/density`: Common mass density of all collision geometries.
+   + `//inertial/auto_inertia_params`: Container for custom parameters passed
+     to the moment of inertia calculator.
+
+1. **collision.sdf**: A new element `//collision/density` has been added
+   to specify the density of a material for automatic calculation of the moment
+   of inertia of the parent link. This parameter overrides the value in
+   `//inertial/density` of the parent link if specified. In addition,
+   `//collision/auto_inertia_params` can be used to override
+   `//inertial/auto_inertia_params` of the parent link.
+
 ## SDFormat specification 1.9 to 1.10
 
 ### Additions

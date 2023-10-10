@@ -1,8 +1,97 @@
 ## libsdformat 14.X
 
-### libsdformat 14.0.0 (202X-XX-XX)
+### libsdformat 14.0.0 (2023-09-29)
+
+1. Add missing conda dependencies
+    * [Pull request #1324](https://github.com/gazebosim/sdformat/pull/1324)
+
+1. Correct spelling of Python variable in CMake
+    * [Pull request #1319](https://github.com/gazebosim/sdformat/pull/1319)
+
+1. Remove hard dependence on ruby
+    * [Pull request #1323](https://github.com/gazebosim/sdformat/pull/1323)
+
+1. Documentation fixes
+    * [Pull request #1322](https://github.com/gazebosim/sdformat/pull/1322)
+
+1. Automatic Moment of Inertia Calculations for Basic Shapes
+    * [Pull request #1299](https://github.com/gazebosim/sdformat/pull/1299)
+    * [Pull request #1304](https://github.com/gazebosim/sdformat/pull/1304)
+    * [Pull request #1317](https://github.com/gazebosim/sdformat/pull/1317)
+    * [Pull request #1325](https://github.com/gazebosim/sdformat/pull/1325)
+
+1. Joint axis mimic constraints: add `sdf` element
+    * [Pull request #1166](https://github.com/gazebosim/sdformat/pull/1166)
+
+1. Add python bindings for `sdf::Element` and `sdf::Param`
+    * [Pull request #1303](https://github.com/gazebosim/sdformat/pull/1303)
+
+1. World: handle name collisions like Model
+    * [Pull request #1311](https://github.com/gazebosim/sdformat/pull/1311)
+
+1. ign -> gz
+    * [Pull request #1301](https://github.com/gazebosim/sdformat/pull/1301)
+
+1. Copy 1.10 spec to 1.11 for sdformat14
+    * [Pull request #1298](https://github.com/gazebosim/sdformat/pull/1298)
+
+1. Make sure the deprecated kSdfScopeDelimiter still works
+    * [Pull request #1305](https://github.com/gazebosim/sdformat/pull/1305)
+
+1. Python script to replace ruby xmlschema generator
+    * [Pull request #1232](https://github.com/gazebosim/sdformat/pull/1232)
+
+1. Make dataPtr private in sdf::Plugin
+    * [Pull request #1268](https://github.com/gazebosim/sdformat/pull/1268)
+
+1. Fix GSG violations on non-trivially destructible types
+    * [Pull request #1264](https://github.com/gazebosim/sdformat/pull/1264)
+
+1. Port embedSdf script from Ruby to Python3 and provide unittests
+    * [Pull request #884](https://github.com/gazebosim/sdformat/pull/884)
+    * [Pull request #1297](https://github.com/gazebosim/sdformat/pull/1297)
+
+1. World: sdfwarns to sdf::Errors when warnings policy set to sdf::EnforcementPolicy::ERR
+    * [Pull request #1131](https://github.com/gazebosim/sdformat/pull/1131)
+
+1. Add sdf::Errors output to API methods
+    * [Pull request #1098](https://github.com/gazebosim/sdformat/pull/1098)
+    * [Pull request #1095](https://github.com/gazebosim/sdformat/pull/1095)
+
+1. ⬆️  Bump main to 14.0.0~pre1
+    * [Pull request #1104](https://github.com/gazebosim/sdformat/pull/1104)
 
 ## libsdformat 13.X
+
+### libsdformat 13.6.0 (2023-08-30)
+
+1. Use relative path in an urdf include to avoid confusion between internal and system headers
+    * [Pull request #1259](https://github.com/gazebosim/sdformat/pull/1259)
+
+1. parser.cc update calls to use sdf::Errors output
+    * [Pull request #1294](https://github.com/gazebosim/sdformat/pull/1294)
+
+1. Fix deeply nested merge-include for custom parsed files
+    * [Pull request #1293](https://github.com/gazebosim/sdformat/pull/1293)
+
+1. Updated findfile() to search localpath first
+    * [Pull request #1292](https://github.com/gazebosim/sdformat/pull/1292)
+
+1. World requires a scene and atmosphere
+    * [Pull request #1308](https://github.com/gazebosim/sdformat/pull/1308)
+
+1. Infrastructure
+    * [Pull request #1307](https://github.com/gazebosim/sdformat/pull/1307)
+    * [Pull request #1306](https://github.com/gazebosim/sdformat/pull/1306)
+
+1. Remove robot not found error when parsing fails
+    * [Pull request #1290](https://github.com/gazebosim/sdformat/pull/1290)
+
+1. Make some sdfdbg messages sdfmsgs
+    * [Pull request #1288](https://github.com/gazebosim/sdformat/pull/1288)
+
+1. Minor clean up of tests
+    * [Pull request #1289](https://github.com/gazebosim/sdformat/pull/1289)
 
 ### libsdformat 13.5.0 (2023-05-18)
 
