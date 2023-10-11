@@ -6,7 +6,7 @@ jobs:
   build:
 
     env:
-      PACKAGE: sdformat14
+      PACKAGE: sdformat15
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
