@@ -126,6 +126,4 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-if(NOT WIN32)
-  add_subdirectory(cmd)
-endif()
+add_subdirectory(cmd)
