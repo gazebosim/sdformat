@@ -1,8 +1,8 @@
 libgz-cmake4-dev
 libgz-math7-dev
 libgz-tools2-dev
-libgz-utils2-dev
-libgz-utils2-cli-dev
+libgz-utils3-dev
+libgz-utils3-cli-dev
 libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils
