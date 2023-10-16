@@ -18,8 +18,8 @@ set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
 # Find gz-cmake
-find_package(gz-cmake3 REQUIRED)
-set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
+find_package(gz-cmake4 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
 
 ########################################
 option(SKIP_PYBIND11
