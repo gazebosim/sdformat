@@ -1,5 +1,5 @@
 libgz-cmake4-dev
-libgz-math7-dev
+libgz-math8-dev
 libgz-tools2-dev
 libgz-utils3-dev
 libgz-utils3-cli-dev
@@ -8,7 +8,7 @@ liburdfdom-dev
 libxml2-utils
 python3-dev
 python3-distutils
-python3-gz-math7
+python3-gz-math8
 python3-psutil
 python3-pybind11
 python3-pytest

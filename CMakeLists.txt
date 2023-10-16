@@ -113,8 +113,8 @@ if (BUILD_SDF)
   ########################################
   # Find gz math
   # Set a variable for generating ProjectConfig.cmake
-  gz_find_package(gz-math7 VERSION REQUIRED)
-  set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
+  gz_find_package(gz-math8 VERSION REQUIRED)
+  set(GZ_MATH_VER ${gz-math8_VERSION_MAJOR})
 
   ########################################
   # Find gz utils
