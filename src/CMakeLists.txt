@@ -61,6 +61,10 @@ if (BUILD_TESTING)
       XmlUtils.cc)
   endif()
 
+  if(TARGET UNIT_gz_TEST)
+    target_compile_definitions(UNIT_gz_TEST PUBLIC "-DDETAIL_GZ_CONFIG_PATH=\"${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>\"")
+  endif()
+
   if (TARGET UNIT_FrameSemantics_TEST)
     target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc Utils.cc)
     target_link_libraries(UNIT_FrameSemantics_TEST TINYXML2::TINYXML2)
