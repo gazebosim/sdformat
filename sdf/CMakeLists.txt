@@ -50,7 +50,7 @@ if (GZ_PROGRAM)
     add_custom_command(
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf
       COMMAND
-        ${CMAKE_COMMAND} -E env GZ_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf
+        ${CMAKE_COMMAND} -E env GZ_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>
         ${GZ_PROGRAM}
       ARGS sdf -d ${desc_ver} > ${CMAKE_CURRENT_BINARY_DIR}/full_${desc_ver_dash}.sdf
       COMMENT "Generating full description for spec ${desc_ver}"
