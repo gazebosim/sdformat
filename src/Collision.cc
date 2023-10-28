@@ -52,7 +52,7 @@ class sdf::Collision::Implementation
   /// \brief Density of the collision if it has been set.
   public: std::optional<double> density;
 
-  /// \brief SDF element pointer to <moi_calculator_params> tag
+  /// \brief SDF element pointer to <auto_inertia_params> tag
   public: sdf::ElementPtr autoInertiaParams{nullptr};
 
   /// \brief The SDF element pointer used during load.

@@ -59,12 +59,12 @@ TEST(DOMcollision, Construction)
   EXPECT_DOUBLE_EQ(collision.Density(), 1240.0);
 
   EXPECT_EQ(collision.AutoInertiaParams(), nullptr);
-  sdf::ElementPtr autoInertialParamsElem(new sdf::Element());
-  autoInertialParamsElem->SetName("auto_inertial_params");
-  collision.SetAutoInertiaParams(autoInertialParamsElem);
-  EXPECT_EQ(collision.AutoInertiaParams(), autoInertialParamsElem);
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+  autoInertiaParamsElem->SetName("auto_inertia_params");
+  collision.SetAutoInertiaParams(autoInertiaParamsElem);
+  EXPECT_EQ(collision.AutoInertiaParams(), autoInertiaParamsElem);
   EXPECT_EQ(collision.AutoInertiaParams()->GetName(),
-    autoInertialParamsElem->GetName());
+    autoInertiaParamsElem->GetName());
 
   collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
   EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
