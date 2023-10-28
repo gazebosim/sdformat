@@ -167,11 +167,15 @@ namespace sdf
     /// \param[in] _density An optional density value to override the default
     /// collision density. This value is used instead of DefaultDensity()
     // if this collision's density has not been explicitly set.
+    /// \param[in] _autoInertiaParams An ElementPtr to the auto_inertia_params
+    /// element to be used if the auto_inertia_params have not been set in this
+    /// collision.
     public: void CalculateInertial(
                     sdf::Errors &_errors,
                     gz::math::Inertiald &_inertial,
                     const ParserConfig &_config,
-                    const std::optional<double> &_density);
+                    const std::optional<double> &_density,
+                    sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

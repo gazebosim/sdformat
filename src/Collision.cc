@@ -262,7 +262,8 @@ void Collision::CalculateInertial(
   gz::math::Inertiald &_inertial,
   const ParserConfig &_config)
 {
-  this->CalculateInertial(_errors, _inertial, _config, std::nullopt);
+  this->CalculateInertial(
+    _errors, _inertial, _config, std::nullopt, ElementPtr());
 }
 
 /////////////////////////////////////////////////
@@ -270,7 +271,8 @@ void Collision::CalculateInertial(
   sdf::Errors &_errors,
   gz::math::Inertiald &_inertial,
   const ParserConfig &_config,
-  const std::optional<double> &_density)
+  const std::optional<double> &_density,
+  sdf::ElementPtr _autoInertiaParams)
 {
   // Order of precedence for density:
   double density;
@@ -303,9 +305,16 @@ void Collision::CalculateInertial(
     );
   }
 
+  // If this Collision's auto inertia params have not been set, then use the
+  // params passed into this function.
+  sdf::ElementPtr autoInertiaParams = this->dataPtr->autoInertiaParams;
+  if (!autoInertiaParams)
+  {
+    autoInertiaParams = _autoInertiaParams;
+  }
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(_errors, _config,
-      density, this->dataPtr->autoInertiaParams);
+      density, autoInertiaParams);
 
   if (!geomInertial)
   {
