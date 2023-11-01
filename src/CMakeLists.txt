@@ -27,6 +27,28 @@ else()
     IgnURDFDOM::IgnURDFDOM)
 endif()
 
+ign_create_core_library(SOURCES ${sources}
+  CXX_STANDARD 17
+  LEGACY_PROJECT_PREFIX SDFormat
+  )
+
+target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+  PUBLIC
+    ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
+    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+  PRIVATE
+    TINYXML2::TINYXML2
+    using_parser_urdf)
+
+if (WIN32)
+  target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
+endif()
+
+target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 if (BUILD_TESTING)
   # Build this test file only if Ignition Tools is installed.
   if (NOT IGN_PROGRAM)
@@ -102,28 +124,6 @@ if (BUILD_TESTING)
       parser_urdf.cc)
   endif()
 endif()
-
-ign_create_core_library(SOURCES ${sources}
-  CXX_STANDARD 17
-  LEGACY_PROJECT_PREFIX SDFormat
-  )
-
-target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
-  PUBLIC
-    ignition-math${IGN_MATH_VER}::ignition-math${IGN_MATH_VER}
-    ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
-  PRIVATE
-    TINYXML2::TINYXML2
-    using_parser_urdf)
-
-if (WIN32)
-  target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
-endif()
-
-target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
 
 if(NOT WIN32)
   add_subdirectory(cmd)
