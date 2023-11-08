@@ -57,7 +57,7 @@ if (BUILD_TESTING)
     list(REMOVE_ITEM gtest_sources ign_TEST.cc)
   endif()
 
-  add_library(library_for_tests STATIC
+  add_library(library_for_tests OBJECT
       Converter.cc
       EmbeddedSdf.cc
       FrameSemantics.cc
@@ -73,20 +73,22 @@ if (BUILD_TESTING)
     target_sources(library_for_tests PRIVATE ${urdf_internal_sources})
   endif()
 
-  target_link_libraries(library_for_tests PUBLIC
-    ${PROJECT_LIBRARY_TARGET_NAME}
-    # Also link against the privately linked libraries of the core library
+  # Link against the publically and privately linked libraries of the core library
+  target_link_libraries(library_for_tests
     $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},LINK_LIBRARIES>
   )
 
-  # Use the private include flags from the core library
+  # Use the include flags from the core library
   target_include_directories(library_for_tests PUBLIC
     $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},INCLUDE_DIRECTORIES>
   )
 
-  # Use the private comopile flags from the core library
+  # Use the private compile flags from the core library. Also set IGNITION_SDFORMAT_STATIC_DEFINE to avoid
+  # inconsistent linkage issues on windows. Setting the define will cause the SDFORMAT_VISIBLE/SDFORMAT_HIDDEN  macros
+  # to expand to nothing when building a static library
   target_compile_definitions(library_for_tests PUBLIC
     $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},COMPILE_DEFINITIONS>
+    -DIGNITION_SDFORMAT_STATIC_DEFINE
   )
 
   ign_build_tests(
@@ -100,19 +102,6 @@ if (BUILD_TESTING)
     TEST_LIST
       test_targets
   )
-
-  # MSVC will fail saying there are some symbols are defined multiple times. This is true
-  # since some of the symbols in the static library are public symbols and will also be in the
-  # dynamic library (core library). But this is okay since they will be exactly the same definitions,
-  # so here, we set `/FORCE:MULTIPLE` to disable the error. A compiler warning is also emitted,
-  # so we disable warning C4273.
-  if(WIN32)
-    foreach(test_target ${test_targets})
-      set_target_properties(${test_target} PROPERTIES LINK_FLAGS "/FORCE:MULTIPLE")
-    endforeach()
-
-    set_target_properties(library_for_tests PROPERTIES COMPILE_FLAGS "/wd4273")
-  endif()
 
 endif()
 
