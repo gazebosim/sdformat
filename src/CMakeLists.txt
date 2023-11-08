@@ -42,7 +42,7 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
       IgnURDFDOM::IgnURDFDOM)
   endif()
 
-if (WIN32)
+if (WIN32 AND USE_INTERNAL_URDF)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
 endif()
 
