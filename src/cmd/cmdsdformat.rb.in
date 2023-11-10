@@ -177,8 +177,6 @@ class Cmd
 
     # Read the plugin that handles the command.
     if Pathname.new(LIBRARY_NAME).absolute?
-      # If the first character is a slash, we'll assume that we've been given an
-      # absolute path to the library. This is only used during test mode.
       plugin = LIBRARY_NAME
     else
       # We're assuming that the library path is relative to the current
@@ -189,8 +187,9 @@ class Cmd
 
     begin
       Importer.dlload plugin
-    rescue DLError
+    rescue DLError => error
       puts "Library error: [#{plugin}] not found."
+      puts "DLError: #{error.message}"
       exit(-1)
     end
 
