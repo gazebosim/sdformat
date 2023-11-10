@@ -72,7 +72,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(checkUnrecognizedElements, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -120,7 +120,7 @@ TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -916,7 +916,7 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_shapes_sdf, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -939,7 +939,7 @@ TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(check_model_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(check_model_sdf, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/integration/model/box";
@@ -965,7 +965,7 @@ TEST(check_model_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(describe, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(describe, SDF)
 {
   // Get the description
   std::string output =
@@ -977,7 +977,7 @@ TEST(describe, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -1007,7 +1007,7 @@ TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_degrees, SDF)
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_degrees.sdf");
@@ -1075,7 +1075,7 @@ TEST(print_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_radians, SDF)
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_radians.sdf");
@@ -1143,7 +1143,7 @@ TEST(print_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_quaternions, SDF)
 {
   const auto path = sdf::testing::TestFile(
       "sdf", "rotations_in_quaternions.sdf");
@@ -1212,7 +1212,7 @@ TEST(print_rotations_in_quaternions, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_degrees, SDF)
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
@@ -1283,7 +1283,7 @@ TEST(print_includes_rotations_in_degrees, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_radians, SDF)
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
@@ -1354,8 +1354,7 @@ TEST(print_includes_rotations_in_radians, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_includes_rotations_in_quaternions,
-     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_includes_rotations_in_quaternions, SDF)
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
@@ -1427,8 +1426,7 @@ TEST(print_includes_rotations_in_quaternions,
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_unnormalized_degrees,
-     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_unnormalized_degrees, SDF)
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_degrees.sdf");
@@ -1499,8 +1497,7 @@ TEST(print_rotations_in_unnormalized_degrees,
 }
 
 /////////////////////////////////////////////////
-TEST(print_rotations_in_unnormalized_radians,
-     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_rotations_in_unnormalized_radians, SDF)
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
@@ -1568,7 +1565,7 @@ TEST(print_rotations_in_unnormalized_radians,
 }
 
 /////////////////////////////////////////////////
-TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(shuffled_cmd_flags, SDF)
 {
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
@@ -1617,8 +1614,7 @@ TEST(shuffled_cmd_flags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 }
 
 /////////////////////////////////////////////////
-TEST(print_snap_to_degrees_tolerance_too_high,
-     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(print_snap_to_degrees_tolerance_too_high, SDF)
 {
   const std::string path = sdf::testing::TestFile(
       "sdf",
@@ -1635,7 +1631,7 @@ TEST(print_snap_to_degrees_tolerance_too_high,
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
+TEST(GraphCmd, WorldPoseRelativeTo)
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
 
@@ -1686,7 +1682,7 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
+TEST(GraphCmd, ModelPoseRelativeTo)
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_relative_to_nested_reference.sdf";
@@ -1762,7 +1758,7 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
+TEST(GraphCmd, WorldFrameAttachedTo)
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/world_nested_frame_attached_to.sdf";
@@ -1808,7 +1804,7 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 }
 
 /////////////////////////////////////////////////
-TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
+TEST(GraphCmd, ModelFrameAttachedTo)
 {
   const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
   const std::string path = pathBase + "/model_nested_frame_attached_to.sdf";
@@ -1859,7 +1855,7 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 // Disable on arm
 #if !defined __ARM_ARCH
 /////////////////////////////////////////////////
-TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+TEST(inertial_stats, SDF)
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -1948,7 +1944,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
 //////////////////////////////////////////////////
 /// \brief Check help message and bash completion script for consistent flags
-TEST(HelpVsCompletionFlags, SDF)
+TEST(HelpVsCompletionFlags, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Flags in help message
   std::string helpOutput = custom_exec_str(GzCommand() + " sdf --help");

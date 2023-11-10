@@ -26,6 +26,8 @@ else
 end
 
 require 'optparse'
+require 'pathname'
+
 
 # Constants.
 LIBRARY_NAME = '@library_location@'
@@ -174,7 +176,7 @@ class Cmd
     # puts options
 
     # Read the plugin that handles the command.
-    if LIBRARY_NAME[0] == '/'
+    if Pathname.new(LIBRARY_NAME).absolute?
       # If the first character is a slash, we'll assume that we've been given an
       # absolute path to the library. This is only used during test mode.
       plugin = LIBRARY_NAME

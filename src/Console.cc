@@ -34,13 +34,7 @@ using namespace sdf;
 static std::shared_ptr<Console> myself;
 static std::mutex g_instance_mutex;
 
-/// \todo Output disabled for windows, to allow tests to pass. We should
-/// disable output just for tests on windows.
-#ifndef _WIN32
 static bool g_quiet = false;
-#else
-static bool g_quiet = true;
-#endif
 
 static Console::ConsoleStream g_NullStream(nullptr);
 
