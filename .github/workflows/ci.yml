@@ -1,6 +1,11 @@
 name: Ubuntu
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - 'sdf[0-9]?'
+      - 'main'
 
 jobs:
   bionic-ci:
@@ -8,7 +13,7 @@ jobs:
     name: Ubuntu Bionic CI
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Compile and test
         id: ci
         uses: ignition-tooling/action-ignition-ci@bionic
@@ -19,7 +24,7 @@ jobs:
     name: Ubuntu Focal CI
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Compile and test
         id: ci
         uses: ignition-tooling/action-ignition-ci@focal
