@@ -661,6 +661,27 @@
         </air_speed>
       </sensor>
 
+      <sensor name="air_flow_sensor" type="air_flow">
+        <pose>2 14 96 0 0 0</pose>
+        <always_on>1</always_on>
+        <update_rate>10.0</update_rate>
+        <enable_metrics>false</enable_metrics>
+        <air_flow>
+          <speed>
+            <noise type="gaussian">
+              <mean>0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </speed>
+          <direction>
+            <noise type="gaussian">
+              <mean>0</mean>
+              <stddev>0.02</stddev>
+            </noise>
+          </direction>
+        </air_flow>
+      </sensor>
+
       <sensor name="wide_angle_camera_sensor" type="wideanglecamera">
         <pose>20 30 40 0 0 0</pose>
         <camera name="wide_angle_cam">

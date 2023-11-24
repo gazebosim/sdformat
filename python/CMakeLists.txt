@@ -44,6 +44,7 @@ endfunction()
 set(BINDINGS_MODULE_NAME "pysdformat${PROJECT_VERSION_MAJOR}")
 pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/_gz_sdformat_pybind11.cc
+  src/sdf/pyAirFlow.cc
   src/sdf/pyAirPressure.cc
   src/sdf/pyAirSpeed.cc
   src/sdf/pyAltimeter.cc

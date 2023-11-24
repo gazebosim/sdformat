@@ -18,6 +18,7 @@
 #include <pybind11/stl.h>
 #include <gz/math/config.hh>
 
+#include "pyAirFlow.hh"
 #include "pyAirPressure.hh"
 #include "pyAirSpeed.hh"
 #include "pyAltimeter.hh"
@@ -74,6 +75,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
       std::string("gz.math") + std::to_string(GZ_MATH_MAJOR_VERSION);
   pybind11::module::import(gzMathModule.c_str());
 
+  sdf::python::defineAirFlow(m);
   sdf::python::defineAirPressure(m);
   sdf::python::defineAirSpeed(m);
   sdf::python::defineAltimeter(m);

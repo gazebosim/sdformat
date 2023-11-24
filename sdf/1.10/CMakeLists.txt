@@ -1,5 +1,6 @@
 set (sdfs
   actor.sdf
+  air_flow.sdf
   air_pressure.sdf
   air_speed.sdf
   altimeter.sdf
