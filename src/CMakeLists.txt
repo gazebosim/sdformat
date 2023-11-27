@@ -73,7 +73,7 @@ if (BUILD_TESTING)
     target_sources(library_for_tests PRIVATE ${urdf_internal_sources})
   endif()
 
-  # Link against the publically and privately linked libraries of the core library
+  # Link against the publicly and privately linked libraries of the core library
   target_link_libraries(library_for_tests
     $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},LINK_LIBRARIES>
   )
@@ -99,8 +99,6 @@ if (BUILD_TESTING)
       ${PROJECT_SOURCE_DIR}/test
     LIB_DEPS
       library_for_tests
-    TEST_LIST
-      test_targets
   )
 
 endif()
