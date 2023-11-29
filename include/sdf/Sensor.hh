@@ -345,17 +345,17 @@ namespace sdf
     /// \param[in] _air The air pressure sensor.
     public: void SetAirSpeedSensor(const AirSpeed &_air);
 
-    /// \brief Get the air speed sensor, or nullptr if this sensor type
-    /// is not an AirSpeed sensor.
-    /// \return Pointer to the AirSpeed sensor, or nullptr if this
-    /// Sensor is not a AirSpeed sensor.
+    /// \brief Get the air flow sensor, or nullptr if this sensor type
+    /// is not an AirFlow sensor.
+    /// \return Pointer to the AirFlow sensor, or nullptr if this
+    /// Sensor is not a AirFlow sensor.
     /// \sa SensorType Type() const
     public: const AirFlow *AirFlowSensor() const;
 
-    /// \brief Get a mutable air speed sensor, or nullptr if this sensor type
-    /// is not an AirSpeed sensor.
-    /// \return Pointer to the AirSpeed sensor, or nullptr if this
-    /// Sensor is not a AirSpeed sensor.
+    /// \brief Get a mutable air flow sensor, or nullptr if this sensor type
+    /// is not an AirFlow sensor.
+    /// \return Pointer to the AirFlow sensor, or nullptr if this
+    /// Sensor is not a AirFlow sensor.
     /// \sa SensorType Type() const
     public: AirFlow *AirFlowSensor();
 
