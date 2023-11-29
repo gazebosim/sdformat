@@ -90,8 +90,10 @@ bool AirFlow::operator!=(const AirFlow &_air) const
 //////////////////////////////////////////////////
 bool AirFlow::operator==(const AirFlow &_air) const
 {
-  bool speed_noise = this->dataPtr->speed_noise == _air.dataPtr->speed_noise;
-  bool dir_noise = this->dataPtr->direction_noise == _air.dataPtr->direction_noise;
+  bool speed_noise = this->dataPtr->speed_noise ==
+                    _air.dataPtr->speed_noise;
+  bool dir_noise = this->dataPtr->direction_noise ==
+                    _air.dataPtr->direction_noise;
 
   return speed_noise && dir_noise;
 }
