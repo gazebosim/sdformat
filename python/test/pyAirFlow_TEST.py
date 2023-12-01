@@ -48,6 +48,7 @@ class AirFlowTEST(unittest.TestCase):
         speed_noise.set_precision(8.9)
 
         air.set_direction_noise(dir_noise)
+        air.set_speed_noise(speed_noise)
         self.assertEqual(dir_noise, air.direction_noise())
         self.assertEqual(speed_noise, air.speed_noise())
 

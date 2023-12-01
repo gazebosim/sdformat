@@ -124,6 +124,7 @@ if (BUILD_TESTING AND NOT WIN32)
   )
 
   set(python_tests
+    pyAirFlow_TEST
     pyAirPressure_TEST
     pyAirSpeed_TEST
     pyAltimeter_TEST

@@ -43,7 +43,7 @@ void defineAirFlow(pybind11::object module)
     .def("set_speed_noise",
          &sdf::AirFlow::SetSpeedNoise,
          "Set the noise values related to the speed data.")
-    .def("dir_noise", &sdf::AirFlow::DirectionNoise,
+    .def("direction_noise", &sdf::AirFlow::DirectionNoise,
          "Get the direction noise values.")
     .def("set_direction_noise",
          &sdf::AirFlow::SetDirectionNoise,
