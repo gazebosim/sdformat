@@ -21,7 +21,6 @@
 
 #include "sdf/AirFlow.hh"
 
-
 using namespace pybind11::literals;
 
 namespace sdf

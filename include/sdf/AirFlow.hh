@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef SDF_AirFlow_HH_
-#define SDF_AirFlow_HH_
+#ifndef SDF_AIRFLOW_HH_
+#define SDF_AIRFLOW_HH_
 
 #include <gz/utils/ImplPtr.hh>
 
@@ -90,4 +90,4 @@ namespace sdf
   };
   }
 }
-#endif
+#endif  // SDF_AIRFLOW_HH_
