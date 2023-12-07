@@ -4,6 +4,7 @@ load(
     "GZ_ROOT",
     "GZ_VISIBILITY",
     "add_lint_tests",
+    "gz_configure_file",
     "gz_configure_header",
     "gz_export_header",
     "gz_include_header",
@@ -125,6 +126,16 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "sdformat_internal",
+    srcs = [
+        "src/gz.cc",
+        "src/gz.hh",
+    ],
+    visibility = ["//visibility:private"],
+    deps = [":sdformat"],
+)
+
 test_sources = glob(
     ["src/*_TEST.cc"],
     exclude = ["src/gz_TEST.cc"],
@@ -149,6 +160,40 @@ test_sources = glob(
         "@gtest//:gtest_main",
     ],
 ) for src in test_sources]
+
+gz_configure_file(
+    name = "sdformat.rb",
+    src = "src/cmd/cmdsdformat.rb.in",
+    out = "cmdsdformat.rb",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "library_location=libgz-sdformat.so",
+    ],
+    package = "sdformat",
+    visibility = [GZ_ROOT + "tools:__pkg__"],
+)
+
+gz_configure_file(
+    name = "sdformat_yaml",
+    src = "conf/sdformat.yaml.in",
+    out = "sdformat.yaml",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "gz_library_path=gz/sdformat/cmdsdformat.rb",
+    ],
+    package = "sdformat",
+    visibility = [GZ_ROOT + "tools:__pkg__"],
+)
+
+cc_binary(
+    name = "libgz-sdformat.so",
+    srcs = [":sdformat_internal"],
+    linkshared = True,
+    visibility = [GZ_ROOT + "tools:__pkg__"],
+    deps = [
+        ":sdformat",
+    ],
+)
 
 exports_files(["sdf"])
 
