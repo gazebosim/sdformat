@@ -128,7 +128,7 @@ namespace sdf
     /// \brief Default constructor
     public: Bullet();
 
-    /// \brief Load the ODE based on a element pointer. This is *not* the
+    /// \brief Load Bullet friction based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
@@ -183,37 +183,11 @@ namespace sdf
   /// \brief Torsional friction
   class SDFORMAT_VISIBLE Torsional
   {
-/*    /// \brief ODE information for a friction.
-    class SDFORMAT_VISIBLE ODE
-    {
-      /// \brief Default constructor
-      public: ODE();
-
-      /// \brief Load the ODE based on a element pointer. This is *not* the
-      /// usual entry point. Typical usage of the SDF DOM is through the Root
-      /// object.
-      /// \param[in] _sdf The SDF Element pointer
-      /// \return Errors, which is a vector of Error objects. Each Error includes
-      /// an error code and message. An empty vector indicates no error.
-      public: Errors Load(ElementPtr _sdf);
-
-      /// \brief Get the force dependent slip for torsional friction
-      /// \returns Force dependent slip for torsional friction.
-      public: double Slip() const;
-
-      /// \brief Get a pointer to the SDF element that was used during
-      /// load.
-      /// \return SDF element pointer. The value will be nullptr if Load has
-      /// not been called.
-      public: sdf::ElementPtr Element() const;
-    };
-*/
-
     /// \brief Default constructor
     public: Torsional();
 
-    /// \brief Load the ODE based on a element pointer. This is *not* the
-    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// \brief Load torsional friction based on a element pointer. This is *not*
+    /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
@@ -259,8 +233,8 @@ namespace sdf
     /// \returns Force dependent slip for torsional friction.
     public: double ODESlip() const;
 
-    /// \brief Set the ode force dependent slip for torsional friction
-    /// \param[in] _slip Force dependent slip for torsional fricion.
+    /// \brief Set the ODE force dependent slip for torsional friction
+    /// \param[in] _slip Force dependent slip for torsional friction.
     public: void SetODESlip(double _slip);
 
     /// \brief Get a pointer to the SDF element that was used during
