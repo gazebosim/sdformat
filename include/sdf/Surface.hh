@@ -122,6 +122,157 @@ namespace sdf
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
+  /// \brief Bullet information for a friction.
+  class SDFORMAT_VISIBLE Bullet
+  {
+    /// \brief Default constructor
+    public: Bullet();
+
+    /// \brief Load the ODE based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get the friction coefficient in first friction pyramid direction.
+    /// \returns Friction coefficient
+    public: double Friction() const;
+
+    /// \brief Set friction coefficient in first friction pyramid direction.
+    /// \param[in] _fricton Friction coefficient
+    public: void SetFriction(double _friction);
+
+    /// \brief Get the friction coefficient in second friction pyramid direction.
+    /// \returns Second friction coefficient
+    public: double Friction2() const;
+
+    /// \brief Set friction coefficient in second friction pyramid direction.
+    /// \param[in] _fricton Friction coefficient
+    public: void SetFriction2(double _friction);
+
+    /// \brief Get the first friction pyramid direction in collision-fixed
+    /// reference
+    /// \returns First friction pyramid direction.
+    public: const gz::math::Vector3d &Fdir1() const;
+
+    /// \brief Set the first friction pyramid direction in collision-fixed
+    /// reference
+    /// \param[in] _fdir First friction pyramid direction.
+    public: void SetFdir1(const gz::math::Vector3d &_fdir);
+
+    /// \brief Get the rolling friction coefficient
+    /// \returns Rolling friction coefficient
+    public: double RollingFriction() const;
+
+    /// \brief Set the rolling friction coefficient
+    /// \param[in] _slip1 Rolling friction coefficient
+    public: void SetRollingFriction(double _friction);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
+    /// \brief Private data pointer.
+    IGN_UTILS_IMPL_PTR(dataPtr)
+  };
+
+  /// \brief Torsional friction
+  class SDFORMAT_VISIBLE Torsional
+  {
+/*    /// \brief ODE information for a friction.
+    class SDFORMAT_VISIBLE ODE
+    {
+      /// \brief Default constructor
+      public: ODE();
+
+      /// \brief Load the ODE based on a element pointer. This is *not* the
+      /// usual entry point. Typical usage of the SDF DOM is through the Root
+      /// object.
+      /// \param[in] _sdf The SDF Element pointer
+      /// \return Errors, which is a vector of Error objects. Each Error includes
+      /// an error code and message. An empty vector indicates no error.
+      public: Errors Load(ElementPtr _sdf);
+
+      /// \brief Get the force dependent slip for torsional friction
+      /// \returns Force dependent slip for torsional friction.
+      public: double Slip() const;
+
+      /// \brief Get a pointer to the SDF element that was used during
+      /// load.
+      /// \return SDF element pointer. The value will be nullptr if Load has
+      /// not been called.
+      public: sdf::ElementPtr Element() const;
+    };
+*/
+
+    /// \brief Default constructor
+    public: Torsional();
+
+    /// \brief Load the ODE based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get the torsinoal friction coefficient.
+    /// \returns Torsional friction coefficient
+    public: double Coefficient() const;
+
+    /// \brief Set the torsional friction coefficient.
+    /// \param[in] _fricton Torsional friction coefficient
+    public: void SetCoefficient(double _coefficient);
+
+    /// \brief Get whether the patch radius is used to calculate torsional
+    /// friction.
+    /// \returns True if patch radius is used.
+    public: bool UsePatchRadius() const;
+
+    /// \brief Set whether to use patch radius for torsional friction
+    /// calculation.
+    /// \param[in] _usePatchRadius True to use patch radius.
+    /// False to use surface radius.
+    public: void SetUsePatchRadius(bool _usePatchRadius);
+
+    /// \brief Get the radius of contact patch surface.
+    /// \returns Patch radius
+    public: double PatchRadius() const;
+
+    /// \brief Set the radius of contact patch surface.
+    /// \param[in] _radius Patch radius
+    public: void SetPatchRadius(double _radius);
+
+    /// \brief Get the surface radius on the contact point
+    /// \returns Surface radius
+    public: double SurfaceRadius() const;
+
+    /// \brief Set the surface radius on the contact point.
+    /// \param[in] _radius Surface radius
+    public: void SetSurfaceRadius(double _radius);
+
+    /// \brief Get the ODE force dependent slip for torsional friction
+    /// \returns Force dependent slip for torsional friction.
+    public: double ODESlip() const;
+
+    /// \brief Set the ode force dependent slip for torsional friction
+    /// \param[in] _slip Force dependent slip for torsional fricion.
+    public: void SetODESlip(double _slip);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
+    /// \brief Private data pointer.
+    IGN_UTILS_IMPL_PTR(dataPtr)
+  };
+
   /// \brief Friction information for a surface.
   class SDFORMAT_VISIBLE Friction
   {
@@ -144,6 +295,24 @@ namespace sdf
     /// \brief Set the associated ODE object.
     /// \param[in] _ode The ODE object.
     public: void SetODE(const sdf::ODE &_ode);
+
+    /// \brief Get the associated Bullet object
+    /// \returns Pointer to the associated Bullet object,
+    /// nullptr if the Surface doesn't contain a Bullet element.
+    public: const sdf::Bullet *Bullet() const;
+
+    /// \brief Set the associated Bullet object.
+    /// \param[in] _bullet The Bullet object.
+    public: void SetBullet(const sdf::Bullet &_bullet);
+
+    /// \brief Get the torsional friction
+    /// \returns Pointer to the torsional friction
+    /// nullptr if the Surface doesn't contain a torsional friction element.
+    public: const sdf::Torsional *Torsional() const;
+
+    /// \brief Set the torsional friction
+    /// \param[in] _torsional The torsional friction.
+    public: void SetTorsional(const sdf::Torsional &_torsional);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
