@@ -128,8 +128,8 @@ namespace sdf
     /// \brief Default constructor
     public: Bullet();
 
-    /// \brief Load Bullet friction based on a element pointer. This is *not* the
-    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// \brief Load Bullet friction based on a element pointer. This is *not*
+    /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
@@ -144,8 +144,9 @@ namespace sdf
     /// \param[in] _fricton Friction coefficient
     public: void SetFriction(double _friction);
 
-    /// \brief Get the friction coefficient in second friction pyramid direction.
-    /// \returns Second friction coefficient
+    /// \brief Get the friction coefficient in second friction pyramid
+    /// direction.
+    /// \return Second friction coefficient
     public: double Friction2() const;
 
     /// \brief Set friction coefficient in second friction pyramid direction.
@@ -154,7 +155,7 @@ namespace sdf
 
     /// \brief Get the first friction pyramid direction in collision-fixed
     /// reference
-    /// \returns First friction pyramid direction.
+    /// \return First friction pyramid direction.
     public: const gz::math::Vector3d &Fdir1() const;
 
     /// \brief Set the first friction pyramid direction in collision-fixed
@@ -163,7 +164,7 @@ namespace sdf
     public: void SetFdir1(const gz::math::Vector3d &_fdir);
 
     /// \brief Get the rolling friction coefficient
-    /// \returns Rolling friction coefficient
+    /// \return Rolling friction coefficient
     public: double RollingFriction() const;
 
     /// \brief Set the rolling friction coefficient
@@ -195,7 +196,7 @@ namespace sdf
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get the torsional friction coefficient.
-    /// \returns Torsional friction coefficient
+    /// \return Torsional friction coefficient
     public: double Coefficient() const;
 
     /// \brief Set the torsional friction coefficient.
@@ -204,7 +205,7 @@ namespace sdf
 
     /// \brief Get whether the patch radius is used to calculate torsional
     /// friction.
-    /// \returns True if patch radius is used.
+    /// \return True if patch radius is used.
     public: bool UsePatchRadius() const;
 
     /// \brief Set whether to use patch radius for torsional friction
@@ -214,7 +215,7 @@ namespace sdf
     public: void SetUsePatchRadius(bool _usePatchRadius);
 
     /// \brief Get the radius of contact patch surface.
-    /// \returns Patch radius
+    /// \return Patch radius
     public: double PatchRadius() const;
 
     /// \brief Set the radius of contact patch surface.
@@ -222,7 +223,7 @@ namespace sdf
     public: void SetPatchRadius(double _radius);
 
     /// \brief Get the surface radius on the contact point
-    /// \returns Surface radius
+    /// \return Surface radius
     public: double SurfaceRadius() const;
 
     /// \brief Set the surface radius on the contact point.
@@ -230,7 +231,7 @@ namespace sdf
     public: void SetSurfaceRadius(double _radius);
 
     /// \brief Get the ODE force dependent slip for torsional friction
-    /// \returns Force dependent slip for torsional friction.
+    /// \return Force dependent slip for torsional friction.
     public: double ODESlip() const;
 
     /// \brief Set the ODE force dependent slip for torsional friction
@@ -271,7 +272,7 @@ namespace sdf
     public: void SetODE(const sdf::ODE &_ode);
 
     /// \brief Get the associated Bullet object
-    /// \returns Pointer to the associated Bullet object,
+    /// \return Pointer to the associated Bullet object,
     /// nullptr if the Surface doesn't contain a Bullet element.
     public: const sdf::Bullet *Bullet() const;
 
@@ -280,7 +281,7 @@ namespace sdf
     public: void SetBullet(const sdf::Bullet &_bullet);
 
     /// \brief Get the torsional friction
-    /// \returns Pointer to the torsional friction
+    /// \return Pointer to the torsional friction
     /// nullptr if the Surface doesn't contain a torsional friction element.
     public: const sdf::Torsional *Torsional() const;
 

@@ -182,7 +182,8 @@ TEST(DOMsurface, ToElement)
 
   EXPECT_DOUBLE_EQ(0.3, surface2.Friction()->Bullet()->Friction());
   EXPECT_DOUBLE_EQ(0.5, surface2.Friction()->Bullet()->Friction2());
-  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), surface2.Friction()->Bullet()->Fdir1());
+  EXPECT_EQ(gz::math::Vector3d(2, 1, 4),
+            surface2.Friction()->Bullet()->Fdir1());
   EXPECT_DOUBLE_EQ(1.3, surface2.Friction()->Bullet()->RollingFriction());
 
   EXPECT_DOUBLE_EQ(0.5, surface2.Friction()->Torsional()->Coefficient());
