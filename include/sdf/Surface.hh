@@ -194,7 +194,7 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(ElementPtr _sdf);
 
-    /// \brief Get the torsinoal friction coefficient.
+    /// \brief Get the torsional friction coefficient.
     /// \returns Torsional friction coefficient
     public: double Coefficient() const;
 
