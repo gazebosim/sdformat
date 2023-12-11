@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <gz/math/Vector3.hh>
 #include "sdf/Surface.hh"
 
 /////////////////////////////////////////////////

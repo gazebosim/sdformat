@@ -17,6 +17,7 @@
 #ifndef SDF_SURFACE_HH_
 #define SDF_SURFACE_HH_
 
+#include <gz/math/Vector3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
 #include "sdf/Types.hh"
