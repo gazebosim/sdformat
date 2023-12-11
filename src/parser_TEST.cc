@@ -947,7 +947,13 @@ int main(int argc, char **argv)
   // temporarily set HOME
   std::string homeDir;
   sdf::testing::TestTmpPath(homeDir);
+
+#ifdef _WIN32
+  gz::utils::setenv("HOMEPATH", homeDir);
+#else
   gz::utils::setenv("HOME", homeDir);
+#endif
+
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);
