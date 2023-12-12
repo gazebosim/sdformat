@@ -535,7 +535,7 @@ TEST(DOMLink, ResolveAutoInertialsWithDifferentAutoInertiaParams)
 
   // Lambda function for registering as custom inertia calculator
   auto customMeshInertiaCalculator = [](
-    sdf::Errors &_errors,
+    sdf::Errors &,
     const sdf::CustomInertiaCalcProperties &_inertiaProps
   ) -> std::optional<gz::math::Inertiald>
   {
