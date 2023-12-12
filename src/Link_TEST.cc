@@ -458,6 +458,204 @@ TEST(DOMLink, ResolveAutoInertialsWithDifferentDensity)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMLink, ResolveAutoInertialsWithDifferentAutoInertiaParams)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='multilink_model'>"
+  "    <pose>0 0 1.0 0 0 0</pose>"
+  "    <link name='link_auto_inertia_params'>"
+  "      <pose>0 1.0 0 0 0 0</pose>"
+  "      <inertial auto='true'>"
+  "        <auto_inertia_params>"
+  "          <gz:density>12</gz:density>"
+  "          <gz:box_size>1 1 1</gz:box_size>"
+  "        </auto_inertia_params>"
+  "      </inertial>"
+  "      <collision name='box_collision'>"
+  "        <pose>1.0 0 0 0 0 0</pose>"
+  "        <geometry>"
+  "          <mesh>"
+  "            <uri>uri</uri>"
+  "          </mesh>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "    <link name='collision_auto_inertia_params'>"
+  "      <pose>0 2.0 0 0 0 0</pose>"
+  "      <inertial auto='true'/>"
+  "      <collision name='box_collision'>"
+  "        <pose>2.0 0 0 0 0 0</pose>"
+  "        <auto_inertia_params>"
+  "          <gz:density>24</gz:density>"
+  "          <gz:box_size>1 1 1</gz:box_size>"
+  "        </auto_inertia_params>"
+  "        <geometry>"
+  "          <mesh>"
+  "            <uri>uri</uri>"
+  "          </mesh>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "    <link name='collision_auto_inertia_params_overrides'>"
+  "      <pose>0 3.0 0 0 0 0</pose>"
+  "      <inertial auto='true'>"
+  "        <auto_inertia_params>"
+  "          <gz:density>12</gz:density>"
+  "          <gz:box_size>1 1 1</gz:box_size>"
+  "        </auto_inertia_params>"
+  "      </inertial>"
+  "      <collision name='box_collision'>"
+  "        <pose>3.0 0 0 0 0 0</pose>"
+  "        <auto_inertia_params>"
+  "          <gz:density>24</gz:density>"
+  "          <gz:box_size>1 1 1</gz:box_size>"
+  "        </auto_inertia_params>"
+  "        <geometry>"
+  "          <mesh>"
+  "            <uri>uri</uri>"
+  "          </mesh>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "    <link name='default_auto_inertia_params'>"
+  "      <pose>0 4.0 0 0 0 0</pose>"
+  "      <inertial auto='true'/>"
+  "      <collision name='box_collision'>"
+  "        <pose>4.0 0 0 0 0 0</pose>"
+  "        <geometry>"
+  "          <mesh>"
+  "            <uri>uri</uri>"
+  "          </mesh>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "  </model>"
+  "</sdf>";
+
+  // Lambda function for registering as custom inertia calculator
+  auto customMeshInertiaCalculator = [](
+    sdf::Errors &_errors,
+    const sdf::CustomInertiaCalcProperties &_inertiaProps
+  ) -> std::optional<gz::math::Inertiald>
+  {
+    auto autoInertiaParams = _inertiaProps.AutoInertiaParams();
+    if (!autoInertiaParams ||
+        !autoInertiaParams->HasElement("gz:density") ||
+        !autoInertiaParams->HasElement("gz:box_size"))
+    {
+      // return default inertial values
+      gz::math::Inertiald meshInertial;
+
+      meshInertial.SetMassMatrix(
+        gz::math::MassMatrix3d(
+          1.0,
+          gz::math::Vector3d::One,
+          gz::math::Vector3d::Zero
+        )
+      );
+
+      return meshInertial;
+    }
+
+    gz::math::Inertiald meshInerial;
+
+    double gzDensity = autoInertiaParams->Get<double>("gz:density");
+    gz::math::Vector3d gzBoxSize =
+        autoInertiaParams->Get<gz::math::Vector3d>("gz:box_size");
+    gz::math::Material material = gz::math::Material(gzDensity);
+
+    gz::math::MassMatrix3d massMatrix;
+    massMatrix.SetFromBox(gz::math::Material(gzDensity), gzBoxSize);
+
+    meshInerial.SetMassMatrix(massMatrix);
+
+    return meshInerial;
+  };
+
+
+  sdf::Root root;
+  sdf::ParserConfig sdfParserConfig;
+  sdfParserConfig.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ(4u, model->LinkCount());
+
+  // ResolveAutoInertials should run by default during Root::Load.
+
+  {
+    const sdf::Link *link = model->LinkByName("link_auto_inertia_params");
+    ASSERT_NE(nullptr, link);
+
+    // Verify inertial values computed from //inertial/auto_inertia_params
+    // * gz:density == 12
+    // * gz:box_size == (1 1 1)
+    auto inertial = link->Inertial();
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(12.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(2, 2, 2),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+    EXPECT_EQ(gz::math::Pose3d(1, 0, 0, 0, 0, 0), inertial.Pose());
+  }
+
+  {
+    const sdf::Link *link = model->LinkByName("collision_auto_inertia_params");
+    ASSERT_NE(nullptr, link);
+
+    // Verify inertial values computed from //collision/auto_inertia_params
+    // * gz:density == 24
+    // * gz:box_size == (1 1 1)
+    auto inertial = link->Inertial();
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(24.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(4, 4, 4),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+    EXPECT_EQ(gz::math::Pose3d(2, 0, 0, 0, 0, 0), inertial.Pose());
+  }
+
+  {
+    const sdf::Link *link =
+      model->LinkByName("collision_auto_inertia_params_overrides");
+    ASSERT_NE(nullptr, link);
+
+    // Verify inertial values computed from //collision/auto_inertia_params
+    // * gz:density == 24
+    // * gz:box_size == (1 1 1)
+    auto inertial = link->Inertial();
+    // box is 1 m^3, so expected mass == density
+    EXPECT_DOUBLE_EQ(24.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(4, 4, 4),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+    EXPECT_EQ(gz::math::Pose3d(3, 0, 0, 0, 0, 0), inertial.Pose());
+  }
+
+  {
+    const sdf::Link *link =
+      model->LinkByName("default_auto_inertia_params");
+    ASSERT_NE(nullptr, link);
+
+    // Verify default inertial values
+    auto inertial = link->Inertial();
+    EXPECT_DOUBLE_EQ(1.0, inertial.MassMatrix().Mass());
+    EXPECT_EQ(gz::math::Vector3d(1, 1, 1),
+              inertial.MassMatrix().DiagonalMoments());
+    EXPECT_EQ(gz::math::Vector3d::Zero,
+              inertial.MassMatrix().OffDiagonalMoments());
+    EXPECT_EQ(gz::math::Pose3d(4, 0, 0, 0, 0, 0), inertial.Pose());
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(DOMLink, ResolveAutoInertialsWithMultipleCollisions)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
