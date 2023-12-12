@@ -201,9 +201,6 @@ TEST(DOMMesh, CalcualteInertial)
   double density = 0;
   sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
 
-  // File Path needs to be considered as a valid mesh
-  mesh.SetFilePath("/some_path");
-
   // Test Lambda function for registering as custom inertia calculator
   auto customMeshInertiaCalculator = [](
     sdf::Errors &_errors,

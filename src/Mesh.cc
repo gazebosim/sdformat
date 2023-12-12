@@ -199,14 +199,6 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
   double _density, const sdf::ElementPtr _autoInertiaParams,
   const ParserConfig &_config)
 {
-  if (this->dataPtr->filePath.empty())
-  {
-    _errors.push_back({
-      sdf::ErrorCode::WARNING,
-      "File Path for the mesh was empty. Could not calculate inertia"});
-    return std::nullopt;
-  }
-
   const auto &customCalculator = _config.CustomInertiaCalc();
 
   if (!customCalculator)
