@@ -131,6 +131,14 @@ TEST(DOMLink, Construction)
   ASSERT_TRUE(link.Density().has_value());
   EXPECT_DOUBLE_EQ(density, *link.Density());
 
+  EXPECT_EQ(link.AutoInertiaParams(), nullptr);
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+  autoInertiaParamsElem->SetName("auto_inertia_params");
+  link.SetAutoInertiaParams(autoInertiaParamsElem);
+  EXPECT_EQ(link.AutoInertiaParams(), autoInertiaParamsElem);
+  EXPECT_EQ(link.AutoInertiaParams()->GetName(),
+    autoInertiaParamsElem->GetName());
+
   EXPECT_EQ(0u, link.CollisionCount());
   EXPECT_EQ(nullptr, link.CollisionByIndex(0));
   EXPECT_EQ(nullptr, link.CollisionByIndex(1));
