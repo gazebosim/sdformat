@@ -22,6 +22,7 @@
 #include <string>
 
 #include <gz/utils/ExtraTestMacros.hh>
+#include <gz/utils/Environment.hh>
 
 #include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
@@ -74,12 +75,10 @@ std::string custom_exec_str(std::string _cmd)
 /////////////////////////////////////////////////
 TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   // Check an SDFormat file with unrecognized elements
   {
-    std::string path = pathBase +"/unrecognized_elements.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "unrecognized_elements.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -104,7 +103,8 @@ TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDFormat file with unrecognized elements with XML namespaces
   {
-    std::string path = pathBase +"/unrecognized_elements_with_namespace.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "unrecognized_elements_with_namespace.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -122,12 +122,10 @@ TEST(checkUnrecognizedElements, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /////////////////////////////////////////////////
 TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   // Check a good SDF file
   {
-    std::string path = pathBase +"/box_plane_low_friction_test.world";
+    const auto path =
+      sdf::testing::TestFile("sdf", "box_plane_low_friction_test.world");
 
     // Check box_plane_low_friction_test.world
     std::string output =
@@ -137,7 +135,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check a bad SDF file
   {
-    std::string path = pathBase +"/box_bad_test.world";
+    const auto path =
+      sdf::testing::TestFile("sdf", "box_bad_test.world");
 
     // Check box_bad_test.world
     std::string output =
@@ -149,7 +148,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of the same type (world)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/world_duplicate.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "world_duplicate.sdf");
 
     // Check world_duplicate.sdf
     std::string output =
@@ -161,7 +161,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of different types (model, light)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/world_sibling_same_names.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "world_sibling_same_names.sdf");
 
     // Check world_sibling_same_names.sdf
     std::string output =
@@ -171,7 +172,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
   // Check an SDF world file is allowed to have duplicate plugin names
   {
-    std::string path = pathBase +"/world_duplicate_plugins.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "world_duplicate_plugins.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -181,7 +183,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of the same type (link)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/model_duplicate_links.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "model_duplicate_links.sdf");
 
     // Check model_duplicate_links.sdf
     std::string output =
@@ -193,7 +196,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of the same type (joint)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/model_duplicate_joints.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "model_duplicate_joints.sdf");
 
     // Check model_duplicate_joints.sdf
     std::string output =
@@ -205,7 +209,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of different types (link, joint)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/model_link_joint_same_name.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "model_link_joint_same_name.sdf");
 
     // Check model_link_joint_same_name.sdf
     std::string output =
@@ -216,7 +221,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF model file is allowed to have duplicate plugin names
   {
-    std::string path = pathBase +"/model_duplicate_plugins.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -226,7 +232,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of the same type (collision)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/link_duplicate_sibling_collisions.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "link_duplicate_sibling_collisions.sdf");
 
     // Check link_duplicate_sibling_collisions.sdf
     std::string output =
@@ -239,7 +247,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with sibling elements of the same type (visual)
   // that have duplicate names.
   {
-    std::string path = pathBase +"/link_duplicate_sibling_visuals.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "link_duplicate_sibling_visuals.sdf");
 
     // Check link_duplicate_sibling_visuals.sdf
     std::string output =
@@ -251,7 +261,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with cousin elements of the same type (collision)
   // that have duplicate names. This is a valid file.
   {
-    std::string path = pathBase +"/link_duplicate_cousin_collisions.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "link_duplicate_cousin_collisions.sdf");
 
     // Check link_duplicate_cousin_collisions.sdf
     std::string output =
@@ -262,7 +274,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with cousin elements of the same type (visual)
   // that have duplicate names. This is a valid file.
   {
-    std::string path = pathBase +"/link_duplicate_cousin_visuals.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "link_duplicate_cousin_visuals.sdf");
 
     // Check link_duplicate_cousin_visuals.sdf
     std::string output =
@@ -272,7 +286,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a joint with an invalid child link.
   {
-    std::string path = pathBase +"/joint_invalid_child.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_invalid_child.sdf");
 
     // Check joint_invalid_child.sdf
     std::string output =
@@ -285,7 +300,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a joint with an invalid parent link.
   {
-    std::string path = pathBase +"/joint_invalid_parent.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_invalid_parent.sdf");
 
     // Check joint_invalid_parent.sdf
     std::string output =
@@ -298,7 +314,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a joint that names itself as the child frame.
   {
-    std::string path = pathBase +"/joint_invalid_self_child.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_invalid_self_child.sdf");
 
     // Check joint_invalid_self_child.sdf
     std::string output =
@@ -310,7 +327,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a joint that names itself as the parent frame.
   {
-    std::string path = pathBase +"/joint_invalid_self_parent.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_invalid_self_parent.sdf");
 
     // Check joint_invalid_self_parent.sdf
     std::string output =
@@ -323,7 +341,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a joint with identical parent and child.
   {
-    std::string path = pathBase +"/joint_invalid_parent_same_as_child.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "joint_invalid_parent_same_as_child.sdf");
 
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
@@ -337,8 +357,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with a joint with parent parent frame that resolves
   // to the same value as the child.
   {
-    std::string path =
-        pathBase + "/joint_invalid_resolved_parent_same_as_child.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "joint_invalid_resolved_parent_same_as_child.sdf");
 
     // Check joint_invalid_resolved_parent_same_as_child.sdf
     std::string output =
@@ -351,7 +372,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with the world specified as a child link.
   {
-    std::string path = pathBase +"/joint_child_world.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_child_world.sdf");
 
     // Check joint_child_world.sdf
     std::string output =
@@ -367,7 +389,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with the world specified as a parent link.
   // This is a valid file.
   {
-    std::string path = pathBase +"/joint_parent_world.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_parent_world.sdf");
 
     // Check joint_parent_world.sdf
     std::string output =
@@ -378,7 +401,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with a frame specified as the joint child.
   // This is a valid file.
   {
-    std::string path = pathBase +"/joint_child_frame.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_child_frame.sdf");
 
     // Check joint_child_frame.sdf
     std::string output =
@@ -389,7 +413,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with a frame specified as the joint parent.
   // This is a valid file.
   {
-    std::string path = pathBase +"/joint_parent_frame.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_parent_frame.sdf");
 
     // Check joint_parent_frame.sdf
     std::string output =
@@ -400,7 +425,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with the infinite values for joint axis limits.
   // This is a valid file.
   {
-    std::string path = pathBase +"/joint_axis_infinite_limits.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "joint_axis_infinite_limits.sdf");
 
     // Check joint_axis_infinite_limits.sdf
     std::string output =
@@ -411,7 +437,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with the second link specified as the canonical link.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_canonical_link.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "model_canonical_link.sdf");
 
     // Check model_canonical_link.sdf
     std::string output =
@@ -421,7 +448,8 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with an invalid link specified as the canonical link.
   {
-    std::string path = pathBase +"/model_invalid_canonical_link.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf", "model_invalid_canonical_link.sdf");
 
     // Check model_invalid_canonical_link.sdf
     std::string output =
@@ -433,7 +461,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with an invalid model without links.
   {
-    std::string path = pathBase +"/model_without_links.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_without_links.sdf");
 
     // Check model_without_links.sdf
     std::string output =
@@ -444,7 +474,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a nested model.
   {
-    std::string path = pathBase +"/nested_model.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "nested_model.sdf");
 
     // Check nested_model.sdf
     std::string output =
@@ -454,7 +486,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a model that has a nested canonical link.
   {
-    std::string path = pathBase +"/nested_canonical_link.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "nested_canonical_link.sdf");
 
     // Check nested_canonical_link.sdf
     std::string output =
@@ -466,7 +500,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // that is explicitly specified by //model/@canonical_link using ::
   // syntax.
   {
-    std::string path = pathBase +"/nested_explicit_canonical_link.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "nested_explicit_canonical_link.sdf");
 
     // Check nested_explicit_canonical_link.sdf
     std::string output =
@@ -476,7 +512,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a model that a nested model without a link.
   {
-    std::string path = pathBase +"/nested_without_links_invalid.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "nested_without_links_invalid.sdf");
 
     // Check nested_without_links_invalid.sdf
     std::string output =
@@ -487,7 +525,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an invalid SDF file that uses reserved names.
   {
-    std::string path = pathBase +"/model_invalid_reserved_names.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_reserved_names.sdf");
 
     // Check model_invalid_reserved_names.sdf
     std::string output =
@@ -513,7 +553,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check that validity checks are disabled inside <plugin> elements
   {
-    std::string path = pathBase +"/ignore_sdf_in_plugin.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "ignore_sdf_in_plugin.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -522,7 +564,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check that validity checks are disabled inside namespaced elements
   {
-    std::string path = pathBase +"/ignore_sdf_in_namespaced_elements.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "ignore_sdf_in_namespaced_elements.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -532,7 +576,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_frame_attached_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_attached_to.sdf");
 
     // Check model_frame_attached_to.sdf
     std::string output =
@@ -543,7 +589,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames attached_to joints.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_frame_attached_to_joint.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_attached_to_joint.sdf");
 
     // Check model_frame_attached_to_joint.sdf
     std::string output =
@@ -554,7 +602,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames attached_to a nested model.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_frame_attached_to_nested_model.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_attached_to_nested_model.sdf");
 
     // Check model_frame_attached_to_nested_model.sdf
     std::string output =
@@ -564,7 +614,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with model frames with invalid attached_to attributes.
   {
-    std::string path = pathBase +"/model_frame_invalid_attached_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_invalid_attached_to.sdf");
 
     // Check model_frame_invalid_attached_to.sdf
     std::string output =
@@ -582,7 +634,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a cycle in its FrameAttachedTo graph
   {
-    std::string path = pathBase +"/model_frame_invalid_attached_to_cycle.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_invalid_attached_to_cycle.sdf");
 
     // Check model_frame_invalid_attached_to_cycle.sdf
     std::string output =
@@ -600,7 +654,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/world_frame_attached_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "world_frame_attached_to.sdf");
 
     // Check world_frame_attached_to.sdf
     std::string output =
@@ -610,7 +666,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with world frames with invalid attached_to attributes.
   {
-    std::string path = pathBase +"/world_frame_invalid_attached_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "world_frame_invalid_attached_to.sdf");
 
     // Check world_frame_invalid_attached_to.sdf
     std::string output =
@@ -630,7 +688,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with links using the relative_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_link_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_link_relative_to.sdf");
 
     // Check model_link_relative_to.sdf
     std::string output =
@@ -640,7 +700,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with model links with invalid relative_to attributes.
   {
-    std::string path = pathBase +"/model_invalid_link_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_link_relative_to.sdf");
 
     // Check model_invalid_link_relative_to.sdf
     std::string output =
@@ -659,7 +721,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with nested_models using the relative_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_nested_model_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_nested_model_relative_to.sdf");
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
@@ -671,7 +735,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // parent or child frames.
   // This is a valid file.
   {
-    std::string path = pathBase +"/joint_nested_parent_child.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "joint_nested_parent_child.sdf");
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
@@ -682,7 +748,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with joints using the relative_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_joint_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_joint_relative_to.sdf");
 
     // Check model_joint_relative_to.sdf
     std::string output =
@@ -692,7 +760,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with model joints with invalid relative_to attributes.
   {
-    std::string path = pathBase +"/model_invalid_joint_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_joint_relative_to.sdf");
 
     // Check model_invalid_joint_relative_to.sdf
     std::string output =
@@ -711,7 +781,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames using the relative_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_frame_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_relative_to.sdf");
 
     // Check model_frame_relative_to.sdf
     std::string output =
@@ -722,7 +794,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames relative_to joints.
   // This is a valid file.
   {
-    std::string path = pathBase +"/model_frame_relative_to_joint.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_frame_relative_to_joint.sdf");
 
     // Check model_frame_relative_to_joint.sdf
     std::string output =
@@ -732,7 +806,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with model frames with invalid relative_to attributes.
   {
-    std::string path = pathBase +"/model_invalid_frame_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_frame_relative_to.sdf");
 
     // Check model_invalid_frame_relative_to.sdf
     std::string output =
@@ -750,7 +826,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with a cycle in its PoseRelativeTo graph
   {
-    std::string path = pathBase +"/model_invalid_frame_relative_to_cycle.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_frame_relative_to_cycle.sdf");
 
     // Check model_invalid_frame_relative_to_cycle.sdf
     std::string output =
@@ -768,7 +846,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with model frames using the attached_to attribute.
   // This is a valid file.
   {
-    std::string path = pathBase +"/world_frame_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "world_frame_relative_to.sdf");
 
     // Check world_frame_relative_to.sdf
     std::string output =
@@ -778,7 +858,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with world frames with invalid relative_to attributes.
   {
-    std::string path = pathBase +"/world_frame_invalid_relative_to.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "world_frame_invalid_relative_to.sdf");
 
     // Check world_frame_invalid_relative_to.sdf
     std::string output =
@@ -807,7 +889,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   // Check an SDF file with an invalid frame specified as the placement_frame
   // attribute.
   {
-    std::string path = pathBase + "/model_invalid_placement_frame.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_placement_frame.sdf");
 
     // Check model_invalid_placement_frame.sdf
     std::string output =
@@ -820,7 +904,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF file with an valid nested model cross references
   {
-    std::string path = pathBase + "/nested_model_cross_references.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "nested_model_cross_references.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -829,7 +915,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an SDF model file with an invalid usage of __root__
   {
-    std::string path = pathBase + "/model_invalid_root_reference.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_root_reference.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -848,8 +936,11 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   {
     // Set SDF_PATH so that included models can be found
     gz::utils::setenv(
-      "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
-    std::string path = pathBase + "/world_invalid_root_reference.sdf";
+      "SDF_PATH", sdf::testing::TestFile("integration", "model"));
+
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "world_invalid_root_reference.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -896,7 +987,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
   // Check an SDF world file with an valid usage of __root__
   {
-    std::string path = pathBase + "/world_valid_root_reference.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "world_valid_root_reference.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -904,7 +997,9 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
   // Check an SDF with an invalid relative frame at the top level model
   {
-    std::string path = pathBase + "/model_invalid_top_level_frame.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "model_invalid_top_level_frame.sdf");
 
     std::string output =
         custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -918,11 +1013,10 @@ TEST(check, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /////////////////////////////////////////////////
 TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   {
-    std::string path = pathBase +"/shapes.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "shapes.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -930,7 +1024,9 @@ TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
   }
 
   {
-    std::string path = pathBase +"/shapes_world.sdf";
+    const auto path =
+      sdf::testing::TestFile("sdf",
+          "shapes_world.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -941,12 +1037,11 @@ TEST(check_shapes_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /////////////////////////////////////////////////
 TEST(check_model_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/integration/model/box";
-
   // Check a good SDF file by passing the absolute path
   {
-    std::string path = pathBase +"/model.sdf";
+    const auto path =
+      sdf::testing::TestFile("integration",
+          "model", "box", "model.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
@@ -955,7 +1050,9 @@ TEST(check_model_sdf, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check a good SDF file from the same folder by passing a relative path
   {
-    std::string path = "model.sdf";
+    const auto pathBase = sdf::testing::TestFile("integration",
+        "model", "box");
+    const auto path = "model.sdf";
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
@@ -979,12 +1076,10 @@ TEST(describe, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 /////////////////////////////////////////////////
 TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   // Check a good SDF file
   {
-    std::string path = pathBase +"/box_plane_low_friction_test.world";
+    const auto path =
+      sdf::testing::TestFile("sdf", "box_plane_low_friction_test.world");
     sdf::SDFPtr sdf(new sdf::SDF());
     EXPECT_TRUE(sdf::init(sdf));
     EXPECT_TRUE(sdf::readFile(path, sdf));
@@ -997,7 +1092,8 @@ TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check a bad SDF file
   {
-    std::string path = pathBase +"/box_bad_test.world";
+    const auto path =
+      sdf::testing::TestFile("sdf", "box_bad_test.world");
 
     // Check box_bad_test.world
     std::string output =
@@ -1359,7 +1455,7 @@ TEST(print_includes_rotations_in_quaternions,
 {
   // Set SDF_PATH so that included models can be found
   gz::utils::setenv(
-    "SDF_PATH", sdf::testing::SourceFile("test", "integration", "model"));
+    "SDF_PATH", sdf::testing::TestFile("integration", "model"));
   const auto path = sdf::testing::TestFile(
       "sdf", "includes_rotations_in_quaternions.sdf");
 
@@ -1637,11 +1733,9 @@ TEST(print_snap_to_degrees_tolerance_too_high,
 /////////////////////////////////////////////////
 TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 {
-  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
-
   // world pose relative_to graph
   const std::string path =
-    pathBase + "/world_relative_to_nested_reference.sdf";
+    sdf::testing::TestFile("sdf", "world_relative_to_nested_reference.sdf");
 
   const std::string output =
     custom_exec_str(GzCommand() + " sdf -g pose " + path + SdfVersion());
@@ -1688,8 +1782,9 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldPoseRelativeTo))
 /////////////////////////////////////////////////
 TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 {
-  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
-  const std::string path = pathBase + "/model_relative_to_nested_reference.sdf";
+  const auto path =
+    sdf::testing::TestFile("sdf", "model_relative_to_nested_reference.sdf");
+
   const std::string output =
     custom_exec_str(GzCommand() + " sdf -g pose " + path + SdfVersion());
 
@@ -1764,8 +1859,8 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelPoseRelativeTo))
 /////////////////////////////////////////////////
 TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 {
-  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
-  const std::string path = pathBase + "/world_nested_frame_attached_to.sdf";
+  const auto path =
+    sdf::testing::TestFile("sdf", "world_nested_frame_attached_to.sdf");
   const std::string output =
       custom_exec_str(GzCommand() + " sdf -g frame " + path + SdfVersion());
 
@@ -1810,8 +1905,9 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(WorldFrameAttachedTo))
 /////////////////////////////////////////////////
 TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 {
-  const std::string pathBase = std::string(PROJECT_SOURCE_PATH) + "/test/sdf";
-  const std::string path = pathBase + "/model_nested_frame_attached_to.sdf";
+  const auto path =
+    sdf::testing::TestFile("sdf", "model_nested_frame_attached_to.sdf");
+
   const std::string output =
       custom_exec_str(GzCommand() + " sdf -g frame " + path + SdfVersion());
 
@@ -1861,9 +1957,6 @@ TEST(GraphCmd, GZ_UTILS_TEST_DISABLED_ON_WIN32(ModelFrameAttachedTo))
 /////////////////////////////////////////////////
 TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
-  std::string pathBase = PROJECT_SOURCE_PATH;
-  pathBase += "/test/sdf";
-
   std::string expectedOutput =
     "Inertial statistics for model: test_model\n"
     "---\n"
@@ -1882,7 +1975,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check a good SDF file by passing the absolute path
   {
-    std::string path = pathBase +"/inertial_stats.sdf";
+    const auto path = sdf::testing::TestFile("sdf", "inertial_stats.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
@@ -1892,7 +1985,8 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check a good SDF file from the same folder by passing a relative path
   {
-    std::string path = "inertial_stats.sdf";
+    const auto path = "inertial_stats.sdf";
+    const auto pathBase = sdf::testing::TestFile("sdf");
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
@@ -1923,7 +2017,7 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 
   // Check an invalid SDF file by passing the absolute path
   {
-    std::string path = pathBase +"/inertial_invalid.sdf";
+    const auto path = sdf::testing::TestFile("sdf", "inertial_invalid.sdf");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
@@ -1935,7 +2029,8 @@ TEST(inertial_stats, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
           "Error: Expected a model file but received a world file.\n";
   // Check a valid world file.
   {
-    std::string path = pathBase +"/box_plane_low_friction_test.world";
+    const auto path =
+      sdf::testing::TestFile("sdf", "box_plane_low_friction_test.world");
 
     std::string output =
       custom_exec_str(GzCommand() + " sdf --inertial-stats " +
@@ -1954,9 +2049,8 @@ TEST(HelpVsCompletionFlags, SDF)
   std::string helpOutput = custom_exec_str(GzCommand() + " sdf --help");
 
   // Call the output function in the bash completion script
-  std::string scriptPath = PROJECT_SOURCE_PATH;
-  scriptPath = sdf::filesystem::append(scriptPath, "src", "cmd",
-      "sdf.bash_completion.sh");
+  const auto scriptPath =
+    sdf::testing::SourceFile("src", "cmd", "sdf.bash_completion.sh");
 
   // Equivalent to:
   // sh -c "bash -c \". /path/to/sdf.bash_completion.sh; _gz_sdf_flags\""

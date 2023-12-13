@@ -61,8 +61,11 @@ if (BUILD_TESTING)
       XmlUtils.cc)
   endif()
 
-  if(TARGET UNIT_gz_TEST)
-    target_compile_definitions(UNIT_gz_TEST PUBLIC "-DDETAIL_GZ_CONFIG_PATH=\"${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>\"")
+  if (TARGET UNIT_gz_TEST)
+    target_compile_definitions(UNIT_gz_TEST PRIVATE
+      -DGZ_PATH="${GZ_PROGRAM}"
+      -DDETAIL_GZ_CONFIG_PATH="${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>"
+      -DGZ_TEST_LIBRARY_PATH="${PROJECT_BINARY_DIR}/src")
   endif()
 
   if (TARGET UNIT_FrameSemantics_TEST)
