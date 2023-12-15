@@ -319,70 +319,71 @@ TEST(DOMLink, ResolveAutoInertialsWithNoCollisionsInLink)
 /////////////////////////////////////////////////
 TEST(DOMLink, ResolveAutoInertialsWithDifferentDensity)
 {
-  std::string sdf = "<?xml version=\"1.0\"?>"
-  "<sdf version=\"1.11\">"
-  "  <model name='multilink_model'>"
-  "    <pose>0 0 1.0 0 0 0</pose>"
-  "    <link name='link_density'>"
-  "      <pose>0 1.0 0 0 0 0</pose>"
-  "      <inertial auto='true'>"
-  "        <density>12.0</density>"
-  "      </inertial>"
-  "      <collision name='box_collision'>"
-  "        <pose>1.0 0 0 0 0 0</pose>"
-  "        <geometry>"
-  "          <box>"
-  "            <size>1 1 1</size>"
-  "          </box>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "    <link name='collision_density'>"
-  "      <pose>0 2.0 0 0 0 0</pose>"
-  "      <inertial auto='true'/>"
-  "      <collision name='box_collision'>"
-  "        <pose>1.0 0 0 0 0 0</pose>"
-  "        <density>24.0</density>"
-  "        <geometry>"
-  "          <box>"
-  "            <size>1 1 1</size>"
-  "          </box>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "    <link name='collision_density_overrides_link_density'>"
-  "      <pose>0 3.0 0 0 0 0</pose>"
-  "      <inertial auto='true'>"
-  "        <density>12.0</density>"
-  "      </inertial>"
-  "      <collision name='box_collision'>"
-  "        <pose>1.0 0 0 0 0 0</pose>"
-  "        <density>24.0</density>"
-  "        <geometry>"
-  "          <box>"
-  "            <size>1 1 1</size>"
-  "          </box>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "    <link name='default_density'>"
-  "      <pose>0 4.0 0 0 0 0</pose>"
-  "      <inertial auto='true'/>"
-  "      <collision name='box_collision'>"
-  "        <pose>1.0 0 0 0 0 0</pose>"
-  "        <geometry>"
-  "          <box>"
-  "            <size>1 1 1</size>"
-  "          </box>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "  </model>"
-  "</sdf>";
+  const std::string sdfString = R"(
+  <?xml version="1.0"?>
+  <sdf version="1.11">
+    <model name='multilink_model'>
+      <pose>0 0 1.0 0 0 0</pose>
+      <link name='link_density'>
+        <pose>0 1.0 0 0 0 0</pose>
+        <inertial auto='true'>
+          <density>12.0</density>
+        </inertial>
+        <collision name='box_collision'>
+          <pose>1.0 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name='collision_density'>
+        <pose>0 2.0 0 0 0 0</pose>
+        <inertial auto='true'/>
+        <collision name='box_collision'>
+          <pose>1.0 0 0 0 0 0</pose>
+          <density>24.0</density>
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name='collision_density_overrides_link_density'>
+        <pose>0 3.0 0 0 0 0</pose>
+        <inertial auto='true'>
+          <density>12.0</density>
+        </inertial>
+        <collision name='box_collision'>
+          <pose>1.0 0 0 0 0 0</pose>
+          <density>24.0</density>
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name='default_density'>
+        <pose>0 4.0 0 0 0 0</pose>
+        <inertial auto='true'/>
+        <collision name='box_collision'>
+          <pose>1.0 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+  </sdf>)";
 
   sdf::Root root;
   const sdf::ParserConfig sdfParserConfig;
-  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  sdf::Errors errors = root.LoadSdfString(sdfString, sdfParserConfig);
   EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_NE(nullptr, root.Element());
 
@@ -468,78 +469,79 @@ TEST(DOMLink, ResolveAutoInertialsWithDifferentDensity)
 /////////////////////////////////////////////////
 TEST(DOMLink, ResolveAutoInertialsWithDifferentAutoInertiaParams)
 {
-  std::string sdf = "<?xml version=\"1.0\"?>"
-  "<sdf version=\"1.11\">"
-  "  <model name='multilink_model'>"
-  "    <pose>0 0 1.0 0 0 0</pose>"
-  "    <link name='link_auto_inertia_params'>"
-  "      <pose>0 1.0 0 0 0 0</pose>"
-  "      <inertial auto='true'>"
-  "        <auto_inertia_params>"
-  "          <gz:density>12</gz:density>"
-  "          <gz:box_size>1 1 1</gz:box_size>"
-  "        </auto_inertia_params>"
-  "      </inertial>"
-  "      <collision name='box_collision'>"
-  "        <pose>1.0 0 0 0 0 0</pose>"
-  "        <geometry>"
-  "          <mesh>"
-  "            <uri>uri</uri>"
-  "          </mesh>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "    <link name='collision_auto_inertia_params'>"
-  "      <pose>0 2.0 0 0 0 0</pose>"
-  "      <inertial auto='true'/>"
-  "      <collision name='box_collision'>"
-  "        <pose>2.0 0 0 0 0 0</pose>"
-  "        <auto_inertia_params>"
-  "          <gz:density>24</gz:density>"
-  "          <gz:box_size>1 1 1</gz:box_size>"
-  "        </auto_inertia_params>"
-  "        <geometry>"
-  "          <mesh>"
-  "            <uri>uri</uri>"
-  "          </mesh>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "    <link name='collision_auto_inertia_params_overrides'>"
-  "      <pose>0 3.0 0 0 0 0</pose>"
-  "      <inertial auto='true'>"
-  "        <auto_inertia_params>"
-  "          <gz:density>12</gz:density>"
-  "          <gz:box_size>1 1 1</gz:box_size>"
-  "        </auto_inertia_params>"
-  "      </inertial>"
-  "      <collision name='box_collision'>"
-  "        <pose>3.0 0 0 0 0 0</pose>"
-  "        <auto_inertia_params>"
-  "          <gz:density>24</gz:density>"
-  "          <gz:box_size>1 1 1</gz:box_size>"
-  "        </auto_inertia_params>"
-  "        <geometry>"
-  "          <mesh>"
-  "            <uri>uri</uri>"
-  "          </mesh>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "    <link name='default_auto_inertia_params'>"
-  "      <pose>0 4.0 0 0 0 0</pose>"
-  "      <inertial auto='true'/>"
-  "      <collision name='box_collision'>"
-  "        <pose>4.0 0 0 0 0 0</pose>"
-  "        <geometry>"
-  "          <mesh>"
-  "            <uri>uri</uri>"
-  "          </mesh>"
-  "        </geometry>"
-  "      </collision>"
-  "    </link>"
-  "  </model>"
-  "</sdf>";
+  const std::string sdfString = R"(
+  <?xml version="1.0"?>
+  <sdf version="1.11">
+    <model name='multilink_model'>
+      <pose>0 0 1.0 0 0 0</pose>
+      <link name='link_auto_inertia_params'>
+        <pose>0 1.0 0 0 0 0</pose>
+        <inertial auto='true'>
+          <auto_inertia_params>
+            <gz:density>12</gz:density>
+            <gz:box_size>1 1 1</gz:box_size>
+          </auto_inertia_params>
+        </inertial>
+        <collision name='box_collision'>
+          <pose>1.0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>uri</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+      <link name='collision_auto_inertia_params'>
+        <pose>0 2.0 0 0 0 0</pose>
+        <inertial auto='true'/>
+        <collision name='box_collision'>
+          <pose>2.0 0 0 0 0 0</pose>
+          <auto_inertia_params>
+            <gz:density>24</gz:density>
+            <gz:box_size>1 1 1</gz:box_size>
+          </auto_inertia_params>
+          <geometry>
+            <mesh>
+              <uri>uri</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+      <link name='collision_auto_inertia_params_overrides'>
+        <pose>0 3.0 0 0 0 0</pose>
+        <inertial auto='true'>
+          <auto_inertia_params>
+            <gz:density>12</gz:density>
+            <gz:box_size>1 1 1</gz:box_size>
+          </auto_inertia_params>
+        </inertial>
+        <collision name='box_collision'>
+          <pose>3.0 0 0 0 0 0</pose>
+          <auto_inertia_params>
+            <gz:density>24</gz:density>
+            <gz:box_size>1 1 1</gz:box_size>
+          </auto_inertia_params>
+          <geometry>
+            <mesh>
+              <uri>uri</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+      <link name='default_auto_inertia_params'>
+        <pose>0 4.0 0 0 0 0</pose>
+        <inertial auto='true'/>
+        <collision name='box_collision'>
+          <pose>4.0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>uri</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+  </sdf>)";
 
   // Lambda function for registering as custom inertia calculator
   auto customMeshInertiaCalculator = [](
@@ -585,7 +587,7 @@ TEST(DOMLink, ResolveAutoInertialsWithDifferentAutoInertiaParams)
   sdf::Root root;
   sdf::ParserConfig sdfParserConfig;
   sdfParserConfig.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
-  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  sdf::Errors errors = root.LoadSdfString(sdfString, sdfParserConfig);
   EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_NE(nullptr, root.Element());
 
