@@ -11,9 +11,9 @@ Note: The branch name in the codecov URL & library version should be updated whe
 Build | Status
 -- | --
 Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/main)
-Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-jammy-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-jammy-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-main-win)](https://build.osrfoundation.org/job/sdformat-main-win)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf14-jammy-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf14-jammy-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf14-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf14-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-sdf14-win)](https://build.osrfoundation.org/job/sdformat-sdf14-win)
 
 
 SDFormat is an XML file format that describes environments, objects, and robots
