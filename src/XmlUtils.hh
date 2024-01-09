@@ -29,7 +29,7 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
 
-  /// \brief Perform a deep copy of an XML Node
+  /// \brief Perform a deep copy f an XML Node
   ///
   /// This copies an XMLNode _src and all of its decendants
   /// into a specified XMLDocument.
@@ -41,10 +41,31 @@ namespace sdf
   tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
                                const tinyxml2::XMLNode *_src);
 
+  /// \brief Perform a deep copy of an XML Node
+  ///
+  /// This copies an XMLNode _src and all of its decendants
+  /// into a specified XMLDocument.
+  ///
+  /// \param[in] _doc Document in which to place the copied node
+  /// \param[in] _src The node to deep copy
+  /// \param[out] _errors Vector of errors
+  /// \returns The newly copied node upon success OR
+  ///          nullptr if an error occurs.
+  tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
+                               const tinyxml2::XMLNode *_src,
+                               sdf::Errors &_errors);
+
   /// \brief Converts the XML Element to a string
   /// \param[in] _elem Element to be converted
   /// \return The string representation
-  std::string ElementToString(const tinyxml2::XMLElement *_elem);
+//  std::string ElementToString(const tinyxml2::XMLElement *_elem);
+
+  /// \brief Converts the XML Element to a string
+  /// \param[in] _elem Element to be converted
+  /// \param[out] _errors Vector of errors
+  /// \return The string representation
+  std::string ElementToString(const tinyxml2::XMLElement *_elem,
+                              sdf::Errors &_errors);
   }
 }
 #endif

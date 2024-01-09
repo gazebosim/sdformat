@@ -110,7 +110,8 @@ namespace sdf
     /// \param[in] _copy True to copy the element
     private: static void Move(tinyxml2::XMLElement *_elem,
                               tinyxml2::XMLElement *_moveElem,
-                              const bool _copy);
+                              const bool _copy,
+                              sdf::Errors &_errors);
 
     /// \brief Add an element or attribute to an element.
     /// \param[in] _elem The element to receive the value.
