@@ -144,7 +144,7 @@ if (BUILD_SDF)
     endif()
   endif()
 
-  gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
+  gz_configure_build(QUIT_IF_BUILD_ERRORS)
 
   gz_create_packages()
 
