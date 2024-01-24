@@ -987,6 +987,11 @@ sdf::ElementPtr Link::ToElement() const
   inertiaElem->GetElement("iyz")->Set(massMatrix.Iyz());
   inertiaElem->GetElement("izz")->Set(massMatrix.Izz());
 
+  if (this->dataPtr->density.has_value())
+  {
+    inertialElem->GetElement("density")->Set(*this->dataPtr->density);
+  }
+
   if (this->dataPtr->inertial.FluidAddedMass().has_value())
   {
     auto addedMass = this->dataPtr->inertial.FluidAddedMass().value();

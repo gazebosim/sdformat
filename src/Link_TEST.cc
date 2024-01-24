@@ -984,12 +984,18 @@ TEST(DOMLink, ToElement)
 
   sdf::ElementPtr elem = link.ToElement();
   ASSERT_NE(nullptr, elem);
+  // Expect no density element
+  {
+    auto inertialElem = elem->FindElement("inertial");
+    EXPECT_FALSE(inertialElem->HasElement("density"));
+  }
 
   sdf::Link link2;
   link2.Load(elem);
 
   EXPECT_EQ(link.Name(), link2.Name());
   EXPECT_EQ(link.Inertial(), link2.Inertial());
+  EXPECT_EQ(link.Density(), link2.Density());
   EXPECT_EQ(link.RawPose(), link2.RawPose());
   EXPECT_EQ(link.EnableWind(), link2.EnableWind());
   EXPECT_EQ(link.CollisionCount(), link2.CollisionCount());
@@ -1015,6 +1021,23 @@ TEST(DOMLink, ToElement)
   EXPECT_EQ(link.ProjectorCount(), link2.ProjectorCount());
   for (uint64_t i = 0; i < link2.ProjectorCount(); ++i)
     EXPECT_NE(nullptr, link2.ProjectorByIndex(i));
+
+  // Now set density in link
+  const double kDensity = 1234.5;
+  link.SetDensity(kDensity);
+  sdf::ElementPtr elemWithDensity = link.ToElement();
+  ASSERT_NE(nullptr, elemWithDensity);
+  // Expect density element
+  {
+    auto inertialElem = elemWithDensity->FindElement("inertial");
+    ASSERT_TRUE(inertialElem->HasElement("density"));
+    EXPECT_DOUBLE_EQ(kDensity, inertialElem->Get<double>("density"));
+  }
+
+  sdf::Link link3;
+  link3.Load(elemWithDensity);
+  ASSERT_TRUE(link3.Density().has_value());
+  EXPECT_DOUBLE_EQ(kDensity, *link3.Density());
 }
 
 /////////////////////////////////////////////////
