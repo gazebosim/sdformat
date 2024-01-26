@@ -101,6 +101,15 @@ TEST(ParamPassing, GetElementByNameWarningOutput)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
   std::ostringstream stream;
   stream << "<?xml version=\"1.0\"?>"
          << "<sdf version='1.8'>"
@@ -149,7 +158,7 @@ TEST(ParamPassing, GetElementByNameWarningOutput)
   EXPECT_NE(std::string::npos, buffer.str().find(
       "The original element [model] contains the attribute 'name' but none "
       "was provided in the element modifier. The assumed element to be "
-      "modified is: <model name='test_model'>"));
+      "modified is: <model name='test_model'>")) << buffer.str();
 }
 
 ////////////////////////////////////////
@@ -159,6 +168,15 @@ TEST(ParamPassing, ModifyChildrenNameWarningOutput)
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
 
   std::ostringstream stream;
   stream << "<?xml version=\"1.0\"?>"
@@ -212,5 +230,5 @@ TEST(ParamPassing, ModifyChildrenNameWarningOutput)
   EXPECT_NE(std::string::npos, buffer.str().find(
       "No modifications for element <model name=\"test\"/>\n provided, "
       "skipping modification for:\n<sdf version=\"1.8\">\n"
-      "    <model name=\"test\"/>\n</sdf>"));
+      "    <model name=\"test\"/>\n</sdf>")) << buffer.str();
 }

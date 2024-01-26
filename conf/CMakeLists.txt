@@ -1,12 +1,16 @@
 # Used only for internal testing.
-set(gz_library_path "${CMAKE_BINARY_DIR}/test/lib/ruby/gz/cmd${PROJECT_NAME}")
+set(gz_library_path "${CMAKE_BINARY_DIR}/test/lib/$<CONFIG>/ruby/gz/cmd${PROJECT_NAME}")
 
 # Generate a configuration file for internal testing.
 # Note that the major version of the library is included in the name.
 # Ex: sdformat0.yaml
 configure_file(
   "${PROJECT_NAME_NO_VERSION_LOWER}.yaml.in"
-    "${CMAKE_BINARY_DIR}/test/conf/${PROJECT_NAME}.yaml" @ONLY)
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.yaml.configured" @ONLY)
+
+file(GENERATE
+  OUTPUT "${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>/${PROJECT_NAME}.yaml"
+  INPUT "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.yaml.configured")
 
 # Used for the installed version.
 set(gz_library_path "${CMAKE_INSTALL_PREFIX}/lib/ruby/gz/cmd${PROJECT_NAME}")
