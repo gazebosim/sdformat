@@ -145,7 +145,7 @@ TEST(DOMPlane, Load)
   // Add a normal element
   sdf::ElementPtr normalDesc(new sdf::Element());
   normalDesc->SetName("normal");
-  normalDesc->AddValue("vector3", "0 0 1", "1", "normal");
+  normalDesc->AddValue("vector3", "0 0 1", true, "normal");
   sdf->AddElementDescription(normalDesc);
   sdf::ElementPtr normalElem = sdf->AddElement("normal");
   normalElem->Set<gz::math::Vector3d>({1, 0, 0});
