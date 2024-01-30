@@ -82,7 +82,8 @@ TEST(ParserConfig, NonGlobalConfig)
 
   ASSERT_TRUE(config.FindFileCallback());
   EXPECT_EQ("test/dir2", config.FindFileCallback()("should_not_exist"));
-  EXPECT_EQ("test/dir2", sdf::findFile("should_not_exist", false, true, config));
+  EXPECT_EQ("test/dir2",
+      sdf::findFile("should_not_exist", false, true, config));
   EXPECT_EQ("test/dir2", sdf::findFile("should_not_exist", true, true, config));
 
   EXPECT_TRUE(sdf::ParserConfig::GlobalConfig().URIPathMap().empty());
