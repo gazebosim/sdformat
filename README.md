@@ -19,7 +19,7 @@ Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/ico
 SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
-or dynamic objects, and articulated robots with various sensors, and acutators.
+or dynamic objects, and articulated robots with various sensors, and actuators.
 The format of SDFormat is also described by XML, which facilitates updates and
 allows conversion from previous versions.
 
