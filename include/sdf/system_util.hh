@@ -29,5 +29,15 @@
  */
 #define SDFORMAT_HIDDEN GZ_SDFORMAT_HIDDEN
 
+/** \def SDFORMAT_WARN_UNUSED
+ * Use to represent "[[warn_if_unused]]" compiler directive on C++17 or above
+ */
+
+#if __cplusplus >= 201703L
+#define SDFORMAT_WARN_UNUSED [[nodiscard]]
+#else
+#define SDFORMAT_WARN_UNUSED
+#endif
+
 // SDF_VISIBLE_HH_
 #endif
