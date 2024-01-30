@@ -265,13 +265,37 @@ TEST(DOMLink, InertialInvalid)
 }
 
 //////////////////////////////////////////////////
-TEST(DOMLink, Sensors)
+TEST(DOMLink, LinkInvalidSensor)
 {
-  const std::string testFile = sdf::testing::TestFile("sdf", "sensors.sdf");
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "link_invalid_sensor.sdf");
 
-  // Load the SDF file
+  // Load the SDF file with warnings treated as errors
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  //
   sdf::Root root;
-  auto errors = root.Load(testFile);
+  auto errors = root.Load(testFile, parserConfig);
+  for (auto e : errors)
+    std::cout << e << std::endl;
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(1u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::WARNING);
+  EXPECT_EQ(errors[0].Message(), "A force_torque sensor is attached to the "
+    "link named link, but this sensor type is not supported by links.");
+}
+
+//////////////////////////////////////////////////
+TEST(DOMLink, LinkSensors)
+{
+  const std::string testFile = sdf::testing::TestFile("sdf", "link_sensors.sdf");
+
+  // Load the SDF file with warnings treated as errors
+  sdf::ParserConfig parserConfig;
+  parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  //
+  sdf::Root root;
+  auto errors = root.Load(testFile, parserConfig);
   for (auto e : errors)
     std::cout << e << std::endl;
   EXPECT_TRUE(errors.empty());
@@ -285,7 +309,7 @@ TEST(DOMLink, Sensors)
   const sdf::Link *link = model->LinkByIndex(0);
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
-  EXPECT_EQ(27u, link->SensorCount());
+  EXPECT_EQ(26u, link->SensorCount());
 
   // Get the altimeter sensor
   const sdf::Sensor *altimeterSensor = link->SensorByIndex(0);
@@ -448,16 +472,6 @@ TEST(DOMLink, Sensors)
   EXPECT_EQ("my_boundingbox_camera", boundingboxCamSensor->Name());
   EXPECT_TRUE(boundingboxCamSensor->HasBoundingBoxType());
   EXPECT_EQ("2d", boundingboxCamSensor->BoundingBoxType());
-
-  // Get the force_torque sensor
-  const sdf::Sensor *forceTorqueSensor =
-    link->SensorByName("force_torque_sensor");
-  ASSERT_NE(nullptr, forceTorqueSensor);
-  EXPECT_EQ("force_torque_sensor", forceTorqueSensor->Name());
-  EXPECT_EQ(sdf::SensorType::FORCE_TORQUE, forceTorqueSensor->Type());
-  EXPECT_EQ(gz::math::Pose3d(10, 11, 12, 0, 0, 0),
-      forceTorqueSensor->RawPose());
-  EXPECT_FALSE(forceTorqueSensor->EnableMetrics());
 
   // Get the navsat sensor
   const sdf::Sensor *navSatSensor = link->SensorByName("navsat_sensor");

@@ -157,6 +157,21 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   Errors sensorLoadErrors = loadUniqueRepeated<Sensor>(_sdf, "sensor",
       this->dataPtr->sensors);
   errors.insert(errors.end(), sensorLoadErrors.begin(), sensorLoadErrors.end());
+  // Check that no ForceTorque sensors are attached.
+  for (const auto &sensor : this->dataPtr->sensors)
+  {
+    if (sensor.Type() == SensorType::FORCE_TORQUE)
+    {
+      Error err(
+        ErrorCode::WARNING,
+        "A force_torque sensor is attached to the link named " +
+        this->dataPtr->name + ", but this sensor type is not supported by "
+        "links."
+      );
+      enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), err, errors);
+    }
+  }
 
   // Load all the particle emitters.
   Errors emitterLoadErrors = loadUniqueRepeated<ParticleEmitter>(_sdf,
