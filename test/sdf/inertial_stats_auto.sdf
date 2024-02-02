@@ -25,9 +25,10 @@
 
       <link name="link_1">
         <pose>5 0 0 0 0 0</pose>
-        <inertial auto='true' />
-        <collision name="collision_1">
+        <inertial auto="true">
           <density>6</density>
+        </inertial>
+        <collision name="collision_1">
           <geometry>
             <box>
               <size>1 1 1</size>
