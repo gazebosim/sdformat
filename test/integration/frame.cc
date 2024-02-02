@@ -1299,8 +1299,7 @@ TEST(DOMFrame, WorldIncludeModel)
 TEST(Frame, IncludeFrameWithSubmodel)
 {
   const std::string MODEL_PATH =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "integration",
-                            "model", "box_with_submodel");
+    sdf::testing::TestFile("integration", "model", "box_with_submodel");
 
   std::ostringstream stream;
   std::string version = SDF_VERSION;

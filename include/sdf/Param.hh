@@ -85,6 +85,11 @@ namespace sdf
        : val(_val), precision(_precision) {}
   };
 
+  // Template deduction guide for ParamVariant
+  template<typename ParamVariant>
+  ParamStreamer(const ParamVariant &_val, int _precision)
+    -> ParamStreamer<ParamVariant>;
+
   template<class T>
   std::ostream& operator<<(std::ostream &os, ParamStreamer<T> s)
   {

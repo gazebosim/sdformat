@@ -26,17 +26,17 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
+
 #include "test_config.hh"
 
 const auto g_testPath = sdf::testing::TestFile();
-const auto g_modelsPath =
-    sdf::filesystem::append(g_testPath, "integration", "model");
-const auto g_sdfPath = sdf::filesystem::append(g_testPath, "sdf");
+const auto g_modelsPath = sdf::testing::TestFile("integration", "model");
+const auto g_sdfPath = sdf::testing::TestFile("sdf");
 
 /////////////////////////////////////////////////
 std::string findFileCb(const std::string &_input)
 {
-  return sdf::filesystem::append(g_testPath, "integration", "model", _input);
+  return sdf::filesystem::append(g_modelsPath, _input);
 }
 
 //////////////////////////////////////////////////
