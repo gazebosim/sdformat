@@ -116,7 +116,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     {
       return path;
     }
-    else
+    else if (!_config.FilePath().empty())
     {
       auto p = std::filesystem::path(_config.FilePath()).parent_path();
       p = p / filename;
