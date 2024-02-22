@@ -56,6 +56,9 @@ class sdf::ParserConfig::Implementation
 
   /// \brief Flag to expand URIs where possible store the resolved paths
   public: bool storeResolvedURIs = false;
+
+  /// \brief Path to file where this sdf is loaded
+  public: std::string filePath;
 };
 
 
@@ -184,6 +187,12 @@ bool ParserConfig::URDFPreserveFixedJoint() const
 /////////////////////////////////////////////////
 void ParserConfig::SetStoreResovledURIs(bool _resolveURI)
 {
+  this->SetStoreResolvedURIs(_resolveURI);
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetStoreResolvedURIs(bool _resolveURI)
+{
   this->dataPtr->storeResolvedURIs = _resolveURI;
 }
 
@@ -193,3 +202,14 @@ bool ParserConfig::StoreResolvedURIs() const
   return this->dataPtr->storeResolvedURIs;
 }
 
+/////////////////////////////////////////////////
+void ParserConfig::SetFilePath(const std::string &_path)
+{
+  this->dataPtr->filePath = _path;
+}
+
+/////////////////////////////////////////////////
+const std::string &ParserConfig::FilePath() const
+{
+  return this->dataPtr->filePath;
+}

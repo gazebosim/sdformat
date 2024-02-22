@@ -16,6 +16,7 @@
  */
 
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <functional>
@@ -114,6 +115,16 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     if (sdf::filesystem::exists(path))
     {
       return path;
+    }
+    else
+    {
+      auto p = std::filesystem::path(_config.FilePath()).parent_path();
+      p = p / filename;
+      path = p.string();
+      if (sdf::filesystem::exists(path))
+      {
+        return path;
+      }
     }
   }
 

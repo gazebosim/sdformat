@@ -82,9 +82,11 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("uri"))
   {
+    auto config = _config;
+    config.SetFilePath(this->dataPtr->filePath);
     this->dataPtr->uri = resolveURI(
       _sdf->Get<std::string>(errors, "uri", "").first,
-      _config, errors);
+      config, errors);
   }
   else
   {
