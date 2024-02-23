@@ -57,8 +57,8 @@ class sdf::ParserConfig::Implementation
   /// \brief Flag to expand URIs where possible store the resolved paths
   public: bool storeResolvedURIs = false;
 
-  /// \brief Path to file where this sdf is loaded
-  public: std::string filePath;
+  /// \brief Path to search for URIs with relative paths
+  public: std::string relativeUriSearchPath;
 };
 
 
@@ -203,13 +203,13 @@ bool ParserConfig::StoreResolvedURIs() const
 }
 
 /////////////////////////////////////////////////
-void ParserConfig::SetFilePath(const std::string &_path)
+void ParserConfig::SetRelativeURISearchPath(const std::string &_path)
 {
-  this->dataPtr->filePath = _path;
+  this->dataPtr->relativeUriSearchPath = _path;
 }
 
 /////////////////////////////////////////////////
-const std::string &ParserConfig::FilePath() const
+const std::string &ParserConfig::RelativeURISearchPath() const
 {
-  return this->dataPtr->filePath;
+  return this->dataPtr->relativeUriSearchPath;
 }

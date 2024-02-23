@@ -14,6 +14,8 @@
  * limitations under the License.
  *
 */
+#include <filesystem>
+
 #include "sdf/parser.hh"
 #include "sdf/Mesh.hh"
 #include "Utils.hh"
@@ -83,7 +85,8 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("uri"))
   {
     auto config = _config;
-    config.SetFilePath(this->dataPtr->filePath);
+    auto path = std::filesystem::path(this->dataPtr->filePath).parent_path();
+    config.SetRelativeURISearchPath(path.string());
     this->dataPtr->uri = resolveURI(
       _sdf->Get<std::string>(errors, "uri", "").first,
       config, errors);

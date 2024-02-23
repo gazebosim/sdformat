@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="default">
+
+    <scene>
+      <ambient>0.3 0.4 0.5</ambient>
+      <background>0.6 0.7 0.8</background>
+      <grid>true</grid>
+      <shadows>true</shadows>
+      <origin_visual>true</origin_visual>
+      <sky>
+        <time>3</time>
+        <sunrise>4</sunrise>
+        <sunset>21</sunset>
+        <clouds>
+          <speed>1.2</speed>
+          <direction>1.5</direction>
+          <mean_size>0.2</mean_size>
+          <humidity>0.9</humidity>
+          <ambient>0.1 0.2 0.3</ambient>
+        </clouds>
+        <cubemap_uri>media/dummy_cubemap.dds</cubemap_uri>
+      </sky>
+    </scene>
+
+    <model name="model">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>media/dummy_mesh.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <cast_shadows>false</cast_shadows>
+          <geometry>
+            <mesh>
+              <uri>media/dummy_mesh.dae</uri>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>media/dummy_material.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

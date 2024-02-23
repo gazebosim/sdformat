@@ -14,6 +14,8 @@
  * limitations under the License.
  *
 */
+#include <filesystem>
+
 #include "sdf/parser.hh"
 #include "sdf/Sky.hh"
 #include "Utils.hh"
@@ -201,9 +203,12 @@ Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("cubemap_uri"))
   {
+    auto config = _config;
+    auto path = std::filesystem::path(_sdf->FilePath()).parent_path();
+    config.SetRelativeURISearchPath(path.string());
     this->dataPtr->cubemapUri = resolveURI(
       _sdf->Get<std::string>(errors, "cubemap_uri", "").first,
-      _config, errors);
+      config, errors);
   }
 
   if ( _sdf->HasElement("clouds"))

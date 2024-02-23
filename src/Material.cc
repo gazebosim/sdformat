@@ -14,8 +14,10 @@
  * limitations under the License.
  *
 */
-#include <string>
+
+#include <filesystem>
 #include <optional>
+#include <string>
 #include <vector>
 #include <gz/math/Vector3.hh>
 
@@ -122,7 +124,10 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
           "<uri> element is empty."});
     }
 
-    this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors);
+    auto config = _config;
+    auto path = std::filesystem::path(this->dataPtr->filePath).parent_path();
+    config.SetRelativeURISearchPath(path.string());
+    this->dataPtr->scriptUri = resolveURI(uriPair.first, config, errors);
 
     std::pair<std::string, bool> namePair =
         elem->Get<std::string>(errors, "name", "");

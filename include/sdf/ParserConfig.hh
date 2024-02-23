@@ -199,13 +199,13 @@ class SDFORMAT_VISIBLE ParserConfig
   /// store them.  False to preserve original URIs
   public: bool StoreResolvedURIs() const;
 
-  /// \brief Set the path to the SDF file.
-  /// \param[in] _path Full path to SDF file.
-  public: void SetFilePath(const std::string &_path);
+  /// \brief Set the path to search for URIs with relative path.
+  /// \param[in] _path Path to search.
+  public: void SetRelativeURISearchPath(const std::string &_path);
 
-  /// \brief Get the path to the SDF file.
-  /// \return Full path to SDF file.
-  public: const std::string &FilePath() const;
+  /// \brief Get the path to search for URIs with relative path.
+  /// \return Path to search
+  public: const std::string &RelativeURISearchPath() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)
