@@ -51,7 +51,7 @@ jobs:
       working-directory: build
       run: |
         export PYTHONPATH=$PYTHONPATH:$(brew --prefix)/lib/python
-        cmake .. -DCMAKE_INSTALL_PREFIX=$(brew --prefix)/Cellar/${PACKAGE}/HEAD -DPython3_EXECUTABLE=$(brew --prefix)/bin/python3
+        cmake .. -DCMAKE_INSTALL_PREFIX=$(brew --prefix)/Cellar/${PACKAGE}/HEAD -DPython3_EXECUTABLE=$(brew --prefix python3)/bin/python3
     - run: make
       working-directory: build
     - run: make test

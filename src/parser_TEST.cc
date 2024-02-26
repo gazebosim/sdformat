@@ -23,10 +23,11 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
-#include "test_utils.hh"
 
 #include <gz/utils/Environment.hh>
+
+#include "test_config.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -418,10 +419,18 @@ TEST(Parser, IncludesErrors)
 
     const auto path =
         sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
+    sdf::setFindCallback([&](const std::string &/*_file*/)
+        {
+          return "";
+        });
+
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
+
+    std::cout << buffer.str() << std::endl;
+
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
@@ -937,7 +946,14 @@ int main(int argc, char **argv)
 {
   // temporarily set HOME
   std::string homeDir;
-  sdf::testing::TestSetHomePath(homeDir);
+  sdf::testing::TestTmpPath(homeDir);
+
+#ifdef _WIN32
+  gz::utils::setenv("HOMEPATH", homeDir);
+#else
+  gz::utils::setenv("HOME", homeDir);
+#endif
+
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);

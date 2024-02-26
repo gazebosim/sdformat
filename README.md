@@ -10,16 +10,16 @@ Note: The branch name in the codecov URL & library version should be updated whe
 -->
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/main)
-Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-focal-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-focal-amd64)
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/main)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-jammy-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-jammy-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-windows7-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-windows7-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-main-win)](https://build.osrfoundation.org/job/sdformat-main-win)
 
 
 SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
-or dynamic objects, and articulated robots with various sensors, and acutators.
+or dynamic objects, and articulated robots with various sensors, and actuators.
 The format of SDFormat is also described by XML, which facilitates updates and
 allows conversion from previous versions.
 

@@ -156,7 +156,7 @@ void ParserStringConverter(const std::string &_version)
 TEST(ConverterIntegration, UnflattenConversion)
 {
   const std::string filename =
-  sdf::testing::SourceFile("test", "sdf",
+    sdf::testing::TestFile("sdf",
                           "flattened_test_nested_model_with_frames.sdf");
 
   sdf::SDFPtr sdf(new sdf::SDF());

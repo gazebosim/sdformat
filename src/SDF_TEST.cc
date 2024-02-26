@@ -16,7 +16,10 @@
 */
 
 #include <gtest/gtest.h>
+
 #include <any>
+#include <filesystem>
+
 #include <gz/math.hh>
 #include <gz/utils/Environment.hh>
 #include <gz/utils/SuppressWarning.hh>
@@ -284,7 +287,7 @@ TEST(SDF, SetRoot)
 
   sdf::ElementPtr elem;
   elem.reset(new sdf::Element());
-  elem->AddValue("bool", "true", "0", "description");
+  elem->AddValue("bool", "true", false, "description");
   s.SetRoot(elem);
   EXPECT_EQ(elem, s.Root());
 
@@ -306,56 +309,56 @@ TEST(SDF, EmptyValues)
 
   elem.reset(new sdf::Element());
   EXPECT_FALSE(elem->Get<bool>(emptyString));
-  elem->AddValue("bool", "true", "0", "description");
+  elem->AddValue("bool", "true", false, "description");
   EXPECT_TRUE(elem->Get<bool>(emptyString));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<int>(emptyString), 0);
-  elem->AddValue("int", "12", "0", "description");
+  elem->AddValue("int", "12", false, "description");
   EXPECT_EQ(elem->Get<int>(emptyString), 12);
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<unsigned int>(emptyString),
       static_cast<unsigned int>(0));
-  elem->AddValue("unsigned int", "123", "0", "description");
+  elem->AddValue("unsigned int", "123", false, "description");
   EXPECT_EQ(elem->Get<unsigned int>(emptyString),
       static_cast<unsigned int>(123));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<char>(emptyString), '\0');
-  elem->AddValue("char", "a", "0", "description");
+  elem->AddValue("char", "a", false, "description");
   EXPECT_EQ(elem->Get<char>(emptyString), 'a');
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<std::string>(emptyString), "");
-  elem->AddValue("string", "hello", "0", "description");
+  elem->AddValue("string", "hello", false, "description");
   EXPECT_EQ(elem->Get<std::string>(emptyString), "hello");
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<gz::math::Vector2d>(emptyString),
       gz::math::Vector2d());
-  elem->AddValue("vector2d", "1 2", "0", "description");
+  elem->AddValue("vector2d", "1 2", false, "description");
   EXPECT_EQ(elem->Get<gz::math::Vector2d>(emptyString),
       gz::math::Vector2d(1, 2));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<gz::math::Vector3d>(emptyString),
       gz::math::Vector3d());
-  elem->AddValue("vector3", "1 2 3", "0", "description");
+  elem->AddValue("vector3", "1 2 3", false, "description");
   EXPECT_EQ(elem->Get<gz::math::Vector3d>(emptyString),
       gz::math::Vector3d(1, 2, 3));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<gz::math::Quaterniond>(emptyString),
             gz::math::Quaterniond());
-  elem->AddValue("quaternion", "1 2 3", "0", "description");
+  elem->AddValue("quaternion", "1 2 3", false, "description");
   EXPECT_EQ(elem->Get<gz::math::Quaterniond>(emptyString),
             gz::math::Quaterniond(-2.14159, 1.14159, -0.141593));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<gz::math::Pose3d>(emptyString),
       gz::math::Pose3d());
-  elem->AddValue("pose", "1.0 2.0 3.0 4.0 5.0 6.0", "0", "description");
+  elem->AddValue("pose", "1.0 2.0 3.0 4.0 5.0 6.0", false, "description");
   EXPECT_EQ(elem->Get<gz::math::Pose3d>(emptyString).Pos(),
       gz::math::Pose3d(1, 2, 3, 4, 5, 6).Pos());
   EXPECT_EQ(elem->Get<gz::math::Pose3d>(emptyString).Rot().Euler(),
@@ -364,23 +367,23 @@ TEST(SDF, EmptyValues)
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<gz::math::Color>(emptyString),
       gz::math::Color());
-  elem->AddValue("color", ".1 .2 .3 1.0", "0", "description");
+  elem->AddValue("color", ".1 .2 .3 1.0", false, "description");
   EXPECT_EQ(elem->Get<gz::math::Color>(emptyString),
             gz::math::Color(.1f, .2f, .3f, 1.0f));
 
   elem.reset(new sdf::Element());
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time());
-  elem->AddValue("time", "1 2", "0", "description");
+  elem->AddValue("time", "1 2", false, "description");
   EXPECT_EQ(elem->Get<sdf::Time>(emptyString), sdf::Time(1, 2));
 
   elem.reset(new sdf::Element());
   EXPECT_NEAR(elem->Get<float>(emptyString), 0.0, 1e-6);
-  elem->AddValue("float", "12.34", "0", "description");
+  elem->AddValue("float", "12.34", false, "description");
   EXPECT_NEAR(elem->Get<float>(emptyString), 12.34, 1e-6);
 
   elem.reset(new sdf::Element());
   EXPECT_NEAR(elem->Get<double>(emptyString), 0.0, 1e-6);
-  elem->AddValue("double", "12.34", "0", "description");
+  elem->AddValue("double", "12.34", false, "description");
   EXPECT_NEAR(elem->Get<double>(emptyString), 12.34, 1e-6);
 }
 
@@ -788,17 +791,17 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
-
 /////////////////////////////////////////////////
 TEST(SDF, FindFileModelSDFCurrDir)
 {
-  std::string currDir;
-
-  // Get current directory path from $PWD env variable
-  currDir = sdf::filesystem::current_path();
+  // Change to a temporary directory before running test
+  auto prevPath = std::filesystem::current_path();
+  std::string tmpDir;
+  ASSERT_TRUE(sdf::testing::TestTmpPath(tmpDir));
+  std::filesystem::current_path(tmpDir);
 
   // A file named model.sdf in current directory
-  auto tempFile = currDir + "/model.sdf";
+  auto tempFile = tmpDir + "/model.sdf";
 
   sdf::SDF tempSDF;
   tempSDF.Write(tempFile);
@@ -815,5 +818,6 @@ TEST(SDF, FindFileModelSDFCurrDir)
 
   // Cleanup
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
+  std::filesystem::current_path(prevPath);
 }
 #endif  // _WIN32

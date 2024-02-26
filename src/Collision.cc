@@ -49,13 +49,10 @@ class sdf::Collision::Implementation
   /// \brief The collision's surface parameters.
   public: sdf::Surface surface;
 
-  /// \brief Density of the collision. Default is 1000.0
-  public: double density{1000.0};
+  /// \brief Density of the collision if it has been set.
+  public: std::optional<double> density;
 
-  /// \brief True if density was set during load from sdf.
-  public: bool densitySetAtLoad = false;
-
-  /// \brief SDF element pointer to <moi_calculator_params> tag
+  /// \brief SDF element pointer to <auto_inertia_params> tag
   public: sdf::ElementPtr autoInertiaParams{nullptr};
 
   /// \brief The SDF element pointer used during load.
@@ -130,7 +127,6 @@ Errors Collision::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("density"))
   {
     this->dataPtr->density = _sdf->Get<double>("density");
-    this->dataPtr->densitySetAtLoad = true;
   }
 
   // Load the auto_inertia_params element
@@ -156,9 +152,19 @@ void Collision::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
+double Collision::DensityDefault()
+{
+  return 1000.0;
+}
+
+/////////////////////////////////////////////////
 double Collision::Density() const
 {
-  return this->dataPtr->density;
+  if (this->dataPtr->density)
+  {
+    return *this->dataPtr->density;
+  }
+  return DensityDefault();
 }
 
 /////////////////////////////////////////////////
@@ -256,23 +262,59 @@ void Collision::CalculateInertial(
   gz::math::Inertiald &_inertial,
   const ParserConfig &_config)
 {
-  // Check if density was not set during load & send a warning
-  // about the default value being used
-  if (!this->dataPtr->densitySetAtLoad)
+  this->CalculateInertial(
+    _errors, _inertial, _config, std::nullopt, ElementPtr());
+}
+
+/////////////////////////////////////////////////
+void Collision::CalculateInertial(
+  sdf::Errors &_errors,
+  gz::math::Inertiald &_inertial,
+  const ParserConfig &_config,
+  const std::optional<double> &_density,
+  sdf::ElementPtr _autoInertiaParams)
+{
+  // Order of precedence for density:
+  double density;
+  // 1. Density explicitly set in this collision, either from the
+  // `//collision/density` element or from Collision::SetDensity.
+  if (this->dataPtr->density)
   {
+    density = *this->dataPtr->density;
+  }
+  // 2. Density passed into this function, which likely comes from the
+  // `//link/inertial/density` element or from Link::SetDensity.
+  else if (_density)
+  {
+    density = *_density;
+  }
+  // 3. DensityDefault value.
+  else
+  {
+    // If density was not explicitly set, send a warning
+    // about the default value being used
+    density = DensityDefault();
     Error densityMissingErr(
       ErrorCode::ELEMENT_MISSING,
       "Collision is missing a <density> child element. "
-      "Using a default density value of 1000.0 kg/m^3. "
+      "Using a default density value of " +
+      std::to_string(DensityDefault()) + " kg/m^3. "
     );
     enforceConfigurablePolicyCondition(
       _config.WarningsPolicy(), densityMissingErr, _errors
     );
   }
 
+  // If this Collision's auto inertia params have not been set, then use the
+  // params passed into this function.
+  sdf::ElementPtr autoInertiaParams = this->dataPtr->autoInertiaParams;
+  if (!autoInertiaParams)
+  {
+    autoInertiaParams = _autoInertiaParams;
+  }
   auto geomInertial =
     this->dataPtr->geom.CalculateInertial(_errors, _config,
-      this->dataPtr->density, this->dataPtr->autoInertiaParams);
+      density, autoInertiaParams);
 
   if (!geomInertial)
   {
@@ -309,6 +351,7 @@ sdf::ElementPtr Collision::Element() const
   return this->dataPtr->sdf;
 }
 
+/////////////////////////////////////////////////
 sdf::ElementPtr Collision::ToElement() const
 {
   sdf::Errors errors;
@@ -335,8 +378,11 @@ sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
   poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
   // Set the density
-  sdf::ElementPtr densityElem = elem->GetElement("density", _errors);
-  densityElem->Set<double>(this->Density());
+  if (this->dataPtr->density.has_value())
+  {
+    sdf::ElementPtr densityElem = elem->GetElement("density", _errors);
+    densityElem->Set<double>(this->Density());
+  }
 
   // Set the geometry
   elem->InsertElement(this->dataPtr->geom.ToElement(_errors), true);

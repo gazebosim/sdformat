@@ -18,6 +18,7 @@
 #define SDF_LINK_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <gz/math/Inertial.hh>
 #include <gz/math/Pose3.hh>
@@ -78,6 +79,27 @@ namespace sdf
     /// The name of a link must be unique within the scope of a Model.
     /// \param[in] _name Name of the link.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the density of the inertial if it has been set.
+    /// \return Density of the inertial if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<double> Density() const;
+
+    /// \brief Set the density of the inertial.
+    /// \param[in] _density Density of the inertial.
+    public: void SetDensity(double _density);
+
+    /// \brief Get the ElementPtr to the <auto_inertia_params> element
+    /// This element can be used as a parent element to hold user-defined
+    /// params for the custom moment of inertia calculator.
+    /// \return ElementPtr object for the <auto_inertia_params> element.
+    public: sdf::ElementPtr AutoInertiaParams() const;
+
+    /// \brief Function to set the auto inertia params using a
+    /// sdf ElementPtr object
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
+    /// element
+    public: void SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get the number of visuals.
     /// \return Number of visuals contained in this Link object.

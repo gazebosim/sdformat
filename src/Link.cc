@@ -69,6 +69,13 @@ class sdf::Link::Implementation
   /// \brief The projectors specified in this link.
   public: std::vector<Projector> projectors;
 
+  /// \brief Density of the inertial which will be used for auto-inertial
+  /// calculations if the collision density has not been set.
+  public: std::optional<double> density;
+
+  /// \brief SDF element pointer to <auto_inertia_params> tag
+  public: sdf::ElementPtr autoInertiaParams{nullptr};
+
   /// \brief The inertial information for this link.
   public: gz::math::Inertiald inertial {{1.0,
             gz::math::Vector3d::One, gz::math::Vector3d::Zero},
@@ -179,6 +186,18 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasElement("inertial"))
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
+
+    if (inertialElem->HasElement("density"))
+    {
+      this->dataPtr->density = inertialElem->Get<double>("density");
+    }
+
+    // Load the auto_inertia_params element
+    if (inertialElem->HasElement("auto_inertia_params"))
+    {
+      this->dataPtr->autoInertiaParams =
+        inertialElem->GetElement("auto_inertia_params");
+    }
 
     if (inertialElem->Get<bool>("auto"))
     {
@@ -307,6 +326,30 @@ std::string Link::Name() const
 void Link::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+std::optional<double> Link::Density() const
+{
+  return this->dataPtr->density;
+}
+
+/////////////////////////////////////////////////
+void Link::SetDensity(double _density)
+{
+  this->dataPtr->density = _density;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Link::AutoInertiaParams() const
+{
+  return this->dataPtr->autoInertiaParams;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams)
+{
+  this->dataPtr->autoInertiaParams = _autoInertiaParams;
 }
 
 /////////////////////////////////////////////////
@@ -620,7 +663,9 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
     for (sdf::Collision &collision : this->dataPtr->collisions)
     {
       gz::math::Inertiald collisionInertia;
-      collision.CalculateInertial(_errors, collisionInertia, _config);
+      collision.CalculateInertial(_errors, collisionInertia, _config,
+                                  this->dataPtr->density,
+                                  this->dataPtr->autoInertiaParams);
       totalInertia = totalInertia + collisionInertia;
     }
 
@@ -941,6 +986,11 @@ sdf::ElementPtr Link::ToElement() const
   inertiaElem->GetElement("iyy")->Set(massMatrix.Iyy());
   inertiaElem->GetElement("iyz")->Set(massMatrix.Iyz());
   inertiaElem->GetElement("izz")->Set(massMatrix.Izz());
+
+  if (this->dataPtr->density.has_value())
+  {
+    inertialElem->GetElement("density")->Set(*this->dataPtr->density);
+  }
 
   if (this->dataPtr->inertial.FluidAddedMass().has_value())
   {
