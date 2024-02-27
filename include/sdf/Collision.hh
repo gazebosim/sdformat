@@ -18,6 +18,7 @@
 #define SDF_COLLISION_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
@@ -77,6 +78,11 @@ namespace sdf
     /// The name of the collision must be unique within the scope of a Link.
     /// \param[in] _name Name of the collision.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the default density of a collision if its density is not
+    /// specified.
+    /// \return Default density.
+    public: static double DensityDefault();
 
     /// \brief Get the density of the collision.
     /// \return Density of the collision.
@@ -145,12 +151,31 @@ namespace sdf
     /// \brief Calculate and return the MassMatrix for the collision
     /// \param[out] _errors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
-    /// \param[in] _config Custom parser configuration
     /// \param[out] _inertial An inertial object which will be set with the
     /// calculated inertial values
+    /// \param[in] _config Custom parser configuration
     public: void CalculateInertial(sdf::Errors &_errors,
                                   gz::math::Inertiald &_inertial,
                                   const ParserConfig &_config);
+
+    /// \brief Calculate and return the MassMatrix for the collision
+    /// \param[out] _errors A vector of Errors objects. Each errors contains an
+    /// Error code and a message. An empty errors vector indicates no errors
+    /// \param[out] _inertial An inertial object which will be set with the
+    /// calculated inertial values
+    /// \param[in] _config Custom parser configuration
+    /// \param[in] _density An optional density value to override the default
+    /// collision density. This value is used instead of DefaultDensity()
+    // if this collision's density has not been explicitly set.
+    /// \param[in] _autoInertiaParams An ElementPtr to the auto_inertia_params
+    /// element to be used if the auto_inertia_params have not been set in this
+    /// collision.
+    public: void CalculateInertial(
+                    sdf::Errors &_errors,
+                    gz::math::Inertiald &_inertial,
+                    const ParserConfig &_config,
+                    const std::optional<double> &_density,
+                    sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

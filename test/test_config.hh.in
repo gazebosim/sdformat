@@ -18,18 +18,25 @@
 #ifndef SDF_TEST_CONFIG_HH_
 #define SDF_TEST_CONFIG_HH_
 
-#define GZ_CONFIG_PATH "@CMAKE_BINARY_DIR@/test/conf"
-#define GZ_PATH "@GZ_PROGRAM@"
-#define GZ_TEST_LIBRARY_PATH "${PROJECT_BINARY_DIR}/src:"\
-  "@GZ-MSGS_LIBRARY_DIRS@:"
-#define PROJECT_SOURCE_PATH "${PROJECT_SOURCE_DIR}"
-#define PROJECT_BINARY_DIR  "${CMAKE_BINARY_DIR}"
-#define SDF_PROTOCOL_VERSION "${SDF_PROTOCOL_VERSION}"
-#define SDF_TMP_DIR "tmp-sdf/"
-
 #include <gz/utils/Environment.hh>
 
 #include <sdf/Filesystem.hh>
+
+#cmakedefine PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
+#cmakedefine PROJECT_BINARY_DIR "@PROJECT_BINARY_DIR@"
+
+#ifdef PROJECT_SOURCE_DIR
+constexpr const char* kProjectSourceDir = PROJECT_SOURCE_DIR;
+#else
+constexpr const char* kProjectSourceDir = "";
+#endif
+
+#ifdef PROJECT_BINARY_DIR
+constexpr const char* kProjectBinaryDir = PROJECT_BINARY_DIR;
+#else
+constexpr const char* kProjectBinaryDir= "";
+#endif
+
 namespace sdf
 {
   namespace testing
@@ -41,17 +48,18 @@ namespace sdf
     /// \return True if directory is set correctly, false otherwise
     bool ProjectSourcePath(std::string &_sourceDir)
     {
+      std::string bazel_path;
       // Bazel builds set TEST_SRCDIR
-      if(gz::utils::env("TEST_SRCDIR", _sourceDir))
+      if(gz::utils::env("TEST_SRCDIR", _sourceDir) &&
+         gz::utils::env("GZ_BAZEL_PATH", bazel_path))
       {
         _sourceDir = sdf::filesystem::append(
-            _sourceDir, "__main__", "sdformat");
+            _sourceDir, "gz", bazel_path);
         return true;
       }
       else
       {
-        // CMake builds set PROJECT_SOURCE_PATH
-        _sourceDir = PROJECT_SOURCE_PATH;
+        _sourceDir = kProjectSourceDir;
         return true;
       }
 
@@ -71,7 +79,8 @@ namespace sdf
       }
       else
       {
-        _tmpDir = sdf::filesystem::append(PROJECT_BINARY_DIR, SDF_TMP_DIR);
+        _tmpDir = sdf::filesystem::append(kProjectBinaryDir, "sdf-tmp");
+        sdf::filesystem::create_directory(_tmpDir);
         return true;
       }
     }
@@ -93,7 +102,7 @@ namespace sdf
       }
       else
       {
-        _homeDir = PROJECT_BINARY_DIR;
+        _homeDir = kProjectBinaryDir;
         // Set both for linux and windows
         return gz::utils::setenv("HOME", _homeDir) &&
                gz::utils::setenv("HOMEPATH", _homeDir);

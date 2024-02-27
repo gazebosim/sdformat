@@ -623,7 +623,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   const std::string expectedSdfPath =
     sdf::testing::TestFile(
         "integration", "nested_model_with_frames_expected.sdf");
-  std::fstream fs;
+  std::ifstream fs;
   fs.open(expectedSdfPath);
   EXPECT_TRUE(fs.is_open());
   std::stringstream expected;
@@ -779,7 +779,7 @@ TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
   const std::string expectedSdfPath =
       sdf::testing::TestFile(
           "integration", "two_level_nested_model_with_frames_expected.sdf");
-  std::fstream fs;
+  std::ifstream fs;
   fs.open(expectedSdfPath);
   EXPECT_TRUE(fs.is_open());
   std::stringstream expected;

@@ -38,6 +38,7 @@ TEST(DOMcollision, Construction)
   EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
   EXPECT_EQ(collision.Density(), 1000.0);
+  EXPECT_EQ(collision.DensityDefault(), 1000.0);
 
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
@@ -58,12 +59,12 @@ TEST(DOMcollision, Construction)
   EXPECT_DOUBLE_EQ(collision.Density(), 1240.0);
 
   EXPECT_EQ(collision.AutoInertiaParams(), nullptr);
-  sdf::ElementPtr autoInertialParamsElem(new sdf::Element());
-  autoInertialParamsElem->SetName("auto_inertial_params");
-  collision.SetAutoInertiaParams(autoInertialParamsElem);
-  EXPECT_EQ(collision.AutoInertiaParams(), autoInertialParamsElem);
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+  autoInertiaParamsElem->SetName("auto_inertia_params");
+  collision.SetAutoInertiaParams(autoInertiaParamsElem);
+  EXPECT_EQ(collision.AutoInertiaParams(), autoInertiaParamsElem);
   EXPECT_EQ(collision.AutoInertiaParams()->GetName(),
-    autoInertialParamsElem->GetName());
+    autoInertiaParamsElem->GetName());
 
   collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
   EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
@@ -420,6 +421,8 @@ TEST(DOMCollision, ToElement)
 
   sdf::ElementPtr elem = collision.ToElement();
   ASSERT_NE(nullptr, elem);
+  // Expect no density element
+  EXPECT_FALSE(elem->HasElement("density"));
 
   sdf::Collision collision2;
   collision2.Load(elem);
@@ -434,6 +437,19 @@ TEST(DOMCollision, ToElement)
   ASSERT_NE(nullptr, surface2->Friction());
   ASSERT_NE(nullptr, surface2->Friction()->ODE());
   EXPECT_DOUBLE_EQ(1.23, surface2->Friction()->ODE()->Mu());
+
+  // Now set density in collision
+  const double kDensity = 1234.5;
+  collision.SetDensity(kDensity);
+  sdf::ElementPtr elemWithDensity = collision.ToElement();
+  ASSERT_NE(nullptr, elemWithDensity);
+  // Expect density element
+  ASSERT_TRUE(elemWithDensity->HasElement("density"));
+  EXPECT_DOUBLE_EQ(kDensity, elemWithDensity->Get<double>("density"));
+
+  sdf::Collision collision3;
+  collision3.Load(elem);
+  EXPECT_DOUBLE_EQ(kDensity, collision.Density());
 }
 
 /////////////////////////////////////////////////
