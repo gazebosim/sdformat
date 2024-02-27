@@ -9,6 +9,7 @@ add_subdirectory(1.8)
 add_subdirectory(1.9)
 add_subdirectory(1.10)
 add_subdirectory(1.11)
+add_subdirectory(1.12)
 
 add_custom_target(schema)
 add_dependencies(schema schema1_11)

@@ -9,7 +9,7 @@ project (sdformat15 VERSION 15.0.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
-set (SDF_PROTOCOL_VERSION 1.11)
+set (SDF_PROTOCOL_VERSION 1.12)
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
