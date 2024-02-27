@@ -12,6 +12,14 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 14.x to 15.x
+
+### Additions
+
+1. **New SDFormat specification version 1.12**
+    + Details about the 1.11 to 1.12 transition are explained below in this same
+      document
+
 ## libsdformat 13.x to 14.x
 
 ### Additions
@@ -575,6 +583,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 1. **Lump:: prefix in link names**
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
+
+## SDFormat specification 1.11 to 1.12
 
 ## SDFormat specification 1.10 to 1.11
 
