@@ -206,11 +206,11 @@ TEST(Frame, NoFrame)
 }
 
 ////////////////////////////////////////
-// Test parsing nested model states
+// Test parsing states with //pose/@relative_to
 TEST(Frame, StateFrame)
 {
   std::ostringstream sdfStr;
-  sdfStr << "<sdf version ='" << SDF_VERSION << "'>"
+  sdfStr << "<sdf version ='1.11'>"
     << "<world name='default'>"
     << "<state world_name='default'>"
     << "<model name='my_model'>"
@@ -239,8 +239,8 @@ TEST(Frame, StateFrame)
   EXPECT_TRUE(worldElem->HasElement("state"));
   sdf::ElementPtr stateElem = worldElem->GetElement("state");
 
-  EXPECT_TRUE(stateElem->HasElement("model"));
-  sdf::ElementPtr modelStateElem = stateElem->GetElement("model");
+  EXPECT_TRUE(stateElem->HasElement("model_state"));
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
 
   // model
   EXPECT_TRUE(modelStateElem->HasAttribute("name"));
@@ -271,8 +271,8 @@ TEST(Frame, StateFrame)
   }
 
   // link
-  EXPECT_TRUE(modelStateElem->HasElement("link"));
-  sdf::ElementPtr linkStateElem = modelStateElem->GetElement("link");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"));
+  sdf::ElementPtr linkStateElem = modelStateElem->GetElement("link_state");
   EXPECT_TRUE(linkStateElem->HasAttribute("name"));
   EXPECT_EQ(linkStateElem->Get<std::string>("name"), "my_link");
 
@@ -286,8 +286,8 @@ TEST(Frame, StateFrame)
               gz::math::Pose3d(111, 3, 0, 0, 0, 0));
   }
 
-  EXPECT_TRUE(stateElem->HasElement("light"));
-  sdf::ElementPtr lightStateElem = stateElem->GetElement("light");
+  EXPECT_TRUE(stateElem->HasElement("light_state"));
+  sdf::ElementPtr lightStateElem = stateElem->GetElement("light_state");
 
   // light
   EXPECT_TRUE(lightStateElem->HasAttribute("name"));
