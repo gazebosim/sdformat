@@ -269,7 +269,8 @@ namespace sdf
   std::string resolveURI(const std::string &_inputURI,
                          const sdf::ParserConfig &_config,
                          sdf::Errors &_errors,
-                         const std::unordered_set<std::string> &_searchPaths = {});
+                         const std::unordered_set<std::string>
+                         &_searchPaths = {});
 }
 }
 #endif
