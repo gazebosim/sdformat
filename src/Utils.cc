@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <filesystem>
 #include <limits>
 #include <string>
 #include <utility>
@@ -390,7 +391,9 @@ std::string resolveURI(const std::string &_inputURI,
   if (_config.StoreResolvedURIs())
   {
     std::string sep("://");
-    if (!_searchPaths.empty() && _inputURI.find(sep) == std::string::npos)
+    if (!_searchPaths.empty() &&
+        _inputURI.find(sep) == std::string::npos &&
+        !std::filesystem::path(_inputURI).is_absolute())
     {
       for (const auto &sp : _searchPaths)
       {
