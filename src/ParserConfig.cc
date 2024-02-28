@@ -201,15 +201,3 @@ bool ParserConfig::StoreResolvedURIs() const
 {
   return this->dataPtr->storeResolvedURIs;
 }
-
-/////////////////////////////////////////////////
-void ParserConfig::SetRelativeURISearchPath(const std::string &_path)
-{
-  this->dataPtr->relativeUriSearchPath = _path;
-}
-
-/////////////////////////////////////////////////
-const std::string &ParserConfig::RelativeURISearchPath() const
-{
-  return this->dataPtr->relativeUriSearchPath;
-}

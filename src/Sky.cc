@@ -203,12 +203,10 @@ Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("cubemap_uri"))
   {
-    auto config = _config;
     auto path = std::filesystem::path(_sdf->FilePath()).parent_path();
-    config.SetRelativeURISearchPath(path.string());
     this->dataPtr->cubemapUri = resolveURI(
       _sdf->Get<std::string>(errors, "cubemap_uri", "").first,
-      config, errors);
+      _config, errors, {path.string()});
   }
 
   if ( _sdf->HasElement("clouds"))

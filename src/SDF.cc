@@ -115,15 +115,6 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
     {
       return path;
     }
-    else if (!_config.RelativeURISearchPath().empty())
-    {
-      path = sdf::filesystem::append(_config.RelativeURISearchPath(),
-                                     filename);
-      if (sdf::filesystem::exists(path))
-      {
-        return path;
-      }
-    }
   }
 
   // Next check the install path.

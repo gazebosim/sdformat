@@ -124,10 +124,9 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
           "<uri> element is empty."});
     }
 
-    auto config = _config;
     auto path = std::filesystem::path(this->dataPtr->filePath).parent_path();
-    config.SetRelativeURISearchPath(path.string());
-    this->dataPtr->scriptUri = resolveURI(uriPair.first, config, errors);
+    this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors,
+        {path.string()});
 
     std::pair<std::string, bool> namePair =
         elem->Get<std::string>(errors, "name", "");
