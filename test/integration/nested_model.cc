@@ -244,6 +244,102 @@ TEST(NestedModel, State)
 }
 
 ////////////////////////////////////////
+// Test parsing nested model states
+TEST(NestedModel, StateSiblingsConversion1_12)
+{
+  const std::string testFile =
+  sdf::testing::TestFile("sdf", "state_nested_model_world.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // load the state sdf
+  EXPECT_TRUE(root.Element()->HasElement("world"));
+  sdf::ElementPtr worldElem = root.Element()->GetElement("world");
+
+  // Confirm that regular model elements were not migrated
+  EXPECT_FALSE(worldElem->HasElement("model_state"));
+
+  // Confirm that model and link elements in state were converted to
+  // model_state and link_state
+  EXPECT_TRUE(worldElem->HasElement("state"));
+  sdf::ElementPtr stateElem = worldElem->GetElement("state");
+  EXPECT_TRUE(stateElem->HasElement("model_state"))
+    << stateElem->ToString("");
+  EXPECT_FALSE(stateElem->HasElement("model"))
+    << stateElem->ToString("");
+
+  // model sdf
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
+  EXPECT_TRUE(modelStateElem->HasAttribute("name"));
+  EXPECT_EQ(modelStateElem->Get<std::string>("name"), "top_level_model");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"))
+    << modelStateElem->ToString("");
+  EXPECT_TRUE(modelStateElem->HasElement("model_state"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("link"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("model"))
+    << modelStateElem->ToString("");
+}
+
+////////////////////////////////////////
+// Test parsing nested model states
+TEST(NestedModel, StateInsertionsConversion1_12)
+{
+  const std::string testFile =
+  sdf::testing::TestFile("sdf", "state_nested_model_world_insertion.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // load the state sdf
+  EXPECT_TRUE(root.Element()->HasElement("world"));
+  sdf::ElementPtr worldElem = root.Element()->GetElement("world");
+
+  // Confirm that regular model elements were not migrated
+  EXPECT_FALSE(worldElem->HasElement("model_state"));
+
+  // Confirm that model and link elements in state were converted to
+  // model_state and link_state
+  EXPECT_TRUE(worldElem->HasElement("state"));
+  sdf::ElementPtr stateElem = worldElem->GetElement("state");
+  EXPECT_TRUE(stateElem->HasElement("model_state"))
+    << stateElem->ToString("");
+  EXPECT_FALSE(stateElem->HasElement("model"))
+    << stateElem->ToString("");
+
+  // model sdf
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
+  EXPECT_TRUE(modelStateElem->HasAttribute("name"));
+  EXPECT_EQ(modelStateElem->Get<std::string>("name"), "top_level_model");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"))
+    << modelStateElem->ToString("");
+  EXPECT_TRUE(modelStateElem->HasElement("model_state"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("link"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("model"))
+    << modelStateElem->ToString("");
+
+  // insertions
+  EXPECT_TRUE(stateElem->HasElement("insertions"));
+  sdf::ElementPtr insertionsElem = stateElem->GetElement("insertions");
+  // confirm that //insertions/model and link tags were not converted
+  EXPECT_FALSE(insertionsElem->HasElement("model_state"));
+  EXPECT_TRUE(insertionsElem->HasElement("model"));
+  sdf::ElementPtr insertedModelElem = insertionsElem->GetElement("model");
+  EXPECT_TRUE(insertedModelElem->HasAttribute("name"));
+  EXPECT_EQ(insertedModelElem->Get<std::string>("name"), "unit_box");
+  EXPECT_FALSE(insertedModelElem->HasElement("link_state"));
+  EXPECT_TRUE(insertedModelElem->HasElement("link"));
+}
+
+////////////////////////////////////////
 // Test parsing models with joints nested via <include>
 // Confirm that joint axis rotation is handled differently for 1.4 and 1.5+
 TEST(NestedModel, NestedInclude)
