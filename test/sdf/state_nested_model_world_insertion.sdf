@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <world name="default">
+    <model name="top_level_model">
+      <link name="parent"/>
+      <link name="child"/>
+      <model name="nested_model01">
+        <link name="nested_link01"/>
+        <link name="nested_link02"/>
+        <model name="nested_nested_model01">
+          <link name="nested_nested_link01"/>
+          <link name="nested_nested_link02"/>
+        </model>
+        <model name="nested_nested_model02">
+          <link name="nested_nested_link01"/>
+          <link name="nested_nested_link02"/>
+        </model>
+      </model>
+      <model name="nested_model02">
+        <link name="nested_link01"/>
+        <link name="nested_link02"/>
+      </model>
+      <joint name="top_level_joint" type="revolute">
+        <parent>parent</parent>
+        <child>child</child>
+        <axis>
+          <xyz>1 0 0</xyz>
+        </axis>
+      </joint>
+    </model>
+    <gravity>0 0 -9.8</gravity>
+    <state world_name="default">
+      <sim_time>0 689000000</sim_time>
+      <real_time>0 732670244</real_time>
+      <wall_time>1709252095 646182343</wall_time>
+      <iterations>689</iterations>
+      <insertions>
+        <model name='unit_box'>
+          <pose>-0.541687 -2.44761 0.5 0 -0 0</pose>
+          <link name='link'/>
+        </model>
+      </insertions>
+      <model name="top_level_model">
+        <link name="child">
+          <pose>0 0 -2.329 0 -0 0 </pose>
+        </link>
+        <link name="parent">
+          <pose>0 0 -2.329 0 -0 0 </pose>
+        </link>
+        <model name="nested_model01">
+          <link name="nested_link01">
+            <pose>0 0 -2.329 0 -0 0 </pose>
+          </link>
+          <link name="nested_link02">
+            <pose>0 0 -2.329 0 -0 0 </pose>
+          </link>
+          <model name="nested_nested_model01">
+            <link name="nested_nested_link01">
+              <pose>0 0 -2.329 0 -0 0 </pose>
+            </link>
+            <link name="nested_nested_link02">
+              <pose>0 0 -2.329 0 -0 0 </pose>
+            </link>
+          </model>
+          <model name="nested_nested_model02">
+            <link name="nested_nested_link01">
+              <pose>0 0 -2.329 0 -0 0 </pose>
+            </link>
+            <link name="nested_nested_link02">
+              <pose>0 0 -2.329 0 -0 0 </pose>
+            </link>
+          </model>
+        </model>
+        <model name="nested_model02">
+          <link name="nested_link01">
+            <pose>0 0 -2.329 0 -0 0 </pose>
+          </link>
+          <link name="nested_link02">
+            <pose>0 0 -2.329 0 -0 0 </pose>
+          </link>
+        </model>
+      </model>
+      <model name="unit_box">
+        <link name="link">
+          <pose>-0.5417 -2.448 0.5 0 -0 0 </pose>
+        </link>
+      </model>
+    </state>
+  </world>
+</sdf>

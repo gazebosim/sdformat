@@ -1,12 +1,12 @@
 <!-- State information for a model -->
-<element name="model" required="*">
+<element name="model_state" required="*">
   <description>Model state</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>Name of the model</description>
   </attribute>
 
-  <element name="joint" required="*">
+  <element name="joint_state" required="*">
     <description>Joint angle</description>
 
     <attribute name="name" type="string" default="__default__" required="1">
@@ -22,7 +22,7 @@
     </element>
   </element>
 
-  <element name="model" ref="model_state" required="*">
+  <element name="model_state" ref="model_state" required="*">
     <description>A nested model state element</description>
     <attribute name="name" type="string" default="__default__" required="1">
       <description>Name of the model. </description>
