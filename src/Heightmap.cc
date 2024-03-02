@@ -134,11 +134,15 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("diffuse"))
   {
-    auto path = std::filesystem::path(
-        this->dataPtr->sdf->FilePath()).parent_path();
+    std::unordered_set<std::string> paths;
+    if (!this->dataPtr->sdf->FilePath().empty())
+    {
+      paths.insert(
+          std::filesystem::path(this->dataPtr->sdf->FilePath()).parent_path());
+    }
     this->dataPtr->diffuse = resolveURI(
         _sdf->Get<std::string>(errors, "diffuse", this->dataPtr->diffuse).first,
-        _config, errors, {path.string()});
+        _config, errors, paths);
   }
   else
   {
@@ -148,11 +152,15 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("normal"))
   {
-    auto path = std::filesystem::path(
-        this->dataPtr->sdf->FilePath()).parent_path();
+    std::unordered_set<std::string> paths;
+    if (!this->dataPtr->sdf->FilePath().empty())
+    {
+      paths.insert(
+          std::filesystem::path(this->dataPtr->sdf->FilePath()).parent_path());
+    }
     this->dataPtr->normal = resolveURI(
         _sdf->Get<std::string>(errors, "normal", this->dataPtr->normal).first,
-        _config, errors, {path.string()});
+        _config, errors, paths);
   }
   else
   {
@@ -331,10 +339,15 @@ Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   if (_sdf->HasElement("uri"))
   {
-    auto path = std::filesystem::path(this->dataPtr->filePath).parent_path();
+    std::unordered_set<std::string> paths;
+    if (!this->dataPtr->filePath.empty())
+    {
+      paths.insert(
+          std::filesystem::path(this->dataPtr->filePath).parent_path());
+    }
     this->dataPtr->uri = resolveURI(
       _sdf->Get<std::string>(errors, "uri", "").first,
-      _config, errors, {path.string()});
+      _config, errors, paths);
   }
   else
   {
