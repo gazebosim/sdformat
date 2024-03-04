@@ -127,8 +127,8 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
     std::unordered_set<std::string> paths;
     if (!this->dataPtr->filePath.empty())
     {
-      paths.insert(
-          std::filesystem::path(this->dataPtr->filePath).parent_path());
+      paths.insert(std::filesystem::path(
+          this->dataPtr->filePath).parent_path().string());
     }
     this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors,
         paths);

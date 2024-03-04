@@ -206,8 +206,8 @@ Errors Sky::Load(ElementPtr _sdf, const ParserConfig &_config)
     std::unordered_set<std::string> paths;
     if (!_sdf->FilePath().empty())
     {
-      paths.insert(
-          std::filesystem::path(_sdf->FilePath()).parent_path());
+      paths.insert(std::filesystem::path(
+          _sdf->FilePath()).parent_path().string());
     }
     this->dataPtr->cubemapUri = resolveURI(
       _sdf->Get<std::string>(errors, "cubemap_uri", "").first,

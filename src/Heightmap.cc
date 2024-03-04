@@ -137,8 +137,8 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
     std::unordered_set<std::string> paths;
     if (!this->dataPtr->sdf->FilePath().empty())
     {
-      paths.insert(
-          std::filesystem::path(this->dataPtr->sdf->FilePath()).parent_path());
+      paths.insert(std::filesystem::path(
+          this->dataPtr->sdf->FilePath()).parent_path().string());
     }
     this->dataPtr->diffuse = resolveURI(
         _sdf->Get<std::string>(errors, "diffuse", this->dataPtr->diffuse).first,
@@ -155,8 +155,8 @@ Errors HeightmapTexture::Load(ElementPtr _sdf, const ParserConfig &_config)
     std::unordered_set<std::string> paths;
     if (!this->dataPtr->sdf->FilePath().empty())
     {
-      paths.insert(
-          std::filesystem::path(this->dataPtr->sdf->FilePath()).parent_path());
+      paths.insert(std::filesystem::path(
+          this->dataPtr->sdf->FilePath()).parent_path().string());
     }
     this->dataPtr->normal = resolveURI(
         _sdf->Get<std::string>(errors, "normal", this->dataPtr->normal).first,
@@ -342,8 +342,8 @@ Errors Heightmap::Load(ElementPtr _sdf, const ParserConfig &_config)
     std::unordered_set<std::string> paths;
     if (!this->dataPtr->filePath.empty())
     {
-      paths.insert(
-          std::filesystem::path(this->dataPtr->filePath).parent_path());
+      paths.insert(std::filesystem::path(
+          this->dataPtr->filePath).parent_path().string());
     }
     this->dataPtr->uri = resolveURI(
       _sdf->Get<std::string>(errors, "uri", "").first,
