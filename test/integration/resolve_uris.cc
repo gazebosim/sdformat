@@ -60,7 +60,7 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(false);
+  config.SetStoreResolvedURIs(false);
   EXPECT_FALSE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -176,7 +176,7 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(true);
+  config.SetStoreResolvedURIs(true);
   EXPECT_TRUE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -302,7 +302,7 @@ TEST(ResolveURIs, BadCallback)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(true);
+  config.SetStoreResolvedURIs(true);
   EXPECT_TRUE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -428,7 +428,7 @@ TEST(ResolveURIs, ResolvedRelativeURIs)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(true);
+  config.SetStoreResolvedURIs(true);
   EXPECT_TRUE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -517,7 +517,7 @@ TEST(ResolveURIs, ResolvedRelativeURIsSdfString)
   </sdf>)";
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(true);
+  config.SetStoreResolvedURIs(true);
   EXPECT_TRUE(config.StoreResolvedURIs());
 
   const std::string kTestMediaPath = sdf::testing::TestFile("sdf", "media");

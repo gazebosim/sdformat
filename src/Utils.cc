@@ -397,6 +397,7 @@ std::string resolveURI(const std::string &_inputURI,
     {
       for (const auto &sp : _searchPaths)
       {
+        // find file by searching local path but do not use callbacks
         std::string fullPath = sdf::filesystem::append(sp, _inputURI);
         resolvedURI = sdf::findFile(fullPath, true, false);
         if (!resolvedURI.empty())
@@ -404,6 +405,7 @@ std::string resolveURI(const std::string &_inputURI,
       }
     }
 
+    // find file by searching local path and use registered callbacks
     resolvedURI = sdf::findFile(_inputURI, true, true, _config);
     if (resolvedURI.empty())
     {
