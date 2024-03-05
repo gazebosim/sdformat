@@ -15,6 +15,7 @@
  *
  */
 
+#include <filesystem>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -59,7 +60,7 @@ TEST(ResolveURIs, StoreResolvedDisabled)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(false);
+  config.SetStoreResolvedURIs(false);
   EXPECT_FALSE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -175,7 +176,7 @@ TEST(ResolveURIs, StoreResolvedEnabled)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(true);
+  config.SetStoreResolvedURIs(true);
   EXPECT_TRUE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -301,7 +302,7 @@ TEST(ResolveURIs, BadCallback)
   const std::string sdfDir = sdf::testing::TestFile("sdf");
 
   sdf::ParserConfig config;
-  config.SetStoreResovledURIs(true);
+  config.SetStoreResolvedURIs(true);
   EXPECT_TRUE(config.StoreResolvedURIs());
 
   size_t callbackCount = 0;
@@ -417,4 +418,152 @@ TEST(ResolveURIs, BadCallback)
   EXPECT_EQ(kHeightmapUri, heightmapColElemUri);
   EXPECT_EQ(kDiffuseUri, diffuseElemUri);
   EXPECT_EQ(kNormalUri, normalElemUri);
+}
+
+/////////////////////////////////////////////////
+TEST(ResolveURIs, ResolvedRelativeURIs)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "resolve_relative_uris.sdf");
+  const std::string sdfDir = sdf::testing::TestFile("sdf");
+
+  sdf::ParserConfig config;
+  config.SetStoreResolvedURIs(true);
+  EXPECT_TRUE(config.StoreResolvedURIs());
+
+  size_t callbackCount = 0;
+  config.SetFindCallback(
+      [=, &callbackCount](const std::string &)
+      {
+        callbackCount++;
+        return "";
+      });
+
+  sdf::Root root;
+  auto errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty());
+  // no user callbacks should be invoked
+  EXPECT_EQ(0, callbackCount);
+
+  auto world = root.WorldByIndex(0);
+  ASSERT_NE(nullptr, world);
+
+  // Skybox Cubemap Uri
+  auto sky = world->Scene()->Sky();
+  auto cubemapUri = sky->CubemapUri();
+
+  // Visual mesh and material script uri
+  auto model = world->ModelByName("model");
+  ASSERT_NE(nullptr, model);
+  auto link = model->LinkByName("link");
+  ASSERT_NE(nullptr, link);
+  auto visual = link->VisualByName("visual");
+  ASSERT_NE(nullptr, visual);
+  auto meshVisualUri = visual->Geom()->MeshShape()->Uri();
+  auto scriptUri = visual->Material()->ScriptUri();
+
+  // Collision mesh uri
+  auto meshCol = link->CollisionByName("collision");
+  ASSERT_NE(nullptr, meshCol);
+  auto meshColUri = meshCol->Geom()->MeshShape()->Uri();
+
+  EXPECT_NE(std::string::npos, cubemapUri.find("dummy_cubemap.dds"));
+  EXPECT_NE(std::string::npos, scriptUri.find("dummy_material.material"));
+  EXPECT_NE(std::string::npos, meshVisualUri.find("dummy_mesh.dae"));
+  EXPECT_NE(std::string::npos, meshColUri.find("dummy_mesh.dae"));
+  EXPECT_EQ(meshVisualUri, meshColUri);
+
+  EXPECT_TRUE(std::filesystem::path(cubemapUri).is_absolute());
+  EXPECT_TRUE(std::filesystem::path(scriptUri).is_absolute());
+  EXPECT_TRUE(std::filesystem::path(meshVisualUri).is_absolute());
+  EXPECT_TRUE(std::filesystem::path(meshColUri).is_absolute());
+
+  EXPECT_TRUE(sdf::filesystem::exists(cubemapUri));
+  EXPECT_TRUE(sdf::filesystem::exists(scriptUri));
+  EXPECT_TRUE(sdf::filesystem::exists(meshVisualUri));
+  EXPECT_TRUE(sdf::filesystem::exists(meshColUri));
+}
+
+/////////////////////////////////////////////////
+TEST(ResolveURIs, ResolvedRelativeURIsSdfString)
+{
+  const std::string testSdfString = R"(
+  <sdf version="1.6">
+    <model name="model">
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>media/dummy_mesh.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <cast_shadows>false</cast_shadows>
+          <geometry>
+            <mesh>
+              <uri>media/dummy_mesh.dae</uri>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>media/dummy_material.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </sdf>)";
+
+  sdf::ParserConfig config;
+  config.SetStoreResolvedURIs(true);
+  EXPECT_TRUE(config.StoreResolvedURIs());
+
+  const std::string kTestMediaPath = sdf::testing::TestFile("sdf", "media");
+  size_t callbackCount = 0;
+  config.SetFindCallback(
+      [=, &callbackCount](const std::string &_file)
+      {
+        std::string path = _file;
+        std::string media = "media";
+        path.replace(path.find(media), media.length(), kTestMediaPath);
+        callbackCount++;
+        return path;
+      });
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(testSdfString, config);
+  EXPECT_TRUE(errors.empty());
+  // callbacks should be invoked for all relative uris
+  EXPECT_EQ(3, callbackCount);
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  // Visual mesh and material script uri
+  auto link = model->LinkByName("link");
+  ASSERT_NE(nullptr, link);
+  auto visual = link->VisualByName("visual");
+  ASSERT_NE(nullptr, visual);
+  auto meshVisualUri = visual->Geom()->MeshShape()->Uri();
+  auto scriptUri = visual->Material()->ScriptUri();
+
+  // Collision mesh uri
+  auto meshCol = link->CollisionByName("collision");
+  ASSERT_NE(nullptr, meshCol);
+  auto meshColUri = meshCol->Geom()->MeshShape()->Uri();
+
+  EXPECT_NE(std::string::npos, scriptUri.find("dummy_material.material"));
+  EXPECT_NE(std::string::npos, meshVisualUri.find("dummy_mesh.dae"));
+  EXPECT_NE(std::string::npos, meshColUri.find("dummy_mesh.dae"));
+  EXPECT_EQ(meshVisualUri, meshColUri);
+
+  EXPECT_TRUE(std::filesystem::path(scriptUri).is_absolute());
+  EXPECT_TRUE(std::filesystem::path(meshVisualUri).is_absolute());
+  EXPECT_TRUE(std::filesystem::path(meshColUri).is_absolute());
+
+  EXPECT_TRUE(sdf::filesystem::exists(scriptUri));
+  EXPECT_TRUE(sdf::filesystem::exists(meshVisualUri));
+  EXPECT_TRUE(sdf::filesystem::exists(meshColUri));
 }

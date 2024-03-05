@@ -184,6 +184,12 @@ bool ParserConfig::URDFPreserveFixedJoint() const
 /////////////////////////////////////////////////
 void ParserConfig::SetStoreResovledURIs(bool _resolveURI)
 {
+  this->SetStoreResolvedURIs(_resolveURI);
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetStoreResolvedURIs(bool _resolveURI)
+{
   this->dataPtr->storeResolvedURIs = _resolveURI;
 }
 
@@ -192,4 +198,3 @@ bool ParserConfig::StoreResolvedURIs() const
 {
   return this->dataPtr->storeResolvedURIs;
 }
-

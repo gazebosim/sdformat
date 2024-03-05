@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 #include <tinyxml2.h>
+#include <unordered_set>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
 #include "sdf/InterfaceElements.hh"
@@ -262,10 +263,14 @@ namespace sdf
   /// \param[in] _inputURI URI from parsed SDF file to resolve
   /// \param[in] _config Parser configuration to use to resolve
   /// \param[in, out] _errors Error vector to append to if resolution fails
+  /// \param[in] _searchPaths Optional additional search paths (directory)
+  /// when resolving URI
   /// \return Resolved URI or Original URI, depending on parser configuration
   std::string resolveURI(const std::string &_inputURI,
                          const sdf::ParserConfig &_config,
-                         sdf::Errors &_errors);
+                         sdf::Errors &_errors,
+                         const std::unordered_set<std::string>
+                         &_searchPaths = {});
 }
 }
 #endif
