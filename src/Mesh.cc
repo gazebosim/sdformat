@@ -30,6 +30,9 @@ using namespace sdf;
 // Private data class
 class sdf::Mesh::Implementation
 {
+  /// \brief Mesh simplification method
+  public: std::string simplification;
+
   /// \brief The mesh's URI.
   public: std::string uri = "";
 
@@ -87,6 +90,13 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
     return errors;
   }
 
+  // Simplify
+  if (_sdf->HasAttribute("simplification"))
+  {
+    this->dataPtr->simplification = _sdf->Get<std::string>("simplification",
+        this->dataPtr->simplification).first;
+  }
+
   if (_sdf->HasElement("uri"))
   {
     std::unordered_set<std::string> paths;
@@ -138,6 +148,18 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
 sdf::ElementPtr Mesh::Element() const
 {
   return this->dataPtr->sdf;
+}
+
+//////////////////////////////////////////////////
+std::string Mesh::Simplification() const
+{
+  return this->dataPtr->simplification;
+}
+
+//////////////////////////////////////////////////
+void Mesh::SetSimplification(const std::string &_simplification)
+{
+  this->dataPtr->simplification = _simplification;
 }
 
 //////////////////////////////////////////////////
@@ -243,6 +265,10 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("mesh_shape.sdf", elem);
+
+  // Simplification
+  elem->GetAttribute("simplification")->Set<std::string>(
+      this->dataPtr->simplification);
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);
