@@ -61,6 +61,15 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
+    /// \brief Get the mesh's simplifcation method
+    /// \return The mesh simplification method.
+    /// Empty string if no mesh simplificaton is done.
+    public: std::string Simplification() const;
+
+    /// \brief Set the mesh simplification method.
+    /// \param[in] _simplifcation The mesh simplification method.
+    public: void SetSimplification(const std::string &_simplifcation);
+
     /// \brief Get the mesh's URI.
     /// \return The URI of the mesh data.
     public: std::string Uri() const;

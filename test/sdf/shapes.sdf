@@ -120,7 +120,7 @@
 
       <collision name="mesh_col">
         <geometry>
-          <mesh>
+          <mesh simplification="convex_hull">
             <uri>https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/mesh.dae</uri>
             <submesh>
               <name>my_submesh</name>
