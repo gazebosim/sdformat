@@ -216,6 +216,10 @@ class SDFORMAT_VISIBLE ParserConfig
   public: bool URDFPreserveFixedJoint() const;
 
   /// \brief Set the storeResolvedURIs flag value.
+  /// \sa SetStoreResolvedURIs
+  public: void SetStoreResovledURIs(bool _resolveURI);
+
+  /// \brief Set the storeResolvedURIs flag value.
   /// \param[in] _resolveURI True to make the parser attempt to resolve any
   /// URIs found and store them.  False to preserve original URIs
   ///
@@ -224,7 +228,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// If the FindFileCallback provides a non-empty string, the URI will be
   /// stored in the DOM object, and the original (unresolved) URI will be
   /// stored in the underlying Element.
-  public: void SetStoreResovledURIs(bool _resolveURI);
+  public: void SetStoreResolvedURIs(bool _resolveURI);
 
   /// \brief Get the storeResolvedURIs flag value.
   /// \return True if the parser will attempt to resolve any URIs found and
