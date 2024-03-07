@@ -1101,6 +1101,27 @@
 
 ## libsdformat 9.X
 
+### libsdformat 9.10.1 (2024-01-05)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
+1. Fix Element::Set method return value
+    * [Pull request #1256](https://github.com/gazebosim/sdformat/pull/1256)
+
+1. Allowing relative paths in URDF
+    * [Pull request #1213](https://github.com/gazebosim/sdformat/pull/1213)
+
+1. Use `File.exist?` for Ruby 3.2 compatibility
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
+1. Infrastructure
+    * [Pull request #1217](https://github.com/gazebosim/sdformat/pull/1217)
+    * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
+    * [Pull request #1271](https://github.com/gazebosim/sdformat/pull/1271)
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+    * [Pull request #1252](https://github.com/gazebosim/sdformat/pull/1252)
+
 ### libsdformat 9.10.0 (2022-11-30)
 
 1. Ign to gz header migration.
