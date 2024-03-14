@@ -1,5 +1,45 @@
 ## libsdformat 14.X
 
+### libsdformat 14.1.0 (2024-03-14)
+1. Resolve URIs relative to file path
+    * [Pull request #1373](https://github.com/gazebosim/sdformat/pull/1373)
+
+1. Use `//link/inertial/density` for auto-inertials
+    * [Pull request #1335](https://github.com/gazebosim/sdformat/pull/1335)
+
+1. Fix a little typo in the README.md
+    * [Pull request #1365](https://github.com/gazebosim/sdformat/pull/1365)
+
+1. Fix version variable in reference manual PDF filename
+    * [Pull request #1363](https://github.com/gazebosim/sdformat/pull/1363)
+
+1. In parser config test, use a filename less likely to exist
+    * [Pull request #1362](https://github.com/gazebosim/sdformat/pull/1362)
+
+1. Update CI badges in README
+    * [Pull request #1352](https://github.com/gazebosim/sdformat/pull/1352)
+
+1. Bazel updates for Garden build
+    * [Pull request #1239](https://github.com/gazebosim/sdformat/pull/1239)
+
+1. Fix static builds and optimize test compilation 
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Install ruby commands on Windows
+    * [Pull request #1339](https://github.com/gazebosim/sdformat/pull/1339)
+
+1. Infrastructure
+    * [Pull request #1336](https://github.com/gazebosim/sdformat/pull/1336)
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+    * [Pull request #1367](https://github.com/gazebosim/sdformat/pull/1367)
+
+1. URDF parser: use SDFormat 1.11, parse joint mimic
+    * [Pull request #1333](https://github.com/gazebosim/sdformat/pull/1333)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
 ### libsdformat 14.0.0 (2023-09-29)
 
 1. Add missing conda dependencies
