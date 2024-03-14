@@ -37,6 +37,17 @@ namespace sdf
   // Forward declarations.
   class ParserConfig;
 
+  /// \brief Mesh simplification method
+  enum class MeshSimplification
+  {
+    /// \brief No mesh simplification
+    NONE,
+    /// \brief Convex hull
+    CONVEX_HULL,
+    /// \brief Convex decomposition
+    CONVEX_DECOMPOSITION
+  };
+
   /// \brief Mesh represents a mesh shape, and is usually accessed through a
   /// Geometry.
   class SDFORMAT_VISIBLE Mesh
@@ -63,12 +74,24 @@ namespace sdf
 
     /// \brief Get the mesh's simplifcation method
     /// \return The mesh simplification method.
+    /// MeshSimplification::NONE if no mesh simplificaton is done.
+    public: MeshSimplification Simplification() const;
+
+    /// \brief Get the mesh's simplifcation method
+    /// \return The mesh simplification method.
     /// Empty string if no mesh simplificaton is done.
-    public: std::string Simplification() const;
+    public: std::string SimplificationStr() const;
 
     /// \brief Set the mesh simplification method.
     /// \param[in] _simplifcation The mesh simplification method.
-    public: void SetSimplification(const std::string &_simplifcation);
+    public: void SetSimplification(MeshSimplification _simplifcation);
+
+    /// \brief Set the mesh simplification method.
+    /// \param[in] _simplifcation The mesh simplification method.
+    /// \return True if the _simplificationStr parameter matched a known
+    /// mesh simplification method. False if the mesh simplification method
+    ///  could not be set.
+    public: bool SetSimplification(const std::string &_simplifcationStr);
 
     /// \brief Get the mesh's URI.
     /// \return The URI of the mesh data.
