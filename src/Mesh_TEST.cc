@@ -34,7 +34,8 @@ TEST(DOMMesh, Construction)
   sdf::Mesh mesh;
   EXPECT_EQ(nullptr, mesh.Element());
 
-  EXPECT_EQ(std::string(), mesh.Simplification());
+  EXPECT_EQ(std::string(), mesh.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::NONE, mesh.Simplification());
   EXPECT_EQ(std::string(), mesh.FilePath());
   EXPECT_EQ(std::string(), mesh.Uri());
   EXPECT_EQ(std::string(), mesh.Submesh());
@@ -54,7 +55,8 @@ TEST(DOMMesh, MoveConstructor)
   mesh.SetFilePath("/pear");
 
   sdf::Mesh mesh2(std::move(mesh));
-  EXPECT_EQ("convex_hull", mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -74,7 +76,8 @@ TEST(DOMMesh, CopyConstructor)
   mesh.SetFilePath("/pear");
 
   sdf::Mesh mesh2(mesh);
-  EXPECT_EQ("convex_hull", mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -95,7 +98,8 @@ TEST(DOMMesh, CopyAssignmentOperator)
 
   sdf::Mesh mesh2;
   mesh2 = mesh;
-  EXPECT_EQ("convex_hull", mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -116,7 +120,8 @@ TEST(DOMMesh, MoveAssignmentOperator)
 
   sdf::Mesh mesh2;
   mesh2 = std::move(mesh);
-  EXPECT_EQ("convex_hull", mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -149,9 +154,14 @@ TEST(DOMMesh, Set)
   sdf::Mesh mesh;
   EXPECT_EQ(nullptr, mesh.Element());
 
-  EXPECT_EQ(std::string(), mesh.Simplification());
+  EXPECT_EQ(std::string(), mesh.SimplificationStr());
   mesh.SetSimplification("convex_hull");
-  EXPECT_EQ("convex_hull", mesh.Simplification());
+  EXPECT_EQ("convex_hull", mesh.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh.Simplification());
+  mesh.SetSimplification(sdf::MeshSimplification::CONVEX_DECOMPOSITION);
+  EXPECT_EQ("convex_decomposition", mesh.SimplificationStr());
+  EXPECT_EQ(sdf::MeshSimplification::CONVEX_DECOMPOSITION,
+            mesh.Simplification());
 
   EXPECT_EQ(std::string(), mesh.Uri());
   mesh.SetUri("http://myuri.com");
@@ -321,6 +331,7 @@ TEST(DOMMesh, ToElement)
   sdf::Mesh mesh2;
   mesh2.Load(elem);
 
+  EXPECT_EQ(mesh.SimplificationStr(), mesh2.SimplificationStr());
   EXPECT_EQ(mesh.Simplification(), mesh2.Simplification());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
@@ -361,6 +372,7 @@ TEST(DOMMesh, ToElementErrorOutput)
   errors = mesh2.Load(elem);
   EXPECT_TRUE(errors.empty());
 
+  EXPECT_EQ(mesh.SimplificationStr(), mesh2.SimplificationStr());
   EXPECT_EQ(mesh.Simplification(), mesh2.Simplification());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());

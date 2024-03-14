@@ -27,11 +27,21 @@
 
 using namespace sdf;
 
+/// Mesh Simplification method strings. These should match the data in
+/// `enum class MeshSimplification` located in Mesh.hh, and the size
+/// template parameter should match the number of elements as well.
+constexpr std::array<const std::string_view, 3> kMeshSimplificationStrs =
+{
+  "",
+  "convex_hull",
+  "convex_decomposition"
+};
+
 // Private data class
 class sdf::Mesh::Implementation
 {
   /// \brief Mesh simplification method
-  public: std::string simplification;
+  public: MeshSimplification simplification = MeshSimplification::NONE;
 
   /// \brief The mesh's URI.
   public: std::string uri = "";
@@ -93,8 +103,7 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
   // Simplify
   if (_sdf->HasAttribute("simplification"))
   {
-    this->dataPtr->simplification = _sdf->Get<std::string>("simplification",
-        this->dataPtr->simplification).first;
+    this->SetSimplification(_sdf->Get<std::string>("simplification", "").first);
   }
 
   if (_sdf->HasElement("uri"))
@@ -151,13 +160,36 @@ sdf::ElementPtr Mesh::Element() const
 }
 
 //////////////////////////////////////////////////
-std::string Mesh::Simplification() const
+MeshSimplification Mesh::Simplification() const
 {
   return this->dataPtr->simplification;
 }
 
 //////////////////////////////////////////////////
-void Mesh::SetSimplification(const std::string &_simplification)
+std::string Mesh::SimplificationStr() const
+{
+  size_t index = static_cast<int>(this->dataPtr->simplification);
+  if (index < kMeshSimplificationStrs.size())
+    return std::string(kMeshSimplificationStrs[index]);
+  return "";
+}
+
+//////////////////////////////////////////////////
+bool Mesh::SetSimplification(const std::string &_simplificationStr)
+{
+  for (size_t i = 0; i < kMeshSimplificationStrs.size(); ++i)
+  {
+    if (_simplificationStr == kMeshSimplificationStrs[i])
+    {
+      this->dataPtr->simplification = static_cast<MeshSimplification>(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////
+void Mesh::SetSimplification(MeshSimplification _simplification)
 {
   this->dataPtr->simplification = _simplification;
 }
@@ -268,7 +300,7 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
 
   // Simplification
   elem->GetAttribute("simplification")->Set<std::string>(
-      this->dataPtr->simplification);
+      this->SimplificationStr());
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);
