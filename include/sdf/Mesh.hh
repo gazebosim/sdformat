@@ -48,6 +48,36 @@ namespace sdf
     CONVEX_DECOMPOSITION
   };
 
+  /// \brief Convex decomposition
+  class SDFORMAT_VISIBLE ConvexDecomposition
+  {
+    /// \brief Default constructor
+    public: ConvexDecomposition();
+
+    /// \brief Load the contact based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the maximum number of convex hulls that can be generated.
+    public: unsigned int MaxConvexHulls() const;
+
+    /// \brief Set the maximum number of convex hulls that can be generated.
+    public: void SetMaxConvexHulls(unsigned int _maxConvexHulls);
+
+    /// \brief Private data pointer.
+    GZ_UTILS_IMPL_PTR(dataPtr)
+  };
+
   /// \brief Mesh represents a mesh shape, and is usually accessed through a
   /// Geometry.
   class SDFORMAT_VISIBLE Mesh
@@ -92,6 +122,16 @@ namespace sdf
     /// mesh optimization method. False if the mesh optimization method
     ///  could not be set.
     public: bool SetOptimization(const std::string &_optimizationStr);
+
+    /// \brief Get the associated ConvexDecomposition object
+    /// \returns Pointer to the associated ConvexDecomposition object,
+    /// nullptr if the Mesh doesn't contain a ConvexDecomposition element.
+    public: const sdf::ConvexDecomposition *ConvexDecomposition() const;
+
+    /// \brief Set the associated ConvexDecomposition object.
+    /// \param[in] _convexDecomposition The ConvexDecomposition object.
+    public: void SetConvexDecomposition(
+        const sdf::ConvexDecomposition &_convexDecomposition);
 
     /// \brief Get the mesh's URI.
     /// \return The URI of the mesh data.

@@ -39,11 +39,24 @@ constexpr std::array<const std::string_view, 3> kMeshOptimizationStrs =
   "convex_decomposition"
 };
 
-// Private data class
+// Private data class for ConvexDecomposition
+class sdf::ConvexDecomposition::Implementation
+{
+  /// \brief Maximum number of convex hulls to generate.
+  public: unsigned int maxConvexHulls{16u};
+
+  /// \brief The SDF element pointer used during load.
+  public: sdf::ElementPtr sdf = nullptr;
+};
+
+// Private data class for Mesh
 class sdf::Mesh::Implementation
 {
   /// \brief Mesh optimization method
   public: MeshOptimization optimization = MeshOptimization::NONE;
+
+  /// \brief Optional convex decomposition.
+  public: std::optional<sdf::ConvexDecomposition> convexDecomposition;
 
   /// \brief The mesh's URI.
   public: std::string uri = "";
@@ -65,6 +78,62 @@ class sdf::Mesh::Implementation
 };
 
 /////////////////////////////////////////////////
+ConvexDecomposition::ConvexDecomposition()
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
+{
+}
+
+/////////////////////////////////////////////////
+Errors ConvexDecomposition::Load(ElementPtr _sdf)
+{
+  Errors errors;
+
+  this->dataPtr->sdf = _sdf;
+
+  // Check that sdf is a valid pointer
+  if (!_sdf)
+  {
+    errors.push_back({ErrorCode::ELEMENT_MISSING,
+        "Attempting to load convex decomposition, "
+        "but the provided SDF element is null."});
+    return errors;
+  }
+
+  // We need a convex_decomposition element
+  if (_sdf->GetName() != "convex_decomposition")
+  {
+    errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
+        "Attempting to load convex decomposition, but the provided SDF "
+        "element is not <convex_decomposition>."});
+    return errors;
+  }
+
+  this->dataPtr->maxConvexHulls = _sdf->Get<unsigned int>(
+      errors, "max_convex_hulls",
+      this->dataPtr->maxConvexHulls).first;
+
+  return errors;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr ConvexDecomposition::Element() const
+{
+  return this->dataPtr->sdf;
+}
+
+/////////////////////////////////////////////////
+unsigned int ConvexDecomposition::MaxConvexHulls() const
+{
+  return this->dataPtr->maxConvexHulls;
+}
+
+/////////////////////////////////////////////////
+void ConvexDecomposition::SetMaxConvexHulls(unsigned int _maxConvexHulls)
+{
+  this->dataPtr->maxConvexHulls = _maxConvexHulls;
+}
+
+/////////////////////////////////////////////////
 Mesh::Mesh()
   : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
@@ -75,6 +144,7 @@ Errors Mesh::Load(ElementPtr _sdf)
 {
   return this->Load(_sdf, ParserConfig::GlobalConfig());
 }
+
 
 /////////////////////////////////////////////////
 Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
@@ -102,10 +172,18 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
     return errors;
   }
 
-  // Simplify
+  // Optimization
   if (_sdf->HasAttribute("optimization"))
   {
     this->SetOptimization(_sdf->Get<std::string>("optimization", "").first);
+  }
+
+  if (_sdf->HasElement("convex_decomposition"))
+  {
+    this->dataPtr->convexDecomposition.emplace();
+    Errors err = this->dataPtr->convexDecomposition->Load(
+        _sdf->GetElement("convex_decomposition", errors));
+    errors.insert(errors.end(), err.begin(), err.end());
   }
 
   if (_sdf->HasElement("uri"))
@@ -194,6 +272,21 @@ bool Mesh::SetOptimization(const std::string &_optimizationStr)
 void Mesh::SetOptimization(MeshOptimization _optimization)
 {
   this->dataPtr->optimization = _optimization;
+}
+
+//////////////////////////////////////////////////
+const sdf::ConvexDecomposition *Mesh::ConvexDecomposition() const
+{
+  if (this->dataPtr->convexDecomposition.has_value())
+    return &this->dataPtr->convexDecomposition.value();
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+ void Mesh::SetConvexDecomposition(
+    const sdf::ConvexDecomposition &_convexDecomposition)
+{
+  this->dataPtr->convexDecomposition = _convexDecomposition;
 }
 
 //////////////////////////////////////////////////
@@ -303,6 +396,14 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
   // Optimization
   elem->GetAttribute("optimization")->Set<std::string>(
       this->OptimizationStr());
+
+  if (this->dataPtr->convexDecomposition.has_value())
+  {
+    sdf::ElementPtr convexDecomp = elem->GetElement("convex_decomposition",
+        _errors);
+    convexDecomp->GetElement("max_convex_hulls")->Set(
+        this->dataPtr->convexDecomposition->MaxConvexHulls());
+  }
 
   // Uri
   sdf::ElementPtr uriElem = elem->GetElement("uri", _errors);

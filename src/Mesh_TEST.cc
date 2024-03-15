@@ -36,6 +36,7 @@ TEST(DOMMesh, Construction)
 
   EXPECT_EQ(std::string(), mesh.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::NONE, mesh.Optimization());
+  EXPECT_EQ(nullptr, mesh.ConvexDecomposition());
   EXPECT_EQ(std::string(), mesh.FilePath());
   EXPECT_EQ(std::string(), mesh.Uri());
   EXPECT_EQ(std::string(), mesh.Submesh());
@@ -47,21 +48,29 @@ TEST(DOMMesh, Construction)
 TEST(DOMMesh, MoveConstructor)
 {
   sdf::Mesh mesh;
-  mesh.SetOptimization("convex_hull");
+  mesh.SetOptimization("convex_decomposition");
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
   mesh.SetScale({0.5, 0.6, 0.7});
   mesh.SetFilePath("/pear");
 
+  sdf::ConvexDecomposition convexDecomp;
+  convexDecomp.SetMaxConvexHulls(10u);
+  mesh.SetConvexDecomposition(convexDecomp);
+
   sdf::Mesh mesh2(std::move(mesh));
-  EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
-  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
+  EXPECT_EQ("convex_decomposition", mesh2.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION, mesh2.Optimization());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
   EXPECT_TRUE(mesh2.CenterSubmesh());
   EXPECT_EQ("/pear", mesh2.FilePath());
+
+  auto convexDecomp2 = mesh2.ConvexDecomposition();
+  ASSERT_NE(nullptr, convexDecomp2);
+  EXPECT_EQ(10u, convexDecomp2->MaxConvexHulls());
 }
 
 /////////////////////////////////////////////////
@@ -78,6 +87,7 @@ TEST(DOMMesh, CopyConstructor)
   sdf::Mesh mesh2(mesh);
   EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
+  EXPECT_EQ(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -100,6 +110,7 @@ TEST(DOMMesh, CopyAssignmentOperator)
   mesh2 = mesh;
   EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
+  EXPECT_EQ(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -122,6 +133,7 @@ TEST(DOMMesh, MoveAssignmentOperator)
   mesh2 = std::move(mesh);
   EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
+  EXPECT_EQ(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -162,6 +174,12 @@ TEST(DOMMesh, Set)
   EXPECT_EQ("convex_decomposition", mesh.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
             mesh.Optimization());
+
+  sdf::ConvexDecomposition convexDecomp;
+  convexDecomp.SetMaxConvexHulls(10u);
+  mesh.SetConvexDecomposition(convexDecomp);
+  ASSERT_NE(nullptr, mesh.ConvexDecomposition());
+  EXPECT_EQ(10u, mesh.ConvexDecomposition()->MaxConvexHulls());
 
   EXPECT_EQ(std::string(), mesh.Uri());
   mesh.SetUri("http://myuri.com");
@@ -319,11 +337,15 @@ TEST(DOMMesh, ToElement)
 {
   sdf::Mesh mesh;
 
-  mesh.SetOptimization("convex_hull");
+  mesh.SetOptimization("convex_decomposition");
   mesh.SetUri("mesh-uri");
   mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
   mesh.SetCenterSubmesh(false);
+
+  sdf::ConvexDecomposition convexDecomp;
+  convexDecomp.SetMaxConvexHulls(10u);
+  mesh.SetConvexDecomposition(convexDecomp);
 
   sdf::ElementPtr elem = mesh.ToElement();
   ASSERT_NE(nullptr, elem);
@@ -337,6 +359,8 @@ TEST(DOMMesh, ToElement)
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
   EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
   EXPECT_EQ(mesh.CenterSubmesh(), mesh2.CenterSubmesh());
+  ASSERT_NE(nullptr, mesh2.ConvexDecomposition());
+  EXPECT_EQ(10u, mesh2.ConvexDecomposition()->MaxConvexHulls());
 }
 
 /////////////////////////////////////////////////
@@ -374,6 +398,7 @@ TEST(DOMMesh, ToElementErrorOutput)
 
   EXPECT_EQ(mesh.OptimizationStr(), mesh2.OptimizationStr());
   EXPECT_EQ(mesh.Optimization(), mesh2.Optimization());
+  EXPECT_EQ(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
   EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
