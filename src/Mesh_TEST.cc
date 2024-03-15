@@ -34,8 +34,8 @@ TEST(DOMMesh, Construction)
   sdf::Mesh mesh;
   EXPECT_EQ(nullptr, mesh.Element());
 
-  EXPECT_EQ(std::string(), mesh.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::NONE, mesh.Simplification());
+  EXPECT_EQ(std::string(), mesh.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::NONE, mesh.Optimization());
   EXPECT_EQ(std::string(), mesh.FilePath());
   EXPECT_EQ(std::string(), mesh.Uri());
   EXPECT_EQ(std::string(), mesh.Submesh());
@@ -47,7 +47,7 @@ TEST(DOMMesh, Construction)
 TEST(DOMMesh, MoveConstructor)
 {
   sdf::Mesh mesh;
-  mesh.SetSimplification("convex_hull");
+  mesh.SetOptimization("convex_hull");
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -55,8 +55,8 @@ TEST(DOMMesh, MoveConstructor)
   mesh.SetFilePath("/pear");
 
   sdf::Mesh mesh2(std::move(mesh));
-  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -68,7 +68,7 @@ TEST(DOMMesh, MoveConstructor)
 TEST(DOMMesh, CopyConstructor)
 {
   sdf::Mesh mesh;
-  mesh.SetSimplification("convex_hull");
+  mesh.SetOptimization("convex_hull");
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -76,8 +76,8 @@ TEST(DOMMesh, CopyConstructor)
   mesh.SetFilePath("/pear");
 
   sdf::Mesh mesh2(mesh);
-  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -89,7 +89,7 @@ TEST(DOMMesh, CopyConstructor)
 TEST(DOMMesh, CopyAssignmentOperator)
 {
   sdf::Mesh mesh;
-  mesh.SetSimplification("convex_hull");
+  mesh.SetOptimization("convex_hull");
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -98,8 +98,8 @@ TEST(DOMMesh, CopyAssignmentOperator)
 
   sdf::Mesh mesh2;
   mesh2 = mesh;
-  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -111,7 +111,7 @@ TEST(DOMMesh, CopyAssignmentOperator)
 TEST(DOMMesh, MoveAssignmentOperator)
 {
   sdf::Mesh mesh;
-  mesh.SetSimplification("convex_hull");
+  mesh.SetOptimization("convex_hull");
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -120,8 +120,8 @@ TEST(DOMMesh, MoveAssignmentOperator)
 
   sdf::Mesh mesh2;
   mesh2 = std::move(mesh);
-  EXPECT_EQ("convex_hull", mesh2.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh2.Simplification());
+  EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -154,14 +154,14 @@ TEST(DOMMesh, Set)
   sdf::Mesh mesh;
   EXPECT_EQ(nullptr, mesh.Element());
 
-  EXPECT_EQ(std::string(), mesh.SimplificationStr());
-  mesh.SetSimplification("convex_hull");
-  EXPECT_EQ("convex_hull", mesh.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL, mesh.Simplification());
-  mesh.SetSimplification(sdf::MeshSimplification::CONVEX_DECOMPOSITION);
-  EXPECT_EQ("convex_decomposition", mesh.SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_DECOMPOSITION,
-            mesh.Simplification());
+  EXPECT_EQ(std::string(), mesh.OptimizationStr());
+  mesh.SetOptimization("convex_hull");
+  EXPECT_EQ("convex_hull", mesh.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh.Optimization());
+  mesh.SetOptimization(sdf::MeshOptimization::CONVEX_DECOMPOSITION);
+  EXPECT_EQ("convex_decomposition", mesh.OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
+            mesh.Optimization());
 
   EXPECT_EQ(std::string(), mesh.Uri());
   mesh.SetUri("http://myuri.com");
@@ -319,7 +319,7 @@ TEST(DOMMesh, ToElement)
 {
   sdf::Mesh mesh;
 
-  mesh.SetSimplification("convex_hull");
+  mesh.SetOptimization("convex_hull");
   mesh.SetUri("mesh-uri");
   mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
@@ -331,8 +331,8 @@ TEST(DOMMesh, ToElement)
   sdf::Mesh mesh2;
   mesh2.Load(elem);
 
-  EXPECT_EQ(mesh.SimplificationStr(), mesh2.SimplificationStr());
-  EXPECT_EQ(mesh.Simplification(), mesh2.Simplification());
+  EXPECT_EQ(mesh.OptimizationStr(), mesh2.OptimizationStr());
+  EXPECT_EQ(mesh.Optimization(), mesh2.Optimization());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
   EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
@@ -358,7 +358,7 @@ TEST(DOMMesh, ToElementErrorOutput)
   sdf::Mesh mesh;
   sdf::Errors errors;
 
-  mesh.SetSimplification("convex_hull");
+  mesh.SetOptimization("convex_hull");
   mesh.SetUri("mesh-uri");
   mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
@@ -372,8 +372,8 @@ TEST(DOMMesh, ToElementErrorOutput)
   errors = mesh2.Load(elem);
   EXPECT_TRUE(errors.empty());
 
-  EXPECT_EQ(mesh.SimplificationStr(), mesh2.SimplificationStr());
-  EXPECT_EQ(mesh.Simplification(), mesh2.Simplification());
+  EXPECT_EQ(mesh.OptimizationStr(), mesh2.OptimizationStr());
+  EXPECT_EQ(mesh.Optimization(), mesh2.Optimization());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
   EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());

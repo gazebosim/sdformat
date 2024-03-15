@@ -37,10 +37,10 @@ namespace sdf
   // Forward declarations.
   class ParserConfig;
 
-  /// \brief Mesh simplification method
-  enum class MeshSimplification
+  /// \brief Mesh optimization method
+  enum class MeshOptimization
   {
-    /// \brief No mesh simplification
+    /// \brief No mesh optimization
     NONE,
     /// \brief Convex hull
     CONVEX_HULL,
@@ -72,26 +72,26 @@ namespace sdf
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
 
-    /// \brief Get the mesh's simplifcation method
-    /// \return The mesh simplification method.
-    /// MeshSimplification::NONE if no mesh simplificaton is done.
-    public: MeshSimplification Simplification() const;
+    /// \brief Get the mesh's optimization method
+    /// \return The mesh optimization method.
+    /// MeshOptimization::NONE if no mesh simplificaton is done.
+    public: MeshOptimization Optimization() const;
 
-    /// \brief Get the mesh's simplifcation method
-    /// \return The mesh simplification method.
+    /// \brief Get the mesh's optimization method
+    /// \return The mesh optimization method.
     /// Empty string if no mesh simplificaton is done.
-    public: std::string SimplificationStr() const;
+    public: std::string OptimizationStr() const;
 
-    /// \brief Set the mesh simplification method.
-    /// \param[in] _simplifcation The mesh simplification method.
-    public: void SetSimplification(MeshSimplification _simplifcation);
+    /// \brief Set the mesh optimization method.
+    /// \param[in] _optimization The mesh optimization method.
+    public: void SetOptimization(MeshOptimization _optimization);
 
-    /// \brief Set the mesh simplification method.
-    /// \param[in] _simplifcation The mesh simplification method.
-    /// \return True if the _simplificationStr parameter matched a known
-    /// mesh simplification method. False if the mesh simplification method
+    /// \brief Set the mesh optimization method.
+    /// \param[in] _optimization The mesh optimization method.
+    /// \return True if the _optimizationStr parameter matched a known
+    /// mesh optimization method. False if the mesh optimization method
     ///  could not be set.
-    public: bool SetSimplification(const std::string &_simplifcationStr);
+    public: bool SetOptimization(const std::string &_optimizationStr);
 
     /// \brief Get the mesh's URI.
     /// \return The URI of the mesh data.

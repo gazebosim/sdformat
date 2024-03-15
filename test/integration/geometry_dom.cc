@@ -179,9 +179,9 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::MESH, meshCol->Geom()->Type());
   const sdf::Mesh *meshColGeom = meshCol->Geom()->MeshShape();
   ASSERT_NE(nullptr, meshColGeom);
-  EXPECT_EQ("convex_hull", meshColGeom->SimplificationStr());
-  EXPECT_EQ(sdf::MeshSimplification::CONVEX_HULL,
-            meshColGeom->Simplification());
+  EXPECT_EQ("convex_hull", meshColGeom->OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL,
+            meshColGeom->Optimization());
 
   EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/"
       "mesh.dae", meshColGeom->Uri());
