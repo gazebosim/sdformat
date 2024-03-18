@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>sdformat14</name>
-  <version>14.0.0</version>
+  <version>14.1.0</version>
   <description>SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications</description>
 
   <maintainer email="addisu@openrobotics.org">Addisu Z. Taddese</maintainer>
   <maintainer email="scpeters@openrobotics.org">Steve Peters</maintainer>
-
 
   <license>Apache License 2.0</license>
 
