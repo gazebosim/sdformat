@@ -19,6 +19,7 @@
 #include <optional>
 #include <vector>
 #include <gz/math/Pose3.hh>
+#include "sdf/AirFlow.hh"
 #include "sdf/AirPressure.hh"
 #include "sdf/AirSpeed.hh"
 #include "sdf/Altimeter.hh"
@@ -68,7 +69,8 @@ const std::vector<std::string> sensorTypeStrs =
   "boundingbox_camera",
   "custom",
   "wide_angle_camera",
-  "air_speed"
+  "air_speed",
+  "air_flow"
 };
 
 class sdf::Sensor::Implementation
@@ -114,6 +116,9 @@ class sdf::Sensor::Implementation
 
   /// \brief Optional air pressure sensor.
   public: std::optional<AirSpeed> airSpeed;
+
+  /// \brief Optional air flow sensor.
+  public: std::optional<AirFlow> airFlow;
 
   /// \brief Optional camera.
   public: std::optional<Camera> camera;
@@ -171,6 +176,8 @@ bool Sensor::operator==(const Sensor &_sensor) const
       return *(this->dataPtr->airPressure) == *(_sensor.dataPtr->airPressure);
     case SensorType::AIR_SPEED:
       return *(this->dataPtr->airSpeed) == *(_sensor.dataPtr->airSpeed);
+    case SensorType::AIR_FLOW:
+      return *(this->dataPtr->airFlow) == *(_sensor.dataPtr->airFlow);
     case SensorType::FORCE_TORQUE:
       return *(this->dataPtr->forceTorque) == *(_sensor.dataPtr->forceTorque);
     case SensorType::IMU:
@@ -256,6 +263,14 @@ Errors Sensor::Load(ElementPtr _sdf)
     this->dataPtr->airPressure.emplace();
     Errors err = this->dataPtr->airPressure->Load(
         _sdf->GetElement("air_pressure"));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (type == "air_flow")
+  {
+    this->dataPtr->type = SensorType::AIR_FLOW;
+    this->dataPtr->airFlow.emplace();
+    Errors err = this->dataPtr->airFlow->Load(
+        _sdf->GetElement("air_flow"));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (type == "air_speed")
@@ -594,6 +609,24 @@ void Sensor::SetAirPressureSensor(const AirPressure &_air)
 }
 
 /////////////////////////////////////////////////
+const AirFlow *Sensor::AirFlowSensor() const
+{
+  return optionalToPointer(this->dataPtr->airFlow);
+}
+
+/////////////////////////////////////////////////
+AirFlow *Sensor::AirFlowSensor()
+{
+  return optionalToPointer(this->dataPtr->airFlow);
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetAirFlowSensor(const AirFlow &_air)
+{
+  this->dataPtr->airFlow = _air;
+}
+
+/////////////////////////////////////////////////
 const AirSpeed *Sensor::AirSpeedSensor() const
 {
   return optionalToPointer(this->dataPtr->airSpeed);
@@ -757,6 +790,13 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   {
     sdf::ElementPtr airPressureElem = elem->GetElement("air_pressure");
     airPressureElem->Copy(this->dataPtr->airPressure->ToElement());
+  }
+  // air flow
+  else if (this->Type() == sdf::SensorType::AIR_FLOW &&
+      this->dataPtr->airFlow)
+  {
+    sdf::ElementPtr airFlowElem = elem->GetElement("air_flow");
+    airFlowElem->Copy(this->dataPtr->airFlow->ToElement());
   }
   // air speed
   else if (this->Type() == sdf::SensorType::AIR_SPEED &&
