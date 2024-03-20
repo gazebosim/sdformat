@@ -48,7 +48,7 @@ TEST(DOMMesh, Construction)
 TEST(DOMMesh, MoveConstructor)
 {
   sdf::Mesh mesh;
-  mesh.SetOptimization("convex_decomposition");
+  EXPECT_TRUE(mesh.SetOptimization("convex_decomposition"));
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -56,6 +56,7 @@ TEST(DOMMesh, MoveConstructor)
   mesh.SetFilePath("/pear");
 
   sdf::ConvexDecomposition convexDecomp;
+  EXPECT_EQ(nullptr, convexDecomp.Element());
   convexDecomp.SetMaxConvexHulls(10u);
   mesh.SetConvexDecomposition(convexDecomp);
 
@@ -77,7 +78,7 @@ TEST(DOMMesh, MoveConstructor)
 TEST(DOMMesh, CopyConstructor)
 {
   sdf::Mesh mesh;
-  mesh.SetOptimization("convex_hull");
+  EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -99,7 +100,7 @@ TEST(DOMMesh, CopyConstructor)
 TEST(DOMMesh, CopyAssignmentOperator)
 {
   sdf::Mesh mesh;
-  mesh.SetOptimization("convex_hull");
+  EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -122,7 +123,7 @@ TEST(DOMMesh, CopyAssignmentOperator)
 TEST(DOMMesh, MoveAssignmentOperator)
 {
   sdf::Mesh mesh;
-  mesh.SetOptimization("convex_hull");
+  EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -167,13 +168,14 @@ TEST(DOMMesh, Set)
   EXPECT_EQ(nullptr, mesh.Element());
 
   EXPECT_EQ(std::string(), mesh.OptimizationStr());
-  mesh.SetOptimization("convex_hull");
+  EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
   EXPECT_EQ("convex_hull", mesh.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh.Optimization());
   mesh.SetOptimization(sdf::MeshOptimization::CONVEX_DECOMPOSITION);
   EXPECT_EQ("convex_decomposition", mesh.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
             mesh.Optimization());
+  EXPECT_FALSE(mesh.SetOptimization("invalid"));
 
   sdf::ConvexDecomposition convexDecomp;
   convexDecomp.SetMaxConvexHulls(10u);
@@ -337,7 +339,7 @@ TEST(DOMMesh, ToElement)
 {
   sdf::Mesh mesh;
 
-  mesh.SetOptimization("convex_decomposition");
+  EXPECT_TRUE(mesh.SetOptimization("convex_decomposition"));
   mesh.SetUri("mesh-uri");
   mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
@@ -382,7 +384,7 @@ TEST(DOMMesh, ToElementErrorOutput)
   sdf::Mesh mesh;
   sdf::Errors errors;
 
-  mesh.SetOptimization("convex_hull");
+  EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
   mesh.SetUri("mesh-uri");
   mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");

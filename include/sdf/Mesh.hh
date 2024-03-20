@@ -120,7 +120,7 @@ namespace sdf
     /// \param[in] _optimization The mesh optimization method.
     /// \return True if the _optimizationStr parameter matched a known
     /// mesh optimization method. False if the mesh optimization method
-    ///  could not be set.
+    /// could not be set.
     public: bool SetOptimization(const std::string &_optimizationStr);
 
     /// \brief Get the associated ConvexDecomposition object
