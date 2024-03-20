@@ -129,9 +129,9 @@ namespace sdf
     /// \brief Default constructor
     public: BulletFriction();
 
-    /// \brief Load BulletFriction friction based on a element pointer. This is *not*
-    /// the usual entry point. Typical usage of the SDF DOM is through the Root
-    /// object.
+    /// \brief Load BulletFriction friction based on a element pointer. This is
+    /// *not* the usual entry point. Typical usage of the SDF DOM is through
+    /// the Root object.
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.

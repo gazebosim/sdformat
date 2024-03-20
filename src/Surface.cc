@@ -171,8 +171,8 @@ Errors Torsional::Load(ElementPtr _sdf)
   if (_sdf->GetName() != "torsional")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a BulletFriction, but the provided SDF element is not a "
-        "<ode>."});
+        "Attempting to load a BulletFriction, but the provided SDF element "
+        "is not a <torsional>."});
     return errors;
   }
 
@@ -287,8 +287,8 @@ Errors BulletFriction::Load(ElementPtr _sdf)
   if (_sdf->GetName() != "bullet")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a BulletFriction, but the provided SDF element is not a "
-        "<ode>."});
+        "Attempting to load a BulletFriction, but the provided SDF element "
+        "is not a <bullet>."});
     return errors;
   }
 
