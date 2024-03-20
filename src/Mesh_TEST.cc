@@ -175,7 +175,14 @@ TEST(DOMMesh, Set)
   EXPECT_EQ("convex_decomposition", mesh.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
             mesh.Optimization());
+  // check invalid inputs
   EXPECT_FALSE(mesh.SetOptimization("invalid"));
+  {
+    auto invalidMeshOpt = static_cast<sdf::MeshOptimization>(99);
+    mesh.SetOptimization(invalidMeshOpt);
+    EXPECT_EQ(invalidMeshOpt, mesh.Optimization());
+    EXPECT_EQ("", mesh.OptimizationStr());
+  }
 
   sdf::ConvexDecomposition convexDecomp;
   convexDecomp.SetMaxConvexHulls(10u);
@@ -208,6 +215,7 @@ TEST(DOMMesh, Set)
 TEST(DOMMesh, Load)
 {
   sdf::Mesh mesh;
+  sdf::ConvexDecomposition convexDecomp;
   sdf::Errors errors;
 
   // Null element name
@@ -216,6 +224,11 @@ TEST(DOMMesh, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_EQ(nullptr, mesh.Element());
 
+  errors = convexDecomp.Load(nullptr);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
+  EXPECT_EQ(nullptr, convexDecomp.Element());
+
   // Bad element name
   sdf::ElementPtr sdf(new sdf::Element());
   sdf->SetName("bad");
@@ -223,6 +236,11 @@ TEST(DOMMesh, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
   EXPECT_NE(nullptr, mesh.Element());
+
+  errors = convexDecomp.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+  EXPECT_NE(nullptr, convexDecomp.Element());
 
   // Missing <uri> element
   sdf->SetName("mesh");
