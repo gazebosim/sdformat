@@ -123,13 +123,13 @@ namespace sdf
     IGN_UTILS_IMPL_PTR(dataPtr)
   };
 
-  /// \brief Bullet information for a friction.
-  class SDFORMAT_VISIBLE Bullet
+  /// \brief BulletFriction information for a friction.
+  class SDFORMAT_VISIBLE BulletFriction
   {
     /// \brief Default constructor
-    public: Bullet();
+    public: BulletFriction();
 
-    /// \brief Load Bullet friction based on a element pointer. This is *not*
+    /// \brief Load BulletFriction friction based on a element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
@@ -272,14 +272,14 @@ namespace sdf
     /// \param[in] _ode The ODE object.
     public: void SetODE(const sdf::ODE &_ode);
 
-    /// \brief Get the associated Bullet object
-    /// \return Pointer to the associated Bullet object,
-    /// nullptr if the Surface doesn't contain a Bullet element.
-    public: const sdf::Bullet *Bullet() const;
+    /// \brief Get the associated BulletFriction object
+    /// \return Pointer to the associated BulletFriction object,
+    /// nullptr if the Surface doesn't contain a BulletFriction element.
+    public: const sdf::BulletFriction *BulletFriction() const;
 
-    /// \brief Set the associated Bullet object.
-    /// \param[in] _bullet The Bullet object.
-    public: void SetBullet(const sdf::Bullet &_bullet);
+    /// \brief Set the associated BulletFriction object.
+    /// \param[in] _bullet The BulletFriction object.
+    public: void SetBulletFriction(const sdf::BulletFriction &_bullet);
 
     /// \brief Get the torsional friction
     /// \return Pointer to the torsional friction

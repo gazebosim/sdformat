@@ -150,12 +150,12 @@ TEST(DOMsurface, ToElement)
   ode.SetSlip2(4);
   ode.SetFdir1(gz::math::Vector3d(1, 2, 3));
   friction.SetODE(ode);
-  sdf::Bullet bullet;
+  sdf::BulletFriction bullet;
   bullet.SetFriction(0.3);
   bullet.SetFriction2(0.5);
   bullet.SetFdir1(gz::math::Vector3d(2, 1, 4));
   bullet.SetRollingFriction(1.3);
-  friction.SetBullet(bullet);
+  friction.SetBulletFriction(bullet);
   sdf::Torsional torsional;
   torsional.SetCoefficient(0.5);
   torsional.SetUsePatchRadius(false);
@@ -181,11 +181,11 @@ TEST(DOMsurface, ToElement)
   EXPECT_EQ(surface2.Friction()->ODE()->Fdir1(),
             gz::math::Vector3d(1, 2, 3));
 
-  EXPECT_DOUBLE_EQ(0.3, surface2.Friction()->Bullet()->Friction());
-  EXPECT_DOUBLE_EQ(0.5, surface2.Friction()->Bullet()->Friction2());
+  EXPECT_DOUBLE_EQ(0.3, surface2.Friction()->BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(0.5, surface2.Friction()->BulletFriction()->Friction2());
   EXPECT_EQ(gz::math::Vector3d(2, 1, 4),
-            surface2.Friction()->Bullet()->Fdir1());
-  EXPECT_DOUBLE_EQ(1.3, surface2.Friction()->Bullet()->RollingFriction());
+            surface2.Friction()->BulletFriction()->Fdir1());
+  EXPECT_DOUBLE_EQ(1.3, surface2.Friction()->BulletFriction()->RollingFriction());
 
   EXPECT_DOUBLE_EQ(0.5, surface2.Friction()->Torsional()->Coefficient());
   EXPECT_FALSE(surface2.Friction()->Torsional()->UsePatchRadius());
@@ -260,12 +260,12 @@ TEST(DOMfriction, SetFriction)
   sdf::Friction friction1;
   friction1.SetODE(ode1);
 
-  sdf::Bullet bullet;
+  sdf::BulletFriction bullet;
   bullet.SetFriction(0.3);
   bullet.SetFriction2(0.5);
   bullet.SetFdir1(gz::math::Vector3d(2, 1, 4));
   bullet.SetRollingFriction(1.3);
-  friction1.SetBullet(bullet);
+  friction1.SetBulletFriction(bullet);
 
   sdf::Torsional torsional;
   torsional.SetCoefficient(0.5);
@@ -282,10 +282,10 @@ TEST(DOMfriction, SetFriction)
   EXPECT_EQ(friction1.ODE()->Fdir1(),
             gz::math::Vector3d(1, 2, 3));
 
-  EXPECT_DOUBLE_EQ(0.3, friction1.Bullet()->Friction());
-  EXPECT_DOUBLE_EQ(0.5, friction1.Bullet()->Friction2());
-  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction1.Bullet()->Fdir1());
-  EXPECT_DOUBLE_EQ(1.3, friction1.Bullet()->RollingFriction());
+  EXPECT_DOUBLE_EQ(0.3, friction1.BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(0.5, friction1.BulletFriction()->Friction2());
+  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction1.BulletFriction()->Fdir1());
+  EXPECT_DOUBLE_EQ(1.3, friction1.BulletFriction()->RollingFriction());
 
   EXPECT_DOUBLE_EQ(0.5, friction1.Torsional()->Coefficient());
   EXPECT_FALSE(friction1.Torsional()->UsePatchRadius());
@@ -306,12 +306,12 @@ TEST(DOMfriction, CopyOperator)
   sdf::Friction friction1;
   friction1.SetODE(ode1);
 
-  sdf::Bullet bullet;
+  sdf::BulletFriction bullet;
   bullet.SetFriction(0.3);
   bullet.SetFriction2(0.5);
   bullet.SetFdir1(gz::math::Vector3d(2, 1, 4));
   bullet.SetRollingFriction(1.3);
-  friction1.SetBullet(bullet);
+  friction1.SetBulletFriction(bullet);
 
   sdf::Torsional torsional;
   torsional.SetCoefficient(0.5);
@@ -329,10 +329,10 @@ TEST(DOMfriction, CopyOperator)
   EXPECT_EQ(friction2.ODE()->Fdir1(),
             gz::math::Vector3d(1, 2, 3));
 
-  EXPECT_DOUBLE_EQ(0.3, friction2.Bullet()->Friction());
-  EXPECT_DOUBLE_EQ(0.5, friction2.Bullet()->Friction2());
-  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction2.Bullet()->Fdir1());
-  EXPECT_DOUBLE_EQ(1.3, friction2.Bullet()->RollingFriction());
+  EXPECT_DOUBLE_EQ(0.3, friction2.BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(0.5, friction2.BulletFriction()->Friction2());
+  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction2.BulletFriction()->Fdir1());
+  EXPECT_DOUBLE_EQ(1.3, friction2.BulletFriction()->RollingFriction());
 
   EXPECT_DOUBLE_EQ(0.5, friction2.Torsional()->Coefficient());
   EXPECT_FALSE(friction2.Torsional()->UsePatchRadius());
@@ -353,12 +353,12 @@ TEST(DOMfriction, CopyAssignmentOperator)
   sdf::Friction friction1;
   friction1.SetODE(ode1);
 
-  sdf::Bullet bullet;
+  sdf::BulletFriction bullet;
   bullet.SetFriction(0.3);
   bullet.SetFriction2(0.5);
   bullet.SetFdir1(gz::math::Vector3d(2, 1, 4));
   bullet.SetRollingFriction(1.3);
-  friction1.SetBullet(bullet);
+  friction1.SetBulletFriction(bullet);
 
   sdf::Torsional torsional;
   torsional.SetCoefficient(0.5);
@@ -376,10 +376,10 @@ TEST(DOMfriction, CopyAssignmentOperator)
   EXPECT_EQ(friction2.ODE()->Fdir1(),
             gz::math::Vector3d(1, 2, 3));
 
-  EXPECT_DOUBLE_EQ(0.3, friction2.Bullet()->Friction());
-  EXPECT_DOUBLE_EQ(0.5, friction2.Bullet()->Friction2());
-  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction2.Bullet()->Fdir1());
-  EXPECT_DOUBLE_EQ(1.3, friction2.Bullet()->RollingFriction());
+  EXPECT_DOUBLE_EQ(0.3, friction2.BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(0.5, friction2.BulletFriction()->Friction2());
+  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction2.BulletFriction()->Fdir1());
+  EXPECT_DOUBLE_EQ(1.3, friction2.BulletFriction()->RollingFriction());
 
   EXPECT_DOUBLE_EQ(0.5, friction2.Torsional()->Coefficient());
   EXPECT_FALSE(friction2.Torsional()->UsePatchRadius());
@@ -409,19 +409,19 @@ TEST(DOMfriction, CopyAssignmentAfterMove)
   sdf::Friction friction2;
   friction2.SetODE(ode2);
 
-  sdf::Bullet bullet1;
+  sdf::BulletFriction bullet1;
   bullet1.SetFriction(0.3);
   bullet1.SetFriction2(0.5);
   bullet1.SetFdir1(gz::math::Vector3d(2, 1, 4));
   bullet1.SetRollingFriction(1.3);
-  friction1.SetBullet(bullet1);
+  friction1.SetBulletFriction(bullet1);
 
-  sdf::Bullet bullet2;
+  sdf::BulletFriction bullet2;
   bullet2.SetFriction(0.1);
   bullet2.SetFriction2(0.2);
   bullet2.SetFdir1(gz::math::Vector3d(3, 4, 5));
   bullet2.SetRollingFriction(3.1);
-  friction2.SetBullet(bullet2);
+  friction2.SetBulletFriction(bullet2);
 
   sdf::Torsional torsional1;
   torsional1.SetCoefficient(0.5);
@@ -456,14 +456,14 @@ TEST(DOMfriction, CopyAssignmentAfterMove)
   EXPECT_EQ(friction2.ODE()->Fdir1(),
             gz::math::Vector3d(1, 2, 3));
 
-  EXPECT_DOUBLE_EQ(0.3, friction2.Bullet()->Friction());
-  EXPECT_DOUBLE_EQ(0.5, friction2.Bullet()->Friction2());
-  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction2.Bullet()->Fdir1());
-  EXPECT_DOUBLE_EQ(1.3, friction2.Bullet()->RollingFriction());
-  EXPECT_DOUBLE_EQ(0.1, friction1.Bullet()->Friction());
-  EXPECT_DOUBLE_EQ(0.2, friction1.Bullet()->Friction2());
-  EXPECT_EQ(gz::math::Vector3d(3, 4, 5), friction1.Bullet()->Fdir1());
-  EXPECT_DOUBLE_EQ(3.1, friction1.Bullet()->RollingFriction());
+  EXPECT_DOUBLE_EQ(0.3, friction2.BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(0.5, friction2.BulletFriction()->Friction2());
+  EXPECT_EQ(gz::math::Vector3d(2, 1, 4), friction2.BulletFriction()->Fdir1());
+  EXPECT_DOUBLE_EQ(1.3, friction2.BulletFriction()->RollingFriction());
+  EXPECT_DOUBLE_EQ(0.1, friction1.BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(0.2, friction1.BulletFriction()->Friction2());
+  EXPECT_EQ(gz::math::Vector3d(3, 4, 5), friction1.BulletFriction()->Fdir1());
+  EXPECT_DOUBLE_EQ(3.1, friction1.BulletFriction()->RollingFriction());
 
   EXPECT_DOUBLE_EQ(0.5, friction2.Torsional()->Coefficient());
   EXPECT_FALSE(friction2.Torsional()->UsePatchRadius());
@@ -591,7 +591,7 @@ TEST(DOMode, Set)
 /////////////////////////////////////////////////
 TEST(DOMbullet, DefaultValues)
 {
-  sdf::Bullet bullet;
+  sdf::BulletFriction bullet;
   EXPECT_EQ(nullptr, bullet.Element());
   EXPECT_DOUBLE_EQ(1.0, bullet.Friction());
   EXPECT_DOUBLE_EQ(1.0, bullet.Friction2());
@@ -602,13 +602,13 @@ TEST(DOMbullet, DefaultValues)
 /////////////////////////////////////////////////
 TEST(DOMbullet, CopyOperator)
 {
-  sdf::Bullet bullet1;
+  sdf::BulletFriction bullet1;
   bullet1.SetFriction(0.1);
   bullet1.SetFriction2(0.2);
   bullet1.SetFdir1(gz::math::Vector3d(1, 2, 3));
   bullet1.SetRollingFriction(4.0);
 
-  sdf::Bullet bullet2(bullet1);
+  sdf::BulletFriction bullet2(bullet1);
   EXPECT_DOUBLE_EQ(0.1, bullet2.Friction());
   EXPECT_DOUBLE_EQ(0.2, bullet2.Friction2());
   EXPECT_EQ(gz::math::Vector3d(1, 2, 3), bullet2.Fdir1());
@@ -618,13 +618,13 @@ TEST(DOMbullet, CopyOperator)
 /////////////////////////////////////////////////
 TEST(DOMbullet, CopyAssignmentOperator)
 {
-  sdf::Bullet bullet1;
+  sdf::BulletFriction bullet1;
   bullet1.SetFriction(0.1);
   bullet1.SetFriction2(0.2);
   bullet1.SetFdir1(gz::math::Vector3d(1, 2, 3));
   bullet1.SetRollingFriction(4.0);
 
-  sdf::Bullet bullet2 = bullet1;
+  sdf::BulletFriction bullet2 = bullet1;
   EXPECT_DOUBLE_EQ(0.1, bullet2.Friction());
   EXPECT_DOUBLE_EQ(0.2, bullet2.Friction2());
   EXPECT_EQ(gz::math::Vector3d(1, 2, 3), bullet2.Fdir1());
@@ -634,19 +634,19 @@ TEST(DOMbullet, CopyAssignmentOperator)
 /////////////////////////////////////////////////
 TEST(DOMbullet, CopyAssignmentAfterMove)
 {
-  sdf::Bullet bullet1;
+  sdf::BulletFriction bullet1;
   bullet1.SetFriction(0.1);
   bullet1.SetFriction2(0.2);
   bullet1.SetFdir1(gz::math::Vector3d(1, 2, 3));
   bullet1.SetRollingFriction(4.0);
 
-  sdf::Bullet bullet2;
+  sdf::BulletFriction bullet2;
   bullet2.SetFriction(0.2);
   bullet2.SetFriction2(0.1);
   bullet2.SetFdir1(gz::math::Vector3d(3, 2, 1));
   bullet2.SetRollingFriction(3.0);
 
-  sdf::Bullet tmp = std::move(bullet1);
+  sdf::BulletFriction tmp = std::move(bullet1);
   bullet1 = bullet2;
   bullet2 = tmp;
 
@@ -664,7 +664,7 @@ TEST(DOMbullet, CopyAssignmentAfterMove)
 /////////////////////////////////////////////////
 TEST(DOMbullet, Set)
 {
-  sdf::Bullet bullet1;
+  sdf::BulletFriction bullet1;
 
   EXPECT_DOUBLE_EQ(bullet1.Friction(), 1.0);
   EXPECT_DOUBLE_EQ(bullet1.Friction2(), 1.0);

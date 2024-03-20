@@ -64,7 +64,7 @@ class sdf::ODE::Implementation
   public: double slip2 = 0.0;
 };
 
-class sdf::Bullet::Implementation
+class sdf::BulletFriction::Implementation
 {
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
@@ -119,8 +119,8 @@ class sdf::Friction::Implementation
   /// \brief The object storing ode parameters
   public: sdf::ODE ode;
 
-  /// \brief The object storing bullet parameters
-  public: std::optional<sdf::Bullet> bullet;
+  /// \brief The object storing bullet friction parameters
+  public: std::optional<sdf::BulletFriction> bullet;
 
   /// \brief The object storing torsional parameters
   public: std::optional<sdf::Torsional> torsional;
@@ -158,7 +158,7 @@ Errors Torsional::Load(ElementPtr _sdf)
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a Bullet, but the provided SDF "
+        "Attempting to load a BulletFriction, but the provided SDF "
         "element is null."});
     return errors;
   }
@@ -168,7 +168,7 @@ Errors Torsional::Load(ElementPtr _sdf)
   if (_sdf->GetName() != "torsional")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Bullet, but the provided SDF element is not a "
+        "Attempting to load a BulletFriction, but the provided SDF element is not a "
         "<ode>."});
     return errors;
   }
@@ -258,13 +258,13 @@ sdf::ElementPtr Torsional::Element() const
 }
 
 /////////////////////////////////////////////////
-Bullet::Bullet()
+BulletFriction::BulletFriction()
   : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
 }
 
 /////////////////////////////////////////////////
-Errors Bullet::Load(ElementPtr _sdf)
+Errors BulletFriction::Load(ElementPtr _sdf)
 {
   Errors errors;
 
@@ -274,7 +274,7 @@ Errors Bullet::Load(ElementPtr _sdf)
   if (!_sdf)
   {
     errors.push_back({ErrorCode::ELEMENT_MISSING,
-        "Attempting to load a Bullet, but the provided SDF "
+        "Attempting to load a BulletFriction, but the provided SDF "
         "element is null."});
     return errors;
   }
@@ -284,7 +284,7 @@ Errors Bullet::Load(ElementPtr _sdf)
   if (_sdf->GetName() != "bullet")
   {
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
-        "Attempting to load a Bullet, but the provided SDF element is not a "
+        "Attempting to load a BulletFriction, but the provided SDF element is not a "
         "<ode>."});
     return errors;
   }
@@ -302,55 +302,55 @@ Errors Bullet::Load(ElementPtr _sdf)
 }
 
 /////////////////////////////////////////////////
-double Bullet::Friction() const
+double BulletFriction::Friction() const
 {
   return this->dataPtr->friction;
 }
 
 /////////////////////////////////////////////////
-void Bullet::SetFriction(double _friction)
+void BulletFriction::SetFriction(double _friction)
 {
   this->dataPtr->friction = _friction;
 }
 
 /////////////////////////////////////////////////
-double Bullet::Friction2() const
+double BulletFriction::Friction2() const
 {
   return this->dataPtr->friction2;
 }
 
 /////////////////////////////////////////////////
-void Bullet::SetFriction2(double _friction2)
+void BulletFriction::SetFriction2(double _friction2)
 {
   this->dataPtr->friction2 = _friction2;
 }
 
 /////////////////////////////////////////////////
-const gz::math::Vector3d &Bullet::Fdir1() const
+const gz::math::Vector3d &BulletFriction::Fdir1() const
 {
   return this->dataPtr->fdir1;
 }
 
 /////////////////////////////////////////////////
-void Bullet::SetFdir1(const gz::math::Vector3d &_fdir)
+void BulletFriction::SetFdir1(const gz::math::Vector3d &_fdir)
 {
   this->dataPtr->fdir1 = _fdir;
 }
 
 /////////////////////////////////////////////////
-double Bullet::RollingFriction() const
+double BulletFriction::RollingFriction() const
 {
   return this->dataPtr->rollingFriction;
 }
 
 /////////////////////////////////////////////////
-void Bullet::SetRollingFriction(double _rollingFriction)
+void BulletFriction::SetRollingFriction(double _rollingFriction)
 {
   this->dataPtr->rollingFriction = _rollingFriction;
 }
 
 /////////////////////////////////////////////////
-sdf::ElementPtr Bullet::Element() const
+sdf::ElementPtr BulletFriction::Element() const
 {
   return this->dataPtr->sdf;
 }
@@ -537,13 +537,13 @@ const sdf::ODE *Friction::ODE() const
 }
 
 /////////////////////////////////////////////////
-void Friction::SetBullet(const sdf::Bullet &_bullet)
+void Friction::SetBulletFriction(const sdf::BulletFriction &_bullet)
 {
   this->dataPtr->bullet = _bullet;
 }
 
 /////////////////////////////////////////////////
-const sdf::Bullet *Friction::Bullet() const
+const sdf::BulletFriction *Friction::BulletFriction() const
 {
   return optionalToPointer(this->dataPtr->bullet);
 }
@@ -715,17 +715,17 @@ sdf::ElementPtr Surface::ToElement() const
   ode->GetElement("slip2")->Set(this->dataPtr->friction.ODE()->Slip2());
   ode->GetElement("fdir1")->Set(this->dataPtr->friction.ODE()->Fdir1());
 
-  if (this->dataPtr->friction.Bullet())
+  if (this->dataPtr->friction.BulletFriction())
   {
     sdf::ElementPtr bullet = frictionElem->GetElement("bullet");
     bullet->GetElement("friction")->Set(
-      this->dataPtr->friction.Bullet()->Friction());
+      this->dataPtr->friction.BulletFriction()->Friction());
     bullet->GetElement("friction2")->Set(
-      this->dataPtr->friction.Bullet()->Friction2());
+      this->dataPtr->friction.BulletFriction()->Friction2());
     bullet->GetElement("fdir1")->Set(
-      this->dataPtr->friction.Bullet()->Fdir1());
+      this->dataPtr->friction.BulletFriction()->Fdir1());
     bullet->GetElement("rolling_friction")->Set(
-      this->dataPtr->friction.Bullet()->RollingFriction());
+      this->dataPtr->friction.BulletFriction()->RollingFriction());
   }
 
   if (this->dataPtr->friction.Torsional())
