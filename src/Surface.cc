@@ -15,6 +15,9 @@
  *
  */
 
+#include <cstdint>
+#include <optional>
+
 #include "sdf/Element.hh"
 #include "sdf/parser.hh"
 #include "sdf/Surface.hh"
