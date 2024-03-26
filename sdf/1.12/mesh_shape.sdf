@@ -12,7 +12,6 @@
     <element name="max_convex_hulls" type="unsigned int" default="16" required="0">
       <description>Maximum number of convex hulls to decompose into. This sets the maximum number of submeshes that the final decomposed mesh will contain.</description>
     </element>
-    </element>
   </element>
 
   <element name="uri" type="string" default="__default__" required="1">
