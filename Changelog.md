@@ -1,6 +1,12 @@
 ## libsdformat 14.X
 
+### libsdformat 14.1.1 (2024-03-28)
+
+1. Use relative install paths in CMake
+    * [Pull request #1387](https://github.com/gazebosim/sdformat/pull/1387)
+
 ### libsdformat 14.1.0 (2024-03-14)
+
 1. Resolve URIs relative to file path
     * [Pull request #1373](https://github.com/gazebosim/sdformat/pull/1373)
 
@@ -22,7 +28,7 @@
 1. Bazel updates for Garden build
     * [Pull request #1239](https://github.com/gazebosim/sdformat/pull/1239)
 
-1. Fix static builds and optimize test compilation 
+1. Fix static builds and optimize test compilation
     * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
     * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
 
