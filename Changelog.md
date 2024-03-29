@@ -2,6 +2,9 @@
 
 ### libsdformat 14.1.1 (2024-03-28)
 
+1. Fix warning with pybind11 2.12
+    * [Pull request #1389](https://github.com/gazebosim/sdformat/pull/1389)
+
 1. Use relative install paths in CMake
     * [Pull request #1387](https://github.com/gazebosim/sdformat/pull/1387)
 
