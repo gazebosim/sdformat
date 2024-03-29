@@ -141,7 +141,11 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
       sdfErrorsException.attr("errors") = pybind11::cast(e.Errors());
       // This has to be called last since it's the call that sets
       // PyErr_SetString.
+#if PYBIND11_VERSION_HEX >= 0x020C0000
+      pybind11::set_error(sdfErrorsException, e.what());
+#else
       sdfErrorsException(e.what());
+#endif
     }
   });
 
