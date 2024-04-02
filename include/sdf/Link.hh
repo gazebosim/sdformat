@@ -419,7 +419,7 @@ namespace sdf
     public: bool Kinematic() const;
 
     /// \brief Set whether this link is kinematic only.
-    /// \param[in] _enable True to make the link kinematic only,
+    /// \param[in] _kinematic True to make the link kinematic only,
     public: void SetKinematic(bool _kinematic);
 
     /// \brief Check if the automatic calculation for the link inertial
