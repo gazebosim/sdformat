@@ -72,6 +72,10 @@ TEST(DOMLink, Construction)
   link.SetEnableWind(true);
   EXPECT_TRUE(link.EnableWind());
 
+  EXPECT_FALSE(link.Kinematic());
+  link.SetKinematic(true);
+  EXPECT_TRUE(link.Kinematic());
+
   EXPECT_FALSE(link.AutoInertiaSaved());
   link.SetAutoInertiaSaved(true);
   EXPECT_TRUE(link.AutoInertiaSaved());
@@ -902,6 +906,7 @@ TEST(DOMLink, ToElement)
   EXPECT_TRUE(link.SetInertial(inertial));
   link.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));
   link.SetEnableWind(true);
+  link.SetKinematic(true);
 
   for (int j = 0; j <= 1; ++j)
   {
@@ -998,6 +1003,7 @@ TEST(DOMLink, ToElement)
   EXPECT_EQ(link.Density(), link2.Density());
   EXPECT_EQ(link.RawPose(), link2.RawPose());
   EXPECT_EQ(link.EnableWind(), link2.EnableWind());
+  EXPECT_EQ(link.Kinematic(), link2.Kinematic());
   EXPECT_EQ(link.CollisionCount(), link2.CollisionCount());
   for (uint64_t i = 0; i < link2.CollisionCount(); ++i)
     EXPECT_NE(nullptr, link2.CollisionByIndex(i));

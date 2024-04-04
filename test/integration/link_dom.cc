@@ -147,6 +147,7 @@ TEST(DOMLink, InertialDoublePendulum)
       upperLink->RawPose());
   EXPECT_EQ("", upperLink->PoseRelativeTo());
   EXPECT_TRUE(upperLink->EnableWind());
+  EXPECT_TRUE(upperLink->Kinematic());
 
   const gz::math::Inertiald inertialUpper = upperLink->Inertial();
   EXPECT_DOUBLE_EQ(1.0, inertialUpper.MassMatrix().Mass());

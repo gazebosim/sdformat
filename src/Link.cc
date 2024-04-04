@@ -87,6 +87,9 @@ class sdf::Link::Implementation
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief True if this link is kinematic only
+  public: bool kinematic = false;
+
   /// \brief True if automatic caluclation for the link inertial is enabled
   public: bool autoInertia = false;
 
@@ -312,6 +315,9 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind",
       this->dataPtr->enableWind).first;
+
+  this->dataPtr->kinematic = _sdf->Get<bool>("kinematic",
+      this->dataPtr->kinematic).first;
 
   return errors;
 }
@@ -842,6 +848,18 @@ void Link::SetEnableWind(const bool _enableWind)
 }
 
 /////////////////////////////////////////////////
+bool Link::Kinematic() const
+{
+  return this->dataPtr->kinematic;
+}
+
+/////////////////////////////////////////////////
+void Link::SetKinematic(bool _kinematic)
+{
+  this->dataPtr->kinematic = _kinematic;
+}
+
+/////////////////////////////////////////////////
 bool Link::AutoInertia() const
 {
   return this->dataPtr->autoInertia;
@@ -1021,6 +1039,9 @@ sdf::ElementPtr Link::ToElement() const
 
   // wind mode
   elem->GetElement("enable_wind")->Set(this->EnableWind());
+
+  // kinematic
+  elem->GetElement("kinematic")->Set(this->Kinematic());
 
   // Collisions
   for (const sdf::Collision &collision : this->dataPtr->collisions)
