@@ -2156,12 +2156,12 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
     }
   }
 
-	// If we didn't find the link, emit a warning
-	if (!link_found) {
-		sdfwarn << "<gazebo> tag with reference[" << _linkName << "] does not exist"
+  // If we didn't find the link, emit a warning
+  if (!link_found) {
+    sdfwarn << "<gazebo> tag with reference[" << _linkName << "] does not exist"
             << " in the URDF model. Please ensure that the reference attribute"
             << " matches the name of a link.";
-	}
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
