@@ -2108,14 +2108,14 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
 void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
                             const std::string &_linkName)
 {
-		bool link_found = false;
+  bool link_found = false;
   for (StringSDFExtensionPtrMap::iterator
        sdfIt = g_extensions.begin();
        sdfIt != g_extensions.end(); ++sdfIt)
   {
     if (sdfIt->first == _linkName)
     {
-						link_found = true;
+      link_found = true;
       sdfdbg << "inserting extension with reference ["
              << _linkName << "] into link.\n";
       for (std::vector<SDFExtensionPtr>::iterator ge =
@@ -2155,13 +2155,13 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
       }
     }
   }
-		
-		// If we didn't find the link, emit a warning
-		if (!link_found) {
-				sdfwarn << "<gazebo> tag with reference[" << _linkName << "] does not exist in the URDF model. Please "
-												<< "ensure that the referenced attribute matches the name of a link, consider checking unicode "
-												<< "representation for reference attribute in case of invisible characters and homoglyphs";
-		}
+
+	// If we didn't find the link, emit a warning
+	if (!link_found) {
+		sdfwarn << "<gazebo> tag with reference[" << _linkName << "] does not exist"
+            << " in the URDF model. Please ensure that the reference attribute"
+            << " matches the name of a link.";
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

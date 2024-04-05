@@ -2463,7 +2463,7 @@ TEST(URDFParser, ZeroMassLeafLink)
 /////////////////////////////////////////////////
 TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
 {
-// Redirect sdfwarn output
+  // Redirect sdfwarn output
   std::stringstream buffer;
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
@@ -2476,46 +2476,45 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
       });
 #endif
 
-		// test if reference to link exists
-		{
-				 // clear the contents of the buffer
+	// test if reference to link exists
+	{
+    // clear the contents of the buffer
     buffer.str("");
 
     std::string str = R"(
-								<robot name="test_robot">
-												<link name="link1">
-																<inertial>
-																				<mass value="1" />
-																				<inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
-																</inertial>
-												</link>
-												<gazebo reference="lіnk1">
-																<sensor name="link1_imu" type="imu">
-																				<always_on>1</always_on>
-																				<update_rate>100</update_rate>
-																				<pose>0.13525 0 -0.07019999999999993 0.0 -0.0 -2.0943952105869315</pose>
-																				<plugin name="sensor_plugin" filename="example_plugin.so" />
-																</sensor>
-												</gazebo>
-								</robot>
-				)";
+      <robot name="test_robot">
+        <link name="link1">
+          <inertial>
+            <mass value="1" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+          </inertial>
+        </link>
+        <gazebo reference="lіnk1">
+          <sensor name="link1_imu" type="imu">
+            <always_on>1</always_on>
+            <update_rate>100</update_rate>
+            <pose>0.13525 0 -0.07019999999999993 0.0 -0.0 -2.0943952105869315</pose>
+            <plugin name="sensor_plugin" filename="example_plugin.so" />
+          </sensor>
+        </gazebo>
+      </robot>)";
 
     sdf::URDF2SDF parser;
     tinyxml2::XMLDocument sdfResult;
     sdf::ParserConfig config;
     parser.InitModelString(str, config, &sdfResult);
- 
-				EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "<gazebo> tag with reference[link1] does not exist in the URDF model. Please "
-								"ensure that the referenced attribute matches the name of a link, consider checking unicode "
-								"representation for reference attribute in case of invisible characters and homoglyphs");
-		}
 
-		// TODO: Similar tests for - 
-		// InsertSDFExtensionCollision, 
-		// InsertSDFExtensionRobot, 
-		// InsertSDFExtensionVisual, 
-		// InsertSDFExtensionJoint
+		EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "<gazebo> tag with reference[" << _linkName << "] does not exist"
+        " in the URDF model. Please ensure that the reference attribute"
+        " matches the name of a link.");
+	}
+
+	/* TODO(aagrawal05): Similar tests for - 
+      InsertSDFExtensionCollision,
+      InsertSDFExtensionRobot,
+      InsertSDFExtensionVisual, 
+      InsertSDFExtensionJoint */
 }
 
 /////////////////////////////////////////////////
