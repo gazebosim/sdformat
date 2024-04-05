@@ -2505,12 +2505,12 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
     parser.InitModelString(str, config, &sdfResult);
 
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "<gazebo> tag with reference[" << _linkName << "] does not exist"
+        "<gazebo> tag with reference[link1] does not exist"
         " in the URDF model. Please ensure that the reference attribute"
         " matches the name of a link.");
-	}
-
-	/* TODO(aagrawal05): Similar tests for -
+  }
+  
+  /* TODO(aagrawal05): Similar tests for -
       InsertSDFExtensionCollision,
       InsertSDFExtensionRobot,
       InsertSDFExtensionVisual,
