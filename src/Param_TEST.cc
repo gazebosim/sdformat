@@ -79,10 +79,10 @@ TEST(Param, Bool)
   EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
-  // Anything other than 1 or true is treated as a false value
+  // Anything other than 0, 1, true, or false (any capitalization) will
+  // causes Get<bool> to fail.
   EXPECT_TRUE(strParam.Set("%"));
-  EXPECT_TRUE(strParam.Get<bool>(value));
-  EXPECT_FALSE(value);
+  EXPECT_FALSE(strParam.Get<bool>(value));
 
   EXPECT_TRUE(boolParam.Set(true));
   std::any anyValue;
