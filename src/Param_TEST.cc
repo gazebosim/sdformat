@@ -46,45 +46,45 @@ TEST(Param, Bool)
 {
   sdf::Param boolParam("key", "bool", "true", false, "description");
   bool value = true;
-  boolParam.Get<bool>(value);
+  EXPECT_TRUE(boolParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
-  boolParam.Set(false);
-  boolParam.Get<bool>(value);
+  EXPECT_TRUE(boolParam.Set(false));
+  EXPECT_TRUE(boolParam.Get<bool>(value));
   EXPECT_FALSE(value);
 
   // String parameter that represents a boolean.
   sdf::Param strParam("key", "string", "true", false, "description");
 
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
-  strParam.Set("false");
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Set("false"));
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_FALSE(value);
 
-  strParam.Set("1");
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Set("1"));
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
-  strParam.Set("0");
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Set("0"));
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_FALSE(value);
 
-  strParam.Set("True");
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Set("True"));
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
-  strParam.Set("TRUE");
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Set("TRUE"));
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
   // Anything other than 1 or true is treated as a false value
-  strParam.Set("%");
-  strParam.Get<bool>(value);
+  EXPECT_TRUE(strParam.Set("%"));
+  EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_FALSE(value);
 
-  boolParam.Set(true);
+  EXPECT_TRUE(boolParam.Set(true));
   std::any anyValue;
   EXPECT_TRUE(boolParam.GetAny(anyValue));
   try
