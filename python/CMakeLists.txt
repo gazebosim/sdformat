@@ -52,6 +52,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyCamera.cc
   src/sdf/pyCapsule.cc
   src/sdf/pyCollision.cc
+  src/sdf/pyConvexDecomposition.cc
   src/sdf/pyCylinder.cc
   src/sdf/pyElement.cc
   src/sdf/pyEllipsoid.cc
