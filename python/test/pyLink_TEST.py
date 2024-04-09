@@ -61,6 +61,10 @@ class LinkTEST(unittest.TestCase):
         link.set_enable_wind(True)
         self.assertTrue(link.enable_wind())
 
+        self.assertFalse(link.kinematic())
+        link.set_kinematic(True)
+        self.assertTrue(link.kinematic())
+
         self.assertEqual(0, link.sensor_count())
         self.assertEqual(None, link.sensor_by_index(0))
         self.assertEqual(None, link.sensor_by_index(1))
