@@ -35,6 +35,23 @@ void defineMesh(pybind11::object module)
   pybind11::class_<sdf::Mesh>(module, "Mesh")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Mesh>())
+    .def("optimization", &sdf::Mesh::Optimization,
+         "Get the mesh's optimization method.")
+    .def("optimization_str", &sdf::Mesh::OptimizationStr,
+         "Get the mesh's optimization method")
+    .def("set_optimization",
+         pybind11::overload_cast<sdf::MeshOptimization>(
+           &sdf::Mesh::SetOptimization),
+         "Set the mesh optimization method.")
+    .def("set_optimization",
+         pybind11::overload_cast<const std::string &>(
+           &sdf::Mesh::SetOptimization),
+         "Set the mesh optimization method.")
+    .def("convex_decomposition", &sdf::Mesh::ConvexDecomposition,
+         pybind11::return_value_policy::reference_internal,
+         "Get the associated ConvexDecomposition object")
+    .def("set_convex_decomposition", &sdf::Mesh::SetConvexDecomposition,
+         "Set the associated ConvexDecomposition object.")
     .def("uri", &sdf::Mesh::Uri,
          "Get the mesh's URI.")
     .def("set_uri", &sdf::Mesh::SetUri,
@@ -67,6 +84,11 @@ void defineMesh(pybind11::object module)
     .def("__deepcopy__", [](const sdf::Mesh &self, pybind11::dict) {
       return sdf::Mesh(self);
     }, "memo"_a);
+
+    pybind11::enum_<sdf::MeshOptimization>(module, "MeshOptimization")
+      .value("NONE", sdf::MeshOptimization::NONE)
+      .value("CONVEX_HULL", sdf::MeshOptimization::CONVEX_HULL)
+      .value("CONVEX_DECOMPOSITION", sdf::MeshOptimization::CONVEX_DECOMPOSITION);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
