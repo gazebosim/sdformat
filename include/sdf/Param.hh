@@ -740,22 +740,6 @@ namespace sdf
       {
         _value = std::get<T>(pv);
       }
-      else if (typeStr == "bool" && this->dataPtr->typeName == "string")
-      {
-        // this section for handling bool types is to keep backward behavior
-        // TODO(anyone) remove for Fortress. For more details:
-        // https://github.com/gazebosim/sdformat/pull/638
-        valueStr = lowercase(valueStr);
-
-        std::stringstream tmp;
-        if (valueStr == "true" || valueStr == "1")
-          tmp << "1";
-        else
-          tmp << "0";
-
-        tmp >> _value;
-        return true;
-      }
 
       return success;
     }
