@@ -79,8 +79,8 @@ TEST(Param, Bool)
   EXPECT_TRUE(strParam.Get<bool>(value));
   EXPECT_TRUE(value);
 
-  // Anything other than 0, 1, true, or false (any capitalization) will
-  // causes Get<bool> to fail.
+  // Anything other than "0", "1", "true", or "false" (any capitalization) will
+  // cause Get<bool> to fail.
   EXPECT_TRUE(strParam.Set("%"));
   EXPECT_FALSE(strParam.Get<bool>(value));
 
