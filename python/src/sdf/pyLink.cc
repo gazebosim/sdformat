@@ -162,6 +162,12 @@ void defineLink(pybind11::object module)
     .def("set_enable_wind",
          &sdf::Link::SetEnableWind,
          "Set whether this link should be subject to wind.")
+    .def("kinematic",
+         &sdf::Link::Kinematic,
+         "Check if this link is kinematic only")
+    .def("set_kinematic",
+         &sdf::Link::SetKinematic,
+         "Set whether this link is kinematic only.")
     .def("add_collision",
          &sdf::Link::AddCollision,
          "Add a collision to the link.")
