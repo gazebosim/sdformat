@@ -69,10 +69,22 @@ namespace sdf
     public: sdf::ElementPtr Element() const;
 
     /// \brief Get the maximum number of convex hulls that can be generated.
+    /// \return Maximum number of convex hulls.
     public: unsigned int MaxConvexHulls() const;
 
     /// \brief Set the maximum number of convex hulls that can be generated.
+    /// \param[in] _maxConvexHulls Maximum number of convex hulls.
     public: void SetMaxConvexHulls(unsigned int _maxConvexHulls);
+
+    /// Get the voxel resolution to use for representing the mesh. Applicable
+    /// only to voxel based convex decomposition methods.
+    /// \param[in] _voxelResolution Voxel resolution to use.
+    public: unsigned int VoxelResolution() const;
+
+    /// Set the voxel resolution to use for representing the mesh. Applicable
+    /// only to voxel based convex decomposition methods.
+    /// \param[in] _voxelResolution Voxel resolution to use.
+    public: void SetVoxelResolution(unsigned int _voxelResolution);
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
