@@ -20,6 +20,16 @@ but with improved human-readability..
     + Details about the 1.11 to 1.12 transition are explained below in this same
       document
 
+### Modifications
+
+1. **Behavior change of `Param::Get<bool>`**
+    + Previously when a Param was set from a string, the `Get<bool>` method
+      would always return `true`, and the value would be `true` if the lowercase
+      string value matched `"1"` or `"true"` and `false` otherwise. Now,
+      the `Get<bool>` method returns `true` only if the lowercase value string
+      matches `"0"`, `"1"`, `"true"`, or `"false"` and returns `false`
+      otherwise.
+
 ## libsdformat 13.x to 14.x
 
 ### Additions
