@@ -2094,6 +2094,16 @@ int main(int argc, char **argv)
   gz::utils::setenv("LD_LIBRARY_PATH", testLibraryPath);
 #endif
 
+  // temporarily set HOME
+  std::string homeDir;
+  sdf::testing::TestTmpPath(homeDir);
+
+#ifdef _WIN32
+  gz::utils::setenv("HOMEPATH", homeDir);
+#else
+  gz::utils::setenv("HOME", homeDir);
+#endif
+
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

@@ -188,8 +188,6 @@ class Cmd
     if defined? RubyInstaller
       # RubyInstaller does not search for dlls in PATH or the directory that tests are running from,
       # so we'll add the parent directory of the plugin to the search path.
-      ENV['RUBY_DLL_PATH'] = ENV['PATH']
-      RubyInstaller::Runtime.enable_dll_search_paths
       # https://github.com/oneclick/rubyinstaller2/wiki/For-gem-developers#-dll-loading
       RubyInstaller::Runtime.add_dll_directory(File.dirname(plugin))
     end
