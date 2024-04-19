@@ -52,7 +52,7 @@ namespace sdf
 
     /// \brief Get the name of the animation.
     /// \return Name of the animation.
-    public: SDFORMAT_WARN_UNUSED const  std::string &Name() const;
+    public: SDFORMAT_WARN_UNUSED const std::string &Name() const;
 
     /// \brief Set the name of the animation.
     /// \param[in] _name Name of the animation.

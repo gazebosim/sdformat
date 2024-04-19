@@ -36,6 +36,7 @@
 #if __cplusplus >= 201703L
 #define SDFORMAT_WARN_UNUSED [[nodiscard]]
 #else
+#error "HELLO"
 #define SDFORMAT_WARN_UNUSED
 #endif
 
