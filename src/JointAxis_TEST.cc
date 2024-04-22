@@ -286,13 +286,13 @@ TEST(DOMJointAxis, ToElement)
   ASSERT_NE(nullptr, mimicElem);
   std::string mimicJointName;
   mimicJointName = mimicElem->Get<std::string>(
-      errors, "joint", mimicJointName).first;
+      errors, "joint", "").first;
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("test_joint", mimicJointName);
 
   std::string mimicAxisName;
   mimicAxisName = mimicElem->Get<std::string>(
-      errors, "axis", mimicAxisName).first;
+      errors, "axis", "").first;
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("axis2", mimicAxisName);
 
