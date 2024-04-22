@@ -296,21 +296,21 @@ TEST(DOMJointAxis, ToElement)
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("axis2", mimicAxisName);
 
-  double multiplier = 0.0;
+  double multiplier;
   multiplier = mimicElem->Get<double>(
-      errors, "multiplier", multiplier).first;
+      errors, "multiplier", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(5.0, multiplier);
 
-  double offset = 0.0;
+  double offset;
   offset = mimicElem->Get<double>(
-      errors, "offset", offset).first;
+      errors, "offset", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1.0, offset);
 
-  double reference = 0.0;
+  double reference;
   reference = mimicElem->Get<double>(
-      errors, "reference", reference).first;
+      errors, "reference", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(2.0, reference);
 
