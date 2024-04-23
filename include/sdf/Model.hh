@@ -77,12 +77,12 @@ namespace sdf
     /// are valid.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors ValidateGraphs() const;
+    public: [[nodiscard]] Errors ValidateGraphs() const;
 
     /// \brief Get the name of the model.
     /// The name of the model should be unique within the scope of a World.
     /// \return Name of the model.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the model.
     /// The name of the model should be unique within the scope of a World.
@@ -93,7 +93,7 @@ namespace sdf
     /// A static model is one that is not subject to physical forces (in other
     /// words, it's purely kinematic instead of dynamic).
     /// \return true if the model should be static, false if it is dynamic.
-    public: bool Static() const;
+    public: [[nodiscard]] bool Static() const;
 
     /// \brief Set this model to be static or not static.
     /// \param[in] _static True or false depending on whether the model should
@@ -106,7 +106,7 @@ namespace sdf
     /// into contact. If a model is not self-colliding, its links will pass
     /// through each other.
     /// \return true if the model should self-collide, false otherwise.
-    public: bool SelfCollide() const;
+    public: [[nodiscard]] bool SelfCollide() const;
 
     /// \brief Set this model to self-collide or not self-collide.
     /// \param[in] _selfCollide True or false depending on whether the model
@@ -118,7 +118,7 @@ namespace sdf
     /// If auto-disable is allowed, a model that is at rest can choose to not
     /// update its dynamics.
     /// \return true if auto-disable is allowed for this model
-    public: bool AllowAutoDisable() const;
+    public: [[nodiscard]] bool AllowAutoDisable() const;
 
     /// \brief Set this model to allow auto-disabling.
     /// \param[in] _allowAutoDisable True or false depending on whether the
@@ -130,7 +130,7 @@ namespace sdf
     /// If true, all links in the model should be affected by the wind. This can
     /// be overridden per link.
     /// \return true if the model should be subject to wind, false otherwise.
-    public: bool EnableWind() const;
+    public: [[nodiscard]] bool EnableWind() const;
 
     /// \brief Set whether this model should be subject to wind.
     /// \param[in] _enableWind True or false depending on whether the model
@@ -142,14 +142,14 @@ namespace sdf
     /// \remark LinkByName() can find links that are not immediate children of
     /// this Model object.
     /// \return Number of links contained in this Model object.
-    public: uint64_t LinkCount() const;
+    public: [[nodiscard]] uint64_t LinkCount() const;
 
     /// \brief Get an immediate (not nested) child link based on an index.
     /// \param[in] _index Index of the link. The index should be in the
     /// range [0..LinkCount()).
     /// \return Pointer to the link. Nullptr if the index does not exist.
     /// \sa uint64_t LinkCount() const
-    public: const Link *LinkByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Link *LinkByIndex(const uint64_t _index) const;
 
     /// \brief Get an immediate (not nested) mutable child link based on an
     /// index.
@@ -164,7 +164,7 @@ namespace sdf
     /// To get a link in a nested model, prefix the link name with the
     /// sequence of nested models containing this link, delimited by "::".
     /// \return Pointer to the link. Nullptr if the name does not exist.
-    public: const Link *LinkByName(const std::string &_name) const;
+    public: [[nodiscard]] const Link *LinkByName(const std::string &_name) const;
 
     /// \brief Get a mutable link based on a name.
     /// \param[in] _name Name of the link.
@@ -178,21 +178,21 @@ namespace sdf
     /// To check for a link in a nested model, prefix the link name with
     /// the sequence of nested models containing this link, delimited by "::".
     /// \return True if there exists a link with the given name.
-    public: bool LinkNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool LinkNameExists(const std::string &_name) const;
 
     /// \brief Get the number of joints that are immediate (not nested) children
     /// of this Model object.
     /// \remark JointByName() can find joints that are not immediate children of
     /// this Model object.
     /// \return Number of joints contained in this Model object.
-    public: uint64_t JointCount() const;
+    public: [[nodiscard]] uint64_t JointCount() const;
 
     /// \brief Get an immediate (not nested) child joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
     /// \sa uint64_t JointCount() const
-    public: const Joint *JointByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Joint *JointByIndex(const uint64_t _index) const;
 
     /// \brief Get an immediate (not nested) mutable child joint based on an
     /// index.
@@ -207,7 +207,7 @@ namespace sdf
     /// To check for a joint in a nested model, prefix the joint name with
     /// the sequence of nested models containing this joint, delimited by "::".
     /// \return True if there exists a joint with the given name.
-    public: bool JointNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool JointNameExists(const std::string &_name) const;
 
     /// \brief Get a joint based on a name.
     /// \param[in] _name Name of the joint.
@@ -216,7 +216,7 @@ namespace sdf
     /// \return Pointer to the joint. Nullptr if a joint with the given name
     ///  does not exist.
     /// \sa bool JointNameExists(const std::string &_name) const
-    public: const Joint *JointByName(const std::string &_name) const;
+    public: [[nodiscard]] const Joint *JointByName(const std::string &_name) const;
 
     /// \brief Get a mubtable joint based on a name.
     /// \param[in] _name Name of the joint.
@@ -232,7 +232,7 @@ namespace sdf
     /// \remark FrameByName() can find explicit frames that are not immediate
     /// children of this Model object.
     /// \return Number of explicit frames contained in this Model object.
-    public: uint64_t FrameCount() const;
+    public: [[nodiscard]] uint64_t FrameCount() const;
 
     /// \brief Get an immediate (not nested) child explicit frame based on an
     /// index.
@@ -241,7 +241,7 @@ namespace sdf
     /// \return Pointer to the explicit frame. Nullptr if the index does not
     /// exist.
     /// \sa uint64_t FrameCount() const
-    public: const Frame *FrameByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Frame *FrameByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable immediate (not nested) child explicit frame based
     /// on an index.
@@ -258,7 +258,7 @@ namespace sdf
     /// sequence of nested models containing this frame, delimited by "::".
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
-    public: const Frame *FrameByName(const std::string &_name) const;
+    public: [[nodiscard]] const Frame *FrameByName(const std::string &_name) const;
 
     /// \brief Get a mutable explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
@@ -273,14 +273,14 @@ namespace sdf
     /// To check for a frame in a nested model, prefix the frame name with
     /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists an explicit frame with the given name.
-    public: bool FrameNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool FrameNameExists(const std::string &_name) const;
 
     /// \brief Get the number of nested models that are immediate (not
     /// recursively nested) children of this Model object.
     /// \remark ModelByName() can find nested models that are not immediate
     /// children of this Model object.
     /// \return Number of nested models contained in this Model object.
-    public: uint64_t ModelCount() const;
+    public: [[nodiscard]] uint64_t ModelCount() const;
 
     /// \brief Get an immediate (not recursively nested) child model based on an
     /// index.
@@ -288,7 +288,7 @@ namespace sdf
     /// range [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
     /// \sa uint64_t ModelCount() const
-    public: const Model *ModelByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Model *ModelByIndex(const uint64_t _index) const;
 
     /// \brief Get an immediate (not recursively nested) mutable child model
     // based on an index.
@@ -303,7 +303,7 @@ namespace sdf
     /// To check for a model nested in other models, prefix the model name
     /// with the sequence of nested model names, delimited by "::".
     /// \return True if there exists a nested model with the given name.
-    public: bool ModelNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool ModelNameExists(const std::string &_name) const;
 
     /// \brief Get a nested model based on a name.
     /// \param[in] _name Name of the nested model.
@@ -312,7 +312,7 @@ namespace sdf
     /// \return Pointer to the model. Nullptr if a model with the given name
     ///  does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
-    public: const Model *ModelByName(const std::string &_name) const;
+    public: [[nodiscard]] const Model *ModelByName(const std::string &_name) const;
 
     /// \brief Get a mutable nested model based on a name.
     /// \param[in] _name Name of the nested model.
@@ -328,7 +328,7 @@ namespace sdf
     /// typically used to express the position and rotation of a model in a
     /// global coordinate frame.
     /// \return The pose of the model.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the model.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -337,13 +337,13 @@ namespace sdf
 
     /// \brief Get the model's canonical link
     /// \return An immutable pointer to the canonical link
-    public: const Link *CanonicalLink() const;
+    public: [[nodiscard]] const Link *CanonicalLink() const;
 
     /// \brief Get the name of the model's canonical link. An empty value
     /// indicates that the first link in the model or the first link found
     /// in a depth first search of nested models is the canonical link.
     /// \return The name of the canonical link.
-    public: const std::string &CanonicalLinkName() const;
+    public: [[nodiscard]] const std::string &CanonicalLinkName() const;
 
     /// \brief Set the name of the model's canonical link. An empty value
     /// indicates that the first link in the model or the first link found
@@ -355,7 +355,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent model/world coordinate frame.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -367,16 +367,16 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get the name of the placement frame of the model.
     /// \return Name of the placement frame attribute of the model.
-    public: const std::string &PlacementFrameName() const;
+    public: [[nodiscard]] const std::string &PlacementFrameName() const;
 
     /// \brief Set the name of the placement frame of the model.
     /// The specified placement frame must exist within the model.
@@ -390,14 +390,14 @@ namespace sdf
     // TODO(addisu): If the canonical link is inside an interface model, this
     // function returns {nullptr, name}. This can be problematic for downstream
     // applications.
-    public: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
+    public: [[nodiscard]] std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
         const;
 
     /// \brief Get the number of nested interface models that are immediate (not
     /// recursively nested) children of this Model object.
     /// \return Number of nested interface models contained in this Model
     /// object.
-    public: uint64_t InterfaceModelCount() const;
+    public: [[nodiscard]] uint64_t InterfaceModelCount() const;
 
     /// \brief Get an immediate (not recursively nested) child interface model
     /// based on an index.
@@ -405,7 +405,7 @@ namespace sdf
     /// be in the range [0..InterfaceModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
     /// \sa uint64_t InterfaceModelCount() const
-    public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
+    public: [[nodiscard]] std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
                 const uint64_t _index) const;
 
     /// \brief Get the nested include information of an immediate (not
@@ -415,7 +415,7 @@ namespace sdf
     /// \return Pointer to the nested include information. Nullptr if the index
     /// does not exist.
     /// \sa uint64_t InterfaceModelCount() const
-    public: const NestedInclude *InterfaceModelNestedIncludeByIndex(
+    public: [[nodiscard]] const NestedInclude *InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
     /// \brief Create and return an SDF element filled with data from this
@@ -432,7 +432,7 @@ namespace sdf
     /// is loaded from an `<include>` tag since the parser will
     /// automatically expand an `<include>` element to a `<model>` element.
     /// \return SDF element pointer with updated model values.
-    public: sdf::ElementPtr ToElement(
+    public: [[nodiscard]] sdf::ElementPtr ToElement(
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Check if a given name exists in the FrameAttachedTo graph at the
@@ -444,7 +444,7 @@ namespace sdf
     /// False otherwise, or if the frame graph is invalid.
     /// \note This function assumes the model has a valid FrameAttachedTo graph.
     /// It will return false if the graph is invalid.
-    public: bool NameExistsInFrameAttachedToGraph(
+    public: [[nodiscard]] bool NameExistsInFrameAttachedToGraph(
                 const std::string &_name) const;
 
     /// \brief Add a link to the model.
@@ -485,7 +485,7 @@ namespace sdf
 
     /// \brief Get the URI associated with this model
     /// \return The model's URI, or empty string if it has not been set.
-    public: std::string Uri() const;
+    public: [[nodiscard]] std::string Uri() const;
 
     /// \brief Set the URI associated with this model.
     /// \param[in] _uri The model's URI.
@@ -494,7 +494,7 @@ namespace sdf
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
@@ -534,13 +534,13 @@ namespace sdf
 
     /// \brief Get the list of merged interface models.
     /// \return The list of merged interface models.
-    private: const std::vector<std::pair<std::optional<sdf::NestedInclude>,
+    private: [[nodiscard]] const std::vector<std::pair<std::optional<sdf::NestedInclude>,
              sdf::InterfaceModelConstPtr>> &MergedInterfaceModels() const;
 
     /// \brief Get whether the model was merge-included and needs to be
     /// processed to carry out the merge.
     /// \return True if the model was merge-included.
-    private: bool IsMerged() const;
+    private: [[nodiscard]] bool IsMerged() const;
 
     /// \brief Prepare the model to be merged into the parent model or world.
     /// As part of the perparation, this will create the proxy frame that would

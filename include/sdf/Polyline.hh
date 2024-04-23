@@ -47,7 +47,7 @@ namespace sdf
 
     /// \brief Get the polyline's height in meters.
     /// \return The height of the polyline in meters.
-    public: double Height() const;
+    public: [[nodiscard]] double Height() const;
 
     /// \brief Set the polyline's height in meters.
     /// \param[in] _height The height of the polyline in meters.
@@ -55,11 +55,11 @@ namespace sdf
 
     /// \brief Get the number of points.
     /// \return Number of points.
-    public: uint64_t PointCount() const;
+    public: [[nodiscard]] uint64_t PointCount() const;
 
     /// \brief Get a point by its index.
     /// \return Constant pointer to the point.
-    public: const gz::math::Vector2d *PointByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const gz::math::Vector2d *PointByIndex(uint64_t _index) const;
 
     /// \brief Get a point by its index.
     /// \return Mutable pointer to the point.
@@ -76,20 +76,20 @@ namespace sdf
     /// \brief Get the polyline's points. Each point has 2D coordinates in
     /// meters.
     /// \return The polyline's points.
-    public: const std::vector<gz::math::Vector2d> &Points() const;
+    public: [[nodiscard]] const std::vector<gz::math::Vector2d> &Points() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// polyline.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated polyline values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// polyline.

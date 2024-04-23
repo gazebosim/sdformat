@@ -98,7 +98,7 @@ namespace sdf
     /// \brief Get the name of the joint.
     /// The name of the joint must be unique within the scope of a Model.
     /// \return Name of the joint.
-    public: const std::string &Name() const;
+    public: [[nodiscard]] const std::string &Name() const;
 
     /// \brief Set the name of the joint.
     /// The name of the joint must be unique within the scope of a Model.
@@ -107,7 +107,7 @@ namespace sdf
 
     /// \brief Get the joint type
     /// \return Type of joint.
-    public: JointType Type() const;
+    public: [[nodiscard]] JointType Type() const;
 
     /// \brief Set the joint type
     /// \param[in] _jointType The type of joint.
@@ -115,7 +115,7 @@ namespace sdf
 
     /// \brief Get the name of this joint's parent frame.
     /// \return The name of the parent frame.
-    public: const std::string &ParentName() const;
+    public: [[nodiscard]] const std::string &ParentName() const;
 
     /// \brief Set the name of the parent frame.
     /// \param[in] _name Name of the parent frame.
@@ -123,7 +123,7 @@ namespace sdf
 
     /// \brief Get the name of this joint's child frame.
     /// \return The name of the child frame.
-    public: const std::string &ChildName() const;
+    public: [[nodiscard]] const std::string &ChildName() const;
 
     /// \brief Set the name of the child frame.
     /// \param[in] _name Name of the child frame.
@@ -132,7 +132,7 @@ namespace sdf
     /// \brief Get the name of this joint's parent link.
     /// \return The name of the parent link.
     /// \deprecated Use ParentName.
-    public: GZ_DEPRECATED(13) const std::string &ParentLinkName() const;
+    public: [[nodiscard]] GZ_DEPRECATED(13) const std::string &ParentLinkName() const;
 
     /// \brief Set the name of the parent link.
     /// \param[in] _name Name of the parent link.
@@ -142,7 +142,7 @@ namespace sdf
     /// \brief Get the name of this joint's child link.
     /// \return The name of the child link.
     /// \deprecated Use ChildName.
-    public: GZ_DEPRECATED(13) const std::string &ChildLinkName() const;
+    public: [[nodiscard]] GZ_DEPRECATED(13) const std::string &ChildLinkName() const;
 
     /// \brief Set the name of the child link.
     /// \param[in] _name Name of the child link.
@@ -169,7 +169,7 @@ namespace sdf
     /// \return A JointAxis for either the first or second joint axis. A
     /// return value of nullptr indicates that the axis is not
     /// specified.
-    public: const JointAxis *Axis(const unsigned int _index = 0) const;
+    public: [[nodiscard]] const JointAxis *Axis(const unsigned int _index = 0) const;
 
     /// \brief Set a joint axis.
     /// \param[in] _index This value specifies which axis to set. A value of
@@ -184,7 +184,7 @@ namespace sdf
     /// Transformations have not been applied to the return value.
     /// \return The pose of the joint. This is the raw pose value, as set in
     /// the SDF file.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the joint.
     /// \sa const gz::math::Pose3d &RawPose() const;
@@ -195,7 +195,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the child link frame.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -207,7 +207,7 @@ namespace sdf
     /// revolution around the joint axis (only valid for screw joints).
     /// \return The thread pitch with units of meters per revolution with a
     /// positive value corresponding to a right-handed thread.
-    public: double ScrewThreadPitch() const;
+    public: [[nodiscard]] double ScrewThreadPitch() const;
 
     /// \brief Set the thread pitch (only valid for screw joints).
     /// \param[in] _threadPitch The thread pitch with units of meters per
@@ -218,7 +218,7 @@ namespace sdf
     /// screw joints). This will be deprecated in a future version.
     /// \return The thread pitch with units of radians / meters and a positive
     /// value coresponding to a left-handed thread.
-    public: double ThreadPitch() const;
+    public: [[nodiscard]] double ThreadPitch() const;
 
     /// \brief Set the thread pitch in gazebo-classic format (only valid for
     /// screw joints). This will be deprecated in a future version.
@@ -230,23 +230,23 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get the number of sensors.
     /// \return Number of sensors contained in this Joint object.
-    public: uint64_t SensorCount() const;
+    public: [[nodiscard]] uint64_t SensorCount() const;
 
     /// \brief Get a sensor based on an index.
     /// \param[in] _index Index of the sensor. The index should be in the
     /// range [0..SensorCount()).
     /// \return Pointer to the sensor. Nullptr if the index does not exist.
     /// \sa uint64_t SensorCount() const
-    public: const Sensor *SensorByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Sensor *SensorByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable sensor based on an index.
     /// \param[in] _index Index of the sensor. The index should be in the
@@ -258,14 +258,14 @@ namespace sdf
     /// \brief Get whether a sensor name exists.
     /// \param[in] _name Name of the sensor to check.
     /// \return True if there exists a sensor with the given name.
-    public: bool SensorNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool SensorNameExists(const std::string &_name) const;
 
     /// \brief Get a sensor based on a name.
     /// \param[in] _name Name of the sensor.
     /// \return Pointer to the sensor. Nullptr if a sensor with the given name
     ///  does not exist.
     /// \sa bool SensorNameExists(const std::string &_name) const
-    public: const Sensor *SensorByName(const std::string &_name) const;
+    public: [[nodiscard]] const Sensor *SensorByName(const std::string &_name) const;
 
     /// \brief Get a mutable sensor based on a name.
     /// \param[in] _name Name of the sensor.
@@ -279,7 +279,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated joint values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Add a sensors to the joint.
     /// \param[in] _sensor Sensor to add.

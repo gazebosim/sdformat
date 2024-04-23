@@ -41,11 +41,11 @@ class SDFORMAT_VISIBLE InterfaceLink
 
   /// \brief Get the name of the link.
   /// \return Local name of the link.
-  public: const std::string &Name() const;
+  public: [[nodiscard]] const std::string &Name() const;
 
   /// \brief Get the pose of this link in the parent model frame.
   /// \return The pose of this link in the parent model frame.
-  public: const gz::math::Pose3d &PoseInModelFrame() const;
+  public: [[nodiscard]] const gz::math::Pose3d &PoseInModelFrame() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

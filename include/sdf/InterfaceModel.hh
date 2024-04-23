@@ -76,29 +76,29 @@ class SDFORMAT_VISIBLE InterfaceModel
 
   /// \brief Get the name of the model.
   /// \return Local name of the model.
-  public: const std::string &Name() const;
+  public: [[nodiscard]] const std::string &Name() const;
 
   /// \brief Get whether the model is static.
   /// \return Whether the model is static.
-  public: bool Static() const;
+  public: [[nodiscard]] bool Static() const;
 
   /// \brief Get the canonical link name.
   /// \remark Unlike Model::CanonicalLinkName which simply returns
   /// the value of //model/@canonical_link without resolving to an actual link,
   /// this function returns the resolved canonical link name.
   /// \return Canonical link name of the model.
-  public: const std::string &CanonicalLinkName() const;
+  public: [[nodiscard]] const std::string &CanonicalLinkName() const;
 
   /// \brief Get the pose of this model in the parent frame.
   /// \return Pose of this model in the parent model frame.
-  public: const gz::math::Pose3d &ModelFramePoseInParentFrame() const;
+  public: [[nodiscard]] const gz::math::Pose3d &ModelFramePoseInParentFrame() const;
 
   /// \brief Provided so that hierarchy can still be leveraged from SDFormat.
   /// \param[in] _nestedModel A child interface model.
   public: void AddNestedModel(sdf::InterfaceModelConstPtr _nestedModel);
 
   /// \brief Gets registered nested models.
-  public: const std::vector<sdf::InterfaceModelConstPtr> &NestedModels() const;
+  public: [[nodiscard]] const std::vector<sdf::InterfaceModelConstPtr> &NestedModels() const;
 
   /// \brief Add an interface frame. Provided so that the including SDFormat
   /// model can still interface with the declared frames.
@@ -106,7 +106,7 @@ class SDFORMAT_VISIBLE InterfaceModel
   public: void AddFrame(sdf::InterfaceFrame _frame);
 
   /// \brief Gets registered frames.
-  public: const std::vector<sdf::InterfaceFrame> &Frames() const;
+  public: [[nodiscard]] const std::vector<sdf::InterfaceFrame> &Frames() const;
 
   /// \brief Add an interface joint. Provided so that the including SDFormat
   /// model can still interface with the declared joints.
@@ -114,7 +114,7 @@ class SDFORMAT_VISIBLE InterfaceModel
   public: void AddJoint(sdf::InterfaceJoint _joint);
 
   /// \brief Gets registered joints.
-  public: const std::vector<sdf::InterfaceJoint> &Joints() const;
+  public: [[nodiscard]] const std::vector<sdf::InterfaceJoint> &Joints() const;
 
   /// \brief Add an interface link. Provided so that the including SDFormat
   /// model can still interface with the declared links.
@@ -122,11 +122,11 @@ class SDFORMAT_VISIBLE InterfaceModel
   public: void AddLink(sdf::InterfaceLink _link);
 
   /// \brief Gets registered links.
-  public: const std::vector<sdf::InterfaceLink> &Links() const;
+  public: [[nodiscard]] const std::vector<sdf::InterfaceLink> &Links() const;
 
   /// \brief Whether the custom parser supports merge-include.
   /// \return True if the custom parser supports merge-include
-  public: bool ParserSupportsMergeInclude() const;
+  public: [[nodiscard]] bool ParserSupportsMergeInclude() const;
 
   /// \brief Set whether the custom parser supports merge-include.
   /// \brief[in] _val True if the custom parser supports merge-include.

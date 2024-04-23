@@ -48,7 +48,7 @@ namespace sdf
 
     /// \brief Get the sphere's radius in meters.
     /// \return The radius of the sphere in meters.
-    public: double Radius() const;
+    public: [[nodiscard]] double Radius() const;
 
     /// \brief Set the sphere's radius in meters.
     /// \param[in] _radius The radius of the sphere in meters.
@@ -56,7 +56,7 @@ namespace sdf
 
     /// \brief Get the Gazebo Math representation of this Sphere.
     /// \return A const reference to a gz::math::Sphered object.
-    public: const gz::math::Sphered &Shape() const;
+    public: [[nodiscard]] const gz::math::Sphered &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Sphere.
     /// \return A reference to a gz::math::Sphered object.
@@ -66,7 +66,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Calculate and return the Inertial values for the Sphere. In
     /// order to calculate the inertial properties, the function mutates the
@@ -81,7 +81,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sphere values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// sphere.

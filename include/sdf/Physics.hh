@@ -48,7 +48,7 @@ namespace sdf
 
     /// \brief Get the name of this set of physics parameters.
     /// \return Name of the physics profile.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of this set of physics parameters.
     /// \param[in] _name Name of the physics profile.
@@ -58,7 +58,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get whether this physics profile is marked as default.
     /// If true, this physics profile is set as the default physics profile
@@ -66,7 +66,7 @@ namespace sdf
     /// physics profile marked as default is chosen. If no default physics
     /// element exists, the first physics element is chosen.
     /// \return True if this profile is the default.
-    public: bool IsDefault() const;
+    public: [[nodiscard]] bool IsDefault() const;
 
     /// \brief Set whether this physics profile is the default.
     /// \param[in] _default True to make this profile default.
@@ -76,7 +76,7 @@ namespace sdf
     /// Current options are ode, bullet, simbody and dart. Defaults to ode if
     /// left unspecified.
     /// \return The type of dynamics engine.
-    public: std::string EngineType() const;
+    public: [[nodiscard]] std::string EngineType() const;
 
     /// \brief Set the physics profile dynamics engine type.
     /// \param[in] _type The type of dynamics engine.
@@ -86,7 +86,7 @@ namespace sdf
     /// The Maximum time step size at which every system in simulation can
     /// interact with the states of the world.
     /// \return The max step size in seconds.
-    public: double MaxStepSize() const;
+    public: [[nodiscard]] double MaxStepSize() const;
 
     /// \brief Set the max step size in seconds.
     /// \param[in] _step The max step size in seconds.
@@ -96,7 +96,7 @@ namespace sdf
     /// Target simulation speedup factor, defined by ratio of simulation time
     /// to real-time.
     /// \return The target real time factor.
-    public: double RealTimeFactor() const;
+    public: [[nodiscard]] double RealTimeFactor() const;
 
     /// \brief Set the target realtime factor.
     /// \param[in] _factor The target real time factor.
@@ -106,7 +106,7 @@ namespace sdf
     /// entities. This value can be overridden by a max_contacts element in a
     /// collision element.
     /// \return Maximum number of contacts.
-    public: int MaxContacts() const;
+    public: [[nodiscard]] int MaxContacts() const;
 
     /// \brief Set the maximum number of contacts allowed between two
     /// entities. This value can be overridden by a max_contacts element in a
@@ -119,7 +119,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated physics values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// physics.

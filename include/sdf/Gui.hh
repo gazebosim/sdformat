@@ -43,7 +43,7 @@ namespace sdf
 
     /// \brief Get whether the Gui should be fullscreen.
     /// \return True if the Gui should be fullscreen.
-    public: bool Fullscreen() const;
+    public: [[nodiscard]] bool Fullscreen() const;
 
     /// \brief Set whether the Gui should be full screen.
     /// \param[in] _fullscreen True indicates that the Gui should be
@@ -60,25 +60,25 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// gui.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated gui values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Get the number of plugins.
     /// \return Number of plugins contained in this Gui object.
-    public: uint64_t PluginCount() const;
+    public: [[nodiscard]] uint64_t PluginCount() const;
 
     /// \brief Get a plugin based on an index.
     /// \param[in] _index Index of the plugin. The index should be in the
     /// range [0..PluginCount()).
     /// \return Pointer to the plugin. Nullptr if the index does not exist.
     /// \sa uint64_t PluginCount() const
-    public: const Plugin *PluginByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Plugin *PluginByIndex(const uint64_t _index) const;
 
     /// \brief Remove all plugins
     public: void ClearPlugins();
@@ -90,7 +90,7 @@ namespace sdf
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

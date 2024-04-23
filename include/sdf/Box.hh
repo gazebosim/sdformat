@@ -48,7 +48,7 @@ namespace sdf
 
     /// \brief Get the box size in meters.
     /// \return Size of the box in meters.
-    public: gz::math::Vector3d Size() const;
+    public: [[nodiscard]] gz::math::Vector3d Size() const;
 
     /// \brief Set the box size in meters.
     /// \param[in] _size Size of the box in meters.
@@ -58,11 +58,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Box.
     /// \return A const reference to a gz::math::Boxd object.
-    public: const gz::math::Boxd &Shape() const;
+    public: [[nodiscard]] const gz::math::Boxd &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Box.
     /// \return A reference to a gz::math::Boxd object.
@@ -81,7 +81,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated box values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// box.

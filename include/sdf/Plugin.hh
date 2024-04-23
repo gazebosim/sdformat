@@ -92,7 +92,7 @@ namespace sdf
     /// The name of the plugin should be unique within the scope of its
     /// parent.
     /// \return Name of the plugin.
-    public: const std::string &Name() const;
+    public: [[nodiscard]] const std::string &Name() const;
 
     /// \brief Set the name of the plugin.
     /// The name of the plugin should be unique within the scope of its
@@ -102,7 +102,7 @@ namespace sdf
 
     /// \brief Get the filename of the shared library.
     /// \return Filename of the shared library associated with the plugin.
-    public: const std::string &Filename() const;
+    public: [[nodiscard]] const std::string &Filename() const;
 
     /// \brief Remove the contents of the plugin, this is everything that
     /// is a child element of the `<plugin>`.
@@ -111,7 +111,7 @@ namespace sdf
     /// \brief Get the plugin contents. This is all the SDF elements that
     /// are children of the `<plugin>`.
     /// \return The child elements of this plugin.
-    public: const std::vector<sdf::ElementPtr> &Contents() const;
+    public: [[nodiscard]] const std::vector<sdf::ElementPtr> &Contents() const;
 
     /// \brief Insert an element into the plugin content. This does not
     /// modify the values in the sdf::ElementPtr returned by the `Element()`
@@ -156,14 +156,14 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// plugin.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated plugin values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// plugin.

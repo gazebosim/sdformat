@@ -44,7 +44,7 @@ namespace sdf
 
     /// \brief Get time of day [0..24]
     /// \return Time of day
-    public: double Time() const;
+    public: [[nodiscard]] double Time() const;
 
     /// \brief Set time of day
     /// \param[in] _time Time of day [0..24]
@@ -52,7 +52,7 @@ namespace sdf
 
     /// \brief Get sunrise time
     /// \return sunrise time [0..24]
-    public: double Sunrise() const;
+    public: [[nodiscard]] double Sunrise() const;
 
     /// \brief Set Sunrise time
     /// \param[in] _time Sunrise time [0..24]
@@ -60,7 +60,7 @@ namespace sdf
 
     /// \brief Get sunset time
     /// \return sunset time [0..24]
-    public: double Sunset() const;
+    public: [[nodiscard]] double Sunset() const;
 
     /// \brief Set Sunset time
     /// \param[in] _time Sunset time [0..24]
@@ -68,7 +68,7 @@ namespace sdf
 
     /// \brief Get cloud speed
     /// \return cloud speed in meters per second
-    public: double CloudSpeed() const;
+    public: [[nodiscard]] double CloudSpeed() const;
 
     /// \brief Set cloud speed
     /// \param[in] _speed cloud speed in meters per second.
@@ -76,7 +76,7 @@ namespace sdf
 
     /// \brief Get cloud direction angle (angle around up axis)
     /// \return cloud direction angle in world frame
-    public: gz::math::Angle CloudDirection() const;
+    public: [[nodiscard]] gz::math::Angle CloudDirection() const;
 
     /// \brief Set cloud direction angle (angle around up axis)
     /// \param[in] _angle Cloud direction angle in world frame.
@@ -84,7 +84,7 @@ namespace sdf
 
     /// \brief Get cloud humidity
     /// \return cloud humidity [0..1]
-    public: double CloudHumidity() const;
+    public: [[nodiscard]] double CloudHumidity() const;
 
     /// \brief Set cloud humidity
     /// \param[in] _humidity cloud humidity [0..1]
@@ -92,7 +92,7 @@ namespace sdf
 
     /// \brief Get cloud mean size
     /// \return cloud mean size [0..1]
-    public: double CloudMeanSize() const;
+    public: [[nodiscard]] double CloudMeanSize() const;
 
     /// \brief Set cloud mean siz
     /// \param[in] _size cloud mean size [0..1]
@@ -100,7 +100,7 @@ namespace sdf
 
     /// \brief Get cloud ambient color
     /// \return cloud ambient color
-    public: gz::math::Color CloudAmbient() const;
+    public: [[nodiscard]] gz::math::Color CloudAmbient() const;
 
     /// \brief Set cloud ambient color
     /// \param[in] _ambient cloud ambient color
@@ -108,7 +108,7 @@ namespace sdf
 
     /// \brief Get the skybox texture URI.
     /// \return The URI of the skybox texture.
-    public: const std::string &CubemapUri() const;
+    public: [[nodiscard]] const std::string &CubemapUri() const;
 
     /// \brief Set the skybox texture URI.
     /// \param[in] _uri The URI of the skybox texture.
@@ -134,14 +134,14 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// sky.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sky values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// sky.

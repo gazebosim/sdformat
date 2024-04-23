@@ -54,7 +54,7 @@ namespace sdf
 
     /// \brief Get the ambient color of the scene
     /// \return Scene ambient color
-    public: gz::math::Color Ambient() const;
+    public: [[nodiscard]] gz::math::Color Ambient() const;
 
     /// \brief Set the ambient color of the scene
     /// \param[in] _ambient Ambient color to set to
@@ -62,7 +62,7 @@ namespace sdf
 
     /// \brief Get the background color of the scene
     /// \return Scene background color
-    public: gz::math::Color Background() const;
+    public: [[nodiscard]] gz::math::Color Background() const;
 
     /// \brief Set the background color of the scene
     /// \param[in] _background Background color to set to
@@ -70,7 +70,7 @@ namespace sdf
 
     /// \brief Get whether grid is enabled
     /// \return True if grid is enabled
-    public: bool Grid() const;
+    public: [[nodiscard]] bool Grid() const;
 
     /// \brief Set whether the grid should be enabled
     /// \param[in] enabled True to enable grid
@@ -78,7 +78,7 @@ namespace sdf
 
     /// \brief Get whether origin visual is enabled
     /// \return True if origin visual is enabled
-    public: bool OriginVisual() const;
+    public: [[nodiscard]] bool OriginVisual() const;
 
     /// \brief Set whether the origin visual should be enabled
     /// \param[in] enabled True to enable origin visual
@@ -86,7 +86,7 @@ namespace sdf
 
     /// \brief Get whether shadows are enabled
     /// \return True if shadows are enabled
-    public: bool Shadows() const;
+    public: [[nodiscard]] bool Shadows() const;
 
     /// \brief Set whether shadows should be enabled
     /// \param[in] enabled True to enable shadows
@@ -98,20 +98,20 @@ namespace sdf
 
     /// \brief Get sky
     /// \return Sky
-    public: const sdf::Sky *Sky() const;
+    public: [[nodiscard]] const sdf::Sky *Sky() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// scene.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated scene values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// scene.

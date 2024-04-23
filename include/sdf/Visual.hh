@@ -70,7 +70,7 @@ namespace sdf
     /// \brief Get the name of the visual.
     /// The name of the visual must be unique within the scope of a Link.
     /// \return Name of the visual.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the visual.
     /// The name of the visual must be unique within the scope of a Link.
@@ -79,7 +79,7 @@ namespace sdf
 
     /// \brief Get whether the visual casts shadows
     /// \return True if the visual casts shadows, false otherwise
-    public: bool CastShadows() const;
+    public: [[nodiscard]] bool CastShadows() const;
 
     /// \brief Set whether the visual casts shadows
     /// \param[in] _castShadows True to cast shadows, false to not cast shadows
@@ -87,7 +87,7 @@ namespace sdf
 
     /// \brief Get the transparency value of the visual
     /// \return Transparency value
-    public: float Transparency() const;
+    public: [[nodiscard]] float Transparency() const;
 
     /// \brief Set the transparency value for the visual
     /// \param[in] _transparency Transparency value between 0 and 1
@@ -95,7 +95,7 @@ namespace sdf
 
     /// \brief Get a pointer to the visual's geometry.
     /// \return The visual's geometry.
-    public: const Geometry *Geom() const;
+    public: [[nodiscard]] const Geometry *Geom() const;
 
     /// \brief Set the visual's geometry
     /// \param[in] _geom The geometry of the visual object
@@ -105,7 +105,7 @@ namespace sdf
     /// visual as specified in SDF
     /// (<visual><pose> ... </pose></visual>).
     /// \return The pose of the visual object.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the visual object.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -116,7 +116,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -127,19 +127,19 @@ namespace sdf
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get a pointer to the visual's material properties. This can
     /// be a nullptr if material properties have not been set.
     /// \return Pointer to the visual's material properties. Nullptr
     /// indicates that material properties have not been set.
-    public: const sdf::Material *Material() const;
+    public: [[nodiscard]] const sdf::Material *Material() const;
 
     /// \brief Set the visual's material
     /// \param[in] _material The material of the visual object
@@ -147,7 +147,7 @@ namespace sdf
 
     /// \brief Get the visibility flags of a visual
     /// \return visibility flags
-    public: uint32_t VisibilityFlags() const;
+    public: [[nodiscard]] uint32_t VisibilityFlags() const;
 
     /// \brief Set the visibility flags of a visual
     /// \param[in] _flags visibility flags
@@ -161,11 +161,11 @@ namespace sdf
 
     /// \brief Get whether the lidar reflective intensity was set was set.
     /// \return True if the lidar reflective intensity was set was set.
-    public: bool HasLaserRetro() const;
+    public: [[nodiscard]] bool HasLaserRetro() const;
 
     /// \brief Get the flidar reflective intensity.
     /// \return The lidar reflective intensity.
-    public: double LaserRetro() const;
+    public: [[nodiscard]] double LaserRetro() const;
 
     /// \brief Set the lidar reflective intensity.
     /// \param[in] _laserRetro The lidar reflective intensity.
@@ -176,12 +176,12 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated visual values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

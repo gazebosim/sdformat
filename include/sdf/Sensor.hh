@@ -153,7 +153,7 @@ namespace sdf
     /// \brief Get the name of the sensor.
     /// The name of the sensor should be unique within the scope of a World.
     /// \return Name of the sensor.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the sensor.
     /// The name of the sensor should be unique within the scope of a World.
@@ -162,7 +162,7 @@ namespace sdf
 
     /// \brief Get the topic on which sensor data should be published.
     /// \return Topic for this sensor's data.
-    public: std::string Topic() const;
+    public: [[nodiscard]] std::string Topic() const;
 
     /// \brief Set the topic on which sensor data should be published.
     /// \param[in] _topic Topic for this sensor's data.
@@ -170,7 +170,7 @@ namespace sdf
 
     /// \brief Get flag state for enabling performance metrics publication.
     /// \return True if performance metrics are enabled, false otherwise.
-    public: bool EnableMetrics() const;
+    public: [[nodiscard]] bool EnableMetrics() const;
 
     /// \brief Set flag to enable publishing performance metrics
     /// \param[in] _enableMetrics True to enable.
@@ -181,7 +181,7 @@ namespace sdf
     /// typically used to express the position and rotation of a sensor in a
     /// global coordinate frame.
     /// \return The pose of the sensor.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the sensor.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -192,7 +192,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link/joint coordinate frame.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -203,20 +203,20 @@ namespace sdf
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// sensor.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// sensor.
@@ -228,7 +228,7 @@ namespace sdf
 
     /// \brief Get the sensor type.
     /// \return The sensor type.
-    public: SensorType Type() const;
+    public: [[nodiscard]] SensorType Type() const;
 
     /// \brief Set the sensor type.
     /// \param[in] _type The sensor type.
@@ -244,13 +244,13 @@ namespace sdf
 
     /// \brief Get the sensor type as a string.
     /// \return The sensor type as a string.
-    public: std::string TypeStr() const;
+    public: [[nodiscard]] std::string TypeStr() const;
 
     /// \brief Get the update rate in Hz.
     /// This is The frequency at which the sensor data is generated.
     /// If left unspecified (0.0), the sensor will generate data every cycle.
     /// \return The update rate in Hz.
-    public: double UpdateRate() const;
+    public: [[nodiscard]] double UpdateRate() const;
 
     /// \brief Set the update rate.
     /// This is The frequency at which the sensor data is generated.
@@ -274,7 +274,7 @@ namespace sdf
     /// \return Pointer to the Magnetometer sensor, or nullptr if this
     /// Sensor is not a Magnetometer.
     /// \sa SensorType Type() const
-    public: const Magnetometer *MagnetometerSensor() const;
+    public: [[nodiscard]] const Magnetometer *MagnetometerSensor() const;
 
     /// \brief Get a mutable magnetometer sensor, or nullptr if this sensor type
     /// is not a Magnetometer.
@@ -292,7 +292,7 @@ namespace sdf
     /// \return Pointer to the Altimeter sensor, or nullptr if this
     /// Sensor is not a Altimeter.
     /// \sa SensorType Type() const
-    public: const Altimeter *AltimeterSensor() const;
+    public: [[nodiscard]] const Altimeter *AltimeterSensor() const;
 
     /// \brief Get a mutable altimeter sensor, or nullptr if this sensor type
     /// is not an Altimeter.
@@ -310,7 +310,7 @@ namespace sdf
     /// \return Pointer to the AirPressure sensor, or nullptr if this
     /// Sensor is not a AirPressure sensor.
     /// \sa SensorType Type() const
-    public: const AirPressure *AirPressureSensor() const;
+    public: [[nodiscard]] const AirPressure *AirPressureSensor() const;
 
     /// \brief Get a mutable air pressure sensor, or nullptr if this sensor type
     /// is not an AirPressure sensor.
@@ -328,7 +328,7 @@ namespace sdf
     /// \return Pointer to the AirSpeed sensor, or nullptr if this
     /// Sensor is not a AirSpeed sensor.
     /// \sa SensorType Type() const
-    public: const AirSpeed *AirSpeedSensor() const;
+    public: [[nodiscard]] const AirSpeed *AirSpeedSensor() const;
 
     /// \brief Get a mutable air speed sensor, or nullptr if this sensor type
     /// is not an AirSpeed sensor.
@@ -350,7 +350,7 @@ namespace sdf
     /// \return Pointer to the sensor's camera, or nullptr if the sensor
     /// is not a camera.
     /// \sa SensorType Type() const
-    public: const Camera *CameraSensor() const;
+    public: [[nodiscard]] const Camera *CameraSensor() const;
 
     /// \brief Get a mutable camera sensor, or nullptr if the
     /// sensor does not contain a camera sensor.
@@ -368,7 +368,7 @@ namespace sdf
     /// \return Pointer to the sensor's NAVSAT, or nullptr if the sensor
     /// is not an NAVSAT.
     /// \sa SensorType Type() const
-    public: const NavSat *NavSatSensor() const;
+    public: [[nodiscard]] const NavSat *NavSatSensor() const;
 
     /// \brief Get a mutable NAVSAT sensor, or nullptr if the sensor
     /// does not contain an NAVSAT sensor.
@@ -386,7 +386,7 @@ namespace sdf
     /// \return Pointer to the force torque sensor, or nullptr if the sensor
     /// is not a force torque sensor.
     /// \sa SensorType Type() const
-    public: const ForceTorque *ForceTorqueSensor() const;
+    public: [[nodiscard]] const ForceTorque *ForceTorqueSensor() const;
 
     /// \brief Get a mutable force torque sensor, or nullptr if the sensor
     /// does not contain a force torque sensor.
@@ -404,7 +404,7 @@ namespace sdf
     /// \return Pointer to the sensor's IMU, or nullptr if the sensor
     /// is not an IMU.
     /// \sa SensorType Type() const
-    public: const Imu *ImuSensor() const;
+    public: [[nodiscard]] const Imu *ImuSensor() const;
 
     /// \brief Get a mutable IMU sensor, or nullptr if the sensor
     /// does not contain an IMU sensor.
@@ -418,7 +418,7 @@ namespace sdf
     /// \return Pointer to the Lidar sensor, or nullptr if this Sensor is not a
     /// Lidar.
     /// \sa SensorType Type() const
-    public: const Lidar *LidarSensor() const;
+    public: [[nodiscard]] const Lidar *LidarSensor() const;
 
     /// \brief Get a mutable lidar sensor, or nullptr if this sensor type is
     /// not a Lidar.
@@ -434,7 +434,7 @@ namespace sdf
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

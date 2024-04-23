@@ -83,7 +83,7 @@ namespace sdf
     /// an albedo map has not been set.
     /// \return Filename of the albedo map, or empty string if an albedo map
     /// has not been specified.
-    public: std::string AlbedoMap() const;
+    public: [[nodiscard]] std::string AlbedoMap() const;
 
     /// \brief Set the albedo map filename.
     /// \param[in] _map Filename of the albedo map.
@@ -93,7 +93,7 @@ namespace sdf
     /// a normal map has not been set.
     /// \return Filename of the normal map, or empty string if a normal map
     /// has not been specified.
-    public: std::string NormalMap() const;
+    public: [[nodiscard]] std::string NormalMap() const;
 
     /// \brief Set the normal map filename.
     /// \param[in] _map Filename of the normal map.
@@ -104,13 +104,13 @@ namespace sdf
 
     /// \brief Get the normal map type, either tangent or object space
     /// \return Space that the normal map is defined in
-    public: NormalMapSpace NormalMapType() const;
+    public: [[nodiscard]] NormalMapSpace NormalMapType() const;
 
     /// \brief Get the environment map filename. This will be an empty string
     /// if an environment map has not been set.
     /// \return Filename of the environment map, or empty string if an
     /// environment map has not been specified.
-    public: std::string EnvironmentMap() const;
+    public: [[nodiscard]] std::string EnvironmentMap() const;
 
     /// \brief Set the environment map filename.
     /// \param[in] _map Filename of the environment map.
@@ -120,7 +120,7 @@ namespace sdf
     /// string if an ambient occlusion map has not been set.
     /// \return Filename of the ambient occlusion map, or empty string if an
     /// ambient occlusion map has not been specified.
-    public: std::string AmbientOcclusionMap() const;
+    public: [[nodiscard]] std::string AmbientOcclusionMap() const;
 
     /// \brief Set the ambient occlusion map filename.
     /// \param[in] _map Filename of the ambient occlusion map.
@@ -130,7 +130,7 @@ namespace sdf
     /// an empty string if a roughness map has not been set.
     /// \return Filename of the roughness map, or empty string if a roughness
     /// map has not been specified.
-    public: std::string RoughnessMap() const;
+    public: [[nodiscard]] std::string RoughnessMap() const;
 
     /// \brief Set the roughness map filename for metal workflow.
     /// \param[in] _map Filename of the roughness map.
@@ -140,7 +140,7 @@ namespace sdf
     /// an empty string if a metalness map has not been set.
     /// \return Filename of the metalness map, or empty string if a metalness
     /// map has not been specified.
-    public: std::string MetalnessMap() const;
+    public: [[nodiscard]] std::string MetalnessMap() const;
 
     /// \brief Set the metalness map filename for metal workflow.
     /// \param[in] _map Filename of the metalness map.
@@ -150,7 +150,7 @@ namespace sdf
     /// if an emissive map has not been set.
     /// \return Filename of the emissive map, or empty string if an emissive
     /// map has not been specified.
-    public: std::string EmissiveMap() const;
+    public: [[nodiscard]] std::string EmissiveMap() const;
 
     /// \brief Set the emissive map filename.
     /// \param[in] _map Filename of the emissive map.
@@ -160,7 +160,7 @@ namespace sdf
     /// if an light map has not been set.
     /// \return Filename of the light map, or empty string if a light
     /// map has not been specified.
-    public: std::string LightMap() const;
+    public: [[nodiscard]] std::string LightMap() const;
 
     /// \brief Set the light map filename.
     /// \param[in] _map Filename of the light map.
@@ -169,11 +169,11 @@ namespace sdf
 
     /// \brief Get the light map texture coordinate set.
     /// \return Index of the texture coordinate set
-    public: unsigned int LightMapTexCoordSet() const;
+    public: [[nodiscard]] unsigned int LightMapTexCoordSet() const;
 
     /// \brief Get the metalness value of the material for metal workflow
     /// \return metalness value of the material
-    public: double Metalness() const;
+    public: [[nodiscard]] double Metalness() const;
 
     /// \brief Set the metalness value of the material for metal workflow.
     /// \param[in] _value Metalness value.
@@ -181,7 +181,7 @@ namespace sdf
 
     /// \brief Get the roughness value of the material for metal workflow
     /// \return roughness value of the material
-    public: double Roughness() const;
+    public: [[nodiscard]] double Roughness() const;
 
     /// \brief Set the roughness value of the material for metal workflow.
     /// \param[in] _value Roughness value.
@@ -191,7 +191,7 @@ namespace sdf
     /// be an empty string if a glossiness map has not been set.
     /// \return Filename of the glossiness map, or empty string if a glossiness
     /// map has not been specified.
-    public: std::string GlossinessMap() const;
+    public: [[nodiscard]] std::string GlossinessMap() const;
 
     /// \brief Set the glossiness map filename for specular workflow.
     /// \param[in] _map Filename of the glossiness map.
@@ -199,7 +199,7 @@ namespace sdf
 
     /// \brief Get the glossiness value of the material for specular workflow
     /// \return Glossiness value of the material
-    public: double Glossiness() const;
+    public: [[nodiscard]] double Glossiness() const;
 
     /// \brief Set the glossiness value of the material for specular workflow.
     /// \param[in] _value Glossiness value.
@@ -209,7 +209,7 @@ namespace sdf
     /// be an empty string if a specular map has not been set.
     /// \return Filename of the specular map, or empty string if a specular
     /// map has not been specified.
-    public: std::string SpecularMap() const;
+    public: [[nodiscard]] std::string SpecularMap() const;
 
     /// \brief Set the specular map filename for specular workflow.
     /// \param[in] _map Filename of the specular map.
@@ -219,11 +219,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the workflow type.
     /// \return PBR workflow type.
-    public: PbrWorkflowType Type() const;
+    public: [[nodiscard]] PbrWorkflowType Type() const;
 
     /// \brief Set the PBR workflow to use
     /// \param[in] _type Workflow type to use
@@ -259,7 +259,7 @@ namespace sdf
     /// \param[in] _type Type of PBR workflow
     /// \return Workflow of the specified type.
     /// \sa PbrWorkflowType
-    public: const PbrWorkflow *Workflow(PbrWorkflowType _type) const;
+    public: [[nodiscard]] const PbrWorkflow *Workflow(PbrWorkflowType _type) const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

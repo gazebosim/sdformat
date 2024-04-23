@@ -119,12 +119,12 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the number of lidar rays horizontally to generate per laser
     /// sweep.
     /// \return Number of lidar rays horizontally per laser sweep.
-    public: unsigned int HorizontalScanSamples() const;
+    public: [[nodiscard]] unsigned int HorizontalScanSamples() const;
 
     /// \brief Set the number of lidar rays horizontally to generate per laser
     /// sweep.
@@ -133,7 +133,7 @@ namespace sdf
 
     /// \brief Get the resolution for horizontal scan.
     /// \return Resolution for horizontal scan.
-    public: double HorizontalScanResolution() const;
+    public: [[nodiscard]] double HorizontalScanResolution() const;
 
     /// \brief Set the resolution for horizontal scan.
     /// \param[in] Resolution for horizontal scan.
@@ -141,7 +141,7 @@ namespace sdf
 
     /// \brief Get the minimum angle for horizontal scan.
     /// \return Minimum angle for horizontal scan.
-    public: gz::math::Angle HorizontalScanMinAngle() const;
+    public: [[nodiscard]] gz::math::Angle HorizontalScanMinAngle() const;
 
     /// \brief Set the minimum angle for horizontal scan.
     /// \param[in] Minimum angle for horizontal scan.
@@ -149,7 +149,7 @@ namespace sdf
 
     /// \brief Get the maximum angle for horizontal scan.
     /// \return Maximum angle for horizontal scan.
-    public: gz::math::Angle HorizontalScanMaxAngle() const;
+    public: [[nodiscard]] gz::math::Angle HorizontalScanMaxAngle() const;
 
     /// \brief Set the maximum angle for horizontal scan.
     /// \param[in] Maximum angle for horizontal scan.
@@ -158,7 +158,7 @@ namespace sdf
     /// \brief Get the number of lidar rays vertically to generate per laser
     /// sweep.
     /// \return Number of lidar rays vertically per laser sweep.
-    public: unsigned int VerticalScanSamples() const;
+    public: [[nodiscard]] unsigned int VerticalScanSamples() const;
 
     /// \brief Set the number of lidar rays vertically to generate per laser
     /// sweep.
@@ -167,7 +167,7 @@ namespace sdf
 
     /// \brief Get the resolution for vertical scan.
     /// \return Resolution for vertical scan.
-    public: double VerticalScanResolution() const;
+    public: [[nodiscard]] double VerticalScanResolution() const;
 
     /// \brief Set the resolution for vertical scan.
     /// \param[in] Resolution for vertical scan.
@@ -175,7 +175,7 @@ namespace sdf
 
     /// \brief Get the minimum angle for vertical scan.
     /// \return Minimum angle for vertical scan.
-    public: gz::math::Angle VerticalScanMinAngle() const;
+    public: [[nodiscard]] gz::math::Angle VerticalScanMinAngle() const;
 
     /// \brief Set the minimum angle for vertical scan.
     /// \param[in] Minimum angle for vertical scan.
@@ -183,7 +183,7 @@ namespace sdf
 
     /// \brief Get the maximum angle for vertical scan.
     /// \return Maximum angle for vertical scan.
-    public: gz::math::Angle VerticalScanMaxAngle() const;
+    public: [[nodiscard]] gz::math::Angle VerticalScanMaxAngle() const;
 
     /// \brief Set the maximum angle for vertical scan.
     /// \param[in] Maximum angle for vertical scan.
@@ -191,7 +191,7 @@ namespace sdf
 
     /// \brief Get minimum distance for each lidar ray.
     /// \return Minimum distance for each lidar ray.
-    public: double RangeMin() const;
+    public: [[nodiscard]] double RangeMin() const;
 
     /// \brief Set minimum distance for each lidar ray.
     /// \param[in] Minimum distance for each lidar ray.
@@ -199,7 +199,7 @@ namespace sdf
 
     /// \brief Get maximum distance for each lidar ray.
     /// \return Maximum distance for each lidar ray.
-    public: double RangeMax() const;
+    public: [[nodiscard]] double RangeMax() const;
 
     /// \brief Set maximum distance for each lidar ray.
     /// \param[in] Maximum distance for each lidar ray.
@@ -207,7 +207,7 @@ namespace sdf
 
     /// \brief Get linear resolution of each lidar ray.
     /// \return Linear resolution for each lidar ray.
-    public: double RangeResolution() const;
+    public: [[nodiscard]] double RangeResolution() const;
 
     /// \brief Set linear resolution of each lidar ray.
     /// \param[in] Linear resolution for each lidar ray.
@@ -215,7 +215,7 @@ namespace sdf
 
     /// \brief Get the noise values for the lidar sensor.
     /// \return Noise values for the lidar sensor.
-    public: const Noise &LidarNoise() const;
+    public: [[nodiscard]] const Noise &LidarNoise() const;
 
     /// \biref Set the noise values for the lidar sensor.
     /// \param[in] _noise Noise values for the lidar sensor.
@@ -223,7 +223,7 @@ namespace sdf
 
     /// \brief Get the visibility mask of a lidar
     /// \return visibility mask
-    public: uint32_t VisibilityMask() const;
+    public: [[nodiscard]] uint32_t VisibilityMask() const;
 
     /// \brief Set the visibility mask of a lidar
     /// \param[in] _mask visibility mask
@@ -245,7 +245,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

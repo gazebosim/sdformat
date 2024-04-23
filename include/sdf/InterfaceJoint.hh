@@ -42,15 +42,15 @@ class SDFORMAT_VISIBLE InterfaceJoint
 
   /// \brief Get the name of the joint.
   /// \return Local name of the joint.
-  public: const std::string &Name() const;
+  public: [[nodiscard]] const std::string &Name() const;
 
   /// \brief Get the name of the joint's child.
   /// \return The name of the joint's child link or frame.
-  public: const std::string &ChildName() const;
+  public: [[nodiscard]] const std::string &ChildName() const;
 
   /// \brief Get the pose of this joint in the child frame.
   /// \return The pose of this joint in the child frame.
-  public: const gz::math::Pose3d &PoseInChildFrame() const;
+  public: [[nodiscard]] const gz::math::Pose3d &PoseInChildFrame() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

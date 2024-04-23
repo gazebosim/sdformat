@@ -47,7 +47,7 @@ namespace sdf
 
     /// \brief Get the cylinder's radius in meters.
     /// \return The radius of the cylinder in meters.
-    public: double Radius() const;
+    public: [[nodiscard]] double Radius() const;
 
     /// \brief Set the cylinder's radius in meters.
     /// \param[in] _radius The radius of the cylinder in meters.
@@ -55,7 +55,7 @@ namespace sdf
 
     /// \brief Get the cylinder's length in meters.
     /// \return The length of the cylinder in meters.
-    public: double Length() const;
+    public: [[nodiscard]] double Length() const;
 
     /// \brief Set the cylinder's length in meters.
     /// \param[in] _length The length of the cylinder in meters.
@@ -65,11 +65,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Cylinder.
     /// \return A const reference to a gz::math::Sphered object.
-    public: const gz::math::Cylinderd &Shape() const;
+    public: [[nodiscard]] const gz::math::Cylinderd &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Cylinder.
     /// \return A reference to a gz::math::Cylinderd object.
@@ -88,7 +88,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated cylinder values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// cylinder.

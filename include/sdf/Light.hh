@@ -75,7 +75,7 @@ namespace sdf
 
     /// \brief Get the light type.
     /// \return The light type.
-    public: LightType Type() const;
+    public: [[nodiscard]] LightType Type() const;
 
     /// \brief Set the light type.
     /// \param[in] _type The light type.
@@ -83,7 +83,7 @@ namespace sdf
 
     /// \brief Get the name of the light.
     /// \return Name of the light.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the light.
     /// \param[in] _name Name of the light.
@@ -94,7 +94,7 @@ namespace sdf
     /// typically used to express the position and rotation of a light in a
     /// global coordinate frame.
     /// \return The pose of the light.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the light.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -105,7 +105,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link/world coordinate frame.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -116,11 +116,11 @@ namespace sdf
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get whether the light casts shadows.
     /// \return True if the light casts shadows.
-    public: bool CastShadows() const;
+    public: [[nodiscard]] bool CastShadows() const;
 
     /// \brief Set whether the light casts shadows.
     /// \param[in] _cast True to indicate that the light casts shadows.
@@ -128,7 +128,7 @@ namespace sdf
 
     /// \brief Get if the light is on
     /// \return True if the light is on.
-    public: bool LightOn() const;
+    public: [[nodiscard]] bool LightOn() const;
 
     /// \brief Set if the light is ON/OFF
     /// \param[in] _cast True to indicate that the light is on, False otherwise.
@@ -136,7 +136,7 @@ namespace sdf
 
     /// \brief Whether light visualization in the GUI is enabled.
     /// \return True if visualization is enabled.
-    public: bool Visualize() const;
+    public: [[nodiscard]] bool Visualize() const;
 
     /// \brief Set whether light visualization in the GUI is enabled.
     /// \param[in] _visualize True to view the light on the GUI.
@@ -144,7 +144,7 @@ namespace sdf
 
     /// \brief Get the light intensity
     /// \return The light intensity
-    public: double Intensity() const;
+    public: [[nodiscard]] double Intensity() const;
 
     /// \brief Set the light intensity
     /// \param[in] _intensity New light intensity
@@ -154,7 +154,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Diffuse color.
-    public: gz::math::Color Diffuse() const;
+    public: [[nodiscard]] gz::math::Color Diffuse() const;
 
     /// \brief Set the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -166,7 +166,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Specular color.
-    public: gz::math::Color Specular() const;
+    public: [[nodiscard]] gz::math::Color Specular() const;
 
     /// \brief Set the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -176,7 +176,7 @@ namespace sdf
 
     /// \brief Get the range of the light source in meters.
     /// \return Range of the light source in meters.
-    public: double AttenuationRange() const;
+    public: [[nodiscard]] double AttenuationRange() const;
 
     /// \brief Set the range of the light source in meters.
     /// \param[in] _factor Range of the light source in meters.
@@ -186,7 +186,7 @@ namespace sdf
     /// a value between 0 and 1, where 1 means attenuate evenly over the
     /// distance.
     /// \return Linear attentuation factor.
-    public: double LinearAttenuationFactor() const;
+    public: [[nodiscard]] double LinearAttenuationFactor() const;
 
     /// \brief Set the linear attenuation factor. This value is clamped to
     /// a value between 0 and 1, where 1 means attenuate evenly over the
@@ -198,7 +198,7 @@ namespace sdf
     /// a value between 0 and 1,  where 1.0 means never attenuate and 0.0 is
     /// complete attenutation.
     /// \return Constant attenuation factor.
-    public: double ConstantAttenuationFactor() const;
+    public: [[nodiscard]] double ConstantAttenuationFactor() const;
 
     /// \brief Set the constant attenuation factor. This value is clamped to
     /// a value between 0 and 1,  where 1.0 means never attenuate and 0.0 is
@@ -209,7 +209,7 @@ namespace sdf
     /// \brief Get the quadratic attenuation factor which adds a curvature to
     /// the attenuation.
     /// \return The quadratic attenuation factor.
-    public: double QuadraticAttenuationFactor() const;
+    public: [[nodiscard]] double QuadraticAttenuationFactor() const;
 
     /// \brief Set the quadratic attenuation factor which adds a curvature to
     /// the attenuation.
@@ -220,7 +220,7 @@ namespace sdf
     /// for spot and directional light types. The default value is
     /// [0, 0, -1].
     /// \return Light source direction.
-    public: gz::math::Vector3d Direction() const;
+    public: [[nodiscard]] gz::math::Vector3d Direction() const;
 
     /// \brief Set the direction of the light source. This only has meaning
     /// for spot and directional light types.
@@ -230,7 +230,7 @@ namespace sdf
     /// \brief Get the angle covered by the bright inner cone.
     /// \return The angle covered by the bright inner cone.
     /// \note This function only has meaning for a spot light.
-    public: gz::math::Angle SpotInnerAngle() const;
+    public: [[nodiscard]] gz::math::Angle SpotInnerAngle() const;
 
     /// \brief Set the angle covered by the bright inner cone.
     /// \param[in] _angle The angle covered by the bright inner cone.
@@ -240,7 +240,7 @@ namespace sdf
     /// \brief Get the angle covered by the outer cone.
     /// \return The angle covered by the outer cone.
     /// \note This function only has meaning for a spot light.
-    public: gz::math::Angle SpotOuterAngle() const;
+    public: [[nodiscard]] gz::math::Angle SpotOuterAngle() const;
 
     /// \brief Set the angle covered by the outer cone.
     /// \param[in] _angle The angle covered by the outer cone.
@@ -252,7 +252,7 @@ namespace sdf
     /// and a higher value indicates a faster falloff.
     /// \return The spot falloff.
     /// \note This function only has meaning for a spot light.
-    public: double SpotFalloff() const;
+    public: [[nodiscard]] double SpotFalloff() const;
 
     /// \brief Set the rate of falloff between the inner and outer cones.
     /// A value of 1.0 is a linear falloff, less than 1.0 is a slower falloff,
@@ -265,7 +265,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Helper function to copy from another light
     /// \param[in] _light Light to copy.
@@ -289,7 +289,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated light values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// light object.

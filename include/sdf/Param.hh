@@ -216,7 +216,7 @@ namespace sdf
     /// \brief Get the value as a string.
     /// \param[in] _config Configuration for conversion to string.
     /// \return String containing the value of the parameter.
-    public: std::string GetAsString(
+    public: [[nodiscard]] std::string GetAsString(
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the value as a string.
@@ -230,7 +230,7 @@ namespace sdf
     /// \brief Get the default value as a string.
     /// \param[in] _config Configuration for conversion to string.
     /// \return String containing the default value of the parameter.
-    public: std::string GetDefaultAsString(
+    public: [[nodiscard]] std::string GetDefaultAsString(
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the default value as a string.
@@ -246,7 +246,7 @@ namespace sdf
     /// \return Returns a string containing the minimum allowed value of the
     /// parameter if the minimum value is specified in the SDFormat description
     /// of the parameter. nullopt otherwise.
-    public: std::optional<std::string> GetMinValueAsString(
+    public: [[nodiscard]] std::optional<std::string> GetMinValueAsString(
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the minimum allowed value as a string.
@@ -264,7 +264,7 @@ namespace sdf
     /// \return Returns a string containing the maximum allowed value of the
     /// parameter if the maximum value is specified in the SDFormat description
     /// of the parameter. nullopt otherwise.
-    public: std::optional<std::string> GetMaxValueAsString(
+    public: [[nodiscard]] std::optional<std::string> GetMaxValueAsString(
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Get the maximum allowed value as a string.
@@ -308,7 +308,7 @@ namespace sdf
     /// \brief Get the parent Element of this Param.
     /// \return Pointer to this Param's parent Element, nullptr if there is no
     /// parent Element.
-    public: ElementPtr GetParentElement() const;
+    public: [[nodiscard]] ElementPtr GetParentElement() const;
 
     /// \brief Set the parent Element of this Param.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
@@ -358,35 +358,35 @@ namespace sdf
 
     /// \brief Get the key value.
     /// \return The key.
-    public: const std::string &GetKey() const;
+    public: [[nodiscard]] const std::string &GetKey() const;
 
     /// \brief Return true if the param is a particular type
     /// \return True if the type held by this Param matches the Type
     /// template parameter.
     public: template<typename Type>
-            bool IsType() const;
+            [[nodiscard]] bool IsType() const;
 
     /// \brief Get the type name value.
     /// \return The type name.
-    public: const std::string &GetTypeName() const;
+    public: [[nodiscard]] const std::string &GetTypeName() const;
 
     /// \brief Return whether the parameter is required.
     /// \return True if the parameter is required.
-    public: bool GetRequired() const;
+    public: [[nodiscard]] bool GetRequired() const;
 
     /// \brief Return true if the parameter has been set.
     /// \return True if the parameter has been set.
-    public: bool GetSet() const;
+    public: [[nodiscard]] bool GetSet() const;
 
     /// \brief Return true if the parameter ignores the parent element's
     /// attributes, or if the parameter has no parent element.
     /// \return True if the parameter ignores the parent element's attributes,
     /// or if the parameter has no parent element.
-    public: bool IgnoresParentElementAttribute() const;
+    public: [[nodiscard]] bool IgnoresParentElementAttribute() const;
 
     /// \brief Clone the parameter.
     /// \return A new parameter that is the clone of this.
-    public: ParamPtr Clone() const;
+    public: [[nodiscard]] ParamPtr Clone() const;
 
     /// \brief Set the update function. The updateFunc will be used to
     /// set the parameter's value when Param::Update is called.
@@ -470,11 +470,11 @@ namespace sdf
 
     /// \brief Get the description of the parameter.
     /// \return The description of the parameter.
-    public: std::string GetDescription() const;
+    public: [[nodiscard]] std::string GetDescription() const;
 
     /// \brief Validate the value against minimum and maximum allowed values
     /// \return True if the value is valid
-    public: bool ValidateValue() const;
+    public: [[nodiscard]] bool ValidateValue() const;
 
     /// \brief Validate the value against minimum and maximum allowed values
     /// \param[out] _errors Vector of errors.

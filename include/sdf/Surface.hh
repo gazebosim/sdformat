@@ -45,11 +45,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the collide bitmask parameter.
     /// \return The collide bitmask parameter.
-    public: uint16_t CollideBitmask() const;
+    public: [[nodiscard]] uint16_t CollideBitmask() const;
 
     /// \brief Set the collide bitmask parameter.
     public: void SetCollideBitmask(const uint16_t _bitmask);
@@ -74,7 +74,7 @@ namespace sdf
 
     /// \brief Set the Mu
     /// \returns ODE mu
-    public: double Mu() const;
+    public: [[nodiscard]] double Mu() const;
 
     /// \brief Set Mu
     /// \param[in] _mu ODE mu
@@ -82,7 +82,7 @@ namespace sdf
 
     /// \brief Get the Mu2
     /// \returns ODE mu2
-    public: double Mu2() const;
+    public: [[nodiscard]] double Mu2() const;
 
     /// \brief Set Mu2
     /// \param[in] _mu2 ODE mu2
@@ -90,7 +90,7 @@ namespace sdf
 
     /// \brief Get the fdir
     /// \returns ODE fdir
-    public: const gz::math::Vector3d &Fdir1() const;
+    public: [[nodiscard]] const gz::math::Vector3d &Fdir1() const;
 
     /// \brief Set fdir
     /// \param[in] _fdir ODE fdir
@@ -98,7 +98,7 @@ namespace sdf
 
     /// \brief Get the slip1
     /// \returns ODE slip1
-    public: double Slip1() const;
+    public: [[nodiscard]] double Slip1() const;
 
     /// \brief Set Slip1
     /// \param[in] _slip1 ODE Slip1
@@ -106,7 +106,7 @@ namespace sdf
 
     /// \brief Get the Slip2
     /// \returns ODE Slip2
-    public: double Slip2() const;
+    public: [[nodiscard]] double Slip2() const;
 
     /// \brief Set Slip2
     /// \param[in] _slip2 ODE Slip2
@@ -116,7 +116,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
@@ -139,7 +139,7 @@ namespace sdf
     /// \brief Get the associated ODE object
     /// \returns Pointer to the associated ODE object,
     /// nullptr if the Surface doesn't contain a ODE element.
-    public: const sdf::ODE *ODE() const;
+    public: [[nodiscard]] const sdf::ODE *ODE() const;
 
     /// \brief Set the associated ODE object.
     /// \param[in] _ode The ODE object.
@@ -149,7 +149,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
@@ -173,12 +173,12 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the associated contact object
     /// \returns Pointer to the associated Contact object,
     /// nullptr if the Surface doesn't contain a Contact element.
-    public: const sdf::Contact *Contact() const;
+    public: [[nodiscard]] const sdf::Contact *Contact() const;
 
     /// \brief Set the associated contact object.
     /// \param[in] _cont The contact object.
@@ -187,7 +187,7 @@ namespace sdf
     /// \brief Get the associated friction object
     /// \returns Pointer to the associated friction object,
     /// nullptr if the Surface doesn't contain a friction element.
-    public: const sdf::Friction *Friction() const;
+    public: [[nodiscard]] const sdf::Friction *Friction() const;
 
     /// \brief Set the associated friction object.
     /// \param[in] _friction The friction object.
@@ -198,7 +198,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated surface values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// surface.

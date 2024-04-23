@@ -74,7 +74,7 @@ namespace sdf
     /// The name of the particle emitter should be unique within the scope of
     /// a Link.
     /// \return Name of the particle emitter.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the particle emitter.
     /// The name of the particle emitter should be unique within the scope of
@@ -86,7 +86,7 @@ namespace sdf
     /// The type of the particle emitter should be unique within the scope of
     /// a Link.
     /// \return Type of the particle emitter.
-    public: ParticleEmitterType Type() const;
+    public: [[nodiscard]] ParticleEmitterType Type() const;
 
     /// \brief Set the type of the particle emitter.
     /// \param[in] _type Type of the particle emitter.
@@ -102,12 +102,12 @@ namespace sdf
 
     /// \brief Get the particle emitter type as a string.
     /// \return The particle emitter type as a string.
-    public: std::string TypeStr() const;
+    public: [[nodiscard]] std::string TypeStr() const;
 
     /// \brief Get whether the particle emitter should run (emit
     /// particles).
     /// \return True if particles should be emitted.
-    public: bool Emitting() const;
+    public: [[nodiscard]] bool Emitting() const;
 
     /// \brief Set whether the particle emitter is running, emitting
     /// particles.
@@ -117,7 +117,7 @@ namespace sdf
     /// \brief Get the number of seconds the emitter is active.
     /// A value less than or equal to zero indicates infinite duration.
     /// \return The number of seconds the emitter is active.
-    public: double Duration() const;
+    public: [[nodiscard]] double Duration() const;
 
     /// \brief Set the number of seconds the emitter is active.
     /// \param[in] _duration The number of seconds the emitter is active.
@@ -127,7 +127,7 @@ namespace sdf
     /// \brief Get the number of seconds each particle will 'live' for
     /// before being destroyed.
     /// \return The lifetime of a particle in seconds.
-    public: double Lifetime() const;
+    public: [[nodiscard]] double Lifetime() const;
 
     /// \brief Set the number of seconds each particle will 'live' for.
     /// \param[in] _duration The number of seconds a particle will 'life'
@@ -137,7 +137,7 @@ namespace sdf
 
     /// \brief Get the number of particles per second that should be emitted.
     /// \return The number of particles to emit per second.
-    public: double Rate() const;
+    public: [[nodiscard]] double Rate() const;
 
     /// \brief Set the number of particles per second that should be emitted.
     /// \param[in] _rate The number of particle to emit per second.
@@ -147,7 +147,7 @@ namespace sdf
     /// \brief Get the amount by which to scale the particles in both x
     /// and y direction per second.
     /// \return The scaling amount in the x and y directions.
-    public: double ScaleRate() const;
+    public: [[nodiscard]] double ScaleRate() const;
 
     /// \brief Set the amount by which to scale the particles in both x
     /// and y direction per second.
@@ -157,7 +157,7 @@ namespace sdf
 
     /// \brief Get the minimum velocity for each particle.
     /// \return The minimum velocity for each particle in m/s.
-    public: double MinVelocity() const;
+    public: [[nodiscard]] double MinVelocity() const;
 
     /// \brief Set the minimum velocity for each particle.
     /// \param[in] _vel The minimum velocity for each particle in m/s.
@@ -166,7 +166,7 @@ namespace sdf
 
     /// \brief Get the maximum velocity for each particle.
     /// \return The maximum velocity for each particle in m/s.
-    public: double MaxVelocity() const;
+    public: [[nodiscard]] double MaxVelocity() const;
 
     /// \brief Set the maximum velocity for each particle.
     /// \param[in] _vel The maximum velocity for each particle in m/s.
@@ -187,7 +187,7 @@ namespace sdf
     //                identical to EM_BOX, except that the dimensions
     //                describe the widest points along each of the axes.
     /// \return Size of the emitter region in meters.
-    public: gz::math::Vector3d Size() const;
+    public: [[nodiscard]] gz::math::Vector3d Size() const;
 
     /// \brief Set the size of the emitter where the particles are sampled.
     /// \param[in] _size Size of the emitter in meters.
@@ -198,7 +198,7 @@ namespace sdf
 
     /// \brief Get the size of a particle in meters.
     /// \return Size of a particle in meters.
-    public: gz::math::Vector3d ParticleSize() const;
+    public: [[nodiscard]] gz::math::Vector3d ParticleSize() const;
 
     /// \brief Set the size of a particle in meters.
     /// \param[in] _size Size of a particle in meters.
@@ -212,7 +212,7 @@ namespace sdf
     /// Color::White is the default color for the particles
     /// unless a specific function is used.
     /// \return The starting color.
-    public: gz::math::Color ColorStart() const;
+    public: [[nodiscard]] gz::math::Color ColorStart() const;
 
     /// \brief Set the starting color for all particles emitted.
     /// \param[in] _colorStart The starting color for all particles emitted.
@@ -225,7 +225,7 @@ namespace sdf
     /// Color::White is the default color for the particles
     /// unless a specific function is used.
     /// \return The end color.
-    public: gz::math::Color ColorEnd() const;
+    public: [[nodiscard]] gz::math::Color ColorEnd() const;
 
     /// \brief Set the end color for all particles emitted.
     /// \param[in] _colorEnd The end color for all particles emitted.
@@ -240,7 +240,7 @@ namespace sdf
     /// dimension of the image is used.
     /// The ColorRangeImage has higher priority than ColorEnd and
     /// ColorStart. If all three are set, ColorRangeImage should be used.
-    public: std::string ColorRangeImage() const;
+    public: [[nodiscard]] std::string ColorRangeImage() const;
 
     /// \brief Set the path to the color image used as an affector.
     /// \param[in] _image The path to the color image.
@@ -249,7 +249,7 @@ namespace sdf
 
     /// \brief Get the topic used to update the particle emitter properties.
     /// \return The topic used to update the particle emitter.
-    public: std::string Topic() const;
+    public: [[nodiscard]] std::string Topic() const;
 
     /// \brief Set the topic used to update the particle emitter properties.
     /// \param[in] _topic The topic used to update the particle emitter.
@@ -259,7 +259,7 @@ namespace sdf
     /// ratio of particles that will be detected by sensors.
     /// \return Particle scatter ratio
     /// \sa SetScatterRatio
-    public: float ScatterRatio() const;
+    public: [[nodiscard]] float ScatterRatio() const;
 
     /// \brief Set the particle scatter ratio. This is used to determine the
     /// ratio of particles that will be detected by sensors.
@@ -270,7 +270,7 @@ namespace sdf
     /// emitter as specified in SDF
     /// (<particle_emitter><pose> ... </pose></particle_emitter>).
     /// \return The pose of the particle emitter.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the particle emitter object.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -281,7 +281,7 @@ namespace sdf
     /// emitter's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// emitter's pose is expressed. An empty value indicates that the frame is
@@ -291,18 +291,18 @@ namespace sdf
 
     /// \brief Get SemanticPose object of this object to aid in resolving poses.
     /// \return SemanticPose object for this emitter.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get a pointer to the emitter's material properties. This can
     /// be a nullptr if material properties have not been set.
     /// \return Pointer to the emitter's material properties. Nullptr
     /// indicates that material properties have not been set.
-    public: const sdf::Material *Material() const;
+    public: [[nodiscard]] const sdf::Material *Material() const;
 
     /// \brief Set the emitter's material
     /// \param[in] _material The material of the particle emitter.
@@ -310,7 +310,7 @@ namespace sdf
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -321,7 +321,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated particle emitter values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// particle emitter.

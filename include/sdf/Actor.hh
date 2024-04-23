@@ -52,7 +52,7 @@ namespace sdf
 
     /// \brief Get the name of the animation.
     /// \return Name of the animation.
-    public: const std::string &Name() const;
+    public: [[nodiscard]] const std::string &Name() const;
 
     /// \brief Set the name of the animation.
     /// \param[in] _name Name of the animation.
@@ -60,7 +60,7 @@ namespace sdf
 
     /// \brief Get the animation filename.
     /// \return Filename of the animation.
-    public: const std::string &Filename() const;
+    public: [[nodiscard]] const std::string &Filename() const;
 
     /// \brief Set the filename of the animation.
     /// \param[in] _filename Path to animation file.
@@ -68,7 +68,7 @@ namespace sdf
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -76,7 +76,7 @@ namespace sdf
 
     /// \brief Get the scale for the animation skeleton.
     /// \return Scale of the animation skeleton.
-    public: double Scale() const;
+    public: [[nodiscard]] double Scale() const;
 
     /// \brief Set the scale of the animation skeleton.
     /// \param[in] _scale Scale for animation skeleton.
@@ -84,7 +84,7 @@ namespace sdf
 
     /// \brief Get whether the animation is interpolated on X.
     /// \return True if interpolated on X.
-    public: bool InterpolateX() const;
+    public: [[nodiscard]] bool InterpolateX() const;
 
     /// \brief Set whether the animation is interpolated on X.
     /// \param[in] _interpolateX True to indicate interpolation on X.
@@ -110,7 +110,7 @@ namespace sdf
 
     /// \brief Get the time in seconds when the pose should be reached.
     /// \return Time in seconds.
-    public: double Time() const;
+    public: [[nodiscard]] double Time() const;
 
     /// \brief Set the time in seconds when the pose should be reached.
     /// \param[in] _time Time in seconds for the pose to be reached.
@@ -118,7 +118,7 @@ namespace sdf
 
     /// \brief Get the pose to be reached.
     /// \return Pose to be reached.
-    public: gz::math::Pose3d Pose() const;
+    public: [[nodiscard]] gz::math::Pose3d Pose() const;
 
     /// \brief Set the pose to be reached.
     /// \param[in] _pose Pose to be reached.
@@ -144,7 +144,7 @@ namespace sdf
 
     /// \brief Get the unique id of the trajectory.
     /// \return Trajectory id.
-    public: uint64_t Id() const;
+    public: [[nodiscard]] uint64_t Id() const;
 
     /// \brief Set the ID of the trajectory.
     /// \param[in] _id Trajectory Id.
@@ -152,7 +152,7 @@ namespace sdf
 
     /// \brief Get the type of the trajectory.
     /// \return Type of the trajectory.
-    public: const std::string &Type() const;
+    public: [[nodiscard]] const std::string &Type() const;
 
     /// \brief Set the animation type of the trajectory.
     /// (should match the animation name).
@@ -161,7 +161,7 @@ namespace sdf
 
     /// \brief Get the tension of the trajectory spline.
     /// \return Tension of the trajectory spline.
-    public: double Tension() const;
+    public: [[nodiscard]] double Tension() const;
 
     /// \brief Set the tension of trajectory spline.
     /// \param[in] _tension Tension for the trajectory spline.
@@ -169,14 +169,14 @@ namespace sdf
 
     /// \brief Get the number of waypoints.
     /// \return Number of waypoints.
-    public: uint64_t WaypointCount() const;
+    public: [[nodiscard]] uint64_t WaypointCount() const;
 
     /// \brief Get a waypoint based on an index.
     /// \param[in] _index Index of the waypoint. The index should be in the
     /// range [0..WaypointCount()).
     /// \return Pointer to the waypoint. Nullptr if the index does not exist.
     /// \sa uint64_t WaypointCount() const
-    public: const Waypoint *WaypointByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const Waypoint *WaypointByIndex(uint64_t _index) const;
 
     /// \brief Add a new waypoint.
     /// \param[in] _waypoint Waypoint to be added.
@@ -203,7 +203,7 @@ namespace sdf
 
     /// \brief Get the name of the actor.
     /// \return Name of the actor.
-    public: const std::string &Name() const;
+    public: [[nodiscard]] const std::string &Name() const;
 
     /// \brief Set the name of the actor.
     /// \param[in] _name Name of the actor.
@@ -214,7 +214,7 @@ namespace sdf
     /// typically used to express the position and rotation of an actor in a
     /// global coordinate frame.
     /// \return The pose of the actor.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the actor.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -225,7 +225,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the world frame.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -235,7 +235,7 @@ namespace sdf
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -243,7 +243,7 @@ namespace sdf
 
     /// \brief Get the skin filename.
     /// \return Constant skin filename.
-    public: const std::string &SkinFilename() const;
+    public: [[nodiscard]] const std::string &SkinFilename() const;
 
     /// \brief Set the skin filename.
     /// \param[in] _skinFilename Skin filename.
@@ -251,7 +251,7 @@ namespace sdf
 
     /// \brief Get the skin scale.
     /// \return Constant skin filename.
-    public: double SkinScale() const;
+    public: [[nodiscard]] double SkinScale() const;
 
     /// \brief Set the skin scale.
     /// \param[in] _skinScale Skin scale.
@@ -259,19 +259,19 @@ namespace sdf
 
     /// \brief Get the number of animations.
     /// \return Number of animations.
-    public: uint64_t AnimationCount() const;
+    public: [[nodiscard]] uint64_t AnimationCount() const;
 
     /// \brief Get an animation based on an index.
     /// \param[in] _index Index of the animation. The index should be in the
     /// range [0..AnimationCount()).
     /// \return Pointer to the animation. Nullptr if the index does not exist.
     /// \sa uint64_t AnimationCount() const
-    public: const Animation *AnimationByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const Animation *AnimationByIndex(uint64_t _index) const;
 
     /// \brief Get whether an animation name exists.
     /// \param[in] _name Name of the animation to check.
     /// \return True if there exists an animation with the given name.
-    public: bool AnimationNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool AnimationNameExists(const std::string &_name) const;
 
     /// \brief Add a new animation.
     /// \param[in] _anim Animation to be added.
@@ -279,7 +279,7 @@ namespace sdf
 
     /// \brief Get whether the animation plays in loop.
     /// \return True if the animation plays in loop.
-    public: bool ScriptLoop() const;
+    public: [[nodiscard]] bool ScriptLoop() const;
 
     /// \brief Set whether the animation plays in loop.
     /// \param[in] _scriptLoop True to indicate that the animation
@@ -288,7 +288,7 @@ namespace sdf
 
     /// \brief Get the time (in seconds) of delay to start.
     /// \return Time of delay to start.
-    public: double ScriptDelayStart() const;
+    public: [[nodiscard]] double ScriptDelayStart() const;
 
     /// \brief Set the delay time to start.
     /// \param[in] _scriptDelayStart Time of delay to start.
@@ -296,7 +296,7 @@ namespace sdf
 
     /// \brief Get whether the animation plays when simulation starts.
     /// \return True if the animation plays when simulation starts.
-    public: bool ScriptAutoStart() const;
+    public: [[nodiscard]] bool ScriptAutoStart() const;
 
     /// \brief Set whether the animation plays when simulation starts.
     /// \param[in] _staticAutoStart True to indicate that the animation
@@ -305,19 +305,19 @@ namespace sdf
 
     /// \brief Get the number of trajectories.
     /// \return Number of trajectories.
-    public: uint64_t TrajectoryCount() const;
+    public: [[nodiscard]] uint64_t TrajectoryCount() const;
 
     /// \brief Get a trajectory based on an index.
     /// \param[in] _index Index of the trajectory. The index should be in the
     /// range [0..TrajectoryCount()).
     /// \return Pointer to the trajectory. Nullptr if the index does not exist.
     /// \sa uint64_t TrajectoryCount() const
-    public: const Trajectory *TrajectoryByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const Trajectory *TrajectoryByIndex(uint64_t _index) const;
 
     /// \brief Get whether a trajectory id exists.
     /// \param[in] _id Id of the trajectory to check.
     /// \return True if there exists a trajectory with the given name.
-    public: bool TrajectoryIdExists(uint64_t _id) const;
+    public: [[nodiscard]] bool TrajectoryIdExists(uint64_t _id) const;
 
     /// \brief Add a new trajectory.
     /// \param[in] _traj Trajectory to be added.
@@ -325,41 +325,41 @@ namespace sdf
 
     /// \brief Get the number of links.
     /// \return Number of links.
-    public: uint64_t LinkCount() const;
+    public: [[nodiscard]] uint64_t LinkCount() const;
 
     /// \brief Get a link based on an index.
     /// \param[in] _index Index of the link. The index should be in the
     /// range [0..LinkCount()).
     /// \return Pointer to the link. Nullptr if the index does not exist.
     /// \sa uint64_t LinkCount() const
-    public: const Link *LinkByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const Link *LinkByIndex(uint64_t _index) const;
 
     /// \brief Get whether a link name exists.
     /// \param[in] _name Name of the link to check.
     /// \return True if there exists a link with the given name.
-    public: bool LinkNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool LinkNameExists(const std::string &_name) const;
 
     /// \brief Get the number of joints.
     /// \return Number of joints.
-    public: uint64_t JointCount() const;
+    public: [[nodiscard]] uint64_t JointCount() const;
 
     /// \brief Get a joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
     /// \sa uint64_t JointCount() const
-    public: const Joint *JointByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const Joint *JointByIndex(uint64_t _index) const;
 
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
     /// \return True if there exists a joint with the given name.
-    public: bool JointNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool JointNameExists(const std::string &_name) const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Add a link to the actor.
     /// \param[in] _link Link to add.
@@ -384,12 +384,12 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated actor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

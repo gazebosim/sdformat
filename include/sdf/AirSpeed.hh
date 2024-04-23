@@ -48,11 +48,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the noise values.
     /// \return Noise values for differential pressure data.
-    public: const Noise &PressureNoise() const;
+    public: [[nodiscard]] const Noise &PressureNoise() const;
 
     /// \brief Set the noise values related to the differential pressure data.
     /// \param[in] _noise Noise values for the pressure data.
@@ -75,7 +75,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

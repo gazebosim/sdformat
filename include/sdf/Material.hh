@@ -69,7 +69,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Ambient color.
-    public: gz::math::Color Ambient() const;
+    public: [[nodiscard]] gz::math::Color Ambient() const;
 
     /// \brief Set the ambient color. The ambient color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -81,7 +81,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Diffuse color.
-    public: gz::math::Color Diffuse() const;
+    public: [[nodiscard]] gz::math::Color Diffuse() const;
 
     /// \brief Set the diffuse color. The diffuse color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -93,7 +93,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Specular color.
-    public: gz::math::Color Specular() const;
+    public: [[nodiscard]] gz::math::Color Specular() const;
 
     /// \brief Set the specular color. The specular color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -103,7 +103,7 @@ namespace sdf
 
     /// \brief Get the specular exponent.
     /// \return Specular exponent.
-    public: double Shininess() const;
+    public: [[nodiscard]] double Shininess() const;
 
     /// \brief Set the specular exponent.
     /// \param[in] _shininess Specular exponent.
@@ -113,7 +113,7 @@ namespace sdf
     /// specified by a set of three numbers representing red/green/blue,
     /// each in the range of [0,1].
     /// \return Emissive color.
-    public: gz::math::Color Emissive() const;
+    public: [[nodiscard]] gz::math::Color Emissive() const;
 
     /// \brief Set the emissive color. The emissive color is
     /// specified by a set of three numbers representing red/green/blue,
@@ -125,7 +125,7 @@ namespace sdf
     /// be rendered on top of the other coplanar polygons. The default value
     /// is zero.
     /// \return Render order
-    public: float RenderOrder() const;
+    public: [[nodiscard]] float RenderOrder() const;
 
     /// \brief Set render order.
     /// \param[in] _renderOrder render order
@@ -135,7 +135,7 @@ namespace sdf
     /// \brief Get whether dynamic lighting is enabled. The default
     /// value is true.
     /// \return False if dynamic lighting should be disabled.
-    public: bool Lighting() const;
+    public: [[nodiscard]] bool Lighting() const;
 
     /// \brief Set whether dynamic lighting is enabled.
     /// \param[in] _lighting False disables dynamic lighting.
@@ -144,7 +144,7 @@ namespace sdf
     /// \brief Get whether double sided material is enabled. The default
     /// value is false.
     /// \return False if double sided material should be disabled.
-    public: bool DoubleSided() const;
+    public: [[nodiscard]] bool DoubleSided() const;
 
     /// \brief Set whether double sided material is enabled.
     /// \param[in] _lighting False disables double sided material.
@@ -154,12 +154,12 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the URI of the material script, if one has been set.
     /// \return The URI of the material script, or empty string if one has
     /// not been set.
-    public: std::string ScriptUri() const;
+    public: [[nodiscard]] std::string ScriptUri() const;
 
     /// \brief Set the URI of the material script.
     /// \param[in] _uri The URI of the material script.
@@ -170,7 +170,7 @@ namespace sdf
     /// script element in the script located at the ScriptUri().
     /// \return The name of the material script, or empty string if one has
     /// not been set.
-    public: std::string ScriptName() const;
+    public: [[nodiscard]] std::string ScriptName() const;
 
     /// \brief Set the name of the material script. The name should match an
     /// script element in the script located at the ScriptUri().
@@ -179,7 +179,7 @@ namespace sdf
 
     /// \brief Get the type of shader.
     /// \return Shader type.
-    public: ShaderType Shader() const;
+    public: [[nodiscard]] ShaderType Shader() const;
 
     /// \brief Set the type of shader.
     /// \param[in] _type Shader type.
@@ -189,7 +189,7 @@ namespace sdf
     /// a normal map has not been set.
     /// \return Filename of the normal map, or empty string if a normal map
     /// has not been specified.
-    public: std::string NormalMap() const;
+    public: [[nodiscard]] std::string NormalMap() const;
 
     /// \brief Set the normal map filename.
     /// \param[in] _map Filename of the normal map.
@@ -201,11 +201,11 @@ namespace sdf
 
     /// \brief Get the Physically Based Rendering (PBR) material
     /// \return Pointer to the PBR material. Null if it does not exist.
-    public: const Pbr *PbrMaterial() const;
+    public: [[nodiscard]] const Pbr *PbrMaterial() const;
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -216,7 +216,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated material values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// material.

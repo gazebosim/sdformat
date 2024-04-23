@@ -88,7 +88,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Set the noise values for the horizontal position sensor
     /// \param[in] _noise Noise values to set to
@@ -96,7 +96,7 @@ namespace sdf
 
     /// \brief Get noise value for horizontal position sensor
     /// \return Noise values
-    public: const Noise &HorizontalPositionNoise() const;
+    public: [[nodiscard]] const Noise &HorizontalPositionNoise() const;
 
     /// \brief Set the noise values for the vertical position sensor
     /// \param[in] _noise Noise values to set to
@@ -104,7 +104,7 @@ namespace sdf
 
     /// \brief Get noise value for vertical position sensor
     /// \return Noise values
-    public: const Noise &VerticalPositionNoise() const;
+    public: [[nodiscard]] const Noise &VerticalPositionNoise() const;
 
     /// \brief Set the noise values for the horizontal velocity sensor
     /// \param[in] _noise Noise values to set to
@@ -112,7 +112,7 @@ namespace sdf
 
     /// \brief Get noise value for horizontal velocity sensor
     /// \return Noise values
-    public: const Noise &HorizontalVelocityNoise() const;
+    public: [[nodiscard]] const Noise &HorizontalVelocityNoise() const;
 
     /// \brief Set the noise values for the vertical velocity sensor
     /// \param[in] _noise Noise values to set to
@@ -120,7 +120,7 @@ namespace sdf
 
     /// \brief Get noise value for vertical velocity sensor
     /// \return Noise values
-    public: const Noise &VerticalVelocityNoise() const;
+    public: [[nodiscard]] const Noise &VerticalVelocityNoise() const;
 
     /// \brief Return true if both NavSat objects contain the same values.
     /// \param[_in] _navsat NavSat value to compare.

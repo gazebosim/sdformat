@@ -57,7 +57,7 @@ namespace sdf
 
     /// \brief Get the type of the atmospheric model.
     /// \return The type of atmosphere engine, which defaults to adiabatic.
-    public: AtmosphereType Type() const;
+    public: [[nodiscard]] AtmosphereType Type() const;
 
     /// \brief Set the type of the atmospheric model.
     /// \param[in] _type The type of atmosphere engine.
@@ -65,7 +65,7 @@ namespace sdf
 
     /// \brief Get the temperature at sea level.
     /// \return The temperature at sea level.
-    public: gz::math::Temperature Temperature() const;
+    public: [[nodiscard]] gz::math::Temperature Temperature() const;
 
     /// \brief Set the temperature at sea level.
     /// \param[in] _temp The temperature at sea level.
@@ -74,7 +74,7 @@ namespace sdf
     /// \brief Get the temperature gradient with respect to increasing
     /// altitude in units of K/m.
     /// \return The temperature gradient in K/m.
-    public: double TemperatureGradient() const;
+    public: [[nodiscard]] double TemperatureGradient() const;
 
     /// \brief Set the temperature gradient with respect to increasing
     /// altitude in units of K/m.
@@ -83,7 +83,7 @@ namespace sdf
 
     /// \brief Get the pressure at sea level in pascals.
     /// \return The pressure at sea level in pascals.
-    public: double Pressure() const;
+    public: [[nodiscard]] double Pressure() const;
 
     /// \brief Set the pressure at sea level in pascals.
     /// \param[in] _pressure The pressure at sea level in pascals.
@@ -100,7 +100,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated atmosphere values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// atmosphere.

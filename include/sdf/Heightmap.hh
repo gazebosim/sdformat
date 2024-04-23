@@ -58,7 +58,7 @@ namespace sdf
 
     /// \brief Get the heightmap texture's size.
     /// \return The size of the heightmap texture in meters.
-    public: double Size() const;
+    public: [[nodiscard]] double Size() const;
 
     /// \brief Set the size of the texture in meters.
     /// \param[in] _size The size of the texture in meters.
@@ -66,7 +66,7 @@ namespace sdf
 
     /// \brief Get the heightmap texture's diffuse map.
     /// \return The diffuse map of the heightmap texture.
-    public: std::string Diffuse() const;
+    public: [[nodiscard]] std::string Diffuse() const;
 
     /// \brief Set the filename of the diffuse map.
     /// \param[in] _diffuse The diffuse map of the heightmap texture.
@@ -74,7 +74,7 @@ namespace sdf
 
     /// \brief Get the heightmap texture's normal map.
     /// \return The normal map of the heightmap texture.
-    public: std::string Normal() const;
+    public: [[nodiscard]] std::string Normal() const;
 
     /// \brief Set the filename of the normal map.
     /// \param[in] _normal The normal map of the heightmap texture.
@@ -83,7 +83,7 @@ namespace sdf
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
@@ -105,7 +105,7 @@ namespace sdf
 
     /// \brief Get the heightmap blend's minimum height.
     /// \return The minimum height of the blend layer.
-    public: double MinHeight() const;
+    public: [[nodiscard]] double MinHeight() const;
 
     /// \brief Set the minimum height of the blend in meters.
     /// \param[in] _uri The minimum height of the blend in meters.
@@ -113,7 +113,7 @@ namespace sdf
 
     /// \brief Get the heightmap blend's fade distance.
     /// \return The fade distance of the heightmap blend in meters.
-    public: double FadeDistance() const;
+    public: [[nodiscard]] double FadeDistance() const;
 
     /// \brief Set the distance over which the blend occurs.
     /// \param[in] _uri The distance in meters.
@@ -122,7 +122,7 @@ namespace sdf
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
@@ -154,7 +154,7 @@ namespace sdf
 
     /// \brief Get the heightmap's URI.
     /// \return The URI of the heightmap data.
-    public: std::string Uri() const;
+    public: [[nodiscard]] std::string Uri() const;
 
     /// \brief Set the URI to a grayscale image.
     /// \param[in] _uri The URI of the heightmap.
@@ -162,7 +162,7 @@ namespace sdf
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -170,7 +170,7 @@ namespace sdf
 
     /// \brief Get the heightmap's scaling factor.
     /// \return The heightmap's size.
-    public: gz::math::Vector3d Size() const;
+    public: [[nodiscard]] gz::math::Vector3d Size() const;
 
     /// \brief Set the heightmap's scaling factor. Defaults to 1x1x1.
     /// \return The heightmap's size factor.
@@ -178,7 +178,7 @@ namespace sdf
 
     /// \brief Get the heightmap's position offset.
     /// \return The heightmap's position offset.
-    public: gz::math::Vector3d Position() const;
+    public: [[nodiscard]] gz::math::Vector3d Position() const;
 
     /// \brief Set the heightmap's position offset.
     /// \return The heightmap's position offset.
@@ -186,7 +186,7 @@ namespace sdf
 
     /// \brief Get whether the heightmap uses terrain paging.
     /// \return True if the heightmap uses terrain paging.
-    public: bool UseTerrainPaging() const;
+    public: [[nodiscard]] bool UseTerrainPaging() const;
 
     /// \brief Set whether the heightmap uses terrain paging. Defaults to false.
     /// \param[in] _use True to use.
@@ -194,7 +194,7 @@ namespace sdf
 
     /// \brief Get the heightmap's sampling per datum.
     /// \return The heightmap's sampling.
-    public: unsigned int Sampling() const;
+    public: [[nodiscard]] unsigned int Sampling() const;
 
     /// \brief Set the heightmap's sampling. Defaults to 1.
     /// \param[in] _sampling The heightmap's sampling per datum.
@@ -202,7 +202,7 @@ namespace sdf
 
     /// \brief Get the number of heightmap textures.
     /// \return Number of heightmap textures contained in this Heightmap object.
-    public: uint64_t TextureCount() const;
+    public: [[nodiscard]] uint64_t TextureCount() const;
 
     /// \brief Get a heightmap texture based on an index.
     /// \param[in] _index Index of the heightmap texture. The index should be in
@@ -210,7 +210,7 @@ namespace sdf
     /// \return Pointer to the heightmap texture. Nullptr if the index does not
     /// exist.
     /// \sa uint64_t TextureCount() const
-    public: const HeightmapTexture *TextureByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const HeightmapTexture *TextureByIndex(uint64_t _index) const;
 
     /// \brief Add a heightmap texture.
     /// \param[in] _texture Texture to add.
@@ -218,7 +218,7 @@ namespace sdf
 
     /// \brief Get the number of heightmap blends.
     /// \return Number of heightmap blends contained in this Heightmap object.
-    public: uint64_t BlendCount() const;
+    public: [[nodiscard]] uint64_t BlendCount() const;
 
     /// \brief Get a heightmap blend based on an index.
     /// \param[in] _index Index of the heightmap blend. The index should be in
@@ -226,7 +226,7 @@ namespace sdf
     /// \return Pointer to the heightmap blend. Nullptr if the index does not
     /// exist.
     /// \sa uint64_t BlendCount() const
-    public: const HeightmapBlend *BlendByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const HeightmapBlend *BlendByIndex(uint64_t _index) const;
 
     /// \brief Add a heightmap blend.
     /// \param[in] _blend Blend to add.
@@ -235,14 +235,14 @@ namespace sdf
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// heightmap.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated heightmap values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// heightmap.

@@ -217,11 +217,11 @@ namespace sdf
     /// \brief Get the error code.
     /// \return An error code.
     /// \sa ErrorCode.
-    public: ErrorCode Code() const;
+    public: [[nodiscard]] ErrorCode Code() const;
 
     /// \brief Get the error message, which is a description of the error.
     /// \return Error message.
-    public: std::string Message() const;
+    public: [[nodiscard]] std::string Message() const;
 
     /// \brief Sets the message associated with this error.
     /// \param [in] _message Message that describes this error.
@@ -230,7 +230,7 @@ namespace sdf
     /// \brief Get the file path associated with this error.
     /// \return Returns the path of the file that this error is related to,
     /// nullopt otherwise.
-    public: std::optional<std::string> FilePath() const;
+    public: [[nodiscard]] std::optional<std::string> FilePath() const;
 
     /// \brief Sets the file path that is associated with this error.
     /// \param[in] _filePath The file path that is related to this error. (e.g.
@@ -239,7 +239,7 @@ namespace sdf
 
     /// \brief Get the line number associated with this error.
     /// \return Returns the line number. nullopt otherwise.
-    public: std::optional<int> LineNumber() const;
+    public: [[nodiscard]] std::optional<int> LineNumber() const;
 
     /// \brief Sets the line number that is associated with this error.
     /// \param[in] _lineNumber The line number that is related to this error.
@@ -248,7 +248,7 @@ namespace sdf
     /// \brief Get the XPath-like trace that is associated with this error.
     /// \return Returns the XPath-like trace that this error is related to,
     /// nullopt otherwise.
-    public: std::optional<std::string> XmlPath() const;
+    public: [[nodiscard]] std::optional<std::string> XmlPath() const;
 
     /// \brief Sets the XML path that is associated with this error.
     /// \param[in] _xmlPath The XML path that is related to this error. (e.g.

@@ -47,11 +47,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the noise values related to the vertical position.
     /// \return Noise values for the vertical position.
-    public: const Noise &VerticalPositionNoise() const;
+    public: [[nodiscard]] const Noise &VerticalPositionNoise() const;
 
     /// \brief Set the noise values related to the vertical position.
     /// \param[in] _noise Noise values for the vertical position.
@@ -59,7 +59,7 @@ namespace sdf
 
     /// \brief Get the noise values related to the vertical velocity.
     /// \return Noise values for the vertical velocity.
-    public: const Noise &VerticalVelocityNoise() const;
+    public: [[nodiscard]] const Noise &VerticalVelocityNoise() const;
 
     /// \brief Set the noise values related to the vertical velocity.
     /// \param[in] _noise Noise values for the vertical velocity.
@@ -81,7 +81,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// altimeter sensor.

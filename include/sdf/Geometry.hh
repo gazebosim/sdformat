@@ -109,7 +109,7 @@ namespace sdf
 
     /// \brief Get the type of geometry.
     /// \return The geometry type.
-    public: GeometryType Type() const;
+    public: [[nodiscard]] GeometryType Type() const;
 
     /// \brief Set the type of geometry.
     /// \param[in] _type The geometry type.
@@ -120,7 +120,7 @@ namespace sdf
     /// \return Pointer to the visual's box geometry, or nullptr if the
     /// geometry is not a box.
     /// \sa GeometryType Type() const
-    public: const Box *BoxShape() const;
+    public: [[nodiscard]] const Box *BoxShape() const;
 
     /// \brief Set the box shape.
     /// \param[in] _box The box shape.
@@ -131,7 +131,7 @@ namespace sdf
     /// \return Pointer to the capsule geometry, or nullptr if the
     /// geometry is not a capsule.
     /// \sa GeometryType Type() const
-    public: const Capsule *CapsuleShape() const;
+    public: [[nodiscard]] const Capsule *CapsuleShape() const;
 
     /// \brief Set the capsule shape.
     /// \param[in] _capsule The capsule shape.
@@ -142,7 +142,7 @@ namespace sdf
     /// \return Pointer to the visual's cylinder geometry, or nullptr if the
     /// geometry is not a cylinder.
     /// \sa GeometryType Type() const
-    public: const Cylinder *CylinderShape() const;
+    public: [[nodiscard]] const Cylinder *CylinderShape() const;
 
     /// \brief Set the cylinder shape.
     /// \param[in] _cylinder The cylinder shape.
@@ -153,7 +153,7 @@ namespace sdf
     /// \return Pointer to the ellipsoid geometry, or nullptr if the geometry is
     /// not an ellipsoid.
     /// \sa GeometryType Type() const
-    public: const Ellipsoid *EllipsoidShape() const;
+    public: [[nodiscard]] const Ellipsoid *EllipsoidShape() const;
 
     /// \brief Set the ellipsoid shape.
     /// \param[in] _ellipsoid The ellipsoid shape.
@@ -164,7 +164,7 @@ namespace sdf
     /// \return Pointer to the visual's sphere geometry, or nullptr if the
     /// geometry is not a sphere.
     /// \sa GeometryType Type() const
-    public: const Sphere *SphereShape() const;
+    public: [[nodiscard]] const Sphere *SphereShape() const;
 
     /// \brief Set the sphere shape.
     /// \param[in] _sphere The sphere shape.
@@ -174,7 +174,7 @@ namespace sdf
     /// geometry is not a polyline.
     /// \return The visual's polyline geometries.
     /// \sa GeometryType Type() const
-    public: const std::vector<Polyline> &PolylineShape() const;
+    public: [[nodiscard]] const std::vector<Polyline> &PolylineShape() const;
 
     /// \brief Set the polyline shape.
     /// \param[in] _polyline The polyline shape.
@@ -185,7 +185,7 @@ namespace sdf
     /// \return Pointer to the visual's plane geometry, or nullptr if the
     /// geometry is not a plane.
     /// \sa GeometryType Type() const
-    public: const Plane *PlaneShape() const;
+    public: [[nodiscard]] const Plane *PlaneShape() const;
 
     /// \brief Set the plane shape.
     /// \param[in] _plane The plane shape.
@@ -196,7 +196,7 @@ namespace sdf
     /// \return Pointer to the visual's mesh geometry, or nullptr if the
     /// geometry is not a mesh.
     /// \sa GeometryType Type() const
-    public: const Mesh *MeshShape() const;
+    public: [[nodiscard]] const Mesh *MeshShape() const;
 
     /// \brief Set the mesh shape.
     /// \param[in] _mesh The mesh shape.
@@ -207,7 +207,7 @@ namespace sdf
     /// \return Pointer to the heightmap geometry, or nullptr if the geometry is
     /// not a heightmap.
     /// \sa GeometryType Type() const
-    public: const Heightmap *HeightmapShape() const;
+    public: [[nodiscard]] const Heightmap *HeightmapShape() const;
 
     /// \brief Set the heightmap shape.
     /// \param[in] _heightmap The heightmap shape.
@@ -228,14 +228,14 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// geometry.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated geometry values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// geometry.

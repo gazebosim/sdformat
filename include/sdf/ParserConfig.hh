@@ -113,7 +113,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the find file callback function
   /// \return Immutable reference to the find file callback function
-  public: const std::function<std::string(const std::string &)> &
+  public: [[nodiscard]] const std::function<std::string(const std::string &)> &
           FindFileCallback() const;
 
   /// \brief Set the callback to use when libsdformat can't find a file.
@@ -134,7 +134,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the URI scheme to search directories map
   /// \return Immutable reference to the URI scheme to search directories map
-  public: const SchemeToPathMap &URIPathMap() const;
+  public: [[nodiscard]] const SchemeToPathMap &URIPathMap() const;
 
   /// \brief Associate paths to a URI.
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
@@ -149,7 +149,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the current warning enforcement policy
   /// \return The warning enforcement policy enum value
-  public: EnforcementPolicy WarningsPolicy() const;
+  public: [[nodiscard]] EnforcementPolicy WarningsPolicy() const;
 
   /// \brief Set the policy for unrecogonized elements without an xmlns
   /// \param[in] _policy The unrecognized elements enforcement policy
@@ -157,7 +157,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the current unrecognized elements policy
   /// \return The unrecognized elements policy enum value
-  public: EnforcementPolicy UnrecognizedElementsPolicy() const;
+  public: [[nodiscard]] EnforcementPolicy UnrecognizedElementsPolicy() const;
 
   /// \brief Set the policy for deprecated elements.
   /// \param[in] _policy The deprecated elements enforcement policy
@@ -173,12 +173,12 @@ class SDFORMAT_VISIBLE ParserConfig
   /// SetWarningsPolicy will not change the value of DeprecatedElementsPolicy
   /// unless ResetDeprecatedElementsPolicy is called.
   /// \return The deperacted elements policy enum value
-  public: EnforcementPolicy DeprecatedElementsPolicy() const;
+  public: [[nodiscard]] EnforcementPolicy DeprecatedElementsPolicy() const;
 
   /// \brief Get the current configuration for the CalculateInertial()
   /// function
   /// \return Current set value of the ConfigureResolveAutoInertials enum
-  public: ConfigureResolveAutoInertials CalculateInertialConfiguration() const;
+  public: [[nodiscard]] ConfigureResolveAutoInertials CalculateInertialConfiguration() const;
 
   /// \brief Set the configuration for the CalculateInertial() function
   /// \param[in] _configuration The configuration to set for the
@@ -193,7 +193,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the registered custom model parsers
   /// \return Vector of registered model parser callbacks.
-  public: const std::vector<CustomModelParser> &CustomModelParsers() const;
+  public: [[nodiscard]] const std::vector<CustomModelParser> &CustomModelParsers() const;
 
   /// \brief Registers a custom Moment of Inertia Calculator for Meshes
   /// \param[in] _inertiaCalculator Callback with signature as described in
@@ -203,7 +203,7 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the registered custom mesh MOI Calculator
   /// \return registered mesh MOI Calculator.
-  public: const CustomInertiaCalculator &CustomInertiaCalc() const;
+  public: [[nodiscard]] const CustomInertiaCalculator &CustomInertiaCalc() const;
 
   /// \brief Set the preserveFixedJoint flag.
   /// \param[in] _preserveFixedJoint True to preserve fixed joints, false to
@@ -213,7 +213,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the preserveFixedJoint flag value.
   /// \return True to preserve fixed joints, false to reduce the fixed joints
   /// and merge the child link into the parent.
-  public: bool URDFPreserveFixedJoint() const;
+  public: [[nodiscard]] bool URDFPreserveFixedJoint() const;
 
   /// \brief Set the storeResolvedURIs flag value.
   /// \sa SetStoreResolvedURIs
@@ -233,7 +233,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \brief Get the storeResolvedURIs flag value.
   /// \return True if the parser will attempt to resolve any URIs found and
   /// store them.  False to preserve original URIs
-  public: bool StoreResolvedURIs() const;
+  public: [[nodiscard]] bool StoreResolvedURIs() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

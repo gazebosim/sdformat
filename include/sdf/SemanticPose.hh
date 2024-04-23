@@ -55,13 +55,13 @@ namespace sdf
   {
     /// \brief Get the raw Pose3 transform.
     /// \return The raw Pose3 transform.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the default parent object.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &RelativeTo() const;
+    public: [[nodiscard]] const std::string &RelativeTo() const;
 
     /// \brief Resolve pose of this object with respect to another named frame.
     /// If there are any errors resolving the pose, the output will not be

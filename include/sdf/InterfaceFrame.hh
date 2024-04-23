@@ -45,16 +45,16 @@ class SDFORMAT_VISIBLE InterfaceFrame
 
   /// \brief Get the name of the frame.
   /// \return Local name of the frame.
-  public: const std::string &Name() const;
+  public: [[nodiscard]] const std::string &Name() const;
 
   /// \brief Get the name of the coordinate frame to which this frame is
   /// attached.
   /// \return The name of the attached-to frame.
-  public: const std::string &AttachedTo() const;
+  public: [[nodiscard]] const std::string &AttachedTo() const;
 
   /// \brief Get the pose of this frame relative to the attached-to frame.
   /// \return The pose of this frame in the attached-to frame.
-  public: const gz::math::Pose3d &PoseInAttachedToFrame() const;
+  public: [[nodiscard]] const gz::math::Pose3d &PoseInAttachedToFrame() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

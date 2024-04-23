@@ -47,7 +47,7 @@ namespace sdf
 
     /// \brief Get the capsule's radius in meters.
     /// \return The radius of the capsule in meters.
-    public: double Radius() const;
+    public: [[nodiscard]] double Radius() const;
 
     /// \brief Set the capsule's radius in meters.
     /// \param[in] _radius The radius of the capsule in meters.
@@ -55,7 +55,7 @@ namespace sdf
 
     /// \brief Get the capsule's length in meters.
     /// \return The length of the capsule in meters.
-    public: double Length() const;
+    public: [[nodiscard]] double Length() const;
 
     /// \brief Set the capsule's length in meters.
     /// \param[in] _length The length of the capsule in meters.
@@ -65,11 +65,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Capsule.
     /// \return A const reference to a gz::math::Sphered object.
-    public: const gz::math::Capsuled &Shape() const;
+    public: [[nodiscard]] const gz::math::Capsuled &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Capsule.
     /// \return A reference to a gz::math::Capsuled object.
@@ -88,7 +88,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated capsule values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// capsule.

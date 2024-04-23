@@ -81,11 +81,11 @@ namespace sdf
     /// are valid.
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-    public: Errors ValidateGraphs() const;
+    public: [[nodiscard]] Errors ValidateGraphs() const;
 
     /// \brief Get the name of the world.
     /// \return Name of the world.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the world.
     /// \param[in] _name Name of the world.
@@ -95,7 +95,7 @@ namespace sdf
     /// playback audio files. A value of "default" or an empty string
     /// indicates that the system's default audio device should be used.
     /// \return Audio device name.
-    public: std::string AudioDevice() const;
+    public: [[nodiscard]] std::string AudioDevice() const;
 
     /// \brief Set the audio device name. See std::string AudioDevice() const
     /// for more information.
@@ -107,7 +107,7 @@ namespace sdf
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
     /// \return Linear velocity of wind in the global/world coordinate frame.
     /// \sa void SetWindLinearVelocity(const gz::math::Vector3d &_wind)
-    public: gz::math::Vector3d WindLinearVelocity() const;
+    public: [[nodiscard]] gz::math::Vector3d WindLinearVelocity() const;
 
     /// \brief Set the wind linear velocity in the global/world coordinate
     /// frame. Units are meters per second \f$(\frac{m}{s})\f$
@@ -120,7 +120,7 @@ namespace sdf
     /// [0, 0, -9.80665] \f$(\frac{m}{s^2})\f$
     /// \return Gravity vector in meters per second squared
     /// \f$(\frac{m}{s^2})\f$
-    public: gz::math::Vector3d Gravity() const;
+    public: [[nodiscard]] gz::math::Vector3d Gravity() const;
 
     /// \brief Set the acceleration due to gravity. Units are meters per
     /// second squared \f$(\frac{m}{s^2})\f$
@@ -133,7 +133,7 @@ namespace sdf
     /// <spherical_coordinates> element.
     /// \return Magnetic field vector.
     /// \sa SphericalCoordinates
-    public: gz::math::Vector3d MagneticField() const;
+    public: [[nodiscard]] gz::math::Vector3d MagneticField() const;
 
     /// \brief Set the magnetic vector in Tesla, expressed in
     /// a coordinate frame defined by the SphericalCoordinate.
@@ -145,7 +145,7 @@ namespace sdf
 
     /// \brief Get the spherical coordinates for the world origin.
     /// \return Spherical coordinates or null if not defined.
-    public: const gz::math::SphericalCoordinates *
+    public: [[nodiscard]] const gz::math::SphericalCoordinates *
         SphericalCoordinates() const;
 
     /// \brief Set the spherical coordinates for the world origin.
@@ -158,7 +158,7 @@ namespace sdf
     /// \remark ModelByName() can find nested models that are not immediate
     /// children of this World object.
     /// \return Number of models contained in this World object.
-    public: uint64_t ModelCount() const;
+    public: [[nodiscard]] uint64_t ModelCount() const;
 
     /// \brief Get an immediate (not recursively nested) child model based on an
     /// index.
@@ -166,7 +166,7 @@ namespace sdf
     /// [0..ModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
     /// \sa uint64_t ModelCount() const
-    public: const Model *ModelByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Model *ModelByIndex(const uint64_t _index) const;
 
     /// \brief Get an immediate (not recursively nested) mutable child model
     /// based on an index.
@@ -183,7 +183,7 @@ namespace sdf
     /// \return Pointer to the model. Nullptr if a model with the given name
     /// does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
-    public: const Model *ModelByName(const std::string &_name) const;
+    public: [[nodiscard]] const Model *ModelByName(const std::string &_name) const;
 
     /// \brief Get a mutable model based on a name.
     /// \param[in] _name Name of the model.
@@ -199,7 +199,7 @@ namespace sdf
     /// To check for a model nested in other models, prefix the model name with
     /// the sequence of nested models containing this model, delimited by "::".
     /// \return True if there exists a model with the given name.
-    public: bool ModelNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool ModelNameExists(const std::string &_name) const;
 
     /// \brief Add a model to the world.
     /// \param[in] _model Model to add.
@@ -257,14 +257,14 @@ namespace sdf
 
     /// \brief Get the number of actors.
     /// \return Number of actors contained in this World object.
-    public: uint64_t ActorCount() const;
+    public: [[nodiscard]] uint64_t ActorCount() const;
 
     /// \brief Get an actor based on an index.
     /// \param[in] _index Index of the actor. The index should be in the
     /// range [0..ActorCount()).
     /// \return Pointer to the actor. Nullptr if the index does not exist.
     /// \sa uint64_t ActorCount() const
-    public: const Actor *ActorByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Actor *ActorByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable actor based on an index.
     /// \param[in] _index Index of the actor. The index should be in the
@@ -276,14 +276,14 @@ namespace sdf
     /// \brief Get whether an actor name exists.
     /// \param[in] _name Name of the actor to check.
     /// \return True if there exists an actor with the given name.
-    public: bool ActorNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool ActorNameExists(const std::string &_name) const;
 
     /// \brief Get the number of explicit frames that are immediate (not nested)
     /// children of this World object.
     /// \remark FrameByName() can find explicit frames that are not immediate
     /// children of this World object.
     /// \return Number of explicit frames contained in this World object.
-    public: uint64_t FrameCount() const;
+    public: [[nodiscard]] uint64_t FrameCount() const;
 
     /// \brief Get an immediate (not nested) child explicit frame based on an
     /// index.
@@ -292,7 +292,7 @@ namespace sdf
     /// \return Pointer to the explicit frame. Nullptr if the index does not
     /// exist.
     /// \sa uint64_t FrameCount() const
-    public: const Frame *FrameByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Frame *FrameByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable immediate (not nested) child explicit frame based
     /// on an index.
@@ -309,7 +309,7 @@ namespace sdf
     /// sequence of nested models containing this frame, delimited by "::".
     /// \return Pointer to the explicit frame. Nullptr if the name does not
     /// exist.
-    public: const Frame *FrameByName(const std::string &_name) const;
+    public: [[nodiscard]] const Frame *FrameByName(const std::string &_name) const;
 
     /// \brief Get a mutable explicit frame based on a name.
     /// \param[in] _name Name of the explicit frame.
@@ -324,18 +324,18 @@ namespace sdf
     /// To check for a frame in a nested model, prefix the frame name with
     /// the sequence of nested models containing this frame, delimited by "::".
     /// \return True if there exists an explicit frame with the given name.
-    public: bool FrameNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool FrameNameExists(const std::string &_name) const;
 
     /// \brief Get the number of joints.
     /// \return Number of joints contained in this World object.
-    public: uint64_t JointCount() const;
+    public: [[nodiscard]] uint64_t JointCount() const;
 
     /// \brief Get a joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
     /// range [0..JointCount()).
     /// \return Pointer to the joint. Nullptr if the index does not exist.
     /// \sa uint64_t JointCount() const
-    public: const Joint *JointByIndex(uint64_t _index) const;
+    public: [[nodiscard]] const Joint *JointByIndex(uint64_t _index) const;
 
     /// \brief Get a mutable joint based on an index.
     /// \param[in] _index Index of the joint. The index should be in the
@@ -350,7 +350,7 @@ namespace sdf
     /// sequence of nested models containing this joint, delimited by "::".
     /// \return Pointer to the joint. Nullptr if the name does not
     /// exist.
-    public: const Joint *JointByName(const std::string &_name) const;
+    public: [[nodiscard]] const Joint *JointByName(const std::string &_name) const;
 
     /// \brief Get a mutable joint based on a name.
     /// \param[in] _name Name of the joint.
@@ -363,18 +363,18 @@ namespace sdf
     /// \brief Get whether a joint name exists.
     /// \param[in] _name Name of the joint to check.
     /// \return True if there exists a joint with the given name.
-    public: bool JointNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool JointNameExists(const std::string &_name) const;
 
     /// \brief Get the number of lights.
     /// \return Number of lights contained in this World object.
-    public: uint64_t LightCount() const;
+    public: [[nodiscard]] uint64_t LightCount() const;
 
     /// \brief Get a light based on an index.
     /// \param[in] _index Index of the light. The index should be in the
     /// range [0..LightCount()).
     /// \return Pointer to the light. Nullptr if the index does not exist.
     /// \sa uint64_t LightCount() const
-    public: const Light *LightByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Light *LightByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable light based on an index.
     /// \param[in] _index Index of the light. The index should be in the
@@ -386,13 +386,13 @@ namespace sdf
     /// \brief Get whether a light name exists.
     /// \param[in] _name Name of the light to check.
     /// \return True if there exists a light with the given name.
-    public: bool LightNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool LightNameExists(const std::string &_name) const;
 
     /// \brief Get a pointer to the atmosphere model associated with this
     /// world. A nullptr indicates that an atmosphere model has not been set.
     /// \return Pointer to this world's atmosphere model. Nullptr inidicates
     /// that there is no atmosphere model.
-    public: const sdf::Atmosphere *Atmosphere() const;
+    public: [[nodiscard]] const sdf::Atmosphere *Atmosphere() const;
 
     /// \brief Set the atmosphere model associated with this world.
     /// \param[in] _atmosphere The new atmosphere model for this world.
@@ -402,7 +402,7 @@ namespace sdf
     /// world. A nullptr indicates that a Gui element has not been specified.
     /// \return Pointer to this world's Gui parameters. Nullptr inidicates
     /// that there are no Gui parameters.
-    public: const sdf::Gui *Gui() const;
+    public: [[nodiscard]] const sdf::Gui *Gui() const;
 
     /// \brief Set the Gui parameters associated with this world.
     /// \param[in] _gui The new Gui parameter for this world
@@ -412,7 +412,7 @@ namespace sdf
     /// world. A nullptr indicates that a Scene element has not been specified.
     /// \return Pointer to this world's Scene parameters. Nullptr inidicates
     /// that there are no Scene parameters.
-    public: const sdf::Scene *Scene() const;
+    public: [[nodiscard]] const sdf::Scene *Scene() const;
 
     /// \brief Set the Scene parameters associated with this world.
     /// \param[in] _gui The new Scene parameter for this world
@@ -422,11 +422,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the number of physics profiles.
     /// \return Number of physics profiles contained in this World object.
-    public: uint64_t PhysicsCount() const;
+    public: [[nodiscard]] uint64_t PhysicsCount() const;
 
     /// \brief Get a physics profile based on an index.
     /// \param[in] _index Index of the physics profile.
@@ -434,7 +434,7 @@ namespace sdf
     /// \return Pointer to the physics profile. Nullptr if the index does not
     /// exist.
     ///// \sa uint64_t PhysicsCount() const
-    public: const Physics *PhysicsByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const Physics *PhysicsByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable physics profile based on an index.
     /// \param[in] _index Index of the physics profile.
@@ -446,18 +446,18 @@ namespace sdf
 
     /// \brief Get the default physics profile.
     /// \return Pointer to the default physics profile.
-    public: const Physics *PhysicsDefault() const;
+    public: [[nodiscard]] const Physics *PhysicsDefault() const;
 
     /// \brief Get whether a physics profile name exists.
     /// \param[in] _name Name of the physics profile to check.
     /// \return True if there exists a physics profile with the given name.
-    public: bool PhysicsNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool PhysicsNameExists(const std::string &_name) const;
 
     /// \brief Get the number of nested interface models that are immediate (not
     /// recursively nested) children of this World object.
     /// \return Number of nested interface models contained in this World
     /// object.
-    public: uint64_t InterfaceModelCount() const;
+    public: [[nodiscard]] uint64_t InterfaceModelCount() const;
 
     /// \brief Get an immediate (not recursively nested) child interface model
     /// based on an index.
@@ -465,7 +465,7 @@ namespace sdf
     /// be in the range [0..InterfaceModelCount()).
     /// \return Pointer to the model. Nullptr if the index does not exist.
     /// \sa uint64_t InterfaceModelCount() const
-    public: std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
+    public: [[nodiscard]] std::shared_ptr<const InterfaceModel> InterfaceModelByIndex(
                 const uint64_t _index) const;
 
     /// \brief Get the nested include information of an immediate (not
@@ -475,7 +475,7 @@ namespace sdf
     /// \return Pointer to the nested include information. Nullptr if the index
     /// does not exist.
     /// \sa uint64_t InterfaceModelCount() const
-    public: const NestedInclude* InterfaceModelNestedIncludeByIndex(
+    public: [[nodiscard]] const NestedInclude* InterfaceModelNestedIncludeByIndex(
                 const uint64_t _index) const;
 
     /// \brief Create and return an SDF element filled with data from this
@@ -484,7 +484,7 @@ namespace sdf
     /// function.
     /// \param[in] _config Custom parser configuration
     /// \return SDF element pointer with updated world values.
-    public: sdf::ElementPtr ToElement(
+    public: [[nodiscard]] sdf::ElementPtr ToElement(
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Check if a given name exists in the FrameAttachedTo graph at the
@@ -496,13 +496,13 @@ namespace sdf
     /// False otherwise, or if the frame graph is invalid.
     /// \note This function assumes the world has a valid FrameAttachedTo graph.
     /// It will return false if the graph is invalid.
-    public: bool NameExistsInFrameAttachedToGraph(
+    public: [[nodiscard]] bool NameExistsInFrameAttachedToGraph(
                 const std::string &_name) const;
 
     /// \brief Get the plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this object.
     /// \return A vector of Plugin, which will be empty if there are no

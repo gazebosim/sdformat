@@ -72,7 +72,7 @@ namespace sdf
     /// \brief Get the name of the collision.
     /// The name of the collision must be unique within the scope of a Link.
     /// \return Name of the collision.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the collision.
     /// The name of the collision must be unique within the scope of a Link.
@@ -86,7 +86,7 @@ namespace sdf
 
     /// \brief Get the density of the collision.
     /// \return Density of the collision.
-    public: double Density() const;
+    public: [[nodiscard]] double Density() const;
 
     /// \brief Set the density of the collision.
     /// \param[in] _density Density of the collision.
@@ -96,7 +96,7 @@ namespace sdf
     /// This element can be used as a parent element to hold user-defined
     /// params for the custom moment of inertia calculator.
     /// \return ElementPtr object for the <auto_inertia_params> element.
-    public: sdf::ElementPtr AutoInertiaParams() const;
+    public: [[nodiscard]] sdf::ElementPtr AutoInertiaParams() const;
 
     /// \brief Function to set the auto inertia params using a
     /// sdf ElementPtr object
@@ -106,7 +106,7 @@ namespace sdf
 
     /// \brief Get a pointer to the collisions's geometry.
     /// \return The collision's geometry.
-    public: const Geometry *Geom() const;
+    public: [[nodiscard]] const Geometry *Geom() const;
 
     /// \brief Set the collision's geometry
     /// \param[in] _geom The geometry of the collision object
@@ -114,7 +114,7 @@ namespace sdf
 
     /// \brief Get a pointer to the collisions's surface parameters.
     /// \return The collision's surface parameters.
-    public: const sdf::Surface *Surface() const;
+    public: [[nodiscard]] const sdf::Surface *Surface() const;
 
     /// \brief Set the collision's surface parameters
     /// \param[in] _surface The surface parameters of the collision object
@@ -124,7 +124,7 @@ namespace sdf
     /// collison as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the collision object.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -135,7 +135,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -146,7 +146,7 @@ namespace sdf
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Calculate and return the MassMatrix for the collision
     /// \param[out] _errors A vector of Errors objects. Each errors contains an
@@ -181,14 +181,14 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// collision.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated collision values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// collision.

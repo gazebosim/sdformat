@@ -66,10 +66,10 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the maximum number of convex hulls that can be generated.
-    public: unsigned int MaxConvexHulls() const;
+    public: [[nodiscard]] unsigned int MaxConvexHulls() const;
 
     /// \brief Set the maximum number of convex hulls that can be generated.
     public: void SetMaxConvexHulls(unsigned int _maxConvexHulls);
@@ -105,12 +105,12 @@ namespace sdf
     /// \brief Get the mesh's optimization method
     /// \return The mesh optimization method.
     /// MeshOptimization::NONE if no mesh simplificaton is done.
-    public: MeshOptimization Optimization() const;
+    public: [[nodiscard]] MeshOptimization Optimization() const;
 
     /// \brief Get the mesh's optimization method
     /// \return The mesh optimization method.
     /// Empty string if no mesh simplificaton is done.
-    public: std::string OptimizationStr() const;
+    public: [[nodiscard]] std::string OptimizationStr() const;
 
     /// \brief Set the mesh optimization method.
     /// \param[in] _optimization The mesh optimization method.
@@ -126,7 +126,7 @@ namespace sdf
     /// \brief Get the associated ConvexDecomposition object
     /// \returns Pointer to the associated ConvexDecomposition object,
     /// nullptr if the Mesh doesn't contain a ConvexDecomposition element.
-    public: const sdf::ConvexDecomposition *ConvexDecomposition() const;
+    public: [[nodiscard]] const sdf::ConvexDecomposition *ConvexDecomposition() const;
 
     /// \brief Set the associated ConvexDecomposition object.
     /// \param[in] _convexDecomposition The ConvexDecomposition object.
@@ -135,7 +135,7 @@ namespace sdf
 
     /// \brief Get the mesh's URI.
     /// \return The URI of the mesh data.
-    public: std::string Uri() const;
+    public: [[nodiscard]] std::string Uri() const;
 
     /// \brief Set the mesh's URI.
     /// \param[in] _uri The URI of the mesh.
@@ -143,7 +143,7 @@ namespace sdf
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -151,7 +151,7 @@ namespace sdf
 
     /// \brief Get the mesh's scale factor.
     /// \return The mesh's scale factor.
-    public: gz::math::Vector3d Scale() const;
+    public: [[nodiscard]] gz::math::Vector3d Scale() const;
 
     /// \brief Set the mesh's scale factor.
     /// \return The mesh's scale factor.
@@ -161,7 +161,7 @@ namespace sdf
     /// optionally be specified. If specified, this submesh should be used
     /// instead of the entire mesh.
     /// \return The name of the submesh within the mesh at the specified URI.
-    public: std::string Submesh() const;
+    public: [[nodiscard]] std::string Submesh() const;
 
     /// \brief Set the mesh's submesh. See Submesh() for more information.
     /// \param[in] _submesh Name of the submesh. The name should match a submesh
@@ -173,7 +173,7 @@ namespace sdf
     /// from parent links and models are applied. The return value is only
     /// applicable if a SubMesh has been specified.
     /// \return True if the submesh should be centered.
-    public: bool CenterSubmesh() const;
+    public: [[nodiscard]] bool CenterSubmesh() const;
 
     /// \brief Set whether the submesh should be centered. See CenterSubmesh()
     /// for more information.
@@ -197,14 +197,14 @@ namespace sdf
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// mesh.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated mesh values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// mesh.

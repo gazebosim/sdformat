@@ -48,11 +48,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the noise values related to the body-frame x axis.
     /// \return Noise values for the x axis.
-    public: const Noise &XNoise() const;
+    public: [[nodiscard]] const Noise &XNoise() const;
 
     /// \brief Set the noise values related to the body-frame x axis.
     /// \param[in] _noise Noise values for the x axis.
@@ -60,7 +60,7 @@ namespace sdf
 
     /// \brief Get the noise values related to the body-frame y axis.
     /// \return Noise values for the y axis.
-    public: const Noise &YNoise() const;
+    public: [[nodiscard]] const Noise &YNoise() const;
 
     /// \brief Set the noise values related to the body-frame y axis.
     /// \param[in] _noise Noise values for the y axis.
@@ -68,7 +68,7 @@ namespace sdf
 
     /// \brief Get the noise values related to the body-frame z axis.
     /// \return Noise values for the z axis.
-    public: const Noise &ZNoise() const;
+    public: [[nodiscard]] const Noise &ZNoise() const;
 
     /// \brief Set the noise values related to the body-frame z axis.
     /// \param[in] _noise Noise values for the z axis.
@@ -90,7 +90,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

@@ -57,7 +57,7 @@ namespace sdf
     /// The name of the projector should be unique within the scope of
     /// a Link.
     /// \return Name of the projector.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the projector.
     /// The name of the projector should be unique within the scope of
@@ -67,7 +67,7 @@ namespace sdf
 
     /// \brief Get the near clip distance.
     /// \return The near clip distance.
-    public: double NearClip() const;
+    public: [[nodiscard]] double NearClip() const;
 
     /// \brief Set the near clip distance.
     /// \param[in] _near The near clip distance.
@@ -75,7 +75,7 @@ namespace sdf
 
     /// \brief Get the far clip distance.
     /// \return The far clip distance.
-    public: double FarClip() const;
+    public: [[nodiscard]] double FarClip() const;
 
     /// \brief Set the far clip distance.
     /// \param[in] _far The far clip distance.
@@ -83,7 +83,7 @@ namespace sdf
 
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
-    public: gz::math::Angle HorizontalFov() const;
+    public: [[nodiscard]] gz::math::Angle HorizontalFov() const;
 
     /// \brief Set the horizontal field of view in radians.
     /// \param[in] _hfov The horizontal field of view in radians.
@@ -91,7 +91,7 @@ namespace sdf
 
     /// \brief Get the visibility flags of a projector
     /// \return visibility flags
-    public: uint32_t VisibilityFlags() const;
+    public: [[nodiscard]] uint32_t VisibilityFlags() const;
 
     /// \brief Set the visibility flags of a projector
     /// \param[in] _flags visibility flags
@@ -101,7 +101,7 @@ namespace sdf
     /// a texture has not been set.
     /// \return Filename of the texture, or empty string if a texture
     /// has not been specified.
-    public: std::string Texture() const;
+    public: [[nodiscard]] std::string Texture() const;
 
     /// \brief Set the texture filename.
     /// \param[in] _map Filename of the texture
@@ -110,7 +110,7 @@ namespace sdf
     /// \brief Get the plugins attached to this projector.
     /// \return A vector of Plugin, which will be empty if there are no
     /// plugins.
-    public: const sdf::Plugins &Plugins() const;
+    public: [[nodiscard]] const sdf::Plugins &Plugins() const;
 
     /// \brief Get a mutable vector of plugins attached to this projector.
     /// \return A vector of Plugin, which will be empty if there are no
@@ -128,7 +128,7 @@ namespace sdf
     /// projector as specified in SDF
     /// (<projector><pose> ... </pose></projector>).
     /// \return The pose of the projector.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the projector object.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -139,7 +139,7 @@ namespace sdf
     /// projector's pose is expressed. An empty value indicates that the frame
     /// is relative to the parent link.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// projector's pose is expressed. An empty value indicates that the frame
@@ -149,16 +149,16 @@ namespace sdf
 
     /// \brief Get SemanticPose object of this object to aid in resolving poses.
     /// \return SemanticPose object for this projector.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief The path to the file where this element was loaded from.
     /// \return Full path to the file on disk.
-    public: const std::string &FilePath() const;
+    public: [[nodiscard]] const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
     /// \paramp[in] _filePath Full path to the file on disk.
@@ -169,7 +169,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated projector values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Set the name of the xml parent of this object, to be used
     /// for resolving poses. This is private and is intended to be called by

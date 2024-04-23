@@ -52,7 +52,7 @@ class SDFORMAT_VISIBLE CustomInertiaCalcProperties
 
   /// \brief Get the density of the mesh.
   /// \return Double density of the mesh.
-  public: double Density() const;
+  public: [[nodiscard]] double Density() const;
 
   /// \brief Function to set the density of the interface object
   /// \param[in] _density Double density value
@@ -60,7 +60,7 @@ class SDFORMAT_VISIBLE CustomInertiaCalcProperties
 
   /// \brief Get the reference to the mesh oject being used.
   /// \return Reference to the sdf::Mesh object.
-  public: const std::optional<sdf::Mesh> &Mesh() const;
+  public: [[nodiscard]] const std::optional<sdf::Mesh> &Mesh() const;
 
   /// \brief Function to set the mesh object
   /// \param[in] _mesh sdf::Mesh object
@@ -69,7 +69,7 @@ class SDFORMAT_VISIBLE CustomInertiaCalcProperties
   /// \brief Get the reference to the <auto_inertia_params> sdf element.
   /// User defined calculator params can be accessed through this element
   /// \return sdf::ElementPtr for the tag
-  public: const sdf::ElementPtr AutoInertiaParams() const;
+  public: [[nodiscard]] const sdf::ElementPtr AutoInertiaParams() const;
 
   /// \brief Function to set the calculator params sdf element object
   /// \param[in] _autoInertiaParamsElem sdf::ElementPtr for calculator params

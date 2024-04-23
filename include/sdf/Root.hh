@@ -121,7 +121,7 @@ namespace sdf
     /// pointer.
     /// \return SDF version string.
     /// \sa void SetVersion(const std::string &_version)
-    public: std::string Version() const;
+    public: [[nodiscard]] std::string Version() const;
 
     /// \brief Set the SDF version string.
     /// \param[in] _version The new SDF version.
@@ -130,14 +130,14 @@ namespace sdf
 
     /// \brief Get the number of worlds.
     /// \return Number of worlds contained in this Root object.
-    public: uint64_t WorldCount() const;
+    public: [[nodiscard]] uint64_t WorldCount() const;
 
     /// \brief Get a world based on an index.
     /// \param[in] _index Index of the world. The index should be in the
     /// range [0..WorldCount()).
     /// \return Pointer to the world. Nullptr if the index does not exist.
     /// \sa uint64_t WorldCount() const
-    public: const World *WorldByIndex(const uint64_t _index) const;
+    public: [[nodiscard]] const World *WorldByIndex(const uint64_t _index) const;
 
     /// \brief Get a mutable world based on an index.
     /// \param[in] _index Index of the world. The index should be in the
@@ -151,7 +151,7 @@ namespace sdf
     /// \return Pointer to the world. Nullptr if a world with the given name
     /// does not exist.
     /// \sa bool WorldNameExists(const std::string &_name) const
-    public: const World *WorldByName(const std::string &_name) const;
+    public: [[nodiscard]] const World *WorldByName(const std::string &_name) const;
 
     /// \brief Get a world based on a name.
     /// \param[in] _name Name of the world.
@@ -163,12 +163,12 @@ namespace sdf
     /// \brief Get whether a world name exists.
     /// \param[in] _name Name of the world to check.
     /// \return True if there exists a world with the given name.
-    public: bool WorldNameExists(const std::string &_name) const;
+    public: [[nodiscard]] bool WorldNameExists(const std::string &_name) const;
 
     /// \brief Get a pointer to the model object if it exists.
     ///
     /// \return A pointer to the model, nullptr if it doesn't exist
-    public: const sdf::Model *Model() const;
+    public: [[nodiscard]] const sdf::Model *Model() const;
 
     /// \brief Set the model object. This will override any existing model,
     /// actor, and light object.
@@ -178,7 +178,7 @@ namespace sdf
     /// \brief Get a pointer to the light object if it exists.
     ///
     /// \return A pointer to the light, nullptr if it doesn't exist
-    public: const sdf::Light *Light() const;
+    public: [[nodiscard]] const sdf::Light *Light() const;
 
     /// \brief Set the light object. This will override any existing model,
     /// actor, and light object.
@@ -188,7 +188,7 @@ namespace sdf
     /// \brief Get a pointer to the actor object if it exists.
     ///
     /// \return A pointer to the actor, nullptr if it doesn't exist
-    public: const sdf::Actor *Actor() const;
+    public: [[nodiscard]] const sdf::Actor *Actor() const;
 
     /// \brief Set the actor object. This will override any existing model,
     /// actor, and light object.
@@ -199,7 +199,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Add a world to the root.
     /// \param[in] _word World to add.
@@ -216,7 +216,7 @@ namespace sdf
     /// \return A clone of this Root object.
     /// Deprecate this function in SDF version 13, and use
     /// GZ_UTILS_IMPL_PTR instead.
-    public: sdf::Root Clone() const;
+    public: [[nodiscard]] sdf::Root Clone() const;
 
     /// \brief Recreate the frame and pose graphs for the worlds and model
     /// that are children of this Root object. You can call this function
@@ -243,7 +243,7 @@ namespace sdf
     /// function.
     /// \param[in] _config Custom output configuration
     /// \return SDF element pointer with updated root values.
-    public: sdf::ElementPtr ToElement(
+    public: [[nodiscard]] sdf::ElementPtr ToElement(
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
     /// \brief Private data pointer

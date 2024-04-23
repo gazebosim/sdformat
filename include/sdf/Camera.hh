@@ -83,7 +83,7 @@ namespace sdf
 
     /// \brief Get the camera info topic
     /// \return Topic for the camera info
-    public: std::string CameraInfoTopic() const;
+    public: [[nodiscard]] std::string CameraInfoTopic() const;
 
     /// \brief Set the camera info topic
     /// \param[in] _cameraInfoTopic Topic for the camera info.
@@ -93,11 +93,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the name of the camera.
     /// \return Name of the sensor.
-    public: std::string Name() const;
+    public: [[nodiscard]] std::string Name() const;
 
     /// \brief Set the name of the camera.
     /// \param[in] _name Name of the sensor.
@@ -105,7 +105,7 @@ namespace sdf
 
     /// \brief Get whether the camera is triggered by a topic.
     /// \return True if the camera is triggered by a topic.
-    public: bool Triggered() const;
+    public: [[nodiscard]] bool Triggered() const;
 
     /// \brief Set whether the camera should be triggered by a topic.
     /// \param[in] _triggered True if the camera should be triggered by a topic.
@@ -113,7 +113,7 @@ namespace sdf
 
     /// \brief Get the topic that will trigger the camera.
     /// \return Topic for the camera trigger.
-    public: std::string TriggerTopic() const;
+    public: [[nodiscard]] std::string TriggerTopic() const;
 
     /// \brief Set the topic that will trigger the camera.
     /// \param[in] _triggerTopic Topic for the camera trigger.
@@ -121,7 +121,7 @@ namespace sdf
 
     /// \brief Get the horizontal field of view in radians.
     /// \return The horizontal field of view in radians.
-    public: gz::math::Angle HorizontalFov() const;
+    public: [[nodiscard]] gz::math::Angle HorizontalFov() const;
 
     /// \brief Set the horizontal field of view in radians.
     /// \param[in] _hfov The horizontal field of view in radians.
@@ -129,7 +129,7 @@ namespace sdf
 
     /// \brief Get the image width in pixels.
     /// \return The image width in pixels.
-    public: uint32_t ImageWidth() const;
+    public: [[nodiscard]] uint32_t ImageWidth() const;
 
     /// \brief Set the image width in pixels.
     /// \param[in] _width The image width in pixels.
@@ -137,7 +137,7 @@ namespace sdf
 
     /// \brief Get the image height in pixels.
     /// \return The image height in pixels.
-    public: uint32_t ImageHeight() const;
+    public: [[nodiscard]] uint32_t ImageHeight() const;
 
     /// \brief Set the image height in pixels.
     /// \param[in] _height The image height in pixels.
@@ -146,7 +146,7 @@ namespace sdf
     /// \brief Get the pixel format. This value is set from the <format>
     /// element that is the child of <image>.
     /// \return The pixel format.
-    public: PixelFormatType PixelFormat() const;
+    public: [[nodiscard]] PixelFormatType PixelFormat() const;
 
     /// \brief Set the pixel format type.
     /// \param[in] _format The image format.
@@ -154,7 +154,7 @@ namespace sdf
 
     /// \brief Get the pixel format as a string.
     /// \return The pixel format string.
-    public: std::string PixelFormatStr() const;
+    public: [[nodiscard]] std::string PixelFormatStr() const;
 
     /// \brief Set the pixel format from a string.
     /// \param[in] _fmt The pixel format string.
@@ -162,7 +162,7 @@ namespace sdf
 
     /// \brief Get the anti-aliasing value.
     /// \return The anti-aliasing value.
-    public: uint32_t AntiAliasingValue() const;
+    public: [[nodiscard]] uint32_t AntiAliasingValue() const;
 
     /// \brief Set the anti-aliasing value.
     /// \param[in] _antiAliasingValue The anti-aliasing value.
@@ -170,7 +170,7 @@ namespace sdf
 
     /// \brief Get the near clip distance for the depth camera.
     /// \return The near clip depth distance.
-    public: double DepthNearClip() const;
+    public: [[nodiscard]] double DepthNearClip() const;
 
     /// \brief Set the near clip distance for the depth camera.
     /// \param[in] _near The near clip depth distance.
@@ -178,7 +178,7 @@ namespace sdf
 
     /// \brief Get the far clip distance for the depth camera.
     /// \return The far clip depth distance.
-    public: double DepthFarClip() const;
+    public: [[nodiscard]] double DepthFarClip() const;
 
     /// \brief Set the far clip distance for the depth camera.
     /// \param[in] _far The far clip depth distance.
@@ -186,7 +186,7 @@ namespace sdf
 
     /// \brief Get the near clip distance.
     /// \return The near clip distance.
-    public: double NearClip() const;
+    public: [[nodiscard]] double NearClip() const;
 
     /// \brief Set the near clip distance.
     /// \param[in] _near The near clip distance.
@@ -198,7 +198,7 @@ namespace sdf
 
     /// \brief Get whether the depth camera was set.
     /// \return True if the depth camera was set.
-    public: bool HasDepthCamera() const;
+    public: [[nodiscard]] bool HasDepthCamera() const;
 
     /// \brief Set whether the depth camera near clip distance
     /// has been specified.
@@ -208,7 +208,7 @@ namespace sdf
 
     /// \brief Get whether the depth camera near clip distance was set.
     /// \return True if the depth camera near clip distance was set.
-    public: bool HasDepthNearClip() const;
+    public: [[nodiscard]] bool HasDepthNearClip() const;
 
     /// \brief Set whether the depth camera far clip distance
     /// has been specified.
@@ -218,11 +218,11 @@ namespace sdf
 
     /// \brief Get whether the depth camera far clip distance was set.
     /// \return True if the depth camera far clip distance was set.
-    public: bool HasDepthFarClip() const;
+    public: [[nodiscard]] bool HasDepthFarClip() const;
 
     /// \brief Get the far clip distance.
     /// \return The far clip distance.
-    public: double FarClip() const;
+    public: [[nodiscard]] double FarClip() const;
 
     /// \brief Set the far clip distance.
     /// \param[in] _far The far clip distance.
@@ -235,11 +235,11 @@ namespace sdf
 
     /// \brief Get whether the segmentation type was set.
     /// \return True if the segmentation type was set.
-    public: bool HasSegmentationType() const;
+    public: [[nodiscard]] bool HasSegmentationType() const;
 
     /// \brief Get the segmentation type.
     /// \return The segmentation type.
-    public: const std::string &SegmentationType() const;
+    public: [[nodiscard]] const std::string &SegmentationType() const;
 
     /// \brief Set the segmentation type.
     /// \param[in] _type The segmentation type.
@@ -252,11 +252,11 @@ namespace sdf
 
     /// \brief Get whether the boundingbox type was set.
     /// \return True if the boundingbox type was set.
-    public: bool HasBoundingBoxType() const;
+    public: [[nodiscard]] bool HasBoundingBoxType() const;
 
     /// \brief Get the boundingbox type.
     /// \return The boundingbox type.
-    public: const std::string &BoundingBoxType() const;
+    public: [[nodiscard]] const std::string &BoundingBoxType() const;
 
     /// \brief Set the boundingbox type.
     /// \param[in] _type The boundingbox type.
@@ -264,7 +264,7 @@ namespace sdf
 
     /// \brief Get whether frames should be saved.
     /// \return True if image frames should be saved.
-    public: bool SaveFrames() const;
+    public: [[nodiscard]] bool SaveFrames() const;
 
     /// \brief Set whether frames should be saved.
     /// \param[in] _save True if image frames should be saved.
@@ -272,7 +272,7 @@ namespace sdf
 
     /// \brief Get the path in which to save frames.
     /// \return Path to save frames.
-    public: const std::string &SaveFramesPath() const;
+    public: [[nodiscard]] const std::string &SaveFramesPath() const;
 
     /// \brief Set the path in which to save frames.
     /// \param[in] _path Path to save frames.
@@ -280,7 +280,7 @@ namespace sdf
 
     /// \brief Get the image noise values.
     /// \return Noise values for the image.
-    public: const Noise &ImageNoise() const;
+    public: [[nodiscard]] const Noise &ImageNoise() const;
 
     /// \brief Set the noise values related to the image.
     /// \param[in] _noise Noise values for the image.
@@ -288,7 +288,7 @@ namespace sdf
 
     /// \brief Get the radial distortion coefficient k1
     /// \return _k1 The k1 radial distortion.
-    public: double DistortionK1() const;
+    public: [[nodiscard]] double DistortionK1() const;
 
     /// \brief Set the radial distortion coefficient k1
     /// \param[in] _k1 The k1 radial distortion.
@@ -296,7 +296,7 @@ namespace sdf
 
     /// \brief Get the radial distortion coefficient k2
     /// \return _k2 The k2 radial distortion.
-    public: double DistortionK2() const;
+    public: [[nodiscard]] double DistortionK2() const;
 
     /// \brief Set the radial distortion coefficient k2
     /// \param[in] _k2 The k2 radial distortion.
@@ -304,7 +304,7 @@ namespace sdf
 
     /// \brief Get the radial distortion coefficient k3
     /// \return _k3 The k3 radial distortion.
-    public: double DistortionK3() const;
+    public: [[nodiscard]] double DistortionK3() const;
 
     /// \brief Set the radial distortion coefficient k3
     /// \param[in] _k3 The k3 radial distortion.
@@ -312,7 +312,7 @@ namespace sdf
 
     /// \brief Get the tangential distortion coefficient p1
     /// \return _p1 The p1 tangential distortion.
-    public: double DistortionP1() const;
+    public: [[nodiscard]] double DistortionP1() const;
 
     /// \brief Set the tangential distortion coefficient p1
     /// \param[in] _p1 The p1 tangential distortion.
@@ -320,7 +320,7 @@ namespace sdf
 
     /// \brief Get the tangential distortion coefficient p2
     /// \return The p2 tangential distortion.
-    public: double DistortionP2() const;
+    public: [[nodiscard]] double DistortionP2() const;
 
     /// \brief Set the tangential distortion coefficient p2
     /// \return  The p2 tangential distortion.
@@ -328,7 +328,7 @@ namespace sdf
 
     /// \brief Get the distortion center or principal point.
     /// \return Distortion center or principal point.
-    public: const gz::math::Vector2d &DistortionCenter() const;
+    public: [[nodiscard]] const gz::math::Vector2d &DistortionCenter() const;
 
     /// \brief Set the distortion center or principal point.
     /// \param[in] _center Distortion center or principal point.
@@ -337,7 +337,7 @@ namespace sdf
     /// \brief Get the pose of the camer. This is the pose of the camera
     /// as specified in SDF (<camera> <pose> ... </pose></camera>).
     /// \return The pose of the link.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the pose of the camera.
     /// \sa const gz::math::Pose3d &RawPose() const
@@ -348,7 +348,7 @@ namespace sdf
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
@@ -363,7 +363,7 @@ namespace sdf
     /// The Camera sensor assumes that the color and depth images are captured
     /// at the same frame_id.
     /// \return The name of the frame this camera uses in its camera_info topic.
-    public: const std::string OpticalFrameId() const;
+    public: [[nodiscard]] const std::string OpticalFrameId() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's camera_info is expressed.
@@ -376,7 +376,7 @@ namespace sdf
     /// projection, it is recommended to specify a horizontal_fov of less than
     /// or equal to 90 degrees
     /// \return The lens type.
-    public: std::string LensType() const;
+    public: [[nodiscard]] std::string LensType() const;
 
     /// \brief Set the lens type. Supported values are gnomonical,
     /// stereographic, equidistant, equisolid_angle, orthographic, custom.
@@ -386,7 +386,7 @@ namespace sdf
     /// \brief Get lens scale to horizontal field of field.
     /// \return True if the image should be scaled to fit horizontal FOV,
     /// otherwise it will be shown according to projection type parameters.
-    public: bool LensScaleToHfov() const;
+    public: [[nodiscard]] bool LensScaleToHfov() const;
 
     /// \brief Set lens scale to horizontal field of field.
     /// \param[in] _scale True if the image should be scaled to fit horizontal
@@ -395,7 +395,7 @@ namespace sdf
 
     /// \brief Get lens custom function linear scaling constant.
     /// \return The lens custom function linear scaling constant.
-    public: double LensC1() const;
+    public: [[nodiscard]] double LensC1() const;
 
     /// \brief Set lens custom function linear scaling constant.
     /// \param[in] _c1 The lens custom function linear scaling constant.
@@ -403,7 +403,7 @@ namespace sdf
 
     /// \brief Get lens custom function angular scaling constant.
     /// \return The lens custom function angular scaling constant.
-    public: double LensC2() const;
+    public: [[nodiscard]] double LensC2() const;
 
     /// \brief Set lens custom function angular scaling constant.
     /// \param[in] _c2 The lens custom function angular scaling constant.
@@ -411,7 +411,7 @@ namespace sdf
 
     /// \brief Get lens custom function angle offset constant.
     /// \return The lens custom function angle offset constant.
-    public: double LensC3() const;
+    public: [[nodiscard]] double LensC3() const;
 
     /// \brief Set lens custom function angle offset constant.
     /// \param[in] _c3 The lens custom function angle offset constant.
@@ -419,7 +419,7 @@ namespace sdf
 
     /// \brief Get lens custom function focal length.
     /// \return The lens custom function focal length.
-    public: double LensFocalLength() const;
+    public: [[nodiscard]] double LensFocalLength() const;
 
     /// \brief Set lens custom function focal length.
     /// \param[in] _f The lens custom function focal length.
@@ -428,7 +428,7 @@ namespace sdf
     /// \brief Get lens custom function. Possible values are 'sin', 'tan',
     /// and 'id'.
     /// \return The lens custom function.
-    public: const std::string &LensFunction() const;
+    public: [[nodiscard]] const std::string &LensFunction() const;
 
     /// \brief Set lens custom function.
     /// \param[in] _fun The lens custom function. Possible values are 'sin',
@@ -438,7 +438,7 @@ namespace sdf
     /// \brief Get lens cutoff angle. Everything outside of the specified
     /// angle will be hidden.
     /// \return The lens cutoff angle.
-    public: gz::math::Angle LensCutoffAngle() const;
+    public: [[nodiscard]] gz::math::Angle LensCutoffAngle() const;
 
     /// \brief Set lens cutoff angle. Everything outside of the specified
     /// angle will be hidden.
@@ -448,7 +448,7 @@ namespace sdf
     /// \brief Get environment texture size. This is the resolution of the
     /// environment cube map used to draw the world.
     /// \return The lens environment texture size.
-    public: int LensEnvironmentTextureSize() const;
+    public: [[nodiscard]] int LensEnvironmentTextureSize() const;
 
     /// \brief Set environment texture size. This is the resolution of the
     /// environment cube map used to draw the world.
@@ -457,7 +457,7 @@ namespace sdf
 
     /// \brief Get the lens intrinsic matrix X focal length in pixels.
     /// \return The lens X focal length in pixels for the intrinsic matrix.
-    public: double LensIntrinsicsFx() const;
+    public: [[nodiscard]] double LensIntrinsicsFx() const;
 
     /// \brief Set the lens intrinsic matrix X focal length in pixels.
     /// \param[in] _fx The intrinsic matrix lens X focal length in pixels.
@@ -465,7 +465,7 @@ namespace sdf
 
     /// \brief Get the lens intrinsic matrix Y focal length in pixels.
     /// \return The lens intrinsic matrix Y focal length in pixels.
-    public: double LensIntrinsicsFy() const;
+    public: [[nodiscard]] double LensIntrinsicsFy() const;
 
     /// \brief Set the lens intrinsic matrix Y focal length in pixels.
     /// \param[in] _fy The lens intrinsic matrix Y focal length in pixels.
@@ -473,7 +473,7 @@ namespace sdf
 
     /// \brief Get the lens intrinsic matrix X principal point in pixels.
     /// \return The lens intrinsic matrix X principal point in pixels.
-    public: double LensIntrinsicsCx() const;
+    public: [[nodiscard]] double LensIntrinsicsCx() const;
 
     /// \brief Set the lens intrinsic matrix X principal point in pixels.
     /// \param[in] _cx The lens intrinsic matrix X principal point in pixels.
@@ -481,7 +481,7 @@ namespace sdf
 
     /// \brief Get the lens intrinsic matrix Y principal point in pixels.
     /// \return The lens intrinsic matrix Y principal point in pixels.
-    public: double LensIntrinsicsCy() const;
+    public: [[nodiscard]] double LensIntrinsicsCy() const;
 
     /// \brief Set the lens intrinsic matrix Y principal point in pixels.
     /// \param[in] _cy The lens intrinsic matrix Y principal point in pixels.
@@ -489,7 +489,7 @@ namespace sdf
 
     /// \brief Get the lens projection matrix X focal length in pixels.
     /// \return The lens projection matrix X focal length in pixels.
-    public: double LensProjectionFx() const;
+    public: [[nodiscard]] double LensProjectionFx() const;
 
     /// \brief Set the lens projection matrix X focal length in pixels.
     /// \param[in] _fx_p The lens projection matrix X focal length in pixels.
@@ -497,7 +497,7 @@ namespace sdf
 
     /// \brief Get the lens projection matrix Y focal length in pixels.
     /// \return The lens projection matrix Y focal length in pixels.
-    public: double LensProjectionFy() const;
+    public: [[nodiscard]] double LensProjectionFy() const;
 
     /// \brief Set the lens projection matrix Y focal length in pixels.
     /// \param[in] _fy_p The lens projection matrix Y focal length in pixels.
@@ -505,7 +505,7 @@ namespace sdf
 
     /// \brief Get the lens projection matrix X principal point in pixels.
     /// \return The lens projection matrix X principal point in pixels.
-    public: double LensProjectionCx() const;
+    public: [[nodiscard]] double LensProjectionCx() const;
 
     /// \brief Set the lens projection matrix X principal point in pixels.
     /// \param[in] _cx_p The lens projection matrix X principal point in pixels.
@@ -513,7 +513,7 @@ namespace sdf
 
     /// \brief Get the lens projection matrix Y principal point in pixels.
     /// \return The lens projection matrix Y principal point in pixels.
-    public: double LensProjectionCy() const;
+    public: [[nodiscard]] double LensProjectionCy() const;
 
     /// \brief Set the lens projection matrix Y principal point in pixels.
     /// \param[in] _cy_p The lens projection matrix Y principal point in pixels.
@@ -521,7 +521,7 @@ namespace sdf
 
     /// \brief Get the lens projection matrix X translation in pixels.
     /// \return The lens projection matrix X translation in pixels.
-    public: double LensProjectionTx() const;
+    public: [[nodiscard]] double LensProjectionTx() const;
 
     /// \brief Set the lens projection matrix X translation in pixels.
     /// \param[in] _tx The lens projection matrix X translation in pixels.
@@ -529,7 +529,7 @@ namespace sdf
 
     /// \brief Get the lens projection matrix Y translation in pixels.
     /// \return The lens projection matrix Y translation in pixels.
-    public: double LensProjectionTy() const;
+    public: [[nodiscard]] double LensProjectionTy() const;
 
     /// \brief Set the lens projection matrix Y translation in pixels.
     /// \param[in] _ty The lens projection matrix Y translation in pixels.
@@ -537,7 +537,7 @@ namespace sdf
 
     /// \brief Get the lens XY axis skew.
     /// \return The lens XY axis skew.
-    public: double LensIntrinsicsSkew() const;
+    public: [[nodiscard]] double LensIntrinsicsSkew() const;
 
     /// \brief Set the lens XY axis skew.
     /// \param[in] _s The lens XY axis skew.
@@ -556,7 +556,7 @@ namespace sdf
 
     /// \brief Get the visibility mask of a camera
     /// \return visibility mask
-    public: uint32_t VisibilityMask() const;
+    public: [[nodiscard]] uint32_t VisibilityMask() const;
 
     /// \brief Set the visibility mask of a camera
     /// \param[in] _mask visibility mask
@@ -564,18 +564,18 @@ namespace sdf
 
     /// \brief Get whether or not the camera has instrinsics values set
     /// \return True if the camera has instrinsics values set, false otherwise
-    public: bool HasLensIntrinsics() const;
+    public: [[nodiscard]] bool HasLensIntrinsics() const;
 
     /// \brief Get whether or not the camera has projection values set
     /// \return True if the camera has projection values set, false otherwise
-    public: bool HasLensProjection() const;
+    public: [[nodiscard]] bool HasLensProjection() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// camera.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated camera values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

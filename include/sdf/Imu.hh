@@ -47,12 +47,12 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the noise values related to the body-frame linear
     /// acceleration on the X-axis.
     /// \return Noise values for the X-axis linear acceleration.
-    public: const Noise &LinearAccelerationXNoise() const;
+    public: [[nodiscard]] const Noise &LinearAccelerationXNoise() const;
 
     /// \brief Set the noise values related to the body-frame linear
     /// acceleration on the X-axis.
@@ -62,7 +62,7 @@ namespace sdf
     /// \brief Get the noise values related to the body-frame linear
     /// acceleration on the Y-axis.
     /// \return Noise values for the Y-axis linear acceleration.
-    public: const Noise &LinearAccelerationYNoise() const;
+    public: [[nodiscard]] const Noise &LinearAccelerationYNoise() const;
 
     /// \brief Set the noise values related to the body-frame linear
     /// acceleration on the Y-axis.
@@ -72,7 +72,7 @@ namespace sdf
     /// \brief Get the noise values related to the body-frame linear
     /// acceleration on the Z-axis.
     /// \return Noise values for the Z-axis linear acceleration.
-    public: const Noise &LinearAccelerationZNoise() const;
+    public: [[nodiscard]] const Noise &LinearAccelerationZNoise() const;
 
     /// \brief Set the noise values related to the body-frame linear
     /// acceleration on the Z-axis.
@@ -82,7 +82,7 @@ namespace sdf
     /// \brief Get the noise values related to the body-frame angular
     /// velocity on the X-axis.
     /// \return Noise values for the X-axis linear acceleration.
-    public: const Noise &AngularVelocityXNoise() const;
+    public: [[nodiscard]] const Noise &AngularVelocityXNoise() const;
 
     /// \brief Set the noise values related to the body-frame angular
     /// velocity around the X-axis.
@@ -92,7 +92,7 @@ namespace sdf
     /// \brief Get the noise values related to the body-frame angular
     /// velocity around the Y-axis.
     /// \return Noise values for the Y-axis angular velocity.
-    public: const Noise &AngularVelocityYNoise() const;
+    public: [[nodiscard]] const Noise &AngularVelocityYNoise() const;
 
     /// \brief Set the noise values related to the body-frame angular
     /// velocity around the Y-axis.
@@ -102,7 +102,7 @@ namespace sdf
     /// \brief Get the noise values related to the body-frame angular
     /// velocity around the Z-axis.
     /// \return Noise values for the Z-axis angular velocity.
-    public: const Noise &AngularVelocityZNoise() const;
+    public: [[nodiscard]] const Noise &AngularVelocityZNoise() const;
 
     /// \brief Set the noise values related to the body-frame angular
     /// velocity around the Z-axis.
@@ -115,7 +115,7 @@ namespace sdf
     /// X-axis.  grav_dir_x is  defined in the coordinate frame as defined by
     /// the parent_frame element.
     /// \return The gravity direction.
-    public: const gz::math::Vector3d &GravityDirX() const;
+    public: [[nodiscard]] const gz::math::Vector3d &GravityDirX() const;
 
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the
@@ -130,7 +130,7 @@ namespace sdf
     /// special reserved "world" frame. If left empty, use the sensor's own
     /// local frame.
     /// \return The name of the parent frame.
-    public: const std::string &GravityDirXParentFrame() const;
+    public: [[nodiscard]] const std::string &GravityDirXParentFrame() const;
 
     /// \brief Set the name of parent frame which the GravityDirX vector is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -171,7 +171,7 @@ namespace sdf
     ///               IMU reference frame Y-axis is a vector orthogonal to both
     ///               X and Z axis following the right hand rule.
     /// \return Localization frame name
-    public: const std::string &Localization() const;
+    public: [[nodiscard]] const std::string &Localization() const;
 
     /// \brief See Localization(const std::string &).
     /// \param[in] _localization Localization frame name
@@ -212,7 +212,7 @@ namespace sdf
     ///    +z:up).
     ///    Example sdf: parent_frame="local", custom_rpy="-0.5*M_PI 0 -0.5*M_PI"
     /// \return Custom RPY vectory
-    public: const gz::math::Vector3d &CustomRpy() const;
+    public: [[nodiscard]] const gz::math::Vector3d &CustomRpy() const;
 
     /// \brief See CustomRpy() const.
     /// \param[in] Custom RPY vectory
@@ -223,7 +223,7 @@ namespace sdf
     /// special reserved "world" frame. If left empty, use the sensor's own
     /// local frame.
     /// \return The name of the parent frame.
-    public: const std::string &CustomRpyParentFrame() const;
+    public: [[nodiscard]] const std::string &CustomRpyParentFrame() const;
 
     /// \brief Set the name of parent frame which the custom_rpy transform is
     /// defined relative to. It can be any valid fully scoped link name or the
@@ -235,7 +235,7 @@ namespace sdf
     /// \brief Get whether orientation data generation is enabled.
     /// \return True if orientation data generation is enabled orientation data,
     /// false otherwise.
-    public: bool OrientationEnabled() const;
+    public: [[nodiscard]] bool OrientationEnabled() const;
 
     /// \brief Set whether to enable orientation data generation.
     /// \param[in] _enabled True to enabled orientation data, false to disable
@@ -258,7 +258,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// imu sensor.

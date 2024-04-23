@@ -90,27 +90,27 @@ namespace sdf
 
     /// \brief Retrieve the name of the leader joint.
     /// \return Name of the joint containing the leader axis.
-    public: const std::string &Joint() const;
+    public: [[nodiscard]] const std::string &Joint() const;
 
     /// \brief Retrieve the name of the leader axis, either "axis" or "axis2".
     /// \return Name of the leader axis.
-    public: const std::string &Axis() const;
+    public: [[nodiscard]] const std::string &Axis() const;
 
     /// \brief Retrieve the multiplier parameter, which represents the ratio
     /// between changes in the follower position relative to changes in the
     /// leader position.
     /// \return Multiplier for the Mimic constraint.
-    public: double Multiplier() const;
+    public: [[nodiscard]] double Multiplier() const;
 
     /// \brief Retrieve the offset to the follower position in the linear
     /// constraint.
     /// \return Offset for the Mimic constraint.
-    public: double Offset() const;
+    public: [[nodiscard]] double Offset() const;
 
     /// \brief Retrieve the reference for the leader position before applying
     /// the multiplier in the linear constraint.
     /// \param[in] _reference Reference for the Mimic constraint.
-    public: double Reference() const;
+    public: [[nodiscard]] double Reference() const;
 
     /// \brief The implementation pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
@@ -139,7 +139,7 @@ namespace sdf
     /// (0, 0, 1).
     /// \return The x,y,z components of the axis unit vector.
     /// \sa void SetXyz(const gz::math::Vector3d &_xyz)
-    public: gz::math::Vector3d Xyz() const;
+    public: [[nodiscard]] gz::math::Vector3d Xyz() const;
 
     /// \brief Set the x,y,z components of the axis unit vector.
     /// \param[in] _xyz The x,y,z components of the axis unit vector.
@@ -160,14 +160,14 @@ namespace sdf
     /// and axis names names, multiplier, offset, and reference to be used
     /// for mimicking.
     /// \sa void SetMimic(const MimicConstraint)
-    public: std::optional<MimicConstraint> Mimic() const;
+    public: [[nodiscard]] std::optional<MimicConstraint> Mimic() const;
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).
     /// \return The physical velocity dependent viscous damping coefficient
     /// of the joint axis
     /// \sa void SetDamping(const double _damping)
-    public: double Damping() const;
+    public: [[nodiscard]] double Damping() const;
 
     /// \brief Set the physical velocity dependent viscous damping coefficient
     /// of the joint axis.
@@ -180,7 +180,7 @@ namespace sdf
     /// default value is zero (0.0).
     /// \return The physical static friction value of the joint.
     /// \sa void SetFriction(const double _friction)
-    public: double Friction() const;
+    public: [[nodiscard]] double Friction() const;
 
     /// \brief Set the physical static friction value of the joint.
     /// \param[in] _friction The physical static friction value of the joint.
@@ -191,7 +191,7 @@ namespace sdf
     /// default value is zero (0.0).
     /// \return The spring reference position for this joint axis.
     /// \sa void SetSpringReference(const double _spring)
-    public: double SpringReference() const;
+    public: [[nodiscard]] double SpringReference() const;
 
     /// \brief Set the spring reference position for this joint axis.
     /// \param[in] _spring The spring reference position for this joint axis.
@@ -202,7 +202,7 @@ namespace sdf
     /// value is zero (0.0).
     /// \return The spring stiffness for this joint axis.
     /// \sa void SetSpringStiffness(const double _spring)
-    public: double SpringStiffness() const;
+    public: [[nodiscard]] double SpringStiffness() const;
 
     /// \brief Set the spring stiffness for this joint axis.
     /// \param[in] _spring The spring stiffness for this joint axis.
@@ -214,7 +214,7 @@ namespace sdf
     /// axis is continuous. The default value is -1e16.
     /// \return The lower joint axis limit
     /// \sa void SetLower(const double _lower)
-    public: double Lower() const;
+    public: [[nodiscard]] double Lower() const;
 
     /// \brief Set the lower joint axis limit (radians for revolute joints,
     /// meters for prismatic joints). Not valid if the joint that uses this
@@ -228,7 +228,7 @@ namespace sdf
     /// axis is continuous. The default value is 1e16.
     /// \return The upper joint axis limit.
     /// \sa double SetUpper(const double _upper) const
-    public: double Upper() const;
+    public: [[nodiscard]] double Upper() const;
 
     /// \brief Set the upper joint axis limit (radians for revolute joints,
     /// meters for prismatic joints). Not valid if joint that uses this
@@ -243,7 +243,7 @@ namespace sdf
     /// The default value is infinity.
     /// \return Symmetric effort limit.
     /// \sa void SetEffort(double _effort)
-    public: double Effort() const;
+    public: [[nodiscard]] double Effort() const;
 
     /// \brief Set the value for enforcing the maximum absolute joint effort
     /// that can be applied.
@@ -256,7 +256,7 @@ namespace sdf
     /// The default value is infinity.
     /// \return The value for enforcing the maximum absolute joint velocity.
     /// \sa void SetVelocity(const double _velocity) const
-    public: double MaxVelocity() const;
+    public: [[nodiscard]] double MaxVelocity() const;
 
     /// \brief Set the value for enforcing the maximum absolute joint velocity.
     /// \param[in] _velocity The value for enforcing the maximum absolute
@@ -267,7 +267,7 @@ namespace sdf
     /// \brief Get the joint stop stiffness. The default value is 1e8.
     /// \return The joint stop stiffness.
     /// \sa void SetStiffness(const double _stiffness) const
-    public: double Stiffness() const;
+    public: [[nodiscard]] double Stiffness() const;
 
     /// \brief Get the joint stop stiffness.
     /// \param[in] _stiffness The joint stop stiffness.
@@ -278,7 +278,7 @@ namespace sdf
     /// \brief Get the joint stop dissipation. The default value is 1.0.
     /// \return The joint stop dissipation.
     /// \sa void SetDissipation(const double _dissipation) const
-    public: double Dissipation() const;
+    public: [[nodiscard]] double Dissipation() const;
 
     /// \brief Set the joint stop dissipation.
     /// \param[in] _dissipation The joint stop dissipation.
@@ -289,7 +289,7 @@ namespace sdf
     /// unit vector is expressed. An empty value implies the parent (joint)
     /// frame.
     /// \return The name of the xyz expressed-in frame.
-    public: const std::string& XyzExpressedIn() const;
+    public: [[nodiscard]] const std::string& XyzExpressedIn() const;
 
     /// Set the name of the coordinate frame in which this joint axis's
     /// unit vector is expressed. An empty value implies the parent (joint)
@@ -312,7 +312,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// joint axis.
@@ -320,7 +320,7 @@ namespace sdf
     /// function.
     /// \param[in] _index Index of this joint axis
     /// \return SDF element pointer with updated joint values.
-    public: sdf::ElementPtr ToElement(unsigned int _index = 0u) const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement(unsigned int _index = 0u) const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// joint axis.

@@ -55,7 +55,7 @@ namespace sdf
     /// \brief Get the name of the frame.
     /// The name of the frame must be unique within the scope of its siblings.
     /// \return Name of the frame.
-    public: const std::string &Name() const;
+    public: [[nodiscard]] const std::string &Name() const;
 
     /// \brief Set the name of the frame.
     /// The name of the frame must be unique within the scope of its siblings.
@@ -70,7 +70,7 @@ namespace sdf
     /// is a child of <world> an empty value indicates that the frame is
     /// attached to the world frame.
     /// \return The name of the attached-to frame.
-    public: const std::string &AttachedTo() const;
+    public: [[nodiscard]] const std::string &AttachedTo() const;
 
     /// \brief Set the name of the coordinate frame to which this
     /// frame is attached. The interpretation of an empty value depends
@@ -87,7 +87,7 @@ namespace sdf
     /// (<frame><pose> ... </pose></frame>).
     /// Use SemanticPose to compute the pose relative to a specific frame.
     /// \return The pose of the frame object.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: [[nodiscard]] const gz::math::Pose3d &RawPose() const;
 
     /// \brief Set the raw pose of the frame object. This is interpreted
     /// relative to the frame named in the //pose/@relative_to attribute.
@@ -99,7 +99,7 @@ namespace sdf
     /// frame's pose is expressed. An empty value indicates that the frame is
     /// expressed relative to the attached-to link.
     /// \return The name of the relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: [[nodiscard]] const std::string &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// frame's pose is expressed. An empty value indicates that the frame is
@@ -110,7 +110,7 @@ namespace sdf
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Resolve the attached-to body of this frame from the
     /// FrameAttachedToGraph. Generally, it resolves to the name of a link, but
@@ -122,14 +122,14 @@ namespace sdf
     /// \brief Get SemanticPose object of this object to aid in resolving
     /// poses.
     /// \return SemanticPose object for this link.
-    public: sdf::SemanticPose SemanticPose() const;
+    public: [[nodiscard]] sdf::SemanticPose SemanticPose() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// frame.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated frame values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// frame.

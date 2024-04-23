@@ -42,7 +42,7 @@ namespace sdf
     /// \brief Returns whether or not pose rotations should be printed in
     /// degrees.
     /// \return True if pose rotations are printed in degrees, false otherwise.
-    public: bool RotationInDegrees() const;
+    public: [[nodiscard]] bool RotationInDegrees() const;
 
     /// \brief Sets the option for printing pose rotation in degrees as well as
     /// snapping the rotation to the desired interval, with the provided
@@ -72,12 +72,12 @@ namespace sdf
     /// when printed.
     /// \return The assigned degrees interval value to snap to. If it has not
     /// been assigned, a nullopt will be returned.
-    public: std::optional<unsigned int> RotationSnapToDegrees() const;
+    public: [[nodiscard]] std::optional<unsigned int> RotationSnapToDegrees() const;
 
     /// \brief Returns the tolerance for snapping degree values when printed.
     /// \return The assigned tolerance value which allows snapping to happen. If
     /// it has not been assigned, a nullopt will be returned.
-    public: std::optional<double> RotationSnapTolerance() const;
+    public: [[nodiscard]] std::optional<double> RotationSnapTolerance() const;
 
     /// \brief Set print config to preserve <include> tags.
     /// \param[in] _preserve True to preserve <include> tags.
@@ -87,7 +87,7 @@ namespace sdf
     /// \brief Check if <include> tags are to be preserved or expanded.
     /// \return True if <include> tags are preserved.
     /// False if they are to be expanded.
-    public: bool PreserveIncludes() const;
+    public: [[nodiscard]] bool PreserveIncludes() const;
 
     /// \brief Set precision of output stream for float / double types.
     /// By default, the output stream uses maximum precision.
@@ -97,7 +97,7 @@ namespace sdf
 
     /// \brief Retrieve the output stream's set precision value.
     /// \return The output stream's precision.
-    public: int OutPrecision() const;
+    public: [[nodiscard]] int OutPrecision() const;
 
     /// \brief Return true if both PrintConfig objects contain the same values.
     /// \param[in] _config PrintConfig to compare.

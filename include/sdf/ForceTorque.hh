@@ -77,11 +77,11 @@ namespace sdf
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the force noise values in the measurement frame X-axis.
     /// \return Noise values for the X-axis force.
-    public: const Noise &ForceXNoise() const;
+    public: [[nodiscard]] const Noise &ForceXNoise() const;
 
     /// \brief Set the force noise values in the measurement frame X-axis.
     /// \param[in] _noise Noise values for the X-axis force.
@@ -89,7 +89,7 @@ namespace sdf
 
     /// \brief Get the force noise values in the measurement frame Y-axis.
     /// \return Noise values for the Y-axis force.
-    public: const Noise &ForceYNoise() const;
+    public: [[nodiscard]] const Noise &ForceYNoise() const;
 
     /// \brief Set the force noise values in the measurement frame Y-axis.
     /// \param[in] _noise Noise values for the Y-axis force.
@@ -97,7 +97,7 @@ namespace sdf
 
     /// \brief Get the force noise values in the measurement frame Z-axis.
     /// \return Noise values for the Z-axis force.
-    public: const Noise &ForceZNoise() const;
+    public: [[nodiscard]] const Noise &ForceZNoise() const;
 
     /// \brief Set the force noise values in the measurement frame Z-axis.
     /// \param[in] _noise Noise values for the Z-axis force.
@@ -105,7 +105,7 @@ namespace sdf
 
     /// \brief Get the torque noise values in the measurement frame X-axis.
     /// \return Noise values for the X-axis torque.
-    public: const Noise &TorqueXNoise() const;
+    public: [[nodiscard]] const Noise &TorqueXNoise() const;
 
     /// \brief Set the torque noise values in the measurement frame X-axis.
     /// \param[in] _noise Noise values for the X-axis torque.
@@ -113,7 +113,7 @@ namespace sdf
 
     /// \brief Get the torque noise values in the measurement frame Y-axis.
     /// \return Noise values for the Y-axis torque.
-    public: const Noise &TorqueYNoise() const;
+    public: [[nodiscard]] const Noise &TorqueYNoise() const;
 
     /// \brief Set the torque noise values in the measurement frame Y-axis.
     /// \param[in] _noise Noise values for the Y-axis torque.
@@ -121,7 +121,7 @@ namespace sdf
 
     /// \brief Get the torque noise values in the measurement frame Z-axis.
     /// \return Noise values for the Z-axis torque.
-    public: const Noise &TorqueZNoise() const;
+    public: [[nodiscard]] const Noise &TorqueZNoise() const;
 
     /// \brief Set the torque noise values in the measurement frame Z-axis.
     /// \param[in] _noise Noise values for the Z-axis torque.
@@ -129,7 +129,7 @@ namespace sdf
 
     /// \brief Get the frame in which the wrench values are reported.
     /// \return The frame of the wrench values.
-    public: ForceTorqueFrame Frame() const;
+    public: [[nodiscard]] ForceTorqueFrame Frame() const;
 
     /// \brief Set the frame in which the wrench values are reported.
     /// \param[in] _frame The frame of the wrench values.
@@ -137,7 +137,7 @@ namespace sdf
 
     /// \brief Get the measure direction of the wrench values.
     /// \return The measure direction of the wrench values.
-    public: ForceTorqueMeasureDirection MeasureDirection() const;
+    public: [[nodiscard]] ForceTorqueMeasureDirection MeasureDirection() const;
 
     /// \brief Set the measure direction of the wrench values.
     /// \param[in] _direction The measure direction of the wrench values.
@@ -159,7 +159,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// force torque sensor.

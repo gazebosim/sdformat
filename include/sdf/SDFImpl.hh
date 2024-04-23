@@ -131,7 +131,7 @@ namespace sdf
     /// \brief Convert the SDF values to a string representation.
     /// \param[in] _config Configuration for printing the values.
     /// \return The string representation.
-    public: std::string ToString(
+    public: [[nodiscard]] std::string ToString(
         const PrintConfig &_config = PrintConfig()) const;
 
     /// \brief Set SDF values from a string
@@ -142,7 +142,7 @@ namespace sdf
 
     /// \brief Get a pointer to the root element
     /// \return Pointer to the root element
-    public: ElementPtr Root() const;
+    public: [[nodiscard]] ElementPtr Root() const;
 
     /// \brief Set the root pointer
     /// \param[in] _root Root element
@@ -155,7 +155,7 @@ namespace sdf
 
     /// \brief Get the path to the SDF document on disk.
     /// \return The full path to the SDF document.
-    public: std::string FilePath() const;
+    public: [[nodiscard]] std::string FilePath() const;
 
     /// \brief Set the path on disk.
     /// \param[in] _path Path on disk.
@@ -167,7 +167,7 @@ namespace sdf
 
     /// \brief Get the spec version that this was originally parsed from.
     /// \return Spec version string.
-    public: const std::string &OriginalVersion() const;
+    public: [[nodiscard]] const std::string &OriginalVersion() const;
 
     /// \brief Get the version
     /// \return The version as a string

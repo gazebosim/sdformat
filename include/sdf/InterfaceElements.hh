@@ -51,7 +51,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// not end with a file extension (it will not end with an extension if it
   /// refers to a model package).
   /// \return URI of the included model
-  public: const std::string &Uri() const;
+  public: [[nodiscard]] const std::string &Uri() const;
 
   /// \brief Set the URI of the included model
   /// \param[in] _uri URI of the included model
@@ -62,7 +62,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// predicates on filenames -- however, the predicates should generally only
   /// check the file extension.
   /// \return The resolved absolute file path from the URI.
-  public: const std::string &ResolvedFileName() const;
+  public: [[nodiscard]] const std::string &ResolvedFileName() const;
 
   /// \brief Set the resolved absolute file path.
   /// \param[in] _resolvedFileName The resolved absolute file path
@@ -74,7 +74,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// `top_model::middle_model`. If the parent entity is the world, this would
   /// be an empty string.
   /// \return Absolute name of parent entity
-  public: const std::string &AbsoluteParentName() const;
+  public: [[nodiscard]] const std::string &AbsoluteParentName() const;
 
   /// \brief Set the absolute name of parent entity
   /// \param[in] _absoluteparentname Absolute name of parent entity
@@ -86,7 +86,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// included model file.
   /// Example: `my_new_model`
   /// \return The local name. nullopt if `//include/name` is not set
-  public: const std::optional<std::string> &LocalModelName() const;
+  public: [[nodiscard]] const std::optional<std::string> &LocalModelName() const;
 
   /// \brief Set the name relative to immediate parent as specified in
   /// `//include/name`
@@ -97,7 +97,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// is nullopt if `//include/static` is not set.
   /// \return Whether the model is static. nullopt if `//include/static` is not
   /// set.
-  public: const std::optional<bool> &IsStatic() const;
+  public: [[nodiscard]] const std::optional<bool> &IsStatic() const;
 
   /// \brief Set whether the model is static.
   /// \param[in] _isStatic True if the model is static.
@@ -106,7 +106,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \brief The raw pose as specified in `//include/pose`. This is nullopt if
   /// `//include/pose` is not set.
   /// \return The raw pose.  nullopt if `//include/pose` is not set.
-  public: const std::optional<gz::math::Pose3d> &IncludeRawPose() const;
+  public: [[nodiscard]] const std::optional<gz::math::Pose3d> &IncludeRawPose() const;
 
   /// \brief Set the raw pose as specified in `//include/pose`.
   /// \param[in] _includeRawPose The raw pose
@@ -117,7 +117,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// `//include/pose/@relative_to` is not set.
   /// \return The relative-to frame of the pose. nullopt if
   /// `//include/pose/@relative_to` is not set.
-  public: const std::optional<std::string> &IncludePoseRelativeTo() const;
+  public: [[nodiscard]] const std::optional<std::string> &IncludePoseRelativeTo() const;
 
   /// \brief Set the relative-to frame of the pose.
   /// \param[in] _includePoseRelativeTo The relative-to frame.
@@ -128,7 +128,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// This is nullopt if `//include/placement_frame` is is not set.
   /// \return The placement frame. nullopt if `//include/placement_frame` is is
   /// not set.
-  public: const std::optional<std::string> &PlacementFrame() const;
+  public: [[nodiscard]] const std::optional<std::string> &PlacementFrame() const;
 
   /// \brief Set the placement frame.
   /// \param[in] _placementFrame The placement frame.
@@ -137,7 +137,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// This is the `//include` element. This can be used to pass custom elements
   /// and attributes to the custom model parser.
   /// \return The `//include` element
-  public: sdf::ElementPtr IncludeElement() const;
+  public: [[nodiscard]] sdf::ElementPtr IncludeElement() const;
 
   /// Set the `//include` element.
   /// \param[in] _includeElement The include element
@@ -152,7 +152,7 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \brief Whether the interface model is to be merge-included
   /// \return If `//include/[@merge]` is set, this returns the value of the
   /// attribute, otherwise, nullopt.
-  public: const std::optional<bool> &IsMerge() const;
+  public: [[nodiscard]] const std::optional<bool> &IsMerge() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

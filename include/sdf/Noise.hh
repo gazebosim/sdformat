@@ -69,7 +69,7 @@ namespace sdf
 
     /// \brief Get the type of noise.
     /// \return The noise type.
-    public: NoiseType Type() const;
+    public: [[nodiscard]] NoiseType Type() const;
 
     /// \brief Set the type of noise.
     /// \param[in] _type The noise type.
@@ -79,7 +79,7 @@ namespace sdf
     /// from which noise values are drawn. This is applicable to "gaussian*"
     /// noise types.
     /// \return The mean of the Guassian distribution.
-    public: double Mean() const;
+    public: [[nodiscard]] double Mean() const;
 
     /// \brief Set the mean of the Gaussian distribution
     /// from which noise values are drawn. This is applicable to "gaussian*"
@@ -91,7 +91,7 @@ namespace sdf
     /// from which noise values are drawn. This is applicable to "gaussian*"
     /// noise types.
     /// \return The standard deviation of the Guassian distribution.
-    public: double StdDev() const;
+    public: [[nodiscard]] double StdDev() const;
 
     /// \brief Set the standard deviation of the Gaussian distribution
     /// from which noise values are drawn. This is applicable to "gaussian*"
@@ -103,7 +103,7 @@ namespace sdf
     /// from which bias values are drawn. This is applicable to "gaussian*"
     /// noise types.
     /// \return The mean of the bias Guassian distribution.
-    public: double BiasMean() const;
+    public: [[nodiscard]] double BiasMean() const;
 
     /// \brief Set the mean of the Gaussian distribution
     /// from which bias values are drawn. This is applicable to "gaussian*"
@@ -115,7 +115,7 @@ namespace sdf
     /// from which bias values are drawn. This is applicable to "gaussian*"
     /// noise types.
     /// \return The standard deviation of the bias Guassian distribution.
-    public: double BiasStdDev() const;
+    public: [[nodiscard]] double BiasStdDev() const;
 
     /// \brief Set the standard deviation of the Gaussian distribution
     /// from which bias values are drawn. This is applicable to "gaussian*"
@@ -127,7 +127,7 @@ namespace sdf
     /// \brief For type "gaussian_quantized", get the precision of output
     /// signals. A value of zero implies infinite precision / no quantization.
     /// \return Precision of output signals.
-    public: double Precision() const;
+    public: [[nodiscard]] double Precision() const;
 
     /// \brief For type "gaussian_quantized", set the precision of output
     /// signals. A value of zero implies infinite precision / no quantization.
@@ -137,7 +137,7 @@ namespace sdf
     /// \brief For type "gaussian*", get the standard deviation of the noise
     /// used to drive a process to model slow variations in a sensor bias.
     /// \return The dynamic bias standard deviation.
-    public: double DynamicBiasStdDev() const;
+    public: [[nodiscard]] double DynamicBiasStdDev() const;
 
     /// \brief For type "gaussian*", set the standard deviation of the noise
     /// used to drive a process to model slow variations in a sensor bias.
@@ -147,7 +147,7 @@ namespace sdf
     /// \brief For type "gaussian*", get the correlation time of the noise
     /// used to drive a process to model slow variations in a sensor bias.
     /// \return The dynamic bias correlation time.
-    public: double DynamicBiasCorrelationTime() const;
+    public: [[nodiscard]] double DynamicBiasCorrelationTime() const;
 
     /// \brief For type "gaussian*", set the correlation time in seconds of
     /// the noise used to drive a process to model slow variations in a sensor
@@ -160,14 +160,14 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// noise.
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated noise values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// noise.

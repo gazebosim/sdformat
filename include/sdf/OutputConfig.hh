@@ -86,7 +86,7 @@ class SDFORMAT_VISIBLE OutputConfig
   /// reconstituted in ToElement() invocations.
   /// \return True if include tags are reconstituted, or false
   /// if the fully populated model is returned instead.
-  public: bool ToElementUseIncludeTag() const;
+  public: [[nodiscard]] bool ToElementUseIncludeTag() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)

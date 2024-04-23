@@ -48,7 +48,7 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the reference altitude of the sensor in meters. This value
     /// can be used by a sensor implementation to augment the altitude of the
@@ -57,7 +57,7 @@ namespace sdf
     /// set this value to 1000 and place your model on a ground plane with a Z
     /// height of zero.
     /// \return Reference altitude in meters.
-    public: double ReferenceAltitude() const;
+    public: [[nodiscard]] double ReferenceAltitude() const;
 
     /// \brief Set the reference altitude of the sensor in meters.
     /// \sa ReferenceAltitude()
@@ -66,7 +66,7 @@ namespace sdf
 
     /// \brief Get the noise values.
     /// \return Noise values for pressure data.
-    public: const Noise &PressureNoise() const;
+    public: [[nodiscard]] const Noise &PressureNoise() const;
 
     /// \brief Set the noise values related to the pressure data.
     /// \param[in] _noise Noise values for the pressure data.
@@ -89,7 +89,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated sensor values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// air pressure sensor.

@@ -50,7 +50,7 @@ namespace sdf
     /// for a Visual or Collision object, then the normal is specified in the
     /// Visual or Collision frame, respectively.
     /// \return The plane normal vector.
-    public: gz::math::Vector3d Normal() const;
+    public: [[nodiscard]] gz::math::Vector3d Normal() const;
 
     /// \brief Set the plane normal vector. The normal vector will be
     /// normalized. See gz::math::Vector3d Normal() for more information
@@ -60,7 +60,7 @@ namespace sdf
 
     /// \brief Get the plane size in meters.
     /// \return The plane size in meters.
-    public: gz::math::Vector2d Size() const;
+    public: [[nodiscard]] gz::math::Vector2d Size() const;
 
     /// \brief Set the plane size in meters.
     /// \param[in] _size The plane size in meters.
@@ -70,11 +70,11 @@ namespace sdf
     /// load.
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
-    public: sdf::ElementPtr Element() const;
+    public: [[nodiscard]] sdf::ElementPtr Element() const;
 
     /// \brief Get the Gazebo Math representation of this Plane.
     /// \return A const reference to a gz::math::Planed object.
-    public: const gz::math::Planed &Shape() const;
+    public: [[nodiscard]] const gz::math::Planed &Shape() const;
 
     /// \brief Get a mutable Gazebo Math representation of this Plane.
     /// \return A reference to a gz::math::Planed object.
@@ -85,7 +85,7 @@ namespace sdf
     /// Note that parameter passing functionality is not captured with this
     /// function.
     /// \return SDF element pointer with updated plane values.
-    public: sdf::ElementPtr ToElement() const;
+    public: [[nodiscard]] sdf::ElementPtr ToElement() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// plane.

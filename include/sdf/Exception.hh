@@ -81,11 +81,11 @@ namespace sdf
 
     /// \brief Return the error function
     /// \return The error function name
-    public: std::string GetErrorFile() const;
+    public: [[nodiscard]] std::string GetErrorFile() const;
 
     /// \brief Return the error string
     /// \return The error string
-    public: std::string GetErrorStr() const;
+    public: [[nodiscard]] std::string GetErrorStr() const;
 
     /// \brief Print the exception to std out.
     public: void Print() const;
