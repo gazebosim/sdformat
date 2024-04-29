@@ -125,7 +125,7 @@ TEST(SDFParser, ReloadCustomElements)
   ASSERT_NE(nullptr, customElem2);
 
   const std::string customElemStr =
-R"(<mysim:transmission name='simple_trans'>
+R"(<mysim:transmission name='simple_trans' mysim:attr='custom_attribute'>
   <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
   <mysim:joint name='J1'>
     <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>

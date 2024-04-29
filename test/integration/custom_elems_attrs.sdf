@@ -10,7 +10,7 @@
         <child>L2</child>
       </joint>
 
-      <mysim:transmission name="simple_trans">
+      <mysim:transmission name="simple_trans" mysim:attr="custom_attribute">
         <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
         <mysim:joint name="J1">
           <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>
