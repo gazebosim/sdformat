@@ -46,7 +46,7 @@ class ParamTEST(unittest.TestCase):
         str_param.set_string("TRUE")
         self.assertTrue(str_param.get_bool()[0])
 
-        # Anything other than 1 or true is treated as a False value
+        # Anything other than "0", "1" , "false", or "true" raises an exception
         str_param.set_string("%")
         with self.assertRaises(SDFErrorsException):
             str_param.get_bool()
