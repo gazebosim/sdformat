@@ -13,7 +13,7 @@
       <description>Maximum number of convex hulls to decompose into. This sets the maximum number of submeshes that the final decomposed mesh will contain.</description>
     </element>
     <element name="voxel_resolution" type="unsigned int" default="200000" required="0">
-      <description>Voxel resolution to use for representing the mesh before decomposition. Applicable only to voxel based convex decomposition methods.</description>
+      <description>The number of voxels to use for representing the source mesh before decomposition. Applicable only to voxel based convex decomposition methods.</description>
     </element>
   </element>
 
