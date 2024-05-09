@@ -584,7 +584,6 @@ bool Link::EnableWind() const
   return this->dataPtr->enableWind;
 }
 
-
 /////////////////////////////////////////////////
 bool Link::EnableGravity() const
 {
