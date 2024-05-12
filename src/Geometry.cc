@@ -21,6 +21,7 @@
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Heightmap.hh"
@@ -48,6 +49,9 @@ class sdf::Geometry::Implementation
 
   /// \brief Optional capsule.
   public: std::optional<Capsule> capsule;
+
+  /// \brief Optional cone.
+  public: std::optional<Cone> cone;
 
   /// \brief Optional cylinder.
   public: std::optional<Cylinder> cylinder;
@@ -125,6 +129,14 @@ Errors Geometry::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->dataPtr->capsule.emplace();
     Errors err = this->dataPtr->capsule->Load(
         _sdf->GetElement("capsule", errors));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (_sdf->HasElement("cone"))
+  {
+    this->dataPtr->type = GeometryType::CONE;
+    this->dataPtr->cone.emplace();
+    Errors err = this->dataPtr->cone->Load(
+        _sdf->GetElement("cone", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("cylinder"))
@@ -241,6 +253,18 @@ void Geometry::SetCapsuleShape(const Capsule &_capsule)
 }
 
 /////////////////////////////////////////////////
+const Cone *Geometry::ConeShape() const
+{
+  return optionalToPointer(this->dataPtr->cone);
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetConeShape(const Cone &_cone)
+{
+  this->dataPtr->cone = _cone;
+}
+
+/////////////////////////////////////////////////
 const Cylinder *Geometry::CylinderShape() const
 {
   return optionalToPointer(this->dataPtr->cylinder);
@@ -327,6 +351,9 @@ std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
     case GeometryType::CAPSULE:
       geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
       break;
+    case GeometryType::CONE:
+      geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
+      break;
     case GeometryType::CYLINDER:
       geomInertial = this->dataPtr->cylinder->CalculateInertial(_density);
       break;
@@ -383,6 +410,9 @@ sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
   {
     case GeometryType::BOX:
       elem->InsertElement(this->dataPtr->box->ToElement(_errors), true);
+      break;
+    case GeometryType::CONE:
+      elem->InsertElement(this->dataPtr->cone->ToElement(_errors), true);
       break;
     case GeometryType::CYLINDER:
       elem->InsertElement(this->dataPtr->cylinder->ToElement(_errors), true);

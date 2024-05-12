@@ -52,6 +52,9 @@ namespace sdf
 
     /// \brief An ellipsoid emitter.
     ELLIPSOID = 3,
+
+    /// \brief An cone emitter.
+    CONE = 4,
   };
 
   /// \brief A description of a particle emitter, which can be attached
