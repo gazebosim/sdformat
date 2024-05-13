@@ -28,6 +28,7 @@
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/InstallationDirectories.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
@@ -45,11 +46,15 @@ std::string SDF::version = SDF_VERSION;  // NOLINT(runtime/string)
 
 std::string sdfSharePath()
 {
-#ifdef SDF_SHARE_PATH
-  if (std::string(SDF_SHARE_PATH) != "/")
-    return SDF_SHARE_PATH;
-#endif
-  return "";
+  std::string sharePath = sdf::getSharePath();
+  if (sharePath != "/")
+  {
+    return sharePath;
+  }
+  else
+  {
+    return "";
+  }
 }
 
 /////////////////////////////////////////////////
