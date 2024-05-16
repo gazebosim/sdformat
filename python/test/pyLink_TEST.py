@@ -61,6 +61,10 @@ class LinkTEST(unittest.TestCase):
         link.set_enable_wind(True)
         self.assertTrue(link.enable_wind())
 
+        self.assertTrue(link.enable_gravity())
+        link.set_enable_gravity(False)
+        self.assertFalse(link.enable_gravity())
+
         self.assertEqual(0, link.sensor_count())
         self.assertEqual(None, link.sensor_by_index(0))
         self.assertEqual(None, link.sensor_by_index(1))
