@@ -20,6 +20,7 @@
 #include <optional>
 
 #include <gz/math/Inertial.hh>
+#include <gz/math/Cone.hh>
 #include "sdf/Cone.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -107,7 +108,7 @@ double Cone::Radius() const
 }
 
 //////////////////////////////////////////////////
-void Cone::SetRadius(const double _radius)
+void Cone::SetRadius(double _radius)
 {
   this->dataPtr->cone.SetRadius(_radius);
 }
@@ -119,7 +120,7 @@ double Cone::Length() const
 }
 
 //////////////////////////////////////////////////
-void Cone::SetLength(const double _length)
+void Cone::SetLength(double _length)
 {
   this->dataPtr->cone.SetLength(_length);
 }

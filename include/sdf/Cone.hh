@@ -53,7 +53,7 @@ namespace sdf
 
     /// \brief Set the cone's radius in meters.
     /// \param[in] _radius The radius of the cone in meters.
-    public: void SetRadius(const double _radius);
+    public: void SetRadius(double _radius);
 
     /// \brief Get the cone's length in meters.
     /// \return The length of the cone in meters.
@@ -61,7 +61,7 @@ namespace sdf
 
     /// \brief Set the cone's length in meters.
     /// \param[in] _length The length of the cone in meters.
-    public: void SetLength(const double _length);
+    public: void SetLength(double _length);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
