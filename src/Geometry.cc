@@ -352,7 +352,7 @@ std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
       geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
       break;
     case GeometryType::CONE:
-      geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
+      geomInertial = this->dataPtr->cone->CalculateInertial(_density);
       break;
     case GeometryType::CYLINDER:
       geomInertial = this->dataPtr->cylinder->CalculateInertial(_density);
