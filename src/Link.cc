@@ -591,13 +591,13 @@ bool Link::EnableGravity() const
 }
 
 /////////////////////////////////////////////////
-void Link::SetEnableWind(const bool _enableWind)
+void Link::SetEnableWind(bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
 }
 
 /////////////////////////////////////////////////
-void Link::SetEnableGravity(const bool _enableGravity)
+void Link::SetEnableGravity(bool _enableGravity)
 {
   this->dataPtr->enableGravity = _enableGravity;
 }

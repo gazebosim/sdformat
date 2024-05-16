@@ -324,7 +324,6 @@ namespace sdf
     /// \brief Check if this link should be subject to gravity.
     /// If true, this link should be affected by gravity.
     /// \return true if the model should be subject to gravity, false otherwise.
-    /// \sa bool Model::EnableGravity
     public: bool EnableGravity() const;
 
     /// \brief Set whether this link should be subject to wind.
@@ -336,7 +335,6 @@ namespace sdf
     /// \brief Set whether this link should be subject to gravity.
     /// \param[in] _enableGravity True or false depending on whether the link
     /// should be subject to gravity.
-    /// \sa Model::SetEnableGravity(bool)
     public: void SetEnableGravity(bool _enableGravity);
 
     /// \brief Add a collision to the link.
