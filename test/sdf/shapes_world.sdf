@@ -147,5 +147,28 @@
         </visual>
       </link>
     </model>
+
+    <model name="cone">
+      <pose relative_to="mesh">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cone>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cone>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cone>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cone>
+          </geometry>
+        </visual>
+      </link>
+    </model>
   </world>
 </sdf>
