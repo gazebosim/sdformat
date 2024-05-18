@@ -7,7 +7,7 @@
   </attribute>
 
   <attribute name="type" type="string" default="point" required="1">
-    <description><description>The type of a particle emitter. One of "box", "cylinder", "cone", "ellipsoid", or "point".</description>
+    <description>The type of a particle emitter. One of "box", "cone", "cylinder", "ellipsoid", or "point".</description>
   </attribute>
 
   <element name="emitting" type="bool" default="true" required="0">
