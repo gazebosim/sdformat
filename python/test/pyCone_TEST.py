@@ -28,7 +28,7 @@ class ConeTEST(unittest.TestCase):
   def test_default_construction(self):
     cone = Cone()
 
-    self.assertEqual(math.pi * math.pow(0.5, 2) * 1.0,
+    self.assertEqual(math.pi * math.pow(0.5, 2) * 1.0 / 3.0,
                      cone.shape().volume())
 
     self.assertEqual(0.5, cone.radius())
