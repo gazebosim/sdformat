@@ -32,7 +32,8 @@ TEST(DOMCone, Construction)
   sdf::Cone cone;
   EXPECT_EQ(nullptr, cone.Element());
   // A default cone has a length of 1 meter and radius if 0.5 meters.
-  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.5, 2) * 1.0, cone.Shape().Volume());
+  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.5, 2) * 1.0 / 3.0,
+                   cone.Shape().Volume());
 
   EXPECT_DOUBLE_EQ(0.5, cone.Radius());
   EXPECT_DOUBLE_EQ(1.0, cone.Length());
@@ -55,7 +56,8 @@ TEST(DOMCone, MoveConstructor)
   EXPECT_DOUBLE_EQ(0.2, cone2.Radius());
   EXPECT_DOUBLE_EQ(3.0, cone2.Length());
 
-  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.2, 2) * 3.0, cone2.Shape().Volume());
+  EXPECT_DOUBLE_EQ(GZ_PI * std::pow(0.2, 2) * 3.0 / 3.0,
+                   cone2.Shape().Volume());
   EXPECT_DOUBLE_EQ(0.2, cone2.Shape().Radius());
   EXPECT_DOUBLE_EQ(3.0, cone2.Shape().Length());
 }
