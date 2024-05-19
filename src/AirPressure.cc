@@ -139,3 +139,11 @@ sdf::ElementPtr AirPressure::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view AirPressure::SchemaFile() 
+{
+    static char kSchemaFile[] = "air_pressure.sdf";
+    return kSchemaFile;
+}
+

@@ -147,3 +147,11 @@ sdf::Plugins &Gui::Plugins()
 }
 
 
+
+/////////////////////////////////////////////////
+inline std::string_view Gui::SchemaFile() 
+{
+    static char kSchemaFile[] = "gui.sdf";
+    return kSchemaFile;
+}
+

@@ -300,3 +300,11 @@ sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Noise::SchemaFile() 
+{
+    static char kSchemaFile[] = "noise.sdf";
+    return kSchemaFile;
+}
+

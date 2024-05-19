@@ -421,3 +421,11 @@ sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Geometry::SchemaFile() 
+{
+    static char kSchemaFile[] = "geometry.sdf";
+    return kSchemaFile;
+}
+

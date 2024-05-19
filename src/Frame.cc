@@ -250,3 +250,11 @@ sdf::ElementPtr Frame::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Frame::SchemaFile() 
+{
+    static char kSchemaFile[] = "frame.sdf";
+    return kSchemaFile;
+}
+

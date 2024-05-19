@@ -311,3 +311,11 @@ bool Plugin::operator!=(const Plugin &_plugin) const
 {
   return !(*this == _plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Plugin::SchemaFile() 
+{
+    static char kSchemaFile[] = "plugin.sdf";
+    return kSchemaFile;
+}
+

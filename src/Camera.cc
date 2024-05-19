@@ -1337,3 +1337,11 @@ sdf::ElementPtr Camera::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Camera::SchemaFile() 
+{
+    static char kSchemaFile[] = "camera.sdf";
+    return kSchemaFile;
+}
+

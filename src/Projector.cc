@@ -331,3 +331,11 @@ sdf::ElementPtr Projector::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Projector::SchemaFile() 
+{
+    static char kSchemaFile[] = "projector.sdf";
+    return kSchemaFile;
+}
+

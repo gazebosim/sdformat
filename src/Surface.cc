@@ -431,3 +431,11 @@ sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Surface::SchemaFile() 
+{
+    static char kSchemaFile[] = "surface.sdf";
+    return kSchemaFile;
+}
+

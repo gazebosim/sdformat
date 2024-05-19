@@ -819,3 +819,11 @@ void Actor::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Actor::SchemaFile() 
+{
+    static char kSchemaFile[] = "actor.sdf";
+    return kSchemaFile;
+}
+

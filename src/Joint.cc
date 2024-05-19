@@ -630,3 +630,11 @@ void Joint::ClearSensors()
 {
   this->dataPtr->sensors.clear();
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Joint::SchemaFile() 
+{
+    static char kSchemaFile[] = "joint.sdf";
+    return kSchemaFile;
+}
+

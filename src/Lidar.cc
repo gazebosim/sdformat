@@ -450,3 +450,11 @@ sdf::ElementPtr Lidar::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Lidar::SchemaFile() 
+{
+    static char kSchemaFile[] = "lidar.sdf";
+    return kSchemaFile;
+}
+

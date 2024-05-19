@@ -528,3 +528,11 @@ sdf::ElementPtr Material::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Material::SchemaFile() 
+{
+    static char kSchemaFile[] = "material.sdf";
+    return kSchemaFile;
+}
+
