@@ -136,7 +136,7 @@ bool Magnetometer::operator==(const Magnetometer &_mag) const
 sdf::ElementPtr Magnetometer::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("magnetometer.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   sdf::ElementPtr magnetometerXElem = elem->GetElement("x");
   sdf::ElementPtr magnetometerXNoiseElem =

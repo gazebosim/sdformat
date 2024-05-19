@@ -1115,7 +1115,7 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
   }
 
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("model.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
   elem->GetAttribute("name")->Set(this->Name());
 
   if (!this->dataPtr->canonicalLink.empty())

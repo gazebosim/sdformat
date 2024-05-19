@@ -296,7 +296,7 @@ sdf::ElementPtr ForceTorque::ToElement() const
 sdf::ElementPtr ForceTorque::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("forcetorque.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   std::string frame;
   switch (this->Frame())

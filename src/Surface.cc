@@ -409,7 +409,7 @@ sdf::ElementPtr Surface::ToElement() const
 sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("surface.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   sdf::ElementPtr contactElem = elem->GetElement("contact", _errors);
   contactElem->GetElement("collide_bitmask", _errors)->Set(

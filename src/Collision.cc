@@ -364,7 +364,7 @@ sdf::ElementPtr Collision::ToElement() const
 sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("collision.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name(), _errors);
 
