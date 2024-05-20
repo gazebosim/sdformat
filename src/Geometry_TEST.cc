@@ -426,7 +426,7 @@ TEST(DOMGeometry, CalculateInertial)
     cone.SetRadius(r);
 
     expectedMass = cone.Shape().Volume() * density;
-    double ixxIyy = (3/80.0) * expectedMass * (4*r*r + l*l);
+    double ixxIyy = (3 / 80.0) * expectedMass * (4 * r * r + l * l);
     double izz = 3.0 * expectedMass * r * r / 10.0;
 
     expectedMassMat.SetMass(expectedMass);

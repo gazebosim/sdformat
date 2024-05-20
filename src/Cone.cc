@@ -16,8 +16,9 @@
  * limitations under the License.
  *
 */
-#include <sstream>
 #include <optional>
+#include <sstream>
+#include <utility>
 
 #include <gz/math/Inertial.hh>
 #include <gz/math/Cone.hh>
