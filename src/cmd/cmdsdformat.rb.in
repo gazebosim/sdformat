@@ -42,6 +42,7 @@ COMMANDS = {  'sdf' =>
                        "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                    use only and the output may change without any promise of stability)\n" +
+                       "  --inertial-stats arg              Prints moment of inertia, centre of mass, and total mass from a model sdf file.\n" +
                        "  -p [ --print ] arg                Print converted arg. Note the quaternion representation of the\n" +
                        "                                    rotational part of poses and unit vectors will be normalized.\n" +
                        "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
@@ -51,7 +52,6 @@ COMMANDS = {  'sdf' =>
                        "      --snap-tolerance arg          Used in conjunction with --snap-to-degrees, specifies the tolerance at which snapping\n" +
                        "                                    occurs. This value must be larger than 0, less than 360, and less than the defined\n" +
                        "                                    degrees value to snap to. If unspecified, its default value is 0.01.\n" +
-                       "      --inertial-stats  arg         Prints moment of inertia, centre of mass, and total mass from a model sdf file.\n" +
                        "      --precision arg               Set the output stream precision for floating point numbers. The arg must be a positive integer.\n" +
 
                        COMMON_OPTIONS
