@@ -1098,7 +1098,8 @@ TEST(print, GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
     // Check box_bad_test.world
     std::string output =
       custom_exec_str(GzCommand() + " sdf -p " + path + SdfVersion());
-    EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
+    EXPECT_TRUE(output.find("Required attribute") != std::string::npos)
+      << output;
   }
 }
 
@@ -1728,6 +1729,36 @@ TEST(print_snap_to_degrees_tolerance_too_high,
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30 50 60</pose>");
+}
+
+/////////////////////////////////////////////////
+TEST(print_auto_inertial,
+     GZ_UTILS_TEST_DISABLED_ON_WIN32(SDF))
+{
+  const auto path = sdf::testing::TestFile("sdf", "inertial_stats_auto.sdf");
+
+  {
+    // Print without --expand-auto-inertials
+    // expect no <mass> or <inertia> elements
+    std::string output = custom_exec_str(
+        GzCommand() + " sdf -p " + path +
+        SdfVersion());
+    ASSERT_FALSE(output.empty());
+    EXPECT_PRED2(sdf::testing::notContains, output, "<mass>");
+    EXPECT_PRED2(sdf::testing::notContains, output, "<inertia>");
+  }
+
+  {
+    // Print with --expand-auto-inertials
+    // expect <mass> and <inertia> elements
+    std::string output = custom_exec_str(
+        GzCommand() + " sdf -p " + path +
+        " --expand-auto-inertials " +
+        SdfVersion());
+    ASSERT_FALSE(output.empty());
+    EXPECT_PRED2(sdf::testing::contains, output, "<mass>");
+    EXPECT_PRED2(sdf::testing::contains, output, "<inertia>");
+  }
 }
 
 /////////////////////////////////////////////////

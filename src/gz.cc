@@ -28,6 +28,7 @@
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/parser.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/PrintConfig.hh"
 #include "sdf/system_util.hh"
 
@@ -140,7 +141,7 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 //////////////////////////////////////////////////
 extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
     int _inDegrees, int _snapToDegrees, float _snapTolerance,
-    int _preserveIncludes, int _outPrecision)
+    int _preserveIncludes, int _outPrecision, int _expandAutoInertials)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -148,19 +149,15 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
     return -1;
   }
 
-  sdf::SDFPtr sdf(new sdf::SDF());
-
-  if (!sdf::init(sdf))
+  sdf::ParserConfig parserConfig;
+  if (_expandAutoInertials)
   {
-    std::cerr << "Error: SDF schema initialization failed.\n";
-    return -1;
+    parserConfig.SetCalculateInertialConfiguration(
+      sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT);
   }
 
-  if (!sdf::readFile(_path, sdf))
-  {
-    std::cerr << "Error: SDF parsing the xml failed.\n";
-    return -1;
-  }
+  sdf::Root root;
+  sdf::Errors errors = root.Load(_path, parserConfig);
 
   sdf::PrintConfig config;
   if (_inDegrees != 0)
@@ -180,7 +177,13 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
   if (_outPrecision > 0)
     config.SetOutPrecision(_outPrecision);
 
-  sdf->PrintValues(config);
+  root.Element()->PrintValues(errors, "", config);
+
+  if (!errors.empty())
+  {
+    std::cerr << errors << std::endl;
+    return -1;
+  }
   return 0;
 }
 
