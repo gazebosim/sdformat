@@ -684,6 +684,30 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
     {
       this->dataPtr->autoInertiaSaved = true;
     }
+    else if (_config.CalculateInertialConfiguration() ==
+      ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT)
+    {
+      this->dataPtr->autoInertiaSaved = true;
+      // Write calculated inertia values to //link/inertial element
+      auto inertialElem = this->dataPtr->sdf->GetElement("inertial");
+      inertialElem->GetElement("pose")->GetValue()->Set<gz::math::Pose3d>(
+        totalInertia.Pose());
+      inertialElem->GetElement("mass")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Mass());
+      auto momentOfInertiaElem = inertialElem->GetElement("inertia");
+      momentOfInertiaElem->GetElement("ixx")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Ixx());
+      momentOfInertiaElem->GetElement("ixy")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Ixy());
+      momentOfInertiaElem->GetElement("ixz")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Ixz());
+      momentOfInertiaElem->GetElement("iyy")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Iyy());
+      momentOfInertiaElem->GetElement("iyz")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Iyz());
+      momentOfInertiaElem->GetElement("izz")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Izz());
+    }
   }
   // If auto is false, this means inertial values were set
   // from user given values in Link::Load(), therefore we can return
