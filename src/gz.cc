@@ -177,7 +177,10 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
   if (_outPrecision > 0)
     config.SetOutPrecision(_outPrecision);
 
-  root.Element()->PrintValues(errors, "", config);
+  if (root.Element())
+  {
+    root.Element()->PrintValues(errors, "", config);
+  }
 
   if (!errors.empty())
   {
