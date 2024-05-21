@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>sdformat15</name>
+  <version>15.0.0</version>
+  <description>SDFormat is an XML file format that describes environments, objects, and robots
+in a manner suitable for robotic applications</description>
+
+  <maintainer email="addisu@openrobotics.org">Addisu Z. Taddese</maintainer>
+  <maintainer email="scpeters@openrobotics.org">Steve Peters</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <url type="website">https://github.com/gazebosim/sdformat</url>
+
+  <buildtool_depend>cmake</buildtool_depend>
+  <build_depend>gz-cmake4</build_depend>
+  <depend>gz-math8</depend>
+  <depend>gz-utils3</depend>
+  <depend>tinyxml2</depend>
+  <depend>liburdfdom-dev</depend>
+  <depend>pybind11-dev</depend>
+
+  <exec_depend>gz-tools2</exec_depend>
+
+  <test_depend>libxml2-utils</test_depend>
+  <test_depend>python3-psutil</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>
