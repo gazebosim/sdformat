@@ -4,6 +4,22 @@
 
 ## libsdformat 14.X
 
+### libsdformat 14.2.0 (2024-04-23)
+
+1. Fix trivial warning on 24.04 for JointAxis_TEST.cc
+    * [Pull request #1402](https://github.com/gazebosim/sdformat/pull/1402)
+
+1. Add package.xml, fix `gz sdf` tests on Windows
+    * [Pull request #1374](https://github.com/gazebosim/sdformat/pull/1374)
+
+1. Backport mesh optimization feature
+    * [Pull request #1398](https://github.com/gazebosim/sdformat/pull/1398)
+    * [Pull request #1386](https://github.com/gazebosim/sdformat/pull/1386)
+    * [Pull request #1382](https://github.com/gazebosim/sdformat/pull/1382)
+
+1. Param_TEST: Check return values of Param::Get/Set
+    * [Pull request #1394](https://github.com/gazebosim/sdformat/pull/1394)
+
 ### libsdformat 14.1.1 (2024-03-28)
 
 1. Fix warning with pybind11 2.12
