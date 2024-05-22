@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.12">
   <model name="shapes">
     <link name="link">
       <collision name="box_col">
