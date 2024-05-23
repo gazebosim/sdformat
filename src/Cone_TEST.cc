@@ -219,7 +219,7 @@ TEST(DOMCone, CalculateInertial)
 
   gz::math::Inertiald expectedInertial;
   expectedInertial.SetMassMatrix(expectedMassMat);
-  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+  expectedInertial.SetPose({0, 0, -l / 4.0, 0, 0, 0});
 
   auto coneInertial = cone.CalculateInertial(density);
   EXPECT_EQ(cone.Shape().Mat().Density(), density);
