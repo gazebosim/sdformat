@@ -434,7 +434,7 @@ TEST(DOMGeometry, CalculateInertial)
     expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
 
     expectedInertial.SetMassMatrix(expectedMassMat);
-    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+    expectedInertial.SetPose(gz::math::Pose3d({0, 0, l / 4.0, 0, 0, 0}));
 
     geom.SetType(sdf::GeometryType::CONE);
     geom.SetConeShape(cone);
