@@ -49,7 +49,8 @@ COMMANDS = {  'sdf' =>
                        "                                    rotational part of poses and unit vectors will be normalized.\n" +
                        "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
                        "      --degrees                     Pose rotation angles are printed in degrees.\n" +
-                       "      --expand-auto-inertials       Prints auto-computed inertial values.\n" +
+                       "      --expand-auto-inertials       Prints auto-computed inertial values for simple shapes. For meshes and other unsupported\n" +
+                       "                                    shapes, the default inertial values will be printed.\n" +
                        "      --snap-to-degrees arg         Snap pose rotation angles to this specified interval in degrees. This value must be\n" +
                        "                                    larger than 0, less than or equal to 360, and larger than the defined snap tolerance.\n" +
                        "      --snap-tolerance arg          Used in conjunction with --snap-to-degrees, specifies the tolerance at which snapping\n" +
