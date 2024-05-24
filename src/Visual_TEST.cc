@@ -68,6 +68,7 @@ TEST(DOMVisual, Construction)
   ASSERT_NE(nullptr, visual.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, visual.Geom()->Type());
   EXPECT_EQ(nullptr, visual.Geom()->BoxShape());
+  EXPECT_EQ(nullptr, visual.Geom()->ConeShape());
   EXPECT_EQ(nullptr, visual.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, visual.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, visual.Geom()->SphereShape());
