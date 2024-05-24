@@ -39,7 +39,7 @@ constexpr std::array<const std::string_view, 4> kEmitterTypeStrs =
   "point",
   "box",
   "cylinder",
-  "ellipsoid",
+  "ellipsoid"
 };
 
 class sdf::ParticleEmitter::Implementation

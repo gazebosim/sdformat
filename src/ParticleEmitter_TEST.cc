@@ -35,6 +35,8 @@ TEST(DOMParticleEmitter, Construction)
   EXPECT_TRUE(emitter.SetType("box"));
   EXPECT_EQ("box", emitter.TypeStr());
   EXPECT_EQ(sdf::ParticleEmitterType::BOX, emitter.Type());
+  emitter.SetType(sdf::ParticleEmitterType::CONE);
+  EXPECT_EQ("cone", emitter.TypeStr());
   emitter.SetType(sdf::ParticleEmitterType::CYLINDER);
   EXPECT_EQ("cylinder", emitter.TypeStr());
 

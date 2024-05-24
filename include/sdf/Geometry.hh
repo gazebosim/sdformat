@@ -37,6 +37,7 @@ namespace sdf
   // Forward declare private data class.
   class Box;
   class Capsule;
+  class Cone;
   class Cylinder;
   class Ellipsoid;
   class Heightmap;
@@ -79,6 +80,9 @@ namespace sdf
 
     /// \brief A polyline geometry.
     POLYLINE = 9,
+
+    /// \brief A polyline geometry.
+    CONE = 10,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -136,6 +140,17 @@ namespace sdf
     /// \brief Set the capsule shape.
     /// \param[in] _capsule The capsule shape.
     public: void SetCapsuleShape(const Capsule &_capsule);
+
+    /// \brief Get the cone geometry, or nullptr if the contained
+    /// geometry is not a cone.
+    /// \return Pointer to the visual's cone geometry, or nullptr if the
+    /// geometry is not a cone.
+    /// \sa GeometryType Type() const
+    public: const Cone *ConeShape() const;
+
+    /// \brief Set the cone shape.
+    /// \param[in] _cone The cone shape.
+    public: void SetConeShape(const Cone &_cone);
 
     /// \brief Get the cylinder geometry, or nullptr if the contained
     /// geometry is not a cylinder.

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cylinder, Ellipsoid,
+from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cone, Cylinder, Ellipsoid,
                                    Mesh, ParserConfig, Plane, Sphere)
 from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
 import gz_test_deps.sdformat as sdf
@@ -32,6 +32,9 @@ class GeometryTEST(unittest.TestCase):
 
     geom.set_type(sdf.GeometryType.CAPSULE)
     self.assertEqual(sdf.GeometryType.CAPSULE, geom.type())
+
+    geom.set_type(sdf.GeometryType.CONE)
+    self.assertEqual(sdf.GeometryType.CONE, geom.type())
 
     geom.set_type(sdf.GeometryType.CYLINDER)
     self.assertEqual(sdf.GeometryType.CYLINDER, geom.type())
@@ -122,6 +125,19 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(0.123, geom.capsule_shape().radius())
     self.assertEqual(4.56, geom.capsule_shape().length())
 
+  def test_cone(self):
+    geom = Geometry()
+    geom.set_type(sdf.GeometryType.CONE)
+
+    coneShape = Cone()
+    coneShape.set_radius(0.123)
+    coneShape.set_length(4.56)
+    geom.set_cone_shape(coneShape)
+
+    self.assertEqual(sdf.GeometryType.CONE, geom.type())
+    self.assertNotEqual(None, geom.cone_shape())
+    self.assertEqual(0.123, geom.cone_shape().radius())
+    self.assertEqual(4.56, geom.cone_shape().length())
 
   def test_cylinder(self):
     geom = Geometry()
