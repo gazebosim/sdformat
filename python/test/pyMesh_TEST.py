@@ -45,6 +45,7 @@ class MeshTEST(unittest.TestCase):
 
     convexDecomp = ConvexDecomposition()
     convexDecomp.set_max_convex_hulls(10)
+    convexDecomp.set_voxel_resolution(100000)
     mesh.set_convex_decomposition(convexDecomp)
 
     mesh2 = mesh
@@ -58,6 +59,7 @@ class MeshTEST(unittest.TestCase):
 
     convexDecomp2 = mesh2.convex_decomposition()
     self.assertEqual(10, convexDecomp2.max_convex_hulls())
+    self.assertEqual(100000, convexDecomp2.voxel_resolution())
 
     mesh.set_file_path("/apple")
     self.assertEqual("/apple", mesh2.file_path())
@@ -86,6 +88,7 @@ class MeshTEST(unittest.TestCase):
 
     convexDecomp = ConvexDecomposition()
     convexDecomp.set_max_convex_hulls(10)
+    convexDecomp.set_voxel_resolution(100000)
     mesh.set_convex_decomposition(convexDecomp)
 
     mesh2 = copy.deepcopy(mesh)
@@ -99,6 +102,7 @@ class MeshTEST(unittest.TestCase):
 
     convexDecomp2 = mesh2.convex_decomposition()
     self.assertEqual(10, convexDecomp2.max_convex_hulls())
+    self.assertEqual(100000, convexDecomp2.voxel_resolution())
 
     mesh.set_file_path("/apple")
     mesh.set_scale(Vector3d(0.3, 0.2, 0.4))
@@ -131,8 +135,10 @@ class MeshTEST(unittest.TestCase):
 
     convexDecomp = ConvexDecomposition()
     convexDecomp.set_max_convex_hulls(10)
+    convexDecomp.set_voxel_resolution(100000)
     mesh.set_convex_decomposition(convexDecomp)
     self.assertEqual(10, mesh.convex_decomposition().max_convex_hulls())
+    self.assertEqual(100000, mesh.convex_decomposition().voxel_resolution())
 
     self.assertEqual("", mesh.uri())
     mesh.set_uri("http://myuri.com")

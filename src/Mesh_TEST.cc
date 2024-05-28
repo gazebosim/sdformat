@@ -58,6 +58,7 @@ TEST(DOMMesh, MoveConstructor)
   sdf::ConvexDecomposition convexDecomp;
   EXPECT_EQ(nullptr, convexDecomp.Element());
   convexDecomp.SetMaxConvexHulls(10u);
+  convexDecomp.SetVoxelResolution(100000u);
   mesh.SetConvexDecomposition(convexDecomp);
 
   sdf::Mesh mesh2(std::move(mesh));
@@ -72,6 +73,7 @@ TEST(DOMMesh, MoveConstructor)
   auto convexDecomp2 = mesh2.ConvexDecomposition();
   ASSERT_NE(nullptr, convexDecomp2);
   EXPECT_EQ(10u, convexDecomp2->MaxConvexHulls());
+  EXPECT_EQ(100000u, convexDecomp2->VoxelResolution());
 }
 
 /////////////////////////////////////////////////
@@ -186,9 +188,11 @@ TEST(DOMMesh, Set)
 
   sdf::ConvexDecomposition convexDecomp;
   convexDecomp.SetMaxConvexHulls(10u);
+  convexDecomp.SetVoxelResolution(200000u);
   mesh.SetConvexDecomposition(convexDecomp);
   ASSERT_NE(nullptr, mesh.ConvexDecomposition());
   EXPECT_EQ(10u, mesh.ConvexDecomposition()->MaxConvexHulls());
+  EXPECT_EQ(200000u, mesh.ConvexDecomposition()->VoxelResolution());
 
   EXPECT_EQ(std::string(), mesh.Uri());
   mesh.SetUri("http://myuri.com");
@@ -365,6 +369,7 @@ TEST(DOMMesh, ToElement)
 
   sdf::ConvexDecomposition convexDecomp;
   convexDecomp.SetMaxConvexHulls(10u);
+  convexDecomp.SetVoxelResolution(300000u);
   mesh.SetConvexDecomposition(convexDecomp);
 
   sdf::ElementPtr elem = mesh.ToElement();
@@ -381,6 +386,7 @@ TEST(DOMMesh, ToElement)
   EXPECT_EQ(mesh.CenterSubmesh(), mesh2.CenterSubmesh());
   ASSERT_NE(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ(10u, mesh2.ConvexDecomposition()->MaxConvexHulls());
+  EXPECT_EQ(300000u, mesh2.ConvexDecomposition()->VoxelResolution());
 }
 
 /////////////////////////////////////////////////

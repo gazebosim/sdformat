@@ -138,6 +138,7 @@
           <mesh optimization="convex_decomposition">
             <convex_decomposition>
               <max_convex_hulls>4</max_convex_hulls>
+              <voxel_resolution>400000</voxel_resolution>
             </convex_decomposition>
             <uri>https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/mesh.dae</uri>
             <submesh>

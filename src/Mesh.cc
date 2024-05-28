@@ -45,6 +45,10 @@ class sdf::ConvexDecomposition::Implementation
   /// \brief Maximum number of convex hulls to generate.
   public: unsigned int maxConvexHulls{16u};
 
+  /// \brief Voxel resolution. Applicable only to voxel based methods for
+  /// representing the mesh before decomposition
+  public: unsigned int voxelResolution{200000u};
+
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf = nullptr;
 };
@@ -112,6 +116,10 @@ Errors ConvexDecomposition::Load(ElementPtr _sdf)
       errors, "max_convex_hulls",
       this->dataPtr->maxConvexHulls).first;
 
+  this->dataPtr->voxelResolution = _sdf->Get<unsigned int>(
+      errors, "voxel_resolution",
+      this->dataPtr->voxelResolution).first;
+
   return errors;
 }
 
@@ -131,6 +139,18 @@ unsigned int ConvexDecomposition::MaxConvexHulls() const
 void ConvexDecomposition::SetMaxConvexHulls(unsigned int _maxConvexHulls)
 {
   this->dataPtr->maxConvexHulls = _maxConvexHulls;
+}
+
+/////////////////////////////////////////////////
+unsigned int ConvexDecomposition::VoxelResolution() const
+{
+  return this->dataPtr->voxelResolution;
+}
+
+/////////////////////////////////////////////////
+void ConvexDecomposition::SetVoxelResolution(unsigned int _voxelResolution)
+{
+  this->dataPtr->voxelResolution = _voxelResolution;
 }
 
 /////////////////////////////////////////////////
@@ -403,6 +423,8 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
         _errors);
     convexDecomp->GetElement("max_convex_hulls")->Set(
         this->dataPtr->convexDecomposition->MaxConvexHulls());
+    convexDecomp->GetElement("voxel_resolution")->Set(
+        this->dataPtr->convexDecomposition->VoxelResolution());
   }
 
   // Uri
