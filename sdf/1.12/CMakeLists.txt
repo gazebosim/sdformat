@@ -11,6 +11,7 @@ set (sdfs
   camera.sdf
   capsule_shape.sdf
   collision.sdf
+  cone_shape.sdf
   contact.sdf
   cylinder_shape.sdf
   ellipsoid_shape.sdf

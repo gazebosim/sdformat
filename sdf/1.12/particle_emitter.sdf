@@ -7,7 +7,7 @@
   </attribute>
 
   <attribute name="type" type="string" default="point" required="1">
-    <description>The type of a particle emitter. One of "box", "cylinder", "ellipsoid", or "point".</description>
+    <description>The type of a particle emitter. One of "box", "cone", "cylinder", "ellipsoid", or "point".</description>
   </attribute>
 
   <element name="emitting" type="bool" default="true" required="0">
@@ -26,6 +26,8 @@
     depending on the emmiter type:
       - point: The area is ignored.
       - box: The area is interpreted as width X height X depth.
+      - cone: The area is interpreted as the bounding box of the
+                  cone. The cone is oriented along the Z-axis.
       - cylinder: The area is interpreted as the bounding box of the
                   cylinder. The cylinder is oriented along the Z-axis.
       - ellipsoid: The area is interpreted as the bounding box of an

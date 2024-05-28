@@ -60,7 +60,13 @@ enum class ConfigureResolveAutoInertials
 
   /// \brief If this values is used, CalculateInertial() would be
   /// called and the computed inertial values would be saved
-  SAVE_CALCULATION
+  SAVE_CALCULATION,
+
+  /// \brief If this values is used, CalculateInertial() would be
+  /// called and the computed inertial values would be saved and
+  /// written to the XML Element, allowing the calculated values
+  /// to be printed with `gz sdf --print`.
+  SAVE_CALCULATION_IN_ELEMENT,
 };
 
 // Forward declare private data class.

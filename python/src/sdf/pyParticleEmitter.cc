@@ -154,6 +154,7 @@ void defineParticleEmitter(pybind11::object module)
     pybind11::enum_<sdf::ParticleEmitterType>(particleEmitterModule, "ParticleEmitterType")
       .value("POINT", sdf::ParticleEmitterType::POINT)
       .value("BOX", sdf::ParticleEmitterType::BOX)
+      .value("CONE", sdf::ParticleEmitterType::CONE)
       .value("CYLINDER", sdf::ParticleEmitterType::CYLINDER)
       .value("ELLIPSOID", sdf::ParticleEmitterType::ELLIPSOID);
 }
