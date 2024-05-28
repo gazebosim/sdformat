@@ -38,6 +38,13 @@ void defineConvexDecomposition(pybind11::object module)
          "Get the maximum number of convex hulls that can be generated.")
     .def("set_max_convex_hulls", &sdf::ConvexDecomposition::SetMaxConvexHulls,
          "Set the maximum number of convex hulls that can be generated.")
+    .def("voxel_resolution", &sdf::ConvexDecomposition::VoxelResolution,
+         "Get the voxel resolution to use. Applicable only to voxel based "
+         "convex decomposition methods.")
+    .def("set_voxel_resolution", &sdf::ConvexDecomposition::SetVoxelResolution,
+         "Set the voxel resolution to use. Applicable only to voxel based "
+         "convex decomposition methods.")
+
     .def("__copy__", [](const sdf::ConvexDecomposition &self) {
       return sdf::ConvexDecomposition(self);
     })
