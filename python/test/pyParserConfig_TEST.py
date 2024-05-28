@@ -26,7 +26,7 @@ class ParserConfigColor(unittest.TestCase):
         self.assertFalse(config.uri_path_map())
         self.assertFalse(config.find_file_callback())
 
-        testDir = source_file();
+        testDir = source_file()
         config.add_uri_path("file://", testDir)
 
         self.assertTrue(config.uri_path_map())
@@ -35,7 +35,7 @@ class ParserConfigColor(unittest.TestCase):
         self.assertEqual(it[0], testDir)
 
         def testFunc(argument):
-            return "test/dir2";
+            return "test/dir2"
 
         config.set_find_callback(testFunc)
         self.assertTrue(config.find_file_callback())
@@ -102,7 +102,7 @@ class ParserConfigColor(unittest.TestCase):
         # so we'll use the source path
         testDir1 = source_file()
 
-        config1 = ParserConfig();
+        config1 = ParserConfig()
         config1.add_uri_path("file://", testDir1)
 
         it = config1.uri_path_map().get("file://")

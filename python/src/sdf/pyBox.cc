@@ -16,6 +16,7 @@
 #include "pyBox.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Box.hh"
 
@@ -42,6 +43,8 @@ void defineBox(pybind11::object module)
         pybind11::overload_cast<>(&sdf::Box::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
         "Get a mutable Gazebo Math representation of this Box.")
+    .def("calculate_inertial", &sdf::Box::CalculateInertial,
+         "Calculate and return the Inertial values for the Box.")
     .def("__copy__", [](const sdf::Box &self) {
       return sdf::Box(self);
     })

@@ -38,6 +38,8 @@ void defineRoot(pybind11::object module)
 {
   pybind11::class_<sdf::Root>(module, "Root")
     .def(pybind11::init<>())
+    .def("resolve_auto_inertials", &sdf::Root::ResolveAutoInertials,
+         "Calculate & set the inertial properties")
     .def("load",
          [](Root &self, const std::string &_filename)
          {
@@ -46,7 +48,7 @@ void defineRoot(pybind11::object module)
          "Parse the given SDF file, and generate objects based on types "
          "specified in the SDF file.")
     .def("load",
-         [](Root &self, const std::string &_filename, 
+         [](Root &self, const std::string &_filename,
             const ParserConfig &_config)
          {
            ThrowIfErrors(self.Load(_filename, _config));
