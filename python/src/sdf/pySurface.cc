@@ -64,7 +64,7 @@ void defineFriction(pybind11::object module)
          pybind11::return_value_policy::reference_internal,
          "Get the torsional friction object.")
     .def("set_torsional", &sdf::Friction::SetTorsional,
-         "Set the torisional friction object.")
+         "Set the torsional friction object.")
     .def("__copy__", [](const sdf::Friction &self) {
       return sdf::Friction(self);
     })
