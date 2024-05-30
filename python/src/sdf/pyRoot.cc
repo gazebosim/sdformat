@@ -39,7 +39,7 @@ void defineRoot(pybind11::object module)
   pybind11::class_<sdf::Root>(module, "Root")
     .def(pybind11::init<>())
     .def("resolve_auto_inertials", &sdf::Root::ResolveAutoInertials,
-         "Calculate & set the inertial properties")
+         "Calculate and set the inertial properties")
     .def("load",
          [](Root &self, const std::string &_filename)
          {
