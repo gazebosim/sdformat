@@ -14,8 +14,9 @@
 
 import copy
 from gz_test_deps.math import Color, Vector3d, SphericalCoordinates
+from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 from gz_test_deps.sdformat import (Atmosphere, Gui, Physics, Plugin, Error,
-                                   Frame, Joint, Light, Model, Scene, World)
+                                   Frame, Joint, Light, Model, ParserConfig, Root, Scene, World)
 import gz_test_deps.sdformat as sdf
 import unittest
 import math
@@ -87,8 +88,8 @@ class WorldTEST(unittest.TestCase):
           "PoseRelativeToGraph error: scope does not point to a valid graph.")
 
         # world doesn't have graphs, so no names should exist in graphs
-        self.assertFalse(world.name_exists_in_frame_attached_to_graph(""));
-        self.assertFalse(world.name_exists_in_frame_attached_to_graph("link"));
+        self.assertFalse(world.name_exists_in_frame_attached_to_graph(""))
+        self.assertFalse(world.name_exists_in_frame_attached_to_graph("link"))
 
 
     def test_copy_construction(self):
@@ -443,6 +444,55 @@ class WorldTEST(unittest.TestCase):
         world.clear_plugins()
         self.assertEqual(0, len(world.plugins()))
 
+    def test_resolve_auto_inertials(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        " <sdf version=\"1.11\">" + \
+        "  <world name='inertial_test_world'>" + \
+        "   <model name='shapes'>" + \
+        "     <link name='link'>" + \
+        "       <inertial auto='true' />" + \
+        "       <collision name='box_col'>" + \
+        "         <density>1240.0</density>" + \
+        "         <geometry>" + \
+        "           <box>" + \
+        "             <size>2 2 2</size>" + \
+        "           </box>" + \
+        "         </geometry>" + \
+        "       </collision>" + \
+        "     </link>" + \
+        "   </model>" + \
+        "  </world>" + \
+        " </sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(None, errors)
+
+        world = root.world_by_index(0)
+        model = world.model_by_index(0)
+        link = model.link_by_index(0)
+
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+
+        l = 2.0
+        w = 2.0
+        h = 2.0
+
+        expectedMass = l * w * h * 1240.0
+        ixx = (1.0 / 12.0) * expectedMass * (w * w + h * h)
+        iyy = (1.0 / 12.0) * expectedMass * (l * l + h * h)
+        izz = (1.0 / 12.0) * expectedMass * (l * l + w * w)
+
+        expectedMassMat = MassMatrix3d(expectedMass, Vector3d(ixx, iyy, izz), Vector3d.ZERO)
+
+        expectedInertial = Inertiald()
+        expectedInertial.set_mass_matrix(expectedMassMat)
+        expectedInertial.set_pose(Pose3d.ZERO)
+
+        self.assertEqual(0, len(errors))
+        self.assertEqual(expectedInertial, link.inertial())
 
 if __name__ == '__main__':
     unittest.main()
