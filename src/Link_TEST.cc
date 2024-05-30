@@ -68,6 +68,10 @@ TEST(DOMLink, Construction)
   link.SetEnableWind(true);
   EXPECT_TRUE(link.EnableWind());
 
+  EXPECT_TRUE(link.EnableGravity());
+  link.SetEnableGravity(false);
+  EXPECT_FALSE(link.EnableGravity());
+
   EXPECT_EQ(0u, link.SensorCount());
   EXPECT_EQ(nullptr, link.SensorByIndex(0));
   EXPECT_EQ(nullptr, link.SensorByIndex(1));
