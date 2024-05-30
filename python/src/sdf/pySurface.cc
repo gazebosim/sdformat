@@ -55,6 +55,16 @@ void defineFriction(pybind11::object module)
          "Get the ODE object.")
     .def("set_ode", &sdf::Friction::SetODE,
          "Set the ODE object.")
+    .def("bullet_friction", &sdf::Friction::BulletFriction,
+         pybind11::return_value_policy::reference_internal,
+         "Get the bullet friction object.")
+    .def("set_bullet_friction", &sdf::Friction::SetBulletFriction,
+         "Set the bullet friction object.")
+    .def("torsional", &sdf::Friction::Torsional,
+         pybind11::return_value_policy::reference_internal,
+         "Get the torsional friction object.")
+    .def("set_torsional", &sdf::Friction::SetTorsional,
+         "Set the torisional friction object.")
     .def("__copy__", [](const sdf::Friction &self) {
       return sdf::Friction(self);
     })
@@ -116,6 +126,68 @@ void defineSurface(pybind11::object module)
     })
     .def("__deepcopy__", [](const sdf::Surface &self, pybind11::dict) {
       return sdf::Surface(self);
+    }, "memo"_a);
+}
+/////////////////////////////////////////////////
+void defineBulletFriction(pybind11::object module)
+{
+  pybind11::class_<sdf::BulletFriction>(module, "BulletFriction")
+    .def(pybind11::init<>())
+    .def(pybind11::init<sdf::BulletFriction>())
+    .def("friction", &sdf::BulletFriction::Friction,
+         "Get the friction parameter.")
+    .def("set_friction", &sdf::BulletFriction::SetFriction,
+         "Set the friction parameter.")
+    .def("friction2", &sdf::BulletFriction::Friction2,
+         "Get the friction parameter.")
+    .def("set_friction2", &sdf::BulletFriction::SetFriction2,
+         "Set the friction2 parameter.")
+    .def("fdir1", &sdf::BulletFriction::Fdir1,
+         "Get the fdir1 parameter.")
+    .def("set_fdir1", &sdf::BulletFriction::SetFdir1,
+         "Set the fdir1 parameter.")
+    .def("rolling_friction", &sdf::BulletFriction::RollingFriction,
+         "Get the rolling fricion parameter.")
+    .def("set_rolling_friction", &sdf::BulletFriction::SetRollingFriction,
+         "Set the rolling friction parameter.")
+    .def("__copy__", [](const sdf::BulletFriction &self) {
+      return sdf::BulletFriction(self);
+    })
+    .def("__deepcopy__", [](const sdf::BulletFriction &self, pybind11::dict) {
+      return sdf::BulletFriction(self);
+    }, "memo"_a);
+}
+/////////////////////////////////////////////////
+void defineTorsional(pybind11::object module)
+{
+  pybind11::class_<sdf::Torsional>(module, "Torsional")
+    .def(pybind11::init<>())
+    .def(pybind11::init<sdf::Torsional>())
+    .def("coefficient", &sdf::Torsional::Coefficient,
+         "Get the coefficient parameter.")
+    .def("set_coefficient", &sdf::Torsional::SetCoefficient,
+         "Set the coefficient parameter.")
+    .def("use_patch_radius", &sdf::Torsional::UsePatchRadius,
+         "Get whether to use patch radius for torsional friction calculation.")
+    .def("set_use_patch_radius", &sdf::Torsional::SetUsePatchRadius,
+         "Set whether to use patch radius for torsional friction calculation.")
+    .def("patch_radius", &sdf::Torsional::PatchRadius,
+         "Get the radius of contact patch surface.")
+    .def("set_patch_radius", &sdf::Torsional::SetPatchRadius,
+         "Set the radius of contact patch surface.")
+    .def("surface_radius", &sdf::Torsional::SurfaceRadius,
+         "Get the surface radius on the contact point.")
+    .def("set_surface_radius", &sdf::Torsional::SetSurfaceRadius,
+         "Set the surface radius on the contact point.")
+    .def("ode_slip", &sdf::Torsional::ODESlip,
+         "Get the ODE force dependent slip for torsional friction.")
+    .def("set_ode_slip", &sdf::Torsional::SetODESlip,
+         "Set the ODE force dependent slip for torsional friction.")
+    .def("__copy__", [](const sdf::Torsional &self) {
+      return sdf::Torsional(self);
+    })
+    .def("__deepcopy__", [](const sdf::Torsional &self, pybind11::dict) {
+      return sdf::Torsional(self);
     }, "memo"_a);
 }
 }  // namespace python
