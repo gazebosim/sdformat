@@ -61,6 +61,10 @@ class LinkTEST(unittest.TestCase):
         link.set_enable_wind(True)
         self.assertTrue(link.enable_wind())
 
+        self.assertTrue(link.enable_gravity())
+        link.set_enable_gravity(False)
+        self.assertFalse(link.enable_gravity())
+
         self.assertFalse(link.auto_inertia_saved())
         link.set_auto_inertia_saved(True)
         self.assertTrue(link.auto_inertia_saved())

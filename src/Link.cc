@@ -87,6 +87,9 @@ class sdf::Link::Implementation
   /// \brief True if this link should be subject to wind, false otherwise.
   public: bool enableWind = false;
 
+  /// \brief True if this link should be subject to gravity, false otherwise.
+  public: bool enableGravity = true;
+
   /// \brief True if automatic caluclation for the link inertial is enabled
   public: bool autoInertia = false;
 
@@ -312,6 +315,9 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
 
   this->dataPtr->enableWind = _sdf->Get<bool>("enable_wind",
       this->dataPtr->enableWind).first;
+
+  this->dataPtr->enableGravity = _sdf->Get<bool>("gravity",
+      this->dataPtr->enableGravity).first;
 
   return errors;
 }
@@ -836,9 +842,21 @@ bool Link::EnableWind() const
 }
 
 /////////////////////////////////////////////////
-void Link::SetEnableWind(const bool _enableWind)
+bool Link::EnableGravity() const
+{
+  return this->dataPtr->enableGravity;
+}
+
+/////////////////////////////////////////////////
+void Link::SetEnableWind(bool _enableWind)
 {
   this->dataPtr->enableWind = _enableWind;
+}
+
+/////////////////////////////////////////////////
+void Link::SetEnableGravity(bool _enableGravity)
+{
+  this->dataPtr->enableGravity = _enableGravity;
 }
 
 /////////////////////////////////////////////////
