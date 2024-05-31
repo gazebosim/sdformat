@@ -408,11 +408,21 @@ namespace sdf
     /// \sa bool Model::EnableWind
     public: bool EnableWind() const;
 
+    /// \brief Check if this link should be subject to gravity.
+    /// If true, this link should be affected by gravity.
+    /// \return true if the model should be subject to gravity, false otherwise.
+    public: bool EnableGravity() const;
+
     /// \brief Set whether this link should be subject to wind.
     /// \param[in] _enableWind True or false depending on whether the link
     /// should be subject to wind.
     /// \sa Model::SetEnableWind(bool)
     public: void SetEnableWind(bool _enableWind);
+
+    /// \brief Set whether this link should be subject to gravity.
+    /// \param[in] _enableGravity True or false depending on whether the link
+    /// should be subject to gravity.
+    public: void SetEnableGravity(bool _enableGravity);
 
     /// \brief Check if the automatic calculation for the link inertial
     /// is enabled or not.

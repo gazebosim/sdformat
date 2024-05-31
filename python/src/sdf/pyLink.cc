@@ -172,6 +172,13 @@ void defineLink(pybind11::object module)
     .def("set_enable_wind",
          &sdf::Link::SetEnableWind,
          "Set whether this link should be subject to wind.")
+    .def("enable_gravity",
+         &sdf::Link::EnableGravity,
+         "Check if this link should be subject to gravity. "
+         "If true, this link should be affected by gravity.")
+    .def("set_enable_gravity",
+         &sdf::Link::SetEnableGravity,
+         "Set whether this link should be subject to gravity.")
     .def("add_collision",
          &sdf::Link::AddCollision,
          "Add a collision to the link.")
