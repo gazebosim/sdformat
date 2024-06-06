@@ -126,6 +126,7 @@ TEST(DOMCamera, Construction)
   cam.SetDistortionCenter(gz::math::Vector2d(0.1, 0.2));
   EXPECT_EQ(gz::math::Vector2d(0.1, 0.2), cam.DistortionCenter());
 
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_EQ(gz::math::Pose3d::Zero, cam.RawPose());
   cam.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), cam.RawPose());
@@ -133,6 +134,7 @@ TEST(DOMCamera, Construction)
   EXPECT_TRUE(cam.PoseRelativeTo().empty());
   cam.SetPoseRelativeTo("/frame");
   EXPECT_EQ("/frame", cam.PoseRelativeTo());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   EXPECT_TRUE(cam.OpticalFrameId().empty());
   cam.SetOpticalFrameId("/optical_frame");
@@ -270,7 +272,9 @@ TEST(DOMCamera, ToElement)
   cam.SetNearClip(0.2);
   cam.SetFarClip(200.2);
   cam.SetVisibilityMask(123u);
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   cam.SetPoseRelativeTo("/frame");
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
   cam.SetSaveFrames(true);
   cam.SetSaveFramesPath("/tmp");
   cam.SetOpticalFrameId("/optical_frame");
@@ -293,7 +297,9 @@ TEST(DOMCamera, ToElement)
   EXPECT_DOUBLE_EQ(0.2, cam2.NearClip());
   EXPECT_DOUBLE_EQ(200.2, cam2.FarClip());
   EXPECT_EQ(123u, cam2.VisibilityMask());
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_EQ("/frame", cam2.PoseRelativeTo());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
   EXPECT_TRUE(cam2.SaveFrames());
   EXPECT_EQ("/tmp", cam2.SaveFramesPath());
   EXPECT_EQ("/optical_frame", cam2.OpticalFrameId());
