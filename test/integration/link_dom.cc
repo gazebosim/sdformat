@@ -314,8 +314,10 @@ TEST(DOMLink, Sensors)
   const sdf::Camera *camSensor = cameraSensor->CameraSensor();
   ASSERT_NE(nullptr, camSensor);
   EXPECT_EQ("my_camera", camSensor->Name());
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_EQ(gz::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
             camSensor->RawPose());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
   EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
   EXPECT_EQ("", cameraSensor->Topic());
   EXPECT_EQ("my_camera/trigger", camSensor->TriggerTopic());
@@ -731,8 +733,10 @@ TEST(DOMLink, Sensors)
   const sdf::Camera *wideAngleCam = wideAngleCameraSensor->CameraSensor();
   ASSERT_NE(nullptr, wideAngleCam);
   EXPECT_EQ("wide_angle_cam", wideAngleCam->Name());
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_EQ(gz::math::Pose3d(0.2, 0.3, 0.4, 0, 0, 0),
             wideAngleCam->RawPose());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
   EXPECT_DOUBLE_EQ(3.14, wideAngleCam->HorizontalFov().Radian());
   EXPECT_EQ("wideanglecamera", wideAngleCameraSensor->Topic());
   EXPECT_EQ("", wideAngleCam->TriggerTopic());
