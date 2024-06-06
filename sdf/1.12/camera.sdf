@@ -226,5 +226,5 @@
     <description>An optional frame id name to be used in the camera_info message header.</description>
   </element>
 
-  <include filename="pose.sdf" required="0"/>
+  <include filename="pose.sdf" required="-1"/>
 </element> <!-- End Camera -->
