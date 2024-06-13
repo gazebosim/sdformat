@@ -34,8 +34,6 @@ class ParticleEmitterTEST(unittest.TestCase):
         self.assertTrue(emitter.set_type("box"))
         self.assertEqual("box", emitter.type_str())
         self.assertEqual(ParticleEmitter.ParticleEmitterType.BOX, emitter.type())
-        emitter.set_type(ParticleEmitter.ParticleEmitterType.CONE)
-        self.assertEqual("cone", emitter.type_str())
         emitter.set_type(ParticleEmitter.ParticleEmitterType.CYLINDER)
         self.assertEqual("cylinder", emitter.type_str())
 

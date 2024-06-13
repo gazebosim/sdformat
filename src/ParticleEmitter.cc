@@ -34,13 +34,12 @@ using namespace sdf;
 /// Particle emitter type strings. These should match the data in
 /// `enum class ParticleEmitterType` located in ParticleEmitter.hh, and the size
 /// template parameter should match the number of elements as well.
-constexpr std::array<const std::string_view, 5> kEmitterTypeStrs =
+constexpr std::array<const std::string_view, 4> kEmitterTypeStrs =
 {
   "point",
   "box",
   "cylinder",
-  "ellipsoid",
-  "cone",
+  "ellipsoid"
 };
 
 class sdf::ParticleEmitter::Implementation
