@@ -462,6 +462,21 @@
 
 ## libsdformat 12.X
 
+### libsdformat 12.8.0 (2024-06-06)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+
 ### libsdformat 12.7.2 (2023-09-01)
 
 1. Fixed 1.9/light.sdf
