@@ -470,6 +470,12 @@ TEST(DOMWorld, AddActor)
   const sdf::Actor *actorFromWorldByName = world.ActorByName("actor1");
   ASSERT_NE(nullptr, actorFromWorldByName);
   EXPECT_EQ(actorFromWorldByName->Name(), actor.Name());
+
+  sdf::Actor *mutableActorFromWorldByName = world.ActorByName("actor1");
+  ASSERT_NE(nullptr, mutableActorFromWorldByName);
+  EXPECT_EQ(mutableActorFromWorldByName->Name(), actor.Name());
+  mutableActorFromWorldByName->SetName("new_name");
+  EXPECT_NE(mutableActorFromWorldByName->Name(), actor.Name());
 }
 
 /////////////////////////////////////////////////

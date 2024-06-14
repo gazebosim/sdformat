@@ -285,6 +285,13 @@ namespace sdf
     /// \sa bool ActorNameExists(const std::string &_name) const
     public: const Actor *ActorByName(const std::string &_name) const;
 
+    /// \brief Get a mutable actor based on a name.
+    /// \param[in] _name Name of the actor.
+    /// \return Pointer to the actor. Nullptr if an actor with the given name
+    /// does not exist.
+    /// \sa bool ActorNameExists(const std::string &_name) const
+    public: Actor *ActorByName(const std::string &_name);
+
     /// \brief Get the number of explicit frames that are immediate (not nested)
     /// children of this World object.
     /// \remark FrameByName() can find explicit frames that are not immediate

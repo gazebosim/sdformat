@@ -773,6 +773,13 @@ const Actor *World::ActorByName(const std::string &_name) const
   return nullptr;
 }
 
+/////////////////////////////////////////////////
+Actor *World::ActorByName(const std::string &_name)
+{
+  return const_cast<Actor*>(
+      static_cast<const World*>(this)->ActorByName(_name));
+}
+
 //////////////////////////////////////////////////
 uint64_t World::PhysicsCount() const
 {
