@@ -111,7 +111,7 @@ TEST(NestedModel, NestedModel)
 TEST(NestedModel, State)
 {
   std::ostringstream sdfStr;
-  sdfStr << "<sdf version ='" << SDF_VERSION << "'>"
+  sdfStr << "<sdf version ='1.11'>"
     << "<world name='default'>"
     << "<state world_name='default'>"
     << "<model name='model_00'>"
@@ -154,9 +154,9 @@ TEST(NestedModel, State)
   sdf::ElementPtr worldElem = sdfParsed->Root()->GetElement("world");
   EXPECT_TRUE(worldElem->HasElement("state"));
   sdf::ElementPtr stateElem = worldElem->GetElement("state");
-  EXPECT_TRUE(stateElem->HasElement("model"));
+  EXPECT_TRUE(stateElem->HasElement("model_state"));
 
-  sdf::ElementPtr modelStateElem = stateElem->GetElement("model");
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
 
   // model sdf
   EXPECT_TRUE(modelStateElem->HasAttribute("name"));
@@ -167,8 +167,8 @@ TEST(NestedModel, State)
   EXPECT_TRUE(!modelStateElem->HasElement("joint"));
 
   // link sdf
-  EXPECT_TRUE(modelStateElem->HasElement("link"));
-  sdf::ElementPtr linkStateElem = modelStateElem->GetElement("link");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"));
+  sdf::ElementPtr linkStateElem = modelStateElem->GetElement("link_state");
   EXPECT_TRUE(linkStateElem->HasAttribute("name"));
   EXPECT_EQ(linkStateElem->Get<std::string>("name"), "link_00");
   EXPECT_TRUE(linkStateElem->HasElement("pose"));
@@ -185,9 +185,9 @@ TEST(NestedModel, State)
     gz::math::Pose3d(0, 0.006121, 0, 0, 0, 0));
 
   // nested model sdf
-  EXPECT_TRUE(modelStateElem->HasElement("model"));
+  EXPECT_TRUE(modelStateElem->HasElement("model_state"));
   sdf::ElementPtr nestedModelStateElem =
-    modelStateElem->GetElement("model");
+    modelStateElem->GetElement("model_state");
   EXPECT_TRUE(nestedModelStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedModelStateElem->Get<std::string>("name"), "model_01");
   EXPECT_TRUE(nestedModelStateElem->HasElement("pose"));
@@ -196,9 +196,9 @@ TEST(NestedModel, State)
   EXPECT_TRUE(!nestedModelStateElem->HasElement("joint"));
 
   // nested model's link sdf
-  EXPECT_TRUE(nestedModelStateElem->HasElement("link"));
+  EXPECT_TRUE(nestedModelStateElem->HasElement("link_state"));
   sdf::ElementPtr nestedLinkStateElem =
-    nestedModelStateElem->GetElement("link");
+    nestedModelStateElem->GetElement("link_state");
   EXPECT_TRUE(nestedLinkStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedLinkStateElem->Get<std::string>("name"), "link_01");
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
@@ -215,8 +215,8 @@ TEST(NestedModel, State)
     gz::math::Pose3d(0, 0.000674, 0, 0, 0, 0));
 
   // double nested model sdf
-  EXPECT_TRUE(nestedModelStateElem->HasElement("model"));
-  nestedModelStateElem = nestedModelStateElem->GetElement("model");
+  EXPECT_TRUE(nestedModelStateElem->HasElement("model_state"));
+  nestedModelStateElem = nestedModelStateElem->GetElement("model_state");
   EXPECT_TRUE(nestedModelStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedModelStateElem->Get<std::string>("name"), "model_02");
   EXPECT_TRUE(nestedModelStateElem->HasElement("pose"));
@@ -225,8 +225,8 @@ TEST(NestedModel, State)
   EXPECT_TRUE(!nestedModelStateElem->HasElement("joint"));
 
   // double nested model's link sdf
-  EXPECT_TRUE(nestedModelStateElem->HasElement("link"));
-  nestedLinkStateElem = nestedModelStateElem->GetElement("link");
+  EXPECT_TRUE(nestedModelStateElem->HasElement("link_state"));
+  nestedLinkStateElem = nestedModelStateElem->GetElement("link_state");
   EXPECT_TRUE(nestedLinkStateElem->HasAttribute("name"));
   EXPECT_EQ(nestedLinkStateElem->Get<std::string>("name"), "link_02");
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
@@ -241,6 +241,102 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
   EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("wrench"),
     gz::math::Pose3d(0, 0, 0, 0, 0, 0));
+}
+
+////////////////////////////////////////
+// Test parsing nested model states
+TEST(NestedModel, StateSiblingsConversion1_12)
+{
+  const std::string testFile =
+  sdf::testing::TestFile("sdf", "state_nested_model_world.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // load the state sdf
+  EXPECT_TRUE(root.Element()->HasElement("world"));
+  sdf::ElementPtr worldElem = root.Element()->GetElement("world");
+
+  // Confirm that regular model elements were not migrated
+  EXPECT_FALSE(worldElem->HasElement("model_state"));
+
+  // Confirm that model and link elements in state were converted to
+  // model_state and link_state
+  EXPECT_TRUE(worldElem->HasElement("state"));
+  sdf::ElementPtr stateElem = worldElem->GetElement("state");
+  EXPECT_TRUE(stateElem->HasElement("model_state"))
+    << stateElem->ToString("");
+  EXPECT_FALSE(stateElem->HasElement("model"))
+    << stateElem->ToString("");
+
+  // model sdf
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
+  EXPECT_TRUE(modelStateElem->HasAttribute("name"));
+  EXPECT_EQ(modelStateElem->Get<std::string>("name"), "top_level_model");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"))
+    << modelStateElem->ToString("");
+  EXPECT_TRUE(modelStateElem->HasElement("model_state"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("link"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("model"))
+    << modelStateElem->ToString("");
+}
+
+////////////////////////////////////////
+// Test parsing nested model states
+TEST(NestedModel, StateInsertionsConversion1_12)
+{
+  const std::string testFile =
+  sdf::testing::TestFile("sdf", "state_nested_model_world_insertion.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty());
+
+  // load the state sdf
+  EXPECT_TRUE(root.Element()->HasElement("world"));
+  sdf::ElementPtr worldElem = root.Element()->GetElement("world");
+
+  // Confirm that regular model elements were not migrated
+  EXPECT_FALSE(worldElem->HasElement("model_state"));
+
+  // Confirm that model and link elements in state were converted to
+  // model_state and link_state
+  EXPECT_TRUE(worldElem->HasElement("state"));
+  sdf::ElementPtr stateElem = worldElem->GetElement("state");
+  EXPECT_TRUE(stateElem->HasElement("model_state"))
+    << stateElem->ToString("");
+  EXPECT_FALSE(stateElem->HasElement("model"))
+    << stateElem->ToString("");
+
+  // model sdf
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
+  EXPECT_TRUE(modelStateElem->HasAttribute("name"));
+  EXPECT_EQ(modelStateElem->Get<std::string>("name"), "top_level_model");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"))
+    << modelStateElem->ToString("");
+  EXPECT_TRUE(modelStateElem->HasElement("model_state"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("link"))
+    << modelStateElem->ToString("");
+  EXPECT_FALSE(modelStateElem->HasElement("model"))
+    << modelStateElem->ToString("");
+
+  // insertions
+  EXPECT_TRUE(stateElem->HasElement("insertions"));
+  sdf::ElementPtr insertionsElem = stateElem->GetElement("insertions");
+  // confirm that //insertions/model and link tags were not converted
+  EXPECT_FALSE(insertionsElem->HasElement("model_state"));
+  EXPECT_TRUE(insertionsElem->HasElement("model"));
+  sdf::ElementPtr insertedModelElem = insertionsElem->GetElement("model");
+  EXPECT_TRUE(insertedModelElem->HasAttribute("name"));
+  EXPECT_EQ(insertedModelElem->Get<std::string>("name"), "unit_box");
+  EXPECT_FALSE(insertedModelElem->HasElement("link_state"));
+  EXPECT_TRUE(insertedModelElem->HasElement("link"));
 }
 
 ////////////////////////////////////////
