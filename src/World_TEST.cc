@@ -58,6 +58,9 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(nullptr, world.ModelByName("a::b::c"));
   EXPECT_EQ(nullptr, world.ModelByName("::::"));
 
+  EXPECT_EQ(nullptr, world.ActorByName(""));
+  EXPECT_EQ(nullptr, world.ActorByName("default"));
+
   EXPECT_EQ(0u, world.FrameCount());
   EXPECT_EQ(nullptr, world.FrameByIndex(0));
   EXPECT_EQ(nullptr, world.FrameByIndex(1));
@@ -452,15 +455,21 @@ TEST(DOMWorld, AddActor)
   EXPECT_EQ(1u, world.ActorCount());
   EXPECT_FALSE(world.AddActor(actor));
   EXPECT_EQ(1u, world.ActorCount());
+  EXPECT_NE(nullptr, world.ActorByName("actor1"));
 
   world.ClearActors();
   EXPECT_EQ(0u, world.ActorCount());
+  EXPECT_EQ(nullptr, world.ActorByName("actor1"));
 
   EXPECT_TRUE(world.AddActor(actor));
   EXPECT_EQ(1u, world.ActorCount());
   const sdf::Actor *actorFromWorld = world.ActorByIndex(0);
   ASSERT_NE(nullptr, actorFromWorld);
   EXPECT_EQ(actorFromWorld->Name(), actor.Name());
+
+  const sdf::Actor *actorFromWorldByName = world.ActorByName("actor1");
+  ASSERT_NE(nullptr, actorFromWorldByName);
+  EXPECT_EQ(actorFromWorldByName->Name(), actor.Name());
 }
 
 /////////////////////////////////////////////////
