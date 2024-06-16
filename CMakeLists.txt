@@ -49,6 +49,13 @@ if (BUILD_SDF)
   # Find tinyxml2.
   gz_find_package(TINYXML2 REQUIRED)
 
+  #################################################
+  # Find DL if doing relocatable installation
+  if (GZ_ENABLE_RELOCATABLE_INSTALL)
+    gz_find_package(DL REQUIRED)
+  endif()
+
+
   ################################################
   # Find urdfdom parser. Logic:
   #
