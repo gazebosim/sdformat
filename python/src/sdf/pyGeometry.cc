@@ -17,6 +17,7 @@
 #include "pyGeometry.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/ParserConfig.hh"
 
@@ -45,6 +46,8 @@ void defineGeometry(pybind11::object module)
   geometryModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Geometry>())
+    .def("calculate_inertial", &sdf::Geometry::CalculateInertial,
+         "Calculate and return the Mass Matrix values for the Geometry")
     .def("type", &sdf::Geometry::Type,
          "Get the type of geometry.")
     .def("set_type", &sdf::Geometry::SetType,

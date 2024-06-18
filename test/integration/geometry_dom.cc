@@ -184,6 +184,7 @@ TEST(DOMGeometry, Shapes)
             meshColGeom->Optimization());
   ASSERT_NE(nullptr, meshColGeom->ConvexDecomposition());
   EXPECT_EQ(4u, meshColGeom->ConvexDecomposition()->MaxConvexHulls());
+  EXPECT_EQ(400000u, meshColGeom->ConvexDecomposition()->VoxelResolution());
 
   EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/"
       "mesh.dae", meshColGeom->Uri());

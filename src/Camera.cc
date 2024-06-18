@@ -208,7 +208,7 @@ class sdf::Camera::Implementation
   public: double lensProjectionTy{0.0};
 
   /// \brief lens instrinsics s.
-  public: double lensIntrinsicsS{1.0};
+  public: double lensIntrinsicsS{0.0};
 
   /// \brief True if this camera has custom intrinsics values
   public: bool hasIntrinsics = false;
