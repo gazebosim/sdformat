@@ -14,7 +14,7 @@
 
 import copy
 from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cylinder, Ellipsoid,
-                                   Mesh, ParserConfig, Plane, Sphere)
+                                   Heightmap, Mesh, ParserConfig, Plane, Sphere)
 from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
 import gz_test_deps.sdformat as sdf
 import math
@@ -169,6 +169,23 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual("banana", geom.mesh_shape().uri())
     self.assertEqual("orange", geom.mesh_shape().submesh())
     self.assertTrue(geom.mesh_shape().center_submesh())
+
+  def test_heighmap(self):
+    geom = Geometry()
+
+    geom.set_type(sdf.GeometryType.HEIGHTMAP)
+    heightmap = Heightmap()
+    geom.set_heightmap_shape(heightmap)
+
+    self.assertEqual(sdf.GeometryType.HEIGHTMAP, geom.type())
+    self.assertEqual(None, geom.box_shape())
+    self.assertEqual(None, geom.capsule_shape())
+    self.assertEqual(None, geom.cylinder_shape())
+    self.assertEqual(None, geom.ellipsoid_shape())
+    self.assertEqual(None, geom.sphere_shape())
+    self.assertEqual(None, geom.plane_shape())
+    self.assertEqual(None, geom.mesh_shape())
+    self.assertNotEqual(None, geom.heightmap_shape())
 
 
   def test_plane(self):
