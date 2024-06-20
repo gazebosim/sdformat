@@ -120,8 +120,10 @@ TEST(SDFDomConversion, Sensors)
     const sdf::Camera *camSensor = cameraSensor->CameraSensor();
     ASSERT_NE(nullptr, camSensor);
     EXPECT_EQ("my_camera", camSensor->Name());
+    GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
     EXPECT_EQ(gz::math::Pose3d(0.1, 0.2, 0.3, 0, 0, 0),
               camSensor->RawPose());
+    GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
     EXPECT_DOUBLE_EQ(0.75, camSensor->HorizontalFov().Radian());
     EXPECT_EQ(640u, camSensor->ImageWidth());
     EXPECT_EQ(480u, camSensor->ImageHeight());

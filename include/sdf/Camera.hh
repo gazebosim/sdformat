@@ -334,27 +334,27 @@ namespace sdf
     /// \param[in] _center Distortion center or principal point.
     public: void SetDistortionCenter(const gz::math::Vector2d &_center);
 
-    /// \brief Get the pose of the camer. This is the pose of the camera
+    /// \brief Get the pose of the camera. This is the pose of the camera
     /// as specified in SDF (<camera> <pose> ... </pose></camera>).
     /// \return The pose of the link.
-    public: const gz::math::Pose3d &RawPose() const;
+    public: const gz::math::Pose3d GZ_DEPRECATED(15) &RawPose() const;
 
     /// \brief Set the pose of the camera.
     /// \sa const gz::math::Pose3d &RawPose() const
     /// \param[in] _pose The new camera pose.
-    public: void SetRawPose(const gz::math::Pose3d &_pose);
+    public: void GZ_DEPRECATED(15) SetRawPose(const gz::math::Pose3d &_pose);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \return The name of the pose relative-to frame.
-    public: const std::string &PoseRelativeTo() const;
+    public: const std::string GZ_DEPRECATED(15) &PoseRelativeTo() const;
 
     /// \brief Set the name of the coordinate frame relative to which this
     /// object's pose is expressed. An empty value indicates that the frame is
     /// relative to the parent link.
     /// \param[in] _frame The name of the pose relative-to frame.
-    public: void SetPoseRelativeTo(const std::string &_frame);
+    public: void GZ_DEPRECATED(15) SetPoseRelativeTo(const std::string &_frame);
 
     /// \brief Get the name of the coordinate frame relative to which this
     /// object's camera_info message header is expressed.

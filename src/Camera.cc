@@ -379,6 +379,8 @@ Errors Camera::Load(ElementPtr _sdf)
     errors.insert(errors.end(), noiseErr.begin(), noiseErr.end());
   }
 
+  // \todo(iche033) //sensor/camera/pose is being deprecated.
+  // Remove in sdformat16.
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
 
@@ -1222,7 +1224,10 @@ sdf::ElementPtr Camera::ToElement() const
     poseElem->GetAttribute("relative_to")->Set<std::string>(
         this->dataPtr->poseRelativeTo);
   }
+
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   poseElem->Set<gz::math::Pose3d>(this->RawPose());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
   elem->GetElement("horizontal_fov")->Set<double>(
       this->HorizontalFov().Radian());
   sdf::ElementPtr imageElem = elem->GetElement("image");

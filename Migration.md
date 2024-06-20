@@ -30,6 +30,17 @@ but with improved human-readability..
       matches `"0"`, `"1"`, `"true"`, or `"false"` and returns `false`
       otherwise.
 
+### Deprecations
+
+- **sdf/Camera.hh**:
+   + The `//sensor/camera/pose` SDF element and corresponding pose functions
+     in the Camera DOM class are deprecated. Please specify camera pose using
+     the `//sensor/pose` SDF element instead.
+   + ***Deprecation:*** const gz::math::Pose3d &RawPose() const
+   + ***Deprecation:*** void SetRawPose(const gz::math::Pose3d &_pose)
+   + ***Deprecation:*** const std::string &PoseRelativeTo() const
+   + ***Deprecation:*** void SetPoseRelativeTo(const std::string &_frame)
+
 ## libsdformat 13.x to 14.x
 
 ### Additions
