@@ -22,6 +22,7 @@
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Box.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/Material.hh"

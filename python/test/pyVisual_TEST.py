@@ -65,6 +65,7 @@ class VisualTEST(unittest.TestCase):
         self.assertNotEqual(None, visual.geometry())
         self.assertEqual(sdf.GeometryType.EMPTY, visual.geometry().type())
         self.assertEqual(None, visual.geometry().box_shape())
+        self.assertEqual(None, visual.geometry().cone_shape())
         self.assertEqual(None, visual.geometry().cylinder_shape())
         self.assertEqual(None, visual.geometry().plane_shape())
         self.assertEqual(None, visual.geometry().sphere_shape())
