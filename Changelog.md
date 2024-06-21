@@ -1,5 +1,14 @@
 ## libsdformat 14.X
 
+### libsdformat 14.4.0 (2024-06-20)
+
+1. Add Cone as a primitive parametric shape.
+    * [Pull request #1415](https://github.com/gazebosim/sdformat/pull/1415)
+    * Thanks to Benjamin Perseghetti
+
+1. Add custom attribute to custom element in test
+    * [Pull request #1406](https://github.com/gazebosim/sdformat/pull/1406)
+
 ### libsdformat 14.3.0 (2024-06-14)
 
 1. Backport voxel_resolution sdf element
