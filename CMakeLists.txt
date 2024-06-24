@@ -79,8 +79,29 @@ if (BUILD_SDF)
   set(GZ_TOOLS_VER 2)
 
   #################################################
+  # Find python
+  if (SKIP_PYBIND11)
+    message(STATUS "SKIP_PYBIND11 set - disabling python bindings")
+    find_package(Python3 COMPONENTS Interpreter)
+  else()
+    find_package(Python3 COMPONENTS Interpreter Development)
+    if (NOT Python3_Development_FOUND)
+      GZ_BUILD_WARNING("Python development libraries are missing: Python interfaces are disabled.")
+    else()
+      set(PYBIND11_PYTHON_VERSION 3)
+      find_package(pybind11 2.4 CONFIG QUIET)
+
+      if (pybind11_FOUND)
+        message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
+      else()
+        GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
+        message (STATUS "Searching for pybind11 - not found.")
+      endif()
+    endif()
+  endif()
+
+  #################################################
   # Copied from catkin/cmake/empy.cmake
-  include(GzPython)
   function(find_python_module module)
     # cribbed from http://www.cmake.org/pipermail/cmake/2011-January/041666.html
     string(TOUPPER ${module} module_upper)
@@ -130,30 +151,6 @@ if (BUILD_SDF)
   gz_find_package(gz-utils2 REQUIRED COMPONENTS cli)
   set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
-  ########################################
-  # Python interfaces
-  if (NOT PYTHON3_FOUND)
-    GZ_BUILD_WARNING("Python is missing: Python interfaces are disabled.")
-    message (STATUS "Searching for Python - not found.")
-  else()
-    message (STATUS "Searching for Python - found version ${Python3_VERSION}.")
-
-    if (SKIP_PYBIND11)
-      message(STATUS "SKIP_PYBIND11 set - disabling python bindings")
-    else()
-      set(PYBIND11_PYTHON_VERSION 3)
-      find_package(pybind11 2.4 QUIET)
-
-      if (${pybind11_FOUND})
-        find_package(Python3 ${GZ_PYTHON_VERSION} REQUIRED COMPONENTS Development)
-        message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
-      else()
-        GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
-        message (STATUS "Searching for pybind11 - not found.")
-      endif()
-    endif()
-  endif()
-
   gz_configure_build(HIDE_SYMBOLS_BY_DEFAULT QUIT_IF_BUILD_ERRORS)
 
   gz_create_packages()
@@ -162,7 +159,7 @@ if (BUILD_SDF)
   add_subdirectory(conf)
   add_subdirectory(doc)
   if (pybind11_FOUND AND NOT SKIP_PYBIND11)
-  	add_subdirectory(python)
+    add_subdirectory(python)
   endif()
 endif(BUILD_SDF)
 
