@@ -761,7 +761,7 @@ TEST(SDF, ErrorOutput)
 
   // Test findFile
   EXPECT_EQ(sdf::findFile(errors, "adfjialkas31", false, true), "");
-  EXPECT_EQ(errors.size(), 1);
+  EXPECT_EQ(errors.size(), 1) << errors;
   EXPECT_NE(std::string::npos,
     errors[0].Message().find("Tried to use callback in sdf::findFile(), "
                              "but the callback is empty.  Did you call "
@@ -771,10 +771,13 @@ TEST(SDF, ErrorOutput)
 
   sdf::SDF sdf;
   sdf.SetFromString(errors, "banana");
-  EXPECT_EQ(errors.size(), 1);
+  EXPECT_EQ(errors.size(), 2) << errors;
   EXPECT_NE(std::string::npos,
-    errors[0].Message().find("Unable to parse sdf string[banana]"))
+    errors[0].Message().find("Error parsing XML from string"))
       << errors[0].Message();
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find("Unable to parse sdf string[banana]"))
+      << errors[1].Message();
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
