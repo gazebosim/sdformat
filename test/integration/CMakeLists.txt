@@ -74,11 +74,22 @@ else()
   gz_build_warning("xmllint not found. schema_test won't be run")
 endif()
 
-gz_build_tests(TYPE ${TEST_TYPE} SOURCES ${tests} INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test)
+gz_build_tests(TYPE ${TEST_TYPE}
+  SOURCES ${tests}
+  INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/test
+)
 
-if (EXISTS ${XMLLINT_EXE})
-  # Need to run schema target (build .xsd files) before running schema_test
-  add_dependencies(${TEST_TYPE}_schema_test schema)
+
+if (TARGET ${TEST_TYPE}_schema_test)
+  target_compile_definitions(${TEST_TYPE}_schema_test
+    PRIVATE
+    -DSDF_ROOT_SCHEMA="${PROJECT_BINARY_DIR}/sdf/${SDF_PROTOCOL_VERSION}/root.xsd"
+  )
+
+  if (EXISTS ${XMLLINT_EXE})
+    # Need to run schema target (build .xsd files) before running schema_test
+    add_dependencies(${TEST_TYPE}_schema_test schema)
+  endif()
 endif()
 
 # Test symbols having the right name on linux only

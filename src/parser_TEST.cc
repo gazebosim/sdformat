@@ -23,10 +23,11 @@
 #include "sdf/Element.hh"
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
-#include "test_config.hh"
-#include "test_utils.hh"
 
 #include <gz/utils/Environment.hh>
+
+#include "test_config.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(Parser, initStringTrim)
@@ -418,10 +419,18 @@ TEST(Parser, IncludesErrors)
 
     const auto path =
         sdf::testing::TestFile("sdf", "includes_missing_model.sdf");
+    sdf::setFindCallback([&](const std::string &/*_file*/)
+        {
+          return "";
+        });
+
     sdf::SDFPtr sdf(new sdf::SDF());
     sdf::init(sdf);
 
     sdf::readFile(path, sdf);
+
+    std::cout << buffer.str() << std::endl;
+
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
                  "Error Code " +
                  std::to_string(
@@ -526,8 +535,14 @@ TEST(Parser, DoubleColonNameAttrError)
 
   sdf::Errors errors;
   EXPECT_FALSE(sdf::readString(stream.str(), sdf, errors));
-  ASSERT_EQ(errors.size(), 1u);
+  ASSERT_EQ(errors.size(), 2u);
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::RESERVED_NAME);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Detected delimiter '::' in element name in<link name='A::B'/>"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::RESERVED_NAME);
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Delimiter '::' found in attribute names of element <sdf>,"
+      " which is not allowed in SDFormat >= 1.8"));
 
   sdf = InitSDF();
   stream.str("");
@@ -836,12 +851,109 @@ TEST(Parser, ElementRemovedAfterDeprecation)
 }
 
 /////////////////////////////////////////////////
+/// Check for non SDF non URDF error on a string
+TEST(Parser, ReadStringErrorNotSDForURDF)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  sdf::SDFPtr sdf = InitSDF();
+  const std::string testString = R"(<?xml version="1.0" ?>
+    <foo>
+    </foo>)";
+  sdf::Errors errors;
+  EXPECT_FALSE(sdf::readString(testString, sdf, errors));
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "XML does not seem to be an SDFormat or an URDF string."));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+/////////////////////////////////////////////////
+/// Check for non SDF non URDF error on a file
+TEST(Parser, ReadFileErrorNotSDForURDF)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "box.dae");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  ASSERT_EQ(errors.size(), 1u);
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARSING_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "XML does not seem to be an SDFormat or an URDF file."));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+/////////////////////////////////////////////////
+/// Check that malformed SDF files do not throw confusing error
+TEST(Parser, ReadFileMalformedSDFNoRobotError)
+{
+  // Capture sdferr output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  const auto path =
+      sdf::testing::TestFile("sdf", "bad_syntax_pose.sdf");
+
+  sdf::Errors errors;
+  sdf::SDFPtr sdf = sdf::readFile(path, errors);
+  // Check the old error is not printed anymore
+  EXPECT_EQ(std::string::npos, buffer.str().find(
+      "Could not find the 'robot' element in the xml file"));
+
+  // Revert cerr rdbug so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
+}
+
+/////////////////////////////////////////////////
 /// Main
 int main(int argc, char **argv)
 {
   // temporarily set HOME
   std::string homeDir;
-  sdf::testing::TestSetHomePath(homeDir);
+  sdf::testing::TestTmpPath(homeDir);
+
+#ifdef _WIN32
+  gz::utils::setenv("HOMEPATH", homeDir);
+#else
+  gz::utils::setenv("HOME", homeDir);
+#endif
+
   sdf::Console::Clear();
 
   ::testing::InitGoogleTest(&argc, argv);

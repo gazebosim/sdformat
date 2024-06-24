@@ -26,22 +26,57 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "test_config.hh"
+#include "test_utils.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, InvalidSDF)
 {
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
   const std::string testFile =
     sdf::testing::TestFile("sdf", "empty_invalid.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
-  EXPECT_FALSE(errors.empty());
-  EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
+  EXPECT_EQ(errors.size(), 2u);
+  EXPECT_EQ(sdf::ErrorCode::PARSING_ERROR, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "XML does not seem to be an SDFormat or an URDF file."));
+  EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[1].Code());
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Unable to read file"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, NoVersion)
 {
+    // Redirect sdferr output
+    std::stringstream buffer;
+    sdf::testing::RedirectConsoleStream redir(
+        sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
   const std::string testFile =
     sdf::testing::TestFile("sdf", "empty_noversion.sdf");
 
@@ -49,11 +84,27 @@ TEST(DOMRoot, NoVersion)
   sdf::Errors errors = root.Load(testFile);
   EXPECT_FALSE(errors.empty());
   EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, Load)
 {
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
   const std::string testFile =
     sdf::testing::TestFile("sdf", "empty.sdf");
 
@@ -72,11 +123,27 @@ TEST(DOMRoot, Load)
   ASSERT_TRUE(root.WorldByIndex(0)->ModelByIndex(0) != nullptr);
   EXPECT_EQ("ground_plane", root.WorldByIndex(0)->ModelByIndex(0)->Name());
   EXPECT_TRUE(root.WorldByIndex(0)->ModelNameExists("ground_plane"));
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, LoadMultipleModels)
 {
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
   const std::string testFile =
     sdf::testing::TestFile("sdf", "root_multiple_models.sdf");
 
@@ -92,11 +159,26 @@ TEST(DOMRoot, LoadMultipleModels)
 
   ASSERT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 /////////////////////////////////////////////////
 TEST(DOMRoot, LoadDuplicateModels)
 {
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
   const std::string testFile =
     sdf::testing::TestFile("sdf", "root_duplicate_models.sdf");
 
@@ -108,6 +190,9 @@ TEST(DOMRoot, LoadDuplicateModels)
 
   EXPECT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
+
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
 
 /////////////////////////////////////////////////

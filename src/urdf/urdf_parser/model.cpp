@@ -36,7 +36,11 @@
 #pragma warning(push, 0)
 
 #include <vector>
-#include "urdf_parser/urdf_parser.h"
+// Use relative path to avoid confusion with urdf system headers (if present).
+// The change to the relative path is only required to be present in this
+// file given how MSVC include headers. See:
+// https://github.com/gazebosim/sdformat/pull/1259/files#r1149821498
+#include "../urdf_parser/urdf_parser.h"
 // #include <console_bridge/console.h>
 #include <fstream>
 

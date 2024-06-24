@@ -45,6 +45,15 @@ inline namespace SDF_VERSION_NAMESPACE
 // returns the version string when possible.
 std::string SDF::version = SDF_VERSION;  // NOLINT(runtime/string)
 
+std::string sdfSharePath()
+{
+#ifdef SDF_SHARE_PATH
+  if (std::string(SDF_SHARE_PATH) != "/")
+    return SDF_SHARE_PATH;
+#endif
+  return "";
+}
+
 /////////////////////////////////////////////////
 void setFindCallback(std::function<std::string(const std::string &)> _cb)
 {
@@ -125,23 +134,35 @@ std::string findFile(sdf::Errors &_errors, const std::string &_filename,
     filename = filename.substr(idx + sep.length());
   }
 
+  // First check the local path, if the flag is set.
+  if (_searchLocalPath)
+  {
+    std::string path = sdf::filesystem::append(sdf::filesystem::current_path(),
+                                               filename);
+    if (sdf::filesystem::exists(path))
+    {
+      return path;
+    }
+  }
+
   // Next check the install path.
-  std::string path = sdf::filesystem::append(SDF_SHARE_PATH, filename);
+  std::string path = sdf::filesystem::append(sdfSharePath(), filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
   }
 
   // Next check the versioned install path.
-  path = sdf::filesystem::append(SDF_SHARE_PATH,
-                                 "sdformat" SDF_MAJOR_VERSION_STR,
-                                 sdf::SDF::Version(), filename);
+  path = sdf::filesystem::append(sdfSharePath(),
+    "sdformat" + std::string(SDF_MAJOR_VERSION_STR),
+    sdf::SDF::Version(), filename);
+
   if (sdf::filesystem::exists(path))
   {
     return path;
   }
 
-  // Next check to see if the given file exists.
+  // Finally check to see if the given file exists.
   path = filename;
   if (sdf::filesystem::exists(path))
   {
@@ -160,16 +181,6 @@ std::string findFile(sdf::Errors &_errors, const std::string &_filename,
       {
         return path;
       }
-    }
-  }
-
-  // Finally check the local path, if the flag is set.
-  if (_searchLocalPath)
-  {
-    path = sdf::filesystem::append(sdf::filesystem::current_path(), filename);
-    if (sdf::filesystem::exists(path))
-    {
-      return path;
     }
   }
 

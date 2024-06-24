@@ -54,6 +54,7 @@
 #include "pyPlane.hh"
 #include "pyPlugin.hh"
 #include "pyPolyline.hh"
+#include "pyProjector.hh"
 #include "pyRoot.hh"
 #include "pyScene.hh"
 #include "pySemanticPose.hh"
@@ -78,6 +79,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
+  sdf::python::defineBulletFriction(m);
   sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
@@ -114,6 +116,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::definePlane(m);
   sdf::python::definePlugin(m);
   sdf::python::definePolyline(m);
+  sdf::python::defineProjector(m);
   sdf::python::defineRoot(m);
   sdf::python::defineScene(m);
   sdf::python::defineSemanticPose(m);
@@ -121,6 +124,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineSky(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
+  sdf::python::defineTorsional(m);
   sdf::python::defineVisual(m);
   sdf::python::defineWorld(m);
 
@@ -139,7 +143,11 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
       sdfErrorsException.attr("errors") = pybind11::cast(e.Errors());
       // This has to be called last since it's the call that sets
       // PyErr_SetString.
+#if PYBIND11_VERSION_HEX >= 0x020C0000
+      pybind11::set_error(sdfErrorsException, e.what());
+#else
       sdfErrorsException(e.what());
+#endif
     }
   });
 

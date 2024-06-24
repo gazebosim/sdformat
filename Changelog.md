@@ -1,5 +1,163 @@
 ## libsdformat 13.X
 
+### libsdformat 13.7.0 (2024-06-13)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+    * [Pull request #1419](https://github.com/gazebosim/sdformat/pull/1419)
+
+1. Fix macOS workflow and backport windows fix
+    * [Pull request #1409](https://github.com/gazebosim/sdformat/pull/1409)
+
+1. Fix warning with pybind11 2.12
+    * [Pull request #1389](https://github.com/gazebosim/sdformat/pull/1389)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+    * [Pull request #1427](https://github.com/gazebosim/sdformat/pull/1427)
+
+1. Resolve URIs relative to file path
+    * [Pull request #1373](https://github.com/gazebosim/sdformat/pull/1373)
+
+1. Bazel updates for Garden build
+    * [Pull request #1239](https://github.com/gazebosim/sdformat/pull/1239)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Install ruby commands on Windows
+    * [Pull request #1339](https://github.com/gazebosim/sdformat/pull/1339)
+    * [Pull request #1341](https://github.com/gazebosim/sdformat/pull/1341)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
+### libsdformat 13.6.0 (2023-08-30)
+
+1. Use relative path in an urdf include to avoid confusion between internal and system headers
+    * [Pull request #1259](https://github.com/gazebosim/sdformat/pull/1259)
+
+1. parser.cc update calls to use sdf::Errors output
+    * [Pull request #1294](https://github.com/gazebosim/sdformat/pull/1294)
+
+1. Fix deeply nested merge-include for custom parsed files
+    * [Pull request #1293](https://github.com/gazebosim/sdformat/pull/1293)
+
+1. Updated findfile() to search localpath first
+    * [Pull request #1292](https://github.com/gazebosim/sdformat/pull/1292)
+
+1. World requires a scene and atmosphere
+    * [Pull request #1308](https://github.com/gazebosim/sdformat/pull/1308)
+
+1. Infrastructure
+    * [Pull request #1307](https://github.com/gazebosim/sdformat/pull/1307)
+    * [Pull request #1306](https://github.com/gazebosim/sdformat/pull/1306)
+
+1. Remove robot not found error when parsing fails
+    * [Pull request #1290](https://github.com/gazebosim/sdformat/pull/1290)
+
+1. Make some sdfdbg messages sdfmsgs
+    * [Pull request #1288](https://github.com/gazebosim/sdformat/pull/1288)
+
+1. Minor clean up of tests
+    * [Pull request #1289](https://github.com/gazebosim/sdformat/pull/1289)
+
+### libsdformat 13.5.0 (2023-05-18)
+
+1. Added projector Python wrapper
+    * [Pull request #1279](https://github.com/gazebosim/sdformat/pull/1279)
+
+1. Added new error codes in Python
+    * [Pull request #1280](https://github.com/gazebosim/sdformat/pull/1280)
+
+1. Fixed 1.9/light.sdf
+    * [Pull request #1281](https://github.com/gazebosim/sdformat/pull/1281)
+
+1. Add Projector DOM
+    * [Pull request #1277](https://github.com/gazebosim/sdformat/pull/1277)
+
+1. Disable pybind11 tests on windows
+    * [Pull request #1278](https://github.com/gazebosim/sdformat/pull/1278)
+
+1. Geometry and others: update calls to use sdf::Errors parameters
+    * [Pull request #1153](https://github.com/gazebosim/sdformat/pull/1153)
+
+1. Fix GitHub Actions on macOS
+    * [Pull request #1271](https://github.com/gazebosim/sdformat/pull/1271)
+
+1. JointAxis: improve code coverage in Load()
+    * [Pull request #1267](https://github.com/gazebosim/sdformat/pull/1267)
+
+1. Scene: update calls to use sdf::Errors parameters
+    * [Pull request #1164](https://github.com/gazebosim/sdformat/pull/1164)
+
+1. ForceTorque: update calls to use sdf::Errors output
+    * [Pull request #1163](https://github.com/gazebosim/sdformat/pull/1163)
+
+1. Fix Element::Set method return value
+    * [Pull request #1256](https://github.com/gazebosim/sdformat/pull/1256)
+
+1. Sky: update calls to use sdf::Errors output
+    * [Pull request #1162](https://github.com/gazebosim/sdformat/pull/1162)
+
+1. Add missing values in Surface ToElement method
+    * [Pull request #1263](https://github.com/gazebosim/sdformat/pull/1263)
+
+1. Atmosphere: update calls to use sdf::Errors output
+    * [Pull request #1161](https://github.com/gazebosim/sdformat/pull/1161)
+
+1. Altimeter: update calls to use sdf::Errors output
+    * [Pull request #1160](https://github.com/gazebosim/sdformat/pull/1160)
+
+1. AirPressure: update calls to use sdf::Errors output
+    * [Pull request #1159](https://github.com/gazebosim/sdformat/pull/1159)
+
+1. ParticleEmitter: update calls to use sdf::Errors output
+    * [Pull request #1158](https://github.com/gazebosim/sdformat/pull/1158)
+
+1. Physics: update calls to use sdf::Errors output
+    * [Pull request #1157](https://github.com/gazebosim/sdformat/pull/1157)
+
+1. Frame: update calls to use sdf::Errors output
+    * [Pull request #1156](https://github.com/gazebosim/sdformat/pull/1156)
+
+1. Material: update calls to use sdf::Errors output
+    * [Pull request #1155](https://github.com/gazebosim/sdformat/pull/1155)
+
+1. Light: update calls to use sdf::Errors parameters
+    * [Pull request #1154](https://github.com/gazebosim/sdformat/pull/1154)
+
+1. Imu: update calls to use sdf::Errors output
+    * [Pull request #1152](https://github.com/gazebosim/sdformat/pull/1152)
+
+1. JointAxis: update calls to use sdf::Errors output
+    * [Pull request #1145](https://github.com/gazebosim/sdformat/pull/1145)
+
+1. Noise: update calls to use sdf::Errors parameters
+    * [Pull request #1151](https://github.com/gazebosim/sdformat/pull/1151)
+
+1. Plugin: update calls to use sdf::Errors output
+    * [Pull request #1144](https://github.com/gazebosim/sdformat/pull/1144)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
+1. Element: update calls to use sdf::Errors output
+    * [Pull request #1141](https://github.com/gazebosim/sdformat/pull/1141)
+
+1. Add: new error enums to Python
+    * [Pull request #1249](https://github.com/gazebosim/sdformat/pull/1249)
+
+1. Rename COPYING to LICENSE
+    * [Pull request #1252](https://github.com/gazebosim/sdformat/pull/1252)
+
+1. Allowing relative paths in URDF
+    * [Pull request #1213](https://github.com/gazebosim/sdformat/pull/1213)
+
 ### libsdformat 13.4.1 (2023-03-08)
 
 1. Fix camera_info_topic default value
@@ -339,6 +497,45 @@
     * [Pull request #758](https://github.com/gazebosim/sdformat/pull/758)
 
 ## libsdformat 12.X
+
+### libsdformat 12.8.0 (2024-06-06)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+
+### libsdformat 12.7.2 (2023-09-01)
+
+1. Fixed 1.9/light.sdf
+    * [Pull request #1281](https://github.com/gazebosim/sdformat/pull/1281)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
+1. Fix Element::Set method return value
+    * [Pull request #1256](https://github.com/gazebosim/sdformat/pull/1256)
+
+1. Add missing values in Surace ToElement method
+    * [Pull request #1263](https://github.com/gazebosim/sdformat/pull/1263)
+
+1. Rename COPYING to LICENSE
+    * [Pull request #1252](https://github.com/gazebosim/sdformat/pull/1252)
+
+1. Infrastructure
+    * [Pull request #1245](https://github.com/gazebosim/sdformat/pull/1245)
+    * [Pull request #1271](https://github.com/gazebosim/sdformat/pull/1271)
+
+1. Allow relative paths in URDF
+    * [Pull request #1213](https://github.com/gazebosim/sdformat/pull/1213)
 
 ### libsdformat 12.7.1 (2023-02-28)
 
@@ -1416,6 +1613,27 @@
     * [BitBucket pull request 643](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/643)
 
 ## libsdformat 9.X
+
+### libsdformat 9.10.1 (2024-01-05)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
+
+1. Fix Element::Set method return value
+    * [Pull request #1256](https://github.com/gazebosim/sdformat/pull/1256)
+
+1. Allowing relative paths in URDF
+    * [Pull request #1213](https://github.com/gazebosim/sdformat/pull/1213)
+
+1. Use `File.exist?` for Ruby 3.2 compatibility
+    * [Pull request #1216](https://github.com/gazebosim/sdformat/pull/1216)
+
+1. Infrastructure
+    * [Pull request #1217](https://github.com/gazebosim/sdformat/pull/1217)
+    * [Pull request #1225](https://github.com/gazebosim/sdformat/pull/1225)
+    * [Pull request #1271](https://github.com/gazebosim/sdformat/pull/1271)
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+    * [Pull request #1252](https://github.com/gazebosim/sdformat/pull/1252)
 
 ### libsdformat 9.10.0 (2022-11-30)
 

@@ -23,6 +23,7 @@
 #include "sdf/Visual.hh"
 #include "sdf/Collision.hh"
 #include "sdf/SemanticPose.hh"
+#include "sdf/Projector.hh"
 #include "sdf/Sensor.hh"
 #include "sdf/Light.hh"
 
@@ -87,6 +88,20 @@ void defineLink(pybind11::object module)
            &sdf::Link::LightByName),
          pybind11::return_value_policy::reference_internal,
          "Get a mutable light based on a name.")
+    .def("projector_count", &sdf::Link::ProjectorCount,
+         "Get the number of projectors.")
+    .def("projector_by_index",
+         pybind11::overload_cast<const uint64_t>(
+           &sdf::Link::ProjectorByIndex),
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable projector based on an index.")
+    .def("projector_name_exists", &sdf::Link::ProjectorNameExists,
+         "Get whether a projector name exists.")
+    .def("projector_by_name",
+         pybind11::overload_cast<const std::string &>(
+           &sdf::Link::ProjectorByName),
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable projector based on a name.")
     .def("sensor_count", &sdf::Link::SensorCount,
          "Get the number of sensors.")
     .def("sensor_by_index",
@@ -147,6 +162,13 @@ void defineLink(pybind11::object module)
     .def("set_enable_wind",
          &sdf::Link::SetEnableWind,
          "Set whether this link should be subject to wind.")
+    .def("enable_gravity",
+         &sdf::Link::EnableGravity,
+         "Check if this link should be subject to gravity. "
+         "If true, this link should be affected by gravity.")
+    .def("set_enable_gravity",
+         &sdf::Link::SetEnableGravity,
+         "Set whether this link should be subject to gravity.")
     .def("add_collision",
          &sdf::Link::AddCollision,
          "Add a collision to the link.")
@@ -162,6 +184,9 @@ void defineLink(pybind11::object module)
     // .def("AddParticleEmitter",
     //      &sdf::Link::AddParticleEmitter,
     //      "Add a particle emitter to the link.")
+    .def("add_projector",
+         &sdf::Link::AddProjector,
+         "Add a projector to the link.")
     .def("clear_collisions",
          &sdf::Link::ClearCollisions,
          "Remove all collisions")
@@ -177,6 +202,9 @@ void defineLink(pybind11::object module)
     // .def("clear_particle_emitters",
     //      &sdf::Link::ClearParticleEmitters,
     //      "Remove all particle emitters")
+    .def("clear_projector",
+         &sdf::Link::ClearProjectors,
+         "Remove all projectors")
     .def("__copy__", [](const sdf::Link &self) {
       return sdf::Link(self);
     })

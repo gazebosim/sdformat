@@ -154,7 +154,7 @@ TEST(DOMCapsule, Load)
   // Add a radius element
   sdf::ElementPtr radiusDesc(new sdf::Element());
   radiusDesc->SetName("radius");
-  radiusDesc->AddValue("double", "1.0", "1", "radius");
+  radiusDesc->AddValue("double", "1.0", true, "radius");
   sdf->AddElementDescription(radiusDesc);
   sdf::ElementPtr radiusElem = sdf->AddElement("radius");
   radiusElem->Set<double>(2.0);

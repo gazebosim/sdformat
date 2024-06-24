@@ -14,8 +14,8 @@
 
 import copy
 from gz_test_deps.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from gz_test_deps.sdformat import (Collision, Light, Link, Sensor, Visual,
-                                   SDFErrorsException)
+from gz_test_deps.sdformat import (Collision, Light, Link, Projector, Sensor,
+                                   Visual, SDFErrorsException)
 import unittest
 import math
 
@@ -50,9 +50,20 @@ class LinkTEST(unittest.TestCase):
         # self.assertFalse(link.particle_emitter_name_exists("default"))
         # self.assertEqual(None, link.ParticleEmitterByName("no_such_emitter"))
 
+        self.assertEqual(0, link.projector_count())
+        self.assertEqual(None, link.projector_by_index(0))
+        self.assertEqual(None, link.projector_by_index(1))
+        self.assertFalse(link.projector_name_exists(""))
+        self.assertFalse(link.projector_name_exists("default"))
+        self.assertEqual(None, link.projector_by_name("no_such_projector"))
+
         self.assertFalse(link.enable_wind())
         link.set_enable_wind(True)
         self.assertTrue(link.enable_wind())
+
+        self.assertTrue(link.enable_gravity())
+        link.set_enable_gravity(False)
+        self.assertFalse(link.enable_gravity())
 
         self.assertEqual(0, link.sensor_count())
         self.assertEqual(None, link.sensor_by_index(0))
@@ -263,6 +274,10 @@ class LinkTEST(unittest.TestCase):
         # pe.set_name("pe1")
         # self.assertTrue(link.AddParticleEmitter(pe))
 
+        projector = Projector()
+        projector.set_name("projector1")
+        self.assertTrue(link.add_projector(projector))
+
         # Modify the visual
         v = link.visual_by_index(0)
         self.assertNotEqual(None, v)
@@ -298,6 +313,13 @@ class LinkTEST(unittest.TestCase):
         # p.set_name("pe2")
         # self.assertEqual("pe2", link.ParticleEmitterByIndex(0).name())
 
+        # Modify the projector
+        pr = link.projector_by_index(0)
+        self.assertNotEqual(None, pr)
+        self.assertEqual("projector1", pr.name())
+        pr.set_name("projector2");
+        self.assertEqual("projector2", link.projector_by_index(0).name());
+
     def test_mutable_by_name(self):
         link = Link()
         link.set_name("my-name")
@@ -321,6 +343,10 @@ class LinkTEST(unittest.TestCase):
         # sdf::ParticleEmitter pe
         # pe.set_name("pe1")
         # self.assertTrue(link.AddParticleEmitter(pe))
+
+        projector = Projector()
+        projector.set_name("projector1")
+        self.assertTrue(link.add_projector(projector))
 
         # Modify the visual
         v = link.visual_by_name("visual1")
@@ -362,6 +388,13 @@ class LinkTEST(unittest.TestCase):
         # self.assertFalse(link.particle_emitter_name_exists("pe1"))
         # self.assertTrue(link.particle_emitter_name_exists("pe2"))
 
+        # Modify the projector
+        pr = link.projector_by_name("projector1");
+        self.assertNotEqual(None, pr);
+        self.assertEqual("projector1", pr.name());
+        pr.set_name("projector2");
+        self.assertFalse(link.projector_name_exists("projector1"));
+        self.assertTrue(link.projector_name_exists("projector2"));
 
 if __name__ == '__main__':
     unittest.main()
