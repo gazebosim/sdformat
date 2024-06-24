@@ -79,6 +79,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
+  sdf::python::defineBulletFriction(m);
   sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
@@ -123,6 +124,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineSky(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
+  sdf::python::defineTorsional(m);
   sdf::python::defineVisual(m);
   sdf::python::defineWorld(m);
 
@@ -141,7 +143,11 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
       sdfErrorsException.attr("errors") = pybind11::cast(e.Errors());
       // This has to be called last since it's the call that sets
       // PyErr_SetString.
+#if PYBIND11_VERSION_HEX >= 0x020C0000
+      pybind11::set_error(sdfErrorsException, e.what());
+#else
       sdfErrorsException(e.what());
+#endif
     }
   });
 
