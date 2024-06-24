@@ -190,7 +190,7 @@ std::string findFile(sdf::Errors &_errors, const std::string &_filename,
   {
     if (!_config.FindFileCallback())
     {
-      _errors.push_back({sdf::ErrorCode::FILE_NOT_FOUND,
+      _errors.push_back({sdf::ErrorCode::FILE_READ,
         "Tried to use callback in sdf::findFile(), but the callback "
         "is empty.  Did you call sdf::setFindCallback()?"});
       return std::string();
@@ -378,7 +378,7 @@ void SDF::Write(sdf::Errors &_errors, const std::string &_filename)
 
   if (!out)
   {
-    _errors.push_back({sdf::ErrorCode::FILE_NOT_FOUND,
+    _errors.push_back({sdf::ErrorCode::FILE_READ,
       "Unable to open file[" + _filename + "] for writing."});
     return;
   }
@@ -546,7 +546,7 @@ const std::string &SDF::EmbeddedSpec(
   }
   catch(const std::out_of_range &)
   {
-      _errors.push_back({sdf::ErrorCode::FILE_NOT_FOUND,
+      _errors.push_back({sdf::ErrorCode::FILE_READ,
           "Unable to find SDF filename[" + _filename + "] with " +
           "version " + SDF::Version()});
   }
