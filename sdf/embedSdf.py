@@ -160,10 +160,10 @@ def generate_map_content(paths: List[Path], relative_to: Optional[str] = None) -
     for path in paths:
         with open(path, "r", encoding="utf8") as input_sdf:
             file_content = input_sdf.read()
-
             # Strip relative path if requested
             if relative_to is not None:
-                path = path.relative_to(relative_to)
+                _, relative_path = str(path).split(relative_to)
+                path = relative_path
             content.append(embed_sdf_content(str(path), file_content))
     return ",".join(content)
 

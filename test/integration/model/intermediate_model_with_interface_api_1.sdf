@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<sdf version="1.10">
+  <model name="intermediate_model">
+    <include>
+      <!-- This file is in test/integration/model/. The search directory has to be set by the test -->
+      <uri>double_pendulum.toml</uri>
+      <pose>0 0 10   0 0 0</pose>
+    </include>
+    <frame name="F1"/>
+  </model>
+</sdf>

@@ -158,17 +158,19 @@ static bool isSdfFile(const std::string &_fileName)
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename,
                              const ParserConfig &_config,
-                             TPtr _sdf)
+                             TPtr _sdf,
+                             sdf::Errors &_errors)
 {
   auto xmlDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
   {
-    sdferr << "Unable to load file["
-           << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
+    _errors.emplace_back(sdf::Error(ErrorCode::FILE_READ,
+                         "Unable to load file[" + _filename +
+                         xmlDoc.ErrorStr() + "]"));
     return false;
   }
 
-  return initDoc(&xmlDoc, _config, _sdf);
+  return initDoc(_errors, _sdf, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -232,6 +234,26 @@ static void insertIncludedElement(sdf::SDFPtr _includeSDF,
   }
 
   // Validate included model's frame semantics
+  if (!_config.CustomModelParsers().empty())
+  {
+    // Since we have custom parsers, we can't create a throwaway sdf::Root
+    // object to validate the merge-included model. This is because calling
+    // `sdf::Root::Load` here would call the custom parsers if this model
+    // contains a nested model that is custom parsed. But the custom parsers
+    // will be called again later when we construct the final `sdf::Root`
+    // object. We also can't do the merge here since we'd be doing so without
+    // validating the model.
+    // We could forego validating the model and just merge all its children to
+    // the parent element, but we wouldn't be able to handle placement frames
+    // since that requires building a frame graph for the model.
+    // So instead we add a hidden flag here to tell `sdf::Model` or `sdf::World`
+    // that this model is meant to be merged.
+    firstElem->AddAttribute("__merge__", "bool", "false", false,
+                            "Indicates whether this is a merge included model");
+    firstElem->GetAttribute("__merge__")->Set<bool>(true);
+    _parent->InsertElement(firstElem, true);
+    return;
+  }
   // We create a throwaway sdf::Root object in order to validate the
   // included entity.
   sdf::Root includedRoot;
@@ -395,10 +417,20 @@ bool init(SDFPtr _sdf)
 //////////////////////////////////////////////////
 bool init(SDFPtr _sdf, const ParserConfig &_config)
 {
+  sdf::Errors errors;
+  bool result = init(errors, _sdf, _config);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+
+}
+
+//////////////////////////////////////////////////
+bool init(sdf::Errors &_errors, SDFPtr _sdf, const ParserConfig &_config)
+{
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
   auto xmlDoc = makeSdfDoc();
   xmlDoc.Parse(xmldata.c_str());
-  return initDoc(&xmlDoc, _config, _sdf);
+  return initDoc(_errors, _sdf, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
@@ -408,18 +440,28 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
 }
 
 //////////////////////////////////////////////////
-bool initFile(
-    const std::string &_filename, const ParserConfig &_config, SDFPtr _sdf)
+bool initFile(const std::string &_filename, const ParserConfig &_config,
+              SDFPtr _sdf)
+{
+  sdf::Errors errors;
+  bool result = initFile(_filename, _config, _sdf, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool initFile(const std::string &_filename, const ParserConfig &_config,
+              SDFPtr _sdf, sdf::Errors &_errors)
 {
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _config, _sdf);
+    return initDoc(_errors, _sdf, &xmlDoc, _config);
   }
   return _initFile(sdf::findFile(_filename, true, false, _config), _config,
-                   _sdf);
+                   _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
@@ -432,50 +474,77 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 bool initFile(
     const std::string &_filename, const ParserConfig &_config, ElementPtr _sdf)
 {
+  sdf::Errors errors;
+  bool result = initFile(_filename, _config, _sdf, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool initFile(const std::string &_filename, const ParserConfig &_config,
+              ElementPtr _sdf, sdf::Errors &_errors)
+{
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
     auto xmlDoc = makeSdfDoc();
     xmlDoc.Parse(xmldata.c_str());
-    return initDoc(&xmlDoc, _config, _sdf);
+    return initDoc(_errors, _sdf, &xmlDoc, _config);
   }
   return _initFile(sdf::findFile(_filename, true, false, _config), _config,
-                   _sdf);
+                   _sdf, _errors);
 }
 
 //////////////////////////////////////////////////
-bool initString(
-    const std::string &_xmlString, const ParserConfig &_config, SDFPtr _sdf)
+bool initString(const std::string &_xmlString, const ParserConfig &_config,
+                SDFPtr _sdf)
+{
+  sdf::Errors errors;
+  bool result = initString(_xmlString, _config, _sdf, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool initString(const std::string &_xmlString, const ParserConfig &_config,
+                SDFPtr _sdf, sdf::Errors &_errors)
 {
   auto xmlDoc = makeSdfDoc();
   if (xmlDoc.Parse(_xmlString.c_str()))
   {
-    sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
+    _errors.push_back({ErrorCode::PARSING_ERROR, "Failed to parse string"
+                      " as XML: " + std::string(xmlDoc.ErrorStr())});
     return false;
   }
 
-  return initDoc(&xmlDoc, _config, _sdf);
+  return initDoc(_errors, _sdf, &xmlDoc, _config);
 }
 
 //////////////////////////////////////////////////
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
-  return initString(_xmlString, ParserConfig::GlobalConfig(), _sdf);
+  sdf::Errors errors;
+  bool result = initString(_xmlString, ParserConfig::GlobalConfig(),
+                           _sdf, errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
 }
 
 //////////////////////////////////////////////////
-inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
+inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc,
+                                                sdf::Errors &_errors)
 {
   if (!_xmlDoc)
   {
-    sdferr << "Could not parse the xml\n";
+    _errors.push_back({ErrorCode::PARSING_ERROR, "Could not parse the xml"});
     return nullptr;
   }
 
   tinyxml2::XMLElement *element = _xmlDoc->FirstChildElement("element");
   if (!element)
   {
-    sdferr << "Could not find the 'element' element in the xml file\n";
+    _errors.push_back({ErrorCode::ELEMENT_MISSING, "Could not find the "
+                      "'element' element in the xml file"});
     return nullptr;
   }
 
@@ -483,37 +552,40 @@ inline tinyxml2::XMLElement *_initDocGetElement(tinyxml2::XMLDocument *_xmlDoc)
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
-             const ParserConfig &_config,
-             SDFPtr _sdf)
+bool initDoc(sdf::Errors &_errors,
+             SDFPtr _sdf,
+             tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config)
 {
-  auto element = _initDocGetElement(_xmlDoc);
+  auto element = _initDocGetElement(_xmlDoc, _errors);
   if (!element)
   {
     return false;
   }
 
-  return initXml(element, _config, _sdf->Root());
+  return initXml(_errors, _sdf->Root(), element, _config);
 }
 
 //////////////////////////////////////////////////
-bool initDoc(tinyxml2::XMLDocument *_xmlDoc,
-             const ParserConfig &_config,
-             ElementPtr _sdf)
+bool initDoc(sdf::Errors &_errors,
+             ElementPtr _sdf,
+             tinyxml2::XMLDocument *_xmlDoc,
+             const ParserConfig &_config)
 {
-  auto element = _initDocGetElement(_xmlDoc);
+  auto element = _initDocGetElement(_xmlDoc, _errors);
   if (!element)
   {
     return false;
   }
 
-  return initXml(element, _config, _sdf);
+  return initXml(_errors, _sdf, element, _config);
 }
 
 //////////////////////////////////////////////////
-bool initXml(tinyxml2::XMLElement *_xml,
-             const ParserConfig &_config,
-             ElementPtr _sdf)
+bool initXml(sdf::Errors &_errors,
+             ElementPtr _sdf,
+             tinyxml2::XMLElement *_xml,
+             const ParserConfig &_config)
 {
   const char *refString = _xml->Attribute("ref");
   if (refString)
@@ -524,7 +596,8 @@ bool initXml(tinyxml2::XMLElement *_xml,
   const char *nameString = _xml->Attribute("name");
   if (!nameString)
   {
-    sdferr << "Element is missing the name attribute\n";
+    _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+                      "Element is missing the name attribute"});
     return false;
   }
   _sdf->SetName(std::string(nameString));
@@ -532,7 +605,8 @@ bool initXml(tinyxml2::XMLElement *_xml,
   const char *requiredString = _xml->Attribute("required");
   if (!requiredString)
   {
-    sdferr << "Element is missing the required attribute\n";
+    _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
+                      "Element is missing the required attribute"});
     return false;
   }
   _sdf->SetRequired(requiredString);
@@ -580,22 +654,27 @@ bool initXml(tinyxml2::XMLElement *_xml,
 
     if (!name)
     {
-      sdferr << "Attribute is missing a name\n";
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                        "Attribute is missing a name"});
       return false;
     }
     if (!type)
     {
-      sdferr << "Attribute is missing a type\n";
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                        "Attribute is missing a type"});
       return false;
     }
     if (!defaultValue)
     {
-      sdferr << "Attribute[" << name << "] is missing a default\n";
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                        "Attribute[" + std::string(name)
+                        + "] is missing a default"});
       return false;
     }
     if (!requiredString)
     {
-      sdferr << "Attribute is missing a required string\n";
+      _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+                        "Attribute is missing a required string"});
       return false;
     }
     std::string requiredStr = sdf::trim(requiredString);
@@ -631,7 +710,7 @@ bool initXml(tinyxml2::XMLElement *_xml,
     else
     {
       ElementPtr element(new Element);
-      initXml(child, _config, element);
+      initXml(_errors, element, child, _config);
       _sdf->AddElementDescription(element);
     }
   }
@@ -745,26 +824,29 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
 
   if (filename.empty())
   {
-    sdferr << "Error finding file [" << _filename << "].\n";
+    _errors.push_back({ErrorCode::FILE_READ, "Error finding file [" +
+                      std::string(_filename) + "]."});
     return false;
   }
 
   if (filesystem::is_directory(filename))
   {
-    filename = getModelFilePath(filename);
+    filename = getModelFilePath(_errors, filename);
   }
 
   if (!filesystem::exists(filename))
   {
-    sdferr << "File [" << filename << "] doesn't exist.\n";
+    _errors.push_back({ErrorCode::FILE_READ, "File [" +
+                      std::string(filename) + "] doesn't exist."});
     return false;
   }
 
   auto error_code = xmlDoc.LoadFile(filename.c_str());
   if (error_code)
   {
-    sdferr << "Error parsing XML in file [" << filename << "]: "
-           << xmlDoc.ErrorStr() << '\n';
+    _errors.push_back({ErrorCode::FILE_READ, "Error parsing XML in file [" +
+                      std::string(filename) + "]: " +
+                      std::string(xmlDoc.ErrorStr())});
     return false;
   }
 
@@ -790,14 +872,16 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
       }
       else
       {
-        sdferr << "Failed to parse the URDF file after converting to"
-               << " SDFormat.\n";
+        _errors.push_back({ErrorCode::PARSING_ERROR,
+            "Failed to parse the URDF file after converting to SDFormat."});
         return false;
       }
     }
     else
     {
-      sdferr << "XML does not seem to be an SDFormat or an URDF file.\n";
+      _errors.push_back({ErrorCode::PARSING_ERROR,
+          "XML does not seem to be an SDFormat or an URDF file."});
+      return false;
     }
   }
 
@@ -853,7 +937,9 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
+    _errors.push_back({ErrorCode::STRING_READ,
+                      "Error parsing XML from string: " +
+                      std::string(xmlDoc.ErrorStr())});
     return false;
   }
   tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
@@ -879,14 +965,15 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
       }
       else
       {
-        sdferr << "Failed to parse the URDF file after converting to"
-               << " SDFormat\n";
+        _errors.push_back({ErrorCode::PARSING_ERROR,
+            "Failed to parse the URDF file after converting to SDFormat."});
         return false;
       }
     }
     else
     {
-      sdferr << "XML does not seem to be an SDFormat or an URDF string.\n";
+      _errors.push_back({ErrorCode::PARSING_ERROR,
+          "XML does not seem to be an SDFormat or an URDF string."});
       return false;
     }
   }
@@ -920,7 +1007,9 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
-    sdferr << "Error parsing XML from string: " << xmlDoc.ErrorStr() << '\n';
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "Error parsing XML from string: " +
+                      std::string(xmlDoc.ErrorStr())});
     return false;
   }
   if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), true, _config,
@@ -930,8 +1019,9 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
   }
   else
   {
-    sdferr << "parse as sdf version " << SDF::Version() << " failed, "
-           << "should try to parse as old deprecated format\n";
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "parse as sdf version " + SDF::Version() + " failed, "
+                      "should try to parse as old deprecated format"});
     return false;
   }
 }
@@ -943,7 +1033,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 {
   if (!_xmlDoc)
   {
-    sdfwarn << "Could not parse the xml from source[" << _source << "]\n";
+    _errors.push_back({ErrorCode::WARNING, "Could not parse the xml"
+                      " from source[" + _source + "]"});
     return false;
   }
 
@@ -957,7 +1048,8 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
 
   if (nullptr == _sdf || nullptr == _sdf->Root())
   {
-    sdferr << "SDF pointer or its Root is null.\n";
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "SDF pointer or its Root is null."});
     return false;
   }
 
@@ -1017,7 +1109,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
     gz::math::SemanticVersion sdfVersion(_sdf->Root()->OriginalVersion());
     if (sdfVersion >= gz::math::SemanticVersion(1, 8)
-        && !recursiveSiblingNoDoubleColonInNames(_sdf->Root()))
+        && !recursiveSiblingNoDoubleColonInNames(_errors, _sdf->Root()))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
           "Delimiter '::' found in attribute names of element <"
@@ -1043,7 +1135,7 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
 {
   if (!_xmlDoc)
   {
-    sdfwarn << "Could not parse the xml\n";
+    _errors.push_back({ErrorCode::WARNING, "Could not parse the xml."});
     return false;
   }
 
@@ -1081,7 +1173,6 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
         && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
-
       Converter::Convert(_errors, _xmlDoc, SDF::Version(), _config);
     }
 
@@ -1112,12 +1203,11 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     // delimiter '::' in element names not allowed in SDFormat >= 1.8
     gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
     if (sdfVersion >= gz::math::SemanticVersion(1, 8)
-        && !recursiveSiblingNoDoubleColonInNames(_sdf))
+        && !recursiveSiblingNoDoubleColonInNames(_errors, _sdf))
     {
       _errors.push_back({ErrorCode::RESERVED_NAME,
-          "Delimiter '::' found in attribute names of element <"
-          + _sdf->GetName() +
-          ">, which is not allowed in SDFormat >= 1.8"});
+          "Delimiter '::' found in attribute names of element <" +
+          _sdf->GetName() + ">, which is not allowed in SDFormat >= 1.8"});
       return false;
     }
   }
@@ -1178,8 +1268,9 @@ bool checkXmlFromRoot(tinyxml2::XMLElement *_xmlRoot,
 }
 
 //////////////////////////////////////////////////
-std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
-                                         std::string &_modelFileName)
+std::string getBestSupportedModelVersion(std::string &_modelFileName,
+                                         sdf::Errors &_errors,
+                                         tinyxml2::XMLElement *_modelXML)
 {
   tinyxml2::XMLElement *sdfXML = _modelXML->FirstChildElement("sdf");
   tinyxml2::XMLElement *nameSearch = _modelXML->FirstChildElement("name");
@@ -1208,10 +1299,10 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
         }
         else
         {
-          sdfwarn << "Ignoring version " << version
-                  << " for model " << nameSearch->GetText()
-                  << " because is newer than this sdf parser"
-                  << " (version " << SDF_VERSION << ")\n";
+          _errors.push_back({ErrorCode::WARNING, "Ignoring version " +
+                  version + " for model " + nameSearch->GetText() +
+                  " because is newer than this sdf parser" +
+                  " (version " + SDF_VERSION + ")"});
         }
       }
     }
@@ -1220,8 +1311,10 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   if (!sdfXML || !sdfXML->GetText())
   {
-    sdferr << "Failure to detect an sdf tag in the model config file"
-           << " for model: " << nameSearch->GetText() << "\n";
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "Failure to detect an sdf tag in the model "
+                      "config file for model: " +
+                      std::string(nameSearch->GetText())});
 
     _modelFileName = "";
     return "";
@@ -1229,11 +1322,13 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
   if (!sdfXML->Attribute("version"))
   {
-    sdfwarn << "Can not find the XML attribute 'version'"
-            << " in sdf XML tag for model: " << nameSearch->GetText() << "."
-            << " Please specify the SDF protocol supported in the model"
-            << " configuration file. The first sdf tag in the config file"
-            << " will be used \n";
+    _errors.push_back({ErrorCode::WARNING,
+            "Can not find the XML attribute 'version'"
+            " in sdf XML tag for model: " +
+            std::string(nameSearch->GetText()) + "."
+            " Please specify the SDF protocol supported in the model"
+            " configuration file. The first sdf tag in the config file"
+            " will be used "});
   }
 
   _modelFileName = sdfXML->GetText();
@@ -1242,6 +1337,16 @@ std::string getBestSupportedModelVersion(tinyxml2::XMLElement *_modelXML,
 
 //////////////////////////////////////////////////
 std::string getModelFilePath(const std::string &_modelDirPath)
+{
+  sdf::Errors errors;
+  std::string result = getModelFilePath(errors, _modelDirPath);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+std::string getModelFilePath(sdf::Errors &_errors,
+                             const std::string &_modelDirPath)
 {
   std::string configFilePath;
 
@@ -1255,25 +1360,26 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      sdferr << "Could not find model.config or manifest.xml in ["
-             << _modelDirPath << "]\n";
+      _errors.push_back({ErrorCode::FILE_READ,
+              "Could not find model.config or manifest.xml in [" +
+              _modelDirPath + "]"});
       return std::string();
     }
     else
     {
       // We found manifest.xml, but since it is deprecated print a warning.
-      sdfwarn << "The manifest.xml for a model is deprecated. "
-              << "Please rename manifest.xml to "
-              << "model.config" << ".\n";
+      _errors.push_back({ErrorCode::WARNING,
+                        "The manifest.xml for a model is deprecated. "
+                        "Please rename manifest.xml to model.config."});
     }
   }
 
   auto configFileDoc = makeSdfDoc();
   if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
   {
-    sdferr << "Error parsing XML in file ["
-           << configFilePath << "]: "
-           << configFileDoc.ErrorStr() << '\n';
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "Error parsing XML in file [" + configFilePath +
+                      "]: " + configFileDoc.ErrorStr()});
     return std::string();
   }
 
@@ -1281,12 +1387,14 @@ std::string getModelFilePath(const std::string &_modelDirPath)
 
   if (!modelXML)
   {
-    sdferr << "No <model> element in configFile[" << configFilePath << "]\n";
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "No <model> element in configFile[" +
+                      configFilePath + "]"});
     return std::string();
   }
 
   std::string modelFileName;
-  if (getBestSupportedModelVersion(modelXML, modelFileName).empty())
+  if (getBestSupportedModelVersion(modelFileName, _errors, modelXML).empty())
   {
     return std::string();
   }
@@ -1452,7 +1560,7 @@ static bool resolveFileNameFromUri(tinyxml2::XMLElement *_includeXml,
       if (sdf::filesystem::is_directory(modelPath))
       {
         // Get the model.config filename
-        _fileName = getModelFilePath(modelPath);
+        _fileName = getModelFilePath(_errors, modelPath);
 
         if (_fileName.empty())
         {
@@ -1568,7 +1676,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     ElementPtr refSDF;
     refSDF.reset(new Element);
     std::string refFilename = refSDFStr + ".sdf";
-    initFile(refFilename, _config, refSDF);
+    initFile(refFilename, _config, refSDF, _errors);
     _sdf->RemoveFromParent();
     _sdf->Copy(refSDF);
 
@@ -1647,7 +1755,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           {
             Error err(
                 ErrorCode::FILE_READ,
-                "Unable to read file[" + filename + "]",
+                "Unable to read file: [" + filename + "]",
                 _source,
                 uriElement->GetLineNum());
             err.SetXmlPath(uriXmlPath);
@@ -2127,27 +2235,35 @@ sdf::Errors convertString(SDFPtr _sdf, const std::string &_sdfString,
 //////////////////////////////////////////////////
 bool checkCanonicalLinkNames(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkCanonicalLinkNames(errors, _root);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkCanonicalLinkNames(sdf::Errors &_errors, const sdf::Root *_root)
+{
   if (!_root)
   {
-    std::cerr << "Error: invalid sdf::Root pointer, unable to "
-              << "check canonical link names."
-              << std::endl;
+    _errors.push_back({ErrorCode::FATAL_ERROR, "Error: invalid sdf::Root "
+                      "pointer, unable to check canonical link names."});
     return false;
   }
 
   bool result = true;
 
-  auto checkModelCanonicalLinkName = [](
+  auto checkModelCanonicalLinkName = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
     std::string canonicalLink = _model->CanonicalLinkName();
     if (!canonicalLink.empty() && !_model->LinkNameExists(canonicalLink))
     {
-      std::cerr << "Error: canonical_link with name[" << canonicalLink
-                << "] not found in model with name[" << _model->Name()
-                << "]."
-                << std::endl;
+      _errors.push_back({ErrorCode::MODEL_CANONICAL_LINK_INVALID,
+                        "Error: canonical_link with name[" + canonicalLink +
+                        "] not found in model with name[" + _model->Name() +
+                        "]."});
       modelResult = false;
     }
     return modelResult;
@@ -2174,9 +2290,18 @@ bool checkCanonicalLinkNames(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkFrameAttachedToNames(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkFrameAttachedToNames(errors, _root);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToNames(sdf::Errors &_errors, const sdf::Root *_root)
+{
   bool result = true;
 
-  auto checkModelFrameAttachedToNames = [](
+  auto checkModelFrameAttachedToNames = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
@@ -2194,12 +2319,11 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
       if (attachedTo == frame->Name())
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] is identical to frame name[" << frame->Name()
-                  << "], causing a graph cycle "
-                  << "in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+                          "Error: attached_to name[" + attachedTo +
+                          "] is identical to frame name[" + frame->Name() +
+                          "], causing a graph cycle in model with name[" +
+                          _model->Name() + "]."});
         modelResult = false;
       }
       else if (!_model->LinkNameExists(attachedTo) &&
@@ -2207,19 +2331,19 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
                !_model->JointNameExists(attachedTo) &&
                !_model->FrameNameExists(attachedTo))
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a nested model, link, joint, "
-                  << "or frame name in model with name[" << _model->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+                          "Error: attached_to name[" + attachedTo +
+                          "] specified by frame with name[" + frame->Name() +
+                          "] does not match a nested model, link, joint, "
+                          "or frame name in model with name[" +
+                          _model->Name() + "]."});
         modelResult = false;
       }
     }
     return modelResult;
   };
 
-  auto checkWorldFrameAttachedToNames = [](
+  auto checkWorldFrameAttachedToNames = [&_errors](
       const sdf::World *_world) -> bool
   {
     auto findNameInWorld = [](const sdf::World *_inWorld,
@@ -2267,22 +2391,20 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 
       if (attachedTo == frame->Name())
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] is identical to frame name[" << frame->Name()
-                  << "], causing a graph cycle "
-                  << "in world with name[" << _world->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
+                          "Error: attached_to name[" + attachedTo +
+                          "] is identical to frame name[" + frame->Name() +
+                          "], causing a graph cycle in world with name[" +
+                          _world->Name() + "]."});
         worldResult = false;
       }
       else if (!findNameInWorld(_world, attachedTo))
       {
-        std::cerr << "Error: attached_to name[" << attachedTo
-                  << "] specified by frame with name[" << frame->Name()
-                  << "] does not match a model or frame name "
-                  << "in world with name[" << _world->Name()
-                  << "]."
-                  << std::endl;
+        _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
+                          "Error: attached_to name[" + attachedTo +
+                          "] specified by frame with name[" + frame->Name() +
+                          "] does not match a model or frame name in world "
+                          "with name[" + _world->Name() + "]."});
         worldResult = false;
       }
     }
@@ -2311,6 +2433,15 @@ bool checkFrameAttachedToNames(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 {
+  sdf::Errors errors;
+  bool result = recursiveSameTypeUniqueNames(errors, _elem);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSameTypeUniqueNames(sdf::Errors &_errors, sdf::ElementPtr _elem)
+{
   if (!shouldValidateElement(_elem))
     return true;
 
@@ -2320,10 +2451,9 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
   {
     if (!_elem->HasUniqueChildNames(typeName))
     {
-      std::cerr << "Error: Non-unique names detected in type "
-                << typeName << " in\n"
-                << _elem->ToString("")
-                << std::endl;
+      _errors.push_back({ErrorCode::DUPLICATE_NAME,
+                        "Error: Non-unique names detected in type " +
+                        typeName +" in\n" + _elem->ToString("")});
       result = false;
     }
   }
@@ -2331,7 +2461,7 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSameTypeUniqueNames(child) && result;
+    result = recursiveSameTypeUniqueNames(_errors, child) && result;
     child = child->GetNextElement();
   }
 
@@ -2341,6 +2471,15 @@ bool recursiveSameTypeUniqueNames(sdf::ElementPtr _elem)
 //////////////////////////////////////////////////
 bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 {
+  sdf::Errors errors;
+  bool result = recursiveSiblingUniqueNames(errors, _elem);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSiblingUniqueNames(sdf::Errors &_errors, sdf::ElementPtr _elem)
+{
   if (!shouldValidateElement(_elem))
     return true;
 
@@ -2348,16 +2487,16 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
       _elem->HasUniqueChildNames("", Element::NameUniquenessExceptions());
   if (!result)
   {
-    std::cerr << "Error: Non-unique names detected in "
-              << _elem->ToString("")
-              << std::endl;
+    _errors.push_back({ErrorCode::PARSING_ERROR,
+                      "Error: Non-unique names detected in " +
+                      _elem->ToString("")});
     result = false;
   }
 
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSiblingUniqueNames(child) && result;
+    result = recursiveSiblingUniqueNames(_errors, child) && result;
     child = child->GetNextElement();
   }
 
@@ -2367,6 +2506,16 @@ bool recursiveSiblingUniqueNames(sdf::ElementPtr _elem)
 //////////////////////////////////////////////////
 bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
 {
+  sdf::Errors errors;
+  bool result = recursiveSiblingNoDoubleColonInNames(errors, _elem);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool recursiveSiblingNoDoubleColonInNames(sdf::Errors &_errors,
+                                          sdf::ElementPtr _elem)
+{
   if (!shouldValidateElement(_elem))
     return true;
 
@@ -2374,16 +2523,16 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
   if (_elem->HasAttribute("name")
       && _elem->Get<std::string>("name").find("::") != std::string::npos)
   {
-    std::cerr << "Error: Detected delimiter '::' in element name in\n"
-             << _elem->ToString("")
-             << std::endl;
+    _errors.push_back({ErrorCode::RESERVED_NAME,
+                      "Error: Detected delimiter '::' in element name in" +
+                      _elem->ToString("")});
     result = false;
   }
 
   sdf::ElementPtr child = _elem->GetFirstElement();
   while (child)
   {
-    result = recursiveSiblingNoDoubleColonInNames(child) && result;
+    result = recursiveSiblingNoDoubleColonInNames(_errors, child) && result;
     child = child->GetNextElement();
   }
 
@@ -2393,60 +2542,71 @@ bool recursiveSiblingNoDoubleColonInNames(sdf::ElementPtr _elem)
 //////////////////////////////////////////////////
 bool checkFrameAttachedToGraph(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkFrameAttachedToGraph(errors, _root);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkFrameAttachedToGraph(sdf::Errors &_errors, const sdf::Root *_root)
+{
   bool result = true;
 
-  auto checkModelFrameAttachedToGraph = [](
+  auto checkModelFrameAttachedToGraph = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
     auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
     sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
-    auto errors = sdf::buildFrameAttachedToGraph(graph, _model);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildFrameAttachedToGraph(graph, _model);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
-    errors = sdf::validateFrameAttachedToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validateFrameAttachedToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validateFrameAttachedToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validateFrameAttachedToGraph: " +
+                  error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
     return modelResult;
   };
 
-  auto checkWorldFrameAttachedToGraph = [](
+  auto checkWorldFrameAttachedToGraph = [&_errors](
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
     auto ownedGraph = std::make_shared<sdf::FrameAttachedToGraph>();
     sdf::ScopedGraph<sdf::FrameAttachedToGraph> graph(ownedGraph);
-    auto errors = sdf::buildFrameAttachedToGraph(graph, _world);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildFrameAttachedToGraph(graph, _world);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
+        _errors.push_back(error);
       }
       worldResult = false;
     }
-    errors = sdf::validateFrameAttachedToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validateFrameAttachedToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validateFrameAttachedToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validateFrameAttachedToGraph: " +
+                  error.Message());
+        _errors.push_back(error);
       }
       worldResult = false;
     }
@@ -2475,60 +2635,70 @@ bool checkFrameAttachedToGraph(const sdf::Root *_root)
 //////////////////////////////////////////////////
 bool checkPoseRelativeToGraph(const sdf::Root *_root)
 {
+  sdf::Errors errors;
+  bool result = checkPoseRelativeToGraph(errors, _root);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+//////////////////////////////////////////////////
+bool checkPoseRelativeToGraph(sdf::Errors &_errors, const sdf::Root *_root)
+{
   bool result = true;
 
-  auto checkModelPoseRelativeToGraph = [](
+  auto checkModelPoseRelativeToGraph = [&_errors](
       const sdf::Model *_model) -> bool
   {
     bool modelResult = true;
     auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
     sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
-    auto errors = sdf::buildPoseRelativeToGraph(graph, _model);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildPoseRelativeToGraph(graph, _model);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
-    errors = sdf::validatePoseRelativeToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validatePoseRelativeToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validatePoseRelativeToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validatePoseRelativeToGraph: " +
+                          error.Message());
+        _errors.push_back(error);
       }
       modelResult = false;
     }
     return modelResult;
   };
 
-  auto checkWorldPoseRelativeToGraph = [](
+  auto checkWorldPoseRelativeToGraph = [&_errors](
       const sdf::World *_world) -> bool
   {
     bool worldResult = true;
     auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
     sdf::ScopedGraph<PoseRelativeToGraph> graph(ownedGraph);
-    auto errors = sdf::buildPoseRelativeToGraph(graph, _world);
-    if (!errors.empty())
+    auto buildErrors = sdf::buildPoseRelativeToGraph(graph, _world);
+    if (!buildErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : buildErrors)
       {
-        std::cerr << "Error: " << error.Message() << std::endl;
+        error.SetMessage("Error: " + error.Message());
       }
       worldResult = false;
     }
-    errors = sdf::validatePoseRelativeToGraph(graph);
-    if (!errors.empty())
+    auto validateErrors = sdf::validatePoseRelativeToGraph(graph);
+    if (!validateErrors.empty())
     {
-      for (auto &error : errors)
+      for (auto &error : validateErrors)
       {
-        std::cerr << "Error in validatePoseRelativeToGraph: "
-                  << error.Message()
-                  << std::endl;
+        error.SetMessage("Error in validatePoseRelativeToGraph: " +
+                          error.Message());
+        _errors.push_back(error);
       }
       worldResult = false;
     }

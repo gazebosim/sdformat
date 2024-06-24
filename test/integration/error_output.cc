@@ -452,25 +452,25 @@ TEST(ErrorOutput, ModelErrorOutput)
         " with name[test_model]."));
     EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
     EXPECT_NE(std::string::npos, errors[1].Message().find(
-        "link with name[common_name] already exists."));
-    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
-    EXPECT_NE(std::string::npos, errors[2].Message().find(
         "Link with name [common_name] in model with name [test_model] has a "
         "name collision. Please rename this link."));
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "link with name[common_name] already exists."));
     EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
     EXPECT_NE(std::string::npos, errors[3].Message().find(
-        "joint with name[common_name] already exists."));
-    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
-    EXPECT_NE(std::string::npos, errors[4].Message().find(
         "Joint with name [common_name] in model with name [test_model] has a "
         "name collision. Please rename this joint."));
+    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[4].Message().find(
+        "joint with name[common_name] already exists."));
     EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
     EXPECT_NE(std::string::npos, errors[5].Message().find(
-        "frame with name[common_name] already exists."));
-    EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_NAME);
-    EXPECT_NE(std::string::npos, errors[6].Message().find(
         "Frame with name [common_name] in model with name [test_model] has a "
         "name collision. Please rename this frame."));
+    EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[6].Message().find(
+        "frame with name[common_name] already exists."));
     errors.clear();
   }
 
@@ -482,25 +482,25 @@ TEST(ErrorOutput, ModelErrorOutput)
     ASSERT_EQ(errors.size(), 6u);
     EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::DUPLICATE_NAME);
     EXPECT_NE(std::string::npos, errors[0].Message().find(
-        "link with name[common_name] already exists."));
-    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
-    EXPECT_NE(std::string::npos, errors[1].Message().find(
         "Link with name [common_name] in model with name [test_model] has a "
         "name collision. Please rename this link."));
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[1].Message().find(
+        "link with name[common_name] already exists."));
     EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
     EXPECT_NE(std::string::npos, errors[2].Message().find(
-        "joint with name[common_name] already exists."));
-    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
-    EXPECT_NE(std::string::npos, errors[3].Message().find(
         "Joint with name [common_name] in model with name [test_model] has a "
         "name collision. Please rename this joint."));
+    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[3].Message().find(
+        "joint with name[common_name] already exists."));
     EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
     EXPECT_NE(std::string::npos, errors[4].Message().find(
-        "frame with name[common_name] already exists."));
-    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
-    EXPECT_NE(std::string::npos, errors[5].Message().find(
         "Frame with name [common_name] in model with name [test_model] has a "
         "name collision. Please rename this frame."));
+    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[5].Message().find(
+        "frame with name[common_name] already exists."));
     // Check printed warnings
     EXPECT_NE(std::string::npos, buffer.str().find(
         "Non-unique name[common_name] detected 7 times in XML children of model"
@@ -523,27 +523,27 @@ TEST(ErrorOutput, ModelErrorOutput)
     EXPECT_NE(std::string::npos, errors[0].Message().find(
         "Non-unique name[common_name] detected 7 times in XML children of model"
         " with name[test_model]."));
-    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::WARNING);
     EXPECT_NE(std::string::npos, errors[1].Message().find(
-        "link with name[common_name] already exists."));
-    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::WARNING);
-    EXPECT_NE(std::string::npos, errors[2].Message().find(
         "Link with name [common_name] in model with name [test_model] has a "
         "name collision, changing link name to [common_name_link]."));
-    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "link with name[common_name] already exists."));
+    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::WARNING);
     EXPECT_NE(std::string::npos, errors[3].Message().find(
-        "joint with name[common_name] already exists."));
-    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::WARNING);
-    EXPECT_NE(std::string::npos, errors[4].Message().find(
         "Joint with name [common_name] in model with name [test_model] has a "
         "name collision, changing joint name to [common_name_joint]."));
-    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[4].Message().find(
+        "joint with name[common_name] already exists."));
+    EXPECT_EQ(errors[5].Code(), sdf::ErrorCode::WARNING);
     EXPECT_NE(std::string::npos, errors[5].Message().find(
-        "frame with name[common_name] already exists."));
-    EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::WARNING);
-    EXPECT_NE(std::string::npos, errors[6].Message().find(
         "Frame with name [common_name] in model with name [test_model] has a "
         "name collision, changing frame name to [common_name_frame]."));
+    EXPECT_EQ(errors[6].Code(), sdf::ErrorCode::DUPLICATE_NAME);
+    EXPECT_NE(std::string::npos, errors[6].Message().find(
+        "frame with name[common_name] already exists."));
     // Check nothing has been printed
     EXPECT_TRUE(buffer.str().empty()) << buffer.str();
     errors.clear();

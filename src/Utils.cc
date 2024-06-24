@@ -14,10 +14,12 @@
  * limitations under the License.
  *
 */
+#include <filesystem>
 #include <limits>
 #include <string>
 #include <utility>
 #include "sdf/Assert.hh"
+#include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "Utils.hh"
 
@@ -191,6 +193,13 @@ static std::optional<std::string> computeAbsoluteName(
   {
     if (parent->HasAttribute("name"))
     {
+      // Ignore this parent model if it's a merged model, since the child will
+      // be merged into the grand parent model/world.
+      if (parent->GetName() == "model" &&
+          parent->Get<bool>("__merge__", false).first)
+      {
+        continue;
+      }
       names.push_back(parent->GetAttribute("name")->GetAsString());
     }
     else
@@ -221,7 +230,7 @@ static std::optional<std::string> computeAbsoluteName(
 // cppcheck-suppress unusedFunction
 sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     const sdf::ParserConfig &_config,
-    std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models)
+    std::vector<std::pair<NestedInclude, InterfaceModelConstPtr>> &_models)
 {
   sdf::Errors allErrors;
   for (auto includeElem = _sdf->GetElementImpl("include"); includeElem;
@@ -375,11 +384,28 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
 
 /////////////////////////////////////////////////
 std::string resolveURI(const std::string &_inputURI,
-    const sdf::ParserConfig &_config, sdf::Errors &_errors)
+    const sdf::ParserConfig &_config, sdf::Errors &_errors,
+    const std::unordered_set<std::string> &_searchPaths)
 {
   std::string resolvedURI = _inputURI;
   if (_config.StoreResolvedURIs())
   {
+    std::string sep("://");
+    if (!_searchPaths.empty() &&
+        _inputURI.find(sep) == std::string::npos &&
+        !std::filesystem::path(_inputURI).is_absolute())
+    {
+      for (const auto &sp : _searchPaths)
+      {
+        // find file by searching local path but do not use callbacks
+        std::string fullPath = sdf::filesystem::append(sp, _inputURI);
+        resolvedURI = sdf::findFile(fullPath, true, false);
+        if (!resolvedURI.empty())
+          return resolvedURI;
+      }
+    }
+
+    // find file by searching local path and use registered callbacks
     resolvedURI = sdf::findFile(_inputURI, true, true, _config);
     if (resolvedURI.empty())
     {

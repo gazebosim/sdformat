@@ -5,10 +5,9 @@ gz_get_libsources_and_unittests(sources gtest_sources)
 # Add the source file auto-generated into the build folder from sdf/CMakeLists.txt
 list(APPEND sources EmbeddedSdf.cc)
 
-# Use interface library to deduplicate cmake logic for URDF linking
-add_library(using_parser_urdf INTERFACE)
+# When using the internal URDF parser, we build its sources with the core library
 if (USE_INTERNAL_URDF)
-  set(sources ${sources}
+  set(urdf_internal_sources
     urdf/urdf_parser/model.cpp
     urdf/urdf_parser/link.cpp
     urdf/urdf_parser/joint.cpp
@@ -17,92 +16,7 @@ if (USE_INTERNAL_URDF)
     urdf/urdf_parser/urdf_model_state.cpp
     urdf/urdf_parser/urdf_sensor.cpp
     urdf/urdf_parser/world.cpp)
-  target_include_directories(using_parser_urdf INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
-  if (WIN32)
-    target_compile_definitions(using_parser_urdf INTERFACE -D_USE_MATH_DEFINES)
-  endif()
-else()
-  target_link_libraries(using_parser_urdf INTERFACE
-    GzURDFDOM::GzURDFDOM)
-endif()
-
-if (BUILD_TESTING)
-  # Build this test file only if Gazebo Tools is installed.
-  if (NOT GZ_PROGRAM)
-    list(REMOVE_ITEM gtest_sources gz_TEST.cc)
-  endif()
-
-  # Skip tests that don't work on Windows
-  if (WIN32)
-    list(REMOVE_ITEM gtest_sources Converter_TEST.cc)
-    list(REMOVE_ITEM gtest_sources FrameSemantics_TEST.cc)
-    list(REMOVE_ITEM gtest_sources ParamPassing_TEST.cc)
-    list(REMOVE_ITEM gtest_sources Utils_TEST.cc)
-    list(REMOVE_ITEM gtest_sources XmlUtils_TEST.cc)
-    list(REMOVE_ITEM gtest_sources parser_urdf_TEST.cc)
-  endif()
-
-  gz_build_tests(
-    TYPE UNIT
-    SOURCES ${gtest_sources}
-    INCLUDE_DIRS
-      ${CMAKE_CURRENT_SOURCE_DIR}
-      ${PROJECT_SOURCE_DIR}/test
-  )
-
-  if (TARGET UNIT_Converter_TEST)
-    target_link_libraries(UNIT_Converter_TEST
-      TINYXML2::TINYXML2)
-    target_sources(UNIT_Converter_TEST PRIVATE
-      Converter.cc
-      EmbeddedSdf.cc
-      Utils.cc
-      XmlUtils.cc)
-  endif()
-
-  if (TARGET UNIT_FrameSemantics_TEST)
-    target_sources(UNIT_FrameSemantics_TEST PRIVATE FrameSemantics.cc Utils.cc)
-    target_link_libraries(UNIT_FrameSemantics_TEST TINYXML2::TINYXML2)
-  endif()
-
-  if (TARGET UNIT_ParamPassing_TEST)
-    target_link_libraries(UNIT_ParamPassing_TEST
-      TINYXML2::TINYXML2
-      using_parser_urdf)
-    target_sources(UNIT_ParamPassing_TEST PRIVATE
-      Converter.cc
-      EmbeddedSdf.cc
-      FrameSemantics.cc
-      ParamPassing.cc
-      SDFExtension.cc
-      Utils.cc
-      XmlUtils.cc
-      parser.cc
-      parser_urdf.cc)
-  endif()
-
-  if (TARGET UNIT_Utils_TEST)
-    target_sources(UNIT_Utils_TEST PRIVATE Utils.cc)
-    target_link_libraries(UNIT_Utils_TEST TINYXML2::TINYXML2)
-  endif()
-
-  if (TARGET UNIT_XmlUtils_TEST)
-    target_link_libraries(UNIT_XmlUtils_TEST
-      TINYXML2::TINYXML2)
-    target_sources(UNIT_XmlUtils_TEST PRIVATE XmlUtils.cc Utils.cc)
-  endif()
-
-  if (TARGET UNIT_parser_urdf_TEST)
-    target_link_libraries(UNIT_parser_urdf_TEST
-      TINYXML2::TINYXML2
-      using_parser_urdf)
-    target_sources(UNIT_parser_urdf_TEST PRIVATE
-      SDFExtension.cc
-      XmlUtils.cc
-      parser_urdf.cc
-      Utils.cc)
-  endif()
+  set(sources ${sources} ${urdf_internal_sources})
 endif()
 
 gz_create_core_library(SOURCES ${sources}
@@ -115,10 +29,20 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     gz-math${GZ_MATH_VER}::gz-math${GZ_MATH_VER}
     gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   PRIVATE
-    TINYXML2::TINYXML2
-    using_parser_urdf)
+    TINYXML2::TINYXML2)
 
-if (WIN32)
+  if (USE_INTERNAL_URDF)
+    target_include_directories(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
+    if (WIN32)
+      target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE -D_USE_MATH_DEFINES)
+    endif()
+  else()
+    target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
+      GzURDFDOM::GzURDFDOM)
+  endif()
+
+if (WIN32 AND USE_INTERNAL_URDF)
   target_compile_definitions(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE URDFDOM_STATIC)
 endif()
 
@@ -127,6 +51,62 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-if(NOT WIN32)
-  add_subdirectory(cmd)
+if (BUILD_TESTING)
+  # Build this test file only if Gazebo Tools is installed.
+  if (NOT GZ_PROGRAM)
+    list(REMOVE_ITEM gtest_sources gz_TEST.cc)
+  endif()
+
+  add_library(library_for_tests OBJECT
+      Converter.cc
+      EmbeddedSdf.cc
+      FrameSemantics.cc
+      ParamPassing.cc
+      SDFExtension.cc
+      Utils.cc
+      XmlUtils.cc
+      parser.cc
+      parser_urdf.cc
+  )
+
+  if (USE_INTERNAL_URDF)
+    target_sources(library_for_tests PRIVATE ${urdf_internal_sources})
+  endif()
+
+  # Link against the publicly and privately linked libraries of the core library
+  target_link_libraries(library_for_tests
+    $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},LINK_LIBRARIES>
+  )
+
+  # Use the include flags from the core library
+  target_include_directories(library_for_tests PUBLIC
+    $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},INCLUDE_DIRECTORIES>
+  )
+
+  # Use the private compile flags from the core library. Also set GZ_SDFORMAT_STATIC_DEFINE to avoid
+  # inconsistent linkage issues on windows. Setting the define will cause the SDFORMAT_VISIBLE/SDFORMAT_HIDDEN  macros
+  # to expand to nothing when building a static library
+  target_compile_definitions(library_for_tests PUBLIC
+    $<TARGET_PROPERTY:${PROJECT_LIBRARY_TARGET_NAME},COMPILE_DEFINITIONS>
+    -DGZ_SDFORMAT_STATIC_DEFINE
+  )
+
+  gz_build_tests(
+    TYPE UNIT
+    SOURCES ${gtest_sources}
+    INCLUDE_DIRS
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${PROJECT_SOURCE_DIR}/test
+    LIB_DEPS
+      library_for_tests
+  )
+
+  if (TARGET UNIT_gz_TEST)
+    target_compile_definitions(UNIT_gz_TEST PRIVATE
+      -DGZ_PATH="${GZ_PROGRAM}"
+      -DDETAIL_GZ_CONFIG_PATH="${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>"
+      -DGZ_TEST_LIBRARY_PATH="${PROJECT_BINARY_DIR}/src")
+  endif()
 endif()
+
+add_subdirectory(cmd)

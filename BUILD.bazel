@@ -1,0 +1,200 @@
+load(
+    "@gz//bazel/skylark:build_defs.bzl",
+    "GZ_FEATURES",
+    "GZ_ROOT",
+    "GZ_VISIBILITY",
+    "add_lint_tests",
+    "gz_configure_file",
+    "gz_configure_header",
+    "gz_export_header",
+    "gz_include_header",
+    "gz_py_binary",
+)
+
+package(
+    default_visibility = GZ_VISIBILITY,
+    features = GZ_FEATURES,
+)
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+gz_configure_header(
+    name = "config",
+    src = "include/sdf/config.hh.in",
+    cmakelists = ["CMakeLists.txt"],
+    defines = {
+        "CMAKE_INSTALL_FULL_DATAROOTDIR": "unused",
+    },
+    package = "sdformat",
+)
+
+gz_py_binary(
+    name = "embed_sdf",
+    srcs = ["sdf/embedSdf.py"],
+    main = "sdf/embedSdf.py",
+)
+
+genrule(
+    name = "embed_sdf_genrule",
+    srcs = glob([
+        "sdf/**/*.sdf",
+        "sdf/**/*.convert",
+    ]),
+    outs = ["EmbeddedSdf.cc"],
+    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root sdformat/sdf/ --input-files $(SRCS)",  # noqa
+    tools = [":embed_sdf"],
+)
+
+public_headers_no_gen = glob([
+    "include/sdf/*.h",
+    "include/sdf/*.hh",
+])
+
+private_headers = glob(["src/*.hh"])
+
+sources = glob(
+    ["src/*.cc"],
+    exclude = [
+        "src/*_TEST.cc",
+        "src/gz.cc",
+    ],
+)
+
+gz_export_header(
+    name = "include/sdf/Export.hh",
+    export_base = "GZ_SDFORMAT",
+    lib_name = "sdf",
+    visibility = ["//visibility:private"],
+)
+
+gz_include_header(
+    name = "sdformat_hh_genrule",
+    out = "include/sdformat.hh",
+    hdrs = public_headers_no_gen + [
+        "include/sdf/config.hh",
+        "include/sdf/Export.hh",
+    ],
+)
+
+public_headers = public_headers_no_gen + [
+    "include/sdf/Export.hh",
+    "include/sdf/config.hh",
+    "include/sdformat.hh",
+]
+
+cc_library(
+    name = "urdf",
+    srcs = [
+        "src/urdf/urdf_parser/joint.cpp",
+        "src/urdf/urdf_parser/link.cpp",
+        "src/urdf/urdf_parser/model.cpp",
+        "src/urdf/urdf_parser/pose.cpp",
+        "src/urdf/urdf_parser/twist.cpp",
+        "src/urdf/urdf_parser/urdf_model_state.cpp",
+        "src/urdf/urdf_parser/urdf_sensor.cpp",
+        "src/urdf/urdf_parser/world.cpp",
+    ],
+    hdrs = glob(
+        ["src/urdf/**/*.h"],
+    ),
+    copts = ["-Wno-unknown-pragmas"],
+    includes = ["src/urdf"],
+    deps = [
+        "@tinyxml2",
+    ],
+)
+
+cc_library(
+    name = "sdformat",
+    srcs = sources + private_headers + ["EmbeddedSdf.cc"],
+    hdrs = public_headers,
+    defines = [
+        'SDF_SHARE_PATH=\\".\\"',
+        'SDF_VERSION_PATH=\\"sdformat\\"',
+    ],
+    includes = [
+        "include",
+        "src",
+    ],
+    deps = [
+        ":urdf",
+        GZ_ROOT + "math",
+        GZ_ROOT + "utils",
+        "@tinyxml2",
+    ],
+)
+
+cc_library(
+    name = "sdformat_internal",
+    srcs = [
+        "src/gz.cc",
+        "src/gz.hh",
+    ],
+    visibility = ["//visibility:private"],
+    deps = [":sdformat"],
+)
+
+test_sources = glob(
+    ["src/*_TEST.cc"],
+    exclude = ["src/gz_TEST.cc"],
+)
+
+[cc_test(
+    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+    srcs = [src],
+    data = [
+        "sdf",
+        GZ_ROOT + "sdformat/test:integration",
+        GZ_ROOT + "sdformat/test:sdf",
+    ],
+    env = {
+        "GZ_BAZEL": "1",
+        "GZ_BAZEL_PATH": "sdformat",
+    },
+    deps = [
+        ":sdformat",
+        GZ_ROOT + "sdformat/test:test_utils",
+        "@gtest",
+        "@gtest//:gtest_main",
+    ],
+) for src in test_sources]
+
+gz_configure_file(
+    name = "sdformat.rb",
+    src = "src/cmd/cmdsdformat.rb.in",
+    out = "cmdsdformat.rb",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "library_location=libgz-sdformat.so",
+    ],
+    package = "sdformat",
+    visibility = [GZ_ROOT + "tools:__pkg__"],
+)
+
+gz_configure_file(
+    name = "sdformat_yaml",
+    src = "conf/sdformat.yaml.in",
+    out = "sdformat.yaml",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "gz_library_path=gz/sdformat/cmdsdformat.rb",
+    ],
+    package = "sdformat",
+    visibility = [GZ_ROOT + "tools:__pkg__"],
+)
+
+cc_binary(
+    name = "libgz-sdformat.so",
+    srcs = [":sdformat_internal"],
+    linkshared = True,
+    visibility = [GZ_ROOT + "tools:__pkg__"],
+    deps = [
+        ":sdformat",
+    ],
+)
+
+exports_files(["sdf"])
+
+add_lint_tests()

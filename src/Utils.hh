@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 #include <tinyxml2.h>
+#include <unordered_set>
 #include "sdf/Error.hh"
 #include "sdf/Element.hh"
 #include "sdf/InterfaceElements.hh"
@@ -200,6 +201,23 @@ namespace sdf
     return errors;
   }
 
+  /// \brief Load a single object of a specific sdf element type. Unlike
+  /// \ref loadRepeated, this will load the input element instead of one of its
+  /// children.
+  /// \param[out] _errors The vector of errors. An empty vector indicates no
+  /// errors were experienced.
+  /// \param[in] _elem The SDFormat element to be loaded.
+  /// \param[in] _args Extra arguments forwarded to the Load memeber function.
+  /// \return An instance of Class loaded from the input SDFormat element.
+  template <typename Class, typename... Args>
+  Class loadSingle(sdf::Errors &_errors, sdf::ElementPtr _elem, Args &&..._args)
+  {
+    Class obj;
+    Errors loadErrors = obj.Load(_elem, std::forward<Args>(_args)...);
+    _errors.insert(_errors.end(), loadErrors.begin(), loadErrors.end());
+    return obj;
+  }
+
   /// \brief Load interface models from //include tags.
   /// \param[in] _sdf sdf::ElementPtr that contains the //include tags.
   /// \param[in] _config Parser configuration options.
@@ -207,7 +225,7 @@ namespace sdf
   /// \return Errors encountered.
   sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
       const sdf::ParserConfig &_config,
-      std::vector<std::pair<NestedInclude, InterfaceModelPtr>> &_models);
+      std::vector<std::pair<NestedInclude, InterfaceModelConstPtr>> &_models);
 
   /// \brief Convenience function that returns a pointer to the value contained
   /// in a std::optional.
@@ -245,10 +263,14 @@ namespace sdf
   /// \param[in] _inputURI URI from parsed SDF file to resolve
   /// \param[in] _config Parser configuration to use to resolve
   /// \param[in, out] _errors Error vector to append to if resolution fails
+  /// \param[in] _searchPaths Optional additional search paths (directory)
+  /// when resolving URI
   /// \return Resolved URI or Original URI, depending on parser configuration
   std::string resolveURI(const std::string &_inputURI,
                          const sdf::ParserConfig &_config,
-                         sdf::Errors &_errors);
+                         sdf::Errors &_errors,
+                         const std::unordered_set<std::string>
+                         &_searchPaths = {});
 }
 }
 #endif

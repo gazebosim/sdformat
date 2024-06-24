@@ -202,7 +202,7 @@ class WorldTEST(unittest.TestCase):
 
     def test_set_scene(self):
         world = World()
-        self.assertEqual(None, world.scene())
+        self.assertNotEqual(None, world.scene())
 
         scene = Scene()
         scene.set_ambient(Color.BLUE)

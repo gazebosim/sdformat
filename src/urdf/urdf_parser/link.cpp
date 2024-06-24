@@ -35,7 +35,7 @@
 /* Author: Wim Meeussen */
 #pragma warning(push, 0)
 
-#include <urdf_parser/urdf_parser.h>
+#include "../urdf_parser/urdf_parser.h"
 #include <urdf_model/link.h>
 #include <fstream>
 #include <sstream>

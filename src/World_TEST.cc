@@ -39,6 +39,11 @@ TEST(DOMWorld, Construction)
   EXPECT_STREQ("default", world.AudioDevice().c_str());
   EXPECT_EQ(gz::math::Vector3d::Zero, world.WindLinearVelocity());
 
+  // The scene and atmosphere are requred, per the SDF spec. Make sure
+  // that they have been created.
+  EXPECT_TRUE(world.Scene());
+  EXPECT_TRUE(world.Atmosphere());
+
   EXPECT_EQ(0u, world.ModelCount());
   EXPECT_EQ(nullptr, world.ModelByIndex(0));
   EXPECT_EQ(nullptr, world.ModelByIndex(1));
@@ -52,6 +57,9 @@ TEST(DOMWorld, Construction)
   EXPECT_EQ(nullptr, world.ModelByName("a::b"));
   EXPECT_EQ(nullptr, world.ModelByName("a::b::c"));
   EXPECT_EQ(nullptr, world.ModelByName("::::"));
+
+  EXPECT_EQ(nullptr, world.ActorByName(""));
+  EXPECT_EQ(nullptr, world.ActorByName("default"));
 
   EXPECT_EQ(0u, world.FrameCount());
   EXPECT_EQ(nullptr, world.FrameByIndex(0));
@@ -358,7 +366,7 @@ TEST(DOMWorld, SetGui)
 TEST(DOMWorld, SetScene)
 {
   sdf::World world;
-  EXPECT_EQ(nullptr, world.Scene());
+  EXPECT_NE(nullptr, world.Scene());
 
   sdf::Scene scene;
   scene.SetAmbient(gz::math::Color::Blue);
@@ -447,15 +455,27 @@ TEST(DOMWorld, AddActor)
   EXPECT_EQ(1u, world.ActorCount());
   EXPECT_FALSE(world.AddActor(actor));
   EXPECT_EQ(1u, world.ActorCount());
+  EXPECT_NE(nullptr, world.ActorByName("actor1"));
 
   world.ClearActors();
   EXPECT_EQ(0u, world.ActorCount());
+  EXPECT_EQ(nullptr, world.ActorByName("actor1"));
 
   EXPECT_TRUE(world.AddActor(actor));
   EXPECT_EQ(1u, world.ActorCount());
   const sdf::Actor *actorFromWorld = world.ActorByIndex(0);
   ASSERT_NE(nullptr, actorFromWorld);
   EXPECT_EQ(actorFromWorld->Name(), actor.Name());
+
+  const sdf::Actor *actorFromWorldByName = world.ActorByName("actor1");
+  ASSERT_NE(nullptr, actorFromWorldByName);
+  EXPECT_EQ(actorFromWorldByName->Name(), actor.Name());
+
+  sdf::Actor *mutableActorFromWorldByName = world.ActorByName("actor1");
+  ASSERT_NE(nullptr, mutableActorFromWorldByName);
+  EXPECT_EQ(mutableActorFromWorldByName->Name(), actor.Name());
+  mutableActorFromWorldByName->SetName("new_name");
+  EXPECT_NE(mutableActorFromWorldByName->Name(), actor.Name());
 }
 
 /////////////////////////////////////////////////

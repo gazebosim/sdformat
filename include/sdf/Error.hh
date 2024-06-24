@@ -225,6 +225,10 @@ namespace sdf
     /// \return Error message.
     public: std::string Message() const;
 
+    /// \brief Sets the message associated with this error.
+    /// \param [in] _message Message that describes this error.
+    public: void SetMessage(const std::string &_message);
+
     /// \brief Get the file path associated with this error.
     /// \return Returns the path of the file that this error is related to,
     /// nullopt otherwise.

@@ -55,9 +55,7 @@ TEST(IncludesTest, Includes)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
-  for (auto e : errors)
-    std::cout << e.Message() << std::endl;
-  EXPECT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   ASSERT_NE(nullptr, root.Element());
   EXPECT_EQ(worldFile, root.Element()->FilePath());
@@ -234,8 +232,6 @@ TEST(IncludesTest, Includes_15)
 
   sdf::Root root;
   sdf::Errors errors = root.Load(worldFile);
-  for (auto e : errors)
-    std::cout << e.Message() << std::endl;
   EXPECT_TRUE(errors.empty());
 
   ASSERT_NE(nullptr, root.Element());
@@ -349,20 +345,19 @@ TEST(IncludesTest, IncludeModelMissingConfig)
   sdf::Errors errors;
   ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
 
-  ASSERT_GE(1u, errors.size());
-  EXPECT_EQ(1u, errors.size());
-  std::cout << errors[0] << std::endl;
-  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::URI_LOOKUP);
+  EXPECT_EQ(2u, errors.size());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
   EXPECT_NE(std::string::npos, errors[0].Message().find(
-      "Unable to resolve uri[box_missing_config] to model path")) << errors[0];
-  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Could not find model.config or manifest.xml in")) << errors[0];
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::URI_LOOKUP);
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Unable to resolve uri[box_missing_config] to model path")) << errors[1];
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
       "box_missing_config] since it does not contain a model.config file"))
-    << errors[0];
+    << errors[1];
 
   sdf::Root root;
   errors = root.Load(sdfParsed);
-  for (auto e : errors)
-    std::cout << e.Message() << std::endl;
   EXPECT_TRUE(errors.empty());
 
   EXPECT_EQ(nullptr, root.Model());
@@ -651,7 +646,23 @@ TEST(IncludesTest, MergeIncludePlacementFrame)
 //////////////////////////////////////////////////
 TEST(IncludesTest, InvalidMergeInclude)
 {
+  // Redirect sdferr output
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+      sdf::Console::Instance()->GetMsgStream(), &buffer);
+#ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+        []
+        {
+        sdf::Console::Instance()->SetQuiet(true);
+        });
+#endif
+
   sdf::ParserConfig config;
+  // Set policies to Error to make sure nothing gets printed
+  config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+  config.SetUnrecognizedElementsPolicy(sdf::EnforcementPolicy::ERR);
   // Using the "file://" URI scheme to allow multiple search paths
   config.AddURIPath("file://", sdf::testing::TestFile("sdf"));
   config.AddURIPath("file://", sdf::testing::TestFile("integration", "model"));
@@ -672,6 +683,7 @@ TEST(IncludesTest, InvalidMergeInclude)
     ASSERT_FALSE(errors.empty());
     EXPECT_EQ(sdf::ErrorCode::MODEL_WITHOUT_LINK, errors[0].Code());
   }
+
   {
     const std::string sdfString = R"(
       <sdf version="1.9">
@@ -737,29 +749,22 @@ TEST(IncludesTest, InvalidMergeInclude)
     </sdf>)";
     sdf::Root root;
     sdf::Errors errors = root.LoadSdfString(sdfString, config);
-    ASSERT_FALSE(errors.empty());
-    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[0].Code());
-    EXPECT_EQ("Merge-include does not support parent element of type frame",
-              errors[0].Message());
-    EXPECT_EQ(5, errors[0].LineNumber());
+    ASSERT_EQ(3, errors.size());
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
+    EXPECT_NE(std::string::npos, errors[0].Message().find(
+        "child of element[sensor], not defined in SDF."));
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[1].Code());
+    EXPECT_NE(std::string::npos, errors[1].Message().find(
+        "XML Element[unknown_element], child of element[model], not"
+        " defined in SDF. Copying[unknown_element] as children of [model]"));
+    EXPECT_EQ(sdf::ErrorCode::MERGE_INCLUDE_UNSUPPORTED, errors[2].Code());
+    EXPECT_NE(std::string::npos, errors[2].Message().find(
+        "Merge-include does not support parent element of type frame"));
+    EXPECT_EQ(5, errors[2].LineNumber());
   }
 
   // Syntax error in included file
   {
-    // Redirect sdferr output
-    std::stringstream buffer;
-    sdf::testing::RedirectConsoleStream redir(
-        sdf::Console::Instance()->GetMsgStream(), &buffer);
-#ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-    sdf::testing::ScopeExit revertSetQuiet(
-        []
-        {
-        sdf::Console::Instance()->SetQuiet(true);
-        });
-#endif
-
-
     const std::string sdfString = R"(
     <sdf version="1.9">
       <world name="default">
@@ -770,11 +775,24 @@ TEST(IncludesTest, InvalidMergeInclude)
     </sdf>)";
     sdf::Root root;
     sdf::Errors errors = root.LoadSdfString(sdfString, config);
-    ASSERT_FALSE(errors.empty());
-    EXPECT_EQ(sdf::ErrorCode::FILE_READ, errors[0].Code());
-    EXPECT_EQ(0u, errors[0].Message().find("Unable to read file"));
-    EXPECT_EQ(5, *errors[0].LineNumber());
-    EXPECT_TRUE(buffer.str().find("Error parsing XML in file") !=
-                std::string::npos) << buffer.str();
+    ASSERT_EQ(errors.size(), 5u);
+    EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::FILE_READ);
+    EXPECT_NE(std::string::npos,
+              errors[0].Message().find("Error parsing XML in file"));
+    EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FILE_READ);
+    EXPECT_NE(std::string::npos,
+              errors[1].Message().find("Unable to read file"));
+    EXPECT_EQ(5, *errors[1].LineNumber());
+    EXPECT_EQ(errors[2].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+    EXPECT_NE(std::string::npos,
+              errors[2].Message().find("Error reading element <world>"));
+    EXPECT_EQ(errors[3].Code(), sdf::ErrorCode::ELEMENT_INVALID);
+    EXPECT_NE(std::string::npos,
+              errors[3].Message().find("Error reading element <sdf>"));
+    EXPECT_EQ(errors[4].Code(), sdf::ErrorCode::STRING_READ);
+    EXPECT_NE(std::string::npos,
+              errors[4].Message().find("Unable to read SDF string"));
   }
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

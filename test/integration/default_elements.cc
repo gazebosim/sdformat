@@ -26,14 +26,14 @@
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
 #include "sdf/Filesystem.hh"
+
 #include "test_config.hh"
 
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 {
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "empty_road_sph_coords.sdf");
+  const auto testFile =
+    sdf::testing::TestFile("sdf", "empty_road_sph_coords.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -109,9 +109,8 @@ TEST(ExplicitlySetInFile, EmptyRoadSphCoords)
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, EmptyAxis)
 {
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "empty_axis.sdf");
+  const auto testFile =
+    sdf::testing::TestFile("sdf", "empty_axis.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
@@ -157,9 +156,8 @@ TEST(ExplicitlySetInFile, EmptyAxis)
 //////////////////////////////////////////////////
 TEST(ExplicitlySetInFile, ToString)
 {
-  const std::string testFile =
-    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
-        "empty_road_sph_coords.sdf");
+  const auto testFile =
+    sdf::testing::TestFile("sdf", "empty_road_sph_coords.sdf");
 
   sdf::Root root;
   sdf::Errors errors = root.Load(testFile);
