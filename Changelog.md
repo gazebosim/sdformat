@@ -1,6 +1,6 @@
 ## libsdformat 13.X
 
-### libsdformat 13.7.0 (2024-06-25)
+### libsdformat 13.8.0 (2024-06-25)
 
 1. Added `World::ActorByName`
     * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
