@@ -500,7 +500,7 @@ sdf::ElementPtr Light::ToElement() const
 sdf::ElementPtr Light::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("light.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   std::string lightTypeStr = "point";
   switch (this->Type())
@@ -556,3 +556,11 @@ sdf::ElementPtr Light::ToElement(sdf::Errors &_errors) const
       _errors, this->SpotFalloff());
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Light::SchemaFile() 
+{
+    static char kSchemaFile[] = "light.sdf";
+    return kSchemaFile;
+}
+

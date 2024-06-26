@@ -619,7 +619,7 @@ void Root::ResolveAutoInertials(sdf::Errors &_errors,
 sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("root.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("version")->Set(this->Version());
 
@@ -644,3 +644,11 @@ sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Root::SchemaFile() 
+{
+    static char kSchemaFile[] = "root.sdf";
+    return kSchemaFile;
+}
+

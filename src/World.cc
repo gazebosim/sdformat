@@ -1067,7 +1067,7 @@ Errors World::Implementation::LoadSphericalCoordinates(
 sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("world.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name());
   elem->GetElement("gravity")->Set(this->Gravity());
@@ -1271,3 +1271,11 @@ void World::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view World::SchemaFile() 
+{
+    static char kSchemaFile[] = "world.sdf";
+    return kSchemaFile;
+}
+

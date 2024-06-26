@@ -307,7 +307,7 @@ void Projector::AddPlugin(const Plugin &_plugin)
 sdf::ElementPtr Projector::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("projector.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   // Set pose
   sdf::ElementPtr poseElem = elem->GetElement("pose");
@@ -331,3 +331,11 @@ sdf::ElementPtr Projector::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Projector::SchemaFile() 
+{
+    static char kSchemaFile[] = "projector.sdf";
+    return kSchemaFile;
+}
+
