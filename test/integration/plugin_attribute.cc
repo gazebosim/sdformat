@@ -30,7 +30,7 @@ std::string get_sdf_string()
     << "<model name='model'>"
     << "  <link name='link'/>"
     << "  <plugin name='example' filename='libexample.so'>"
-    << "    <user attribute='attribute' />"
+    << "    <user attribute='attribute' empty_attribute='' />"
     << "    <value attribute='attribute'>value</value>"
     << "  </plugin>"
     << "</model>"
@@ -54,6 +54,8 @@ TEST(PluginAttribute, ParseAttributes)
     EXPECT_TRUE(user->HasAttribute("attribute"));
     EXPECT_EQ(user->GetAttribute("attribute")->GetAsString(),
               std::string("attribute"));
+    EXPECT_TRUE(user->HasAttribute("empty_attribute"));
+    EXPECT_EQ(user->GetAttribute("empty_attribute")->GetAsString(), "");
   }
   {
     sdf::ElementPtr value = plugin->GetElement("value");

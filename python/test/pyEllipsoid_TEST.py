@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Vector3d
+from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 import math
 from gz_test_deps.sdformat import Ellipsoid
 import unittest
@@ -51,7 +51,7 @@ class BoxTEST(unittest.TestCase):
 
 
   def test_deepcopy_after_assignment(self):
-      ellipsoid1 = Ellipsoid();
+      ellipsoid1 = Ellipsoid()
       expectedradii1 = Vector3d(1.0, 2.0, 3.0)
       ellipsoid1.set_radii(expectedradii1)
 
@@ -62,8 +62,8 @@ class BoxTEST(unittest.TestCase):
       # This is similar to what std::swap does except it uses std::move for each
       # assignment
       tmp = copy.deepcopy(ellipsoid1)
-      ellipsoid1 = ellipsoid2;
-      ellipsoid2 = tmp;
+      ellipsoid1 = ellipsoid2
+      ellipsoid2 = tmp
 
       self.assertEqual(expectedradii1, ellipsoid2.shape().radii())
       self.assertEqual(expectedradii2, ellipsoid1.shape().radii())
@@ -77,6 +77,44 @@ class BoxTEST(unittest.TestCase):
     ellipsoid.shape().set_radii(expectedradii)
     self.assertEqual(expectedradii, ellipsoid.radii())
 
+  def test_calculate_inertial(self):
+    ellipsoid = Ellipsoid()
+
+    # density of aluminium
+    density = 2170
+
+    # Invalid dimensions leading to std::nullopt return in
+    # CalculateInertial()
+    ellipsoid.set_radii(Vector3d(-1, 2, 0))
+    invalidEllipsoidInertial = ellipsoid.calculate_inertial(density)
+    self.assertEqual(None, invalidEllipsoidInertial)
+
+    a = 1.0
+    b = 10.0
+    c = 100.0
+
+    ellipsoid.set_radii(Vector3d(a, b, c))
+
+    expectedMass = ellipsoid.shape().volume() * density
+    ixx = (expectedMass / 5.0) * (b * b + c * c)
+    iyy = (expectedMass / 5.0) * (a * a + c * c)
+    izz = (expectedMass / 5.0) * (a * a + b * b)
+
+    expectedMassMat = MassMatrix3d(expectedMass, Vector3d(ixx, iyy, izz), Vector3d.ZERO)
+
+    expectedInertial = Inertiald()
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    ellipsoidInertial = ellipsoid.calculate_inertial(density)
+    self.assertEqual(ellipsoid.shape().material().density(), density)
+    self.assertNotEqual(None, ellipsoidInertial)
+    self.assertEqual(expectedInertial, ellipsoidInertial)
+    self.assertEqual(expectedInertial.mass_matrix().diagonal_moments(),
+      ellipsoidInertial.mass_matrix().diagonal_moments())
+    self.assertEqual(expectedInertial.mass_matrix().mass(),
+      ellipsoidInertial.mass_matrix().mass())
+    self.assertEqual(expectedInertial.pose(), ellipsoidInertial.pose())
 
 if __name__ == '__main__':
     unittest.main()

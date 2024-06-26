@@ -84,6 +84,7 @@ TEST(DOMcollision, Construction)
   ASSERT_NE(nullptr, collision.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, collision.Geom()->Type());
   EXPECT_EQ(nullptr, collision.Geom()->BoxShape());
+  EXPECT_EQ(nullptr, collision.Geom()->ConeShape());
   EXPECT_EQ(nullptr, collision.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, collision.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, collision.Geom()->SphereShape());

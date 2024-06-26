@@ -26,6 +26,8 @@ else
 end
 
 require 'optparse'
+require 'pathname'
+
 
 # Constants.
 LIBRARY_NAME = '@library_location@'
@@ -174,9 +176,7 @@ class Cmd
     # puts options
 
     # Read the plugin that handles the command.
-    if LIBRARY_NAME[0] == '/'
-      # If the first character is a slash, we'll assume that we've been given an
-      # absolute path to the library. This is only used during test mode.
+    if Pathname.new(LIBRARY_NAME).absolute?
       plugin = LIBRARY_NAME
     else
       # We're assuming that the library path is relative to the current
@@ -185,10 +185,18 @@ class Cmd
     end
     conf_version = LIBRARY_VERSION
 
+    if defined? RubyInstaller
+      # RubyInstaller does not search for dlls in PATH or the directory that tests are running from,
+      # so we'll add the parent directory of the plugin to the search path.
+      # https://github.com/oneclick/rubyinstaller2/wiki/For-gem-developers#-dll-loading
+      RubyInstaller::Runtime.add_dll_directory(File.dirname(plugin))
+    end
+
     begin
       Importer.dlload plugin
-    rescue DLError
+    rescue DLError => error
       puts "Library error: [#{plugin}] not found."
+      puts "DLError: #{error.message}"
       exit(-1)
     end
 

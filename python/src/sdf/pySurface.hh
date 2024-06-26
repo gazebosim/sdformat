@@ -52,6 +52,18 @@ void defineODE(pybind11::object module);
  * \param[in] module a pybind11 module to add the definition to
  */
 void defineSurface(pybind11::object module);
+
+/// Define a pybind11 wrapper for an sdf::BulletFriction
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineBulletFriction(pybind11::object module);
+
+/// Define a pybind11 wrapper for an sdf::Torsional
+/**
+ * \param[in] module a pybind11 module to add the definition to
+ */
+void defineTorsional(pybind11::object module);
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
 }  // namespace sdf

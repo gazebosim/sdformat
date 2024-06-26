@@ -72,6 +72,10 @@ TEST(DOMLink, Construction)
   link.SetEnableWind(true);
   EXPECT_TRUE(link.EnableWind());
 
+  EXPECT_TRUE(link.EnableGravity());
+  link.SetEnableGravity(false);
+  EXPECT_FALSE(link.EnableGravity());
+
   EXPECT_FALSE(link.AutoInertiaSaved());
   link.SetAutoInertiaSaved(true);
   EXPECT_TRUE(link.AutoInertiaSaved());

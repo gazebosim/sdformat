@@ -671,7 +671,8 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
     // better separation of concerns if the conversion process set the
     // required attributes with their default values.
     if ((*aiter)->GetSet() || (*aiter)->GetRequired() ||
-        _includeDefaultAttributes)
+        _includeDefaultAttributes ||
+        ((*aiter)->GetKey().find(':') != std::string::npos))
     {
       const std::string key = (*aiter)->GetKey();
       const auto it = attributeExceptions.find(key);

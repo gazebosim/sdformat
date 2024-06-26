@@ -16,6 +16,7 @@
 #include "pySphere.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Sphere.hh"
 
@@ -33,6 +34,8 @@ void defineSphere(pybind11::object module)
   pybind11::class_<sdf::Sphere>(module, "Sphere")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Sphere>())
+    .def("calculate_inertial", &sdf::Sphere::CalculateInertial,
+         "Calculate and return the Inertial values for the Sphere.")
     .def("radius", &sdf::Sphere::Radius,
          "Get the sphere's radius in meters.")
     .def("set_radius", &sdf::Sphere::SetRadius,

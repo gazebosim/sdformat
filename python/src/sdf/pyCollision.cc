@@ -17,6 +17,7 @@
 #include "pyCollision.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
@@ -37,6 +38,12 @@ void defineCollision(pybind11::object module)
   geometryModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Collision>())
+    .def("set_density", &sdf::Collision::SetDensity, "Set the density of the collision.")
+    .def("density", &sdf::Collision::Density, "Get the density of the collision.")
+    .def("calculate_inertial",
+         pybind11::overload_cast<sdf::Errors &, gz::math::Inertiald &, const ParserConfig &>(
+          &sdf::Collision::CalculateInertial),
+         "Calculate and return the MassMatrix for the collision.")
     .def("name", &sdf::Collision::Name,
          "Get the name of the collision. "
          "The name of the collision must be unique within the scope of a Link.")

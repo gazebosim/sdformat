@@ -14,7 +14,7 @@
 
 import copy
 from gz_test_deps.math import Pose3d
-from gz_test_deps.sdformat import (Error, Model, Light, Root, SDF_VERSION,
+from gz_test_deps.sdformat import (ConfigureResolveAutoInertials, Error, Model, ParserConfig, Light, Root, SDF_VERSION,
                                    SDFErrorsException, SDF_PROTOCOL_VERSION,
                                    World)
 import gz_test_deps.sdformat as sdf
@@ -121,7 +121,7 @@ class RootTEST(unittest.TestCase):
     # /////////////////////////////////////////////////
     # TEST(DOMRoot, StringActorSdfParse)
     # {
-    #   std::string sdf = "<?xml version=\"1.0\"?>"
+    #   sdf = "<?xml version=\"1.0\"?>"
     #     " <sdf version=\"1.8\">"
     #     "   <actor name='actor_test'>"
     #     "     <pose>0 0 1.0 0 0 0</pose>"
@@ -324,6 +324,39 @@ class RootTEST(unittest.TestCase):
         # ASSERT_EQ(None, root2.Actor())
         self.assertEqual(0, root2.world_count())
 
+    def test_resolve_auto_inertials_with_save_calculation_configuration(self):
+      sdf = "<?xml version=\"1.0\"?>" + \
+      " <sdf version=\"1.11\">" + \
+      "   <model name='shapes'>" + \
+      "     <link name='link'>" + \
+      "       <inertial auto='true' />" + \
+      "       <collision name='box_col'>" + \
+      "         <density>1240.0</density>" + \
+      "         <geometry>" + \
+      "           <box>" + \
+      "             <size>2 2 2</size>" + \
+      "           </box>" + \
+      "         </geometry>" + \
+      "       </collision>" + \
+      "     </link>" + \
+      "   </model>" + \
+      " </sdf>"
+
+      root = Root()
+      sdfParserConfig = ParserConfig()
+      errors = root.load_sdf_string(sdf, sdfParserConfig)
+      self.assertEqual(None, errors)
+
+      model = root.model()
+      link = model.link_by_index(0)
+
+      sdfParserConfig.set_calculate_inertial_configuration(
+        ConfigureResolveAutoInertials.SAVE_CALCULATION)
+
+      inertialErr = []
+      root.resolve_auto_inertials(inertialErr, sdfParserConfig)
+      self.assertEqual(len(inertialErr), 0)
+      self.assertTrue(link.auto_inertia_saved())
 
 if __name__ == '__main__':
     unittest.main()

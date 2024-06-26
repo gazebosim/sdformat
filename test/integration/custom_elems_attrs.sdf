@@ -4,13 +4,13 @@
     <mysim:description>Description of this world</mysim:description>
     <model name="M1">
       <link name="L1" mysim:custom_attr_str="A" mysim:custom_attr_int="5" />
-      <link name="L2" />
+      <link name="L2" mysim:empty_attr="" />
       <joint name="J1" type="revolute">
         <parent>L1</parent>
         <child>L2</child>
       </joint>
 
-      <mysim:transmission name="simple_trans">
+      <mysim:transmission name="simple_trans" mysim:attr="custom_attribute">
         <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
         <mysim:joint name="J1">
           <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>

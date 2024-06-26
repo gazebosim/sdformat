@@ -48,6 +48,8 @@ void defineWorld(pybind11::object module)
   geometryModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::World>())
+    .def("resolve_auto_inertials", &sdf::World::ResolveAutoInertials,
+         "Calculate and set the inertials for all the models in the world object")
     .def("validate_graphs", &sdf::World::ValidateGraphs,
          "Check that the FrameAttachedToGraph and PoseRelativeToGraph "
          "are valid.")

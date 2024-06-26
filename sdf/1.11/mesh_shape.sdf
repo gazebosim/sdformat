@@ -1,5 +1,22 @@
 <element name="mesh" required="0">
   <description>Mesh shape</description>
+
+  <attribute name="optimization" type="string" default="" required="0">
+    <description>
+      Set whether to optimize the mesh using one of the specified methods. Values include: "convex_hull" - a single convex hull that encapsulates the mesh, "convex_decomposition" - decompose the mesh into multiple convex hull meshes. Default value is an empty string which means no mesh optimization.
+    </description>
+  </attribute>
+
+  <element name="convex_decomposition" required="0">
+    <description>Convex decomposition parameters. Applicable if the mesh optimization attribute is set to convex_decomposition</description>
+    <element name="max_convex_hulls" type="unsigned int" default="16" required="0">
+      <description>Maximum number of convex hulls to decompose into. This sets the maximum number of submeshes that the final decomposed mesh will contain.</description>
+    </element>
+    <element name="voxel_resolution" type="unsigned int" default="200000" required="0">
+      <description>The number of voxels to use for representing the source mesh before decomposition. Applicable only to voxel based convex decomposition methods.</description>
+    </element>
+  </element>
+
   <element name="uri" type="string" default="__default__" required="1">
     <description>Mesh uri</description>
   </element>

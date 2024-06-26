@@ -16,6 +16,7 @@ import copy
 
 import math
 
+from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 from gz_test_deps.sdformat import Cylinder
 
 import unittest
@@ -64,7 +65,7 @@ class CylinderTEST(unittest.TestCase):
 
 
   def test_copy_construction(self):
-    cylinder = Cylinder();
+    cylinder = Cylinder()
     cylinder.set_radius(0.2)
     cylinder.set_length(3.0)
 
@@ -81,11 +82,11 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(3.0, cylinder2.length())
 
   def test_deepcopy(self):
-    cylinder = Cylinder();
+    cylinder = Cylinder()
     cylinder.set_radius(0.2)
     cylinder.set_length(3.0)
 
-    cylinder2 = copy.deepcopy(cylinder);
+    cylinder2 = copy.deepcopy(cylinder)
     self.assertEqual(0.2, cylinder2.radius())
     self.assertEqual(3.0, cylinder2.length())
 
@@ -98,7 +99,7 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(3.0, cylinder2.length())
 
   def test_shape(self):
-    cylinder = Cylinder();
+    cylinder = Cylinder()
     self.assertEqual(0.5, cylinder.radius())
     self.assertEqual(1.0, cylinder.length())
 
@@ -107,6 +108,44 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(0.123, cylinder.radius())
     self.assertEqual(0.456, cylinder.length())
 
+  def test_calculate_interial(self):
+    cylinder = Cylinder()
+
+    # density of aluminium
+    density = 2170
+
+    # Invalid dimensions leading to None return in
+    # CalculateInertial()
+    cylinder.set_length(-1)
+    cylinder.set_radius(0)
+    invalidCylinderInertial = cylinder.calculate_inertial(density)
+    self.assertEqual(None, invalidCylinderInertial)
+
+    l = 2.0
+    r = 0.1
+
+    cylinder.set_length(l)
+    cylinder.set_radius(r)
+
+    expectedMass = cylinder.shape().volume() * density
+    ixxIyy = (1 / 12.0) * expectedMass * (3 * r * r + l * l)
+    izz = 0.5 * expectedMass * r * r
+
+    expectedMassMat = MassMatrix3d(expectedMass, Vector3d(ixxIyy, ixxIyy, izz), Vector3d.ZERO)
+
+    expectedInertial = Inertiald()
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    cylinderInertial = cylinder.calculate_inertial(density)
+    self.assertEqual(cylinder.shape().mat().density(), density)
+    self.assertNotEqual(None, cylinderInertial)
+    self.assertEqual(expectedInertial, cylinderInertial)
+    self.assertEqual(expectedInertial.mass_matrix().diagonal_moments(),
+      cylinderInertial.mass_matrix().diagonal_moments())
+    self.assertEqual(expectedInertial.mass_matrix().mass(),
+      cylinderInertial.mass_matrix().mass())
+    self.assertEqual(expectedInertial.pose(), cylinderInertial.pose())
 
 if __name__ == '__main__':
     unittest.main()

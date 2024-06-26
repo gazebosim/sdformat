@@ -56,4 +56,22 @@ TEST(DOMSurface, Shapes)
   EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Slip2(), 5);
   EXPECT_EQ(boxCol->Surface()->Friction()->ODE()->Fdir1(),
             gz::math::Vector3d(1.2, 3.4, 5.6));
+
+  EXPECT_DOUBLE_EQ(1.6,
+      boxCol->Surface()->Friction()->BulletFriction()->Friction());
+  EXPECT_DOUBLE_EQ(1.7,
+      boxCol->Surface()->Friction()->BulletFriction()->Friction2());
+  EXPECT_EQ(boxCol->Surface()->Friction()->BulletFriction()->Fdir1(),
+            gz::math::Vector3d(6.5, 4.3, 2.1));
+  EXPECT_DOUBLE_EQ(1.5,
+      boxCol->Surface()->Friction()->BulletFriction()->RollingFriction());
+
+  EXPECT_DOUBLE_EQ(5.1,
+                   boxCol->Surface()->Friction()->Torsional()->Coefficient());
+  EXPECT_FALSE(boxCol->Surface()->Friction()->Torsional()->UsePatchRadius());
+  EXPECT_DOUBLE_EQ(1.3,
+                   boxCol->Surface()->Friction()->Torsional()->PatchRadius());
+  EXPECT_DOUBLE_EQ(3.7,
+                   boxCol->Surface()->Friction()->Torsional()->SurfaceRadius());
+  EXPECT_DOUBLE_EQ(3.1, boxCol->Surface()->Friction()->Torsional()->ODESlip());
 }

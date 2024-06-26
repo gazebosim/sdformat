@@ -16,6 +16,7 @@
 #include "pyEllipsoid.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Ellipsoid.hh"
 
@@ -33,6 +34,8 @@ void defineEllipsoid(pybind11::object module)
   pybind11::class_<sdf::Ellipsoid>(module, "Ellipsoid")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Ellipsoid>())
+    .def("calculate_inertial", &sdf::Ellipsoid::CalculateInertial,
+         "Calculate and return the Inertial values for the Ellipsoid.")
     .def("radii", &sdf::Ellipsoid::Radii,
          "Get the ellipsoid's radii in meters.")
     .def("set_radii", &sdf::Ellipsoid::SetRadii,

@@ -46,6 +46,12 @@ void defineParserConfig(pybind11::object module)
     .def("find_file_callback",
          &sdf::ParserConfig::FindFileCallback,
          "Get the find file callback function")
+    .def("calculate_inertial_configuration",
+         &sdf::ParserConfig::CalculateInertialConfiguration,
+         "Get the current configuration for the CalculateInertial() function")
+    .def("set_calculate_inertial_configuration",
+         &sdf::ParserConfig::SetCalculateInertialConfiguration,
+         "Set the configuration for the CalculateInertial() function")
     .def("set_find_callback",
          &sdf::ParserConfig::SetFindCallback,
          "Set the callback to use when libsdformat can't find a file.")
@@ -96,6 +102,10 @@ void defineParserConfig(pybind11::object module)
     .value("WARN", sdf::EnforcementPolicy::WARN)
     .value("LOG", sdf::EnforcementPolicy::LOG);
 
+  pybind11::enum_<sdf::ConfigureResolveAutoInertials>(
+    module, "ConfigureResolveAutoInertials")
+    .value("SKIP_CALCULATION_IN_LOAD", sdf::ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD)
+    .value("SAVE_CALCULATION", sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

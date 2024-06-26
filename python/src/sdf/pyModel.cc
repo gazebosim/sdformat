@@ -46,6 +46,8 @@ void defineModel(pybind11::object module)
          },
          "Check that the FrameAttachedToGraph and PoseRelativeToGraph "
          "are valid.")
+    .def("resolve_auto_inertials", &sdf::Model::ResolveAutoInertials,
+         "Calculate and set the inertials for all the links belonging to the model object")
     .def("name", &sdf::Model::Name,
          "Get the name of model.")
     .def("set_name", &sdf::Model::SetName,

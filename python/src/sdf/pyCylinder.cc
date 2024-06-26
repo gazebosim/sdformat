@@ -16,6 +16,7 @@
 #include "pyCylinder.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Cylinder.hh"
 
@@ -33,6 +34,8 @@ void defineCylinder(pybind11::object module)
   pybind11::class_<sdf::Cylinder>(module, "Cylinder")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Cylinder>())
+    .def("calculate_inertial", &sdf::Cylinder::CalculateInertial,
+         "Calculate and return the Inertial values for the Cylinder.")
     .def("radius", &sdf::Cylinder::Radius,
          "Get the cylinder's radius in meters.")
     .def("set_radius", &sdf::Cylinder::SetRadius,

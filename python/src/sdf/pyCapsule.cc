@@ -16,6 +16,7 @@
 #include "pyCapsule.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Capsule.hh"
 
@@ -41,6 +42,8 @@ void defineCapsule(pybind11::object module)
          "Get the capsule's length in meters.")
     .def("set_length", &sdf::Capsule::SetLength,
          "Set the capsule's length in meters.")
+    .def("calculate_inertial", &sdf::Capsule::CalculateInertial,
+         "Calculate and return the Inertial values for the Capsule.")
     .def(
         "shape",
         pybind11::overload_cast<>(&sdf::Capsule::Shape, pybind11::const_),

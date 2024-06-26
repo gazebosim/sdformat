@@ -191,7 +191,7 @@ class CameraTEST(unittest.TestCase):
       cam.set_lens_intrinsics_cy(123)
       self.assertAlmostEqual(123, cam.lens_intrinsics_cy())
 
-      self.assertAlmostEqual(1.0, cam.lens_intrinsics_skew())
+      self.assertAlmostEqual(0.0, cam.lens_intrinsics_skew())
       cam.set_lens_intrinsics_skew(2.3)
       self.assertAlmostEqual(2.3, cam.lens_intrinsics_skew())
 

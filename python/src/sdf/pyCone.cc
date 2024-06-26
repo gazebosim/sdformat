@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2022 Open Source Robotics Foundation
+ * Copyright 2024 CogniPilot Foundation
+ * Copyright 2024 Open Source Robotics Foundation
+ * Copyright 2024 Rudis Laboratories
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "pyBox.hh"
+#include "pyCone.hh"
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
-#include "sdf/Box.hh"
+#include "sdf/Cone.hh"
 
 using namespace pybind11::literals;
 
@@ -29,27 +30,29 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
 /////////////////////////////////////////////////
-void defineBox(pybind11::object module)
+void defineCone(pybind11::object module)
 {
-  pybind11::class_<sdf::Box>(module, "Box")
+  pybind11::class_<sdf::Cone>(module, "Cone")
     .def(pybind11::init<>())
-    .def(pybind11::init<sdf::Box>())
-    .def("size", &sdf::Box::Size,
-         "Get the box size in meters.")
-    .def("set_size", &sdf::Box::SetSize,
-         "Set the box size in meters.")
+    .def(pybind11::init<sdf::Cone>())
+    .def("radius", &sdf::Cone::Radius,
+         "Get the cone's radius in meters.")
+    .def("set_radius", &sdf::Cone::SetRadius,
+         "Set the cone's radius in meters.")
+    .def("length", &sdf::Cone::Length,
+         "Get the cone's length in meters.")
+    .def("set_length", &sdf::Cone::SetLength,
+         "Set the cone's length in meters.")
     .def(
         "shape",
-        pybind11::overload_cast<>(&sdf::Box::Shape, pybind11::const_),
+        pybind11::overload_cast<>(&sdf::Cone::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
-        "Get a mutable Gazebo Math representation of this Box.")
-    .def("calculate_inertial", &sdf::Box::CalculateInertial,
-         "Calculate and return the Inertial values for the Box.")
-    .def("__copy__", [](const sdf::Box &self) {
-      return sdf::Box(self);
+        "Get a mutable Gazebo Math representation of this Cone.")
+    .def("__copy__", [](const sdf::Cone &self) {
+      return sdf::Cone(self);
     })
-    .def("__deepcopy__", [](const sdf::Box &self, pybind11::dict) {
-      return sdf::Box(self);
+    .def("__deepcopy__", [](const sdf::Cone &self, pybind11::dict) {
+      return sdf::Cone(self);
     }, "memo"_a);
 }
 }  // namespace python
