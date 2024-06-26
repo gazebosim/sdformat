@@ -254,11 +254,11 @@ namespace sdf
     public: static ElementPtr WrapInRoot(const ElementPtr &_sdf);
 
     /// \brief wraps the SDF element into a root element with the version info.
-    /// \param[in] _sdf the sdf element. Will be cloned by this function.
     /// \param[out] _errors Vector of errors.
+    /// \param[in] _sdf the sdf element. Will be cloned by this function.
     /// \return a wrapped clone of the SDF element
-    public: static ElementPtr WrapInRoot(const ElementPtr &_sdf,
-                                         sdf::Errors &_errors);
+    public: static ElementPtr WrapInRoot(sdf::Errors &_errors,
+                                         const ElementPtr &_sdf);
 
     /// \brief Get a string representation of an SDF specification file.
     /// This function uses a built-in version of a .sdf file located in
@@ -283,14 +283,14 @@ namespace sdf
     ///
     /// Most people should not use this function.
     ///
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _filename Base name of the SDF specification file to
     /// load. For example "root.sdf" or "world.sdf".
-    /// \param[out] _errors Vector of errors.
     /// \return A string that contains the contents of the specified
     /// _filename. An empty string is returned if the _filename could not be
     /// found.
     public: static const std::string &EmbeddedSpec(
-                const std::string &_filename, sdf::Errors &_errors);
+                sdf::Errors &_errors, const std::string &_filename);
 
     /// \internal
     /// \brief Pointer to private data.

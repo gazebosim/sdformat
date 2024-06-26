@@ -505,13 +505,13 @@ void SDF::Version(const std::string &_version)
 ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
 {
   sdf::Errors errors;
-  ElementPtr result = SDF::WrapInRoot(_sdf, errors);
+  ElementPtr result = SDF::WrapInRoot(errors, _sdf);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 /////////////////////////////////////////////////
-ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf, sdf::Errors &_errors)
+ElementPtr SDF::WrapInRoot(sdf::Errors &_errors, const ElementPtr &_sdf)
 {
   ElementPtr root(new Element);
   root->SetName("sdf");
@@ -527,7 +527,7 @@ const std::string &SDF::EmbeddedSpec(
     const std::string &_filename, const bool _quiet)
 {
   sdf::Errors errors;
-  const std::string &result = EmbeddedSpec(_filename, errors);
+  const std::string &result = EmbeddedSpec(errors, _filename);
   if (!_quiet)
   {
     sdf::throwOrPrintErrors(errors);
@@ -537,7 +537,7 @@ const std::string &SDF::EmbeddedSpec(
 
 /////////////////////////////////////////////////
 const std::string &SDF::EmbeddedSpec(
-    const std::string &_filename, sdf::Errors &_errors)
+    sdf::Errors &_errors, const std::string &_filename)
 {
   try
   {
