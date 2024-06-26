@@ -1,5 +1,13 @@
 ## libsdformat 13.X
 
+### libsdformat 13.8.0 (2024-06-25)
+
+1. Added `World::ActorByName`
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
+
+1. Backport #1367 to Garden: Fix find Python3 logic.
+    * [Pull request #1370](https://github.com/gazebosim/sdformat/pull/1370)
+
 ### libsdformat 13.7.0 (2024-06-13)
 
 1. Add support for no gravity link
