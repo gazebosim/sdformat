@@ -14,7 +14,7 @@
 
 import copy
 from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from gz_test_deps.sdformat import (Box, Collision, Contact, Cylinder, Error,
+from gz_test_deps.sdformat import (Box, Collision, Cone, Contact, Cylinder, Error,
                                    Geometry, ParserConfig, Plane, Root, Surface, Sphere,
                                    SDFErrorsException)
 import gz_test_deps.sdformat as sdf
@@ -61,6 +61,7 @@ class CollisionTEST(unittest.TestCase):
         self.assertNotEqual(None, collision.geometry())
         self.assertEqual(sdf.GeometryType.EMPTY, collision.geometry().type())
         self.assertEqual(None, collision.geometry().box_shape())
+        self.assertEqual(None, collision.geometry().cone_shape())
         self.assertEqual(None, collision.geometry().cylinder_shape())
         self.assertEqual(None, collision.geometry().plane_shape())
         self.assertEqual(None, collision.geometry().sphere_shape())
