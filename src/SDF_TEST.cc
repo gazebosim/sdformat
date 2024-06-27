@@ -743,6 +743,46 @@ bool create_new_temp_dir(std::string &_new_temp_path)
 }
 
 /////////////////////////////////////////////////
+TEST(SDF, ErrorOutput)
+{
+  std::stringstream buffer;
+  sdf::testing::RedirectConsoleStream redir(
+  sdf::Console::Instance()->GetMsgStream(), &buffer);
+
+  #ifdef _WIN32
+    sdf::Console::Instance()->SetQuiet(false);
+    sdf::testing::ScopeExit revertSetQuiet(
+      []
+      {
+        sdf::Console::Instance()->SetQuiet(true);
+      });
+  #endif
+  sdf::Errors errors;
+
+  // Test findFile
+  EXPECT_EQ(sdf::findFile(errors, "adfjialkas31", false, true), "");
+  EXPECT_EQ(errors.size(), 1) << errors;
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find("Tried to use callback in sdf::findFile(), "
+                             "but the callback is empty.  Did you call "
+                             "sdf::setFindCallback()?"))
+      << errors[0].Message();
+  errors.clear();
+
+  sdf::SDF sdf;
+  sdf.SetFromString(errors, "banana");
+  EXPECT_EQ(errors.size(), 2) << errors;
+  EXPECT_NE(std::string::npos,
+    errors[0].Message().find("Error parsing XML from string"))
+      << errors[0].Message();
+  EXPECT_NE(std::string::npos,
+    errors[1].Message().find("Unable to parse sdf string[banana]"))
+      << errors[1].Message();
+  // Check nothing has been printed
+  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+}
+
+/////////////////////////////////////////////////
 bool g_findFileCbCalled = false;
 std::string findFileCb(const std::string &)
 {

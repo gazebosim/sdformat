@@ -100,13 +100,13 @@ void defineWorld(pybind11::object module)
          pybind11::overload_cast<uint64_t>(
            &sdf::World::ModelByIndex),
          pybind11::return_value_policy::reference_internal,
-         "Get a mutable immediate (not nested) child joint model on an index.")
+         "Get a mutable immediate (not nested) model based on an index.")
      .def("model_by_name",
           pybind11::overload_cast<const std::string &>(
             &sdf::World::ModelByName),
           pybind11::return_value_policy::reference_internal,
-          "Get a mutable immediate (not nested) mutable child model based on an "
-          "index.")
+          "Get a mutable immediate (not nested) mutable child model based on a "
+          "name.")
      .def("model_name_exists", &sdf::World::ModelNameExists,
           "Get whether a model name exists.")
      .def("name_exists_in_frame_attached_to_graph",
@@ -139,6 +139,16 @@ void defineWorld(pybind11::object module)
           "Remove all joints.")
      .def("actor_count", &sdf::World::ActorCount,
           "Get the number of actors.")
+    .def("actor_by_index",
+         pybind11::overload_cast<uint64_t>(
+           &sdf::World::ActorByIndex),
+         pybind11::return_value_policy::reference_internal,
+         "Get a mutable actor based on an index.")
+     .def("actor_by_name",
+          pybind11::overload_cast<const std::string &>(
+            &sdf::World::ActorByName),
+          pybind11::return_value_policy::reference_internal,
+          "Get a mutable actor based on a name.")
      .def("frame_count", &sdf::World::FrameCount,
           "Get the number of explicit frames that are immediate (not nested) "
           "children of this World object.")
