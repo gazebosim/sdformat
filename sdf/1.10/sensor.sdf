@@ -8,6 +8,7 @@
 
   <attribute name="type" type="string" default="__default__" required="1">
     <description>The type name of the sensor. By default, SDFormat supports types
+                  air_flow,
                   air_pressure,
                   air_speed,
                   altimeter,
@@ -61,6 +62,7 @@
 
   <include filename="pose.sdf" required="0"/>
   <include filename="plugin.sdf" required="*"/>
+  <include filename="air_flow.sdf" required="0"/>
   <include filename="air_pressure.sdf" required="0"/>
   <include filename="air_speed.sdf" required="0"/>
   <include filename="altimeter.sdf" required="0"/>
