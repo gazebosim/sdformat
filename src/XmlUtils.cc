@@ -59,7 +59,7 @@ tinyxml2::XMLNode *DeepClone(sdf::Errors &_errors,
   for (const tinyxml2::XMLNode *node = _src->FirstChild(); node != nullptr;
        node = node->NextSibling())
   {
-    auto *childCopy = DeepClone(_doc, node);
+    auto *childCopy = DeepClone(_errors, _doc, node);
     if (childCopy == nullptr)
     {
     _errors.push_back({sdf::ErrorCode::XML_ERROR,
