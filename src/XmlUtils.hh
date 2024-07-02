@@ -29,7 +29,7 @@ namespace sdf
   // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
 
-  /// \brief Perform a deep copy f an XML Node
+  /// \brief Perform a deep copy of an XML Node
   ///
   /// This copies an XMLNode _src and all of its decendants
   /// into a specified XMLDocument.
