@@ -56,11 +56,6 @@ namespace sdf
                                const tinyxml2::XMLNode *_src);
 
   /// \brief Converts the XML Element to a string
-  /// \param[in] _elem Element to be converted
-  /// \return The string representation
-//  std::string ElementToString(const tinyxml2::XMLElement *_elem);
-
-  /// \brief Converts the XML Element to a string
   /// \param[out] _errors Vector of errors
   /// \param[in] _elem Element to be converted
   /// \return The string representation

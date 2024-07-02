@@ -73,15 +73,6 @@ tinyxml2::XMLNode *DeepClone(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
-std::string ElementToString(const tinyxml2::XMLElement *_elem)
-{
-  sdf::Errors errors;
-  std::string result = ElementToString(_elem, errors);
-  sdf::throwOrPrintErrors(errors);
-  return result;
-}
-
-/////////////////////////////////////////////////
 std::string ElementToString(sdf::Errors &_errors,
                             const tinyxml2::XMLElement *_elem)
 {
