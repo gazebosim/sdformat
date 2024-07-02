@@ -61,6 +61,7 @@ TEST(XMLUtils, InvalidDeepClone)
 {
   sdf::Errors errors;
   auto newRoot = sdf::DeepClone(errors, nullptr, nullptr);
+  EXPECT_EQ(nullptr, newRoot);
   EXPECT_EQ(1u, errors.size()) << errors;
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::XML_ERROR);
@@ -94,6 +95,7 @@ TEST(XMLUtils, InvalidElementToString)
 {
   sdf::Errors errors;
   std::string docString = sdf::ElementToString(errors, nullptr);
+  EXPECT_TRUE(docString.empty());
   EXPECT_EQ(1u, errors.size()) << errors;
   ASSERT_FALSE(errors.empty());
   EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::XML_ERROR);
