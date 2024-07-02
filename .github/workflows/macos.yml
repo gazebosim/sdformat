@@ -18,11 +18,11 @@ jobs:
     # Workaround for https://github.com/actions/setup-python/issues/577
     - name: Clean up python binaries
       run: |
-        rm -f /usr/local/bin/2to3*;
-        rm -f /usr/local/bin/idle3*;
-        rm -f /usr/local/bin/pydoc3*;
-        rm -f /usr/local/bin/python3*;
-        rm -f /usr/local/bin/python3*-config;
+        rm -f $(brew --prefix)/bin/2to3*;
+        rm -f $(brew --prefix)/bin/idle3*;
+        rm -f $(brew --prefix)/bin/pydoc3*;
+        rm -f $(brew --prefix)/bin/python3*;
+        rm -f $(brew --prefix)/bin/python3*-config;
     - name: Install base dependencies
       env:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
@@ -33,7 +33,9 @@ jobs:
     - run: mkdir build
     - name: cmake
       working-directory: build
-      run: cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local/Cellar/${PACKAGE}/HEAD
+      run: |
+        export PYTHONPATH=$PYTHONPATH:$(brew --prefix)/lib/python
+        cmake .. -DCMAKE_INSTALL_PREFIX=$(brew --prefix)/Cellar/${PACKAGE}/HEAD -DPython3_EXECUTABLE=$(brew --prefix)/bin/python3
     - run: make
       working-directory: build
     - run: make test
