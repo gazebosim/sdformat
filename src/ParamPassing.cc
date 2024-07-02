@@ -52,7 +52,7 @@ void updateParams(const ParserConfig &_config,
       _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
         "Element identifier requires an element_id attribute, but the "
         "element_id is not set. Skipping element alteration:\n"
-        + ElementToString(childElemXml)
+        + ElementToString(_errors, childElemXml)
       });
       continue;
     }
@@ -67,7 +67,7 @@ void updateParams(const ParserConfig &_config,
       _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
         "Missing name after double colons in element identifier. "
         "Skipping element alteration:\n"
-        + ElementToString(childElemXml)
+        + ElementToString(_errors, childElemXml)
       });
       continue;
     }
@@ -83,7 +83,7 @@ void updateParams(const ParserConfig &_config,
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
           "Action [" + actionStr + "] is not a valid action. Skipping "
-          "element alteration:\n" + ElementToString(childElemXml)
+          "element alteration:\n" + ElementToString(_errors, childElemXml)
         });
         continue;
       }
@@ -102,7 +102,7 @@ void updateParams(const ParserConfig &_config,
         _errors.push_back({ErrorCode::ATTRIBUTE_MISSING,
           "Element to be added is missing a 'name' attribute. "
           "Skipping element addition:\n"
-          + ElementToString(childElemXml)
+          + ElementToString(_errors, childElemXml)
         });
         continue;
       }
@@ -112,7 +112,7 @@ void updateParams(const ParserConfig &_config,
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
           "The 'name' attribute can not be empty. Skipping element addition:\n"
-          + ElementToString(childElemXml)
+          + ElementToString(_errors, childElemXml)
         });
         continue;
       }
@@ -129,7 +129,7 @@ void updateParams(const ParserConfig &_config,
           + " element_id='" + childElemXml->Attribute("element_id")
           + "'> because element already exists in included model. "
           + "Skipping element addition:\n"
-          + ElementToString(childElemXml)
+          + ElementToString(_errors, childElemXml)
         });
         continue;
       }
@@ -157,7 +157,8 @@ void updateParams(const ParserConfig &_config,
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element <" + std::string(childElemXml->Name())
         + " element_id='" + childElemXml->Attribute("element_id") + "'>. " +
-        "Skipping element modification:\n" + ElementToString(childElemXml)
+        "Skipping element modification:\n" +
+        ElementToString(_errors, childElemXml)
       });
       continue;
     }
@@ -194,7 +195,7 @@ void updateParams(const ParserConfig &_config,
       {
         _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Unable to convert XML to SDF. Skipping element replacement:\n"
-          + ElementToString(childElemXml)
+          + ElementToString(_errors, childElemXml)
         });
         continue;
       }
@@ -355,7 +356,7 @@ ElementPtr initElementDescription(const tinyxml2::XMLElement *_xml,
     _errors.push_back({ErrorCode::ELEMENT_INVALID,
       "Element [" + std::string(_xml->Name()) + "] is not a defined "
       "SDF element. Skipping element alteration\n: "
-      + ElementToString(_xml)
+      + ElementToString(_errors, _xml)
     });
     return nullptr;
   }
@@ -384,7 +385,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
         "Missing an action attribute. Skipping child element modification "
         "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
         + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-        + ElementToString(xmlChild)
+        + ElementToString(_errors, xmlChild)
       });
       continue;
     }
@@ -397,7 +398,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
         "child element modification with parent <"
         + std::string(_childrenXml->Name()) + " element_id='"
         + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-        + ElementToString(xmlChild)
+        + ElementToString(_errors, xmlChild)
       });
       continue;
     }
@@ -411,7 +412,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
           "Could not find element. Skipping child element removal "
           "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
           + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-          + ElementToString(xmlChild)
+          + ElementToString(_errors, xmlChild)
         });
       }
       else
@@ -430,7 +431,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
           "Could not find element. Skipping child element modification "
           "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
           + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-          + ElementToString(xmlChild)
+          + ElementToString(_errors, xmlChild)
         });
       }
       else
@@ -455,7 +456,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
         "child element modification with parent <"
         + std::string(_childrenXml->Name()) + " element_id='"
         + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-        + ElementToString(xmlChild)
+        + ElementToString(_errors, xmlChild)
       });
       continue;
     }
@@ -468,7 +469,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
         "Unable to convert XML to SDF. Skipping child element alteration "
         "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
         + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-        + ElementToString(xmlChild)
+        + ElementToString(_errors, xmlChild)
       });
       continue;
     }
@@ -486,7 +487,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
           "Could not find element. Skipping child element replacement "
           "with parent <" + std::string(_childrenXml->Name()) + " element_id='"
           + std::string(_childrenXml->Attribute("element_id")) + "'>:\n"
-          + ElementToString(xmlChild)
+          + ElementToString(_errors, xmlChild)
         });
         continue;
       }
@@ -498,7 +499,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
           "Replacement element is missing a 'name' attribute. "
           "Skipping element replacement <" + std::string(_childrenXml->Name())
           + " element_id='" + std::string(_childrenXml->Attribute("element_id"))
-          + "'>:\n" + ElementToString(xmlChild)
+          + "'>:\n" + ElementToString(_errors, xmlChild)
         });
         continue;
       }
@@ -525,7 +526,7 @@ void add(const ParserConfig &_config, const std::string &_source,
   {
     _errors.push_back({ErrorCode::ELEMENT_INVALID,
       "Unable to convert XML to SDF. Skipping element addition:\n"
-      + ElementToString(_childXml)
+      + ElementToString(_errors, _childXml)
     });
   }
 }
@@ -557,7 +558,8 @@ void modifyAttributes(tinyxml2::XMLElement *_xml,
       {
         _errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
           "Attribute [" + attrName + "] is invalid. "
-          "Skipping attribute modification in:\n" + ElementToString(_xml)
+          "Skipping attribute modification in:\n" +
+          ElementToString(_errors, _xml)
         });
         continue;
       }
@@ -582,7 +584,7 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
     {
       _errors.push_back({ErrorCode::ELEMENT_MISSING,
         "Could not find element [" + elemName + "]. "
-        "Skipping modification for:\n" + ElementToString(_xml)
+        "Skipping modification for:\n" + ElementToString(_errors, _xml)
       });
       continue;
     }
@@ -599,7 +601,7 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
         _errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Value [" + std::string(xmlChild->GetText()) + "] for element ["
           + elemName + "] is invalid. Skipping modification for:\n"
-          + ElementToString(_xml)
+          + ElementToString(_errors, _xml)
         });
         continue;
       }
@@ -620,9 +622,9 @@ void modifyChildren(tinyxml2::XMLElement *_xml,
         // sdf has child elements but no children were specified in xml
         std::stringstream ss;
         ss << "No modifications for element "
-           << ElementToString(xmlChild)
+           << ElementToString(_errors, xmlChild)
            << " provided, skipping modification for:\n"
-           << ElementToString(_xml);
+           << ElementToString(_errors, _xml);
         Error err(ErrorCode::WARNING, ss.str());
         enforceConfigurablePolicyCondition(
             _config.WarningsPolicy(), err, _errors);
@@ -650,7 +652,7 @@ void modify(tinyxml2::XMLElement *_xml,  const sdf::ParserConfig &_config,
       _errors.push_back({ErrorCode::ELEMENT_INVALID,
         "Value [" + std::string(_xml->GetText()) + "] for element [" +
         std::string(_xml->Name()) + "] is invalid. Skipping modification for:\n"
-        + ElementToString(_xml)
+        + ElementToString(_errors, _xml)
       });
     }
   }
@@ -688,7 +690,7 @@ void remove(const tinyxml2::XMLElement *_xml, const sdf::ParserConfig &_config,
           + std::string(xmlParent->Name()) + " element_id='"
           + std::string(xmlParent->Attribute("element_id")) + "'> with parent <"
           + std::string(_xml->Name()) + ">:\n"
-          + ElementToString(xmlChild)
+          + ElementToString(_errors, xmlChild)
         });
         continue;
       }

@@ -264,7 +264,7 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     }
     else if (name == "copy")
     {
-      Move(_elem, childElem, true);
+      Move(_elem, childElem, true, _errors);
     }
     else if (name == "map")
     {
@@ -272,7 +272,7 @@ void Converter::ConvertImpl(tinyxml2::XMLElement *_elem,
     }
     else if (name == "move")
     {
-      Move(_elem, childElem, false);
+      Move(_elem, childElem, false, _errors);
     }
     else if (name == "add")
     {
@@ -923,7 +923,8 @@ void Converter::Map(tinyxml2::XMLElement *_elem,
 /////////////////////////////////////////////////
 void Converter::Move(tinyxml2::XMLElement *_elem,
                      tinyxml2::XMLElement *_moveElem,
-                     const bool _copy)
+                     const bool _copy,
+                     sdf::Errors &_errors)
 {
   SDF_ASSERT(_elem != NULL, "SDF element is NULL");
   SDF_ASSERT(_moveElem != NULL, "Move element is NULL");
@@ -1024,7 +1025,8 @@ void Converter::Move(tinyxml2::XMLElement *_elem,
 
     if (toElemStr && !toAttrStr)
     {
-      tinyxml2::XMLNode *cloned = DeepClone(moveFrom->GetDocument(), moveFrom);
+      tinyxml2::XMLNode *cloned = DeepClone(_errors, moveFrom->GetDocument(),
+                                            moveFrom);
       tinyxml2::XMLElement *moveTo = static_cast<tinyxml2::XMLElement*>(cloned);
 
       moveTo->SetValue(toName);
