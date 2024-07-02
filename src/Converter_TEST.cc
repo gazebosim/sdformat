@@ -3370,7 +3370,7 @@ TEST(Converter, World_17_to_18)
   ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
-  std::string convertedXmlStr = ElementToString(xmlDoc.RootElement(), errors);
+  std::string convertedXmlStr = ElementToString(errors, xmlDoc.RootElement());
   ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(convertedXmlStr.empty());
 
@@ -3394,7 +3394,7 @@ TEST(Converter, World_17_to_18)
   tinyxml2::XMLDocument expectedXmlDoc;
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement(), errors),
+  EXPECT_EQ(ElementToString(errors, expectedXmlDoc.RootElement()),
             convertedXmlStr);
   ASSERT_TRUE(errors.empty());
 
@@ -3512,7 +3512,7 @@ TEST(Converter, World_17_to_18)
   ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
-  convertedXmlStr = ElementToString(xmlDoc.RootElement(), errors);
+  convertedXmlStr = ElementToString(errors, xmlDoc.RootElement());
   ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(convertedXmlStr.empty());
 
@@ -3581,7 +3581,7 @@ TEST(Converter, World_17_to_18)
   expectedXmlDoc.Clear();
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement(), errors),
+  EXPECT_EQ(ElementToString(errors, expectedXmlDoc.RootElement()),
             convertedXmlStr);
   ASSERT_TRUE(errors.empty());
 
@@ -3622,7 +3622,7 @@ TEST(Converter, World_17_to_18)
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Compare converted xml with expected
-  convertedXmlStr = ElementToString(xmlDoc.RootElement(), errors);
+  convertedXmlStr = ElementToString(errors, xmlDoc.RootElement());
   ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(convertedXmlStr.empty());
 
@@ -3662,7 +3662,7 @@ TEST(Converter, World_17_to_18)
   expectedXmlDoc.Clear();
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement(), errors),
+  EXPECT_EQ(ElementToString(errors, expectedXmlDoc.RootElement()),
             convertedXmlStr);
   ASSERT_TRUE(errors.empty());
 

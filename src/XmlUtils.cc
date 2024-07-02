@@ -31,15 +31,15 @@ tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
                               const tinyxml2::XMLNode *_src)
 {
   sdf::Errors errors;
-  tinyxml2::XMLNode *result = DeepClone(_doc, _src, errors);
+  tinyxml2::XMLNode *result = DeepClone(errors, _doc, _src);
   sdf::throwOrPrintErrors(errors);
   return result;
 }
 
 /////////////////////////////////////////////////
-tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
-                             const tinyxml2::XMLNode *_src,
-                             sdf::Errors &_errors)
+tinyxml2::XMLNode *DeepClone(sdf::Errors &_errors,
+                             tinyxml2::XMLDocument *_doc,
+                             const tinyxml2::XMLNode *_src)
 {
   if (_src == nullptr)
   {
@@ -82,8 +82,8 @@ std::string ElementToString(const tinyxml2::XMLElement *_elem)
 }
 
 /////////////////////////////////////////////////
-std::string ElementToString(const tinyxml2::XMLElement *_elem,
-                            sdf::Errors &_errors)
+std::string ElementToString(sdf::Errors &_errors,
+                            const tinyxml2::XMLElement *_elem)
 {
   if (_elem == nullptr)
   {

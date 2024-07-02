@@ -46,14 +46,14 @@ namespace sdf
   /// This copies an XMLNode _src and all of its decendants
   /// into a specified XMLDocument.
   ///
+  /// \param[out] _errors Vector of errors
   /// \param[in] _doc Document in which to place the copied node
   /// \param[in] _src The node to deep copy
-  /// \param[out] _errors Vector of errors
   /// \returns The newly copied node upon success OR
   ///          nullptr if an error occurs.
-  tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
-                               const tinyxml2::XMLNode *_src,
-                               sdf::Errors &_errors);
+  tinyxml2::XMLNode *DeepClone(sdf::Errors &_errors,
+                               tinyxml2::XMLDocument *_doc,
+                               const tinyxml2::XMLNode *_src);
 
   /// \brief Converts the XML Element to a string
   /// \param[in] _elem Element to be converted
@@ -61,11 +61,11 @@ namespace sdf
 //  std::string ElementToString(const tinyxml2::XMLElement *_elem);
 
   /// \brief Converts the XML Element to a string
-  /// \param[in] _elem Element to be converted
   /// \param[out] _errors Vector of errors
+  /// \param[in] _elem Element to be converted
   /// \return The string representation
-  std::string ElementToString(const tinyxml2::XMLElement *_elem,
-                              sdf::Errors &_errors);
+  std::string ElementToString(sdf::Errors &_errors,
+                              const tinyxml2::XMLElement *_elem);
   }
 }
 #endif
