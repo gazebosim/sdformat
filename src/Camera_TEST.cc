@@ -134,9 +134,12 @@ TEST(DOMCamera, Construction)
   cam.SetPoseRelativeTo("/frame");
   EXPECT_EQ("/frame", cam.PoseRelativeTo());
 
+  // \todo(iche033) Remove in sdformat16
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_TRUE(cam.OpticalFrameId().empty());
   cam.SetOpticalFrameId("/optical_frame");
   EXPECT_EQ("/optical_frame", cam.OpticalFrameId());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   EXPECT_EQ("stereographic", cam.LensType());
   cam.SetLensType("custom");
@@ -273,7 +276,12 @@ TEST(DOMCamera, ToElement)
   cam.SetPoseRelativeTo("/frame");
   cam.SetSaveFrames(true);
   cam.SetSaveFramesPath("/tmp");
+
+  // \todo(iche033) Remove in sdformat16
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   cam.SetOpticalFrameId("/optical_frame");
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+
   cam.SetCameraInfoTopic("/camera_info_test");
   cam.SetTriggerTopic("/trigger_topic_test");
   cam.SetTriggered(true);
@@ -296,7 +304,12 @@ TEST(DOMCamera, ToElement)
   EXPECT_EQ("/frame", cam2.PoseRelativeTo());
   EXPECT_TRUE(cam2.SaveFrames());
   EXPECT_EQ("/tmp", cam2.SaveFramesPath());
+
+  // \todo(iche033) Remove in sdformat16
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   EXPECT_EQ("/optical_frame", cam2.OpticalFrameId());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+
   EXPECT_EQ("/camera_info_test", cam2.CameraInfoTopic());
   EXPECT_EQ("/trigger_topic_test", cam2.TriggerTopic());
   EXPECT_TRUE(cam2.Triggered());

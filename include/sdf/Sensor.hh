@@ -160,6 +160,14 @@ namespace sdf
     /// \param[in] _name Name of the sensor.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get the frame ID of the sensor.
+    /// \return Sensor frame ID.
+    public: std::string FrameId() const;
+
+    /// \brief Set the frame ID of the sensor.
+    /// \param[in] _frameId Frame ID to set.
+    public: void SetFrameId(const std::string &_frameId);
+
     /// \brief Get the topic on which sensor data should be published.
     /// \return Topic for this sensor's data.
     public: std::string Topic() const;

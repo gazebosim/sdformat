@@ -60,6 +60,9 @@ TEST(DOMSensor, Construction)
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
 
+  EXPECT_TRUE(sensor.FrameId().empty());
+  sensor.SetFrameId("new_frame_id");
+  EXPECT_EQ("new_frame_id", sensor.FrameId());
 
   EXPECT_DOUBLE_EQ(0.0, sensor.UpdateRate());
 
@@ -76,6 +79,7 @@ TEST(DOMSensor, MoveConstructor)
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseRelativeTo("a_frame");
   sensor.SetUpdateRate(0.123);
+  sensor.SetFrameId("new_frame_id");
 
   sdf::Noise noise;
   noise.SetMean(0.1);
@@ -88,6 +92,7 @@ TEST(DOMSensor, MoveConstructor)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
   EXPECT_EQ("a_frame", sensor2.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor2.FrameId());
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
@@ -102,6 +107,7 @@ TEST(DOMSensor, CopyConstructor)
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseRelativeTo("a_frame");
   sensor.SetUpdateRate(0.123);
+  sensor.SetFrameId("new_frame_id");
 
   sdf::Noise noise;
   noise.SetMean(0.1);
@@ -114,6 +120,7 @@ TEST(DOMSensor, CopyConstructor)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor.RawPose());
   EXPECT_EQ("a_frame", sensor.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor.FrameId());
   ASSERT_TRUE(nullptr != sensor.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor.MagnetometerSensor()->XNoise().Mean());
@@ -121,6 +128,7 @@ TEST(DOMSensor, CopyConstructor)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
   EXPECT_EQ("a_frame", sensor2.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor2.FrameId());
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
@@ -134,6 +142,7 @@ TEST(DOMSensor, MoveAssignment)
   sensor.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseRelativeTo("a_frame");
+  sensor.SetFrameId("new_frame_id");
 
   sdf::Noise noise;
   noise.SetMean(0.1);
@@ -147,6 +156,7 @@ TEST(DOMSensor, MoveAssignment)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
   EXPECT_EQ("a_frame", sensor2.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor2.FrameId());
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
@@ -159,6 +169,7 @@ TEST(DOMSensor, CopyAssignment)
   sensor.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseRelativeTo("a_frame");
+  sensor.SetFrameId("new_frame_id");
 
   sdf::Noise noise;
   noise.SetMean(0.1);
@@ -172,6 +183,7 @@ TEST(DOMSensor, CopyAssignment)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor.RawPose());
   EXPECT_EQ("a_frame", sensor.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor.FrameId());
   ASSERT_TRUE(nullptr != sensor.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor.MagnetometerSensor()->XNoise().Mean());
@@ -179,6 +191,7 @@ TEST(DOMSensor, CopyAssignment)
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
   EXPECT_EQ("a_frame", sensor2.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor.FrameId());
   ASSERT_TRUE(nullptr != sensor2.MagnetometerSensor());
   EXPECT_DOUBLE_EQ(mag.XNoise().Mean(),
                    sensor2.MagnetometerSensor()->XNoise().Mean());
@@ -191,11 +204,13 @@ TEST(DOMSensor, CopyAssignmentAfterMove)
   sensor1.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
   sensor1.SetType(sdf::SensorType::MAGNETOMETER);
   sensor1.SetPoseRelativeTo("frame1");
+  sensor1.SetFrameId("new_frame_id");
 
   sdf::Sensor sensor2;
   sensor2.SetRawPose(gz::math::Pose3d(4, 5, 6, 0, 0, 0));
   sensor2.SetType(sdf::SensorType::CAMERA);
   sensor2.SetPoseRelativeTo("frame2");
+  sensor2.SetFrameId("new_frame_id2");
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -206,10 +221,12 @@ TEST(DOMSensor, CopyAssignmentAfterMove)
   EXPECT_EQ(sdf::SensorType::CAMERA, sensor1.Type());
   EXPECT_EQ(gz::math::Pose3d(4, 5, 6, 0, 0, 0), sensor1.RawPose());
   EXPECT_EQ("frame2", sensor1.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id2", sensor1.FrameId());
 
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
   EXPECT_EQ("frame1", sensor2.PoseRelativeTo());
+  EXPECT_EQ("new_frame_id", sensor2.FrameId());
 }
 
 /////////////////////////////////////////////////
@@ -509,6 +526,7 @@ TEST(DOMSensor, ToElement)
   // test calling ToElement on a DOM object constructed without calling Load
   sdf::Sensor sensor;
   sensor.SetName("my_sensor");
+  sensor.SetFrameId("my_sensor_frame_id");
   sensor.SetRawPose(gz::math::Pose3d(1, 2, 3, 0, 0, 0));
   sensor.SetType(sdf::SensorType::MAGNETOMETER);
   sensor.SetPoseRelativeTo("a_frame");
@@ -534,6 +552,7 @@ TEST(DOMSensor, ToElement)
   sensor2.Load(sensorElem);
 
   EXPECT_EQ("my_sensor", sensor2.Name());
+  EXPECT_EQ("my_sensor_frame_id", sensor2.FrameId());
   EXPECT_EQ(sdf::SensorType::MAGNETOMETER, sensor2.Type());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), sensor2.RawPose());
   EXPECT_EQ("a_frame", sensor2.PoseRelativeTo());
