@@ -1,16 +1,98 @@
 <!-- State information for a joint -->
 <element name="joint_state" required="*">
-  <description>Joint angle</description>
+  <description>State of the joint</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>Name of the joint</description>
   </attribute>
 
-  <element name="angle" type="double" default="0" required="+">
+  <element name="angle" type="double" default="0" required="-1">
     <attribute name="axis" type="unsigned int" default="0" required="1">
       <description>Index of the axis.</description>
     </attribute>
 
     <description>Angle of an axis</description>
+  </element>
+
+  <element name="axis_state" required="0">
+    <description>
+      Contains the state of the first joint axis.
+    </description>
+
+    <element name="position" type="double" default="0" required="0">
+      <description>The position of the first joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          Whether or not the joint position is interpreted in degrees,
+          otherwise they will be interpreted as radians by default.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="velocity" type="double" default="0" required="0">
+      <description>The velocity of the first joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          Whether or not the joint velocity is interpreted in degrees per
+          second, otherwise they will be interpreted as radians per second
+          by default.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="acceleration" type="double" default="0" required="0">
+      <description>The acceleration of the first joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          Whether or not the joint acceleration is interpreted in degrees per
+          second per second, otherwise they will be interpreted as radians per
+          second per second by default.
+        </description>
+      </attribute>
+    </element>
+  </element>
+
+  <element name="axis2_state" required="0">
+    <description>
+      Contains the state of the second joint axis.
+    </description>
+
+    <element name="position" type="double" default="0" required="0">
+      <description>The position of the second joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          Whether or not the joint position is interpreted in degrees,
+          otherwise they will be interpreted as radians by default.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="velocity" type="double" default="0" required="0">
+      <description>The velocity of the second joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          Whether or not the joint velocity is interpreted in degrees per
+          second, otherwise they will be interpreted as radians per second
+          by default.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="acceleration" type="double" default="0" required="0">
+      <description>The acceleration of the second joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          Whether or not the joint acceleration is interpreted in degrees per
+          second per second, otherwise they will be interpreted as radians per
+          second per second by default.
+        </description>
+      </attribute>
+    </element>
   </element>
 </element> <!-- End Joint -->
