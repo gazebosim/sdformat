@@ -38,4 +38,6 @@
 
   <include filename="light_state.sdf" required="*"/>
 
+  <include filename="joint_state.sdf" required="*"/>
+
 </element> <!-- End State -->

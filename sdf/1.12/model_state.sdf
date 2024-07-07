@@ -6,21 +6,7 @@
     <description>Name of the model</description>
   </attribute>
 
-  <element name="joint_state" required="*">
-    <description>Joint angle</description>
-
-    <attribute name="name" type="string" default="__default__" required="1">
-      <description>Name of the joint</description>
-    </attribute>
-
-    <element name="angle" type="double" default="0" required="+">
-      <attribute name="axis" type="unsigned int" default="0" required="1">
-        <description>Index of the axis.</description>
-      </attribute>
-
-      <description>Angle of an axis</description>
-    </element>
-  </element>
+  <include filename="joint_state.sdf" required="*"/>
 
   <element name="model_state" ref="model_state" required="*">
     <description>A nested model state element</description>
