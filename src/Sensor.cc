@@ -82,6 +82,9 @@ class sdf::Sensor::Implementation
   /// \brief Name of the sensor.
   public: std::string name = "";
 
+  /// \brief Sensor frame ID
+  public: std::string frameId{""};
+
   /// \brief Sensor data topic.
   public: std::string topic = "";
 
@@ -243,7 +246,8 @@ Errors Sensor::Load(ElementPtr _sdf)
                      "The supplied sensor name [" + this->dataPtr->name +
                      "] is reserved."});
   }
-
+  this->dataPtr->frameId = _sdf->Get<std::string>("frame_id",
+      this->dataPtr->frameId).first;
   this->dataPtr->updateRate = _sdf->Get<double>("update_rate",
       this->dataPtr->updateRate).first;
   this->dataPtr->topic = _sdf->Get<std::string>("topic");
@@ -437,6 +441,18 @@ std::string Sensor::Name() const
 void Sensor::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+std::string Sensor::FrameId() const
+{
+  return this->dataPtr->frameId;
+}
+
+/////////////////////////////////////////////////
+void Sensor::SetFrameId(const std::string &_frameId)
+{
+  this->dataPtr->frameId = _frameId;
 }
 
 /////////////////////////////////////////////////
@@ -750,6 +766,7 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   }
   poseElem->Set<gz::math::Pose3d>(this->RawPose());
 
+  elem->GetElement("frame_id")->Set<std::string>(this->FrameId());
   elem->GetElement("topic")->Set<std::string>(this->Topic());
   elem->GetElement("update_rate")->Set<double>(this->UpdateRate());
   elem->GetElement("enable_metrics")->Set<double>(this->EnableMetrics());

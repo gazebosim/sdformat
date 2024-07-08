@@ -32,6 +32,9 @@ namespace python
 /////////////////////////////////////////////////
 void defineCamera(pybind11::object module)
 {
+  // \todo(iche033) OpticalFrameId and SetOpticalFrameId are deprecated
+  // Remove sdformat16
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   pybind11::class_<sdf::Camera> cameraModule(module, "Camera");
   cameraModule
     .def(pybind11::init<>())
@@ -296,6 +299,8 @@ void defineCamera(pybind11::object module)
       .value("BAYER_BGGR8", sdf::PixelFormatType::BAYER_BGGR8)
       .value("BAYER_GBRG8", sdf::PixelFormatType::BAYER_GBRG8)
       .value("BAYER_GRBG8", sdf::PixelFormatType::BAYER_GRBG8);
+
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

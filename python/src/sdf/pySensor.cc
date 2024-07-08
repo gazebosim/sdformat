@@ -51,6 +51,10 @@ void defineSensor(pybind11::object module)
          "Get the name of the sensor.")
     .def("set_name", &sdf::Sensor::SetName,
          "Set the name of the sensor.")
+    .def("frame_id", &sdf::Sensor::FrameId,
+         "Get the frame id of the sensor.")
+    .def("set_frame_id", &sdf::Sensor::SetFrameId,
+         "Set the frame id of the sensor.")
     .def("topic", &sdf::Sensor::Topic,
          "Get the topic on which sensor data should be published.")
     .def("set_topic", &sdf::Sensor::SetTopic,

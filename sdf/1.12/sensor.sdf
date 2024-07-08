@@ -59,6 +59,10 @@
     <description>If true, the sensor will publish performance metrics</description>
   </element>
 
+  <element name="frame_id" type="string" default="" required="0">
+    <description>An optional frame id which indicates the sensor's frame of reference.</description>
+  </element>
+
   <include filename="pose.sdf" required="0"/>
   <include filename="plugin.sdf" required="*"/>
   <include filename="air_pressure.sdf" required="0"/>
