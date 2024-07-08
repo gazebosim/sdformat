@@ -6,14 +6,34 @@
     <description>Name of the link</description>
   </attribute>
 
-  <element name="velocity" type="pose" default="0 0 0 0 0 0" required="0">
+  <element name="angular_velocity" type="vector3" default="0 0 0 0 0 0" required="0">
+    <description>Angular velocity of the link relative to the world frame.
+    </description>
+  </element>
+
+  <element name="linear_velocity" type="vector3" default="0 0 0 0 0 0" required="0">
+    <description>Linear velocity of the link relative to the world frame.
+    </description>
+  </element>
+
+  <element name="velocity" type="pose" default="0 0 0 0 0 0" required="-1">
     <description>Velocity of the link. The x, y, z components of the pose
       correspond to the linear velocity of the link, and the roll, pitch, yaw
       components correspond to the angular velocity of the link
     </description>
   </element>
 
-  <element name="acceleration" type="pose" default="0 0 0 0 0 0" required="0">
+  <element name="angular_acceleration" type="vector3" default="0 0 0 0 0 0" required="0">
+    <description>Angular acceleration of the link relative to the world frame.
+    </description>
+  </element>
+
+  <element name="linear_acceleration" type="vector3" default="0 0 0 0 0 0" required="0">
+    <description>Linear acceleration of the link relative to the world frame.
+    </description>
+  </element>
+
+  <element name="acceleration" type="pose" default="0 0 0 0 0 0" required="-1">
     <description>Acceleration of the link. The x, y, z components of the pose
       correspond to the linear acceleration of the link, and the roll,
       pitch, yaw components correspond to the angular acceleration of the link
