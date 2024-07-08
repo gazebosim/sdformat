@@ -60,12 +60,14 @@ class SensorTEST(unittest.TestCase):
 
         self.assertAlmostEqual(0.0, sensor.update_rate())
 
+        self.assertFalse(sensor.frame_id())
         self.assertFalse(sensor.topic())
         self.assertFalse(sensor == sensor2)
         self.assertTrue(sensor != sensor2)
 
     def test_copy_construction(self):
         sensor = Sensor()
+        sensor.set_frame_id("test_frame_id")
         sensor.set_raw_pose(Pose3d(1, 2, 3, 0, 0, 0))
         sensor.set_type(sdf.Sensortype.MAGNETOMETER)
         sensor.set_pose_relative_to("a_frame")
@@ -79,6 +81,7 @@ class SensorTEST(unittest.TestCase):
 
         sensor2 = Sensor(sensor)
 
+        self.assertEqual("test_frame_id", sensor.frame_id())
         self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor.raw_pose())
         self.assertEqual("a_frame", sensor.pose_relative_to())
@@ -86,6 +89,7 @@ class SensorTEST(unittest.TestCase):
         self.assertAlmostEqual(mag.x_noise().mean(),
                                sensor.magnetometer_sensor().x_noise().mean())
 
+        self.assertEqual("test_frame_id", sensor2.frame_id())
         self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor2.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor2.raw_pose())
         self.assertEqual("a_frame", sensor2.pose_relative_to())
@@ -96,6 +100,7 @@ class SensorTEST(unittest.TestCase):
 
     def test_deepcopy(self):
         sensor = Sensor()
+        sensor.set_frame_id("test_frame_id")
         sensor.set_raw_pose(Pose3d(1, 2, 3, 0, 0, 0))
         sensor.set_type(sdf.Sensortype.MAGNETOMETER)
         sensor.set_pose_relative_to("a_frame")
@@ -108,6 +113,7 @@ class SensorTEST(unittest.TestCase):
 
         sensor2 = copy.deepcopy(sensor)
 
+        self.assertEqual("test_frame_id", sensor.frame_id())
         self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor.raw_pose())
         self.assertEqual("a_frame", sensor.pose_relative_to())
@@ -115,6 +121,7 @@ class SensorTEST(unittest.TestCase):
         self.assertAlmostEqual(mag.x_noise().mean(),
                                sensor.magnetometer_sensor().x_noise().mean())
 
+        self.assertEqual("test_frame_id", sensor2.frame_id())
         self.assertEqual(sdf.Sensortype.MAGNETOMETER, sensor2.type())
         self.assertEqual(Pose3d(1, 2, 3, 0, 0, 0), sensor2.raw_pose())
         self.assertEqual("a_frame", sensor2.pose_relative_to())
