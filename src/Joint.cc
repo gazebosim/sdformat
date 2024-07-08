@@ -307,30 +307,6 @@ void Joint::SetChildName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-const std::string &Joint::ParentLinkName() const
-{
-  return this->ParentName();
-}
-
-/////////////////////////////////////////////////
-void Joint::SetParentLinkName(const std::string &_name)
-{
-  this->SetParentName(_name);
-}
-
-/////////////////////////////////////////////////
-const std::string &Joint::ChildLinkName() const
-{
-  return this->ChildName();
-}
-
-/////////////////////////////////////////////////
-void Joint::SetChildLinkName(const std::string &_name)
-{
-  this->SetChildName(_name);
-}
-
-/////////////////////////////////////////////////
 const JointAxis *Joint::Axis(const unsigned int _index) const
 {
   return optionalToPointer(this->dataPtr->axis[std::min(_index, 1u)]);

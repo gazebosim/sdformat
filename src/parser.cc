@@ -2725,12 +2725,6 @@ bool checkPoseRelativeToGraph(sdf::Errors &_errors, const sdf::Root *_root)
 }
 
 //////////////////////////////////////////////////
-bool checkJointParentChildLinkNames(const sdf::Root *_root)
-{
-  return checkJointParentChildNames(_root);
-}
-
-//////////////////////////////////////////////////
 bool checkJointParentChildNames(const sdf::Root *_root)
 {
   Errors errors;
