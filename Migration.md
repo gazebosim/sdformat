@@ -30,6 +30,18 @@ but with improved human-readability..
       matches `"0"`, `"1"`, `"true"`, or `"false"` and returns `false`
       otherwise.
 
+### Deprecations
+
+- **sdf/Camera.hh**:
+   + The `//sensor/camera/optical_frame_id` SDF element and corresponding functions
+     in the Camera DOM class are deprecated. Please specify camera frame using
+     the `//sensor/frame_id` SDF element instead.
+   + ***Deprecation:*** std::string OpticalFrameId() const
+   + ***Replacement:*** std::string Sensor::FrameId() const
+   + ***Deprecation:*** void SetOpticalFrameId(const std::string &)
+   + ***Replacement:*** void Sensor::SetFrameId(const std::string &)
+
+
 ## libsdformat 13.x to 14.x
 
 ### Additions
