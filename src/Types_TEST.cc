@@ -200,11 +200,3 @@ TEST(Types, JoinName)
     EXPECT_EQ(joinedName, "");
   }
 }
-
-/////////////////////////////////////////////////
-TEST(Types, ScopeDelimiters)
-{
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  EXPECT_EQ(sdf::kScopeDelimiter, sdf::kSdfScopeDelimiter);
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
-}

@@ -384,12 +384,6 @@ void SDF::SetRoot(const ElementPtr _root)
 }
 
 /////////////////////////////////////////////////
-void SDF::Root(const ElementPtr _root)
-{
-  this->SetRoot(_root);
-}
-
-/////////////////////////////////////////////////
 std::string SDF::FilePath() const
 {
   return this->dataPtr->path;

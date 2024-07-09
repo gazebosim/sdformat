@@ -30,10 +30,6 @@ TEST(DOMJoint, Construction)
 
   EXPECT_TRUE(joint.ParentName().empty());
   EXPECT_TRUE(joint.ChildName().empty());
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  EXPECT_TRUE(joint.ParentLinkName().empty());
-  EXPECT_TRUE(joint.ChildLinkName().empty());
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   EXPECT_EQ(gz::math::Pose3d::Zero, joint.RawPose());
   EXPECT_TRUE(joint.PoseRelativeTo().empty());
@@ -64,18 +60,6 @@ TEST(DOMJoint, Construction)
 
   joint.SetName("test_joint");
   EXPECT_EQ("test_joint", joint.Name());
-
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  joint.SetParentLinkName("parent");
-  EXPECT_EQ("parent", joint.ParentLinkName());
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
-  EXPECT_EQ("parent", joint.ParentName());
-
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  joint.SetChildLinkName("child");
-  EXPECT_EQ("child", joint.ChildLinkName());
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
-  EXPECT_EQ("child", joint.ChildName());
 
   joint.SetParentName("parent2");
   EXPECT_EQ("parent2", joint.ParentName());

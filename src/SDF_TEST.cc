@@ -290,14 +290,6 @@ TEST(SDF, SetRoot)
   elem->AddValue("bool", "true", false, "description");
   s.SetRoot(elem);
   EXPECT_EQ(elem, s.Root());
-
-  // Test deprecated setter, remove in libsdformat14
-  s.SetRoot(nullptr);
-  EXPECT_EQ(nullptr, s.Root());
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  s.Root(elem);
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
-  EXPECT_EQ(elem, s.Root());
 }
 
 ////////////////////////////////////////////////////
