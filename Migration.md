@@ -41,6 +41,23 @@ but with improved human-readability..
    + ***Deprecation:*** void SetOpticalFrameId(const std::string &)
    + ***Replacement:*** void Sensor::SetFrameId(const std::string &)
 
+### Removals
+
+- **sdf/Joint.hh**:
+   + `const std::string &ChildLinkName() const` (use `ChildName()` instead)
+   + `const std::string &ParentLinkName() const` (use `ParentName()` instead)
+   + `void SetChildLinkName(const std::string &)` (use `SetChildName()` instead)
+   + `void SetParentLinkName(const std::string &)` (use `SetParentName()` instead)
+
+- **sdf/SDFImpl.hh**:
+   + `void Root(const ElementPtr)` (use `SetRoot(const ElementPtr)` instead)
+
+- **sdf/Types.hh**:
+   + `const std::string &kSdfScopeDelimiter` (use `kScopeDelimiter` instead)
+   + `const std::string &SdfScopeDelimiter()` (use `kScopeDelimiter` instead)
+
+- **sdf/parser.hh**:
+   + `bool checkJointParentChildLinkNames(const sdf::Root *)` (use `checkJointParentChildNames(const sdf::Root *)` instead)
 
 ## libsdformat 13.x to 14.x
 

@@ -36,21 +36,7 @@ namespace sdf
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
-  namespace internal
-  {
-    /// \brief Initializes the scope delimiter as a function-local static
-    /// variable so it can be used to initialize kSdfScopeDelimiter.
-    /// \note This should not be used directly in user code. It will likely be
-    /// removed in libsdformat 15 with kSdfScopeDelimiter.
-    SDFORMAT_VISIBLE const std::string &SdfScopeDelimiter();
-  }  // namespace internal
-
   constexpr std::string_view kScopeDelimiter{"::"};
-
-  // Deprecated because it violates the Google Style Guide as it is not
-  // trivially destructible. Please use sdf::kScopeDelimiter instead.
-  GZ_DEPRECATED(14)
-  inline const std::string &kSdfScopeDelimiter = internal::SdfScopeDelimiter();
 
   /// \brief The source path replacement if it was parsed from a string,
   /// instead of a file.
@@ -156,12 +142,6 @@ namespace sdf
 
     /// \brief Nanoseconds.
     public: int32_t nsec;
-  };
-
-  /// \brief A class for inertial information about a link.
-  class SDFORMAT_VISIBLE GZ_DEPRECATED(13) Inertia
-  {
-    public: double mass;
   };
 
   /// \brief Transforms a string to its lowercase equivalent
