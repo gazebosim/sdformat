@@ -82,6 +82,34 @@ namespace sdf
 
   /// \brief Find the absolute path of a file.
   ///
+  /// The search order in the function is as follows:
+  /// 1. Using the global URI path map, search in paths associated with the URI
+  ///    scheme of the input.
+  /// 2. Seach in the path defined by the macro `SDF_SHARE_PATH`.
+  /// 3. Search in the the libsdformat install path. The path is formed by
+  ///    has the pattern `SDF_SHARE_PATH/sdformat<major version>/<version>/`
+  /// 4. Directly check if the input path exists in the filesystem.
+  /// 5. Seach in the path defined by the environment variable `SDF_PATH`.
+  /// 6. If enabled via _searchLocalPath, prepend the input with the current
+  ///    working directory and check if the result path exists.
+  /// 7. If enabled via _useCallback and the global callback function is set,
+  ///    invoke the function and return its result.
+  ///
+  /// \param[out] _errors Vector of errors.
+  /// \param[in] _filename Name of the file to find.
+  /// \param[in] _searchLocalPath True to search for the file in the current
+  /// working directory.
+  /// \param[in] _useCallback True to find a file based on a registered
+  /// callback if the file is not found via the normal mechanism.
+  /// \return File's full path.
+  SDFORMAT_VISIBLE
+  std::string findFile(sdf::Errors &_errors,
+                       const std::string &_filename,
+                       bool _searchLocalPath = true,
+                       bool _useCallback = false);
+
+  /// \brief Find the absolute path of a file.
+  ///
   /// This overload uses the URI path map and and the callback function
   /// configured in the input ParserConfig object instead of their global
   /// counterparts.
@@ -99,6 +127,26 @@ namespace sdf
                        bool _useCallback,
                        const ParserConfig &_config);
 
+  /// \brief Find the absolute path of a file.
+  ///
+  /// This overload uses the URI path map and and the callback function
+  /// configured in the input ParserConfig object instead of their global
+  /// counterparts.
+  ///
+  /// \param[out] _errors Vector of errors.
+  /// \param[in] _filename Name of the file to find.
+  /// \param[in] _searchLocalPath True to search for the file in the current
+  /// working directory.
+  /// \param[in] _useCallback True to find a file based on a registered
+  /// callback if the file is not found via the normal mechanism.
+  /// \param[in] _config Custom parser configuration.
+  /// \return File's full path.
+  SDFORMAT_VISIBLE
+  std::string findFile(sdf::Errors &_errors,
+                       const std::string &_filename,
+                       bool _searchLocalPath,
+                       bool _useCallback,
+                       const ParserConfig &_config);
 
   /// \brief Associate paths to a URI.
   /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
@@ -121,12 +169,20 @@ namespace sdf
     /// \brief Destructor
     public: ~SDF();
     public: void PrintDescription();
+    public: void PrintDescription(sdf::Errors &_errors);
     public: void PrintDoc();
     public: void Write(const std::string &_filename);
+    public: void Write(sdf::Errors &_errors, const std::string &_filename);
 
     /// \brief Output SDF's values to stdout.
     /// \param[in] _config Configuration for printing the values.
     public: void PrintValues(const PrintConfig &_config = PrintConfig());
+
+    /// \brief Output SDF's values to stdout.
+    /// \param[out] _errors Vector of errrors.
+    /// \param[in] _config Configuration for printing the values.
+    public: void PrintValues(sdf::Errors &_errors,
+                             const PrintConfig &_config = PrintConfig());
 
     /// \brief Convert the SDF values to a string representation.
     /// \param[in] _config Configuration for printing the values.
@@ -134,8 +190,23 @@ namespace sdf
     public: std::string ToString(
         const PrintConfig &_config = PrintConfig()) const;
 
+    /// \brief Convert the SDF values to a string representation.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _config Configuration for printing the values.
+    /// \return The string representation.
+    public: std::string ToString(
+        sdf::Errors &_errors,
+        const PrintConfig &_config = PrintConfig()) const;
+
     /// \brief Set SDF values from a string
+    /// \param[in] sdfData String with the values to load.
     public: void SetFromString(const std::string &_sdfData);
+
+    /// \brief Set SDF values from a string
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] sdfData String with the values to load.
+    public: void SetFromString(sdf::Errors &_Errors,
+                               const std::string &_sdfData);
 
     /// \brief Clear the data in this object.
     public: void Clear();
@@ -177,6 +248,13 @@ namespace sdf
     /// \return a wrapped clone of the SDF element
     public: static ElementPtr WrapInRoot(const ElementPtr &_sdf);
 
+    /// \brief wraps the SDF element into a root element with the version info.
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _sdf the sdf element. Will be cloned by this function.
+    /// \return a wrapped clone of the SDF element
+    public: static ElementPtr WrapInRoot(sdf::Errors &_errors,
+                                         const ElementPtr &_sdf);
+
     /// \brief Get a string representation of an SDF specification file.
     /// This function uses a built-in version of a .sdf file located in
     /// the sdf directory. The parser.cc code uses this function, which avoids
@@ -192,6 +270,22 @@ namespace sdf
     /// found.
     public: static const std::string &EmbeddedSpec(
                 const std::string &_filename, const bool _quiet);
+
+    /// \brief Get a string representation of an SDF specification file.
+    /// This function uses a built-in version of a .sdf file located in
+    /// the sdf directory. The parser.cc code uses this function, which avoids
+    /// touching the filesystem.
+    ///
+    /// Most people should not use this function.
+    ///
+    /// \param[out] _errors Vector of errors.
+    /// \param[in] _filename Base name of the SDF specification file to
+    /// load. For example "root.sdf" or "world.sdf".
+    /// \return A string that contains the contents of the specified
+    /// _filename. An empty string is returned if the _filename could not be
+    /// found.
+    public: static const std::string &EmbeddedSpec(
+                sdf::Errors &_errors, const std::string &_filename);
 
     /// \internal
     /// \brief Pointer to private data.

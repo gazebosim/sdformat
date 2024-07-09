@@ -69,6 +69,9 @@ but with improved human-readability..
 
 ### Modifications
 
+1. The default camera lens intrinsics skew value in the Camera DOM class changed
+   from `1` to `0` to match the SDF specification.
+
 1. World class only renames frames with name collisions if original file version
    is 1.6 or earlier. Name collisions in newer files will cause `DUPLICATE_NAME`
    errors, which now matches the behavior of the Model class.

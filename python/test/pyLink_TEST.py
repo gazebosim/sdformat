@@ -14,8 +14,8 @@
 
 import copy
 from gz_test_deps.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from gz_test_deps.sdformat import (Collision, Light, Link, Projector, Sensor,
-                                   Visual, SDFErrorsException)
+from gz_test_deps.sdformat import (Collision, Light, Link, ParserConfig, Projector, Sensor,
+                                   Visual, Root, SDFErrorsException)
 import unittest
 import math
 
@@ -60,6 +60,18 @@ class LinkTEST(unittest.TestCase):
         self.assertFalse(link.enable_wind())
         link.set_enable_wind(True)
         self.assertTrue(link.enable_wind())
+
+        self.assertTrue(link.enable_gravity())
+        link.set_enable_gravity(False)
+        self.assertFalse(link.enable_gravity())
+
+        self.assertFalse(link.auto_inertia_saved())
+        link.set_auto_inertia_saved(True)
+        self.assertTrue(link.auto_inertia_saved())
+
+        self.assertFalse(link.auto_inertia())
+        link.set_auto_inertia(True)
+        self.assertTrue(link.auto_inertia())
 
         self.assertFalse(link.kinematic())
         link.set_kinematic(True)
@@ -317,8 +329,8 @@ class LinkTEST(unittest.TestCase):
         pr = link.projector_by_index(0)
         self.assertNotEqual(None, pr)
         self.assertEqual("projector1", pr.name())
-        pr.set_name("projector2");
-        self.assertEqual("projector2", link.projector_by_index(0).name());
+        pr.set_name("projector2")
+        self.assertEqual("projector2", link.projector_by_index(0).name())
 
     def test_mutable_by_name(self):
         link = Link()
@@ -380,7 +392,7 @@ class LinkTEST(unittest.TestCase):
         self.assertFalse(link.sensor_name_exists("sensor1"))
         self.assertTrue(link.sensor_name_exists("sensor2"))
 
-        # // Modify the particle emitter
+        # # Modify the particle emitter
         # sdf::ParticleEmitter *p = link.ParticleEmitterByName("pe1")
         # self.assertNotEqual(None, p)
         # self.assertEqual("pe1", p.name())
@@ -389,12 +401,154 @@ class LinkTEST(unittest.TestCase):
         # self.assertTrue(link.particle_emitter_name_exists("pe2"))
 
         # Modify the projector
-        pr = link.projector_by_name("projector1");
-        self.assertNotEqual(None, pr);
-        self.assertEqual("projector1", pr.name());
-        pr.set_name("projector2");
-        self.assertFalse(link.projector_name_exists("projector1"));
-        self.assertTrue(link.projector_name_exists("projector2"));
+        pr = link.projector_by_name("projector1")
+        self.assertNotEqual(None, pr)
+        self.assertEqual("projector1", pr.name())
+        pr.set_name("projector2")
+        self.assertFalse(link.projector_name_exists("projector1"))
+        self.assertTrue(link.projector_name_exists("projector2"))
+
+    def test_resolveauto_inertialsWithNoCollisionsInLink(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        " <sdf version=\"1.11\">" + \
+        "   <model name='shapes'>" + \
+        "     <link name='link'>" + \
+        "       <inertial auto='True' />" + \
+        "     </link>" + \
+        "   </model>" + \
+        " </sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        with self.assertRaises(SDFErrorsException):
+            errors = root.load_sdf_string(sdf, sdfParserConfig)
+
+        model = root.model()
+        link = model.link_by_index(0)
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+
+        # Default Inertial values set during load
+        self.assertEqual(1.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Vector3d.ONE,
+            link.inertial().mass_matrix().diagonal_moments())
+
+    def test_resolveauto_inertialsWithMultipleCollisions(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='compound_model'>" + \
+        "   <pose>0 0 1.0 0 0 0</pose>" + \
+        "   <link name='compound_link'>" + \
+        "     <inertial auto='True' />" + \
+        "     <collision name='box_collision'>" + \
+        "      <pose>0 0 -0.5 0 0 0</pose>" + \
+        "      <density>2.0</density>" + \
+        "      <geometry>" + \
+        "        <box>" + \
+        "          <size>1 1 1</size>" + \
+        "        </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "      <collision name='cylinder_compound_collision'>" + \
+        "        <pose>0 0 0.5 0 0 0</pose>" + \
+        "        <density>4</density>" + \
+        "        <geometry>" + \
+        "          <cylinder>" + \
+        "            <radius>0.5</radius>" + \
+        "            <length>1.0</length>" + \
+        "          </cylinder>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "   </model>" + \
+        "  </sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(errors, None)
+
+        model = root.model()
+        link = model.link_by_index(0)
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+
+        # Mass of cube(volume * density) + mass of cylinder(volume * density)
+        expectedMass = 1.0 * 2.0 + math.pi * 0.5 * 0.5 * 1 * 4.0
+
+        self.assertAlmostEqual(expectedMass, link.inertial().mass_matrix().mass())
+        self.assertEqual(Vector3d(2.013513, 2.013513, 0.72603),
+            link.inertial().mass_matrix().diagonal_moments())
+
+    def test_inertial_values_given_with_auto_set_to_true(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='compound_model'>" + \
+        "   <link name='compound_link'>" + \
+        "     <inertial auto='True'>" + \
+        "       <mass>4.0</mass>" + \
+        "       <pose>1 1 1 2 2 2</pose>" + \
+        "       <inertia>" + \
+        "         <ixx>1</ixx>" + \
+        "         <iyy>1</iyy>" + \
+        "         <izz>1</izz>" + \
+        "       </inertia>" + \
+        "     </inertial>" + \
+        "     <collision name='box_collision'>" + \
+        "      <density>2.0</density>" + \
+        "      <geometry>" + \
+        "        <box>" + \
+        "          <size>1 1 1</size>" + \
+        "        </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "   </model>" + \
+        "  </sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(errors, None)
+
+        model = root.model()
+        link = model.link_by_index(0)
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+
+        self.assertNotEqual(4.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Pose3d.ZERO, link.inertial().pose())
+        self.assertEqual(Vector3d(0.33333, 0.33333, 0.33333),
+            link.inertial().mass_matrix().diagonal_moments())
+
+    def test_resolveauto_inertialsCalledWithAutoFalse(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        " <sdf version=\"1.11\">" + \
+        "   <model name='shapes'>" + \
+        "     <link name='link'>" + \
+        "       <inertial auto='false' />" + \
+        "     </link>" + \
+        "   </model>" + \
+        " </sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(errors, None)
+
+        model = root.model()
+        link = model.link_by_index(0)
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+
+        # Default Inertial values set during load
+        self.assertEqual(1.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Vector3d.ONE,
+            link.inertial().mass_matrix().diagonal_moments())
 
 if __name__ == '__main__':
     unittest.main()
