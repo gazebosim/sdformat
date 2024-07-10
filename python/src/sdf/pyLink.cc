@@ -41,6 +41,16 @@ void defineLink(pybind11::object module)
   pybind11::class_<sdf::Link>(module, "Link")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Link>())
+    .def("resolve_auto_inertials", &sdf::Link::ResolveAutoInertials,
+         "Calculate & set inertial values for the link")
+    .def("auto_inertia", &sdf::Link::AutoInertia,
+         "Check if the automatic calculation for the link inertial is enabled or not.")
+    .def("set_auto_inertia", &sdf::Link::SetAutoInertia,
+         "Enable automatic inertial calculations by setting autoInertia to true")
+    .def("auto_inertia_saved", &sdf::Link::AutoInertiaSaved,
+         "Check if the inertial values for this link were saved.")
+    .def("set_auto_inertia_saved", &sdf::Link::SetAutoInertiaSaved,
+         "Set the autoInertiaSaved() values")
     .def("name", &sdf::Link::Name,
          "Get the name of the link.")
     .def("set_name", &sdf::Link::SetName,
@@ -168,6 +178,13 @@ void defineLink(pybind11::object module)
     .def("set_kinematic",
          &sdf::Link::SetKinematic,
          "Set whether this link is kinematic only.")
+    .def("enable_gravity",
+         &sdf::Link::EnableGravity,
+         "Check if this link should be subject to gravity. "
+         "If true, this link should be affected by gravity.")
+    .def("set_enable_gravity",
+         &sdf::Link::SetEnableGravity,
+         "Set whether this link should be subject to gravity.")
     .def("add_collision",
          &sdf::Link::AddCollision,
          "Add a collision to the link.")

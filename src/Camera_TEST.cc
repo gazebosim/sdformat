@@ -217,7 +217,7 @@ TEST(DOMCamera, Construction)
   cam.SetLensProjectionTy(2);
   EXPECT_DOUBLE_EQ(2, cam.LensProjectionTy());
 
-  EXPECT_DOUBLE_EQ(1.0, cam.LensIntrinsicsSkew());
+  EXPECT_DOUBLE_EQ(0, cam.LensIntrinsicsSkew());
   cam.SetLensIntrinsicsSkew(2.3);
   EXPECT_DOUBLE_EQ(2.3, cam.LensIntrinsicsSkew());
 

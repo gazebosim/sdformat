@@ -27,11 +27,13 @@
 #include "sdf/parser.hh"
 #include "sdf/Assert.hh"
 #include "sdf/Console.hh"
+#include "sdf/Error.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
 #include "sdf/sdf_config.h"
 #include "EmbeddedSdf.hh"
+#include "Utils.hh"
 
 #include <gz/utils/Environment.hh>
 
@@ -62,13 +64,39 @@ void setFindCallback(std::function<std::string(const std::string &)> _cb)
 std::string findFile(
     const std::string &_filename, bool _searchLocalPath, bool _useCallback)
 {
+  sdf::Errors errors;
+  std::string result = findFile(errors, _filename, _searchLocalPath,
+                                _useCallback, ParserConfig::GlobalConfig());
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+std::string findFile(
+    sdf::Errors &_errors, const std::string &_filename, bool _searchLocalPath,
+    bool _useCallback)
+{
   return findFile(
-      _filename, _searchLocalPath, _useCallback, ParserConfig::GlobalConfig());
+      _errors, _filename, _searchLocalPath,
+      _useCallback, ParserConfig::GlobalConfig());
 }
 
 /////////////////////////////////////////////////
 std::string findFile(const std::string &_filename, bool _searchLocalPath,
                           bool _useCallback, const ParserConfig &_config)
+{
+  sdf::Errors errors;
+  std::string result = findFile(errors, _filename, _searchLocalPath,
+                                _useCallback, _config);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+
+/////////////////////////////////////////////////
+std::string findFile(sdf::Errors &_errors, const std::string &_filename,
+                     bool _searchLocalPath, bool _useCallback,
+                     const ParserConfig &_config)
 {
   // Check to see if _filename is URI. If so, resolve the URI path.
   for (const auto &[uriScheme, paths] : _config.URIPathMap())
@@ -162,8 +190,9 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   {
     if (!_config.FindFileCallback())
     {
-      sdferr << "Tried to use callback in sdf::findFile(), but the callback "
-        "is empty.  Did you call sdf::setFindCallback()?\n";
+      _errors.push_back({sdf::ErrorCode::FILE_READ,
+        "Tried to use callback in sdf::findFile(), but the callback "
+        "is empty.  Did you call sdf::setFindCallback()?"});
       return std::string();
     }
     else
@@ -195,13 +224,29 @@ SDF::~SDF()
 /////////////////////////////////////////////////
 void SDF::PrintDescription()
 {
-  this->Root()->PrintDescription("");
+  sdf::Errors errors;
+  this->PrintDescription(errors);
+  sdf::throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void SDF::PrintDescription(sdf::Errors &_errors)
+{
+  this->Root()->PrintDescription(_errors, "");
 }
 
 /////////////////////////////////////////////////
 void SDF::PrintValues(const PrintConfig &_config)
 {
-  this->Root()->PrintValues("", _config);
+  sdf::Errors errors;
+  this->PrintValues(errors, _config);
+  sdf::throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void SDF::PrintValues(sdf::Errors &_errors, const PrintConfig &_config)
+{
+  this->Root()->PrintValues(_errors, "", _config);
 }
 
 /////////////////////////////////////////////////
@@ -319,13 +364,22 @@ void SDF::PrintDoc()
 /////////////////////////////////////////////////
 void SDF::Write(const std::string &_filename)
 {
-  std::string string = this->Root()->ToString("");
+  sdf::Errors errors;
+  this->Write(errors, _filename);
+  sdf::throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void SDF::Write(sdf::Errors &_errors, const std::string &_filename)
+{
+  std::string string = this->Root()->ToString(_errors, "");
 
   std::ofstream out(_filename.c_str(), std::ios::out);
 
   if (!out)
   {
-    sdferr << "Unable to open file[" << _filename << "] for writing\n";
+    _errors.push_back({sdf::ErrorCode::FILE_READ,
+      "Unable to open file[" + _filename + "] for writing."});
     return;
   }
   out << string;
@@ -335,6 +389,16 @@ void SDF::Write(const std::string &_filename)
 /////////////////////////////////////////////////
 std::string SDF::ToString(const PrintConfig &_config) const
 {
+  sdf::Errors errors;
+  std::string result = this->ToString(errors, _config);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+std::string SDF::ToString(sdf::Errors &_errors,
+                          const PrintConfig &_config) const
+{
   std::ostringstream stream;
 
   stream << "<?xml version='1.0'?>\n";
@@ -343,7 +407,7 @@ std::string SDF::ToString(const PrintConfig &_config) const
     stream << "<sdf version='" << SDF::Version() << "'>\n";
   }
 
-  stream << this->Root()->ToString("", _config);
+  stream << this->Root()->ToString(_errors, "", _config);
 
   if (this->Root()->GetName() != "sdf")
   {
@@ -356,10 +420,20 @@ std::string SDF::ToString(const PrintConfig &_config) const
 /////////////////////////////////////////////////
 void SDF::SetFromString(const std::string &_sdfData)
 {
+  sdf::Errors errors;
+  this->SetFromString(errors, _sdfData);
+  sdf::throwOrPrintErrors(errors);
+}
+
+/////////////////////////////////////////////////
+void SDF::SetFromString(sdf::Errors &_errors,
+                        const std::string &_sdfData)
+{
   sdf::initFile("root.sdf", this->Root());
-  if (!sdf::readString(_sdfData, this->Root()))
+  if (!sdf::readString(_sdfData, this->Root(), _errors))
   {
-    sdferr << "Unable to parse sdf string[" << _sdfData << "]\n";
+    _errors.push_back({sdf::ErrorCode::PARSING_ERROR,
+      "Unable to parse sdf string[" + _sdfData + "]"});
   }
 }
 
@@ -424,11 +498,20 @@ void SDF::Version(const std::string &_version)
 /////////////////////////////////////////////////
 ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
 {
+  sdf::Errors errors;
+  ElementPtr result = SDF::WrapInRoot(errors, _sdf);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+ElementPtr SDF::WrapInRoot(sdf::Errors &_errors, const ElementPtr &_sdf)
+{
   ElementPtr root(new Element);
   root->SetName("sdf");
   std::stringstream v;
   v << Version();
-  root->AddAttribute("version", "string", v.str(), true, "version");
+  root->AddAttribute("version", "string", v.str(), true, _errors, "version");
   root->InsertElement(_sdf->Clone());
   return root;
 }
@@ -437,6 +520,19 @@ ElementPtr SDF::WrapInRoot(const ElementPtr &_sdf)
 const std::string &SDF::EmbeddedSpec(
     const std::string &_filename, const bool _quiet)
 {
+  sdf::Errors errors;
+  const std::string &result = EmbeddedSpec(errors, _filename);
+  if (!_quiet)
+  {
+    sdf::throwOrPrintErrors(errors);
+  }
+  return result;
+}
+
+/////////////////////////////////////////////////
+const std::string &SDF::EmbeddedSpec(
+    sdf::Errors &_errors, const std::string &_filename)
+{
   try
   {
     const std::string pathname = SDF::Version() + "/" + _filename;
@@ -444,9 +540,9 @@ const std::string &SDF::EmbeddedSpec(
   }
   catch(const std::out_of_range &)
   {
-    if (!_quiet)
-      sdferr << "Unable to find SDF filename[" << _filename << "] with "
-        << "version " << SDF::Version() << "\n";
+      _errors.push_back({sdf::ErrorCode::FILE_READ,
+          "Unable to find SDF filename[" + _filename + "] with " +
+          "version " + SDF::Version()});
   }
 
   // An empty SDF string is returned if a query into the embeddedSdf map fails.
