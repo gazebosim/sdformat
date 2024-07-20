@@ -641,7 +641,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//state/model/model` renamed to `//state/model_state/model_state`
     + `//state/model/link/collision` renamed to `//state/model_state/link_state/collision_state`
 
- 1. `//state/joint_state` has been added to represent the state of a
+1. **state.sdf**: `//state/joint_state` has been added to represent the state of a
     `//world/joint`.
 
 ## SDFormat specification 1.10 to 1.11
