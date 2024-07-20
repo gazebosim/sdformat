@@ -628,6 +628,22 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat specification 1.11 to 1.12
 
+### Additions
+
+1. **joint_state.sdf**:
+    + `//joint_state/axis_state/position`
+    + `//joint_state/axis_state/velocity`
+    + `//joint_state/axis_state/acceleration`
+    + `//joint_state/axis2_state/position`
+    + `//joint_state/axis2_state/velocity`
+    + `//joint_state/axis2_state/acceleration`
+
+1. **link_state.sdf**:
+    + `//link_state/linear_velocity`
+    + `//link_state/angular_velocity`
+    + `//link_state/linear_acceleration`
+    + `//link_state/angular_acceleration`
+
 ### Modifications
 
 1. **state.sdf**, **model_state.sdf**, **joint_state.sdf**, **link_state.sdf**,
@@ -643,6 +659,18 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **state.sdf**: `//state/joint_state` has been added to represent the state of a
     `//world/joint`.
+
+### Deprecations
+
+1. **joint_state.sdf**:
+    + `//joint_state/angle` is deprecated in favor of `//axis_state/position`
+      and  `//axis2_state/position`.
+
+1. **link_state.sdf**:
+    + `//link_state/velocity` is deprecated in favor of `//link_state/angular_velocity`
+      and  `//link_state/linear_velocity`.
+    + `//link_state/acceleration` is deprecated in favor of `//link_state/angular_acceleration`
+      and  `//link_state/linear_acceleration`.
 
 ## SDFormat specification 1.10 to 1.11
 
