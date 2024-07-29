@@ -183,6 +183,9 @@ namespace sdf
     /// \brief The joint axis mimic does not refer to a valid joint in the
     /// current scope.
     JOINT_AXIS_MIMIC_INVALID,
+
+    /// \brief Error at the XML level.
+    XML_ERROR,
   };
 
   class SDFORMAT_VISIBLE Error
