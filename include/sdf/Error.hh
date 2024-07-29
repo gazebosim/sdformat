@@ -179,6 +179,9 @@ namespace sdf
 
     /// \brief Generic error during parsing.
     PARSING_ERROR,
+
+    /// \brief Error at the XML level.
+    XML_ERROR,
   };
 
   class SDFORMAT_VISIBLE Error
