@@ -52,6 +52,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyCamera.cc
   src/sdf/pyCapsule.cc
   src/sdf/pyCollision.cc
+  src/sdf/pyCone.cc
   src/sdf/pyConvexDecomposition.cc
   src/sdf/pyCylinder.cc
   src/sdf/pyElement.cc
@@ -135,6 +136,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyCamera_TEST
     pyCapsule_TEST
     pyCollision_TEST
+    pyCone_TEST
     pyCylinder_TEST
     pyElement_TEST
     pyEllipsoid_TEST

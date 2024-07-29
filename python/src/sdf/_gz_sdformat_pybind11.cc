@@ -26,6 +26,7 @@
 #include "pyCamera.hh"
 #include "pyCapsule.hh"
 #include "pyCollision.hh"
+#include "pyCone.hh"
 #include "pyConvexDecomposition.hh"
 #include "pyCylinder.hh"
 #include "pyElement.hh"
@@ -83,9 +84,11 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineAltimeter(m);
   sdf::python::defineAtmosphere(m);
   sdf::python::defineBox(m);
+  sdf::python::defineBulletFriction(m);
   sdf::python::defineCamera(m);
   sdf::python::defineCapsule(m);
   sdf::python::defineCollision(m);
+  sdf::python::defineCone(m);
   sdf::python::defineConvexDecomposition(m);
   sdf::python::defineContact(m);
   sdf::python::defineCylinder(m);
@@ -134,6 +137,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineSky(m);
   sdf::python::defineSphere(m);
   sdf::python::defineSurface(m);
+  sdf::python::defineTorsional(m);
   sdf::python::defineVisual(m);
   sdf::python::defineWorld(m);
 

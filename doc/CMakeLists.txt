@@ -13,9 +13,6 @@ if (DOXYGEN_FOUND)
             ${CMAKE_BINARY_DIR}/doxygen/html
     COMMAND cp ${CMAKE_SOURCE_DIR}/doc/search.js
             ${CMAKE_BINARY_DIR}/doxygen/html/search
-    COMMAND make -C ${CMAKE_BINARY_DIR}/doxygen/latex
-    COMMAND mv ${CMAKE_BINARY_DIR}/doxygen/latex/refman.pdf
-    ${CMAKE_BINARY_DIR}/doxygen/latex/sdf-${PROJECT_VERSION_FULL}.pdf
 
     COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif()
