@@ -29,5 +29,4 @@ jobs:
         uses: actions/checkout@v4
       - name: Compile and test
         id: ci
-        uses: gazebo-tooling/action-gz-ci@jrivero/use_venvs_noble
-        
+        uses: gazebo-tooling/action-gz-ci@jrivero/vcs_colcon
