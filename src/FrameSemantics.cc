@@ -77,6 +77,8 @@ FindSourceVertex(const ScopedGraph<T> &_graph,
   using DirectedEdge = typename ScopedGraph<T>::Edge;
   using Vertex = typename ScopedGraph<T>::Vertex;
   using VertexId = gz::math::graph::VertexId;
+  using VertexType = typename ScopedGraph<T>::VertexType;
+  using gz::math::graph::NullVertex;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
@@ -86,7 +88,7 @@ FindSourceVertex(const ScopedGraph<T> &_graph,
     _errors.push_back({ErrorCode::POSE_RELATIVE_TO_INVALID,
         "Unable to resolve pose, invalid vertex[" + std::to_string(_id) + "] "
         "in PoseRelativeToGraph."});
-    return PairType(Vertex::NullVertex, EdgesType());
+    return PairType(NullVertex<VertexType>(), EdgesType());
   }
 
   if (_id == _graph.ScopeVertexId())
@@ -106,7 +108,7 @@ FindSourceVertex(const ScopedGraph<T> &_graph,
       _errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
           "PoseRelativeToGraph error: multiple incoming edges to "
           "current vertex [" + vertex.get().Name() + "]."});
-      return PairType(Vertex::NullVertex, EdgesType());
+      return PairType(NullVertex<VertexType>(), EdgesType());
     }
     auto const &edge = incidentsTo.begin()->second;
     vertex = _graph.Graph().VertexFromId(edge.get().Vertices().first);
@@ -116,7 +118,7 @@ FindSourceVertex(const ScopedGraph<T> &_graph,
       _errors.push_back({ErrorCode::POSE_RELATIVE_TO_CYCLE,
           "PoseRelativeToGraph cycle detected, already visited vertex [" +
           vertex.get().Name() + "]."});
-      return PairType(Vertex::NullVertex, EdgesType());
+      return PairType(NullVertex<VertexType>(), EdgesType());
     }
     if (vertex.get().Id() == _graph.ScopeVertexId())
     {
@@ -129,7 +131,7 @@ FindSourceVertex(const ScopedGraph<T> &_graph,
   if (vertex.get().Id() != _graph.ScopeVertexId())
   {
     // Error, the root vertex is not the same as the the source
-    return PairType(Vertex::NullVertex, EdgesType());
+    return PairType(NullVertex<VertexType>(), EdgesType());
   }
 
   return PairType(vertex, edges);
@@ -157,6 +159,8 @@ FindSinkVertex(
   using DirectedEdge = typename ScopedGraph<T>::Edge;
   using Vertex = typename ScopedGraph<T>::Vertex;
   using VertexId = gz::math::graph::VertexId;
+  using VertexType = typename ScopedGraph<T>::VertexType;
+  using gz::math::graph::NullVertex;
   using EdgesType = std::vector<DirectedEdge>;
   using PairType = std::pair<const Vertex &, EdgesType>;
   EdgesType edges;
@@ -166,7 +170,7 @@ FindSinkVertex(
     _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_INVALID,
         "Invalid vertex[" + std::to_string(_id) + "] "
         "in FrameAttachedToGraph."});
-    return PairType(Vertex::NullVertex, EdgesType());
+    return PairType(NullVertex<VertexType>(), EdgesType());
   }
 
   std::set<VertexId> visited;
@@ -180,7 +184,7 @@ FindSinkVertex(
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_GRAPH_ERROR,
           "FrameAttachedToGraph error: multiple outgoing edges from "
           "current vertex [" + vertex.get().Name() + "]."});
-      return PairType(Vertex::NullVertex, EdgesType());
+      return PairType(NullVertex<VertexType>(), EdgesType());
     }
     auto const &edge = incidentsFrom.begin()->second;
     vertex = _graph.Graph().VertexFromId(edge.get().Vertices().second);
@@ -190,7 +194,7 @@ FindSinkVertex(
       _errors.push_back({ErrorCode::FRAME_ATTACHED_TO_CYCLE,
           "FrameAttachedToGraph cycle detected, already visited vertex [" +
           vertex.get().Name() + "]."});
-      return PairType(Vertex::NullVertex, EdgesType());
+      return PairType(NullVertex<VertexType>(), EdgesType());
     }
     visited.insert(vertex.get().Id());
     incidentsFrom = _graph.Graph().IncidentsFrom(vertex);
