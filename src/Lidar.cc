@@ -395,7 +395,7 @@ bool Lidar::operator!=(const Lidar &_lidar) const
 sdf::ElementPtr Lidar::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("lidar.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   sdf::ElementPtr scanElem = elem->GetElement("scan");
   sdf::ElementPtr horElem = scanElem->GetElement("horizontal");
@@ -450,3 +450,11 @@ sdf::ElementPtr Lidar::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Lidar::SchemaFile() 
+{
+    static char kSchemaFile[] = "lidar.sdf";
+    return kSchemaFile;
+}
+

@@ -738,7 +738,7 @@ sdf::ElementPtr Sensor::ToElement() const
 sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("sensor.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("type")->Set<std::string>(this->TypeStr(), _errors);
   elem->GetAttribute("name")->Set<std::string>(this->Name(), _errors);
@@ -848,3 +848,11 @@ void Sensor::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Sensor::SchemaFile() 
+{
+    static char kSchemaFile[] = "sensor.sdf";
+    return kSchemaFile;
+}
+

@@ -191,3 +191,11 @@ bool NavSat::operator!=(const NavSat &_navsat) const
 {
   return !(*this == _navsat);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view NavSat::SchemaFile() 
+{
+    static char kSchemaFile[] = "navsat.sdf";
+    return kSchemaFile;
+}
+

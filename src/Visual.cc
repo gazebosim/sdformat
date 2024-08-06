@@ -322,7 +322,7 @@ void Visual::SetPoseRelativeToGraph(
 sdf::ElementPtr Visual::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("visual.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name());
 
@@ -378,3 +378,11 @@ void Visual::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Visual::SchemaFile() 
+{
+    static char kSchemaFile[] = "visual.sdf";
+    return kSchemaFile;
+}
+

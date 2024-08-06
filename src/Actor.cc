@@ -726,7 +726,7 @@ void Actor::ClearJoints()
 sdf::ElementPtr Actor::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("actor.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name());
   // Set pose
@@ -819,3 +819,11 @@ void Actor::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Actor::SchemaFile() 
+{
+    static char kSchemaFile[] = "actor.sdf";
+    return kSchemaFile;
+}
+
