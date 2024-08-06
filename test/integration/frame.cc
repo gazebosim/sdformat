@@ -213,18 +213,18 @@ TEST(Frame, StateFrame)
   sdfStr << "<sdf version ='" << SDF_VERSION << "'>"
     << "<world name='default'>"
     << "<state world_name='default'>"
-    << "<model name='my_model'>"
+    << "<model_state name='my_model'>"
     << "  <frame name='mframe'>"
     << "    <pose relative_to='/world'>1 0 2 0 0 0</pose>"
     << "  </frame>"
     << "  <pose relative_to='mframe'>3 3 9 0 0 0</pose>"
-    << "  <link name='my_link'>"
+    << "  <link_state name='my_link'>"
     << "    <pose relative_to='lframe'>111 3 0 0 0 0</pose>"
-    << "  </link>"
-    << "</model>"
-    << "<light name='my_light'>"
+    << "  </link_state>"
+    << "</model_state>"
+    << "<light_state name='my_light'>"
     << "    <pose relative_to='lframe'>99 0 22 0 0 0</pose>"
-    << "</light>"
+    << "</light_state>"
     << "</state>"
     << "</world>"
     << "</sdf>";
@@ -239,8 +239,8 @@ TEST(Frame, StateFrame)
   EXPECT_TRUE(worldElem->HasElement("state"));
   sdf::ElementPtr stateElem = worldElem->GetElement("state");
 
-  EXPECT_TRUE(stateElem->HasElement("model"));
-  sdf::ElementPtr modelStateElem = stateElem->GetElement("model");
+  EXPECT_TRUE(stateElem->HasElement("model_state"));
+  sdf::ElementPtr modelStateElem = stateElem->GetElement("model_state");
 
   // model
   EXPECT_TRUE(modelStateElem->HasAttribute("name"));
@@ -271,8 +271,8 @@ TEST(Frame, StateFrame)
   }
 
   // link
-  EXPECT_TRUE(modelStateElem->HasElement("link"));
-  sdf::ElementPtr linkStateElem = modelStateElem->GetElement("link");
+  EXPECT_TRUE(modelStateElem->HasElement("link_state"));
+  sdf::ElementPtr linkStateElem = modelStateElem->GetElement("link_state");
   EXPECT_TRUE(linkStateElem->HasAttribute("name"));
   EXPECT_EQ(linkStateElem->Get<std::string>("name"), "my_link");
 
@@ -286,8 +286,8 @@ TEST(Frame, StateFrame)
               gz::math::Pose3d(111, 3, 0, 0, 0, 0));
   }
 
-  EXPECT_TRUE(stateElem->HasElement("light"));
-  sdf::ElementPtr lightStateElem = stateElem->GetElement("light");
+  EXPECT_TRUE(stateElem->HasElement("light_state"));
+  sdf::ElementPtr lightStateElem = stateElem->GetElement("light_state");
 
   // light
   EXPECT_TRUE(lightStateElem->HasAttribute("name"));

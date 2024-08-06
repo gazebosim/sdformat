@@ -1,5 +1,5 @@
 <!-- State information for a link -->
-<element name="link" required="*">
+<element name="link_state" required="*">
   <description>Link state</description>
 
   <attribute name="name" type="string" default="__default__" required="1">
@@ -27,7 +27,7 @@
     </description>
   </element>
 
-  <element name="collision" required="*">
+  <element name="collision_state" required="*">
     <description>Collision state</description>
 
     <attribute name="name" type="string" default="__default__" required="1">

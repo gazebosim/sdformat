@@ -1,0 +1,16 @@
+<!-- State information for a joint -->
+<element name="joint_state" required="*">
+  <description>Joint angle</description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>Name of the joint</description>
+  </attribute>
+
+  <element name="angle" type="double" default="0" required="+">
+    <attribute name="axis" type="unsigned int" default="0" required="1">
+      <description>Index of the axis.</description>
+    </attribute>
+
+    <description>Angle of an axis</description>
+  </element>
+</element> <!-- End Joint -->

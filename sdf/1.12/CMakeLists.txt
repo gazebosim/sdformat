@@ -26,6 +26,7 @@ set (sdfs
   imu.sdf
   inertial.sdf
   joint.sdf
+  joint_state.sdf
   lidar.sdf
   light.sdf
   light_state.sdf
