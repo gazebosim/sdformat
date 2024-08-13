@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>sdformat14</name>
-  <version>14.4.0</version>
+  <version>14.5.0</version>
   <description>SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications</description>
 
