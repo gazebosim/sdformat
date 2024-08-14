@@ -25,6 +25,7 @@
     <description>A list containing the entire description of entities inserted.</description>
     <include filename="model.sdf" required="+"/>
     <include filename="light.sdf" required="+"/>
+    <include filename="joint.sdf" required="+"/>
   </element>
 
   <element name="deletions" required="0">
