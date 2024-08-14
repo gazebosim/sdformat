@@ -1,5 +1,12 @@
 <!-- State Info -->
 <element name="state" required="*">
+  <description>
+    The state element encapsulates variables within a world that may change
+    over time, including object poses, dynamic states such as velocity and
+    acceleration, a description of objects added to the world, and a list
+    of objects deleted from the world.
+  </description>
+
   <!-- Name of the world this state applies to -->
   <attribute name="world_name" type="string" default="__default__" required="1">
     <description>Name of the world this state applies to</description>
@@ -22,14 +29,14 @@
   </element>
 
   <element name="insertions" required="0">
-    <description>A list containing the entire description of entities inserted.</description>
+    <description>A list containing the entire description of entities inserted into the world.</description>
     <include filename="model.sdf" required="+"/>
     <include filename="light.sdf" required="+"/>
     <include filename="joint.sdf" required="+"/>
   </element>
 
   <element name="deletions" required="0">
-    <description>A list of names of deleted entities/</description>
+    <description>A list of names of entities deleted from the world./</description>
     <element name="name" type="string" default="__default__" required="+">
       <description>The name of a deleted entity.</description>
     </element>

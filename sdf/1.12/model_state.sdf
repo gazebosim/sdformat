@@ -1,6 +1,10 @@
 <!-- State information for a model -->
 <element name="model_state" required="*">
-  <description>Model state</description>
+  <description>
+    The model state element encapsulates variables within a model that may
+    change over time, including object poses, the states of its nested models
+    and links and joints, and changes in model scale.
+  </description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>Name of the model</description>
