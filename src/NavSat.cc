@@ -193,9 +193,9 @@ bool NavSat::operator!=(const NavSat &_navsat) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view NavSat::SchemaFile() 
+inline std::string_view NavSat::SchemaFile()
 {
-    static char kSchemaFile[] = "navsat.sdf";
+    static const char kSchemaFile[] = "navsat.sdf";
     return kSchemaFile;
 }
 

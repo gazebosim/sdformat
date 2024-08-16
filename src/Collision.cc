@@ -394,9 +394,9 @@ sdf::ElementPtr Collision::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Collision::SchemaFile() 
+inline std::string_view Collision::SchemaFile()
 {
-    static char kSchemaFile[] = "collision.sdf";
+    static const char kSchemaFile[] = "collision.sdf";
     return kSchemaFile;
 }
 

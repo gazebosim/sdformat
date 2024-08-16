@@ -333,9 +333,9 @@ sdf::ElementPtr Projector::ToElement() const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Projector::SchemaFile() 
+inline std::string_view Projector::SchemaFile()
 {
-    static char kSchemaFile[] = "projector.sdf";
+    static const char kSchemaFile[] = "projector.sdf";
     return kSchemaFile;
 }
 

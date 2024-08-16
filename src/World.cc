@@ -773,14 +773,27 @@ Actor *World::ActorByIndex(uint64_t _index)
 /////////////////////////////////////////////////
 bool World::ActorNameExists(const std::string &_name) const
 {
-  for (auto const &a : this->dataPtr->actors)
+  return nullptr != this->ActorByName(_name);
+}
+
+/////////////////////////////////////////////////
+const Actor *World::ActorByName(const std::string &_name) const
+{
+  for (const Actor &a : this->dataPtr->actors)
   {
     if (a.Name() == _name)
     {
-      return true;
+      return &a;
     }
   }
-  return false;
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+Actor *World::ActorByName(const std::string &_name)
+{
+  return const_cast<Actor*>(
+      static_cast<const World*>(this)->ActorByName(_name));
 }
 
 //////////////////////////////////////////////////
@@ -1273,9 +1286,9 @@ void World::AddPlugin(const Plugin &_plugin)
 }
 
 /////////////////////////////////////////////////
-inline std::string_view World::SchemaFile() 
+inline std::string_view World::SchemaFile()
 {
-    static char kSchemaFile[] = "world.sdf";
+    static const char kSchemaFile[] = "world.sdf";
     return kSchemaFile;
 }
 

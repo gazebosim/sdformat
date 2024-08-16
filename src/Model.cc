@@ -1416,9 +1416,9 @@ sdf::Frame Model::PrepareForMerge(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Model::SchemaFile() 
+inline std::string_view Model::SchemaFile()
 {
-    static char kSchemaFile[] = "model.sdf";
+    static const char kSchemaFile[] = "model.sdf";
     return kSchemaFile;
 }
 

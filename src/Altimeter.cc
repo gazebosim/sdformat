@@ -171,9 +171,9 @@ sdf::ElementPtr Altimeter::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Altimeter::SchemaFile() 
+inline std::string_view Altimeter::SchemaFile()
 {
-    static char kSchemaFile[] = "altimeter.sdf";
+    static const char kSchemaFile[] = "altimeter.sdf";
     return kSchemaFile;
 }
 

@@ -157,9 +157,9 @@ sdf::ElementPtr Magnetometer::ToElement() const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Magnetometer::SchemaFile() 
+inline std::string_view Magnetometer::SchemaFile()
 {
-    static char kSchemaFile[] = "magnetometer.sdf";
+    static const char kSchemaFile[] = "magnetometer.sdf";
     return kSchemaFile;
 }
 

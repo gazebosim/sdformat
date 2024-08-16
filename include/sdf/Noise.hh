@@ -51,7 +51,7 @@ namespace sdf
 
     /// \brief Get the schema file name accessor
     public: static inline std::string_view SchemaFile();
-    
+
     /// \brief Return true if both Noise objects contain the same values.
     /// \param[_in] _noise Noise value to compare.
     /// \return True if 'this' == _noise.

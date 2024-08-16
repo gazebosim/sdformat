@@ -646,9 +646,9 @@ sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Root::SchemaFile() 
+inline std::string_view Root::SchemaFile()
 {
-    static char kSchemaFile[] = "root.sdf";
+    static const char kSchemaFile[] = "root.sdf";
     return kSchemaFile;
 }
 

@@ -313,9 +313,9 @@ bool Plugin::operator!=(const Plugin &_plugin) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Plugin::SchemaFile() 
+inline std::string_view Plugin::SchemaFile()
 {
-    static char kSchemaFile[] = "plugin.sdf";
+    static const char kSchemaFile[] = "plugin.sdf";
     return kSchemaFile;
 }
 

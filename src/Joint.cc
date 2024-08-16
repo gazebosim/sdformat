@@ -632,9 +632,9 @@ void Joint::ClearSensors()
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Joint::SchemaFile() 
+inline std::string_view Joint::SchemaFile()
 {
-    static char kSchemaFile[] = "joint.sdf";
+    static const char kSchemaFile[] = "joint.sdf";
     return kSchemaFile;
 }
 

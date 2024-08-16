@@ -214,9 +214,9 @@ sdf::ElementPtr Scene::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Scene::SchemaFile() 
+inline std::string_view Scene::SchemaFile()
 {
-    static char kSchemaFile[] = "scene.sdf";
+    static const char kSchemaFile[] = "scene.sdf";
     return kSchemaFile;
 }
 

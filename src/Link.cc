@@ -1062,9 +1062,9 @@ sdf::ElementPtr Link::ToElement() const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Link::SchemaFile() 
+inline std::string_view Link::SchemaFile()
 {
-    static char kSchemaFile[] = "link.sdf";
+    static const char kSchemaFile[] = "link.sdf";
     return kSchemaFile;
 }
 

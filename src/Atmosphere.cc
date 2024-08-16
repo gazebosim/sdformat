@@ -174,9 +174,9 @@ sdf::ElementPtr Atmosphere::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Atmosphere::SchemaFile() 
+inline std::string_view Atmosphere::SchemaFile()
 {
-    static char kSchemaFile[] = "atmosphere.sdf";
+    static const char kSchemaFile[] = "atmosphere.sdf";
     return kSchemaFile;
 }
 
