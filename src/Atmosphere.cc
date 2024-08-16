@@ -161,7 +161,7 @@ sdf::ElementPtr Atmosphere::ToElement() const
 sdf::ElementPtr Atmosphere::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("atmosphere.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("type")->Set("adiabatic", _errors);
   elem->GetElement("temperature", _errors)->Set(

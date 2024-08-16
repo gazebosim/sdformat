@@ -215,7 +215,7 @@ sdf::ElementPtr Physics::ToElement() const
 sdf::ElementPtr Physics::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("physics.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name(), _errors);
   elem->GetAttribute("default")->Set(this->IsDefault(), _errors);

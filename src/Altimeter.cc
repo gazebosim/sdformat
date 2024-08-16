@@ -151,7 +151,7 @@ sdf::ElementPtr Altimeter::ToElement() const
 sdf::ElementPtr Altimeter::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("altimeter.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   sdf::ElementPtr verticalPosElem = elem->GetElement(
       "vertical_position", _errors);

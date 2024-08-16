@@ -97,7 +97,7 @@ sdf::ElementPtr Gui::Element() const
 sdf::ElementPtr Gui::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("gui.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("fullscreen")->Set(this->dataPtr->fullscreen);
 

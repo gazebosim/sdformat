@@ -1213,7 +1213,7 @@ bool Camera::HasLensProjection() const
 sdf::ElementPtr Camera::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("camera.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set<std::string>(this->Name());
   sdf::ElementPtr poseElem = elem->GetElement("pose");

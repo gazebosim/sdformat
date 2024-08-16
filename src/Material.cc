@@ -411,7 +411,7 @@ sdf::ElementPtr Material::ToElement() const
 sdf::ElementPtr Material::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("material.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetElement("ambient", _errors)->Set(_errors, this->Ambient());
   elem->GetElement("diffuse", _errors)->Set(_errors, this->Diffuse());

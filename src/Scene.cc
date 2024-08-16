@@ -198,7 +198,7 @@ sdf::ElementPtr Scene::ToElement() const
 sdf::ElementPtr Scene::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("scene.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetElement("ambient", _errors)->Set(_errors, this->Ambient());
   elem->GetElement("background", _errors)->Set(_errors, this->Background());

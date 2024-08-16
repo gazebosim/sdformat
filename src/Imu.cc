@@ -389,7 +389,7 @@ sdf::ElementPtr Imu::ToElement() const
 sdf::ElementPtr Imu::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("imu.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   sdf::ElementPtr orientationRefFrameElem =
     elem->GetElement("orientation_reference_frame", _errors);
