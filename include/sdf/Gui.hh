@@ -33,6 +33,9 @@ namespace sdf
     /// \brief Default constructor
     public: Gui();
 
+    /// \brief Get the schema file name accessor
+    public: static inline std::string_view SchemaFile();
+    
     /// \brief Load the gui based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.

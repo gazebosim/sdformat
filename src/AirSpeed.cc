@@ -106,3 +106,11 @@ sdf::ElementPtr AirSpeed::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view AirSpeed::SchemaFile() 
+{
+    static char kSchemaFile[] = "air_speed.sdf";
+    return kSchemaFile;
+}
+

@@ -1414,3 +1414,11 @@ sdf::Frame Model::PrepareForMerge(sdf::Errors &_errors,
 
   return proxyFrame;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Model::SchemaFile() 
+{
+    static char kSchemaFile[] = "model.sdf";
+    return kSchemaFile;
+}
+

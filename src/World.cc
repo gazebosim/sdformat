@@ -1271,3 +1271,11 @@ void World::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view World::SchemaFile() 
+{
+    static char kSchemaFile[] = "world.sdf";
+    return kSchemaFile;
+}
+

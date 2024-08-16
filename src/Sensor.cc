@@ -848,3 +848,11 @@ void Sensor::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Sensor::SchemaFile() 
+{
+    static char kSchemaFile[] = "sensor.sdf";
+    return kSchemaFile;
+}
+

@@ -573,3 +573,11 @@ sdf::ElementPtr ParticleEmitter::ToElement(sdf::Errors &_errors) const
 }
 
 
+
+/////////////////////////////////////////////////
+inline std::string_view ParticleEmitter::SchemaFile() 
+{
+    static char kSchemaFile[] = "particle_emitter.sdf";
+    return kSchemaFile;
+}
+

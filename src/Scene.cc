@@ -212,3 +212,11 @@ sdf::ElementPtr Scene::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Scene::SchemaFile() 
+{
+    static char kSchemaFile[] = "scene.sdf";
+    return kSchemaFile;
+}
+

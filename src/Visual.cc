@@ -378,3 +378,11 @@ void Visual::AddPlugin(const Plugin &_plugin)
 {
   this->dataPtr->plugins.push_back(_plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Visual::SchemaFile() 
+{
+    static char kSchemaFile[] = "visual.sdf";
+    return kSchemaFile;
+}
+

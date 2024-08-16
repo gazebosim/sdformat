@@ -82,6 +82,9 @@ namespace sdf
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
+
+    public: static inline std::string_view SchemaFile();
+
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get a pointer to the SDF element that was used during

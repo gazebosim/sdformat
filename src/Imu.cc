@@ -454,3 +454,11 @@ sdf::ElementPtr Imu::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Imu::SchemaFile() 
+{
+    static char kSchemaFile[] = "imu.sdf";
+    return kSchemaFile;
+}
+

@@ -367,3 +367,11 @@ sdf::ElementPtr ForceTorque::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view ForceTorque::SchemaFile() 
+{
+  static char kSchemaFile[] = "forcetorque.sdf";
+  return kSchemaFile;
+}
+

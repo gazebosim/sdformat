@@ -47,6 +47,9 @@ namespace sdf
     /// \brief Default constructor
     public: Plugin();
 
+    /// \brief Get the schema file name accessor
+    public: static inline std::string_view SchemaFile();
+    
     /// \brief Default destructor
     public: ~Plugin();
 

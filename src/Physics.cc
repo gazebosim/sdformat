@@ -232,3 +232,11 @@ sdf::ElementPtr Physics::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Physics::SchemaFile() 
+{
+    static char kSchemaFile[] = "physics.sdf";
+    return kSchemaFile;
+}
+
