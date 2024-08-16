@@ -977,7 +977,7 @@ void Link::ClearProjectors()
 sdf::ElementPtr Link::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("link.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name());
 
@@ -1078,3 +1078,11 @@ sdf::ElementPtr Link::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Link::SchemaFile()
+{
+    static const char kSchemaFile[] = "link.sdf";
+    return kSchemaFile;
+}
+

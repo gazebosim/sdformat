@@ -97,7 +97,7 @@ sdf::ElementPtr Gui::Element() const
 sdf::ElementPtr Gui::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("gui.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("fullscreen")->Set(this->dataPtr->fullscreen);
 
@@ -146,4 +146,12 @@ sdf::Plugins &Gui::Plugins()
   return this->dataPtr->plugins;
 }
 
+
+
+/////////////////////////////////////////////////
+inline std::string_view Gui::SchemaFile()
+{
+    static const char kSchemaFile[] = "gui.sdf";
+    return kSchemaFile;
+}
 

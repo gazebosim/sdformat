@@ -232,7 +232,7 @@ sdf::ElementPtr Frame::ToElement() const
 sdf::ElementPtr Frame::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("frame.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->dataPtr->name, _errors);
 
@@ -250,3 +250,11 @@ sdf::ElementPtr Frame::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Frame::SchemaFile()
+{
+    static const char kSchemaFile[] = "frame.sdf";
+    return kSchemaFile;
+}
+

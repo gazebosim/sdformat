@@ -538,7 +538,7 @@ Sensor *Joint::SensorByName(const std::string &_name)
 sdf::ElementPtr Joint::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("joint.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set<std::string>(this->Name());
   sdf::ElementPtr poseElem = elem->GetElement("pose");
@@ -630,3 +630,11 @@ void Joint::ClearSensors()
 {
   this->dataPtr->sensors.clear();
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Joint::SchemaFile()
+{
+    static const char kSchemaFile[] = "joint.sdf";
+    return kSchemaFile;
+}
+

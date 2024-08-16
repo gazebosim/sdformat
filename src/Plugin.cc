@@ -178,7 +178,7 @@ sdf::ElementPtr Plugin::ToElement() const
 sdf::ElementPtr Plugin::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("plugin.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetAttribute("name")->Set(this->Name(), _errors);
   elem->GetAttribute("filename")->Set(this->Filename(), _errors);
@@ -311,3 +311,11 @@ bool Plugin::operator!=(const Plugin &_plugin) const
 {
   return !(*this == _plugin);
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Plugin::SchemaFile()
+{
+    static const char kSchemaFile[] = "plugin.sdf";
+    return kSchemaFile;
+}
+

@@ -265,7 +265,7 @@ sdf::ElementPtr Noise::ToElement() const
 sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("noise.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   std::string noiseType;
   switch (this->Type())
@@ -300,3 +300,11 @@ sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Noise::SchemaFile()
+{
+    static const char kSchemaFile[] = "noise.sdf";
+    return kSchemaFile;
+}
+

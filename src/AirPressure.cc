@@ -129,7 +129,7 @@ sdf::ElementPtr AirPressure::ToElement() const
 sdf::ElementPtr AirPressure::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("air_pressure.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   elem->GetElement("reference_altitude", _errors)->Set<double>(
       _errors, this->ReferenceAltitude());
@@ -139,3 +139,11 @@ sdf::ElementPtr AirPressure::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view AirPressure::SchemaFile()
+{
+    static const char kSchemaFile[] = "air_pressure.sdf";
+    return kSchemaFile;
+}
+

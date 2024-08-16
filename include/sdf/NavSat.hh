@@ -76,6 +76,10 @@ namespace sdf
   {
     /// \brief Default constructor
     public: NavSat();
+
+    /// \brief Get the schema file name accessor
+    public: static inline std::string_view SchemaFile();
+
     /// \brief Load the navsat based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.

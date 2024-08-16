@@ -404,7 +404,7 @@ sdf::ElementPtr Geometry::ToElement() const
 sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("geometry.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   switch (this->dataPtr->type)
   {
@@ -451,3 +451,11 @@ sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view Geometry::SchemaFile()
+{
+    static const char kSchemaFile[] = "geometry.sdf";
+    return kSchemaFile;
+}
+

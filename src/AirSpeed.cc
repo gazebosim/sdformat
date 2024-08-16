@@ -98,7 +98,7 @@ void AirSpeed::SetPressureNoise(const Noise &_noise)
 sdf::ElementPtr AirSpeed::ToElement() const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("air_speed.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   sdf::ElementPtr pressureElem = elem->GetElement("pressure");
   sdf::ElementPtr noiseElem = pressureElem->GetElement("noise");
@@ -106,3 +106,11 @@ sdf::ElementPtr AirSpeed::ToElement() const
 
   return elem;
 }
+
+/////////////////////////////////////////////////
+inline std::string_view AirSpeed::SchemaFile()
+{
+    static const char kSchemaFile[] = "air_speed.sdf";
+    return kSchemaFile;
+}
+

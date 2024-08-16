@@ -533,7 +533,7 @@ sdf::ElementPtr ParticleEmitter::ToElement() const
 sdf::ElementPtr ParticleEmitter::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("particle_emitter.sdf", elem);
+  sdf::initFile(std::string(this->SchemaFile()), elem);
 
   // Set pose
   sdf::ElementPtr poseElem = elem->GetElement("pose", _errors);
@@ -572,4 +572,12 @@ sdf::ElementPtr ParticleEmitter::ToElement(sdf::Errors &_errors) const
   return elem;
 }
 
+
+
+/////////////////////////////////////////////////
+inline std::string_view ParticleEmitter::SchemaFile()
+{
+    static const char kSchemaFile[] = "particle_emitter.sdf";
+    return kSchemaFile;
+}
 
