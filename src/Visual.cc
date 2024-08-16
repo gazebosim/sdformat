@@ -380,9 +380,9 @@ void Visual::AddPlugin(const Plugin &_plugin)
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Visual::SchemaFile() 
+inline std::string_view Visual::SchemaFile()
 {
-    static char kSchemaFile[] = "visual.sdf";
+    static const char kSchemaFile[] = "visual.sdf";
     return kSchemaFile;
 }
 

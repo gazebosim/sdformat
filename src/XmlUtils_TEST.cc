@@ -37,7 +37,9 @@ TEST(XMLUtils, DeepClone)
   ASSERT_EQ(tinyxml2::XML_SUCCESS, ret);
 
   auto root = oldDoc.FirstChild();
-  auto newRoot = sdf::DeepClone(&newDoc, root);
+  sdf::Errors errors;
+  auto newRoot = sdf::DeepClone(errors, &newDoc, root);
+  EXPECT_TRUE(errors.empty()) << errors;
 
   EXPECT_STREQ("document", newRoot->ToElement()->Name());
 
@@ -52,4 +54,49 @@ TEST(XMLUtils, DeepClone)
 
   auto childB_text = newChildB->ToElement()->GetText();
   EXPECT_STREQ("Hello World", childB_text);
+}
+
+/////////////////////////////////////////////////
+TEST(XMLUtils, InvalidDeepClone)
+{
+  sdf::Errors errors;
+  auto newRoot = sdf::DeepClone(errors, nullptr, nullptr);
+  EXPECT_EQ(nullptr, newRoot);
+  EXPECT_EQ(1u, errors.size()) << errors;
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::XML_ERROR);
+}
+
+/////////////////////////////////////////////////
+TEST(XMLUtils, ElementToString)
+{
+  tinyxml2::XMLDocument doc;
+
+  std::string docXml =
+R"(<document>
+    <nodeA>
+        <nodeB attr="true">Hello World</nodeB>
+    </nodeA>
+</document>
+)";
+
+  auto ret = doc.Parse(docXml.c_str());
+  ASSERT_EQ(tinyxml2::XML_SUCCESS, ret);
+
+  auto root = doc.FirstChild();
+  sdf::Errors errors;
+  std::string docString = sdf::ElementToString(errors, root->ToElement());
+  EXPECT_TRUE(errors.empty()) << errors;
+  EXPECT_EQ(docXml, docString);
+}
+
+/////////////////////////////////////////////////
+TEST(XMLUtils, InvalidElementToString)
+{
+  sdf::Errors errors;
+  std::string docString = sdf::ElementToString(errors, nullptr);
+  EXPECT_TRUE(docString.empty());
+  EXPECT_EQ(1u, errors.size()) << errors;
+  ASSERT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::XML_ERROR);
 }

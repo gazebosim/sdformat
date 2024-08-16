@@ -3370,7 +3370,8 @@ TEST(Converter, World_17_to_18)
   ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
-  std::string convertedXmlStr = ElementToString(xmlDoc.RootElement());
+  std::string convertedXmlStr = ElementToString(errors, xmlDoc.RootElement());
+  ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(convertedXmlStr.empty());
 
   std::string expectedXmlStr = R"(
@@ -3393,7 +3394,9 @@ TEST(Converter, World_17_to_18)
   tinyxml2::XMLDocument expectedXmlDoc;
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
+  EXPECT_EQ(ElementToString(errors, expectedXmlDoc.RootElement()),
+            convertedXmlStr);
+  ASSERT_TRUE(errors.empty());
 
     // Check some basic elements
   tinyxml2::XMLElement *convertedElem =  xmlDoc.FirstChildElement();
@@ -3509,7 +3512,8 @@ TEST(Converter, World_17_to_18)
   ASSERT_TRUE(errors.empty());
 
   // Compare converted xml with expected
-  convertedXmlStr = ElementToString(xmlDoc.RootElement());
+  convertedXmlStr = ElementToString(errors, xmlDoc.RootElement());
+  ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(convertedXmlStr.empty());
 
   expectedXmlStr = R"(
@@ -3577,7 +3581,9 @@ TEST(Converter, World_17_to_18)
   expectedXmlDoc.Clear();
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
+  EXPECT_EQ(ElementToString(errors, expectedXmlDoc.RootElement()),
+            convertedXmlStr);
+  ASSERT_TRUE(errors.empty());
 
 
   // ------- Another flattened world in 1.7 format
@@ -3616,7 +3622,8 @@ TEST(Converter, World_17_to_18)
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 
   // Compare converted xml with expected
-  convertedXmlStr = ElementToString(xmlDoc.RootElement());
+  convertedXmlStr = ElementToString(errors, xmlDoc.RootElement());
+  ASSERT_TRUE(errors.empty());
   ASSERT_FALSE(convertedXmlStr.empty());
 
   expectedXmlStr = R"(
@@ -3655,7 +3662,9 @@ TEST(Converter, World_17_to_18)
   expectedXmlDoc.Clear();
   expectedXmlDoc.Parse(expectedXmlStr.c_str());
 
-  EXPECT_EQ(ElementToString(expectedXmlDoc.RootElement()), convertedXmlStr);
+  EXPECT_EQ(ElementToString(errors, expectedXmlDoc.RootElement()),
+            convertedXmlStr);
+  ASSERT_TRUE(errors.empty());
 
   // Check some basic elements
   convertedElem =  xmlDoc.FirstChildElement();

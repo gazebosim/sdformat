@@ -76,15 +76,16 @@ namespace sdf
   {
     /// \brief Default constructor
     public: NavSat();
+
+    /// \brief Get the schema file name accessor
+    public: static inline std::string_view SchemaFile();
+
     /// \brief Load the navsat based on an element pointer. This is *not*
     /// the usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
     /// \param[in] _sdf The SDF Element pointer
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
-
-    public: static inline std::string_view SchemaFile();
-
     public: Errors Load(ElementPtr _sdf);
 
     /// \brief Get a pointer to the SDF element that was used during

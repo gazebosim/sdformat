@@ -15,7 +15,9 @@
  *
 */
 #include <algorithm>
+#include <tinyxml2.h>
 
+#include "Utils.hh"
 #include "XmlUtils.hh"
 
 #include "sdf/Console.hh"
@@ -28,26 +30,40 @@ inline namespace SDF_VERSION_NAMESPACE {
 tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
                               const tinyxml2::XMLNode *_src)
 {
+  sdf::Errors errors;
+  tinyxml2::XMLNode *result = DeepClone(errors, _doc, _src);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+tinyxml2::XMLNode *DeepClone(sdf::Errors &_errors,
+                             tinyxml2::XMLDocument *_doc,
+                             const tinyxml2::XMLNode *_src)
+{
   if (_src == nullptr)
   {
-    sdferr << "Pointer to XML node _src is NULL\n";
+    _errors.push_back({sdf::ErrorCode::XML_ERROR,
+        "Pointer to XML node _src is NULL"});
     return nullptr;
   }
 
   tinyxml2::XMLNode *copy = _src->ShallowClone(_doc);
   if (copy == nullptr)
   {
-    sdferr << "Failed to clone node " << _src->Value() << "\n";
+    _errors.push_back({sdf::ErrorCode::XML_ERROR,
+        "Failed to clone node " + std::string(_src->Value())});
     return nullptr;
   }
 
   for (const tinyxml2::XMLNode *node = _src->FirstChild(); node != nullptr;
        node = node->NextSibling())
   {
-    auto *childCopy = DeepClone(_doc, node);
+    auto *childCopy = DeepClone(_errors, _doc, node);
     if (childCopy == nullptr)
     {
-      sdferr << "Failed to clone child " << node->Value() << "\n";
+    _errors.push_back({sdf::ErrorCode::XML_ERROR,
+        "Failed to clone child " + std::string(node->Value())});
       return nullptr;
     }
     copy->InsertEndChild(childCopy);
@@ -57,11 +73,13 @@ tinyxml2::XMLNode *DeepClone(tinyxml2::XMLDocument *_doc,
 }
 
 /////////////////////////////////////////////////
-std::string ElementToString(const tinyxml2::XMLElement *_elem)
+std::string ElementToString(sdf::Errors &_errors,
+                            const tinyxml2::XMLElement *_elem)
 {
   if (_elem == nullptr)
   {
-    sdferr << "Pointer to XML Element _elem is nullptr\n";
+    _errors.push_back({sdf::ErrorCode::XML_ERROR,
+        "Pointer to XML Element _elem is nullptr"});
     return "";
   }
 

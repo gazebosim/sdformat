@@ -64,7 +64,7 @@ namespace sdf
 
     /// \brief Get the schema file name accessor
     public: static inline std::string_view SchemaFile();
-    
+
     /// \brief Return true if both Camera objects contain the same values.
     /// \param[_in] _alt Camera value to compare.
     /// \returen True if 'this' == _alt.

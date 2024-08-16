@@ -61,7 +61,7 @@ namespace sdf
 
     /// \brief Get the schema file name accessor
     public: static inline std::string_view SchemaFile();
-    
+
     /// \brief Get the name of the world without loading the entire world
     /// Users shouldn't normally need to use this API.
     /// This doesn't load the world, it might return the world name even if the

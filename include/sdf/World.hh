@@ -62,7 +62,7 @@ namespace sdf
 
     /// \brief Get the schema file name accessor
     public: static inline std::string_view SchemaFile();
-    
+
     /// \brief Load the world based on a element pointer. This is *not* the
     /// usual entry point. Typical usage of the SDF DOM is through the Root
     /// object.
@@ -280,6 +280,20 @@ namespace sdf
     /// \param[in] _name Name of the actor to check.
     /// \return True if there exists an actor with the given name.
     public: bool ActorNameExists(const std::string &_name) const;
+
+    /// \brief Get an actor based on a name.
+    /// \param[in] _name Name of the actor.
+    /// \return Pointer to the actor. Nullptr if an actor with the given name
+    /// does not exist.
+    /// \sa bool ActorNameExists(const std::string &_name) const
+    public: const Actor *ActorByName(const std::string &_name) const;
+
+    /// \brief Get a mutable actor based on a name.
+    /// \param[in] _name Name of the actor.
+    /// \return Pointer to the actor. Nullptr if an actor with the given name
+    /// does not exist.
+    /// \sa bool ActorNameExists(const std::string &_name) const
+    public: Actor *ActorByName(const std::string &_name);
 
     /// \brief Get the number of explicit frames that are immediate (not nested)
     /// children of this World object.

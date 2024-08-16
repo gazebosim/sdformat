@@ -850,9 +850,9 @@ void Sensor::AddPlugin(const Plugin &_plugin)
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Sensor::SchemaFile() 
+inline std::string_view Sensor::SchemaFile()
 {
-    static char kSchemaFile[] = "sensor.sdf";
+    static const char kSchemaFile[] = "sensor.sdf";
     return kSchemaFile;
 }
 

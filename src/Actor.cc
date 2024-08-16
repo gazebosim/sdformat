@@ -821,9 +821,9 @@ void Actor::AddPlugin(const Plugin &_plugin)
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Actor::SchemaFile() 
+inline std::string_view Actor::SchemaFile()
 {
-    static char kSchemaFile[] = "actor.sdf";
+    static const char kSchemaFile[] = "actor.sdf";
     return kSchemaFile;
 }
 

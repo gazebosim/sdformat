@@ -302,9 +302,9 @@ sdf::ElementPtr Noise::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Noise::SchemaFile() 
+inline std::string_view Noise::SchemaFile()
 {
-    static char kSchemaFile[] = "noise.sdf";
+    static const char kSchemaFile[] = "noise.sdf";
     return kSchemaFile;
 }
 

@@ -252,9 +252,9 @@ sdf::ElementPtr Frame::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Frame::SchemaFile() 
+inline std::string_view Frame::SchemaFile()
 {
-    static char kSchemaFile[] = "frame.sdf";
+    static const char kSchemaFile[] = "frame.sdf";
     return kSchemaFile;
 }
 

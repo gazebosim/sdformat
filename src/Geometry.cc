@@ -453,9 +453,9 @@ sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Geometry::SchemaFile() 
+inline std::string_view Geometry::SchemaFile()
 {
-    static char kSchemaFile[] = "geometry.sdf";
+    static const char kSchemaFile[] = "geometry.sdf";
     return kSchemaFile;
 }
 

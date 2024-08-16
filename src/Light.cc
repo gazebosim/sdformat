@@ -558,9 +558,9 @@ sdf::ElementPtr Light::ToElement(sdf::Errors &_errors) const
 }
 
 /////////////////////////////////////////////////
-inline std::string_view Light::SchemaFile() 
+inline std::string_view Light::SchemaFile()
 {
-    static char kSchemaFile[] = "light.sdf";
+    static const char kSchemaFile[] = "light.sdf";
     return kSchemaFile;
 }
 
