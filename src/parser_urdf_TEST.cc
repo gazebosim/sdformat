@@ -2476,8 +2476,8 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
       });
 #endif
 
-	// test if reference to link exists
-	{
+  // test if reference to link exists
+  {
     // clear the contents of the buffer
     buffer.str("");
 
@@ -2509,12 +2509,75 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
         " in the URDF model. Please ensure that the reference attribute"
         " matches the name of a link.");
   }
-  
-  /* TODO(aagrawal05): Similar tests for -
-      InsertSDFExtensionCollision,
-      InsertSDFExtensionRobot,
-      InsertSDFExtensionVisual,
-      InsertSDFExtensionJoint */
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name="test_robot">
+        <link name="link1">
+          <inertial>
+            <mass value="1" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+          </inertial>
+        </link>
+        <visual reference="lіnk1">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <color rgba="0.8 0.1 0.1 1.0"/>
+          </material>
+          <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        </visual>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    parser.InitModelString(str, config, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "<visual> tag with reference[link1] does not exist"
+        " in the URDF model. Please ensure that the reference attribute"
+        " matches the name of a link.");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name="test_robot">
+        <link name="link1">
+          <inertial>
+            <mass value="1" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+          </inertial>
+        </link>
+        <collision reference="lіnk1">
+          <geometry>
+            <sphere>
+              <radius>0.5</radius>
+            </sphere>
+          </geometry>
+          <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        </collision>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    parser.InitModelString(str, config, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "<collision> tag with reference[link1] does not exist"
+        " in the URDF model. Please ensure that the reference attribute"
+        " matches the name of a link.");
+  }
 }
 
 /////////////////////////////////////////////////
