@@ -23,6 +23,24 @@ gz_create_core_library(SOURCES ${sources}
   CXX_STANDARD 17
   LEGACY_PROJECT_PREFIX SDFormat
   )
+gz_add_get_install_prefix_impl(GET_INSTALL_PREFIX_FUNCTION sdf::getInstallPrefix
+  GET_INSTALL_PREFIX_HEADER sdf/InstallationDirectories.hh
+  OVERRIDE_INSTALL_PREFIX_ENV_VARIABLE SDF_INSTALL_PREFIX)
+
+# CMAKE_INSTALL_DATAROOTDIR may be an absolute path, let's make sure to use the
+# relative version
+if(IS_ABSOLUTE "${CMAKE_INSTALL_DATAROOTDIR}")
+  file(RELATIVE_PATH CMAKE_INSTALL_RELATIVE_DATAROOTDIR "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_DATAROOTDIR}")
+else()
+  set(CMAKE_INSTALL_RELATIVE_DATAROOTDIR "${CMAKE_INSTALL_DATAROOTDIR}")
+endif()
+
+set_property(
+  SOURCE InstallationDirectories.cc
+  PROPERTY COMPILE_DEFINITIONS
+  CMAKE_INSTALL_RELATIVE_DATAROOTDIR="${CMAKE_INSTALL_RELATIVE_DATAROOTDIR}"
+)
+
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
@@ -91,6 +109,11 @@ if (BUILD_TESTING)
     -DGZ_SDFORMAT_STATIC_DEFINE
   )
 
+  if(WIN32)
+    target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+      PRIVATE shlwapi)
+  endif()
+
   gz_build_tests(
     TYPE UNIT
     SOURCES ${gtest_sources}
@@ -99,6 +122,8 @@ if (BUILD_TESTING)
       ${PROJECT_SOURCE_DIR}/test
     LIB_DEPS
       library_for_tests
+    ENVIRONMENT
+      SDF_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
   )
 
   if (TARGET UNIT_gz_TEST)

@@ -1,5 +1,82 @@
 ## libsdformat 14.X
 
+### libsdformat 14.5.0 (2024-08-05)
+
+1. Adding Errors structure to XmlUtils
+    * [Pull request #1296](https://github.com/gazebosim/sdformat/pull/1296)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Added SetHeightMap and Heighmap to Geometry Python binding
+    * [Pull request #1440](https://github.com/gazebosim/sdformat/pull/1440)
+
+1. workflows/ci.yml fix push branch regex
+    * [Pull request #1445](https://github.com/gazebosim/sdformat/pull/1445)
+
+1. SDF.cc update calls to use sdf::Errors output
+    * [Pull request #1295](https://github.com/gazebosim/sdformat/pull/1295)
+
+1. Added World::ActorByName
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
+
+### libsdformat 14.4.0 (2024-06-20)
+
+1. Add Cone as a primitive parametric shape.
+    * [Pull request #1415](https://github.com/gazebosim/sdformat/pull/1415)
+    * Thanks to Benjamin Perseghetti
+
+1. Add custom attribute to custom element in test
+    * [Pull request #1406](https://github.com/gazebosim/sdformat/pull/1406)
+
+### libsdformat 14.3.0 (2024-06-14)
+
+1. Backport voxel_resolution sdf element
+    * [Pull request #1429](https://github.com/gazebosim/sdformat/pull/1429)
+
+1. Added Automatic Moment of Inertia Calculations for Basic Shapes Python wrappers
+    * [Pull request #1424](https://github.com/gazebosim/sdformat/pull/1424)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+    * [Pull request #1419](https://github.com/gazebosim/sdformat/pull/1419)
+
+1. Update default camera instrinsics skew to 0, which matches spec
+    * [Pull request #1423](https://github.com/gazebosim/sdformat/pull/1423)
+    * [Pull request #1425](https://github.com/gazebosim/sdformat/pull/1425)
+
+1. Allow empty strings in plugin and custom attributes
+    * [Pull request #1407](https://github.com/gazebosim/sdformat/pull/1407)
+
+1. (Backport) Enable 24.04 CI, remove distutils dependency
+    * [Pull request #1413](https://github.com/gazebosim/sdformat/pull/1413)
+
+1. Fix macOS workflow and backport windows fix
+    * [Pull request #1409](https://github.com/gazebosim/sdformat/pull/1409)
+
+1. Fix warning with pybind11 2.12
+    * [Pull request #1389](https://github.com/gazebosim/sdformat/pull/1389)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+    * [Pull request #1427](https://github.com/gazebosim/sdformat/pull/1427)
+
+### libsdformat 14.2.0 (2024-04-23)
+
+1. Fix trivial warning on 24.04 for JointAxis_TEST.cc
+    * [Pull request #1402](https://github.com/gazebosim/sdformat/pull/1402)
+
+1. Add package.xml, fix `gz sdf` tests on Windows
+    * [Pull request #1374](https://github.com/gazebosim/sdformat/pull/1374)
+
+1. Backport mesh optimization feature
+    * [Pull request #1398](https://github.com/gazebosim/sdformat/pull/1398)
+    * [Pull request #1386](https://github.com/gazebosim/sdformat/pull/1386)
+    * [Pull request #1382](https://github.com/gazebosim/sdformat/pull/1382)
+
+1. Param_TEST: Check return values of Param::Get/Set
+    * [Pull request #1394](https://github.com/gazebosim/sdformat/pull/1394)
+
 ### libsdformat 14.1.1 (2024-03-28)
 
 1. Fix warning with pybind11 2.12
@@ -111,6 +188,50 @@
     * [Pull request #1104](https://github.com/gazebosim/sdformat/pull/1104)
 
 ## libsdformat 13.X
+
+### libsdformat 13.8.0 (2024-06-25)
+
+1. Added `World::ActorByName`
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
+
+1. Backport #1367 to Garden: Fix find Python3 logic.
+    * [Pull request #1370](https://github.com/gazebosim/sdformat/pull/1370)
+
+### libsdformat 13.7.0 (2024-06-13)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+    * [Pull request #1419](https://github.com/gazebosim/sdformat/pull/1419)
+
+1. Fix macOS workflow and backport windows fix
+    * [Pull request #1409](https://github.com/gazebosim/sdformat/pull/1409)
+
+1. Fix warning with pybind11 2.12
+    * [Pull request #1389](https://github.com/gazebosim/sdformat/pull/1389)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+    * [Pull request #1427](https://github.com/gazebosim/sdformat/pull/1427)
+
+1. Resolve URIs relative to file path
+    * [Pull request #1373](https://github.com/gazebosim/sdformat/pull/1373)
+
+1. Bazel updates for Garden build
+    * [Pull request #1239](https://github.com/gazebosim/sdformat/pull/1239)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Install ruby commands on Windows
+    * [Pull request #1339](https://github.com/gazebosim/sdformat/pull/1339)
+    * [Pull request #1341](https://github.com/gazebosim/sdformat/pull/1341)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
 
 ### libsdformat 13.6.0 (2023-08-30)
 
@@ -573,6 +694,21 @@
     * [Pull request #758](https://github.com/gazebosim/sdformat/pull/758)
 
 ## libsdformat 12.X
+
+### libsdformat 12.8.0 (2024-06-06)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
 
 ### libsdformat 12.7.2 (2023-09-01)
 

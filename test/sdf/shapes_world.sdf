@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.8">
+<sdf version="1.11">
   <world name="shapes_world">
     <model name="ground_plane">
       <static>true</static>
@@ -143,6 +143,29 @@
               </submesh>
               <scale>1.2 2.3 3.4</scale>
             </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="cone">
+      <pose relative_to="mesh">2 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cone>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cone>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cone>
+              <radius>0.2</radius>
+              <length>0.1</length>
+            </cone>
           </geometry>
         </visual>
       </link>

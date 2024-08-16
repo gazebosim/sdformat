@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import (Geometry, Box, Capsule, Cylinder, Ellipsoid,
-                                   Mesh, Plane, Sphere)
-from gz_test_deps.math import Vector3d, Vector2d
+from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cone, Cylinder, Ellipsoid,
+                                   Heightmap, Mesh, ParserConfig, Plane, Sphere)
+from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
 import gz_test_deps.sdformat as sdf
+import math
 import unittest
 
 
@@ -31,6 +32,9 @@ class GeometryTEST(unittest.TestCase):
 
     geom.set_type(sdf.GeometryType.CAPSULE)
     self.assertEqual(sdf.GeometryType.CAPSULE, geom.type())
+
+    geom.set_type(sdf.GeometryType.CONE)
+    self.assertEqual(sdf.GeometryType.CONE, geom.type())
 
     geom.set_type(sdf.GeometryType.CYLINDER)
     self.assertEqual(sdf.GeometryType.CYLINDER, geom.type())
@@ -122,6 +126,21 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(4.56, geom.capsule_shape().length())
 
 
+  def test_cone(self):
+    geom = Geometry()
+    geom.set_type(sdf.GeometryType.CONE)
+
+    coneShape = Cone()
+    coneShape.set_radius(0.123)
+    coneShape.set_length(4.56)
+    geom.set_cone_shape(coneShape)
+
+    self.assertEqual(sdf.GeometryType.CONE, geom.type())
+    self.assertNotEqual(None, geom.cone_shape())
+    self.assertEqual(0.123, geom.cone_shape().radius())
+    self.assertEqual(4.56, geom.cone_shape().length())
+
+
   def test_cylinder(self):
     geom = Geometry()
     geom.set_type(sdf.GeometryType.CYLINDER)
@@ -169,6 +188,23 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual("orange", geom.mesh_shape().submesh())
     self.assertTrue(geom.mesh_shape().center_submesh())
 
+  def test_heighmap(self):
+    geom = Geometry()
+
+    geom.set_type(sdf.GeometryType.HEIGHTMAP)
+    heightmap = Heightmap()
+    geom.set_heightmap_shape(heightmap)
+
+    self.assertEqual(sdf.GeometryType.HEIGHTMAP, geom.type())
+    self.assertEqual(None, geom.box_shape())
+    self.assertEqual(None, geom.capsule_shape())
+    self.assertEqual(None, geom.cylinder_shape())
+    self.assertEqual(None, geom.ellipsoid_shape())
+    self.assertEqual(None, geom.sphere_shape())
+    self.assertEqual(None, geom.plane_shape())
+    self.assertEqual(None, geom.mesh_shape())
+    self.assertNotEqual(None, geom.heightmap_shape())
+
 
   def test_plane(self):
     geom = Geometry()
@@ -184,6 +220,173 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(Vector3d.UNIT_X, geom.plane_shape().normal())
     self.assertEqual(Vector2d(9, 8), geom.plane_shape().size())
 
+
+  def test_calculate_inertial(self):
+    geom = Geometry()
+
+    # Density of Aluminimum
+    density = 2170.0
+    expectedMass = 0
+    expectedMassMat = MassMatrix3d()
+    expectedInertial = Inertiald()
+    sdfParserConfig = ParserConfig()
+    errors = []
+
+    # Not supported geom type
+    geom.set_type(sdf.GeometryType.EMPTY)
+    element = Element()
+    notSupportedInertial = geom.calculate_inertial(errors,
+      sdfParserConfig, density, element)
+    self.assertEqual(notSupportedInertial, None)
+
+    box = Box()
+    l = 2.0
+    w = 2.0
+    h = 2.0
+    box.set_size(Vector3d(l, w, h))
+
+    expectedMass = box.shape().volume() * density
+    ixx = (1.0 / 12.0) * expectedMass * (w * w + h * h)
+    iyy = (1.0 / 12.0) * expectedMass * (l * l + h * h)
+    izz = (1.0 / 12.0) * expectedMass * (l * l + w * w)
+
+    expectedMassMat.set_mass(expectedMass)
+    expectedMassMat.set_diagonal_moments(Vector3d(ixx, iyy, izz))
+    expectedMassMat.set_off_diagonal_moments(Vector3d.ZERO)
+
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    geom.set_type(sdf.GeometryType.BOX)
+    geom.set_box_shape(box)
+    boxInertial = geom.calculate_inertial(errors,
+      sdfParserConfig, density, element)
+
+    self.assertNotEqual(None, boxInertial)
+    self.assertEqual(expectedInertial, boxInertial)
+    self.assertEqual(expectedInertial.mass_matrix(), expectedMassMat)
+    self.assertEqual(expectedInertial.pose(), boxInertial.pose())
+
+    # Capsule
+    capsule = Capsule()
+    l = 2.0
+    r = 0.1
+    capsule.set_length(l)
+    capsule.set_radius(r)
+
+    expectedMass = capsule.shape().volume() * density
+    cylinderVolume = math.pi * r * r * l
+    sphereVolume = math.pi * 4. / 3. * r * r * r
+    volume = cylinderVolume + sphereVolume
+    cylinderMass = expectedMass * cylinderVolume / volume
+    sphereMass = expectedMass * sphereVolume / volume
+    ixxIyy = (1 / 12.0) * cylinderMass * (3 * r *r + l * l) + sphereMass * (
+      0.4 * r * r + 0.375 * r * l + 0.25 * l * l)
+    izz = r * r * (0.5 * cylinderMass + 0.4 * sphereMass)
+
+    expectedMassMat.set_mass(expectedMass)
+    expectedMassMat.set_diagonal_moments(Vector3d(ixxIyy, ixxIyy, izz))
+    expectedMassMat.set_off_diagonal_moments(Vector3d.ZERO)
+
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    geom.set_type(sdf.GeometryType.CAPSULE)
+    geom.set_capsule_shape(capsule)
+    capsuleInertial = geom.calculate_inertial(errors,
+      sdfParserConfig, density, element)
+
+    self.assertNotEqual(None, capsuleInertial)
+    self.assertEqual(expectedInertial, capsuleInertial)
+    self.assertEqual(expectedInertial.mass_matrix(), expectedMassMat)
+    self.assertEqual(expectedInertial.pose(), capsuleInertial.pose())
+
+    # Cylinder
+    cylinder = Cylinder()
+    l = 2.0
+    r = 0.1
+
+    cylinder.set_length(l)
+    cylinder.set_radius(r)
+
+    expectedMass = cylinder.shape().volume() * density
+    ixxIyy = (1/12.0) * expectedMass * (3*r*r + l*l)
+    izz = 0.5 * expectedMass * r * r
+
+    expectedMassMat.set_mass(expectedMass)
+    expectedMassMat.set_diagonal_moments(Vector3d(ixxIyy, ixxIyy, izz))
+    expectedMassMat.set_off_diagonal_moments(Vector3d.ZERO)
+
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    geom.set_type(sdf.GeometryType.CYLINDER)
+    geom.set_cylinder_shape(cylinder)
+    cylinderInertial = geom.calculate_inertial(errors,
+      sdfParserConfig, density, element)
+
+    self.assertNotEqual(None, cylinderInertial)
+    self.assertEqual(expectedInertial, cylinderInertial)
+    self.assertEqual(expectedInertial.mass_matrix(), expectedMassMat)
+    self.assertEqual(expectedInertial.pose(), cylinderInertial.pose())
+
+    # Ellipsoid
+    ellipsoid = Ellipsoid()
+
+    a = 1.0
+    b = 10.0
+    c = 100.0
+
+    ellipsoid.set_radii(Vector3d(a, b, c))
+
+    expectedMass = ellipsoid.shape().volume() * density
+    ixx = (expectedMass / 5.0) * (b*b + c*c)
+    iyy = (expectedMass / 5.0) * (a*a + c*c)
+    izz = (expectedMass / 5.0) * (a*a + b*b)
+
+    expectedMassMat.set_mass(expectedMass)
+    expectedMassMat.set_diagonal_moments(Vector3d(ixx, iyy, izz))
+    expectedMassMat.set_off_diagonal_moments(Vector3d.ZERO)
+
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    geom.set_type(sdf.GeometryType.ELLIPSOID)
+    geom.set_ellipsoid_shape(ellipsoid)
+    ellipsoidInertial = geom.calculate_inertial(errors,
+      sdfParserConfig, density, element)
+
+    self.assertNotEqual(None, ellipsoidInertial)
+    self.assertEqual(expectedInertial, ellipsoidInertial)
+    self.assertEqual(expectedInertial.mass_matrix(), expectedMassMat)
+    self.assertEqual(expectedInertial.pose(), ellipsoidInertial.pose())
+
+    # Sphere
+    sphere = Sphere()
+    r = 0.1
+
+    sphere.set_radius(r)
+
+    expectedMass = sphere.shape().volume() * density
+    ixxIyyIzz = 0.4 * expectedMass * r * r
+
+    expectedMassMat.set_mass(expectedMass)
+    expectedMassMat.set_diagonal_moments(
+      Vector3d(ixxIyyIzz, ixxIyyIzz, ixxIyyIzz))
+    expectedMassMat.set_off_diagonal_moments(Vector3d.ZERO)
+
+    expectedInertial.set_mass_matrix(expectedMassMat)
+    expectedInertial.set_pose(Pose3d.ZERO)
+
+    geom.set_type(sdf.GeometryType.SPHERE)
+    geom.set_sphere_shape(sphere)
+    sphereInertial = geom.calculate_inertial(errors,
+      sdfParserConfig, density, element)
+
+    self.assertNotEqual(None, sphereInertial)
+    self.assertEqual(expectedInertial, sphereInertial)
+    self.assertEqual(expectedInertial.mass_matrix(), expectedMassMat)
+    self.assertEqual(expectedInertial.pose(), sphereInertial.pose())
 
 if __name__ == '__main__':
     unittest.main()

@@ -21,6 +21,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
 #include "sdf/Collision.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/Ellipsoid.hh"
@@ -93,6 +94,26 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, capsuleVisGeom);
   EXPECT_DOUBLE_EQ(2.1, capsuleVisGeom->Radius());
   EXPECT_DOUBLE_EQ(10.2, capsuleVisGeom->Length());
+
+  // Test cone collision
+  const sdf::Collision *coneCol = link->CollisionByName("cone_col");
+  ASSERT_NE(nullptr, coneCol);
+  ASSERT_NE(nullptr, coneCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::CONE, coneCol->Geom()->Type());
+  const sdf::Cone *coneColGeom = coneCol->Geom()->ConeShape();
+  ASSERT_NE(nullptr, coneColGeom);
+  EXPECT_DOUBLE_EQ(0.2, coneColGeom->Radius());
+  EXPECT_DOUBLE_EQ(0.1, coneColGeom->Length());
+
+  // Test cone visual
+  const sdf::Visual *coneVis = link->VisualByName("cone_vis");
+  ASSERT_NE(nullptr, coneVis);
+  ASSERT_NE(nullptr, coneVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::CONE, coneVis->Geom()->Type());
+  const sdf::Cone *coneVisGeom = coneVis->Geom()->ConeShape();
+  ASSERT_NE(nullptr, coneVisGeom);
+  EXPECT_DOUBLE_EQ(2.1, coneVisGeom->Radius());
+  EXPECT_DOUBLE_EQ(10.2, coneVisGeom->Length());
 
   // Test cylinder collision
   const sdf::Collision *cylinderCol = link->CollisionByName("cylinder_col");
@@ -179,6 +200,13 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::MESH, meshCol->Geom()->Type());
   const sdf::Mesh *meshColGeom = meshCol->Geom()->MeshShape();
   ASSERT_NE(nullptr, meshColGeom);
+  EXPECT_EQ("convex_decomposition", meshColGeom->OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
+            meshColGeom->Optimization());
+  ASSERT_NE(nullptr, meshColGeom->ConvexDecomposition());
+  EXPECT_EQ(4u, meshColGeom->ConvexDecomposition()->MaxConvexHulls());
+  EXPECT_EQ(400000u, meshColGeom->ConvexDecomposition()->VoxelResolution());
+
   EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/"
       "mesh.dae", meshColGeom->Uri());
   EXPECT_TRUE(gz::math::Vector3d(0.1, 0.2, 0.3) ==
