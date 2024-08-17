@@ -2505,7 +2505,84 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
     parser.InitModelString(str, config, &sdfResult);
 
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "<gazebo> tag with reference[link1] does not exist"
+        "<link> tag reference[link1] does not exist"
+        " in the URDF model. Please ensure that the reference attribute"
+        " matches the name of a link.");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name="test_robot">
+        <link name="link1">
+          <inertial>
+            <mass value="1" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+          </inertial>
+          <visual name="visual1">
+            <geometry>
+              <box>
+                <size>1 1 1</size>
+              </box>
+            </geometry>
+            <material>
+              <color rgba="0.8 0.1 0.1 1.0"/>
+            </material>
+            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+          </visual>
+        </link>
+        <gazebo reference="vіsual1">
+        </gazebo>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    parser.InitModelString(str, config, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "<link> tag reference[link1] does not exist"
+        " in the URDF model. Please ensure that the reference attribute"
+        " matches the name of a link.");
+  }
+
+  {
+    // clear the contents of the buffer
+    buffer.str("");
+
+    std::string str = R"(
+      <robot name="test_robot">
+        <link name="link1">
+          <inertial>
+            <mass value="1" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+          </inertial>
+          <collision name="collision1">
+            <geometry>
+              <sphere radius="0.5" />
+            </geometry>
+            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+          </collision>
+        </link>
+        <gazebo reference="collіsion1">
+          <sensor name="link1_imu" type="imu">
+            <always_on>1</always_on>
+            <update_rate>100</update_rate>
+            <pose>0.13525 0 -0.07019999999999993 0.0 -0.0 -2.0943952105869315</pose>
+            <plugin name="sensor_plugin" filename="example_plugin.so" />
+          </sensor>
+        </gazebo>
+      </robot>)";
+
+    sdf::URDF2SDF parser;
+    tinyxml2::XMLDocument sdfResult;
+    sdf::ParserConfig config;
+    parser.InitModelString(str, config, &sdfResult);
+
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+        "<link> tag reference[link1] does not exist"
         " in the URDF model. Please ensure that the reference attribute"
         " matches the name of a link.");
   }
@@ -2522,50 +2599,26 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
             <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
           </inertial>
         </link>
-        <visual reference="lіnk1">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <color rgba="0.8 0.1 0.1 1.0"/>
-          </material>
-          <origin xyz="0 0 0.5" rpy="0 0 0"/>
-        </visual>
-      </robot>)";
-
-    sdf::URDF2SDF parser;
-    tinyxml2::XMLDocument sdfResult;
-    sdf::ParserConfig config;
-    parser.InitModelString(str, config, &sdfResult);
-
-    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "<visual> tag with reference[link1] does not exist"
-        " in the URDF model. Please ensure that the reference attribute"
-        " matches the name of a link.");
-  }
-
-  {
-    // clear the contents of the buffer
-    buffer.str("");
-
-    std::string str = R"(
-      <robot name="test_robot">
-        <link name="link1">
+        <link name="link2">
           <inertial>
             <mass value="1" />
             <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
           </inertial>
         </link>
-        <collision reference="lіnk1">
-          <geometry>
-            <sphere>
-              <radius>0.5</radius>
-            </sphere>
-          </geometry>
-          <origin xyz="0 0 0.5" rpy="0 0 0"/>
-        </collision>
+        <joint name="joint1" type="revolute">
+          <parent link="link1"/>
+          <child link="link2"/>
+          <axis xyz="0 0 1"/>
+          <limit lower="-1.57" upper="1.57" effort="10" velocity="1.0"/>
+        </joint>
+        <gazebo reference="joіnt1">
+          <sensor name="link1_imu" type="imu">
+            <always_on>1</always_on>
+            <update_rate>100</update_rate>
+            <pose>0.13525 0 -0.07019999999999993 0.0 -0.0 -2.0943952105869315</pose>
+            <plugin name="sensor_plugin" filename="example_plugin.so" />
+          </sensor>
+        </gazebo>
       </robot>)";
 
     sdf::URDF2SDF parser;
@@ -2574,9 +2627,9 @@ TEST(URDFParser, ParseGazeboRefDoesntExistWarningMessage)
     parser.InitModelString(str, config, &sdfResult);
 
     EXPECT_PRED2(sdf::testing::contains, buffer.str(),
-        "<collision> tag with reference[link1] does not exist"
+        "<joint> tag reference[joint1] does not exist"
         " in the URDF model. Please ensure that the reference attribute"
-        " matches the name of a link.");
+        " matches the name of a joint.");
   }
 }
 

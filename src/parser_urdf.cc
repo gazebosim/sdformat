@@ -1604,7 +1604,7 @@ void CopyBlob(tinyxml2::XMLElement *_src, tinyxml2::XMLElement *_blob_parent)
 void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
                                  const std::string &_linkName)
 {
-  bool link_found = false;
+  bool linkFound = false;
   // loop through extensions for the whole model
   // and see which ones belong to _linkName
   // This might be complicated since there's:
@@ -1616,7 +1616,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
   {
     if (sdfIt->first == _linkName)
     {
-      link_found = true;
+      linkFound = true;
       // std::cerr << "============================\n";
       // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
@@ -1911,8 +1911,8 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
     }
   }
   // If we didn't find the link, emit a warning
-  if (!link_found) {
-    sdfwarn << "<collision> tag with reference[" << _linkName << "] does not exist"
+  if (!linkFound) {
+    sdfwarn << "<link> tag reference[" << _linkName << "] does not exist"
             << " in the URDF model. Please ensure that the reference attribute"
             << " matches the name of a link.";
   }
@@ -1922,7 +1922,7 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
 void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
                               const std::string &_linkName)
 {
-  bool link_found = false;
+  bool linkFound = false;
   // loop through extensions for the whole model
   // and see which ones belong to _linkName
   // This might be complicated since there's:
@@ -1934,7 +1934,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
   {
     if (sdfIt->first == _linkName)
     {
-      link_found=true;
+      linkFound=true;
       // std::cerr << "============================\n";
       // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
@@ -2113,8 +2113,8 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
     }
   }
   // If we didn't find the link, emit a warning
-  if (!link_found) {
-    sdfwarn << "<visual> tag with reference[" << _linkName << "] does not exist"
+  if (!linkFound) {
+    sdfwarn << "<link> tag reference[" << _linkName << "] does not exist"
             << " in the URDF model. Please ensure that the reference attribute"
             << " matches the name of a link.";
   }
@@ -2124,14 +2124,14 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
 void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
                             const std::string &_linkName)
 {
-  bool link_found = false;
+  bool linkFound = false;
   for (StringSDFExtensionPtrMap::iterator
        sdfIt = g_extensions.begin();
        sdfIt != g_extensions.end(); ++sdfIt)
   {
     if (sdfIt->first == _linkName)
     {
-      link_found = true;
+      linkFound = true;
       sdfdbg << "inserting extension with reference ["
              << _linkName << "] into link.\n";
       for (std::vector<SDFExtensionPtr>::iterator ge =
@@ -2171,10 +2171,9 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
       }
     }
   }
-
   // If we didn't find the link, emit a warning
-  if (!link_found) {
-    sdfwarn << "<gazebo> tag with reference[" << _linkName << "] does not exist"
+  if (!linkFound) {
+    sdfwarn << "<link> tag reference[" << _linkName << "] does not exist"
             << " in the URDF model. Please ensure that the reference attribute"
             << " matches the name of a link.";
   }
@@ -2184,7 +2183,7 @@ void InsertSDFExtensionLink(tinyxml2::XMLElement *_elem,
 void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
                              const std::string &_jointName)
 {
-  bool joint_found = false;
+  bool jointFound = false;
   auto* doc = _elem->GetDocument();
   for (StringSDFExtensionPtrMap::iterator
       sdfIt = g_extensions.begin();
@@ -2192,7 +2191,7 @@ void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
   {
     if (sdfIt->first == _jointName)
     {
-      joint_found = true;
+      jointFound = true;
       for (std::vector<SDFExtensionPtr>::iterator
           ge = sdfIt->second.begin();
           ge != sdfIt->second.end(); ++ge)
@@ -2329,9 +2328,9 @@ void InsertSDFExtensionJoint(tinyxml2::XMLElement *_elem,
   }
 
   // If we didn't find the link, emit a warning
-  if (!joint_found) {
-    sdfwarn << "<joint> tag with name[" << _jointName << "] does not exist"
-            << " in the URDF model. Please ensure that the name attribute"
+  if (!jointFound) {
+    sdfwarn << "<joint> tag reference[" << _jointName << "] does not exist"
+            << " in the URDF model. Please ensure that the reference attribute"
             << " matches the name of a joint.";
   }
 }
