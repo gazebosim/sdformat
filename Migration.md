@@ -628,6 +628,23 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ## SDFormat specification 1.11 to 1.12
 
+### Modifications
+
+1. **state.sdf**, **model_state.sdf**, **joint_state.sdf**, **link_state.sdf**,
+   **light_state.sdf**: A `_state` suffix has been added to state element names
+   to match the `.sdf` file names and for consistency.
+    + `//state/light` renamed to `//state/light_state`
+    + `//state/model` renamed to `//state/model_state`
+    + `//state/model/joint` renamed to `//state/model_state/joint_state`
+    + `//state/model/light` renamed to `//state/model_state/light_state`
+    + `//state/model/link`  renamed to `//state/model_state/link_state`
+    + `//state/model/model` renamed to `//state/model_state/model_state`
+    + `//state/model/link/collision` renamed to `//state/model_state/link_state/collision_state`
+
+1. **state.sdf**: `//state/joint_state` has been added to represent the state of a
+    `//world/joint` and `//state/insertions/joint` can represent inserted
+    `//world/joint` elements.
+
 ## SDFormat specification 1.10 to 1.11
 
 ### Additions
