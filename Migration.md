@@ -658,7 +658,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//state/model/link/collision` renamed to `//state/model_state/link_state/collision_state`
 
 1. **state.sdf**: `//state/joint_state` has been added to represent the state of a
-    `//world/joint`.
+    `//world/joint` and `//state/insertions/joint` can represent inserted
+    `//world/joint` elements.
 
 ### Deprecations
 

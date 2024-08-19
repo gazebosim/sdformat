@@ -1,6 +1,9 @@
 <!-- State information for a joint -->
 <element name="joint_state" required="*">
-  <description>State of the joint</description>
+  <description>
+    The joint state element encapsulates variables within a joint that may
+    change over time, currently limited to the joint angle.
+  </description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>Name of the joint</description>

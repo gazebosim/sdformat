@@ -1,6 +1,10 @@
 <!-- State information for a link -->
 <element name="link_state" required="*">
-  <description>Link state</description>
+  <description>
+    The link state element encapsulates variables within a link that may
+    change over time, including pose, velocity, acceleration, applied wrench,
+    and the state of attached collisions.
+  </description>
 
   <attribute name="name" type="string" default="__default__" required="1">
     <description>Name of the link</description>
