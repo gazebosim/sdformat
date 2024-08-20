@@ -1934,7 +1934,7 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
   {
     if (sdfIt->first == _linkName)
     {
-      linkFound=true;
+      linkFound = true;
       // std::cerr << "============================\n";
       // std::cerr << "working on g_extensions for link ["
       //           << sdfIt->first << "]\n";
