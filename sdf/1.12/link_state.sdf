@@ -10,13 +10,20 @@
     <description>Name of the link</description>
   </attribute>
 
-  <element name="angular_velocity" type="vector3" default="0 0 0 0 0 0" required="0">
-    <description>Angular velocity of the link relative to the world frame.
+  <element name="angular_velocity" type="vector3" default="0 0 0" required="0">
+    <description>Angular velocity of the link frame relative to the world frame.
     </description>
+
+    <attribute name="degrees" type="bool" default="false" required="0">
+      <description>
+        If true, the angular velocity is expressed in units of degrees per
+        second [deg/s], otherwise it is expressed in radians per second [rad/s].
+      </description>
+    </attribute>
   </element>
 
-  <element name="linear_velocity" type="vector3" default="0 0 0 0 0 0" required="0">
-    <description>Linear velocity of the link relative to the world frame.
+  <element name="linear_velocity" type="vector3" default="0 0 0" required="0">
+    <description>Linear velocity of the link frame relative to the world frame.
     </description>
   </element>
 
@@ -27,13 +34,23 @@
     </description>
   </element>
 
-  <element name="angular_acceleration" type="vector3" default="0 0 0 0 0 0" required="0">
-    <description>Angular acceleration of the link relative to the world frame.
+  <element name="angular_acceleration" type="vector3" default="0 0 0" required="0">
+    <description>
+      Angular acceleration of the link frame relative to the world frame.
     </description>
+
+    <attribute name="degrees" type="bool" default="false" required="0">
+      <description>
+        If true, the angular acceleration is expressed in units of degrees per
+        second per second [deg/s^2], otherwise it is expressed in radians per
+        second per second [rad/s^2].
+      </description>
+    </attribute>
   </element>
 
-  <element name="linear_acceleration" type="vector3" default="0 0 0 0 0 0" required="0">
-    <description>Linear acceleration of the link relative to the world frame.
+  <element name="linear_acceleration" type="vector3" default="0 0 0" required="0">
+    <description>
+      Linear acceleration of the link frame relative to the world frame.
     </description>
   </element>
 

@@ -27,8 +27,8 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          Whether or not the joint position is interpreted in degrees,
-          otherwise they will be interpreted as radians by default.
+          If true, the joint position is expressed in units of degrees [deg],
+          otherwise it is expressed in radians [rad].
         </description>
       </attribute>
     </element>
@@ -38,9 +38,9 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          Whether or not the joint velocity is interpreted in degrees per
-          second, otherwise they will be interpreted as radians per second
-          by default.
+          If true, the joint velocity is expressed in units of degrees per
+          second [deg/s], otherwise it is expressed in radians per second
+          [rad/s].
         </description>
       </attribute>
     </element>
@@ -50,9 +50,9 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          Whether or not the joint acceleration is interpreted in degrees per
-          second per second, otherwise they will be interpreted as radians per
-          second per second by default.
+          If true, the joint acceleration is expressed in units of degrees per
+          second per second [deg/s^2], otherwise it is expressed in radians per
+          second per second [rad/s^2].
         </description>
       </attribute>
     </element>
@@ -68,8 +68,8 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          Whether or not the joint position is interpreted in degrees,
-          otherwise they will be interpreted as radians by default.
+          If true, the joint position is expressed in units of degrees [deg],
+          otherwise it is expressed in radians [rad].
         </description>
       </attribute>
     </element>
@@ -79,9 +79,9 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          Whether or not the joint velocity is interpreted in degrees per
-          second, otherwise they will be interpreted as radians per second
-          by default.
+          If true, the joint velocity is expressed in units of degrees per
+          second [deg/s], otherwise it is expressed in radians per second
+          [rad/s].
         </description>
       </attribute>
     </element>
@@ -91,9 +91,9 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          Whether or not the joint acceleration is interpreted in degrees per
-          second per second, otherwise they will be interpreted as radians per
-          second per second by default.
+          If true, the joint acceleration is expressed in units of degrees per
+          second per second [deg/s^2], otherwise it is expressed in radians per
+          second per second [rad/s^2].
         </description>
       </attribute>
     </element>
