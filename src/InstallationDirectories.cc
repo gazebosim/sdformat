@@ -15,14 +15,11 @@
  *
 */
 
+#include <filesystem>
 #include <regex>
 
 #include <sdf/sdf_config.h>
 #include <sdf/InstallationDirectories.hh>
-
-#ifdef _WIN32
-#include <shlwapi.h>
-#endif
 
 namespace sdf
 {
@@ -75,70 +72,52 @@ std::string checkWindowsPath(const std::string _path)
 }
 
 // Function imported from
-// https://github.com/gazebosim/gz-common/blob/ignition-common4_4.6.2/src/Filesystem.cc#L256
+// https://github.com/gazebosim/gz-common/blob/gz-common5_5.6.0/src/Filesystem.cc#L142
 std::string joinPaths(const std::string &_path1,
                       const std::string &_path2)
 {
+  namespace fs = std::filesystem;
+  fs::path p1{_path1};
+  fs::path p2{_path2};
 
-  /// This function is used to avoid duplicated path separators at the
-  /// beginning/end of the string, and between the two paths being joined.
-  /// \param[in] _path This is the string to sanitize.
-  /// \param[in] _stripLeading True if the leading separator should be
-  /// removed.
-  auto sanitizeSlashes = [](const std::string &_path,
-                            bool _stripLeading = false)
+  if (p1.empty())
   {
-    // Shortcut
-    if (_path.empty())
-      return _path;
+    p1 = std::string{fs::path::preferred_separator};
+  }
 
-    std::string result = _path;
+  bool is_url = false;
 
-    // Use the appropriate character for each platform.
-#ifndef _WIN32
-    char replacement = '/';
-#else
-    char replacement = '\\';
-#endif
+  if (_path1.find("://") == std::string::npos)
+    p1 = p1.lexically_normal();
+  else
+    is_url = true;
 
-    // Sanitize the start of the path.
-    size_t index = 0;
-    size_t leadingIndex = _stripLeading ? 0 : 1;
-    for (; index < result.length() && result[index] == replacement; ++index)
-    {
-    }
-    if (index > leadingIndex)
-      result.erase(leadingIndex, index-leadingIndex);
+  // TODO(mjcarroll) Address the case that path2 is also a URI.
+  // It's likely not a valid scenario, but not currently covered by our test
+  // suite and doesn't return an error.
+  if (_path2.find("://") == std::string::npos)
+    p2 = p2.lexically_normal();
+  else
+    is_url = true;
 
-    // Sanitize the end of the path.
-    index = result.length()-1;
-    for (; index <  result.length() && result[index] == replacement; --index)
-    {
-    }
-    index += 1;
-    if (index < result.length()-1)
-        result.erase(index+1);
-    return result;
-  };
-
-  std::string path;
-#ifndef _WIN32
-  path = sanitizeSlashes(sanitizeSlashes(separator(_path1)) +
-      sanitizeSlashes(_path2, true));
-#else  // _WIN32
-  std::string path1 = sanitizeSlashes(checkWindowsPath(_path1));
-  std::string path2 = sanitizeSlashes(checkWindowsPath(_path2), true);
-  std::vector<char> combined(path1.length() + path2.length() + 2);
-  if (::PathCombineA(combined.data(), path1.c_str(), path2.c_str()) != NULL)
+  if (p2.string()[0] == fs::path::preferred_separator)
   {
-    path = sanitizeSlashes(checkWindowsPath(std::string(combined.data())));
+    p2 = fs::path{p2.string().substr(1)};
+  }
+
+  auto ret = (p1 / p2);
+
+  if (is_url)
+  {
+    std::string path = ret.string();
+    std::replace(path.begin(), path.end(),
+        static_cast<char>(fs::path::preferred_separator), '/');
+    return path;
   }
   else
   {
-    path = sanitizeSlashes(checkWindowsPath(separator(path1) + path2));
+    return ret.lexically_normal().string();
   }
-#endif  // _WIN32
-  return path;
 }
 
 std::string getSharePath()
