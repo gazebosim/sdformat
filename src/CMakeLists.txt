@@ -49,11 +49,6 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PRIVATE
     TINYXML2::TINYXML2)
 
-if (WIN32)
-  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
-    PRIVATE shlwapi)
-endif()
-
   if (USE_INTERNAL_URDF)
     target_include_directories(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
