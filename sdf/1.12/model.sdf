@@ -62,6 +62,7 @@
       <description>URI to a resource, such as a model</description>
     </element>
 
+    <include filename="model_state.sdf" required="0"/>
     <include filename="pose.sdf" required="0"/>
     <include filename="plugin.sdf" required="*"/>
 
@@ -84,6 +85,8 @@
       <description>A unique name for the model. This name must not match another nested model in the same level as this model.</description>
     </attribute>
   </element>
+
+  <include filename="model_state.sdf" required="0"/>
 
   <element name="enable_wind" type="bool" default="false" required="0">
     <description>If set to true, all links in the model will be affected by the wind. Can be overriden by the link wind property.</description>
