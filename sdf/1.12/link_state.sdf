@@ -61,7 +61,19 @@
     </description>
   </element>
 
-  <element name="wrench" type="pose" default="0 0 0 0 0 0" required="0">
+  <element name="angular_wrench" type="vector3" default="0 0 0" required="0">
+    <description>Angular wrench (torque) acting on the link relative to the world frame.
+    </description>
+  </element>
+
+  <element name="linear_wrench" type="vector3" default="0 0 0" required="0">
+    <description>
+      Linear wrench (force) acting on the link at the link frame relative to
+      the world frame.
+    </description>
+  </element>
+
+  <element name="wrench" type="pose" default="0 0 0 0 0 0" required="-1">
     <description>Force and torque applied to the link. The x, y, z components
       of the pose correspond to the force applied to the link, and the roll,
       pitch, yaw components correspond to the torque applied to the link
