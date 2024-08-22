@@ -118,25 +118,34 @@ TEST(NestedModel, State)
     << "  <pose>0 0 0.5 0 0 0</pose>"
     << "  <link_state name='link_00'>"
     << "    <pose>0 0 0.5 0 0 0</pose>"
-    << "    <velocity>0.001 0 0 0 0 0</velocity>"
-    << "    <acceleration>0 0.006121 0 0.012288 0 0.001751</acceleration>"
-    << "    <wrench>0 0.006121 0 0 0 0</wrench>"
+    << "    <linear_velocity>0.001 0 0</linear_velocity>"
+    << "    <angular_velocity>-0.1 5.0 -0.1</angular_velocity>"
+    << "    <linear_acceleration>0 0.006121 0</linear_acceleration>"
+    << "    <angular_acceleration>0.012288 0 0.001751</angular_acceleration>"
+    << "    <linear_wrench>0 0.006121 0</linear_wrench>"
+    << "    <angular_wrench>0 0 0</angular_wrench>"
     << "  </link_state>"
     << "  <model_state name='model_01'>"
     << "    <pose>1 0 0.5 0 0 0</pose>"
     << "    <link_state name='link_01'>"
     << "      <pose>1.25 0 0.5 0 0 0</pose>"
-    << "      <velocity>0 -0.001 0 0 0 0</velocity>"
-    << "      <acceleration>0 0.000674 0 -0.001268 0 0</acceleration>"
-    << "      <wrench>0 0.000674 0 0 0 0</wrench>"
+    << "      <linear_velocity>0 -0.001 0</linear_velocity>"
+    << "      <angular_velocity>0 0 0</angular_velocity>"
+    << "      <linear_acceleration>0 0.000674 0</linear_acceleration>"
+    << "      <angular_acceleration>-0.001268 0 0</angular_acceleration>"
+    << "      <linear_wrench>0 0.000674 0</linear_wrench>"
+    << "      <angular_wrench>0 0 0</angular_wrench>"
     << "    </link_state>"
     << "    <model_state name='model_02'>"
     << "      <pose>1 1 0.5 0 0 0</pose>"
     << "      <link_state name='link_02'>"
     << "        <pose>1.25 1 0.5 0 0 0</pose>"
-    << "        <velocity>0 0 0.001 0 0 0</velocity>"
-    << "        <acceleration>0 0 0 0 0 0</acceleration>"
-    << "        <wrench>0 0 0 0 0 0</wrench>"
+    << "        <linear_velocity>0 0 0.001</linear_velocity>"
+    << "        <angular_velocity>0 0 0</angular_velocity>"
+    << "        <linear_acceleration>0 0 0</linear_acceleration>"
+    << "        <angular_acceleration>0 0 0</angular_acceleration>"
+    << "        <linear_wrench>0 0 0</linear_wrench>"
+    << "        <angular_wrench>0 0 0</angular_wrench>"
     << "      </link_state>"
     << "    </model_state>"
     << "  </model_state>"
@@ -175,15 +184,27 @@ TEST(NestedModel, State)
   EXPECT_TRUE(linkStateElem->HasElement("pose"));
   EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("pose"),
     gz::math::Pose3d(0, 0, 0.5, 0, 0, 0));
-  EXPECT_TRUE(linkStateElem->HasElement("velocity"));
-  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("velocity"),
-    gz::math::Pose3d(0.001, 0, 0, 0, 0, 0));
-  EXPECT_TRUE(linkStateElem->HasElement("acceleration"));
-  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("acceleration"),
-    gz::math::Pose3d(0, 0.006121, 0, 0.012288, 0, 0.001751));
-  EXPECT_TRUE(linkStateElem->HasElement("wrench"));
-  EXPECT_EQ(linkStateElem->Get<gz::math::Pose3d>("wrench"),
-    gz::math::Pose3d(0, 0.006121, 0, 0, 0, 0));
+  EXPECT_FALSE(linkStateElem->HasElement("velocity"));
+  EXPECT_TRUE(linkStateElem->HasElement("angular_velocity"));
+  EXPECT_TRUE(linkStateElem->HasElement("linear_velocity"));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("linear_velocity"),
+    gz::math::Vector3d(0.001, 0, 0));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("angular_velocity"),
+    gz::math::Vector3d(-0.1, 5.0, -0.1));
+  EXPECT_FALSE(linkStateElem->HasElement("acceleration"));
+  EXPECT_TRUE(linkStateElem->HasElement("angular_acceleration"));
+  EXPECT_TRUE(linkStateElem->HasElement("linear_acceleration"));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("linear_acceleration"),
+    gz::math::Vector3d(0, 0.006121, 0));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("angular_acceleration"),
+    gz::math::Vector3d(0.012288, 0, 0.001751));
+  EXPECT_FALSE(linkStateElem->HasElement("wrench"));
+  EXPECT_TRUE(linkStateElem->HasElement("angular_wrench"));
+  EXPECT_TRUE(linkStateElem->HasElement("linear_wrench"));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("linear_wrench"),
+    gz::math::Vector3d(0, 0.006121, 0));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("angular_wrench"),
+    gz::math::Vector3d(0, 0, 0));
 
   // nested model sdf
   EXPECT_TRUE(modelStateElem->HasElement("model_state"));
@@ -206,15 +227,29 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
   EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("pose"),
     gz::math::Pose3d(1.25, 0, 0.5, 0, 0, 0));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("velocity"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("velocity"),
-    gz::math::Pose3d(0, -0.001, 0, 0, 0, 0));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("acceleration"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("acceleration"),
-    gz::math::Pose3d(0, 0.000674, 0, -0.001268, 0, 0));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("wrench"),
-    gz::math::Pose3d(0, 0.000674, 0, 0, 0, 0));
+  EXPECT_FALSE(nestedLinkStateElem->HasElement("velocity"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_velocity"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_velocity"));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("linear_velocity"),
+    gz::math::Vector3d(0, -0.001, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("angular_velocity"),
+    gz::math::Vector3d(0, 0, 0));
+  EXPECT_FALSE(nestedLinkStateElem->HasElement("acceleration"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_acceleration"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_acceleration"));
+  EXPECT_EQ(
+    nestedLinkStateElem->Get<gz::math::Vector3d>("linear_acceleration"),
+    gz::math::Vector3d(0, 0.000674, 0));
+  EXPECT_EQ(
+    nestedLinkStateElem->Get<gz::math::Vector3d>("angular_acceleration"),
+    gz::math::Vector3d(-0.001268, 0, 0));
+  EXPECT_FALSE(nestedLinkStateElem->HasElement("wrench"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_wrench"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_wrench"));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("linear_wrench"),
+    gz::math::Vector3d(0, 0.000674, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("angular_wrench"),
+    gz::math::Vector3d(0, 0, 0));
 
   // double nested model sdf
   EXPECT_TRUE(nestedModelStateElem->HasElement("model_state"));
@@ -235,15 +270,29 @@ TEST(NestedModel, State)
   EXPECT_TRUE(nestedLinkStateElem->HasElement("pose"));
   EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("pose"),
     gz::math::Pose3d(1.25, 1, 0.5, 0, 0, 0));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("velocity"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("velocity"),
-    gz::math::Pose3d(0, 0, 0.001, 0, 0, 0));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("acceleration"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("acceleration"),
-    gz::math::Pose3d(0, 0, 0, 0, 0, 0));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("wrench"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Pose3d>("wrench"),
-    gz::math::Pose3d(0, 0, 0, 0, 0, 0));
+  EXPECT_FALSE(nestedLinkStateElem->HasElement("velocity"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_velocity"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_velocity"));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("linear_velocity"),
+    gz::math::Vector3d(0, 0, 0.001));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("angular_velocity"),
+    gz::math::Vector3d(0, 0, 0));
+  EXPECT_FALSE(nestedLinkStateElem->HasElement("acceleration"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_acceleration"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_acceleration"));
+  EXPECT_EQ(
+    nestedLinkStateElem->Get<gz::math::Vector3d>("linear_acceleration"),
+    gz::math::Vector3d(0, 0, 0));
+  EXPECT_EQ(
+    nestedLinkStateElem->Get<gz::math::Vector3d>("angular_acceleration"),
+    gz::math::Vector3d(0, 0, 0));
+  EXPECT_FALSE(nestedLinkStateElem->HasElement("wrench"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_wrench"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_wrench"));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("linear_wrench"),
+    gz::math::Vector3d(0, 0, 0));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("angular_wrench"),
+    gz::math::Vector3d(0, 0, 0));
 }
 
 ////////////////////////////////////////
