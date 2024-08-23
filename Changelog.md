@@ -4,6 +4,26 @@
 
 ## libsdformat 14.X
 
+### libsdformat 14.5.0 (2024-08-05)
+
+1. Adding Errors structure to XmlUtils
+    * [Pull request #1296](https://github.com/gazebosim/sdformat/pull/1296)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Added SetHeightMap and Heighmap to Geometry Python binding
+    * [Pull request #1440](https://github.com/gazebosim/sdformat/pull/1440)
+
+1. workflows/ci.yml fix push branch regex
+    * [Pull request #1445](https://github.com/gazebosim/sdformat/pull/1445)
+
+1. SDF.cc update calls to use sdf::Errors output
+    * [Pull request #1295](https://github.com/gazebosim/sdformat/pull/1295)
+
+1. Added World::ActorByName
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
+
 ### libsdformat 14.4.0 (2024-06-20)
 
 1. Add Cone as a primitive parametric shape.
