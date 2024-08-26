@@ -1,8 +1,79 @@
 ## libsdformat 15.X
 
-### libsdformat 15.X.X (202X-XX-XX)
+### libsdformat 15.0.0 (2024-09-XX)
+
+1. Spec 1.12: add `_state` suffix to //state subelements
+    * [Pull request #1455](https://github.com/gazebosim/sdformat/pull/1455)
+
+1. Add optional binary relocatability
+    * [Pull request #1414](https://github.com/gazebosim/sdformat/pull/1414)
+    * [Pull request #1468](https://github.com/gazebosim/sdformat/pull/1468)
+    * [Pull request #1469](https://github.com/gazebosim/sdformat/pull/1469)
+
+1. FrameSemantics: fix NullVertex warnings
+    * [Pull request #1460](https://github.com/gazebosim/sdformat/pull/1460)
+    * [Pull request #1459](https://github.com/gazebosim/sdformat/pull/1459)
+    * [Pull request #1458](https://github.com/gazebosim/sdformat/pull/1458)
+
+1. Remove deprecated APIs
+    * [Pull request #1456](https://github.com/gazebosim/sdformat/pull/1456)
+
+1. Spec 1.12: add `//sensor/frame_id`
+    * [Pull request #1454](https://github.com/gazebosim/sdformat/pull/1454)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Print auto inertial values with `gz sdf --print --expand-auto-inertials`
+    * [Pull request #1422](https://github.com/gazebosim/sdformat/pull/1422)
+
+1. Enable 24.04 CI, remove distutils dependency
+    * [Pull request #1408](https://github.com/gazebosim/sdformat/pull/1408)
+
+1. Change behavior of `Param::Get<bool>`
+    * [Pull request #1397](https://github.com/gazebosim/sdformat/pull/1397)
+
+1. Parse kinematic property in Link, expand spec documentation of property
+    * [Pull request #1390](https://github.com/gazebosim/sdformat/pull/1390)
+    * [Pull request #1399](https://github.com/gazebosim/sdformat/pull/1399)
+    * [Pull request #1462](https://github.com/gazebosim/sdformat/pull/1462)
+
+1. Copy 1.11 spec to 1.12 for libsdformat15
+    * [Pull request #1375](https://github.com/gazebosim/sdformat/pull/1375)
+
+1. Fix find Python3 logic and macOS workflow
+    * [Pull request #1367](https://github.com/gazebosim/sdformat/pull/1367)
+
+1. Remove `HIDE_SYMBOLS_BY_DEFAULT`: replace by a default configuration in gz-cmake.
+    * [Pull request #1355](https://github.com/gazebosim/sdformat/pull/1355)
+
+1. Dependency version bumps in ionic: use gz-cmake4, gz-utils3, gz-math8
+    * [Pull request #1340](https://github.com/gazebosim/sdformat/pull/1340)
+
+1. Bump major version to 15
+    * [Pull request #1338](https://github.com/gazebosim/sdformat/pull/1338)
 
 ## libsdformat 14.X
+
+### libsdformat 14.5.0 (2024-08-05)
+
+1. Adding Errors structure to XmlUtils
+    * [Pull request #1296](https://github.com/gazebosim/sdformat/pull/1296)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Added SetHeightMap and Heighmap to Geometry Python binding
+    * [Pull request #1440](https://github.com/gazebosim/sdformat/pull/1440)
+
+1. workflows/ci.yml fix push branch regex
+    * [Pull request #1445](https://github.com/gazebosim/sdformat/pull/1445)
+
+1. SDF.cc update calls to use sdf::Errors output
+    * [Pull request #1295](https://github.com/gazebosim/sdformat/pull/1295)
+
+1. Added World::ActorByName
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
 
 ### libsdformat 14.4.0 (2024-06-20)
 
