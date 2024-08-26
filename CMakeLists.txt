@@ -6,6 +6,8 @@ if(COMMAND CMAKE_POLICY)
 endif(COMMAND CMAKE_POLICY)
 
 project (sdformat15 VERSION 15.0.0)
+# set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,modernize-use-nodiscard)
+
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
