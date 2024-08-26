@@ -648,6 +648,13 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//link_state/linear_wrench`
     + `//link_state/angular_wrench`
 
+1. **model.sdf**:
+    + `//model/model_state`
+    + `//model/include/model_state`
+
+1. **world.sdf**:
+    + `//world/include/model_state`
+
 ### Modifications
 
 1. **state.sdf**, **model_state.sdf**, **joint_state.sdf**, **link_state.sdf**,
