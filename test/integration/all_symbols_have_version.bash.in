@@ -7,7 +7,7 @@ VERSIONED_NS=v@PROJECT_VERSION_MAJOR@
 
 # nm options:
 # -D to get only dynamic symbols exported
-# 3 before the sdf is <lenght, id> used by
+# 3 before the sdf is <length, id> used by
 # mangled symbols in C++ to check for the
 # sdf namespace
 NUM_SYMBOLS=$(nm -D $LIBPATH | grep -e "3sdf" | wc -l)
