@@ -5,7 +5,7 @@
 1. **Baseline:** this includes all changes from 14.5.0 and earlier.
 
 1. README: update badges for sdf15
-    * [Pull request #README: update badges for sdf15](https://github.com/gazebosim/sdformat/pull/README: update badges for sdf15)
+    * [Pull request #1472](https://github.com/gazebosim/sdformat/pull/1472)
 
 1. Ionic Changelog
     * [Pull request #1471](https://github.com/gazebosim/sdformat/pull/1471)
