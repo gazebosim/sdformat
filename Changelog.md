@@ -4,6 +4,9 @@
 
 1. **Baseline:** this includes all changes from 14.5.0 and earlier.
 
+1. Fix symbol checking test when compiled with debug symbols
+    * [Pull request #1474](https://github.com/gazebosim/sdformat/pull/1474)
+
 1. README: update badges for sdf15
     * [Pull request #1472](https://github.com/gazebosim/sdformat/pull/1472)
 
