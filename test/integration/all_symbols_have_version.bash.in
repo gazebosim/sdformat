@@ -4,7 +4,13 @@ LIBPATH=$1
 VERSIONED_NS=v@PROJECT_VERSION_MAJOR@
 
 # Sanity check - there should be at least one symbol
-NUM_SYMBOLS=$(nm $LIBPATH | grep -e "sdf" | wc -l)
+
+# nm options:
+# -D to get only dynamic symbols exported
+# 3 before the sdf is <lenght, id> used by
+# mangled symbols in C++ to check for the
+# sdf namespace
+NUM_SYMBOLS=$(nm -D $LIBPATH | grep -e "3sdf" | wc -l)
 
 if [ $NUM_SYMBOLS -eq 0 ]
 then
@@ -13,7 +19,7 @@ then
 fi
 
 # There must be no unversioned symbols
-UNVERSIONED_SYMBOLS=$(nm $LIBPATH | grep -e "sdf" | grep -e "$VERSIONED_NS" -v)
+UNVERSIONED_SYMBOLS=$(nm -D $LIBPATH | grep -e "3sdf" | grep -e "$VERSIONED_NS" -v)
 UNVERSIONED_SYMBOL_CHARS=$(printf "$UNVERSIONED_SYMBOLS" | wc -m)
 
 if [ $UNVERSIONED_SYMBOL_CHARS -ne 0 ]
