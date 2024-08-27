@@ -43,7 +43,7 @@ if (BUILD_SDF)
   gz_configure_project(
     NO_PROJECT_PREFIX
     REPLACE_INCLUDE_PATH sdf
-    VERSION_SUFFIX)
+    VERSION_SUFFIX pre1)
 
   #################################################
   # Find tinyxml2.
