@@ -27,8 +27,12 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          If true, the joint position is expressed in units of degrees [deg],
+          If this is a rotational axis and this attribute is true,
+          the joint position is expressed in units of degrees [deg],
           otherwise it is expressed in radians [rad].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters [m] regardless of the value of
+          this attribute.
         </description>
       </attribute>
     </element>
@@ -38,9 +42,13 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          If true, the joint velocity is expressed in units of degrees per
+          If this is a rotational axis and this attribute is true,
+          the joint velocity is expressed in units of degrees per
           second [deg/s], otherwise it is expressed in radians per second
           [rad/s].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second [m/s] regardless of
+          the value of this attribute.
         </description>
       </attribute>
     </element>
@@ -50,9 +58,13 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          If true, the joint acceleration is expressed in units of degrees per
+          If this is a rotational axis and this attribute is true,
+          the joint acceleration is expressed in units of degrees per
           second per second [deg/s^2], otherwise it is expressed in radians per
           second per second [rad/s^2].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second per second [m/s^2]
+          regardless of the value of this attribute.
         </description>
       </attribute>
     </element>
@@ -72,8 +84,12 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          If true, the joint position is expressed in units of degrees [deg],
+          If this is a rotational axis and this attribute is true,
+          the joint position is expressed in units of degrees [deg],
           otherwise it is expressed in radians [rad].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters [m] regardless of the value of
+          this attribute.
         </description>
       </attribute>
     </element>
@@ -83,9 +99,13 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          If true, the joint velocity is expressed in units of degrees per
+          If this is a rotational axis and this attribute is true,
+          the joint velocity is expressed in units of degrees per
           second [deg/s], otherwise it is expressed in radians per second
           [rad/s].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second [m/s] regardless of
+          the value of this attribute.
         </description>
       </attribute>
     </element>
@@ -95,9 +115,13 @@
 
       <attribute name="degrees" type="bool" default="false" required="0">
         <description>
-          If true, the joint acceleration is expressed in units of degrees per
+          If this is a rotational axis and this attribute is true,
+          the joint acceleration is expressed in units of degrees per
           second per second [deg/s^2], otherwise it is expressed in radians per
           second per second [rad/s^2].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second per second [m/s^2]
+          regardless of the value of this attribute.
         </description>
       </attribute>
     </element>
