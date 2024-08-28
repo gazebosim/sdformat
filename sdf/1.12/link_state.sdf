@@ -61,15 +61,14 @@
     </description>
   </element>
 
-  <element name="angular_wrench" type="vector3" default="0 0 0" required="0">
-    <description>Angular wrench (torque) acting on the link relative to the world frame.
+  <element name="torque" type="vector3" default="0 0 0" required="0">
+    <description>Torque acting on the link relative to the world frame.
     </description>
   </element>
 
-  <element name="linear_wrench" type="vector3" default="0 0 0" required="0">
+  <element name="force" type="vector3" default="0 0 0" required="0">
     <description>
-      Linear wrench (force) acting on the link at the link frame relative to
-      the world frame.
+      Force acting on the link at the link frame relative to the world frame.
     </description>
   </element>
 

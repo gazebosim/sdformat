@@ -645,8 +645,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + `//link_state/angular_velocity`
     + `//link_state/linear_acceleration`
     + `//link_state/angular_acceleration`
-    + `//link_state/linear_wrench`
-    + `//link_state/angular_wrench`
+    + `//link_state/force`
+    + `//link_state/torque`
 
 1. **model.sdf**:
     + `//model/model_state`
@@ -683,8 +683,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
       and  `//link_state/linear_velocity`.
     + `//link_state/acceleration` is deprecated in favor of `//link_state/angular_acceleration`
       and  `//link_state/linear_acceleration`.
-    + `//link_state/wrench` is deprecated in favor of `//link_state/angular_wrench`
-      and  `//link_state/linear_wrench`.
+    + `//link_state/wrench` is deprecated in favor of `//link_state/torque`
+      and  `//link_state/force`.
 
 ## SDFormat specification 1.10 to 1.11
 

@@ -122,8 +122,8 @@ TEST(NestedModel, State)
     << "    <angular_velocity>-0.1 5.0 -0.1</angular_velocity>"
     << "    <linear_acceleration>0 0.006121 0</linear_acceleration>"
     << "    <angular_acceleration>0.012288 0 0.001751</angular_acceleration>"
-    << "    <linear_wrench>0 0.006121 0</linear_wrench>"
-    << "    <angular_wrench>0 0 0</angular_wrench>"
+    << "    <force>0 0.006121 0</force>"
+    << "    <torque>0 0 0</torque>"
     << "  </link_state>"
     << "  <model_state name='model_01'>"
     << "    <pose>1 0 0.5 0 0 0</pose>"
@@ -133,8 +133,8 @@ TEST(NestedModel, State)
     << "      <angular_velocity>0 0 0</angular_velocity>"
     << "      <linear_acceleration>0 0.000674 0</linear_acceleration>"
     << "      <angular_acceleration>-0.001268 0 0</angular_acceleration>"
-    << "      <linear_wrench>0 0.000674 0</linear_wrench>"
-    << "      <angular_wrench>0 0 0</angular_wrench>"
+    << "      <force>0 0.000674 0</force>"
+    << "      <torque>0 0 0</torque>"
     << "    </link_state>"
     << "    <model_state name='model_02'>"
     << "      <pose>1 1 0.5 0 0 0</pose>"
@@ -144,8 +144,8 @@ TEST(NestedModel, State)
     << "        <angular_velocity>0 0 0</angular_velocity>"
     << "        <linear_acceleration>0 0 0</linear_acceleration>"
     << "        <angular_acceleration>0 0 0</angular_acceleration>"
-    << "        <linear_wrench>0 0 0</linear_wrench>"
-    << "        <angular_wrench>0 0 0</angular_wrench>"
+    << "        <force>0 0 0</force>"
+    << "        <torque>0 0 0</torque>"
     << "      </link_state>"
     << "    </model_state>"
     << "  </model_state>"
@@ -199,11 +199,11 @@ TEST(NestedModel, State)
   EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("angular_acceleration"),
     gz::math::Vector3d(0.012288, 0, 0.001751));
   EXPECT_FALSE(linkStateElem->HasElement("wrench"));
-  EXPECT_TRUE(linkStateElem->HasElement("angular_wrench"));
-  EXPECT_TRUE(linkStateElem->HasElement("linear_wrench"));
-  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("linear_wrench"),
+  EXPECT_TRUE(linkStateElem->HasElement("torque"));
+  EXPECT_TRUE(linkStateElem->HasElement("force"));
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("force"),
     gz::math::Vector3d(0, 0.006121, 0));
-  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("angular_wrench"),
+  EXPECT_EQ(linkStateElem->Get<gz::math::Vector3d>("torque"),
     gz::math::Vector3d(0, 0, 0));
 
   // nested model sdf
@@ -244,11 +244,11 @@ TEST(NestedModel, State)
     nestedLinkStateElem->Get<gz::math::Vector3d>("angular_acceleration"),
     gz::math::Vector3d(-0.001268, 0, 0));
   EXPECT_FALSE(nestedLinkStateElem->HasElement("wrench"));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_wrench"));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_wrench"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("linear_wrench"),
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("torque"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("force"));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("force"),
     gz::math::Vector3d(0, 0.000674, 0));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("angular_wrench"),
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("torque"),
     gz::math::Vector3d(0, 0, 0));
 
   // double nested model sdf
@@ -287,11 +287,11 @@ TEST(NestedModel, State)
     nestedLinkStateElem->Get<gz::math::Vector3d>("angular_acceleration"),
     gz::math::Vector3d(0, 0, 0));
   EXPECT_FALSE(nestedLinkStateElem->HasElement("wrench"));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("angular_wrench"));
-  EXPECT_TRUE(nestedLinkStateElem->HasElement("linear_wrench"));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("linear_wrench"),
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("torque"));
+  EXPECT_TRUE(nestedLinkStateElem->HasElement("force"));
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("force"),
     gz::math::Vector3d(0, 0, 0));
-  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("angular_wrench"),
+  EXPECT_EQ(nestedLinkStateElem->Get<gz::math::Vector3d>("torque"),
     gz::math::Vector3d(0, 0, 0));
 }
 
