@@ -675,8 +675,8 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 ### Deprecations
 
 1. **joint_state.sdf**:
-    + `//joint_state/angle` is deprecated in favor of `//axis_state/position`
-      and  `//axis2_state/position`.
+    + `//joint_state/angle` is deprecated in favor of `//joint_state/axis_state/position`
+      and  `//joint_state/axis2_state/position`.
 
 1. **link_state.sdf**:
     + `//link_state/velocity` is deprecated in favor of `//link_state/angular_velocity`
