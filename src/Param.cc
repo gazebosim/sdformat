@@ -1327,6 +1327,13 @@ bool Param::SetParentElement(ElementPtr _parentElement, sdf::Errors &_errors)
 }
 
 //////////////////////////////////////////////////
+bool Param::SetParentElementNoReparse(ElementPtr _parentElement)
+{
+  this->dataPtr->parentElement = _parentElement;
+  return true;
+}
+
+//////////////////////////////////////////////////
 void Param::Reset()
 {
   this->dataPtr->value = this->dataPtr->defaultValue;

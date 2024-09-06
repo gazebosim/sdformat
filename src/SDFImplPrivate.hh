@@ -34,7 +34,14 @@ namespace sdf
   {
     public: SDFPrivate() : root(new Element)
     {
-    };
+    }
+
+    public: SDFPrivate(const SDFPrivate& other)
+    {
+      this->path = other.path;
+      this->originalVersion = other.originalVersion;
+      this->root = other.root->Clone();
+    }
 
     /// \brief Store the root element.
     /// \sa ElementPtr Root()

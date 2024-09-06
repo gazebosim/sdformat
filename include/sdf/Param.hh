@@ -326,6 +326,15 @@ namespace sdf
     public: bool SetParentElement(ElementPtr _parentElement,
                                   sdf::Errors &_errors);
 
+    /// \brief Set the parent Element of this Param.
+    /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
+    /// be provided to remove the current parent Element.
+    /// \param[out] _errors Vector of errors.
+    /// \return True if the parent Element was set and the value was reparsed
+    /// successfully.
+    public: bool SetParentElementNoReparse(
+        ElementPtr _parentElement);
+
     /// \brief Reset the parameter to the default value.
     public: void Reset();
 

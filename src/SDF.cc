@@ -220,7 +220,10 @@ SDF::SDF()
   : dataPtr(new SDFPrivate)
 {
 }
-
+SDF::SDF(const SDF& other)
+{
+  this->dataPtr = std::make_unique<SDFPrivate>(*other.dataPtr);
+}
 /////////////////////////////////////////////////
 SDF::~SDF()
 {
