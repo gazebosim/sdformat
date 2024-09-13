@@ -4,3 +4,4 @@ build_*
 *.*.sw?
 .vscode
 __pycache__
+bazel-*

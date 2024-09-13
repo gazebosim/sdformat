@@ -1,0 +1,29 @@
+## MODULE.bazel
+module(
+    name = "sdformat",
+    repo_name = "org_gazebosim_sdformat",
+)
+
+bazel_dep(name = "buildifier_prebuilt", version = "6.1.2")
+bazel_dep(name = "googletest", version = "1.14.0")
+bazel_dep(name = "rules_license", version = "0.0.8")
+
+# Gazebo Dependencies
+bazel_dep(name = "rules_gz")
+bazel_dep(name = "gz-utils")
+bazel_dep(name = "gz-math")
+
+local_path_override(
+    module_name = "rules_gz",
+    path = "/usr/local/google/home/mjcarroll/workspaces/gz_ionic_bazel/rules_gz",
+)
+
+local_path_override(
+    module_name = "gz-utils",
+    path = "/usr/local/google/home/mjcarroll/workspaces/gz_ionic_bazel/gz-utils",
+)
+
+local_path_override(
+    module_name = "gz-math",
+    path = "/usr/local/google/home/mjcarroll/workspaces/gz_ionic_bazel/gz-math",
+)

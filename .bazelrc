@@ -1,0 +1,3 @@
+common --enable_bzlmod
+common --lockfile_mode=off
+build --cxxopt='-std=c++20'
