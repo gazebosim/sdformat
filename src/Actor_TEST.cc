@@ -20,6 +20,8 @@
 #include "sdf/Actor.hh"
 #include "sdf/Plugin.hh"
 
+#include <filesystem>
+
 /////////////////////////////////////////////////
 sdf::Animation CreateDummyAnimation()
 {
@@ -508,6 +510,9 @@ TEST(DOMTrajectory, CopyAssignmentAfterMove)
 TEST(DOMActor, ToElement)
 {
   sdf::Actor actor;
+
+  // Output the current working directory
+  std::cout << std::filesystem::current_path() << std::endl;
 
   actor.SetName("my-actor");
   actor.SetRawPose(gz::math::Pose3d(1, 2, 3, 0.1, 0.2, 0.3));

@@ -1,36 +1,42 @@
-load(
-    "@gz//bazel/skylark:build_defs.bzl",
-    "GZ_FEATURES",
-    "GZ_ROOT",
-    "GZ_VISIBILITY",
-    "add_lint_tests",
-    "gz_configure_file",
-    "gz_configure_header",
-    "gz_export_header",
-    "gz_include_header",
-    "gz_py_binary",
-)
+load("@buildifier_prebuilt//:rules.bzl", "buildifier", "buildifier_test")
+load("@rules_gazebo//gazebo:headers.bzl", "gz_configure_header", "gz_export_header")
+load("@rules_license//rules:license.bzl", "license")
 
 package(
-    default_visibility = GZ_VISIBILITY,
-    features = GZ_FEATURES,
+    default_applicable_licenses = [":license"],
+)
+
+license(
+    name = "license",
+    package_name = "sdformat",
 )
 
 licenses(["notice"])
 
-exports_files(["LICENSE"])
+exports_files([
+    "package.xml",
+    "LICENSE",
+    "MODULE.bazel",
+])
 
-gz_configure_header(
-    name = "config",
-    src = "include/sdf/config.hh.in",
-    cmakelists = ["CMakeLists.txt"],
-    defines = {
-        "CMAKE_INSTALL_FULL_DATAROOTDIR": "unused",
-    },
-    package = "sdformat",
+gz_export_header(
+    name = "Export",
+    out = "include/sdf/Export.hh",
+    export_base = "GZ_SDFORMAT",
+    lib_name = "sdformat",
 )
 
-gz_py_binary(
+gz_configure_header(
+    name = "Config",
+    src = "include/sdf/config.hh.in",
+    defines = {
+        "CMAKE_INSTALL_FULL_DATAROOTDIR": "unused",
+        "SDF_PROTOCOL_VERSION": "11111",
+    },
+    package_xml = "package.xml",
+)
+
+py_binary(
     name = "embed_sdf",
     srcs = ["sdf/embedSdf.py"],
     main = "sdf/embedSdf.py",
@@ -43,49 +49,12 @@ genrule(
         "sdf/**/*.convert",
     ]),
     outs = ["EmbeddedSdf.cc"],
-    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root sdformat/sdf/ --input-files $(SRCS)",  # noqa
+    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root sdf/ --input-files $(SRCS)",  # noqa
     tools = [":embed_sdf"],
 )
 
-public_headers_no_gen = glob([
-    "include/sdf/*.h",
-    "include/sdf/*.hh",
-])
-
-private_headers = glob(["src/*.hh"])
-
-sources = glob(
-    ["src/*.cc"],
-    exclude = [
-        "src/*_TEST.cc",
-        "src/gz.cc",
-    ],
-)
-
-gz_export_header(
-    name = "include/sdf/Export.hh",
-    export_base = "GZ_SDFORMAT",
-    lib_name = "sdf",
-    visibility = ["//visibility:private"],
-)
-
-gz_include_header(
-    name = "sdformat_hh_genrule",
-    out = "include/sdformat.hh",
-    hdrs = public_headers_no_gen + [
-        "include/sdf/config.hh",
-        "include/sdf/Export.hh",
-    ],
-)
-
-public_headers = public_headers_no_gen + [
-    "include/sdf/Export.hh",
-    "include/sdf/config.hh",
-    "include/sdformat.hh",
-]
-
 cc_library(
-    name = "urdf",
+    name = "urdf_parser",
     srcs = [
         "src/urdf/urdf_parser/joint.cpp",
         "src/urdf/urdf_parser/link.cpp",
@@ -108,9 +77,25 @@ cc_library(
 
 cc_library(
     name = "sdformat",
-    srcs = sources + private_headers + ["EmbeddedSdf.cc"],
-    hdrs = public_headers,
+    srcs = glob(
+        include = [
+            "src/*.cc",
+            "src/*.hh",
+            "src/bazel/*.cc",
+        ],
+        exclude = [
+            "src/*_TEST.cc",
+        ],
+    ) + ["EmbeddedSdf.cc"],
+    hdrs = glob(
+        include = [
+            "include/sdf/*.hh",
+        ],
+        exclude = [
+        ],
+    ),
     defines = [
+        "CMAKE_INSTALL_RELATIVE_DATAROOTDIR=\\\"\\\"",
         'SDF_SHARE_PATH=\\".\\"',
         'SDF_VERSION_PATH=\\"sdformat\\"',
     ],
@@ -118,36 +103,37 @@ cc_library(
         "include",
         "src",
     ],
-    deps = [
-        ":urdf",
-        GZ_ROOT + "math",
-        GZ_ROOT + "utils",
-        "@tinyxml2",
-    ],
-)
-
-cc_library(
-    name = "sdformat_internal",
-    srcs = [
-        "src/gz.cc",
-        "src/gz.hh",
-    ],
-    visibility = ["//visibility:private"],
-    deps = [":sdformat"],
-)
-
-test_sources = glob(
-    ["src/*_TEST.cc"],
-    exclude = ["src/gz_TEST.cc"],
-)
-
-[cc_test(
-    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
-    srcs = [src],
     data = [
-        "sdf",
-        GZ_ROOT + "sdformat/test:integration",
-        GZ_ROOT + "sdformat/test:sdf",
+        "sdf"
+    ],
+    deps = [
+        ":Config",
+        ":Export",
+        ":urdf_parser",
+        "@gz-math//:Angle",
+        "@gz-math//:Box",
+        "@gz-math//:Capsule",
+        "@gz-math//:Color",
+        "@gz-math//:Cone",
+        "@gz-math//:Cylinder",
+        "@gz-math//:Ellipsoid",
+        "@gz-math//:Graph",
+        "@gz-math//:Inertial",
+        "@gz-math//:Pose3",
+        "@gz-math//:SemanticVersion",
+        "@gz-math//:Sphere",
+        "@gz-math//:SphericalCoordinates",
+        "@gz-math//:Temperature",
+        "@gz-math//:Vector2",
+        "@gz-utils//:Environment",
+        "@gz-utils//:ImplPtr",
+    ],
+)
+
+cc_test(
+    name = "Actor_TEST",
+    srcs = [
+        "src/Actor_TEST.cc",
     ],
     env = {
         "GZ_BAZEL": "1",
@@ -155,46 +141,46 @@ test_sources = glob(
     },
     deps = [
         ":sdformat",
-        GZ_ROOT + "sdformat/test:test_utils",
-        "@gtest",
-        "@gtest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
-) for src in test_sources]
-
-gz_configure_file(
-    name = "sdformat.rb",
-    src = "src/cmd/cmdsdformat.rb.in",
-    out = "cmdsdformat.rb",
-    cmakelists = ["CMakeLists.txt"],
-    defines = [
-        "library_location=libgz-sdformat.so",
-    ],
-    package = "sdformat",
-    visibility = [GZ_ROOT + "tools:__pkg__"],
 )
 
-gz_configure_file(
-    name = "sdformat_yaml",
-    src = "conf/sdformat.yaml.in",
-    out = "sdformat.yaml",
-    cmakelists = ["CMakeLists.txt"],
-    defines = [
-        "gz_library_path=gz/sdformat/cmdsdformat.rb",
+cc_test(
+    name = "Console_TEST",
+    srcs = [
+        "src/Console_TEST.cc",
     ],
-    package = "sdformat",
-    visibility = [GZ_ROOT + "tools:__pkg__"],
-)
-
-cc_binary(
-    name = "libgz-sdformat.so",
-    srcs = [":sdformat_internal"],
-    linkshared = True,
-    visibility = [GZ_ROOT + "tools:__pkg__"],
     deps = [
         ":sdformat",
+        "@googletest//:gtest_main",
     ],
 )
 
-exports_files(["sdf"])
+cc_test(
+    name = "Element_TEST",
+    srcs = [
+        "src/Element_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
 
-add_lint_tests()
+# Bazel linting
+buildifier(
+    name = "buildifier.fix",
+    exclude_patterns = ["./.git/*"],
+    lint_mode = "fix",
+    mode = "fix",
+)
+
+buildifier_test(
+    name = "buildifier.test",
+    exclude_patterns = ["./.git/*"],
+    lint_mode = "warn",
+    mode = "diff",
+    no_sandbox = True,
+    workspace = "//:MODULE.bazel",
+)
