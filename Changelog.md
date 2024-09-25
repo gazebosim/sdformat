@@ -1,8 +1,14 @@
 ## libsdformat 15.X
 
-### libsdformat 15.0.0 (2024-09-XX)
+### libsdformat 15.0.0 (2024-09-25)
 
 1. **Baseline:** this includes all changes from 14.5.0 and earlier.
+
+1. Use colcon for Windows building compilation
+    * [Pull request #1481](https://github.com/gazebosim/sdformat/pull/1481)
+
+1. Spec 1.12: link_state, joint_state changes
+    * [Pull request #1461](https://github.com/gazebosim/sdformat/pull/1461)
 
 1. Fix symbol checking test when compiled with debug symbols
     * [Pull request #1474](https://github.com/gazebosim/sdformat/pull/1474)
