@@ -34,7 +34,7 @@ namespace sdf
   {
     public: SDFPrivate() : root(new Element)
     {
-    }
+    };
 
     /// \brief Store the root element.
     /// \sa ElementPtr Root()
