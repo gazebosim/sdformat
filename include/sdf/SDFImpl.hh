@@ -166,9 +166,8 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
-    public: SDF(const SDF& other);//Copy constructor
     /// \brief Destructor
-    public: virtual ~SDF();
+    public: ~SDF();
     public: void PrintDescription();
     public: void PrintDescription(sdf::Errors &_errors);
     public: void PrintDoc();
