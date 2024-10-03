@@ -208,7 +208,7 @@ class sdf::Camera::Implementation
   public: double lensProjectionTy{0.0};
 
   /// \brief lens instrinsics s.
-  public: double lensIntrinsicsS{1.0};
+  public: double lensIntrinsicsS{0.0};
 
   /// \brief True if this camera has custom intrinsics values
   public: bool hasIntrinsics = false;
@@ -752,6 +752,9 @@ void Camera::SetSaveFramesPath(const std::string &_path)
 //////////////////////////////////////////////////
 bool Camera::operator==(const Camera &_cam) const
 {
+
+  // \todo(iche033) Remove in sdformat16
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   return this->Name() == _cam.Name() &&
     this->HorizontalFov() == _cam.HorizontalFov() &&
     this->ImageWidth() == _cam.ImageWidth() &&
@@ -764,6 +767,7 @@ bool Camera::operator==(const Camera &_cam) const
     this->ImageNoise() == _cam.ImageNoise() &&
     this->VisibilityMask() == _cam.VisibilityMask() &&
     this->OpticalFrameId() == _cam.OpticalFrameId();
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 }
 
 //////////////////////////////////////////////////
@@ -1332,8 +1336,11 @@ sdf::ElementPtr Camera::ToElement() const
         this->SegmentationType());
   }
 
+  // \todo(iche033) Remove in sdformat16
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   elem->GetElement("optical_frame_id")->Set<std::string>(
       this->OpticalFrameId());
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   return elem;
 }

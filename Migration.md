@@ -30,6 +30,35 @@ but with improved human-readability..
       matches `"0"`, `"1"`, `"true"`, or `"false"` and returns `false`
       otherwise.
 
+### Deprecations
+
+- **sdf/Camera.hh**:
+   + The `//sensor/camera/optical_frame_id` SDF element and corresponding functions
+     in the Camera DOM class are deprecated. Please specify camera frame using
+     the `//sensor/frame_id` SDF element instead.
+   + ***Deprecation:*** std::string OpticalFrameId() const
+   + ***Replacement:*** std::string Sensor::FrameId() const
+   + ***Deprecation:*** void SetOpticalFrameId(const std::string &)
+   + ***Replacement:*** void Sensor::SetFrameId(const std::string &)
+
+### Removals
+
+- **sdf/Joint.hh**:
+   + `const std::string &ChildLinkName() const` (use `ChildName()` instead)
+   + `const std::string &ParentLinkName() const` (use `ParentName()` instead)
+   + `void SetChildLinkName(const std::string &)` (use `SetChildName()` instead)
+   + `void SetParentLinkName(const std::string &)` (use `SetParentName()` instead)
+
+- **sdf/SDFImpl.hh**:
+   + `void Root(const ElementPtr)` (use `SetRoot(const ElementPtr)` instead)
+
+- **sdf/Types.hh**:
+   + `const std::string &kSdfScopeDelimiter` (use `kScopeDelimiter` instead)
+   + `const std::string &SdfScopeDelimiter()` (use `kScopeDelimiter` instead)
+
+- **sdf/parser.hh**:
+   + `bool checkJointParentChildLinkNames(const sdf::Root *)` (use `checkJointParentChildNames(const sdf::Root *)` instead)
+
 ## libsdformat 13.x to 14.x
 
 ### Additions
@@ -39,6 +68,9 @@ but with improved human-readability..
       document
 
 ### Modifications
+
+1. The default camera lens intrinsics skew value in the Camera DOM class changed
+   from `1` to `0` to match the SDF specification.
 
 1. World class only renames frames with name collisions if original file version
    is 1.6 or earlier. Name collisions in newer files will cause `DUPLICATE_NAME`
@@ -595,6 +627,64 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
 
 ## SDFormat specification 1.11 to 1.12
+
+### Additions
+
+1. **joint_state.sdf**:
+    + `//joint_state/axis_state/position`
+    + `//joint_state/axis_state/velocity`
+    + `//joint_state/axis_state/acceleration`
+    + `//joint_state/axis_state/effort`
+    + `//joint_state/axis2_state/position`
+    + `//joint_state/axis2_state/velocity`
+    + `//joint_state/axis2_state/acceleration`
+    + `//joint_state/axis2_state/effort`
+
+1. **link_state.sdf**:
+    + `//link_state/linear_velocity`
+    + `//link_state/angular_velocity`
+    + `//link_state/linear_acceleration`
+    + `//link_state/angular_acceleration`
+    + `//link_state/force`
+    + `//link_state/torque`
+
+1. **model.sdf**:
+    + `//model/model_state`
+    + `//model/include/model_state`
+
+1. **world.sdf**:
+    + `//world/include/model_state`
+
+### Modifications
+
+1. **state.sdf**, **model_state.sdf**, **joint_state.sdf**, **link_state.sdf**,
+   **light_state.sdf**: A `_state` suffix has been added to state element names
+   to match the `.sdf` file names and for consistency.
+    + `//state/light` renamed to `//state/light_state`
+    + `//state/model` renamed to `//state/model_state`
+    + `//state/model/joint` renamed to `//state/model_state/joint_state`
+    + `//state/model/light` renamed to `//state/model_state/light_state`
+    + `//state/model/link`  renamed to `//state/model_state/link_state`
+    + `//state/model/model` renamed to `//state/model_state/model_state`
+    + `//state/model/link/collision` renamed to `//state/model_state/link_state/collision_state`
+
+1. **state.sdf**: `//state/joint_state` has been added to represent the state of a
+    `//world/joint` and `//state/insertions/joint` can represent inserted
+    `//world/joint` elements.
+
+### Deprecations
+
+1. **joint_state.sdf**:
+    + `//joint_state/angle` is deprecated in favor of `//joint_state/axis_state/position`
+      and  `//joint_state/axis2_state/position`.
+
+1. **link_state.sdf**:
+    + `//link_state/velocity` is deprecated in favor of `//link_state/angular_velocity`
+      and  `//link_state/linear_velocity`.
+    + `//link_state/acceleration` is deprecated in favor of `//link_state/angular_acceleration`
+      and  `//link_state/linear_acceleration`.
+    + `//link_state/wrench` is deprecated in favor of `//link_state/torque`
+      and  `//link_state/force`.
 
 ## SDFormat specification 1.10 to 1.11
 

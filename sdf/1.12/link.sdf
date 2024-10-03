@@ -19,7 +19,7 @@
   </element>
 
   <element name="kinematic" type="bool" default="false" required="0">
-    <description>If true, the link is kinematic only</description>
+    <description>If true, the link is kinematic only. A kinematic link does not react to forces such as gravity, applied force / torque, or influences from other dynamic bodies. The link can be animated by changing its position or velocity. Kinematic links can also be connected by joints, and moved by joint position or velocity commands.</description>
   </element>
 
   <element name="must_be_base_link" type="bool" default="false" required="0">

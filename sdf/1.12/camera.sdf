@@ -222,7 +222,7 @@
     <description><![CDATA[Visibility mask of a camera. When (camera's visibility_mask & visual's visibility_flags) evaluates to non-zero, the visual will be visible to the camera.]]></description>
   </element>
 
-  <element name="optical_frame_id" type="string" default="" required="0">
+  <element name="optical_frame_id" type="string" default="" required="-1">
     <description>An optional frame id name to be used in the camera_info message header.</description>
   </element>
 

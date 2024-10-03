@@ -144,13 +144,5 @@ std::string JoinName(
   else
     return _scopeName + std::string(kScopeDelimiter) + _localName;
 }
-
-/////////////////////////////////////////////////
-const std::string &internal::SdfScopeDelimiter()
-{
-  static const gz::utils::NeverDestroyed<std::string> delimiter{
-      kScopeDelimiter};
-  return delimiter.Access();
-}
 }
 }

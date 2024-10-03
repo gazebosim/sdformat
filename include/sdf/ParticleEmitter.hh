@@ -51,10 +51,7 @@ namespace sdf
     CYLINDER = 2,
 
     /// \brief An ellipsoid emitter.
-    ELLIPSOID = 3,
-
-    /// \brief An cone emitter.
-    CONE = 4,
+    ELLIPSOID = 3
   };
 
   /// \brief A description of a particle emitter, which can be attached

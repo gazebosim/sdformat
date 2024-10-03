@@ -1,8 +1,146 @@
 ## libsdformat 15.X
 
-### libsdformat 15.X.X (202X-XX-XX)
+### libsdformat 15.0.0 (2024-09-25)
+
+1. **Baseline:** this includes all changes from 14.5.0 and earlier.
+
+1. Use colcon for Windows building compilation
+    * [Pull request #1481](https://github.com/gazebosim/sdformat/pull/1481)
+
+1. Spec 1.12: link_state, joint_state changes
+    * [Pull request #1461](https://github.com/gazebosim/sdformat/pull/1461)
+
+1. Fix symbol checking test when compiled with debug symbols
+    * [Pull request #1474](https://github.com/gazebosim/sdformat/pull/1474)
+
+1. README: update badges for sdf15
+    * [Pull request #1472](https://github.com/gazebosim/sdformat/pull/1472)
+
+1. Ionic Changelog
+    * [Pull request #1471](https://github.com/gazebosim/sdformat/pull/1471)
+
+1. Spec 1.12: add `_state` suffix to //state subelements
+    * [Pull request #1455](https://github.com/gazebosim/sdformat/pull/1455)
+
+1. Add optional binary relocatability
+    * [Pull request #1414](https://github.com/gazebosim/sdformat/pull/1414)
+    * [Pull request #1468](https://github.com/gazebosim/sdformat/pull/1468)
+    * [Pull request #1469](https://github.com/gazebosim/sdformat/pull/1469)
+
+1. FrameSemantics: fix NullVertex warnings
+    * [Pull request #1460](https://github.com/gazebosim/sdformat/pull/1460)
+    * [Pull request #1459](https://github.com/gazebosim/sdformat/pull/1459)
+    * [Pull request #1458](https://github.com/gazebosim/sdformat/pull/1458)
+
+1. Remove deprecated APIs
+    * [Pull request #1456](https://github.com/gazebosim/sdformat/pull/1456)
+
+1. Spec 1.12: add `//sensor/frame_id`
+    * [Pull request #1454](https://github.com/gazebosim/sdformat/pull/1454)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Print auto inertial values with `gz sdf --print --expand-auto-inertials`
+    * [Pull request #1422](https://github.com/gazebosim/sdformat/pull/1422)
+
+1. Add cone shape to SDFormat spec
+    * [Pull request #1418](https://github.com/gazebosim/sdformat/pull/1418)
+    * [Pull request #1434](https://github.com/gazebosim/sdformat/pull/1434)
+
+1. Enable 24.04 CI, remove distutils dependency
+    * [Pull request #1408](https://github.com/gazebosim/sdformat/pull/1408)
+
+1. Change behavior of `Param::Get<bool>`
+    * [Pull request #1397](https://github.com/gazebosim/sdformat/pull/1397)
+
+1. Parse kinematic property in Link, expand spec documentation of property
+    * [Pull request #1390](https://github.com/gazebosim/sdformat/pull/1390)
+    * [Pull request #1399](https://github.com/gazebosim/sdformat/pull/1399)
+    * [Pull request #1462](https://github.com/gazebosim/sdformat/pull/1462)
+
+1. Spec 1.11+: add `//mesh/@optimization`, `//mesh/convex_decomposition`
+    * [Pull request #1382](https://github.com/gazebosim/sdformat/pull/1382)
+    * [Pull request #1386](https://github.com/gazebosim/sdformat/pull/1386)
+    * [Pull request #1403](https://github.com/gazebosim/sdformat/pull/1403)
+
+1. Copy 1.11 spec to 1.12 for libsdformat15
+    * [Pull request #1375](https://github.com/gazebosim/sdformat/pull/1375)
+
+1. Fix find Python3 logic and macOS workflow
+    * [Pull request #1367](https://github.com/gazebosim/sdformat/pull/1367)
+
+1. Remove `HIDE_SYMBOLS_BY_DEFAULT`: replace by a default configuration in gz-cmake.
+    * [Pull request #1355](https://github.com/gazebosim/sdformat/pull/1355)
+
+1. Dependency version bumps in ionic: use gz-cmake4, gz-utils3, gz-math8
+    * [Pull request #1340](https://github.com/gazebosim/sdformat/pull/1340)
+
+1. Bump major version to 15
+    * [Pull request #1338](https://github.com/gazebosim/sdformat/pull/1338)
 
 ## libsdformat 14.X
+
+### libsdformat 14.5.0 (2024-08-05)
+
+1. Adding Errors structure to XmlUtils
+    * [Pull request #1296](https://github.com/gazebosim/sdformat/pull/1296)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Added SetHeightMap and Heighmap to Geometry Python binding
+    * [Pull request #1440](https://github.com/gazebosim/sdformat/pull/1440)
+
+1. workflows/ci.yml fix push branch regex
+    * [Pull request #1445](https://github.com/gazebosim/sdformat/pull/1445)
+
+1. SDF.cc update calls to use sdf::Errors output
+    * [Pull request #1295](https://github.com/gazebosim/sdformat/pull/1295)
+
+1. Added World::ActorByName
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
+
+### libsdformat 14.4.0 (2024-06-20)
+
+1. Add Cone as a primitive parametric shape.
+    * [Pull request #1415](https://github.com/gazebosim/sdformat/pull/1415)
+    * Thanks to Benjamin Perseghetti
+
+1. Add custom attribute to custom element in test
+    * [Pull request #1406](https://github.com/gazebosim/sdformat/pull/1406)
+
+### libsdformat 14.3.0 (2024-06-14)
+
+1. Backport voxel_resolution sdf element
+    * [Pull request #1429](https://github.com/gazebosim/sdformat/pull/1429)
+
+1. Added Automatic Moment of Inertia Calculations for Basic Shapes Python wrappers
+    * [Pull request #1424](https://github.com/gazebosim/sdformat/pull/1424)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+    * [Pull request #1419](https://github.com/gazebosim/sdformat/pull/1419)
+
+1. Update default camera instrinsics skew to 0, which matches spec
+    * [Pull request #1423](https://github.com/gazebosim/sdformat/pull/1423)
+    * [Pull request #1425](https://github.com/gazebosim/sdformat/pull/1425)
+
+1. Allow empty strings in plugin and custom attributes
+    * [Pull request #1407](https://github.com/gazebosim/sdformat/pull/1407)
+
+1. (Backport) Enable 24.04 CI, remove distutils dependency
+    * [Pull request #1413](https://github.com/gazebosim/sdformat/pull/1413)
+
+1. Fix macOS workflow and backport windows fix
+    * [Pull request #1409](https://github.com/gazebosim/sdformat/pull/1409)
+
+1. Fix warning with pybind11 2.12
+    * [Pull request #1389](https://github.com/gazebosim/sdformat/pull/1389)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+    * [Pull request #1427](https://github.com/gazebosim/sdformat/pull/1427)
 
 ### libsdformat 14.2.0 (2024-04-23)
 
@@ -131,6 +269,50 @@
     * [Pull request #1104](https://github.com/gazebosim/sdformat/pull/1104)
 
 ## libsdformat 13.X
+
+### libsdformat 13.8.0 (2024-06-25)
+
+1. Added `World::ActorByName`
+    * [Pull request #1436](https://github.com/gazebosim/sdformat/pull/1436)
+
+1. Backport #1367 to Garden: Fix find Python3 logic.
+    * [Pull request #1370](https://github.com/gazebosim/sdformat/pull/1370)
+
+### libsdformat 13.7.0 (2024-06-13)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+    * [Pull request #1419](https://github.com/gazebosim/sdformat/pull/1419)
+
+1. Fix macOS workflow and backport windows fix
+    * [Pull request #1409](https://github.com/gazebosim/sdformat/pull/1409)
+
+1. Fix warning with pybind11 2.12
+    * [Pull request #1389](https://github.com/gazebosim/sdformat/pull/1389)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+    * [Pull request #1427](https://github.com/gazebosim/sdformat/pull/1427)
+
+1. Resolve URIs relative to file path
+    * [Pull request #1373](https://github.com/gazebosim/sdformat/pull/1373)
+
+1. Bazel updates for Garden build
+    * [Pull request #1239](https://github.com/gazebosim/sdformat/pull/1239)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Install ruby commands on Windows
+    * [Pull request #1339](https://github.com/gazebosim/sdformat/pull/1339)
+    * [Pull request #1341](https://github.com/gazebosim/sdformat/pull/1341)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
+
+1. URDF->SDF handle links with no inertia or small mass
+    * [Pull request #1238](https://github.com/gazebosim/sdformat/pull/1238)
 
 ### libsdformat 13.6.0 (2023-08-30)
 
@@ -593,6 +775,21 @@
     * [Pull request #758](https://github.com/gazebosim/sdformat/pull/758)
 
 ## libsdformat 12.X
+
+### libsdformat 12.8.0 (2024-06-06)
+
+1. Add support for no gravity link
+    * [Pull request #1410](https://github.com/gazebosim/sdformat/pull/1410)
+
+1. Add bullet and torsional friction DOM
+    * [Pull request #1351](https://github.com/gazebosim/sdformat/pull/1351)
+
+1. Fix static builds and optimize test compilation
+    * [Pull request #1343](https://github.com/gazebosim/sdformat/pull/1343)
+    * [Pull request #1347](https://github.com/gazebosim/sdformat/pull/1347)
+
+1. Update github action workflows
+    * [Pull request #1345](https://github.com/gazebosim/sdformat/pull/1345)
 
 ### libsdformat 12.7.2 (2023-09-01)
 

@@ -1440,7 +1440,8 @@ static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     // attribute is found
     if (std::strchr(attribute->Name(), ':') != nullptr)
     {
-      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
+      // Add with required == 0 to allow custom attribute to be empty
+      _sdf->AddAttribute(attribute->Name(), "string", "", 0, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(attribute->Value());
       attribute = attribute->Next();
       continue;
@@ -2722,12 +2723,6 @@ bool checkPoseRelativeToGraph(sdf::Errors &_errors, const sdf::Root *_root)
   }
 
   return result;
-}
-
-//////////////////////////////////////////////////
-bool checkJointParentChildLinkNames(const sdf::Root *_root)
-{
-  return checkJointParentChildNames(_root);
 }
 
 //////////////////////////////////////////////////

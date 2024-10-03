@@ -1,0 +1,133 @@
+<!-- State information for a joint -->
+<element name="joint_state" required="*">
+  <description>
+    The joint state element encapsulates variables within a joint that may
+    change over time, currently limited to the joint angle.
+  </description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>Name of the joint</description>
+  </attribute>
+
+  <element name="angle" type="double" default="0" required="-1">
+    <attribute name="axis" type="unsigned int" default="0" required="1">
+      <description>Index of the axis.</description>
+    </attribute>
+
+    <description>Angle of an axis</description>
+  </element>
+
+  <element name="axis_state" required="0">
+    <description>
+      Contains the state of the first joint axis.
+    </description>
+
+    <element name="position" type="double" default="0" required="0">
+      <description>The position of the first joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          If this is a rotational axis and this attribute is true,
+          the joint position is expressed in units of degrees [deg],
+          otherwise it is expressed in radians [rad].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters [m] regardless of the value of
+          this attribute.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="velocity" type="double" default="0" required="0">
+      <description>The velocity of the first joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          If this is a rotational axis and this attribute is true,
+          the joint velocity is expressed in units of degrees per
+          second [deg/s], otherwise it is expressed in radians per second
+          [rad/s].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second [m/s] regardless of
+          the value of this attribute.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="acceleration" type="double" default="0" required="0">
+      <description>The acceleration of the first joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          If this is a rotational axis and this attribute is true,
+          the joint acceleration is expressed in units of degrees per
+          second per second [deg/s^2], otherwise it is expressed in radians per
+          second per second [rad/s^2].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second per second [m/s^2]
+          regardless of the value of this attribute.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="effort" type="double" default="0" required="0">
+      <description>The effort applied at the first joint axis.</description>
+    </element>
+  </element>
+
+  <element name="axis2_state" required="0">
+    <description>
+      Contains the state of the second joint axis.
+    </description>
+
+    <element name="position" type="double" default="0" required="0">
+      <description>The position of the second joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          If this is a rotational axis and this attribute is true,
+          the joint position is expressed in units of degrees [deg],
+          otherwise it is expressed in radians [rad].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters [m] regardless of the value of
+          this attribute.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="velocity" type="double" default="0" required="0">
+      <description>The velocity of the second joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          If this is a rotational axis and this attribute is true,
+          the joint velocity is expressed in units of degrees per
+          second [deg/s], otherwise it is expressed in radians per second
+          [rad/s].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second [m/s] regardless of
+          the value of this attribute.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="acceleration" type="double" default="0" required="0">
+      <description>The acceleration of the second joint axis.</description>
+
+      <attribute name="degrees" type="bool" default="false" required="0">
+        <description>
+          If this is a rotational axis and this attribute is true,
+          the joint acceleration is expressed in units of degrees per
+          second per second [deg/s^2], otherwise it is expressed in radians per
+          second per second [rad/s^2].
+          If this axis is translational (such as a prismatic joint), the
+          units will be interpreted in meters per second per second [m/s^2]
+          regardless of the value of this attribute.
+        </description>
+      </attribute>
+    </element>
+
+    <element name="effort" type="double" default="0" required="0">
+      <description>The effort applied at the second joint axis.</description>
+    </element>
+  </element>
+</element> <!-- End Joint -->

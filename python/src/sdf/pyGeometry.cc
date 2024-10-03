@@ -17,6 +17,7 @@
 #include "pyGeometry.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/ParserConfig.hh"
 
@@ -26,6 +27,7 @@
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
@@ -46,6 +48,8 @@ void defineGeometry(pybind11::object module)
   geometryModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Geometry>())
+    .def("calculate_inertial", &sdf::Geometry::CalculateInertial,
+         "Calculate and return the Mass Matrix values for the Geometry")
     .def("type", &sdf::Geometry::Type,
          "Get the type of geometry.")
     .def("set_type", &sdf::Geometry::SetType,
@@ -98,6 +102,11 @@ void defineGeometry(pybind11::object module)
          "geometry is not a mesh.")
     .def("set_mesh_shape", &sdf::Geometry::SetMeshShape,
          "Set the mesh shape.")
+    .def("set_heightmap_shape", &sdf::Geometry::SetHeightmapShape,
+         "Set the heightmap shape.")
+    .def("heightmap_shape", &sdf::Geometry::HeightmapShape,
+          pybind11::return_value_policy::reference,
+          "Get the heightmap geometry.")
     .def("__copy__", [](const sdf::Geometry &self) {
       return sdf::Geometry(self);
     })
