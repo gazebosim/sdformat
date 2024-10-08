@@ -11,7 +11,7 @@ Note: The branch name in the codecov URL & library version should be updated whe
 Build | Status
 -- | --
 Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/main)
-Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-jammy-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-jammy-amd64)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-noble-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-noble-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-main-win)](https://build.osrfoundation.org/job/sdformat-main-win)
 
@@ -66,7 +66,7 @@ sudo apt-get update
 sudo apt install libsdformat<#>-dev libsdformat<#>
 ```
 
-Be sure to replace `<#>` with a number value, such as 2 or 3, depending on
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
 which version you need, or leave it empty for version 1.
 
 ### macOS
@@ -82,7 +82,7 @@ Install sdformat:
   brew install sdformat<#>
   ```
 
-Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
 which version you need.
 
 ### Windows
@@ -126,7 +126,7 @@ Clone the repository
 ```sh
 git clone https://github.com/gazebosim/sdformat -b sdf<#>
 ```
-Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
 which version you need.
 
 ### Build from Source
@@ -168,7 +168,7 @@ Clone the repository
 ```sh
 git clone https://github.com/gazebosim/sdformat -b sdf<#>
 ```
-Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
 which version you need.
 
 Install dependencies
@@ -213,34 +213,37 @@ conda activate gz-ws
 
 Install prerequisites:
 ```
-conda install tinyxml2 urdfdom --channel conda-forge
+conda install cmake git vcstool colcon-common-extensions ^
+tinyxml2 urdfdom pybind11 -channel conda-forge
 ```
 
-Install Gazebo dependencies:
+### Getting the sources and building from Source
 
-You can view lists of dependencies:
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
+which version you need.
+
+1. Getting the sources
+
 ```
-conda search libsdformat --channel conda-forge --info
+mkdir ws\src
+cd ws
+vcs import src --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/sdformat<#>.yaml
 ```
 
-Install dependencies, replacing `<#>` with the desired versions:
+2. Build from source
+
+Note: the Gazebo library dependencies are going to be compiled from source
+with sdformat although it should be possible to install them from
+conda-forge on stable Gazebo releases using the standard conda install
+command.
+
+Build the gazebo libraries needed as dependencies (skip testing to speed up the compilation)
+using the [colcon](https://colcon.readthedocs.io/en/released/) tool:
 ```
-conda install libgz-cmake<#> libgz-math<#> libgz-tools<#> libgz-utils<#> --channel conda-forge
+  colcon build --cmake-args -DBUILD_TESTING=OFF --merge-install --packages-skip sdformat<#>
 ```
 
-### Build from Source
-
-This assumes you have created and activated a Conda environment while installing the Prerequisites.
-
-1. Configure and build
-  ```
-  mkdir build
-  cd build
-  cmake .. -DBUILD_TESTING=OFF  # Optionally, -DCMAKE_INSTALL_PREFIX=path\to\install
-  cmake --build . --config Release
-  ```
-
-2. Install
-  ```
-  cmake --install . --config Release
-  ```
+Build sdformat with its test suite:
+```
+  colcon build --cmake-args -DBUILD_TESTING=ON --merge-install --packages-select sdformat<#>
+```
