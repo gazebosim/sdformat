@@ -1,6 +1,23 @@
 ## libsdformat 15.X
 
-### libsdformat 15.0.0 (2024-09-XX)
+### libsdformat 15.0.0 (2024-09-25)
+
+1. **Baseline:** this includes all changes from 14.5.0 and earlier.
+
+1. Use colcon for Windows building compilation
+    * [Pull request #1481](https://github.com/gazebosim/sdformat/pull/1481)
+
+1. Spec 1.12: link_state, joint_state changes
+    * [Pull request #1461](https://github.com/gazebosim/sdformat/pull/1461)
+
+1. Fix symbol checking test when compiled with debug symbols
+    * [Pull request #1474](https://github.com/gazebosim/sdformat/pull/1474)
+
+1. README: update badges for sdf15
+    * [Pull request #1472](https://github.com/gazebosim/sdformat/pull/1472)
+
+1. Ionic Changelog
+    * [Pull request #1471](https://github.com/gazebosim/sdformat/pull/1471)
 
 1. Spec 1.12: add `_state` suffix to //state subelements
     * [Pull request #1455](https://github.com/gazebosim/sdformat/pull/1455)
@@ -27,6 +44,10 @@
 1. Print auto inertial values with `gz sdf --print --expand-auto-inertials`
     * [Pull request #1422](https://github.com/gazebosim/sdformat/pull/1422)
 
+1. Add cone shape to SDFormat spec
+    * [Pull request #1418](https://github.com/gazebosim/sdformat/pull/1418)
+    * [Pull request #1434](https://github.com/gazebosim/sdformat/pull/1434)
+
 1. Enable 24.04 CI, remove distutils dependency
     * [Pull request #1408](https://github.com/gazebosim/sdformat/pull/1408)
 
@@ -37,6 +58,11 @@
     * [Pull request #1390](https://github.com/gazebosim/sdformat/pull/1390)
     * [Pull request #1399](https://github.com/gazebosim/sdformat/pull/1399)
     * [Pull request #1462](https://github.com/gazebosim/sdformat/pull/1462)
+
+1. Spec 1.11+: add `//mesh/@optimization`, `//mesh/convex_decomposition`
+    * [Pull request #1382](https://github.com/gazebosim/sdformat/pull/1382)
+    * [Pull request #1386](https://github.com/gazebosim/sdformat/pull/1386)
+    * [Pull request #1403](https://github.com/gazebosim/sdformat/pull/1403)
 
 1. Copy 1.11 spec to 1.12 for libsdformat15
     * [Pull request #1375](https://github.com/gazebosim/sdformat/pull/1375)
