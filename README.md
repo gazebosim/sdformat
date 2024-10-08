@@ -10,10 +10,10 @@ Note: The branch name in the codecov URL & library version should be updated whe
 -->
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/sdf15/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/sdf15)
-Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf15-noble-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf15-noble-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf15-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf15-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-sdf15-win)](https://build.osrfoundation.org/job/sdformat-sdf15-win)
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/main)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-noble-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-noble-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-main-win)](https://build.osrfoundation.org/job/sdformat-main-win)
 
 
 SDFormat is an XML file format that describes environments, objects, and robots
