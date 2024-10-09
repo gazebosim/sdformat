@@ -114,7 +114,7 @@ conda install libsdformat=12.5.0 --channel conda-forge
 ## Source Installation
 
 
-**Note:** the `main` branch is under development for `libsdformat15` and is
+**Note:** the `main` branch is under development for `libsdformat16` and is
 currently unstable. A release branch (`sdf12`, `sdf11`, `sdf10`, `sdf9`, etc.)
 is recommended for most users.
 

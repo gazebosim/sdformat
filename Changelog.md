@@ -1,3 +1,7 @@
+## libsdformat 16.X
+
+### libsdformat 16.0.0 (20XX-XX-XX)
+
 ## libsdformat 15.X
 
 ### libsdformat 15.0.0 (2024-09-25)
@@ -64,7 +68,7 @@
     * [Pull request #1386](https://github.com/gazebosim/sdformat/pull/1386)
     * [Pull request #1403](https://github.com/gazebosim/sdformat/pull/1403)
 
-1. Copy 1.11 spec to 1.12 for libsdformat15
+1. Copy 1.11 spec to 1.12 for libsdformat16
     * [Pull request #1375](https://github.com/gazebosim/sdformat/pull/1375)
 
 1. Fix find Python3 logic and macOS workflow
