@@ -326,12 +326,12 @@ namespace sdf
     public: bool SetParentElement(ElementPtr _parentElement,
                                   sdf::Errors &_errors);
 
-    /// \brief Set the parent Element of this Param.
+    /// \brief Set the parent Element of this Param without reparsing.
+    /// This is meant for internal consumption when cloning elements.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
     /// be provided to remove the current parent Element.
     /// \param[out] _errors Vector of errors.
-    /// \return True if the parent Element was set and the value was reparsed
-    /// successfully.
+    /// \return True if the parent Element was set.
     public: bool SetParentElementNoReparse(
         ElementPtr _parentElement);
 
