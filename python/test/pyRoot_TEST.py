@@ -324,6 +324,33 @@ class RootTEST(unittest.TestCase):
         # ASSERT_EQ(None, root2.Actor())
         self.assertEqual(0, root2.world_count())
 
+    def test_clear_actor_light_model(self):
+        root = Root()
+
+        # \TODO(anyone) Wrap the Actor class.
+        # self.assertEqual(None, root.actor())
+        # actor1 = Actor()
+        # actor1.set_name("actor1")
+        # root.set_actor(actor1)
+        # self.assertNotEqual(None, root.actor())
+        # root.clear_actor_light_model()
+        # self.assertEqual(None, root.actor())
+
+        self.assertEqual(None, root.light())
+        light1 = Light()
+        light1.set_name("light1")
+        root.set_light(light1)
+        self.assertNotEqual(None, root.light())
+        root.clear_actor_light_model()
+        self.assertEqual(None, root.light())
+
+        self.assertEqual(None, root.model())
+        model1 = Model()
+        model1.set_name("model1")
+        root.set_model(model1)
+        self.assertNotEqual(None, root.model())
+        root.clear_actor_light_model()
+        self.assertEqual(None, root.model())
 
 if __name__ == '__main__':
     unittest.main()

@@ -630,3 +630,33 @@ TEST(DOMRoot, WorldByName)
   ASSERT_TRUE(root.WorldNameExists("world2"));
   EXPECT_EQ("world2", root.WorldByName("world2")->Name());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, ClearActorLightModel)
+{
+  sdf::Root root;
+  EXPECT_EQ(nullptr, root.Actor());
+  EXPECT_EQ(nullptr, root.Light());
+  EXPECT_EQ(nullptr, root.Model());
+
+  sdf::Actor actor1;
+  actor1.SetName("actor1");
+  root.SetActor(actor1);
+  EXPECT_NE(nullptr, root.Actor());
+  root.ClearActorLightModel();
+  EXPECT_EQ(nullptr, root.Actor());
+
+  sdf::Light light1;
+  light1.SetName("light1");
+  root.SetLight(light1);
+  EXPECT_NE(nullptr, root.Light());
+  root.ClearActorLightModel();
+  EXPECT_EQ(nullptr, root.Light());
+
+  sdf::Model model1;
+  model1.SetName("model1");
+  root.SetModel(model1);
+  EXPECT_NE(nullptr, root.Model());
+  root.ClearActorLightModel();
+  EXPECT_EQ(nullptr, root.Model());
+}
