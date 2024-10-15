@@ -129,6 +129,25 @@ git clone https://github.com/gazebosim/sdformat -b sdf<#>
 Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
 which version you need.
 
+### Install dependencies
+
+#### Ubuntu
+
+```sh
+cd sdformat
+sudo apt -y install \
+  $(sort -u $(find . -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt' | tr '\n' ' '))
+```
+
+#### macOS
+
+```sh
+brew install --only-dependencies sdformat<#>
+```
+
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
+which version you need.
+
 ### Build from Source
 
 Standard installation can be performed in UNIX systems using the following
@@ -157,44 +176,6 @@ To uninstall the software installed with the previous steps:
 cd build
 make uninstall
 ```
-
-## macOS
-
-### Prerequisites
-
-Clone the repository
-```sh
-git clone https://github.com/gazebosim/sdformat -b sdf<#>
-```
-Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
-which version you need.
-
-Install dependencies
-```sh
-brew install --only-dependencies sdformat<#>
-```
-
-### Build from Source
-
-1. Configure and build
-  ```sh
-  cd sdformat
-  mkdir build
-  cd build
-  cmake .. # Consider specifying -DCMAKE_INSTALL_PREFIX=...
-  make
-  ```
-
-2. Optionally, install and uninstall
-  ```sh
-  sudo make install
-  ```
-
-  To uninstall the software installed with the previous steps:
-  ```sh
-  cd build/
-  sudo make uninstall
-  ```
 
 ## Windows
 
