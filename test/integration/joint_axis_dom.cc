@@ -355,3 +355,233 @@ TEST(DOMJointAxis, XyzNormalization)
     EXPECT_EQ(Vector3d::UnitZ, joint4->Axis(0)->Xyz());
   }
 }
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimic)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.11'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <link name='link3'/>"
+    "    <joint name='source_joint' type='revolute'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "      </axis>"
+    "    </joint>"
+    "    <joint name='follow_joint' type='revolute'>"
+    "      <pose>2 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link3</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='source_joint'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  auto joint = model->JointByName("follow_joint");
+  ASSERT_NE(nullptr, joint);
+  auto jointAxis = joint->Axis();
+  ASSERT_NE(nullptr, jointAxis);
+  auto mimicJoint = jointAxis->Mimic();
+  ASSERT_NE(std::nullopt, mimicJoint);
+
+  EXPECT_EQ(mimicJoint->Joint(), "source_joint");
+  EXPECT_EQ(mimicJoint->Axis(), "axis");
+  EXPECT_DOUBLE_EQ(mimicJoint->Multiplier(), 4);
+  EXPECT_DOUBLE_EQ(mimicJoint->Offset(), 2);
+  EXPECT_DOUBLE_EQ(mimicJoint->Reference(), 3);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseInvalidSelfMimic)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.11'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <joint name='self_mimic' type='universal'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='self_mimic'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "      <axis2>"
+    "        <xyz>1 0 0</xyz>"
+    "        <mimic joint='self_mimic' axis='axis2'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis2>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  ASSERT_EQ(errors.size(), 2) << errors;
+  const std::string errorMsg = "Axis with name [axis] "
+    "in joint with name [self_mimic] cannot mimic itself.";
+  const std::string errorMsg2 = "Axis with name [axis2] "
+    "in joint with name [self_mimic] cannot mimic itself.";
+  EXPECT_EQ(errors[0].Message(), errorMsg) << errors[0];
+  EXPECT_EQ(errors[1].Message(), errorMsg2) << errors[1];
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimicInvalidLeaderJointName)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.11'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <joint name='joint' type='universal'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='invalid'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "      <axis2>"
+    "        <xyz>1 0 0</xyz>"
+    "        <mimic joint='invalid'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis2>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  EXPECT_EQ(errors.size(), 2) << errors;
+  for (const auto &error : errors)
+  {
+    std::stringstream ss;
+    ss << error;
+    const std::string errorMsg = "Error Code 41: Msg: A joint with"
+      " name[invalid] specified by an axis mimic in joint with name[joint] not"
+      " found in model with name[test].";
+    EXPECT_EQ(ss.str(), errorMsg);
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimicInvalidLeaderAxis)
+{
+  std::string sdf =
+    "<?xml version='1.0' ?>"
+    "<sdf version='1.11'>"
+    "  <model name='test'>"
+    "    <link name='link1'/>"
+    "    <link name='link2'/>"
+    "    <link name='link3'/>"
+    "    <joint name='leader' type='revolute'>"
+    "      <pose>0 0 1 0 0 0</pose>"
+    "      <child>link1</child>"
+    "      <parent>link2</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "      </axis>"
+    "    </joint>"
+    "    <joint name='follower' type='universal'>"
+    "      <pose>1 0 0 0 0 0</pose>"
+    "      <child>link2</child>"
+    "      <parent>link3</parent>"
+    "      <axis>"
+    "        <xyz>0 0 1</xyz>"
+    "        <mimic joint='leader' axis='invalid'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis>"
+    "      <axis2>"
+    "        <xyz>1 0 0</xyz>"
+    "        <mimic joint='leader' axis='axis2'>"
+    "          <multiplier>4</multiplier>"
+    "          <offset>2</offset>"
+    "          <reference>3</reference>"
+    "        </mimic>"
+    "      </axis2>"
+    "    </joint>"
+    "  </model>"
+    "</sdf>";
+
+  sdf::Root root;
+  auto errors = root.LoadSdfString(sdf);
+  ASSERT_EQ(errors.size(), 4) << errors;
+  const std::string errorMsg1 = "Axis with name [axis] in joint with name "
+    "[follower] specified an invalid leader axis name [invalid].";
+  const std::string errorMsg2 = "Axis with name [axis] in joint with name "
+    "[follower] specified a leader axis name [invalid] that is not found in "
+    "the leader joint with name [leader].";
+  const std::string errorMsg3 = "Axis with name [axis2] in joint with name "
+    "[follower] specified a leader axis name [axis2] that is not found in "
+    "the leader joint with name [leader].";
+  EXPECT_EQ(errors[0].Message(), errorMsg1) << errors[0];
+  EXPECT_EQ(errors[1].Message(), errorMsg1) << errors[1];
+  EXPECT_EQ(errors[2].Message(), errorMsg2) << errors[2];
+  EXPECT_EQ(errors[3].Message(), errorMsg3) << errors[3];
+}
+
+/////////////////////////////////////////////////
+TEST(DOMJointAxis, ParseMimicURDF)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_mimic_rack_pinion.urdf");
+
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  auto followerJoint = model->JointByName("rack_joint");
+  ASSERT_NE(nullptr, followerJoint);
+  auto followerJointAxis = followerJoint->Axis();
+  ASSERT_NE(nullptr, followerJointAxis);
+  auto mimicJoint = followerJointAxis->Mimic();
+  ASSERT_NE(std::nullopt, mimicJoint);
+
+  EXPECT_EQ(mimicJoint->Joint(), "upper_joint");
+  EXPECT_EQ(mimicJoint->Axis(), "axis");
+  EXPECT_DOUBLE_EQ(mimicJoint->Multiplier(), 0.105);
+  EXPECT_DOUBLE_EQ(mimicJoint->Offset(), 0);
+  EXPECT_DOUBLE_EQ(mimicJoint->Reference(), 0);
+}

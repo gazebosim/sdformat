@@ -80,6 +80,17 @@ TEST(DOMJointAxis, Construction)
 
   axis.SetDissipation(1.5);
   EXPECT_DOUBLE_EQ(1.5, axis.Dissipation());
+
+  sdf::MimicConstraint mimic("test_joint", "axis", 5.0, 1.0, 2.0);
+
+  EXPECT_FALSE(axis.Mimic());
+  axis.SetMimic(mimic);
+  EXPECT_TRUE(axis.Mimic());
+  EXPECT_EQ(axis.Mimic()->Joint(), "test_joint");
+  EXPECT_EQ(axis.Mimic()->Axis(), "axis");
+  EXPECT_DOUBLE_EQ(axis.Mimic()->Multiplier(), 5.0);
+  EXPECT_DOUBLE_EQ(axis.Mimic()->Offset(), 1.0);
+  EXPECT_DOUBLE_EQ(axis.Mimic()->Reference(), 2.0);
 }
 
 /////////////////////////////////////////////////
@@ -193,9 +204,13 @@ TEST(DOMJointAxis, ToElement)
   axis.SetStiffness(1e2);
   axis.SetDissipation(1.5);
 
+  sdf::MimicConstraint mimic("test_joint", "axis2", 5.0, 1.0, 2.0);
+  axis.SetMimic(mimic);
+
   sdf::ElementPtr elem = axis.ToElement(errors);
   ASSERT_TRUE(errors.empty());
 
+  // Check //axis/xyz
   sdf::ElementPtr xyzElem = elem->GetElement("xyz", errors);
   ASSERT_TRUE(errors.empty());
   gz::math::Vector3d xyz = elem->Get<gz::math::Vector3d>(
@@ -207,62 +222,97 @@ TEST(DOMJointAxis, ToElement)
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ("test", expressedIn);
 
+  // Check //axis/dynamics
   sdf::ElementPtr dynElem = elem->GetElement("dynamics", errors);
   ASSERT_TRUE(errors.empty());
 
-  double damping = 0;
-  damping = dynElem->Get<double>(errors, "damping", damping).first;
+  double damping;
+  damping = dynElem->Get<double>(errors, "damping", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(0.2, damping);
 
-  double friction = 0;
-  friction = dynElem->Get<double>(errors, "friction", friction).first;
+  double friction;
+  friction = dynElem->Get<double>(errors, "friction", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1.3, friction);
 
-  double springReference = 0;
+  double springReference;
   springReference = dynElem->Get<double>(
-      errors, "spring_reference", springReference).first;
+      errors, "spring_reference", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(2.4, springReference);
 
-  double springStiffness = 0;
+  double springStiffness;
   springStiffness = dynElem->Get<double>(
-      errors, "spring_stiffness", springStiffness).first;
+      errors, "spring_stiffness", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(-1.2, springStiffness);
 
+  // Check //axis/limit
   sdf::ElementPtr limitElem = elem->GetElement("limit", errors);
-  double lower = 0;
-  lower = limitElem->Get<double>(errors, "lower", lower).first;
+  double lower;
+  lower = limitElem->Get<double>(errors, "lower", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(-10.8, lower);
 
-  double upper = 0;
-  upper = limitElem->Get<double>(errors, "upper", upper).first;
+  double upper;
+  upper = limitElem->Get<double>(errors, "upper", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(123.4, upper);
 
-  double effort = 0;
-  effort = limitElem->Get<double>(errors, "effort", effort).first;
+  double effort;
+  effort = limitElem->Get<double>(errors, "effort", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(3.2, effort);
 
-  double maxVel = 0;
-  maxVel = limitElem->Get<double>(errors, "velocity", maxVel).first;
+  double maxVel;
+  maxVel = limitElem->Get<double>(errors, "velocity", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(54.2, maxVel);
 
-  double stiffness = 0;
-  stiffness = limitElem->Get<double>(errors, "stiffness", stiffness).first;
+  double stiffness;
+  stiffness = limitElem->Get<double>(errors, "stiffness", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1e2, stiffness);
 
-  double dissipation = 0;
+  double dissipation;
   dissipation = limitElem->Get<double>(
-      errors, "dissipation", dissipation).first;
+      errors, "dissipation", 0.0).first;
   ASSERT_TRUE(errors.empty());
   EXPECT_DOUBLE_EQ(1.5, dissipation);
+
+  // Check //axis/mimic
+  sdf::ElementPtr mimicElem = elem->FindElement("mimic");
+  ASSERT_NE(nullptr, mimicElem);
+  std::string mimicJointName;
+  mimicJointName = mimicElem->Get<std::string>(
+      errors, "joint", "").first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ("test_joint", mimicJointName);
+
+  std::string mimicAxisName;
+  mimicAxisName = mimicElem->Get<std::string>(
+      errors, "axis", "").first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ("axis2", mimicAxisName);
+
+  double multiplier;
+  multiplier = mimicElem->Get<double>(
+      errors, "multiplier", 0.0).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(5.0, multiplier);
+
+  double offset;
+  offset = mimicElem->Get<double>(
+      errors, "offset", 0.0).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(1.0, offset);
+
+  double reference;
+  reference = mimicElem->Get<double>(
+      errors, "reference", 0.0).first;
+  ASSERT_TRUE(errors.empty());
+  EXPECT_DOUBLE_EQ(2.0, reference);
 
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();

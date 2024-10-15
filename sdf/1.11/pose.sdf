@@ -1,0 +1,43 @@
+<!-- Pose -->
+<element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
+  <description>A pose (translation, rotation) expressed in the frame named by
+  @relative_to. The first three components (x, y, z) represent the position of
+  the element's origin (in the @relative_to frame). The rotation component
+  represents the orientation of the element as either a sequence of Euler
+  rotations (r, p, y), see http://sdformat.org/tutorials?tut=specify_pose,
+  or as a quaternion (x, y, z, w), where w is the real component.</description>
+
+  <attribute name="relative_to" type="string" default="" required="0">
+    <description>
+      If specified, this pose is expressed in the named frame. The named frame
+      must be declared within the same scope (world/model) as the element that
+      has its pose specified by this tag.
+
+      If missing, the pose is expressed in the frame of the parent XML element
+      of the element that contains the pose. For exceptions to this rule and
+      more details on the default behavior, see
+      http://sdformat.org/tutorials?tut=pose_frame_semantics.
+
+      Note that @relative_to merely affects an element's initial pose and
+      does not affect the element's dynamic movement thereafter.
+
+      New in v1.8: @relative_to may use frames of nested scopes. In this case,
+      the frame is specified using `::` as delimiter to define the scope of the
+      frame, e.g. `nested_model_A::nested_model_B::awesome_frame`.
+    </description>
+  </attribute>
+
+  <attribute name="rotation_format" type="string" default="euler_rpy" required="0">
+    <description>'euler_rpy' by default. Supported rotation formats are
+      'euler_rpy', Euler angles representation in roll, pitch, yaw. The pose is expected to have 6 values.
+      'quat_xyzw', Quaternion representation in x, y, z, w. The pose is expected to have 7 values.
+    </description>
+  </attribute>
+
+  <attribute name="degrees" type="bool" default="false" required="0">
+    <description>
+      Whether or not the euler angles are in degrees, otherwise they will be interpreted as radians by default.
+    </description>
+  </attribute>
+
+</element> <!-- End Pose -->

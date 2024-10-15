@@ -20,6 +20,7 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 
 using namespace sdf;
 
@@ -43,8 +44,17 @@ class sdf::ParserConfig::Implementation
   /// to behave behave differently than the `warningsPolicy`.
   public: std::optional<EnforcementPolicy> deprecatedElementsPolicy;
 
+  /// \brief Configuration that is set for the CalculateInertial() function
+  /// By default it is set to SAVE_CALCULATION to preserve the behavior of
+  /// Root::Load() generating complete inertial information.
+  public: ConfigureResolveAutoInertials resolveAutoInertialsConfig =
+    ConfigureResolveAutoInertials::SAVE_CALCULATION;
+
   /// \brief Collection of custom model parsers.
   public: std::vector<CustomModelParser> customParsers;
+
+  /// \brief Collection of custom model parsers.
+  public: CustomInertiaCalculator customInertiaCalculator;
 
   /// \brief Flag to explicitly preserve fixed joints when
   /// reading the SDF/URDF file.
@@ -158,6 +168,20 @@ EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
 }
 
 /////////////////////////////////////////////////
+ConfigureResolveAutoInertials
+  ParserConfig::CalculateInertialConfiguration() const
+{
+  return this->dataPtr->resolveAutoInertialsConfig;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetCalculateInertialConfiguration(
+  ConfigureResolveAutoInertials _configuration)
+{
+  this->dataPtr->resolveAutoInertialsConfig = _configuration;
+}
+
+/////////////////////////////////////////////////
 void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
 {
   this->dataPtr->customParsers.push_back(_modelParser);
@@ -167,6 +191,19 @@ void ParserConfig::RegisterCustomModelParser(CustomModelParser _modelParser)
 const std::vector<CustomModelParser> &ParserConfig::CustomModelParsers() const
 {
   return this->dataPtr->customParsers;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::RegisterCustomInertiaCalc(
+    CustomInertiaCalculator _inertiaCalculator)
+{
+  this->dataPtr->customInertiaCalculator = _inertiaCalculator;
+}
+
+/////////////////////////////////////////////////
+const CustomInertiaCalculator &ParserConfig::CustomInertiaCalc() const
+{
+  return this->dataPtr->customInertiaCalculator;
 }
 
 /////////////////////////////////////////////////

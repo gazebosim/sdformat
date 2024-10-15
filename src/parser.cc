@@ -1440,7 +1440,8 @@ static bool readAttributes(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     // attribute is found
     if (std::strchr(attribute->Name(), ':') != nullptr)
     {
-      _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
+      // Add with required == 0 to allow custom attribute to be empty
+      _sdf->AddAttribute(attribute->Name(), "string", "", 0, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(attribute->Value());
       attribute = attribute->Next();
       continue;
@@ -2908,6 +2909,86 @@ void checkJointAxisExpressedInValues(const sdf::Root *_root, Errors &_errors)
       checkScopedJointAxisExpressedInValues(model, "model", _errors);
     }
     checkScopedJointAxisExpressedInValues(world, "world", _errors);
+  }
+}
+
+//////////////////////////////////////////////////
+template <typename TPtr>
+void checkScopedJointAxisMimicValues(
+    const TPtr _scope, const std::string &_scopeType, Errors &errors)
+{
+  const std::vector<std::string> followerAxisNames = {"axis", "axis2"};
+  for (uint64_t j = 0; j < _scope->JointCount(); ++j)
+  {
+    auto joint = _scope->JointByIndex(j);
+    for (uint64_t a = 0; a < 2; ++a)
+    {
+      auto axis = joint->Axis(a);
+      if (axis)
+      {
+        const std::string &followerAxis = followerAxisNames[a];
+        auto mimic = axis->Mimic();
+        if (mimic)
+        {
+          if (!_scope->JointByName(mimic->Joint()))
+          {
+            errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+              "A joint with name[" + mimic->Joint() +
+              "] specified by an axis mimic in joint with name[" + joint->Name()
+              + "] not found in " + _scopeType + " with name[" + _scope->Name()
+              + "]."});
+          }
+          else
+          {
+            auto leaderJoint = _scope->JointByName(mimic->Joint());
+            const sdf::JointAxis *leaderAxis = nullptr;
+            if ("axis" == mimic->Axis())
+            {
+              leaderAxis = leaderJoint->Axis(0);
+            }
+            else if ("axis2" == mimic->Axis())
+            {
+              leaderAxis = leaderJoint->Axis(1);
+            }
+            else
+            {
+              errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+                "Axis with name [" + followerAxis + "] in " +
+                "joint with name [" + joint->Name() + "] specified "
+                "an invalid leader axis name [" + mimic->Axis() + "]."});
+            }
+            if (!leaderAxis)
+            {
+              errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+                "Axis with name [" + followerAxis + "] in " +
+                "joint with name [" + joint->Name() + "] specified "
+                "a leader axis name [" + mimic->Axis() + "] that is not found "
+                "in the leader joint with name [" + mimic->Joint() + "]."});
+            }
+          }
+        }
+      }
+    }
+    }
+}
+
+//////////////////////////////////////////////////
+void checkJointAxisMimicValues(const sdf::Root *_root, Errors &_errors)
+{
+  if (_root->Model())
+  {
+    checkScopedJointAxisMimicValues(_root->Model(), "model", _errors);
+  }
+
+  for (uint64_t w = 0; w < _root->WorldCount(); ++w)
+  {
+    auto world = _root->WorldByIndex(w);
+    for (uint64_t m = 0; m < world->ModelCount(); ++m)
+    {
+      auto model = world->ModelByIndex(m);
+      checkScopedJointAxisMimicValues(model, "model", _errors);
+    }
+    checkScopedJointAxisMimicValues(world, "world", _errors);
   }
 }
 

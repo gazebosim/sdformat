@@ -60,6 +60,20 @@ TEST(SDFParser, CustomElements)
   auto customAttrInt = link1Element->Get<int>("mysim:custom_attr_int");
   EXPECT_EQ(5, customAttrInt);
 
+  // Check empty attribute in link L2
+  const sdf::Link *link2 = model->LinkByName("L2");
+  ASSERT_TRUE(link2 != nullptr);
+  sdf::ElementPtr link2Element = link2->Element();
+  ASSERT_TRUE(link2Element != nullptr);
+  EXPECT_TRUE(link2Element->HasAttribute("mysim:empty_attr"));
+  auto emptyAttrStr = link2Element->Get<std::string>("mysim:empty_attr");
+  EXPECT_EQ("", emptyAttrStr);
+
+  // Ensure that mysim:empty_attr appears when calling ToString("")
+  auto rootToString = link2Element->ToString("");
+  EXPECT_NE(std::string::npos, rootToString.find("mysim:empty_attr=''"))
+    << rootToString;
+
   // Use of sdf::Model::Element() to obtain an sdf::ElementPtr object
   sdf::ElementPtr modelElement = model->Element();
 
@@ -125,7 +139,7 @@ TEST(SDFParser, ReloadCustomElements)
   ASSERT_NE(nullptr, customElem2);
 
   const std::string customElemStr =
-R"(<mysim:transmission name='simple_trans'>
+R"(<mysim:transmission name='simple_trans' mysim:attr='custom_attribute'>
   <mysim:type>transmission_interface/SimpleTransmission</mysim:type>
   <mysim:joint name='J1'>
     <mysim:hardwareInterface>EffortJointInterface</mysim:hardwareInterface>

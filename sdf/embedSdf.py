@@ -8,12 +8,13 @@ from typing import List, Optional
 import argparse
 import inspect
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 # The list of supported SDF specification versions. This will let us drop
 # versions without removing the directories.
 SUPPORTED_SDF_VERSIONS = [
+    "1.11",
     "1.10",
     "1.9",
     "1.8",
@@ -27,7 +28,7 @@ SUPPORTED_SDF_VERSIONS = [
 
 # The list of supported SDF conversions. This list includes versions that
 # a user can convert an existing SDF version to.
-SUPPORTED_SDF_CONVERSIONS = ["1.10", "1.9", "1.8", "1.7", "1.6", "1.5", "1.4", "1.3"]
+SUPPORTED_SDF_CONVERSIONS = ["1.11", "1.10", "1.9", "1.8", "1.7", "1.6", "1.5", "1.4", "1.3"]
 
 # whitespace indentation for C++ code
 INDENTATION = "  "
@@ -164,7 +165,9 @@ def generate_map_content(paths: List[Path], relative_to: Optional[str] = None) -
             if relative_to is not None:
                 _, relative_path = str(path).split(relative_to)
                 path = relative_path
-            content.append(embed_sdf_content(str(path), file_content))
+            # dir separator is hardcoded to '/' in C++ mapping
+            posix_path = PurePosixPath(path)
+            content.append(embed_sdf_content(str(posix_path), file_content))
     return ",".join(content)
 
 

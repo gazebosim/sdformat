@@ -17,6 +17,9 @@
 #ifndef SDF_SPHERE_HH_
 #define SDF_SPHERE_HH_
 
+#include <optional>
+
+#include <gz/math/Inertial.hh>
 #include <gz/math/Sphere.hh>
 #include <gz/utils/ImplPtr.hh>
 
@@ -64,6 +67,14 @@ namespace sdf
     /// \return SDF element pointer. The value will be nullptr if Load has
     /// not been called.
     public: sdf::ElementPtr Element() const;
+
+    /// \brief Calculate and return the Inertial values for the Sphere. In
+    /// order to calculate the inertial properties, the function mutates the
+    /// object by updating its material properties.
+    /// \param[in] _density Density of the sphere in kg/m^3
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald>
+            CalculateInertial(double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// sphere.

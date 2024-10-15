@@ -74,8 +74,8 @@ foreach(FIL ${sdfs})
 
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.xsd"
-    COMMAND ${RUBY} ${CMAKE_SOURCE_DIR}/tools/xmlschema.rb
-    ARGS -s ${CMAKE_CURRENT_SOURCE_DIR} -i ${ABS_FIL} -o ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/xmlschema.py
+    ARGS --sdf-dir ${CMAKE_CURRENT_SOURCE_DIR} --input-file ${ABS_FIL} --output-dir ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${ABS_FIL}
     COMMENT "Running xml schema compiler on ${FIL}"
     VERBATIM)
@@ -85,5 +85,5 @@ add_custom_target(schema1_9 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
 
-install(FILES 1_8.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat${PROJECT_VERSION_MAJOR}/1.9)
-install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat${PROJECT_VERSION_MAJOR}/1.9)
+install(FILES 1_8.convert ${sdfs} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sdformat${PROJECT_VERSION_MAJOR}/1.9)
+install(FILES ${SDF_SCHEMA} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sdformat${PROJECT_VERSION_MAJOR}/1.9)

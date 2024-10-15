@@ -1981,7 +1981,7 @@ TEST(inertial_stats, SDF)
 
   // Check a good SDF file from the same folder by passing a relative path
   {
-    const auto path = "inertial_stats.sdf";
+    std::string path = "inertial_stats_auto.sdf";
     const auto pathBase = sdf::testing::TestFile("sdf");
 
     std::string output =

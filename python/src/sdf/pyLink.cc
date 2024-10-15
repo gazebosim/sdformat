@@ -41,6 +41,16 @@ void defineLink(pybind11::object module)
   pybind11::class_<sdf::Link>(module, "Link")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Link>())
+    .def("resolve_auto_inertials", &sdf::Link::ResolveAutoInertials,
+         "Calculate & set inertial values for the link")
+    .def("auto_inertia", &sdf::Link::AutoInertia,
+         "Check if the automatic calculation for the link inertial is enabled or not.")
+    .def("set_auto_inertia", &sdf::Link::SetAutoInertia,
+         "Enable automatic inertial calculations by setting autoInertia to true")
+    .def("auto_inertia_saved", &sdf::Link::AutoInertiaSaved,
+         "Check if the inertial values for this link were saved.")
+    .def("set_auto_inertia_saved", &sdf::Link::SetAutoInertiaSaved,
+         "Set the autoInertiaSaved() values")
     .def("name", &sdf::Link::Name,
          "Get the name of the link.")
     .def("set_name", &sdf::Link::SetName,

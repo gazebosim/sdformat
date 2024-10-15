@@ -3,5 +3,4 @@ build
 build_*
 *.*.sw?
 .vscode
-
 __pycache__

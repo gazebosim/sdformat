@@ -34,10 +34,10 @@
 constexpr const int kNumCallbacks = 13;
 
 constexpr const char* kMeshUri =
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/mesh.dae";
+  "https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/mesh.dae";
 
 constexpr const char* kHeightmapUri =
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/heightmap.png";  // NOLINT
+  "https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/heightmap.png";  // NOLINT
 
 constexpr const char* kCubemapUri = "dummyUri";
 
@@ -45,10 +45,10 @@ constexpr const char* kMaterialScriptUri =
   "file://media/materials/scripts/gazebo.material";
 
 constexpr const char* kDiffuseUri =
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/diffuse0.png";  // NOLINT
+  "https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/diffuse0.png";  // NOLINT
 
 constexpr const char* kNormalUri =
-  "https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/normal0.png";  // NOLINT
+  "https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/normal0.png";  // NOLINT
 
 /////////////////////////////////////////////////
 TEST(ResolveURIs, StoreResolvedDisabled)

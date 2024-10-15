@@ -18,6 +18,7 @@
 #define SDF_LINK_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <gz/math/Inertial.hh>
 #include <gz/math/Pose3.hh>
@@ -27,6 +28,8 @@
 #include "sdf/Types.hh"
 #include "sdf/sdf_config.h"
 #include "sdf/system_util.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Error.hh"
 
 namespace sdf
 {
@@ -76,6 +79,27 @@ namespace sdf
     /// The name of a link must be unique within the scope of a Model.
     /// \param[in] _name Name of the link.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the density of the inertial if it has been set.
+    /// \return Density of the inertial if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<double> Density() const;
+
+    /// \brief Set the density of the inertial.
+    /// \param[in] _density Density of the inertial.
+    public: void SetDensity(double _density);
+
+    /// \brief Get the ElementPtr to the <auto_inertia_params> element
+    /// This element can be used as a parent element to hold user-defined
+    /// params for the custom moment of inertia calculator.
+    /// \return ElementPtr object for the <auto_inertia_params> element.
+    public: sdf::ElementPtr AutoInertiaParams() const;
+
+    /// \brief Function to set the auto inertia params using a
+    /// sdf ElementPtr object
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
+    /// element
+    public: void SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get the number of visuals.
     /// \return Number of visuals contained in this Link object.
@@ -326,6 +350,16 @@ namespace sdf
     public: Errors ResolveInertial(gz::math::Inertiald &_inertial,
                                    const std::string &_resolveTo = "") const;
 
+    /// \brief Calculate & set inertial values(mass, mass matrix
+    /// & inertial pose) for the link. Inertial values can be provided
+    /// by the user through the SDF or can be calculated automatically
+    /// by setting the auto attribute to true.
+    /// \param[out] _errors A vector of Errors object. Each object
+    /// would contain an error code and an error message.
+    /// \param[in] _config Custom parser configuration
+    public: void ResolveAutoInertials(sdf::Errors &_errors,
+                                    const ParserConfig &_config);
+
     /// \brief Get the pose of the link. This is the pose of the link
     /// as specified in SDF (<link> <pose> ... </pose></link>).
     /// \return The pose of the link.
@@ -389,6 +423,32 @@ namespace sdf
     /// \param[in] _enableGravity True or false depending on whether the link
     /// should be subject to gravity.
     public: void SetEnableGravity(bool _enableGravity);
+
+    /// \brief Check if the automatic calculation for the link inertial
+    /// is enabled or not.
+    /// \return True if automatic calculation is enabled. This can be done
+    /// setting the auto attribute of the <inertial> element of the link to
+    /// true or by setting the autoInertia member to true
+    /// using SetAutoInertia().
+    public: bool AutoInertia() const;
+
+    /// \brief Enable automatic inertial calculations by setting autoInertia
+    /// to true.
+    /// \param[in] _autoInertia True or False
+    public: void SetAutoInertia(bool _autoInertia);
+
+    /// \brief Check if the inertial values for this link were saved.
+    /// If true, the inertial values for this link wont be calculated
+    /// when CalculateInertial() is called. This value is set to true
+    /// when CalculateInertial() is called with SAVE_CALCULATION
+    /// configuration.
+    /// \return True if CalculateInertial() was called with SAVE_CALCULATION
+    /// configuration, false otherwise.
+    public: bool AutoInertiaSaved() const;
+
+    /// \brief Set the autoInertiaSaved() values
+    /// \param[in] _autoInertiaSaved True or False
+    public: void SetAutoInertiaSaved(bool _autoInertiaSaved);
 
     /// \brief Add a collision to the link.
     /// \param[in] _collision Collision to add.

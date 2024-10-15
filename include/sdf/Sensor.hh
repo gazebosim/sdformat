@@ -49,7 +49,7 @@ namespace sdf
 
   /// \enum SensorType
   /// \brief The set of sensor types.
-  // Developer note: Make sure to update sensorTypeStrs in the source file
+  // Developer note: Make sure to update kSensorTypeStrs in the source file
   // when changing this enum.
   enum class SensorType
   {

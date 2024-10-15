@@ -31,6 +31,8 @@
 #include "sdf/Sensor.hh"
 #include "sdf/Types.hh"
 #include "sdf/Visual.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Element.hh"
 
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
@@ -67,6 +69,13 @@ class sdf::Link::Implementation
   /// \brief The projectors specified in this link.
   public: std::vector<Projector> projectors;
 
+  /// \brief Density of the inertial which will be used for auto-inertial
+  /// calculations if the collision density has not been set.
+  public: std::optional<double> density;
+
+  /// \brief SDF element pointer to <auto_inertia_params> tag
+  public: sdf::ElementPtr autoInertiaParams{nullptr};
+
   /// \brief The inertial information for this link.
   public: gz::math::Inertiald inertial {{1.0,
             gz::math::Vector3d::One, gz::math::Vector3d::Zero},
@@ -80,6 +89,13 @@ class sdf::Link::Implementation
 
   /// \brief True if this link should be subject to gravity, false otherwise.
   public: bool enableGravity = true;
+
+  /// \brief True if automatic caluclation for the link inertial is enabled
+  public: bool autoInertia = false;
+
+  /// \brief This variable is used to track whether the inertia values for
+  /// link was saved in CalculateInertial()
+  public: bool autoInertiaSaved = false;
 
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
@@ -174,23 +190,58 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
   {
     sdf::ElementPtr inertialElem = _sdf->GetElement("inertial");
 
-    if (inertialElem->HasElement("pose"))
-      loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
-
-    // Get the mass.
-    mass = inertialElem->Get<double>("mass", 1.0).first;
-
-    if (inertialElem->HasElement("inertia"))
+    if (inertialElem->HasElement("density"))
     {
-      sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+      this->dataPtr->density = inertialElem->Get<double>("density");
+    }
 
-      xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
-      xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
-      xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
+    // Load the auto_inertia_params element
+    if (inertialElem->HasElement("auto_inertia_params"))
+    {
+      this->dataPtr->autoInertiaParams =
+        inertialElem->GetElement("auto_inertia_params");
+    }
 
-      xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
-      xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
-      xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+    if (inertialElem->Get<bool>("auto"))
+    {
+      this->dataPtr->autoInertia = true;
+      // If auto is to true but user has still provided
+      // inertial values
+      if (inertialElem->HasElement("pose") ||
+          inertialElem->HasElement("mass") ||
+          inertialElem->HasElement("inertia"))
+      {
+        Error err(
+          ErrorCode::WARNING,
+          "Inertial was used with auto=true for the link named " +
+          this->dataPtr->name + ", but user-defined inertial values were "
+          "found, which will be overwritten by the computed inertial values."
+        );
+        enforceConfigurablePolicyCondition(
+          _config.WarningsPolicy(), err, errors);
+      }
+    }
+    // If auto is set to false or not specified
+    else
+    {
+      if (inertialElem->HasElement("pose"))
+        loadPose(inertialElem->GetElement("pose"), inertiaPose, inertiaFrame);
+
+      // Get the mass.
+      mass = inertialElem->Get<double>("mass", 1.0).first;
+
+      if (inertialElem->HasElement("inertia"))
+      {
+        sdf::ElementPtr inertiaElem = inertialElem->GetElement("inertia");
+
+        xxyyzz.X(inertiaElem->Get<double>("ixx", 1.0).first);
+        xxyyzz.Y(inertiaElem->Get<double>("iyy", 1.0).first);
+        xxyyzz.Z(inertiaElem->Get<double>("izz", 1.0).first);
+
+        xyxzyz.X(inertiaElem->Get<double>("ixy", 0.0).first);
+        xyxzyz.Y(inertiaElem->Get<double>("ixz", 0.0).first);
+        xyxzyz.Z(inertiaElem->Get<double>("iyz", 0.0).first);
+      }
     }
 
     if (inertialElem->HasElement("fluid_added_mass"))
@@ -249,6 +300,7 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       }
     }
   }
+
   if (!this->dataPtr->inertial.SetMassMatrix(
       gz::math::MassMatrix3d(mass, xxyyzz, xyxzyz)))
   {
@@ -280,6 +332,30 @@ std::string Link::Name() const
 void Link::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
+}
+
+/////////////////////////////////////////////////
+std::optional<double> Link::Density() const
+{
+  return this->dataPtr->density;
+}
+
+/////////////////////////////////////////////////
+void Link::SetDensity(double _density)
+{
+  this->dataPtr->density = _density;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr Link::AutoInertiaParams() const
+{
+  return this->dataPtr->autoInertiaParams;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertiaParams(const sdf::ElementPtr _autoInertiaParams)
+{
+  this->dataPtr->autoInertiaParams = _autoInertiaParams;
 }
 
 /////////////////////////////////////////////////
@@ -570,6 +646,54 @@ Errors Link::ResolveInertial(
 }
 
 /////////////////////////////////////////////////
+void Link::ResolveAutoInertials(sdf::Errors &_errors,
+  const ParserConfig &_config)
+{
+  // If inertial calculations is set to automatic & the inertial values for the
+  // link was not saved previously
+  if (this->dataPtr->autoInertia && !this->dataPtr->autoInertiaSaved)
+  {
+    // Return an error if auto is set to true but there are no
+    // collision elements in the link
+    if (this->dataPtr->collisions.empty())
+    {
+      _errors.push_back({ErrorCode::ELEMENT_MISSING,
+                        "Inertial is set to auto but there are no "
+                        "<collision> elements for the link named " +
+                        this->Name() + "."});
+      return;
+    }
+
+    gz::math::Inertiald totalInertia;
+
+    for (sdf::Collision &collision : this->dataPtr->collisions)
+    {
+      gz::math::Inertiald collisionInertia;
+      collision.CalculateInertial(_errors, collisionInertia, _config,
+                                  this->dataPtr->density,
+                                  this->dataPtr->autoInertiaParams);
+      totalInertia = totalInertia + collisionInertia;
+    }
+
+    this->dataPtr->inertial = totalInertia;
+
+    // If CalculateInertial() was called with SAVE_CALCULATION
+    // configuration then set autoInertiaSaved to true
+    if (_config.CalculateInertialConfiguration() ==
+      ConfigureResolveAutoInertials::SAVE_CALCULATION)
+    {
+      this->dataPtr->autoInertiaSaved = true;
+    }
+  }
+  // If auto is false, this means inertial values were set
+  // from user given values in Link::Load(), therefore we can return
+  else
+  {
+    return;
+  }
+}
+
+/////////////////////////////////////////////////
 const gz::math::Pose3d &Link::RawPose() const
 {
   return this->dataPtr->pose;
@@ -735,6 +859,30 @@ void Link::SetEnableGravity(bool _enableGravity)
   this->dataPtr->enableGravity = _enableGravity;
 }
 
+/////////////////////////////////////////////////
+bool Link::AutoInertia() const
+{
+  return this->dataPtr->autoInertia;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertia(bool _autoInertia)
+{
+  this->dataPtr->autoInertia = _autoInertia;
+}
+
+/////////////////////////////////////////////////
+bool Link::AutoInertiaSaved() const
+{
+  return this->dataPtr->autoInertiaSaved;
+}
+
+/////////////////////////////////////////////////
+void Link::SetAutoInertiaSaved(bool _autoInertiaSaved)
+{
+  this->dataPtr->autoInertiaSaved = _autoInertiaSaved;
+}
+
 //////////////////////////////////////////////////
 bool Link::AddCollision(const Collision &_collision)
 {
@@ -856,6 +1004,11 @@ sdf::ElementPtr Link::ToElement() const
   inertiaElem->GetElement("iyy")->Set(massMatrix.Iyy());
   inertiaElem->GetElement("iyz")->Set(massMatrix.Iyz());
   inertiaElem->GetElement("izz")->Set(massMatrix.Izz());
+
+  if (this->dataPtr->density.has_value())
+  {
+    inertialElem->GetElement("density")->Set(*this->dataPtr->density);
+  }
 
   if (this->dataPtr->inertial.FluidAddedMass().has_value())
   {

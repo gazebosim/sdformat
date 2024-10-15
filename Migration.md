@@ -12,6 +12,31 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 13.x to 14.x
+
+### Additions
+
+1. **New SDFormat specification version 1.11**
+    + Details about the 1.10 to 1.11 transition are explained below in this same
+      document
+
+### Modifications
+
+1. The default camera lens intrinsics skew value in the Camera DOM class changed
+   from `1` to `0` to match the SDF specification.
+
+1. World class only renames frames with name collisions if original file version
+   is 1.6 or earlier. Name collisions in newer files will cause `DUPLICATE_NAME`
+   errors, which now matches the behavior of the Model class.
+
+1. Python is now required to build libsdformat instead of Ruby.
+
+1. **sdf/ParserConfig.hh** The following new functions were added to support automatic calculation of moments of inertia.
+    + ConfigureResolveAutoInertials CalculateInertialConfiguration() const
+    + void SetCalculateInertialConfiguration(ConfigureResolveAutoInertials)
+    + void RegisterCustomInertiaCalc(CustomInertiaCalculator)
+    + const CustomInertiaCalculator &CustomInertiaCalc() const
+
 ## libsdformat 12.x to 13.x
 
 ### Additions
@@ -24,7 +49,7 @@ but with improved human-readability..
 
 1. ParserConfig defaults to WARN instead of LOG when parsing unrecognized
    elements.
-2. Updated search order for `sdf::findFile()` making local path (current directory) the first to be searched. 
+2. Updated search order for `sdf::findFile()` making local path (current directory) the first to be searched.
 
 ### Deprecations
 
@@ -553,6 +578,36 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 1. **Lump:: prefix in link names**
     + Changed to `_fixed_joint_lump__` to avoid confusion with scoped names
     + [BitBucket pull request 245](https://osrf-migration.github.io/sdformat-gh-pages/#!/osrf/sdformat/pull-requests/245)
+
+## SDFormat specification 1.10 to 1.11
+
+### Additions
+
+1. **mimic.sdf**, **joint.sdf**: a mimic tag can be added to `//joint/axis` and
+    `//joint/axis2` to specify a linear relationship between the position of two
+    joint axes according to the following equation:
+    `follower_position = multiplier * (leader_position - reference) + offset`.
+    The joint axis containing the mimic tag is the follwer and the leader is
+    specified using the `@joint` and `@axis` attributes.
+    + `//mimic/@joint`: name of joint containing the leader axis.
+    + `//mimic/@axis`: name of the leader axis. Only valid values are "axis" or "axis2".
+    + `//mimic/multiplier`: parameter representing ratio between changes in follower axis position relative to changes in leader axis position.
+    + `//mimic/offset`: parameter representing offset to follower position.
+    + `//mimic/reference`: parameter representing reference for leader position before applying the multiplier.
+
+1. **inertial.sdf**: A new attribute `//inertial/@auto` has been added
+   to specify whether the moment of inertia of a link should be calculated
+   automatically. In addition, the following elements have been added:
+   + `//inertial/density`: Common mass density of all collision geometries.
+   + `//inertial/auto_inertia_params`: Container for custom parameters passed
+     to the moment of inertia calculator.
+
+1. **collision.sdf**: A new element `//collision/density` has been added
+   to specify the density of a material for automatic calculation of the moment
+   of inertia of the parent link. This parameter overrides the value in
+   `//inertial/density` of the parent link if specified. In addition,
+   `//collision/auto_inertia_params` can be used to override
+   `//inertial/auto_inertia_params` of the parent link.
 
 ## SDFormat specification 1.9 to 1.10
 

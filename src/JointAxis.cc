@@ -31,6 +31,29 @@
 
 using namespace sdf;
 
+/////////////////////////////////////////////////
+class sdf::MimicConstraint::Implementation
+{
+  /// \brief The name of the joint to be mimicked, i.e. the leader joint.
+  public: std::string joint;
+
+  /// \brief The name of the axis to be mimicked (either "axis" or "axis2"),
+  /// i.e. the leader axis.
+  public: std::string axis;
+
+  /// \brief Multiplication factor to be applied to parent joint's pose.
+  public: double multiplier;
+
+  /// \brief Offset to be added to parent joint's position after
+  /// multiplication.
+  public: double offset;
+
+  /// \brief Position of the parent joint will be measured with
+  /// respect to this reference point.
+  public: double reference;
+};
+
+/////////////////////////////////////////////////
 class sdf::JointAxis::Implementation
 {
   /// \brief Represents the x,y,z components of the axis unit vector.
@@ -84,7 +107,85 @@ class sdf::JointAxis::Implementation
 
   /// \brief Scoped Pose Relative-To graph at the parent model scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseRelativeToGraph;
+
+  /// \brief Joint to be mimicked.
+  public: std::optional<MimicConstraint> mimic = std::nullopt;
 };
+
+/////////////////////////////////////////////////
+void MimicConstraint::SetJoint(const std::string &_joint)
+{
+  this->dataPtr->joint = _joint;
+}
+
+/////////////////////////////////////////////////
+const std::string &MimicConstraint::Joint() const
+{
+  return this->dataPtr->joint;
+}
+
+/////////////////////////////////////////////////
+void MimicConstraint::SetAxis(const std::string &_axis)
+{
+  this->dataPtr->axis = _axis;
+}
+
+/////////////////////////////////////////////////
+const std::string &MimicConstraint::Axis() const
+{
+  return this->dataPtr->axis;
+}
+
+/////////////////////////////////////////////////
+void MimicConstraint::SetMultiplier(double _multiplier)
+{
+  this->dataPtr->multiplier = _multiplier;
+}
+
+/////////////////////////////////////////////////
+double MimicConstraint::Multiplier() const
+{
+  return this->dataPtr->multiplier;
+}
+
+/////////////////////////////////////////////////
+void MimicConstraint::SetOffset(double _offset)
+{
+  this->dataPtr->offset = _offset;
+}
+
+/////////////////////////////////////////////////
+double MimicConstraint::Offset() const
+{
+  return this->dataPtr->offset;
+}
+
+/////////////////////////////////////////////////
+void MimicConstraint::SetReference(double _reference)
+{
+  this->dataPtr->reference = _reference;
+}
+
+/////////////////////////////////////////////////
+double MimicConstraint::Reference() const
+{
+  return this->dataPtr->reference;
+}
+
+/////////////////////////////////////////////////
+MimicConstraint::MimicConstraint(const std::string &_joint,
+                                 const std::string &_axis,
+                                 double _multiplier,
+                                 double _offset,
+                                 double _reference)
+  : dataPtr(gz::utils::MakeImpl<Implementation>())
+{
+  this->SetJoint(_joint);
+  this->SetAxis(_axis);
+  this->SetMultiplier(_multiplier);
+  this->SetOffset(_offset);
+  this->SetReference(_reference);
+}
 
 /////////////////////////////////////////////////
 JointAxis::JointAxis()
@@ -148,6 +249,25 @@ Errors JointAxis::Load(ElementPtr _sdf)
         "dissipation", this->dataPtr->dissipation).first;
   }
 
+  // Load mimic joint details if provided.
+  auto mimicElement = _sdf->FindElement("mimic");
+  if (mimicElement)
+  {
+    auto newMimic = MimicConstraint();
+    newMimic.SetJoint(mimicElement->Get<std::string>(
+        errors, "joint", "").first);
+    newMimic.SetAxis(mimicElement->Get<std::string>(
+        errors, "axis", "").first);
+    newMimic.SetMultiplier(mimicElement->Get<double>(
+        errors, "multiplier", 0).first);
+    newMimic.SetOffset(mimicElement->Get<double>(
+        errors, "offset", 0).first);
+    newMimic.SetReference(mimicElement->Get<double>(
+        errors, "reference", 0).first);
+
+    this->dataPtr->mimic = std::make_optional<MimicConstraint>(newMimic);
+  }
+
   return errors;
 }
 
@@ -168,6 +288,19 @@ sdf::Errors JointAxis::SetXyz(const gz::math::Vector3d &_xyz)
   this->dataPtr->xyz = _xyz;
   this->dataPtr->xyz.Normalize();
   return sdf::Errors();
+}
+
+/////////////////////////////////////////////////
+void JointAxis::SetMimic(const MimicConstraint
+    &_mimic)
+{
+  this->dataPtr->mimic = std::make_optional(_mimic);
+}
+
+/////////////////////////////////////////////////
+std::optional<MimicConstraint> JointAxis::Mimic() const
+{
+  return this->dataPtr->mimic;
 }
 
 /////////////////////////////////////////////////
@@ -415,5 +548,21 @@ sdf::ElementPtr JointAxis::ToElement(sdf::Errors &_errors,
       _errors, this->Stiffness());
   limitElem->GetElement("dissipation", _errors)->Set<double>(
       _errors, this->Dissipation());
+
+  if (this->dataPtr->mimic)
+  {
+    sdf::ElementPtr mimicElement = axisElem->GetElement("mimic", _errors);
+    mimicElement->GetAttribute("joint")->SetFromString(
+        this->dataPtr->mimic->Joint(), _errors);
+    mimicElement->GetAttribute("axis")->SetFromString(
+        this->dataPtr->mimic->Axis(), _errors);
+    mimicElement->GetElement("multiplier", _errors)->Set<double>(
+        _errors, this->dataPtr->mimic->Multiplier());
+    mimicElement->GetElement("offset", _errors)->Set<double>(
+        _errors, this->dataPtr->mimic->Offset());
+    mimicElement->GetElement("reference", _errors)->Set<double>(
+        _errors, this->dataPtr->mimic->Reference());
+  }
+
   return axisElem;
 }

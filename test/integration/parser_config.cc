@@ -50,10 +50,10 @@ TEST(ParserConfig, GlobalConfig)
 
   ASSERT_TRUE(sdf::ParserConfig::GlobalConfig().FindFileCallback());
   EXPECT_EQ("test/dir2",
-      sdf::ParserConfig::GlobalConfig().FindFileCallback()("empty"));
+      sdf::ParserConfig::GlobalConfig().FindFileCallback()("should_not_exist"));
   // sdf::findFile requires explicitly enabling callbacks
-  EXPECT_EQ("test/dir2", sdf::findFile("empty", false, true));
-  EXPECT_EQ("test/dir2", sdf::findFile("empty", true, true));
+  EXPECT_EQ("test/dir2", sdf::findFile("should_not_exist", false, true));
+  EXPECT_EQ("test/dir2", sdf::findFile("should_not_exist", true, true));
 }
 
 /////////////////////////////////////////////////
@@ -81,9 +81,10 @@ TEST(ParserConfig, NonGlobalConfig)
   EXPECT_EQ(it->second.front(), testDir);
 
   ASSERT_TRUE(config.FindFileCallback());
-  EXPECT_EQ("test/dir2", config.FindFileCallback()("empty"));
-  EXPECT_EQ("test/dir2", sdf::findFile("empty", false, true, config));
-  EXPECT_EQ("test/dir2", sdf::findFile("empty", true, true, config));
+  EXPECT_EQ("test/dir2", config.FindFileCallback()("should_not_exist"));
+  EXPECT_EQ("test/dir2",
+      sdf::findFile("should_not_exist", false, true, config));
+  EXPECT_EQ("test/dir2", sdf::findFile("should_not_exist", true, true, config));
 
   EXPECT_TRUE(sdf::ParserConfig::GlobalConfig().URIPathMap().empty());
   EXPECT_FALSE(sdf::ParserConfig::GlobalConfig().FindFileCallback());

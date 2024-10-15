@@ -17,9 +17,11 @@
 
 #include <optional>
 
+#include <gz/math/Inertial.hh>
 #include "sdf/Geometry.hh"
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Heightmap.hh"
@@ -28,6 +30,9 @@
 #include "sdf/Plane.hh"
 #include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/Element.hh"
+#include "sdf/Types.hh"
+#include "sdf/Error.hh"
 
 #include "Utils.hh"
 
@@ -44,6 +49,9 @@ class sdf::Geometry::Implementation
 
   /// \brief Optional capsule.
   public: std::optional<Capsule> capsule;
+
+  /// \brief Optional cone.
+  public: std::optional<Cone> cone;
 
   /// \brief Optional cylinder.
   public: std::optional<Cylinder> cylinder;
@@ -121,6 +129,14 @@ Errors Geometry::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->dataPtr->capsule.emplace();
     Errors err = this->dataPtr->capsule->Load(
         _sdf->GetElement("capsule", errors));
+    errors.insert(errors.end(), err.begin(), err.end());
+  }
+  else if (_sdf->HasElement("cone"))
+  {
+    this->dataPtr->type = GeometryType::CONE;
+    this->dataPtr->cone.emplace();
+    Errors err = this->dataPtr->cone->Load(
+        _sdf->GetElement("cone", errors));
     errors.insert(errors.end(), err.begin(), err.end());
   }
   else if (_sdf->HasElement("cylinder"))
@@ -237,6 +253,18 @@ void Geometry::SetCapsuleShape(const Capsule &_capsule)
 }
 
 /////////////////////////////////////////////////
+const Cone *Geometry::ConeShape() const
+{
+  return optionalToPointer(this->dataPtr->cone);
+}
+
+/////////////////////////////////////////////////
+void Geometry::SetConeShape(const Cone &_cone)
+{
+  this->dataPtr->cone = _cone;
+}
+
+/////////////////////////////////////////////////
 const Cylinder *Geometry::CylinderShape() const
 {
   return optionalToPointer(this->dataPtr->cylinder);
@@ -309,6 +337,55 @@ void Geometry::SetPolylineShape(const std::vector<Polyline> &_polylines)
 }
 
 /////////////////////////////////////////////////
+std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
+  sdf::Errors &_errors, const ParserConfig &_config,
+  double _density, sdf::ElementPtr _autoInertiaParams)
+{
+  std::optional<gz::math::Inertiald> geomInertial;
+
+  switch (this->dataPtr->type)
+  {
+    case GeometryType::BOX:
+      geomInertial = this->dataPtr->box->CalculateInertial(_density);
+      break;
+    case GeometryType::CAPSULE:
+      geomInertial = this->dataPtr->capsule->CalculateInertial(_density);
+      break;
+    case GeometryType::CONE:
+      geomInertial = this->dataPtr->cone->CalculateInertial(_density);
+      break;
+    case GeometryType::CYLINDER:
+      geomInertial = this->dataPtr->cylinder->CalculateInertial(_density);
+      break;
+    case GeometryType::ELLIPSOID:
+      geomInertial = this->dataPtr->ellipsoid->CalculateInertial(_density);
+      break;
+    case GeometryType::SPHERE:
+      geomInertial = this->dataPtr->sphere->CalculateInertial(_density);
+      break;
+    case GeometryType::MESH:
+      geomInertial =
+        this->dataPtr->mesh->CalculateInertial(_errors, _density,
+                                              _autoInertiaParams,
+                                              _config);
+      break;
+    default:
+      Error invalidGeomTypeErr(
+        ErrorCode::WARNING,
+        "Automatic inertia calculations are not supported for the given"
+        " Geometry type. "
+      );
+      enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), invalidGeomTypeErr, _errors
+      );
+      geomInertial = std::nullopt;
+      break;
+  }
+
+  return geomInertial;
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Geometry::Element() const
 {
   return this->dataPtr->sdf;
@@ -333,6 +410,9 @@ sdf::ElementPtr Geometry::ToElement(sdf::Errors &_errors) const
   {
     case GeometryType::BOX:
       elem->InsertElement(this->dataPtr->box->ToElement(_errors), true);
+      break;
+    case GeometryType::CONE:
+      elem->InsertElement(this->dataPtr->cone->ToElement(_errors), true);
       break;
     case GeometryType::CYLINDER:
       elem->InsertElement(this->dataPtr->cylinder->ToElement(_errors), true);

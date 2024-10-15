@@ -17,8 +17,11 @@
 #ifndef SDF_BOX_HH_
 #define SDF_BOX_HH_
 
+#include <optional>
+
 #include <gz/math/Box.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -64,6 +67,14 @@ namespace sdf
     /// \brief Get a mutable Gazebo Math representation of this Box.
     /// \return A reference to a gz::math::Boxd object.
     public: gz::math::Boxd &Shape();
+
+    /// \brief Calculate and return the Inertial values for the Box. In order
+    /// to calculate the inertial properties, the function mutates the object
+    /// by updating its material properties.
+    /// \param[in] _density Density of the box in kg/m^3
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald>
+            CalculateInertial(double _density);
 
     /// \brief Create and return an SDF element filled with data from this
     /// box.

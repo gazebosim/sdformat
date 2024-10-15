@@ -359,7 +359,7 @@ TEST(ErrorOutput, WorldErrorOutput)
     "model with name[common_name] already exists."));
   EXPECT_NE(std::string::npos, errors[2].Message().find(
     "Frame with name [common_name] in world with name [test_world] has a name"
-    " collision, changing frame name to [common_name_frame]."));
+    " collision. Please rename this frame."));
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }

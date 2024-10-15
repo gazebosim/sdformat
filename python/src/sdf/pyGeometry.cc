@@ -17,14 +17,17 @@
 #include "pyGeometry.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/ParserConfig.hh"
 
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Heightmap.hh"
 #include "sdf/Mesh.hh"
 #include "sdf/Plane.hh"
 #include "sdf/Sphere.hh"
@@ -45,6 +48,8 @@ void defineGeometry(pybind11::object module)
   geometryModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Geometry>())
+    .def("calculate_inertial", &sdf::Geometry::CalculateInertial,
+         "Calculate and return the Mass Matrix values for the Geometry")
     .def("type", &sdf::Geometry::Type,
          "Get the type of geometry.")
     .def("set_type", &sdf::Geometry::SetType,
@@ -61,6 +66,12 @@ void defineGeometry(pybind11::object module)
          "geometry is not a capsule.")
     .def("set_capsule_shape", &sdf::Geometry::SetCapsuleShape,
          "Set the capsule shape.")
+    .def("cone_shape", &sdf::Geometry::ConeShape,
+         pybind11::return_value_policy::reference,
+         "Get the cone geometry, or None if the contained "
+         "geometry is not a cone.")
+    .def("set_cone_shape", &sdf::Geometry::SetConeShape,
+         "Set the cone shape.")
     .def("cylinder_shape", &sdf::Geometry::CylinderShape,
          pybind11::return_value_policy::reference,
          "Get the cylinder geometry, or None if the contained "
@@ -91,6 +102,11 @@ void defineGeometry(pybind11::object module)
          "geometry is not a mesh.")
     .def("set_mesh_shape", &sdf::Geometry::SetMeshShape,
          "Set the mesh shape.")
+    .def("set_heightmap_shape", &sdf::Geometry::SetHeightmapShape,
+         "Set the heightmap shape.")
+    .def("heightmap_shape", &sdf::Geometry::HeightmapShape,
+          pybind11::return_value_policy::reference,
+          "Get the heightmap geometry.")
     .def("__copy__", [](const sdf::Geometry &self) {
       return sdf::Geometry(self);
     })
@@ -101,6 +117,7 @@ void defineGeometry(pybind11::object module)
     pybind11::enum_<sdf::GeometryType>(module, "GeometryType")
       .value("EMPTY", sdf::GeometryType::EMPTY)
       .value("BOX", sdf::GeometryType::BOX)
+      .value("CONE", sdf::GeometryType::CONE)
       .value("CYLINDER", sdf::GeometryType::CYLINDER)
       .value("PLANE", sdf::GeometryType::PLANE)
       .value("SPHERE", sdf::GeometryType::SPHERE)

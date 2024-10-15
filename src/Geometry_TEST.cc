@@ -14,10 +14,11 @@
  * limitations under the License.
  *
 */
-
+#include <optional>
 #include <gtest/gtest.h>
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/Geometry.hh"
@@ -26,7 +27,15 @@
 #include "sdf/Plane.hh"
 #include "sdf/Polyline.hh"
 #include "sdf/Sphere.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
+#include "sdf/Element.hh"
+#include "sdf/CustomInertiaCalcProperties.hh"
 #include "test_utils.hh"
+#include <gz/math/Inertial.hh>
+#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMGeometry, Construction)
@@ -40,6 +49,9 @@ TEST(DOMGeometry, Construction)
 
   geom.SetType(sdf::GeometryType::CAPSULE);
   EXPECT_EQ(sdf::GeometryType::CAPSULE, geom.Type());
+
+  geom.SetType(sdf::GeometryType::CONE);
+  EXPECT_EQ(sdf::GeometryType::CONE, geom.Type());
 
   geom.SetType(sdf::GeometryType::CYLINDER);
   EXPECT_EQ(sdf::GeometryType::CYLINDER, geom.Type());
@@ -196,6 +208,23 @@ TEST(DOMGeometry, Capsule)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGeometry, Cone)
+{
+  sdf::Geometry geom;
+  geom.SetType(sdf::GeometryType::CONE);
+
+  sdf::Cone coneShape;
+  coneShape.SetRadius(0.123);
+  coneShape.SetLength(4.56);
+  geom.SetConeShape(coneShape);
+
+  EXPECT_EQ(sdf::GeometryType::CONE, geom.Type());
+  EXPECT_NE(nullptr, geom.ConeShape());
+  EXPECT_DOUBLE_EQ(0.123, geom.ConeShape()->Radius());
+  EXPECT_DOUBLE_EQ(4.56, geom.ConeShape()->Length());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGeometry, Cylinder)
 {
   sdf::Geometry geom;
@@ -299,6 +328,272 @@ TEST(DOMGeometry, Polyline)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMGeometry, CalculateInertial)
+{
+  sdf::Geometry geom;
+
+  // Density of Aluminimum
+  const double density = 2170.0;
+  double expectedMass;
+  gz::math::MassMatrix3d expectedMassMat;
+  gz::math::Inertiald expectedInertial;
+  sdf::ParserConfig sdfParserConfig;
+  sdf::ElementPtr autoInertiaParams;
+  sdf::Errors errors;
+
+  // Not supported geom type
+  {
+    geom.SetType(sdf::GeometryType::EMPTY);
+    auto notSupportedInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+    ASSERT_EQ(notSupportedInertial, std::nullopt);
+  }
+
+  // Box
+  {
+    sdf::Box box;
+    const double l = 2;
+    const double w = 2;
+    const double h = 2;
+    box.SetSize(gz::math::Vector3d(l, w, h));
+
+    expectedMass = box.Shape().Volume() * density;
+    double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+    double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+    double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixx, iyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::BOX);
+    geom.SetBoxShape(box);
+    auto boxInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    ASSERT_NE(std::nullopt, boxInertial);
+    EXPECT_EQ(expectedInertial, *boxInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), boxInertial->Pose());
+  }
+
+  // Capsule
+  {
+    sdf::Capsule capsule;
+    const double l = 2.0;
+    const double r = 0.1;
+    capsule.SetLength(l);
+    capsule.SetRadius(r);
+
+    expectedMass = capsule.Shape().Volume() * density;
+    const double cylinderVolume = GZ_PI * r*r * l;
+    const double sphereVolume = GZ_PI * 4. / 3. * r*r*r;
+    const double volume = cylinderVolume + sphereVolume;
+    const double cylinderMass = expectedMass * cylinderVolume / volume;
+    const double sphereMass = expectedMass * sphereVolume / volume;
+    double ixxIyy = (1/12.0) * cylinderMass * (3*r*r + l*l)
+      + sphereMass * (0.4*r*r + 0.375*r*l + 0.25*l*l);
+    double izz = r*r * (0.5 * cylinderMass + 0.4 * sphereMass);
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixxIyy, ixxIyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::CAPSULE);
+    geom.SetCapsuleShape(capsule);
+    auto capsuleInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    ASSERT_NE(std::nullopt, capsuleInertial);
+    EXPECT_EQ(expectedInertial, *capsuleInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), capsuleInertial->Pose());
+  }
+
+  // Cone
+  {
+    sdf::Cone cone;
+    const double l = 2.0;
+    const double r = 0.1;
+
+    cone.SetLength(l);
+    cone.SetRadius(r);
+
+    expectedMass = cone.Shape().Volume() * density;
+    double ixxIyy = (3 / 80.0) * expectedMass * (4 * r * r + l * l);
+    double izz = 3.0 * expectedMass * r * r / 10.0;
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixxIyy, ixxIyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d({0, 0, -l / 4.0, 0, 0, 0}));
+
+    geom.SetType(sdf::GeometryType::CONE);
+    geom.SetConeShape(cone);
+    auto coneInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    ASSERT_NE(std::nullopt, coneInertial);
+    EXPECT_EQ(expectedInertial, *coneInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), coneInertial->Pose());
+  }
+
+  // Cylinder
+  {
+    sdf::Cylinder cylinder;
+    const double l = 2.0;
+    const double r = 0.1;
+
+    cylinder.SetLength(l);
+    cylinder.SetRadius(r);
+
+    expectedMass = cylinder.Shape().Volume() * density;
+    double ixxIyy = (1/12.0) * expectedMass * (3*r*r + l*l);
+    double izz = 0.5 * expectedMass * r * r;
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixxIyy, ixxIyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::CYLINDER);
+    geom.SetCylinderShape(cylinder);
+    auto cylinderInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    ASSERT_NE(std::nullopt, cylinderInertial);
+    EXPECT_EQ(expectedInertial, *cylinderInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), cylinderInertial->Pose());
+  }
+
+  // Ellipsoid
+  {
+    sdf::Ellipsoid ellipsoid;
+
+    const double a = 1.0;
+    const double b = 10.0;
+    const double c = 100.0;
+
+    ellipsoid.SetRadii(gz::math::Vector3d(a, b, c));
+
+    expectedMass = ellipsoid.Shape().Volume() * density;
+    double ixx = (expectedMass / 5.0) * (b*b + c*c);
+    double iyy = (expectedMass / 5.0) * (a*a + c*c);
+    double izz = (expectedMass / 5.0) * (a*a + b*b);
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(gz::math::Vector3d(ixx, iyy, izz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::ELLIPSOID);
+    geom.SetEllipsoidShape(ellipsoid);
+    auto ellipsoidInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    ASSERT_NE(std::nullopt, ellipsoidInertial);
+    EXPECT_EQ(expectedInertial, *ellipsoidInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), ellipsoidInertial->Pose());
+  }
+
+  // Sphere
+  {
+    sdf::Sphere sphere;
+    const double r = 0.1;
+
+    sphere.SetRadius(r);
+
+    expectedMass = sphere.Shape().Volume() * density;
+    double ixxIyyIzz = 0.4 * expectedMass * r * r;
+
+    expectedMassMat.SetMass(expectedMass);
+    expectedMassMat.SetDiagonalMoments(
+      gz::math::Vector3d(ixxIyyIzz, ixxIyyIzz, ixxIyyIzz));
+    expectedMassMat.SetOffDiagonalMoments(gz::math::Vector3d::Zero);
+
+    expectedInertial.SetMassMatrix(expectedMassMat);
+    expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+    geom.SetType(sdf::GeometryType::SPHERE);
+    geom.SetSphereShape(sphere);
+    auto sphereInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    ASSERT_NE(std::nullopt, sphereInertial);
+    EXPECT_EQ(expectedInertial, *sphereInertial);
+    EXPECT_EQ(expectedInertial.MassMatrix(), expectedMassMat);
+    EXPECT_EQ(expectedInertial.Pose(), sphereInertial->Pose());
+  }
+
+  // Mesh
+  {
+    sdf::Mesh mesh;
+    sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+    sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+
+    // Test Lambda function for registering as custom inertia calculator
+    auto customMeshInertiaCalculator = [](
+      sdf::Errors &_errors,
+      const sdf::CustomInertiaCalcProperties &_inertiaProps
+    ) -> std::optional<gz::math::Inertiald>
+    {
+      if (_inertiaProps.Density() <= 0)
+      {
+        _errors.push_back(
+          {sdf::ErrorCode::LINK_INERTIA_INVALID,
+          "Inertia is invalid"});
+        return std::nullopt;
+      }
+
+      gz::math::Inertiald meshInerial;
+
+      meshInerial.SetMassMatrix(
+        gz::math::MassMatrix3d(
+          1.0,
+          gz::math::Vector3d::One,
+          gz::math::Vector3d::Zero
+        )
+      );
+
+      return meshInerial;
+    };
+
+    // Register the lambda function as Custom Inertia Calculator
+    sdfParserConfig.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+    // File Path needs to be considered as a valid mesh
+    mesh.SetFilePath("/some_path");
+
+    geom.SetType(sdf::GeometryType::MESH);
+    geom.SetMeshShape(mesh);
+
+    auto meshInertial = geom.CalculateInertial(errors,
+      sdfParserConfig, density, autoInertiaParams);
+
+    EXPECT_TRUE(errors.empty());
+    EXPECT_DOUBLE_EQ(meshInertial->MassMatrix().Mass(), 1.0);
+    EXPECT_EQ(meshInertial->MassMatrix().DiagonalMoments(),
+      gz::math::Vector3d::One);
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(DOMGeometry, ToElement)
 {
   // Box
@@ -318,6 +613,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_NE(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -344,6 +640,34 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_NE(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Cone
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::CONE);
+    sdf::Cone cone;
+    geom.SetConeShape(cone);
+
+    sdf::ElementPtr elem = geom.ToElement();
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    geom2.Load(elem);
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_NE(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -370,6 +694,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_NE(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -396,6 +721,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_NE(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -422,6 +748,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_NE(nullptr, geom2.SphereShape());
@@ -448,6 +775,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -474,6 +802,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -500,6 +829,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -526,6 +856,7 @@ TEST(DOMGeometry, ToElement)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -573,6 +904,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_NE(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -601,6 +933,36 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_NE(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
+    EXPECT_EQ(nullptr, geom2.CylinderShape());
+    EXPECT_EQ(nullptr, geom2.EllipsoidShape());
+    EXPECT_EQ(nullptr, geom2.SphereShape());
+    EXPECT_EQ(nullptr, geom2.PlaneShape());
+    EXPECT_EQ(nullptr, geom2.MeshShape());
+    EXPECT_EQ(nullptr, geom2.HeightmapShape());
+    EXPECT_TRUE(geom2.PolylineShape().empty());
+  }
+
+  // Cone
+  {
+    sdf::Geometry geom;
+
+    geom.SetType(sdf::GeometryType::CONE);
+    sdf::Cone cone;
+    geom.SetConeShape(cone);
+
+    sdf::ElementPtr elem = geom.ToElement(errors);
+    EXPECT_TRUE(errors.empty());
+    ASSERT_NE(nullptr, elem);
+
+    sdf::Geometry geom2;
+    errors = geom2.Load(elem);
+    EXPECT_TRUE(errors.empty());
+
+    EXPECT_EQ(geom.Type(), geom2.Type());
+    EXPECT_EQ(nullptr, geom2.BoxShape());
+    EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_NE(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -629,6 +991,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_NE(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -657,6 +1020,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_NE(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -685,6 +1049,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_NE(nullptr, geom2.SphereShape());
@@ -713,6 +1078,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -745,6 +1111,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -777,6 +1144,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());
@@ -805,6 +1173,7 @@ TEST(DOMGeometry, ToElementErrorOutput)
     EXPECT_EQ(geom.Type(), geom2.Type());
     EXPECT_EQ(nullptr, geom2.BoxShape());
     EXPECT_EQ(nullptr, geom2.CapsuleShape());
+    EXPECT_EQ(nullptr, geom2.ConeShape());
     EXPECT_EQ(nullptr, geom2.CylinderShape());
     EXPECT_EQ(nullptr, geom2.EllipsoidShape());
     EXPECT_EQ(nullptr, geom2.SphereShape());

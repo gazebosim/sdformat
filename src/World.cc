@@ -18,6 +18,7 @@
 #include <unordered_set>
 #include <vector>
 #include <optional>
+#include <gz/math/SemanticVersion.hh>
 #include <gz/math/Vector3.hh>
 
 #include "sdf/Actor.hh"
@@ -135,6 +136,7 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   Errors errors;
 
   this->dataPtr->sdf = _sdf;
+  gz::math::SemanticVersion sdfVersion(_sdf->OriginalVersion());
 
   // Check that the provided SDF element is a <world>
   // This is an error that cannot be recovered, so return an error.
@@ -327,21 +329,35 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     std::string frameName = frame.Name();
     if (implicitFrameNames.count(frameName) > 0)
     {
-      frameName += "_frame";
-      int i = 0;
-      while (implicitFrameNames.count(frameName) > 0)
+      // This frame has a name collision
+      if (sdfVersion < gz::math::SemanticVersion(1, 7))
       {
-        frameName = frame.Name() + "_frame" + std::to_string(i++);
+        // This came from an old file, so try to workaround by renaming frame
+        frameName += "_frame";
+        int i = 0;
+        while (implicitFrameNames.count(frameName) > 0)
+        {
+          frameName = frame.Name() + "_frame" + std::to_string(i++);
+        }
+        std::stringstream ss;
+        ss << "Frame with name [" << frame.Name() << "] "
+           << "in world with name [" << this->Name() << "] "
+           << "has a name collision, changing frame name to ["
+           << frameName << "].";
+        Error err(ErrorCode::WARNING, ss.str());
+        enforceConfigurablePolicyCondition(
+            _config.WarningsPolicy(), err, errors);
+
+        frame.SetName(frameName);
       }
-      std::stringstream ss;
-      ss << "Frame with name [" << frame.Name() << "] "
-          << "in world with name [" << this->Name() << "] "
-          << "has a name collision, changing frame name to ["
-          << frameName << "].\n";
-      Error err(ErrorCode::WARNING, ss.str());
-      enforceConfigurablePolicyCondition(
-          _config.WarningsPolicy(), err, errors);
-      frame.SetName(frameName);
+      else
+      {
+        std::stringstream ss;
+        ss << "Frame with name [" << frame.Name() << "] "
+           << "in world with name [" << this->Name() << "] "
+           << "has a name collision. Please rename this frame.";
+        errors.push_back({ErrorCode::DUPLICATE_NAME, ss.str()});
+      }
     }
     implicitFrameNames.insert(frameName);
   }
@@ -854,6 +870,17 @@ const NestedInclude *World::InterfaceModelNestedIncludeByIndex(
   if (_index < this->dataPtr->interfaceModels.size())
     return &this->dataPtr->interfaceModels[_index].first;
   return nullptr;
+}
+
+/////////////////////////////////////////////////
+void World::ResolveAutoInertials(sdf::Errors &_errors,
+                              const ParserConfig &_config)
+{
+  // Call ResolveAutoInertials() function for all the models
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    model.ResolveAutoInertials(_errors, _config);
+  }
 }
 
 /////////////////////////////////////////////////

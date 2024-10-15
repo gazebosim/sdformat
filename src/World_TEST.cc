@@ -19,13 +19,19 @@
 #include <gz/math/Color.hh>
 #include <gz/math/SphericalCoordinates.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/math/MassMatrix3.hh>
+#include <gz/math/Inertial.hh>
+#include <gz/math/Pose3.hh>
 #include "sdf/Frame.hh"
 #include "sdf/Light.hh"
 #include "sdf/Actor.hh"
 #include "sdf/Model.hh"
+#include "sdf/Link.hh"
+#include "sdf/Types.hh"
 #include "sdf/Physics.hh"
 #include "sdf/Root.hh"
 #include "sdf/World.hh"
+#include "sdf/Collision.hh"
 
 /////////////////////////////////////////////////
 TEST(DOMWorld, Construction)
@@ -522,6 +528,63 @@ TEST(DOMWorld, AddLight)
   const sdf::Light *lightFromWorld = world.LightByIndex(0);
   ASSERT_NE(nullptr, lightFromWorld);
   EXPECT_EQ(lightFromWorld->Name(), light.Name());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMWorld, ResolveAutoInertials)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "  <world name='inertial_test_world'>"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  "  </world>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::World *world = root.WorldByIndex(0);
+  const sdf::Model *model = world->ModelByIndex(0);
+  const sdf::Link *link = model->LinkByIndex(0);
+
+  root.ResolveAutoInertials(errors, sdfParserConfig);
+
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
+
+  double expectedMass = l*w*h * 1240.0;
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  ASSERT_TRUE(errors.empty());
+  EXPECT_EQ(expectedInertial, link->Inertial());
 }
 
 /////////////////////////////////////////////////

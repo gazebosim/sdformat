@@ -32,6 +32,51 @@ inline namespace SDF_VERSION_NAMESPACE {
 namespace python
 {
 /////////////////////////////////////////////////
+void defineMimicConstraint(pybind11::object module)
+{
+  pybind11::class_<sdf::MimicConstraint>(module, "MimicConstraint")
+    .def(pybind11::init<>())
+    .def(pybind11::init<const std::string &,
+                        const std::string &,
+                        double,
+                        double,
+                        double>())
+    .def(pybind11::init<sdf::MimicConstraint>())
+    .def("set_joint", &sdf::MimicConstraint::SetJoint,
+         "Set the name of the joint containing the leader axis.")
+    .def("set_axis", &sdf::MimicConstraint::SetAxis,
+         "Set the leader axis name, either \"axis\" or \"axis2\".")
+    .def("set_multiplier", &sdf::MimicConstraint::SetMultiplier,
+         "Set the multiplier parameter, which represents the ratio "
+         "between changes in the follower position relative to changes in the "
+         "leader position.")
+    .def("set_offset", &sdf::MimicConstraint::SetOffset,
+         "Set the offset to the follower position in the linear constraint.")
+    .def("set_reference", &sdf::MimicConstraint::SetReference,
+         "Set the reference for the leader position before applying the "
+         "multiplier in the linear constraint.")
+    .def("joint", &sdf::MimicConstraint::Joint,
+         "Retrieve the name of the leader joint.")
+    .def("axis", &sdf::MimicConstraint::Axis,
+         "Retrieve the name of the leader axis, either \"axis\" or \"axis2\".")
+    .def("multiplier", &sdf::MimicConstraint::Multiplier,
+         "Retrieve the multiplier parameter, which represents the ratio "
+         "between changes in the follower position relative to changes in the "
+         "leader position.")
+    .def("offset", &sdf::MimicConstraint::Offset,
+         "Retrieve the offset to the follower position in the linear constraint.")
+    .def("reference", &sdf::MimicConstraint::Reference,
+         "Retrieve the reference for the leader position before applying the "
+         "multiplier in the linear constraint.")
+    .def("__copy__", [](const sdf::MimicConstraint &self) {
+      return sdf::MimicConstraint(self);
+    })
+    .def("__deepcopy__", [](const sdf::MimicConstraint &self, pybind11::dict) {
+      return sdf::MimicConstraint(self);
+    }, "memo"_a);
+}
+
+/////////////////////////////////////////////////
 void defineJointAxis(pybind11::object module)
 {
   pybind11::class_<sdf::JointAxis>(module, "JointAxis")
@@ -44,6 +89,12 @@ void defineJointAxis(pybind11::object module)
            ThrowIfErrors(self.SetXyz(_xyz));
          },
          "Set the x,y,z components of the axis unit vector.")
+    .def("set_mimic", &sdf::JointAxis::SetMimic,
+         "Set the Mimic constraint parameters.")
+    .def("mimic", &sdf::JointAxis::Mimic,
+         "Get a MimicConstraint object containing the leader joint "
+         "and axis names names, multiplier, offset, and reference to be used "
+         "for mimicking.")
     .def("damping", &sdf::JointAxis::Damping,
          "Get the physical velocity dependent viscous damping coefficient "
          "of the joint axis. The default value is zero (0.0).")

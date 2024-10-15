@@ -1,0 +1,233 @@
+<!-- Inertial -->
+<element name="inertial" required="0">
+  <description>
+    The link's mass, position of its center of mass, its central inertia
+    properties, and optionally its fluid added mass.
+  </description>
+
+  <attribute name="auto" type="bool" default="false" required="0">
+    <description>
+      Set to true if you want automatic computation for the moments of inertia (ixx, iyy, izz) 
+      and products of inertia(ixy, iyz, ixz). Default value is false.
+    </description>
+  </attribute>
+
+  <element name="mass" type="double" default="1.0" required="0">
+    <description>The mass of the link.</description>
+  </element>
+
+  <element name="density" type="double" default="1000.0" required="0">
+    <description>
+      Mass Density of the collision geometry. 
+      This is used to determine mass and inertia values during automatic calculation.
+      This density value would be overwritten by the density value in collision.
+      Default is the density of water 1000 kg/m^3.
+    </description>
+  </element>
+
+  <element name="auto_inertia_params" required="0">
+    <description>
+      Parent tag to hold user-defined custom params for mesh inertia calculator
+      The elements used under this would be overwritten by the elements in auto_inertia_params
+      in collision.
+    </description>
+  </element>
+
+  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
+    <description>
+      This pose (translation, rotation) describes the position and orientation
+      of the link's center-of-mass-frame C relative to the link-frame L.
+      The first three components (x y z) specify the position vector from Lo
+      (the link-frame origin) to Co (the link's center of mass) as
+      `x L̂x + y L̂y + z L̂ᴢ`, where L̂x, L̂y, L̂ᴢ are link-frame L's orthogonal unit
+      vectors. The subsequent values characterize C's orientation relative to
+      link-frame L as a sequence of Euler rotations
+      (r p y) documented in http://sdformat.org/tutorials?tut=specify_pose,
+      or as a quaternion (x y z w), where w is the scalar component.
+    </description>
+
+    <attribute name="rotation_format" type="string" default="euler_rpy" required="0">
+      <description>'euler_rpy' by default. Supported rotation formats are
+        'euler_rpy', Euler angles representation in roll, pitch, yaw. The pose is expected to have 6 values.
+        'quat_xyzw', Quaternion representation in x, y, z, w. The pose is expected to have 7 values.
+      </description>
+    </attribute>
+
+    <attribute name="degrees" type="bool" default="false" required="0">
+      <description>
+        Whether or not the euler angles are in degrees, otherwise they will be interpreted as radians by default.
+      </description>
+    </attribute>
+
+  </element>
+
+  <element name="inertia" required="0">
+    <description>
+      This link's moments of inertia ixx, iyy, izz and products of inertia
+      ixy, ixz, iyz about Co (the link's center of mass) for the unit vectors
+      Ĉx, Ĉy, Ĉᴢ fixed in the center-of-mass-frame C.
+      Note: the orientation of Ĉx, Ĉy, Ĉᴢ relative to L̂x, L̂y, L̂ᴢ is specified
+      by the `pose` tag.
+      To avoid compatibility issues associated with the negative sign
+      convention for product of inertia, align Ĉx, Ĉy, Ĉᴢ with principal
+      inertia directions so that all the products of inertia are zero.
+      For more information about this sign convention, see the following
+      MathWorks documentation for working with CAD tools:
+      https://www.mathworks.com/help/releases/R2021b/physmod/sm/ug/specify-custom-inertia.html#mw_b043ec69-835b-4ca9-8769-af2e6f1b190c
+    </description>
+    <element name="ixx" type="double" default="1.0" required="1">
+      <description>
+        The link's moment of inertia about Co (the link's center of mass) for Ĉx.
+      </description>
+    </element>
+    <element name="ixy" type="double" default="0.0" required="1">
+      <description>
+        The link's product of inertia about Co (the link's center of mass) for
+        Ĉx and Ĉy, where the product of inertia convention -m x y  (not +m x y)
+        is used. If Ĉx or Ĉy is a principal inertia direction, ixy = 0.
+      </description>
+    </element>
+    <element name="ixz" type="double" default="0.0" required="1">
+      <description>
+        The link's product of inertia about Co (the link's center of mass) for
+        Ĉx and Ĉz, where the product of inertia convention -m x z  (not +m x z)
+        is used. If Ĉx or Ĉz is a principal inertia direction, ixz = 0.
+      </description>
+    </element>
+    <element name="iyy" type="double" default="1.0" required="1">
+      <description>
+        The link's moment of inertia about Co (the link's center of mass) for Ĉy.
+      </description>
+    </element>
+    <element name="iyz" type="double" default="0.0" required="1">
+      <description>
+        The link's product of inertia about Co (the link's center of mass) for
+        Ĉy and Ĉz, where the product of inertia convention -m y z  (not +m y z)
+        is used. If Ĉy or Ĉz is a principal inertia direction, iyz = 0.
+      </description>
+    </element>
+    <element name="izz" type="double" default="1.0" required="1">
+      <description>
+        The link's moment of inertia about Co (the link's center of mass) for Ĉz.
+      </description>
+    </element>
+  </element> <!-- End Inertia -->
+
+  <element name="fluid_added_mass" required="0">
+    <description>
+      This link's fluid added mass matrix about the link's origin.
+      This matrix represents the inertia of the fluid that is dislocated when the
+      body moves. Added mass should be zero if the density of the surrounding
+      fluid is negligible with respect to the body's density.
+      The 6x6 matrix is symmetric, therefore only 21 unique elements can be set.
+      The elements of the matrix follow the [x, y, z, p, q, r] notation, where
+      [x, y, z] correspond to translation and [p, q, r] to rotation
+      (i.e. roll, pitch, yaw).
+    </description>
+    <element name="xx" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to linear acceleration in the X axis, in kg.
+      </description>
+    </element>
+    <element name="xy" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to linear acceleration in the Y axis, and vice-versa, in kg.
+      </description>
+    </element>
+    <element name="xz" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to linear acceleration in the Z axis, and vice-versa, in kg.
+      </description>
+    </element>
+    <element name="xp" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to angular acceleration about the X axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="xq" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to angular acceleration about the Y axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="xr" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the X axis due to angular acceleration about the Z axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="yy" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to linear acceleration in the Y axis, in kg.
+      </description>
+    </element>
+    <element name="yz" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to linear acceleration in the Z axis, and vice-versa, in kg.
+      </description>
+    </element>
+    <element name="yp" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to angular acceleration about the X axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="yq" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to angular acceleration about the Y axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="yr" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Y axis due to angular acceleration about the Z axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="zz" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to linear acceleration in the Z axis, in kg.
+      </description>
+    </element>
+    <element name="zp" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to angular acceleration about the X axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="zq" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to angular acceleration about the Y axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="zr" type="double" default="0.0" required="0">
+      <description>
+        Added mass in the Z axis due to angular acceleration about the Z axis, and vice-versa, in kg * m.
+      </description>
+    </element>
+    <element name="pp" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the X axis due to angular acceleration about the X axis, in kg * m^2.
+      </description>
+    </element>
+    <element name="pq" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the X axis due to angular acceleration about the Y axis, and vice-versa, in kg * m^2.
+      </description>
+    </element>
+    <element name="pr" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the X axis due to angular acceleration about the Z axis, and vice-versa, in kg * m^2.
+      </description>
+    </element>
+    <element name="qq" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the Y axis due to angular acceleration about the Y axis, in kg * m^2.
+      </description>
+    </element>
+    <element name="qr" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the Y axis due to angular acceleration about the Z axis, and vice-versa, in kg * m^2.
+      </description>
+    </element>
+    <element name="rr" type="double" default="0.0" required="0">
+      <description>
+        Added mass moment about the Z axis due to angular acceleration about the Z axis, in kg * m^2.
+      </description>
+    </element>
+  </element> <!-- End fluid added mass -->
+</element> <!-- End Inertial -->

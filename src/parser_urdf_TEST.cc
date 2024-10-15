@@ -100,8 +100,8 @@ TEST(URDFParser, ParseResults_BasicModel_ParseEqualToModel)
 
   // SDF -> SDF
   std::ostringstream stream;
-  // parser_urdf.cc exports version "1.7"
-  stream << "<sdf version='" << "1.7" << "'>"
+  // parser_urdf.cc exports version "1.11"
+  stream << "<sdf version='" << "1.11" << "'>"
          << "  <model name='test_robot' />"
          << "</sdf>";
   tinyxml2::XMLDocument sdf_doc;
@@ -890,7 +890,7 @@ TEST(URDFParser, CheckJointTransform)
     << "  </link>"
     << "</robot>";
 
-  std::string expectedSdf = R"(<sdf version="1.7">
+  std::string expectedSdf = R"(<sdf version="1.11">
     <model name="test_robot">
         <joint type="fixed" name="jointw_1">
             <pose relative_to="__model__">0 0 0 0 0 0</pose>

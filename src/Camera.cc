@@ -15,6 +15,8 @@
  *
 */
 #include <array>
+#include <string_view>
+
 #include "sdf/Camera.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -23,7 +25,7 @@ using namespace sdf;
 
 /// \brief String names for the pixel formats.
 /// \sa Image::PixelFormat.
-static std::array<std::string, 19> kPixelFormatNames =
+constexpr std::array<const std::string_view, 19> kPixelFormatNames =
 {
   "UNKNOWN_PIXEL_FORMAT",
   "L_INT8",
@@ -206,7 +208,7 @@ class sdf::Camera::Implementation
   public: double lensProjectionTy{0.0};
 
   /// \brief lens instrinsics s.
-  public: double lensIntrinsicsS{1.0};
+  public: double lensIntrinsicsS{0.0};
 
   /// \brief True if this camera has custom intrinsics values
   public: bool hasIntrinsics = false;
@@ -1146,9 +1148,9 @@ std::string Camera::ConvertPixelFormat(PixelFormatType _type)
 {
   unsigned int index = static_cast<int>(_type);
   if (index < kPixelFormatNames.size())
-    return kPixelFormatNames[static_cast<int>(_type)];
+    return std::string(kPixelFormatNames[static_cast<int>(_type)]);
 
-  return kPixelFormatNames[0];
+  return std::string(kPixelFormatNames[0]);
 }
 
 /////////////////////////////////////////////////

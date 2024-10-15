@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!-- Since sdformat itself doesn't have an moment of inertia calculator for meshes, this file is not expected to load without errors -->
+<sdf version='1.11'>
+  <model name='test_model'>
+    <link name='L1'>
+      <inertial auto='true'/>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>box.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>
+

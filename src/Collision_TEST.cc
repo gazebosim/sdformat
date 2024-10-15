@@ -18,8 +18,18 @@
 #include <gtest/gtest.h>
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/Box.hh"
+#include "sdf/Model.hh"
+#include "sdf/Link.hh"
 #include "sdf/Surface.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
+#include "sdf/Root.hh"
 #include "test_utils.hh"
+#include <gz/math/Inertial.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/MassMatrix3.hh>
 
 /////////////////////////////////////////////////
 TEST(DOMcollision, Construction)
@@ -27,6 +37,8 @@ TEST(DOMcollision, Construction)
   sdf::Collision collision;
   EXPECT_EQ(nullptr, collision.Element());
   EXPECT_TRUE(collision.Name().empty());
+  EXPECT_EQ(collision.Density(), 1000.0);
+  EXPECT_EQ(collision.DensityDefault(), 1000.0);
 
   collision.SetName("test_collison");
   EXPECT_EQ(collision.Name(), "test_collison");
@@ -41,6 +53,18 @@ TEST(DOMcollision, Construction)
     // expect errors when trying to resolve pose
     EXPECT_FALSE(semanticPose.Resolve(pose).empty());
   }
+
+  EXPECT_EQ(collision.Density(), 1000.0);
+  collision.SetDensity(1240.0);
+  EXPECT_DOUBLE_EQ(collision.Density(), 1240.0);
+
+  EXPECT_EQ(collision.AutoInertiaParams(), nullptr);
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+  autoInertiaParamsElem->SetName("auto_inertia_params");
+  collision.SetAutoInertiaParams(autoInertiaParamsElem);
+  EXPECT_EQ(collision.AutoInertiaParams(), autoInertiaParamsElem);
+  EXPECT_EQ(collision.AutoInertiaParams()->GetName(),
+    autoInertiaParamsElem->GetName());
 
   collision.SetRawPose({-10, -20, -30, GZ_PI, GZ_PI, GZ_PI});
   EXPECT_EQ(gz::math::Pose3d(-10, -20, -30, GZ_PI, GZ_PI, GZ_PI),
@@ -60,6 +84,7 @@ TEST(DOMcollision, Construction)
   ASSERT_NE(nullptr, collision.Geom());
   EXPECT_EQ(sdf::GeometryType::EMPTY, collision.Geom()->Type());
   EXPECT_EQ(nullptr, collision.Geom()->BoxShape());
+  EXPECT_EQ(nullptr, collision.Geom()->ConeShape());
   EXPECT_EQ(nullptr, collision.Geom()->CylinderShape());
   EXPECT_EQ(nullptr, collision.Geom()->PlaneShape());
   EXPECT_EQ(nullptr, collision.Geom()->SphereShape());
@@ -171,6 +196,209 @@ TEST(DOMcollision, SetSurface)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
+{
+  sdf::Collision collision;
+  EXPECT_DOUBLE_EQ(1000.0, collision.Density());
+
+  sdf::ElementPtr sdf(new sdf::Element());
+  collision.Load(sdf);
+
+  gz::math::Inertiald collisionInertial;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Geometry geom;
+  sdf::Box box;
+
+  // Invalid Inertial test
+  box.SetSize(gz::math::Vector3d(-1, 1, 0));
+  geom.SetType(sdf::GeometryType::BOX);
+  geom.SetBoxShape(box);
+  collision.SetGeom(geom);
+
+  sdf::Errors errors;
+
+  collision.CalculateInertial(errors, collisionInertial,
+    sdfParserConfig);
+  ASSERT_FALSE(errors.empty());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CorrectBoxCollisionCalculateInertial)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+
+  sdf::Errors inertialErr;
+  root.ResolveAutoInertials(inertialErr, sdfParserConfig);
+
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
+
+  double expectedMass = l*w*h * collision->Density();
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  ASSERT_TRUE(inertialErr.empty());
+  EXPECT_DOUBLE_EQ(1240.0, collision->Density());
+  EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.MassMatrix(), link->Inertial().MassMatrix());
+  EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CalculateInertialWithAutoInertiaParamsElement)
+{
+  // This example considers a custom voxel-based inertia calculator
+  // <auto_inertial_params> element is used to provide properties
+  // for the custom calculator like voxel size, grid type, etc.
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <auto_inertia_params>"
+  "           <gz:voxel_size>0.01</gz:voxel_size>"
+  "           <gz:voxel_grid_type>float</gz:voxel_grid_type>"
+  "         </auto_inertia_params>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+
+  root.ResolveAutoInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+
+  sdf::ElementPtr autoInertiaParamsElem = collision->AutoInertiaParams();
+
+  // <auto_inertial_params> element is used as parent element for custom
+  // intertia calculator params. Custom elements have to be defined with a
+  // namespace prefix(gz in this case). More about this can be found in the
+  // following proposal:
+  // http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal&cat=pose_semantics_docs&
+  double voxelSize = autoInertiaParamsElem->Get<double>("gz:voxel_size");
+  std::string voxelGridType =
+    autoInertiaParamsElem->Get<std::string>("gz:voxel_grid_type");
+  EXPECT_EQ("float", voxelGridType);
+  EXPECT_DOUBLE_EQ(0.01, voxelSize);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <frame name='arbitrary_frame'>"
+  "       <pose>0 0 1 0 0 0</pose>"
+  "     </frame>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <pose relative_to='arbitrary_frame'>0 0 -1 0 0 0</pose>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  const sdf::Collision *collision = link->CollisionByIndex(0);
+
+  sdf::Errors inertialErr;
+  root.ResolveAutoInertials(inertialErr, sdfParserConfig);
+
+  const double l = 2;
+  const double w = 2;
+  const double h = 2;
+
+  double expectedMass = l*w*h * collision->Density();
+  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
+  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
+  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+
+  gz::math::MassMatrix3d expectedMassMat(
+    expectedMass,
+    gz::math::Vector3d(ixx, iyy, izz),
+    gz::math::Vector3d::Zero
+  );
+
+  gz::math::Inertiald expectedInertial;
+  expectedInertial.SetMassMatrix(expectedMassMat);
+  expectedInertial.SetPose(gz::math::Pose3d::Zero);
+
+  ASSERT_TRUE(inertialErr.empty());
+  EXPECT_DOUBLE_EQ(1240.0, collision->Density());
+  EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(expectedInertial.MassMatrix(), link->Inertial().MassMatrix());
+  EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMCollision, ToElement)
 {
   sdf::Collision collision;
@@ -194,6 +422,8 @@ TEST(DOMCollision, ToElement)
 
   sdf::ElementPtr elem = collision.ToElement();
   ASSERT_NE(nullptr, elem);
+  // Expect no density element
+  EXPECT_FALSE(elem->HasElement("density"));
 
   sdf::Collision collision2;
   collision2.Load(elem);
@@ -208,6 +438,19 @@ TEST(DOMCollision, ToElement)
   ASSERT_NE(nullptr, surface2->Friction());
   ASSERT_NE(nullptr, surface2->Friction()->ODE());
   EXPECT_DOUBLE_EQ(1.23, surface2->Friction()->ODE()->Mu());
+
+  // Now set density in collision
+  const double kDensity = 1234.5;
+  collision.SetDensity(kDensity);
+  sdf::ElementPtr elemWithDensity = collision.ToElement();
+  ASSERT_NE(nullptr, elemWithDensity);
+  // Expect density element
+  ASSERT_TRUE(elemWithDensity->HasElement("density"));
+  EXPECT_DOUBLE_EQ(kDensity, elemWithDensity->Get<double>("density"));
+
+  sdf::Collision collision3;
+  collision3.Load(elem);
+  EXPECT_DOUBLE_EQ(kDensity, collision.Density());
 }
 
 /////////////////////////////////////////////////

@@ -18,8 +18,12 @@
 #define SDF_MESH_HH_
 
 #include <string>
+#include <optional>
+
 #include <gz/math/Vector3.hh>
+#include <gz/math/Inertial.hh>
 #include <gz/utils/ImplPtr.hh>
+#include <sdf/CustomInertiaCalcProperties.hh>
 #include <sdf/Element.hh>
 #include <sdf/Error.hh>
 #include <sdf/sdf_config.h>
@@ -32,6 +36,59 @@ namespace sdf
 
   // Forward declarations.
   class ParserConfig;
+
+  /// \brief Mesh optimization method
+  enum class MeshOptimization
+  {
+    /// \brief No mesh optimization
+    NONE,
+    /// \brief Convex hull
+    CONVEX_HULL,
+    /// \brief Convex decomposition
+    CONVEX_DECOMPOSITION
+  };
+
+  /// \brief Convex decomposition
+  class SDFORMAT_VISIBLE ConvexDecomposition
+  {
+    /// \brief Default constructor
+    public: ConvexDecomposition();
+
+    /// \brief Load the contact based on a element pointer. This is *not* the
+    /// usual entry point. Typical usage of the SDF DOM is through the Root
+    /// object.
+    /// \param[in] _sdf The SDF Element pointer
+    /// \return Errors, which is a vector of Error objects. Each Error includes
+    /// an error code and message. An empty vector indicates no error.
+    public: Errors Load(ElementPtr _sdf);
+
+    /// \brief Get a pointer to the SDF element that was used during
+    /// load.
+    /// \return SDF element pointer. The value will be nullptr if Load has
+    /// not been called.
+    public: sdf::ElementPtr Element() const;
+
+    /// \brief Get the maximum number of convex hulls that can be generated.
+    /// \return Maximum number of convex hulls.
+    public: unsigned int MaxConvexHulls() const;
+
+    /// \brief Set the maximum number of convex hulls that can be generated.
+    /// \param[in] _maxConvexHulls Maximum number of convex hulls.
+    public: void SetMaxConvexHulls(unsigned int _maxConvexHulls);
+
+    /// Get the voxel resolution to use for representing the mesh. Applicable
+    /// only to voxel based convex decomposition methods.
+    /// \param[in] _voxelResolution Voxel resolution to use.
+    public: unsigned int VoxelResolution() const;
+
+    /// Set the voxel resolution to use for representing the mesh. Applicable
+    /// only to voxel based convex decomposition methods.
+    /// \param[in] _voxelResolution Voxel resolution to use.
+    public: void SetVoxelResolution(unsigned int _voxelResolution);
+
+    /// \brief Private data pointer.
+    GZ_UTILS_IMPL_PTR(dataPtr)
+  };
 
   /// \brief Mesh represents a mesh shape, and is usually accessed through a
   /// Geometry.
@@ -56,6 +113,37 @@ namespace sdf
     /// \return Errors, which is a vector of Error objects. Each Error includes
     /// an error code and message. An empty vector indicates no error.
     public: Errors Load(sdf::ElementPtr _sdf, const ParserConfig &_config);
+
+    /// \brief Get the mesh's optimization method
+    /// \return The mesh optimization method.
+    /// MeshOptimization::NONE if no mesh simplificaton is done.
+    public: MeshOptimization Optimization() const;
+
+    /// \brief Get the mesh's optimization method
+    /// \return The mesh optimization method.
+    /// Empty string if no mesh simplificaton is done.
+    public: std::string OptimizationStr() const;
+
+    /// \brief Set the mesh optimization method.
+    /// \param[in] _optimization The mesh optimization method.
+    public: void SetOptimization(MeshOptimization _optimization);
+
+    /// \brief Set the mesh optimization method.
+    /// \param[in] _optimization The mesh optimization method.
+    /// \return True if the _optimizationStr parameter matched a known
+    /// mesh optimization method. False if the mesh optimization method
+    /// could not be set.
+    public: bool SetOptimization(const std::string &_optimizationStr);
+
+    /// \brief Get the associated ConvexDecomposition object
+    /// \returns Pointer to the associated ConvexDecomposition object,
+    /// nullptr if the Mesh doesn't contain a ConvexDecomposition element.
+    public: const sdf::ConvexDecomposition *ConvexDecomposition() const;
+
+    /// \brief Set the associated ConvexDecomposition object.
+    /// \param[in] _convexDecomposition The ConvexDecomposition object.
+    public: void SetConvexDecomposition(
+        const sdf::ConvexDecomposition &_convexDecomposition);
 
     /// \brief Get the mesh's URI.
     /// \return The URI of the mesh data.
@@ -103,6 +191,20 @@ namespace sdf
     /// for more information.
     /// \param[in] _center True to center the submesh.
     public: void SetCenterSubmesh(const bool _center);
+
+    /// \brief Calculate and return the Inertial values for the Mesh
+    /// \param[out] _errors A vector of Errors object. Each object
+    /// would contain an error code and an error message.
+    /// \param[in] _density Density of the mesh in kg/m^3
+    /// \param[in] _autoInertiaParams ElementPtr to
+    /// <auto_inertia_params> element
+    /// \param[in] _config Parser Configuration
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald>
+            CalculateInertial(sdf::Errors &_errors,
+                              double _density,
+                              const sdf::ElementPtr _autoInertiaParams,
+                              const ParserConfig &_config);
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has

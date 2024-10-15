@@ -166,18 +166,38 @@ Errors Joint::Load(ElementPtr _sdf)
         "] was specified for both."});
   }
 
-  if (_sdf->HasElement("axis"))
+  // Map of follower axis name to dataPtr->axis[] array index
+  // The keys of this map are also the only valid leader axis names
+  const std::map<std::string, std::size_t>
+      followerAxisNames = {{"axis", 0}, {"axis2", 1}};
+  for (const auto &[followerAxis, i] : followerAxisNames)
   {
-    this->dataPtr->axis[0].emplace();
-    Errors axisErrors = this->dataPtr->axis[0]->Load(_sdf->GetElement("axis"));
-    errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
-  }
+    if (_sdf->HasElement(followerAxis))
+    {
+      auto &axis = this->dataPtr->axis[i].emplace();
+      Errors axisErrors = axis.Load(_sdf->GetElement(followerAxis));
+      errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
 
-  if (_sdf->HasElement("axis2"))
-  {
-    this->dataPtr->axis[1].emplace();
-    Errors axisErrors = this->dataPtr->axis[1]->Load(_sdf->GetElement("axis2"));
-    errors.insert(errors.end(), axisErrors.begin(), axisErrors.end());
+      if (axis.Mimic())
+      {
+        const auto leaderAxis = axis.Mimic()->Axis();
+        if (axis.Mimic()->Joint() == this->Name() &&
+            leaderAxis == followerAxis)
+        {
+          errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+            "Axis with name [" + followerAxis + "] in " +
+            "joint with name [" + this->dataPtr->name +
+            "] cannot mimic itself."});
+        }
+        if (followerAxisNames.find(leaderAxis) == followerAxisNames.end())
+        {
+          errors.push_back({ErrorCode::JOINT_AXIS_MIMIC_INVALID,
+            "Axis with name [" + followerAxis + "] in " +
+            "joint with name [" + this->dataPtr->name +
+            "] specified an invalid leader axis name [" + leaderAxis + "]."});
+        }
+      }
+    }
   }
 
   if (_sdf->HasElement("screw_thread_pitch"))

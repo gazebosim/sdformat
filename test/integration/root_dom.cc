@@ -300,3 +300,13 @@ TEST(DOMRoot, CreateMulipleWorlds)
   testFunc(root);
   testFunc(root2);
 }
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadWithoutMeshAutoInertialCalculator)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "mesh_auto_inertial.sdf");
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+}

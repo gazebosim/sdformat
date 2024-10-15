@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.6">
+<sdf version="1.11">
   <model name="shapes">
     <link name="link">
       <collision name="box_col">
@@ -62,6 +62,24 @@
             <radius>2.1</radius>
             <length>10.2</length>
           </capsule>
+        </geometry>
+      </visual>
+
+      <collision name="cone_col">
+        <geometry>
+          <cone>
+            <radius>0.2</radius>
+            <length>0.1</length>
+          </cone>
+        </geometry>
+      </collision>
+
+      <visual name="cone_vis">
+        <geometry>
+          <cone>
+            <radius>2.1</radius>
+            <length>10.2</length>
+          </cone>
         </geometry>
       </visual>
 
@@ -135,8 +153,12 @@
 
       <collision name="mesh_col">
         <geometry>
-          <mesh>
-            <uri>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/mesh.dae</uri>
+          <mesh optimization="convex_decomposition">
+            <convex_decomposition>
+              <max_convex_hulls>4</max_convex_hulls>
+              <voxel_resolution>400000</voxel_resolution>
+            </convex_decomposition>
+            <uri>https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/mesh.dae</uri>
             <submesh>
               <name>my_submesh</name>
               <center>true</center>
@@ -149,7 +171,7 @@
       <visual name="mesh_vis">
         <geometry>
           <mesh>
-            <uri>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/mesh.dae</uri>
+            <uri>https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/mesh.dae</uri>
             <submesh>
               <name>another_submesh</name>
               <center>false</center>
@@ -162,7 +184,7 @@
       <collision name="heightmap_col">
         <geometry>
           <heightmap>
-            <uri>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/heightmap.png</uri>
+            <uri>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/heightmap.png</uri>
             <size>500 500 100</size>
             <pos>1 2 3</pos>
           </heightmap>
@@ -172,12 +194,12 @@
       <visual name="heightmap_vis">
         <geometry>
           <heightmap>
-            <uri>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/heightmap.png</uri>
+            <uri>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/heightmap.png</uri>
             <size>500 500 100</size>
             <pos>1 2 3</pos>
             <texture>
-              <diffuse>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/diffuse0.png</diffuse>
-              <normal>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/normal0.png</normal>
+              <diffuse>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/diffuse0.png</diffuse>
+              <normal>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/normal0.png</normal>
               <size>5</size>
             </texture>
             <blend>
@@ -185,8 +207,8 @@
               <fade_dist>5</fade_dist>
             </blend>
             <texture>
-              <diffuse>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/diffuse1.png</diffuse>
-              <normal>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/normal1.png</normal>
+              <diffuse>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/diffuse1.png</diffuse>
+              <normal>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/normal1.png</normal>
               <size>10</size>
             </texture>
             <blend>
@@ -194,8 +216,8 @@
               <fade_dist>10</fade_dist>
             </blend>
             <texture>
-              <diffuse>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/diffuse2.png</diffuse>
-              <normal>https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/materials/textures/normal2.png</normal>
+              <diffuse>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/diffuse2.png</diffuse>
+              <normal>https://fuel.gazebosim.org/1.0/an_org/models/a_model/materials/textures/normal2.png</normal>
               <size>20</size>
             </texture>
           </heightmap>

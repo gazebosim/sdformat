@@ -1,0 +1,9 @@
+<element name="capsule" required="0">
+  <description>Capsule shape</description>
+  <element name="radius" type="double" default="0.5" required="1">
+    <description>Radius of the capsule</description>
+  </element>
+  <element name="length" type="double" default="1" required="1">
+    <description>Length of the cylindrical portion of the capsule along the z axis</description>
+  </element>
+</element>

@@ -26,6 +26,8 @@
 #include "sdf/World.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Root.hh"
+#include "sdf/ParserConfig.hh"
+#include "sdf/Types.hh"
 #include "test_config.hh"
 
 /////////////////////////////////////////////////
@@ -323,6 +325,44 @@ TEST(DOMRoot, FrameSemanticsOnMove)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMRoot, ResolveAutoInertialsWithSaveCalculationConfiguration)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  " <sdf version=\"1.11\">"
+  "   <model name='shapes'>"
+  "     <link name='link'>"
+  "       <inertial auto='true' />"
+  "       <collision name='box_col'>"
+  "         <density>1240.0</density>"
+  "         <geometry>"
+  "           <box>"
+  "             <size>2 2 2</size>"
+  "           </box>"
+  "         </geometry>"
+  "       </collision>"
+  "     </link>"
+  "   </model>"
+  " </sdf>";
+
+  sdf::Root root;
+  sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+
+  sdfParserConfig.SetCalculateInertialConfiguration(
+    sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
+
+  sdf::Errors inertialErr;
+  root.ResolveAutoInertials(inertialErr, sdfParserConfig);
+  EXPECT_TRUE(inertialErr.empty());
+  ASSERT_TRUE(link->AutoInertiaSaved());
+}
+
+/////////////////////////////////////////////////
 TEST(DOMRoot, AddWorld)
 {
   sdf::Root root;
@@ -543,7 +583,7 @@ TEST(DOMRoot, CopyConstructor)
 
   auto testFrame1 = [](const sdf::Root &_root)
   {
-    EXPECT_EQ("1.10", _root.Version());
+    EXPECT_EQ("1.11", _root.Version());
 
     const sdf::World *world = _root.WorldByIndex(0);
     ASSERT_NE(nullptr, world);

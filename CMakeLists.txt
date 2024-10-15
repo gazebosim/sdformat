@@ -5,11 +5,11 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat13 VERSION 13.8.0)
+project (sdformat14 VERSION 14.5.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
-set (SDF_PROTOCOL_VERSION 1.10)
+set (SDF_PROTOCOL_VERSION 1.11)
 
 OPTION(SDFORMAT_DISABLE_CONSOLE_LOGFILE "Disable the sdformat console logfile" OFF)
 
@@ -49,6 +49,13 @@ if (BUILD_SDF)
   # Find tinyxml2.
   gz_find_package(TINYXML2 REQUIRED)
 
+  #################################################
+  # Find DL if doing relocatable installation
+  if (GZ_ENABLE_RELOCATABLE_INSTALL)
+    gz_find_package(DL REQUIRED)
+  endif()
+
+
   ################################################
   # Find urdfdom parser. Logic:
   #
@@ -82,9 +89,12 @@ if (BUILD_SDF)
   # Find python
   if (SKIP_PYBIND11)
     message(STATUS "SKIP_PYBIND11 set - disabling python bindings")
-    find_package(Python3 COMPONENTS Interpreter)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
   else()
-    find_package(Python3 COMPONENTS Interpreter Development)
+    find_package(Python3 REQUIRED
+      COMPONENTS Interpreter
+      OPTIONAL_COMPONENTS Development
+    )
     if (NOT Python3_Development_FOUND)
       GZ_BUILD_WARNING("Python development libraries are missing: Python interfaces are disabled.")
     else()
@@ -129,15 +139,6 @@ if (BUILD_SDF)
   find_python_module(psutil)
   if (NOT PY_PSUTIL)
     gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
-  endif()
-
-  ################################################
-  # Find ruby executable to produce xml schemas
-  find_program(RUBY ruby)
-  if (NOT RUBY)
-    gz_build_error ("Ruby version 1.9 is needed to build xml schemas")
-  else()
-    message(STATUS "Found ruby executable: ${RUBY}")
   endif()
 
   ########################################

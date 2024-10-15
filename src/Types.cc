@@ -96,12 +96,12 @@ std::ostream &operator<<(std::ostream &_out, const sdf::Errors &_errs)
 std::pair<std::string, std::string> SplitName(
     const std::string &_absoluteName)
 {
-  const auto pos = _absoluteName.rfind(kSdfScopeDelimiter);
+  const auto pos = _absoluteName.rfind(kScopeDelimiter);
   if (pos != std::string::npos)
   {
     const std::string first = _absoluteName.substr(0, pos);
     const std::string second =
-        _absoluteName.substr(pos + kSdfScopeDelimiter.size());
+        _absoluteName.substr(pos + kScopeDelimiter.size());
     return {first, second};
   }
   return {"", _absoluteName};
@@ -109,20 +109,20 @@ std::pair<std::string, std::string> SplitName(
 
 static bool EndsWithDelimiter(const std::string &_s)
 {
-  if (_s.size() < kSdfScopeDelimiter.size())
+  if (_s.size() < kScopeDelimiter.size())
     return false;
 
-  const size_t startPosition = _s.size() - kSdfScopeDelimiter.size();
+  const size_t startPosition = _s.size() - kScopeDelimiter.size();
   return _s.compare(
-    startPosition, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
+    startPosition, kScopeDelimiter.size(), kScopeDelimiter) == 0;
 }
 
 static bool StartsWithDelimiter(const std::string &_s)
 {
-  if (_s.size() < kSdfScopeDelimiter.size())
+  if (_s.size() < kScopeDelimiter.size())
     return false;
 
-  return _s.compare(0, kSdfScopeDelimiter.size(), kSdfScopeDelimiter) == 0;
+  return _s.compare(0, kScopeDelimiter.size(), kScopeDelimiter) == 0;
 }
 
 // Join a scope name prefix with a local name using the scope delimeter
@@ -138,11 +138,19 @@ std::string JoinName(
   const bool localNameStartsWithDelimiter = StartsWithDelimiter(_localName);
 
   if (scopeNameEndsWithDelimiter && localNameStartsWithDelimiter)
-    return _scopeName + _localName.substr(kSdfScopeDelimiter.size());
+    return _scopeName + _localName.substr(kScopeDelimiter.size());
   else if (scopeNameEndsWithDelimiter || localNameStartsWithDelimiter)
     return _scopeName + _localName;
   else
-    return _scopeName + kSdfScopeDelimiter + _localName;
+    return _scopeName + std::string(kScopeDelimiter) + _localName;
+}
+
+/////////////////////////////////////////////////
+const std::string &internal::SdfScopeDelimiter()
+{
+  static const gz::utils::NeverDestroyed<std::string> delimiter{
+      kScopeDelimiter};
+  return delimiter.Access();
 }
 }
 }

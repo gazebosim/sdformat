@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <gz/math/Vector3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
@@ -36,6 +37,84 @@ namespace sdf
   // Forward declare private data class.
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
+
+  /// \brief Helper class to hold contents of a joint axis mimic tag, which
+  /// define a Mimic constraint. A Mimic constraint encodes a linear
+  /// relationship between the position of two joint axes. One joint axis is
+  /// labelled as the *leader* and the other as the *follower*.
+  /// The multiplier, offset, and reference parameters determine the linear
+  /// relationship according to the following equation:
+  ///
+  /// follower_position = multiplier * (leader_position - reference) + offset
+  class SDFORMAT_VISIBLE MimicConstraint
+  {
+    /// \brief Constructor with arguments.
+    /// \param[in] _joint Name of Joint containing the leader axis.
+    /// \param[in] _axis Name of the leader axis, either "axis" or "axis2".
+    /// \param[in] _multiplier Multiplier parameter, which represents the ratio
+    /// between changes in the follower position relative to changes in the
+    /// leader position.
+    /// \param[in] _offset Offset to the follower position in the linear
+    /// constraint.
+    /// \param[in] _reference Reference for the leader position before applying
+    /// the multiplier in the linear constraint.
+    public: MimicConstraint(
+              const std::string &_joint = "",
+              const std::string &_axis = "axis",
+              double _multiplier = 0.0,
+              double _offset = 0.0,
+              double _reference = 0.0);
+
+    /// \brief Set the leader joint name.
+    /// \param[in] _joint Name of the the joint containing the leader axis.
+    public: void SetJoint(const std::string &_joint);
+
+    /// \brief Set the leader axis name, either "axis" or "axis2".
+    /// \param[in] _axis Name of the leader axis.
+    public: void SetAxis(const std::string &_axis);
+
+    /// \brief Set the multiplier parameter, which represents the ratio
+    /// between changes in the follower position relative to changes in the
+    /// leader position.
+    /// \param[in] _multiplier Multiplier for the Mimic constraint.
+    public: void SetMultiplier(double _multiplier);
+
+    /// \brief Set the offset to the follower position in the linear constraint.
+    /// \param[in] _offset Offset for the Mimic constraint.
+    public: void SetOffset(double _offset);
+
+    /// \brief Set the reference for the leader position before applying
+    /// the multiplier in the linear constraint.
+    /// \param[in] _reference Reference for the Mimic constraint.
+    public: void SetReference(double _reference);
+
+    /// \brief Retrieve the name of the leader joint.
+    /// \return Name of the joint containing the leader axis.
+    public: const std::string &Joint() const;
+
+    /// \brief Retrieve the name of the leader axis, either "axis" or "axis2".
+    /// \return Name of the leader axis.
+    public: const std::string &Axis() const;
+
+    /// \brief Retrieve the multiplier parameter, which represents the ratio
+    /// between changes in the follower position relative to changes in the
+    /// leader position.
+    /// \return Multiplier for the Mimic constraint.
+    public: double Multiplier() const;
+
+    /// \brief Retrieve the offset to the follower position in the linear
+    /// constraint.
+    /// \return Offset for the Mimic constraint.
+    public: double Offset() const;
+
+    /// \brief Retrieve the reference for the leader position before applying
+    /// the multiplier in the linear constraint.
+    /// \param[in] _reference Reference for the Mimic constraint.
+    public: double Reference() const;
+
+    /// \brief The implementation pointer.
+    GZ_UTILS_IMPL_PTR(dataPtr)
+  };
 
   /// \brief Parameters related to the axis of rotation for rotational joints,
   /// and the axis of translation for prismatic joints.
@@ -68,6 +147,20 @@ namespace sdf
     /// \return Errors will have an entry if the norm of the xyz vector is 0.
     public: [[nodiscard]] sdf::Errors SetXyz(
                 const gz::math::Vector3d &_xyz);
+
+    /// \brief Set the Mimic constraint parameters.
+    /// \param[in] _mimic A MimicConstraint object containing the leader joint
+    /// and axis names names, multiplier, offset, and reference to be used
+    /// for mimicking.
+    /// \sa MimicConstraint Mimic()
+    public: void SetMimic(const MimicConstraint &_mimic);
+
+    /// \brief Get the Mimic constraint parameters.
+    /// \return A MimicConstraint object containing the leader joint
+    /// and axis names names, multiplier, offset, and reference to be used
+    /// for mimicking.
+    /// \sa void SetMimic(const MimicConstraint)
+    public: std::optional<MimicConstraint> Mimic() const;
 
     /// \brief Get the physical velocity dependent viscous damping coefficient
     /// of the joint axis. The default value is zero (0.0).

@@ -1,0 +1,37 @@
+<!-- Mimic -->
+<element name="mimic" required="0">
+  <description>Specifies a linear equality constraint between the position of two joint
+    axes. One joint axis is labeled as the leader and the other as the follower.
+    The joint axis containing a mimic tag is the follower, and the leader
+    is specified by the joint and axis attributes.
+    The multiplier, offset, and reference parameters determine the linear relationship
+    according to the following equation:
+    follower_position = multiplier * (leader_position - reference) + offset.
+    Note that the multiplier and offset parameters match the parameters of
+    the URDF mimic tag if the reference parameter is 0.
+  </description>
+  <attribute name="joint" type="string" default="" required="1">
+    <description>Name of the joint containing the leader axis, i.e. the axis to be mimicked</description>
+  </attribute>
+  <attribute name="axis" type="string" default="axis" required="0">
+    <description>Name of the leader axis, i.e. the axis to be mimicked.
+      The only valid values are "axis" and "axis2", and "axis2" may only be
+      used if the leader joint has multiple axes.
+    </description>
+  </attribute>
+  <element name="multiplier" type="double" default="1.0" required="1">
+    <description>A parameter representing the ratio between changes in the
+      follower joint axis position relative to changes in the leader joint
+      axis position. It can be expressed as follows:
+      multiplier = (follower_position - offset) / (leader_position - reference)
+    </description>
+  </element>
+  <element name="offset" type="double" default="0" required="1">
+    <description>Offset to the follower position in the linear constraint.</description>
+  </element>
+  <element name="reference" type="double" default="0" required="1">
+    <description>Reference for the leader position before applying the
+      multiplier in the linear constraint.
+    </description>
+  </element>
+</element> <!-- End Mimic -->

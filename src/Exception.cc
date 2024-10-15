@@ -48,8 +48,6 @@ Exception::Exception(const char *_file, std::int64_t _line, std::string _msg)
   this->dataPtr->file = _file;
   this->dataPtr->line = _line;
   this->dataPtr->str = _msg;
-  // TODO(azeey) Remove Print for libsdformat 14.0
-  this->Print();
 }
 
 //////////////////////////////////////////////////

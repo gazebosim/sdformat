@@ -530,6 +530,14 @@ namespace sdf
     /// \param[in] _plugin Plugin to add.
     public: void AddPlugin(const Plugin &_plugin);
 
+    /// \brief Calculate and set the inertials for all the models in the world
+    /// object
+    /// \param[out] _errrors A vector of Errors objects. Each errors contains an
+    /// Error code and a message. An empty errors vector indicates no errors
+    /// \param[in] _config Custom parser configuration
+    public: void ResolveAutoInertials(sdf::Errors &_errors,
+                                    const ParserConfig &_config);
+
     /// \brief Give the Scoped PoseRelativeToGraph to be passed on to child
     /// entities for resolving poses. This is private and is intended to be
     /// called by Root::Load.

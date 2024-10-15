@@ -216,7 +216,7 @@ static std::optional<std::string> computeAbsoluteName(
     std::advance(it, 1);
     for (; it != names.rend(); ++it)
     {
-      absoluteParentName.append(kSdfScopeDelimiter);
+      absoluteParentName.append(kScopeDelimiter);
       absoluteParentName.append(*it);
     }
 
@@ -366,7 +366,8 @@ void copyChildren(ElementPtr _sdf, tinyxml2::XMLElement *_xml,
       for (const tinyxml2::XMLAttribute *attribute = elemXml->FirstAttribute();
            attribute; attribute = attribute->Next())
       {
-        element->AddAttribute(attribute->Name(), "string", "", 1, "");
+        // Add with required == 0 to allow unrecognized attribute to be empty
+        element->AddAttribute(attribute->Name(), "string", "", 0, "");
         element->GetAttribute(attribute->Name())->SetFromString(
             attribute->Value());
       }

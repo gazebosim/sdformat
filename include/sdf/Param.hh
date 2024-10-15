@@ -618,12 +618,12 @@ namespace sdf
     /// \brief Data type to string mapping
     /// \return The type as a string, empty string if unknown type
     public: template<typename T>
-            std::string TypeToString() const;
+            static std::string TypeToString();
   };
 
   ///////////////////////////////////////////////
   template<typename T>
-  std::string ParamPrivate::TypeToString() const
+  std::string ParamPrivate::TypeToString()
   {
     // cppcheck-suppress syntaxError
     if constexpr (std::is_same_v<T, bool>)

@@ -10,16 +10,16 @@ Note: The branch name in the codecov URL & library version should be updated whe
 -->
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/branch/main)
-Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-focal-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-focal-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-windows7-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-windows7-amd64)
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/sdf14/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/sdf14)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf14-jammy-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf14-jammy-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf14-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf14-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-sdf14-win)](https://build.osrfoundation.org/job/sdformat-sdf14-win)
 
 
 SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications. SDFormat is capable of representing
 and describing different physic engines, lighting properties, terrain, static
-or dynamic objects, and articulated robots with various sensors, and acutators.
+or dynamic objects, and articulated robots with various sensors, and actuators.
 The format of SDFormat is also described by XML, which facilitates updates and
 allows conversion from previous versions.
 
@@ -114,18 +114,28 @@ conda install libsdformat=12.5.0 --channel conda-forge
 ## Source Installation
 
 
-**Note:** the `main` branch is under development for `libsdformat13` and is
+**Note:** the `main` branch is under development for `libsdformat14` and is
 currently unstable. A release branch (`sdf12`, `sdf11`, `sdf10`, `sdf9`, etc.)
 is recommended for most users.
 
 ## UNIX
 
-#### Build from Source
+### Prerequisites
+
+Clone the repository
+```sh
+git clone https://github.com/gazebosim/sdformat -b sdf<#>
+```
+Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+which version you need.
+
+### Build from Source
 
 Standard installation can be performed in UNIX systems using the following
 steps:
 
 ```sh
+cd sdformat
 mkdir build
 cd build
 cmake ..  # Consider specifying -DCMAKE_INSTALL_PREFIX=...
@@ -203,7 +213,7 @@ conda activate gz-ws
 
 Install prerequisites:
 ```
-conda install urdfdom --channel conda-forge
+conda install tinyxml2 urdfdom --channel conda-forge
 ```
 
 Install Gazebo dependencies:
@@ -215,7 +225,7 @@ conda search libsdformat --channel conda-forge --info
 
 Install dependencies, replacing `<#>` with the desired versions:
 ```
-conda install libgz-math<#> libgz-tools<#> --channel conda-forge
+conda install libgz-cmake<#> libgz-math<#> libgz-tools<#> libgz-utils<#> --channel conda-forge
 ```
 
 ### Build from Source

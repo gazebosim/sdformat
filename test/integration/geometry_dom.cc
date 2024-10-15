@@ -21,6 +21,7 @@
 #include "sdf/Box.hh"
 #include "sdf/Capsule.hh"
 #include "sdf/Collision.hh"
+#include "sdf/Cone.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/Element.hh"
 #include "sdf/Ellipsoid.hh"
@@ -93,6 +94,26 @@ TEST(DOMGeometry, Shapes)
   ASSERT_NE(nullptr, capsuleVisGeom);
   EXPECT_DOUBLE_EQ(2.1, capsuleVisGeom->Radius());
   EXPECT_DOUBLE_EQ(10.2, capsuleVisGeom->Length());
+
+  // Test cone collision
+  const sdf::Collision *coneCol = link->CollisionByName("cone_col");
+  ASSERT_NE(nullptr, coneCol);
+  ASSERT_NE(nullptr, coneCol->Geom());
+  EXPECT_EQ(sdf::GeometryType::CONE, coneCol->Geom()->Type());
+  const sdf::Cone *coneColGeom = coneCol->Geom()->ConeShape();
+  ASSERT_NE(nullptr, coneColGeom);
+  EXPECT_DOUBLE_EQ(0.2, coneColGeom->Radius());
+  EXPECT_DOUBLE_EQ(0.1, coneColGeom->Length());
+
+  // Test cone visual
+  const sdf::Visual *coneVis = link->VisualByName("cone_vis");
+  ASSERT_NE(nullptr, coneVis);
+  ASSERT_NE(nullptr, coneVis->Geom());
+  EXPECT_EQ(sdf::GeometryType::CONE, coneVis->Geom()->Type());
+  const sdf::Cone *coneVisGeom = coneVis->Geom()->ConeShape();
+  ASSERT_NE(nullptr, coneVisGeom);
+  EXPECT_DOUBLE_EQ(2.1, coneVisGeom->Radius());
+  EXPECT_DOUBLE_EQ(10.2, coneVisGeom->Length());
 
   // Test cylinder collision
   const sdf::Collision *cylinderCol = link->CollisionByName("cylinder_col");
@@ -179,7 +200,14 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::MESH, meshCol->Geom()->Type());
   const sdf::Mesh *meshColGeom = meshCol->Geom()->MeshShape();
   ASSERT_NE(nullptr, meshColGeom);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh/"
+  EXPECT_EQ("convex_decomposition", meshColGeom->OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
+            meshColGeom->Optimization());
+  ASSERT_NE(nullptr, meshColGeom->ConvexDecomposition());
+  EXPECT_EQ(4u, meshColGeom->ConvexDecomposition()->MaxConvexHulls());
+  EXPECT_EQ(400000u, meshColGeom->ConvexDecomposition()->VoxelResolution());
+
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh/"
       "mesh.dae", meshColGeom->Uri());
   EXPECT_TRUE(gz::math::Vector3d(0.1, 0.2, 0.3) ==
       meshColGeom->Scale());
@@ -193,7 +221,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::MESH, meshVis->Geom()->Type());
   const sdf::Mesh *meshVisGeom = meshVis->Geom()->MeshShape();
   ASSERT_NE(nullptr, meshVisGeom);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/mesh"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh"
       "/mesh.dae", meshVisGeom->Uri());
   EXPECT_TRUE(gz::math::Vector3d(1.2, 2.3, 3.4) ==
       meshVisGeom->Scale());
@@ -207,7 +235,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::HEIGHTMAP, heightmapCol->Geom()->Type());
   auto heightmapColGeom = heightmapCol->Geom()->HeightmapShape();
   ASSERT_NE(nullptr, heightmapColGeom);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/heightmap.png", heightmapColGeom->Uri());
   EXPECT_EQ(gz::math::Vector3d(500, 500, 100), heightmapColGeom->Size());
   EXPECT_EQ(gz::math::Vector3d(1, 2, 3), heightmapColGeom->Position());
@@ -221,7 +249,7 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::HEIGHTMAP, heightmapVis->Geom()->Type());
   auto heightmapVisGeom = heightmapVis->Geom()->HeightmapShape();
   ASSERT_NE(nullptr, heightmapVisGeom);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/heightmap.png", heightmapVisGeom->Uri());
   EXPECT_EQ(gz::math::Vector3d(500, 500, 100), heightmapVisGeom->Size());
   EXPECT_EQ(gz::math::Vector3d(1, 2, 3), heightmapVisGeom->Position());
@@ -229,23 +257,23 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(2u, heightmapVisGeom->BlendCount());
 
   auto texture0 = heightmapVisGeom->TextureByIndex(0u);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/diffuse0.png", texture0->Diffuse());
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/normal0.png", texture0->Normal());
   EXPECT_DOUBLE_EQ(5.0, texture0->Size());
 
   auto texture1 = heightmapVisGeom->TextureByIndex(1u);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/diffuse1.png", texture1->Diffuse());
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/normal1.png", texture1->Normal());
   EXPECT_DOUBLE_EQ(10.0, texture1->Size());
 
   auto texture2 = heightmapVisGeom->TextureByIndex(2u);
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/diffuse2.png", texture2->Diffuse());
-  EXPECT_EQ("https://fuel.ignitionrobotics.org/1.0/an_org/models/a_model/"
+  EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/"
       "materials/textures/normal2.png", texture2->Normal());
   EXPECT_DOUBLE_EQ(20.0, texture2->Size());
 

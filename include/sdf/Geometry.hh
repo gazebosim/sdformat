@@ -18,11 +18,15 @@
 #define SDF_GEOMETRY_HH_
 
 #include <vector>
+#include <optional>
 
 #include <gz/utils/ImplPtr.hh>
+#include <gz/math/Inertial.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/sdf_config.h>
+#include <sdf/ParserConfig.hh>
+#include <sdf/Types.hh>
 
 namespace sdf
 {
@@ -33,6 +37,7 @@ namespace sdf
   // Forward declare private data class.
   class Box;
   class Capsule;
+  class Cone;
   class Cylinder;
   class Ellipsoid;
   class Heightmap;
@@ -75,6 +80,9 @@ namespace sdf
 
     /// \brief A polyline geometry.
     POLYLINE = 9,
+
+    /// \brief A polyline geometry.
+    CONE = 10,
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -132,6 +140,17 @@ namespace sdf
     /// \brief Set the capsule shape.
     /// \param[in] _capsule The capsule shape.
     public: void SetCapsuleShape(const Capsule &_capsule);
+
+    /// \brief Get the cone geometry, or nullptr if the contained
+    /// geometry is not a cone.
+    /// \return Pointer to the visual's cone geometry, or nullptr if the
+    /// geometry is not a cone.
+    /// \sa GeometryType Type() const
+    public: const Cone *ConeShape() const;
+
+    /// \brief Set the cone shape.
+    /// \param[in] _cone The cone shape.
+    public: void SetConeShape(const Cone &_cone);
 
     /// \brief Get the cylinder geometry, or nullptr if the contained
     /// geometry is not a cylinder.
@@ -208,6 +227,17 @@ namespace sdf
     /// \brief Set the heightmap shape.
     /// \param[in] _heightmap The heightmap shape.
     public: void SetHeightmapShape(const Heightmap &_heightmap);
+
+    /// \brief Calculate and return the Inertial values for the Geometry
+    /// \param[out] _errors A vector of Errors object. Each object
+    /// would contain an error code and an error message.
+    /// \param[in] _config Parser Config
+    /// \param[in] _density The density of the geometry element.
+    /// \param[in] _autoInertiaParams ElementPtr to <auto_inertia_params>
+    /// \return A std::optional with gz::math::Inertiald object or std::nullopt
+    public: std::optional<gz::math::Inertiald> CalculateInertial(
+      sdf::Errors &_errors, const ParserConfig &_config,
+      double _density, sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

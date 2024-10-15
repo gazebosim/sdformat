@@ -906,6 +906,23 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 }
 
 /////////////////////////////////////////////////
+void Model::ResolveAutoInertials(sdf::Errors &_errors,
+                              const ParserConfig &_config)
+{
+  // Loop through all the nested models, if there are any
+  for (sdf::Model &model : this->dataPtr->models)
+  {
+    model.ResolveAutoInertials(_errors, _config);
+  }
+
+  // Calculate and set inertials for all the links in the model
+  for (sdf::Link &link : this->dataPtr->links)
+  {
+    link.ResolveAutoInertials(_errors, _config);
+  }
+}
+
+/////////////////////////////////////////////////
 void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 {
   this->dataPtr->poseGraph = _graph;
