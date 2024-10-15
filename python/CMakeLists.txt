@@ -8,6 +8,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   find_package(pybind11 REQUIRED)
   find_package(sdformat${SDF_VER} REQUIRED)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat${PROJECT_VERSION_MAJOR}::sdformat${PROJECT_VERSION_MAJOR}")
+  include(GNUInstallDirs)
   include(CTest)
   if(BUILD_TESTING)
     enable_testing()
@@ -28,7 +29,7 @@ if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
   endif()
 else()
   # If not a system installation, respect local paths
-  set(GZ_PYTHON_INSTALL_PATH ${GZ_LIB_INSTALL_DIR}/python)
+  set(GZ_PYTHON_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/python)
 endif()
 
 # Set the build location and install location for a CPython extension
