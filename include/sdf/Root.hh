@@ -246,6 +246,11 @@ namespace sdf
     public: sdf::ElementPtr ToElement(
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
 
+    /// \brief Remove the actor, light, or model if one of them exists.
+    /// The SDF Root object can only hold one, or none, from the set
+    /// [Actor, Light, Model].
+    public: void ClearActorLightModel();
+
     /// \brief Private data pointer
     GZ_UTILS_IMPL_PTR(dataPtr)
   };
