@@ -706,5 +706,7 @@ TEST(DOMRoot, ClearActorLightModel)
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_NE(nullptr, root.Model());
   root.ClearActorLightModel();
+  EXPECT_EQ(nullptr, root.Actor());
+  EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Model());
 }
