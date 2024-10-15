@@ -71,9 +71,9 @@ which version you need, or leave it empty for version 1.
 
 ### macOS
 
-On macOS, add OSRF packages:
+On macOS, after installing the [Homebrew package manager](https://brew.sh),
+add OSRF packages:
   ```sh
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   brew tap osrf/simulation
   ```
 
@@ -144,12 +144,10 @@ make install
 
 sdformat supported cmake parameters at configuring time:
 
-* `USE_INTERNAL_URDF` (`bool`) [default `False`] <br/>
-  Use an internal copy of urdfdom 1.0.0 instead of look for one
-  installed in the system
-* `USE_UPSTREAM_CFLAGS` (`bool`) [default `True`] <br/>
-  Use the sdformat team compilation flags instead of the common set defined
-  by cmake.
+| Name                  | Type | Default  | Description                          |
+|-----------------------|------|----------|--------------------------------------|
+| `USE_INTERNAL_URDF`   | BOOL | False    | Use an internal copy of urdfdom 1.0.0 instead of looking for one installed in the system |
+| `USE_UPSTREAM_CFLAGS` | BOOL | True     | Use the sdformat team compilation flags instead of the common set defined by cmake.      |
 
 ## Uninstallation
 
