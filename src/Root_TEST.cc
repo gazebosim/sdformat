@@ -683,6 +683,8 @@ TEST(DOMRoot, ClearActorLightModel)
   actor1.SetName("actor1");
   root.SetActor(actor1);
   EXPECT_NE(nullptr, root.Actor());
+  EXPECT_EQ(nullptr, root.Light());
+  EXPECT_EQ(nullptr, root.Model());
   root.ClearActorLightModel();
   EXPECT_EQ(nullptr, root.Actor());
 
