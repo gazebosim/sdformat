@@ -695,7 +695,9 @@ TEST(DOMRoot, ClearActorLightModel)
   EXPECT_NE(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Model());
   root.ClearActorLightModel();
+  EXPECT_EQ(nullptr, root.Actor());
   EXPECT_EQ(nullptr, root.Light());
+  EXPECT_EQ(nullptr, root.Model());
 
   sdf::Model model1;
   model1.SetName("model1");
