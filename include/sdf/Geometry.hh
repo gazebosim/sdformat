@@ -24,7 +24,7 @@
 #include <gz/math/Inertial.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include <sdf/ParserConfig.hh>
 #include <sdf/Types.hh>
 
