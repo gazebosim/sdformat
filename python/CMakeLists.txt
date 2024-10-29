@@ -2,7 +2,6 @@
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.16)
   set(SDF_VER 15)
-  set(GZ_UTILS_VER 3)
   project(sdformat${SDF_VER}-python VERSION ${SDF_VER})
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
   find_package(pybind11 REQUIRED)
@@ -125,7 +124,6 @@ if (BUILD_TESTING AND NOT WIN32)
 
   target_link_libraries(sdformattest PRIVATE
     ${PROJECT_LIBRARY_TARGET_NAME}
-    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   )
 
   set(python_tests
