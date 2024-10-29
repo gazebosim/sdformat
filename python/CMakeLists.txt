@@ -1,6 +1,6 @@
 # Detect if we are doing a standalone build of the bindings, using an external gz-math
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-  cmake_minimum_required(VERSION 3.16)
+  cmake_minimum_required(VERSION 3.22.1)
   set(SDF_VER 15)
   project(sdformat${SDF_VER}-python VERSION ${SDF_VER})
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
@@ -9,9 +9,6 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat${PROJECT_VERSION_MAJOR}::sdformat${PROJECT_VERSION_MAJOR}")
   include(GNUInstallDirs)
   include(CTest)
-  if(BUILD_TESTING)
-    enable_testing()
-  endif()
 endif()
 
 if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
