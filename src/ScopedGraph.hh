@@ -27,7 +27,7 @@
 #include <gz/math/Pose3.hh>
 #include <gz/math/graph/Graph.hh>
 
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 
 namespace sdf
 {

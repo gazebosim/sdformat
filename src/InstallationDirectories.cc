@@ -18,7 +18,7 @@
 #include <filesystem>
 #include <regex>
 
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include <sdf/InstallationDirectories.hh>
 
 namespace sdf

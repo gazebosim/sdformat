@@ -22,7 +22,7 @@
 #include <string>
 #include <tuple>
 
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include <sdf/Types.hh>
 #include "sdf/system_util.hh"
 

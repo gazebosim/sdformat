@@ -20,7 +20,7 @@
 
 #include <cstring>
 
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include "sdf/system_util.hh"
 
 // Inline bracket to help doxygen filtering.
