@@ -21,7 +21,7 @@
 #include <gz/utils/ImplPtr.hh>
 
 #include "sdf/InterfaceElements.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/system_util.hh"
 
 

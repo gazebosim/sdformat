@@ -22,7 +22,7 @@
 #include <string.h>
 #include <vector>
 
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
