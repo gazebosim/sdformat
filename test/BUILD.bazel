@@ -1,0 +1,27 @@
+load("@rules_gazebo//gazebo:headers.bzl", "gz_configure_header")
+load("@rules_license//rules:license.bzl", "license")
+
+package(
+    default_applicable_licenses = ["//:license"],
+)
+
+license(
+    name = "license",
+    package_name = "sdformat-test",
+)
+
+gz_configure_header(
+    name = "TestConfig",
+    src = "test_config.hh.in",
+    package_xml = "//:package.xml",
+)
+
+cc_library(
+    name = "test_utils",
+    hdrs = [
+        "test_config.hh",
+        "test_utils.hh",
+    ],
+    includes = ["."],
+    visibility = ["//:__subpackages__"],
+)
