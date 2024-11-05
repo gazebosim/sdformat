@@ -1,4 +1,4 @@
-# Detect if we are doing a standalone build of the bindings, using an external gz-math
+# Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
   set(SDF_VER 15)
