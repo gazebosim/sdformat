@@ -136,9 +136,11 @@ if (BUILD_SDF)
 
   ################################################
   # Find psutil python package for memory tests
-  find_python_module(psutil)
-  if (NOT PY_PSUTIL)
-    gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
+  if (BUILD_TESTING)
+    find_python_module(psutil)
+    if (NOT PY_PSUTIL)
+      gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
+    endif()
   endif()
 
   ########################################
