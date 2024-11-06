@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-  # pybind11 logic for setting up a debug build when both a debug and release
-  # python interpreter are present in the system seems to be pretty much broken.
-  # This works around the issue.
-  set(PYTHON_LIBRARIES "${PYTHON_DEBUG_LIBRARIES}")
-endif()
-
-=======
 # Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
@@ -19,6 +10,14 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11 TRUE)
   include(GNUInstallDirs)
   include(CTest)
+elseif(${CMAKE_VERSION} VERSION_LESS "3.12.0")
+  # TODO: remove once the minimum CMake version is increased
+  if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # pybind11 logic for setting up a debug build when both a debug and release
+    # python interpreter are present in the system seems to be pretty much broken.
+    # This works around the issue.
+    set(PYTHON_LIBRARIES "${PYTHON_DEBUG_LIBRARIES}")
+  endif()
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
@@ -30,12 +29,11 @@ else()
   message(WARNING "pybind11 is missing: Python interfaces are disabled.")
   return()
 endif()
->>>>>>> 3dcdd55e (Permit building python bindings separately from libsdformat library (#1491))
 
 if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
   if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
     execute_process(
-      COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
+      COMMAND "${Python3_EXECUTABLE}" -c "if True:
   from distutils import sysconfig as sc
   print(sc.get_python_lib(plat_specific=True))"
       OUTPUT_VARIABLE Python3_SITEARCH
