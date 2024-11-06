@@ -1,7 +1,7 @@
 # Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
-  set(SDF_VER 15)
+  set(SDF_VER 14)
   project(sdformat${SDF_VER}-python VERSION ${SDF_VER})
   find_package(sdformat${SDF_VER} REQUIRED)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat${PROJECT_VERSION_MAJOR}::sdformat${PROJECT_VERSION_MAJOR}")
