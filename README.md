@@ -177,47 +177,6 @@ cd build
 make uninstall
 ```
 
-<<<<<<< HEAD
-## macOS
-
-### Prerequisites
-
-Clone the repository
-```sh
-git clone https://github.com/gazebosim/sdformat -b sdf<#>
-```
-Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
-which version you need.
-
-Install dependencies
-```sh
-brew install --only-dependencies sdformat<#>
-```
-
-### Build from Source
-
-1. Configure and build
-  ```sh
-  cd sdformat
-  mkdir build
-  cd build
-  cmake .. # Consider specifying -DCMAKE_INSTALL_PREFIX=...
-  make
-  ```
-
-2. Optionally, install and uninstall
-  ```sh
-  sudo make install
-  ```
-
-  To uninstall the software installed with the previous steps:
-  ```sh
-  cd build/
-  sudo make uninstall
-  ```
-
-=======
->>>>>>> 22684cbe (Improve installation instructions (#1490))
 ## Windows
 
 ### Prerequisites
