@@ -1,5 +1,16 @@
 ## libsdformat 13.X
 
+### libsdformat 13.9.0 (2024-11-06)
+
+1. Add Errors structure to XmlUtils
+    * [Pull request #1296](https://github.com/gazebosim/sdformat/pull/1296)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. SDF.cc update calls to use sdf::Errors output
+    * [Pull request #1295](https://github.com/gazebosim/sdformat/pull/1295)
+
 ### libsdformat 13.8.0 (2024-06-25)
 
 1. Added `World::ActorByName`
