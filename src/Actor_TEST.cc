@@ -20,8 +20,6 @@
 #include "sdf/Actor.hh"
 #include "sdf/Plugin.hh"
 
-#include <filesystem>
-
 /////////////////////////////////////////////////
 sdf::Animation CreateDummyAnimation()
 {
