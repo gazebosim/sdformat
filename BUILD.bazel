@@ -29,10 +29,10 @@ gz_export_header(
 gz_configure_header(
     name = "Config",
     src = "include/sdf/config.hh.in",
-    defines = {
-        "CMAKE_INSTALL_FULL_DATAROOTDIR": "unused",
-        "SDF_PROTOCOL_VERSION": "11111",
-    },
+    defines = [
+        "CMAKE_INSTALL_FULL_DATAROOTDIR=unused",
+        "SDF_PROTOCOL_VERSION=1.12",
+    ],
     package_xml = "package.xml",
 )
 
@@ -94,6 +94,9 @@ cc_library(
         exclude = [
         ],
     ),
+    data = [
+        "sdf",
+    ],
     defines = [
         "CMAKE_INSTALL_RELATIVE_DATAROOTDIR=\\\"\\\"",
         'SDF_SHARE_PATH=\\".\\"',
@@ -102,9 +105,6 @@ cc_library(
     includes = [
         "include",
         "src",
-    ],
-    data = [
-        "sdf"
     ],
     deps = [
         ":Config",
