@@ -23,10 +23,10 @@
 
   <element name="image" required="1">
     <description>The image size in pixels and format.</description>
-    <element name="width" type="int" default="320" required="1">
+    <element name="width" type="int" default="320" min="1" required="1">
       <description>Width in pixels</description>
     </element>
-    <element name="height" type="int" default="240" required="1">
+    <element name="height" type="int" default="240" min="1" required="1">
       <description>Height in pixels </description>
     </element>
     <element name="format" type="string" default="R8G8B8" required="0">
