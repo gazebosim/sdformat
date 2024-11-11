@@ -25,3 +25,8 @@ cc_library(
     includes = ["."],
     visibility = ["//:__subpackages__"],
 )
+
+exports_files([
+    "sdf",
+    "integration/model",
+])

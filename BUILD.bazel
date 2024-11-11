@@ -4,6 +4,7 @@ load("@rules_license//rules:license.bzl", "license")
 
 package(
     default_applicable_licenses = [":license"],
+    features = ["layering_check"],
 )
 
 license(
@@ -135,12 +136,114 @@ cc_test(
     srcs = [
         "src/Actor_TEST.cc",
     ],
-    env = {
-        "GZ_BAZEL": "1",
-        "GZ_BAZEL_PATH": "sdformat",
-    },
     deps = [
         ":sdformat",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "AirPressure_TEST",
+    srcs = [
+        "src/AirPressure_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Airspeed_TEST",
+    srcs = [
+        "src/Airspeed_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Altimeter_TEST",
+    srcs = [
+        "src/Altimeter_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Atmosphere_TEST",
+    srcs = [
+        "src/Atmosphere_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Box_TEST",
+    srcs = [
+        "src/Box_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Camera_TEST",
+    srcs = [
+        "src/Camera_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Capsule_TEST",
+    srcs = [
+        "src/Capsule_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Collision_TEST",
+    srcs = [
+        "src/Collision_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Cone_TEST",
+    srcs = [
+        "src/Cone_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
         "@googletest//:gtest_main",
     ],
 )
@@ -157,9 +260,678 @@ cc_test(
 )
 
 cc_test(
+    name = "Converter_TEST",
+    srcs = [
+        "src/Converter_TEST.cc",
+    ],
+    data = [
+        "sdf/1.10/1_9.convert",
+        "sdf/1.6/1_5.convert",
+        "sdf/1.7/1_6.convert",
+        "sdf/1.8/1_7.convert",
+        "sdf/1.9/1_8.convert",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "CustomInertiaCalcProperties_TEST",
+    srcs = [
+        "src/CustomInertiaCalcProperties_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Cylinder_TEST",
+    srcs = [
+        "src/Cylinder_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "Element_TEST",
     srcs = [
         "src/Element_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Ellipsoid_TEST",
+    srcs = [
+        "src/Ellipsoid_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Error_TEST",
+    srcs = [
+        "src/Error_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Exception_TEST",
+    srcs = [
+        "src/Exception_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Filesystem_TEST",
+    srcs = [
+        "src/Filesystem_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ForceTorque_TEST",
+    srcs = [
+        "src/ForceTorque_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Frame_TEST",
+    srcs = [
+        "src/Frame_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "FrameSemantics_TEST",
+    srcs = [
+        "src/FrameSemantics_TEST.cc",
+    ],
+    data = [
+        "//test:sdf",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Geometry_TEST",
+    srcs = [
+        "src/Geometry_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Gui_TEST",
+    srcs = [
+        "src/Gui_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+# TODO: Enable once gz-utils exposes ExtraTestMacros.hh in bazel build.
+# cc_test(
+#    name = "gz_TEST",
+#    srcs = [
+#        "src/gz_TEST.cc",
+#    ],
+#    deps = [
+#        ":sdformat",
+#        "//test:test_utils",
+#        "@googletest//:gtest_main",
+#    ],
+#)
+
+cc_test(
+    name = "Heightmap_TEST",
+    srcs = [
+        "src/Heightmap_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Imu_TEST",
+    srcs = [
+        "src/Imu_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "InterfaceElements_TEST",
+    srcs = [
+        "src/InterfaceElements_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Joint_TEST",
+    srcs = [
+        "src/Joint_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "JointAxis_TEST",
+    srcs = [
+        "src/JointAxis_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Lidar_TEST",
+    srcs = [
+        "src/Lidar_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Light_TEST",
+    srcs = [
+        "src/Light_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Link_TEST",
+    srcs = [
+        "src/Link_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Magnetometer_TEST",
+    srcs = [
+        "src/Magnetometer_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Material_TEST",
+    srcs = [
+        "src/Material_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Mesh_TEST",
+    srcs = [
+        "src/Mesh_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Model_TEST",
+    srcs = [
+        "src/Model_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "NavSat_TEST",
+    srcs = [
+        "src/NavSat_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Noise_TEST",
+    srcs = [
+        "src/Noise_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "OutputConfig_TEST",
+    srcs = [
+        "src/OutputConfig_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Param_TEST",
+    srcs = [
+        "src/Param_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ParamPassing_TEST",
+    srcs = [
+        "src/ParamPassing_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "parser_TEST",
+    srcs = [
+        "src/parser_TEST.cc",
+    ],
+    data = [
+        "//test:integration/model",
+        "//test:sdf",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "parser_urdf_TEST",
+    srcs = [
+        "src/parser_urdf_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ParserConfig_TEST",
+    srcs = [
+        "src/ParserConfig_TEST.cc",
+    ],
+    data = [
+        "//test:sdf",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ParticleEmitter_TEST",
+    srcs = [
+        "src/ParticleEmitter_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Pbr_TEST",
+    srcs = [
+        "src/Pbr_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Physics_TEST",
+    srcs = [
+        "src/Physics_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Plane_TEST",
+    srcs = [
+        "src/Plane_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Plugin_TEST",
+    srcs = [
+        "src/Plugin_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Polyline_TEST",
+    srcs = [
+        "src/Polyline_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "PrintConfig_TEST",
+    srcs = [
+        "src/PrintConfig_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Projector_TEST",
+    srcs = [
+        "src/Projector_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Root_TEST",
+    srcs = [
+        "src/Root_TEST.cc",
+    ],
+    data = [
+        "//test:sdf",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Scene_TEST",
+    srcs = [
+        "src/Scene_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "SDF_TEST",
+    srcs = [
+        "src/SDF_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+        "@gz-math//:Color",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector2",
+    ],
+)
+
+cc_test(
+    name = "SemanticPose_TEST",
+    srcs = [
+        "src/SemanticPose_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Sensor_TEST",
+    srcs = [
+        "src/Sensor_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Sky_TEST",
+    srcs = [
+        "src/Sky_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Sphere_TEST",
+    srcs = [
+        "src/Sphere_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Surface_TEST",
+    srcs = [
+        "src/Surface_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Types_TEST",
+    srcs = [
+        "src/Types_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Utils_TEST",
+    srcs = [
+        "src/Utils_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "Visual_TEST",
+    srcs = [
+        "src/Visual_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "World_TEST",
+    srcs = [
+        "src/World_TEST.cc",
+    ],
+    deps = [
+        ":sdformat",
+        "//test:test_utils",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "XmlUtils_TEST",
+    srcs = [
+        "src/XmlUtils_TEST.cc",
     ],
     deps = [
         ":sdformat",

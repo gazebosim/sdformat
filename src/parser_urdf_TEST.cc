@@ -19,7 +19,6 @@
 
 #include <list>
 
-#include "sdf/sdf.hh"
 #include "parser_urdf.hh"
 #include "test_utils.hh"
 
