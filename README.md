@@ -71,9 +71,9 @@ which version you need, or leave it empty for version 1.
 
 ### macOS
 
-On macOS, add OSRF packages:
+On macOS, after installing the [Homebrew package manager](https://brew.sh),
+add OSRF packages:
   ```sh
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   brew tap osrf/simulation
   ```
 
@@ -129,6 +129,25 @@ git clone https://github.com/gazebosim/sdformat -b sdf<#>
 Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
 which version you need.
 
+### Install dependencies
+
+#### Ubuntu
+
+```sh
+cd sdformat
+sudo apt -y install \
+  $(sort -u $(find . -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt' | tr '\n' ' '))
+```
+
+#### macOS
+
+```sh
+brew install --only-dependencies sdformat<#>
+```
+
+Be sure to replace `<#>` with a number value, such as 14 or 15, depending on
+which version you need.
+
 ### Build from Source
 
 Standard installation can be performed in UNIX systems using the following
@@ -144,12 +163,35 @@ make install
 
 sdformat supported cmake parameters at configuring time:
 
-* `USE_INTERNAL_URDF` (`bool`) [default `False`] <br/>
-  Use an internal copy of urdfdom 1.0.0 instead of look for one
-  installed in the system
-* `USE_UPSTREAM_CFLAGS` (`bool`) [default `True`] <br/>
-  Use the sdformat team compilation flags instead of the common set defined
-  by cmake.
+| Name                  | Type | Default  | Description                          |
+|-----------------------|------|----------|--------------------------------------|
+| `SKIP_PYBIND11`       | BOOL | False    | Skip generating Python bindings via pybind11 |
+| `USE_INTERNAL_URDF`   | BOOL | False    | Use an internal copy of urdfdom 1.0.0 instead of looking for one installed in the system |
+| `USE_UPSTREAM_CFLAGS` | BOOL | True     | Use the sdformat team compilation flags instead of the common set defined by cmake.      |
+
+### Build python bindings separately from main library
+
+If you want to build Python bindings separately from the main libsdformat library
+(for example if you want to build Python bindings for multiple versions of Python),
+you can invoke cmake on the `python` folder instead of the root folder.
+This requires cmake version 3.22.1 due to the use of a `CMAKE_REQUIRE_FIND_PACKAGE_*`
+variable, which is newer than the minimum required version of cmake for sdformat14.
+Specify the path to the python executable with which you wish to build bindings
+in the `Python3_EXECUTABLE` cmake variable.
+Specify the install path for the bindings in the `CMAKE_INSTALL_PREFIX`
+variable, and be sure to set your `PYTHONPATH` accordingly after install.
+
+```bash
+cd sdformat
+mkdir build_python3
+cd build_python3
+cmake ../python \
+    -DPython3_EXECUTABLE=/usr/local/bin/python3.12 \
+    -DCMAKE_INSTALL_PREFIX=<prefix>
+```
+
+See the homebrew [sdformat15 formula](https://github.com/osrf/homebrew-simulation/blob/027d06f5be49da1e40d01180aedae7f76dc7ff47/Formula/sdformat15.rb#L12-L56)
+for an example of building bindings for multiple versions of Python.
 
 ## Uninstallation
 
@@ -159,44 +201,6 @@ To uninstall the software installed with the previous steps:
 cd build
 make uninstall
 ```
-
-## macOS
-
-### Prerequisites
-
-Clone the repository
-```sh
-git clone https://github.com/gazebosim/sdformat -b sdf<#>
-```
-Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
-which version you need.
-
-Install dependencies
-```sh
-brew install --only-dependencies sdformat<#>
-```
-
-### Build from Source
-
-1. Configure and build
-  ```sh
-  cd sdformat
-  mkdir build
-  cd build
-  cmake .. # Consider specifying -DCMAKE_INSTALL_PREFIX=...
-  make
-  ```
-
-2. Optionally, install and uninstall
-  ```sh
-  sudo make install
-  ```
-
-  To uninstall the software installed with the previous steps:
-  ```sh
-  cd build/
-  sudo make uninstall
-  ```
 
 ## Windows
 
