@@ -51,6 +51,9 @@ namespace sdf
       // Bazel builds set TEST_SRCDIR
       if(gz::utils::env("TEST_SRCDIR", _sourceDir))
       {
+        // Bazel symlinks test files at <test_target>.runfiles/_main/ and
+        // the TEST_SRCDIR env var should point to <test_target>.runfiles.
+        // See https://bazel.build/remote/output-directories for details.
         _sourceDir = sdf::filesystem::append(_sourceDir, "_main");
         return true;
       }
