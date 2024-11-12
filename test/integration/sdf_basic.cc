@@ -16,7 +16,7 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/sdf.hh"
+#include "sdf/SDFImpl.hh"
 
 #include "test_config.hh"
 

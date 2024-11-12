@@ -74,6 +74,7 @@ cc_library(
     deps = [
         "@tinyxml2",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -129,6 +130,7 @@ cc_library(
         "@gz-utils//:Environment",
         "@gz-utils//:ImplPtr",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(
