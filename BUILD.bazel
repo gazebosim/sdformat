@@ -71,10 +71,10 @@ cc_library(
     ),
     copts = ["-Wno-unknown-pragmas"],
     includes = ["src/urdf"],
+    visibility = ["//visibility:public"],
     deps = [
         "@tinyxml2",
     ],
-    visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -108,6 +108,7 @@ cc_library(
         "include",
         "src",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         ":Config",
         ":Export",
@@ -130,7 +131,6 @@ cc_library(
         "@gz-utils//:Environment",
         "@gz-utils//:ImplPtr",
     ],
-    visibility = ["//visibility:public"],
 )
 
 cc_test(

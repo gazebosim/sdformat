@@ -1,3 +1,4 @@
+load("@buildifier_prebuilt//:rules.bzl", "buildifier", "buildifier_test")
 load("@rules_gazebo//gazebo:headers.bzl", "gz_configure_header")
 
 package(
@@ -694,8 +695,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -709,8 +710,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -724,8 +725,8 @@ cc_test(
         "integration/provide_feedback.urdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -739,8 +740,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -754,8 +755,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -769,8 +770,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -797,8 +798,8 @@ cc_test(
         "integration/sdf_basic.cc",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -809,12 +810,12 @@ cc_test(
         "integration/sdf_custom.cc",
     ],
     data = [
-        ":integration/model",
         "integration/custom_elems_attrs.sdf",
+        ":integration/model",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -828,8 +829,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -843,8 +844,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -858,8 +859,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -873,8 +874,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -891,8 +892,8 @@ cc_test(
         "integration/urdf_gazebo_extensions.urdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -906,8 +907,8 @@ cc_test(
         "integration/urdf_joint_parameters.urdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -923,8 +924,8 @@ cc_test(
         "integration/invalid_force_torque_sensor_massless_child_link.urdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -938,8 +939,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -954,8 +955,8 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
 )
@@ -969,8 +970,23 @@ cc_test(
         ":sdf",
     ],
     deps = [
-        "//:sdformat",
         ":test_utils",
+        "//:sdformat",
         "@googletest//:gtest_main",
     ],
+)
+
+# Bazel linting
+buildifier(
+    name = "buildifier.fix",
+    lint_mode = "fix",
+    mode = "fix",
+)
+
+buildifier_test(
+    name = "buildifier.test",
+    lint_mode = "warn",
+    mode = "diff",
+    no_sandbox = True,
+    workspace = "//:MODULE.bazel",
 )
