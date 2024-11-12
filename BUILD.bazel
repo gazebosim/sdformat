@@ -50,7 +50,7 @@ genrule(
         "sdf/**/*.convert",
     ]),
     outs = ["EmbeddedSdf.cc"],
-    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root sdf/ --input-files $(SRCS)",  # noqa
+    cmd = "$(execpath :embed_sdf) --output-file $@ --sdf-root sdf/ --input-files $(SRCS)",
     tools = [":embed_sdf"],
 )
 
