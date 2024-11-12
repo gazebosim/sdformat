@@ -16,9 +16,15 @@
 */
 
 #include <gtest/gtest.h>
-#include "sdf/Noise.hh"
+#include "sdf/AirPressure.hh"
+#include "sdf/Altimeter.hh"
+#include "sdf/Camera.hh"
+#include "sdf/ForceTorque.hh"
+#include "sdf/Imu.hh"
+#include "sdf/Lidar.hh"
 #include "sdf/Magnetometer.hh"
-#include "sdf/sdf.hh"
+#include "sdf/NavSat.hh"
+#include "sdf/Noise.hh"
 #include "sdf/Sensor.hh"
 
 /////////////////////////////////////////////////
