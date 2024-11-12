@@ -538,13 +538,9 @@ const std::string &SDF::EmbeddedSpec(
 const std::string &SDF::EmbeddedSpec(
     sdf::Errors &_errors, const std::string &_filename)
 {
-
   try
   {
     const std::string pathname = SDF::Version() + "/" + _filename;
-
-    std::cout << "Reading: " << pathname << std::endl;
-
     return GetEmbeddedSdf().at(pathname);
   }
   catch(const std::out_of_range &)

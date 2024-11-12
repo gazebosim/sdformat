@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "sdf/parser.hh"
 
 #include "test_config.hh"
 

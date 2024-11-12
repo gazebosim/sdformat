@@ -23,7 +23,16 @@
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
 
-#include "sdf/sdf.hh"
+#include "sdf/Collision.hh"
+#include "sdf/Frame.hh"
+#include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/parser.hh"
+#include "sdf/Root.hh"
+#include "sdf/Visual.hh"
+#include "sdf/World.hh"
 
 #include "test_config.hh"
 
