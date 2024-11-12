@@ -165,8 +165,31 @@ sdformat supported cmake parameters at configuring time:
 
 | Name                  | Type | Default  | Description                          |
 |-----------------------|------|----------|--------------------------------------|
+| `SKIP_PYBIND11`       | BOOL | False    | Skip generating Python bindings via pybind11 |
 | `USE_INTERNAL_URDF`   | BOOL | False    | Use an internal copy of urdfdom 1.0.0 instead of looking for one installed in the system |
 | `USE_UPSTREAM_CFLAGS` | BOOL | True     | Use the sdformat team compilation flags instead of the common set defined by cmake.      |
+
+### Build python bindings separately from main library
+
+If you want to build Python bindings separately from the main libsdformat library
+(for example if you want to build Python bindings for multiple versions of Python),
+you can invoke cmake on the `python` folder instead of the root folder.
+Specify the path to the python executable with which you wish to build bindings
+in the `Python3_EXECUTABLE` cmake variable.
+Specify the install path for the bindings in the `CMAKE_INSTALL_PREFIX`
+variable, and be sure to set your `PYTHONPATH` accordingly after install.
+
+```bash
+cd sdformat
+mkdir build_python3
+cd build_python3
+cmake ../python \
+    -DPython3_EXECUTABLE=/usr/local/bin/python3.12 \
+    -DCMAKE_INSTALL_PREFIX=<prefix>
+```
+
+See the homebrew [sdformat15 formula](https://github.com/osrf/homebrew-simulation/blob/027d06f5be49da1e40d01180aedae7f76dc7ff47/Formula/sdformat15.rb#L12-L56)
+for an example of building bindings for multiple versions of Python.
 
 ## Uninstallation
 
