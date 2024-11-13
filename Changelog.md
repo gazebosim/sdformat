@@ -1,5 +1,34 @@
 ## libsdformat 15.X
 
+### libsdformat 15.1.0 (2024-11-13)
+
+1. Bazel CI
+    * [Pull request #1500](https://github.com/gazebosim/sdformat/pull/1500)
+
+1. Add bzlmod support to sdf15
+    * [Pull request #1493](https://github.com/gazebosim/sdformat/pull/1493)
+
+1. Support removing the actor, light, or model from the root
+    * [Pull request #1492](https://github.com/gazebosim/sdformat/pull/1492)
+
+1. Only look for psutil if testing is enabled
+    * [Pull request #1495](https://github.com/gazebosim/sdformat/pull/1495)
+
+1. Improve installation instructions
+    * [Pull request #1496](https://github.com/gazebosim/sdformat/pull/1496)
+
+1. Permit building python bindings separately from libsdformat library
+    * [Pull request #1491](https://github.com/gazebosim/sdformat/pull/1491)
+
+1. Change sdf\_config.h to sdf/config.hh everywhere
+    * [Pull request #1494](https://github.com/gazebosim/sdformat/pull/1494)
+
+1. Improve installation instructions
+    * [Pull request #1490](https://github.com/gazebosim/sdformat/pull/1490)
+
+1. Fix symbol checking test when compiled with debug symbols
+    * [Pull request #1474](https://github.com/gazebosim/sdformat/pull/1474)
+
 ### libsdformat 15.0.0 (2024-09-25)
 
 1. **Baseline:** this includes all changes from 14.5.0 and earlier.
