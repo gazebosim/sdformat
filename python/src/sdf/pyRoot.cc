@@ -96,6 +96,10 @@ void defineRoot(pybind11::object module)
     .def("set_light", &sdf::Root::SetLight,
          "Set the light object. This will override any existing model, "
          "actor, and light object.")
+    .def("clear_actor_light_model", &sdf::Root::ClearActorLightModel,
+         "Remove the actor, light, or model if one of them exists."
+         "The SDF Root object can only hold one, or none, from the set"
+         "[Actor, Light, Model].")
     .def("add_world", [](Root &self, const World &_world)
          {
            ThrowIfErrors(self.AddWorld(_world));
