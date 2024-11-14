@@ -124,6 +124,7 @@ cc_library(
         "@gz-math//:Helpers",
         "@gz-math//:Inertial",
         "@gz-math//:Material",
+        "@gz-math//:MassMatrix3",
         "@gz-math//:Pose3",
         "@gz-math//:Plane",
         "@gz-math//:Quaternion",
