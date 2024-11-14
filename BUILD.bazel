@@ -133,6 +133,7 @@ cc_library(
         "@gz-math//:Vector3",
         "@gz-utils//:Environment",
         "@gz-utils//:ImplPtr",
+        "@gz-utils//:NeverDestroyed",
         "@gz-utils//:SuppressWarning",
     ],
 )
