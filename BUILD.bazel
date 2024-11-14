@@ -129,6 +129,7 @@ cc_library(
         "@gz-math//:SphericalCoordinates",
         "@gz-math//:Temperature",
         "@gz-math//:Vector2",
+        "@gz-math//:Vector3",
         "@gz-utils//:Environment",
         "@gz-utils//:ImplPtr",
         "@gz-utils//:SuppressWarning",
