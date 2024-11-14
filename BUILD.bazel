@@ -4,7 +4,10 @@ load("@rules_license//rules:license.bzl", "license")
 
 package(
     default_applicable_licenses = [":license"],
-    features = ["layering_check"],
+    features = [
+        "layering_check",
+        "parse_headers",
+    ],
 )
 
 license(
@@ -94,6 +97,7 @@ cc_library(
             "include/sdf/*.hh",
         ],
         exclude = [
+            "include/sdf/sdf.hh",
         ],
     ),
     data = [

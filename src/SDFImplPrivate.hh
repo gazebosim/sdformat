@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include "sdf/Element.hh"
 #include "sdf/Types.hh"
 
 /// \ingroup sdf_parser

@@ -23,6 +23,7 @@
 #include <tuple>
 
 #include <sdf/config.hh>
+#include <sdf/ParserConfig.hh>
 #include <sdf/Types.hh>
 #include "sdf/system_util.hh"
 
