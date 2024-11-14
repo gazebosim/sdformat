@@ -135,6 +135,7 @@ cc_library(
         "@gz-utils//:ImplPtr",
         "@gz-utils//:NeverDestroyed",
         "@gz-utils//:SuppressWarning",
+        "@tinyxml2",
     ],
 )
 
