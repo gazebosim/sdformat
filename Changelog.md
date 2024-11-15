@@ -1,5 +1,12 @@
 ## libsdformat 15.X
 
+### libsdformat 15.1.1 (2024-11-15)
+
+1. **Baseline:** this includes all changes from 15.1.0 and earlier.
+
+1. Fix bazel rules for layering_check and parse_headers with clang
+    * [Pull request #1507](https://github.com/gazebosim/sdformat/pull/1507)
+
 ### libsdformat 15.1.0 (2024-11-13)
 
 1. Bazel CI
