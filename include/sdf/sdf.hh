@@ -20,6 +20,6 @@
 
 // This file is kept for backwards compatibility.
 // Use sdformat.hh directly instead.
-#include <sdformat.hh>
+//#include <sdformat.hh>
 
 #endif

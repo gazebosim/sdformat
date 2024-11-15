@@ -1,0 +1,5 @@
+sh_binary(
+    name = "asan",
+    srcs = ["asan.sh"],
+    data = ["asan.supp"],
+)
