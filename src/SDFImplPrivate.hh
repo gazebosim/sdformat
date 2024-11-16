@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "sdf/Element.hh"
 #include "sdf/Types.hh"
 #include "sdf/Element.hh"
 
