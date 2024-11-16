@@ -6,6 +6,9 @@
 
 1. Fix bazel rules for layering_check and parse_headers with clang
     * [Pull request #1507](https://github.com/gazebosim/sdformat/pull/1507)
+  
+1. Enable header layering checks for bazel build
+    * [Pull request #1505(https://github.com/gazebosim/sdformat/pull/15057)
 
 ### libsdformat 15.1.0 (2024-11-13)
 
