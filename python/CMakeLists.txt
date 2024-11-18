@@ -11,6 +11,12 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11 TRUE)
   include(GNUInstallDirs)
   include(CTest)
+
+  if(BUILD_TESTING)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../test/test_config.hh.in 
+                   ${PROJECT_BINARY_DIR}/include/test_config.hh)
+    include_directories(${PROJECT_BINARY_DIR}/include)
+  endif()
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
@@ -200,10 +206,10 @@ if (BUILD_TESTING AND NOT WIN32)
   foreach (test ${python_tests})
     if (pytest_FOUND)
       add_test(NAME ${test}.py COMMAND
-        "${Python3_EXECUTABLE}" -m pytest "${CMAKE_SOURCE_DIR}/python/test/${test}.py" --junitxml "${CMAKE_BINARY_DIR}/test_results/${test}.xml")
+        "${Python3_EXECUTABLE}" -m pytest "${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.py" --junitxml "${CMAKE_BINARY_DIR}/test_results/${test}.xml")
     else()
       add_test(NAME ${test}.py COMMAND
-        "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
+        "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.py")
     endif()
     set(_env_vars)
     list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib:$ENV{PYTHONPATH}")
