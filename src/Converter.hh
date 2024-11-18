@@ -25,6 +25,7 @@
 #include <sdf/config.hh>
 #include <sdf/Types.hh>
 #include "sdf/system_util.hh"
+#include <sdf/ParserConfig.hh>
 
 namespace sdf
 {
