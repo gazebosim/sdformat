@@ -1,5 +1,28 @@
 ## libsdformat 14.X
 
+### libsdformat 14.6.0 (2024-11-18)
+
+1. Support removing the actor, light, or model from the root.
+    * [Pull request #1492](https://github.com/gazebosim/sdformat/pull/1492)
+
+1. Backport: Permit building python bindings separately from libsdformat library.
+    * [Pull request #1497](https://github.com/gazebosim/sdformat/pull/1497)
+
+1. Backport: Improve installation instructions.
+    * [Pull request #1496](https://github.com/gazebosim/sdformat/pull/1496)
+
+1. Backport: Fix symbol checking test when compiled with debug symbols.
+    * [Pull request #1476](https://github.com/gazebosim/sdformat/pull/1476)
+
+1. Update joinPaths implementation in InstallationDirectories.
+    * [Pull request #1469](https://github.com/gazebosim/sdformat/pull/1469)
+
+1. Decouple linking to shlwapi from `BUILD_TESTING`.
+    * [Pull request #1468](https://github.com/gazebosim/sdformat/pull/1468)
+
+1. Add optional binary relocatability.
+    * [Pull request #1414](https://github.com/gazebosim/sdformat/pull/1414)
+
 ### libsdformat 14.5.0 (2024-08-05)
 
 1. Adding Errors structure to XmlUtils
