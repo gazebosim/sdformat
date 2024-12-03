@@ -256,7 +256,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
     auto clonedAttribute = (*aiter)->Clone();
-    SDF_ASSERT(clonedAttribute->SetParentElement(clone),
+    SDF_ASSERT(clonedAttribute->SetParentElementNoReparse(clone),
         "Cannot set parent Element of cloned attribute Param to cloned "
         "Element.");
     clone->dataPtr->attributes.push_back(clonedAttribute);
@@ -279,7 +279,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   if (this->dataPtr->value)
   {
     clone->dataPtr->value = this->dataPtr->value->Clone();
-    SDF_ASSERT(clone->dataPtr->value->SetParentElement(clone),
+    SDF_ASSERT(clone->dataPtr->value->SetParentElementNoReparse(clone),
         "Cannot set parent Element of cloned value Param to cloned Element.");
   }
 
