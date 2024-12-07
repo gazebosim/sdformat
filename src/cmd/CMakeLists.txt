@@ -1,3 +1,48 @@
+# Collect source files into the "sources" variable and unit test files into the
+# "gtest_sources" variable.
+gz_get_libsources_and_unittests(sources gtest_sources)
+
+if (NOT HAVE_GZ_TOOLS)
+  list(REMOVE_ITEM gtest_sources gz_TEST.cc)
+endif()
+
+# Make a small static lib of command line functions
+add_library(gz STATIC gz.cc)
+target_link_libraries(gz
+  ${PROJECT_LIBRARY_TARGET_NAME}
+)
+
+# Build sdf CLI executable
+set(sdf_executable gz-sdformat-sdf)
+add_executable(${sdf_executable} sdf_main.cc)
+target_link_libraries(${sdf_executable}
+  gz
+  gz-utils${GZ_UTILS_VER}::cli
+  ${PROJECT_LIBRARY_TARGET_NAME}
+)
+install(TARGETS ${sdf_executable} DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}${PROJECT_VERSION_MAJOR}/)
+
+if (FALSE AND BUILD_TESTING)
+  # Build the unit tests.
+  gz_build_tests(TYPE UNIT SOURCES ${gtest_sources}
+    TEST_LIST test_list
+    LIB_DEPS
+      gz
+      gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
+      ${EXTRA_TEST_LIB_DEPS} test_config)
+
+  if (TARGET UNIT_gz_TEST)
+
+    set_tests_properties(
+      UNIT_gz_TEST
+      PROPERTIES
+      ENVIRONMENT
+        "GZ_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>"
+  #      "GZ_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>;LD_LIBRARY_PATH=\"$<TARGET_FILE_DIR:${PROJECT_LIBRARY_TARGET_NAME}>\":$ENV{LD_LIBRARY_PATH}"
+    )
+  endif()
+endif()
+
 #===============================================================================
 # Generate the ruby script for internal testing.
 # Note that the major version of the library is included in the name.
