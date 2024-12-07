@@ -114,28 +114,22 @@ void addSdfFlags(CLI::App &_app)
   auto filepathOpt =
     _app.add_option("filepath", opt->filepath,
                     "Path to an SDFormat file.");
-  auto preserveIncludesOpt =
-    _app.add_option("-i,--preserve-includes", opt->preserveIncludes,
-                    "Preserve included tags when printing converted arg (does "
-                    "not preserve merge-includes).");
-  auto degreesOpt =
-    _app.add_option("--degrees", opt->degrees,
-                    "Printed pose rotations are will be in degrees.");
-  auto expandAutoInertialsOpt =
-    _app.add_option("--expand-auto-inertials", opt->expandAutoInertials,
-                    "Auto-computed inertial values will be printed.");
-  auto precisionOpt =
-    _app.add_option("--precision", opt->precision,
-                    "Set the output stream precision for floating point "
-                    "numbers.");
-  auto snapToDegreesOpt =
-    _app.add_option("--snap-to-degrees", opt->snapToDegrees,
-                    "Printed rotations are snapped to specified degree "
-                    "intervals.");
-  auto snapToleranceOpt =
-    _app.add_option("--snap-tolerance", opt->snapTolerance,
-                    "Printed rotations are snapped if they are within this "
-                    "specified tolerance.");
+  _app.add_option("-i,--preserve-includes", opt->preserveIncludes,
+      "Preserve included tags when printing converted arg (does "
+      "not preserve merge-includes).");
+  _app.add_option("--degrees", opt->degrees,
+      "Printed pose rotations are will be in degrees.");
+  _app.add_option("--expand-auto-inertials", opt->expandAutoInertials,
+      "Auto-computed inertial values will be printed.");
+  _app.add_option("--precision", opt->precision,
+      "Set the output stream precision for floating point "
+      "numbers.");
+  _app.add_option("--snap-to-degrees", opt->snapToDegrees,
+      "Printed rotations are snapped to specified degree "
+      "intervals.");
+  _app.add_option("--snap-tolerance", opt->snapTolerance,
+      "Printed rotations are snapped if they are within this "
+      "specified tolerance.");
 
   auto command = _app.add_option_group("command", "Command to be executed.");
 
