@@ -24,7 +24,7 @@
 #include "sdf/Console.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Types.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 
 #include <gz/utils/Environment.hh>
 

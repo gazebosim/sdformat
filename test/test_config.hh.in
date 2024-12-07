@@ -48,13 +48,13 @@ namespace sdf
     /// \return True if directory is set correctly, false otherwise
     bool ProjectSourcePath(std::string &_sourceDir)
     {
-      std::string bazel_path;
       // Bazel builds set TEST_SRCDIR
-      if(gz::utils::env("TEST_SRCDIR", _sourceDir) &&
-         gz::utils::env("GZ_BAZEL_PATH", bazel_path))
+      if(gz::utils::env("TEST_SRCDIR", _sourceDir))
       {
-        _sourceDir = sdf::filesystem::append(
-            _sourceDir, "gz", bazel_path);
+        // Bazel symlinks test files at <test_target>.runfiles/_main/ and
+        // the TEST_SRCDIR env var should point to <test_target>.runfiles.
+        // See https://bazel.build/remote/output-directories for details.
+        _sourceDir = sdf::filesystem::append(_sourceDir, "_main");
         return true;
       }
       else
