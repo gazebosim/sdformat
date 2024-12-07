@@ -9,7 +9,10 @@ endif()
 # Make a small static lib of command line functions
 add_library(gz STATIC gz.cc ../FrameSemantics.cc)
 target_link_libraries(gz
-  ${PROJECT_LIBRARY_TARGET_NAME}
+  PUBLIC
+    ${PROJECT_LIBRARY_TARGET_NAME}
+  PRIVATE
+    TINYXML2::TINYXML2
 )
 
 # Build sdf CLI executable
