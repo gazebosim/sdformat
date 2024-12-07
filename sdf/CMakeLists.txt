@@ -47,5 +47,7 @@ if (GZ_PROGRAM)
       COMMENT "Generating full description for spec ${desc_ver}"
       VERBATIM)
   endforeach()
-  add_custom_target(sdf_descriptions DEPENDS ${description_targets} ${PROJECT_LIBRARY_TARGET_NAME})
+  add_custom_target(sdf_descriptions DEPENDS ${description_targets})
+  # Add a dependency on the gz-sdformat-sdf target which is created in in ../cmd/CMakeLists
+  add_dependencies(sdf_descriptions gz-sdformat-sdf)
 endif()
