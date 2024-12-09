@@ -948,7 +948,7 @@ TEST(DOMLink, InertialAuto)
   const sdf::Link *link = model->LinkByName("link_1");
   ASSERT_NE(link, nullptr);
 
-  // Verify inertial values for link_1 match thos in inertial_stats.sdf
+  // Verify inertial values for link_1 match those in inertial_stats.sdf
   gz::math::Inertiald inertial = link->Inertial();
   gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
   EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
@@ -990,7 +990,7 @@ TEST(DOMLink, InertialAutoSaveInElement)
   const sdf::Link *link = model->LinkByName("link_1");
   ASSERT_NE(link, nullptr);
 
-  // Verify inertial values for link_1 match thos in inertial_stats.sdf
+  // Verify inertial values for link_1 match those in inertial_stats.sdf
   gz::math::Inertiald inertial = link->Inertial();
   gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
   EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
