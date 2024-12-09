@@ -725,7 +725,7 @@ TEST(DOMLink, ResolveAutoInertialsWithMultipleCollisions)
 }
 
 /////////////////////////////////////////////////
-TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
+TEST(DOMLink, ResolveAutoInertialsWithMass)
 {
   std::string sdf = "<?xml version=\"1.0\"?>"
   "<sdf version=\"1.11\">"
@@ -733,6 +733,50 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
   "   <link name='compound_link'>"
   "     <inertial auto='true'>"
   "       <mass>4.0</mass>"
+  "       <pose>1 1 1 2 2 2</pose>"
+  "       <inertia>"
+  "         <ixx>1</ixx>"
+  "         <iyy>1</iyy>"
+  "         <izz>1</izz>"
+  "       </inertia>"
+  "     </inertial>"
+  "     <collision name='box_collision'>"
+  "      <density>2.0</density>"
+  "      <geometry>"
+  "        <box>"
+  "          <size>1 1 1</size>"
+  "        </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "   </model>"
+  "  </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(4.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
+  EXPECT_EQ(gz::math::Vector3d(0.66666, 0.66666, 0.66666),
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
+{
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='compound_model'>"
+  "   <link name='compound_link'>"
+  "     <inertial auto='true'>"
   "       <pose>1 1 1 2 2 2</pose>"
   "       <inertia>"
   "         <ixx>1</ixx>"

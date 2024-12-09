@@ -211,7 +211,6 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       // If auto is to true but user has still provided
       // inertial values
       if (inertialElem->HasElement("pose") ||
-          inertialElem->HasElement("mass") ||
           inertialElem->HasElement("inertia"))
       {
         Error err(
@@ -681,7 +680,27 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
       totalInertia = totalInertia + collisionInertia;
     }
 
-    this->dataPtr->inertial = totalInertia;
+    // If mass is specified, scale inertia to match desired mass
+    auto inertialElem = this->dataPtr->sdf->GetElement("inertial");
+    if (inertialElem->HasElement("mass"))
+    {
+      double mass = inertialElem->Get<double>("mass");
+      const gz::math::MassMatrix3d &totalMassMatrix = totalInertia.MassMatrix();
+      // normalize to get the unit mass matrix
+      gz::math::MassMatrix3d unitMassMatrix(1.0,
+          totalMassMatrix.DiagonalMoments() / totalMassMatrix.Mass(),
+          totalMassMatrix.OffDiagonalMoments() / totalMassMatrix.Mass());
+      // scale the final inertia to match specified mass
+      this->dataPtr->inertial = gz::math::Inertiald(
+          gz::math::MassMatrix3d(mass,
+              mass * unitMassMatrix.DiagonalMoments(),
+              mass * unitMassMatrix.OffDiagonalMoments()),
+          totalInertia.Pose());
+    }
+    else
+    {
+      this->dataPtr->inertial = totalInertia;
+    }
 
     // If CalculateInertial() was called with SAVE_CALCULATION
     // configuration then set autoInertiaSaved to true
@@ -695,7 +714,6 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
     {
       this->dataPtr->autoInertiaSaved = true;
       // Write calculated inertia values to //link/inertial element
-      auto inertialElem = this->dataPtr->sdf->GetElement("inertial");
       inertialElem->GetElement("pose")->GetValue()->Set<gz::math::Pose3d>(
         totalInertia.Pose());
       inertialElem->GetElement("mass")->GetValue()->Set<double>(
