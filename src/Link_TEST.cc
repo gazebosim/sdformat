@@ -727,6 +727,58 @@ TEST(DOMLink, ResolveAutoInertialsWithMultipleCollisions)
 /////////////////////////////////////////////////
 TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
 {
+  // A model with link inertial auto set to true.
+  // The inertia matrix is specified but should be ignored.
+  // <mass> is not speicifed so the inertial values should be computed
+  // based on the collision density value.
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='compound_model'>"
+  "   <link name='compound_link'>"
+  "     <inertial auto='true'>"
+  "       <pose>1 1 1 2 2 2</pose>"
+  "       <inertia>"
+  "         <ixx>1</ixx>"
+  "         <iyy>1</iyy>"
+  "         <izz>1</izz>"
+  "       </inertia>"
+  "     </inertial>"
+  "     <collision name='box_collision'>"
+  "      <density>2.0</density>"
+  "      <geometry>"
+  "        <box>"
+  "          <size>1 1 1</size>"
+  "        </box>"
+  "        </geometry>"
+  "      </collision>"
+  "    </link>"
+  "   </model>"
+  "  </sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(2.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
+  EXPECT_EQ(gz::math::Vector3d(0.33333, 0.33333, 0.33333),
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, ResolveAutoInertialsWithMass)
+{
+  // A model with link inertial auto set to true.
+  // The inertia matrix is specified but should be ignored.
+  // <mass> is specified - the auto computed inertial values should
+  // be scaled based on the desired mass.
   std::string sdf = "<?xml version=\"1.0\"?>"
   "<sdf version=\"1.11\">"
   "  <model name='compound_model'>"
@@ -763,9 +815,117 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
   root.ResolveAutoInertials(errors, sdfParserConfig);
   EXPECT_TRUE(errors.empty());
 
-  EXPECT_NE(4.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_DOUBLE_EQ(4.0, link->Inertial().MassMatrix().Mass());
   EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
-  EXPECT_EQ(gz::math::Vector3d(0.33333, 0.33333, 0.33333),
+  EXPECT_EQ(gz::math::Vector3d(0.66666, 0.66666, 0.66666),
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, ResolveAutoInertialsWithMassAndMultipleCollisions)
+{
+  // A model with link inertial auto set to true.
+  // The inertia matrix is specified but should be ignored.
+  // <mass> is specified - the auto computed inertial values should
+  // be scaled based on the desired mass.
+  // The model contains two collisions with different sizes and densities
+  // and a lumped center of mass at the link origin.
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='compound_model'>"
+  "   <link name='compound_link'>"
+  "     <inertial auto='true'>"
+  "       <mass>12.0</mass>"
+  "       <pose>1 1 1 2 2 2</pose>"
+  "       <inertia>"
+  "         <ixx>1</ixx>"
+  "         <iyy>1</iyy>"
+  "         <izz>1</izz>"
+  "       </inertia>"
+  "     </inertial>"
+  "     <collision name='cube_collision'>"
+  "       <pose>0.0 0.0 0.5 0 0 0</pose>"
+  "       <density>4.0</density>"
+  "       <geometry>"
+  "         <box>"
+  "           <size>1 1 1</size>"
+  "         </box>"
+  "       </geometry>"
+  "     </collision>"
+  "     <collision name='box_collision'>"
+  "       <pose>0.0 0.0 -1.0 0 0 0</pose>"
+  "       <density>1.0</density>"
+  "       <geometry>"
+  "         <box>"
+  "           <size>1 1 2</size>"
+  "         </box>"
+  "       </geometry>"
+  "     </collision>"
+  "    </link>"
+  "  </model>"
+  "</sdf>";
+
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+
+  // Expect mass value from //inertial/mass
+  EXPECT_DOUBLE_EQ(12.0, link->Inertial().MassMatrix().Mass());
+
+  // Inertial values based on density before scaling to match specified mass
+  //
+  // Collision geometries:
+  //
+  // --------- z = 1
+  // |       |
+  // |   c   | cube on top, side length 1.0, density 4.0
+  // |       |
+  // |-------| z = 0
+  // |       |
+  // |       |
+  // |       |
+  // |   c   | box on bottom, size 1x1x2, density 1.0
+  // |       |
+  // |       |
+  // |       |
+  // --------- z = -2
+  //
+  //   Top cube: volume = 1.0, mass = 4.0, center of mass z = 0.5
+  // Bottom box: volume = 2.0, mass = 2.0, center of mass z = -1.0
+  //
+  // Total mass from density: 6.0
+  // Lumped center of mass z = (4.0 * 0.5 + 2.0 * (-1.0)) / 6.0 = 0.0
+  EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
+
+  // Moment of inertia at center of each shape
+  //   Top cube: Ixx = Iyy = Izz = 4.0 / 12 * (1*1 + 1*1) =  8/12 = 2/3
+  // Bottom box:       Ixx = Iyy = 2.0 / 12 * (1*1 + 2*2) = 10/12 = 5/6
+  //                         Izz = 2.0 / 12 * (1*1 + 1*1) =  4/12 = 1/3
+  //
+  // Lumped moment of inertia at lumped center of mass
+  // Ixx = sum(Ixx_i + mass_i * center_of_mass_z_i^2) for i in [top, bottom]
+  // Iyy = Ixx
+  // Izz = Izz_top + Izz_bottom
+  //
+  // Ixx = Iyy = (2/3 + 4.0 * 0.5 * 0.5) + (5/6 + 2.0 * (-1.0) * (-1.0))
+  //           = (2/3 + 1)               + (5/6 + 2.0)
+  //           = 5/3                     + 17/6
+  //           = 27/6 = 9/2 = 4.5
+  //
+  // Izz = 2/3 + 1/3 = 1.0
+
+  // Then scale the inertias according to the specified mass of 12.0
+  // mass_ratio = 12.0 / 6.0 = 2.0
+  // Ixx = Iyy = mass_ratio * Ixx_unscaled = 2.0 * 4.5 = 9.0
+  //       Izz = mass_ratio * Izz_unscaled = 2.0 * 1.0 = 2.0
+  EXPECT_EQ(gz::math::Vector3d(9.0, 9.0, 2.0),
     link->Inertial().MassMatrix().DiagonalMoments());
 }
 
