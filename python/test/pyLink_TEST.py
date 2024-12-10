@@ -482,7 +482,54 @@ class LinkTEST(unittest.TestCase):
         self.assertEqual(Vector3d(2.013513, 2.013513, 0.72603),
             link.inertial().mass_matrix().diagonal_moments())
 
+    def test_inertial_values_given_with_auto_set_to_true(self):
+        # The inertia matrix is specified but should be ignored.
+        # <mass> is not speicifed so the inertial values should be computed
+        # based on the collision density value.
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='compound_model'>" + \
+        "   <link name='compound_link'>" + \
+        "     <inertial auto='True'>" + \
+        "       <pose>1 1 1 2 2 2</pose>" + \
+        "       <inertia>" + \
+        "         <ixx>1</ixx>" + \
+        "         <iyy>1</iyy>" + \
+        "         <izz>1</izz>" + \
+        "       </inertia>" + \
+        "     </inertial>" + \
+        "     <collision name='box_collision'>" + \
+        "      <density>2.0</density>" + \
+        "      <geometry>" + \
+        "        <box>" + \
+        "          <size>1 1 1</size>" + \
+        "        </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "   </model>" + \
+        "  </sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(errors, None)
+
+        model = root.model()
+        link = model.link_by_index(0)
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+
+        self.assertNotEqual(4.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Pose3d.ZERO, link.inertial().pose())
+        self.assertEqual(Vector3d(0.33333, 0.33333, 0.33333),
+            link.inertial().mass_matrix().diagonal_moments())
+
     def test_resolveauto_inertialsWithMass(self):
+        # The inertia matrix is specified but should be ignored.
+        # <mass> is speicifed - the auto computed inertial values should
+        # be scaled based on the desired mass.
         sdf = "<?xml version=\"1.0\"?>" + \
         "<sdf version=\"1.11\">" + \
         "  <model name='compound_model'>" + \
@@ -522,47 +569,6 @@ class LinkTEST(unittest.TestCase):
         self.assertEqual(4.0, link.inertial().mass_matrix().mass())
         self.assertEqual(Pose3d.ZERO, link.inertial().pose())
         self.assertEqual(Vector3d(0.66666, 0.66666, 0.66666),
-            link.inertial().mass_matrix().diagonal_moments())
-
-    def test_inertial_values_given_with_auto_set_to_true(self):
-        sdf = "<?xml version=\"1.0\"?>" + \
-        "<sdf version=\"1.11\">" + \
-        "  <model name='compound_model'>" + \
-        "   <link name='compound_link'>" + \
-        "     <inertial auto='True'>" + \
-        "       <pose>1 1 1 2 2 2</pose>" + \
-        "       <inertia>" + \
-        "         <ixx>1</ixx>" + \
-        "         <iyy>1</iyy>" + \
-        "         <izz>1</izz>" + \
-        "       </inertia>" + \
-        "     </inertial>" + \
-        "     <collision name='box_collision'>" + \
-        "      <density>2.0</density>" + \
-        "      <geometry>" + \
-        "        <box>" + \
-        "          <size>1 1 1</size>" + \
-        "        </box>" + \
-        "        </geometry>" + \
-        "      </collision>" + \
-        "    </link>" + \
-        "   </model>" + \
-        "  </sdf>"
-
-        root = Root()
-        sdfParserConfig = ParserConfig()
-        errors = root.load_sdf_string(sdf, sdfParserConfig)
-        self.assertEqual(errors, None)
-
-        model = root.model()
-        link = model.link_by_index(0)
-        errors = []
-        root.resolve_auto_inertials(errors, sdfParserConfig)
-        self.assertEqual(len(errors), 0)
-
-        self.assertNotEqual(4.0, link.inertial().mass_matrix().mass())
-        self.assertEqual(Pose3d.ZERO, link.inertial().pose())
-        self.assertEqual(Vector3d(0.33333, 0.33333, 0.33333),
             link.inertial().mass_matrix().diagonal_moments())
 
     def test_resolveauto_inertialsCalledWithAutoFalse(self):

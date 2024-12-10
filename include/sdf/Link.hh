@@ -356,7 +356,8 @@ namespace sdf
     /// If mass is not provided by the user, the inertial values will be
     /// determined based on either link density or collision density if
     /// explicitly set. Otherwise, if mass is specified, the inertia matrix
-    /// will be scaled to match the desired mass.
+    /// will be scaled to match the desired mass, while respecting
+    /// the ratio of density values between collisions.
     /// \param[out] _errors A vector of Errors object. Each object
     /// would contain an error code and an error message.
     /// \param[in] _config Custom parser configuration
