@@ -627,7 +627,6 @@ class LinkTEST(unittest.TestCase):
         self.assertEqual(Vector3d(1.55556, 1.55556, 0.666667),
             link.inertial().mass_matrix().diagonal_moments())
 
-
     def test_resolveauto_inertialsCalledWithAutoFalse(self):
         sdf = "<?xml version=\"1.0\"?>" + \
         " <sdf version=\"1.11\">" + \
