@@ -777,7 +777,7 @@ TEST(DOMLink, ResolveAutoInertialsWithMass)
 {
   // A model with link inertial auto set to true.
   // The inertia matrix is specified but should be ignored.
-  // <mass> is speicifed - the auto computed inertial values should
+  // <mass> is specified - the auto computed inertial values should
   // be scaled based on the desired mass.
   std::string sdf = "<?xml version=\"1.0\"?>"
   "<sdf version=\"1.11\">"
@@ -826,7 +826,7 @@ TEST(DOMLink, ResolveAutoInertialsWithMassAndMultipleCollisions)
 {
   // A model with link inertial auto set to true.
   // The inertia matrix is specified but should be ignored.
-  // <mass> is speicifed - the auto computed inertial values should
+  // <mass> is specified - the auto computed inertial values should
   // be scaled based on the desired mass.
   std::string sdf = "<?xml version=\"1.0\"?>"
   "<sdf version=\"1.11\">"

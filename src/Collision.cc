@@ -291,18 +291,8 @@ void Collision::CalculateInertial(
   // 3. DensityDefault value.
   else
   {
-    // If density was not explicitly set, send a warning
-    // about the default value being used
+    // If density was not explicitly set, default value is used
     density = DensityDefault();
-    Error densityMissingErr(
-      ErrorCode::ELEMENT_MISSING,
-      "Collision is missing a <density> child element. "
-      "Using a default density value of " +
-      std::to_string(DensityDefault()) + " kg/m^3. "
-    );
-    enforceConfigurablePolicyCondition(
-      _config.WarningsPolicy(), densityMissingErr, _errors
-    );
   }
 
   // If this Collision's auto inertia params have not been set, then use the
