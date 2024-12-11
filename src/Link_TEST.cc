@@ -821,7 +821,64 @@ TEST(DOMLink, ResolveAutoInertialsWithMass)
     link->Inertial().MassMatrix().DiagonalMoments());
 }
 
+/////////////////////////////////////////////////
+TEST(DOMLink, ResolveAutoInertialsWithMassAndMultipleCollisions)
+{
+  // A model with link inertial auto set to true.
+  // The inertia matrix is specified but should be ignored.
+  // <mass> is speicifed - the auto computed inertial values should
+  // be scaled based on the desired mass.
+  std::string sdf = "<?xml version=\"1.0\"?>"
+  "<sdf version=\"1.11\">"
+  "  <model name='compound_model'>"
+  "   <link name='compound_link'>"
+  "     <inertial auto='true'>"
+  "       <mass>4.0</mass>"
+  "       <pose>1 1 1 2 2 2</pose>"
+  "       <inertia>"
+  "         <ixx>1</ixx>"
+  "         <iyy>1</iyy>"
+  "         <izz>1</izz>"
+  "       </inertia>"
+  "     </inertial>"
+  "     <collision name='box_collision'>"
+  "       <pose>0.0 0.0 0.5 0 0 0</pose>"
+  "       <density>2.0</density>"
+  "       <geometry>"
+  "         <box>"
+  "           <size>1 1 1</size>"
+  "         </box>"
+  "       </geometry>"
+  "     </collision>"
+  "     <collision name='box_collision2'>"
+  "       <pose>0.0 0.0 -0.5 0 0 0</pose>"
+  "       <density>4.0</density>"
+  "       <geometry>"
+  "         <box>"
+  "           <size>1 1 1</size>"
+  "         </box>"
+  "       </geometry>"
+  "     </collision>"
+  "    </link>"
+  "  </model>"
+  "</sdf>";
 
+  sdf::Root root;
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+  EXPECT_NE(nullptr, root.Element());
+
+  const sdf::Model *model = root.Model();
+  const sdf::Link *link = model->LinkByIndex(0);
+  root.ResolveAutoInertials(errors, sdfParserConfig);
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_DOUBLE_EQ(4.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(gz::math::Pose3d(0 0 -0.166667 0 0 0), link->Inertial().Pose());
+  EXPECT_EQ(gz::math::Vector3d(1.55556 1.55556 0.666667),
+    link->Inertial().MassMatrix().DiagonalMoments());
+}
 
 /////////////////////////////////////////////////
 TEST(DOMLink, ResolveAutoInertialsCalledWithAutoFalse)
