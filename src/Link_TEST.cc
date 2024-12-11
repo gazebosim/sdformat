@@ -875,8 +875,9 @@ TEST(DOMLink, ResolveAutoInertialsWithMassAndMultipleCollisions)
   EXPECT_TRUE(errors.empty());
 
   EXPECT_DOUBLE_EQ(4.0, link->Inertial().MassMatrix().Mass());
-  EXPECT_EQ(gz::math::Pose3d(0 0 -0.166667 0 0 0), link->Inertial().Pose());
-  EXPECT_EQ(gz::math::Vector3d(1.55556 1.55556 0.666667),
+  EXPECT_EQ(gz::math::Pose3d(0, 0, -0.166667, 0, 0, 0),
+            link->Inertial().Pose());
+  EXPECT_EQ(gz::math::Vector3d(1.55556, 1.55556, 0.666667),
     link->Inertial().MassMatrix().DiagonalMoments());
 }
 
