@@ -521,7 +521,7 @@ class LinkTEST(unittest.TestCase):
         root.resolve_auto_inertials(errors, sdfParserConfig)
         self.assertEqual(len(errors), 0)
 
-        self.assertNotEqual(4.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(2.0, link.inertial().mass_matrix().mass())
         self.assertEqual(Pose3d.ZERO, link.inertial().pose())
         self.assertEqual(Vector3d(0.33333, 0.33333, 0.33333),
             link.inertial().mass_matrix().diagonal_moments())

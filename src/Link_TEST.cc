@@ -766,7 +766,7 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
   root.ResolveAutoInertials(errors, sdfParserConfig);
   EXPECT_TRUE(errors.empty());
 
-  EXPECT_NE(4.0, link->Inertial().MassMatrix().Mass());
+  EXPECT_EQ(2.0, link->Inertial().MassMatrix().Mass());
   EXPECT_EQ(gz::math::Pose3d::Zero, link->Inertial().Pose());
   EXPECT_EQ(gz::math::Vector3d(0.33333, 0.33333, 0.33333),
     link->Inertial().MassMatrix().DiagonalMoments());
