@@ -28,7 +28,7 @@
 #include "sdf/Link.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Plugin.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf

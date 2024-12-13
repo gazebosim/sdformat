@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include "sdf/sdf.hh"
+#include "sdf/parser.hh"
 
 std::string get_sdf_string()
 {

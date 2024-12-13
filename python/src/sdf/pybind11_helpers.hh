@@ -17,7 +17,7 @@
 #ifndef SDFORMAT_PYTHON_PYBIND11_HELPERS_HH_
 #define SDFORMAT_PYTHON_PYBIND11_HELPERS_HH_
 
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 
 #include <sdf/Types.hh>
 

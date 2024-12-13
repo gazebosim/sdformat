@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "sdf/Param.hh"
 
 TEST(CheckFixForLocal, CheckFixForCxxLocal)
 {

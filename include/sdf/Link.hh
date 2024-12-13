@@ -26,7 +26,7 @@
 #include "sdf/Element.hh"
 #include "sdf/SemanticPose.hh"
 #include "sdf/Types.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/system_util.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Error.hh"
