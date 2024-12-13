@@ -20,14 +20,16 @@
 #include <any>
 #include <filesystem>
 
-#include <gz/math.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 #include <gz/utils/Environment.hh>
 #include <gz/utils/SuppressWarning.hh>
 
+#include "sdf/parser.hh"
 #include "test_config.hh"
 #include "test_utils.hh"
-
-#include "sdf/sdf.hh"
 
 class SDFUpdateFixture
 {

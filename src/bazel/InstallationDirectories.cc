@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Open Source Robotics Foundation
+ * Copyright (C) 2024 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
 
-#include <string>
+#include <sdf/InstallationDirectories.hh>
 
-#include <gtest/gtest.h>
-
-#include "sdf/parser.hh"
-
-#include "test_config.hh"
-
-//////////////////////////////////////////////////
-TEST(SDFParser, AudioSDF_FullParameters_noThrow)
+namespace sdf
 {
-  const auto sdfTestFile =
-    sdf::testing::TestFile("integration", "audio.sdf");
 
-  sdf::SDFPtr p(new sdf::SDF());
-  sdf::init(p);
-  ASSERT_TRUE(sdf::readFile(sdfTestFile, p));
+inline namespace SDF_VERSION_NAMESPACE {
+
+// Generate an install prefix specifically for bazel build.
+std::string getInstallPrefix()
+{
+  return ".";
 }
+}  // namespace SDF_VERSION_NAMESPACE
+}  // namespace sdf
+

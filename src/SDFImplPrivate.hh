@@ -20,6 +20,7 @@
 #include <string>
 
 #include "sdf/Types.hh"
+#include "sdf/Element.hh"
 
 /// \ingroup sdf_parser
 /// \brief namespace for Simulation Description Format parser

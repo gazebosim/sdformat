@@ -20,7 +20,8 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "sdf/parser.hh"
+#include "sdf/Root.hh"
 
 std::string get_sdf_string(const std::string &_version)
 {

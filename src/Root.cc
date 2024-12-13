@@ -27,7 +27,7 @@
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "FrameSemantics.hh"
 #include "ScopedGraph.hh"
 #include "Utils.hh"
@@ -643,4 +643,10 @@ sdf::ElementPtr Root::ToElement(const OutputConfig &_config) const
   }
 
   return elem;
+}
+
+/////////////////////////////////////////////////
+void Root::ClearActorLightModel()
+{
+  this->dataPtr->modelLightOrActor = std::monostate{};
 }

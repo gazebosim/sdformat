@@ -25,7 +25,7 @@
 #include "sdf/ParserConfig.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/system_util.hh"
 
 namespace sdf
@@ -245,6 +245,11 @@ namespace sdf
     /// \return SDF element pointer with updated root values.
     public: sdf::ElementPtr ToElement(
         const OutputConfig &_config = OutputConfig::GlobalConfig()) const;
+
+    /// \brief Remove the actor, light, or model if one of them exists.
+    /// The SDF Root object can only hold one, or none, from the set
+    /// [Actor, Light, Model].
+    public: void ClearActorLightModel();
 
     /// \brief Private data pointer
     GZ_UTILS_IMPL_PTR(dataPtr)
