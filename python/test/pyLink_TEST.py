@@ -580,7 +580,7 @@ class LinkTEST(unittest.TestCase):
         "  <model name='compound_model'>" + \
         "   <link name='compound_link'>" + \
         "     <inertial auto='True'>" + \
-        "       <mass>4.0</mass>" + \
+        "       <mass>12.0</mass>" + \
         "       <pose>1 1 1 2 2 2</pose>" + \
         "       <inertia>" + \
         "         <ixx>1</ixx>" + \
