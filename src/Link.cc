@@ -669,6 +669,11 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
       return;
     }
 
+    auto inertialElem = this->dataPtr->sdf->GetElement("inertial");
+    bool massSpecified = inertialElem->HasElement("mass");
+    // Warn about using default collision density value if mass is not specified
+    bool warnUseDefaultDensity = !massSpecified;
+
     gz::math::Inertiald totalInertia;
 
     for (sdf::Collision &collision : this->dataPtr->collisions)
@@ -676,13 +681,13 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
       gz::math::Inertiald collisionInertia;
       collision.CalculateInertial(_errors, collisionInertia, _config,
                                   this->dataPtr->density,
-                                  this->dataPtr->autoInertiaParams);
+                                  this->dataPtr->autoInertiaParams,
+                                  warnUseDefaultDensity);
       totalInertia = totalInertia + collisionInertia;
     }
 
     // If mass is specified, scale inertia to match desired mass
-    auto inertialElem = this->dataPtr->sdf->GetElement("inertial");
-    if (inertialElem->HasElement("mass"))
+    if (massSpecified)
     {
       double mass = inertialElem->Get<double>("mass");
       const gz::math::MassMatrix3d &totalMassMatrix = totalInertia.MassMatrix();
