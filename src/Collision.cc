@@ -272,7 +272,8 @@ void Collision::CalculateInertial(
   gz::math::Inertiald &_inertial,
   const ParserConfig &_config,
   const std::optional<double> &_density,
-  sdf::ElementPtr _autoInertiaParams)
+  sdf::ElementPtr _autoInertiaParams,
+  bool _warnIfDensityIsUnset)
 {
   // Order of precedence for density:
   double density;
@@ -292,7 +293,20 @@ void Collision::CalculateInertial(
   else
   {
     // If density was not explicitly set, default value is used
+    // Send a warning about the default value being used if needed
     density = DensityDefault();
+    if (_warnIfDensityIsUnset)
+    {
+      Error densityMissingErr(
+        ErrorCode::ELEMENT_MISSING,
+        "Collision is missing a <density> child element. "
+        "Using a default density value of " +
+        std::to_string(DensityDefault()) + " kg/m^3. "
+      );
+      enforceConfigurablePolicyCondition(
+        _config.WarningsPolicy(), densityMissingErr, _errors
+      );
+    }
   }
 
   // If this Collision's auto inertia params have not been set, then use the
