@@ -588,21 +588,21 @@ class LinkTEST(unittest.TestCase):
         "         <izz>1</izz>" + \
         "       </inertia>" + \
         "     </inertial>" + \
-        "     <collision name='box_collision'>" + \
+        "     <collision name='cube_collision'>" + \
         "       <pose>0.0 0.0 0.5 0 0 0</pose>" + \
-        "      <density>2.0</density>" + \
+        "      <density>4.0</density>" + \
         "      <geometry>" + \
         "        <box>" + \
         "          <size>1 1 1</size>" + \
         "        </box>" + \
         "        </geometry>" + \
         "      </collision>" + \
-        "     <collision name='box_collision2'>" + \
-        "       <pose>0.0 0.0 -0.5 0 0 0</pose>" + \
-        "       <density>4.0</density>" + \
+        "     <collision name='box_collision'>" + \
+        "       <pose>0.0 0.0 -1.0 0 0 0</pose>" + \
+        "       <density>1.0</density>" + \
         "       <geometry>" + \
         "         <box>" + \
-        "           <size>1 1 1</size>" + \
+        "           <size>1 1 2</size>" + \
         "         </box>" + \
         "       </geometry>" + \
         "    </collision>" + \
@@ -621,10 +621,67 @@ class LinkTEST(unittest.TestCase):
         root.resolve_auto_inertials(errors, sdfParserConfig)
         self.assertEqual(len(errors), 0)
 
-        self.assertEqual(4.0, link.inertial().mass_matrix().mass())
-        self.assertEqual(Pose3d(0, 0, -0.166667, 0, 0, 0),
+        self.assertEqual(12.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Pose3d.ZERO,
                          link.inertial().pose())
-        self.assertEqual(Vector3d(1.55556, 1.55556, 0.666667),
+        self.assertEqual(Vector3d(9.0, 9.0, 2.0),
+            link.inertial().mass_matrix().diagonal_moments())
+
+    def test_resolveauto_inertialsWithMassAndDefaultDensity(self):
+        # The inertia matrix is specified but should be ignored.
+        # <mass> is speicifed - the auto computed inertial values should
+        # be scaled based on the desired mass.
+        # Density is not specified for the bottom collision - it should
+        # use the default value
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='compound_model'>" + \
+        "   <link name='compound_link'>" + \
+        "     <inertial auto='True'>" + \
+        "       <mass>12000.0</mass>" + \
+        "       <pose>1 1 1 2 2 2</pose>" + \
+        "       <inertia>" + \
+        "         <ixx>1</ixx>" + \
+        "         <iyy>1</iyy>" + \
+        "         <izz>1</izz>" + \
+        "       </inertia>" + \
+        "     </inertial>" + \
+        "     <collision name='cube_collision'>" + \
+        "       <pose>0.0 0.0 0.5 0 0 0</pose>" + \
+        "      <density>4000.0</density>" + \
+        "      <geometry>" + \
+        "        <box>" + \
+        "          <size>1 1 1</size>" + \
+        "        </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "     <collision name='box_collision'>" + \
+        "       <pose>0.0 0.0 -1.0 0 0 0</pose>" + \
+        "       <geometry>" + \
+        "         <box>" + \
+        "           <size>1 1 2</size>" + \
+        "         </box>" + \
+        "       </geometry>" + \
+        "    </collision>" + \
+        "  </link>" + \
+        " </model>" + \
+        "</sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(errors, None)
+
+        model = root.model()
+        link = model.link_by_index(0)
+        errors = []
+        root.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+
+        self.assertEqual(12000.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Pose3d.ZERO,
+                         link.inertial().pose())
+        self.assertEqual(Vector3d(9000.0, 9000.0, 2000.0),
             link.inertial().mass_matrix().diagonal_moments())
 
     def test_resolveauto_inertialsCalledWithAutoFalse(self):
