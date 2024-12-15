@@ -356,20 +356,6 @@ namespace sdf
     /// \param[in] _frame The name of the pose relative-to frame.
     public: void SetPoseRelativeTo(const std::string &_frame);
 
-    /// \brief Get the name of the coordinate frame relative to which this
-    /// object's camera_info message header is expressed.
-    /// Note: while Gazebo interprets the camera frame to be looking towards +X,
-    /// other tools, such as ROS interprets this frame as looking towards +Z.
-    /// The Camera sensor assumes that the color and depth images are captured
-    /// at the same frame_id.
-    /// \return The name of the frame this camera uses in its camera_info topic.
-    public: const std::string GZ_DEPRECATED(15) OpticalFrameId() const;
-
-    /// \brief Set the name of the coordinate frame relative to which this
-    /// object's camera_info is expressed.
-    /// \param[in] _frame The frame this camera uses in its camera_info topic.
-    public: void GZ_DEPRECATED(15) SetOpticalFrameId(const std::string &_frame);
-
     /// \brief Get the lens type. This is the type of the lens mapping.
     /// Supported values are gnomonical, stereographic, equidistant,
     /// equisolid_angle, orthographic, custom. For gnomonical (perspective)

@@ -110,10 +110,6 @@ cc_library(
     name = "sdformat",
     srcs = sources + private_headers + ["EmbeddedSdf.cc"],
     hdrs = public_headers,
-    defines = [
-        'SDF_SHARE_PATH=\\".\\"',
-        'SDF_VERSION_PATH=\\"sdformat\\"',
-    ],
     includes = [
         "include",
         "src",
