@@ -22,7 +22,17 @@
 #include <sstream>
 #include <string>
 
-#include "sdf/sdf.hh"
+#include "sdf/Camera.hh"
+#include "sdf/Geometry.hh"
+#include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/parser.hh"
+#include "sdf/Root.hh"
+#include "sdf/Sensor.hh"
+#include "sdf/Visual.hh"
+#include "sdf/World.hh"
 
 #include "test_config.hh"
 

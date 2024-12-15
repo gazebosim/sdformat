@@ -28,7 +28,7 @@
 #include "sdf/Error.hh"
 #include "sdf/InterfaceElements.hh"
 #include "sdf/CustomInertiaCalcProperties.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "sdf/system_util.hh"
 
 

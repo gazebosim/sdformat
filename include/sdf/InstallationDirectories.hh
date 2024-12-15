@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include <sdf/system_util.hh>
 
 namespace sdf

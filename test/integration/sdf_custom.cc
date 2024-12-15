@@ -19,7 +19,11 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
+#include "sdf/Link.hh"
+#include "sdf/Model.hh"
+#include "sdf/parser.hh"
+#include "sdf/Root.hh"
+#include "sdf/World.hh"
 
 #include "test_config.hh"
 
