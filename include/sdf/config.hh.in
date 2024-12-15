@@ -47,12 +47,4 @@
 
 #cmakedefine SDFORMAT_DISABLE_CONSOLE_LOGFILE 1
 
-#ifndef SDF_SHARE_PATH
-#define SDF_SHARE_PATH _Pragma ("GCC warning \"'SDF_SHARE_PATH' macro is deprecated, use sdf::getSharePath() function instead. \"") "${CMAKE_INSTALL_FULL_DATAROOTDIR}/"
-#endif
-
-#ifndef SDF_VERSION_PATH
-#define SDF_VERSION_PATH _Pragma ("GCC warning \"'SDF_VERSION_PATH' macro is deprecated and should not be used. \"") "${CMAKE_INSTALL_FULL_DATAROOTDIR}/sdformat${PROJECT_VERSION_MAJOR}/${PROJECT_VERSION}"
-#endif
-
 #endif  // #ifndef SDF_CONFIG_HH_

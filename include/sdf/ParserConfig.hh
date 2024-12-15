@@ -222,10 +222,6 @@ class SDFORMAT_VISIBLE ParserConfig
   public: bool URDFPreserveFixedJoint() const;
 
   /// \brief Set the storeResolvedURIs flag value.
-  /// \sa SetStoreResolvedURIs
-  public: GZ_DEPRECATED(15) void SetStoreResovledURIs(bool _resolveURI);
-
-  /// \brief Set the storeResolvedURIs flag value.
   /// \param[in] _resolveURI True to make the parser attempt to resolve any
   /// URIs found and store them.  False to preserve original URIs
   ///

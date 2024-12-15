@@ -32,9 +32,6 @@ namespace python
 /////////////////////////////////////////////////
 void defineCamera(pybind11::object module)
 {
-  // \todo(iche033) OpticalFrameId and SetOpticalFrameId are deprecated
-  // Remove sdformat16
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   pybind11::class_<sdf::Camera> cameraModule(module, "Camera");
   cameraModule
     .def(pybind11::init<>())
@@ -178,16 +175,6 @@ void defineCamera(pybind11::object module)
          "Set the name of the coordinate frame relative to which this "
          "object's pose is expressed. An empty value indicates that the frame "
          "is relative to the parent link.")
-    .def("optical_frame_id", &sdf::Camera::OpticalFrameId,
-         "Get the name of the coordinate frame relative to which this "
-         "object's camera_info message header is expressed. "
-         "Note: while Gazebo interprets the camera frame to be looking towards "
-         "+X, other tools, such as ROS interprets this frame as looking "
-         "towards +Z.  The Camera sensor assumes that the color and depth "
-         "images are captured at the same frame_id.")
-    .def("set_optical_frame_id", &sdf::Camera::SetOpticalFrameId,
-         "Set the name of the coordinate frame relative to which this "
-         "object's camera_info is expressed.")
     .def("lens_type", &sdf::Camera::LensType,
          "Get the lens type. This is the type of the lens mapping. "
          "Supported values are gnomonical, stereographic, equidistant, "
@@ -300,7 +287,6 @@ void defineCamera(pybind11::object module)
       .value("BAYER_GBRG8", sdf::PixelFormatType::BAYER_GBRG8)
       .value("BAYER_GRBG8", sdf::PixelFormatType::BAYER_GRBG8);
 
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

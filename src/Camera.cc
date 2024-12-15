@@ -147,9 +147,6 @@ class sdf::Camera::Implementation
   /// \brief Frame of the pose.
   public: std::string poseRelativeTo = "";
 
-  /// \brief Frame ID the camera_info message header is expressed.
-  public: std::string opticalFrameId{""};
-
   /// \brief Lens type.
   public: std::string lensType{"stereographic"};
 
@@ -381,13 +378,6 @@ Errors Camera::Load(ElementPtr _sdf)
 
   // Load the pose. Ignore the return value since the pose is optional.
   loadPose(_sdf, this->dataPtr->pose, this->dataPtr->poseRelativeTo);
-
-  // Load the optional optical_frame_id value.
-  if (_sdf->HasElement("optical_frame_id"))
-  {
-    this->dataPtr->opticalFrameId = _sdf->Get<std::string>("optical_frame_id",
-        this->dataPtr->opticalFrameId).first;
-  }
 
   // Load the lens values.
   if (_sdf->HasElement("lens"))
@@ -752,9 +742,6 @@ void Camera::SetSaveFramesPath(const std::string &_path)
 //////////////////////////////////////////////////
 bool Camera::operator==(const Camera &_cam) const
 {
-
-  // \todo(iche033) Remove in sdformat16
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   return this->Name() == _cam.Name() &&
     this->HorizontalFov() == _cam.HorizontalFov() &&
     this->ImageWidth() == _cam.ImageWidth() &&
@@ -765,9 +752,7 @@ bool Camera::operator==(const Camera &_cam) const
     this->SaveFrames() == _cam.SaveFrames() &&
     this->SaveFramesPath() == _cam.SaveFramesPath() &&
     this->ImageNoise() == _cam.ImageNoise() &&
-    this->VisibilityMask() == _cam.VisibilityMask() &&
-    this->OpticalFrameId() == _cam.OpticalFrameId();
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+    this->VisibilityMask() == _cam.VisibilityMask();
 }
 
 //////////////////////////////////////////////////
@@ -882,18 +867,6 @@ void Camera::SetRawPose(const gz::math::Pose3d &_pose)
 void Camera::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
-}
-
-/////////////////////////////////////////////////
-const std::string Camera::OpticalFrameId() const
-{
-  return this->dataPtr->opticalFrameId;
-}
-
-/////////////////////////////////////////////////
-void Camera::SetOpticalFrameId(const std::string &_frame)
-{
-  this->dataPtr->opticalFrameId = _frame;
 }
 
 /////////////////////////////////////////////////
@@ -1335,12 +1308,6 @@ sdf::ElementPtr Camera::ToElement() const
     elem->GetElement("segmentation_type")->Set<std::string>(
         this->SegmentationType());
   }
-
-  // \todo(iche033) Remove in sdformat16
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
-  elem->GetElement("optical_frame_id")->Set<std::string>(
-      this->OpticalFrameId());
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   return elem;
 }
