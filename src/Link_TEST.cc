@@ -993,7 +993,7 @@ TEST(DOMLink, ResolveAutoInertialsWithMassAndDefaultDensity)
   //
   // --------- z = 1
   // |       |
-  // |   c   | cube on top, side length 1.0, density 40000.0
+  // |   c   | cube on top, side length 1.0, density 4000.0
   // |       |
   // |-------| z = 0
   // |       |
