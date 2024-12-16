@@ -1,0 +1,140 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <!---
+  Model consists of 4 cubes places symmetrically in the XY plane.
+              +y
+              │
+            ┌─┼─┐
+         L3 │ │ │(0,5,0)
+            └─┼─┘
+              │
+    L2┌───┐   │     ┌───┐L1
+  ────┼┼┼┼┼───┼─────┼┼┼┼┼─── +x
+      └───┘   │     └───┘
+    (-5,0,0)  │     (5,0,0)
+            ┌─┼─┐
+            │ │ │(0,-5,0)
+            └─┼─┘
+            L4│
+  -->
+  <![CDATA[
+  This model is used to verify the "gz sdf --inertial-stats" tool.
+  ]]>
+    <model name="test_model">
+      <pose>0 0 0 0 0 0</pose>
+
+      <!-- set //inertial/density -->
+      <link name="link_1">
+        <pose>5 0 0 0 0 0</pose>
+        <inertial auto="true">
+          <density>6</density>
+        </inertial>
+        <collision name="collision_1">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual_1">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- set //inertial/mass and default collision density -->
+      <link name="link_2">
+        <pose>-5 0 0 0 0 0</pose>
+        <inertial auto="true">
+          <mass>6</mass>
+        </inertial>
+        <collision name="collision_2">
+          <density>1000</density>
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual_2">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- use two half-cube collisions instead of single cube -->
+      <!-- set //inertial/mass and default collision density -->
+      <link name="link_3">
+        <pose>0 5 0 0 0 0</pose>
+        <inertial auto="true">
+          <mass>6</mass>
+        </inertial>
+        <collision name="collision_3_up">
+          <pose>0 0 0.25 0 0 0</pose>
+          <density>1000</density>
+          <geometry>
+            <box>
+              <size>1 1 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <collision name="collision_3_down">
+          <pose>0 0 -0.25 0 0 0</pose>
+          <density>1000</density>
+          <geometry>
+            <box>
+              <size>1 1 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual_3">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- use two half-cube collisions instead of single cube -->
+      <!-- set //inertial/mass and identical non-default collision densities -->
+      <link name="link_4">
+        <pose>0 -5 0 0 0 0</pose>
+        <inertial auto="true">
+          <mass>6</mass>
+        </inertial>
+        <collision name="collision_4_up">
+          <pose>0 0 0.25 0 0 0</pose>
+          <density>123.456</density>
+          <geometry>
+            <box>
+              <size>1 1 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <collision name="collision_4_down">
+          <pose>0 0 -0.25 0 0 0</pose>
+          <density>123.456</density>
+          <geometry>
+            <box>
+              <size>1 1 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual_4">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+</sdf>

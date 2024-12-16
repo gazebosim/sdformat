@@ -170,12 +170,15 @@ namespace sdf
     /// \param[in] _autoInertiaParams An ElementPtr to the auto_inertia_params
     /// element to be used if the auto_inertia_params have not been set in this
     /// collision.
+    /// \param[in] _warnIfDensityIsUnset True to generate a warning that
+    /// the default density value will be used if it is not explicitly set.
     public: void CalculateInertial(
                     sdf::Errors &_errors,
                     gz::math::Inertiald &_inertial,
                     const ParserConfig &_config,
                     const std::optional<double> &_density,
-                    sdf::ElementPtr _autoInertiaParams);
+                    sdf::ElementPtr _autoInertiaParams,
+                    bool _warnIfDensityIsUnset = true);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
