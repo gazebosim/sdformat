@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include "sdf/AirFlow.hh"
 #include "sdf/AirPressure.hh"
 #include "sdf/AirSpeed.hh"
 #include "sdf/Altimeter.hh"
@@ -101,6 +102,29 @@ TEST(SDFDomConversion, Sensors)
     ASSERT_NE(nullptr, airSpeedSensorSDF);
     EXPECT_DOUBLE_EQ(0.0, airSpeedSensorSDF->PressureNoise().Mean());
     EXPECT_DOUBLE_EQ(0.01, airSpeedSensorSDF->PressureNoise().StdDev());
+  }
+
+  {
+    // Get the air_flow sensor
+    const sdf::Sensor *sensor = link->SensorByName("air_flow_sensor");
+    // convert to sdf element and load it back
+    sdf::ElementPtr sensorElem = sensor->ToElement();
+    auto airFlowSensor = std::make_unique<sdf::Sensor>();
+    airFlowSensor->Load(sensorElem);
+
+    ASSERT_NE(nullptr, airFlowSensor);
+    EXPECT_EQ("air_flow_sensor", airFlowSensor->Name());
+    EXPECT_EQ(sdf::SensorType::AIR_FLOW, airFlowSensor->Type());
+    EXPECT_EQ(gz::math::Pose3d(2, 14, 96, 0, 0, 0),
+        airFlowSensor->RawPose());
+    EXPECT_FALSE(airFlowSensor->EnableMetrics());
+    const sdf::AirFlow *airFlowSensorSDF = airFlowSensor->AirFlowSensor();
+    ASSERT_NE(nullptr, airFlowSensorSDF);
+    EXPECT_DOUBLE_EQ(0.0, airFlowSensorSDF->SpeedNoise().Mean());
+    EXPECT_DOUBLE_EQ(0.01, airFlowSensorSDF->SpeedNoise().StdDev());
+    EXPECT_DOUBLE_EQ(0.0, airFlowSensorSDF->DirectionNoise().Mean());
+    EXPECT_DOUBLE_EQ(0.02, airFlowSensorSDF->DirectionNoise().StdDev());
+
   }
 
   // camera

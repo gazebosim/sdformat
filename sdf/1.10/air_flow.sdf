@@ -1,0 +1,18 @@
+<element name="air_flow" required="0">
+  <description>These elements are specific to an air flow sensor. This sensor emulates an ultrasonic airflow sensor which determines the airspeed and direction based on the doppler effect.</description>
+
+  <element name="speed" required="0">
+    <description>
+      Noise parameters for the speed data.
+    </description>
+    <include filename="noise.sdf" required="0"/>
+  </element>
+
+  <element name="direction" required="0">
+    <description>
+      Noise parameters for the direction data.
+    </description>
+    <include filename="noise.sdf" required="0"/>
+  </element>
+
+</element>

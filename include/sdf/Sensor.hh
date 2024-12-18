@@ -35,6 +35,7 @@ namespace sdf
   //
 
   // Forward declarations.
+  class AirFlow;
   class AirPressure;
   class AirSpeed;
   class Altimeter;
@@ -134,6 +135,9 @@ namespace sdf
 
     /// \brief An air speed sensor.
     AIR_SPEED = 26,
+
+    /// \brief An airflow sensor.
+    AIR_FLOW = 27,
   };
 
   /// \brief Information about an SDF sensor.
@@ -340,6 +344,24 @@ namespace sdf
     /// \brief Set the air pressure sensor.
     /// \param[in] _air The air pressure sensor.
     public: void SetAirSpeedSensor(const AirSpeed &_air);
+
+    /// \brief Get the air flow sensor, or nullptr if this sensor type
+    /// is not an AirFlow sensor.
+    /// \return Pointer to the AirFlow sensor, or nullptr if this
+    /// Sensor is not a AirFlow sensor.
+    /// \sa SensorType Type() const
+    public: const AirFlow *AirFlowSensor() const;
+
+    /// \brief Get a mutable air flow sensor, or nullptr if this sensor type
+    /// is not an AirFlow sensor.
+    /// \return Pointer to the AirFlow sensor, or nullptr if this
+    /// Sensor is not a AirFlow sensor.
+    /// \sa SensorType Type() const
+    public: AirFlow *AirFlowSensor();
+
+    /// \brief Set the air pressure sensor.
+    /// \param[in] _air The air pressure sensor.
+    public: void SetAirFlowSensor(const AirFlow &_air);
 
     /// \brief Set the camera sensor.
     /// \param[in] _cam The camera sensor.
