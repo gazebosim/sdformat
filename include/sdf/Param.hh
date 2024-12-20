@@ -330,7 +330,6 @@ namespace sdf
     /// This is meant for internal consumption when cloning elements.
     /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
     /// be provided to remove the current parent Element.
-    /// \param[out] _errors Vector of errors.
     /// \return True if the parent Element was set.
     public: bool SetParentElementNoReparse(
         ElementPtr _parentElement);
