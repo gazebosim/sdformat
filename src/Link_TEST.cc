@@ -389,6 +389,24 @@ TEST(DOMLink, ResolveAutoInertialsWithDifferentDensity)
     </model>
   </sdf>)";
 
+  // Parse first with enforcement policy set to ERR to detect warnings.
+  {
+    sdf::Root root;
+    sdf::ParserConfig sdfParserConfig;
+    // Set enforcement policy to ERR so we can detect warnings in sdf::Errors.
+    sdfParserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+    sdf::Errors errors = root.LoadSdfString(sdfString, sdfParserConfig);
+    // Expect 1 warning due to an unset collision density.
+    EXPECT_EQ(1u, errors.size()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code()) << errors;
+    EXPECT_NE(std::string::npos,
+              errors[0].Message().find(
+                  "Collision is missing a <density> child element. Using a "
+                  "default density value of")) << errors;
+    EXPECT_NE(nullptr, root.Element());
+  }
+
+  // Parse again with default enforcement policy and expect no warnings.
   sdf::Root root;
   const sdf::ParserConfig sdfParserConfig;
   sdf::Errors errors = root.LoadSdfString(sdfString, sdfParserConfig);
@@ -755,6 +773,27 @@ TEST(DOMLink, InertialValuesGivenWithAutoSetToTrue)
   "   </model>"
   "  </sdf>";
 
+  // Parse first with enforcement policy set to ERR to detect warnings.
+  {
+    sdf::Root root;
+    sdf::ParserConfig sdfParserConfig;
+    // Set enforcement policy to ERR so we can detect warnings in sdf::Errors.
+    sdfParserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+    sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
+    // Expect 1 warning due to user-specified inertial values when using
+    // inertial auto=true.
+    EXPECT_EQ(1u, errors.size()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::WARNING, errors[0].Code()) << errors;
+    EXPECT_NE(std::string::npos,
+              errors[0].Message().find(
+                  "Inertial was used with auto=true for the link named "
+                  "compound_link, but user-defined inertial values were "
+                  "found, which will be overwritten by the computed inertial "
+                  "values")) << errors;
+    EXPECT_NE(nullptr, root.Element());
+  }
+
+  // Parse again with default enforcement policy and expect no warnings.
   sdf::Root root;
   const sdf::ParserConfig sdfParserConfig;
   sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
@@ -933,11 +972,11 @@ TEST(DOMLink, ResolveAutoInertialsWithMassAndMultipleCollisions)
 TEST(DOMLink, ResolveAutoInertialsWithMassAndDefaultDensity)
 {
   // A model with link inertial auto set to true.
-  // The inertia matrix is specified but should be ignored.
   // <mass> is specified - the auto computed inertial values should
   // be scaled based on the desired mass.
   // The model contains two collisions with different sizes. Density
   // is specified for the top collision but not the bottom collision.
+  // There should be no parser warnings.
   // The model should have a lumped center of mass at the link origin.
   std::string sdf = "<?xml version=\"1.0\"?>"
   "<sdf version=\"1.11\">"
@@ -945,12 +984,6 @@ TEST(DOMLink, ResolveAutoInertialsWithMassAndDefaultDensity)
   "   <link name='compound_link'>"
   "     <inertial auto='true'>"
   "       <mass>12000.0</mass>"
-  "       <pose>1 1 1 2 2 2</pose>"
-  "       <inertia>"
-  "         <ixx>1</ixx>"
-  "         <iyy>1</iyy>"
-  "         <izz>1</izz>"
-  "       </inertia>"
   "     </inertial>"
   "     <collision name='cube_collision'>"
   "       <pose>0.0 0.0 0.5 0 0 0</pose>"
@@ -974,9 +1007,13 @@ TEST(DOMLink, ResolveAutoInertialsWithMassAndDefaultDensity)
   "</sdf>";
 
   sdf::Root root;
-  const sdf::ParserConfig sdfParserConfig;
+  sdf::ParserConfig sdfParserConfig;
+  // Set enforcement policy to ERR so we can detect warnings in sdf::Errors.
+  sdfParserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
   sdf::Errors errors = root.LoadSdfString(sdf, sdfParserConfig);
-  EXPECT_TRUE(errors.empty());
+  // Expect no warnings due to user-specified inertial values when using
+  // inertial auto=true.
+  EXPECT_TRUE(errors.empty()) << errors;
   EXPECT_NE(nullptr, root.Element());
 
   const sdf::Model *model = root.Model();
