@@ -12,6 +12,24 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 15.x to 16.x
+
+### Removals
+
+- **sdf/config.hh**:
+   + The macro `SDF_SHARE_PATH` has been removed.
+     Please use `sdf::getSharePath()` instead.
+   + The macro `SDF_VERSION_PATH` has been removed.
+
+- **sdf/Camera.hh**:
+   + The `//sensor/camera/optical_frame_id` SDF element and corresponding functions
+     in the Camera DOM class are removed. Please specify camera frame using
+     the `//sensor/frame_id` SDF element instead.
+   + ***removal:*** std::string OpticalFrameId() const
+   + ***Replacement:*** std::string Sensor::FrameId() const
+   + ***removal:*** void SetOpticalFrameId(const std::string &)
+   + ***Replacement:*** void Sensor::SetFrameId(const std::string &)
+
 ## libsdformat 14.x to 15.x
 
 ### Additions
