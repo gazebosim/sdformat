@@ -41,6 +41,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -56,6 +57,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -71,6 +73,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -87,6 +90,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -102,6 +106,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -118,6 +123,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -133,6 +139,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -149,6 +156,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -165,6 +173,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -197,6 +206,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -212,6 +222,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -230,6 +241,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -245,6 +257,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -260,7 +273,9 @@ cc_test(
     ],
     deps = [
         ":test_utils",
+        "//:Config",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -276,6 +291,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -291,6 +307,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -306,6 +323,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -327,7 +345,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
     ],
 )
 
@@ -344,6 +364,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -359,6 +380,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -371,6 +393,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -387,6 +410,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -402,6 +426,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -417,7 +442,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
     ],
 )
 
@@ -429,7 +456,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Color",
     ],
 )
 
@@ -444,6 +473,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -456,6 +486,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -471,7 +502,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Color",
     ],
 )
 
@@ -486,6 +519,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -502,7 +536,10 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector3",
     ],
 )
 
@@ -517,6 +554,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -536,7 +574,10 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector3",
     ],
 )
 
@@ -552,6 +593,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -573,6 +615,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -589,6 +632,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -601,6 +645,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -616,7 +661,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Vector3",
     ],
 )
 
@@ -628,6 +675,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -639,6 +687,7 @@ cc_test(
     ],
     deps = [
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -654,6 +703,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -670,7 +720,11 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Angle",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector3",
     ],
 )
 
@@ -681,6 +735,7 @@ cc_test(
     ],
     deps = [
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -697,6 +752,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -712,7 +768,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Vector3",
     ],
 )
 
@@ -727,6 +785,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -742,6 +801,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -757,6 +817,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -772,7 +833,9 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
+        "@gz-math//:Color",
     ],
 )
 
@@ -800,6 +863,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -816,6 +880,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -831,6 +896,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -846,6 +912,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -861,6 +928,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -876,6 +944,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -894,6 +963,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -909,6 +979,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -926,6 +997,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -941,6 +1013,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -957,6 +1030,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
@@ -972,6 +1046,7 @@ cc_test(
     deps = [
         ":test_utils",
         "//:sdformat",
+        "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )

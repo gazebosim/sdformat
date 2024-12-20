@@ -1,15 +1,22 @@
 # Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
-  set(SDF_VER 15)
-  project(sdformat${SDF_VER}-python VERSION ${SDF_VER})
-  find_package(sdformat${SDF_VER} REQUIRED)
+  find_package(gz-cmake4 4.1.0 REQUIRED)
+  gz_get_package_xml_version(${CMAKE_SOURCE_DIR}/../package.xml PACKAGE_XML)
+  project(sdformat${PACKAGE_XML_VERSION_MAJOR}-python VERSION ${PACKAGE_XML_VERSION})
+  find_package(sdformat${PROJECT_VERSION_MAJOR} REQUIRED)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat${PROJECT_VERSION_MAJOR}::sdformat${PROJECT_VERSION_MAJOR}")
   # require python dependencies to be found
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11 TRUE)
   include(GNUInstallDirs)
   include(CTest)
+
+  if(BUILD_TESTING)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../test/test_config.hh.in 
+                   ${PROJECT_BINARY_DIR}/include/test_config.hh)
+    include_directories(${PROJECT_BINARY_DIR}/include)
+  endif()
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
@@ -199,10 +206,10 @@ if (BUILD_TESTING AND NOT WIN32)
   foreach (test ${python_tests})
     if (pytest_FOUND)
       add_test(NAME ${test}.py COMMAND
-        "${Python3_EXECUTABLE}" -m pytest "${CMAKE_SOURCE_DIR}/python/test/${test}.py" --junitxml "${CMAKE_BINARY_DIR}/test_results/${test}.xml")
+        "${Python3_EXECUTABLE}" -m pytest "${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.py" --junitxml "${CMAKE_BINARY_DIR}/test_results/${test}.xml")
     else()
       add_test(NAME ${test}.py COMMAND
-        "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/python/test/${test}.py")
+        "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.py")
     endif()
     set(_env_vars)
     list(APPEND _env_vars "PYTHONPATH=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python/:${CMAKE_BINARY_DIR}/lib:$ENV{PYTHONPATH}")
