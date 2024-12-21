@@ -948,7 +948,7 @@ TEST(DOMLink, InertialAuto)
   const sdf::Link *link = model->LinkByName("link_1");
   ASSERT_NE(link, nullptr);
 
-  // Verify inertial values for link_1 match thos in inertial_stats.sdf
+  // Verify inertial values for link_1 match those in inertial_stats.sdf
   gz::math::Inertiald inertial = link->Inertial();
   gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
   EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
@@ -967,6 +967,40 @@ TEST(DOMLink, InertialAuto)
   EXPECT_FALSE(inertialElem->HasElement("inertia"));
   EXPECT_FALSE(inertialElem->HasElement("mass"));
   EXPECT_FALSE(inertialElem->HasElement("pose"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InertialAutoExplicitMass)
+{
+  const std::string testFile = sdf::testing::TestFile("sdf",
+        "inertial_stats_auto_mass.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  std::vector<std::string> linkNames{"link_1", "link_2", "link_3", "link_4"};
+  for (const std::string &linkName : linkNames)
+  {
+    const sdf::Link *link = model->LinkByName(linkName);
+    ASSERT_NE(link, nullptr);
+
+    // Verify inertial values for link_i match those in inertial_stats.sdf
+    gz::math::Inertiald inertial = link->Inertial();
+    gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
+    EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
+    EXPECT_DOUBLE_EQ(6.0, massMatrix.Mass());
+    EXPECT_DOUBLE_EQ(1.0, massMatrix.Ixx());
+    EXPECT_DOUBLE_EQ(1.0, massMatrix.Iyy());
+    EXPECT_DOUBLE_EQ(1.0, massMatrix.Izz());
+    EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixy());
+    EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixz());
+    EXPECT_DOUBLE_EQ(0.0, massMatrix.Iyz());
+  }
 }
 
 /////////////////////////////////////////////////
@@ -990,7 +1024,7 @@ TEST(DOMLink, InertialAutoSaveInElement)
   const sdf::Link *link = model->LinkByName("link_1");
   ASSERT_NE(link, nullptr);
 
-  // Verify inertial values for link_1 match thos in inertial_stats.sdf
+  // Verify inertial values for link_1 match those in inertial_stats.sdf
   gz::math::Inertiald inertial = link->Inertial();
   gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
   EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
