@@ -2021,6 +2021,19 @@ TEST(inertial_stats, SDF)
     EXPECT_EQ(expectedOutput, output);
   }
 
+  // Check a good SDF file with auto-inertials and explicit mass
+  // from the same folder by passing a relative path
+  {
+    std::string path = "inertial_stats_auto_mass.sdf";
+    const auto pathBase = sdf::testing::TestFile("sdf");
+
+    std::string output =
+      custom_exec_str("cd " + pathBase + " && " +
+                      GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
   expectedOutput =
           "Error Code " +
           std::to_string(static_cast<int>(
