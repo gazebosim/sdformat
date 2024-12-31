@@ -236,6 +236,8 @@ namespace sdf
     public: const std::string &OriginalVersion() const;
 
     /// \brief Get the version
+    /// The result will be set to SDF_VERSION by default, unless overridden by a
+    /// call to the Version(const std::string &) function at runtime.
     /// \return The version as a string
     public: static std::string Version();
 
@@ -290,10 +292,6 @@ namespace sdf
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<SDFPrivate> dataPtr;
-
-    /// \brief The SDF version. Set to SDF_VERSION by default, or through
-    /// the Version function at runtime.
-    private: static std::string version;
   };
   /// \}
   }
