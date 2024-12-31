@@ -19,8 +19,8 @@
 #define SDF_EXCEPTION_HH_
 
 #include <cstdint>
-#include <iostream>
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <string>
 
