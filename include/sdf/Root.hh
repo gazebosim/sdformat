@@ -170,6 +170,11 @@ namespace sdf
     /// \return A pointer to the model, nullptr if it doesn't exist
     public: const sdf::Model *Model() const;
 
+    /// \brief Get a mutable pointer to the model object if it exists.
+    ///
+    /// \return A pointer to the model; nullptr if it doesn't exist.
+    public: sdf::Model *Model();
+
     /// \brief Set the model object. This will override any existing model,
     /// actor, and light object.
     /// \param[in] _model The model to use.
