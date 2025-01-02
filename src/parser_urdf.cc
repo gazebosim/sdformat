@@ -35,8 +35,8 @@
 #include <urdf_parser/urdf_parser.h>
 
 #include "sdf/Error.hh"
-#include "sdf/sdf.hh"
 #include "sdf/Types.hh"
+#include "sdf/Frame.hh"
 
 #include "XmlUtils.hh"
 #include "SDFExtension.hh"

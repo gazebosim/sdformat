@@ -25,7 +25,7 @@
 #include <string>
 
 #include <gz/utils/ImplPtr.hh>
-#include <sdf/sdf_config.h>
+#include <sdf/config.hh>
 #include "sdf/system_util.hh"
 
 namespace sdf

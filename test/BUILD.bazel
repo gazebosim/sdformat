@@ -1,24 +1,15 @@
-load(
-    "@gz//bazel/skylark:build_defs.bzl",
-    "GZ_FEATURES",
-    "GZ_ROOT",
-    "GZ_VISIBILITY",
-    "cmake_configure_file",
-)
+load("@buildifier_prebuilt//:rules.bzl", "buildifier", "buildifier_test")
+load("@rules_gazebo//gazebo:headers.bzl", "gz_configure_header")
 
 package(
-    default_visibility = GZ_VISIBILITY,
-    features = GZ_FEATURES,
+    default_applicable_licenses = ["//:license"],
+    features = ["layering_check"],
 )
 
-licenses(["notice"])
-
-cmake_configure_file(
-    name = "config",
+gz_configure_header(
+    name = "TestConfig",
     src = "test_config.hh.in",
-    out = "test_config.hh",
-    cmakelists = ["CMakeLists.txt"],
-    defines = [],
+    package_xml = "//:package.xml",
 )
 
 cc_library(
@@ -28,45 +19,1049 @@ cc_library(
         "test_utils.hh",
     ],
     includes = ["."],
-    deps = [
-        GZ_ROOT + "utils:utils",
-        GZ_ROOT + "sdformat:sdformat",
-    ],
+    visibility = ["//:__subpackages__"],
 )
 
-integration_test_sources = glob(
-    ["integration/*.cc"],
-    exclude = [
-        "integration/schema_test.cc",
-        "integration/element_memory_leak.cc",
+exports_files(
+    [
+        "sdf",
+        "integration/model",
     ],
+    visibility = ["//:__subpackages__"],
 )
 
-[cc_test(
-    name = src.replace("/", "_").replace(".cc", "").replace("integration_", "INTEGRATION_"),
+cc_test(
+    name = "INTEGRATION_actor_dom",
     srcs = [
-        src,
+        "integration/actor_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_audio",
+    srcs = [
+        "integration/audio.cc",
+    ],
+    data = [
+        "integration/audio.sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_category_bitmask",
+    srcs = [
+        "integration/category_bitmask.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_cfm_damping_implicit_spring_damper",
+    srcs = [
+        "integration/cfm_damping_implicit_spring_damper.cc",
+    ],
+    data = [
+        "integration/cfm_damping_implicit_spring_damper.sdf",
+        "integration/cfm_damping_implicit_spring_damper.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_collision_dom",
+    srcs = [
+        "integration/collision_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_converter",
+    srcs = [
+        "integration/converter.cc",
+    ],
+    data = [
+        "integration/audio.sdf",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_default_elements",
+    srcs = [
+        "integration/default_elements.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_deprecated_specs",
+    srcs = [
+        "integration/deprecated_specs.cc",
+    ],
+    data = [
+        "integration/deprecated_sdf_1-0.sdf",
+        "integration/deprecated_sdf_1-2.sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_disable_fixed_joint_reduction",
+    srcs = [
+        "integration/disable_fixed_joint_reduction.cc",
+    ],
+    data = [
+        "integration/fixed_joint_reduction.urdf",
+        "integration/fixed_joint_reduction_disabled.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+# TODO: Enable after adding build rule for tools/get_mem_info.py
+# cc_test(
+#     name = "INTEGRATION_element_memory_leak",
+#     srcs = [
+#         "integration/element_memory_leak.cc",
+#     ],
+#     data = [
+#         ":sdf",
+#     ],
+#     deps = [
+#         "//:sdformat",
+#         ":test_utils",
+#         "@googletest//:gtest_main",
+#     ],
+# )
+
+cc_test(
+    name = "INTEGRATION_element_tracing",
+    srcs = [
+        "integration/element_tracing.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_error_output",
+    srcs = [
+        "integration/error_output.cc",
+    ],
+    data = [
+        ":integration/model",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_fixed_joint_reduction",
+    srcs = [
+        "integration/fixed_joint_reduction.cc",
+    ],
+    data = glob(
+        [
+            "integration/fixed_joint_reduction*.sdf",
+            "integration/fixed_joint_reduction*.urdf",
+        ],
+    ),
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_force_torque_sensor",
+    srcs = [
+        "integration/force_torque_sensor.cc",
+    ],
+    data = [
+        "integration/force_torque_sensor.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_frame",
+    srcs = [
+        "integration/frame.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:Config",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_geometry_dom",
+    srcs = [
+        "integration/geometry_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_gui_dom",
+    srcs = [
+        "integration/gui_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_include",
+    srcs = [
+        "integration/include.cc",
+    ],
+    data = [
+        "integration/include_description.sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_includes",
+    srcs = [
+        "integration/includes.cc",
+    ],
+    data = glob(
+        [
+            "integration/include*.sdf",
+        ],
+    ) + [
+        "integration/merge_include_model.sdf",
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_interface_api",
+    srcs = [
+        "integration/interface_api.cc",
         "integration/toml_parser.hh",
     ],
     data = [
-        GZ_ROOT + "sdformat:sdf",
-        "integration",
-        "sdf",
+        ":integration/model",
+        ":sdf",
     ],
-    env = {
-        "GZ_BAZEL": "1",
-        "GZ_BAZEL_PATH": "sdformat",
-    },
-    includes = ["integration"],
     deps = [
-        GZ_ROOT + "sdformat:sdformat",
         ":test_utils",
-        "@gtest",
-        "@gtest//:gtest_main",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
-) for src in integration_test_sources]
+)
 
-exports_files([
-    "sdf",
-    "integration",
-])
+cc_test(
+    name = "INTEGRATION_joint_axis_dom",
+    srcs = [
+        "integration/joint_axis_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_joint_axis_frame",
+    srcs = [
+        "integration/joint_axis_frame.cc",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_joint_dom",
+    srcs = [
+        "integration/joint_dom.cc",
+    ],
+    data = [
+        "integration/provide_feedback.urdf",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_light_dom",
+    srcs = [
+        "integration/light_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_link_dom",
+    srcs = [
+        "integration/link_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_link_light",
+    srcs = [
+        "integration/link_light.cc",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Color",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_locale_fix",
+    srcs = [
+        "integration/locale_fix.cc",
+    ],
+    data = [
+        "integration/numeric.sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_locale_fix_cxx",
+    srcs = [
+        "integration/locale_fix_cxx.cc",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_material",
+    srcs = [
+        "integration/material.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Color",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_material_pbr",
+    srcs = [
+        "integration/material_pbr.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_model_dom",
+    srcs = [
+        "integration/model_dom.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_model_versions",
+    srcs = [
+        "integration/model_versions.cc",
+    ],
+    data = [
+        ":integration/model",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_nested_model",
+    srcs = [
+        "integration/nested_model.cc",
+    ],
+    data = [
+        "integration/nested_model_with_frames_expected.sdf",
+        "integration/partially_flattened.sdf",
+        "integration/two_level_nested_model_with_frames_expected.sdf",
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_nested_multiple_elements_error",
+    srcs = [
+        "integration/nested_multiple_elements_error.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_param_passing",
+    srcs = [
+        "integration/param_passing.cc",
+    ],
+    data = [
+        "integration/include_custom_model.sdf",
+        "integration/include_custom_model_expected_output.sdf",
+        "integration/include_custom_nested_model_expected_output.sdf",
+        "integration/include_invalid_custom_model.sdf",
+        "integration/include_model.sdf",
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_parser_config",
+    srcs = [
+        "integration/parser_config.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_parser_error_detection",
+    srcs = [
+        "integration/parser_error_detection.cc",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_particle_emitter_dom",
+    srcs = [
+        "integration/particle_emitter_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Vector3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_plugin_attribute",
+    srcs = [
+        "integration/plugin_attribute.cc",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_plugin_bool",
+    srcs = [
+        "integration/plugin_bool.cc",
+    ],
+    deps = [
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_plugin_include",
+    srcs = [
+        "integration/plugin_include.cc",
+    ],
+    data = [
+        ":integration/model",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_pose_1_9_sdf",
+    srcs = [
+        "integration/pose_1_9_sdf.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Angle",
+        "@gz-math//:Pose3",
+        "@gz-math//:Vector3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_precision",
+    srcs = [
+        "integration/precision.cc",
+    ],
+    deps = [
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_print_config",
+    srcs = [
+        "integration/print_config.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_projector_dom",
+    srcs = [
+        "integration/projector_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Vector3",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_provide_feedback",
+    srcs = [
+        "integration/provide_feedback.cc",
+    ],
+    data = [
+        "integration/provide_feedback.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_resolve_uris",
+    srcs = [
+        "integration/resolve_uris.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_root_dom",
+    srcs = [
+        "integration/root_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_scene_dom",
+    srcs = [
+        "integration/scene_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-math//:Color",
+    ],
+)
+
+# TODO: Enable once xmllint is available in toolchain
+# cc_test(
+#     name = "INTEGRATION_schema_test",
+#     srcs = [
+#         "integration/schema_test.cc",
+#     ],
+#     data = [
+#         ":integration/model",
+#     ],
+#     deps = [
+#         "//:sdformat",
+#         ":test_utils",
+#         "@googletest//:gtest_main",
+#     ],
+# )
+
+cc_test(
+    name = "INTEGRATION_sdf_basic",
+    srcs = [
+        "integration/sdf_basic.cc",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_sdf_custom",
+    srcs = [
+        "integration/sdf_custom.cc",
+    ],
+    data = [
+        "integration/custom_elems_attrs.sdf",
+        ":integration/model",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_sdf_dom_conversion",
+    srcs = [
+        "integration/sdf_dom_conversion.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_sensor_dom",
+    srcs = [
+        "integration/sensor_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_surface_dom",
+    srcs = [
+        "integration/surface_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_unknown",
+    srcs = [
+        "integration/unknown.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_urdf_gazebo_extensions",
+    srcs = [
+        "integration/urdf_gazebo_extensions.cc",
+    ],
+    data = [
+        "integration/fixed_joint_example.urdf",
+        "integration/fixed_joint_simple.urdf",
+        "integration/fixed_joint_static.urdf",
+        "integration/urdf_gazebo_extensions.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_urdf_joint_parameters",
+    srcs = [
+        "integration/urdf_joint_parameters.cc",
+    ],
+    data = [
+        "integration/urdf_joint_parameters.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_urdf_to_sdf",
+    srcs = [
+        "integration/urdf_to_sdf.cc",
+    ],
+    data = [
+        "integration/force_torque_sensor.urdf",
+        "integration/invalid_force_torque_sensor_lumped_and_reduced.urdf",
+        "integration/invalid_force_torque_sensor_massless_child_link.urdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_visual_dom",
+    srcs = [
+        "integration/visual_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_whitespace",
+    srcs = [
+        "integration/whitespace.cc",
+    ],
+    data = [
+        ":integration/model",
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "INTEGRATION_world_dom",
+    srcs = [
+        "integration/world_dom.cc",
+    ],
+    data = [
+        ":sdf",
+    ],
+    deps = [
+        ":test_utils",
+        "//:sdformat",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+# Bazel linting
+buildifier(
+    name = "buildifier.fix",
+    lint_mode = "fix",
+    mode = "fix",
+)
+
+buildifier_test(
+    name = "buildifier.test",
+    lint_mode = "warn",
+    mode = "diff",
+    no_sandbox = True,
+    workspace = "//:MODULE.bazel",
+)

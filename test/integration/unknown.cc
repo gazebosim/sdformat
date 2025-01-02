@@ -19,8 +19,9 @@
 
 #include <gtest/gtest.h>
 
-#include "sdf/sdf.hh"
 #include "sdf/Error.hh"
+#include "sdf/parser.hh"
+#include "sdf/Root.hh"
 
 #include "test_config.hh"
 

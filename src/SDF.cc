@@ -33,7 +33,7 @@
 #include "sdf/InstallationDirectories.hh"
 #include "sdf/SDFImpl.hh"
 #include "SDFImplPrivate.hh"
-#include "sdf/sdf_config.h"
+#include "sdf/config.hh"
 #include "EmbeddedSdf.hh"
 #include "Utils.hh"
 

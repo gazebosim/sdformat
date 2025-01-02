@@ -1,0 +1,23 @@
+name: Bazel CI
+on:
+  push:
+    branches: [sdf15, main]
+  pull_request:
+    branches: [sdf15, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: bazel-contrib/.github/.github/workflows/bazel.yaml@v7
+    with:
+      folders: |
+        [
+          ".",
+        ]
+      exclude: |
+        [
+          {"folder": ".", "bzlmodEnabled": false},
+        ]
