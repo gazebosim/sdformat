@@ -17,9 +17,9 @@
 #ifndef SDF_ERROR_HH_
 #define SDF_ERROR_HH_
 
-#include <iostream>
-#include <string>
 #include <optional>
+#include <ostream>
+#include <string>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/config.hh>
 #include "sdf/Console.hh"
