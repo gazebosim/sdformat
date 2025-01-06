@@ -46,6 +46,9 @@ TEST(DOMRoot, Construction)
   EXPECT_EQ(nullptr, root.Model());
   EXPECT_EQ(nullptr, root.Light());
   EXPECT_EQ(nullptr, root.Actor());
+
+  const sdf::Root &const_root = root;
+  EXPECT_EQ(nullptr, const_root.Model());
 }
 
 /////////////////////////////////////////////////
@@ -424,6 +427,7 @@ TEST(DOMRoot, ToElementEmpty)
 TEST(DOMRoot, ToElementModel)
 {
   sdf::Root root;
+  const sdf::Root &const_root = root;
 
   sdf::Actor actor1;
   actor1.SetName("actor1");
@@ -438,6 +442,7 @@ TEST(DOMRoot, ToElementModel)
   root.SetModel(model1);
 
   ASSERT_NE(nullptr, root.Model());
+  ASSERT_NE(nullptr, const_root.Model());
   ASSERT_EQ(nullptr, root.Light());
   ASSERT_EQ(nullptr, root.Actor());
   EXPECT_EQ(0u, root.WorldCount());
@@ -447,12 +452,15 @@ TEST(DOMRoot, ToElementModel)
   ASSERT_NE(nullptr, elem);
 
   sdf::Root root2;
+  const sdf::Root &const_root2 = root2;
   root2.LoadSdfString(elem->ToString(""));
 
   EXPECT_EQ(SDF_VERSION, root2.Version());
 
   ASSERT_NE(nullptr, root2.Model());
+  ASSERT_NE(nullptr, const_root2.Model());
   EXPECT_EQ("model1", root2.Model()->Name());
+  EXPECT_EQ("model1", const_root2.Model()->Name());
 
   ASSERT_EQ(nullptr, root2.Actor());
   ASSERT_EQ(nullptr, root2.Light());
@@ -651,24 +659,25 @@ TEST(DOMRoot, CopyConstructor)
 TEST(DOMRoot, WorldByName)
 {
   sdf::Root root;
-  EXPECT_EQ(0u, root.WorldCount());
+  const sdf::Root &const_root = root;
+  EXPECT_EQ(0u, const_root.WorldCount());
 
   sdf::World world;
   world.SetName("world1");
   EXPECT_TRUE(root.AddWorld(world).empty());
-  EXPECT_EQ(1u, root.WorldCount());
+  EXPECT_EQ(1u, const_root.WorldCount());
 
-  EXPECT_TRUE(root.WorldNameExists("world1"));
-  const sdf::World *wPtr = root.WorldByName("world1");
-  EXPECT_NE(nullptr, wPtr);
+  EXPECT_TRUE(const_root.WorldNameExists("world1"));
+  EXPECT_NE(nullptr, root.WorldByName("world1"));
+  EXPECT_NE(nullptr, const_root.WorldByName("world1"));
 
   // Modify the world
   sdf::World *w = root.WorldByName("world1");
   ASSERT_NE(nullptr, w);
   EXPECT_EQ("world1", w->Name());
   w->SetName("world2");
-  ASSERT_TRUE(root.WorldNameExists("world2"));
-  EXPECT_EQ("world2", root.WorldByName("world2")->Name());
+  ASSERT_TRUE(const_root.WorldNameExists("world2"));
+  EXPECT_EQ("world2", const_root.WorldByName("world2")->Name());
 }
 
 /////////////////////////////////////////////////

@@ -83,7 +83,7 @@ void defineRoot(pybind11::object module)
          "Get a world based on an index.")
      .def("world_name_exists", &sdf::Root::WorldNameExists,
           "Get whether a world name exists.")
-    .def("model", &sdf::Root::Model,
+    .def("model", pybind11::overload_cast<>(&sdf::Root::Model),
          pybind11::return_value_policy::reference_internal,
          "Get a model object if it exists.")
     .def("set_model", &sdf::Root::SetModel,
