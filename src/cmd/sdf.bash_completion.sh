@@ -24,10 +24,10 @@ GZ_SDF_COMPLETION_LIST="
   -k --check
   -d --describe
   -p --print
+  -g --graph
   --inertial-stats
   -h --help
-  --force-version
-  --versions
+  -v --version
 "
 
 function _gz_sdf
