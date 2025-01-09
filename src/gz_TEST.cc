@@ -1066,7 +1066,8 @@ TEST(describe, SDF)
 {
   // Get the description
   std::string output =
-    custom_exec_str(GzCommand() + " sdf -d " + SDF_PROTOCOL_VERSION + SdfVersion());
+    custom_exec_str(GzCommand() + " sdf -d " +
+    SDF_PROTOCOL_VERSION + SdfVersion());
   EXPECT_FALSE(output.empty());
 
   // The first line should start with the following text.
