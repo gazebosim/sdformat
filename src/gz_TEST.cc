@@ -40,6 +40,11 @@
 // DETAIL_GZ_CONFIG_PATH is compiler definition set in CMake.
 #define GZ_CONFIG_PATH DETAIL_GZ_CONFIG_PATH
 
+static std::string SdfVersion()
+{
+  return " --force-version " + std::string(SDF_VERSION_FULL);
+}
+
 static std::string GzCommand()
 {
   return std::string(GZ_PATH);
@@ -76,7 +81,7 @@ TEST(checkUnrecognizedElements, SDF)
       sdf::testing::TestFile("sdf", "unrecognized_elements.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos, output.find(
         "XML Attribute[some_attribute] in element[model] not defined in SDF."))
       << output;
@@ -102,7 +107,7 @@ TEST(checkUnrecognizedElements, SDF)
       sdf::testing::TestFile("sdf", "unrecognized_elements_with_namespace.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos, output.find(
         "XML Attribute[some_attribute] in element[model] not defined in SDF."))
       << output;
@@ -124,7 +129,7 @@ TEST(check, SDF)
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -135,7 +140,7 @@ TEST(check, SDF)
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Required attribute"), std::string::npos)
       << output;
   }
@@ -148,7 +153,7 @@ TEST(check, SDF)
 
     // Check world_duplicate.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("World with name[default] already exists."),
               std::string::npos) << output;
   }
@@ -161,7 +166,7 @@ TEST(check, SDF)
 
     // Check world_sibling_same_names.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
@@ -171,7 +176,7 @@ TEST(check, SDF)
       sdf::testing::TestFile("sdf", "world_duplicate_plugins.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -183,7 +188,7 @@ TEST(check, SDF)
 
     // Check model_duplicate_links.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("link with name[link] already exists."),
               std::string::npos) << output;
   }
@@ -196,7 +201,7 @@ TEST(check, SDF)
 
     // Check model_duplicate_joints.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("joint with name[joint] already exists."),
               std::string::npos) << output;
   }
@@ -209,7 +214,7 @@ TEST(check, SDF)
 
     // Check model_link_joint_same_name.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Non-unique names"), std::string::npos)
       << output;
   }
@@ -220,7 +225,7 @@ TEST(check, SDF)
       sdf::testing::TestFile("sdf", "model_duplicate_plugins.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -233,7 +238,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_sibling_collisions.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("collision with name[collision] "
                           "already exists."),
               std::string::npos) << output;
@@ -248,7 +253,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_sibling_visuals.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("visual with name[visual] already exists."),
               std::string::npos) << output;
   }
@@ -262,7 +267,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_cousin_collisions.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -275,7 +280,7 @@ TEST(check, SDF)
 
     // Check link_duplicate_cousin_visuals.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -286,7 +291,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_child.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Child frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_child]."),
@@ -300,7 +305,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_parent.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("parent frame with name[invalid] specified by "
                           "joint with name[joint] not found in model with "
                           "name[joint_invalid_parent]."),
@@ -314,7 +319,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_self_child.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("FrameAttachedToGraph cycle detected, already "
                           "visited vertex [joint_invalid_self_child::self]."),
               std::string::npos) << output;
@@ -327,7 +332,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_self_parent.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("joint with name[self] in model with "
                           "name[joint_invalid_self_parent] must not specify "
                           "its own name as the parent frame."),
@@ -342,7 +347,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_parent_same_as_child.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Joint with name[joint] must "
                           "specify different frame names for parent and child, "
                           "while [link] was specified for both."),
@@ -358,7 +363,7 @@ TEST(check, SDF)
 
     // Check joint_invalid_resolved_parent_same_as_child.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("specified parent frame [J1] and child frame [L2] "
                           "that both resolve to [L2], but they should resolve "
                           "to different values."),
@@ -372,7 +377,7 @@ TEST(check, SDF)
 
     // Check joint_child_world.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("Joint with name[joint] specified invalid "
                           "child link [world]."),
               std::string::npos) << output;
@@ -389,7 +394,7 @@ TEST(check, SDF)
 
     // Check joint_parent_world.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -401,7 +406,7 @@ TEST(check, SDF)
 
     // Check joint_child_frame.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -413,7 +418,7 @@ TEST(check, SDF)
 
     // Check joint_parent_frame.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -425,7 +430,7 @@ TEST(check, SDF)
 
     // Check joint_axis_infinite_limits.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -437,7 +442,7 @@ TEST(check, SDF)
 
     // Check model_canonical_link.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -448,7 +453,7 @@ TEST(check, SDF)
 
     // Check model_invalid_canonical_link.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("canonical_link with name[link3] not found in "
                           "model with name[model_invalid_canonical_link]."),
               std::string::npos) << output;
@@ -462,7 +467,7 @@ TEST(check, SDF)
 
     // Check model_without_links.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("A model must have at least one link."),
               std::string::npos) << output;
   }
@@ -475,7 +480,7 @@ TEST(check, SDF)
 
     // Check nested_model.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -487,7 +492,7 @@ TEST(check, SDF)
 
     // Check nested_canonical_link.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -501,7 +506,7 @@ TEST(check, SDF)
 
     // Check nested_explicit_canonical_link.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -513,7 +518,7 @@ TEST(check, SDF)
 
     // Check nested_without_links_invalid.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("A model must have at least one link."),
               std::string::npos) << output;
   }
@@ -526,7 +531,7 @@ TEST(check, SDF)
 
     // Check model_invalid_reserved_names.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("The supplied link name [world] is reserved."),
               std::string::npos) << output;
     EXPECT_NE(output.find("The supplied link name [__link__] "
@@ -553,7 +558,7 @@ TEST(check, SDF)
           "ignore_sdf_in_plugin.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -564,7 +569,7 @@ TEST(check, SDF)
           "ignore_sdf_in_namespaced_elements.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -577,7 +582,7 @@ TEST(check, SDF)
 
     // Check model_frame_attached_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -590,7 +595,7 @@ TEST(check, SDF)
 
     // Check model_frame_attached_to_joint.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -603,7 +608,7 @@ TEST(check, SDF)
 
     // Check model_frame_attached_to_nested_model.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -615,7 +620,7 @@ TEST(check, SDF)
 
     // Check model_frame_invalid_attached_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("attached_to name[A] specified by frame with "
                           "name[F3] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -635,7 +640,7 @@ TEST(check, SDF)
 
     // Check model_frame_invalid_attached_to_cycle.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos,
         output.find("FrameAttachedToGraph cycle detected, already visited "
                     "vertex [model_frame_invalid_attached_to_cycle::F1]."))
@@ -655,7 +660,7 @@ TEST(check, SDF)
 
     // Check world_frame_attached_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -667,7 +672,7 @@ TEST(check, SDF)
 
     // Check world_frame_invalid_attached_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("attached_to name[A] specified by frame with "
                           "name[F] does not match a model or frame "
                           "name in world with "
@@ -689,7 +694,7 @@ TEST(check, SDF)
 
     // Check model_link_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -701,7 +706,7 @@ TEST(check, SDF)
 
     // Check model_invalid_link_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by link with "
                           "name[L] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -722,7 +727,7 @@ TEST(check, SDF)
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -736,7 +741,7 @@ TEST(check, SDF)
 
     // Check model_nested_model_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -749,7 +754,7 @@ TEST(check, SDF)
 
     // Check model_joint_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -761,7 +766,7 @@ TEST(check, SDF)
 
     // Check model_invalid_joint_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by joint with "
                           "name[J] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -782,7 +787,7 @@ TEST(check, SDF)
 
     // Check model_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -795,7 +800,7 @@ TEST(check, SDF)
 
     // Check model_frame_relative_to_joint.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -807,7 +812,7 @@ TEST(check, SDF)
 
     // Check model_invalid_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by frame with "
                           "name[F] does not match a nested model, link, "
                           "joint, or frame name in model with "
@@ -827,7 +832,7 @@ TEST(check, SDF)
 
     // Check model_invalid_frame_relative_to_cycle.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(std::string::npos,
         output.find("PoseRelativeToGraph cycle detected, already visited "
                     "vertex [model_invalid_frame_relative_to_cycle::F1]."))
@@ -847,7 +852,7 @@ TEST(check, SDF)
 
     // Check world_frame_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -859,7 +864,7 @@ TEST(check, SDF)
 
     // Check world_frame_invalid_relative_to.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(output.find("relative_to name[A] specified by model with "
                           "name[M] does not match a model or frame "
                           "name in world with "
@@ -890,7 +895,7 @@ TEST(check, SDF)
 
     // Check model_invalid_placement_frame.sdf
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("unable to find unique frame with name [link3] in graph"),
         std::string::npos)
@@ -904,7 +909,7 @@ TEST(check, SDF)
           "nested_model_cross_references.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -915,7 +920,7 @@ TEST(check, SDF)
           "model_invalid_root_reference.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [relative_to]"),
@@ -938,7 +943,7 @@ TEST(check, SDF)
           "world_invalid_root_reference.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("'__root__' is reserved; it cannot be used as a "
                     "value of attribute [relative_to]"),
@@ -987,7 +992,7 @@ TEST(check, SDF)
           "world_valid_root_reference.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output) << output;
   }
   // Check an SDF with an invalid relative frame at the top level model
@@ -997,7 +1002,7 @@ TEST(check, SDF)
           "model_invalid_top_level_frame.sdf");
 
     std::string output =
-        custom_exec_str(GzCommand() + " sdf -k " + path);
+        custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_NE(
         output.find("Attribute //pose[@relative_to] of top level model must be "
                     "left empty, found //pose[@relative_to='some_frame']."),
@@ -1014,7 +1019,7 @@ TEST(check_shapes_sdf, SDF)
           "shapes.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 
@@ -1024,7 +1029,7 @@ TEST(check_shapes_sdf, SDF)
           "shapes_world.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 }
@@ -1039,7 +1044,7 @@ TEST(check_model_sdf, SDF)
           "model", "box", "model.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -k " + path);
+      custom_exec_str(GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 
@@ -1051,7 +1056,7 @@ TEST(check_model_sdf, SDF)
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
-                      GzCommand() + " sdf -k " + path);
+                      GzCommand() + " sdf -k " + path + SdfVersion());
     EXPECT_EQ("Valid.\n", output);
   }
 }
@@ -1061,7 +1066,7 @@ TEST(describe, SDF)
 {
   // Get the description
   std::string output =
-    custom_exec_str(GzCommand() + " sdf -d " SDF_PROTOCOL_VERSION);
+    custom_exec_str(GzCommand() + " sdf -d " + SDF_PROTOCOL_VERSION + SdfVersion());
   EXPECT_FALSE(output.empty());
 
   // The first line should start with the following text.
@@ -1081,7 +1086,7 @@ TEST(print, SDF)
 
     // Check box_plane_low_friction_test.world
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -p " + path);
+      custom_exec_str(GzCommand() + " sdf -p " + path + SdfVersion());
     EXPECT_EQ(sdf->Root()->ToString(""), output);
   }
 
@@ -1092,7 +1097,7 @@ TEST(print, SDF)
 
     // Check box_bad_test.world
     std::string output =
-      custom_exec_str(GzCommand() + " sdf -p " + path);
+      custom_exec_str(GzCommand() + " sdf -p " + path + SdfVersion());
     EXPECT_TRUE(output.find("Required attribute") != std::string::npos)
       << output;
   }
@@ -1106,14 +1111,15 @@ TEST(print_rotations_in_degrees, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1121,7 +1127,8 @@ TEST(print_rotations_in_degrees, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1129,7 +1136,8 @@ TEST(print_rotations_in_degrees, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1137,7 +1145,8 @@ TEST(print_rotations_in_degrees, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1146,7 +1155,7 @@ TEST(print_rotations_in_degrees, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1155,7 +1164,7 @@ TEST(print_rotations_in_degrees, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1170,14 +1179,15 @@ TEST(print_rotations_in_radians, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1185,7 +1195,8 @@ TEST(print_rotations_in_radians, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1193,7 +1204,8 @@ TEST(print_rotations_in_radians, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1201,7 +1213,8 @@ TEST(print_rotations_in_radians, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1210,7 +1223,7 @@ TEST(print_rotations_in_radians, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1219,7 +1232,7 @@ TEST(print_rotations_in_radians, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1234,7 +1247,7 @@ TEST(print_rotations_in_quaternions, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose rotation_format='quat_xyzw'>"
@@ -1242,7 +1255,8 @@ TEST(print_rotations_in_quaternions, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1250,7 +1264,8 @@ TEST(print_rotations_in_quaternions, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1258,7 +1273,8 @@ TEST(print_rotations_in_quaternions, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1266,7 +1282,8 @@ TEST(print_rotations_in_quaternions, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1275,7 +1292,7 @@ TEST(print_rotations_in_quaternions, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1284,7 +1301,7 @@ TEST(print_rotations_in_quaternions, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1302,14 +1319,15 @@ TEST(print_includes_rotations_in_degrees, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1317,7 +1335,8 @@ TEST(print_includes_rotations_in_degrees, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1325,7 +1344,8 @@ TEST(print_includes_rotations_in_degrees, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1333,7 +1353,8 @@ TEST(print_includes_rotations_in_degrees, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1342,7 +1363,7 @@ TEST(print_includes_rotations_in_degrees, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1351,7 +1372,7 @@ TEST(print_includes_rotations_in_degrees, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1369,14 +1390,15 @@ TEST(print_includes_rotations_in_radians, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose>1 2 3 0.523756 0.785241 -1.04735</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1384,7 +1406,8 @@ TEST(print_includes_rotations_in_radians, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1392,7 +1415,8 @@ TEST(print_includes_rotations_in_radians, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1400,7 +1424,8 @@ TEST(print_includes_rotations_in_radians, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1409,7 +1434,7 @@ TEST(print_includes_rotations_in_radians, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1418,7 +1443,7 @@ TEST(print_includes_rotations_in_radians, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1436,7 +1461,7 @@ TEST(print_includes_rotations_in_quaternions, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose rotation_format='quat_xyzw'>"
@@ -1444,7 +1469,8 @@ TEST(print_includes_rotations_in_quaternions, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1452,7 +1478,8 @@ TEST(print_includes_rotations_in_quaternions, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 ");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1460,7 +1487,8 @@ TEST(print_includes_rotations_in_quaternions, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1468,7 +1496,8 @@ TEST(print_includes_rotations_in_quaternions, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1477,7 +1506,7 @@ TEST(print_includes_rotations_in_quaternions, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1486,7 +1515,7 @@ TEST(print_includes_rotations_in_quaternions, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1504,14 +1533,15 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
   // returned by parsing the pose value, whenever a parent Element Attribute,
   // or PrintConfig is used.
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true'>1 2 3   30.009 44.991 -60.009</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1519,7 +1549,8 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1527,7 +1558,8 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1535,7 +1567,8 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1544,7 +1577,7 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1553,7 +1586,7 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1568,14 +1601,15 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
 
   // Default printing
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path);
+      GzCommand() + " sdf -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose>1 2 3 0.523755 0.785251 -1.04736</pose>");
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1583,7 +1617,8 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
 
   // Printing with snap_to_degrees 5
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1591,7 +1626,8 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
 
   // Printing with snap_to_degrees 2
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 2 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1599,7 +1635,8 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
 
   // Printing with snap_to_degrees 20
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20");
+      GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 20 "
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1608,7 +1645,7 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.008
   output = custom_exec_str(
       GzCommand() + " sdf -p --precision 6 " + path + " --snap-to-degrees 5 "
-      + "--snap-tolerance 0.008");
+      + "--snap-tolerance 0.008 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1617,7 +1654,7 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
   // Printing with snap_to_degrees 5, snap_tolerance 0.01
   output = custom_exec_str(
       GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
-      "--snap-tolerance 0.01");
+      "--snap-tolerance 0.01 " + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1630,17 +1667,18 @@ TEST(shuffled_cmd_flags, SDF)
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
 
-  // -p PATH --degrees
+  // -p PATH --degrees ARG
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1");
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60.009</pose>");
 
-  // --degrees -p PATH
+  // --degrees ARG -p PATH
   output = custom_exec_str(
-      GzCommand() + " sdf --degrees 1 -p --precision 6 " + path);
+      GzCommand() + " sdf --degrees 1 -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1648,7 +1686,8 @@ TEST(shuffled_cmd_flags, SDF)
 
   // -p PATH --snap-to-degrees ARG
   output = custom_exec_str(
-      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5");
+      GzCommand() + " sdf -p " + path + " --snap-to-degrees 5 " +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1656,7 +1695,7 @@ TEST(shuffled_cmd_flags, SDF)
 
   // -p --snap-to-degrees ARG PATH
   output = custom_exec_str(
-      GzCommand() + " sdf -p --snap-to-degrees 5 " + path);
+      GzCommand() + " sdf -p --snap-to-degrees 5 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1664,7 +1703,7 @@ TEST(shuffled_cmd_flags, SDF)
 
   // --snap-to-degrees ARG -p PATH
   output = custom_exec_str(
-      GzCommand() + " sdf --snap-to-degrees 5 -p " + path);
+      GzCommand() + " sdf --snap-to-degrees 5 -p " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1680,7 +1719,8 @@ TEST(print_snap_to_degrees_tolerance_too_high, SDF)
 
   std::string output = custom_exec_str(
       GzCommand() + " sdf -p " + path +
-      " --snap-to-degrees 5 " + " --snap-tolerance 4");
+      " --snap-to-degrees 5 " + " --snap-tolerance 4" +
+      SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1696,7 +1736,8 @@ TEST(print_auto_inertial, SDF)
     // Print without --expand-auto-inertials
     // expect no <mass> or <inertia> elements
     std::string output = custom_exec_str(
-        GzCommand() + " sdf -p " + path);
+        GzCommand() + " sdf -p " + path +
+        SdfVersion());
     ASSERT_FALSE(output.empty());
     EXPECT_PRED2(sdf::testing::notContains, output, "<mass>");
     EXPECT_PRED2(sdf::testing::notContains, output, "<inertia>");
@@ -1707,7 +1748,8 @@ TEST(print_auto_inertial, SDF)
     // expect <mass> and <inertia> elements
     std::string output = custom_exec_str(
         GzCommand() + " sdf -p " + path +
-        " --expand-auto-inertials 1");
+        " --expand-auto-inertials 1 " +
+        SdfVersion());
     ASSERT_FALSE(output.empty());
     EXPECT_PRED2(sdf::testing::contains, output, "<mass>");
     EXPECT_PRED2(sdf::testing::contains, output, "<inertia>");
@@ -1722,7 +1764,7 @@ TEST(GraphCmd, WorldPoseRelativeTo)
     sdf::testing::TestFile("sdf", "world_relative_to_nested_reference.sdf");
 
   const std::string output =
-    custom_exec_str(GzCommand() + " sdf -g pose " + path);
+    custom_exec_str(GzCommand() + " sdf -g pose " + path + SdfVersion());
 
   std::stringstream expected;
   expected << "digraph {\n"
@@ -1770,7 +1812,7 @@ TEST(GraphCmd, ModelPoseRelativeTo)
     sdf::testing::TestFile("sdf", "model_relative_to_nested_reference.sdf");
 
   const std::string output =
-    custom_exec_str(GzCommand() + " sdf -g pose " + path);
+    custom_exec_str(GzCommand() + " sdf -g pose " + path + SdfVersion());
 
   std::stringstream expected;
   expected << "digraph {\n"
@@ -1846,7 +1888,7 @@ TEST(GraphCmd, WorldFrameAttachedTo)
   const auto path =
     sdf::testing::TestFile("sdf", "world_nested_frame_attached_to.sdf");
   const std::string output =
-      custom_exec_str(GzCommand() + " sdf -g frame " + path);
+      custom_exec_str(GzCommand() + " sdf -g frame " + path + SdfVersion());
 
   std::stringstream expected;
 
@@ -1893,7 +1935,7 @@ TEST(GraphCmd, ModelFrameAttachedTo)
     sdf::testing::TestFile("sdf", "model_nested_frame_attached_to.sdf");
 
   const std::string output =
-      custom_exec_str(GzCommand() + " sdf -g frame " + path);
+      custom_exec_str(GzCommand() + " sdf -g frame " + path + SdfVersion());
 
   std::stringstream expected;
 
@@ -1962,7 +2004,8 @@ TEST(inertial_stats, SDF)
     const auto path = sdf::testing::TestFile("sdf", "inertial_stats.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf --inertial-stats " + path);
+      custom_exec_str(GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
 
@@ -1973,7 +2016,8 @@ TEST(inertial_stats, SDF)
 
     std::string output =
       custom_exec_str("cd " + pathBase + " && " +
-                      GzCommand() + " sdf --inertial-stats " + path);
+                      GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
 
@@ -2002,7 +2046,8 @@ TEST(inertial_stats, SDF)
     const auto path = sdf::testing::TestFile("sdf", "inertial_invalid.sdf");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf --inertial-stats " + path);
+      custom_exec_str(GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
 
@@ -2014,7 +2059,8 @@ TEST(inertial_stats, SDF)
       sdf::testing::TestFile("sdf", "box_plane_low_friction_test.world");
 
     std::string output =
-      custom_exec_str(GzCommand() + " sdf --inertial-stats " + path);
+      custom_exec_str(GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
     EXPECT_EQ(expectedOutput, output);
   }
 }
