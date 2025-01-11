@@ -114,12 +114,12 @@ void addSdfFlags(CLI::App &_app)
   auto filepathOpt =
     _app.add_option("filepath", opt->filepath,
                     "Path to an SDFormat file.");
-  _app.add_option("-i,--preserve-includes", opt->preserveIncludes,
+  _app.add_flag("-i,--preserve-includes", opt->preserveIncludes,
       "Preserve included tags when printing converted arg (does "
       "not preserve merge-includes).");
-  _app.add_option("--degrees", opt->degrees,
+  _app.add_flag("--degrees", opt->degrees,
       "Printed pose rotations are will be in degrees.");
-  _app.add_option("--expand-auto-inertials", opt->expandAutoInertials,
+  _app.add_flag("--expand-auto-inertials", opt->expandAutoInertials,
       "Auto-computed inertial values will be printed.");
   _app.add_option("--precision", opt->precision,
       "Set the output stream precision for floating point "
@@ -146,7 +146,9 @@ void addSdfFlags(CLI::App &_app)
       opt->version = _version;
     },
     "Print the aggregated SDFormat spec description. Latest version ("
-    SDF_PROTOCOL_VERSION ")");
+    SDF_PROTOCOL_VERSION ")")
+    ->expected(0, 1)
+    ->default_val(SDF_PROTOCOL_VERSION);
 
   command->add_option_function<std::string>("-g,--graph",
     [opt](const std::string &_graphType){

@@ -1066,8 +1066,7 @@ TEST(describe, SDF)
 {
   // Get the description
   std::string output =
-    custom_exec_str(GzCommand() + " sdf -d " +
-    SDF_PROTOCOL_VERSION + SdfVersion());
+    custom_exec_str(GzCommand() + " sdf -d " + SdfVersion());
   EXPECT_FALSE(output.empty());
 
   // The first line should start with the following text.
@@ -1119,7 +1118,7 @@ TEST(print_rotations_in_degrees, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1187,7 +1186,7 @@ TEST(print_rotations_in_radians, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1256,7 +1255,7 @@ TEST(print_rotations_in_quaternions, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1327,7 +1326,7 @@ TEST(print_includes_rotations_in_degrees, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1398,7 +1397,7 @@ TEST(print_includes_rotations_in_radians, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1470,7 +1469,7 @@ TEST(print_includes_rotations_in_quaternions, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1541,7 +1540,7 @@ TEST(print_rotations_in_unnormalized_degrees, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1609,7 +1608,7 @@ TEST(print_rotations_in_unnormalized_radians, SDF)
 
   // Printing with in_degrees
   output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
@@ -1668,18 +1667,18 @@ TEST(shuffled_cmd_flags, SDF)
   const std::string path =
       sdf::testing::TestFile("sdf", "rotations_in_unnormalized_radians.sdf");
 
-  // -p PATH --degrees ARG
+  // -p PATH --degrees
   std::string output = custom_exec_str(
-      GzCommand() + " sdf -p --precision 6 " + path + " --degrees 1"
+      GzCommand() + " sdf -p --precision 6 " + path + " --degrees "
       + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
                "1 2 3   30.009 44.9915 -60.009</pose>");
 
-  // --degrees ARG -p PATH
+  // --degrees -p PATH
   output = custom_exec_str(
-      GzCommand() + " sdf --degrees 1 -p --precision 6 " + path + SdfVersion());
+      GzCommand() + " sdf --degrees -p --precision 6 " + path + SdfVersion());
   ASSERT_FALSE(output.empty());
   EXPECT_PRED2(sdf::testing::contains, output,
                "<pose degrees='true' rotation_format='euler_rpy'>"
@@ -1749,7 +1748,7 @@ TEST(print_auto_inertial, SDF)
     // expect <mass> and <inertia> elements
     std::string output = custom_exec_str(
         GzCommand() + " sdf -p " + path +
-        " --expand-auto-inertials 1 " +
+        " --expand-auto-inertials " +
         SdfVersion());
     ASSERT_FALSE(output.empty());
     EXPECT_PRED2(sdf::testing::contains, output, "<mass>");
