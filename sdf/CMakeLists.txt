@@ -31,7 +31,7 @@ execute_process(
 if (GZ_PROGRAM)
 
   # Update this list as new sdformat spec versions are added.
-  set(sdf_desc_versions 1.4 1.5 1.6 1.7 1.8 1.9 1.10 1.11)
+  set(sdf_desc_versions 1.4 1.5 1.6 1.7 1.8 1.9 1.10 1.11 1.12)
 
   set(description_targets)
   foreach(desc_ver ${sdf_desc_versions})
