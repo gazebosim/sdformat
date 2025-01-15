@@ -12,6 +12,18 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+
+## libsdformat 15.1.1 to 15.2.0
+
+1. Auto-inertia computation now takes into account the mass if specified.
+Previously when auto-inertia is set to true, mass is ignored and the inertia
+matrix is computed based on the collision densities. The new behavior is that
+if mass is specified, the inertial values will be computed to preserve the
+specified mass. The is done by first resolving the inertia from all
+collisions using density as usual, it is then normalized to get unit inertia,
+and finally the unit inertia is scaled so that the resulting mass matches the
+specified mass.
+
 ## libsdformat 14.x to 15.x
 
 ### Additions
