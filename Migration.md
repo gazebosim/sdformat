@@ -12,6 +12,19 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+## libsdformat 14.6.0 to 14.7.0
+
+1. Inertial parameters can now be automatically calculated with a specified
+mass. Previously when the `//inertial/@auto` attribute is set to true, the
+`//inertial/mass` value is ignored and the mass, center of mass location, and
+inertia matrix are computed based on the collision geometries and densities.
+The new behavior is that if `//inertial/mass` is specified, the inertial values
+will be computed to preserve the specified mass. This is done by first
+calculating inertial parameters from all collisions using density as usual,
+calculating the ratio between user-specified mass and the auto-computed mass,
+and rescaling the computed mass and moment of inertia by that mass ratio so
+that the resulting mass matches the specified mass.
+
 ## libsdformat 13.x to 14.x
 
 ### Additions
