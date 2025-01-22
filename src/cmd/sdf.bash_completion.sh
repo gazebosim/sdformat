@@ -27,7 +27,8 @@ GZ_SDF_COMPLETION_LIST="
   -g --graph
   --inertial-stats
   -h --help
-  -v --version
+  --force-version
+  --versions
 "
 
 function _gz_sdf
