@@ -19,8 +19,6 @@ jobs:
         uses: gazebo-tooling/action-gz-ci@jammy
         with:
           codecov-enabled: true
-          cppcheck-enabled: true
-          cpplint-enabled: true
   noble-ci:
     runs-on: ubuntu-latest
     name: Ubuntu Noble CI
@@ -30,3 +28,6 @@ jobs:
       - name: Compile and test
         id: ci
         uses: gazebo-tooling/action-gz-ci@noble
+        with:
+          cppcheck-enabled: true
+          cpplint-enabled: true
