@@ -929,3 +929,132 @@ TEST(DOMLink, InvalidInertialPoseRelTo)
   EXPECT_EQ(link->Inertial().Pose(),
       gz::math::Pose3d(0.1, 1, 0.2, 0, 0, -0.52));
 }
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InertialAuto)
+{
+  const std::string testFile = sdf::testing::TestFile("sdf",
+        "inertial_stats_auto.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  const sdf::Link *link = model->LinkByName("link_1");
+  ASSERT_NE(link, nullptr);
+
+  // Verify inertial values for link_1 match those in inertial_stats.sdf
+  gz::math::Inertiald inertial = link->Inertial();
+  gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
+  EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
+  EXPECT_DOUBLE_EQ(6.0, massMatrix.Mass());
+  EXPECT_DOUBLE_EQ(1.0, massMatrix.Ixx());
+  EXPECT_DOUBLE_EQ(1.0, massMatrix.Iyy());
+  EXPECT_DOUBLE_EQ(1.0, massMatrix.Izz());
+  EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixy());
+  EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixz());
+  EXPECT_DOUBLE_EQ(0.0, massMatrix.Iyz());
+
+  // Expect //link/inertial element to not contain inertia, mass, or pose
+  auto linkElem = link->Element();
+  auto inertialElem = linkElem->FindElement("inertial");
+  ASSERT_TRUE(inertialElem != nullptr);
+  EXPECT_FALSE(inertialElem->HasElement("inertia"));
+  EXPECT_FALSE(inertialElem->HasElement("mass"));
+  EXPECT_FALSE(inertialElem->HasElement("pose"));
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InertialAutoExplicitMass)
+{
+  const std::string testFile = sdf::testing::TestFile("sdf",
+        "inertial_stats_auto_mass.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  auto errors = root.Load(testFile);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  std::vector<std::string> linkNames{"link_1", "link_2", "link_3", "link_4"};
+  for (const std::string &linkName : linkNames)
+  {
+    const sdf::Link *link = model->LinkByName(linkName);
+    ASSERT_NE(link, nullptr);
+
+    // Verify inertial values for link_i match those in inertial_stats.sdf
+    gz::math::Inertiald inertial = link->Inertial();
+    gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
+    EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
+    EXPECT_DOUBLE_EQ(6.0, massMatrix.Mass());
+    EXPECT_DOUBLE_EQ(1.0, massMatrix.Ixx());
+    EXPECT_DOUBLE_EQ(1.0, massMatrix.Iyy());
+    EXPECT_DOUBLE_EQ(1.0, massMatrix.Izz());
+    EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixy());
+    EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixz());
+    EXPECT_DOUBLE_EQ(0.0, massMatrix.Iyz());
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, InertialAutoSaveInElement)
+{
+  const std::string testFile = sdf::testing::TestFile("sdf",
+        "inertial_stats_auto.sdf");
+
+  // Load the SDF file with SAVE_CALCULATION_IN_ELEMENT
+  sdf::ParserConfig config;
+  config.SetCalculateInertialConfiguration(
+    sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT);
+
+  sdf::Root root;
+  auto errors = root.Load(testFile, config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(model, nullptr);
+
+  const sdf::Link *link = model->LinkByName("link_1");
+  ASSERT_NE(link, nullptr);
+
+  // Verify inertial values for link_1 match those in inertial_stats.sdf
+  gz::math::Inertiald inertial = link->Inertial();
+  gz::math::MassMatrix3d massMatrix = inertial.MassMatrix();
+  EXPECT_EQ(gz::math::Pose3d::Zero, inertial.Pose());
+  EXPECT_DOUBLE_EQ(6.0, massMatrix.Mass());
+  EXPECT_DOUBLE_EQ(1.0, massMatrix.Ixx());
+  EXPECT_DOUBLE_EQ(1.0, massMatrix.Iyy());
+  EXPECT_DOUBLE_EQ(1.0, massMatrix.Izz());
+  EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixy());
+  EXPECT_DOUBLE_EQ(0.0, massMatrix.Ixz());
+  EXPECT_DOUBLE_EQ(0.0, massMatrix.Iyz());
+
+  // Expect //link/inertial element to contain inertia values
+  auto linkElem = link->Element();
+  auto inertialElem = linkElem->FindElement("inertial");
+  ASSERT_TRUE(inertialElem != nullptr);
+  EXPECT_TRUE(inertialElem->HasElement("mass"));
+  EXPECT_DOUBLE_EQ(6.0, inertialElem->Get<double>("mass"));
+  EXPECT_EQ(gz::math::Pose3d::Zero,
+    inertialElem->Get<gz::math::Pose3d>("pose"));
+  auto momentOfInertiaElem = inertialElem->FindElement("inertia");
+  ASSERT_TRUE(momentOfInertiaElem != nullptr);
+  EXPECT_TRUE(momentOfInertiaElem->HasElement("ixx"));
+  EXPECT_DOUBLE_EQ(1.0, momentOfInertiaElem->Get<double>("ixx"));
+  EXPECT_TRUE(momentOfInertiaElem->HasElement("iyy"));
+  EXPECT_DOUBLE_EQ(1.0, momentOfInertiaElem->Get<double>("iyy"));
+  EXPECT_TRUE(momentOfInertiaElem->HasElement("izz"));
+  EXPECT_DOUBLE_EQ(1.0, momentOfInertiaElem->Get<double>("izz"));
+  EXPECT_TRUE(momentOfInertiaElem->HasElement("ixy"));
+  EXPECT_DOUBLE_EQ(0.0, momentOfInertiaElem->Get<double>("ixy"));
+  EXPECT_TRUE(momentOfInertiaElem->HasElement("ixz"));
+  EXPECT_DOUBLE_EQ(0.0, momentOfInertiaElem->Get<double>("ixz"));
+  EXPECT_TRUE(momentOfInertiaElem->HasElement("iyz"));
+  EXPECT_DOUBLE_EQ(0.0, momentOfInertiaElem->Get<double>("iyz"));
+}

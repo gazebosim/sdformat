@@ -44,16 +44,18 @@ COMMANDS = {  'sdf' =>
                        "  -d [ --describe ] [SPEC VERSION]  Print the aggregated SDFormat spec description. Default version (@SDF_PROTOCOL_VERSION@).\n" +
                        "  -g [ --graph ] <pose, frame> arg  Print the PoseRelativeTo or FrameAttachedTo graph. (WARNING: This is for advanced\n" +
                        "                                    use only and the output may change without any promise of stability)\n" +
+                       "  --inertial-stats arg              Prints moment of inertia, centre of mass, and total mass from a model sdf file.\n" +
                        "  -p [ --print ] arg                Print converted arg. Note the quaternion representation of the\n" +
                        "                                    rotational part of poses and unit vectors will be normalized.\n" +
                        "      -i [ --preserve-includes ]    Preserve included tags when printing converted arg (does not preserve merge-includes).\n" +
                        "      --degrees                     Pose rotation angles are printed in degrees.\n" +
+                       "      --expand-auto-inertials       Prints auto-computed inertial values for simple shapes. For meshes and other unsupported\n" +
+                       "                                    shapes, the default inertial values will be printed.\n" +
                        "      --snap-to-degrees arg         Snap pose rotation angles to this specified interval in degrees. This value must be\n" +
                        "                                    larger than 0, less than or equal to 360, and larger than the defined snap tolerance.\n" +
                        "      --snap-tolerance arg          Used in conjunction with --snap-to-degrees, specifies the tolerance at which snapping\n" +
                        "                                    occurs. This value must be larger than 0, less than 360, and less than the defined\n" +
                        "                                    degrees value to snap to. If unspecified, its default value is 0.01.\n" +
-                       "      --inertial-stats  arg         Prints moment of inertia, centre of mass, and total mass from a model sdf file.\n" +
                        "      --precision arg               Set the output stream precision for floating point numbers. The arg must be a positive integer.\n" +
 
                        COMMON_OPTIONS
@@ -70,6 +72,7 @@ class Cmd
   def parse(args)
     options = {}
     options['degrees'] = 0
+    options['expand_auto_inertials'] = 0
     options['snap_tolerance'] = 0.01
     options['preserve_includes'] = 0
 
@@ -103,6 +106,9 @@ class Cmd
       end
       opts.on('--degrees', 'Printed pose rotations are will be in degrees') do |degrees|
         options['degrees'] = 1
+      end
+      opts.on('--expand-auto-inertials', 'Auto-computed inertial values will be printed') do
+        options['expand_auto_inertials'] = 1
       end
       opts.on('--snap-to-degrees arg', Integer,
               'Printed rotations are snapped to specified degree intervals') do |arg|
@@ -243,13 +249,14 @@ class Cmd
           if options.key?('precision')
             precision = options['precision']
           end
-          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance, int, int)'
+          Importer.extern 'int cmdPrint(const char *, int in_degrees, int snap_to_degrees, float snap_tolerance, int, int, int)'
           exit(Importer.cmdPrint(File.expand_path(options['print']),
                                  options['degrees'],
                                  snap_to_degrees,
                                  options['snap_tolerance'],
                                  options['preserve_includes'],
-                                 precision))
+                                 precision,
+                                 options['expand_auto_inertials']))
         elsif options.key?('graph')
           Importer.extern 'int cmdGraph(const char *, const char *)'
           exit(Importer.cmdGraph(options['graph'][:type], File.expand_path(ARGV[1])))

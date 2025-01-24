@@ -5,7 +5,7 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat14 VERSION 14.5.0)
+project (sdformat14 VERSION 14.6.0)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
@@ -97,16 +97,6 @@ if (BUILD_SDF)
     )
     if (NOT Python3_Development_FOUND)
       GZ_BUILD_WARNING("Python development libraries are missing: Python interfaces are disabled.")
-    else()
-      set(PYBIND11_PYTHON_VERSION 3)
-      find_package(pybind11 2.4 CONFIG QUIET)
-
-      if (pybind11_FOUND)
-        message (STATUS "Searching for pybind11 - found version ${pybind11_VERSION}.")
-      else()
-        GZ_BUILD_WARNING("pybind11 is missing: Python interfaces are disabled.")
-        message (STATUS "Searching for pybind11 - not found.")
-      endif()
     endif()
   endif()
 
@@ -136,9 +126,11 @@ if (BUILD_SDF)
 
   ################################################
   # Find psutil python package for memory tests
-  find_python_module(psutil)
-  if (NOT PY_PSUTIL)
-    gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
+  if (BUILD_TESTING)
+    find_python_module(psutil)
+    if (NOT PY_PSUTIL)
+      gz_build_warning("Python psutil package not found. Memory leak tests will be skipped")
+    endif()
   endif()
 
   ########################################
@@ -159,7 +151,7 @@ if (BUILD_SDF)
   add_subdirectory(sdf)
   add_subdirectory(conf)
   add_subdirectory(doc)
-  if (pybind11_FOUND AND NOT SKIP_PYBIND11)
+  if (Python3_Development_FOUND AND NOT SKIP_PYBIND11)
     add_subdirectory(python)
   endif()
 endif(BUILD_SDF)

@@ -208,7 +208,6 @@ Errors Link::Load(ElementPtr _sdf, const ParserConfig &_config)
       // If auto is to true but user has still provided
       // inertial values
       if (inertialElem->HasElement("pose") ||
-          inertialElem->HasElement("mass") ||
           inertialElem->HasElement("inertia"))
       {
         Error err(
@@ -664,6 +663,11 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
       return;
     }
 
+    auto inertialElem = this->dataPtr->sdf->GetElement("inertial");
+    bool massSpecified = inertialElem->HasElement("mass");
+    // Warn about using default collision density value if mass is not specified
+    bool warnUseDefaultDensity = !massSpecified;
+
     gz::math::Inertiald totalInertia;
 
     for (sdf::Collision &collision : this->dataPtr->collisions)
@@ -671,11 +675,31 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
       gz::math::Inertiald collisionInertia;
       collision.CalculateInertial(_errors, collisionInertia, _config,
                                   this->dataPtr->density,
-                                  this->dataPtr->autoInertiaParams);
+                                  this->dataPtr->autoInertiaParams,
+                                  warnUseDefaultDensity);
       totalInertia = totalInertia + collisionInertia;
     }
 
-    this->dataPtr->inertial = totalInertia;
+    // If mass is specified, scale inertia to match desired mass
+    if (massSpecified)
+    {
+      double mass = inertialElem->Get<double>("mass");
+      const gz::math::MassMatrix3d &totalMassMatrix = totalInertia.MassMatrix();
+      // normalize to get the unit mass matrix
+      gz::math::MassMatrix3d unitMassMatrix(1.0,
+          totalMassMatrix.DiagonalMoments() / totalMassMatrix.Mass(),
+          totalMassMatrix.OffDiagonalMoments() / totalMassMatrix.Mass());
+      // scale the final inertia to match specified mass
+      this->dataPtr->inertial = gz::math::Inertiald(
+          gz::math::MassMatrix3d(mass,
+              mass * unitMassMatrix.DiagonalMoments(),
+              mass * unitMassMatrix.OffDiagonalMoments()),
+          totalInertia.Pose());
+    }
+    else
+    {
+      this->dataPtr->inertial = totalInertia;
+    }
 
     // If CalculateInertial() was called with SAVE_CALCULATION
     // configuration then set autoInertiaSaved to true
@@ -683,6 +707,29 @@ void Link::ResolveAutoInertials(sdf::Errors &_errors,
       ConfigureResolveAutoInertials::SAVE_CALCULATION)
     {
       this->dataPtr->autoInertiaSaved = true;
+    }
+    else if (_config.CalculateInertialConfiguration() ==
+      ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT)
+    {
+      this->dataPtr->autoInertiaSaved = true;
+      // Write calculated inertia values to //link/inertial element
+      inertialElem->GetElement("pose")->GetValue()->Set<gz::math::Pose3d>(
+        totalInertia.Pose());
+      inertialElem->GetElement("mass")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Mass());
+      auto momentOfInertiaElem = inertialElem->GetElement("inertia");
+      momentOfInertiaElem->GetElement("ixx")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Ixx());
+      momentOfInertiaElem->GetElement("ixy")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Ixy());
+      momentOfInertiaElem->GetElement("ixz")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Ixz());
+      momentOfInertiaElem->GetElement("iyy")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Iyy());
+      momentOfInertiaElem->GetElement("iyz")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Iyz());
+      momentOfInertiaElem->GetElement("izz")->GetValue()->Set<double>(
+        totalInertia.MassMatrix().Izz());
     }
   }
   // If auto is false, this means inertial values were set

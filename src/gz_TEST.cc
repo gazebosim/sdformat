@@ -1098,7 +1098,8 @@ TEST(print, SDF)
     // Check box_bad_test.world
     std::string output =
       custom_exec_str(GzCommand() + " sdf -p " + path + SdfVersion());
-    EXPECT_TRUE(output.find("Required attribute") != std::string::npos);
+    EXPECT_TRUE(output.find("Required attribute") != std::string::npos)
+      << output;
   }
 }
 
@@ -1727,6 +1728,35 @@ TEST(print_snap_to_degrees_tolerance_too_high, SDF)
 }
 
 /////////////////////////////////////////////////
+TEST(print_auto_inertial, SDF)
+{
+  const auto path = sdf::testing::TestFile("sdf", "inertial_stats_auto.sdf");
+
+  {
+    // Print without --expand-auto-inertials
+    // expect no <mass> or <inertia> elements
+    std::string output = custom_exec_str(
+        GzCommand() + " sdf -p " + path +
+        SdfVersion());
+    ASSERT_FALSE(output.empty());
+    EXPECT_PRED2(sdf::testing::notContains, output, "<mass>");
+    EXPECT_PRED2(sdf::testing::notContains, output, "<inertia>");
+  }
+
+  {
+    // Print with --expand-auto-inertials
+    // expect <mass> and <inertia> elements
+    std::string output = custom_exec_str(
+        GzCommand() + " sdf -p " + path +
+        " --expand-auto-inertials " +
+        SdfVersion());
+    ASSERT_FALSE(output.empty());
+    EXPECT_PRED2(sdf::testing::contains, output, "<mass>");
+    EXPECT_PRED2(sdf::testing::contains, output, "<inertia>");
+  }
+}
+
+/////////////////////////////////////////////////
 TEST(GraphCmd, WorldPoseRelativeTo)
 {
   // world pose relative_to graph
@@ -1982,6 +2012,19 @@ TEST(inertial_stats, SDF)
   // Check a good SDF file from the same folder by passing a relative path
   {
     std::string path = "inertial_stats_auto.sdf";
+    const auto pathBase = sdf::testing::TestFile("sdf");
+
+    std::string output =
+      custom_exec_str("cd " + pathBase + " && " +
+                      GzCommand() + " sdf --inertial-stats " +
+                      path + SdfVersion());
+    EXPECT_EQ(expectedOutput, output);
+  }
+
+  // Check a good SDF file with auto-inertials and explicit mass
+  // from the same folder by passing a relative path
+  {
+    std::string path = "inertial_stats_auto_mass.sdf";
     const auto pathBase = sdf::testing::TestFile("sdf");
 
     std::string output =
