@@ -1,5 +1,13 @@
 ## libsdformat 9.X
 
+### libsdformat 9.10.2 (2025-01-29)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Fix macOS workflow
+    * [Pull request #1453](https://github.com/gazebosim/sdformat/pull/1453)
+
 ### libsdformat 9.10.1 (2024-01-05)
 
 1. URDF->SDF handle links with no inertia or small mass
