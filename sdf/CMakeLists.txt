@@ -25,6 +25,10 @@ execute_process(
     --output-file "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
 )
+file(SIZE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc" OUT_SIZE)
+if(${OUT_SIZE} EQUAL 0)
+   message(FATAL_ERROR "Problems executing ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py")
+endif()
 
 # Generate aggregated SDF description files for use by the sdformat.org
 # website. If the description files change, the generated full*.sdf files need
