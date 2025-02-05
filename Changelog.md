@@ -1,5 +1,17 @@
 ## libsdformat 14.X
 
+### libsdformat 14.7.0 (2025-01-30)
+
+1. Resolve auto inertia based on input mass
+    * [Pull request #1513](https://github.com/gazebosim/sdformat/pull/1513)
+    * [Pull request #1530](https://github.com/gazebosim/sdformat/pull/1530)
+
+1. Print auto inertial values with gz sdf --print --expand-auto-inertials
+    * [Pull request #1422](https://github.com/gazebosim/sdformat/pull/1422)
+
+1. Only look for psutil if testing is enabled
+    * [Pull request #1495](https://github.com/gazebosim/sdformat/pull/1495)
+
 ### libsdformat 14.6.0 (2024-11-18)
 
 1. Support removing the actor, light, or model from the root.
