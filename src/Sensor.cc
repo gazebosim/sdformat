@@ -827,6 +827,13 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     sdf::ElementPtr magnetometerElem = elem->GetElement("magnetometer");
     magnetometerElem->Copy(this->dataPtr->magnetometer->ToElement());
   }
+  // navsat
+  else if (this->Type() == sdf::SensorType::NAVSAT &&
+      this->dataPtr->navSat)
+  {
+    sdf::ElementPtr navsatElem = elem->GetElement("navsat");
+    navsatElem->Copy(this->dataPtr->navSat->Element());
+  }
   else
   {
     std::stringstream ss;
