@@ -1,11 +1,3 @@
-# Collect source files into the "sources" variable and unit test files into the
-# "gtest_sources" variable.
-gz_get_libsources_and_unittests(sources gtest_sources)
-
-if (NOT HAVE_GZ_TOOLS)
-  list(REMOVE_ITEM gtest_sources gz_TEST.cc)
-endif()
-
 # Make a small static lib of command line functions
 add_library(gz STATIC gz.cc ../FrameSemantics.cc)
 target_link_libraries(gz
@@ -23,25 +15,34 @@ target_link_libraries(${sdf_executable}
   gz-utils${GZ_UTILS_VER}::cli
   ${PROJECT_LIBRARY_TARGET_NAME}
 )
-install(TARGETS ${sdf_executable} DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}${PROJECT_VERSION_MAJOR}/)
+install(
+  TARGETS ${sdf_executable}
+  DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}${PROJECT_VERSION_MAJOR}/
+)
 
-if (FALSE AND BUILD_TESTING)
-  # Build the unit tests.
-  gz_build_tests(TYPE UNIT SOURCES ${gtest_sources}
-    TEST_LIST test_list
+# Build the unit tests only if Gazebo tools is installed
+if(BUILD_TESTING AND GZ_PROGRAM)
+  gz_build_tests(TYPE UNIT
+    SOURCES
+      gz_TEST.cc
+    INCLUDE_DIRS
+      ${PROJECT_SOURCE_DIR}/test
+    TEST_LIST
+      test_list
     LIB_DEPS
       gz
       gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
-      ${EXTRA_TEST_LIB_DEPS} test_config)
+      ${EXTRA_TEST_LIB_DEPS}
+    ENVIRONMENT
+      SDF_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+  )
 
-  if (TARGET UNIT_gz_TEST)
-
-    set_tests_properties(
-      UNIT_gz_TEST
-      PROPERTIES
-      ENVIRONMENT
-        "GZ_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>"
-  #      "GZ_CONFIG_PATH=${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>;LD_LIBRARY_PATH=\"$<TARGET_FILE_DIR:${PROJECT_LIBRARY_TARGET_NAME}>\":$ENV{LD_LIBRARY_PATH}"
+  if(TARGET UNIT_gz_TEST)
+    target_compile_definitions(UNIT_gz_TEST
+      PRIVATE
+        "GZ_PATH=\"${GZ_PROGRAM}\""
+        "GZ_CONFIG_PATH=\"${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>\""
+        "GZ_TEST_LIBRARY_PATH=\"$<TARGET_FILE_DIR:${PROJECT_LIBRARY_TARGET_NAME}>\""
     )
   endif()
 endif()
@@ -67,7 +68,6 @@ configure_file(
 file(GENERATE
   OUTPUT "${cmd_script_generated_test}"
   INPUT  "${cmd_script_configured_test}")
-
 
 #===============================================================================
 # Used for the installed version.

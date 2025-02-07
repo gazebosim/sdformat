@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2025 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@
 #include "gz.hh"
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
+int cmdCheck(const char *_path)
 {
   int result = 0;
 
@@ -107,7 +107,7 @@ extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path)
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE char *gzVersion()
+char *gzVersion()
 {
 #ifdef _MSC_VER
   return _strdup(SDF_VERSION_FULL);
@@ -117,9 +117,7 @@ extern "C" SDFORMAT_VISIBLE char *gzVersion()
 }
 
 //////////////////////////////////////////////////
-/// \brief Print the full description of the SDF spec.
-/// \return 0 on success, -1 if SDF could not be initialized.
-extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
+int cmdDescribe(const char *_version)
 {
   sdf::SDFPtr sdf(new sdf::SDF());
 
@@ -139,9 +137,9 @@ extern "C" SDFORMAT_VISIBLE int cmdDescribe(const char *_version)
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
-    int _inDegrees, int _snapToDegrees, float _snapTolerance,
-    int _preserveIncludes, int _outPrecision, int _expandAutoInertials)
+int cmdPrint(const char *_path, int _inDegrees, int _snapToDegrees,
+    float _snapTolerance, int _preserveIncludes, int _outPrecision,
+    int _expandAutoInertials)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -191,9 +189,7 @@ extern "C" SDFORMAT_VISIBLE int cmdPrint(const char *_path,
 }
 
 //////////////////////////////////////////////////
-// cppcheck-suppress unusedFunction
-extern "C" SDFORMAT_VISIBLE int cmdGraph(
-    const char *_graphType, const char *_path)
+int cmdGraph(const char *_graphType, const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
   {
@@ -258,8 +254,7 @@ extern "C" SDFORMAT_VISIBLE int cmdGraph(
 }
 
 //////////////////////////////////////////////////
-extern "C" SDFORMAT_VISIBLE int cmdInertialStats(
-    const char *_path)
+int cmdInertialStats(const char *_path)
 {
   if (!sdf::filesystem::exists(_path))
   {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2025 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,7 +157,7 @@ void addSdfFlags(CLI::App &_app)
     },
     "<pose, frame> filepath  Print the PoseRelativeTo or FrameAttachedTo "
     "graph.\n"
-    " (WARNING: This is for advanced use only and the output may change \n"
+    "(WARNING: This is for advanced use only and the output may change\n"
     "without any promise of stability)")
     ->needs(filepathOpt);
 
@@ -173,8 +173,8 @@ void addSdfFlags(CLI::App &_app)
     [opt](){
       opt->command = SdfCommand::kSdfPrint;
     },
-    "Prints moment of inertia, centre of mass, and total mass from a model "
-    "sdf file.")
+    "Print converted arg. Note the quaternion representation of the\n"
+    "rotational part of poses and unit vectors will be normalized.")
     ->needs(filepathOpt);
 
   _app.callback([opt](){runSdfCommand(*opt); });
@@ -190,6 +190,8 @@ int main(int argc, char** argv)
       throw CLI::Success();
     },
     "Print the current library version");
+
+  // Dummy flags handled by gz-tools
   app.add_flag("--force-version", "Use a specific library version.");
   app.add_flag("--versions", "Show the available versions.");
 
