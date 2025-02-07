@@ -15,6 +15,8 @@
  *
  */
 
+#include <iostream>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -155,7 +157,7 @@ void addSdfFlags(CLI::App &_app)
       opt->command = SdfCommand::kSdfGraph;
       opt->graphType = _graphType;
     },
-    "<pose, frame> filepath  Print the PoseRelativeTo or FrameAttachedTo "
+    "<pose, frame> filepath Print the PoseRelativeTo or FrameAttachedTo "
     "graph.\n"
     "(WARNING: This is for advanced use only and the output may change\n"
     "without any promise of stability)")
