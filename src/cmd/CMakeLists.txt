@@ -1,19 +1,10 @@
-# Make a small static lib of command line functions
-add_library(gz STATIC gz.cc ../FrameSemantics.cc)
-target_link_libraries(gz
-  PUBLIC
-    ${PROJECT_LIBRARY_TARGET_NAME}
-  PRIVATE
-    TINYXML2::TINYXML2
-)
-
 # Build sdf CLI executable
 set(sdf_executable gz-sdformat-sdf)
-add_executable(${sdf_executable} sdf_main.cc)
+add_executable(${sdf_executable} sdf_main.cc gz.cc ../FrameSemantics.cc)
 target_link_libraries(${sdf_executable}
-  gz
   gz-utils${GZ_UTILS_VER}::cli
   ${PROJECT_LIBRARY_TARGET_NAME}
+  TINYXML2::TINYXML2
 )
 install(
   TARGETS ${sdf_executable}
@@ -30,7 +21,6 @@ if(BUILD_TESTING AND GZ_PROGRAM)
     TEST_LIST
       test_list
     LIB_DEPS
-      gz
       gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
       ${EXTRA_TEST_LIB_DEPS}
     ENVIRONMENT
