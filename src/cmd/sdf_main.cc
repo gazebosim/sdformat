@@ -58,22 +58,22 @@ struct SdfOptions
   /// * "pose" for PoseRelativeToGraph
   std::string graphType{""};
 
-  /// \brief When nonzero, preserve included tags when printing converted arg
+  /// \brief When true, preserve included tags when printing converted arg
   /// (does not preserve merge-includes)
-  int preserveIncludes{0};
+  bool preserveIncludes{false};
 
-  /// \brief When nonzero, print pose rotations in degrees.
-  int degrees{0};
+  /// \brief When true, print pose rotations in degrees.
+  bool degrees{false};
 
-  /// \brief When nonzero, auto-computed inertial values will be printed.
-  int expandAutoInertials{0};
+  /// \brief When true, auto-computed inertial values will be printed.
+  bool expandAutoInertials{false};
 
   /// \brief Output stream precision for floating point numbers.
-  std::optional<int> precision;
+  int precision{0};
 
   /// \brief If set, printed rotations are snapped to specified degree
   /// intervals.
-  std::optional<int> snapToDegrees;
+  int snapToDegrees{0};
 
   /// \brief Printed rotations are snapped if they are less than this specified
   /// tolerance.
@@ -99,8 +99,8 @@ void runSdfCommand(const SdfOptions &_opt)
       cmdInertialStats(_opt.filepath.c_str());
       break;
     case SdfCommand::kSdfPrint:
-      cmdPrint(_opt.filepath.c_str(), _opt.degrees, *_opt.snapToDegrees,
-               _opt.snapTolerance, _opt.preserveIncludes, *_opt.precision,
+      cmdPrint(_opt.filepath.c_str(), _opt.degrees, _opt.snapToDegrees,
+               _opt.snapTolerance, _opt.preserveIncludes, _opt.precision,
                _opt.expandAutoInertials);
       break;
     case SdfCommand::kNone:

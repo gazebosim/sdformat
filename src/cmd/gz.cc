@@ -15,9 +15,12 @@
  *
 */
 
+#include <cstddef>
 #include <cstring>
+#include <filesystem>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <string.h>
 #include <vector>
@@ -141,9 +144,9 @@ namespace sdf
   }
 
   //////////////////////////////////////////////////
-  int cmdPrint(const char *_path, int _inDegrees, int _snapToDegrees,
-      float _snapTolerance, int _preserveIncludes, int _outPrecision,
-      int _expandAutoInertials)
+  int cmdPrint(const char *_path, bool _inDegrees, int _snapToDegrees,
+      float _snapTolerance, bool _preserveIncludes, int _outPrecision,
+      bool _expandAutoInertials)
   {
     if (!sdf::filesystem::exists(_path))
     {
@@ -162,7 +165,7 @@ namespace sdf
     sdf::Errors errors = root.Load(_path, parserConfig);
 
     sdf::PrintConfig config;
-    if (_inDegrees != 0)
+    if (_inDegrees)
     {
       config.SetRotationInDegrees(true);
     }
@@ -173,7 +176,7 @@ namespace sdf
                                       static_cast<double>(_snapTolerance));
     }
 
-    if (_preserveIncludes != 0)
+    if (_preserveIncludes)
       config.SetPreserveIncludes(true);
 
     if (_outPrecision > 0)
@@ -308,7 +311,8 @@ namespace sdf
     auto yCentreOfMass = totalInertial.Pose().Pos().Y();
     auto zCentreOfMass = totalInertial.Pose().Pos().Z();
 
-    std::cout << "Inertial statistics for model: " << model->Name() << std::endl;
+    std::cout << "Inertial statistics for model: "
+              << model->Name() << std::endl;
     std::cout << "---" << std::endl;
     std::cout << "Total mass of the model: " << totalMass << std::endl;
     std::cout << "---" << std::endl;

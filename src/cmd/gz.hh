@@ -51,9 +51,9 @@ namespace sdf
   /// \param[in] _outPrecision Output stream precision for floating point.
   /// \param[in] _expandAutoInertials Print auto-computed inertial values.
   /// \return int Zero on success, negative one otherwise.
-  int cmdPrint(const char *_path, int _inDegrees, int _snapToDegrees,
-      float _snapTolerance, int _preserveIncludes, int _outPrecision,
-      int _expandAutoInertials);
+  int cmdPrint(const char *_path, bool _inDegrees, int _snapToDegrees,
+      float _snapTolerance, bool _preserveIncludes, int _outPrecision,
+      bool _expandAutoInertials);
 
   /// \brief External hook to execute 'gz sdf --graph' from the command line.
   /// \param[in] _graphType Graph type.
@@ -61,7 +61,8 @@ namespace sdf
   /// \return int Zero on success, negative one otherwise.
   int cmdGraph(const char *_graphType, const char *_path);
 
-  /// \brief External hook to execute 'gz sdf --inertial-stats' from command line
+  /// \brief External hook to execute 'gz sdf --inertial-stats'
+  ///   from command line
   /// \param[in] _path Path to SDF file.
   /// \return int Zero on success, negative one otherwise.
   int cmdInertialStats(const char *_path);
