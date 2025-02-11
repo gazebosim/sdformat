@@ -298,7 +298,15 @@ TEST(DOMMesh, CalcualteInertial)
   auto meshInertial = mesh.CalculateInertial(errors,
   density, autoInertiaParamsElem, config);
   ASSERT_FALSE(errors.empty());
-  ASSERT_EQ(meshInertial, std::nullopt);
+  gz::math::Inertiald defaultInertial;
+  defaultInertial.SetMassMatrix(
+    gz::math::MassMatrix3d(
+      1.0,
+      gz::math::Vector3d::One,
+      gz::math::Vector3d::Zero
+    )
+  );
+  ASSERT_EQ(defaultInertial, meshInertial);
 
   density = 1240.0;
   sdf::Errors errors2;
@@ -353,7 +361,52 @@ TEST(DOMMesh, CalculateInertiaWithEmptyFilePath)
   auto meshInertial = mesh.CalculateInertial(errors,
     density, autoInertiaParamsElem, config);
   ASSERT_FALSE(errors.empty());
-  ASSERT_EQ(meshInertial, std::nullopt);
+  gz::math::Inertiald defaultInertial;
+  defaultInertial.SetMassMatrix(
+    gz::math::MassMatrix3d(
+      1.0,
+      gz::math::Vector3d::One,
+      gz::math::Vector3d::Zero
+    )
+  );
+  ASSERT_EQ(defaultInertial, meshInertial);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, CalculateInertiaWithNullInertiaFromMeshCalculator)
+{
+  sdf::Mesh mesh;
+  sdf::ParserConfig config;
+  sdf::Errors errors;
+  sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+  sdf::ElementPtr autoInertiaParamsElem(new sdf::Element());
+
+  // A custom inertia calculator that return nullopt
+  auto customMeshInertiaCalculator = [](
+    sdf::Errors &,
+    const sdf::CustomInertiaCalcProperties &)
+      -> std::optional<gz::math::Inertiald>
+  {
+    return std::nullopt;
+  };
+
+  config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+  double density = 1000;
+  auto meshInertial = mesh.CalculateInertial(errors,
+    density, autoInertiaParamsElem, config);
+  ASSERT_TRUE(errors.empty());
+
+  gz::math::Inertiald defaultInertial;
+  defaultInertial.SetMassMatrix(
+    gz::math::MassMatrix3d(
+      1.0,
+      gz::math::Vector3d::One,
+      gz::math::Vector3d::Zero
+    )
+  );
+  ASSERT_EQ(defaultInertial, meshInertial);
 }
 
 /////////////////////////////////////////////////
