@@ -26,6 +26,8 @@
 #include "sdf/config.hh"
 #include "gz.hh"
 
+using namespace sdf;
+
 //////////////////////////////////////////////////
 /// \brief Enumeration of available commands
 enum class SdfCommand
