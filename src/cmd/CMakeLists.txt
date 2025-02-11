@@ -31,7 +31,7 @@ if(BUILD_TESTING AND GZ_PROGRAM)
     target_compile_definitions(UNIT_gz_TEST
       PRIVATE
         "GZ_PATH=\"${GZ_PROGRAM}\""
-        "GZ_CONFIG_PATH=\"${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>\""
+        "DETAIL_GZ_CONFIG_PATH=\"${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>\""
         "GZ_TEST_LIBRARY_PATH=\"$<TARGET_FILE_DIR:${PROJECT_LIBRARY_TARGET_NAME}>\""
     )
   endif()
