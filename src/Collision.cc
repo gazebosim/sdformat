@@ -324,7 +324,10 @@ void Collision::CalculateInertial(
   {
     _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
         "Inertia Calculated for collision: " +
-        this->dataPtr->name + " is invalid."});
+        this->dataPtr->name + " is invalid, using default inertial values."});
+    _inertial = gz::math::Inertiald(
+        gz::math::MassMatrix3d(1, gz::math::Vector3d::One,
+        gz::math::Vector3d::Zero), gz::math::Pose3d::Zero);
   }
   else
   {

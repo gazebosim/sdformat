@@ -196,6 +196,49 @@ TEST(DOMcollision, SetSurface)
 }
 
 /////////////////////////////////////////////////
+TEST(DOMCollision, IncorrectMeshCollisionCalculateInertial)
+{
+  sdf::Collision collision;
+
+  sdf::ElementPtr sdf(new sdf::Element());
+  collision.Load(sdf);
+
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Geometry geom;
+  sdf::Mesh mesh;
+  geom.SetType(sdf::GeometryType::MESH);
+  geom.SetMeshShape(mesh);
+  collision.SetGeom(geom);
+
+  sdf::ParserConfig config;
+  sdf::Errors errors;
+  sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+  // Custom inertia calculator that returns null inertia
+  auto customMeshInertiaCalculator = [](
+    sdf::Errors &,
+    const sdf::CustomInertiaCalcProperties &)
+      -> std::optional<gz::math::Inertiald>
+  {
+    return std::nullopt;
+  };
+  config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+  gz::math::Inertiald collisionInertial;
+  collision.CalculateInertial(errors, collisionInertial, config);
+  ASSERT_FALSE(errors.empty());
+
+  // Expect mesh class to handle null inertia and return
+  // default inertial values
+  gz::math::Inertiald defaultInertial;
+  defaultInertial.SetMassMatrix(
+    gz::math::MassMatrix3d(1.0,
+      gz::math::Vector3d::One,
+      gz::math::Vector3d::Zero));
+  ASSERT_EQ(collisionInertial, defaultInertial);
+}
+
+/////////////////////////////////////////////////
 TEST(DOMCollision, IncorrectBoxCollisionCalculateInertial)
 {
   sdf::Collision collision;

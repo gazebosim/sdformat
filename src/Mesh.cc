@@ -376,10 +376,6 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
 {
   const auto &customCalculator = _config.CustomInertiaCalc();
 
-  auto defaultInertial = gz::math::Inertiald(
-      gz::math::MassMatrix3d(1, gz::math::Vector3d::One,
-                             gz::math::Vector3d::Zero),
-                             gz::math::Pose3d::Zero);
   if (!customCalculator)
   {
     Error err(
@@ -389,25 +385,17 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
         "inertial values.");
     enforceConfigurablePolicyCondition(
           _config.WarningsPolicy(), err, _errors);
-    return defaultInertial;
+
+    using namespace gz::math;
+    return Inertiald(
+        MassMatrix3d(1, Vector3d::One, Vector3d::Zero),
+        Pose3d::Zero);
   }
 
   sdf::CustomInertiaCalcProperties calcInterface = CustomInertiaCalcProperties(
     _density, *this, _autoInertiaParams);
 
-  std::optional<gz::math::Inertiald> inertial =
-      customCalculator(_errors, calcInterface);
-  if (!inertial)
-  {
-    Error err(
-        sdf::ErrorCode::WARNING,
-        "Custom moment of inertia calculator for meshes produced invalid inertia, "
-        "using default inertial values.");
-    enforceConfigurablePolicyCondition(
-          _config.WarningsPolicy(), err, _errors);
-    return defaultInertial;
-  }
-  return inertial;
+  return customCalculator(_errors, calcInterface);
 }
 
 /////////////////////////////////////////////////
