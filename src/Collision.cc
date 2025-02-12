@@ -322,9 +322,27 @@ void Collision::CalculateInertial(
 
   if (!geomInertial)
   {
-    _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
-        "Inertia Calculated for collision: " +
-        this->dataPtr->name + " is invalid."});
+    if (_config.CalculateInertialFailurePolicy() ==
+        CalculateInertialFailurePolicyType::WARN_AND_USE_DEFAULT_INERTIAL)
+    {
+      Error err(
+          sdf::ErrorCode::WARNING,
+          "Inertia Calculated for collision: " + this->dataPtr->name +
+          " is invalid, using default inertial values.");
+      enforceConfigurablePolicyCondition(_config.WarningsPolicy(), err,
+                                         _errors);
+
+      using namespace gz::math;
+      _inertial = Inertiald(MassMatrix3d(1, Vector3d::One, Vector3d::Zero),
+                            Pose3d::Zero);
+    }
+    else if (_config.CalculateInertialFailurePolicy() ==
+             CalculateInertialFailurePolicyType::ERR)
+    {
+        _errors.push_back({ErrorCode::LINK_INERTIA_INVALID,
+            "Inertia Calculated for collision: " +
+            this->dataPtr->name + " is invalid."});
+    }
   }
   else
   {
