@@ -431,8 +431,9 @@ TEST(DOMCollision, CollisionCalculateInertialFailurePolicy)
   // mesh inertial calculator returns null inertial values.
   gz::math::Inertiald collisionInertial;
   collision.CalculateInertial(errors, collisionInertial, config);
-  ASSERT_FALSE(errors.empty());
-  gz::math::Inertiald empty;
+  ASSERT_EQ(1u, errors.size()) << errors;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
+  const gz::math::Inertiald empty;
   EXPECT_EQ(empty, collisionInertial);
 
   // Set inertial failure policy to use default inertial values on failure and
@@ -441,7 +442,7 @@ TEST(DOMCollision, CollisionCalculateInertialFailurePolicy)
   config.SetCalculateInertialFailurePolicy(
     sdf::CalculateInertialFailurePolicyType::WARN_AND_USE_DEFAULT_INERTIAL);
   collision.CalculateInertial(errors, collisionInertial, config);
-  ASSERT_TRUE(errors.empty());
+  EXPECT_TRUE(errors.empty()) << errors;
 
   // Verify default inertial values are returned.
   gz::math::Inertiald defaultInertial;
@@ -449,7 +450,7 @@ TEST(DOMCollision, CollisionCalculateInertialFailurePolicy)
     gz::math::MassMatrix3d(1.0,
       gz::math::Vector3d::One,
       gz::math::Vector3d::Zero));
-  ASSERT_EQ(collisionInertial, defaultInertial);
+  EXPECT_EQ(collisionInertial, defaultInertial);
 }
 
 /////////////////////////////////////////////////
