@@ -44,6 +44,11 @@ class sdf::ParserConfig::Implementation
   /// to behave behave differently than the `warningsPolicy`.
   public: std::optional<EnforcementPolicy> deprecatedElementsPolicy;
 
+  /// \brief Policy that is set for handling failures of the
+  /// CalculateInertial() function. By default errors are reported.
+  public: CalculateInertialFailurePolicyType calculateInertialFailurePolicy =
+    CalculateInertialFailurePolicyType::ERR;
+
   /// \brief Configuration that is set for the CalculateInertial() function
   /// By default it is set to SAVE_CALCULATION to preserve the behavior of
   /// Root::Load() generating complete inertial information.
@@ -165,6 +170,20 @@ EnforcementPolicy ParserConfig::DeprecatedElementsPolicy() const
 {
   return this->dataPtr->deprecatedElementsPolicy.value_or(
       this->dataPtr->warningsPolicy);
+}
+
+/////////////////////////////////////////////////
+CalculateInertialFailurePolicyType
+  ParserConfig::CalculateInertialFailurePolicy() const
+{
+  return this->dataPtr->calculateInertialFailurePolicy;
+}
+
+/////////////////////////////////////////////////
+void ParserConfig::SetCalculateInertialFailurePolicy(
+  CalculateInertialFailurePolicyType _policy)
+{
+  this->dataPtr->calculateInertialFailurePolicy = _policy;
 }
 
 /////////////////////////////////////////////////
