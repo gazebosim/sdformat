@@ -142,7 +142,7 @@ set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
 configure_build_install_location(${BINDINGS_MODULE_NAME})
 
 if (BUILD_TESTING AND NOT WIN32)
-  pybind11_add_module(sdformattest SHARED
+  pybind11_add_module(sdformattest MODULE
     test/_gz_sdformattest_pybind11.cc
   )
 
