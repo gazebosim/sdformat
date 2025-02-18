@@ -311,3 +311,16 @@ TEST(DOMCone, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCone, AxisAlignedBox)
+{
+  sdf::Cone cone;
+  cone.SetRadius(0.2);
+  cone.SetLength(3.0);
+
+  auto aabb = cone.AxisAlignedBox();
+  EXPECT_EQ(gz::math::Vector3d(0.4, 0.4, 3.0), aabb.Size());
+  EXPECT_EQ(gz::math::Vector3d(-0.2, -0.2, -1.5), aabb.Min());
+  EXPECT_EQ(gz::math::Vector3d(0.2, 0.2, 1.5), aabb.Max());
+}

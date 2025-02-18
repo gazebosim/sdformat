@@ -261,3 +261,15 @@ TEST(DOMBox, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMBox, AxisAlignedBox)
+{
+  sdf::Box box;
+  box.SetSize(gz::math::Vector3d(1, 2, 3));
+
+  auto aabb = box.AxisAlignedBox();
+  EXPECT_EQ(box.Size(), aabb.Size());
+  EXPECT_EQ(gz::math::Vector3d(-0.5, -1, -1.5), aabb.Min());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 1, 1.5), aabb.Max());
+}

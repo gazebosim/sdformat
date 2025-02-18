@@ -181,6 +181,14 @@ std::optional<gz::math::Inertiald> Capsule::CalculateInertial(double _density)
 }
 
 /////////////////////////////////////////////////
+gz::math::AxisAlignedBox Capsule::AxisAlignedBox() const
+{
+  auto halfSize = gz::math::Vector3d(
+    this->Radius(), this->Radius(), this->Length() / 2);
+  return gz::math::AxisAlignedBox(-halfSize, halfSize);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Capsule::ToElement() const
 {
   sdf::Errors errors;

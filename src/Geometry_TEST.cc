@@ -1186,3 +1186,171 @@ TEST(DOMGeometry, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMGeometry, AxisAlignedBox)
+{
+  // Box
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::BOX);
+
+    sdf::Box box;
+    box.SetSize({1, 2, 3});
+    geom.SetBoxShape(box);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-0.5, -1, -1.5), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(0.5, 1, 1.5), aabb->Max());
+  }
+
+  // Capsule
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::CAPSULE);
+
+    sdf::Capsule capsule;
+    capsule.SetRadius(1.2);
+    capsule.SetLength(3.4);
+    geom.SetCapsuleShape(capsule);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-1.2, -1.2, -1.7), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1.2, 1.2, 1.7), aabb->Max());
+  }
+
+  // Cone
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::CONE);
+
+    sdf::Cone cone;
+    cone.SetRadius(1.2);
+    cone.SetLength(3.4);
+    geom.SetConeShape(cone);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-1.2, -1.2, -1.7), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1.2, 1.2, 1.7), aabb->Max());
+  }
+
+  // Cylinder
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::CYLINDER);
+
+    sdf::Cylinder cylinder;
+    cylinder.SetRadius(1.2);
+    cylinder.SetLength(3.4);
+    geom.SetCylinderShape(cylinder);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-1.2, -1.2, -1.7), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1.2, 1.2, 1.7), aabb->Max());
+  }
+
+  // Ellipsoid
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::ELLIPSOID);
+
+    sdf::Ellipsoid ellipsoid;
+    ellipsoid.SetRadii({1.2, 3.4, 5.6});
+    geom.SetEllipsoidShape(ellipsoid);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-1.2, -3.4, -5.6), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1.2, 3.4, 5.6), aabb->Max());
+  }
+
+  // Sphere
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::SPHERE);
+
+    sdf::Sphere sphere;
+    sphere.SetRadius(1.2);
+    geom.SetSphereShape(sphere);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-1.2, -1.2, -1.2), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1.2, 1.2, 1.2), aabb->Max());
+  }
+
+  // Mesh
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::MESH);
+
+    sdf::Mesh mesh;
+    mesh.SetUri("mesh://model.sdf");
+    geom.SetMeshShape(mesh);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_FALSE(aabb.has_value());
+
+    auto meshAabbCalculator = [](const sdf::Mesh &) -> gz::math::AxisAlignedBox
+    {
+      return gz::math::AxisAlignedBox(
+        gz::math::Vector3d(-1, -2, -3),
+        gz::math::Vector3d(1, 2, 3));
+    };
+
+    aabb = geom.AxisAlignedBox(meshAabbCalculator);
+    EXPECT_TRUE(aabb.has_value());
+    EXPECT_EQ(gz::math::Vector3d(-1, -2, -3), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1, 2, 3), aabb->Max());
+  }
+
+  // Heightmap - no axis aligned box
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::HEIGHTMAP);
+
+    sdf::Heightmap heightmap;
+    heightmap.SetUri("heightmap://model.sdf");
+    geom.SetHeightmapShape(heightmap);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_FALSE(aabb.has_value());
+  }
+
+  // Polyline - no axis aligned box
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::POLYLINE);
+
+    sdf::Polyline polyline;
+    geom.SetPolylineShape({polyline});
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_FALSE(aabb.has_value());
+  }
+
+  // Plane - no axis aligned box
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::PLANE);
+
+    sdf::Plane plane;
+    geom.SetPlaneShape(plane);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_FALSE(aabb.has_value());
+  }
+
+  // Empty - no axis aligned box
+  {
+    sdf::Geometry geom;
+    geom.SetType(sdf::GeometryType::EMPTY);
+
+    auto aabb = geom.AxisAlignedBox(nullptr);
+    EXPECT_FALSE(aabb.has_value());
+  }
+}

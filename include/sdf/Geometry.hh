@@ -22,6 +22,7 @@
 
 #include <gz/utils/ImplPtr.hh>
 #include <gz/math/Inertial.hh>
+#include <gz/math/AxisAlignedBox.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
 #include <sdf/config.hh>
@@ -238,6 +239,13 @@ namespace sdf
     public: std::optional<gz::math::Inertiald> CalculateInertial(
       sdf::Errors &_errors, const ParserConfig &_config,
       double _density, sdf::ElementPtr _autoInertiaParams);
+
+    /// \brief Calculate and return the AxisAlignedBox for the Geometry
+    /// @param _meshAabbCalculator The function to calculate the AABB of a mesh
+    /// @return std::optional with gz::math::AxisAlignedBox object or
+    /// std::nullopt if the geometry type does not support AABB calculation
+    public: std::optional<gz::math::AxisAlignedBox> AxisAlignedBox(
+      Mesh::AxisAlignedBoxCalculator _meshAabbCalculator) const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.
