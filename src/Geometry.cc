@@ -386,6 +386,45 @@ std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
 }
 
 /////////////////////////////////////////////////
+std::optional<gz::math::AxisAlignedBox> Geometry::AxisAlignedBox(
+  Mesh::AxisAlignedBoxCalculator _meshAabbCalculator) const
+{
+  // Initialized the AABB to an empty box (zero volume)
+  std::optional<gz::math::AxisAlignedBox> aabb;
+
+  switch (this->dataPtr->type)
+  {
+    case GeometryType::BOX:
+      aabb = this->dataPtr->box->AxisAlignedBox();
+      break;
+    case GeometryType::CAPSULE:
+      aabb = this->dataPtr->capsule->AxisAlignedBox();
+      break;
+    case GeometryType::CONE:
+      aabb = this->dataPtr->cone->AxisAlignedBox();
+      break;
+    case GeometryType::CYLINDER:
+      aabb = this->dataPtr->cylinder->AxisAlignedBox();
+      break;
+    case GeometryType::ELLIPSOID:
+      aabb = this->dataPtr->ellipsoid->AxisAlignedBox();
+      break;
+    case GeometryType::SPHERE:
+      aabb = this->dataPtr->sphere->AxisAlignedBox();
+      break;
+    case GeometryType::MESH:
+      aabb = this->dataPtr->mesh->AxisAlignedBox(_meshAabbCalculator);
+      break;
+    default:
+      aabb = std::nullopt;
+      break;
+  }
+
+  return aabb;
+}
+
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Geometry::Element() const
 {
   return this->dataPtr->sdf;

@@ -399,6 +399,18 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
+std::optional<gz::math::AxisAlignedBox> Mesh::AxisAlignedBox(
+  Mesh::AxisAlignedBoxCalculator _customCalculator) const
+{
+  if (!_customCalculator)
+  {
+    return std::nullopt;
+  }
+
+  return _customCalculator(*this);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Mesh::ToElement() const
 {
   sdf::Errors errors;
