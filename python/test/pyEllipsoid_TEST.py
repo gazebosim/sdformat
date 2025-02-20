@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from gz_test_deps.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d
 import math
 from gz_test_deps.sdformat import Ellipsoid
 import unittest
@@ -77,6 +77,7 @@ class BoxTEST(unittest.TestCase):
     ellipsoid.shape().set_radii(expectedradii)
     self.assertEqual(expectedradii, ellipsoid.radii())
 
+
   def test_calculate_inertial(self):
     ellipsoid = Ellipsoid()
 
@@ -115,6 +116,15 @@ class BoxTEST(unittest.TestCase):
     self.assertEqual(expectedInertial.mass_matrix().mass(),
       ellipsoidInertial.mass_matrix().mass())
     self.assertEqual(expectedInertial.pose(), ellipsoidInertial.pose())
+
+  def test_axis_aligned_box(self):
+    ellipsoid = Ellipsoid()
+    ellipsoid.set_radii(Vector3d(1.0, 2.0, 3.0))
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-1.0, -2.0, -3.0), Vector3d(1.0, 2.0, 3.0)),
+      ellipsoid.axis_aligned_box())
+
 
 if __name__ == '__main__':
     unittest.main()

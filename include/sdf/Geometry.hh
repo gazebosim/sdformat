@@ -241,11 +241,11 @@ namespace sdf
       double _density, sdf::ElementPtr _autoInertiaParams);
 
     /// \brief Calculate and return the AxisAlignedBox for the Geometry
-    /// @param _meshAabbCalculator The function to calculate the AABB of a mesh
-    /// @return std::optional with gz::math::AxisAlignedBox object or
+    /// \param _meshAabbCalculator The function to calculate the AABB of a mesh
+    /// \return std::optional with gz::math::AxisAlignedBox object or
     /// std::nullopt if the geometry type does not support AABB calculation
     public: std::optional<gz::math::AxisAlignedBox> AxisAlignedBox(
-      Mesh::AxisAlignedBoxCalculator _meshAabbCalculator) const;
+      const Mesh::AxisAlignedBoxCalculator &_meshAabbCalculator) const;
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

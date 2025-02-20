@@ -17,6 +17,8 @@
 #include "pyMesh.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 #include "sdf/ParserConfig.hh"
 #include "sdf/Mesh.hh"
@@ -78,6 +80,8 @@ void defineMesh(pybind11::object module)
     .def("set_center_submesh", &sdf::Mesh::SetCenterSubmesh,
          "Set whether the submesh should be centered. See CenterSubmesh() "
          "for more information.")
+    .def("axis_aligned_box", &sdf::Mesh::AxisAlignedBox,
+         "Get the axis-aligned box that contains this Mesh.")
     .def("__copy__", [](const sdf::Mesh &self) {
       return sdf::Mesh(self);
     })

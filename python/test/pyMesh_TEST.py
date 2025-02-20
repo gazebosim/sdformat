@@ -14,7 +14,7 @@
 
 import copy
 from gz_test_deps.sdformat import Mesh, ConvexDecomposition
-from gz_test_deps.math import Vector3d
+from gz_test_deps.math import AxisAlignedBox, Vector3d
 import gz_test_deps.sdformat as sdf
 import unittest
 
@@ -116,7 +116,6 @@ class MeshTEST(unittest.TestCase):
     self.assertTrue(mesh2.center_submesh())
     self.assertEqual("/pear", mesh2.file_path())
 
-
   def test_set(self):
     mesh = Mesh()
 
@@ -159,6 +158,28 @@ class MeshTEST(unittest.TestCase):
     self.assertEqual("", mesh.file_path())
     mesh.set_file_path("/mypath")
     self.assertEqual("/mypath", mesh.file_path())
+
+  def test_axis_aligned_box(self):
+    mesh = Mesh()
+    self.assertEqual(None, mesh.axis_aligned_box(None))
+
+    # Customly defined Mesh AABB calculator
+    def mesh_aabb_calulator(sdf_mesh: Mesh) -> AxisAlignedBox:
+      if sdf_mesh.uri() == "banana":
+        # Banana mesh should return invalid AABB
+        return AxisAlignedBox()
+
+      return AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1))
+
+    mesh.set_uri("banana")
+    self.assertEqual(
+      AxisAlignedBox(),
+      mesh.axis_aligned_box(mesh_aabb_calulator))
+
+    mesh.set_uri("apple")
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1)),
+      mesh.axis_aligned_box(mesh_aabb_calulator))
 
 
 if __name__ == '__main__':
