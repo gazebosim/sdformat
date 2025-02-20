@@ -15,7 +15,7 @@
 import copy
 from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cone, Cylinder, Ellipsoid,
                                    Heightmap, Mesh, ParserConfig, Plane, Sphere)
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
+from gz_test_deps.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
 import gz_test_deps.sdformat as sdf
 import math
 import unittest
@@ -387,6 +387,106 @@ class GeometryTEST(unittest.TestCase):
     self.assertEqual(expectedInertial, sphereInertial)
     self.assertEqual(expectedInertial.mass_matrix(), expectedMassMat)
     self.assertEqual(expectedInertial.pose(), sphereInertial.pose())
+
+  def test_axis_aligned_box(self):
+    geom = Geometry()
+
+    # Box
+    geom.set_type(sdf.GeometryType.BOX)
+    box = Box()
+    box.set_size(Vector3d(1, 2, 3))
+    geom.set_box_shape(box)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -1, -1.5), Vector3d(0.5, 1, 1.5)),
+      geom.axis_aligned_box(None))
+
+    # Capsule
+    geom.set_type(sdf.GeometryType.CAPSULE)
+    capsule = Capsule()
+    capsule.set_radius(0.5)
+    capsule.set_length(3.0)
+    geom.set_capsule_shape(capsule)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -0.5, -1.5), Vector3d(0.5, 0.5, 1.5)),
+      geom.axis_aligned_box(None))
+
+    # Cone
+    geom.set_type(sdf.GeometryType.CONE)
+    cone = Cone()
+    cone.set_radius(0.5)
+    cone.set_length(3.0)
+    geom.set_cone_shape(cone)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -0.5, -1.5), Vector3d(0.5, 0.5, 1.5)),
+      geom.axis_aligned_box(None))
+
+    # Cylinder
+    geom.set_type(sdf.GeometryType.CYLINDER)
+    cylinder = Cylinder()
+    cylinder.set_radius(0.5)
+    cylinder.set_length(3.0)
+    geom.set_cylinder_shape(cylinder)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -0.5, -1.5), Vector3d(0.5, 0.5, 1.5)),
+      geom.axis_aligned_box(None))
+
+    # Ellipsoid
+    geom.set_type(sdf.GeometryType.ELLIPSOID)
+    ellipsoid = Ellipsoid()
+    ellipsoid.set_radii(Vector3d(1, 2, 3))
+    geom.set_ellipsoid_shape(ellipsoid)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-1, -2, -3), Vector3d(1, 2, 3)),
+      geom.axis_aligned_box(None))
+
+    # Sphere
+    geom.set_type(sdf.GeometryType.SPHERE)
+    sphere = Sphere()
+    sphere.set_radius(0.5)
+    geom.set_sphere_shape(sphere)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -0.5, -0.5), Vector3d(0.5, 0.5, 0.5)),
+      geom.axis_aligned_box(None))
+
+    # Mesh
+    geom.set_type(sdf.GeometryType.MESH)
+    mesh = Mesh()
+    geom.set_mesh_shape(mesh)
+
+    self.assertEqual(None, geom.axis_aligned_box(None))
+
+    def mesh_aabb_calulator(sdf_mesh: Mesh) -> AxisAlignedBox:
+      return AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1))
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1)),
+      geom.axis_aligned_box(mesh_aabb_calulator))
+
+    # Plane - Non volumetric geometry (no AABB)
+    geom.set_type(sdf.GeometryType.PLANE)
+    plane = Plane()
+    geom.set_plane_shape(plane)
+
+    self.assertEqual(None, geom.axis_aligned_box(None))
+
+    # Heightmap - Non volumetric geometry (no AABB)
+    geom.set_type(sdf.GeometryType.HEIGHTMAP)
+    heightmap = Heightmap()
+    geom.set_heightmap_shape(heightmap)
+
+    self.assertEqual(None, geom.axis_aligned_box(None))
+
+    # Empty - Non volumetric geometry (no AABB)
+    geom.set_type(sdf.GeometryType.EMPTY)
+
+    self.assertEqual(None, geom.axis_aligned_box(None))
+
 
 if __name__ == '__main__':
     unittest.main()

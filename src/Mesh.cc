@@ -400,7 +400,7 @@ std::optional<gz::math::Inertiald> Mesh::CalculateInertial(sdf::Errors &_errors,
 
 /////////////////////////////////////////////////
 std::optional<gz::math::AxisAlignedBox> Mesh::AxisAlignedBox(
-  Mesh::AxisAlignedBoxCalculator _customCalculator) const
+  const Mesh::AxisAlignedBoxCalculator &_customCalculator) const
 {
   if (!_customCalculator)
   {

@@ -45,6 +45,8 @@ void defineBox(pybind11::object module)
         "Get a mutable Gazebo Math representation of this Box.")
     .def("calculate_inertial", &sdf::Box::CalculateInertial,
          "Calculate and return the Inertial values for the Box.")
+    .def("axis_aligned_box", &sdf::Box::AxisAlignedBox,
+         "Get the axis-aligned box that contains this box.")
     .def("__copy__", [](const sdf::Box &self) {
       return sdf::Box(self);
     })

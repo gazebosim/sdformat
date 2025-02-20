@@ -387,9 +387,9 @@ std::optional<gz::math::Inertiald> Geometry::CalculateInertial(
 
 /////////////////////////////////////////////////
 std::optional<gz::math::AxisAlignedBox> Geometry::AxisAlignedBox(
-  Mesh::AxisAlignedBoxCalculator _meshAabbCalculator) const
+  const Mesh::AxisAlignedBoxCalculator &_meshAabbCalculator) const
 {
-  // Initialized the AABB to an empty box (zero volume)
+  // Initialize the AABB to an invalid box (aabb.Min > aabb.Max)
   std::optional<gz::math::AxisAlignedBox> aabb;
 
   switch (this->dataPtr->type)

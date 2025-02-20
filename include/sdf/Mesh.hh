@@ -211,12 +211,11 @@ namespace sdf
                               const ParserConfig &_config);
 
     /// \brief Get the Axis-aligned box for this Mesh.
-    /// \param[out] _errors A vector of Errors object. Each object
-    /// would contain an error code and an error message.
-    /// \param[in] _config Parser Configuration object.
+    /// \param[in] _aabbCalc A custom function that calculates the
+    /// AxisAlignedBox for the Mesh.
     /// \return A gz::math::AxisAlignedBox object.
     public: std::optional<gz::math::AxisAlignedBox>
-            AxisAlignedBox(AxisAlignedBoxCalculator _meshAabbCalculator) const;
+            AxisAlignedBox(const AxisAlignedBoxCalculator &_aabbCalc) const;
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has
