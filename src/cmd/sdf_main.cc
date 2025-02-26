@@ -159,11 +159,12 @@ void addSdfFlags(CLI::App &_app)
       opt->command = SdfCommand::kSdfGraph;
       opt->graphType = _graphType;
     },
-    "<pose, frame> filepath Print the PoseRelativeTo or FrameAttachedTo "
-    "graph.\n"
+    "Print the PoseRelativeTo or FrameAttachedTo graph by following\n"
+    "with either pose or frame as argument respectively.\n"
     "(WARNING: This is for advanced use only and the output may change\n"
     "without any promise of stability)")
-    ->needs(filepathOpt);
+    ->needs(filepathOpt)
+    ->check(CLI::IsMember({"pose", "frame"}));
 
   command->add_flag_callback("--inertial-stats",
     [opt](){
