@@ -33,10 +33,6 @@ namespace sdf
   /// \return Zero on success, negative one otherwise.
   int cmdCheck(const char *_path);
 
-  /// \brief External hook to read the library version.
-  /// \return C-string representing the version. Ex.: 0.1.2
-  char *gzVersion();
-
   /// \brief External hook to execute 'gz sdf -d' from the command line.
   /// \param[in] _version SDFormat version.
   /// \return int Zero on success, negative one otherwise.

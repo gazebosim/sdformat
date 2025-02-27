@@ -114,16 +114,6 @@ namespace sdf
   }
 
   //////////////////////////////////////////////////
-  char *gzVersion()
-  {
-  #ifdef _MSC_VER
-    return _strdup(SDF_VERSION_FULL);
-  #else
-    return strdup(SDF_VERSION_FULL);
-  #endif
-  }
-
-  //////////////////////////////////////////////////
   int cmdDescribe(const char *_version)
   {
     sdf::SDFPtr sdf(new sdf::SDF());
