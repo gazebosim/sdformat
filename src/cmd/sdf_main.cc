@@ -118,22 +118,6 @@ void addSdfFlags(CLI::App &_app)
   auto filepathOpt =
     _app.add_option("filepath", opt->filepath,
                     "Path to an SDFormat file.");
-  _app.add_flag("-i,--preserve-includes", opt->preserveIncludes,
-      "Preserve included tags when printing converted arg (does "
-      "not preserve merge-includes).");
-  _app.add_flag("--degrees", opt->degrees,
-      "Printed pose rotations are will be in degrees.");
-  _app.add_flag("--expand-auto-inertials", opt->expandAutoInertials,
-      "Auto-computed inertial values will be printed.");
-  _app.add_option("--precision", opt->precision,
-      "Set the output stream precision for floating point "
-      "numbers.");
-  _app.add_option("--snap-to-degrees", opt->snapToDegrees,
-      "Printed rotations are snapped to specified degree "
-      "intervals.");
-  _app.add_option("--snap-tolerance", opt->snapTolerance,
-      "Printed rotations are snapped if they are within this "
-      "specified tolerance.");
 
   auto command = _app.add_option_group("command", "Command to be executed.");
 
@@ -174,13 +158,41 @@ void addSdfFlags(CLI::App &_app)
     "sdf file.")
     ->needs(filepathOpt);
 
-  command->add_flag_callback("-p,--print",
+  auto printCmd = command->add_flag_callback("-p,--print",
     [opt](){
       opt->command = SdfCommand::kSdfPrint;
     },
     "Print converted arg. Note the quaternion representation of the\n"
     "rotational part of poses and unit vectors will be normalized.")
     ->needs(filepathOpt);
+
+  _app.add_flag("-i,--preserve-includes", opt->preserveIncludes,
+      "Preserve included tags when printing converted arg (does "
+      "not preserve merge-includes).")
+      ->needs(printCmd);
+
+  _app.add_flag("--degrees", opt->degrees,
+      "Printed pose rotations are will be in degrees.")
+      ->needs(printCmd);
+
+  _app.add_flag("--expand-auto-inertials", opt->expandAutoInertials,
+      "Auto-computed inertial values will be printed.")
+      ->needs(printCmd);
+
+  _app.add_option("--precision", opt->precision,
+      "Set the output stream precision for floating point "
+      "numbers.")
+      ->needs(printCmd);
+
+  _app.add_option("--snap-to-degrees", opt->snapToDegrees,
+      "Printed rotations are snapped to specified degree "
+      "intervals.")
+      ->needs(printCmd);
+
+  _app.add_option("--snap-tolerance", opt->snapTolerance,
+      "Printed rotations are snapped if they are within this "
+      "specified tolerance.")
+      ->needs(printCmd);
 
   _app.callback([opt](){runSdfCommand(*opt); });
 }
