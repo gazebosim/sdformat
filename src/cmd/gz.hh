@@ -20,21 +20,50 @@
 
 #include <cstring>
 
-#include <sdf/config.hh>
 #include "sdf/system_util.hh"
 
-// Inline bracket to help doxygen filtering.
-inline namespace SDF_VERSION_NAMESPACE {
-//
+namespace sdf
+{
+  // Inline bra to help doxygen filtering.
+  inline namespace SDF_VERSION_NAMESPACE {
+  //
 
-/// \brief External hook to execute 'gz sdf -k' from the command line.
-/// \param[in] _path Path to the file to validate.
-/// \return Zero on success, negative one otherwise.
-extern "C" SDFORMAT_VISIBLE int cmdCheck(const char *_path);
+  /// \brief External hook to execute 'gz sdf -k' from the command line.
+  /// \param[in] _path Path to the SDF file to validate.
+  /// \return Zero on success, negative one otherwise.
+  int cmdCheck(const char *_path);
 
-/// \brief External hook to read the library version.
-/// \return C-string representing the version. Ex.: 0.1.2
-extern "C" SDFORMAT_VISIBLE char *gzVersion();
+  /// \brief External hook to execute 'gz sdf -d' from the command line.
+  /// \param[in] _version SDFormat version.
+  /// \return int Zero on success, negative one otherwise.
+  int cmdDescribe(const char *_version);
+
+  /// \brief External hook to execute 'gz sdf -p' from the command line.
+  /// \param[in] _path Path to SDF file.
+  /// \param[in] _inDegrees Print angles in degrees.
+  /// \param[in] _snapToDegrees Snap pose rotation angles in degrees.
+  /// \param[in] _snapTolerance Specfies tolerance for snapping.
+  /// \param[in] _preserveIncludes Preserve included tags when printing.
+  /// \param[in] _outPrecision Output stream precision for floating point.
+  /// \param[in] _expandAutoInertials Print auto-computed inertial values.
+  /// \return int Zero on success, negative one otherwise.
+  int cmdPrint(const char *_path, bool _inDegrees, int _snapToDegrees,
+      float _snapTolerance, bool _preserveIncludes, int _outPrecision,
+      bool _expandAutoInertials);
+
+  /// \brief External hook to execute 'gz sdf --graph' from the command line.
+  /// \param[in] _graphType Graph type.
+  /// \param[in] _path Path to SDF file.
+  /// \return int Zero on success, negative one otherwise.
+  int cmdGraph(const char *_graphType, const char *_path);
+
+  /// \brief External hook to execute 'gz sdf --inertial-stats'
+  ///   from command line
+  /// \param[in] _path Path to SDF file.
+  /// \return int Zero on success, negative one otherwise.
+  int cmdInertialStats(const char *_path);
+
+  }
 }
 
 #endif
