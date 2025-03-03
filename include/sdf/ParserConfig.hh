@@ -69,6 +69,21 @@ enum class ConfigureResolveAutoInertials
   SAVE_CALCULATION_IN_ELEMENT,
 };
 
+/// \enum CalculateInertialFailurePolicyType
+/// \brief Configuration options of how CalculateInertial() failures should
+/// be handled.
+enum class CalculateInertialFailurePolicyType
+{
+  /// \brief If this value is used, failures of Geometry::CalculateInertial()
+  /// will result in a LINK_INERTIA_INVALID error with no inertial values
+  /// written.
+  ERR,
+
+  /// \brief If this value is used, failures of Geometry::CalculateInertial()
+  /// will result in default inertial values used and a WARNING.
+  WARN_AND_USE_DEFAULT_INERTIAL,
+};
+
 // Forward declare private data class.
 class ParserConfigPrivate;
 
@@ -191,6 +206,19 @@ class SDFORMAT_VISIBLE ParserConfig
   /// CalculateInertial() function
   public: void SetCalculateInertialConfiguration(
     ConfigureResolveAutoInertials _configuration);
+
+  /// \brief Get the current policy for handling failures of the
+  /// CalculateInertial() function. By default an error is reported.
+  /// \return Current set value of the CalculateInertialFailurePolicyType enum
+  public: CalculateInertialFailurePolicyType
+    CalculateInertialFailurePolicy() const;
+
+  /// \brief Set the policy for handling failures of the CalculateInertial()
+  /// function
+  /// \param[in] _policy The policy to set for handling failures of the
+  /// CalculateInertial() function
+  public: void SetCalculateInertialFailurePolicy(
+    CalculateInertialFailurePolicyType _policy);
 
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described in

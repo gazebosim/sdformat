@@ -347,7 +347,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Pose3",
+        "@gz-math",
     ],
 )
 
@@ -444,7 +444,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Pose3",
+        "@gz-math",
     ],
 )
 
@@ -458,7 +458,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Color",
+        "@gz-math",
     ],
 )
 
@@ -504,7 +504,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Color",
+        "@gz-math",
     ],
 )
 
@@ -538,8 +538,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Pose3",
-        "@gz-math//:Vector3",
+        "@gz-math",
     ],
 )
 
@@ -576,8 +575,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Pose3",
-        "@gz-math//:Vector3",
+        "@gz-math",
     ],
 )
 
@@ -663,7 +661,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Vector3",
+        "@gz-math",
     ],
 )
 
@@ -722,9 +720,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Angle",
-        "@gz-math//:Pose3",
-        "@gz-math//:Vector3",
+        "@gz-math",
     ],
 )
 
@@ -770,7 +766,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Vector3",
+        "@gz-math",
     ],
 )
 
@@ -835,7 +831,7 @@ cc_test(
         "//:sdformat",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@gz-math//:Color",
+        "@gz-math",
     ],
 )
 

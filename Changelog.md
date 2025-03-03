@@ -1,5 +1,34 @@
 ## libsdformat 15.X
 
+### libsdformat 15.2.0 (2025-02-12)
+
+1. Add entry to Migration guide about the updated auto-inertia behavior
+    * [Pull request #1528](https://github.com/gazebosim/sdformat/pull/1528)
+
+1. Add missed spec version 1.12 in the sdf_descriptions target
+    * [Pull request #1529](https://github.com/gazebosim/sdformat/pull/1529)
+
+1. Resolve auto inertia based on input mass
+    * [Pull request #1513](https://github.com/gazebosim/sdformat/pull/1513)
+
+1. ci.yml: run cppcheck, cpplint on noble
+    * [Pull request #1521](https://github.com/gazebosim/sdformat/pull/1521)
+
+1. Add non-const overload for Root::Model() getter
+    * [Pull request #1524](https://github.com/gazebosim/sdformat/pull/1524)
+
+1. Remove unncessary <iostream> includes
+    * [Pull request #1523](https://github.com/gazebosim/sdformat/pull/1523)
+
+1. Don't reparse parent elements when cloning.
+    * [Pull request #1484](https://github.com/gazebosim/sdformat/pull/1484)
+
+1. python bindings: get version from package.xml
+    * [Pull request #1504](https://github.com/gazebosim/sdformat/pull/1504)
+
+1. Permit to test when building bindings separately from main library
+    * [Pull request #1509](https://github.com/gazebosim/sdformat/pull/1509)
+
 ### libsdformat 15.1.1 (2024-11-15)
 
 1. **Baseline:** this includes all changes from 15.1.0 and earlier.
