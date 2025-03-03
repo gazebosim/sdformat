@@ -38,7 +38,7 @@ if(EXISTS "${EMBEDDED_SDF_CC_PATH}")
   file(SIZE "${EMBEDDED_SDF_CC_PATH}" EMBEDDED_SDF_CC_SIZE)
 endif()
 if("${EMBEDDED_SDF_CC_SIZE}" STREQUAL "0" OR "${EMBEDDED_SDF_CC_SIZE}" STREQUAL "")
-   message(FATAL_ERROR "${EMBEDDED_SDF_CC_PATH} is empty or does not exist")
+  message(FATAL_ERROR "${EMBEDDED_SDF_CC_PATH} is empty or does not exist")
 endif()
 
 # Generate aggregated SDF description files for use by the sdformat.org
