@@ -20,14 +20,25 @@ endif()
 
 # Generate the EmbeddedSdf.cc file, which contains all the supported SDF
 # descriptions in a map of strings. The parser.cc file uses EmbeddedSdf.hh.
+set(EMBEDDED_SDF_CC_PATH "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc")
 execute_process(
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py
-    --output-file "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc"
+    --output-file "${EMBEDDED_SDF_CC_PATH}"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/sdf"
+  RESULT_VARIABLE EMBEDDED_SDF_RESULT
+  ERROR_VARIABLE EMBEDDED_SDF_ERROR
 )
-file(SIZE "${PROJECT_BINARY_DIR}/src/EmbeddedSdf.cc" OUT_SIZE)
-if(${OUT_SIZE} EQUAL 0)
-   message(FATAL_ERROR "Problems executing ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py")
+# check process return code
+if(NOT EMBEDDED_SDF_RESULT EQUAL 0)
+  message(FATAL_ERROR "Error executing ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/sdf/embedSdf.py to create ${EMBEDDED_SDF_CC_PATH}: ${EMBEDDED_SDF_ERROR}")
+endif()
+# check that EmbeddedSdf.cc exists with non-zero size
+# this should not happen if embedSdf.py was successful
+if(EXISTS "${EMBEDDED_SDF_CC_PATH}")
+  file(SIZE "${EMBEDDED_SDF_CC_PATH}" EMBEDDED_SDF_CC_SIZE)
+endif()
+if("${EMBEDDED_SDF_CC_SIZE}" STREQUAL "0" OR "${EMBEDDED_SDF_CC_SIZE}" STREQUAL "")
+  message(FATAL_ERROR "${EMBEDDED_SDF_CC_PATH} is empty or does not exist")
 endif()
 
 # Generate aggregated SDF description files for use by the sdformat.org
