@@ -15,6 +15,8 @@
  *
  */
 #include "sdf/NavSat.hh"
+#include "sdf/parser.hh"
+#include "Utils.hh"
 
 using namespace sdf;
 using namespace gz;
@@ -190,4 +192,59 @@ bool NavSat::operator==(const NavSat &_navsat) const
 bool NavSat::operator!=(const NavSat &_navsat) const
 {
   return !(*this == _navsat);
+}
+
+
+/////////////////////////////////////////////////
+sdf::ElementPtr NavSat::ToElement() const
+{
+  sdf::Errors errors;
+  auto result = this->ToElement(errors);
+  sdf::throwOrPrintErrors(errors);
+  return result;
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr NavSat::ToElement(sdf::Errors &_errors) const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("navSat.sdf", elem);
+
+  sdf::ElementPtr positionSensing =
+    elem->GetElement("position_sensing", _errors);
+
+  sdf::ElementPtr positionSensingHorizontal =
+    positionSensing->GetElement("horizontal", _errors);
+  sdf::ElementPtr positionSensingHorizontalNoiseElem = positionSensingHorizontal->GetElement(
+      "noise", _errors);
+  positionSensingHorizontalNoiseElem->Copy(this->dataPtr->horizontalPositionNoise.ToElement(
+      _errors), _errors);
+
+  sdf::ElementPtr positionSensingVertical =
+    positionSensing->GetElement("vertical", _errors);
+  sdf::ElementPtr positionSensingVerticallNoiseElem = positionSensingVertical->GetElement(
+      "noise", _errors);
+  positionSensingVerticallNoiseElem->Copy(this->dataPtr->verticalPositionNoise.ToElement(
+      _errors), _errors);
+
+
+  sdf::ElementPtr velocitySensing =
+    elem->GetElement("velocity_sensing", _errors);
+
+  sdf::ElementPtr velocitySensingHorizontal =
+    velocitySensing->GetElement("horizontal", _errors);
+  sdf::ElementPtr velocitySensingHorizontalNoiseElem = velocitySensingHorizontal->GetElement(
+      "noise", _errors);
+  velocitySensingHorizontalNoiseElem->Copy(this->dataPtr->horizontalVelocityNoise.ToElement(
+      _errors), _errors);
+
+  sdf::ElementPtr velocitySensingVertical =
+    velocitySensing->GetElement("vertical", _errors);
+  sdf::ElementPtr velocitySensingVerticallNoiseElem = velocitySensingVertical->GetElement(
+      "noise", _errors);
+  velocitySensingVerticallNoiseElem->Copy(this->dataPtr->verticalVelocityNoise.ToElement(
+      _errors), _errors);
+
+
+  return elem;
 }
