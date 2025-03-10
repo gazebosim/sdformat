@@ -78,7 +78,8 @@ namespace sdf
             CalculateInertial(double _density);
 
     /// \brief Get the Axis-aligned box for this Sphere.
-    /// \return A gz::math::AxisAlignedBox object.
+    /// \return A gz::math::AxisAlignedBox object centered at this
+    /// Sphere's center.
     public: gz::math::AxisAlignedBox AxisAlignedBox() const;
 
     /// \brief Create and return an SDF element filled with data from this

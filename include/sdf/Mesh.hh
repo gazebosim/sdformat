@@ -213,7 +213,8 @@ namespace sdf
     /// \brief Get the Axis-aligned box for this Mesh.
     /// \param[in] _aabbCalc A custom function that calculates the
     /// AxisAlignedBox for the Mesh.
-    /// \return A gz::math::AxisAlignedBox object.
+    /// \return A gz::math::AxisAlignedBox object centered at this
+    /// Mesh's origin.
     public: std::optional<gz::math::AxisAlignedBox>
             AxisAlignedBox(const AxisAlignedBoxCalculator &_aabbCalc) const;
 
