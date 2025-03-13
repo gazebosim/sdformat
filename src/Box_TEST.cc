@@ -155,7 +155,7 @@ TEST(DOMBox, CalculateInertial)
 {
   sdf::Box box;
 
-  // density of aluminium
+  // density of Aluminum
   double density = 2710;
 
   // Invalid dimensions leading to std::nullopt return in

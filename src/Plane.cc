@@ -26,7 +26,7 @@ using namespace sdf;
 class sdf::Plane::Implementation
 {
   /// \brief A plane with a unit Z normal vector, size of 1x1 meters, and
-  /// a zero offest.
+  /// a zero offset.
   public: gz::math::Planed plane{gz::math::Vector3d::UnitZ,
             gz::math::Vector2d::One, 0};
 

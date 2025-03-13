@@ -183,7 +183,7 @@ one root level model, actor or light.
     + const std::string &BoundingBoxType() const
     + void SetBoundingBoxType(const std::string &)
 
-1. **sdf/Elementh.hh**
+1. **sdf/Element.hh**
     + const Param_V &GetAttributes() const
 
 1. **sdf/Error.hh**
@@ -708,7 +708,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
     `//joint/axis2` to specify a linear relationship between the position of two
     joint axes according to the following equation:
     `follower_position = multiplier * (leader_position - reference) + offset`.
-    The joint axis containing the mimic tag is the follwer and the leader is
+    The joint axis containing the mimic tag is the follower and the leader is
     specified using the `@joint` and `@axis` attributes.
     + `//mimic/@joint`: name of joint containing the leader axis.
     + `//mimic/@axis`: name of the leader axis. Only valid values are "axis" or "axis2".
@@ -825,7 +825,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 ### Removals
 
-1. **inerial.sdf** `//inertial/pose/@relative_to` attribute is removed
+1. **inertial.sdf** `//inertial/pose/@relative_to` attribute is removed
     + [Pull request 480](https://github.com/osrf/sdformat/pull/480)
 
 ## SDFormat specification 1.6 to 1.7
@@ -895,7 +895,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
       It has a special interpretation when specified as a parent or child link
       of a joint.
       Names starting and ending with double underscores (eg. `__wheel__`) must
-      be reserved for use by library implementors and the specification.
+      be reserved for use by library implementers and the specification.
       For example, such names might be useful during parsing for setting
       sentinel or default names for elements with missing names.
       If explicitly stated, they can be referred to (e.g. `__model__` / `world`
@@ -1003,7 +1003,7 @@ ABI was broken for `sdf::Element`, and restored on version 11.2.1.
 
 1. **model.sdf** `enable_wind` element
     + description: If set to true, all links in the model will be affected by
-      the wind.  Can be overriden by the link wind property.
+      the wind.  Can be overridden by the link wind property.
     + type: bool
     + default: false
     + required: 0

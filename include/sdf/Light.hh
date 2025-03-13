@@ -185,24 +185,24 @@ namespace sdf
     /// \brief Get the linear attenuation factor. This value is clamped to
     /// a value between 0 and 1, where 1 means attenuate evenly over the
     /// distance.
-    /// \return Linear attentuation factor.
+    /// \return Linear attenuation factor.
     public: double LinearAttenuationFactor() const;
 
     /// \brief Set the linear attenuation factor. This value is clamped to
     /// a value between 0 and 1, where 1 means attenuate evenly over the
     /// distance.
-    /// \param[in] _factor Linear attentuation factor.
+    /// \param[in] _factor Linear attenuation factor.
     public: void SetLinearAttenuationFactor(const double _factor);
 
     /// \brief Get the constant attenuation factor. This value is clamped to
     /// a value between 0 and 1,  where 1.0 means never attenuate and 0.0 is
-    /// complete attenutation.
+    /// complete attenuation.
     /// \return Constant attenuation factor.
     public: double ConstantAttenuationFactor() const;
 
     /// \brief Set the constant attenuation factor. This value is clamped to
     /// a value between 0 and 1,  where 1.0 means never attenuate and 0.0 is
-    /// complete attenutation.
+    /// complete attenuation.
     /// \param[in] _factor Constant attenuation factor.
     public: void SetConstantAttenuationFactor(const double _factor);
 

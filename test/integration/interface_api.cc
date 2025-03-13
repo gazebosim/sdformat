@@ -107,14 +107,14 @@ class CustomTomlParser
 
       if (_include.IsStatic().has_value())
       {
-        // if //include/static is set, override the value in the inluded model
+        // if //include/static is set, override the value in the included model
         sdf::Param param("static", "bool", "false", false);
         param.Set(*_include.IsStatic());
         doc["static"] = {param};
       }
       if (this->overridePoseInParser && _include.IncludeRawPose().has_value())
       {
-        // if //include/static is set, override the value in the inluded model
+        // if //include/static is set, override the value in the included model
         sdf::Param poseParam("pose", "pose", "", false);
         poseParam.Set(*_include.IncludeRawPose());
         doc["pose"] = {poseParam};

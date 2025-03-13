@@ -37,7 +37,7 @@ void ThrowIfErrors(const sdf::Errors &_errors);
 
 
 /// \brief Implementation for ErrorWrappedCast
-// NOTE: This currently only works for member funtions
+// NOTE: This currently only works for member functions
 template <typename... Args>
 struct ErrorWrappedCastImpl
 {

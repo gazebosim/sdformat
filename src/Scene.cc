@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <optional>
 #include "sdf/parser.hh"
 #include "sdf/Scene.hh"
 #include "Utils.hh"

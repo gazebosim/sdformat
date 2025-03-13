@@ -166,7 +166,7 @@ void defineCamera(pybind11::object module)
     .def("set_distortion_center", &sdf::Camera::SetDistortionCenter,
          "Set the distortion center or principal point.")
     .def("raw_pose", &sdf::Camera::RawPose,
-         "Get the pose of the camer. This is the pose of the camera "
+         "Get the pose of the camera. This is the pose of the camera "
          "as specified in SDF (<camera> <pose> ... </pose></camera>).")
     .def("set_raw_pose", &sdf::Camera::SetRawPose,
          "Set the pose of the camera.")
@@ -269,9 +269,9 @@ void defineCamera(pybind11::object module)
     .def("set_visibility_mask", &sdf::Camera::SetVisibilityMask,
          "Set the visibility mask of a camera")
     .def("has_lens_intrinsics", &sdf::Camera::HasLensIntrinsics,
-         "Get whether or not the camera has instrinsics values set")
+         "Get whether or not the camera has intrinsics values set")
     .def("has_lens_projection", &sdf::Camera::HasLensProjection,
-         "Get whether or not the camera has proejction values set")
+         "Get whether or not the camera has projection values set")
     .def("__copy__", [](const sdf::Camera &self) {
       return sdf::Camera(self);
     })

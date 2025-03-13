@@ -1137,7 +1137,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   else if (rotationFormat == "euler_rpy" && inDegrees && snapDegreesToInterval)
   {
     // Helper function that returns a snapped value if it is within the
-    // tolerance of multiples of interval, otherwise the orginal value is
+    // tolerance of multiples of interval, otherwise the original value is
     // returned.
     auto snapToInterval =
         [](double _val, unsigned int _interval, double _tolerance)

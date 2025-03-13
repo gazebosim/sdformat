@@ -335,7 +335,7 @@ void FixedJointReductionCollisionVisualExtension(const std::string &_urdfFile,
   //   <visual name='base_link_fixed_joint_lump__child_link_2_visual_2'>
   //     <uri>script_uri_51</uri>
   //     <name>script_name_51</name>
-  // unassigne max_contacts defaut is 10
+  // unassign max_contacts default is 10
   EXPECT_EQ(urdf_child_link_2_col->Get<int>("max_contacts"), 10);
   EXPECT_EQ(urdf_child_link_2_col->Get<int>("max_contacts"),
             sdf_child_link_2_col->Get<int>("max_contacts"));

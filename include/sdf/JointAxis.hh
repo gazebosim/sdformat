@@ -17,9 +17,8 @@
 #ifndef SDF_JOINTAXIS_HH_
 #define SDF_JOINTAXIS_HH_
 
-#include <memory>
 #include <string>
-#include <utility>
+#include <optional>
 #include <gz/math/Vector3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"

@@ -17,7 +17,6 @@
 #ifndef SDF_JOINT_HH_
 #define SDF_JOINT_HH_
 
-#include <memory>
 #include <string>
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
@@ -197,13 +196,13 @@ namespace sdf
     /// \brief Get the thread pitch in gazebo-classic format (only valid for
     /// screw joints). This will be deprecated in a future version.
     /// \return The thread pitch with units of radians / meters and a positive
-    /// value coresponding to a left-handed thread.
+    /// value corresponding to a left-handed thread.
     public: double ThreadPitch() const;
 
     /// \brief Set the thread pitch in gazebo-classic format (only valid for
     /// screw joints). This will be deprecated in a future version.
     /// \param[in] _threadPitch The thread pitch with units of radians / meters
-    /// and a positive value coresponding to a left-handed thread.
+    /// and a positive value corresponding to a left-handed thread.
     public: void SetThreadPitch(double _threadPitch);
 
     /// \brief Get a pointer to the SDF element that was used during

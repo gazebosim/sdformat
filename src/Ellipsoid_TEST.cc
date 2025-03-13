@@ -151,7 +151,7 @@ TEST(DOMEllipsoid, CalculateInertial)
 {
   sdf::Ellipsoid ellipsoid;
 
-  // density of aluminium
+  // density of Aluminum
   const double density = 2170;
 
   // Invalid dimensions leading to std::nullopt return in

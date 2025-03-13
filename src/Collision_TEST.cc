@@ -324,7 +324,7 @@ TEST(DOMCollision, CalculateInertialWithAutoInertiaParamsElement)
   sdf::ElementPtr autoInertiaParamsElem = collision->AutoInertiaParams();
 
   // <auto_inertial_params> element is used as parent element for custom
-  // intertia calculator params. Custom elements have to be defined with a
+  // inertia calculator params. Custom elements have to be defined with a
   // namespace prefix(gz in this case). More about this can be found in the
   // following proposal:
   // http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal&cat=pose_semantics_docs&

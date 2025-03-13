@@ -53,7 +53,7 @@ void defineLight(pybind11::object module)
     .def("set_name", &sdf::Light::SetName,
          "Set the name of the light.")
     .def("raw_pose", &sdf::Light::RawPose,
-         "Get the pose of the camer. This is the pose of the Light "
+         "Get the pose of the camera. This is the pose of the Light "
          "as specified in SDF (<light> <pose> ... </pose></light>).")
     .def("set_raw_pose", &sdf::Light::SetRawPose,
          "Set the pose of the Light.")
@@ -116,12 +116,12 @@ void defineLight(pybind11::object module)
     .def("constant_attenuation_factor", &sdf::Light::ConstantAttenuationFactor,
          "Get the constant attenuation factor. This value is clamped to "
          "a value between 0 and 1,  where 1.0 means never attenuate and 0.0 is "
-         "complete attenutation.")
+         "complete attenuation.")
     .def("set_constant_attenuation_factor",
          &sdf::Light::SetConstantAttenuationFactor,
          "Get the constant attenuation factor. This value is clamped to "
          "a value between 0 and 1,  where 1.0 means never attenuate and 0.0 is "
-         "complete attenutation.")
+         "complete attenuation.")
     .def("quadratic_attenuation_factor", &sdf::Light::QuadraticAttenuationFactor,
          "Get the quadratic attenuation factor which adds a curvature to "
          "the attenuation.")

@@ -14,6 +14,6 @@
     </third_party_software:not_a_model_element>
   </model>
   <third_party_software:not_an_sdf_element>
-    Ignore this one tooo
+    Ignore this one too
   </third_party_software:not_an_sdf_element>
 </sdf>

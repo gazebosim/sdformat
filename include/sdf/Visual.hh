@@ -164,7 +164,7 @@ namespace sdf
     /// \return True if the lidar reflective intensity was set was set.
     public: bool HasLaserRetro() const;
 
-    /// \brief Get the flidar reflective intensity.
+    /// \brief Get the lidar reflective intensity.
     /// \return The lidar reflective intensity.
     public: double LaserRetro() const;
 

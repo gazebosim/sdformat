@@ -144,7 +144,7 @@ TEST(DOMSphere, CalculateInertial)
 {
   sdf::Sphere sphere;
 
-  // density of aluminium
+  // density of Aluminum
   const double density = 2170;
 
   sphere.SetRadius(-2);

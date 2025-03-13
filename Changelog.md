@@ -17,7 +17,7 @@
 1. Add non-const overload for Root::Model() getter
     * [Pull request #1524](https://github.com/gazebosim/sdformat/pull/1524)
 
-1. Remove unncessary <iostream> includes
+1. Remove unnecessary <iostream> includes
     * [Pull request #1523](https://github.com/gazebosim/sdformat/pull/1523)
 
 1. Don't reparse parent elements when cloning.

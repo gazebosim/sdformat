@@ -119,7 +119,7 @@ TEST(DOMLidar, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
   EXPECT_NE(nullptr, lidar.Element());
 
-  // The Lidar::Load function is tested more thouroughly in the
+  // The Lidar::Load function is tested more thoroughly in the
   // link_dom.cc integration test.
 }
 

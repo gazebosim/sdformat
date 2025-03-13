@@ -514,7 +514,7 @@ TEST(ErrorOutput, ModelErrorOutput)
   {
     sdf::Model model;
     parserConfig.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
-    // Set SDF version to someting lower than 1.7 for extra errors
+    // Set SDF version to something lower than 1.7 for extra errors
     sdfParsed->Root()->GetElement("model")->SetOriginalVersion("1.6");
     errors = model.Load(sdfParsed->Root()->GetElement("model"), parserConfig);
 

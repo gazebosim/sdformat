@@ -80,7 +80,7 @@ class SphereTEST(unittest.TestCase):
   def test_calculate_inertial(self):
     sphere = Sphere()
 
-    # density of aluminium
+    # density of Aluminum
     density = 2170
 
     sphere.set_radius(-2)

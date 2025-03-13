@@ -19,8 +19,6 @@
 #define SDF_INTERFACE_MODEL_POSE_GRAPH
 
 #include <string>
-#include <memory>
-#include <vector>
 
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>

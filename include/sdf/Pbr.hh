@@ -26,7 +26,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   //
 
@@ -70,13 +70,13 @@ namespace sdf
 
     /// \brief Return true if both PbrWorkflow objects contain the same values.
     /// \param[_in] _workflow PbrWorkflow value to compare.
-    /// \returen True if 'this' == _workflow.
+    /// \return True if 'this' == _workflow.
     public: bool operator==(const PbrWorkflow &_workflow) const;
 
     /// \brief Return true this PbrWorkflow object does not contain the same
     /// values as the passed in parameter.
     /// \param[_in] _workflow PbrWorkflow value to compare.
-    /// \returen True if 'this' != _workflow.
+    /// \return True if 'this' != _workflow.
     public: bool operator!=(const PbrWorkflow &_workflow) const;
 
     /// \brief Get the albedo map filename. This will be an empty string if

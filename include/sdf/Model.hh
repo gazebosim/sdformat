@@ -18,9 +18,11 @@
 #define SDF_MODEL_HH_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
+
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
@@ -218,7 +220,7 @@ namespace sdf
     /// \sa bool JointNameExists(const std::string &_name) const
     public: const Joint *JointByName(const std::string &_name) const;
 
-    /// \brief Get a mubtable joint based on a name.
+    /// \brief Get a mutable joint based on a name.
     /// \param[in] _name Name of the joint.
     /// To get a joint in a nested model, prefix the joint name with the
     /// sequence of nested models containing this joint, delimited by "::".
@@ -510,7 +512,7 @@ namespace sdf
 
     /// \brief Calculate and set the inertials for all the links belonging
     /// to the model object
-    /// \param[out] _errrors A vector of Errors objects. Each errors contains an
+    /// \param[out] _errors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
     /// \param[in] _config Custom parser configuration
     public: void ResolveAutoInertials(sdf::Errors &_errors,
@@ -543,7 +545,7 @@ namespace sdf
     private: bool IsMerged() const;
 
     /// \brief Prepare the model to be merged into the parent model or world.
-    /// As part of the perparation, this will create the proxy frame that would
+    /// As part of the preparation, this will create the proxy frame that would
     /// be need to be added to the parent object.
     /// \param[out] _errors A list of errors encountered during the operation.
     /// \param[in] _parentOfProxyFrame Name of parent of the proxy frame that

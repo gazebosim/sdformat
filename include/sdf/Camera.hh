@@ -64,13 +64,13 @@ namespace sdf
 
     /// \brief Return true if both Camera objects contain the same values.
     /// \param[_in] _alt Camera value to compare.
-    /// \returen True if 'this' == _alt.
+    /// \return True if 'this' == _alt.
     public: bool operator==(const Camera &_alt) const;
 
     /// \brief Return true this Camera object does not contain the same
     /// values as the passed in parameter.
     /// \param[_in] _alt Camera value to compare.
-    /// \returen True if 'this' != _alt.
+    /// \return True if 'this' != _alt.
     public: bool operator!=(const Camera &_alt) const;
 
     /// \brief Load the camera sensor based on an element pointer.
@@ -334,7 +334,7 @@ namespace sdf
     /// \param[in] _center Distortion center or principal point.
     public: void SetDistortionCenter(const gz::math::Vector2d &_center);
 
-    /// \brief Get the pose of the camer. This is the pose of the camera
+    /// \brief Get the pose of the camera. This is the pose of the camera
     /// as specified in SDF (<camera> <pose> ... </pose></camera>).
     /// \return The pose of the link.
     public: const gz::math::Pose3d &RawPose() const;
@@ -562,8 +562,8 @@ namespace sdf
     /// \param[in] _mask visibility mask
     public: void SetVisibilityMask(uint32_t _mask);
 
-    /// \brief Get whether or not the camera has instrinsics values set
-    /// \return True if the camera has instrinsics values set, false otherwise
+    /// \brief Get whether or not the camera has intrinsics values set
+    /// \return True if the camera has intrinsics values set, false otherwise
     public: bool HasLensIntrinsics() const;
 
     /// \brief Get whether or not the camera has projection values set

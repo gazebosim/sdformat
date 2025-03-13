@@ -31,7 +31,7 @@ namespace sdf
 
   /// \brief Perform a deep copy of an XML Node
   ///
-  /// This copies an XMLNode _src and all of its decendants
+  /// This copies an XMLNode _src and all of its descendants
   /// into a specified XMLDocument.
   ///
   /// \param[in] _doc Document in which to place the copied node
@@ -43,7 +43,7 @@ namespace sdf
 
   /// \brief Perform a deep copy of an XML Node
   ///
-  /// This copies an XMLNode _src and all of its decendants
+  /// This copies an XMLNode _src and all of its descendants
   /// into a specified XMLDocument.
   ///
   /// \param[out] _errors Vector of errors

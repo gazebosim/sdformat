@@ -207,7 +207,7 @@ namespace sdf
   /// \param[out] _errors The vector of errors. An empty vector indicates no
   /// errors were experienced.
   /// \param[in] _elem The SDFormat element to be loaded.
-  /// \param[in] _args Extra arguments forwarded to the Load memeber function.
+  /// \param[in] _args Extra arguments forwarded to the Load member function.
   /// \return An instance of Class loaded from the input SDFormat element.
   template <typename Class, typename... Args>
   Class loadSingle(sdf::Errors &_errors, sdf::ElementPtr _elem, Args &&..._args)

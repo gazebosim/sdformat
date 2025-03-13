@@ -61,11 +61,11 @@ namespace sdf
   ///    scheme of the input.
   /// 2. If enabled via _searchLocalPath, prepend the input with the current
   ///    working directory and check if the result path exists.
-  /// 3. Seach in the path defined by the macro `SDF_SHARE_PATH`.
+  /// 3. Search in the path defined by the macro `SDF_SHARE_PATH`.
   /// 4. Search in the the libsdformat install path. The path is formed by
   ///    has the pattern `SDF_SHARE_PATH/sdformat<major version>/<version>/`
   /// 5. Directly check if the input path exists in the filesystem.
-  /// 6. Seach in the path defined by the environment variable `SDF_PATH`.
+  /// 6. Search in the path defined by the environment variable `SDF_PATH`.
   /// 7. If enabled via _useCallback and the global callback function is set,
   ///    invoke the function and return its result.
   ///
@@ -85,11 +85,11 @@ namespace sdf
   /// The search order in the function is as follows:
   /// 1. Using the global URI path map, search in paths associated with the URI
   ///    scheme of the input.
-  /// 2. Seach in the path defined by the macro `SDF_SHARE_PATH`.
+  /// 2. Search in the path defined by the macro `SDF_SHARE_PATH`.
   /// 3. Search in the the libsdformat install path. The path is formed by
   ///    has the pattern `SDF_SHARE_PATH/sdformat<major version>/<version>/`
   /// 4. Directly check if the input path exists in the filesystem.
-  /// 5. Seach in the path defined by the environment variable `SDF_PATH`.
+  /// 5. Search in the path defined by the environment variable `SDF_PATH`.
   /// 6. If enabled via _searchLocalPath, prepend the input with the current
   ///    working directory and check if the result path exists.
   /// 7. If enabled via _useCallback and the global callback function is set,
@@ -149,7 +149,7 @@ namespace sdf
                        const ParserConfig &_config);
 
   /// \brief Associate paths to a URI.
-  /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
+  /// Example parameters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
   SDFORMAT_VISIBLE
@@ -179,7 +179,7 @@ namespace sdf
     public: void PrintValues(const PrintConfig &_config = PrintConfig());
 
     /// \brief Output SDF's values to stdout.
-    /// \param[out] _errors Vector of errrors.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _config Configuration for printing the values.
     public: void PrintValues(sdf::Errors &_errors,
                              const PrintConfig &_config = PrintConfig());

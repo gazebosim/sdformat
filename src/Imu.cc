@@ -14,8 +14,6 @@
  * limitations under the License.
  *
  */
-#include <array>
-#include <string>
 #include "sdf/Imu.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"

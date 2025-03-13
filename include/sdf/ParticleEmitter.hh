@@ -151,7 +151,7 @@ namespace sdf
 
     /// \brief Set the amount by which to scale the particles in both x
     /// and y direction per second.
-    /// \param[in] _scaleRate The caling amount in the x and y directions.
+    /// \param[in] _scaleRate The calling amount in the x and y directions.
     /// A value of zero will be used if _scaleRate is negative.
     public: void SetScaleRate(double _scaleRate);
 
@@ -176,7 +176,7 @@ namespace sdf
     /// \brief Get the size of the emitter where the particles are sampled.
     // Default value is (1, 1, 1).
     // Note that the interpretation of the emitter area varies
-    // depending on the emmiter type:
+    // depending on the emitter type:
     //   - point: The area is ignored.
     //   - box: The area is interpreted as width X height X depth.
     //   - cylinder: The area is interpreted as the bounding box of the

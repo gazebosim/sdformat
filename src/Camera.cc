@@ -66,7 +66,7 @@ class sdf::Camera::Implementation
   /// \brief Camera trigger topic.
   public: std::string triggerTopic = "";
 
-  /// \brief Horizontal fied of view.
+  /// \brief Horizontal field of view.
   public: gz::math::Angle hfov{1.047};
 
   /// \brief Image width.
@@ -177,16 +177,16 @@ class sdf::Camera::Implementation
   /// \brief lens environment texture size.
   public: int lensEnvTextureSize{256};
 
-  /// \brief lens instrinsics fx.
+  /// \brief lens intrinsics fx.
   public: double lensIntrinsicsFx{277.0};
 
-  /// \brief lens instrinsics fy.
+  /// \brief lens intrinsics fy.
   public: double lensIntrinsicsFy{277.0};
 
-  /// \brief lens instrinsics cx.
+  /// \brief lens intrinsics cx.
   public: double lensIntrinsicsCx{160.0};
 
-  /// \brief lens instrinsics cy.
+  /// \brief lens intrinsics cy.
   public: double lensIntrinsicsCy{120.0};
 
   /// \brief lens projection fx
@@ -207,7 +207,7 @@ class sdf::Camera::Implementation
   /// \brief lens projection ty
   public: double lensProjectionTy{0.0};
 
-  /// \brief lens instrinsics s.
+  /// \brief lens intrinsics s.
   public: double lensIntrinsicsS{0.0};
 
   /// \brief True if this camera has custom intrinsics values
