@@ -339,7 +339,7 @@ namespace sdf
 
     /// \brief Reparse the parameter value. This should be called after the
     /// parent element's attributes have been modified, in the event that the
-    /// value was set using SetFromString or posesses a default value, and that
+    /// value was set using SetFromString or possesses a default value, and that
     /// the final parsed value is dependent on the attributes of the parent
     /// element. For example, the rotation component of a pose element can
     /// be parsed as degrees or radians, depending on the attribute @degrees
@@ -352,7 +352,7 @@ namespace sdf
 
     /// \brief Reparse the parameter value. This should be called after the
     /// parent element's attributes have been modified, in the event that the
-    /// value was set using SetFromString or posesses a default value, and that
+    /// value was set using SetFromString or possesses a default value, and that
     /// the final parsed value is dependent on the attributes of the parent
     /// element. For example, the rotation component of a pose element can
     /// be parsed as degrees or radians, depending on the attribute @degrees

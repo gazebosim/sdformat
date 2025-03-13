@@ -40,7 +40,7 @@ class sdf::ParserConfig::Implementation
     EnforcementPolicy::WARN;
 
   /// \brief Policy indicating how deprecated elements are treated.
-  /// Defaults to the value of `warningsPolicy`. It can be overriden by the user
+  /// Defaults to the value of `warningsPolicy`. It can be overridden by the user
   /// to behave behave differently than the `warningsPolicy`.
   public: std::optional<EnforcementPolicy> deprecatedElementsPolicy;
 

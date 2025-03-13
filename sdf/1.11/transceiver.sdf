@@ -28,7 +28,7 @@
   </element> <!-- End Power -->
 
   <element name="sensitivity" type="double" default="-90" required="0">
-    <description>Mininum received signal power in dBm</description>
+    <description>Minimum received signal power in dBm</description>
   </element> <!-- End Sensitivity -->
 
 </element> <!-- End Transceiver -->

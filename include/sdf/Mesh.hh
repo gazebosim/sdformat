@@ -116,12 +116,12 @@ namespace sdf
 
     /// \brief Get the mesh's optimization method
     /// \return The mesh optimization method.
-    /// MeshOptimization::NONE if no mesh simplificaton is done.
+    /// MeshOptimization::NONE if no mesh simplification is done.
     public: MeshOptimization Optimization() const;
 
     /// \brief Get the mesh's optimization method
     /// \return The mesh optimization method.
-    /// Empty string if no mesh simplificaton is done.
+    /// Empty string if no mesh simplification is done.
     public: std::string OptimizationStr() const;
 
     /// \brief Set the mesh optimization method.

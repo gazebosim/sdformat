@@ -15,7 +15,7 @@
  *
 */
 #include <sstream>
-#include <optional>
+#include <utility>
 
 #include <gz/math/Inertial.hh>
 #include "sdf/Cylinder.hh"

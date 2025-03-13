@@ -1,4 +1,4 @@
-# Exlcude some files so that they are not added to the master header.
+# Exclude some files so that they are not added to the master header.
 gz_install_all_headers(EXCLUDE_FILES sdf.hh sdf_config.h)
 install(
   FILES

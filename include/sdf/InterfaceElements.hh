@@ -17,8 +17,10 @@
 #ifndef SDF_INTERFACE_ELEMENTS_HH_
 #define SDF_INTERFACE_ELEMENTS_HH_
 
+#include <functional>
 #include <string>
 #include <memory>
+#include <optional>
 
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>

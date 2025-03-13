@@ -15,6 +15,7 @@
  *
 */
 #include <limits>
+#include <sstream>
 
 #include "sdf/PrintConfig.hh"
 #include "sdf/Console.hh"

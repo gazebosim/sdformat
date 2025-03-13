@@ -191,7 +191,7 @@ TEST(DOMCapsule, CalculateInertial)
 {
   sdf::Capsule capsule;
 
-  // density of aluminium
+  // density of Aluminum
   const double density = 2710;
   const double l = 2.0;
   const double r = 0.1;

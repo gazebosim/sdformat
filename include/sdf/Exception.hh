@@ -106,7 +106,7 @@ namespace sdf
 
   /// \class InternalError Exception.hh common/common.hh
   /// \brief Class for generating Internal Gazebo Errors:
-  ///        those errors which should never happend and
+  ///        those errors which should never happened and
   ///        represent programming bugs.
   class SDFORMAT_VISIBLE InternalError : public Exception
   {

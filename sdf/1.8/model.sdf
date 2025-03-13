@@ -82,7 +82,7 @@
   </element>
 
   <element name="enable_wind" type="bool" default="false" required="0">
-    <description>If set to true, all links in the model will be affected by the wind. Can be overriden by the link wind property.</description>
+    <description>If set to true, all links in the model will be affected by the wind. Can be overridden by the link wind property.</description>
   </element>
 
 </element> <!-- End Model -->

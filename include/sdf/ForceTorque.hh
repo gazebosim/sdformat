@@ -145,13 +145,13 @@ namespace sdf
 
     /// \brief Return true if both force torque objects contain the same values.
     /// \param[_in] _ft Force torque value to compare.
-    /// \returen True if 'this' == _ft.
+    /// \return True if 'this' == _ft.
     public: bool operator==(const ForceTorque &_ft) const;
 
     /// \brief Return true this force torque object does not contain the same
     /// values as the passed-in parameter.
     /// \param[_in] _ft Force torque value to compare.
-    /// \returen True if 'this' != _ft.
+    /// \return True if 'this' != _ft.
     public: bool operator!=(const ForceTorque &_ft) const;
 
     /// \brief Create and return an SDF element filled with data from this

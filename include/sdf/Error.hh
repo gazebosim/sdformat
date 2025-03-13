@@ -92,7 +92,7 @@ namespace sdf
     /// \brief A URI is invalid.
     URI_INVALID,
 
-    /// \brief A error occured while trying to resolve a URI.
+    /// \brief A error occurred while trying to resolve a URI.
     URI_LOOKUP,
 
     /// \brief A filesystem directory does not exist.
@@ -151,7 +151,7 @@ namespace sdf
     /// \brief The provided version has been deprecated or it is pre-versioning
     VERSION_DEPRECATED,
 
-    /// \brief Merge include is unspported for the type of entity being
+    /// \brief Merge include is unsupported for the type of entity being
     /// included, or the custom parser does not support merge includes.
     MERGE_INCLUDE_UNSUPPORTED,
 

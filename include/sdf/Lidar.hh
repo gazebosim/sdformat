@@ -35,7 +35,7 @@ namespace sdf
   /// \brief Lidar contains information about a Lidar sensor.
   /// This sensor can be attached to a link. The Lidar sensor can be defined
   /// SDF XML using either the "ray" or "lidar" types. The "lidar" type is
-  /// preffered as "ray" is considered legacy.
+  /// preferred as "ray" is considered legacy.
   ///
   /// # Example SDF XML using lidar type:
   ///

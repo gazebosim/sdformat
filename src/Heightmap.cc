@@ -16,6 +16,7 @@
 */
 
 #include <filesystem>
+#include <unordered_set>
 #include <vector>
 
 #include "Utils.hh"

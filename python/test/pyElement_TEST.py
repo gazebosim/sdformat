@@ -39,7 +39,7 @@ class ElementTEST(unittest.TestCase):
         self.assertEqual(elem.get_required(), "1")
 
     def test_set_explicitly_set_in_file(self):
-        # The heirarchy in xml:
+        # The hierarchy in xml:
         # <parent>
         #   <elem>
         #     <child>
@@ -69,7 +69,7 @@ class ElementTEST(unittest.TestCase):
 
         self.assertTrue(elem.get_explicitly_set_in_file())
 
-        # the childs and siblings of the element should all be
+        # the children and siblings of the element should all be
         # set to the same value when using this function
         child = Element()
         child.set_parent(elem)

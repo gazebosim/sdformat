@@ -42,7 +42,7 @@ namespace sdf
   /// \param[in] _path Path to SDF file.
   /// \param[in] _inDegrees Print angles in degrees.
   /// \param[in] _snapToDegrees Snap pose rotation angles in degrees.
-  /// \param[in] _snapTolerance Specfies tolerance for snapping.
+  /// \param[in] _snapTolerance Specifies tolerance for snapping.
   /// \param[in] _preserveIncludes Preserve included tags when printing.
   /// \param[in] _outPrecision Output stream precision for floating point.
   /// \param[in] _expandAutoInertials Print auto-computed inertial values.

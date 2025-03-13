@@ -25,7 +25,6 @@
 #include <utility>
 #include <vector>
 
-#include <gz/utils/NeverDestroyed.hh>
 #include "sdf/config.hh"
 #include "sdf/system_util.hh"
 #include "sdf/Error.hh"
@@ -146,10 +145,10 @@ namespace sdf
 
   /// \brief Transforms a string to its lowercase equivalent
   /// \param[in] _in String to convert to lowercase
-  /// \return Lowercase equilvalent of _in.
+  /// \return Lowercase equivalent of _in.
   std::string SDFORMAT_VISIBLE lowercase(const std::string &_in);
 
-  /// \brief Split a name into a two strings based on the '::' delimeter
+  /// \brief Split a name into a two strings based on the '::' delimiter
   /// \param[in] _absoluteName The fully qualified absolute name
   /// \return A pair with the absolute name minus the leaf node name, and the
   /// leaf name
@@ -161,7 +160,7 @@ namespace sdf
   /// This checks for edge cases and is safe to use with any valid names
   /// \param[in] _scopeName the left-hand-side component
   /// \param[in] _localName the right-hand-side component
-  /// \return A full string with the names joined by the '::' delimeter.
+  /// \return A full string with the names joined by the '::' delimiter.
   SDFORMAT_VISIBLE
   std::string JoinName(
       const std::string &_scopeName, const std::string &_localName);

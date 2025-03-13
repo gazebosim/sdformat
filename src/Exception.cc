@@ -28,7 +28,7 @@ class sdf::Exception::Implementation
   /// \brief The error function
   public: std::string file;
 
-  /// \brief Line the error occured on
+  /// \brief Line the error occurred on
   public: std::int64_t line;
 
   /// \brief The error string
