@@ -1295,7 +1295,8 @@ TEST(DOMGeometry, AxisAlignedBox)
     auto aabb = geom.AxisAlignedBox(nullptr);
     EXPECT_FALSE(aabb.has_value());
 
-    auto meshAabbCalculator = [](const sdf::Mesh &) -> gz::math::AxisAlignedBox
+    auto meshAabbCalculator = [](const sdf::Mesh &) ->
+      std::optional<gz::math::AxisAlignedBox>
     {
       return gz::math::AxisAlignedBox(
         gz::math::Vector3d(-1, -2, -3),

@@ -18,6 +18,7 @@ from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cone,
 from gz_test_deps.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
 import gz_test_deps.sdformat as sdf
 import math
+from typing import Optional
 import unittest
 
 
@@ -461,7 +462,7 @@ class GeometryTEST(unittest.TestCase):
 
     self.assertEqual(None, geom.axis_aligned_box(None))
 
-    def mesh_aabb_calulator(sdf_mesh: Mesh) -> AxisAlignedBox:
+    def mesh_aabb_calulator(sdf_mesh: Mesh) -> Optional[AxisAlignedBox]:
       return AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1))
 
     self.assertEqual(

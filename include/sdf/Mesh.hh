@@ -96,7 +96,8 @@ namespace sdf
   class SDFORMAT_VISIBLE Mesh
   {
     public: using AxisAlignedBoxCalculator =
-      std::function<gz::math::AxisAlignedBox(const sdf::Mesh &_sdfMesh)>;
+      std::function<std::optional<gz::math::AxisAlignedBox>(
+        const sdf::Mesh &_sdfMesh)>;
 
     /// \brief Constructor
     public: Mesh();
@@ -214,7 +215,7 @@ namespace sdf
     /// \param[in] _aabbCalc A custom function that calculates the
     /// AxisAlignedBox for the Mesh.
     /// \return A gz::math::AxisAlignedBox object centered at this
-    /// Mesh's origin.
+    /// Mesh's origin or std::nullopt.
     public: std::optional<gz::math::AxisAlignedBox>
             AxisAlignedBox(const AxisAlignedBoxCalculator &_aabbCalc) const;
 

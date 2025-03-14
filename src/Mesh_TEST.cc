@@ -443,8 +443,13 @@ TEST(DOMMesh, AxisAlignedBox)
   EXPECT_EQ(std::nullopt, mesh.AxisAlignedBox(nullptr));
 
   auto customCalculator = [](
-    const sdf::Mesh &_mesh) -> gz::math::AxisAlignedBox
+    const sdf::Mesh &_mesh) -> std::optional<gz::math::AxisAlignedBox>
   {
+    if(_mesh.Uri() == "no_mesh")
+    {
+      return std::nullopt;
+    }
+
     if (_mesh.Uri() == "banana")
     {
       // Invalid mesh leads to empty AABB
@@ -459,16 +464,20 @@ TEST(DOMMesh, AxisAlignedBox)
     );
   };
 
-  // Set to valid "apple" mesh
+  // "apple" mesh should return valid aabb
   mesh.SetUri("apple");
   auto aabb = mesh.AxisAlignedBox(customCalculator);
   EXPECT_TRUE(aabb.has_value());
   EXPECT_EQ(gz::math::Vector3d(1, 2, 3), aabb->Min());
   EXPECT_EQ(gz::math::Vector3d(4, 5, 6), aabb->Max());
 
-  // Set to invalid "banana" mesh
+  // "banana" mesh should return invalid aabb
   mesh.SetUri("banana");
   aabb = mesh.AxisAlignedBox(customCalculator);
   EXPECT_TRUE(aabb.has_value());
   EXPECT_EQ(gz::math::AxisAlignedBox(), aabb.value());
+
+  // "no_mesh" should return std::nullopt
+  mesh.SetUri("no_mesh");
+  EXPECT_EQ(std::nullopt, mesh.AxisAlignedBox(customCalculator));
 }
