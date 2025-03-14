@@ -22,6 +22,7 @@
 
 #include <gz/math/Vector3.hh>
 #include <gz/math/Inertial.hh>
+#include <gz/math/AxisAlignedBox.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/CustomInertiaCalcProperties.hh>
 #include <sdf/Element.hh>
@@ -94,6 +95,10 @@ namespace sdf
   /// Geometry.
   class SDFORMAT_VISIBLE Mesh
   {
+    public: using AxisAlignedBoxCalculator =
+      std::function<std::optional<gz::math::AxisAlignedBox>(
+        const sdf::Mesh &_sdfMesh)>;
+
     /// \brief Constructor
     public: Mesh();
 
@@ -205,6 +210,14 @@ namespace sdf
                               double _density,
                               const sdf::ElementPtr _autoInertiaParams,
                               const ParserConfig &_config);
+
+    /// \brief Get the Axis-aligned box for this Mesh.
+    /// \param[in] _aabbCalc A custom function that calculates the
+    /// AxisAlignedBox for the Mesh.
+    /// \return A gz::math::AxisAlignedBox object centered at this
+    /// Mesh's origin or std::nullopt.
+    public: std::optional<gz::math::AxisAlignedBox>
+            AxisAlignedBox(const AxisAlignedBoxCalculator &_aabbCalc) const;
 
     /// \brief Get a pointer to the SDF element that was used during load.
     /// \return SDF element pointer. The value will be nullptr if Load has

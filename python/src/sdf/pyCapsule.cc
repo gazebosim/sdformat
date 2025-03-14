@@ -44,6 +44,8 @@ void defineCapsule(pybind11::object module)
          "Set the capsule's length in meters.")
     .def("calculate_inertial", &sdf::Capsule::CalculateInertial,
          "Calculate and return the Inertial values for the Capsule.")
+    .def("axis_aligned_box", &sdf::Capsule::AxisAlignedBox,
+         "Get the axis-aligned box that contains this Capsule.")
     .def(
         "shape",
         pybind11::overload_cast<>(&sdf::Capsule::Shape, pybind11::const_),

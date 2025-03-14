@@ -16,7 +16,7 @@ import copy
 
 import math
 
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from gz_test_deps.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d
 from gz_test_deps.sdformat import Cylinder
 
 import unittest
@@ -146,6 +146,16 @@ class CylinderTEST(unittest.TestCase):
     self.assertEqual(expectedInertial.mass_matrix().mass(),
       cylinderInertial.mass_matrix().mass())
     self.assertEqual(expectedInertial.pose(), cylinderInertial.pose())
+
+  def test_axis_aligned_box(self):
+    cylinder = Cylinder()
+    cylinder.set_radius(0.8)
+    cylinder.set_length(1.8)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.8, -0.8, -0.9), Vector3d(0.8, 0.8, 0.9)),
+      cylinder.axis_aligned_box())
+
 
 if __name__ == '__main__':
     unittest.main()

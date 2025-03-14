@@ -18,6 +18,7 @@ import copy
 
 import math
 
+from gz_test_deps.math import AxisAlignedBox, Vector3d
 from gz_test_deps.sdformat import Cone
 
 import unittest
@@ -82,6 +83,7 @@ class ConeTEST(unittest.TestCase):
     self.assertEqual(0.2, cone2.radius())
     self.assertEqual(3.0, cone2.length())
 
+
   def test_deepcopy(self):
     cone = Cone();
     cone.set_radius(0.2)
@@ -108,6 +110,15 @@ class ConeTEST(unittest.TestCase):
     cone.shape().set_length(0.456)
     self.assertEqual(0.123, cone.radius())
     self.assertEqual(0.456, cone.length())
+
+  def test_axis_aligned_box(self):
+    cone = Cone()
+    cone.set_radius(1.0)
+    cone.set_length(2.0)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1)),
+      cone.axis_aligned_box())
 
 
 if __name__ == '__main__':

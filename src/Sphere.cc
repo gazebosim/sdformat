@@ -139,6 +139,13 @@ std::optional<gz::math::Inertiald> Sphere::CalculateInertial(double _density)
 }
 
 /////////////////////////////////////////////////
+gz::math::AxisAlignedBox Sphere::AxisAlignedBox() const
+{
+  auto halfSize = this->Radius() * gz::math::Vector3d::One;
+  return gz::math::AxisAlignedBox(-halfSize, halfSize);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Sphere::ToElement() const
 {
   sdf::Errors errors;

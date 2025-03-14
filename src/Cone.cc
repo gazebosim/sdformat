@@ -164,6 +164,13 @@ std::optional<gz::math::Inertiald> Cone::CalculateInertial(double _density)
   }
 }
 
+gz::math::AxisAlignedBox Cone::AxisAlignedBox() const
+{
+  auto halfSize = gz::math::Vector3d(
+    this->Radius(), this->Radius(), this->Length() / 2);
+  return gz::math::AxisAlignedBox(-halfSize, halfSize);
+}
+
 /////////////////////////////////////////////////
 sdf::ElementPtr Cone::ToElement() const
 {
