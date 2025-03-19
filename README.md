@@ -13,7 +13,7 @@ Build | Status
 Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/main)
 Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-noble-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-noble-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-main-win)](https://build.osrfoundation.org/job/sdformat-main-win)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-main-clowin)](https://build.osrfoundation.org/job/sdformat-main-clowin)
 
 
 SDFormat is an XML file format that describes environments, objects, and robots
