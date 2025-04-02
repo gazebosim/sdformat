@@ -156,6 +156,15 @@ TEST(DOMPlane, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
+
+  // Negative <size> element
+  sdf::ElementPtr sizeElem = sdf->AddElement("size");
+  sizeElem->Set<gz::math::Vector2d>(gz::math::Vector2d(-1, -1));
+  errors = plane.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <size>"));
+  EXPECT_NE(nullptr, plane.Element());
 }
 
 /////////////////////////////////////////////////

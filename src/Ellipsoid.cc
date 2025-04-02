@@ -72,13 +72,17 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
       _sdf->Get<gz::math::Vector3d>(
         errors, "radii", this->dataPtr->ellipsoid.Radii());
 
-    if (!pair.second)
+    if (!pair.second || pair.first.X() <= 0 ||
+        pair.first.Y() <= 0 || pair.first.Z() <= 0)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Invalid <radii> data for a <ellipsoid> geometry. "
           "Using a radii of 1, 1, 1 "});
     }
-    this->dataPtr->ellipsoid.SetRadii(pair.first);
+    else
+    {
+      this->dataPtr->ellipsoid.SetRadii(pair.first);
+    }
   }
   else
   {

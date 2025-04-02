@@ -171,6 +171,26 @@ TEST(DOMCone, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <length>"))
       << errors[0].Message();
+
+  // Negative <radius> element
+  radiusElem->Set<double>(-1.0);
+  errors = cone.Load(sdf);
+  ASSERT_EQ(2u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <radius>"))
+      << errors[0].Message();
+  EXPECT_NE(nullptr, cone.Element());
+
+  // Negative <length> element
+  radiusElem->Set<double>(1.0);
+  sdf::ElementPtr lengthElem = sdf->AddElement("length");
+  lengthElem->Set<double>(-1.0);
+  errors = cone.Load(sdf);
+  ASSERT_EQ(2u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <length>"))
+      << errors[0].Message();
+  EXPECT_NE(nullptr, cone.Element());
 }
 
 /////////////////////////////////////////////////

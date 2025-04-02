@@ -133,6 +133,16 @@ TEST(DOMEllipsoid, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radii>"))
       << errors[0].Message();
   EXPECT_NE(nullptr, ellipsoid.Element());
+
+  // Negative <radii> element
+  sdf::ElementPtr radiiElem = sdf->AddElement("radii");
+  radiiElem->Set<gz::math::Vector3d>(gz::math::Vector3d(-1, -1, -1));
+  errors = ellipsoid.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <radii>"))
+      << errors[0].Message();
+  EXPECT_NE(nullptr, ellipsoid.Element());
 }
 
 /////////////////////////////////////////////////

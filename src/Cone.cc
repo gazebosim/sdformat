@@ -73,7 +73,7 @@ Errors Cone::Load(ElementPtr _sdf)
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->cone.Radius());
 
-    if (!pair.second)
+    if (!pair.second || pair.first <= 0)
     {
       std::stringstream ss;
       ss << "Invalid <radius> data for a <cone> geometry. "
@@ -81,14 +81,17 @@ Errors Cone::Load(ElementPtr _sdf)
          << this->dataPtr->cone.Radius() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cone.SetRadius(pair.first);
+    else
+    {
+      this->dataPtr->cone.SetRadius(pair.first);
+    }
   }
 
   {
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "length",
         this->dataPtr->cone.Length());
 
-    if (!pair.second)
+    if (!pair.second || pair.first <= 0)
     {
       std::stringstream ss;
       ss << "Invalid <length> data for a <cone> geometry. "
@@ -96,7 +99,10 @@ Errors Cone::Load(ElementPtr _sdf)
          << this->dataPtr->cone.Length() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cone.SetLength(pair.first);
+    else
+    {
+      this->dataPtr->cone.SetLength(pair.first);
+    }
   }
 
   return errors;

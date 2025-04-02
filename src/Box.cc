@@ -72,13 +72,15 @@ Errors Box::Load(ElementPtr _sdf)
     std::pair<gz::math::Vector3d, bool> pair =
       _sdf->Get<gz::math::Vector3d>(errors, "size", this->dataPtr->box.Size());
 
-    if (!pair.second)
+    if (!pair.second || pair.first.X() <= 0 || pair.first.Y() <= 0 ||
+        pair.first.Z() <= 0)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Invalid <size> data for a <box> geometry. "
           "Using a size of 1, 1, 1 "});
+    } else {
+      this->dataPtr->box.SetSize(pair.first);
     }
-    this->dataPtr->box.SetSize(pair.first);
   }
   else
   {

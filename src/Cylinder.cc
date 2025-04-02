@@ -69,7 +69,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->cylinder.Radius());
 
-    if (!pair.second)
+    if (!pair.second || pair.first <= 0)
     {
       std::stringstream ss;
       ss << "Invalid <radius> data for a <cylinder> geometry. "
@@ -77,14 +77,17 @@ Errors Cylinder::Load(ElementPtr _sdf)
          << this->dataPtr->cylinder.Radius() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cylinder.SetRadius(pair.first);
+    else
+    {
+      this->dataPtr->cylinder.SetRadius(pair.first);
+    }
   }
 
   {
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "length",
         this->dataPtr->cylinder.Length());
 
-    if (!pair.second)
+    if (!pair.second || pair.first <= 0)
     {
       std::stringstream ss;
       ss << "Invalid <length> data for a <cylinder> geometry. "
@@ -92,7 +95,10 @@ Errors Cylinder::Load(ElementPtr _sdf)
          << this->dataPtr->cylinder.Length() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cylinder.SetLength(pair.first);
+    else
+    {
+      this->dataPtr->cylinder.SetLength(pair.first);
+    }
   }
 
   return errors;

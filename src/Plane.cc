@@ -92,13 +92,17 @@ Errors Plane::Load(ElementPtr _sdf)
       _sdf->Get<gz::math::Vector2d>(
       errors, "size", this->dataPtr->plane.Size());
 
-    if (!pair.second)
+    if (!pair.second || pair.first.X() <= 0 ||
+        pair.first.Y() <= 0)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
           "Invalid <size> data for a <plane> geometry. "
           "Using a size of 1, 1."});
     }
-    this->SetSize(pair.first);
+    else
+    {
+      this->SetSize(pair.first);
+    }
   }
   else
   {

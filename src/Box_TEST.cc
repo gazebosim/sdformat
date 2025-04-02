@@ -138,6 +138,16 @@ TEST(DOMBox, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
   EXPECT_NE(nullptr, box.Element());
+
+  // Negative <size> element
+  sdf->GetElement("size")->Set<gz::math::Vector3d>(
+      gz::math::Vector3d(-1, -1, -1));
+  errors = box.Load(sdf);
+  ASSERT_EQ(1u, errors.size());
+  ASSERT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
+  ASSERT_NE(std::string::npos, errors[0].Message().find("Invalid <size>"));
+  ASSERT_NE(nullptr, box.Element());
+  EXPECT_EQ(gz::math::Vector3d::One, box.Size());
 }
 
 /////////////////////////////////////////////////
