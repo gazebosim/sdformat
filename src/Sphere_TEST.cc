@@ -125,8 +125,30 @@ TEST(DOMSphere, Load)
   errors = sphere.Load(sdf);
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"));
+  EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <radius>"))
+      << errors[0].Message();
   EXPECT_NE(nullptr, sphere.Element());
+
+  // Add <radius> element description
+  sdf::ElementPtr radiusDesc(new sdf::Element());
+  radiusDesc->SetName("radius");
+  radiusDesc->AddValue("double", "1.0", true, "radius of the sphere");
+  sdf->AddElementDescription(radiusDesc);
+
+  // Valid <radius> element
+  sdf::ElementPtr radiusElem = sdf->AddElement("radius");
+  radiusElem->Set<double>(2.5);
+  errors = sphere.Load(sdf);
+  ASSERT_EQ(0u, errors.size());
+  EXPECT_NE(nullptr, sphere.Element());
+  EXPECT_DOUBLE_EQ(2.5, sphere.Radius());
+
+  // Negative <radius> element
+  radiusElem->Set<double>(-1.0);
+  errors = sphere.Load(sdf);
+  ASSERT_EQ(0u, errors.size());
+  EXPECT_NE(nullptr, sphere.Element());
+  EXPECT_DOUBLE_EQ(1.0, sphere.Radius());
 }
 
 /////////////////////////////////////////////////
