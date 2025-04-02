@@ -18,6 +18,7 @@
 #include <utility>
 
 #include <gz/math/Inertial.hh>
+#include "sdf/Console.hh"
 #include "sdf/Cylinder.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -69,7 +70,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->cylinder.Radius());
 
-    if (!pair.second || pair.first <= 0)
+    if (!pair.second)
     {
       std::stringstream ss;
       ss << "Invalid <radius> data for a <cylinder> geometry. "
@@ -79,6 +80,12 @@ Errors Cylinder::Load(ElementPtr _sdf)
     }
     else
     {
+      if (pair.first <= 0)
+      {
+        sdfwarn << "Value of <radius> is negative. "
+            << "Using default value of 0.5.\n";
+        pair.first = 0.5;
+      }
       this->dataPtr->cylinder.SetRadius(pair.first);
     }
   }
@@ -87,7 +94,7 @@ Errors Cylinder::Load(ElementPtr _sdf)
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "length",
         this->dataPtr->cylinder.Length());
 
-    if (!pair.second || pair.first <= 0)
+    if (!pair.second)
     {
       std::stringstream ss;
       ss << "Invalid <length> data for a <cylinder> geometry. "
@@ -97,6 +104,12 @@ Errors Cylinder::Load(ElementPtr _sdf)
     }
     else
     {
+      if (pair.first <= 0)
+      {
+        sdfwarn << "Value of <length> is negative. "
+            << "Using default value of 1.\n";
+        pair.first = 1.0;
+      }
       this->dataPtr->cylinder.SetLength(pair.first);
     }
   }

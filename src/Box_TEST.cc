@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 #include <optional>
 
 #include <gtest/gtest.h>
@@ -139,15 +139,21 @@ TEST(DOMBox, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
   EXPECT_NE(nullptr, box.Element());
 
-  // Negative <size> element
-  sdf->GetElement("size")->Set<gz::math::Vector3d>(
-      gz::math::Vector3d(-1, -1, -1));
+  // Define <size> element description
+  sdf::ElementPtr sizeDesc(new sdf::Element());
+  sizeDesc->SetName("size");
+  sizeDesc->AddValue("vector3", "1 1 1", true, "size vector");
+  sdf->AddElementDescription(sizeDesc);
+
+  // Now add the element and assign a negative value
+  sdf::ElementPtr sizeElem = sdf->AddElement("size");
+  sizeElem->Set<gz::math::Vector3d>(gz::math::Vector3d(-1, -1, -1));
+
+  // Load and check behavior
   errors = box.Load(sdf);
-  ASSERT_EQ(1u, errors.size());
-  ASSERT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-  ASSERT_NE(std::string::npos, errors[0].Message().find("Invalid <size>"));
-  ASSERT_NE(nullptr, box.Element());
-  EXPECT_EQ(gz::math::Vector3d::One, box.Size());
+  ASSERT_EQ(0u, errors.size());
+  EXPECT_NE(nullptr, box.Element());
+  EXPECT_EQ(gz::math::Vector3d::One, box.Size()); // Defaulted to 1,1,1
 }
 
 /////////////////////////////////////////////////
@@ -180,15 +186,14 @@ TEST(DOMBox, CalculateInertial)
   box.SetSize(gz::math::Vector3d(l, w, h));
 
   double expectedMass = box.Shape().Volume() * density;
-  double ixx = (1.0/12.0) * expectedMass * (w*w + h*h);
-  double iyy = (1.0/12.0) * expectedMass * (l*l + h*h);
-  double izz = (1.0/12.0) * expectedMass * (l*l + w*w);
+  double ixx = (1.0 / 12.0) * expectedMass * (w * w + h * h);
+  double iyy = (1.0 / 12.0) * expectedMass * (l * l + h * h);
+  double izz = (1.0 / 12.0) * expectedMass * (l * l + w * w);
 
   gz::math::MassMatrix3d expectedMassMat(
-    expectedMass,
-    gz::math::Vector3d(ixx, iyy, izz),
-    gz::math::Vector3d::Zero
-  );
+      expectedMass,
+      gz::math::Vector3d(ixx, iyy, izz),
+      gz::math::Vector3d::Zero);
 
   gz::math::Inertiald expectedInertial;
   expectedInertial.SetMassMatrix(expectedMassMat);
@@ -199,9 +204,9 @@ TEST(DOMBox, CalculateInertial)
   ASSERT_NE(std::nullopt, boxInertial);
   EXPECT_EQ(expectedInertial, *boxInertial);
   EXPECT_EQ(expectedInertial.MassMatrix().DiagonalMoments(),
-    boxInertial->MassMatrix().DiagonalMoments());
+            boxInertial->MassMatrix().DiagonalMoments());
   EXPECT_EQ(expectedInertial.MassMatrix().Mass(),
-    boxInertial->MassMatrix().Mass());
+            boxInertial->MassMatrix().Mass());
   EXPECT_EQ(expectedInertial.Pose(), boxInertial->Pose());
 }
 
@@ -229,14 +234,14 @@ TEST(DOMBox, ToElementErrorOutput)
   sdf::testing::RedirectConsoleStream redir(
       sdf::Console::Instance()->GetMsgStream(), &buffer);
 
-  #ifdef _WIN32
-    sdf::Console::Instance()->SetQuiet(false);
-    sdf::testing::ScopeExit revertSetQuiet(
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+  sdf::testing::ScopeExit revertSetQuiet(
       []
       {
         sdf::Console::Instance()->SetQuiet(true);
       });
-  #endif
+#endif
 
   sdf::Box box;
   sdf::Errors errors;

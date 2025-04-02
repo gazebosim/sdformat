@@ -156,11 +156,13 @@ TEST(DOMCone, Load)
       << errors[1].Message();
   EXPECT_NE(nullptr, cone.Element());
 
-  // Add a radius element
+  // Add <radius> element description
   sdf::ElementPtr radiusDesc(new sdf::Element());
   radiusDesc->SetName("radius");
   radiusDesc->AddValue("double", "1.0", true, "radius");
   sdf->AddElementDescription(radiusDesc);
+
+  // Add a radius element
   sdf::ElementPtr radiusElem = sdf->AddElement("radius");
   radiusElem->Set<double>(2.0);
 
@@ -172,25 +174,28 @@ TEST(DOMCone, Load)
   EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <length>"))
       << errors[0].Message();
 
-  // Negative <radius> element
+  // Now add <length> element description
+  sdf::ElementPtr lengthDesc(new sdf::Element());
+  lengthDesc->SetName("length");
+  lengthDesc->AddValue("double", "1.0", true, "length");
+  sdf->AddElementDescription(lengthDesc);
+
+  // Add length element and test negative radius
+  sdf::ElementPtr lengthElem = sdf->AddElement("length");
+  lengthElem->Set<double>(3.0);
   radiusElem->Set<double>(-1.0);
   errors = cone.Load(sdf);
-  ASSERT_EQ(2u, errors.size());
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <radius>"))
-      << errors[0].Message();
+  ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, cone.Element());
+  EXPECT_DOUBLE_EQ(0.5, cone.Radius()); // default fallback
 
-  // Negative <length> element
+  // Test negative length
   radiusElem->Set<double>(1.0);
-  sdf::ElementPtr lengthElem = sdf->AddElement("length");
   lengthElem->Set<double>(-1.0);
   errors = cone.Load(sdf);
-  ASSERT_EQ(2u, errors.size());
-  EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
-  EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <length>"))
-      << errors[0].Message();
+  ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, cone.Element());
+  EXPECT_DOUBLE_EQ(1.0, cone.Length()); // default fallback
 }
 
 /////////////////////////////////////////////////

@@ -23,6 +23,7 @@
 #include <gz/math/Inertial.hh>
 #include <gz/math/Cone.hh>
 #include "sdf/Cone.hh"
+#include "sdf/Console.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
 
@@ -73,7 +74,7 @@ Errors Cone::Load(ElementPtr _sdf)
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "radius",
         this->dataPtr->cone.Radius());
 
-    if (!pair.second || pair.first <= 0)
+    if (!pair.second)
     {
       std::stringstream ss;
       ss << "Invalid <radius> data for a <cone> geometry. "
@@ -83,6 +84,12 @@ Errors Cone::Load(ElementPtr _sdf)
     }
     else
     {
+      if (pair.first <= 0)
+      {
+        sdfwarn << "Value of <radius> is negative. "
+            << "Using default value of 0.5.\n";
+        pair.first = 0.5;
+      }
       this->dataPtr->cone.SetRadius(pair.first);
     }
   }
@@ -91,7 +98,7 @@ Errors Cone::Load(ElementPtr _sdf)
     std::pair<double, bool> pair = _sdf->Get<double>(errors, "length",
         this->dataPtr->cone.Length());
 
-    if (!pair.second || pair.first <= 0)
+    if (!pair.second)
     {
       std::stringstream ss;
       ss << "Invalid <length> data for a <cone> geometry. "
@@ -101,6 +108,12 @@ Errors Cone::Load(ElementPtr _sdf)
     }
     else
     {
+      if (pair.first <= 0)
+      {
+        sdfwarn << "Value of <length> is negative. "
+            << "Using default of 1.\n";
+        pair.first = 1.0;
+      }
       this->dataPtr->cone.SetLength(pair.first);
     }
   }

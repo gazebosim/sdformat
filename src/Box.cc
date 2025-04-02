@@ -20,6 +20,7 @@
 #include <gz/math/Material.hh>
 #include <gz/math/MassMatrix3.hh>
 #include <gz/math/Inertial.hh>
+#include "sdf/Console.hh"
 #include "sdf/Box.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -72,13 +73,20 @@ Errors Box::Load(ElementPtr _sdf)
     std::pair<gz::math::Vector3d, bool> pair =
       _sdf->Get<gz::math::Vector3d>(errors, "size", this->dataPtr->box.Size());
 
-    if (!pair.second || pair.first.X() <= 0 || pair.first.Y() <= 0 ||
-        pair.first.Z() <= 0)
+    if (!pair.second)
     {
       errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "Invalid <size> data for a <box> geometry. "
-          "Using a size of 1, 1, 1 "});
-    } else {
+          "Invalid <size> data for a <box> geometry."});
+    }
+    else
+    {
+      if (pair.first.X() <= 0 || pair.first.Y() <= 0 ||
+          pair.first.Z() <= 0)
+      {
+        sdfwarn << "Value of <size> is negative. "
+            << "Using default value of 1, 1, 1.\n";
+        pair.first = gz::math::Vector3d::One;
+      }
       this->dataPtr->box.SetSize(pair.first);
     }
   }
