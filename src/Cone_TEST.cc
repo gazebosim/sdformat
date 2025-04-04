@@ -187,7 +187,7 @@ TEST(DOMCone, Load)
   errors = cone.Load(sdf);
   ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, cone.Element());
-  EXPECT_DOUBLE_EQ(0.5, cone.Radius()); // default fallback
+  EXPECT_DOUBLE_EQ(0.5, cone.Radius());  // default fallback
 
   // Test negative length
   radiusElem->Set<double>(1.0);
@@ -195,7 +195,7 @@ TEST(DOMCone, Load)
   errors = cone.Load(sdf);
   ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, cone.Element());
-  EXPECT_DOUBLE_EQ(1.0, cone.Length()); // default fallback
+  EXPECT_DOUBLE_EQ(1.0, cone.Length());  // default fallback
 }
 
 /////////////////////////////////////////////////

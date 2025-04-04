@@ -153,7 +153,7 @@ TEST(DOMBox, Load)
   errors = box.Load(sdf);
   ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, box.Element());
-  EXPECT_EQ(gz::math::Vector3d::One, box.Size()); // Defaulted to 1,1,1
+  EXPECT_EQ(gz::math::Vector3d::One, box.Size());  // Defaulted to 1,1,1
 }
 
 /////////////////////////////////////////////////

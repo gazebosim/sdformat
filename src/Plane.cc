@@ -101,7 +101,7 @@ Errors Plane::Load(ElementPtr _sdf)
     }
     else
     {
-      if (pair.first.X() <= 0 || pair.first.Y() <= 0) 
+      if (pair.first.X() <= 0 || pair.first.Y() <= 0)
       {
         sdfwarn << "Value of <size> is negative. "
             << "Using default value of 1, 1.\n";

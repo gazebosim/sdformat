@@ -183,7 +183,7 @@ TEST(DOMCylinder, Load)
   errors = cylinder.Load(sdf);
   ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, cylinder.Element());
-  EXPECT_DOUBLE_EQ(0.5, cylinder.Radius()); // fallback
+  EXPECT_DOUBLE_EQ(0.5, cylinder.Radius());  // Default to 0.5
 
   // Test negative length
   radiusElem->Set<double>(1.0);
@@ -191,7 +191,7 @@ TEST(DOMCylinder, Load)
   errors = cylinder.Load(sdf);
   ASSERT_EQ(0u, errors.size());
   EXPECT_NE(nullptr, cylinder.Element());
-  EXPECT_DOUBLE_EQ(1.0, cylinder.Length()); // fallback
+  EXPECT_DOUBLE_EQ(1.0, cylinder.Length());  // Default to 1.0
 }
 
 /////////////////////////////////////////////////
