@@ -16,6 +16,7 @@
 */
 #include <gz/math/Vector2.hh>
 #include <gz/math/Vector3.hh>
+#include "sdf/Console.hh"
 #include "sdf/parser.hh"
 #include "sdf/Plane.hh"
 #include "Utils.hh"
@@ -98,7 +99,16 @@ Errors Plane::Load(ElementPtr _sdf)
           "Invalid <size> data for a <plane> geometry. "
           "Using a size of 1, 1."});
     }
-    this->SetSize(pair.first);
+    else
+    {
+      if (pair.first.X() <= 0 || pair.first.Y() <= 0)
+      {
+        sdfwarn << "Value of <size> is negative. "
+            << "Using default value of 1, 1.\n";
+        pair.first = gz::math::Vector2d::One;
+      }
+      this->SetSize(pair.first);
+    }
   }
   else
   {
