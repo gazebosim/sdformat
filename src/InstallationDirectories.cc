@@ -43,7 +43,7 @@ const std::string separator(const std::string &_p)
 
 // Function imported from
 // https://github.com/gazebosim/gz-common/blob/ignition-common4_4.6.2/src/Filesystem.cc#L227
-std::string checkWindowsPath(const std::string _path)
+std::string checkWindowsPath(const std::string &_path)
 {
   if (_path.empty())
     return _path;

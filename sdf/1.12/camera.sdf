@@ -98,7 +98,7 @@
                                             on the visible parts of the objects
 
         - full_2d | full_box_2d: a full 2d box mode which provides axis aligned 2d boxes that fills the
-                                 object dimentions, even if it has an occluded part
+                                 object dimensions, even if it has an occluded part
 
         - 3d: a 3d mode which provides oriented 3d boxes
     </description>

@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <vector>
 #include "sdf/Gui.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"

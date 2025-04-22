@@ -156,11 +156,13 @@ TEST(DOMCapsule, Load)
       << errors[1].Message();
   EXPECT_NE(nullptr, capsule.Element());
 
-  // Add a radius element
+  // Add <radius> element description
   sdf::ElementPtr radiusDesc(new sdf::Element());
   radiusDesc->SetName("radius");
   radiusDesc->AddValue("double", "1.0", true, "radius");
   sdf->AddElementDescription(radiusDesc);
+
+  // Add radius element
   sdf::ElementPtr radiusElem = sdf->AddElement("radius");
   radiusElem->Set<double>(2.0);
 
@@ -171,6 +173,29 @@ TEST(DOMCapsule, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INVALID, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("Invalid <length>"))
       << errors[0].Message();
+
+  // Add <length> element description
+  sdf::ElementPtr lengthDesc(new sdf::Element());
+  lengthDesc->SetName("length");
+  lengthDesc->AddValue("double", "1.0", true, "length");
+  sdf->AddElementDescription(lengthDesc);
+
+  // Add length element and test negative radius
+  sdf::ElementPtr lengthElem = sdf->AddElement("length");
+  lengthElem->Set<double>(3.0);
+  radiusElem->Set<double>(-1.0);
+  errors = capsule.Load(sdf);
+  ASSERT_EQ(0u, errors.size());
+  EXPECT_NE(nullptr, capsule.Element());
+  EXPECT_DOUBLE_EQ(0.5, capsule.Radius());
+
+  // Test negative length
+  radiusElem->Set<double>(1.0);
+  lengthElem->Set<double>(-1.0);
+  errors = capsule.Load(sdf);
+  ASSERT_EQ(0u, errors.size());
+  EXPECT_NE(nullptr, capsule.Element());
+  EXPECT_DOUBLE_EQ(1.0, capsule.Length());
 }
 
 /////////////////////////////////////////////////
@@ -191,7 +216,7 @@ TEST(DOMCapsule, CalculateInertial)
 {
   sdf::Capsule capsule;
 
-  // density of aluminium
+  // density of Aluminum
   const double density = 2710;
   const double l = 2.0;
   const double r = 0.1;

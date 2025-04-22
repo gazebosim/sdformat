@@ -83,7 +83,7 @@ void defineGeometry(pybind11::object module)
          "Get the ellipsoid geometry, or None if the contained "
          "geometry is not a ellipsoid.")
     .def("set_ellipsoid_shape", &sdf::Geometry::SetEllipsoidShape,
-         "Set the elliposid shape.")
+         "Set the ellipsoid shape.")
     .def("sphere_shape", &sdf::Geometry::SphereShape,
          pybind11::return_value_policy::reference,
          "Get the sphere geometry, or None if the contained "

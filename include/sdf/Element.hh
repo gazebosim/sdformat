@@ -639,7 +639,7 @@ namespace sdf
     /// FindElement
     /// \remarks If there are multiple elements with the given tag, it returns
     ///          the first one.
-    /// \param[in] _name Name of the child element to retreive.
+    /// \param[in] _name Name of the child element to retrieve.
     /// \return Pointer to the existing child element, or a new child
     /// element if an existing child element did not exist.
     public: ElementPtr GetElement(const std::string &_name);
@@ -651,7 +651,7 @@ namespace sdf
     /// FindElement
     /// \remarks If there are multiple elements with the given tag, it returns
     ///          the first one.
-    /// \param[in] _name Name of the child element to retreive.
+    /// \param[in] _name Name of the child element to retrieve.
     /// \param[out] _errors Vector of errors.
     /// \return Pointer to the existing child element, or a new child
     /// element if an existing child element did not exist.
@@ -664,7 +664,7 @@ namespace sdf
     /// fails to find an existing element.
     /// \remarks If there are multiple elements with the given tag, it returns
     ///          the first one.
-    /// \param[in] _name Name of the child element to retreive.
+    /// \param[in] _name Name of the child element to retrieve.
     /// \return Pointer to the existing child element, or nullptr
     /// if the child element was not found.
     public: ElementPtr FindElement(const std::string &_name);
@@ -675,7 +675,7 @@ namespace sdf
     /// fails to find an existing element.
     /// \remarks If there are multiple elements with the given tag, it returns
     ///          the first one.
-    /// \param[in] _name Name of the child element to retreive.
+    /// \param[in] _name Name of the child element to retrieve.
     /// \return Pointer to the existing child element, or nullptr
     /// if the child element was not found.
     public: ElementConstPtr FindElement(const std::string &_name) const;

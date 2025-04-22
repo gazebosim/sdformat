@@ -43,7 +43,7 @@ namespace sdf
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
-  /// \brief A collision element descibes the collision properties associated
+  /// \brief A collision element describes the collision properties associated
   /// with a link. This can be different from the visual properties of a link.
   /// For example, simple collision models are often used to reduce
   /// computation time.
@@ -121,7 +121,7 @@ namespace sdf
     public: void SetSurface(const sdf::Surface &_surface);
 
     /// \brief Get the pose of the collision object. This is the pose of the
-    /// collison as specified in SDF
+    /// collision as specified in SDF
     /// (<collision><pose> ... </pose></collision>).
     /// \return The pose of the collision object.
     public: const gz::math::Pose3d &RawPose() const;

@@ -31,7 +31,7 @@ class sdf::NavSat::Implementation
   /// \brief Noise values for the horizontal velocity sensor
   public: Noise horizontalVelocityNoise;
 
-  /// \brief Noise values for the verical velocity sensor
+  /// \brief Noise values for the vertical velocity sensor
   public: Noise verticalVelocityNoise;
 
   /// \brief The SDF element pointer used during load.

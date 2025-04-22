@@ -100,7 +100,7 @@ class sdf::Actor::Implementation
   /// \brief Time to wait before starting the script.
   public: double scriptDelayStart = 0.0;
 
-  /// \brief True if the animation strat with the simulation.
+  /// \brief True if the animation starts with the simulation.
   public: bool scriptAutoStart = true;
 
   /// \brief Trajectories for the actor.

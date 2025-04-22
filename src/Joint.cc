@@ -16,7 +16,9 @@
 */
 #include <algorithm>
 #include <array>
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <gz/math/Pose3.hh>

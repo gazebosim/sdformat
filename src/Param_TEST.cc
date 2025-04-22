@@ -662,7 +662,7 @@ TEST(Param, ReparsingAfterSetDouble)
   EXPECT_DOUBLE_EQ(value, 5.0);
   EXPECT_TRUE(doubleParam.Reparse());
 
-  // Value will be as expected, as the value was set using the explcit Set
+  // Value will be as expected, as the value was set using the explicit Set
   // function, and no parent element attributes are meant to change the value
   // for type double.
   EXPECT_TRUE(doubleParam.Get<double>(value));
@@ -918,7 +918,7 @@ TEST(Param, ChangeParentElementFail)
   poseElem->AddAttribute("degrees", "bool", "false", false);
   poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
 
-  // Param from original default attibute
+  // Param from original default attribute
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
   ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));
@@ -957,7 +957,7 @@ TEST(Param, PoseWithDefaultValue)
   poseElem->AddValue("pose", "1 0 0 0 0 0", false);
   poseElem->AddAttribute("rotation_format", "string", "euler_rpy", false);
 
-  // Clone poseElem for testing Parm::SetFromString
+  // Clone poseElem for testing Param::SetFromString
   auto poseElemClone = poseElem->Clone();
 
   const std::string testString = R"(

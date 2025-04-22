@@ -25,7 +25,7 @@
 #include "test_config.hh"
 
 ////////////////////////////////////////////////////
-/// Ensure that include sdf descriptions can be overriden
+/// Ensure that include sdf descriptions can be overridden
 TEST(Include, IncludeDescription)
 {
   const std::string SDF_DESCRIPTION_PATH =

@@ -35,7 +35,7 @@ class CustomInertiaCalcProperties::Implementation
 
   /// \brief SDF element pointer to <auto_inertia_params> tag.
   /// This can be used to access custom params for the
-  /// Inertia Caluclator
+  /// Inertia Calculator
   public: sdf::ElementPtr inertiaCalculatorParams{nullptr};
 };
 

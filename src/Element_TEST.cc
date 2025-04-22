@@ -76,7 +76,7 @@ TEST(Element, Required)
 /////////////////////////////////////////////////
 TEST(Element, SetExplicitlySetInFile)
 {
-  // The heirarchy in xml:
+  // The hierarchy in xml:
   // <parent>
   //   <elem>
   //     <child>
@@ -106,7 +106,7 @@ TEST(Element, SetExplicitlySetInFile)
 
   EXPECT_TRUE(elem->GetExplicitlySetInFile());
 
-  // the childs and siblings of the element should all be
+  // the children and siblings of the element should all be
   // set to the same value when using this function
   sdf::ElementPtr child = std::make_shared<sdf::Element>();
   child->SetParent(elem);

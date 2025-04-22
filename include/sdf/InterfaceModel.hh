@@ -20,6 +20,7 @@
 
 #include <functional>
 #include <string>
+#include <optional>
 #include <memory>
 #include <vector>
 

@@ -37,7 +37,7 @@ namespace sdf
   struct PoseRelativeToGraph;
   template <typename T> class ScopedGraph;
 
-  /// \brief A Frame element descibes the properties associated with an
+  /// \brief A Frame element describes the properties associated with an
   /// explicit frame defined in a Model or World.
   class SDFORMAT_VISIBLE Frame
   {

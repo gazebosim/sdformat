@@ -326,12 +326,20 @@ namespace sdf
     public: bool SetParentElement(ElementPtr _parentElement,
                                   sdf::Errors &_errors);
 
+    /// \brief Set the parent Element of this Param without reparsing.
+    /// This is meant for internal consumption when cloning elements.
+    /// \param[in] _parentElement Pointer to new parent Element. A nullptr can
+    /// be provided to remove the current parent Element.
+    /// \return True if the parent Element was set.
+    public: bool SetParentElementNoReparse(
+        ElementPtr _parentElement);
+
     /// \brief Reset the parameter to the default value.
     public: void Reset();
 
     /// \brief Reparse the parameter value. This should be called after the
     /// parent element's attributes have been modified, in the event that the
-    /// value was set using SetFromString or posesses a default value, and that
+    /// value was set using SetFromString or possesses a default value, and that
     /// the final parsed value is dependent on the attributes of the parent
     /// element. For example, the rotation component of a pose element can
     /// be parsed as degrees or radians, depending on the attribute @degrees
@@ -344,7 +352,7 @@ namespace sdf
 
     /// \brief Reparse the parameter value. This should be called after the
     /// parent element's attributes have been modified, in the event that the
-    /// value was set using SetFromString or posesses a default value, and that
+    /// value was set using SetFromString or possesses a default value, and that
     /// the final parsed value is dependent on the attributes of the parent
     /// element. For example, the rotation component of a pose element can
     /// be parsed as degrees or radians, depending on the attribute @degrees

@@ -118,7 +118,7 @@ void defineParticleEmitter(pybind11::object module)
          "Set the particle scatter ratio. This is used to determine the "
          "ratio of particles that will be detected by sensors.")
     .def("raw_pose", &sdf::ParticleEmitter::RawPose,
-         "Get the pose of the camer. This is the pose of the ParticleEmitter "
+         "Get the pose of the camera. This is the pose of the ParticleEmitter "
          "as specified in SDF (<particle_emitter> <pose> ... "
          "</pose></particle_emitter>).")
     .def("set_raw_pose", &sdf::ParticleEmitter::SetRawPose,

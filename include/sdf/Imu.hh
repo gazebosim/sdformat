@@ -211,11 +211,11 @@ namespace sdf
     ///    facing +z). (default gazebo camera is +x:view direction, +y:left,
     ///    +z:up).
     ///    Example sdf: parent_frame="local", custom_rpy="-0.5*M_PI 0 -0.5*M_PI"
-    /// \return Custom RPY vectory
+    /// \return Custom RPY vector
     public: const gz::math::Vector3d &CustomRpy() const;
 
     /// \brief See CustomRpy() const.
-    /// \param[in] Custom RPY vectory
+    /// \param[in] Custom RPY vector
     public: void SetCustomRpy(const gz::math::Vector3d &_rpy);
 
     /// \brief Get the name of parent frame which the custom_rpy transform is
@@ -244,13 +244,13 @@ namespace sdf
 
     /// \brief Return true if both Imu objects contain the same values.
     /// \param[_in] _imu Imu value to compare.
-    /// \returen True if 'this' == _imu.
+    /// \return True if 'this' == _imu.
     public: bool operator==(const Imu &_imu) const;
 
     /// \brief Return true this Imu object does not contain the same
     /// values as the passed in parameter.
     /// \param[_in] _imu Imu value to compare.
-    /// \returen True if 'this' != _imu.
+    /// \return True if 'this' != _imu.
     public: bool operator!=(const Imu &_imu) const;
 
     /// \brief Create and return an SDF element filled with data from this

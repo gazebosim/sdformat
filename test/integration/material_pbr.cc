@@ -47,7 +47,7 @@ TEST(Material, PbrDOM)
   ASSERT_NE(nullptr, link);
   EXPECT_EQ("link", link->Name());
 
-  // checkt visual materials
+  // check visual materials
   EXPECT_EQ(3u, link->VisualCount());
 
   // visual metal workflow

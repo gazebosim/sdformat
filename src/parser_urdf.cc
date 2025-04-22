@@ -3261,7 +3261,7 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
         (_link->name + kLumpPrefix + _oldLinkName).c_str());
   }
 
-  // add the visualisation transfrom
+  // add the visualisation transform
   double pose[6];
   pose[0] = _visual->origin.position.x;
   pose[1] = _visual->origin.position.y;
@@ -3598,7 +3598,7 @@ void ReduceSDFExtensionContactSensorFrameReplace(
           collisionNameKey->LinkEndChild(collisionNameTxt);
           contact->LinkEndChild(collisionNameKey);
         }
-        // @todo: FIXME: chagning contact sensor's contact collision
+        // @todo: FIXME: changing contact sensor's contact collision
         //   should trigger a update in sensor offset as well.
         //   But first we need to implement offsets in contact sensors
       }

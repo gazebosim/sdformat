@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-#include <vector>
+#include <string>
 
 #include "sdf/parser.hh"
 #include "sdf/Polyline.hh"

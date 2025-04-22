@@ -32,7 +32,7 @@ TEST(CheckFixForLocal, MakeTestToFail)
   const std::string sdfTestFile =
       sdf::testing::TestFile("integration", "numeric.sdf");
 
-  // Check if any of the latin locales is avilable
+  // Check if any of the latin locales is available
   FILE *fp = popen("locale -a | grep '^es\\|^pt_\\|^it_' | head -n 1", "r");
 
   if (!fp)

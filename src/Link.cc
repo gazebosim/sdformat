@@ -93,7 +93,7 @@ class sdf::Link::Implementation
   /// \brief True if this link is kinematic only
   public: bool kinematic = false;
 
-  /// \brief True if automatic caluclation for the link inertial is enabled
+  /// \brief True if automatic calculation for the link inertial is enabled
   public: bool autoInertia = false;
 
   /// \brief This variable is used to track whether the inertia values for

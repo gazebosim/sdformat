@@ -58,7 +58,7 @@ class SDFORMAT_VISIBLE CustomInertiaCalcProperties
   /// \param[in] _density Double density value
   public: void SetDensity(double _density);
 
-  /// \brief Get the reference to the mesh oject being used.
+  /// \brief Get the reference to the mesh object being used.
   /// \return Reference to the sdf::Mesh object.
   public: const std::optional<sdf::Mesh> &Mesh() const;
 

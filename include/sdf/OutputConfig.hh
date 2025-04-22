@@ -34,7 +34,7 @@ class OutputConfigPrivate;
 
 /// This class contains configuration options for SDF output. Output
 /// configuration can be used to specify how SDF is generated from in-memory
-/// represenations, such as the DOM classes.
+/// representations, such as the DOM classes.
 ///
 /// Example:
 /// The default behavior of the `ToElement` functions is to use `<include>`

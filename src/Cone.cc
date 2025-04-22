@@ -23,6 +23,7 @@
 #include <gz/math/Inertial.hh>
 #include <gz/math/Cone.hh>
 #include "sdf/Cone.hh"
+#include "sdf/Console.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
 
@@ -81,7 +82,16 @@ Errors Cone::Load(ElementPtr _sdf)
          << this->dataPtr->cone.Radius() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cone.SetRadius(pair.first);
+    else
+    {
+      if (pair.first <= 0)
+      {
+        sdfwarn << "Value of <radius> is negative. "
+            << "Using default value of 0.5.\n";
+        pair.first = 0.5;
+      }
+      this->dataPtr->cone.SetRadius(pair.first);
+    }
   }
 
   {
@@ -96,7 +106,16 @@ Errors Cone::Load(ElementPtr _sdf)
          << this->dataPtr->cone.Length() << ".";
       errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
     }
-    this->dataPtr->cone.SetLength(pair.first);
+    else
+    {
+      if (pair.first <= 0)
+      {
+        sdfwarn << "Value of <length> is negative. "
+            << "Using default of 1.\n";
+        pair.first = 1.0;
+      }
+      this->dataPtr->cone.SetLength(pair.first);
+    }
   }
 
   return errors;

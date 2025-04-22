@@ -15,6 +15,7 @@
  *
 */
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <set>
 #include <utility>
@@ -355,7 +356,7 @@ struct FrameWrapper : public WrapperBase
   {
   }
 
-  /// \brief Constructor from name, pose, and attachement data (without
+  /// \brief Constructor from name, pose, and attachment data (without
   /// sdf::Frame or sdf::InterfaceFrame)
   FrameWrapper(const std::string &_name, const gz::math::Pose3d &_rawPose,
                const std::string &_relativeTo, const std::string &_attachedTo)

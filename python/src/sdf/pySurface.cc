@@ -147,7 +147,7 @@ void defineBulletFriction(pybind11::object module)
     .def("set_fdir1", &sdf::BulletFriction::SetFdir1,
          "Set the fdir1 parameter.")
     .def("rolling_friction", &sdf::BulletFriction::RollingFriction,
-         "Get the rolling fricion parameter.")
+         "Get the rolling friction parameter.")
     .def("set_rolling_friction", &sdf::BulletFriction::SetRollingFriction,
          "Set the rolling friction parameter.")
     .def("__copy__", [](const sdf::BulletFriction &self) {

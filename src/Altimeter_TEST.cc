@@ -98,7 +98,7 @@ TEST(DOMAltimeter, Load)
   EXPECT_NE(nullptr, alt.Element());
   EXPECT_EQ(sdf.get(), alt.Element().get());
 
-  // The Altimeter::Load function is test more thouroughly in the
+  // The Altimeter::Load function is test more thoroughly in the
   // link_dom.cc integration test.
 }
 

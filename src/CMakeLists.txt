@@ -70,11 +70,6 @@ target_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
 )
 
 if (BUILD_TESTING)
-  # Build this test file only if Gazebo Tools is installed.
-  if (NOT GZ_PROGRAM)
-    list(REMOVE_ITEM gtest_sources gz_TEST.cc)
-  endif()
-
   add_library(library_for_tests OBJECT
       Converter.cc
       EmbeddedSdf.cc
@@ -120,13 +115,6 @@ if (BUILD_TESTING)
     ENVIRONMENT
       SDF_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
   )
-
-  if (TARGET UNIT_gz_TEST)
-    target_compile_definitions(UNIT_gz_TEST PRIVATE
-      -DGZ_PATH="${GZ_PROGRAM}"
-      -DDETAIL_GZ_CONFIG_PATH="${CMAKE_BINARY_DIR}/test/conf/$<CONFIG>"
-      -DGZ_TEST_LIBRARY_PATH="${PROJECT_BINARY_DIR}/src")
-  endif()
 endif()
 
 add_subdirectory(cmd)

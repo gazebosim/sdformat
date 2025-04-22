@@ -103,7 +103,7 @@
 
           </link>
 
-          <!-- attribute test get's stripped during replace -->
+          <!-- attribute test gets stripped during replace -->
           <collision element_id="right_wheel::collision" test="hello" name="right_wheel_collision" action="replace">
             <geometry>
               <cylinder>

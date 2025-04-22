@@ -45,7 +45,7 @@ TEST(DOMWorld, Construction)
   EXPECT_STREQ("default", world.AudioDevice().c_str());
   EXPECT_EQ(gz::math::Vector3d::Zero, world.WindLinearVelocity());
 
-  // The scene and atmosphere are requred, per the SDF spec. Make sure
+  // The scene and atmosphere are required, per the SDF spec. Make sure
   // that they have been created.
   EXPECT_TRUE(world.Scene());
   EXPECT_TRUE(world.Atmosphere());

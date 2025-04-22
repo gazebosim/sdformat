@@ -80,7 +80,7 @@ class BoxTEST(unittest.TestCase):
   def test_calculate_inertial(self):
     ellipsoid = Ellipsoid()
 
-    # density of aluminium
+    # density of Aluminum
     density = 2170
 
     # Invalid dimensions leading to std::nullopt return in

@@ -484,7 +484,7 @@ class LinkTEST(unittest.TestCase):
 
     def test_inertial_values_given_with_auto_set_to_true(self):
         # The inertia matrix is specified but should be ignored.
-        # <mass> is not speicifed so the inertial values should be computed
+        # <mass> is not specified so the inertial values should be computed
         # based on the collision density value.
         sdf = "<?xml version=\"1.0\"?>" + \
         "<sdf version=\"1.11\">" + \
@@ -528,7 +528,7 @@ class LinkTEST(unittest.TestCase):
 
     def test_resolveauto_inertialsWithMass(self):
         # The inertia matrix is specified but should be ignored.
-        # <mass> is speicifed - the auto computed inertial values should
+        # <mass> is specified - the auto computed inertial values should
         # be scaled based on the desired mass.
         sdf = "<?xml version=\"1.0\"?>" + \
         "<sdf version=\"1.11\">" + \
@@ -573,7 +573,7 @@ class LinkTEST(unittest.TestCase):
 
     def test_resolveauto_inertialsWithMassAndMultipleCollisions(self):
         # The inertia matrix is specified but should be ignored.
-        # <mass> is speicifed - the auto computed inertial values should
+        # <mass> is specified - the auto computed inertial values should
         # be scaled based on the desired mass.
         sdf = "<?xml version=\"1.0\"?>" + \
         "<sdf version=\"1.11\">" + \
@@ -629,7 +629,7 @@ class LinkTEST(unittest.TestCase):
 
     def test_resolveauto_inertialsWithMassAndDefaultDensity(self):
         # The inertia matrix is specified but should be ignored.
-        # <mass> is speicifed - the auto computed inertial values should
+        # <mass> is specified - the auto computed inertial values should
         # be scaled based on the desired mass.
         # Density is not specified for the bottom collision - it should
         # use the default value

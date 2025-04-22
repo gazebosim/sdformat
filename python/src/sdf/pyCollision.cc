@@ -62,7 +62,7 @@ void defineCollision(pybind11::object module)
          "Set the collision's surface parameters")
     .def("raw_pose", &sdf::Collision::RawPose,
          "Get the pose of the collision object. This is the pose of the "
-         "collison as specified in SDF")
+         "collision as specified in SDF")
     .def("set_raw_pose", &sdf::Collision::SetRawPose,
          "Set the pose of the collision object.")
     .def("pose_relative_to", &sdf::Collision::PoseRelativeTo,

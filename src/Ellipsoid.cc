@@ -19,6 +19,7 @@
 
 #include <gz/math/Inertial.hh>
 #include <gz/math/Material.hh>
+#include "sdf/Console.hh"
 #include "sdf/Ellipsoid.hh"
 #include "sdf/parser.hh"
 #include "Utils.hh"
@@ -78,7 +79,16 @@ Errors Ellipsoid::Load(ElementPtr _sdf)
           "Invalid <radii> data for a <ellipsoid> geometry. "
           "Using a radii of 1, 1, 1 "});
     }
-    this->dataPtr->ellipsoid.SetRadii(pair.first);
+    else
+    {
+      if (pair.first.X() <= 0 || pair.first.Y() <= 0 || pair.first.Z() <= 0)
+      {
+        sdfwarn << "Value of <radii> is negative. "
+            << "Using default value of 1, 1, 1.\n";
+        pair.first = gz::math::Vector3d::One;
+      }
+      this->dataPtr->ellipsoid.SetRadii(pair.first);
+    }
   }
   else
   {

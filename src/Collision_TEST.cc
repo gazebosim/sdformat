@@ -324,7 +324,7 @@ TEST(DOMCollision, CalculateInertialWithAutoInertiaParamsElement)
   sdf::ElementPtr autoInertiaParamsElem = collision->AutoInertiaParams();
 
   // <auto_inertial_params> element is used as parent element for custom
-  // intertia calculator params. Custom elements have to be defined with a
+  // inertia calculator params. Custom elements have to be defined with a
   // namespace prefix(gz in this case). More about this can be found in the
   // following proposal:
   // http://sdformat.org/tutorials?tut=custom_elements_attributes_proposal&cat=pose_semantics_docs&
@@ -396,6 +396,61 @@ TEST(DOMCollision, CalculateInertialPoseNotRelativeToLink)
   EXPECT_DOUBLE_EQ(expectedMass, link->Inertial().MassMatrix().Mass());
   EXPECT_EQ(expectedInertial.MassMatrix(), link->Inertial().MassMatrix());
   EXPECT_EQ(expectedInertial.Pose(), link->Inertial().Pose());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMCollision, CollisionCalculateInertialFailurePolicy)
+{
+  sdf::Collision collision;
+
+  sdf::ElementPtr sdf(new sdf::Element());
+  collision.Load(sdf);
+
+  const sdf::ParserConfig sdfParserConfig;
+  sdf::Geometry geom;
+  sdf::Mesh mesh;
+  geom.SetType(sdf::GeometryType::MESH);
+  geom.SetMeshShape(mesh);
+  collision.SetGeom(geom);
+
+  sdf::ParserConfig config;
+  sdf::Errors errors;
+  sdf::CustomInertiaCalcProperties inertiaCalcProps;
+
+  // Custom inertia calculator that returns null inertial
+  auto customMeshInertiaCalculator = [](
+    sdf::Errors &,
+    const sdf::CustomInertiaCalcProperties &)
+      -> std::optional<gz::math::Inertiald>
+  {
+    return std::nullopt;
+  };
+  config.RegisterCustomInertiaCalc(customMeshInertiaCalculator);
+
+  // With default inertial failure policy, there should be an error when the
+  // mesh inertial calculator returns null inertial values.
+  gz::math::Inertiald collisionInertial;
+  collision.CalculateInertial(errors, collisionInertial, config);
+  ASSERT_EQ(1u, errors.size()) << errors;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::LINK_INERTIA_INVALID);
+  const gz::math::Inertiald empty;
+  EXPECT_EQ(empty, collisionInertial);
+
+  // Set inertial failure policy to use default inertial values on failure and
+  // verify that there are no more errors.
+  errors.clear();
+  config.SetCalculateInertialFailurePolicy(
+    sdf::CalculateInertialFailurePolicyType::WARN_AND_USE_DEFAULT_INERTIAL);
+  collision.CalculateInertial(errors, collisionInertial, config);
+  EXPECT_TRUE(errors.empty()) << errors;
+
+  // Verify default inertial values are returned.
+  gz::math::Inertiald defaultInertial;
+  defaultInertial.SetMassMatrix(
+    gz::math::MassMatrix3d(1.0,
+      gz::math::Vector3d::One,
+      gz::math::Vector3d::Zero));
+  EXPECT_EQ(collisionInertial, defaultInertial);
 }
 
 /////////////////////////////////////////////////

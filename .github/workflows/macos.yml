@@ -71,3 +71,10 @@ jobs:
         cmake ..;
         make;
         ./simple ../simple.sdf;
+    - name: Compile python bindings
+      working-directory: python
+      run: |
+        mkdir build;
+        cd build;
+        cmake ..;
+        make;

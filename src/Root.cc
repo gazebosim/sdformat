@@ -476,6 +476,12 @@ const Model *Root::Model() const
 }
 
 /////////////////////////////////////////////////
+Model *Root::Model()
+{
+  return std::get_if<sdf::Model>(&this->dataPtr->modelLightOrActor);
+}
+
+/////////////////////////////////////////////////
 void Root::SetModel(const sdf::Model &_model)
 {
   this->dataPtr->modelLightOrActor = _model;

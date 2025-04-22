@@ -87,7 +87,7 @@ class PluginTEST(unittest.TestCase):
 
         completePlugin = "<plugin name='my-name' filename='my-filename'>\n" + completeContent + "</plugin>\n"
 
-        # Try out curly braces intitialization
+        # Try out curly braces initialization
         plugin2 = Plugin(plugin.filename(), plugin.name(), completeContent)
 
         # Try to insert poorly formed XML, which should fail and not modify the
@@ -97,17 +97,17 @@ class PluginTEST(unittest.TestCase):
         # An empty string will also fail and not modify the content
         self.assertFalse(plugin2.insert_content(""))
 
-        # Contructing a new plugin with no content
+        # Constructing a new plugin with no content
         plugin3 = Plugin("a filename", "a name")
         self.assertEqual("a filename", plugin3.filename())
         self.assertEqual("a name", plugin3.name())
 
-        # Contructing a new plugin with bad XML content
+        # Constructing a new plugin with bad XML content
         plugin4 = Plugin("filename", "name", "<garbage>")
         self.assertEqual("filename", plugin4.filename())
         self.assertEqual("name", plugin4.name())
 
-        # Contructing a new plugin with bad XML content
+        # Constructing a new plugin with bad XML content
         plugin5 = Plugin("filename", "name", "    ")
         self.assertEqual("filename", plugin5.filename())
         self.assertEqual("name", plugin5.name())
