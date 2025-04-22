@@ -58,7 +58,7 @@ void defineVisual(pybind11::object module)
          "Set the visual's geometry")
     .def("raw_pose", &sdf::Visual::RawPose,
          "Get the pose of the visual object. This is the pose of the "
-         "collison as specified in SDF")
+         "collision as specified in SDF")
     .def("set_raw_pose", &sdf::Visual::SetRawPose,
          "Set the pose of the visual object.")
     .def("pose_relative_to", &sdf::Visual::PoseRelativeTo,
@@ -87,7 +87,7 @@ void defineVisual(pybind11::object module)
     .def("has_laser_retro", &sdf::Visual::HasLaserRetro,
          "Get whether the lidar reflective intensity was set was set.")
     .def("laser_retro", &sdf::Visual::LaserRetro,
-         "Get the flidar reflective intensity.")
+         "Get the lidar reflective intensity.")
     .def("set_laser_retro", &sdf::Visual::SetLaserRetro,
          "Set the lidar reflective intensity.")
     .def("plugins",

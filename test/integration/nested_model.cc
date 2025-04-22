@@ -474,7 +474,7 @@ TEST(NestedModel, NestedInclude)
 }
 
 //////////////////////////////////////////////////
-// Test parsing models with child models containg frames nested via <include>
+// Test parsing models with child models contain frames nested via <include>
 TEST(NestedModel, NestedModelWithFrames)
 {
   const std::string name = "test_model_with_frames";
@@ -795,7 +795,7 @@ TEST(NestedModel, PartiallyFlattened)
 
 //////////////////////////////////////////////////
 // Test parsing models that have two levels of nesting with child models
-// containg frames nested via <include>.
+// contain frames nested via <include>.
 // Compare parsed SDF with expected string
 TEST(NestedModel, TwoLevelNestedModelWithFramesDirectComparison)
 {

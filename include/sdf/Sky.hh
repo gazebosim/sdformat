@@ -94,7 +94,7 @@ namespace sdf
     /// \return cloud mean size [0..1]
     public: double CloudMeanSize() const;
 
-    /// \brief Set cloud mean siz
+    /// \brief Set cloud mean size
     /// \param[in] _size cloud mean size [0..1]
     public: void SetCloudMeanSize(double _size);
 

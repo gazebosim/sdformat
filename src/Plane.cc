@@ -16,6 +16,7 @@
 */
 #include <gz/math/Vector2.hh>
 #include <gz/math/Vector3.hh>
+#include "sdf/Console.hh"
 #include "sdf/parser.hh"
 #include "sdf/Plane.hh"
 #include "Utils.hh"
@@ -26,7 +27,7 @@ using namespace sdf;
 class sdf::Plane::Implementation
 {
   /// \brief A plane with a unit Z normal vector, size of 1x1 meters, and
-  /// a zero offest.
+  /// a zero offset.
   public: gz::math::Planed plane{gz::math::Vector3d::UnitZ,
             gz::math::Vector2d::One, 0};
 
@@ -98,7 +99,16 @@ Errors Plane::Load(ElementPtr _sdf)
           "Invalid <size> data for a <plane> geometry. "
           "Using a size of 1, 1."});
     }
-    this->SetSize(pair.first);
+    else
+    {
+      if (pair.first.X() <= 0 || pair.first.Y() <= 0)
+      {
+        sdfwarn << "Value of <size> is negative. "
+            << "Using default value of 1, 1.\n";
+        pair.first = gz::math::Vector2d::One;
+      }
+      this->SetSize(pair.first);
+    }
   }
   else
   {

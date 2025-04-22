@@ -26,7 +26,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief AirPressure contains information about a general
   /// purpose fluid pressure sensor.
@@ -75,13 +75,13 @@ namespace sdf
     /// \brief Return true if both AirPressure objects contain the
     /// same values.
     /// \param[_in] _mag AirPressure value to compare.
-    /// \returen True if 'this' == _mag.
+    /// \return True if 'this' == _mag.
     public: bool operator==(const AirPressure &_air) const;
 
     /// \brief Return true this AirPressure object does not contain
     /// the same values as the passed in parameter.
     /// \param[_in] _mag AirPressure value to compare.
-    /// \returen True if 'this' != _mag.
+    /// \return True if 'this' != _mag.
     public: bool operator!=(const AirPressure &_air) const;
 
     /// \brief Create and return an SDF element filled with data from this

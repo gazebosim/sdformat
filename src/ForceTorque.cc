@@ -134,9 +134,9 @@ Errors ForceTorque::Load(ElementPtr _sdf)
   }
 
   auto loadAxisNoise = [&errors](sdf::ElementPtr _parent,
-                          const std::string _groupLabel,
-                          const std::string _axisLabel,
-                          sdf::Noise& _noise)
+                          const std::string &_groupLabel,
+                          const std::string &_axisLabel,
+                          sdf::Noise &_noise)
   {
     if (_parent->HasElement(_groupLabel) &&
         _parent->GetElement(_groupLabel, errors)->HasElement(_axisLabel))

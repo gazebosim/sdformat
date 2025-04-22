@@ -111,7 +111,7 @@ class CylinderTEST(unittest.TestCase):
   def test_calculate_interial(self):
     cylinder = Cylinder()
 
-    # density of aluminium
+    # density of Aluminum
     density = 2170
 
     # Invalid dimensions leading to None return in

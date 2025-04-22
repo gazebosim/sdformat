@@ -63,13 +63,13 @@ void defineParserConfig(pybind11::object module)
          "Associate paths to a URI.")
     .def("set_warnings_policy",
          &sdf::ParserConfig::SetWarningsPolicy,
-         "Set the warning enforcment policy.")
+         "Set the warning enforcement policy.")
     .def("warnings_policy",
          &sdf::ParserConfig::WarningsPolicy,
          "Get the current warning enforcement policy")
     .def("set_unrecognized_elements_policy",
          &sdf::ParserConfig::SetUnrecognizedElementsPolicy,
-         "Set the policy for unrecogonized elements without an xmlns")
+         "Set the policy for unrecognized elements without an xmlns")
     .def("unrecognized_elements_policy",
          &sdf::ParserConfig::UnrecognizedElementsPolicy,
          "Get the current unrecognized elements policy")

@@ -69,6 +69,21 @@ enum class ConfigureResolveAutoInertials
   SAVE_CALCULATION_IN_ELEMENT,
 };
 
+/// \enum CalculateInertialFailurePolicyType
+/// \brief Configuration options of how CalculateInertial() failures should
+/// be handled.
+enum class CalculateInertialFailurePolicyType
+{
+  /// \brief If this value is used, failures of Geometry::CalculateInertial()
+  /// will result in a LINK_INERTIA_INVALID error with no inertial values
+  /// written.
+  ERR,
+
+  /// \brief If this value is used, failures of Geometry::CalculateInertial()
+  /// will result in default inertial values used and a WARNING.
+  WARN_AND_USE_DEFAULT_INERTIAL,
+};
+
 // Forward declare private data class.
 class ParserConfigPrivate;
 
@@ -143,13 +158,13 @@ class SDFORMAT_VISIBLE ParserConfig
   public: const SchemeToPathMap &URIPathMap() const;
 
   /// \brief Associate paths to a URI.
-  /// Example paramters: "model://", "/usr/share/models:~/.gazebo/models"
+  /// Example parameters: "model://", "/usr/share/models:~/.gazebo/models"
   /// \param[in] _uri URI that will be mapped to _path
   /// \param[in] _path Colon separated set of paths.
   /// \sa sdf::findFile() for the order of search operations
   public: void AddURIPath(const std::string &_uri, const std::string &_path);
 
-  /// \brief Set the warning enforcment policy.
+  /// \brief Set the warning enforcement policy.
   /// \param[in] _policy policy enum value to set
   public: void SetWarningsPolicy(EnforcementPolicy _policy);
 
@@ -157,7 +172,7 @@ class SDFORMAT_VISIBLE ParserConfig
   /// \return The warning enforcement policy enum value
   public: EnforcementPolicy WarningsPolicy() const;
 
-  /// \brief Set the policy for unrecogonized elements without an xmlns
+  /// \brief Set the policy for unrecognized elements without an xmlns
   /// \param[in] _policy The unrecognized elements enforcement policy
   public: void SetUnrecognizedElementsPolicy(EnforcementPolicy _policy);
 
@@ -174,11 +189,11 @@ class SDFORMAT_VISIBLE ParserConfig
   public: void ResetDeprecatedElementsPolicy();
 
   /// \brief Get the current deprecated elements policy. By default, the policy
-  /// is the same as the overall WarningsPolicy, but it can be overriden by
-  /// SetDeprecatedElementsPolicy. Once it is overriden, changing
+  /// is the same as the overall WarningsPolicy, but it can be overridden by
+  /// SetDeprecatedElementsPolicy. Once it is overridden, changing
   /// SetWarningsPolicy will not change the value of DeprecatedElementsPolicy
   /// unless ResetDeprecatedElementsPolicy is called.
-  /// \return The deperacted elements policy enum value
+  /// \return The deprecated elements policy enum value
   public: EnforcementPolicy DeprecatedElementsPolicy() const;
 
   /// \brief Get the current configuration for the CalculateInertial()
@@ -191,6 +206,19 @@ class SDFORMAT_VISIBLE ParserConfig
   /// CalculateInertial() function
   public: void SetCalculateInertialConfiguration(
     ConfigureResolveAutoInertials _configuration);
+
+  /// \brief Get the current policy for handling failures of the
+  /// CalculateInertial() function. By default an error is reported.
+  /// \return Current set value of the CalculateInertialFailurePolicyType enum
+  public: CalculateInertialFailurePolicyType
+    CalculateInertialFailurePolicy() const;
+
+  /// \brief Set the policy for handling failures of the CalculateInertial()
+  /// function
+  /// \param[in] _policy The policy to set for handling failures of the
+  /// CalculateInertial() function
+  public: void SetCalculateInertialFailurePolicy(
+    CalculateInertialFailurePolicyType _policy);
 
   /// \brief Registers a custom model parser.
   /// \param[in] _modelParser Callback as described in

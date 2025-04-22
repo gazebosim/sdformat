@@ -15,6 +15,7 @@
  *
 */
 #include <filesystem>
+#include <unordered_set>
 
 #include "sdf/parser.hh"
 #include "sdf/Sky.hh"

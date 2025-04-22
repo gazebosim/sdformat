@@ -86,7 +86,7 @@ namespace sdf
     /// child element described in xml
     /// \param[in] _xml The xml element to find
     /// \param[in] _config Custom parser configuration.
-    /// \param[out] _errors Vector of errros.
+    /// \param[out] _errors Vector of errors.
     /// \param[in] _isModifyAction Is true if the action is modify, the
     /// attribute 'name' may not be in the sdf element (i.e., may be a
     /// modified/added attribute such as //camera)

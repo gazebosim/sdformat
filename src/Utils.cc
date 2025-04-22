@@ -182,7 +182,7 @@ void throwOrPrintErrors(const sdf::Errors& _errors)
 /// tree.
 /// \param[in] _sdf sdf::ElementPtr of the entity with the name attribute
 /// \param[out] _errors Will contain errors encountered in the function.
-/// \return Absolute name of the entity of no errors occured. nullopt otherwise.
+/// \return Absolute name of the entity if no errors occurred or nullopt.
 static std::optional<std::string> computeAbsoluteName(
     const sdf::ElementPtr &_sdf, sdf::Errors &_errors)
 {

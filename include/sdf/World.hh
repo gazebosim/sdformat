@@ -404,7 +404,7 @@ namespace sdf
 
     /// \brief Get a pointer to the atmosphere model associated with this
     /// world. A nullptr indicates that an atmosphere model has not been set.
-    /// \return Pointer to this world's atmosphere model. Nullptr inidicates
+    /// \return Pointer to this world's atmosphere model. Nullptr indicates
     /// that there is no atmosphere model.
     public: const sdf::Atmosphere *Atmosphere() const;
 
@@ -414,7 +414,7 @@ namespace sdf
 
     /// \brief Get a pointer to the Gui associated with this
     /// world. A nullptr indicates that a Gui element has not been specified.
-    /// \return Pointer to this world's Gui parameters. Nullptr inidicates
+    /// \return Pointer to this world's Gui parameters. Nullptr indicates
     /// that there are no Gui parameters.
     public: const sdf::Gui *Gui() const;
 
@@ -424,7 +424,7 @@ namespace sdf
 
     /// \brief Get a pointer to the Scene associated with this
     /// world. A nullptr indicates that a Scene element has not been specified.
-    /// \return Pointer to this world's Scene parameters. Nullptr inidicates
+    /// \return Pointer to this world's Scene parameters. Nullptr indicates
     /// that there are no Scene parameters.
     public: const sdf::Scene *Scene() const;
 
@@ -532,7 +532,7 @@ namespace sdf
 
     /// \brief Calculate and set the inertials for all the models in the world
     /// object
-    /// \param[out] _errrors A vector of Errors objects. Each errors contains an
+    /// \param[out] _errors A vector of Errors objects. Each errors contains an
     /// Error code and a message. An empty errors vector indicates no errors
     /// \param[in] _config Custom parser configuration
     public: void ResolveAutoInertials(sdf::Errors &_errors,

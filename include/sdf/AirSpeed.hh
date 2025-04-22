@@ -26,7 +26,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \brief AirSpeed contains information about a general
   /// purpose air speed sensor.
@@ -61,13 +61,13 @@ namespace sdf
     /// \brief Return true if both AirSpeed objects contain the
     /// same values.
     /// \param[_in] _air AirSpeed value to compare.
-    /// \returen True if 'this' == _air.
+    /// \return True if 'this' == _air.
     public: bool operator==(const AirSpeed &_air) const;
 
     /// \brief Return true this AirSpeed object does not contain
     /// the same values as the passed in parameter.
     /// \param[_in] _air AirSpeed value to compare.
-    /// \returen True if 'this' != _air.
+    /// \return True if 'this' != _air.
     public: bool operator!=(const AirSpeed &_air) const;
 
     /// \brief Create and return an SDF element filled with data from this

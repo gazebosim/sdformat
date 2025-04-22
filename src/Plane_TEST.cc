@@ -142,11 +142,13 @@ TEST(DOMPlane, Load)
   EXPECT_NE(std::string::npos, errors[1].Message().find("missing a <size>"));
   EXPECT_NE(nullptr, plane.Element());
 
-  // Add a normal element
+  // Add <normal> element description
   sdf::ElementPtr normalDesc(new sdf::Element());
   normalDesc->SetName("normal");
   normalDesc->AddValue("vector3", "0 0 1", true, "normal");
   sdf->AddElementDescription(normalDesc);
+
+  // Add normal element
   sdf::ElementPtr normalElem = sdf->AddElement("normal");
   normalElem->Set<gz::math::Vector3d>({1, 0, 0});
 
@@ -156,6 +158,20 @@ TEST(DOMPlane, Load)
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <size>"));
+
+  // Now add <size> element description
+  sdf::ElementPtr sizeDesc(new sdf::Element());
+  sizeDesc->SetName("size");
+  sizeDesc->AddValue("vector2d", "1 1", true, "size");
+  sdf->AddElementDescription(sizeDesc);
+
+  // Negative <size> element
+  sdf::ElementPtr sizeElem = sdf->AddElement("size");
+  sizeElem->Set<gz::math::Vector2d>(gz::math::Vector2d(-1, -1));
+  errors = plane.Load(sdf);
+  ASSERT_EQ(0u, errors.size());
+  EXPECT_NE(nullptr, plane.Element());
+  EXPECT_EQ(gz::math::Vector2d::One, plane.Size());
 }
 
 /////////////////////////////////////////////////

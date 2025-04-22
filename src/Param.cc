@@ -1137,7 +1137,7 @@ bool PoseStringFromValue(const PrintConfig &_config,
   else if (rotationFormat == "euler_rpy" && inDegrees && snapDegreesToInterval)
   {
     // Helper function that returns a snapped value if it is within the
-    // tolerance of multiples of interval, otherwise the orginal value is
+    // tolerance of multiples of interval, otherwise the original value is
     // returned.
     auto snapToInterval =
         [](double _val, unsigned int _interval, double _tolerance)
@@ -1323,6 +1323,13 @@ bool Param::SetParentElement(ElementPtr _parentElement, sdf::Errors &_errors)
     return false;
   }
 
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Param::SetParentElementNoReparse(ElementPtr _parentElement)
+{
+  this->dataPtr->parentElement = _parentElement;
   return true;
 }
 

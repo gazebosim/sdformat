@@ -522,7 +522,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterSet)
   quatPoseElem->AddAttribute(
       "rotation_format", "string", "quat_xyzw", false);
 
-  // Param from original default attibute
+  // Param from original default attribute
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
 
@@ -590,7 +590,7 @@ TEST(Pose1_9, ChangingParentPoseElementAfterParamSetFromString)
   quatPoseElem->AddAttribute(
       "rotation_format", "string", "quat_xyzw", false);
 
-  // Param from original default attibute
+  // Param from original default attribute
   sdf::ParamPtr valParam = poseElem->GetValue();
   ASSERT_NE(nullptr, valParam);
   ASSERT_TRUE(valParam->SetFromString("1, 2, 3, 0.4, 0.5, 0.6"));

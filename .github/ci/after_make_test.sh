@@ -15,4 +15,11 @@ cmake ..;
 make;
 ./simple ../simple.sdf;
 
+# Compile python bindings
+cd $BUILD_DIR/../python
+mkdir build;
+cd build;
+cmake ..;
+make;
+
 cd $BUILD_DIR

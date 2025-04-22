@@ -124,7 +124,7 @@ TEST(DOMImu, Load)
   EXPECT_NE(nullptr, imu.Element());
   EXPECT_EQ(sdf.get(), imu.Element().get());
 
-  // The Imu::Load function is test more thouroughly in the
+  // The Imu::Load function is test more thoroughly in the
   // link_dom.cc integration test.
 }
 

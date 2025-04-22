@@ -24,7 +24,7 @@
 
 namespace sdf
 {
-  // Inline bracke to help doxygen filtering.
+  // Inline bracket to help doxygen filtering.
   inline namespace SDF_VERSION_NAMESPACE {
   /// \enum NoiseType
   /// \brief The set of noise types.
@@ -56,7 +56,7 @@ namespace sdf
 
     /// \brief Return true the Noise objects do not contain the same values.
     /// \param[_in] _noise Noise value to compare.
-    /// \returen True if 'this' != _noise.
+    /// \return True if 'this' != _noise.
     public: bool operator!=(const Noise &_noise) const;
 
     /// \brief Load the noise based on a element pointer. This is *not*
@@ -78,49 +78,49 @@ namespace sdf
     /// \brief Get the mean of the Gaussian distribution
     /// from which noise values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \return The mean of the Guassian distribution.
+    /// \return The mean of the Gaussian distribution.
     public: double Mean() const;
 
     /// \brief Set the mean of the Gaussian distribution
     /// from which noise values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \param[in] _mean The mean of the Guassian distribution.
+    /// \param[in] _mean The mean of the Gaussian distribution.
     public: void SetMean(double _mean);
 
     /// \brief Get the standard deviation of the Gaussian distribution
     /// from which noise values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \return The standard deviation of the Guassian distribution.
+    /// \return The standard deviation of the Gaussian distribution.
     public: double StdDev() const;
 
     /// \brief Set the standard deviation of the Gaussian distribution
     /// from which noise values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \param[in] _stddev The standard deviation of the Guassian distribution.
+    /// \param[in] _stddev The standard deviation of the Gaussian distribution.
     public: void SetStdDev(double _stddev);
 
     /// \brief Get the mean of the Gaussian distribution
     /// from which bias values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \return The mean of the bias Guassian distribution.
+    /// \return The mean of the bias Gaussian distribution.
     public: double BiasMean() const;
 
     /// \brief Set the mean of the Gaussian distribution
     /// from which bias values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \param[in] _bias The mean of the bias Guassian distribution.
+    /// \param[in] _bias The mean of the bias Gaussian distribution.
     public: void SetBiasMean(double _bias);
 
     /// \brief Get the standard deviation of the Gaussian distribution
     /// from which bias values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \return The standard deviation of the bias Guassian distribution.
+    /// \return The standard deviation of the bias Gaussian distribution.
     public: double BiasStdDev() const;
 
     /// \brief Set the standard deviation of the Gaussian distribution
     /// from which bias values are drawn. This is applicable to "gaussian*"
     /// noise types.
-    /// \param[in] _bias The standard deviation of the bias Guassian
+    /// \param[in] _bias The standard deviation of the bias Gaussian
     /// distribution.
     public: void SetBiasStdDev(double _bias);
 

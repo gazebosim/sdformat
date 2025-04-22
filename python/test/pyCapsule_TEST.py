@@ -110,7 +110,7 @@ class CapsuleTEST(unittest.TestCase):
   def test_calculate_inertial(self):
     capsule = Capsule()
 
-    # density of aluminium
+    # density of Aluminum
     density = 2710
     l = 2.0
     r = 0.1

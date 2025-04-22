@@ -407,7 +407,7 @@ TEST(DOMPlugin, InsertStringContent)
     << "</plugin>\n";
   EXPECT_EQ(completePlugin.str(), plugin.ToElement()->ToString(""));
 
-  // Try out curly braces intitialization
+  // Try out curly braces initialization
   sdf::Plugin plugin2{plugin.Filename(), plugin.Name(), completeContent.str()};
   EXPECT_EQ(plugin.ToElement()->ToString(""),
             plugin2.ToElement()->ToString(""));
@@ -423,19 +423,19 @@ TEST(DOMPlugin, InsertStringContent)
   EXPECT_EQ(plugin.ToElement()->ToString(""),
             plugin2.ToElement()->ToString(""));
 
-  // Contructing a new plugin with no content
+  // Constructing a new plugin with no content
   sdf::Plugin plugin3{"a filename", "a name"};
   EXPECT_EQ("a filename", plugin3.Filename());
   EXPECT_EQ("a name", plugin3.Name());
   EXPECT_TRUE(plugin3.Contents().empty());
 
-  // Contructing a new plugin with bad XML content
+  // Constructing a new plugin with bad XML content
   sdf::Plugin plugin4{"filename", "name", "<garbage>"};
   EXPECT_EQ("filename", plugin4.Filename());
   EXPECT_EQ("name", plugin4.Name());
   EXPECT_TRUE(plugin4.Contents().empty());
 
-  // Contructing a new plugin with bad XML content
+  // Constructing a new plugin with bad XML content
   sdf::Plugin plugin5{"filename", "name", "    "};
   EXPECT_EQ("filename", plugin5.Filename());
   EXPECT_EQ("name", plugin5.Name());

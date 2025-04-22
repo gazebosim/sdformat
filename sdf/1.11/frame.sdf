@@ -4,7 +4,7 @@
 
   <attribute name="name" type="string" default="" required="1">
     <description>
-      Name of the frame. It must be unique whithin its scope (model/world),
+      Name of the frame. It must be unique within its scope (model/world),
       i.e., it must not match the name of another frame, link, joint, or model
       within the same scope.
     </description>

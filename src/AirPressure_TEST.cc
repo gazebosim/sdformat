@@ -90,7 +90,7 @@ TEST(DOMAirPressure, Load)
   EXPECT_NE(nullptr, air.Element());
   EXPECT_EQ(sdf.get(), air.Element().get());
 
-  // The AirPressure::Load function is test more thouroughly in the
+  // The AirPressure::Load function is test more thoroughly in the
   // link_dom.cc integration test.
 }
 

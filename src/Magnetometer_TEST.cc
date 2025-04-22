@@ -108,7 +108,7 @@ TEST(DOMMagnetometer, Load)
   EXPECT_NE(nullptr, mag.Element());
   EXPECT_EQ(sdf.get(), mag.Element().get());
 
-  // The Magnetometer::Load function is test more thouroughly in the
+  // The Magnetometer::Load function is test more thoroughly in the
   // link_dom.cc integration test.
 }
 

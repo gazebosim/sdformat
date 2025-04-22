@@ -107,7 +107,7 @@ TEST(DOMForceTorque, Load)
   EXPECT_NE(nullptr, ft.Element());
   EXPECT_EQ(sdf.get(), ft.Element().get());
 
-  // The ForceTorque::Load function is tested more thouroughly in the
+  // The ForceTorque::Load function is tested more thoroughly in the
   // link_dom.cc integration test.
 }
 

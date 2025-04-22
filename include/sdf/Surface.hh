@@ -142,7 +142,7 @@ namespace sdf
     public: double Friction() const;
 
     /// \brief Set friction coefficient in first friction pyramid direction.
-    /// \param[in] _fricton Friction coefficient
+    /// \param[in] _friction Friction coefficient
     public: void SetFriction(double _friction);
 
     /// \brief Get the friction coefficient in second friction pyramid
@@ -151,7 +151,7 @@ namespace sdf
     public: double Friction2() const;
 
     /// \brief Set friction coefficient in second friction pyramid direction.
-    /// \param[in] _fricton Friction coefficient
+    /// \param[in] _friction Friction coefficient
     public: void SetFriction2(double _friction);
 
     /// \brief Get the first friction pyramid direction in collision-fixed
@@ -201,7 +201,7 @@ namespace sdf
     public: double Coefficient() const;
 
     /// \brief Set the torsional friction coefficient.
-    /// \param[in] _fricton Torsional friction coefficient
+    /// \param[in] _friction Torsional friction coefficient
     public: void SetCoefficient(double _coefficient);
 
     /// \brief Get whether the patch radius is used to calculate torsional

@@ -224,7 +224,7 @@ class GeometryTEST(unittest.TestCase):
   def test_calculate_inertial(self):
     geom = Geometry()
 
-    # Density of Aluminimum
+    # Density of Aluminum
     density = 2170.0
     expectedMass = 0
     expectedMassMat = MassMatrix3d()

@@ -2866,7 +2866,7 @@ void checkScopedJointAxisExpressedInValues(
         const std::string xyzExpressedInLocal =
             sdf::SplitName(xyzExpressedIn).second;
 
-        // If a frame name is specfied, check that the frame exists.
+        // If a frame name is specified, check that the frame exists.
         if (!xyzExpressedIn.empty() &&
             !_scope->NameExistsInFrameAttachedToGraph(xyzExpressedIn))
         {
