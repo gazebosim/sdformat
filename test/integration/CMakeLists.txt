@@ -63,8 +63,10 @@ set(tests
   world_dom.cc
 )
 
-if (Python3_Interpreter_FOUND AND PY_PSUTIL)
+if (PY_PSUTIL)
   set(tests ${tests} element_memory_leak.cc)
+else()
+  message(WARNING "Python psutil package not found. Memory leak tests will be skipped")
 endif()
 
 find_program(XMLLINT_EXE xmllint)

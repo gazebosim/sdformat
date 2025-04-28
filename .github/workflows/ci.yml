@@ -31,3 +31,4 @@ jobs:
         with:
           cppcheck-enabled: true
           cpplint-enabled: true
+          doxygen-enabled: true
