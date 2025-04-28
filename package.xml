@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>sdformat16</name>
+  <name>sdformat</name>
   <version>16.0.0</version>
   <description>SDFormat is an XML file format that describes environments, objects, and robots
 in a manner suitable for robotic applications</description>
@@ -13,9 +13,9 @@ in a manner suitable for robotic applications</description>
   <url type="website">https://github.com/gazebosim/sdformat</url>
 
   <buildtool_depend>cmake</buildtool_depend>
-  <build_depend>gz-cmake4</build_depend>
-  <depend>gz-math8</depend>
-  <depend>gz-utils3</depend>
+  <build_depend>gz-cmake</build_depend>
+  <depend>gz-math</depend>
+  <depend>gz-utils</depend>
   <depend>tinyxml2</depend>
   <depend>liburdfdom-dev</depend>
   <depend>pybind11-dev</depend>

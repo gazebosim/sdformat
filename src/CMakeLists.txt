@@ -44,8 +44,8 @@ set_property(
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-    gz-math${GZ_MATH_VER}::gz-math${GZ_MATH_VER}
-    gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
+    gz-math::gz-math
+    gz-utils::gz-utils
   PRIVATE
     TINYXML2::TINYXML2)
 
