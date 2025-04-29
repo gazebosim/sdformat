@@ -2,7 +2,7 @@
 set(sdf_executable gz-sdformat-sdf)
 add_executable(${sdf_executable} sdf_main.cc gz.cc ../FrameSemantics.cc)
 target_link_libraries(${sdf_executable}
-  gz-utils${GZ_UTILS_VER}::cli
+  gz-utils::cli
   ${PROJECT_LIBRARY_TARGET_NAME}
   TINYXML2::TINYXML2
 )
@@ -21,7 +21,7 @@ if(BUILD_TESTING AND GZ_PROGRAM)
     TEST_LIST
       test_list
     LIB_DEPS
-      gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
+      gz-utils::gz-utils
       ${EXTRA_TEST_LIB_DEPS}
     ENVIRONMENT
       SDF_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}

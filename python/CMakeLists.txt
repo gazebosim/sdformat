@@ -1,11 +1,11 @@
 # Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
-  find_package(gz-cmake4 4.1.0 REQUIRED)
+  find_package(gz-cmake REQUIRED)
   gz_get_package_xml_version(${CMAKE_SOURCE_DIR}/../package.xml PACKAGE_XML)
-  project(sdformat${PACKAGE_XML_VERSION_MAJOR}-python VERSION ${PACKAGE_XML_VERSION})
-  find_package(sdformat${PROJECT_VERSION_MAJOR} REQUIRED)
-  set(PROJECT_LIBRARY_TARGET_NAME "sdformat${PROJECT_VERSION_MAJOR}::sdformat${PROJECT_VERSION_MAJOR}")
+  project(sdformat-python VERSION ${PACKAGE_XML_VERSION})
+  find_package(sdformat REQUIRED)
+  set(PROJECT_LIBRARY_TARGET_NAME "sdformat::sdformat")
   # require python dependencies to be found
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11 TRUE)
@@ -54,9 +54,9 @@ function(configure_build_install_location _library_name)
   )
 endfunction()
 
-# sdformatX target already exists, use pysdformatX + OUTPUT_NAME to get
-# sdformatX file name generated and map BINDINGS_MODULE_NAME to sdformatX
-set(BINDINGS_MODULE_NAME "pysdformat${PROJECT_VERSION_MAJOR}")
+# sdformat target already exists, use pysdformat + OUTPUT_NAME to get
+# sdformat file name generated and map BINDINGS_MODULE_NAME to sdformat
+set(BINDINGS_MODULE_NAME "pysdformat")
 pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/_gz_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
@@ -117,18 +117,18 @@ target_link_libraries(${BINDINGS_MODULE_NAME} PRIVATE
 )
 
 # different from the target name since the target name was not able to use
-# sdformatX since it conflicts with the project name
+# sdformat since it conflicts with the project name
 target_compile_definitions(${BINDINGS_MODULE_NAME} PRIVATE
-  BINDINGS_MODULE_NAME=sdformat${PROJECT_VERSION_MAJOR})
+  BINDINGS_MODULE_NAME=sdformat)
 
 set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
-  OUTPUT_NAME "sdformat${PROJECT_VERSION_MAJOR}")
+  OUTPUT_NAME "sdformat")
 # Deal with naming collision on Windows. It is caused by the both the import
 # library of sdformat library and the import library of the pybind11 bindings
-# library are called sdformat13.lib.
+# library are called sdformat.lib.
 # See https://github.com/gazebosim/sdformat/issues/1150
 set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
-  ARCHIVE_OUTPUT_NAME "python_sdformat${PROJECT_VERSION_MAJOR}")
+  ARCHIVE_OUTPUT_NAME "python_sdformat")
 
 configure_build_install_location(${BINDINGS_MODULE_NAME})
 

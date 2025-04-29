@@ -8,17 +8,6 @@ on:
       - 'main'
 
 jobs:
-  jammy-ci:
-    runs-on: ubuntu-latest
-    name: Ubuntu Jammy CI
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Compile and test
-        id: ci
-        uses: gazebo-tooling/action-gz-ci@jammy
-        with:
-          codecov-enabled: true
   noble-ci:
     runs-on: ubuntu-latest
     name: Ubuntu Noble CI
@@ -29,6 +18,7 @@ jobs:
         id: ci
         uses: gazebo-tooling/action-gz-ci@noble
         with:
+          # codecov-enabled: true
           cppcheck-enabled: true
           cpplint-enabled: true
           doxygen-enabled: true
