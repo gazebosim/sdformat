@@ -48,6 +48,8 @@ void defineCone(pybind11::object module)
         pybind11::overload_cast<>(&sdf::Cone::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
         "Get a mutable Gazebo Math representation of this Cone.")
+    .def("axis_aligned_box", &sdf::Cone::AxisAlignedBox,
+         "Get the axis-aligned box that contains this Cone.")
     .def("__copy__", [](const sdf::Cone &self) {
       return sdf::Cone(self);
     })

@@ -141,6 +141,13 @@ std::optional<gz::math::Inertiald> Ellipsoid::CalculateInertial(double _density)
 }
 
 /////////////////////////////////////////////////
+gz::math::AxisAlignedBox Ellipsoid::AxisAlignedBox() const
+{
+  auto halfSize = this->Radii();
+  return gz::math::AxisAlignedBox(-halfSize, halfSize);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Ellipsoid::ToElement() const
 {
   sdf::Errors errors;

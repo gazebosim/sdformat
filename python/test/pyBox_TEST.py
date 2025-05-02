@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from gz_test_deps.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d
 from gz_test_deps.sdformat import Box
 import unittest
 
@@ -88,6 +88,15 @@ class BoxTEST(unittest.TestCase):
     self.assertEqual(expectedInertial.mass_matrix().mass(),
       boxInertial.mass_matrix().mass())
     self.assertEqual(expectedInertial.pose(), boxInertial.pose())
+
+  def test_axis_aligned_box(self):
+    box = Box()
+    box.set_size(Vector3d(1, 2, 3))
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -1, -1.5), Vector3d(0.5, 1, 1.5)),
+      box.axis_aligned_box())
+
 
 if __name__ == '__main__':
     unittest.main()

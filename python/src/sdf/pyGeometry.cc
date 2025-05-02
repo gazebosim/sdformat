@@ -18,6 +18,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 #include "sdf/ParserConfig.hh"
 
@@ -107,6 +108,8 @@ void defineGeometry(pybind11::object module)
     .def("heightmap_shape", &sdf::Geometry::HeightmapShape,
           pybind11::return_value_policy::reference,
           "Get the heightmap geometry.")
+    .def("axis_aligned_box", &sdf::Geometry::AxisAlignedBox,
+         "Get the axis-aligned box that contains the Geometry.")
     .def("__copy__", [](const sdf::Geometry &self) {
       return sdf::Geometry(self);
     })
