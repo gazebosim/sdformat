@@ -1217,8 +1217,8 @@ TEST(DOMGeometry, AxisAlignedBox)
 
     auto aabb = geom.AxisAlignedBox(nullptr);
     EXPECT_TRUE(aabb.has_value());
-    EXPECT_EQ(gz::math::Vector3d(-1.2, -1.2, -1.7), aabb->Min());
-    EXPECT_EQ(gz::math::Vector3d(1.2, 1.2, 1.7), aabb->Max());
+    EXPECT_EQ(gz::math::Vector3d(-1.2, -1.2, -1.2 - 1.7), aabb->Min());
+    EXPECT_EQ(gz::math::Vector3d(1.2, 1.2, 1.2 + 1.7), aabb->Max());
   }
 
   // Cone

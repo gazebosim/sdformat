@@ -183,8 +183,8 @@ std::optional<gz::math::Inertiald> Capsule::CalculateInertial(double _density)
 /////////////////////////////////////////////////
 gz::math::AxisAlignedBox Capsule::AxisAlignedBox() const
 {
-  auto halfSize = gz::math::Vector3d(
-    this->Radius(), this->Radius(), this->Length() / 2);
+  auto halfSize = this->Radius() * gz::math::Vector3d::One +
+    this->Length() / 2 * gz::math::Vector3d::UnitZ;
   return gz::math::AxisAlignedBox(-halfSize, halfSize);
 }
 

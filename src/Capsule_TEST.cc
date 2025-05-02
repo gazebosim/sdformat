@@ -319,7 +319,7 @@ TEST(DOMCapsule, AxisAlignedBox)
   capsule.SetLength(2.0);
 
   auto aabb = capsule.AxisAlignedBox();
-  EXPECT_EQ(gz::math::Vector3d(1.0, 1.0, 2.0), aabb.Size());
-  EXPECT_EQ(gz::math::Vector3d(-0.5, -0.5, -1.0), aabb.Min());
-  EXPECT_EQ(gz::math::Vector3d(0.5, 0.5, 1.0), aabb.Max());
+  EXPECT_EQ(gz::math::Vector3d(1.0, 1.0, 3.0), aabb.Size());
+  EXPECT_EQ(gz::math::Vector3d(-0.5, -0.5, -1.5), aabb.Min());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.5, 1.5), aabb.Max());
 }

@@ -152,7 +152,7 @@ class CapsuleTEST(unittest.TestCase):
     capsule.set_length(3.0)
 
     self.assertEqual(
-      AxisAlignedBox(Vector3d(-0.5, -0.5, -1.5), Vector3d(0.5, 0.5, 1.5)),
+      AxisAlignedBox(Vector3d(-0.5, -0.5, -2.0), Vector3d(0.5, 0.5, 2.0)),
       capsule.axis_aligned_box())
 
 
