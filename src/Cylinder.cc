@@ -179,6 +179,14 @@ std::optional<gz::math::Inertiald> Cylinder::CalculateInertial(double _density)
 }
 
 /////////////////////////////////////////////////
+gz::math::AxisAlignedBox Cylinder::AxisAlignedBox() const
+{
+  auto halfSize = gz::math::Vector3d(
+    this->Radius(), this->Radius(), this->Length() / 2);
+  return gz::math::AxisAlignedBox(-halfSize, halfSize);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Cylinder::ToElement() const
 {
   sdf::Errors errors;

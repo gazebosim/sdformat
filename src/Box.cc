@@ -151,6 +151,13 @@ std::optional<gz::math::Inertiald> Box::CalculateInertial(double _density)
 }
 
 /////////////////////////////////////////////////
+gz::math::AxisAlignedBox Box::AxisAlignedBox() const
+{
+  auto halfSize = this->Size() / 2;
+  return gz::math::AxisAlignedBox(-halfSize, halfSize);
+}
+
+/////////////////////////////////////////////////
 sdf::ElementPtr Box::ToElement() const
 {
   sdf::Errors errors;
