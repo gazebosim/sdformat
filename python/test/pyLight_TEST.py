@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Angle, Color, Pose3d, Vector3d
-from gz_test_deps.sdformat import Light, SDFErrorsException
-import gz_test_deps.sdformat as sdf
+from gz.math import Angle, Color, Pose3d, Vector3d
+from sdformat import Light, SDFErrorsException
+import sdformat as sdf
 import math
 import unittest
 

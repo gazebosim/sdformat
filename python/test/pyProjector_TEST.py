@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Plugin, Projector
-from gz_test_deps.math import Angle, Pose3d
+from sdformat import Plugin, Projector
+from gz.math import Angle, Pose3d
 import unittest
 
 

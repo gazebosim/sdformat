@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz_test_deps.sdformat import Element, SDFErrorsException
-from gz_test_deps.math import Vector3d
+from sdformat import Element, SDFErrorsException
+from gz.math import Vector3d
 import unittest
 
 

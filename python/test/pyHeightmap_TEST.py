@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Vector3d
-from gz_test_deps.sdformat import Heightmap, HeightmapBlend, HeightmapTexture
+from gz.math import Vector3d
+from sdformat import Heightmap, HeightmapBlend, HeightmapTexture
 import unittest
 
 

@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Magnetometer, Noise
-import gz_test_deps.sdformat as sdf
+from sdformat import Magnetometer, Noise
+import sdformat as sdf
 import unittest
 
 

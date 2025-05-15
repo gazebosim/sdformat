@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Mesh, ConvexDecomposition
-from gz_test_deps.math import Vector3d
-import gz_test_deps.sdformat as sdf
+from sdformat import Mesh, ConvexDecomposition
+from gz.math import Vector3d
+import sdformat as sdf
 import unittest
 
 

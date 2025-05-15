@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from gz_test_deps.sdformat import (Box, Collision, Cone, Contact, Cylinder, Error,
-                                   Geometry, ParserConfig, Plane, Root, Surface, Sphere,
-                                   SDFErrorsException)
-import gz_test_deps.sdformat as sdf
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from sdformat import (Box, Collision, Cone, Contact, Cylinder, Error,
+                      Geometry, ParserConfig, Plane, Root, Surface, Sphere,
+                      SDFErrorsException)
+import sdformat as sdf
 import unittest
 import math
 
