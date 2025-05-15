@@ -14,7 +14,7 @@
 
 import copy
 from sdformat import (Element, Error, Geometry, Box, Capsule, Cone, Cylinder, Ellipsoid,
-                                   Heightmap, Mesh, ParserConfig, Plane, Sphere)
+                      Heightmap, Mesh, ParserConfig, Plane, Sphere)
 from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
 import sdformat as sdf
 import math

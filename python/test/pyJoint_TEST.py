@@ -15,7 +15,7 @@
 import copy
 from gz.math import Pose3d, Vector3d
 from sdformat import (Joint, JointAxis, Error, SemanticPose,
-                                   Sensor, SDFErrorsException)
+                      Sensor, SDFErrorsException)
 import sdformat as sdf
 import math
 import unittest

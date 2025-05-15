@@ -15,7 +15,7 @@
 import copy
 from gz.math import Pose3d
 from sdformat import (Plugin, Model, Joint, Link, Error, Frame,
-                                   SemanticPose, SDFErrorsException)
+                      SemanticPose, SDFErrorsException)
 import sdformat as sdf
 import math
 import unittest

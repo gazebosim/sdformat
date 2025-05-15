@@ -15,8 +15,8 @@
 import copy
 from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 from sdformat import (Box, Collision, Cone, Contact, Cylinder, Error,
-                                   Geometry, ParserConfig, Plane, Root, Surface, Sphere,
-                                   SDFErrorsException)
+                      Geometry, ParserConfig, Plane, Root, Surface, Sphere,
+                      SDFErrorsException)
 import sdformat as sdf
 import unittest
 import math

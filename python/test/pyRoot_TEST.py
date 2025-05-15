@@ -15,8 +15,8 @@
 import copy
 from gz.math import Pose3d
 from sdformat import (ConfigureResolveAutoInertials, Error, Model, ParserConfig, Light, Root, SDF_VERSION,
-                                   SDFErrorsException, SDF_PROTOCOL_VERSION,
-                                   World)
+                      SDFErrorsException, SDF_PROTOCOL_VERSION,
+                      World)
 import sdformat as sdf
 
 import unittest

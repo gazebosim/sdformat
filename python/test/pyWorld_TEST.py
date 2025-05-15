@@ -16,7 +16,7 @@ import copy
 from gz.math import Color, Vector3d, SphericalCoordinates
 from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 from sdformat import (Atmosphere, Gui, Physics, Plugin, Error,
-                                   Frame, Joint, Light, Model, ParserConfig, Root, Scene, World)
+                      Frame, Joint, Light, Model, ParserConfig, Root, Scene, World)
 import sdformat as sdf
 import unittest
 import math

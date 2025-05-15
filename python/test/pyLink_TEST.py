@@ -15,7 +15,7 @@
 import copy
 from gz.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
 from sdformat import (Collision, Light, Link, ParserConfig, Projector, Sensor,
-                                   Visual, Root, SDFErrorsException)
+                      Visual, Root, SDFErrorsException)
 import unittest
 import math
 

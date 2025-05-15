@@ -15,7 +15,7 @@
 import copy
 from gz.math import Pose3d, Color
 from sdformat import (Geometry, Material, Visual, Plugin,
-                                   SDFErrorsException)
+                      SDFErrorsException)
 import sdformat as sdf
 import unittest
 import math

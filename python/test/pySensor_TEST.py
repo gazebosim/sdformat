@@ -15,9 +15,9 @@
 import copy
 from gz.math import Pose3d
 from sdformat import (AirPressure, Altimeter, Camera, IMU,
-                                   ForceTorque, Lidar, Magnetometer, NavSat,
-                                   Noise, Plugin, SemanticPose, Sensor,
-                                   SDFErrorsException)
+                      ForceTorque, Lidar, Magnetometer, NavSat,
+                      Noise, Plugin, SemanticPose, Sensor,
+                      SDFErrorsException)
 import sdformat as sdf
 import unittest
 
