@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 import math
-from gz_test_deps.sdformat import Ellipsoid
+from sdformat import Ellipsoid
 import unittest
 
 

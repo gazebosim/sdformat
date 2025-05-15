@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import ParserConfig
+from sdformat import ParserConfig
 from sdformattest import source_file, test_file
 import unittest
 

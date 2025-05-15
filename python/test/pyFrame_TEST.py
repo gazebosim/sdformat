@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz_test_deps.math import Pose3d
-from gz_test_deps.sdformat import Frame, Error, SDFErrorsException, ErrorCode
+from gz.math import Pose3d
+from sdformat import Frame, Error, SDFErrorsException, ErrorCode
 import unittest
 import math
 

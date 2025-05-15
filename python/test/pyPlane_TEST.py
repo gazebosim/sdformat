@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Plane
-from gz_test_deps.math import Vector3d, Vector2d
+from sdformat import Plane
+from gz.math import Vector3d, Vector2d
 import unittest
 
 

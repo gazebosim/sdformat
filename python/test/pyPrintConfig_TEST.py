@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz_test_deps.sdformat import PrintConfig, SDFErrorsException
+from sdformat import PrintConfig, SDFErrorsException
 import unittest
 
 

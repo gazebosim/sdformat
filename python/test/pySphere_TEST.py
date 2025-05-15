@@ -14,8 +14,8 @@
 
 import copy
 import math
-from gz_test_deps.sdformat import Sphere
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from sdformat import Sphere
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
 import unittest
 
 class SphereTEST(unittest.TestCase):

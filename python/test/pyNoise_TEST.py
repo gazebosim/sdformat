@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Noise
-import gz_test_deps.sdformat as sdf
+from sdformat import Noise
+import sdformat as sdf
 import math
 import unittest
 

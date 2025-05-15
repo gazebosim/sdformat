@@ -18,7 +18,7 @@ import copy
 
 import math
 
-from gz_test_deps.sdformat import Cone
+from sdformat import Cone
 
 import unittest
 

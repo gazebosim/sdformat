@@ -16,8 +16,8 @@ import copy
 
 import math
 
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from gz_test_deps.sdformat import Capsule
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from sdformat import Capsule
 
 import unittest
 

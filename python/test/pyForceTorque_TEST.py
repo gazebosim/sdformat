@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import ForceTorque, Noise
-import gz_test_deps.sdformat as sdf
+from sdformat import ForceTorque, Noise
+import sdformat as sdf
 import unittest
 
 class ForceTorqueTEST(unittest.TestCase):

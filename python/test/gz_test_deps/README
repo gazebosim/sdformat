@@ -1,8 +1,0 @@
-This python package encapsulates versioned python packages of gz library 
-bindings such that the version number only has to be changed in this package. 
-Here's an example of how to use this in a python test:
-
-```python
-from gz_test_deps import math  # instead of from gz import math
-from gz_test_deps.math import Vector3d  # instead of from gz.math import Vector3d
-```

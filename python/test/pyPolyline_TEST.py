@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Polyline
-from gz_test_deps.math import Vector2d
+from sdformat import Polyline
+from gz.math import Vector2d
 import unittest
 
 

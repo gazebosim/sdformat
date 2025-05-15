@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Color, Vector3d, SphericalCoordinates
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from gz_test_deps.sdformat import (Atmosphere, Gui, Physics, Plugin, Error,
+from gz.math import Color, Vector3d, SphericalCoordinates
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from sdformat import (Atmosphere, Gui, Physics, Plugin, Error,
                                    Frame, Joint, Light, Model, ParserConfig, Root, Scene, World)
-import gz_test_deps.sdformat as sdf
+import sdformat as sdf
 import unittest
 import math
 

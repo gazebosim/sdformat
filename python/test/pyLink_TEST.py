@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from gz_test_deps.sdformat import (Collision, Light, Link, ParserConfig, Projector, Sensor,
+from gz.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
+from sdformat import (Collision, Light, Link, ParserConfig, Projector, Sensor,
                                    Visual, Root, SDFErrorsException)
 import unittest
 import math

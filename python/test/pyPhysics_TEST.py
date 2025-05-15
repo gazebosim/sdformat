@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Physics
+from sdformat import Physics
 import unittest
 
 

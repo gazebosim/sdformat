@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import (Element, Error, Geometry, Box, Capsule, Cone, Cylinder, Ellipsoid,
+from sdformat import (Element, Error, Geometry, Box, Capsule, Cone, Cylinder, Ellipsoid,
                                    Heightmap, Mesh, ParserConfig, Plane, Sphere)
-from gz_test_deps.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
-import gz_test_deps.sdformat as sdf
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d, Vector2d
+import sdformat as sdf
 import math
 import unittest
 

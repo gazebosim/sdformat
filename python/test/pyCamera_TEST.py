@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Angle, Pose3d, Vector2d
+from gz.math import Angle, Pose3d, Vector2d
 import math
-from gz_test_deps.sdformat import Camera
-import gz_test_deps.sdformat as sdf
+from sdformat import Camera
+import sdformat as sdf
 import unittest
 
 class CameraTEST(unittest.TestCase):

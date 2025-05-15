@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.sdformat import Material, Pbr, PbrWorkflow
-from gz_test_deps.math import Color
-import gz_test_deps.sdformat as sdf
+from sdformat import Material, Pbr, PbrWorkflow
+from gz.math import Color
+import sdformat as sdf
 import unittest
 
 

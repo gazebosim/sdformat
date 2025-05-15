@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gz_test_deps.sdformat import AirSpeed, Noise
-import gz_test_deps.sdformat as sdf
+from sdformat import AirSpeed, Noise
+import sdformat as sdf
 import unittest
 
 class AirSpeedTEST(unittest.TestCase):

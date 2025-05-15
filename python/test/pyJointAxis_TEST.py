@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import copy
-from gz_test_deps.math import Vector3d
-from gz_test_deps.sdformat import JointAxis, MimicConstraint, Error, SDFErrorsException
+from gz.math import Vector3d
+from sdformat import JointAxis, MimicConstraint, Error, SDFErrorsException
 import math
 import unittest
 
