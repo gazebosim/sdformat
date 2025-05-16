@@ -169,7 +169,6 @@ test_sources = glob(
 cc_test(
     name = "Converter_TEST",
     srcs = [
-        "include/sdf/config.hh",
         "src/Converter.hh",
         "src/Converter_TEST.cc",
         "src/XmlUtils.hh",
@@ -201,7 +200,6 @@ cc_test(
         "//test:sdf",
     ],
     deps = [
-        ":Config",
         ":sdformat",
         "//test:test_utils",
         "@googletest//:gtest",
@@ -253,7 +251,6 @@ cc_test(
         "//test:sdf",
     ],
     deps = [
-        ":Config",
         ":sdformat",
         "//test:test_utils",
         "@googletest//:gtest",
