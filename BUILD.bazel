@@ -103,9 +103,7 @@ cc_library(
             "include/sdf/sdf.hh",
         ],
     ) + ["include/sdf/config.hh"],
-    data = [
-        "sdf",
-    ],
+    data = glob(["sdf/**"]),
     defines = [
         "CMAKE_INSTALL_RELATIVE_DATAROOTDIR=\\\"\\\"",
         'SDF_SHARE_PATH=\\".\\"',
