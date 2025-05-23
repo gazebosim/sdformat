@@ -8,7 +8,7 @@ target_link_libraries(${sdf_executable}
 )
 install(
   TARGETS ${sdf_executable}
-  DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}${PROJECT_VERSION_MAJOR}/
+  DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}/
 )
 
 # Build the unit tests only if Gazebo tools is installed
@@ -46,9 +46,9 @@ set(cmd_script_generated_test
 set(cmd_script_configured_test
   "${CMAKE_CURRENT_BINARY_DIR}/test_cmd${PROJECT_NAME}.rb.configured")
 
-# Set the library_location variable to the full path of the library file within
+# Set the exe_location variable to the full path of the executable file within
 # the build directory.
-set(library_location "$<TARGET_FILE:${sdf_executable}>")
+set(exe_location "$<TARGET_FILE:${sdf_executable}>")
 
 configure_file(
   "cmd${PROJECT_NAME_NO_VERSION_LOWER}.rb.in"
@@ -67,15 +67,9 @@ file(GENERATE
 set(cmd_script_generated "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/cmd${PROJECT_NAME}.rb")
 set(cmd_script_configured "${CMAKE_CURRENT_BINARY_DIR}/cmd${PROJECT_NAME}.rb.configured")
 
-# Set the library_location variable to the relative path to the library file
+# Set the exe_location variable to the relative path to the executable file
 # within the install directory structure.
-if (MSVC)
-  set(library_location_prefix "${CMAKE_INSTALL_BINDIR}")
-else()
-  set(library_location_prefix "${CMAKE_INSTALL_LIBDIR}")
-endif()
-
-set(library_location "../../../${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}${PROJECT_VERSION_MAJOR}/$<TARGET_FILE_NAME:${sdf_executable}>")
+set(exe_location "../../../${CMAKE_INSTALL_LIBEXECDIR}/gz/${GZ_DESIGNATION}/$<TARGET_FILE_NAME:${sdf_executable}>")
 
 configure_file(
   "cmd${PROJECT_NAME_NO_VERSION_LOWER}.rb.in"
