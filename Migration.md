@@ -14,6 +14,10 @@ but with improved human-readability..
 
 ## libsdformat 15.x to 16.x
 
+1. The major version has been removed from the cmake project name and the
+   package.xml package name. Use `find_package(sdformat)` instead of
+   `find_package(sdformatX)` going forward.
+
 ### Removals
 
 - **sdf/config.hh**:
