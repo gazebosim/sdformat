@@ -4,14 +4,15 @@ module(
     repo_name = "org_gazebosim_sdformat",
 )
 
-bazel_dep(name = "buildifier_prebuilt", version = "6.1.2")
-bazel_dep(name = "googletest", version = "1.14.0")
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.0")
+bazel_dep(name = "googletest", version = "1.14.0.bcr.1")
+bazel_dep(name = "rules_cc", version = "0.1.1")
 bazel_dep(name = "rules_python", version = "0.40.0")
-bazel_dep(name = "rules_license", version = "0.0.8")
+bazel_dep(name = "rules_license", version = "1.0.0")
 bazel_dep(name = "tinyxml2", version = "10.0.0")
 
 # Gazebo Dependencies
-bazel_dep(name = "rules_gazebo", version = "0.0.2")
+bazel_dep(name = "rules_gazebo", version = "0.0.6")
 bazel_dep(name = "gz-utils")
 bazel_dep(name = "gz-math")
 
