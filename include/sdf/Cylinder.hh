@@ -21,6 +21,7 @@
 
 #include <gz/math/Cylinder.hh>
 #include <gz/math/Inertial.hh>
+#include <gz/math/AxisAlignedBox.hh>
 #include <gz/utils/ImplPtr.hh>
 #include <sdf/Error.hh>
 #include <sdf/Element.hh>
@@ -82,6 +83,11 @@ namespace sdf
     /// \return A std::optional with gz::math::Inertiald object or std::nullopt
     public: std::optional<gz::math::Inertiald>
             CalculateInertial(double _density);
+
+    /// \brief Get the Axis-aligned box for this Cylinder.
+    /// \return A gz::math::AxisAlignedBox object centered at this
+    /// Cylinder's center.
+    public: gz::math::AxisAlignedBox AxisAlignedBox() const;
 
     /// \brief Create and return an SDF element filled with data from this
     /// cylinder.
