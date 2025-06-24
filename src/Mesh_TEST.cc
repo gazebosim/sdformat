@@ -433,3 +433,51 @@ TEST(DOMMesh, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, AxisAlignedBox)
+{
+  sdf::Mesh mesh;
+
+  // No custom calculator should return nullopt
+  EXPECT_EQ(std::nullopt, mesh.AxisAlignedBox(nullptr));
+
+  auto customCalculator = [](
+    const sdf::Mesh &_mesh) -> std::optional<gz::math::AxisAlignedBox>
+  {
+    if(_mesh.Uri() == "no_mesh")
+    {
+      return std::nullopt;
+    }
+
+    if (_mesh.Uri() == "banana")
+    {
+      // Invalid mesh leads to empty AABB
+      return gz::math::AxisAlignedBox();
+    }
+
+    return gz::math::AxisAlignedBox(
+      gz::math::AxisAlignedBox(
+        gz::math::Vector3d(1, 2, 3),
+        gz::math::Vector3d(4, 5, 6)
+      )
+    );
+  };
+
+  // "apple" mesh should return valid aabb
+  mesh.SetUri("apple");
+  auto aabb = mesh.AxisAlignedBox(customCalculator);
+  EXPECT_TRUE(aabb.has_value());
+  EXPECT_EQ(gz::math::Vector3d(1, 2, 3), aabb->Min());
+  EXPECT_EQ(gz::math::Vector3d(4, 5, 6), aabb->Max());
+
+  // "banana" mesh should return invalid aabb
+  mesh.SetUri("banana");
+  aabb = mesh.AxisAlignedBox(customCalculator);
+  EXPECT_TRUE(aabb.has_value());
+  EXPECT_EQ(gz::math::AxisAlignedBox(), aabb.value());
+
+  // "no_mesh" should return std::nullopt
+  mesh.SetUri("no_mesh");
+  EXPECT_EQ(std::nullopt, mesh.AxisAlignedBox(customCalculator));
+}

@@ -15,7 +15,7 @@
 import copy
 import math
 from sdformat import Sphere
-from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from gz.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d
 import unittest
 
 class SphereTEST(unittest.TestCase):
@@ -110,6 +110,14 @@ class SphereTEST(unittest.TestCase):
     self.assertEqual(expectedInertial.mass_matrix().mass(),
       sphereInertial.mass_matrix().mass())
     self.assertEqual(expectedInertial.pose(), sphereInertial.pose())
+
+  def test_axis_aligned_box(self):
+    sphere = Sphere()
+    sphere.set_radius(0.75)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.75, -0.75, -0.75), Vector3d(0.75, 0.75, 0.75)),
+      sphere.axis_aligned_box())
 
 
 if __name__ == '__main__':

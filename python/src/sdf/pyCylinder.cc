@@ -49,6 +49,8 @@ void defineCylinder(pybind11::object module)
         pybind11::overload_cast<>(&sdf::Cylinder::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
         "Get a mutable Gazebo Math representation of this Cylinder.")
+    .def("axis_aligned_box", &sdf::Cylinder::AxisAlignedBox,
+         "Get the axis-aligned box that contains this Cylinder.")
     .def("__copy__", [](const sdf::Cylinder &self) {
       return sdf::Cylinder(self);
     })
