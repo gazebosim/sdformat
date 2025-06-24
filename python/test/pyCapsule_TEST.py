@@ -16,7 +16,7 @@ import copy
 
 import math
 
-from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from gz.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d
 from sdformat import Capsule
 
 import unittest
@@ -144,6 +144,16 @@ class CapsuleTEST(unittest.TestCase):
     self.assertEqual(expectedInertial.mass_matrix().mass(),
       capsuleInertial.mass_matrix().mass())
     self.assertEqual(expectedInertial.pose(), capsuleInertial.pose())
+
+  def test_axis_aligned_box(self):
+    capsule = Capsule()
+    capsule.set_radius(0.5)
+    capsule.set_length(3.0)
+
+    self.assertEqual(
+      AxisAlignedBox(Vector3d(-0.5, -0.5, -2.0), Vector3d(0.5, 0.5, 2.0)),
+      capsule.axis_aligned_box())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -4,6 +4,53 @@
 
 ## libsdformat 15.X
 
+### libsdformat 15.3.0 (2025-05-16)
+
+1. Allow camera HFOV lower than 0.5°
+    * [Pull request #1563](https://github.com/gazebosim/sdformat/pull/1563)
+
+1. Add AxisAlignedBox getters for all relevant geometries
+    * [Pull request #1547](https://github.com/gazebosim/sdformat/pull/1547)
+
+1. ci: enable doxygen check on noble
+    * [Pull request #1559](https://github.com/gazebosim/sdformat/pull/1559)
+
+1. Fix some cmake logic related to python
+    * [Pull request #1557](https://github.com/gazebosim/sdformat/pull/1557)
+
+1. Test building python bindings in macOS
+    * [Pull request #1556](https://github.com/gazebosim/sdformat/pull/1556)
+
+1. Test building python bindings in CI
+    * [Pull request #1555](https://github.com/gazebosim/sdformat/pull/1555)
+
+1. Fix Crash On Negative Value
+    * [Pull request #1553](https://github.com/gazebosim/sdformat/pull/1553)
+
+1. Code cleanup
+    * [Pull request #1552](https://github.com/gazebosim/sdformat/pull/1552)
+
+1. Standalone `gz sdf` executable
+    * [Pull request #1539](https://github.com/gazebosim/sdformat/pull/1539)
+
+1. Improve error messages when embedSdf.py fails
+    * [Pull request #1549](https://github.com/gazebosim/sdformat/pull/1549)
+
+1. Check proper creation of EmbeddedSdf.cc
+    * [Pull request #1536](https://github.com/gazebosim/sdformat/pull/1536)
+
+1. Build sdformattest pybind11 library as MODULE
+    * [Pull request #1544](https://github.com/gazebosim/sdformat/pull/1544)
+
+1. Add policy for handling CalculateInertial failures
+    * [Pull request #1543](https://github.com/gazebosim/sdformat/pull/1543)
+
+1. Unify Python3_Development_FOUND checks
+    * [Pull request #1541](https://github.com/gazebosim/sdformat/pull/1541)
+
+1. bazel: switch to globbed targets
+    * [Pull request #1540](https://github.com/gazebosim/sdformat/pull/1540)
+
 ### libsdformat 15.2.0 (2025-02-12)
 
 1. Add entry to Migration guide about the updated auto-inertia behavior
@@ -39,7 +86,7 @@
 
 1. Fix bazel rules for layering_check and parse_headers with clang
     * [Pull request #1507](https://github.com/gazebosim/sdformat/pull/1507)
-  
+
 1. Enable header layering checks for bazel build
     * [Pull request #1505](https://github.com/gazebosim/sdformat/pull/1505)
 

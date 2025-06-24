@@ -45,6 +45,8 @@ void defineEllipsoid(pybind11::object module)
         pybind11::overload_cast<>(&sdf::Ellipsoid::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
         "Get a mutable Gazebo Math representation of this Ellipsoid.")
+    .def("axis_aligned_box", &sdf::Ellipsoid::AxisAlignedBox,
+         "Get the axis-aligned box that contains this Ellipsoid.")
     .def("__copy__", [](const sdf::Ellipsoid &self) {
       return sdf::Ellipsoid(self);
     })

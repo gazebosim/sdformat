@@ -255,3 +255,15 @@ TEST(DOMEllipsoid, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMEllipsoid, AxisAlignedBox)
+{
+  sdf::Ellipsoid ellipsoid;
+  ellipsoid.SetRadii(gz::math::Vector3d(1.5, 0.5, 0.25));
+
+  auto aabb = ellipsoid.AxisAlignedBox();
+  EXPECT_EQ(gz::math::Vector3d(3.0, 1.0, 0.5), aabb.Size());
+  EXPECT_EQ(gz::math::Vector3d(-1.5, -0.5, -0.25), aabb.Min());
+  EXPECT_EQ(gz::math::Vector3d(1.5, 0.5, 0.25), aabb.Max());
+}

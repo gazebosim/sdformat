@@ -307,3 +307,16 @@ TEST(DOMCylinder, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMCylinder, AxisAlignedBox)
+{
+  sdf::Cylinder cylinder;
+  cylinder.SetRadius(0.25);
+  cylinder.SetLength(2.5);
+
+  auto aabb = cylinder.AxisAlignedBox();
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.5, 2.5), aabb.Size());
+  EXPECT_EQ(gz::math::Vector3d(-0.25, -0.25, -1.25), aabb.Min());
+  EXPECT_EQ(gz::math::Vector3d(0.25, 0.25, 1.25), aabb.Max());
+}
