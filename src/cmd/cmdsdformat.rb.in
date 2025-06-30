@@ -19,7 +19,7 @@ require 'pathname'
 # Constants.
 LIBRARY_VERSION = '@PROJECT_VERSION_FULL@'
 COMMANDS = {
-  "sdf" => "@library_location@",
+  "sdf" => "@exe_location@",
 }
 
 #
