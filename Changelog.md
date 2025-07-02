@@ -1,5 +1,19 @@
 ## libsdformat 14.X
 
+### libsdformat 14.8.0 (2025-07-02)
+
+1. Improve error messages when embedSdf.py fails
+    * [Pull request #1550](https://github.com/gazebosim/sdformat/pull/1550)
+
+1. Add AxisAlignedBox getters for all relevant geometries
+    * [Pull request #1547](https://github.com/gazebosim/sdformat/pull/1547)
+
+1. Unify Python3_Development_FOUND checks
+    * [Pull request #1541](https://github.com/gazebosim/sdformat/pull/1541)
+
+1. Add policy for handling CalculateInertial failures
+    * [Pull request #1543](https://github.com/gazebosim/sdformat/pull/1543)
+
 ### libsdformat 14.7.0 (2025-01-30)
 
 1. Resolve auto inertia based on input mass
