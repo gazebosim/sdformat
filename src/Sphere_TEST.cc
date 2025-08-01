@@ -251,3 +251,15 @@ TEST(DOMSphere, ToElementErrorOutput)
   // Check nothing has been printed
   EXPECT_TRUE(buffer.str().empty()) << buffer.str();
 }
+
+/////////////////////////////////////////////////
+TEST(DOMSphere, AxisAlignedBox)
+{
+  sdf::Sphere sphere;
+  sphere.SetRadius(1.75);
+
+  auto aabb = sphere.AxisAlignedBox();
+  EXPECT_EQ(gz::math::Vector3d(3.5, 3.5, 3.5), aabb.Size());
+  EXPECT_EQ(gz::math::Vector3d(-1.75, -1.75, -1.75), aabb.Min());
+  EXPECT_EQ(gz::math::Vector3d(1.75, 1.75, 1.75), aabb.Max());
+}

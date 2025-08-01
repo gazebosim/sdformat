@@ -45,6 +45,8 @@ void defineSphere(pybind11::object module)
         pybind11::overload_cast<>(&sdf::Sphere::Shape, pybind11::const_),
         pybind11::return_value_policy::reference,
         "Get a mutable Gazebo Math representation of this Sphere.")
+    .def("axis_aligned_box", &sdf::Sphere::AxisAlignedBox,
+         "Get the axis-aligned box that contains this Sphere.")
     .def("__copy__", [](const sdf::Sphere &self) {
       return sdf::Sphere(self);
     })

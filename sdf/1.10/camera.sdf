@@ -17,7 +17,7 @@
     <description>Name of the topic that will trigger the camera if enabled</description>
   </element> <!-- End Trigger_Topic -->
 
-  <element name="horizontal_fov" type="double" default="1.047" min="0.1" max="6.283186" required="1">
+  <element name="horizontal_fov" type="double" default="1.047" min="0.001" max="6.283186" required="1">
     <description>Horizontal field of view</description>
   </element> <!-- End Horizontal_FOV -->
 
