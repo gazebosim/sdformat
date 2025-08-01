@@ -44,4 +44,4 @@ set (sdfs
   world.sdf
 )
 
-install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sdformat${PROJECT_VERSION_MAJOR}/1.4)
+install(FILES ${sdfs} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/sdformat/1.4)
