@@ -13,7 +13,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   include(CTest)
 
   if(BUILD_TESTING)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../test/test_config.hh.in 
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../test/test_config.hh.in
                    ${PROJECT_BINARY_DIR}/include/test_config.hh)
     include_directories(${PROJECT_BINARY_DIR}/include)
   endif()
