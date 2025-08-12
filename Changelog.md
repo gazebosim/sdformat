@@ -196,6 +196,55 @@
 
 ## libsdformat 14.X
 
+### libsdformat 14.8.0 (2025-07-02)
+
+1. Improve error messages when embedSdf.py fails
+    * [Pull request #1550](https://github.com/gazebosim/sdformat/pull/1550)
+
+1. Add AxisAlignedBox getters for all relevant geometries
+    * [Pull request #1547](https://github.com/gazebosim/sdformat/pull/1547)
+
+1. Unify Python3_Development_FOUND checks
+    * [Pull request #1541](https://github.com/gazebosim/sdformat/pull/1541)
+
+1. Add policy for handling CalculateInertial failures
+    * [Pull request #1543](https://github.com/gazebosim/sdformat/pull/1543)
+
+### libsdformat 14.7.0 (2025-01-30)
+
+1. Resolve auto inertia based on input mass
+    * [Pull request #1513](https://github.com/gazebosim/sdformat/pull/1513)
+    * [Pull request #1530](https://github.com/gazebosim/sdformat/pull/1530)
+
+1. Print auto inertial values with gz sdf --print --expand-auto-inertials
+    * [Pull request #1422](https://github.com/gazebosim/sdformat/pull/1422)
+
+1. Only look for psutil if testing is enabled
+    * [Pull request #1495](https://github.com/gazebosim/sdformat/pull/1495)
+
+### libsdformat 14.6.0 (2024-11-18)
+
+1. Support removing the actor, light, or model from the root.
+    * [Pull request #1492](https://github.com/gazebosim/sdformat/pull/1492)
+
+1. Backport: Permit building python bindings separately from libsdformat library.
+    * [Pull request #1497](https://github.com/gazebosim/sdformat/pull/1497)
+
+1. Backport: Improve installation instructions.
+    * [Pull request #1496](https://github.com/gazebosim/sdformat/pull/1496)
+
+1. Backport: Fix symbol checking test when compiled with debug symbols.
+    * [Pull request #1476](https://github.com/gazebosim/sdformat/pull/1476)
+
+1. Update joinPaths implementation in InstallationDirectories.
+    * [Pull request #1469](https://github.com/gazebosim/sdformat/pull/1469)
+
+1. Decouple linking to shlwapi from `BUILD_TESTING`.
+    * [Pull request #1468](https://github.com/gazebosim/sdformat/pull/1468)
+
+1. Add optional binary relocatability.
+    * [Pull request #1414](https://github.com/gazebosim/sdformat/pull/1414)
+
 ### libsdformat 14.5.0 (2024-08-05)
 
 1. Adding Errors structure to XmlUtils
