@@ -132,6 +132,7 @@ cc_library(
         "@gz-math",
         "@gz-utils//:Environment",
         "@gz-utils//:ImplPtr",
+        "@gz-utils//:NeverDestroyed",
         "@gz-utils//:SuppressWarning",
         "@tinyxml2",
     ],
