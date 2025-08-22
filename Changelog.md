@@ -1,6 +1,39 @@
 ## libsdformat 16.X
 
-### libsdformat 16.0.0 (20XX-XX-XX)
+### libsdformat 16.0.0 (2025-09-24)
+
+1. **Baseline:** this includes all changes from 15.3.0 and earlier.
+
+1. [Bazel] Fix dep issue when building with clang
+    * [Pull request #1581](https://github.com/gazebosim/sdformat/pull/1581)
+
+1. [Bazel] Add back sdformat.hh auto-generated lumped header
+    * [Pull request #1570](https://github.com/gazebosim/sdformat/pull/1570)
+
+1. [Bazel] Fix inclusion of sdf/ data deps
+    * [Pull request #1567](https://github.com/gazebosim/sdformat/pull/1567)
+
+1. [Bazel] Fix build errors with clang
+    * [Pull request #1566](https://github.com/gazebosim/sdformat/pull/1566)
+
+1. Install exe and spec files to unversioned folders
+    * [Pull request #1569](https://github.com/gazebosim/sdformat/pull/1569)
+
+1. Remove gz_test_deps from python tests
+    * [Pull request #1564](https://github.com/gazebosim/sdformat/pull/1564)
+
+1. Bump dependency versions of gz-cmake and others in jetty and remove version from package names
+    * [Pull request #1561](https://github.com/gazebosim/sdformat/pull/1561)
+    * [Release-tools issue #1309](https://github.com/gazebo-tooling/release-tools/issues/1309)
+
+1. Fix initialization and thread-safety of SDF::Version() global
+    * [Pull request #1522](https://github.com/gazebosim/sdformat/pull/1522)
+
+1. Remove deprecations from Camera.hh, ParserConfig.hh, and config.hh
+    * [Pull request #1519](https://github.com/gazebosim/sdformat/pull/1519)
+
+1. Bump major version to 16
+    * [Pull request #1487](https://github.com/gazebosim/sdformat/pull/1487)
 
 ## libsdformat 15.X
 
