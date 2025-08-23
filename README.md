@@ -11,9 +11,9 @@ Note: The branch name in the codecov URL & library version should be updated whe
 Build | Status
 -- | --
 Test coverage | [![codecov](https://codecov.io/gh/gazebosim/sdformat/tree/sdf16/graph/badge.svg)](https://codecov.io/gh/gazebosim/sdformat/tree/sdf16)
-Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf16-noble-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf16-noble-amd64)
+Ubuntu Noble  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf16-noble-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf16-noble-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-ci-sdf16-homebrew-amd64)](https://build.osrfoundation.org/job/sdformat-ci-sdf16-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-16-clowin)](https://build.osrfoundation.org/job/sdformat-16-clowin)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=sdformat-sdf16-cnlwin)](https://build.osrfoundation.org/job/sdformat-sdf16-cnlwin)
 
 
 SDFormat is an XML file format that describes environments, objects, and robots
