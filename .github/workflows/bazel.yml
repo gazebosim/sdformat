@@ -1,9 +1,9 @@
 name: Bazel CI
 on:
   push:
-    branches: [sdf15, main]
+    branches: [sdf15, sdf16, main]
   pull_request:
-    branches: [sdf15, main]
+    branches: [sdf15, sdf16, main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
