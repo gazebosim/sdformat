@@ -18,12 +18,12 @@ bazel_dep(name = "gz-math")
 
 archive_override(
     module_name = "gz-utils",
-    strip_prefix = "gz-utils-main",
-    urls = ["https://github.com/gazebosim/gz-utils/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "gz-utils-gz-utils4",
+    urls = ["https://github.com/gazebosim/gz-utils/archive/refs/heads/gz-utils4.tar.gz"],
 )
 
 archive_override(
     module_name = "gz-math",
-    strip_prefix = "gz-math-main",
-    urls = ["https://github.com/gazebosim/gz-math/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "gz-math-gz-math9",
+    urls = ["https://github.com/gazebosim/gz-math/archive/refs/heads/gz-math9.tar.gz"],
 )
