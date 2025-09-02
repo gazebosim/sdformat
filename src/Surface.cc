@@ -30,7 +30,7 @@ using namespace sdf;
 
 class sdf::Contact::Implementation
 {
-  // \brief The bitmask used to filter collisions.
+  /// \brief The bitmask used to filter collisions.
   public: uint16_t collideBitmask = 0xff;
 
   /// \brief The SDF element pointer used during load.

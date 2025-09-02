@@ -15,6 +15,7 @@
  *
  */
 #include "sdf/NavSat.hh"
+#include "sdf/parser.hh"
 
 using namespace sdf;
 using namespace gz;
@@ -190,4 +191,42 @@ bool NavSat::operator==(const NavSat &_navsat) const
 bool NavSat::operator!=(const NavSat &_navsat) const
 {
   return !(*this == _navsat);
+}
+
+/////////////////////////////////////////////////
+sdf::ElementPtr NavSat::ToElement() const
+{
+  sdf::ElementPtr elem(new sdf::Element);
+  sdf::initFile("navsat.sdf", elem);
+  const auto defaultNoise = sdf::Noise();
+
+  if (this->dataPtr->horizontalPositionNoise != defaultNoise)
+  {
+    auto el = elem->GetElement("position_sensing")->
+        GetElement("horizontal")->GetElement("noise");
+    el->Copy(this->dataPtr->horizontalPositionNoise.ToElement());
+  }
+
+  if (this->dataPtr->verticalPositionNoise != defaultNoise)
+  {
+    auto el = elem->GetElement("position_sensing")->
+        GetElement("vertical")->GetElement("noise");
+    el->Copy(this->dataPtr->verticalPositionNoise.ToElement());
+  }
+
+  if (this->dataPtr->horizontalVelocityNoise != defaultNoise)
+  {
+    auto el = elem->GetElement("velocity_sensing")->
+        GetElement("horizontal")->GetElement("noise");
+    el->Copy(this->dataPtr->horizontalVelocityNoise.ToElement());
+  }
+
+  if (this->dataPtr->verticalVelocityNoise != defaultNoise)
+  {
+    auto el = elem->GetElement("velocity_sensing")->
+        GetElement("vertical")->GetElement("noise");
+    el->Copy(this->dataPtr->verticalVelocityNoise.ToElement());
+  }
+
+  return elem;
 }

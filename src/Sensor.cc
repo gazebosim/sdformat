@@ -76,7 +76,7 @@ constexpr std::array<const std::string_view, 27> kSensorTypeStrs =
 
 class sdf::Sensor::Implementation
 {
-  // \brief The sensor type.
+  /// \brief The sensor type.
   public: SensorType type = SensorType::NONE;
 
   /// \brief Name of the sensor.
@@ -772,25 +772,31 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   elem->GetElement("enable_metrics")->Set<double>(this->EnableMetrics());
 
   // air pressure
-  if (this->Type() == sdf::SensorType::AIR_PRESSURE &&
-      this->dataPtr->airPressure)
+  if (this->Type() == sdf::SensorType::AIR_PRESSURE)
   {
-    sdf::ElementPtr airPressureElem = elem->GetElement("air_pressure");
-    airPressureElem->Copy(this->dataPtr->airPressure->ToElement());
+    if (this->dataPtr->airPressure)
+    {
+      sdf::ElementPtr airPressureElem = elem->GetElement("air_pressure");
+      airPressureElem->Copy(this->dataPtr->airPressure->ToElement());
+    }
   }
   // air speed
-  else if (this->Type() == sdf::SensorType::AIR_SPEED &&
-      this->dataPtr->airSpeed)
+  else if (this->Type() == sdf::SensorType::AIR_SPEED)
   {
-    sdf::ElementPtr airSpeedElem = elem->GetElement("air_speed");
-    airSpeedElem->Copy(this->dataPtr->airSpeed->ToElement());
+    if (this->dataPtr->airSpeed)
+    {
+      sdf::ElementPtr airSpeedElem = elem->GetElement("air_speed");
+      airSpeedElem->Copy(this->dataPtr->airSpeed->ToElement());
+    }
   }
   // altimeter
-  else if (this->Type() == sdf::SensorType::ALTIMETER &&
-      this->dataPtr->altimeter)
+  else if (this->Type() == sdf::SensorType::ALTIMETER)
   {
-    sdf::ElementPtr altimeterElem = elem->GetElement("altimeter");
-    altimeterElem->Copy(this->dataPtr->altimeter->ToElement());
+    if (this->dataPtr->altimeter)
+    {
+      sdf::ElementPtr altimeterElem = elem->GetElement("altimeter");
+      altimeterElem->Copy(this->dataPtr->altimeter->ToElement());
+    }
   }
   // camera, depth, thermal, segmentation
   else if (this->CameraSensor())
@@ -799,39 +805,56 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     cameraElem->Copy(this->dataPtr->camera->ToElement());
   }
   // force torque
-  else if (this->Type() == sdf::SensorType::FORCE_TORQUE  &&
-      this->dataPtr->forceTorque)
+  else if (this->Type() == sdf::SensorType::FORCE_TORQUE)
   {
-    sdf::ElementPtr forceTorqueElem = elem->GetElement("force_torque");
-    forceTorqueElem->Copy(this->dataPtr->forceTorque->ToElement());
+    if (this->dataPtr->forceTorque)
+    {
+      sdf::ElementPtr forceTorqueElem = elem->GetElement("force_torque");
+      forceTorqueElem->Copy(this->dataPtr->forceTorque->ToElement());
+    }
   }
   // imu
-  else if (this->Type() == sdf::SensorType::IMU && this->dataPtr->imu)
+  else if (this->Type() == sdf::SensorType::IMU)
   {
-    sdf::ElementPtr imuElem = elem->GetElement("imu");
-    imuElem->Copy(this->dataPtr->imu->ToElement());
+    if (this->dataPtr->imu)
+    {
+      sdf::ElementPtr imuElem = elem->GetElement("imu");
+      imuElem->Copy(this->dataPtr->imu->ToElement());
+    }
   }
   // lidar, gpu_lidar
-  else if ((this->Type() == sdf::SensorType::GPU_LIDAR ||
-            this->Type() == sdf::SensorType::LIDAR) &&
-           this->dataPtr->lidar)
+  else if (this->Type() == sdf::SensorType::GPU_LIDAR ||
+           this->Type() == sdf::SensorType::LIDAR)
   {
-    sdf::ElementPtr rayElem = (elem->HasElement("ray")) ?
-        elem->GetElement("ray") : elem->GetElement("lidar");
-    rayElem->Copy(this->dataPtr->lidar->ToElement());
+    if (this->dataPtr->lidar)
+    {
+      sdf::ElementPtr rayElem = (elem->HasElement("ray")) ?
+          elem->GetElement("ray") : elem->GetElement("lidar");
+      rayElem->Copy(this->dataPtr->lidar->ToElement());
+    }
   }
   // magnetometer
-  else if (this->Type() == sdf::SensorType::MAGNETOMETER &&
-      this->dataPtr->magnetometer)
+  else if (this->Type() == sdf::SensorType::MAGNETOMETER)
   {
-    sdf::ElementPtr magnetometerElem = elem->GetElement("magnetometer");
-    magnetometerElem->Copy(this->dataPtr->magnetometer->ToElement());
+    if (this->dataPtr->magnetometer)
+    {
+      sdf::ElementPtr magnetometerElem = elem->GetElement("magnetometer");
+      magnetometerElem->Copy(this->dataPtr->magnetometer->ToElement());
+    }
+  }
+  else if (this->Type() == sdf::SensorType::NAVSAT)
+  {
+    if (this->dataPtr->navSat)
+    {
+      sdf::ElementPtr navSatElem = elem->GetElement("navsat");
+      navSatElem->Copy(this->dataPtr->navSat->ToElement());
+    }
   }
   else
   {
     std::stringstream ss;
     ss << "Conversion of sensor type: [" << this->TypeStr() << "] from SDF "
-       << "DOM to Element is not supported yet." << this->Name();
+       "DOM to Element is not supported yet." << this->Name() << '\n';
     _errors.push_back({ErrorCode::ELEMENT_INVALID, ss.str()});
   }
 
