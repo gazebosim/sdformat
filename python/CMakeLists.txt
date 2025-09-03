@@ -39,10 +39,13 @@ function(configure_build_install_location _library_name)
   )
 endfunction()
 
-# sdformatX target already exists, use pysdformatX + OUTPUT_NAME to get
-# sdformatX file name generated and map BINDINGS_MODULE_NAME to sdformatX
-set(BINDINGS_MODULE_NAME "pysdformat${PROJECT_VERSION_MAJOR}")
-pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
+# Option to control creation of unversioned extra Python binding
+option(GENERATE_PYTHON_BINDING_UNVERSIONED
+  "Generate unversioned Python binding module (sdformat) in addition to versioned one"
+  OFF)
+
+# Define source files for both modules
+set(BINDINGS_SOURCE_FILES
   src/sdf/_gz_sdformat_pybind11.cc
   src/sdf/pyAirPressure.cc
   src/sdf/pyAirSpeed.cc
@@ -97,25 +100,51 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pybind11_helpers.cc
 )
 
-target_link_libraries(${BINDINGS_MODULE_NAME} PRIVATE
+# Main module: sdformatX (with version)
+set(BINDINGS_MODULE_NAME_VERSIONED "pysdformat${PROJECT_VERSION_MAJOR}")
+pybind11_add_module(${BINDINGS_MODULE_NAME_VERSIONED} MODULE ${BINDINGS_SOURCE_FILES})
+
+# Optional unversioned module
+if(GENERATE_PYTHON_BINDING_UNVERSIONED)
+  set(BINDINGS_MODULE_NAME_GENERIC "pysdformat")
+  pybind11_add_module(${BINDINGS_MODULE_NAME_GENERIC} MODULE ${BINDINGS_SOURCE_FILES})
+endif()
+
+# Configure versioned module (sdformatX)
+target_link_libraries(${BINDINGS_MODULE_NAME_VERSIONED} PRIVATE
   ${PROJECT_LIBRARY_TARGET_NAME}
 )
 
-# different from the target name since the target name was not able to use
-# sdformatX since it conflicts with the project name
-target_compile_definitions(${BINDINGS_MODULE_NAME} PRIVATE
+target_compile_definitions(${BINDINGS_MODULE_NAME_VERSIONED} PRIVATE
   BINDINGS_MODULE_NAME=sdformat${PROJECT_VERSION_MAJOR})
 
-set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
+set_target_properties(${BINDINGS_MODULE_NAME_VERSIONED} PROPERTIES
   OUTPUT_NAME "sdformat${PROJECT_VERSION_MAJOR}")
-# Deal with naming collision on Windows. It is caused by the both the import
-# library of sdformat library and the import library of the pybind11 bindings
-# library are called sdformat13.lib.
-# See https://github.com/gazebosim/sdformat/issues/1150
-set_target_properties(${BINDINGS_MODULE_NAME} PROPERTIES
+
+# Deal with naming collision on Windows for versioned module
+set_target_properties(${BINDINGS_MODULE_NAME_VERSIONED} PROPERTIES
   ARCHIVE_OUTPUT_NAME "python_sdformat${PROJECT_VERSION_MAJOR}")
 
-configure_build_install_location(${BINDINGS_MODULE_NAME})
+configure_build_install_location(${BINDINGS_MODULE_NAME_VERSIONED})
+
+# Configure unversioned module (sdformat) if enabled
+if(GENERATE_PYTHON_BINDING_UNVERSIONED)
+  target_link_libraries(${BINDINGS_MODULE_NAME_GENERIC} PRIVATE
+    ${PROJECT_LIBRARY_TARGET_NAME}
+  )
+
+  target_compile_definitions(${BINDINGS_MODULE_NAME_GENERIC} PRIVATE
+    BINDINGS_MODULE_NAME=sdformat)
+
+  set_target_properties(${BINDINGS_MODULE_NAME_GENERIC} PROPERTIES
+    OUTPUT_NAME "sdformat")
+
+  # Deal with naming collision on Windows for generic module
+  set_target_properties(${BINDINGS_MODULE_NAME_GENERIC} PROPERTIES
+    ARCHIVE_OUTPUT_NAME "python_sdformat")
+
+  configure_build_install_location(${BINDINGS_MODULE_NAME_GENERIC})
+endif()
 
 if (BUILD_TESTING AND NOT WIN32)
   pybind11_add_module(sdformattest SHARED
