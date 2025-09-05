@@ -267,7 +267,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    clone->dataPtr->elementDescriptions.push_back((*eiter)->Clone(_errors));
+    clone->dataPtr->elementDescriptions.push_back(*eiter);
   }
 
   for (eiter = this->dataPtr->elements.begin();
@@ -348,7 +348,7 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
        _elem->dataPtr->elementDescriptions.begin();
        iter != _elem->dataPtr->elementDescriptions.end(); ++iter)
   {
-    this->dataPtr->elementDescriptions.push_back((*iter)->Clone(_errors));
+    this->dataPtr->elementDescriptions.push_back(*iter);
   }
 
   this->dataPtr->elements.clear();
@@ -1200,7 +1200,7 @@ ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
     for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
       this->dataPtr->elementDescriptions.push_back(
-        parent->GetElementDescription(i)->Clone(_errors));
+        parent->GetElementDescription(i));
     }
   }
 
