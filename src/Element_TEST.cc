@@ -350,17 +350,17 @@ TEST(Element, AddElementReferenceSDF)
 
   ASSERT_EQ(child->GetElementDescriptionCount(), 1UL);
 
-  sdf::ElementPtr check = child->GetElementDescription(4);
+  sdf::ElementConstPtr check = child->ElementDescription(4);
   ASSERT_EQ(check, sdf::ElementPtr());
 
-  check = child->GetElementDescription(0);
+  check = child->ElementDescription(0);
   ASSERT_NE(check, sdf::ElementPtr());
   ASSERT_EQ(check->GetName(), "parent");
 
-  check = child->GetElementDescription("bad");
+  check = child->ElementDescription("bad");
   ASSERT_EQ(check, sdf::ElementPtr());
 
-  check = child->GetElementDescription("parent");
+  check = child->ElementDescription("parent");
   ASSERT_NE(check, sdf::ElementPtr());
   ASSERT_EQ(check->GetName(), "parent");
 
