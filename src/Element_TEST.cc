@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <gz/utils/SuppressWarning.hh>
+
 #include "sdf/Element.hh"
 #include "sdf/Filesystem.hh"
 #include "sdf/Param.hh"
@@ -350,17 +352,17 @@ TEST(Element, AddElementReferenceSDF)
 
   ASSERT_EQ(child->GetElementDescriptionCount(), 1UL);
 
-  sdf::ElementPtr check = child->GetElementDescription(4);
+  sdf::ElementConstPtr check = child->ElementDescription(4);
   ASSERT_EQ(check, sdf::ElementPtr());
 
-  check = child->GetElementDescription(0);
+  check = child->ElementDescription(0);
   ASSERT_NE(check, sdf::ElementPtr());
   ASSERT_EQ(check->GetName(), "parent");
 
-  check = child->GetElementDescription("bad");
+  check = child->ElementDescription("bad");
   ASSERT_EQ(check, sdf::ElementPtr());
 
-  check = child->GetElementDescription("parent");
+  check = child->ElementDescription("parent");
   ASSERT_NE(check, sdf::ElementPtr());
   ASSERT_EQ(check->GetName(), "parent");
 
@@ -1089,4 +1091,41 @@ TEST(Element, FindElement)
     ASSERT_TRUE(childElemB->HasAttribute("name"));
     EXPECT_EQ("first_child", childElemB->GetAttribute("name")->GetAsString());
   }
+}
+
+TEST(Element, MutableElementDescription)
+{
+  sdf::ElementPtr elem = std::make_shared<sdf::Element>();
+  sdf::ElementPtr desc = std::make_shared<sdf::Element>();
+  desc->SetName("radius");
+  desc->AddValue("double", "1", true, "radius");
+  elem->AddElementDescription(desc);
+
+  auto elemClone = elem->Clone();
+
+  EXPECT_EQ(elemClone->ElementDescription("radius"), desc);
+  EXPECT_EQ(elemClone->ElementDescription(0), desc);
+
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
+  EXPECT_EQ(elemClone->GetElementDescription("radius"), desc);
+  EXPECT_EQ(elemClone->GetElementDescription(0), desc);
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+
+  auto newDesc = elemClone->MutableElementDescription("radius");
+  EXPECT_NE(newDesc, desc);
+  // If we call MutableElementDescription multiple times, it shouldn't create
+  // clone new Elements
+  EXPECT_EQ(newDesc, elemClone->MutableElementDescription("radius"));
+  EXPECT_EQ(newDesc, elemClone->MutableElementDescription(0));
+
+  // After MutableElementDescription is called, calling the read-only
+  // ElementDescription will return a different pointer than the original
+  // description
+  EXPECT_NE(elemClone->ElementDescription("radius"), desc);
+  EXPECT_NE(elemClone->ElementDescription(0), desc);
+
+  // Resetting the element clears the element descriptions.
+  elemClone->Reset();
+  EXPECT_EQ(nullptr, elemClone->ElementDescription("radius"));
+  EXPECT_EQ(nullptr, elemClone->MutableElementDescription("radius"));
 }
