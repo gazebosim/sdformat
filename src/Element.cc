@@ -690,6 +690,7 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
   }
 }
 
+/////////////////////////////////////////////////
 std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
     const std::string &_key)
 {
@@ -908,7 +909,7 @@ size_t Element::GetElementDescriptionCount() const
   return this->dataPtr->elementDescriptions.size();
 }
 
-///////////////////////////////////////////////
+/////////////////////////////////////////////////
 ElementPtr Element::GetElementDescription(unsigned int _index) const
 {
   return std::const_pointer_cast<Element>(this->ElementDescription(_index));
@@ -956,11 +957,11 @@ ElementPtr Element::MutableElementDescription(unsigned int _index)
     return ElementPtr();
   }
 
-  // To improve performance of the sdformat library, element descriptions are
-  // shared amont elements of the same type. If the user requests a mutable
+  // To improve the performance of libsdformat, element descriptions are
+  // shared among elements of the same type. If the user requests a mutable
   // element description, we make a clone here so that other elements are not
   // affected by the potential modifications the user makes. We keep track of
-  // the clones we've made so that it a clone is made at most once for each
+  // the clones we've made so that a clone is made at most once for each
   // element description.
   if (this->dataPtr->clonedElementDescriptions.count(desc) == 0)
   {

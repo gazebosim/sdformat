@@ -485,7 +485,6 @@ class ElementTEST(unittest.TestCase):
 
         elem_clone = elem.clone()
         self.assertEqual(elem_clone.element_description("radius"), desc)
-        self.assertEqual(elem_clone.element_description("radius"), desc)
         self.assertEqual(elem_clone.element_description(0), desc)
 
         with warnings.catch_warnings():
