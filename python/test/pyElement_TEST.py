@@ -15,6 +15,7 @@
 from sdformat import Element, SDFErrorsException
 from gz.math import Vector3d
 import unittest
+import warnings
 
 
 class ElementTEST(unittest.TestCase):
@@ -475,6 +476,40 @@ class ElementTEST(unittest.TestCase):
         self.assertEqual("first_child",
                          child_elem_b.get_attribute("name").get_as_string())
 
+    def test_mutable_element_description(self):
+        elem = Element()
+        desc = Element()
+        desc.set_name("radius")
+        desc.add_value("double", "1", True, "radius")
+        elem.add_element_description(desc)
+
+        elem_clone = elem.clone()
+        self.assertEqual(elem_clone.element_description("radius"), desc)
+        self.assertEqual(elem_clone.element_description("radius"), desc)
+        self.assertEqual(elem_clone.element_description(0), desc)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.assertEqual(elem_clone.get_element_description("radius"), desc)
+            self.assertEqual(elem_clone.get_element_description(0), desc)
+
+        newDesc = elem_clone.mutable_element_description("radius")
+        self.assertNotEqual(newDesc, desc)
+        ## If we call mutable_element_description multiple times, it shouldn't create clone new Elements
+        self.assertEqual(newDesc, elem_clone.mutable_element_description("radius"))
+        self.assertEqual(newDesc, elem_clone.mutable_element_description(0))
+
+        # After mutable_element_description is called, calling the read-only
+        # element_description will return a different pointer than the original
+        # description
+        self.assertNotEqual(elem_clone.element_description("radius"), desc)
+        self.assertNotEqual(elem_clone.element_description(0), desc)
+
+
+        # Resetting the element clears the element descriptions.
+        elem_clone.reset()
+        self.assertIsNone(elem_clone.element_description("radius"))
+        self.assertIsNone(elem_clone.mutable_element_description("radius"))
 
 if __name__ == '__main__':
     unittest.main()

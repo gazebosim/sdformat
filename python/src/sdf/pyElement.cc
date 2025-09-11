@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string>
+#include <gz/utils/SuppressWarning.hh>
 
 #include "pyParam.hh"
 #include "pybind11_helpers.hh"
@@ -58,6 +59,11 @@ namespace python
 void defineElement(py::object module)
 {
   using PyClassElement = py::class_<Element, ElementPtr>;
+
+  // TODO(azeey): GetElementDescription has been deprecated. Remove in sdformat17
+  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
+  auto warnings = py::module::import("warnings");
+  auto builtins = py::module::import("builtins");
 
   auto elemClass = PyClassElement(module, "Element");
   elemClass.def(py::init<>())
@@ -143,13 +149,43 @@ void defineElement(py::object module)
       .def("get_element_description_count",
            &Element::GetElementDescriptionCount,
            "Get the number of element descriptions.")
-      .def("get_element_description",
-           py::overload_cast<unsigned int>(&Element::GetElementDescription,
+      .def(
+          "get_element_description",
+          [warnings, builtins](const Element &_self, unsigned int _index)
+          {
+            warnings.attr("warn")(
+                  "GetElementDescription is deprecated. Use ElementDescription "
+                  "or MutableElementDescription instead",
+                   builtins.attr("DeprecationWarning"));
+            return _self.GetElementDescription(_index);
+          },
+          "Get an element description using an index")
+      .def(
+          "get_element_description",
+          [warnings, builtins](const Element &_self, const std::string &_key)
+          {
+            warnings.attr("warn")(
+              "GetElementDescription is deprecated. Use ElementDescription "
+              "or MutableElementDescription instead",
+              builtins.attr("DeprecationWarning"));
+
+            return _self.GetElementDescription(_key);
+          },
+          "Get an element description using a key")
+      .def("element_description",
+           py::overload_cast<unsigned int>(&Element::ElementDescription,
                                            py::const_),
            "Get an element description using an index")
-      .def("get_element_description",
+      .def("element_description",
+           py::overload_cast<const std::string &>(&Element::ElementDescription,
+                                                  py::const_),
+           "Get an element description using a key")
+      .def("mutable_element_description",
+           py::overload_cast<unsigned int>(&Element::MutableElementDescription),
+           "Get an element description using an index")
+      .def("mutable_element_description",
            py::overload_cast<const std::string &>(
-               &Element::GetElementDescription, py::const_),
+               &Element::MutableElementDescription),
            "Get an element description using a key")
       .def("has_element_description", &Element::HasElementDescription,
            "Return true if an element description exists.")
@@ -225,6 +261,7 @@ void defineElement(py::object module)
            "Set a text description for the element.")
       .def("add_element_description", &Element::AddElementDescription,
            "Add a new element description");
+  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   // Definitions for `Get<T>`, and `Set<T>` which will bind to `get_bool`, 
   // `get_int`, etc.

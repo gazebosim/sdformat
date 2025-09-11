@@ -382,13 +382,17 @@ namespace sdf
     /// \param[in] _index the index of the element description to get.
     /// \return An Element pointer to the found element.
     /// \deprecated See ElementDescription
-    public: GZ_DEPRECATED(16) ElementPtr GetElementDescription(unsigned int _index) const;
+    public:
+    GZ_DEPRECATED(16)
+    ElementPtr GetElementDescription(unsigned int _index) const;
 
     /// \brief Get an element description using a key
     /// \param[in] _key the key to use to find the element.
     /// \return An Element pointer to the found element.
     /// \deprecated See ElementDescription
-    public: GZ_DEPRECATED(16) ElementPtr GetElementDescription(const std::string &_key) const;
+    public:
+    GZ_DEPRECATED(16)
+    ElementPtr GetElementDescription(const std::string &_key) const;
 
     /// \brief Get an element description using an index
     /// \param[in] _index the index of the element description to get.
@@ -962,7 +966,8 @@ namespace sdf
     /// \brief XML path of this element.
     public: std::string xmlPath;
 
-    /// \brief Used to keep track of which element descriptions we have cloned in order to provide a mutable pointer.
+    /// \brief Used to keep track of which element descriptions we have cloned
+    /// in order to provide a mutable pointer.
     public: std::unordered_set<ElementConstPtr> clonedElementDescriptions;
 
     /// \brief Generate the string (XML) for the attributes.
@@ -983,10 +988,13 @@ namespace sdf
                                  const PrintConfig &_config,
                                  std::ostringstream &_out) const;
 
-    /// \brief Helper function to get the index of an element description identified by a given key
+    /// \brief Helper function to get the index of an element description
+    /// identified by a given key
     /// \param[in] _key Key of the element description
     /// \return An optional index. nullopt of the key was not found
-    public: std::optional<unsigned int> ElementDescriptionIndex(const std::string &_key);
+    public:
+    std::optional<unsigned int> ElementDescriptionIndex(
+        const std::string &_key);
   };
 
   ///////////////////////////////////////////////

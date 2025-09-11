@@ -690,10 +690,10 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
   }
 }
 
-std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(const std::string &_key) {
-
-  ElementPtr_V::iterator iter;
-  for (iter = this->elementDescriptions.begin();
+std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
+    const std::string &_key)
+{
+  for (auto iter = this->elementDescriptions.begin();
        iter != this->elementDescriptions.end(); ++iter)
   {
     if ((*iter)->GetName() == _key)
