@@ -4,6 +4,15 @@
 
 1. **Baseline:** this includes all changes from 15.3.0 and earlier.
 
+1. Optimize load time and memory consumption by reusing element descriptions
+    * [Pull request #1589](https://github.com/gazebosim/sdformat/pull/1589)
+
+1. Infrastructure
+    * [Pull request #1588](https://github.com/gazebosim/sdformat/pull/1588)
+
+1. [Bazel] Update bazel module to use jetty release branches
+    * [Pull request #1584](https://github.com/gazebosim/sdformat/pull/1584)
+
 1. [Bazel] Fix dep issue when building with clang
     * [Pull request #1581](https://github.com/gazebosim/sdformat/pull/1581)
 
