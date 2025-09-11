@@ -18,7 +18,6 @@
 #define SDF_ELEMENT_HH_
 
 #include <any>
-#include <gz/math/Export.hh>
 #include <map>
 #include <memory>
 #include <optional>
