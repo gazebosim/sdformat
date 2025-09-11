@@ -61,7 +61,6 @@ void defineElement(py::object module)
   using PyClassElement = py::class_<Element, ElementPtr>;
 
   // TODO(azeey): GetElementDescription has been deprecated. Remove in sdformat17
-  GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
   auto warnings = py::module::import("warnings");
   auto builtins = py::module::import("builtins");
 
@@ -157,7 +156,9 @@ void defineElement(py::object module)
                   "GetElementDescription is deprecated. Use ElementDescription "
                   "or MutableElementDescription instead",
                    builtins.attr("DeprecationWarning"));
+            GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
             return _self.GetElementDescription(_index);
+            GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
           },
           "Get an element description using an index")
       .def(
@@ -169,7 +170,9 @@ void defineElement(py::object module)
               "or MutableElementDescription instead",
               builtins.attr("DeprecationWarning"));
 
+            GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
             return _self.GetElementDescription(_key);
+            GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
           },
           "Get an element description using a key")
       .def("element_description",
@@ -261,7 +264,6 @@ void defineElement(py::object module)
            "Set a text description for the element.")
       .def("add_element_description", &Element::AddElementDescription,
            "Add a new element description");
-  GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
 
   // Definitions for `Get<T>`, and `Set<T>` which will bind to `get_bool`, 
   // `get_int`, etc.
