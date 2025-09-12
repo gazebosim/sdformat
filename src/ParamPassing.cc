@@ -461,7 +461,7 @@ void handleIndividualChildActions(const ParserConfig &_config,
       continue;
     }
 
-    ElementPtr elemChild = elemDesc->GetElementDescription(elemName);
+    ElementPtr elemChild = elemDesc->MutableElementDescription(elemName);
 
     if (!xmlToSdf(_config, _source, xmlChild, elemChild, _errors))
     {
