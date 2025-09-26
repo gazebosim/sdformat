@@ -1,6 +1,6 @@
 ## libsdformat 16.X
 
-### libsdformat 16.0.0 (2025-09-24)
+### libsdformat 16.0.0 (2025-09-30)
 
 1. **Baseline:** this includes all changes from 15.3.0 and earlier.
 
