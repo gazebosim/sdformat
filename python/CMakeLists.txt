@@ -29,21 +29,23 @@ else()
   return()
 endif()
 
-if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
-  if(NOT Python3_SITEARCH)
-    # Get variable from Python3 module
-    find_package(Python3 COMPONENTS Interpreter)
-  endif()
+if(NOT DEFINED GZ_PYTHON_INSTALL_PATH)
+  if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
+    if(NOT Python3_SITEARCH)
+      # Get variable from Python3 module
+      find_package(Python3 COMPONENTS Interpreter)
+    endif()
 
-  if(USE_DIST_PACKAGES_FOR_PYTHON)
-    string(REPLACE "site-packages" "dist-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    if(USE_DIST_PACKAGES_FOR_PYTHON)
+      string(REPLACE "site-packages" "dist-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    else()
+      # custom cmake command is returning dist-packages
+      string(REPLACE "dist-packages" "site-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    endif()
   else()
-    # custom cmake command is returning dist-packages
-    string(REPLACE "dist-packages" "site-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    # If not a system installation, respect local paths
+    set(GZ_PYTHON_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/python)
   endif()
-else()
-  # If not a system installation, respect local paths
-  set(GZ_PYTHON_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/python)
 endif()
 
 # Set the build location and install location for a CPython extension
