@@ -371,7 +371,7 @@ namespace sdf
     /// \brief Get an attribute using an index.
     /// \param[in] _index the index of the attribute to get.
     /// \return A Param pointer to the attribute.
-    public: ParamPtr GetAttribute(unsigned int _index) const;
+    public: ParamPtr GetAttribute(std::size_t _index) const;
 
     /// \brief Get the number of element descriptions.
     /// \return The number of element descriptions.
@@ -383,7 +383,7 @@ namespace sdf
     /// \deprecated See ElementDescription
     public:
     GZ_DEPRECATED(16)
-    ElementPtr GetElementDescription(unsigned int _index) const;
+    ElementPtr GetElementDescription(std::size_t _index) const;
 
     /// \brief Get an element description using a key
     /// \param[in] _key the key to use to find the element.
@@ -397,7 +397,7 @@ namespace sdf
     /// \param[in] _index the index of the element description to get.
     /// \return An Element pointer to the found element.
     /// \sa MutableElementDescription
-    public: ElementConstPtr ElementDescription(unsigned int _index) const;
+  public: ElementConstPtr ElementDescription(std::size_t _index) const;
 
     /// \brief Get an element description using a key
     /// \param[in] _key the key to use to find the element.
@@ -408,7 +408,7 @@ namespace sdf
     /// \brief Get a mutable element description using an index
     /// \param[in] _index the index of the element description to get.
     /// \return An Element pointer to the found element.
-    public: ElementPtr MutableElementDescription(unsigned int _index);
+  public: ElementPtr MutableElementDescription(std::size_t _index);
 
     /// \brief Get a mutable element description using a key
     /// \param[in] _key the key to use to find the element.
@@ -992,7 +992,7 @@ namespace sdf
     /// \param[in] _key Key of the element description
     /// \return An optional index. nullopt of the key was not found
     public:
-    std::optional<unsigned int> ElementDescriptionIndex(
+    std::optional<std::size_t> ElementDescriptionIndex(
         const std::string &_key);
   };
 

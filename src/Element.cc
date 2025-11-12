@@ -691,7 +691,7 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
-std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
+std::optional<std::size_t> ElementPrivate::ElementDescriptionIndex(
     const std::string &_key)
 {
   for (auto iter = this->elementDescriptions.begin();
@@ -699,7 +699,8 @@ std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
   {
     if ((*iter)->GetName() == _key)
     {
-      return std::distance(this->elementDescriptions.begin(), iter);
+      return static_cast<std::size_t>(
+          std::distance(this->elementDescriptions.begin(), iter));
     }
   }
   return std::nullopt;
@@ -892,7 +893,7 @@ const Param_V &Element::GetAttributes() const
 }
 
 /////////////////////////////////////////////////
-ParamPtr Element::GetAttribute(unsigned int _index) const
+ParamPtr Element::GetAttribute(std::size_t _index) const
 {
   ParamPtr result;
   if (_index < this->dataPtr->attributes.size())
@@ -910,7 +911,7 @@ size_t Element::GetElementDescriptionCount() const
 }
 
 /////////////////////////////////////////////////
-ElementPtr Element::GetElementDescription(unsigned int _index) const
+ElementPtr Element::GetElementDescription(std::size_t _index) const
 {
   return std::const_pointer_cast<Element>(this->ElementDescription(_index));
 }
@@ -922,7 +923,7 @@ ElementPtr Element::GetElementDescription(const std::string &_key) const
 }
 
 /////////////////////////////////////////////////
-ElementConstPtr Element::ElementDescription(unsigned int _index) const
+ElementConstPtr Element::ElementDescription(std::size_t _index) const
 {
   ElementPtr result;
   if (_index < this->dataPtr->elementDescriptions.size())
@@ -949,7 +950,7 @@ ElementConstPtr Element::ElementDescription(const std::string &_key) const
 }
 
 /////////////////////////////////////////////////
-ElementPtr Element::MutableElementDescription(unsigned int _index)
+ElementPtr Element::MutableElementDescription(std::size_t _index)
 {
   auto desc = static_cast<const Element *>(this)->ElementDescription(_index);
   if (!desc)
@@ -1270,7 +1271,7 @@ ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
       this->dataPtr->elementDescriptions.empty() && parent &&
       parent->GetName() == this->dataPtr->name)
   {
-    for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
+    for (std::size_t i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
       this->dataPtr->elementDescriptions.push_back(
         parent->dataPtr->elementDescriptions[i]);
