@@ -699,7 +699,7 @@ std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
   {
     if ((*iter)->GetName() == _key)
     {
-      return std::static_cast<unsigned int>(
+      return static_cast<unsigned int>(
         std::distance(this->elementDescriptions.begin(), iter));
     }
   }
