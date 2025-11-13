@@ -691,6 +691,25 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
+=======
+std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
+    const std::string &_key)
+{
+  for (auto iter = this->elementDescriptions.begin();
+       iter != this->elementDescriptions.end(); ++iter)
+  {
+    if ((*iter)->GetName() == _key)
+    {
+      return static_cast<unsigned int>(
+        std::distance(this->elementDescriptions.begin(), iter));
+    }
+  }
+  return std::nullopt;
+}
+
+/////////////////////////////////////////////////
+>>>>>>> 7e409b5d (Fixed windows warning (#1595))
 void Element::PrintValues(std::string _prefix,
                           const PrintConfig &_config) const
 {
