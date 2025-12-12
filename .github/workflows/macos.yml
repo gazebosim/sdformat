@@ -48,6 +48,8 @@ jobs:
         brew remove cmake || true
         brew untap local/pinned || true
         brew install --only-dependencies ${PACKAGE};
+        # install :build dependencies of a formula
+        brew install $(brew deps --1 --include-build ${PACKAGE})
 
     - run: mkdir build
     - name: cmake
