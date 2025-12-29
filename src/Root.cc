@@ -24,6 +24,7 @@
 #include "sdf/Light.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
+#include "sdf/SDFImpl.hh"
 #include "sdf/Types.hh"
 #include "sdf/World.hh"
 #include "sdf/parser.hh"
@@ -33,6 +34,21 @@
 #include "Utils.hh"
 
 using namespace sdf;
+
+/// \brief A cache for SDF Parsing
+struct SdfCache {
+
+  /// \brief Constructor.
+  SdfCache(): sdfParsed(new SDF()) {
+    init(this->sdfParsed);
+  }
+
+  /// \brief The parsed SDF Spec
+  SDFPtr sdfParsed;
+};
+
+/// Instantiate the cache
+static SdfCache cache;
 
 /// \brief Private data for sdf::Root
 class sdf::Root::Implementation
@@ -217,9 +233,8 @@ Errors Root::LoadSdfString(const std::string &_sdf)
 Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 {
   Errors errors;
-  SDFPtr sdfParsed(new SDF());
-  init(sdfParsed);
-
+  // Make a copy of the cached structure
+  SDFPtr sdfParsed = std::make_shared<SDF>(*cache.sdfParsed);
   // Read an SDF string, and store the result in sdfParsed.
   if (!readString(_sdf, _config, sdfParsed, errors))
   {
