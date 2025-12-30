@@ -37,6 +37,7 @@ namespace sdf
     {
     };
 
+    /// Copy constructor: Ensure Deep copy.
     public: SDFPrivate(const SDFPrivate& other)
     {
       this->path = other.path;
@@ -44,6 +45,7 @@ namespace sdf
       this->root = other.root->Clone();
     }
 
+    /// Copy constructor: Ensure Deep Copy
     public: SDFPrivate& operator=(const SDFPrivate& other)
     {
       this->path = other.path;
