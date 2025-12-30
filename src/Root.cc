@@ -14,6 +14,7 @@
  * limitations under the License.
  *
 */
+#include <gz/utils/NeverDestroyed.hh>
 #include <string>
 #include <variant>
 #include <vector>
@@ -48,7 +49,7 @@ struct SdfCache {
 };
 
 /// Instantiate the cache
-static SdfCache cache;
+static gz::utils::NeverDestroyed<SdfCache> cache;
 
 /// \brief Private data for sdf::Root
 class sdf::Root::Implementation
@@ -234,7 +235,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 {
   Errors errors;
   // Make a copy of the cached structure
-  SDFPtr sdfParsed = std::make_shared<SDF>(*cache.sdfParsed);
+  SDFPtr sdfParsed = std::make_shared<SDF>(*cache.Access().sdfParsed);
   // Read an SDF string, and store the result in sdfParsed.
   if (!readString(_sdf, _config, sdfParsed, errors))
   {
