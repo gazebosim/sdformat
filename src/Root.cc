@@ -235,6 +235,7 @@ Errors Root::LoadSdfString(const std::string &_sdf, const ParserConfig &_config)
 {
   Errors errors;
   // Make a copy of the cached structure
+  static gz::utils::NeverDestroyed<SdfCache> cache;
   SDFPtr sdfParsed = std::make_shared<SDF>(*cache.Access().sdfParsed);
   // Read an SDF string, and store the result in sdfParsed.
   if (!readString(_sdf, _config, sdfParsed, errors))
