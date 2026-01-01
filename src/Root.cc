@@ -48,9 +48,6 @@ struct SdfCache {
   SDFPtr sdfParsed;
 };
 
-/// Instantiate the cache
-static gz::utils::NeverDestroyed<SdfCache> cache;
-
 /// \brief Private data for sdf::Root
 class sdf::Root::Implementation
 {
