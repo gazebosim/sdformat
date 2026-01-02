@@ -860,4 +860,29 @@ TEST(SDF, FindFileModelSDFCurrDir)
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   std::filesystem::current_path(prevPath);
 }
+
+///////////////////////////////////////////////////
+// Test the copy constructor provides a deep copy
+TEST(SDF, CopyConstructor)
+{
+  // Set up a simple sdf model file
+  std::ostringstream stream;
+  stream << "<sdf version='1.3'>"
+         << "  <model name='test_model'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
+         << "</sdf>";
+  sdf::SDF sdfParsed;
+  sdfParsed.SetFromString(stream.str());
+
+  sdf::SDF copy1sdfParsed(sdfParsed);
+  sdf::SDF copy2sdfParsed = sdfParsed;
+
+  sdfParsed.Root()->SetName("Test");
+  ASSERT_EQ(sdfParsed.Root()->GetName(), "Test");
+  // Since a deep copy occurs no changes should be reflected;
+  ASSERT_NE(copy1sdfParsed.Root()->GetName(), "Test");
+  ASSERT_NE(copy2sdfParsed.Root()->GetName(), "Test");
+}
 #endif  // _WIN32
