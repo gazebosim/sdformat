@@ -37,6 +37,23 @@ namespace sdf
     {
     };
 
+    /// Copy constructor: Ensure Deep copy.
+    public: SDFPrivate(const SDFPrivate& other)
+    {
+      this->path = other.path;
+      this->originalVersion = other.originalVersion;
+      this->root = other.root->Clone();
+    }
+
+    /// Copy constructor: Ensure Deep Copy
+    public: SDFPrivate& operator=(const SDFPrivate& other)
+    {
+      this->path = other.path;
+      this->originalVersion = other.originalVersion;
+      this->root = other.root->Clone();
+      return *this;
+    }
+
     /// \brief Store the root element.
     /// \sa ElementPtr Root()
     /// \sa void Root(const ElementPtr _root)
