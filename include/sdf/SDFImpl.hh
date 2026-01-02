@@ -118,6 +118,8 @@ namespace sdf
   class SDFORMAT_VISIBLE SDF
   {
     public: SDF();
+    public: SDF(const SDF& other);
+    public: SDF& operator=(const SDF& other);
     /// \brief Destructor
     public: ~SDF();
     public: void PrintDescription();
