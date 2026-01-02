@@ -220,6 +220,18 @@ SDF::SDF()
 }
 
 /////////////////////////////////////////////////
+SDF::SDF(const SDF& other)
+{
+  this->dataPtr = std::make_unique<SDFPrivate>(*other.dataPtr);
+}
+
+/////////////////////////////////////////////////
+SDF& SDF::operator=(const SDF& other)
+{
+  this->dataPtr = std::make_unique<SDFPrivate>(*other.dataPtr);
+  return *this;
+}
+/////////////////////////////////////////////////
 SDF::~SDF()
 {
 }
