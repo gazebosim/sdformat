@@ -715,6 +715,63 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
+<<<<<<< HEAD
+=======
+/////////////////////////////////////////////////
+TEST(SDF, FindFileModelSDFCurrDir)
+{
+  // Change to a temporary directory before running test
+  auto prevPath = std::filesystem::current_path();
+  std::string tmpDir;
+  ASSERT_TRUE(sdf::testing::TestTmpPath(tmpDir));
+  std::filesystem::current_path(tmpDir);
+
+  // A file named model.sdf in current directory
+  auto tempFile = tmpDir + "/model.sdf";
+
+  sdf::SDF tempSDF;
+  tempSDF.Write(tempFile);
+
+  // Check file was created
+  auto fp = fopen(tempFile.c_str(), "r");
+  ASSERT_NE(nullptr, fp);
+
+  // Get path of the file returned from findFile()
+  std::string foundFile = sdf::findFile("model.sdf", true, false);
+
+  // Check that the returned file is model.sdf from curr directory
+  ASSERT_EQ(tempFile, foundFile);
+
+  // Cleanup
+  ASSERT_EQ(std::remove(tempFile.c_str()), 0);
+  std::filesystem::current_path(prevPath);
+}
+
+///////////////////////////////////////////////////
+// Test the copy constructor provides a deep copy
+TEST(SDF, CopyConstructor)
+{
+  // Set up a simple sdf model file
+  std::ostringstream stream;
+  stream << "<sdf version='1.3'>"
+         << "  <model name='test_model'>"
+         << "    <pose>0 1 2  0 0 0</pose>"
+         << "    <static>false</static>"
+         << "  </model>"
+         << "</sdf>";
+  sdf::SDF sdfParsed;
+  sdfParsed.SetFromString(stream.str());
+
+  sdf::SDF copy1sdfParsed(sdfParsed);
+  sdf::SDF copy2sdfParsed = sdfParsed;
+
+  sdfParsed.Root()->SetName("Test");
+  ASSERT_EQ(sdfParsed.Root()->GetName(), "Test");
+  // Since a deep copy occurs no changes should be reflected;
+  ASSERT_NE(copy1sdfParsed.Root()->GetName(), "Test");
+  ASSERT_NE(copy2sdfParsed.Root()->GetName(), "Test");
+}
+>>>>>>> 403d96a7 (Introduce a cache to improve performance of construction of SDFormat (#1610))
 #endif  // _WIN32
 
 /////////////////////////////////////////////////
