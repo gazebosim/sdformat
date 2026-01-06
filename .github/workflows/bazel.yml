@@ -1,17 +1,10 @@
 name: Bazel CI
 on:
-<<<<<<< HEAD
-  push:
-    branches: [sdf15, main]
-  pull_request:
-    branches: [sdf15, main]
-=======
   pull_request:
   push:
     branches:
       - 'sdf[1-9]?[0-9]'
       - 'main'
->>>>>>> 9de07aeb ([bazel/infra] CI updates (#1609))
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
