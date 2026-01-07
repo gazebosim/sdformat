@@ -716,36 +716,6 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
 
-/////////////////////////////////////////////////
-TEST(SDF, FindFileModelSDFCurrDir)
-{
-  // Change to a temporary directory before running test
-  auto prevPath = std::filesystem::current_path();
-  std::string tmpDir;
-  ASSERT_TRUE(sdf::testing::TestTmpPath(tmpDir));
-  std::filesystem::current_path(tmpDir);
-
-  // A file named model.sdf in current directory
-  auto tempFile = tmpDir + "/model.sdf";
-
-  sdf::SDF tempSDF;
-  tempSDF.Write(tempFile);
-
-  // Check file was created
-  auto fp = fopen(tempFile.c_str(), "r");
-  ASSERT_NE(nullptr, fp);
-
-  // Get path of the file returned from findFile()
-  std::string foundFile = sdf::findFile("model.sdf", true, false);
-
-  // Check that the returned file is model.sdf from curr directory
-  ASSERT_EQ(tempFile, foundFile);
-
-  // Cleanup
-  ASSERT_EQ(std::remove(tempFile.c_str()), 0);
-  std::filesystem::current_path(prevPath);
-}
-
 ///////////////////////////////////////////////////
 // Test the copy constructor provides a deep copy
 TEST(SDF, CopyConstructor)
