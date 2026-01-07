@@ -715,8 +715,7 @@ TEST(SDF, WriteURIPath)
   ASSERT_EQ(std::remove(tempFile.c_str()), 0);
   ASSERT_EQ(rmdir(tempDir.c_str()), 0);
 }
-<<<<<<< HEAD
-=======
+
 /////////////////////////////////////////////////
 TEST(SDF, FindFileModelSDFCurrDir)
 {
@@ -771,7 +770,6 @@ TEST(SDF, CopyConstructor)
   ASSERT_NE(copy1sdfParsed.Root()->GetName(), "Test");
   ASSERT_NE(copy2sdfParsed.Root()->GetName(), "Test");
 }
->>>>>>> 403d96a7 (Introduce a cache to improve performance of construction of SDFormat (#1610))
 #endif  // _WIN32
 
 /////////////////////////////////////////////////
