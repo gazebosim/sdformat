@@ -1,10 +1,10 @@
 # Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
-  find_package(gz-cmake REQUIRED)
+  find_package(gz-cmake 5 REQUIRED)
   gz_get_package_xml_version(${CMAKE_SOURCE_DIR}/../package.xml PACKAGE_XML)
   project(sdformat-python VERSION ${PACKAGE_XML_VERSION})
-  find_package(sdformat REQUIRED)
+  find_package(sdformat 16 REQUIRED)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat::sdformat")
   # require python dependencies to be found
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
