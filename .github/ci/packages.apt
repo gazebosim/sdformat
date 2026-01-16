@@ -6,5 +6,6 @@ libignition-utils1-cli-dev
 libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils
+pkg-config
 python3-psutil
 ruby-dev
