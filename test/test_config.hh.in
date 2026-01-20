@@ -37,10 +37,23 @@ constexpr const char* kProjectBinaryDir = PROJECT_BINARY_DIR;
 constexpr const char* kProjectBinaryDir= "";
 #endif
 
+#ifdef SDF_BAZEL
+#include "tools/cpp/runfiles/runfiles.h"
+#endif  // SDF_BAZEL
+
 namespace sdf
 {
   namespace testing
   {
+#ifdef SDF_BAZEL
+    static bazel::tools::cpp::runfiles::Runfiles* GetRunfiles()
+    {
+      static std::unique_ptr<bazel::tools::cpp::runfiles::Runfiles> runfiles(
+          bazel::tools::cpp::runfiles::Runfiles::CreateForTest());
+      return runfiles.get();
+    }
+#endif  // SDF_BAZEL
+
     /// \brief Method to retrieve root directory of project source
     ///
     /// This is used to get various test files
@@ -116,9 +129,46 @@ namespace sdf
     template <typename... Args>
     std::string SourceFile(Args const &... args)
     {
+      std::string relativePath = sdf::filesystem::append(args...);
+#ifdef SDF_BAZEL
+      auto* runfiles = GetRunfiles();
+      if (runfiles)
+      {
+        // "sdformat" is the Bazel module name set in MODULE.bazel.
+        constexpr std::string_view SDF_BAZEL_WORKSPACE_NAME = "sdformat";
+
+        // Strategy:
+        // 1. Try the Apparent Name (Works if repo_mapping is active/legacy WORKSPACE)
+        // 2. Try the Bzlmod Canonical Name (Works if repo_mapping is skipped)
+
+        std::vector<std::string> keys;
+
+        // Key 1: "sdformat/..."
+        keys.push_back(std::string(SDF_BAZEL_WORKSPACE_NAME) + "/" + relativePath);
+
+        // Key 2: "sdformat~/..." (Manual Bzlmod fallback, version <=7)
+        keys.push_back(std::string(SDF_BAZEL_WORKSPACE_NAME) + "~/" + relativePath);
+
+        // Key 3: "sdformat+/..." (Manual Bzlmod fallback, version 8+)
+        keys.push_back(std::string(SDF_BAZEL_WORKSPACE_NAME) + "+/" + relativePath);
+
+        // Key 4: "_main/..." (Fallback if running as root module)
+        keys.push_back(std::string("_main/") + relativePath);
+
+        for (const auto& key : keys)
+        {
+          std::string result = runfiles->Rlocation(key);
+          if (!result.empty() && sdf::filesystem::exists(result))
+          {
+            return result;
+          }
+        }
+      }
+#endif  // SDF_BAZEL
+
       std::string dataDir;
       ProjectSourcePath(dataDir);
-      return sdf::filesystem::append(dataDir, args...);
+      return sdf::filesystem::append(dataDir, relativePath);
     }
 
     /// \brief Retrieve a file from the test directory

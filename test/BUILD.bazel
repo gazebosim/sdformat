@@ -19,8 +19,12 @@ cc_library(
         "test_config.hh",
         "test_utils.hh",
     ],
+    defines = ["SDF_BAZEL=1"],
     includes = ["."],
     visibility = ["//:__subpackages__"],
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
+    ],
 )
 
 exports_files(
