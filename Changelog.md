@@ -1,5 +1,31 @@
 ## libsdformat 16.X
 
+### libsdformat 16.0.1 (2026-01-20)
+
+1. Find jetty packages with explicit version
+    * [Pull request #1618](https://github.com/gazebosim/sdformat/pull/1618)
+
+1. [bazel/infra] CI updates
+    * [Pull request #1609](https://github.com/gazebosim/sdformat/pull/1609)
+
+1. Introduce a cache to improve performance of construction of SDFormat
+    * [Pull request #1610](https://github.com/gazebosim/sdformat/pull/1610)
+
+1. [bazel/infra] Add manual BCR release workflow
+    * [Pull request #1606](https://github.com/gazebosim/sdformat/pull/1606)
+
+1. macos.yml: install brew build dependencies
+    * [Pull request #1600](https://github.com/gazebosim/sdformat/pull/1600)
+
+1. Bazel updates: prepare for BCR release automation
+    * [Pull request #1597](https://github.com/gazebosim/sdformat/pull/1597)
+
+1. Fixed windows warning
+    * [Pull request #1595](https://github.com/gazebosim/sdformat/pull/1595)
+
+1. Respect GZ_PYTHON_INSTALL_PATH if passed as an argument
+    * [Pull request #1586](https://github.com/gazebosim/sdformat/pull/1586)
+
 ### libsdformat 16.0.0 (2025-09-30)
 
 1. **Baseline:** this includes all changes from 15.3.0 and earlier.
