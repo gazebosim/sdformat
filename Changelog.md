@@ -27,6 +27,8 @@
 
 ### libsdformat 16.0.0 (2025-09-30)
 
+1. **Baseline:** this includes all changes from 15.3.0 and earlier.
+
 1. Optimize load time and memory consumption by reusing element descriptions
     * [Pull request #1589](https://github.com/gazebosim/sdformat/pull/1589)
 
