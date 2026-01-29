@@ -1,5 +1,28 @@
 ## libsdformat 12.X
 
+### libsdformat 12.9.0 (2026-01-29)
+
+1. Introduce a cache to improve performance of construction of SDFormat
+    * [Pull request #1610](https://github.com/gazebosim/sdformat/pull/1610)
+    * [Pull request #1615](https://github.com/gazebosim/sdformat/pull/1615)
+
+1. Fix finding urdfdom on Ubuntu
+    * [Pull request #1620](https://github.com/gazebosim/sdformat/pull/1620)
+
+1. Clean up compiler warnings
+    * [Pull request #882](https://github.com/gazebosim/sdformat/pull/882)
+
+1. Disable latex and class hierarchy generation
+    * [Pull request #1447](https://github.com/gazebosim/sdformat/pull/1447)
+
+1. Infrastructure
+    1. Fortress: disable Ubuntu Focal CI
+        * [Pull request #1621](https://github.com/gazebosim/sdformat/pull/1621)
+    1. macos.yml: install brew build dependencies
+        * [Pull request #1600](https://github.com/gazebosim/sdformat/pull/1600)
+    1. Fix macOS workflow
+        * [Pull request #1452](https://github.com/gazebosim/sdformat/pull/1452)
+
 ### libsdformat 12.8.0 (2024-06-06)
 
 1. Add support for no gravity link
