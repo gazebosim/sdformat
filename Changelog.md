@@ -1,5 +1,19 @@
 ## libsdformat 14.X
 
+### libsdformat 14.9.0 (2026-01-29)
+
+1. Introduce a cache to improve performance of construction of SDFormat
+    * [Pull request #1610](https://github.com/gazebosim/sdformat/pull/1610)
+
+1. CI macos.yml: install brew build dependencies
+    * [Pull request #1600](https://github.com/gazebosim/sdformat/pull/1600)
+
+1. Permit to test when building bindings separately from main library
+    * [Pull request #1509](https://github.com/gazebosim/sdformat/pull/1509)
+
+1. Build sdformattest pybind11 library as MODULE
+    * [Pull request #1544](https://github.com/gazebosim/sdformat/pull/1544)
+
 ### libsdformat 14.8.0 (2025-07-02)
 
 1. Improve error messages when embedSdf.py fails
