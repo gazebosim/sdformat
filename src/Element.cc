@@ -253,6 +253,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   clone->dataPtr->explicitlySetInFile = this->dataPtr->explicitlySetInFile;
 
   Param_V::const_iterator aiter;
+  clone->dataPtr->attributes.reserve(this->dataPtr->attributes.size());
   for (aiter = this->dataPtr->attributes.begin();
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
@@ -264,12 +265,15 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   }
 
   ElementPtr_V::const_iterator eiter;
+  clone->dataPtr->elementDescriptions.reserve(
+    this->dataPtr->elementDescriptions.size());
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
     clone->dataPtr->elementDescriptions.push_back((*eiter)->Clone(_errors));
   }
 
+  clone->dataPtr->elements.reserve(this->dataPtr->elements.size());
   for (eiter = this->dataPtr->elements.begin();
        eiter != this->dataPtr->elements.end(); ++eiter)
   {
