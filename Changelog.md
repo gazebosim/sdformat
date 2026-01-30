@@ -1,5 +1,31 @@
 ## libsdformat 15.X
 
+### libsdformat 15.4.0 (2026-01-29)
+
+1. Introduce a cache to improve performance of construction of SDFormat
+    * [Pull request #1610](https://github.com/gazebosim/sdformat/pull/1610)
+
+1. Bazel / infra
+    1. [bazel/infra] CI updates (backport #1609)
+        * [Pull request #1609](https://github.com/gazebosim/sdformat/pull/1609)
+        * [Pull request #1617](https://github.com/gazebosim/sdformat/pull/1617)
+    1. [bazel/infra] Add manual BCR release workflow (#1606)
+        * [Pull request #1606](https://github.com/gazebosim/sdformat/pull/1606)
+        * [Pull request #1608](https://github.com/gazebosim/sdformat/pull/1608)
+    1. [Bazel] Add back sdformat.hh auto-generated lumped header
+        * [Pull request #1570](https://github.com/gazebosim/sdformat/pull/1570)
+    1. Fix inclusion of sdf/ data deps
+        * [Pull request #1567](https://github.com/gazebosim/sdformat/pull/1567)
+    1. Manual backport of: Bazel updates (#1597)
+        * [Pull request #1597](https://github.com/gazebosim/sdformat/pull/1597)
+        * [Pull request #1601](https://github.com/gazebosim/sdformat/pull/1601)
+    1. Fix bazel build errors with clang
+        * [Pull request #1566](https://github.com/gazebosim/sdformat/pull/1566)
+
+1. CI macos.yml: install brew build dependencies
+    * [Pull request #1600](https://github.com/gazebosim/sdformat/pull/1600)
+
+
 ### libsdformat 15.3.0 (2025-05-16)
 
 1. Allow camera HFOV lower than 0.5°
