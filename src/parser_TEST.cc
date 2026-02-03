@@ -582,7 +582,7 @@ class ValueConstraintsFixture : public ::testing::Test
   }
 
   public: std::stringstream errBuffer;
-  private: std::streambuf *oldRdbuf;
+  private: std::streambuf *oldRdbuf = nullptr;
 };
 
 /////////////////////////////////////////////////

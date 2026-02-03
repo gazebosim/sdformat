@@ -153,8 +153,14 @@ endif(BUILD_SDF)
 # Setup Codecheck
 
 # Ignore vendored directories.
+# Suppress unknownMacro errors for GZ_DEPRECATED, SDF_PROTOCOL_VERSION,
+# and Google Test macros (ASSERT_NO_THROW) which cppcheck doesn't recognize.
 file(WRITE ${PROJECT_BINARY_DIR}/cppcheck.suppress
   "*:${PROJECT_SOURCE_DIR}/src/urdf/*\n"
+  "unknownMacro:${PROJECT_SOURCE_DIR}/include/sdf/*.hh\n"
+  "unknownMacro:${PROJECT_SOURCE_DIR}/src/cmd/*.cc\n"
+  "unknownMacro:${PROJECT_SOURCE_DIR}/src/*_TEST.cc\n"
+  "unknownMacro:${PROJECT_SOURCE_DIR}/test/*.cc\n"
   )
 
 ########################################
