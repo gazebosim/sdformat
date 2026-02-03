@@ -4,8 +4,9 @@ on:
   pull_request:
   push:
     branches:
-      - 'sdf[1-9]?[0-9]'
-      - 'main'
+      - "sdf[1-9]?[0-9]"
+      - "main"
+      - "jrivero/test_fix_cppcheck"
 
 jobs:
   noble-ci:
