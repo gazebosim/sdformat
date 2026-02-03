@@ -6,7 +6,7 @@ on:
     branches:
       - "sdf[1-9]?[0-9]"
       - "main"
-      - "jrivero/test_fix_cppcheck"
+      - "jrivero/**"
 
 jobs:
   noble-ci:
