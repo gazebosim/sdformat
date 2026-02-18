@@ -26,6 +26,7 @@ TEST(DOMsurface, DefaultConstruction)
   sdf::Surface surface;
   EXPECT_EQ(nullptr, surface.Element());
   EXPECT_EQ(surface.Contact()->CollideBitmask(), 0xFF);
+  EXPECT_EQ(surface.Contact()->CategoryBitmask(), 0xFF);
   EXPECT_EQ(surface.Contact()->Element(), nullptr);
   EXPECT_EQ(surface.Friction()->Element(), nullptr);
 }
@@ -44,11 +45,13 @@ TEST(DOMsurface, CopyOperator)
   sdf::Friction friction;
   friction.SetODE(ode);
   contact.SetCollideBitmask(0x12);
+  contact.SetCategoryBitmask(0x21);
   surface1.SetContact(contact);
   surface1.SetFriction(friction);
 
   sdf::Surface surface2(surface1);
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
+  EXPECT_EQ(surface2.Contact()->CategoryBitmask(), 0x21);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu(), 0.1);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu2(), 0.2);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip1(), 3);
@@ -71,11 +74,13 @@ TEST(DOMsurface, CopyAssignmentOperator)
   sdf::Friction friction;
   friction.SetODE(ode);
   contact.SetCollideBitmask(0x12);
+  contact.SetCategoryBitmask(0x21);
   surface1.SetContact(contact);
   surface1.SetFriction(friction);
 
   sdf::Surface surface2 = surface1;
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
+  EXPECT_EQ(surface2.Contact()->CategoryBitmask(), 0x21);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu(), 0.1);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu2(), 0.2);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip1(), 3);
@@ -92,9 +97,11 @@ TEST(DOMsurface, CopyAssignmentAfterMove)
 
   sdf::Contact contact1;
   contact1.SetCollideBitmask(0x12);
+  contact1.SetCategoryBitmask(0x21);
   surface1.SetContact(contact1);
   sdf::Contact contact2;
   contact2.SetCollideBitmask(0x34);
+  contact2.SetCategoryBitmask(0x43);
   surface2.SetContact(contact2);
 
   sdf::ODE ode1;
@@ -124,6 +131,8 @@ TEST(DOMsurface, CopyAssignmentAfterMove)
 
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
   EXPECT_EQ(surface1.Contact()->CollideBitmask(), 0x34);
+  EXPECT_EQ(surface2.Contact()->CategoryBitmask(), 0x21);
+  EXPECT_EQ(surface1.Contact()->CategoryBitmask(), 0x43);
   EXPECT_DOUBLE_EQ(surface1.Friction()->ODE()->Mu(), 0.2);
   EXPECT_DOUBLE_EQ(surface1.Friction()->ODE()->Mu2(), 0.1);
   EXPECT_DOUBLE_EQ(surface1.Friction()->ODE()->Slip1(), 7);
@@ -165,6 +174,7 @@ TEST(DOMsurface, ToElement)
   torsional.SetODESlip(0.2);
   friction.SetTorsional(torsional);
   contact.SetCollideBitmask(0x12);
+  contact.SetCategoryBitmask(0x21);
   surface1.SetContact(contact);
   surface1.SetFriction(friction);
 
@@ -175,6 +185,7 @@ TEST(DOMsurface, ToElement)
   surface2.Load(elem);
 
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
+  EXPECT_EQ(surface2.Contact()->CategoryBitmask(), 0x21);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu(), 0.1);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu2(), 0.2);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip1(), 3);
@@ -224,6 +235,7 @@ TEST(DOMsurface, ToElementErrorOutput)
   ode.SetFdir1(gz::math::Vector3d(1, 2, 3));
   friction.SetODE(ode);
   contact.SetCollideBitmask(0x12);
+  contact.SetCategoryBitmask(0x21);
   surface1.SetContact(contact);
   surface1.SetFriction(friction);
 
@@ -236,6 +248,7 @@ TEST(DOMsurface, ToElementErrorOutput)
   EXPECT_TRUE(errors.empty());
 
   EXPECT_EQ(surface2.Contact()->CollideBitmask(), 0x12);
+  EXPECT_EQ(surface2.Contact()->CategoryBitmask(), 0x21);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu(), 0.1);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Mu2(), 0.2);
   EXPECT_DOUBLE_EQ(surface2.Friction()->ODE()->Slip1(), 3);
@@ -254,6 +267,7 @@ TEST(DOMcontact, DefaultConstruction)
   sdf::Contact contact;
   EXPECT_EQ(nullptr, contact.Element());
   EXPECT_EQ(contact.CollideBitmask(), 0xFF);
+  EXPECT_EQ(contact.CategoryBitmask(), 0xFF);
   EXPECT_EQ(contact.Element(), nullptr);
 }
 
@@ -262,9 +276,11 @@ TEST(DOMcontact, CopyOperator)
 {
   sdf::Contact contact1;
   contact1.SetCollideBitmask(0x12);
+  contact1.SetCategoryBitmask(0x21);
 
   sdf::Contact contact2(contact1);
   EXPECT_EQ(contact2.CollideBitmask(), 0x12);
+  EXPECT_EQ(contact2.CategoryBitmask(), 0x21);
 }
 
 /////////////////////////////////////////////////
@@ -272,9 +288,11 @@ TEST(DOMcontact, CopyAssignmentOperator)
 {
   sdf::Contact contact1;
   contact1.SetCollideBitmask(0x12);
+  contact1.SetCategoryBitmask(0x21);
 
   sdf::Contact contact2 = contact1;
   EXPECT_EQ(contact2.CollideBitmask(), 0x12);
+  EXPECT_EQ(contact2.CategoryBitmask(), 0x21);
 }
 
 /////////////////////////////////////////////////
@@ -285,6 +303,8 @@ TEST(DOMcontact, CopyAssignmentAfterMove)
 
   contact1.SetCollideBitmask(0x12);
   contact2.SetCollideBitmask(0x34);
+  contact1.SetCategoryBitmask(0x21);
+  contact2.SetCategoryBitmask(0x43);
 
   sdf::Contact tmp = std::move(contact1);
   contact1 = contact2;
@@ -292,6 +312,8 @@ TEST(DOMcontact, CopyAssignmentAfterMove)
 
   EXPECT_EQ(contact2.CollideBitmask(), 0x12);
   EXPECT_EQ(contact1.CollideBitmask(), 0x34);
+  EXPECT_EQ(contact2.CategoryBitmask(), 0x21);
+  EXPECT_EQ(contact1.CategoryBitmask(), 0x43);
 }
 
 /////////////////////////////////////////////////
@@ -299,7 +321,9 @@ TEST(DOMcontact, CollideBitmask)
 {
   sdf::Contact contact;
   contact.SetCollideBitmask(0x67);
+  contact.SetCategoryBitmask(0x76);
   EXPECT_EQ(contact.CollideBitmask(), 0x67);
+  EXPECT_EQ(contact.CategoryBitmask(), 0x76);
 }
 
 /////////////////////////////////////////////////

@@ -53,7 +53,16 @@ namespace sdf
     public: uint16_t CollideBitmask() const;
 
     /// \brief Set the collide bitmask parameter.
+    /// \param[in] _bitmask Category bitmask to set
     public: void SetCollideBitmask(const uint16_t _bitmask);
+
+    /// \brief Get the category bitmask parameter.
+    /// \return The category bitmask parameter.
+    public: uint16_t CategoryBitmask() const;
+
+    /// \brief Set the category bitmask parameter.
+    /// \param[in] _bitmask Category bitmask to set
+    public: void SetCategoryBitmask(const uint16_t _bitmask);
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)
