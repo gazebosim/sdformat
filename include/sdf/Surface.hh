@@ -17,6 +17,7 @@
 #ifndef SDF_SURFACE_HH_
 #define SDF_SURFACE_HH_
 
+#include <cstdint>
 #include <optional>
 
 #include <gz/math/Vector3.hh>
