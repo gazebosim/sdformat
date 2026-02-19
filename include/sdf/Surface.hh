@@ -17,6 +17,8 @@
 #ifndef SDF_SURFACE_HH_
 #define SDF_SURFACE_HH_
 
+#include <optional>
+
 #include <gz/math/Vector3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
@@ -58,7 +60,7 @@ namespace sdf
 
     /// \brief Get the category bitmask parameter.
     /// \return The category bitmask parameter.
-    public: uint16_t CategoryBitmask() const;
+    public: std::optional<uint16_t> CategoryBitmask() const;
 
     /// \brief Set the category bitmask parameter.
     /// \param[in] _bitmask Category bitmask to set

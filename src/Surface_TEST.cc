@@ -26,7 +26,7 @@ TEST(DOMsurface, DefaultConstruction)
   sdf::Surface surface;
   EXPECT_EQ(nullptr, surface.Element());
   EXPECT_EQ(surface.Contact()->CollideBitmask(), 0xFF);
-  EXPECT_EQ(surface.Contact()->CategoryBitmask(), 0xFF);
+  EXPECT_FALSE(surface.Contact()->CategoryBitmask().has_value());
   EXPECT_EQ(surface.Contact()->Element(), nullptr);
   EXPECT_EQ(surface.Friction()->Element(), nullptr);
 }
@@ -267,7 +267,7 @@ TEST(DOMcontact, DefaultConstruction)
   sdf::Contact contact;
   EXPECT_EQ(nullptr, contact.Element());
   EXPECT_EQ(contact.CollideBitmask(), 0xFF);
-  EXPECT_EQ(contact.CategoryBitmask(), 0xFF);
+  EXPECT_FALSE(contact.CategoryBitmask().has_value());
   EXPECT_EQ(contact.Element(), nullptr);
 }
 

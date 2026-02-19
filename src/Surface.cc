@@ -34,7 +34,7 @@ class sdf::Contact::Implementation
   public: uint16_t collideBitmask = 0xff;
 
   // \brief The category bitmask used to filter collisions.
-  public: uint16_t categoryBitmask = 0xff;
+  public: std::optional<uint16_t> categoryBitmask;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
@@ -638,7 +638,7 @@ void Contact::SetCollideBitmask(const uint16_t _bitmask)
 }
 
 /////////////////////////////////////////////////
-uint16_t Contact::CategoryBitmask() const
+std::optional<uint16_t> Contact::CategoryBitmask() const
 {
   return this->dataPtr->categoryBitmask;
 }
@@ -746,8 +746,11 @@ sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
   sdf::ElementPtr contactElem = elem->GetElement("contact", _errors);
   contactElem->GetElement("collide_bitmask", _errors)->Set(
       _errors, this->dataPtr->contact.CollideBitmask());
-  contactElem->GetElement("category_bitmask", _errors)->Set(
-      _errors, this->dataPtr->contact.CategoryBitmask());
+  if (this->dataPtr->contact.CategoryBitmask().has_value())
+  {
+    contactElem->GetElement("category_bitmask", _errors)->Set(
+        _errors, this->dataPtr->contact.CategoryBitmask().value());
+  }
 
   sdf::ElementPtr frictionElem = elem->GetElement("friction", _errors);
 
