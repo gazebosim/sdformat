@@ -49,6 +49,7 @@ set (sdfs
   population.sdf
   pose.sdf
   projector.sdf
+  range.sdf
   ray.sdf
   rfidtag.sdf
   rfid.sdf
