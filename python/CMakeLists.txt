@@ -1,10 +1,10 @@
 # Detect if we are doing a standalone build of the bindings, using an external sdformat
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.22.1)
-  find_package(gz-cmake REQUIRED)
+  find_package(gz-cmake 5 REQUIRED)
   gz_get_package_xml_version(${CMAKE_SOURCE_DIR}/../package.xml PACKAGE_XML)
   project(sdformat-python VERSION ${PACKAGE_XML_VERSION})
-  find_package(sdformat REQUIRED)
+  find_package(sdformat 16 REQUIRED)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat::sdformat")
   # require python dependencies to be found
   find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
@@ -29,21 +29,23 @@ else()
   return()
 endif()
 
-if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
-  if(NOT Python3_SITEARCH)
-    # Get variable from Python3 module
-    find_package(Python3 COMPONENTS Interpreter)
-  endif()
+if(NOT DEFINED GZ_PYTHON_INSTALL_PATH)
+  if(USE_SYSTEM_PATHS_FOR_PYTHON_INSTALLATION)
+    if(NOT Python3_SITEARCH)
+      # Get variable from Python3 module
+      find_package(Python3 COMPONENTS Interpreter)
+    endif()
 
-  if(USE_DIST_PACKAGES_FOR_PYTHON)
-    string(REPLACE "site-packages" "dist-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    if(USE_DIST_PACKAGES_FOR_PYTHON)
+      string(REPLACE "site-packages" "dist-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    else()
+      # custom cmake command is returning dist-packages
+      string(REPLACE "dist-packages" "site-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    endif()
   else()
-    # custom cmake command is returning dist-packages
-    string(REPLACE "dist-packages" "site-packages" GZ_PYTHON_INSTALL_PATH ${Python3_SITEARCH})
+    # If not a system installation, respect local paths
+    set(GZ_PYTHON_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/python)
   endif()
-else()
-  # If not a system installation, respect local paths
-  set(GZ_PYTHON_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/python)
 endif()
 
 # Set the build location and install location for a CPython extension

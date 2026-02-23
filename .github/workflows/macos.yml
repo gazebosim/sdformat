@@ -44,7 +44,12 @@ jobs:
         fi
         # gz-math7 has problems with swig, remove it for now
         brew remove swig || true
+        # remove following two lines once #1587 is resolved
+        brew remove cmake || true
+        brew untap local/pinned || true
         brew install --only-dependencies ${PACKAGE};
+        # install :build dependencies of a formula
+        brew install $(brew deps --1 --include-build ${PACKAGE})
 
     - run: mkdir build
     - name: cmake

@@ -17,6 +17,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -253,6 +256,7 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   clone->dataPtr->explicitlySetInFile = this->dataPtr->explicitlySetInFile;
 
   Param_V::const_iterator aiter;
+  clone->dataPtr->attributes.reserve(this->dataPtr->attributes.size());
   for (aiter = this->dataPtr->attributes.begin();
        aiter != this->dataPtr->attributes.end(); ++aiter)
   {
@@ -264,12 +268,15 @@ ElementPtr Element::Clone(sdf::Errors &_errors) const
   }
 
   ElementPtr_V::const_iterator eiter;
+  clone->dataPtr->elementDescriptions.reserve(
+    this->dataPtr->elementDescriptions.size());
   for (eiter = this->dataPtr->elementDescriptions.begin();
       eiter != this->dataPtr->elementDescriptions.end(); ++eiter)
   {
-    clone->dataPtr->elementDescriptions.push_back((*eiter)->Clone(_errors));
+    clone->dataPtr->elementDescriptions.push_back(*eiter);
   }
 
+  clone->dataPtr->elements.reserve(this->dataPtr->elements.size());
   for (eiter = this->dataPtr->elements.begin();
        eiter != this->dataPtr->elements.end(); ++eiter)
   {
@@ -344,11 +351,12 @@ void Element::Copy(const ElementPtr _elem, sdf::Errors &_errors)
   }
 
   this->dataPtr->elementDescriptions.clear();
+  this->dataPtr->clonedElementDescriptions.clear();
   for (ElementPtr_V::const_iterator iter =
        _elem->dataPtr->elementDescriptions.begin();
        iter != _elem->dataPtr->elementDescriptions.end(); ++iter)
   {
-    this->dataPtr->elementDescriptions.push_back((*iter)->Clone(_errors));
+    this->dataPtr->elementDescriptions.push_back(*iter);
   }
 
   this->dataPtr->elements.clear();
@@ -687,6 +695,22 @@ void ElementPrivate::PrintAttributes(sdf::Errors &_errors,
 }
 
 /////////////////////////////////////////////////
+std::optional<unsigned int> ElementPrivate::ElementDescriptionIndex(
+    const std::string &_key)
+{
+  for (auto iter = this->elementDescriptions.begin();
+       iter != this->elementDescriptions.end(); ++iter)
+  {
+    if ((*iter)->GetName() == _key)
+    {
+      return static_cast<unsigned int>(
+        std::distance(this->elementDescriptions.begin(), iter));
+    }
+  }
+  return std::nullopt;
+}
+
+/////////////////////////////////////////////////
 void Element::PrintValues(std::string _prefix,
                           const PrintConfig &_config) const
 {
@@ -893,6 +917,18 @@ size_t Element::GetElementDescriptionCount() const
 /////////////////////////////////////////////////
 ElementPtr Element::GetElementDescription(unsigned int _index) const
 {
+  return std::const_pointer_cast<Element>(this->ElementDescription(_index));
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::GetElementDescription(const std::string &_key) const
+{
+  return std::const_pointer_cast<Element>(this->ElementDescription(_key));
+}
+
+/////////////////////////////////////////////////
+ElementConstPtr Element::ElementDescription(unsigned int _index) const
+{
   ElementPtr result;
   if (_index < this->dataPtr->elementDescriptions.size())
   {
@@ -902,7 +938,7 @@ ElementPtr Element::GetElementDescription(unsigned int _index) const
 }
 
 /////////////////////////////////////////////////
-ElementPtr Element::GetElementDescription(const std::string &_key) const
+ElementConstPtr Element::ElementDescription(const std::string &_key) const
 {
   ElementPtr_V::const_iterator iter;
   for (iter = this->dataPtr->elementDescriptions.begin();
@@ -915,6 +951,48 @@ ElementPtr Element::GetElementDescription(const std::string &_key) const
   }
 
   return ElementPtr();
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::MutableElementDescription(unsigned int _index)
+{
+  auto desc = static_cast<const Element *>(this)->ElementDescription(_index);
+  if (!desc)
+  {
+    return ElementPtr();
+  }
+
+  // To improve the performance of libsdformat, element descriptions are
+  // shared among elements of the same type. If the user requests a mutable
+  // element description, we make a clone here so that other elements are not
+  // affected by the potential modifications the user makes. We keep track of
+  // the clones we've made so that a clone is made at most once for each
+  // element description.
+  if (this->dataPtr->clonedElementDescriptions.count(desc) == 0)
+  {
+    auto clonedDesc = desc->Clone();
+    this->dataPtr->clonedElementDescriptions.insert(clonedDesc);
+    this->dataPtr->elementDescriptions[_index] = clonedDesc;
+    return clonedDesc;
+  }
+  else
+  {
+    return std::const_pointer_cast<Element>(desc);
+  }
+}
+
+/////////////////////////////////////////////////
+ElementPtr Element::MutableElementDescription(const std::string &_key)
+{
+  auto index = this->dataPtr->ElementDescriptionIndex(_key);
+  if (index)
+  {
+    return this->MutableElementDescription(*index);
+  }
+  else
+  {
+    return sdf::ElementPtr();
+  }
 }
 
 /////////////////////////////////////////////////
@@ -1175,7 +1253,7 @@ void Element::InsertElement(ElementPtr _elem,  bool _setParentToSelf)
 /////////////////////////////////////////////////
 bool Element::HasElementDescription(const std::string &_name) const
 {
-  return this->GetElementDescription(_name) != ElementPtr();
+  return this->ElementDescription(_name) != ElementConstPtr();
 }
 
 /////////////////////////////////////////////////
@@ -1200,7 +1278,7 @@ ElementPtr Element::AddElement(const std::string &_name, sdf::Errors &_errors)
     for (unsigned int i = 0; i < parent->GetElementDescriptionCount(); ++i)
     {
       this->dataPtr->elementDescriptions.push_back(
-        parent->GetElementDescription(i)->Clone(_errors));
+        parent->dataPtr->elementDescriptions[i]);
     }
   }
 
@@ -1309,6 +1387,7 @@ void Element::Reset()
   }
   this->dataPtr->elements.clear();
   this->dataPtr->elementDescriptions.clear();
+  this->dataPtr->clonedElementDescriptions.clear();
 
   this->dataPtr->value.reset();
 
@@ -1476,10 +1555,10 @@ std::any Element::GetAny(sdf::Errors &_errors, const std::string &_key) const
       }
       else
       {
-        tmp = this->GetElementDescription(_key);
-        if (tmp != ElementPtr())
+        auto desc = this->ElementDescription(_key);
+        if (desc != ElementConstPtr())
         {
-          result = tmp->GetAny(_errors);
+          result = desc->GetAny(_errors);
         }
         else
         {

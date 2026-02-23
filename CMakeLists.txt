@@ -5,7 +5,7 @@ if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0004 NEW)
 endif(COMMAND CMAKE_POLICY)
 
-project (sdformat VERSION 16.0.0)
+project (sdformat VERSION 16.0.1)
 
 # The protocol version has nothing to do with the package version.
 # It represents the current version of SDFormat implemented by the software
@@ -18,7 +18,7 @@ set (BUILD_SDF ON CACHE INTERNAL "Build SDF" FORCE)
 
 #################################################
 # Find gz-cmake
-find_package(gz-cmake REQUIRED)
+find_package(gz-cmake 5 REQUIRED)
 
 ########################################
 option(SKIP_PYBIND11
@@ -42,7 +42,7 @@ if (BUILD_SDF)
   gz_configure_project(
     NO_PROJECT_PREFIX
     REPLACE_INCLUDE_PATH sdf
-    VERSION_SUFFIX pre1)
+    VERSION_SUFFIX)
 
   #################################################
   # Find tinyxml2.
@@ -127,11 +127,11 @@ if (BUILD_SDF)
   ########################################
   # Find gz math
   # Set a variable for generating ProjectConfig.cmake
-  gz_find_package(gz-math VERSION REQUIRED)
+  gz_find_package(gz-math VERSION 9 REQUIRED)
 
   ########################################
   # Find gz utils
-  gz_find_package(gz-utils REQUIRED COMPONENTS cli)
+  gz_find_package(gz-utils VERSION 4 REQUIRED COMPONENTS cli)
 
   gz_configure_build(QUIT_IF_BUILD_ERRORS)
 

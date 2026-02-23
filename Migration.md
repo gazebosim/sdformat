@@ -18,6 +18,22 @@ but with improved human-readability..
    package.xml package name. Use `find_package(sdformat)` instead of
    `find_package(sdformatX)` going forward.
 
+### Additions
+
+- **sdf/Element.hh**:
+  + `sdf::ElementConstPtr ElementDescription(unsigned int) const`
+  + `sdf::ElementConstPtr ElementDescription(const std::string &) const`
+  + `sdf::ElementPtr MutableElementDescription(unsigned int)`
+  + `sdf::ElementPtr MutableElementDescription(const std::string &)`
+
+### Deprecations
+- **sdf/Element.hh**:
+  + Mutable access to an element description via `Element::GetElementDescription` has been deprecated. Please use `Element::MutableElementDescription` instead. For immutable access, please use `Element::ElementDescription`.
+  + ***Deprecation:*** `sdf::ElementPtr GetElementDescription(unsigned int)`
+  + ***Replacement:*** `sdf::ElementConstPtr ElementDescription(unsigned int) const`
+  + ***Deprecation:*** `sdf::ElementPtr GetElementDescription(const std::string &)`
+  + ***Replacement:*** `sdf::ElementConstPtr ElementDescription(const std::string &) const`
+
 ### Removals
 
 - **sdf/config.hh**:
