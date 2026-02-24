@@ -762,14 +762,15 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   if (!this->dataPtr->poseRelativeTo.empty())
   {
     poseElem->GetAttribute("relative_to")->Set<std::string>(
-        this->dataPtr->poseRelativeTo);
+        this->dataPtr->poseRelativeTo, _errors);
   }
-  poseElem->Set<gz::math::Pose3d>(this->RawPose());
+  poseElem->Set<gz::math::Pose3d>(_errors, this->RawPose());
 
-  elem->GetElement("frame_id")->Set<std::string>(this->FrameId());
-  elem->GetElement("topic")->Set<std::string>(this->Topic());
-  elem->GetElement("update_rate")->Set<double>(this->UpdateRate());
-  elem->GetElement("enable_metrics")->Set<double>(this->EnableMetrics());
+  elem->GetElement("frame_id")->Set<std::string>(_errors, this->FrameId());
+  elem->GetElement("topic")->Set<std::string>(_errors, this->Topic());
+  elem->GetElement("update_rate")->Set<double>(_errors, this->UpdateRate());
+  elem->GetElement("enable_metrics")->Set<double>(_errors,
+      this->EnableMetrics());
 
   // air pressure
   if (this->Type() == sdf::SensorType::AIR_PRESSURE)
@@ -777,7 +778,8 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     if (this->dataPtr->airPressure)
     {
       sdf::ElementPtr airPressureElem = elem->GetElement("air_pressure");
-      airPressureElem->Copy(this->dataPtr->airPressure->ToElement());
+      airPressureElem->Copy(
+          this->dataPtr->airPressure->ToElement(_errors), _errors);
     }
   }
   // air speed
@@ -785,8 +787,9 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   {
     if (this->dataPtr->airSpeed)
     {
+      // TODO(anyone) use ToElement with sdf::Error when it available
       sdf::ElementPtr airSpeedElem = elem->GetElement("air_speed");
-      airSpeedElem->Copy(this->dataPtr->airSpeed->ToElement());
+      airSpeedElem->Copy(this->dataPtr->airSpeed->ToElement(), _errors);
     }
   }
   // altimeter
@@ -795,14 +798,16 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     if (this->dataPtr->altimeter)
     {
       sdf::ElementPtr altimeterElem = elem->GetElement("altimeter");
-      altimeterElem->Copy(this->dataPtr->altimeter->ToElement());
+      altimeterElem->Copy(
+          this->dataPtr->altimeter->ToElement(_errors), _errors);
     }
   }
   // camera, depth, thermal, segmentation
   else if (this->CameraSensor())
   {
+    // TODO(anyone) use ToElement with sdf::Error when it available
     sdf::ElementPtr cameraElem = elem->GetElement("camera");
-    cameraElem->Copy(this->dataPtr->camera->ToElement());
+    cameraElem->Copy(this->dataPtr->camera->ToElement(), _errors);
   }
   // force torque
   else if (this->Type() == sdf::SensorType::FORCE_TORQUE)
@@ -810,7 +815,8 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     if (this->dataPtr->forceTorque)
     {
       sdf::ElementPtr forceTorqueElem = elem->GetElement("force_torque");
-      forceTorqueElem->Copy(this->dataPtr->forceTorque->ToElement());
+      forceTorqueElem->Copy(
+          this->dataPtr->forceTorque->ToElement(_errors), _errors);
     }
   }
   // imu
@@ -819,7 +825,7 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     if (this->dataPtr->imu)
     {
       sdf::ElementPtr imuElem = elem->GetElement("imu");
-      imuElem->Copy(this->dataPtr->imu->ToElement());
+      imuElem->Copy(this->dataPtr->imu->ToElement(_errors), _errors);
     }
   }
   // lidar, gpu_lidar
@@ -828,9 +834,10 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   {
     if (this->dataPtr->lidar)
     {
+      // TODO(anyone) use ToElement with sdf::Error when it available
       sdf::ElementPtr rayElem = (elem->HasElement("ray")) ?
           elem->GetElement("ray") : elem->GetElement("lidar");
-      rayElem->Copy(this->dataPtr->lidar->ToElement());
+      rayElem->Copy(this->dataPtr->lidar->ToElement(), _errors);
     }
   }
   // magnetometer
@@ -838,8 +845,10 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
   {
     if (this->dataPtr->magnetometer)
     {
+      // TODO(anyone) use ToElement with sdf::Error when it available
       sdf::ElementPtr magnetometerElem = elem->GetElement("magnetometer");
-      magnetometerElem->Copy(this->dataPtr->magnetometer->ToElement());
+      magnetometerElem->Copy(
+          this->dataPtr->magnetometer->ToElement(), _errors);
     }
   }
   else if (this->Type() == sdf::SensorType::NAVSAT)
@@ -847,7 +856,7 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
     if (this->dataPtr->navSat)
     {
       sdf::ElementPtr navSatElem = elem->GetElement("navsat");
-      navSatElem->Copy(this->dataPtr->navSat->ToElement());
+      navSatElem->Copy(this->dataPtr->navSat->ToElement(_errors), _errors);
     }
   }
   else
@@ -860,7 +869,7 @@ sdf::ElementPtr Sensor::ToElement(sdf::Errors &_errors) const
 
   // Add in the plugins
   for (const Plugin &plugin : this->dataPtr->plugins)
-    elem->InsertElement(plugin.ToElement(), true);
+    elem->InsertElement(plugin.ToElement(_errors), true);
 
   return elem;
 }

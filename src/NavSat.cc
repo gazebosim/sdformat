@@ -207,35 +207,37 @@ sdf::ElementPtr NavSat::ToElement() const
 sdf::ElementPtr NavSat::ToElement(sdf::Errors &_errors) const
 {
   sdf::ElementPtr elem(new sdf::Element);
-  sdf::initFile("navsat.sdf", elem);
+  sdf::initFile("navsat.sdf", ParserConfig::GlobalConfig(), elem, _errors);
   const auto defaultNoise = sdf::Noise();
 
   if (this->dataPtr->horizontalPositionNoise != defaultNoise)
   {
     auto el = elem->GetElement("position_sensing", _errors)->
         GetElement("horizontal", _errors)->GetElement("noise", _errors);
-    el->Copy(this->dataPtr->horizontalPositionNoise.ToElement(), _errors);
+    el->Copy(
+        this->dataPtr->horizontalPositionNoise.ToElement(_errors), _errors);
   }
 
   if (this->dataPtr->verticalPositionNoise != defaultNoise)
   {
     auto el = elem->GetElement("position_sensing", _errors)->
         GetElement("vertical", _errors)->GetElement("noise", _errors);
-    el->Copy(this->dataPtr->verticalPositionNoise.ToElement(), _errors);
+    el->Copy(this->dataPtr->verticalPositionNoise.ToElement(_errors), _errors);
   }
 
   if (this->dataPtr->horizontalVelocityNoise != defaultNoise)
   {
     auto el = elem->GetElement("velocity_sensing", _errors)->
         GetElement("horizontal", _errors)->GetElement("noise", _errors);
-    el->Copy(this->dataPtr->horizontalVelocityNoise.ToElement(), _errors);
+    el->Copy(
+        this->dataPtr->horizontalVelocityNoise.ToElement(_errors), _errors);
   }
 
   if (this->dataPtr->verticalVelocityNoise != defaultNoise)
   {
     auto el = elem->GetElement("velocity_sensing", _errors)->
         GetElement("vertical", _errors)->GetElement("noise", _errors);
-    el->Copy(this->dataPtr->verticalVelocityNoise.ToElement(), _errors);
+    el->Copy(this->dataPtr->verticalVelocityNoise.ToElement(_errors), _errors);
   }
 
   return elem;
