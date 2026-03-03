@@ -11,6 +11,7 @@
         <surface>
           <contact>
             <collide_bitmask>0xAB</collide_bitmask>
+            <category_bitmask>0xBA</category_bitmask>
           </contact>
           <friction>
               <ode>

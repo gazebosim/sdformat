@@ -16,6 +16,7 @@
 #include "pySurface.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "sdf/Surface.hh"
 
@@ -37,6 +38,11 @@ void defineContact(pybind11::object module)
          "Get the collide bitmask parameter.")
     .def("set_collide_bitmask", &sdf::Contact::SetCollideBitmask,
          "Set the collide bitmask parameter.")
+    .def("category_bitmask", &sdf::Contact::CategoryBitmask,
+         "Get the category bitmask parameter.")
+    .def("set_category_bitmask", &sdf::Contact::SetCategoryBitmask,
+         "Set the category bitmask parameter.")
+
     .def("__copy__", [](const sdf::Contact &self) {
       return sdf::Contact(self);
     })
