@@ -17,6 +17,9 @@
 #ifndef SDF_SURFACE_HH_
 #define SDF_SURFACE_HH_
 
+#include <cstdint>
+#include <optional>
+
 #include <gz/math/Vector3.hh>
 #include <gz/utils/ImplPtr.hh>
 #include "sdf/Element.hh"
@@ -53,7 +56,16 @@ namespace sdf
     public: uint16_t CollideBitmask() const;
 
     /// \brief Set the collide bitmask parameter.
+    /// \param[in] _bitmask Category bitmask to set
     public: void SetCollideBitmask(const uint16_t _bitmask);
+
+    /// \brief Get the category bitmask parameter.
+    /// \return The category bitmask parameter.
+    public: std::optional<uint16_t> CategoryBitmask() const;
+
+    /// \brief Set the category bitmask parameter.
+    /// \param[in] _bitmask Category bitmask to set
+    public: void SetCategoryBitmask(const uint16_t _bitmask);
 
     /// \brief Private data pointer.
     GZ_UTILS_IMPL_PTR(dataPtr)

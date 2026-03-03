@@ -24,6 +24,7 @@ class SurfaceTEST(unittest.TestCase):
   def test_default_construction(self):
       surface = Surface()
       self.assertEqual(surface.contact().collide_bitmask(), 0xFF)
+      self.assertFalse(surface.contact().category_bitmask())
 
 
   def test_assigment_construction(self):
@@ -54,11 +55,13 @@ class SurfaceTEST(unittest.TestCase):
     friction.set_bullet_friction(bullet)
     friction.set_torsional(torsional)
     contact.set_collide_bitmask(0x12)
+    contact.set_category_bitmask(0x22)
     surface1.set_contact(contact)
     surface1.set_friction(friction)
 
     surface2 = surface1
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+    self.assertEqual(surface2.contact().category_bitmask(), 0x22)
     self.assertEqual(surface2.friction().ode().mu(), 0.1)
     self.assertEqual(surface2.friction().ode().mu2(), 0.2)
     self.assertEqual(surface2.friction().ode().slip1(), 3)
@@ -78,9 +81,12 @@ class SurfaceTEST(unittest.TestCase):
     self.assertEqual(surface2.friction().torsional().ode_slip(), 0.01)
 
     contact.set_collide_bitmask(0x21)
+    contact.set_category_bitmask(0x33)
     surface1.set_contact(contact)
     self.assertEqual(surface1.contact().collide_bitmask(), 0x21)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x21)
+    self.assertEqual(surface1.contact().category_bitmask(), 0x33)
+    self.assertEqual(surface2.contact().category_bitmask(), 0x33)
 
     ode.set_mu(1.1)
     ode.set_mu2(1.2)
@@ -165,11 +171,13 @@ class SurfaceTEST(unittest.TestCase):
     friction.set_bullet_friction(bullet)
     friction.set_torsional(torsional)
     contact.set_collide_bitmask(0x12)
+    contact.set_category_bitmask(0x22)
     surface1.set_contact(contact)
     surface1.set_friction(friction)
 
     surface2 = Surface(surface1)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+    self.assertEqual(surface2.contact().category_bitmask(), 0x22)
     self.assertEqual(surface2.friction().ode().mu(), 0.1)
     self.assertEqual(surface2.friction().ode().mu2(), 0.2)
     self.assertEqual(surface2.friction().ode().slip1(), 3)
@@ -189,9 +197,12 @@ class SurfaceTEST(unittest.TestCase):
     self.assertEqual(surface2.friction().torsional().ode_slip(), 0.01)
 
     contact.set_collide_bitmask(0x21)
+    contact.set_category_bitmask(0x33)
     surface1.set_contact(contact)
     self.assertEqual(surface1.contact().collide_bitmask(), 0x21)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+    self.assertEqual(surface1.contact().category_bitmask(), 0x33)
+    self.assertEqual(surface2.contact().category_bitmask(), 0x22)
 
     ode.set_mu(1.1)
     ode.set_mu2(1.2)
@@ -276,11 +287,13 @@ class SurfaceTEST(unittest.TestCase):
     friction.set_bullet_friction(bullet)
     friction.set_torsional(torsional)
     contact.set_collide_bitmask(0x12)
+    contact.set_category_bitmask(0x22)
     surface1.set_contact(contact)
     surface1.set_friction(friction)
 
     surface2 = copy.deepcopy(surface1)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+    self.assertEqual(surface2.contact().category_bitmask(), 0x22)
     self.assertEqual(surface2.friction().ode().mu(), 0.1)
     self.assertEqual(surface2.friction().ode().mu2(), 0.2)
     self.assertEqual(surface2.friction().ode().slip1(), 3)
@@ -300,9 +313,12 @@ class SurfaceTEST(unittest.TestCase):
     self.assertEqual(surface2.friction().torsional().ode_slip(), 0.01)
 
     contact.set_collide_bitmask(0x21)
+    contact.set_category_bitmask(0x33)
     surface1.set_contact(contact)
     self.assertEqual(surface1.contact().collide_bitmask(), 0x21)
     self.assertEqual(surface2.contact().collide_bitmask(), 0x12)
+    self.assertEqual(surface1.contact().category_bitmask(), 0x33)
+    self.assertEqual(surface2.contact().category_bitmask(), 0x22)
 
     ode.set_mu(1.1)
     ode.set_mu2(1.2)
@@ -363,14 +379,17 @@ class SurfaceTEST(unittest.TestCase):
   def test_default_contact_construction(self):
     contact = Contact()
     self.assertEqual(contact.collide_bitmask(), 0xFF)
+    self.assertFalse(contact.category_bitmask())
 
 
   def test_copy_contact_construction(self):
     contact1 = Contact()
     contact1.set_collide_bitmask(0x12)
+    contact1.set_category_bitmask(0x21)
 
     contact2 = Contact(contact1)
     self.assertEqual(contact2.collide_bitmask(), 0x12)
+    self.assertEqual(contact2.category_bitmask(), 0x21)
 
   def test_default_ode_construction(self):
     ode = ODE()

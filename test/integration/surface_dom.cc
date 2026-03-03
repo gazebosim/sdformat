@@ -50,6 +50,7 @@ TEST(DOMSurface, Shapes)
   ASSERT_NE(nullptr, boxCol->Surface());
   ASSERT_NE(nullptr, boxCol->Surface()->Contact());
   EXPECT_EQ(boxCol->Surface()->Contact()->CollideBitmask(), 0xAB);
+  EXPECT_EQ(boxCol->Surface()->Contact()->CategoryBitmask(), 0xBA);
   EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Mu(), 0.6);
   EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Mu2(), 0.7);
   EXPECT_DOUBLE_EQ(boxCol->Surface()->Friction()->ODE()->Slip1(), 4);
