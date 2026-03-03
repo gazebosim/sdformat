@@ -46,7 +46,7 @@ namespace sdf
   /// \sa Errors
   enum class ErrorCode
   {
-    // \brief No error
+    /// \brief No error
     NONE = 0,
 
     /// \brief Indicates that reading an SDF file failed.
