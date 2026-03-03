@@ -30,8 +30,11 @@ using namespace sdf;
 
 class sdf::Contact::Implementation
 {
-  /// \brief The bitmask used to filter collisions.
+  /// \brief The collide bitmask used to filter collisions.
   public: uint16_t collideBitmask = 0xff;
+
+  /// \brief The category bitmask used to filter collisions.
+  public: std::optional<uint16_t> categoryBitmask;
 
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
@@ -605,6 +608,13 @@ Errors Contact::Load(ElementPtr _sdf)
         errors, "collide_bitmask"));
   }
 
+  if (_sdf->HasElement("category_bitmask"))
+  {
+    this->dataPtr->categoryBitmask =
+        static_cast<uint16_t>(_sdf->Get<unsigned int>(
+        errors, "category_bitmask"));
+  }
+
   // \todo(nkoenig) Parse the remaining collide properties.
   return errors;
 }
@@ -625,6 +635,18 @@ uint16_t Contact::CollideBitmask() const
 void Contact::SetCollideBitmask(const uint16_t _bitmask)
 {
   this->dataPtr->collideBitmask = _bitmask;
+}
+
+/////////////////////////////////////////////////
+std::optional<uint16_t> Contact::CategoryBitmask() const
+{
+  return this->dataPtr->categoryBitmask;
+}
+
+/////////////////////////////////////////////////
+void Contact::SetCategoryBitmask(const uint16_t _bitmask)
+{
+  this->dataPtr->categoryBitmask = _bitmask;
 }
 
 /////////////////////////////////////////////////
@@ -724,6 +746,11 @@ sdf::ElementPtr Surface::ToElement(sdf::Errors &_errors) const
   sdf::ElementPtr contactElem = elem->GetElement("contact", _errors);
   contactElem->GetElement("collide_bitmask", _errors)->Set(
       _errors, this->dataPtr->contact.CollideBitmask());
+  if (this->dataPtr->contact.CategoryBitmask().has_value())
+  {
+    contactElem->GetElement("category_bitmask", _errors)->Set(
+        _errors, this->dataPtr->contact.CategoryBitmask().value());
+  }
 
   sdf::ElementPtr frictionElem = elem->GetElement("friction", _errors);
 
