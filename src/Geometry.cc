@@ -41,7 +41,7 @@ using namespace sdf;
 // Private data class
 class sdf::Geometry::Implementation
 {
-  // \brief The geometry type.
+  /// \brief The geometry type.
   public: GeometryType type = GeometryType::EMPTY;
 
   /// \brief Optional box.
