@@ -264,7 +264,7 @@ bool ParticleEmitter::SetType(const std::string &_typeStr)
 /////////////////////////////////////////////////
 std::string ParticleEmitter::TypeStr() const
 {
-  size_t index = static_cast<int>(this->dataPtr->type);
+  size_t index = static_cast<size_t>(this->dataPtr->type);
   if (index < emitterTypeStrs.size())
     return emitterTypeStrs[index];
   return "point";

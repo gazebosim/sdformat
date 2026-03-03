@@ -1144,9 +1144,9 @@ void Camera::SetLensIntrinsicsSkew(double _s)
 /////////////////////////////////////////////////
 std::string Camera::ConvertPixelFormat(PixelFormatType _type)
 {
-  unsigned int index = static_cast<int>(_type);
+  unsigned int index = static_cast<unsigned int>(_type);
   if (index < kPixelFormatNames.size())
-    return kPixelFormatNames[static_cast<int>(_type)];
+    return kPixelFormatNames[index];
 
   return kPixelFormatNames[0];
 }
