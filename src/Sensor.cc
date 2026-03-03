@@ -611,7 +611,7 @@ void Sensor::SetUpdateRate(double _hz)
 /////////////////////////////////////////////////
 std::string Sensor::TypeStr() const
 {
-  size_t index = static_cast<int>(this->dataPtr->type);
+  size_t index = static_cast<size_t>(this->dataPtr->type);
   if (index > 0 && index < sensorTypeStrs.size())
     return sensorTypeStrs[index];
   return "none";
