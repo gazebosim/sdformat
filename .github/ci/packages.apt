@@ -7,7 +7,7 @@ libtinyxml2-dev
 liburdfdom-dev
 libxml2-utils
 python3-dev
-gz-rotary-math-python
+python-rotary-math
 python3-psutil
 python3-pybind11
 python3-pytest
