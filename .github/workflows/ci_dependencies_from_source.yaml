@@ -1,0 +1,33 @@
+name: Ubuntu CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'sdf[1-9]?[0-9]'
+      - 'main'
+
+jobs:
+  noble-ci:
+    runs-on: ubuntu-latest
+    name: Ubuntu Noble CI (from source)
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-noble-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Compile and test
+        uses: ros-tooling/action-ros-ci@v0.4
+        with:
+          package-name: sdformat
+          target-ros2-distro: kilted
+          vcs-repo-file-url: https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/sdformat16.yaml
+          colcon-defaults: |
+            {
+              "build": {
+                "merge-install": true
+              },
+              "test": {
+                "merge-install": true
+              }
+            }
