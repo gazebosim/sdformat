@@ -26,7 +26,7 @@ jobs:
             {
               "build": {
                 "merge-install": true
-              }
+              },
               "test": {
                 "merge-install": true
               }
