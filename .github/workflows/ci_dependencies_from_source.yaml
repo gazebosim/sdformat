@@ -22,3 +22,9 @@ jobs:
           package-name: sdformat
           target-ros2-distro: kilted
           vcs-repo-file-url: https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/sdformat16.yaml
+          colcon-defaults: |
+            {
+              "build": {
+                "merge-install": true
+              }
+            }
