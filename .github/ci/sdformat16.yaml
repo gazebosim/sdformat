@@ -1,0 +1,22 @@
+---
+repositories:
+  gz-cmake:
+    type: git
+    url: https://github.com/gazebosim/gz-cmake
+    version: gz-cmake5
+  gz-math:
+    type: git
+    url: https://github.com/gazebosim/gz-math
+    version: gz-math9
+  gz-tools:
+    type: git
+    url: https://github.com/gazebosim/gz-tools
+    version: gz-tools2
+  gz-utils:
+    type: git
+    url: https://github.com/gazebosim/gz-utils
+    version: gz-utils4
+  sdformat:
+    type: git
+    url: https://github.com/gazebosim/sdformat
+    version: sdf16
