@@ -1,13 +1,22 @@
-name: Ubuntu CI
+name: Ubuntu CI from source
+run-name: Testing ${{ inputs.packages-to-test }} | vcs ${{ inputs.vcs-repo-file-base }} ${{ inputs.vcs-repo-file }}
 
 on:
   workflow_dispatch:
     inputs:
-      vcs-repo-file-is-relative:
-        description: If true the vcs-repo-file is a relative path in the github workspace; otherwise it is a URL.
-        type: bool
-        required: True
-        default: True
+      packages-to-test:
+        description: Names of packages to test (e.g. 'gz-math sdformat').
+        required: true
+        type: string
+        default: sdformat
+      vcs-repo-file-base:
+        description: Choose whether vcs-repo-file represents a relative path in the github workspace or a URL.
+        required: true
+        default: relative
+        type: choice
+        options:
+          - relative
+          - url
       vcs-repo-file:
         description: Relative path or URL to vcs repo file to import into colcon workspace
         required: true
@@ -26,9 +35,13 @@ jobs:
       - name: Compile and test
         uses: ros-tooling/action-ros-ci@v0.4
         with:
-          package-name: sdformat
+          package-name: ${{ inputs.packages-to-test }}
           target-ros2-distro: kilted
-          vcs-repo-file-url: ${{ inputs.vcs-repo-file-is-relative && format('{0}/', github.workspace) }}${{ inputs.vcs-repo-file }}
+          vcs-repo-file-url: >
+            ${{ case(
+              inputs.vcs-repo-file-base == 'relative', format('{0}/{1}', github.workspace, inputs.vcs-repo-file),
+              inputs.vcs-repo-file
+            ) }}
           colcon-defaults: |
             {
               "build": {
