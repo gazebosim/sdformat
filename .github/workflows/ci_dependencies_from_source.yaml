@@ -1,11 +1,13 @@
 name: Ubuntu CI
 
 on:
-  pull_request:
-  push:
-    branches:
-      - 'sdf[1-9]?[0-9]'
-      - 'main'
+  workflow_dispatch:
+    inputs:
+      vcs_repo_file_url:
+        description: URL to vcs repo file to import into colcon workspace
+        required: true
+        type: string
+        default: "${{ github.workspace }}/.github/ci/packages_up_to_sdformat.yaml"
 
 jobs:
   noble-ci:
@@ -21,7 +23,7 @@ jobs:
         with:
           package-name: sdformat
           target-ros2-distro: kilted
-          vcs-repo-file-url: "${{ github.workspace }}/.github/ci/packages_up_to_sdformat.yaml"
+          vcs-repo-file-url: "${{ inputs.vcs_repo_file_url }}"
           colcon-defaults: |
             {
               "build": {
