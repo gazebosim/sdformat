@@ -21,7 +21,7 @@ jobs:
         with:
           package-name: sdformat
           target-ros2-distro: kilted
-          vcs-repo-file-url: "${{ github.workspace }}/.github/ci/sdformat16.yaml"
+          vcs-repo-file-url: "${{ github.workspace }}/.github/ci/packages_up_to_sdformat.yaml"
           colcon-defaults: |
             {
               "build": {
