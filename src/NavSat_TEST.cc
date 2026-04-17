@@ -113,3 +113,43 @@ TEST(DOMNavSat, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_INCORRECT_TYPE, errors[0].Code());
   EXPECT_NE(nullptr, navSat.Element());
 }
+
+/////////////////////////////////////////////////
+TEST(DOMNavSat, ToElement)
+{
+  sdf::NavSat navSat;
+  sdf::Noise noiseHorPos;
+  noiseHorPos.SetType(sdf::NoiseType::GAUSSIAN);
+  noiseHorPos.SetMean(1.2);
+  noiseHorPos.SetStdDev(2.3);
+  noiseHorPos.SetBiasMean(4.5);
+  noiseHorPos.SetBiasStdDev(6.7);
+  noiseHorPos.SetPrecision(8.9);
+  navSat.SetHorizontalPositionNoise(noiseHorPos);
+
+  auto noiseVerPos = noiseHorPos;
+  noiseVerPos.SetMean(2.2);
+  navSat.SetVerticalPositionNoise(noiseVerPos);
+
+  auto noiseHorVel = noiseHorPos;
+  noiseHorVel.SetMean(3.2);
+  navSat.SetHorizontalVelocityNoise(noiseHorVel);
+
+  auto noiseVerVel = noiseHorPos;
+  noiseVerVel.SetMean(4.2);
+  navSat.SetVerticalVelocityNoise(noiseVerVel);
+
+  sdf::ElementPtr navSatElem = navSat.ToElement();
+  ASSERT_NE(nullptr, navSatElem);
+  EXPECT_EQ(nullptr, navSat.Element());
+
+  // verify values after loading the element back
+  sdf::NavSat navSat2;
+  auto errors = navSat2.Load(navSatElem);
+  ASSERT_TRUE(errors.empty());
+
+  EXPECT_EQ(noiseHorPos, navSat2.HorizontalPositionNoise());
+  EXPECT_EQ(noiseVerPos, navSat2.VerticalPositionNoise());
+  EXPECT_EQ(noiseHorVel, navSat2.HorizontalVelocityNoise());
+  EXPECT_EQ(noiseVerVel, navSat2.VerticalVelocityNoise());
+}
