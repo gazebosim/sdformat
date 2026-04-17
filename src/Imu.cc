@@ -47,6 +47,18 @@ class sdf::Imu::Implementation
   /// Z-axis.
   public: Noise angularVelZNoise;
 
+  /// \brief Noise values related to the body-frame orientation on the
+  /// X-axis (Roll).
+  public: Noise orientationXNoise;
+
+  /// \brief Noise values related to the body-frame orientation on the
+  /// Y-axis (Pitch).
+  public: Noise orientationYNoise;
+
+  /// \brief Noise values related to the body-frame orientation on the
+  /// Z-axis (Yaw).
+  public: Noise orientationZNoise;
+
   /// \brief The gravity dir
   public: gz::math::Vector3d gravityDirX{gz::math::Vector3d::UnitX};
 
@@ -193,6 +205,38 @@ Errors Imu::Load(ElementPtr _sdf)
   {
     this->dataPtr->orientationEnabled = _sdf->Get<bool>(
         errors, "enable_orientation", this->dataPtr->orientationEnabled).first;
+  }
+
+  if (_sdf->HasElement("orientation"))
+  {
+    sdf::ElementPtr elem = _sdf->GetElement("orientation", errors);
+    if (elem->HasElement("x"))
+    {
+      if (elem->GetElement("x", errors)->HasElement("noise"))
+      {
+        sdf::Errors loadErrors = this->dataPtr->orientationXNoise.Load(
+            elem->GetElement("x", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+      }
+    }
+    if (elem->HasElement("y"))
+    {
+      if (elem->GetElement("y", errors)->HasElement("noise"))
+      {
+        sdf::Errors loadErrors = this->dataPtr->orientationYNoise.Load(
+            elem->GetElement("y", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+      }
+    }
+    if (elem->HasElement("z"))
+    {
+      if (elem->GetElement("z", errors)->HasElement("noise"))
+      {
+        sdf::Errors loadErrors = this->dataPtr->orientationZNoise.Load(
+            elem->GetElement("z", errors)->GetElement("noise", errors));
+        errors.insert(errors.end(), loadErrors.begin(), loadErrors.end());
+      }
+    }
   }
 
   return errors;
