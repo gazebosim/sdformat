@@ -263,6 +263,9 @@ bool Imu::operator==(const Imu &_imu) const
          this->dataPtr->angularVelXNoise == _imu.dataPtr->angularVelXNoise &&
          this->dataPtr->angularVelYNoise == _imu.dataPtr->angularVelYNoise &&
          this->dataPtr->angularVelZNoise == _imu.dataPtr->angularVelZNoise &&
+         this->dataPtr->orientationXNoise == _imu.dataPtr->orientationXNoise &&
+         this->dataPtr->orientationYNoise == _imu.dataPtr->orientationYNoise &&
+         this->dataPtr->orientationZNoise == _imu.dataPtr->orientationZNoise &&
          this->dataPtr->localization == _imu.dataPtr->localization &&
 
          this->dataPtr->gravityDirX == _imu.dataPtr->gravityDirX &&
@@ -344,6 +347,42 @@ const Noise &Imu::AngularVelocityZNoise() const
 void Imu::SetAngularVelocityZNoise(const Noise &_noise)
 {
   this->dataPtr->angularVelZNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &Imu::OrientationXNoise() const
+{
+  return this->dataPtr->orientationXNoise;
+}
+
+//////////////////////////////////////////////////
+void Imu::SetOrientationXNoise(const Noise &_noise)
+{
+  this->dataPtr->orientationXNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &Imu::OrientationYNoise() const
+{
+  return this->dataPtr->orientationYNoise;
+}
+
+//////////////////////////////////////////////////
+void Imu::SetOrientationYNoise(const Noise &_noise)
+{
+  this->dataPtr->orientationYNoise = _noise;
+}
+
+//////////////////////////////////////////////////
+const Noise &Imu::OrientationZNoise() const
+{
+  return this->dataPtr->orientationZNoise;
+}
+
+//////////////////////////////////////////////////
+void Imu::SetOrientationZNoise(const Noise &_noise)
+{
+  this->dataPtr->orientationZNoise = _noise;
 }
 
 //////////////////////////////////////////////////
@@ -489,6 +528,26 @@ sdf::ElementPtr Imu::ToElement(sdf::Errors &_errors) const
   sdf::ElementPtr linearAccZNoiseElem = linearAccZElem->GetElement(
       "noise", _errors);
   linearAccZNoiseElem->Copy(this->dataPtr->linearAccelZNoise.ToElement(
+      _errors), _errors);
+
+  sdf::ElementPtr orientationElem = elem->GetElement(
+      "orientation", _errors);
+  sdf::ElementPtr orientationXElem = orientationElem->GetElement("x", _errors);
+  sdf::ElementPtr orientationXNoiseElem = orientationXElem->GetElement(
+      "noise", _errors);
+  orientationXNoiseElem->Copy(this->dataPtr->orientationXNoise.ToElement(
+      _errors), _errors);
+
+  sdf::ElementPtr orientationYElem = orientationElem->GetElement("y", _errors);
+  sdf::ElementPtr orientationYNoiseElem = orientationYElem->GetElement(
+      "noise", _errors);
+  orientationYNoiseElem->Copy(this->dataPtr->orientationYNoise.ToElement(
+      _errors), _errors);
+
+  sdf::ElementPtr orientationZElem = orientationElem->GetElement("z", _errors);
+  sdf::ElementPtr orientationZNoiseElem = orientationZElem->GetElement(
+      "noise", _errors);
+  orientationZNoiseElem->Copy(this->dataPtr->orientationZNoise.ToElement(
       _errors), _errors);
 
   elem->GetElement("enable_orientation", _errors)->Set<bool>(
