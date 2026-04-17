@@ -12,6 +12,10 @@ forward programmatically.
 This document aims to contain similar information to those files
 but with improved human-readability..
 
+
+## libsdformat 16.X to 17.X
+
+
 ## libsdformat 15.x to 16.x
 
 1. The major version has been removed from the cmake project name and the
