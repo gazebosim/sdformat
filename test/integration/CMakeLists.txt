@@ -85,6 +85,8 @@ if (EXISTS ${XMLLINT_EXE})
   # enable schema test if xmllint is older than 2.15.0
   if("${XMLLINT_VERSION}" LESS 21500)
     set (tests ${tests} schema_test.cc)
+  else()
+    gz_build_warning("xmllint version is too new (${XMLLINT_VERSION}). schem_test won't be run")
   endif()
 else()
   gz_build_warning("xmllint not found. schema_test won't be run")
