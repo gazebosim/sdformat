@@ -86,10 +86,10 @@ if (EXISTS ${XMLLINT_EXE})
   if("${XMLLINT_VERSION}" LESS 21500)
     set (tests ${tests} schema_test.cc)
   else()
-    gz_build_warning("xmllint version is too new (${XMLLINT_VERSION}). schema_test won't be run")
+    message(WARNING "xmllint version is too new (${XMLLINT_VERSION}). schema_test won't be run")
   endif()
 else()
-  gz_build_warning("xmllint not found. schema_test won't be run")
+  message(WARNING "xmllint not found. schema_test won't be run")
 endif()
 
 gz_build_tests(TYPE ${TEST_TYPE}
