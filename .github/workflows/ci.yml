@@ -13,13 +13,27 @@ jobs:
     name: Ubuntu Noble CI
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Compile and test
         id: ci
         uses: gazebo-tooling/action-gz-ci@noble
         with:
           gzdev-project-name: rotary
           # codecov-enabled: true
+          cppcheck-enabled: true
+          cpplint-enabled: true
+          doxygen-enabled: true
+  resolute-ci:
+    runs-on: ubuntu-latest
+    name: Ubuntu Resolute CI
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Compile and test
+        id: ci
+        uses: gazebo-tooling/action-gz-ci@resolute
+        with:
+          gzdev-project-name: rotary
           cppcheck-enabled: true
           cpplint-enabled: true
           doxygen-enabled: true

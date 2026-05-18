@@ -71,7 +71,23 @@ endif()
 
 find_program(XMLLINT_EXE xmllint)
 if (EXISTS ${XMLLINT_EXE})
-  set (tests ${tests} schema_test.cc)
+  # get xmllint version
+  execute_process(
+    COMMAND ${XMLLINT_EXE} --version
+    ERROR_VARIABLE XMLLINT_VERSION_OUTPUT
+  )
+  # typical output: "/usr/bin/xmllint: using libxml version 20913\ncompiled with: ..."
+  # version is formatted as a single integer, with 20913 representing 2.9.13
+  string(REGEX MATCH "using libxml version [0-9]+" XMLLINT_VERSION_STRING ${XMLLINT_VERSION_OUTPUT})
+  string(REPLACE "using libxml version " "" XMLLINT_VERSION ${XMLLINT_VERSION_STRING})
+  # schema test is broken with very new versions of xmllint
+  # https://github.com/gazebosim/sdformat/issues/1656
+  # enable schema test if xmllint is older than 2.15.0
+  if("${XMLLINT_VERSION}" LESS 21500)
+    set (tests ${tests} schema_test.cc)
+  else()
+    gz_build_warning("xmllint version is too new (${XMLLINT_VERSION}). schema_test won't be run")
+  endif()
 else()
   gz_build_warning("xmllint not found. schema_test won't be run")
 endif()
