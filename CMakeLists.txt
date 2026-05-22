@@ -82,7 +82,6 @@ if (BUILD_SDF)
   find_program(GZ_PROGRAM gz)
   # Note that CLI files are installed regardless of whether the dependency is
   # available during build time
-  set(GZ_TOOLS_VER 2)
 
   #################################################
   # Find python
