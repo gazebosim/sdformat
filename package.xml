@@ -20,7 +20,7 @@ in a manner suitable for robotic applications</description>
   <depend>liburdfdom-dev</depend>
   <depend>pybind11-dev</depend>
 
-  <exec_depend>gz-tools2</exec_depend>
+  <exec_depend>gz-tools</exec_depend>
 
   <test_depend>libxml2-utils</test_depend>
   <test_depend>python3-psutil</test_depend>
