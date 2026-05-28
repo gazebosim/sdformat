@@ -178,6 +178,10 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
       this->dataPtr->nsFromName = true;
       ns = this->dataPtr->name;
     }
+    else
+    {
+      this->dataPtr->nsFromName = false;
+    }
     this->dataPtr->ns = ns;
   }
 
@@ -464,7 +468,7 @@ void World::SetNamespace(const std::string &_ns)
   if (_ns == "__name__")
   {
     this->dataPtr->nsFromName = true;
-    this->dataPtr->ns = this->name;
+    this->dataPtr->ns = this->dataPtr->name;
   }
   else
   {
