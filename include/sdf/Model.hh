@@ -91,6 +91,15 @@ namespace sdf
     /// \param[in] _name Name of the model.
     public: void SetName(const std::string &_name);
 
+    /// \brief Get the namespace associated with the model.
+    /// \return Namespace of the model.
+    public: std::string Namespace() const;
+
+    /// \brief Set the namespace associated with the model.
+    /// \param[in] _ns Namespace of the model. If set to `"__name__"`, the
+    /// model name will be used as the namespace.
+    public: void SetNamespace(const std::string &_ns);
+
     /// \brief Check if this model should be static.
     /// A static model is one that is not subject to physical forces (in other
     /// words, it's purely kinematic instead of dynamic).
