@@ -53,9 +53,9 @@ class sdf::NestedInclude::Implementation
   public: std::optional<std::string> localModelName;
 
   /// \brief Namespace relative to immediate parent as specified in
-  /// `//include/namespace`. This is nullopt if `//include/namespace` is not set. Then the
-  /// namespace of the model must be determined by the custom model parser from the
-  /// included model file.
+  /// `//include/namespace`. This is nullopt if `//include/namespace` is not
+  /// set. Then the namespace of the model must be determined by the custom
+  /// model parser from the included model file.
   /// Example: `my_new_model_namespace`
   public: std::optional<std::string> localModelNs;
 
