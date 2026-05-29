@@ -209,7 +209,7 @@ TEST(ElementTracing, includes)
   ASSERT_NE(nullptr, overrideActorPluginElem);
   EXPECT_EQ(actorFilePath, overrideActorPluginElem->FilePath());
   ASSERT_TRUE(overrideActorPluginElem->LineNumber().has_value());
-  EXPECT_EQ(40, overrideActorPluginElem->LineNumber().value());
+  EXPECT_EQ(42, overrideActorPluginElem->LineNumber().value());
   EXPECT_EQ(overrideActorPluginXmlPath, overrideActorPluginElem->XmlPath());
 
   // Lights
@@ -270,7 +270,7 @@ TEST(ElementTracing, includes)
   ASSERT_NE(nullptr, overrideModelPluginElem);
   EXPECT_EQ(modelFilePath, overrideModelPluginElem->FilePath());
   ASSERT_TRUE(overrideModelPluginElem->LineNumber().has_value());
-  EXPECT_EQ(14, overrideModelPluginElem->LineNumber().value());
+  EXPECT_EQ(15, overrideModelPluginElem->LineNumber().value());
   EXPECT_EQ(overrideModelPluginXmlPath, overrideModelPluginElem->XmlPath());
 
 #ifdef _WIN32

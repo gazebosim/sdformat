@@ -9,6 +9,7 @@
     <include>
       <uri>test_model</uri>
       <name>override_model_name</name>
+      <namespace>override_model_namespace</namespace>
       <pose>1 2 3 0 0 0</pose>
       <static>true</static>
       <plugin name="plugin_name" filename="file.so"/>
@@ -17,6 +18,7 @@
     <include>
       <uri>test_model/model.sdf</uri>
       <name>test_model_with_file</name>
+      <namespace>__name__</namespace>
     </include>
 
     <include>
