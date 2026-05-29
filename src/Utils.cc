@@ -249,6 +249,10 @@ sdf::Errors loadIncludedInterfaceModels(sdf::ElementPtr _sdf,
     {
       include.SetLocalModelName(includeElem->Get<std::string>("name"));
     }
+    if (includeElem->HasElement("namespace"))
+    {
+      include.SetLocalModelNamespace(includeElem->Get<std::string>("namespace"));
+    }
     if (includeElem->HasElement("static"))
     {
       include.SetIsStatic(includeElem->Get<bool>("static"));

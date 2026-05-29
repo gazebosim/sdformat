@@ -45,6 +45,10 @@
       <description>Override the name of the included entity.</description>
     </element>
 
+    <element name="namespace" type="string" default="" required="0">
+      <description>Override the namespace of the included entity.</description>
+    </element>
+
     <element name="static" type="bool" default="false" required="0">
       <description>Override the static value of the included entity.</description>
     </element>

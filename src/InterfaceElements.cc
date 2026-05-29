@@ -52,6 +52,13 @@ class sdf::NestedInclude::Implementation
   /// Example: `my_new_model`
   public: std::optional<std::string> localModelName;
 
+  /// \brief Namespace relative to immediate parent as specified in
+  /// `//include/namespace`. This is nullopt if `//include/namespace` is not set. Then the
+  /// namespace of the model must be determined by the custom model parser from the
+  /// included model file.
+  /// Example: `my_new_model_namespace`
+  public: std::optional<std::string> localModelNs;
+
   /// \brief Whether the model is static as defined by `//include/static`. This
   /// is nullopt if `//include/static` is not set.
   public: std::optional<bool> isStatic;
@@ -127,6 +134,18 @@ const std::optional<std::string> &NestedInclude::LocalModelName() const
 void NestedInclude::SetLocalModelName(const std::string &_localModelName)
 {
   this->dataPtr->localModelName = _localModelName;
+}
+
+/////////////////////////////////////////////////
+const std::optional<std::string> &NestedInclude::LocalModelNamespace() const
+{
+  return this->dataPtr->localModelNs;
+}
+
+/////////////////////////////////////////////////
+void NestedInclude::SetLocalModelNamespace(const std::string &_localModelNs)
+{
+  this->dataPtr->localModelNs = _localModelNs;
 }
 
 /////////////////////////////////////////////////

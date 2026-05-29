@@ -1141,7 +1141,14 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
     includeElem->GetElement("name")->Set(this->Name());
-    // TODO(C88)
+    if (this->dataPtr->nsFromName)
+    {
+      includeElem->GetElement("namespace")->Set("__name__");
+    }
+    else
+    {
+      includeElem->GetElement("namespace")->Set(this->Namespace());
+    }
     includeElem->GetElement("pose")->Set(this->RawPose());
     if (!this->dataPtr->poseRelativeTo.empty())
     {

@@ -95,6 +95,19 @@ class SDFORMAT_VISIBLE NestedInclude
   /// \param[in] _localModelName The local name
   public: void SetLocalModelName(const std::string &_localModelName);
 
+  /// \brief Namespace relative to immediate parent as specified in
+  /// `//include/namespace`. This is nullopt if `//include/namespace` is not set. Then the
+  /// namespace of the model must be determined by the custom model parser from the
+  /// included model file.
+  /// Example: `my_new_model_namespace`
+  /// \return The local namespace. nullopt if `//include/namespace` is not set
+  public: const std::optional<std::string> &LocalModelNamespace() const;
+
+  /// \brief Set the namespace relative to immediate parent as specified in
+  /// `//include/namespace`
+  /// \param[in] _localModelNs The local namespace
+  public: void SetLocalModelNamespace(const std::string &_localModelNs);
+
   /// \brief Whether the model is static as defined by `//include/static`. This
   /// is nullopt if `//include/static` is not set.
   /// \return Whether the model is static. nullopt if `//include/static` is not
