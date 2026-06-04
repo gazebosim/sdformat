@@ -31,9 +31,15 @@ TEST(DOMModel, Construction)
   sdf::Model model;
   EXPECT_EQ(nullptr, model.Element());
   EXPECT_TRUE(model.Name().empty());
+  EXPECT_TRUE(model.Namespace().empty());
 
   model.SetName("test_model");
   EXPECT_EQ("test_model", model.Name());
+
+  model.SetNamespace("__name__");
+  EXPECT_EQ("test_model", model.Namespace());
+  model.SetNamespace("test_namespace");
+  EXPECT_EQ("test_namespace", model.Namespace());
 
   EXPECT_FALSE(model.Static());
   model.SetStatic(true);
@@ -165,9 +171,11 @@ TEST(DOMModel, CopyConstructor)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetNamespace("test_ns");
 
   sdf::Model model2(model);
   EXPECT_EQ("test_model", model2.Name());
+  EXPECT_EQ("test_ns", model2.Namespace());
 }
 
 /////////////////////////////////////////////////
@@ -175,10 +183,12 @@ TEST(DOMModel, CopyAssignmentOperator)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetNamespace("test_ns");
 
   sdf::Model model2;
   model2 = model;
   EXPECT_EQ("test_model", model2.Name());
+  EXPECT_EQ("test_ns", model2.Namespace());
 }
 
 /////////////////////////////////////////////////
@@ -186,9 +196,11 @@ TEST(DOMModel, MoveConstructor)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetNamespace("test_ns");
 
   sdf::Model model2(std::move(model));
   EXPECT_EQ("test_model", model2.Name());
+  EXPECT_EQ("test_ns", model2.Namespace());
 }
 
 /////////////////////////////////////////////////
@@ -196,10 +208,12 @@ TEST(DOMModel, MoveAssignmentOperator)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetNamespace("test_ns");
 
   sdf::Model model2;
   model2 = std::move(model);
   EXPECT_EQ("test_model", model2.Name());
+  EXPECT_EQ("test_ns", model2.Namespace());
 }
 
 /////////////////////////////////////////////////
@@ -207,9 +221,11 @@ TEST(DOMModel, CopyAssignmentAfterMove)
 {
   sdf::Model model1;
   model1.SetName("model1");
+  model1.SetNamespace("test_ns1");
 
   sdf::Model model2;
   model2.SetName("model2");
+  model2.SetNamespace("test_ns2");
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -219,6 +235,8 @@ TEST(DOMModel, CopyAssignmentAfterMove)
 
   EXPECT_EQ("model2", model1.Name());
   EXPECT_EQ("model1", model2.Name());
+  EXPECT_EQ("test_ns2", model1.Namespace());
+  EXPECT_EQ("test_ns1", model2.Namespace());
 }
 
 /////////////////////////////////////////////////
@@ -333,6 +351,7 @@ TEST(DOMModel, ToElement)
   sdf::Model model;
 
   model.SetName("my-model");
+  model.SetNamespace("my-ns");
   model.SetStatic(true);
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
@@ -443,11 +462,13 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
+  std::string ns = "__name__";
   gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
     "https://fuel.gazebosim.org/1.0/openrobotics/models/my-model";
 
   model.SetName(name);
+  model.SetNamespace(ns);
   model.SetRawPose(pose);
   model.SetStatic(true);
   model.SetPlacementFrameName("link0");
@@ -467,6 +488,10 @@ TEST(DOMModel, Uri)
     sdf::ElementPtr nameElem = elem->FindElement("name");
     ASSERT_NE(nullptr, nameElem);
     EXPECT_EQ(name, nameElem->Get<std::string>());
+
+    sdf::ElementPtr nsElem = elem->FindElement("namespace");
+    ASSERT_NE(nullptr, nsElem);
+    EXPECT_EQ(ns, nsElem->Get<std::string>());
 
     sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
@@ -498,6 +523,10 @@ TEST(DOMModel, Uri)
     sdf::ParamPtr nameAttr = elem->GetAttribute("name");
     ASSERT_NE(nullptr, nameAttr);
     EXPECT_EQ(name, nameAttr->GetAsString());
+
+    sdf::ParamPtr nsAttr = elem->GetAttribute("namespace");
+    ASSERT_NE(nullptr, nsAttr);
+    EXPECT_EQ(ns, nsAttr->GetAsString());
 
     sdf::ParamPtr placementFrameAttr = elem->GetAttribute("placement_frame");
     ASSERT_NE(nullptr, placementFrameAttr);
