@@ -95,12 +95,6 @@ class sdf::World::Implementation
   /// \brief Name of the world.
   public: std::string name = "";
 
-  /// \brief Namespace of the world.
-  public: std::string ns = "";
-
-  /// \brief True when namespace tracks the world name via "__name__".
-  public: bool nsFromName = false;
-
   /// \brief The physics profiles specified in this world.
   public: std::vector<Physics> physics;
 
@@ -167,22 +161,6 @@ Errors World::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
     errors.push_back({ErrorCode::RESERVED_NAME,
                      "The supplied world name [" + this->dataPtr->name +
                      "] is reserved."});
-  }
-
-  // Read the world's namespace
-  if (_sdf->HasAttribute("namespace"))
-  {
-    auto ns = _sdf->Get<std::string>("namespace", "").first;
-    if (ns == "__name__")
-    {
-      this->dataPtr->nsFromName = true;
-      ns = this->dataPtr->name;
-    }
-    else
-    {
-      this->dataPtr->nsFromName = false;
-    }
-    this->dataPtr->ns = ns;
   }
 
   // Read the audio element
@@ -450,31 +428,6 @@ std::string World::Name() const
 void World::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
-  if (this->dataPtr->nsFromName)
-  {
-    this->dataPtr->ns = _name;
-  }
-}
-
-/////////////////////////////////////////////////
-std::string World::Namespace() const
-{
-  return this->dataPtr->ns;
-}
-
-/////////////////////////////////////////////////
-void World::SetNamespace(const std::string &_ns)
-{
-  if (_ns == "__name__")
-  {
-    this->dataPtr->nsFromName = true;
-    this->dataPtr->ns = this->dataPtr->name;
-  }
-  else
-  {
-    this->dataPtr->nsFromName = false;
-    this->dataPtr->ns = _ns;
-  }
 }
 
 /////////////////////////////////////////////////
@@ -1130,14 +1083,6 @@ sdf::ElementPtr World::ToElement(const OutputConfig &_config) const
   sdf::initFile("world.sdf", elem);
 
   elem->GetAttribute("name")->Set(this->Name());
-  if (this->dataPtr->nsFromName)
-  {
-    elem->GetAttribute("namespace")->Set("__name__");
-  }
-  else
-  {
-    elem->GetAttribute("namespace")->Set(this->Namespace());
-  }
   elem->GetElement("gravity")->Set(this->Gravity());
   elem->GetElement("magnetic_field")->Set(this->MagneticField());
 

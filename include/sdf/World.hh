@@ -91,15 +91,6 @@ namespace sdf
     /// \param[in] _name Name of the world.
     public: void SetName(const std::string &_name);
 
-    /// \brief Get the namespace associated with the world.
-    /// \return Namespace of the world.
-    public: std::string Namespace() const;
-
-    /// \brief Set the namespace associated with the world.
-    /// \param[in] _ns Namespace of the world. If set to `"__name__"`, the
-    /// world name will be used as the namespace.
-    public: void SetNamespace(const std::string &_ns);
-
     /// \brief Get the audio device name. The audio device can be used to
     /// playback audio files. A value of "default" or an empty string
     /// indicates that the system's default audio device should be used.
