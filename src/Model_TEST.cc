@@ -33,11 +33,12 @@ TEST(DOMModel, Construction)
   EXPECT_TRUE(model.Name().empty());
   EXPECT_TRUE(model.Namespace().empty());
 
+  model.SetName("test_name");
+  EXPECT_EQ("test_name", model.Name());
+  model.SetNamespace("test/__name__/test_ns");
+  EXPECT_EQ("test/test_name/test_ns", model.Namespace());
   model.SetName("test_model");
-  EXPECT_EQ("test_model", model.Name());
-
-  model.SetNamespace("__name__");
-  EXPECT_EQ("test_model", model.Namespace());
+  EXPECT_EQ("test/test_model/test_ns", model.Namespace());
   model.SetNamespace("test_namespace");
   EXPECT_EQ("test_namespace", model.Namespace());
 
@@ -351,7 +352,7 @@ TEST(DOMModel, ToElement)
   sdf::Model model;
 
   model.SetName("my-model");
-  model.SetNamespace("my-ns");
+  model.SetNamespace("__name__/ns");
   model.SetStatic(true);
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
@@ -421,6 +422,7 @@ TEST(DOMModel, ToElement)
   model2.Load(elem);
 
   EXPECT_EQ(model.Name(), model2.Name());
+  EXPECT_EQ(model.Namespace(), model2.Namespace());
   EXPECT_EQ(model.Static(), model2.Static());
   EXPECT_EQ(model.SelfCollide(), model2.SelfCollide());
   EXPECT_EQ(model.AllowAutoDisable(), model2.AllowAutoDisable());
@@ -462,7 +464,7 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
-  std::string ns = "__name__";
+  std::string ns = "__name__/ns";
   gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
     "https://fuel.gazebosim.org/1.0/openrobotics/models/my-model";

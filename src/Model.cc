@@ -44,11 +44,11 @@ class sdf::Model::Implementation
   /// \brief Name of the model.
   public: std::string name = "";
 
-  /// \brief Namespace of the model.
-  public: std::string ns = "";
+  /// \brief TODO
+  public: std::string rawNamespace = "";
 
-  /// \brief True when namespace tracks the model name via "__name__".
-  public: bool nsFromName = false;
+  /// \brief TODO
+  public: std::string resolvedNamespace = "";
 
   /// \brief True if this model is specified as static, false otherwise.
   public: bool isStatic = false;
@@ -187,17 +187,14 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   // Read the model's namespace
   if (_sdf->HasAttribute("namespace"))
   {
-    auto ns = _sdf->Get<std::string>("namespace", "").first;
-    if (ns == "__name__")
+    this->dataPtr->rawNamespace = _sdf->Get<std::string>("namespace", "").first;
+    this->dataPtr->resolvedNamespace = this->dataPtr->rawNamespace;
+    auto pos = this->dataPtr->resolvedNamespace.find("__name__");
+    if (pos != std::string::npos)
     {
-      this->dataPtr->nsFromName = true;
-      ns = this->dataPtr->name;
+      this->dataPtr->resolvedNamespace.replace(pos, strlen("__name__"),
+                                               this->dataPtr->name);
     }
-    else
-    {
-      this->dataPtr->nsFromName = false;
-    }
-    this->dataPtr->ns = ns;
   }
 
   // Read the model's canonical_link attribute
@@ -556,30 +553,37 @@ std::string Model::Name() const
 void Model::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
-  if (this->dataPtr->nsFromName)
+  auto pos = this->dataPtr->rawNamespace.find("__name__");
+  if (pos != std::string::npos)
   {
-    this->dataPtr->ns = _name;
+    this->dataPtr->resolvedNamespace = this->dataPtr->rawNamespace;
+    this->dataPtr->resolvedNamespace.replace(pos, strlen("__name__"),
+                                             this->dataPtr->name);
   }
 }
 
 /////////////////////////////////////////////////
 std::string Model::Namespace() const
 {
-  return this->dataPtr->ns;
+  return this->dataPtr->resolvedNamespace;
+}
+
+/////////////////////////////////////////////////
+std::string Model::RawNamespace() const
+{
+  return this->dataPtr->rawNamespace;
 }
 
 /////////////////////////////////////////////////
 void Model::SetNamespace(const std::string &_ns)
 {
-  if (_ns == "__name__")
+  this->dataPtr->rawNamespace = _ns;
+  this->dataPtr->resolvedNamespace = this->dataPtr->rawNamespace;
+  auto pos = this->dataPtr->rawNamespace.find("__name__");
+  if (pos != std::string::npos)
   {
-    this->dataPtr->ns = this->dataPtr->name;
-    this->dataPtr->nsFromName = true;
-  }
-  else
-  {
-    this->dataPtr->ns = _ns;
-    this->dataPtr->nsFromName = false;
+    this->dataPtr->resolvedNamespace.replace(pos, strlen("__name__"),
+                                             this->dataPtr->name);
   }
 }
 
@@ -1141,14 +1145,7 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
     includeElem->GetElement("name")->Set(this->Name());
-    if (this->dataPtr->nsFromName)
-    {
-      includeElem->GetElement("namespace")->Set("__name__");
-    }
-    else
-    {
-      includeElem->GetElement("namespace")->Set(this->Namespace());
-    }
+    includeElem->GetElement("namespace")->Set(this->RawNamespace());
     includeElem->GetElement("pose")->Set(this->RawPose());
     if (!this->dataPtr->poseRelativeTo.empty())
     {
@@ -1172,14 +1169,7 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("model.sdf", elem);
   elem->GetAttribute("name")->Set(this->Name());
-  if (this->dataPtr->nsFromName)
-  {
-    elem->GetAttribute("namespace")->Set("__name__");
-  }
-  else
-  {
-    elem->GetAttribute("namespace")->Set(this->Namespace());
-  }
+  elem->GetAttribute("namespace")->Set(this->RawNamespace());
 
   if (!this->dataPtr->canonicalLink.empty())
   {
