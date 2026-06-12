@@ -35,10 +35,10 @@ TEST(DOMModel, Construction)
 
   model.SetName("test_name");
   EXPECT_EQ("test_name", model.Name());
-  model.SetNamespace("test/__name__/test_ns");
-  EXPECT_EQ("test/test_name/test_ns", model.Namespace());
+  model.SetNamespace("test/__name__1/__name__2/test_ns");
+  EXPECT_EQ("test/test_name1/test_name2/test_ns", model.Namespace());
   model.SetName("test_model");
-  EXPECT_EQ("test/test_model/test_ns", model.Namespace());
+  EXPECT_EQ("test/test_model1/test_model2/test_ns", model.Namespace());
   model.SetNamespace("test_namespace");
   EXPECT_EQ("test_namespace", model.Namespace());
 

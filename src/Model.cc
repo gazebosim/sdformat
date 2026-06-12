@@ -188,13 +188,8 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   if (_sdf->HasAttribute("namespace"))
   {
     this->dataPtr->rawNamespace = _sdf->Get<std::string>("namespace", "").first;
-    this->dataPtr->resolvedNamespace = this->dataPtr->rawNamespace;
-    auto pos = this->dataPtr->resolvedNamespace.find("__name__");
-    if (pos != std::string::npos)
-    {
-      this->dataPtr->resolvedNamespace.replace(pos, strlen("__name__"),
-                                               this->dataPtr->name);
-    }
+    this->dataPtr->resolvedNamespace =
+      this->ResolveNamespace(this->dataPtr->rawNamespace, this->Name());
   }
 
   // Read the model's canonical_link attribute
@@ -553,13 +548,8 @@ std::string Model::Name() const
 void Model::SetName(const std::string &_name)
 {
   this->dataPtr->name = _name;
-  auto pos = this->dataPtr->rawNamespace.find("__name__");
-  if (pos != std::string::npos)
-  {
-    this->dataPtr->resolvedNamespace = this->dataPtr->rawNamespace;
-    this->dataPtr->resolvedNamespace.replace(pos, strlen("__name__"),
-                                             this->dataPtr->name);
-  }
+  this->dataPtr->resolvedNamespace =
+    this->ResolveNamespace(this->dataPtr->rawNamespace, _name);
 }
 
 /////////////////////////////////////////////////
@@ -578,13 +568,7 @@ std::string Model::RawNamespace() const
 void Model::SetNamespace(const std::string &_ns)
 {
   this->dataPtr->rawNamespace = _ns;
-  this->dataPtr->resolvedNamespace = this->dataPtr->rawNamespace;
-  auto pos = this->dataPtr->rawNamespace.find("__name__");
-  if (pos != std::string::npos)
-  {
-    this->dataPtr->resolvedNamespace.replace(pos, strlen("__name__"),
-                                             this->dataPtr->name);
-  }
+  this->dataPtr->resolvedNamespace = this->ResolveNamespace(_ns, this->Name());
 }
 
 /////////////////////////////////////////////////
@@ -1466,4 +1450,18 @@ sdf::Frame Model::PrepareForMerge(sdf::Errors &_errors,
   }
 
   return proxyFrame;
+}
+
+std::string Model::ResolveNamespace(const std::string &_rawNs,
+    const std::string &_modelName)
+{
+  std::string resolved = _rawNs;
+  std::size_t pos = 0;
+
+  while ((pos = resolved.find("__name__", pos)) != std::string::npos)
+  {
+    resolved.replace(pos, strlen("__name__"), _modelName);
+    pos += _modelName.size();
+  }
+  return resolved;
 }

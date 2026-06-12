@@ -570,6 +570,13 @@ namespace sdf
     private: sdf::Frame PrepareForMerge(sdf::Errors &_errors,
                                         const std::string &_parentOfProxyFrame);
 
+    /// \brief Resolve namespace placeholders for this model.
+    /// \param[in] _rawNs The raw namespace string.
+    /// \param[in] _modelName The model name used to replace "__name__".
+    /// \return The namespace string with model placeholders resolved.
+    private: std::string ResolveNamespace (const std::string &_rawNs,
+        const std::string &_modelName);
+
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
