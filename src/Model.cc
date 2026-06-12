@@ -567,7 +567,7 @@ std::optional<std::string> Model::RawNamespace() const
 }
 
 /////////////////////////////////////////////////
-void Model::SetNamespace(const std::string &_ns)
+void Model::SetRawNamespace(const std::string &_ns)
 {
   this->dataPtr->rawNamespace = _ns;
   this->dataPtr->resolvedNamespace =

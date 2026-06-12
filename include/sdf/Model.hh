@@ -101,10 +101,10 @@ namespace sdf
     /// otherwise std::nullopt.
     public: std::optional<std::string> RawNamespace() const;
 
-    /// \brief Set the namespace associated with the model.
-    /// \param[in] _ns Namespace of the model. The `__name__` placeholder
+    /// \brief Set the raw namespace associated with the model.
+    /// \param[in] _ns Raw namespace of the model. The `__name__` placeholder
     /// will be replaced with the model name.
-    public: void SetNamespace(const std::string &_ns);
+    public: void SetRawNamespace(const std::string &_ns);
 
     /// \brief Check if this model should be static.
     /// A static model is one that is not subject to physical forces (in other

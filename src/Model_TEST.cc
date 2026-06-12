@@ -36,16 +36,16 @@ TEST(DOMModel, Construction)
 
   model.SetName("test_name");
   EXPECT_EQ("test_name", model.Name());
-  model.SetNamespace("");
+  model.SetRawNamespace("");
   ASSERT_TRUE(model.Namespace().has_value());
   EXPECT_EQ("", model.Namespace().value());
-  model.SetNamespace("test/__name__1/__name__2/test_ns");
+  model.SetRawNamespace("test/__name__1/__name__2/test_ns");
   ASSERT_TRUE(model.Namespace().has_value());
   EXPECT_EQ("test/test_name1/test_name2/test_ns", model.Namespace().value());
   model.SetName("test_model");
   ASSERT_TRUE(model.Namespace().has_value());
   EXPECT_EQ("test/test_model1/test_model2/test_ns", model.Namespace().value());
-  model.SetNamespace("test_namespace");
+  model.SetRawNamespace("test_namespace");
   ASSERT_TRUE(model.Namespace().has_value());
   EXPECT_EQ("test_namespace", model.Namespace().value());
 
@@ -179,7 +179,7 @@ TEST(DOMModel, CopyConstructor)
 {
   sdf::Model model;
   model.SetName("test_model");
-  model.SetNamespace("test_ns");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2(model);
   EXPECT_EQ("test_model", model2.Name());
@@ -192,7 +192,7 @@ TEST(DOMModel, CopyAssignmentOperator)
 {
   sdf::Model model;
   model.SetName("test_model");
-  model.SetNamespace("test_ns");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2;
   model2 = model;
@@ -206,7 +206,7 @@ TEST(DOMModel, MoveConstructor)
 {
   sdf::Model model;
   model.SetName("test_model");
-  model.SetNamespace("test_ns");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2(std::move(model));
   EXPECT_EQ("test_model", model2.Name());
@@ -219,7 +219,7 @@ TEST(DOMModel, MoveAssignmentOperator)
 {
   sdf::Model model;
   model.SetName("test_model");
-  model.SetNamespace("test_ns");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2;
   model2 = std::move(model);
@@ -233,11 +233,11 @@ TEST(DOMModel, CopyAssignmentAfterMove)
 {
   sdf::Model model1;
   model1.SetName("model1");
-  model1.SetNamespace("test_ns1");
+  model1.SetRawNamespace("test_ns1");
 
   sdf::Model model2;
   model2.SetName("model2");
-  model2.SetNamespace("test_ns2");
+  model2.SetRawNamespace("test_ns2");
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -365,7 +365,7 @@ TEST(DOMModel, ToElement)
   sdf::Model model;
 
   model.SetName("my-model");
-  model.SetNamespace("__name__/ns");
+  model.SetRawNamespace("__name__/ns");
   model.SetStatic(true);
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
@@ -483,7 +483,7 @@ TEST(DOMModel, Uri)
     "https://fuel.gazebosim.org/1.0/openrobotics/models/my-model";
 
   model.SetName(name);
-  model.SetNamespace(ns);
+  model.SetRawNamespace(ns);
   model.SetRawPose(pose);
   model.SetStatic(true);
   model.SetPlacementFrameName("link0");
