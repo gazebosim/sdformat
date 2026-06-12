@@ -29,6 +29,7 @@ jobs:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       run: |
         brew tap osrf/simulation;
+        brew trust osrf/simulation;
         # check for ci_matching_branch
         brew install wget
         wget https://github.com/gazebo-tooling/release-tools/raw/master/jenkins-scripts/tools/detect_ci_matching_branch.py
