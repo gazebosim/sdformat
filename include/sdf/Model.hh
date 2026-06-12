@@ -92,12 +92,14 @@ namespace sdf
     public: void SetName(const std::string &_name);
 
     /// \brief Get the resolved namespace associated with the model.
-    /// \return Resolved namespace of the model.
-    public: std::string Namespace() const;
+    /// \return Resolved namespace of the model if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<std::string> Namespace() const;
 
     /// \brief Get the raw namespace associated with the model.
-    /// \return Raw namespace of the model.
-    public: std::string RawNamespace() const;
+    /// \return Raw namespace of the model if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<std::string> RawNamespace() const;
 
     /// \brief Set the namespace associated with the model.
     /// \param[in] _ns Namespace of the model. The `__name__` placeholder
@@ -574,7 +576,8 @@ namespace sdf
     /// \param[in] _rawNs The raw namespace string.
     /// \param[in] _modelName The model name used to replace "__name__".
     /// \return The namespace string with model placeholders resolved.
-    private: std::string ResolveNamespace (const std::string &_rawNs,
+    private: std::optional<std::string> ResolveNamespace (
+        const std::optional<std::string> &_rawNs,
         const std::string &_modelName);
 
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or

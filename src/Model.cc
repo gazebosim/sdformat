@@ -15,6 +15,7 @@
  *
 */
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -44,11 +45,11 @@ class sdf::Model::Implementation
   /// \brief Name of the model.
   public: std::string name = "";
 
-  /// \brief TODO
-  public: std::string rawNamespace = "";
+  /// \brief The unresolved namespace specified by the user.
+  public: std::optional<std::string> rawNamespace;
 
-  /// \brief TODO
-  public: std::string resolvedNamespace = "";
+  /// \brief The namespace after model name placeholders have been resolved.
+  public: std::optional<std::string> resolvedNamespace;
 
   /// \brief True if this model is specified as static, false otherwise.
   public: bool isStatic = false;
@@ -185,7 +186,8 @@ Errors Model::Load(sdf::ElementPtr _sdf, const ParserConfig &_config)
   }
 
   // Read the model's namespace
-  if (_sdf->HasAttribute("namespace"))
+  auto nsAttribute = _sdf->GetAttribute("namespace");
+  if (nsAttribute && nsAttribute->GetSet())
   {
     this->dataPtr->rawNamespace = _sdf->Get<std::string>("namespace", "").first;
     this->dataPtr->resolvedNamespace =
@@ -553,13 +555,13 @@ void Model::SetName(const std::string &_name)
 }
 
 /////////////////////////////////////////////////
-std::string Model::Namespace() const
+std::optional<std::string> Model::Namespace() const
 {
   return this->dataPtr->resolvedNamespace;
 }
 
 /////////////////////////////////////////////////
-std::string Model::RawNamespace() const
+std::optional<std::string> Model::RawNamespace() const
 {
   return this->dataPtr->rawNamespace;
 }
@@ -568,7 +570,8 @@ std::string Model::RawNamespace() const
 void Model::SetNamespace(const std::string &_ns)
 {
   this->dataPtr->rawNamespace = _ns;
-  this->dataPtr->resolvedNamespace = this->ResolveNamespace(_ns, this->Name());
+  this->dataPtr->resolvedNamespace =
+    this->ResolveNamespace(this->dataPtr->rawNamespace, this->Name());
 }
 
 /////////////////////////////////////////////////
@@ -1129,7 +1132,11 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
     includeElem->GetElement("name")->Set(this->Name());
-    includeElem->GetElement("namespace")->Set(this->RawNamespace());
+    const auto rawNamespace = this->RawNamespace();
+    if (rawNamespace.has_value())
+    {
+      includeElem->GetElement("namespace")->Set(rawNamespace.value());
+    }
     includeElem->GetElement("pose")->Set(this->RawPose());
     if (!this->dataPtr->poseRelativeTo.empty())
     {
@@ -1153,7 +1160,11 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("model.sdf", elem);
   elem->GetAttribute("name")->Set(this->Name());
-  elem->GetAttribute("namespace")->Set(this->RawNamespace());
+  const auto rawNamespace = this->RawNamespace();
+  if (rawNamespace.has_value())
+  {
+    elem->GetAttribute("namespace")->Set(rawNamespace.value());
+  }
 
   if (!this->dataPtr->canonicalLink.empty())
   {
@@ -1452,15 +1463,21 @@ sdf::Frame Model::PrepareForMerge(sdf::Errors &_errors,
   return proxyFrame;
 }
 
-std::string Model::ResolveNamespace(const std::string &_rawNs,
-    const std::string &_modelName)
+std::optional<std::string> Model::ResolveNamespace(
+  const std::optional<std::string> &_rawNs,
+  const std::string &_modelName)
 {
-  std::string resolved = _rawNs;
+  if (_rawNs == std::nullopt)
+  {
+    return std::nullopt;
+  }
+
+  std::optional<std::string> resolved = _rawNs;
   std::size_t pos = 0;
 
-  while ((pos = resolved.find("__name__", pos)) != std::string::npos)
+  while ((pos = resolved->find("__name__", pos)) != std::string::npos)
   {
-    resolved.replace(pos, strlen("__name__"), _modelName);
+    resolved->replace(pos, strlen("__name__"), _modelName);
     pos += _modelName.size();
   }
   return resolved;

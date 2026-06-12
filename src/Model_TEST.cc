@@ -31,16 +31,23 @@ TEST(DOMModel, Construction)
   sdf::Model model;
   EXPECT_EQ(nullptr, model.Element());
   EXPECT_TRUE(model.Name().empty());
-  EXPECT_TRUE(model.Namespace().empty());
+  EXPECT_FALSE(model.Namespace().has_value());
+  EXPECT_FALSE(model.RawNamespace().has_value());
 
   model.SetName("test_name");
   EXPECT_EQ("test_name", model.Name());
+  model.SetNamespace("");
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("", model.Namespace().value());
   model.SetNamespace("test/__name__1/__name__2/test_ns");
-  EXPECT_EQ("test/test_name1/test_name2/test_ns", model.Namespace());
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("test/test_name1/test_name2/test_ns", model.Namespace().value());
   model.SetName("test_model");
-  EXPECT_EQ("test/test_model1/test_model2/test_ns", model.Namespace());
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("test/test_model1/test_model2/test_ns", model.Namespace().value());
   model.SetNamespace("test_namespace");
-  EXPECT_EQ("test_namespace", model.Namespace());
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("test_namespace", model.Namespace().value());
 
   EXPECT_FALSE(model.Static());
   model.SetStatic(true);
@@ -176,7 +183,8 @@ TEST(DOMModel, CopyConstructor)
 
   sdf::Model model2(model);
   EXPECT_EQ("test_model", model2.Name());
-  EXPECT_EQ("test_ns", model2.Namespace());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -189,7 +197,8 @@ TEST(DOMModel, CopyAssignmentOperator)
   sdf::Model model2;
   model2 = model;
   EXPECT_EQ("test_model", model2.Name());
-  EXPECT_EQ("test_ns", model2.Namespace());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -201,7 +210,8 @@ TEST(DOMModel, MoveConstructor)
 
   sdf::Model model2(std::move(model));
   EXPECT_EQ("test_model", model2.Name());
-  EXPECT_EQ("test_ns", model2.Namespace());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -214,7 +224,8 @@ TEST(DOMModel, MoveAssignmentOperator)
   sdf::Model model2;
   model2 = std::move(model);
   EXPECT_EQ("test_model", model2.Name());
-  EXPECT_EQ("test_ns", model2.Namespace());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -236,8 +247,10 @@ TEST(DOMModel, CopyAssignmentAfterMove)
 
   EXPECT_EQ("model2", model1.Name());
   EXPECT_EQ("model1", model2.Name());
-  EXPECT_EQ("test_ns2", model1.Namespace());
-  EXPECT_EQ("test_ns1", model2.Namespace());
+  ASSERT_TRUE(model1.Namespace().has_value());
+  EXPECT_EQ("test_ns2", model1.Namespace().value());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns1", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
