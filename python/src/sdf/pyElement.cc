@@ -151,6 +151,21 @@ void defineElement(py::object module)
            py::overload_cast<const std::string &>(
                &Element::GetElementDescription, py::const_),
            "Get an element description using a key")
+      .def("element_description",
+           py::overload_cast<unsigned int>(&Element::ElementDescription,
+                                           py::const_),
+           "Get an element description using an index")
+      .def("element_description",
+           py::overload_cast<const std::string &>(&Element::ElementDescription,
+                                                  py::const_),
+           "Get an element description using a key")
+      .def("mutable_element_description",
+           py::overload_cast<unsigned int>(&Element::MutableElementDescription),
+           "Get an element description using an index")
+      .def("mutable_element_description",
+           py::overload_cast<const std::string &>(
+               &Element::MutableElementDescription),
+           "Get an element description using a key")
       .def("has_element_description", &Element::HasElementDescription,
            "Return true if an element description exists.")
       .def("has_attribute", &Element::HasAttribute,
