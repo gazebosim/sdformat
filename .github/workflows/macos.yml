@@ -33,6 +33,7 @@ jobs:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       run: |
         brew tap osrf/simulation;
+        brew trust osrf/simulation;
         brew install --only-dependencies ${PACKAGE};
         # install :build dependencies of a formula
         brew install $(brew deps --1 --include-build ${PACKAGE})
