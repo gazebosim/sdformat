@@ -1615,7 +1615,7 @@ static void validateIncludeElement(tinyxml2::XMLElement *_xml,
   for (unsigned int descCounter = 0;
       descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
   {
-    ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
+    ElementConstPtr elemDesc = _sdf->ElementDescription(descCounter);
     if (elemDesc->GetName() == _xml->Value())
     {
       ElementPtr element = elemDesc->Clone();
@@ -1957,7 +1957,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           }
 
           auto includeSDFFirstElem = includeSDF->Root()->GetFirstElement();
-          auto includeDesc = _sdf->GetElementDescription("include");
+          auto includeDesc = _sdf->ElementDescription("include");
           if (includeDesc)
           {
             // Store the contents of the <include> tag as the includeElement of
@@ -1981,7 +1981,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
       for (descCounter = 0;
            descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
       {
-        ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
+        ElementConstPtr elemDesc = _sdf->ElementDescription(descCounter);
         if (elemDesc->GetName() == elemXml->Value())
         {
           std::string elemXmlPath = _sdf->XmlPath() + "/" + elemXml->Value();
@@ -2047,7 +2047,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
     for (unsigned int descCounter = 0;
          descCounter != _sdf->GetElementDescriptionCount(); ++descCounter)
     {
-      ElementPtr elemDesc = _sdf->GetElementDescription(descCounter);
+      ElementConstPtr elemDesc = _sdf->ElementDescription(descCounter);
 
       if (elemDesc->GetRequired() == "1" || elemDesc->GetRequired() == "+")
       {
