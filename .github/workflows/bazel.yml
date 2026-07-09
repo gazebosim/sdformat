@@ -12,14 +12,14 @@ concurrency:
 
 jobs:
   test:
-    uses: bazel-contrib/.github/.github/workflows/bazel.yaml@v7.2.3
+    uses: bazel-contrib/.github/.github/workflows/bazel.yaml@v7.7.0
     with:
       folders: |
         [
-          ".",
+          "."
         ]
       exclude: |
         [
-          {"folder": ".", "bzlmodEnabled": false},
+          {"folder": ".", "bzlmodEnabled": false}
         ]
       exclude_windows: true
