@@ -1,5 +1,39 @@
 ## libsdformat 16.X
 
+### libsdformat 16.1.0 (2026-07-10)
+
+1. [bazel/infra] Automate publish to BCR workflow (backport #1686)
+    * [Pull request #1686](https://github.com/gazebosim/sdformat/pull/1686)
+    * [Pull request #1687](https://github.com/gazebosim/sdformat/pull/1687)
+
+1. [bazel/infra] Update bazel CI to use workflow v7.7.0
+    * [Pull request #1683](https://github.com/gazebosim/sdformat/pull/1683)
+
+1. [bazel] Bump default bazel version to 9.1.1 (backport #1681)
+    * [Pull request #1681](https://github.com/gazebosim/sdformat/pull/1681)
+    * [Pull request #1682](https://github.com/gazebosim/sdformat/pull/1682)
+
+1. macos CI: test on push to release branches only
+    * [Pull request #1672](https://github.com/gazebosim/sdformat/pull/1672)
+
+1. macos CI: use brew trust
+    * [Pull request #1666](https://github.com/gazebosim/sdformat/pull/1666)
+
+1. Fix Python test PYTHONPATH: use `ENVIRONMENT_MODIFICATION` instead of ENVIRONMENT
+    * [Pull request #1649](https://github.com/gazebosim/sdformat/pull/1649)
+
+1. Fix `static_cast` that triggers compile errors with -Wpedantic
+    * [Pull request #1632](https://github.com/gazebosim/sdformat/pull/1632)
+
+1. NavSat::ToElement() method
+    * [Pull request #1585](https://github.com/gazebosim/sdformat/pull/1585)
+
+1. Parse category bitmask SDF element in Surface DOM
+    * [Pull request #1630](https://github.com/gazebosim/sdformat/pull/1630)
+
+1. Use std::vector::reserve in Element::Clone
+    * [Pull request #1480](https://github.com/gazebosim/sdformat/pull/1480)
+
 ### libsdformat 16.0.1 (2026-01-20)
 
 1. **Baseline:** this includes all changes from 16.0.0 and earlier.
