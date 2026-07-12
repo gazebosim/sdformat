@@ -37,6 +37,9 @@ namespace python
 /////////////////////////////////////////////////
 void defineModel(pybind11::object module)
 {
+  module.attr("MODEL_NAME_NS_PLACEHOLDER") =
+     pybind11::str(sdf::kNameNsPlaceholder);
+
   pybind11::class_<sdf::Model>(module, "Model")
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Model>())
@@ -52,6 +55,12 @@ void defineModel(pybind11::object module)
          "Get the name of model.")
     .def("set_name", &sdf::Model::SetName,
          "Set the name of model.")
+    .def("namespace", &sdf::Model::Namespace,
+         "Get the resolved namespace associated with the model.")
+    .def("raw_namespace", &sdf::Model::RawNamespace,
+         "Get the raw namespace associated with the model.")
+    .def("set_raw_namespace", &sdf::Model::SetRawNamespace,
+         "Set the raw namespace associated with the model.")
     .def("static", &sdf::Model::Static,
          "Check if this model should be static. "
          "A static model is one that is not subject to physical forces (in "
