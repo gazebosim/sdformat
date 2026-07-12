@@ -15,7 +15,7 @@
     <description>
       Optional namespace associated with the model. This namespace can be
       used by downstream systems and applications to organize related entities
-      and communication interfaces. The `__name__` placeholder will be 
+      and communication interfaces. Model name placeholder will be 
       replaced with the model name.
     </description>
   </attribute>

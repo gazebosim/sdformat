@@ -24,6 +24,8 @@
 #include "sdf/parser.hh"
 #include "test_config.hh"
 
+const std::string nsPlaceholder = sdf::kNameNsPlaceholder;
+
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.
 TEST(DOMModel, Construction)
@@ -39,7 +41,8 @@ TEST(DOMModel, Construction)
   model.SetRawNamespace("");
   ASSERT_TRUE(model.Namespace().has_value());
   EXPECT_EQ("", model.Namespace().value());
-  model.SetRawNamespace("test/__name__1/__name__2/test_ns");
+  model.SetRawNamespace(
+    "test/" + nsPlaceholder + "1/" + nsPlaceholder + "2/test_ns");
   ASSERT_TRUE(model.Namespace().has_value());
   EXPECT_EQ("test/test_name1/test_name2/test_ns", model.Namespace().value());
   model.SetName("test_model");
@@ -365,7 +368,7 @@ TEST(DOMModel, ToElement)
   sdf::Model model;
 
   model.SetName("my-model");
-  model.SetRawNamespace("__name__/ns");
+  model.SetRawNamespace(nsPlaceholder + "/ns");
   model.SetStatic(true);
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
@@ -477,7 +480,7 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
-  std::string ns = "__name__/ns";
+  std::string ns = nsPlaceholder + "/ns";
   gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
     "https://fuel.gazebosim.org/1.0/openrobotics/models/my-model";

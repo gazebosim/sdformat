@@ -18,7 +18,7 @@
     <include>
       <uri>test_model/model.sdf</uri>
       <name>test_model_with_file</name>
-      <namespace>__name__</namespace>
+      <namespace>{name}</namespace>
     </include>
 
     <include>
