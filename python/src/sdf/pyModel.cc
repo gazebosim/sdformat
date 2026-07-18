@@ -38,7 +38,7 @@ namespace python
 void defineModel(pybind11::object module)
 {
   module.attr("MODEL_NAME_NS_PLACEHOLDER") =
-     pybind11::str(sdf::kNameNsPlaceholder);
+     pybind11::str(std::string{sdf::kNameNsPlaceholder});
 
   pybind11::class_<sdf::Model>(module, "Model")
     .def(pybind11::init<>())

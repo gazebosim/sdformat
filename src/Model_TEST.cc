@@ -24,7 +24,7 @@
 #include "sdf/parser.hh"
 #include "test_config.hh"
 
-const std::string nsPlaceholder = sdf::kNameNsPlaceholder;
+const std::string nsPlaceholder{sdf::kNameNsPlaceholder};
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.

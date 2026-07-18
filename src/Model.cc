@@ -1477,7 +1477,7 @@ std::optional<std::string> Model::ResolveNamespace(
 
   while ((pos = resolved->find(kNameNsPlaceholder, pos)) != std::string::npos)
   {
-    resolved->replace(pos, sizeof(kNameNsPlaceholder) - 1, _modelName);
+    resolved->replace(pos, kNameNsPlaceholder.size(),  _modelName);
     pos += _modelName.size();
   }
   return resolved;

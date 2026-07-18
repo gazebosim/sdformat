@@ -53,7 +53,7 @@ namespace sdf
   using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
 
   /// \brief Placeholder that resolves to the model name in a namespace.
-  constexpr char kNameNsPlaceholder[] = "{name}";
+  constexpr std::string_view kNameNsPlaceholder{"{name}"};
 
   class SDFORMAT_VISIBLE Model
   {
