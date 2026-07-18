@@ -371,6 +371,32 @@ TEST(IncludesTest, IncludeModelMissingConfig)
 }
 
 //////////////////////////////////////////////////
+TEST(IncludesTest, IncludeModelEmptyNamespace)
+{
+  sdf::setFindCallback(findFileCb);
+
+  std::ostringstream stream;
+  stream
+    << "<sdf version='" << SDF_VERSION << "'>"
+    << "<include>"
+    << "  <uri>test_model</uri>"
+    << "  <namespace></namespace>"
+    << "</include>"
+    << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("test_model", model->Name());
+  EXPECT_FALSE(model->Namespace().has_value());
+  EXPECT_FALSE(model->RawNamespace().has_value());
+  EXPECT_EQ(1u, model->LinkCount());
+}
+
+//////////////////////////////////////////////////
 /// Check that sdformat natively parses URDF files when there are no custom
 /// parsers
 TEST(IncludesTest, IncludeUrdf)

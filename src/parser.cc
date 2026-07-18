@@ -1833,10 +1833,10 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
 
           if (elemXml->FirstChildElement("namespace"))
           {
-            const std::string overrideNamespace =
+            auto overrideNamespace =
                 elemXml->FirstChildElement("namespace")->GetText();
             auto nsAttribute = topLevelElem->GetAttribute("namespace");
-            if (nsAttribute)
+            if (nsAttribute && overrideNamespace)
             {
               nsAttribute->SetFromString(overrideNamespace);
             }
