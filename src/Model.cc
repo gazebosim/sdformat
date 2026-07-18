@@ -1132,7 +1132,7 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
     sdf::ElementPtr includeElem = worldElem->AddElement("include");
     includeElem->GetElement("uri")->Set(this->Uri());
     includeElem->GetElement("name")->Set(this->Name());
-    const auto rawNamespace = this->RawNamespace();
+    const auto &rawNamespace = this->RawNamespace();
     if (rawNamespace.has_value())
     {
       includeElem->GetElement("namespace")->Set(rawNamespace.value());
@@ -1160,7 +1160,7 @@ sdf::ElementPtr Model::ToElement(const OutputConfig &_config) const
   sdf::ElementPtr elem(new sdf::Element);
   sdf::initFile("model.sdf", elem);
   elem->GetAttribute("name")->Set(this->Name());
-  const auto rawNamespace = this->RawNamespace();
+  const auto &rawNamespace = this->RawNamespace();
   if (rawNamespace.has_value())
   {
     elem->GetAttribute("namespace")->Set(rawNamespace.value());
