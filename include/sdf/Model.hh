@@ -52,9 +52,6 @@ namespace sdf
   template <typename T> class ScopedGraph;
   using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
 
-  /// \brief Placeholder that resolves to the model name in a namespace.
-  constexpr std::string_view kNameNsPlaceholder{"{name}"};
-
   class SDFORMAT_VISIBLE Model
   {
     /// \brief Default constructor
@@ -104,7 +101,7 @@ namespace sdf
     public: std::optional<std::string> RawNamespace() const;
 
     /// \brief Set the raw namespace associated with the model.
-    /// \param[in] _ns Raw namespace of the model. Model name placeholder
+    /// \param[in] _ns Raw namespace of the model. The `{name}` placeholder
     /// will be replaced with the model name.
     public: void SetRawNamespace(const std::string &_ns);
 
@@ -576,8 +573,7 @@ namespace sdf
 
     /// \brief Resolve namespace placeholders for this model.
     /// \param[in] _rawNs The raw namespace string.
-    /// \param[in] _modelName The model name used to replace model name
-    /// placeholders.
+    /// \param[in] _modelName The model name used to replace `{name}`
     /// \return The namespace string with model placeholders resolved.
     private: std::optional<std::string> ResolveNamespace (
         const std::optional<std::string> &_rawNs,

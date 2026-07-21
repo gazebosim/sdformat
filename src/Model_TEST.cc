@@ -17,14 +17,13 @@
 
 #include <gtest/gtest.h>
 #include <gz/math/Pose3.hh>
+#include "sdf/Types.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
 #include "test_config.hh"
-
-const std::string nsPlaceholder{sdf::kNameNsPlaceholder};
 
 /////////////////////////////////////////////////
 /// Test default construction of sdf::Model.
@@ -36,6 +35,7 @@ TEST(DOMModel, Construction)
   EXPECT_FALSE(model.Namespace().has_value());
   EXPECT_FALSE(model.RawNamespace().has_value());
 
+  std::string nsPlaceholder = sdf::kNameNsPlaceholder.data();
   model.SetName("test_name");
   EXPECT_EQ("test_name", model.Name());
   model.SetRawNamespace("");
@@ -366,6 +366,7 @@ TEST(DOMModel, AddModifyFrame)
 TEST(DOMModel, ToElement)
 {
   sdf::Model model;
+  std::string nsPlaceholder = sdf::kNameNsPlaceholder.data();
 
   model.SetName("my-model");
   model.SetRawNamespace(nsPlaceholder + "/ns");
@@ -480,6 +481,7 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
+  std::string nsPlaceholder = sdf::kNameNsPlaceholder.data();
   std::string ns = nsPlaceholder + "/ns";
   gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
