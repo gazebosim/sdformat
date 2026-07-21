@@ -123,7 +123,7 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
           {
             return _err.Code() == sdf::ErrorCode::URI_LOOKUP;
           });
-      EXPECT_EQ(7u, uriErrorCount);
+      EXPECT_EQ(8u, uriErrorCount);
     }
 
     {
@@ -138,7 +138,7 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
           {
             return _err.Code() == sdf::ErrorCode::URI_LOOKUP;
           });
-      EXPECT_EQ(7u, uriErrorCount);
+      EXPECT_EQ(8u, uriErrorCount);
     }
 
 
@@ -161,7 +161,7 @@ TEST(ParserConfig, ParseWithNonGlobalConfig)
       errors = root.Load(testFile, config);
       auto world = root.WorldByIndex(0);
       ASSERT_NE(nullptr, world);
-      EXPECT_EQ(3u, world->ModelCount());
+      EXPECT_EQ(4u, world->ModelCount());
       EXPECT_TRUE(errors.empty());
     }
   }

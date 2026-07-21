@@ -22,6 +22,11 @@
     </include>
 
     <include>
+      <uri>test_model_with_ns</uri>
+      <namespace>override_model_namespace</namespace>
+    </include>
+
+    <include>
       <uri>test_light</uri>
     </include>
 

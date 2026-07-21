@@ -148,7 +148,7 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ("", pointLight1->PoseRelativeTo());
 
   // Models
-  EXPECT_EQ(3u, world->ModelCount());
+  EXPECT_EQ(4u, world->ModelCount());
   EXPECT_FALSE(world->ModelNameExists(""));
 
   // Model without overrides
@@ -226,6 +226,12 @@ TEST(IncludesTest, Includes)
   EXPECT_TRUE(model2->LinkNameExists("link"));
   EXPECT_FALSE(model2->LinkNameExists("coconut"));
   EXPECT_EQ("1.6", model2->Element()->OriginalVersion());
+
+  const sdf::Model *model3 = world->ModelByIndex(3);
+  ASSERT_NE(nullptr, model3);
+  EXPECT_EQ("test_model_with_ns", model3->Name());
+  ASSERT_TRUE(model3->Namespace().has_value());
+  EXPECT_EQ("override_model_namespace", *model3->Namespace());
 }
 
 //////////////////////////////////////////////////
