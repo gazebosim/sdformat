@@ -170,6 +170,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
     <include>
       <uri>file_wont_be_parsed.nonce_1</uri>
       <name>box</name>
+      <namespace>box_ns</namespace>
       <pose relative_to="F1">1 0 0 0 0 0</pose>
       <extra>
         <info1>value1</info1>
@@ -194,6 +195,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
     EXPECT_EQ(sdf::filesystem::append(this->modelDir, fileName),
               _include.ResolvedFileName());
     EXPECT_EQ("box", *_include.LocalModelName());
+    EXPECT_EQ("box_ns", *_include.LocalModelNamespace());
     EXPECT_TRUE(_include.IsStatic().has_value());
     EXPECT_TRUE(_include.IsStatic().value());
 
@@ -227,6 +229,7 @@ TEST_F(InterfaceAPI, NestedIncludeData)
     EXPECT_EQ(sdf::filesystem::append(modelDir, fileName),
               _include.ResolvedFileName());
     EXPECT_FALSE(_include.LocalModelName().has_value());
+    EXPECT_FALSE(_include.LocalModelNamespace().has_value());
     EXPECT_FALSE(_include.IsStatic());
 
     // Add error for test expectation later on.

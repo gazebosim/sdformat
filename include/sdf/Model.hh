@@ -52,7 +52,6 @@ namespace sdf
   template <typename T> class ScopedGraph;
   using InterfaceModelConstPtr = std::shared_ptr<const InterfaceModel>;
 
-
   class SDFORMAT_VISIBLE Model
   {
     /// \brief Default constructor
@@ -90,6 +89,21 @@ namespace sdf
     /// The name of the model should be unique within the scope of a World.
     /// \param[in] _name Name of the model.
     public: void SetName(const std::string &_name);
+
+    /// \brief Get the resolved namespace associated with the model.
+    /// \return Resolved namespace of the model if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<std::string> Namespace() const;
+
+    /// \brief Get the raw namespace associated with the model.
+    /// \return Raw namespace of the model if it has been set,
+    /// otherwise std::nullopt.
+    public: std::optional<std::string> RawNamespace() const;
+
+    /// \brief Set the raw namespace associated with the model.
+    /// \param[in] _ns Raw namespace of the model. The `{name}` placeholder
+    /// will be replaced with the model name.
+    public: void SetRawNamespace(const std::string &_ns);
 
     /// \brief Check if this model should be static.
     /// A static model is one that is not subject to physical forces (in other
@@ -556,6 +570,14 @@ namespace sdf
     /// an invalid state unless it is merged into the parent object.
     private: sdf::Frame PrepareForMerge(sdf::Errors &_errors,
                                         const std::string &_parentOfProxyFrame);
+
+    /// \brief Resolve namespace placeholders for this model.
+    /// \param[in] _rawNs The raw namespace string.
+    /// \param[in] _modelName The model name used to replace `{name}`
+    /// \return The namespace string with model placeholders resolved.
+    private: std::optional<std::string> ResolveNamespace (
+        const std::optional<std::string> &_rawNs,
+        const std::string &_modelName);
 
     /// \brief Allow Root::Load, World::SetPoseRelativeToGraph, or
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and

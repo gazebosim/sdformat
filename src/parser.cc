@@ -1831,6 +1831,17 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
                 "[@name=\"" + overrideName + "\"]");
           }
 
+          if (elemXml->FirstChildElement("namespace"))
+          {
+            auto overrideNamespace =
+                elemXml->FirstChildElement("namespace")->GetText();
+            auto nsAttribute = topLevelElem->GetAttribute("namespace");
+            if (nsAttribute && overrideNamespace)
+            {
+              nsAttribute->SetFromString(overrideNamespace);
+            }
+          }
+
           tinyxml2::XMLElement *poseElemXml =
               elemXml->FirstChildElement("pose");
           if (poseElemXml)
