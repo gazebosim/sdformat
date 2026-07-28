@@ -1738,17 +1738,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
         // element into _sdf.
         if (sdf::isSdfFile(filename) || _config.CustomModelParsers().empty())
         {
-          // NOTE: sdf::init is an expensive call. For performance reason,
-          // a new sdf pointer is created here by cloning a fresh sdf template
-          // pointer instead of calling init every iteration.
-          // SDFPtr includeSDF(new SDF);
-          // init(includeSDF, _config);
-          static SDFPtr includeSDFTemplate;
-          if (!includeSDFTemplate)
-          {
-            includeSDFTemplate.reset(new SDF);
-            init(includeSDFTemplate, _config);
-          }
+          // NOTE: sdf::init is an expensive call. For performance reason, a new
+          // sdf pointer is created here by cloning a fresh sdf template pointer
+          // instead of calling init every iteration. This template is
+          // purposefully never deleted ala gz::utils::NeverDestroyed.
+          static SDF* includeSDFTemplate = [&_config]() {
+            SDFPtr temp(new SDF, [](SDF*) { /* The deleter is a no-op. */ });
+            init(temp, _config);
+            return temp.get();
+          }();
           SDFPtr includeSDF(new SDF);
           includeSDF->SetRoot(includeSDFTemplate->Root()->Clone());
 

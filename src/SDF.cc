@@ -578,8 +578,8 @@ const std::string &SDF::EmbeddedSpec(
   }
 
   // An empty SDF string is returned if a query into the embeddedSdf map fails.
-  static const std::string emptySdfString;
-  return emptySdfString;
+  static const gz::utils::NeverDestroyed<std::string> emptySdfString;
+  return emptySdfString.Access();
 }
 }
 }
