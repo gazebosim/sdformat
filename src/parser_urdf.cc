@@ -171,13 +171,13 @@ void ReduceSDFExtensionJointFrameReplace(
 /// reduced fixed joints:  apply appropriate frame updates in gripper
 ///   inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionGripperFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in projector
 /// inside urdf extensions when doing fixed joint reduction
 void ReduceSDFExtensionProjectorFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link);
 
 /// reduced fixed joints:  apply appropriate frame updates in plugins
@@ -191,7 +191,7 @@ void ReduceSDFExtensionPluginFrameReplace(
 /// reduced fixed joints:  apply appropriate frame updates in urdf
 ///   extensions when doing fixed joint reduction
 void ReduceSDFExtensionContactSensorFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link);
 
 /// \brief reduced fixed joints:  apply appropriate updates to urdf
@@ -2583,15 +2583,18 @@ void ReduceSDFExtensionFrameReplace(SDFExtensionPtr _ge,
            << linkName << "]-->[" << parentLinkName << "]: ["
            << debugStreamIn.CStr() << "]\n";
 
-    ReduceSDFExtensionContactSensorFrameReplace(blobIt, _link);
+    ReduceSDFExtensionContactSensorFrameReplace(
+        (*blobIt)->FirstChildElement(), _link);
     ReduceSDFExtensionPluginFrameReplace(
         (*blobIt)->FirstChildElement(), _link, "plugin", "bodyName",
         _ge->reductionTransform);
     ReduceSDFExtensionPluginFrameReplace(
         (*blobIt)->FirstChildElement(), _link, "plugin", "frameName",
         _ge->reductionTransform);
-    ReduceSDFExtensionProjectorFrameReplace(blobIt, _link);
-    ReduceSDFExtensionGripperFrameReplace(blobIt, _link);
+    ReduceSDFExtensionProjectorFrameReplace(
+        (*blobIt)->FirstChildElement(), _link);
+    ReduceSDFExtensionGripperFrameReplace(
+        (*blobIt)->FirstChildElement(), _link);
     ReduceSDFExtensionJointFrameReplace((*blobIt)->FirstChildElement(), _link);
   }
 }
@@ -3568,16 +3571,16 @@ void ReduceSDFExtensionElementTransformReduction(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionContactSensorFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
   std::string parentLinkName = _link->getParent()->name;
-  if ( strcmp((*_blobIt)->FirstChildElement()->Name(), "sensor") == 0)
+  if (strcmp(_blob->Name(), "sensor") == 0)
   {
     // parse it and add/replace the reduction transform
     // find first instance of xyz and rpy, replace with reduction transform
-    tinyxml2::XMLNode *contact = (*_blobIt)->FirstChildElement("contact");
+    tinyxml2::XMLNode *contact = _blob->FirstChildElement("contact");
     if (contact)
     {
       tinyxml2::XMLNode *collision = contact->FirstChildElement("collision");
@@ -3625,8 +3628,9 @@ void ReduceSDFExtensionPluginFrameReplace(
     {
       if (GetKeyValueAsString(elementNode->ToElement()) == linkName)
       {
+        // Capture the document before DeleteChild — TinyXML2 frees the node.
+        auto* doc = _blob->GetDocument();
         _blob->DeleteChild(elementNode);
-        auto* doc = elementNode->GetDocument();
         tinyxml2::XMLElement *bodyNameKey =
           doc->NewElement(_elementName.c_str());
         std::ostringstream bodyNameStream;
@@ -3707,7 +3711,7 @@ void ReduceSDFExtensionPluginFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionProjectorFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
@@ -3717,7 +3721,7 @@ void ReduceSDFExtensionProjectorFrameReplace(
   // projector plugins
   // update from <projector>MyLinkName/MyProjectorName</projector>
   // to <projector>NewLinkName/MyProjectorName</projector>
-  tinyxml2::XMLNode *projectorElem = (*_blobIt)->FirstChildElement("projector");
+  tinyxml2::XMLNode *projectorElem = _blob->FirstChildElement("projector");
   {
     if (projectorElem)
     {
@@ -3740,15 +3744,16 @@ void ReduceSDFExtensionProjectorFrameReplace(
           projectorName = parentLinkName + "/" +
             projectorName.substr(pos+1, projectorName.size());
 
-          (*_blobIt)->DeleteChild(projectorElem);
-          auto* doc = projectorElem->GetDocument();
+          // Capture the document before DeleteChild — TinyXML2 frees the node.
+          auto* doc = _blob->GetDocument();
+          _blob->DeleteChild(projectorElem);
           tinyxml2::XMLElement *bodyNameKey = doc->NewElement("projector");
           std::ostringstream bodyNameStream;
           bodyNameStream << projectorName;
           tinyxml2::XMLText *bodyNameTxt =
             doc->NewText(bodyNameStream.str().c_str());
           bodyNameKey->LinkEndChild(bodyNameTxt);
-          (*_blobIt)->LinkEndChild(bodyNameKey);
+          _blob->LinkEndChild(bodyNameKey);
         }
       }
     }
@@ -3757,38 +3762,38 @@ void ReduceSDFExtensionProjectorFrameReplace(
 
 ////////////////////////////////////////////////////////////////////////////////
 void ReduceSDFExtensionGripperFrameReplace(
-    std::vector<XMLDocumentPtr>::iterator _blobIt,
+    tinyxml2::XMLElement *_blob,
     urdf::LinkSharedPtr _link)
 {
   std::string linkName = _link->name;
   std::string parentLinkName = _link->getParent()->name;
 
-  if (strcmp((*_blobIt)->FirstChildElement()->Name(), "gripper") == 0)
+  if (strcmp(_blob->Name(), "gripper") == 0)
   {
     tinyxml2::XMLNode *gripperLink =
-      (*_blobIt)->FirstChildElement("gripper_link");
+      _blob->FirstChildElement("gripper_link");
     if (gripperLink)
     {
       if (GetKeyValueAsString(gripperLink->ToElement()) == linkName)
       {
-        (*_blobIt)->DeleteChild(gripperLink);
-        auto* doc = (*_blobIt)->GetDocument();
+        _blob->DeleteChild(gripperLink);
+        auto* doc = _blob->GetDocument();
         tinyxml2::XMLElement *bodyNameKey = doc->NewElement("gripper_link");
         std::ostringstream bodyNameStream;
         bodyNameStream << parentLinkName;
         tinyxml2::XMLText *bodyNameTxt =
           doc->NewText(bodyNameStream.str().c_str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
-        (*_blobIt)->LinkEndChild(bodyNameKey);
+        _blob->LinkEndChild(bodyNameKey);
       }
     }
-    tinyxml2::XMLNode *palmLink = (*_blobIt)->FirstChildElement("palm_link");
+    tinyxml2::XMLNode *palmLink = _blob->FirstChildElement("palm_link");
     if (palmLink)
     {
       if (GetKeyValueAsString(palmLink->ToElement()) == linkName)
       {
-        (*_blobIt)->DeleteChild(palmLink);
-        auto* doc = (*_blobIt)->GetDocument();
+        _blob->DeleteChild(palmLink);
+        auto* doc = _blob->GetDocument();
         tinyxml2::XMLElement *bodyNameKey =
             doc->NewElement("palm_link");
         std::ostringstream bodyNameStream;
@@ -3796,7 +3801,7 @@ void ReduceSDFExtensionGripperFrameReplace(
         tinyxml2::XMLText *bodyNameTxt =
           doc->NewText(bodyNameStream.str().c_str());
         bodyNameKey->LinkEndChild(bodyNameTxt);
-        (*_blobIt)->LinkEndChild(bodyNameKey);
+        _blob->LinkEndChild(bodyNameKey);
       }
     }
   }
