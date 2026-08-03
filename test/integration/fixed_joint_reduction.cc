@@ -43,6 +43,12 @@ const char SDF_TEST_FILE_JOINT_FRAME_EXTENSION[] =
     "fixed_joint_reduction_joint_frame_extension.urdf";
 const char SDF_TEST_FILE_PLUGIN_FRAME_EXTENSION[] =
     "fixed_joint_reduction_plugin_frame_extension.urdf";
+const char SDF_TEST_FILE_CONTACT_SENSOR_FRAME_EXTENSION[] =
+    "fixed_joint_reduction_contact_sensor_frame_extension.urdf";
+const char SDF_TEST_FILE_GRIPPER_FRAME_EXTENSION[] =
+    "fixed_joint_reduction_gripper_frame_extension.urdf";
+const char SDF_TEST_FILE_PROJECTOR_FRAME_EXTENSION[] =
+    "fixed_joint_reduction_projector_frame_extension.urdf";
 
 static std::string GetFullTestFilePath(const char *_input)
 {
@@ -793,4 +799,91 @@ TEST(SDFParser, FixedJointReductionPluginFrameExtensionTest)
 
   bool correctedOffset = plugin->Get<bool>("gz::corrected_offsets");
   EXPECT_TRUE(correctedOffset);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has chained fixed joints with a contact
+// sensor whose <collision> names a reduced child link.
+// Test to make sure that the collision name is updated during reduction.
+TEST(SDFParser, FixedJointReductionContactSensorFrameExtensionTest)
+{
+  sdf::SDFPtr robot(new sdf::SDF());
+  sdf::init(robot);
+  ASSERT_TRUE(sdf::readFile(
+      GetFullTestFilePath(SDF_TEST_FILE_CONTACT_SENSOR_FRAME_EXTENSION),
+      robot));
+
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  ASSERT_NE(nullptr, model);
+
+  // After reduction the contact sensor should live on base_link.
+  sdf::ElementPtr link = model->GetElement("link");
+  sdf::ElementPtr baseLink;
+  while (link)
+  {
+    if (link->Get<std::string>("name") == "base_link")
+    {
+      baseLink = link;
+      break;
+    }
+    link = link->GetNextElement("link");
+  }
+  ASSERT_NE(nullptr, baseLink);
+
+  sdf::ElementPtr sensor = baseLink->GetElement("sensor");
+  ASSERT_NE(nullptr, sensor);
+  EXPECT_EQ("link2_contact_sensor", sensor->Get<std::string>("name"));
+
+  sdf::ElementPtr contact = sensor->GetElement("contact");
+  ASSERT_NE(nullptr, contact);
+  // link2_collision should be rewritten to base_link_collision_link2 when
+  // link2 is reduced into base_link.
+  auto collisionName = contact->Get<std::string>("collision");
+  EXPECT_EQ("base_link_collision_link2", collisionName);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has chained fixed joints with an SDFormat
+// gripper embedded in a <gazebo> tag whose gripper_link and palm_link
+// name a reduced child link.
+// Test to make sure that those link names are updated during reduction.
+TEST(SDFParser, FixedJointReductionGripperFrameExtensionTest)
+{
+  sdf::SDFPtr robot(new sdf::SDF());
+  sdf::init(robot);
+  ASSERT_TRUE(sdf::readFile(
+      GetFullTestFilePath(SDF_TEST_FILE_GRIPPER_FRAME_EXTENSION), robot));
+
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  ASSERT_NE(nullptr, model);
+
+  sdf::ElementPtr gripper = model->GetElement("gripper");
+  ASSERT_NE(nullptr, gripper);
+  EXPECT_EQ("test_gripper", gripper->Get<std::string>("name"));
+
+  auto gripperLink = gripper->Get<std::string>("gripper_link");
+  auto palmLink = gripper->Get<std::string>("palm_link");
+  EXPECT_EQ("base_link", gripperLink);
+  EXPECT_EQ("base_link", palmLink);
+}
+
+/////////////////////////////////////////////////
+// This test uses a urdf that has chained fixed joints with a plugin that
+// contains a <projector>link/name</projector> reference to a reduced link.
+// Test to make sure that the projector link name is updated during reduction.
+TEST(SDFParser, FixedJointReductionProjectorFrameExtensionTest)
+{
+  sdf::SDFPtr robot(new sdf::SDF());
+  sdf::init(robot);
+  ASSERT_TRUE(sdf::readFile(
+      GetFullTestFilePath(SDF_TEST_FILE_PROJECTOR_FRAME_EXTENSION), robot));
+
+  sdf::ElementPtr model = robot->Root()->GetElement("model");
+  ASSERT_NE(nullptr, model);
+
+  sdf::ElementPtr plugin = model->GetElement("plugin");
+  ASSERT_NE(nullptr, plugin);
+
+  auto projector = plugin->Get<std::string>("projector");
+  EXPECT_EQ("base_link/my_projector", projector);
 }
