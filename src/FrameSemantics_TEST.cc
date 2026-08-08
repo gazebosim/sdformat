@@ -24,6 +24,8 @@
 #include "sdf/Element.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Filesystem.hh"
+#include "sdf/Joint.hh"
+#include "sdf/JointAxis.hh"
 #include "sdf/Model.hh"
 #include "sdf/Root.hh"
 #include "sdf/SDFImpl.hh"
@@ -295,6 +297,69 @@ TEST(FrameSemantics, buildPoseRelativeToGraph)
       errors[0].Message().find(
         "PoseRelativeToGraph unable to find unique frame with name ["
         "invalid] in graph."));
+}
+
+/////////////////////////////////////////////////
+// Resolving a frame against itself must be exactly the identity, and a joint
+// axis declared without xyz_expressed_in must come back exactly as declared,
+// since it resolves against the joint's own frame.
+//
+// These hold on current main, so this test does not reproduce a present-day
+// failure. It pins the contract: the identity case must stay exact by
+// construction rather than by the round trip happening to cancel, which
+// matters for any future change to how resolvePose composes poses.
+//
+// EXPECT_EQ cannot be used for either check. Pose3d and Vector3d compare
+// through tolerance-based operator==, so a residual near 1e-17 compares equal.
+// See https://github.com/gazebosim/sdformat/issues/1692
+TEST(FrameSemantics, resolveAgainstOwnFrameIsExact)
+{
+  const std::string testFile =
+    sdf::testing::TestFile("sdf", "joint_axis_in_rotated_frame.sdf");
+
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  auto ownedGraph = std::make_shared<sdf::PoseRelativeToGraph>();
+  sdf::ScopedGraph<sdf::PoseRelativeToGraph> graph(ownedGraph);
+  ASSERT_TRUE(sdf::buildPoseRelativeToGraph(graph, model).empty());
+  graph = graph.ChildModelScope(model->Name());
+
+  for (const std::string &frame :
+       {"__model__", "chassis", "wheel", "wheel_joint"})
+  {
+    gz::math::Pose3d pose;
+    EXPECT_TRUE(sdf::resolvePose(pose, graph, frame, frame).empty()) << frame;
+
+    EXPECT_DOUBLE_EQ(0.0, pose.Pos().X()) << frame;
+    EXPECT_DOUBLE_EQ(0.0, pose.Pos().Y()) << frame;
+    EXPECT_DOUBLE_EQ(0.0, pose.Pos().Z()) << frame;
+
+    EXPECT_DOUBLE_EQ(1.0, pose.Rot().W()) << frame;
+    EXPECT_DOUBLE_EQ(0.0, pose.Rot().X()) << frame;
+    EXPECT_DOUBLE_EQ(0.0, pose.Rot().Y()) << frame;
+    EXPECT_DOUBLE_EQ(0.0, pose.Rot().Z()) << frame;
+  }
+
+  // The consumer that motivated this: a joint axis on a link rotated by a
+  // value that is not exactly representable.
+  for (const std::string &jointName : {"wheel_joint", "wheel_joint_exact"})
+  {
+    const sdf::Joint *joint = model->JointByName(jointName);
+    ASSERT_NE(nullptr, joint) << jointName;
+    const sdf::JointAxis *axis = joint->Axis(0);
+    ASSERT_NE(nullptr, axis) << jointName;
+
+    gz::math::Vector3d xyz;
+    EXPECT_TRUE(axis->ResolveXyz(xyz).empty()) << jointName;
+
+    EXPECT_DOUBLE_EQ(0.0, xyz.X()) << jointName;
+    EXPECT_DOUBLE_EQ(0.0, xyz.Y()) << jointName;
+    EXPECT_DOUBLE_EQ(1.0, xyz.Z()) << jointName;
+  }
 }
 
 /////////////////////////////////////////////////
