@@ -50,9 +50,9 @@ jobs:
         fi
         # gz-math7 has problems with swig, remove it for now
         brew remove swig || true
-        brew install --only-dependencies ${PACKAGE};
-        # install :build dependencies of a formula
-        brew install $(brew deps --1 --include-build ${PACKAGE})
+        brew install --only-dependencies --HEAD ${PACKAGE};
+        # install non-rotary :build dependencies of a formula
+        brew install $(brew deps --1 --include-build ${PACKAGE} | grep -v gz-rotary-)
 
     - run: mkdir build
     - name: cmake
