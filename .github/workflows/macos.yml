@@ -11,7 +11,7 @@ jobs:
   build:
 
     env:
-      PACKAGE: sdformat16
+      PACKAGE: gz-rotary-sdformat
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
