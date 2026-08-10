@@ -328,7 +328,7 @@ TEST(FrameSemantics, resolveAgainstOwnFrameIsExact)
   ASSERT_TRUE(sdf::buildPoseRelativeToGraph(graph, model).empty());
   graph = graph.ChildModelScope(model->Name());
 
-  for (const std::string &frame :
+  for (const auto &frame :
        {"__model__", "chassis", "wheel", "wheel_joint"})
   {
     gz::math::Pose3d pose;
@@ -346,7 +346,7 @@ TEST(FrameSemantics, resolveAgainstOwnFrameIsExact)
 
   // The consumer that motivated this: a joint axis on a link rotated by a
   // value that is not exactly representable.
-  for (const std::string &jointName : {"wheel_joint", "wheel_joint_exact"})
+  for (const auto &jointName : {"wheel_joint", "wheel_joint_exact"})
   {
     const sdf::Joint *joint = model->JointByName(jointName);
     ASSERT_NE(nullptr, joint) << jointName;
