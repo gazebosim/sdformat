@@ -1793,6 +1793,20 @@ Errors resolvePose(gz::math::Pose3d &_pose,
   // If the resolveTo is empty, we're resolving to the Root, so we're done
   if (_resolveToVertexId != gz::math::graph::kNullId)
   {
+    // A frame resolved against itself is the identity by definition, so
+    // return it directly instead of deriving it. Computing it as
+    // poseR.Inverse() * _pose composes an edge chain with its own inverse,
+    // which is exact only in real arithmetic: in floating point the
+    // quaternion round trip can leave a residual on the order of 2^-56.
+    if (_frameVertexId == _resolveToVertexId)
+    {
+      if (errors.empty())
+      {
+        _pose = gz::math::Pose3d::Zero;
+      }
+      return errors;
+    }
+
     gz::math::Pose3d poseR;
     Errors errorsR =
         resolvePoseRelativeToRoot(poseR, _graph, _resolveToVertexId);
