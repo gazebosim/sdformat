@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<!-- Mirrors the joint layout in gz-sim's static_diff_drive_vehicle.sdf that
+     exposed https://github.com/gazebosim/sdformat/issues/1692: a wheel link
+     rotated by a value that is not exactly representable, and a joint whose
+     axis is declared without xyz_expressed_in, so it resolves against its
+     own frame. -->
+<sdf version="1.9">
+  <model name="axis_in_rotated_frame">
+    <link name="chassis"/>
+
+    <link name="wheel">
+      <pose>0.554283 0.625029 -0.025 -1.5707 0 0</pose>
+    </link>
+
+    <joint name="wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>wheel</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <!-- Same layout, but rotated by an exactly representable angle, as a
+         control: this one is expected to resolve cleanly either way. -->
+    <link name="wheel_exact">
+      <pose>0 -0.625 -0.025 0 0 0</pose>
+    </link>
+
+    <joint name="wheel_joint_exact" type="revolute">
+      <parent>chassis</parent>
+      <child>wheel_exact</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+  </model>
+</sdf>
