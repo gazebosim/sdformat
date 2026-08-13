@@ -148,13 +148,14 @@ TEST(IncludesTest, Includes)
   EXPECT_EQ("", pointLight1->PoseRelativeTo());
 
   // Models
-  EXPECT_EQ(3u, world->ModelCount());
+  EXPECT_EQ(4u, world->ModelCount());
   EXPECT_FALSE(world->ModelNameExists(""));
 
   // Model without overrides
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("test_model", model->Name());
+  EXPECT_FALSE(model->Namespace().has_value());
   EXPECT_FALSE(model->Static());
   EXPECT_EQ(1u, model->LinkCount());
   ASSERT_FALSE(nullptr == model->LinkByIndex(0));
@@ -203,6 +204,8 @@ TEST(IncludesTest, Includes)
   const sdf::Model *model1 = world->ModelByIndex(1);
   ASSERT_NE(nullptr, model1);
   EXPECT_EQ("override_model_name", model1->Name());
+  ASSERT_TRUE(model1->Namespace().has_value());
+  EXPECT_EQ("override_model_namespace", *model1->Namespace());
   EXPECT_TRUE(model1->Static());
   EXPECT_EQ(gz::math::Pose3d(1, 2, 3, 0, 0, 0), model1->RawPose());
   EXPECT_EQ("", model1->PoseRelativeTo());
@@ -212,6 +215,8 @@ TEST(IncludesTest, Includes)
   const sdf::Model *model2 = world->ModelByIndex(2);
   ASSERT_NE(nullptr, model2);
   EXPECT_EQ("test_model_with_file", model2->Name());
+  ASSERT_TRUE(model2->Namespace().has_value());
+  EXPECT_EQ("test_model_with_file", *model2->Namespace());
   EXPECT_FALSE(model2->Static());
   EXPECT_EQ(1u, model2->LinkCount());
   ASSERT_NE(nullptr, model2->LinkByIndex(0));
@@ -221,6 +226,12 @@ TEST(IncludesTest, Includes)
   EXPECT_TRUE(model2->LinkNameExists("link"));
   EXPECT_FALSE(model2->LinkNameExists("coconut"));
   EXPECT_EQ("1.6", model2->Element()->OriginalVersion());
+
+  const sdf::Model *model3 = world->ModelByIndex(3);
+  ASSERT_NE(nullptr, model3);
+  EXPECT_EQ("test_model_with_ns", model3->Name());
+  ASSERT_TRUE(model3->Namespace().has_value());
+  EXPECT_EQ("override_model_namespace", *model3->Namespace());
 }
 
 //////////////////////////////////////////////////
@@ -260,6 +271,7 @@ TEST(IncludesTest, Includes_15)
   const sdf::Model *model = world->ModelByIndex(0);
   ASSERT_NE(nullptr, model);
   EXPECT_EQ("test_model", model->Name());
+  EXPECT_FALSE(model->Namespace().has_value());
   EXPECT_EQ(1u, model->LinkCount());
   ASSERT_FALSE(nullptr == model->LinkByName("link"));
 
@@ -310,6 +322,7 @@ TEST(IncludesTest, Includes_15_convert)
   sdf::ElementPtr modelElem = worldElem->GetElement("model");
   ASSERT_NE(nullptr, modelElem);
   EXPECT_EQ(modelElem->Get<std::string>("name"), "test_model");
+  EXPECT_EQ(modelElem->Get<std::string>("namespace"), "");
 
   sdf::ElementPtr linkElem = modelElem->GetElement("link");
   ASSERT_NE(nullptr, linkElem);
@@ -361,6 +374,32 @@ TEST(IncludesTest, IncludeModelMissingConfig)
   EXPECT_TRUE(errors.empty());
 
   EXPECT_EQ(nullptr, root.Model());
+}
+
+//////////////////////////////////////////////////
+TEST(IncludesTest, IncludeModelEmptyNamespace)
+{
+  sdf::setFindCallback(findFileCb);
+
+  std::ostringstream stream;
+  stream
+    << "<sdf version='" << SDF_VERSION << "'>"
+    << "<include>"
+    << "  <uri>test_model</uri>"
+    << "  <namespace></namespace>"
+    << "</include>"
+    << "</sdf>";
+
+  sdf::Root root;
+  sdf::Errors errors = root.LoadSdfString(stream.str());
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  auto model = root.Model();
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("test_model", model->Name());
+  EXPECT_FALSE(model->Namespace().has_value());
+  EXPECT_FALSE(model->RawNamespace().has_value());
+  EXPECT_EQ(1u, model->LinkCount());
 }
 
 //////////////////////////////////////////////////

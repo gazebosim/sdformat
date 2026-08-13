@@ -37,6 +37,9 @@ namespace sdf
 
   constexpr std::string_view kScopeDelimiter{"::"};
 
+  /// \brief Placeholder that resolves to the name in a namespace.
+  constexpr std::string_view kNameNsPlaceholder{"{name}"};
+
   /// \brief The source path replacement if it was parsed from a string,
   /// instead of a file.
   constexpr char kSdfStringSource[] = "<data-string>";

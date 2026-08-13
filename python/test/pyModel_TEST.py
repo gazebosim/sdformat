@@ -20,14 +20,30 @@ import sdformat as sdf
 import math
 import unittest
 
+ns_placeholder = sdf.MODEL_NAME_NS_PLACEHOLDER
+
 class ModelTEST(unittest.TestCase):
 
     def test_default_construction(self):
         model = Model()
         self.assertFalse(model.name())
+        self.assertIsNone(model.namespace())
+        self.assertIsNone(model.raw_namespace())
 
+        model.set_name("test_name")
+        self.assertEqual("test_name", model.name())
+
+        model.set_raw_namespace("")
+        self.assertEqual("", model.namespace())
+        model.set_raw_namespace(
+            "test/" + ns_placeholder + "1/" + ns_placeholder + "2/test_ns")
+        self.assertEqual(
+            "test/test_name1/test_name2/test_ns", model.namespace())
         model.set_name("test_model")
-        self.assertEqual("test_model", model.name())
+        self.assertEqual(
+            "test/test_model1/test_model2/test_ns", model.namespace())
+        model.set_raw_namespace("test_namespace")
+        self.assertEqual("test_namespace", model.namespace())
 
         self.assertFalse(model.static())
         model.set_static(True)
@@ -153,9 +169,11 @@ class ModelTEST(unittest.TestCase):
     def test_copy_construction(self):
         model = Model()
         model.set_name("test_model")
+        model.set_raw_namespace("test_ns")
 
         model2 = Model(model)
         self.assertEqual("test_model", model2.name())
+        self.assertEqual("test_ns", model2.namespace())
 
 
     def test_add_link(self):

@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <gz/math/Pose3.hh>
+#include "sdf/Types.hh"
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
@@ -31,9 +32,25 @@ TEST(DOMModel, Construction)
   sdf::Model model;
   EXPECT_EQ(nullptr, model.Element());
   EXPECT_TRUE(model.Name().empty());
+  EXPECT_FALSE(model.Namespace().has_value());
+  EXPECT_FALSE(model.RawNamespace().has_value());
 
+  std::string nsPlaceholder = sdf::kNameNsPlaceholder.data();
+  model.SetName("test_name");
+  EXPECT_EQ("test_name", model.Name());
+  model.SetRawNamespace("");
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("", model.Namespace().value());
+  model.SetRawNamespace(
+    "test/" + nsPlaceholder + "1/" + nsPlaceholder + "2/test_ns");
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("test/test_name1/test_name2/test_ns", model.Namespace().value());
   model.SetName("test_model");
-  EXPECT_EQ("test_model", model.Name());
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("test/test_model1/test_model2/test_ns", model.Namespace().value());
+  model.SetRawNamespace("test_namespace");
+  ASSERT_TRUE(model.Namespace().has_value());
+  EXPECT_EQ("test_namespace", model.Namespace().value());
 
   EXPECT_FALSE(model.Static());
   model.SetStatic(true);
@@ -165,9 +182,12 @@ TEST(DOMModel, CopyConstructor)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2(model);
   EXPECT_EQ("test_model", model2.Name());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -175,10 +195,13 @@ TEST(DOMModel, CopyAssignmentOperator)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2;
   model2 = model;
   EXPECT_EQ("test_model", model2.Name());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -186,9 +209,12 @@ TEST(DOMModel, MoveConstructor)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2(std::move(model));
   EXPECT_EQ("test_model", model2.Name());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -196,10 +222,13 @@ TEST(DOMModel, MoveAssignmentOperator)
 {
   sdf::Model model;
   model.SetName("test_model");
+  model.SetRawNamespace("test_ns");
 
   sdf::Model model2;
   model2 = std::move(model);
   EXPECT_EQ("test_model", model2.Name());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -207,9 +236,11 @@ TEST(DOMModel, CopyAssignmentAfterMove)
 {
   sdf::Model model1;
   model1.SetName("model1");
+  model1.SetRawNamespace("test_ns1");
 
   sdf::Model model2;
   model2.SetName("model2");
+  model2.SetRawNamespace("test_ns2");
 
   // This is similar to what std::swap does except it uses std::move for each
   // assignment
@@ -219,6 +250,10 @@ TEST(DOMModel, CopyAssignmentAfterMove)
 
   EXPECT_EQ("model2", model1.Name());
   EXPECT_EQ("model1", model2.Name());
+  ASSERT_TRUE(model1.Namespace().has_value());
+  EXPECT_EQ("test_ns2", model1.Namespace().value());
+  ASSERT_TRUE(model2.Namespace().has_value());
+  EXPECT_EQ("test_ns1", model2.Namespace().value());
 }
 
 /////////////////////////////////////////////////
@@ -331,8 +366,10 @@ TEST(DOMModel, AddModifyFrame)
 TEST(DOMModel, ToElement)
 {
   sdf::Model model;
+  std::string nsPlaceholder = sdf::kNameNsPlaceholder.data();
 
   model.SetName("my-model");
+  model.SetRawNamespace(nsPlaceholder + "/ns");
   model.SetStatic(true);
   model.SetSelfCollide(true);
   model.SetAllowAutoDisable(true);
@@ -402,6 +439,7 @@ TEST(DOMModel, ToElement)
   model2.Load(elem);
 
   EXPECT_EQ(model.Name(), model2.Name());
+  EXPECT_EQ(model.Namespace(), model2.Namespace());
   EXPECT_EQ(model.Static(), model2.Static());
   EXPECT_EQ(model.SelfCollide(), model2.SelfCollide());
   EXPECT_EQ(model.AllowAutoDisable(), model2.AllowAutoDisable());
@@ -443,11 +481,14 @@ TEST(DOMModel, Uri)
 {
   sdf::Model model;
   std::string name = "my-model";
+  std::string nsPlaceholder = sdf::kNameNsPlaceholder.data();
+  std::string ns = nsPlaceholder + "/ns";
   gz::math::Pose3d pose(1, 2, 3, 0.1, 0.2, 0.3);
   std::string uri =
     "https://fuel.gazebosim.org/1.0/openrobotics/models/my-model";
 
   model.SetName(name);
+  model.SetRawNamespace(ns);
   model.SetRawPose(pose);
   model.SetStatic(true);
   model.SetPlacementFrameName("link0");
@@ -467,6 +508,10 @@ TEST(DOMModel, Uri)
     sdf::ElementPtr nameElem = elem->FindElement("name");
     ASSERT_NE(nullptr, nameElem);
     EXPECT_EQ(name, nameElem->Get<std::string>());
+
+    sdf::ElementPtr nsElem = elem->FindElement("namespace");
+    ASSERT_NE(nullptr, nsElem);
+    EXPECT_EQ(ns, nsElem->Get<std::string>());
 
     sdf::ElementPtr poseElem = elem->FindElement("pose");
     ASSERT_NE(nullptr, poseElem);
@@ -498,6 +543,10 @@ TEST(DOMModel, Uri)
     sdf::ParamPtr nameAttr = elem->GetAttribute("name");
     ASSERT_NE(nullptr, nameAttr);
     EXPECT_EQ(name, nameAttr->GetAsString());
+
+    sdf::ParamPtr nsAttr = elem->GetAttribute("namespace");
+    ASSERT_NE(nullptr, nsAttr);
+    EXPECT_EQ(ns, nsAttr->GetAsString());
 
     sdf::ParamPtr placementFrameAttr = elem->GetAttribute("placement_frame");
     ASSERT_NE(nullptr, placementFrameAttr);
