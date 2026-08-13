@@ -148,9 +148,9 @@ class InterfaceAPI : public ::testing::Test
     this->modelDir = sdf::testing::TestFile("integration", "model");
 
     this->config.SetFindCallback(
-        [=](const std::string &_file)
+        [this](const std::string &_file)
         {
-          return sdf::filesystem::append(modelDir, _file);
+          return sdf::filesystem::append(this->modelDir, _file);
         });
   }
   public: void CheckFrameSemantics(const sdf::World *world);
