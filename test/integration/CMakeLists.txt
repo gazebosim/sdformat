@@ -78,12 +78,16 @@ if (EXISTS ${XMLLINT_EXE})
   )
   # typical output: "/usr/bin/xmllint: using libxml version 20913\ncompiled with: ..."
   # version is formatted as a single integer, with 20913 representing 2.9.13
-  string(REGEX MATCH "using libxml version [0-9]+" XMLLINT_VERSION_STRING ${XMLLINT_VERSION_OUTPUT})
-  string(REPLACE "using libxml version " "" XMLLINT_VERSION ${XMLLINT_VERSION_STRING})
-  # schema test is broken with very new versions of xmllint
-  # https://github.com/gazebosim/sdformat/issues/1656
-  # enable schema test if xmllint is older than 2.15.0
-  if("${XMLLINT_VERSION}" LESS 21500)
+  string(REGEX MATCH "using libxml version [0-9]+" XMLLINT_VERSION_STRING "${XMLLINT_VERSION_OUTPUT}")
+  string(REPLACE "using libxml version " "" XMLLINT_VERSION "${XMLLINT_VERSION_STRING}")
+  if("${XMLLINT_VERSION}" STREQUAL "")
+    message(WARNING "Unable to identify xmllint version. schema_test won't be run")
+  elseif("${XMLLINT_VERSION}" LESS 10000)
+    message(WARNING "Old version of xmllint (${XMLLINT_VERSION_STRING}) detected. schema_test won't be run")
+  elseif("${XMLLINT_VERSION}" LESS 21500)
+    # schema test is broken with very new versions of xmllint
+    # https://github.com/gazebosim/sdformat/issues/1656
+    # enable schema test if xmllint is older than 2.15.0
     set (tests ${tests} schema_test.cc)
   else()
     # TODO: convert to WARNING when https://github.com/gazebosim/sdformat/issues/1656
