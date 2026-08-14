@@ -86,7 +86,11 @@ if (EXISTS ${XMLLINT_EXE})
   if("${XMLLINT_VERSION}" LESS 21500)
     set (tests ${tests} schema_test.cc)
   else()
-    message(WARNING "xmllint version is too new (${XMLLINT_VERSION}). schema_test won't be run")
+    # TODO: convert to WARNING when https://github.com/gazebosim/sdformat/issues/1656
+    # is resolved on supported platforms. It currently fails on Ubuntu 26.04
+    message(STATUS  "WARNING: xmllint version (${XMLLINT_VERSION}) is too new; "
+                    "schema_test won't be run. "
+                    "See https://github.com/gazebosim/sdformat/issues/1656")
   endif()
 else()
   message(WARNING "xmllint not found. schema_test won't be run")
