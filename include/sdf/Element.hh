@@ -441,6 +441,15 @@ namespace sdf
     /// return A Param pointer to the value of this element.
     public: ParamPtr GetValue() const;
 
+    /// \brief Get the element value as a scalar Angle. The value's units are
+    /// radians unless the element has an attribute named
+    /// "degrees" that contains a boolean value evaluating to true with
+    /// Get<bool>("degrees"), in which case the units are degrees.
+    /// \param[in] _scalar The output Angle to be written.
+    /// return True if a scalar angle was soccessfully copied to _scalar,
+    /// False if no value was copied to _scalar.
+    public: bool GetAngularValue(gz::math::Angle &_scalar) const;
+
     /// \brief Get the element value/attribute as a std::any.
     /// \param[in] _key The key of the attribute. If empty, get the value of
     /// the element. Defaults to empty.

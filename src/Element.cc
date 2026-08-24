@@ -1002,6 +1002,31 @@ ParamPtr Element::GetValue() const
 }
 
 /////////////////////////////////////////////////
+bool Element::GetAngularValue(gz::math::Angle &_scalar) const
+{
+  // Try to parse this Element's value as a scalar, default 0.0
+  std::pair<double, bool> scalarPair = this->Get<double>("", 0.0);
+  if (!scalarPair.second)
+  {
+    // Unable to parse value as a scalar
+    return false;
+  }
+
+  // Check for boolean attribute or child element named "degrees",
+  // defaulting to false if not found.
+  std::pair<bool, bool> degreesPair = this->Get<bool>("degrees", false);
+  if (degreesPair.first)
+  {
+    _scalar.SetDegree(scalarPair.first);
+  }
+  else
+  {
+    _scalar.SetRadian(scalarPair.first);
+  }
+  return true;
+}
+
+/////////////////////////////////////////////////
 bool Element::HasElement(const std::string &_name) const
 {
   return this->GetElementImpl(_name) != ElementPtr();

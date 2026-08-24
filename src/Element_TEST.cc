@@ -1018,6 +1018,35 @@ TEST(Element, CountNamedElements)
   EXPECT_TRUE(errors.empty());
 }
 
+TEST(Element, GetAngularVelue)
+{
+  // <root>
+  //   <value_in_radians_by_default>1.57</value_in_radians_by_default/>
+  //   <value_in_radians degrees="false">1.57</value_in_radians/>
+  //   <value_in_degrees degrees="true">90.0</value_in_degrees/>
+  //
+  //   <nonscalar_numerical_value>1 2 3</nonscalar_numerical_value>
+  //   <non_numerical_value>words</non_numerical_value>
+  // </root>
+  sdf::ElementPtr root = std::make_shared<sdf::Element>();
+  root->SetName("root");
+
+  // Create elements
+  {
+    auto value_in_radians_by_default =
+        addChildElement(root, "value_in_radians_by_default", false, "");
+    sdf::ParamPtr param = value_in_radians_by_default->GetValue();
+    value_in_radians_by_default->AddValue("double", "foo", false, "foo description");
+
+    auto valueInRadians = addChildElement(root, "value_in_radians", false, "");
+    valueInRadians->AddAttribute("degrees", "string", "false", false, "");
+    auto valueInDegrees = addChildElement(root, "value_in_degrees", false, "");
+    valueInDegrees->AddAttribute("degrees", "string", "true", false, "");
+
+    addChildElement(root, "nonscalar_numerical_value", false, "");
+  }
+}
+
 TEST(Element, FindElement)
 {
   // <root>
