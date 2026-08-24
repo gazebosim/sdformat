@@ -884,7 +884,7 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
   }
   else
   {
-    sdferr << "parse as sdf version " << SDF::Version() << " failed, "
+    sdferr << "parse as sdf version " << _config.VersionString() << " failed, "
            << "should try to parse as old deprecated format\n";
     return false;
   }
@@ -943,10 +943,11 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, SDFPtr _sdf,
     }
 
     if (_convert
-        && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
+        && strcmp(sdfNode->Attribute("version"),
+                  _config.VersionString().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated source[" << _source << "].\n";
-      Converter::Convert(_xmlDoc, SDF::Version());
+      Converter::Convert(_xmlDoc, _config.VersionString());
     }
 
     auto *elemXml = _xmlDoc->FirstChildElement(_sdf->Root()->GetName().c_str());
@@ -1032,11 +1033,12 @@ bool readDoc(tinyxml2::XMLDocument *_xmlDoc, ElementPtr _sdf,
     }
 
     if (_convert
-        && strcmp(sdfNode->Attribute("version"), SDF::Version().c_str()) != 0)
+        && strcmp(sdfNode->Attribute("version"),
+                  _config.VersionString().c_str()) != 0)
     {
       sdfdbg << "Converting a deprecated SDF source[" << _source << "].\n";
 
-      Converter::Convert(_xmlDoc, SDF::Version());
+      Converter::Convert(_xmlDoc, _config.VersionString());
     }
 
     tinyxml2::XMLElement *elemXml = sdfNode;

@@ -107,7 +107,7 @@ std::string findFile(const std::string &_filename, bool _searchLocalPath,
   // Next check the versioned install path.
   path = sdf::filesystem::append(SDF_SHARE_PATH,
                                  "sdformat" SDF_MAJOR_VERSION_STR,
-                                 sdf::SDF::Version(), filename);
+                                 _config.VersionString(), filename);
   if (sdf::filesystem::exists(path))
   {
     return path;
@@ -246,7 +246,9 @@ void SDF::PrintDoc()
   << "</head>\n<body>\n";
 
   std::cout << "<div style='padding:4px'>\n"
-            << "<h1>SDF " << SDF::Version() << "</h1>\n";
+            << "<h1>SDF "
+            << ParserConfig::GlobalConfig().VersionString()
+            << "</h1>\n";
 
   std::cout << "<p>The Robot Modeling Language (SDF) is an XML file "
             << "format used to describe all the elements in a simulation "

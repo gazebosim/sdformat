@@ -171,11 +171,11 @@ namespace sdf
 
     /// \brief Get the version
     /// \return The version as a string
-    public: static std::string Version();
+    public: GZ_DEPRECATED(13) static std::string Version();
 
     /// \brief Set the version string
     /// \param[in] _version SDF version string.
-    public: static void Version(const std::string &_version);
+    public: GZ_DEPRECATED(13) static void Version(const std::string &_version);
 
     /// \brief wraps the SDF element into a root element with the version info.
     /// \param[in] _sdf the sdf element. Will be cloned by this function.

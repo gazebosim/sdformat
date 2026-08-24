@@ -53,6 +53,14 @@ class sdf::ParserConfig::Implementation
   /// \brief Flag to use <include> tags within ToElement methods instead of
   /// the fully included model.
   public: bool toElementUseIncludeTag = true;
+
+  /// \brief SDFormat specification version to convert to before parsing,
+  /// expressed as a string.
+  public: std::string versionString = SDF_PROTOCOL_VERSION;
+
+  /// \brief SDFormat specification version to convert to before parsing,
+  /// expressed as an SemanticVersion object.
+  public: gz::math::SemanticVersion version;
 };
 
 
@@ -60,6 +68,7 @@ class sdf::ParserConfig::Implementation
 ParserConfig::ParserConfig()
     : dataPtr(gz::utils::MakeImpl<Implementation>())
 {
+  this->dataPtr->version.Parse(this->dataPtr->versionString);
 }
 
 /////////////////////////////////////////////////
@@ -172,4 +181,23 @@ void ParserConfig::URDFSetPreserveFixedJoint(bool _preserveFixedJoint)
 bool ParserConfig::URDFPreserveFixedJoint() const
 {
   return this->dataPtr->preserveFixedJoint;
+}
+
+/////////////////////////////////////////////////
+std::string VersionString() const
+{
+  return this->dataPtr->versionString;
+}
+
+/////////////////////////////////////////////////
+gz::math::SemanticVersion Version() const
+{
+  return this->dataPtr->version;
+}
+
+/////////////////////////////////////////////////
+void SetVersionString(const std::string &_version)
+{
+  this->dataPtr->versionString = _version;
+  this->dataPtr->version.Parse(_version);
 }

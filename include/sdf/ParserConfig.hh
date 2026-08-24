@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include <gz/math/SemanticVersion.hh>
 #include <gz/utils/ImplPtr.hh>
 
 #include "sdf/Error.hh"
@@ -173,6 +174,18 @@ class SDFORMAT_VISIBLE ParserConfig
 
   /// \brief Get the preserveFixedJoint flag value.
   public: bool URDFPreserveFixedJoint() const;
+
+  /// \brief Set the SDFormat spec version to convert to before parsing.
+  /// \param[in] _version SDFormat spec version string.
+  public: void SetVersionString(const std::string &_version);
+
+  /// \brief Get the SDFormat spec version to convert to before parsing.
+  /// \return SDFormat spec version string.
+  public: std::string VersionString() const;
+
+  /// \brief Get the SDFormat spec version to convert to before parsing.
+  /// \return SDFormat spec version number.
+  public: gz::math::SemanticVersion Version() const;
 
   /// \brief Private data pointer.
   GZ_UTILS_IMPL_PTR(dataPtr)
