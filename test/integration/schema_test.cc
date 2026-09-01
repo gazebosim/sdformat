@@ -31,7 +31,7 @@ class SDFSchemaGenerator : public testing::Test
   public:
     void runXMLlint(const std::string & model)
     {
-      const auto sdfRootSchema = sdf::filesystem::append(SDF_ROOT_SCHEMA);
+      const std::string sdfRootSchema = SDF_ROOT_SCHEMA;
       std::string xmllintCmd = "xmllint --noout --schema " +
                                 sdfRootSchema + " " + model;
       std::cout << "CMD[" << xmllintCmd << "]\n";
