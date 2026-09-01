@@ -21,6 +21,8 @@
 
 #include <gtest/gtest.h>
 
+#include <gz/utils/Environment.hh>
+
 #include "sdf/parser.hh"
 
 #include "test_config.hh"
@@ -31,8 +33,10 @@ class SDFSchemaGenerator : public testing::Test
   public:
     void runXMLlint(const std::string & model)
     {
+      const std::string sdfCatalog = SDF_XML_CATALOG;
+      gz::utils::setenv("XML_CATALOG_FILES", sdfCatalog.c_str());
       const std::string sdfRootSchema = SDF_ROOT_SCHEMA;
-      std::string xmllintCmd = "xmllint --noout --schema " +
+      std::string xmllintCmd = "xmllint --catalogs --noout --schema " +
                                 sdfRootSchema + " " + model;
       std::cout << "CMD[" << xmllintCmd << "]\n";
       if (system(xmllintCmd.c_str()) != 0)

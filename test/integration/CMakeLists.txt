@@ -87,6 +87,7 @@ if (TARGET ${TEST_TYPE}_schema_test)
   target_compile_definitions(${TEST_TYPE}_schema_test
     PRIVATE
     -DSDF_ROOT_SCHEMA="${PROJECT_BINARY_DIR}/sdf/${SDF_PROTOCOL_VERSION}/root.xsd"
+    -DSDF_XML_CATALOG="${PROJECT_BINARY_DIR}/sdf/${SDF_PROTOCOL_VERSION}/catalog.xml"
   )
 
   if (EXISTS ${XMLLINT_EXE})

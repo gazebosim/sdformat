@@ -94,6 +94,11 @@ add_custom_command(
 
 list(APPEND SDF_SCHEMA "${CMAKE_CURRENT_BINARY_DIR}/types.xsd")
 
+configure_file(
+  ${CMAKE_SOURCE_DIR}/sdf/catalog.xml.in
+  ${CMAKE_CURRENT_BINARY_DIR}/catalog.xml
+  @ONLY)
+
 add_custom_target(schema1_12 ALL DEPENDS ${SDF_SCHEMA})
 
 set_source_files_properties(${SDF_SCHEMA} PROPERTIES GENERATED TRUE)
