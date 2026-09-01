@@ -128,7 +128,15 @@ def print_include_ref(element: ElementTree.Element, sdf_root_dir: str) -> List[s
         include_tree = ElementTree.parse(sdf_path)
         root = include_tree.getroot()
         include_element_name = root.attrib["name"]
-        lines.append(f"<xsd:element ref='{include_element_name}'/>")
+
+        elem_reqd = get_attribute(element, "required")
+        if elem_reqd:
+            min_occurs, max_occurs = SDF_REQUIRED_TO_MIN_MAX_OCCURS[elem_reqd]
+            lines.append(f"<xsd:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>")
+            lines.append(f"  <xsd:element ref='{include_element_name}'/>")
+            lines.append("</xsd:choice>")
+        else:
+            lines.append(f"<xsd:element ref='{include_element_name}'/>")
     return lines
 
 
@@ -147,7 +155,7 @@ def print_plugin_element(element: ElementTree.Element) -> List[str]:
     return lines
 
 
-def print_element(element: ElementTree.Element) -> List[str]:
+def print_element(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
     """
     Print a child element of the sdf definition
     """
@@ -190,7 +198,7 @@ def print_element(element: ElementTree.Element) -> List[str]:
             lines.append("      </xsd:extension>")
             lines.append("    </xsd:simpleContent>")
         else:
-            if len(elements):
+            if len(elements) or len(includes):
                 lines.append("    <xsd:choice maxOccurs='unbounded'>")
 
             for child_element in elements:
@@ -198,10 +206,14 @@ def print_element(element: ElementTree.Element) -> List[str]:
                     element_lines = print_plugin_element(child_element)
                     lines.extend(indent_lines(element_lines, 4))
                 else:
-                    element_lines = print_element(child_element)
+                    element_lines = print_element(child_element, sdf_root_dir)
                     lines.extend(indent_lines(element_lines, 6))
 
-            if len(elements):
+            for include_element in includes:
+                element_lines = print_include_ref(include_element, sdf_root_dir)
+                lines.extend(indent_lines(element_lines, 6))
+
+            if len(elements) or len(includes):
                 lines.append("    </xsd:choice>")
 
             for attribute in attributes:
@@ -267,9 +279,14 @@ def print_xsd(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
         "<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>"
     )
 
-    # Reference any includes in the SDF file
-    for include in includes:
-        lines.extend(print_include(include))
+    # Reference all includes in the SDF file (including nested ones)
+    all_includes = element.findall(".//include")
+    included_files = set()
+    for include in all_includes:
+        filename = get_attribute(include, "filename")
+        if filename and filename not in included_files:
+            included_files.add(filename)
+            lines.extend(print_include(include))
 
     complex_type = len(elements) > 0 or len(attributes) > 0 or len(includes) > 0
 
@@ -297,7 +314,7 @@ def print_xsd(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
                     element_lines = print_plugin_element(child_element)
                     lines.extend(indent_lines(element_lines, 4))
                 else:
-                    element_lines = print_element(child_element)
+                    element_lines = print_element(child_element, sdf_root_dir)
                     lines.extend(indent_lines(element_lines, 6))
 
             for include_element in includes:
