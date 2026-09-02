@@ -162,6 +162,7 @@ def print_element(element: ElementTree.Element) -> List[str]:
 
     elements = element.findall("element")
     attributes = element.findall("attribute")
+    includes = element.findall("include")
 
     if not elem_reqd:
         raise RuntimeError("Cannot process element missing 'required' attribute")
@@ -169,28 +170,42 @@ def print_element(element: ElementTree.Element) -> List[str]:
     min_occurs, max_occurs = SDF_REQUIRED_TO_MIN_MAX_OCCURS[elem_reqd]
     lines.append(f"<xsd:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>")
 
-    if elem_type:
+    complex_type = len(elements) > 0 or len(attributes) > 0 or len(includes) > 0
+
+    if not complex_type and elem_type:
         lines.append(f"<xsd:element name='{elem_name}' type='{elem_type}'>")
     else:
         lines.append(f"<xsd:element name='{elem_name}'>")
 
     lines.extend(indent_lines(print_documentation(element), 2))
 
-    if elem_type is None:
+    if complex_type:
         lines.append("  <xsd:complexType>")
 
-        if len(elements):
-            lines.append("    <xsd:choice maxOccurs='unbounded'>")
+        if elem_type:
+            lines.append("    <xsd:simpleContent>")
+            lines.append(f"      <xsd:extension base='{elem_type}'>")
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 8))
+            lines.append("      </xsd:extension>")
+            lines.append("    </xsd:simpleContent>")
+        else:
+            if len(elements):
+                lines.append("    <xsd:choice maxOccurs='unbounded'>")
 
-        for child_element in elements:
-            element_lines = print_element(child_element)
-            lines.extend(indent_lines(element_lines, 6))
+            for child_element in elements:
+                if "copy_data" in child_element.attrib:
+                    element_lines = print_plugin_element(child_element)
+                    lines.extend(indent_lines(element_lines, 4))
+                else:
+                    element_lines = print_element(child_element)
+                    lines.extend(indent_lines(element_lines, 6))
 
-        if len(elements):
-            lines.append("    </xsd:choice>")
+            if len(elements):
+                lines.append("    </xsd:choice>")
 
-        for attribute in attributes:
-            lines.extend(indent_lines(print_attribute(attribute), 4))
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 4))
 
         lines.append("  </xsd:complexType>")
 
@@ -256,34 +271,44 @@ def print_xsd(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
     for include in includes:
         lines.extend(print_include(include))
 
-    if elem_type:
+    complex_type = len(elements) > 0 or len(attributes) > 0 or len(includes) > 0
+
+    if not complex_type and elem_type:
         lines.append(f"<xsd:element name='{elem_name}' type='{elem_type}'>")
     else:
         lines.append(f"<xsd:element name='{elem_name}'>")
 
-    if len(elements) or len(attributes) or len(includes):
+    if complex_type:
         lines.append("  <xsd:complexType>")
 
-        if elem_name != "plugin" and (len(elements) or len(includes)):
-            lines.append("    <xsd:choice maxOccurs='unbounded'>")
+        if elem_type:
+            lines.append("    <xsd:simpleContent>")
+            lines.append(f"      <xsd:extension base='{elem_type}'>")
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 8))
+            lines.append("      </xsd:extension>")
+            lines.append("    </xsd:simpleContent>")
+        else:
+            if elem_name != "plugin" and (len(elements) or len(includes)):
+                lines.append("    <xsd:choice maxOccurs='unbounded'>")
 
-        for child_element in elements:
-            if "copy_data" in child_element.attrib:
-                element_lines = print_plugin_element(child_element)
-                lines.extend(indent_lines(element_lines, 4))
-            else:
-                element_lines = print_element(child_element)
+            for child_element in elements:
+                if "copy_data" in child_element.attrib:
+                    element_lines = print_plugin_element(child_element)
+                    lines.extend(indent_lines(element_lines, 4))
+                else:
+                    element_lines = print_element(child_element)
+                    lines.extend(indent_lines(element_lines, 6))
+
+            for include_element in includes:
+                element_lines = print_include_ref(include_element, sdf_root_dir)
                 lines.extend(indent_lines(element_lines, 6))
 
-        for include_element in includes:
-            element_lines = print_include_ref(include_element, sdf_root_dir)
-            lines.extend(indent_lines(element_lines, 6))
+            if elem_name != "plugin" and (len(elements) or len(includes)):
+                lines.append("    </xsd:choice>")
 
-        if elem_name != "plugin" and (len(elements) or len(includes)):
-            lines.append("    </xsd:choice>")
-
-        for attribute in attributes:
-            lines.extend(indent_lines(print_attribute(attribute), 4))
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 4))
 
         lines.append("  </xsd:complexType>")
     lines.append("</xsd:element>")
