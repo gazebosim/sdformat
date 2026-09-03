@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.0//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/catalog.xml">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <rewriteURI uriStartString="http://sdformat.org/schemas/" rewritePrefix="file://@CMAKE_CURRENT_BINARY_DIR@/"/>
+</catalog>

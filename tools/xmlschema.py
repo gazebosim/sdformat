@@ -128,7 +128,15 @@ def print_include_ref(element: ElementTree.Element, sdf_root_dir: str) -> List[s
         include_tree = ElementTree.parse(sdf_path)
         root = include_tree.getroot()
         include_element_name = root.attrib["name"]
-        lines.append(f"<xsd:element ref='{include_element_name}'/>")
+
+        elem_reqd = get_attribute(element, "required")
+        if elem_reqd:
+            min_occurs, max_occurs = SDF_REQUIRED_TO_MIN_MAX_OCCURS[elem_reqd]
+            lines.append(f"<xsd:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>")
+            lines.append(f"  <xsd:element ref='{include_element_name}'/>")
+            lines.append("</xsd:choice>")
+        else:
+            lines.append(f"<xsd:element ref='{include_element_name}'/>")
     return lines
 
 
@@ -147,7 +155,7 @@ def print_plugin_element(element: ElementTree.Element) -> List[str]:
     return lines
 
 
-def print_element(element: ElementTree.Element) -> List[str]:
+def print_element(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
     """
     Print a child element of the sdf definition
     """
@@ -160,30 +168,58 @@ def print_element(element: ElementTree.Element) -> List[str]:
     if elem_type and is_std_type(elem_type):
         elem_type = xsd_type_string(elem_type)
 
+    elements = element.findall("element")
+    attributes = element.findall("attribute")
+    includes = element.findall("include")
+
     if not elem_reqd:
         raise RuntimeError("Cannot process element missing 'required' attribute")
 
     min_occurs, max_occurs = SDF_REQUIRED_TO_MIN_MAX_OCCURS[elem_reqd]
     lines.append(f"<xsd:choice  minOccurs='{min_occurs}' maxOccurs='{max_occurs}'>")
 
-    if elem_type is None:
+    complex_type = len(elements) > 0 or len(attributes) > 0 or len(includes) > 0
+
+    if not complex_type and elem_type:
+        lines.append(f"<xsd:element name='{elem_name}' type='{elem_type}'>")
+    else:
         lines.append(f"<xsd:element name='{elem_name}'>")
-        lines.extend(indent_lines(print_documentation(element), 2))
+
+    lines.extend(indent_lines(print_documentation(element), 2))
+
+    if complex_type:
         lines.append("  <xsd:complexType>")
-        lines.append("    <xsd:choice maxOccurs='unbounded'>")
 
-        for child_element in element.findall("element"):
-            lines.extend(indent_lines(print_element(child_element), 6))
+        if elem_type:
+            lines.append("    <xsd:simpleContent>")
+            lines.append(f"      <xsd:extension base='{elem_type}'>")
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 8))
+            lines.append("      </xsd:extension>")
+            lines.append("    </xsd:simpleContent>")
+        else:
+            if len(elements) or len(includes):
+                lines.append("    <xsd:choice maxOccurs='unbounded'>")
 
-        lines.append("    </xsd:choice>")
+            for child_element in elements:
+                if "copy_data" in child_element.attrib:
+                    element_lines = print_plugin_element(child_element)
+                    lines.extend(indent_lines(element_lines, 4))
+                else:
+                    element_lines = print_element(child_element, sdf_root_dir)
+                    lines.extend(indent_lines(element_lines, 6))
 
-        for attribute in element.findall("attribute"):
-            lines.extend(indent_lines(print_attribute(attribute), 4))
+            for include_element in includes:
+                element_lines = print_include_ref(include_element, sdf_root_dir)
+                lines.extend(indent_lines(element_lines, 6))
+
+            if len(elements) or len(includes):
+                lines.append("    </xsd:choice>")
+
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 4))
 
         lines.append("  </xsd:complexType>")
-    else:
-        lines.append(f"<xsd:element name='{elem_name}' type='{elem_type}'>")
-        lines.extend(indent_lines(print_documentation(element), 2))
 
     lines.append("</xsd:element>")
     lines.append("</xsd:choice>")
@@ -231,6 +267,9 @@ def print_xsd(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
     elem_name = get_attribute(element, "name")
     elem_type = get_attribute(element, "type")
 
+    if elem_type and is_std_type(elem_type):
+        elem_type = xsd_type_string(elem_type)
+
     elements = element.findall("element")
     attributes = element.findall("attribute")
     includes = element.findall("include")
@@ -240,44 +279,57 @@ def print_xsd(element: ElementTree.Element, sdf_root_dir: str) -> List[str]:
         "<xsd:include schemaLocation='http://sdformat.org/schemas/types.xsd'/>"
     )
 
-    # Reference any includes in the SDF file
-    for include in includes:
-        lines.extend(print_include(include))
+    # Reference all includes in the SDF file (including nested ones)
+    all_includes = element.findall(".//include")
+    included_files = set()
+    for include in all_includes:
+        filename = get_attribute(include, "filename")
+        if filename and filename not in included_files:
+            included_files.add(filename)
+            lines.extend(print_include(include))
 
-    if len(elements) or len(attributes) or len(includes):
+    complex_type = len(elements) > 0 or len(attributes) > 0 or len(includes) > 0
+
+    if not complex_type and elem_type:
+        lines.append(f"<xsd:element name='{elem_name}' type='{elem_type}'>")
+    else:
         lines.append(f"<xsd:element name='{elem_name}'>")
+
+    if complex_type:
         lines.append("  <xsd:complexType>")
 
-        if elem_name != "plugin" and (len(elements) or len(includes)):
-            lines.append("    <xsd:choice maxOccurs='unbounded'>")
+        if elem_type:
+            lines.append("    <xsd:simpleContent>")
+            lines.append(f"      <xsd:extension base='{elem_type}'>")
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 8))
+            lines.append("      </xsd:extension>")
+            lines.append("    </xsd:simpleContent>")
+        else:
+            if elem_name != "plugin" and (len(elements) or len(includes)):
+                lines.append("    <xsd:choice maxOccurs='unbounded'>")
 
-        for child_element in elements:
-            if "copy_data" in child_element.attrib:
-                element_lines = print_plugin_element(child_element)
-                lines.extend(indent_lines(element_lines, 4))
-            else:
-                element_lines = print_element(child_element)
+            for child_element in elements:
+                if "copy_data" in child_element.attrib:
+                    element_lines = print_plugin_element(child_element)
+                    lines.extend(indent_lines(element_lines, 4))
+                else:
+                    element_lines = print_element(child_element, sdf_root_dir)
+                    lines.extend(indent_lines(element_lines, 6))
+
+            for include_element in includes:
+                element_lines = print_include_ref(include_element, sdf_root_dir)
                 lines.extend(indent_lines(element_lines, 6))
 
-        for include_element in includes:
-            element_lines = print_include_ref(include_element, sdf_root_dir)
-            lines.extend(indent_lines(element_lines, 6))
+            if elem_name != "plugin" and (len(elements) or len(includes)):
+                lines.append("    </xsd:choice>")
 
-        if elem_name != "plugin" and (len(elements) or len(includes)):
-            lines.append("    </xsd:choice>")
-
-        for attribute_element in attributes:
-            lines.extend(indent_lines(print_attribute(attribute_element), 4))
+            for attribute in attributes:
+                lines.extend(indent_lines(print_attribute(attribute), 4))
 
         lines.append("  </xsd:complexType>")
-        lines.append("</xsd:element>")
-    else:
-        if elem_type and is_std_type(elem_type):
-            elem_type = f' type={xsd_type_string(elem_type)}'
-        else:
-            elem_type = ""
+    lines.append("</xsd:element>")
 
-        lines.append(f"<xsd:element name='{elem_name}'{elem_type} />")
     return lines
 
 
