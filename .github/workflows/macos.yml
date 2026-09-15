@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Set up Homebrew
       id: set-up-homebrew
-      uses: Homebrew/actions/setup-homebrew@master
+      uses: Homebrew/actions/setup-homebrew@main
     - run: brew config
 
     # Workaround for https://github.com/actions/setup-python/issues/577
