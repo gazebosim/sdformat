@@ -91,7 +91,7 @@ if (BUILD_SDF)
   else()
     find_package(Python3 REQUIRED
       COMPONENTS Interpreter
-      OPTIONAL_COMPONENTS Development
+      OPTIONAL_COMPONENTS Development.Module
     )
   endif()
 
@@ -140,10 +140,10 @@ if (BUILD_SDF)
   add_subdirectory(conf)
   add_subdirectory(doc)
   if (NOT SKIP_PYBIND11)
-    if (Python3_Development_FOUND)
+    if (Python3_Development.Module_FOUND)
       add_subdirectory(python)
     else()
-      message(WARNING "Python development libraries are missing: Python interfaces are disabled.")
+      message(WARNING "Python Development.Module libraries are missing: Python interfaces are disabled.")
     endif()
   endif()
 endif(BUILD_SDF)
