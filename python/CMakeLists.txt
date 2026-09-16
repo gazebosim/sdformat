@@ -7,7 +7,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   find_package(sdformat${PROJECT_VERSION_MAJOR} REQUIRED)
   set(PROJECT_LIBRARY_TARGET_NAME "sdformat${PROJECT_VERSION_MAJOR}::sdformat${PROJECT_VERSION_MAJOR}")
   # require python dependencies to be found
-  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+  find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11 TRUE)
   include(GNUInstallDirs)
   include(CTest)
