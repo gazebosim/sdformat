@@ -1,0 +1,22 @@
+---
+repositories:
+  gz-cmake:
+    type: git
+    url: https://github.com/gazebosim/gz-cmake
+    version: main
+  gz-math:
+    type: git
+    url: https://github.com/gazebosim/gz-math
+    version: main
+  gz-tools:
+    type: git
+    url: https://github.com/gazebosim/gz-tools
+    version: scpeters/colcon-test-result
+  gz-utils:
+    type: git
+    url: https://github.com/gazebosim/gz-utils
+    version: main
+  sdformat:
+    type: git
+    url: https://github.com/gazebosim/sdformat
+    version: main
