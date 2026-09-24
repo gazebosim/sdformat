@@ -56,6 +56,18 @@ TEST(DOMImu, Construction)
   imu.SetAngularVelocityZNoise(noise);
   EXPECT_EQ(noise, imu.AngularVelocityZNoise());
 
+  EXPECT_EQ(defaultNoise, imu.OrientationXNoise());
+  imu.SetOrientationXNoise(noise);
+  EXPECT_EQ(noise, imu.OrientationXNoise());
+
+  EXPECT_EQ(defaultNoise, imu.OrientationYNoise());
+  imu.SetOrientationYNoise(noise);
+  EXPECT_EQ(noise, imu.OrientationYNoise());
+
+  EXPECT_EQ(defaultNoise, imu.OrientationZNoise());
+  imu.SetOrientationZNoise(noise);
+  EXPECT_EQ(noise, imu.OrientationZNoise());
+
   EXPECT_EQ(gz::math::Vector3d::UnitX, imu.GravityDirX());
   imu.SetGravityDirX(gz::math::Vector3d::Zero);
   EXPECT_EQ(gz::math::Vector3d::Zero, imu.GravityDirX());
@@ -146,6 +158,9 @@ TEST(DOMImu, ToElement)
   imu.SetAngularVelocityXNoise(noise);
   imu.SetAngularVelocityYNoise(noise);
   imu.SetAngularVelocityZNoise(noise);
+  imu.SetOrientationXNoise(noise);
+  imu.SetOrientationYNoise(noise);
+  imu.SetOrientationZNoise(noise);
   imu.SetGravityDirX(gz::math::Vector3d::Zero);
   imu.SetGravityDirXParentFrame("my_frame");
   imu.SetCustomRpy(gz::math::Vector3d::UnitZ);
@@ -167,6 +182,9 @@ TEST(DOMImu, ToElement)
   EXPECT_EQ(noise, imu2.AngularVelocityXNoise());
   EXPECT_EQ(noise, imu2.AngularVelocityYNoise());
   EXPECT_EQ(noise, imu2.AngularVelocityZNoise());
+  EXPECT_EQ(noise, imu2.OrientationXNoise());
+  EXPECT_EQ(noise, imu2.OrientationYNoise());
+  EXPECT_EQ(noise, imu2.OrientationZNoise());
   EXPECT_EQ(gz::math::Vector3d::Zero, imu2.GravityDirX());
   EXPECT_EQ("my_frame", imu2.GravityDirXParentFrame());
   EXPECT_EQ(gz::math::Vector3d::UnitZ, imu2.CustomRpy());
@@ -215,6 +233,9 @@ TEST(DOMImu, ToElementErrorOutput)
   imu.SetAngularVelocityXNoise(noise);
   imu.SetAngularVelocityYNoise(noise);
   imu.SetAngularVelocityZNoise(noise);
+  imu.SetOrientationXNoise(noise);
+  imu.SetOrientationYNoise(noise);
+  imu.SetOrientationZNoise(noise);
   imu.SetGravityDirX(gz::math::Vector3d::Zero);
   imu.SetGravityDirXParentFrame("my_frame");
   imu.SetCustomRpy(gz::math::Vector3d::UnitZ);
@@ -238,6 +259,9 @@ TEST(DOMImu, ToElementErrorOutput)
   EXPECT_EQ(noise, imu2.AngularVelocityXNoise());
   EXPECT_EQ(noise, imu2.AngularVelocityYNoise());
   EXPECT_EQ(noise, imu2.AngularVelocityZNoise());
+  EXPECT_EQ(noise, imu2.OrientationXNoise());
+  EXPECT_EQ(noise, imu2.OrientationYNoise());
+  EXPECT_EQ(noise, imu2.OrientationZNoise());
   EXPECT_EQ(gz::math::Vector3d::Zero, imu2.GravityDirX());
   EXPECT_EQ("my_frame", imu2.GravityDirXParentFrame());
   EXPECT_EQ(gz::math::Vector3d::UnitZ, imu2.CustomRpy());
