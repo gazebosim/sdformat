@@ -10,6 +10,7 @@
       Noise parameters for the pressure data.
     </description>
     <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
   </element>
 
 </element>

@@ -1,0 +1,12 @@
+<element name="range" required="0">
+  <description>Specifies range properties of a measurement</description>
+  <element name="min" type="double" default="0" required="1">
+    <description>The minimum measured value.</description>
+  </element>
+  <element name="max" type="double" default="0" required="1">
+    <description>The maximum measured value.</description>
+  </element>
+  <element name="resolution" type="double" default="0" required="0">
+    <description>Linear resolution of the measurements (quantization).</description>
+  </element>
+</element> <!-- End Range -->
