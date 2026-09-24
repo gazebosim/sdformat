@@ -58,6 +58,10 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   else()
     target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
       urdfdom::urdfdom_model)
+    if (${urdfdom_headers_VERSION_GE_2_1_0})
+      set_property(SOURCE parser_urdf.cc
+        APPEND PROPERTY COMPILE_DEFINITIONS urdfdom_headers_VERSION_GE_2_1_0)
+    endif()
   endif()
 
 if (WIN32 AND USE_INTERNAL_URDF)
