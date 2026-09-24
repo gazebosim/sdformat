@@ -75,6 +75,9 @@ class sdf::Material::Implementation
 
   /// \brief The path to the file where this material was defined.
   public: std::string filePath = "";
+
+  /// \brief The line number where this material was defined.
+  public: std::optional<int> lineNumber;
 };
 
 /////////////////////////////////////////////////
@@ -97,6 +100,7 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
   this->dataPtr->sdf = _sdf;
 
   this->dataPtr->filePath = _sdf->FilePath();
+  this->dataPtr->lineNumber = _sdf->LineNumber();
 
   // Check that the provided SDF element is a <material>
   // This is an error that cannot be recovered, so return an error.
@@ -105,120 +109,133 @@ Errors Material::Load(sdf::ElementPtr _sdf, const sdf::ParserConfig &_config)
     errors.push_back({ErrorCode::ELEMENT_INCORRECT_TYPE,
         "Attempting to load a Material, but the provided SDF element is not a "
         "<material>."});
-    return errors;
+  }
+  else
+  {
+    // Load the script information
+    if (_sdf->HasElement("script"))
+    {
+      sdf::ElementPtr elem = _sdf->GetElement("script", errors);
+      std::pair<std::string, bool> uriPair =
+          elem->Get<std::string>(errors, "uri", "");
+      if (uriPair.first == "__default__")
+        uriPair.first = "";
+
+      if (!uriPair.second || uriPair.first.empty())
+      {
+        errors.push_back({ErrorCode::ELEMENT_INVALID,
+            "A <script> element is missing a child <uri> element, or the "
+            "<uri> element is empty."});
+      }
+
+      std::unordered_set<std::string> paths;
+      if (!this->dataPtr->filePath.empty())
+      {
+        paths.insert(std::filesystem::path(
+            this->dataPtr->filePath).parent_path().string());
+      }
+      this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors,
+          paths);
+
+      std::pair<std::string, bool> namePair =
+          elem->Get<std::string>(errors, "name", "");
+      if (namePair.first == "__default__")
+        namePair.first = "";
+
+      if (!namePair.second || namePair.first.empty())
+      {
+        errors.push_back({ErrorCode::ELEMENT_MISSING,
+            "A <script> element is missing a child <name> element, or the "
+            "<name> element is empty."});
+      }
+      this->dataPtr->scriptName = namePair.first;
+    }
+
+    // Load the shader information
+    if (_sdf->HasElement("shader"))
+    {
+      sdf::ElementPtr elem = _sdf->GetElement("shader", errors);
+
+      std::pair<std::string, bool> typePair =
+        elem->Get<std::string>(errors, "type", "pixel");
+      if (typePair.first == "pixel")
+        this->dataPtr->shader = ShaderType::PIXEL;
+      else if (typePair.first == "vertex")
+        this->dataPtr->shader = ShaderType::VERTEX;
+      else if (typePair.first == "normal_map_objectspace")
+        this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
+      else if (typePair.first == "normal_map_object_space")
+        this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
+      else if (typePair.first == "normal_map_tangentspace")
+        this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
+      else if (typePair.first == "normal_map_tangent_space")
+        this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
+      else
+      {
+        errors.push_back({ErrorCode::ELEMENT_INVALID,
+            "The value[" + typePair.first + "] for a <shader><type> element is "
+            "not supported"});
+      }
+
+      this->dataPtr->normalMap =
+          elem->Get<std::string>(errors, "normal_map", "").first;
+      if (this->dataPtr->normalMap == "__default__")
+        this->dataPtr->normalMap = "";
+
+      if ((this->dataPtr->shader == ShaderType::NORMAL_MAP_OBJECTSPACE ||
+           this->dataPtr->shader == ShaderType::NORMAL_MAP_TANGENTSPACE) &&
+          this->dataPtr->normalMap.empty())
+      {
+        errors.push_back({ErrorCode::ELEMENT_MISSING,
+            "A normal map shader type has been specified, but a normal_map has "
+            "not."});
+      }
+    }
+
+    this->dataPtr->renderOrder = _sdf->Get<float>(errors, "render_order",
+        this->dataPtr->renderOrder).first;
+
+    this->dataPtr->ambient = _sdf->Get<gz::math::Color>(errors, "ambient",
+        this->dataPtr->ambient).first;
+
+    this->dataPtr->diffuse = _sdf->Get<gz::math::Color>(errors, "diffuse",
+        this->dataPtr->diffuse).first;
+
+    this->dataPtr->specular = _sdf->Get<gz::math::Color>(errors, "specular",
+        this->dataPtr->specular).first;
+
+    this->dataPtr->shininess = _sdf->Get<double>(errors, "shininess",
+        this->dataPtr->shininess).first;
+
+    this->dataPtr->emissive = _sdf->Get<gz::math::Color>(errors, "emissive",
+        this->dataPtr->emissive).first;
+
+    this->dataPtr->lighting = _sdf->Get<bool>(errors, "lighting",
+        this->dataPtr->lighting).first;
+
+    this->dataPtr->doubleSided = _sdf->Get<bool>(errors, "double_sided",
+        this->dataPtr->doubleSided).first;
+
+    // load pbr param
+    if (_sdf->HasElement("pbr"))
+    {
+      this->dataPtr->pbr.emplace();
+      Errors pbrErrors = this->dataPtr->pbr->Load(
+          _sdf->GetElement("pbr", errors));
+      errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
+    }
   }
 
-  // Load the script information
-  if (_sdf->HasElement("script"))
+  for (auto &err : errors)
   {
-    sdf::ElementPtr elem = _sdf->GetElement("script", errors);
-    std::pair<std::string, bool> uriPair =
-        elem->Get<std::string>(errors, "uri", "");
-    if (uriPair.first == "__default__")
-      uriPair.first = "";
-
-    if (!uriPair.second || uriPair.first.empty())
+    if (!err.FilePath().has_value())
     {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "A <script> element is missing a child <uri> element, or the "
-          "<uri> element is empty."});
+      err.SetFilePath(this->dataPtr->filePath);
     }
-
-    std::unordered_set<std::string> paths;
-    if (!this->dataPtr->filePath.empty())
+    if (!err.LineNumber().has_value() && this->dataPtr->lineNumber.has_value())
     {
-      paths.insert(std::filesystem::path(
-          this->dataPtr->filePath).parent_path().string());
+      err.SetLineNumber(*this->dataPtr->lineNumber);
     }
-    this->dataPtr->scriptUri = resolveURI(uriPair.first, _config, errors,
-        paths);
-
-    std::pair<std::string, bool> namePair =
-        elem->Get<std::string>(errors, "name", "");
-    if (namePair.first == "__default__")
-      namePair.first = "";
-
-    if (!namePair.second || namePair.first.empty())
-    {
-      errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "A <script> element is missing a child <name> element, or the "
-          "<name> element is empty."});
-    }
-    this->dataPtr->scriptName = namePair.first;
-  }
-
-  // Load the shader information
-  if (_sdf->HasElement("shader"))
-  {
-    sdf::ElementPtr elem = _sdf->GetElement("shader", errors);
-
-    std::pair<std::string, bool> typePair =
-      elem->Get<std::string>(errors, "type", "pixel");
-    if (typePair.first == "pixel")
-      this->dataPtr->shader = ShaderType::PIXEL;
-    else if (typePair.first == "vertex")
-      this->dataPtr->shader = ShaderType::VERTEX;
-    else if (typePair.first == "normal_map_objectspace")
-      this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
-    else if (typePair.first == "normal_map_object_space")
-      this->dataPtr->shader = ShaderType::NORMAL_MAP_OBJECTSPACE;
-    else if (typePair.first == "normal_map_tangentspace")
-      this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
-    else if (typePair.first == "normal_map_tangent_space")
-      this->dataPtr->shader = ShaderType::NORMAL_MAP_TANGENTSPACE;
-    else
-    {
-      errors.push_back({ErrorCode::ELEMENT_INVALID,
-          "The value[" + typePair.first + "] for a <shader><type> element is "
-          "not supported"});
-    }
-
-    this->dataPtr->normalMap =
-        elem->Get<std::string>(errors, "normal_map", "").first;
-    if (this->dataPtr->normalMap == "__default__")
-      this->dataPtr->normalMap = "";
-
-    if ((this->dataPtr->shader == ShaderType::NORMAL_MAP_OBJECTSPACE ||
-         this->dataPtr->shader == ShaderType::NORMAL_MAP_TANGENTSPACE) &&
-        this->dataPtr->normalMap.empty())
-    {
-      errors.push_back({ErrorCode::ELEMENT_MISSING,
-          "A normal map shader type has been specified, but a normal_map has "
-          "not."});
-    }
-  }
-
-  this->dataPtr->renderOrder = _sdf->Get<float>(errors, "render_order",
-      this->dataPtr->renderOrder).first;
-
-  this->dataPtr->ambient = _sdf->Get<gz::math::Color>(errors, "ambient",
-      this->dataPtr->ambient).first;
-
-  this->dataPtr->diffuse = _sdf->Get<gz::math::Color>(errors, "diffuse",
-      this->dataPtr->diffuse).first;
-
-  this->dataPtr->specular = _sdf->Get<gz::math::Color>(errors, "specular",
-      this->dataPtr->specular).first;
-
-  this->dataPtr->shininess = _sdf->Get<double>(errors, "shininess",
-      this->dataPtr->shininess).first;
-
-  this->dataPtr->emissive = _sdf->Get<gz::math::Color>(errors, "emissive",
-      this->dataPtr->emissive).first;
-
-  this->dataPtr->lighting = _sdf->Get<bool>(errors, "lighting",
-      this->dataPtr->lighting).first;
-
-  this->dataPtr->doubleSided = _sdf->Get<bool>(errors, "double_sided",
-      this->dataPtr->doubleSided).first;
-
-  // load pbr param
-  if (_sdf->HasElement("pbr"))
-  {
-    this->dataPtr->pbr.emplace();
-    Errors pbrErrors = this->dataPtr->pbr->Load(
-        _sdf->GetElement("pbr", errors));
-    errors.insert(errors.end(), pbrErrors.begin(), pbrErrors.end());
   }
 
   return errors;
@@ -396,6 +413,18 @@ const std::string &Material::FilePath() const
 void Material::SetFilePath(const std::string &_filePath)
 {
   this->dataPtr->filePath = _filePath;
+}
+
+//////////////////////////////////////////////////
+std::optional<int> Material::LineNumber() const
+{
+  return this->dataPtr->lineNumber;
+}
+
+//////////////////////////////////////////////////
+void Material::SetLineNumber(int _lineNumber)
+{
+  this->dataPtr->lineNumber = _lineNumber;
 }
 
 /////////////////////////////////////////////////
