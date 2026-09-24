@@ -30,9 +30,18 @@ using namespace sdf;
 
 class sdf::Contact::Implementation
 {
+<<<<<<< HEAD
   // \brief The bitmask used to filter collisions.
   public: uint16_t collideBitmask = 0xff;
 
+=======
+  /// \brief The collide bitmask used to filter collisions.
+  public: uint16_t collideBitmask = 0xff;
+
+  /// \brief The category bitmask used to filter collisions.
+  public: std::optional<uint16_t> categoryBitmask;
+
+>>>>>>> 8ccc60cd (NavSat::ToElement() method (#1585))
   /// \brief The SDF element pointer used during load.
   public: sdf::ElementPtr sdf{nullptr};
 };
