@@ -57,7 +57,7 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     endif()
   else()
     target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
-      GzURDFDOM::GzURDFDOM)
+      urdfdom::urdfdom_model)
   endif()
 
 if (WIN32 AND USE_INTERNAL_URDF)
