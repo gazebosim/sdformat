@@ -2365,6 +2365,20 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
         AddKeyValue(geometryType, "size", Values2str(sizeCount, sizeVals));
       }
       break;
+#ifdef urdfdom_headers_HAS_CAPSULE_TYPE
+    case urdf::Geometry::CAPSULE:
+      type = "capsule";
+      {
+        // There are no pointer typedefs for Capsule in urdfdom_headers 2.1.0
+        // Just use an explicit shared pointer type instead.
+        std::shared_ptr<const urdf::Capsule> capsule =
+          urdf::dynamic_pointer_cast<urdf::Capsule>(_geometry);
+        geometryType = doc->NewElement(type.c_str());
+        AddKeyValue(geometryType, "length", Values2str(1, &capsule->length));
+        AddKeyValue(geometryType, "radius", Values2str(1, &capsule->radius));
+      }
+      break;
+#endif
     case urdf::Geometry::CYLINDER:
       type = "cylinder";
       {

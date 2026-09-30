@@ -321,3 +321,50 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(gz::math::Vector2d(-0.2, 0.2),
       *polylineVisGeom[0].PointByIndex(1));
 }
+
+//////////////////////////////////////////////////
+TEST(DOMGeometry, URDFCapsule)
+{
+  std::string testFile =
+      sdf::testing::TestFile("sdf", "capsule.urdf");
+
+  sdf::Root root;
+  sdf::Errors errors = root.Load(testFile);
+  std::cout << errors << std::endl;
+
+#if defined(urdfdom_headers_HAS_CAPSULE_TYPE)
+  // Expect the URDF to parse correctly
+  ASSERT_TRUE(errors.empty());
+
+  sdf::ElementPtr geom = root.Element()->GetElement("model")
+                                       ->GetElement("link")
+                                       ->GetElement("visual")
+                                       ->GetElement("geometry");
+  ASSERT_NE(geom, nullptr);
+  ASSERT_TRUE(geom->HasElement("capsule"));
+  sdf::ElementPtr capsuleElem = geom->GetElement("capsule");
+  EXPECT_DOUBLE_EQ(capsuleElem->Get<double>("length"), 0.5);
+  EXPECT_DOUBLE_EQ(capsuleElem->Get<double>("radius"), 15);
+#elif defined(urdfdom_CHECKS_VERSION_ATTRIBUTE)
+  // If the parser is too old to parse URDF 1.1 but is new enough to check
+  // the version attribute, then expect parsing to fail.
+  EXPECT_FALSE(errors.empty());
+  ASSERT_EQ(2u, errors.size()) << errors;
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::PARSING_ERROR);
+  EXPECT_NE(std::string::npos, errors[0].Message().find(
+      "Failed to parse the URDF file after converting to SDFormat"));
+  EXPECT_EQ(errors[1].Code(), sdf::ErrorCode::FILE_READ);
+  EXPECT_NE(std::string::npos, errors[1].Message().find(
+      "Unable to read file"));
+#else
+  // Very old parsers will parse the file but geometry will be empty
+  ASSERT_TRUE(errors.empty());
+
+  sdf::ElementPtr geom = root.Element()->GetElement("model")
+                                       ->GetElement("link")
+                                       ->GetElement("visual")
+                                       ->GetElement("geometry");
+  ASSERT_NE(geom, nullptr);
+  EXPECT_FALSE(geom->HasElement("capsule"));
+#endif
+}
