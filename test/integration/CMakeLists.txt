@@ -106,9 +106,9 @@ gz_build_tests(TYPE ${TEST_TYPE}
   ENVIRONMENT SDF_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 )
 
-if (${urdfdom_headers_VERSION_GE_2_1_0})
+if (${urdfdom_headers_HAS_CAPSULE_TYPE})
   set_property(SOURCE geometry_dom.cc
-    APPEND PROPERTY COMPILE_DEFINITIONS urdfdom_headers_VERSION_GE_2_1_0)
+    APPEND PROPERTY COMPILE_DEFINITIONS urdfdom_headers_HAS_CAPSULE_TYPE)
 endif()
 
 if (TARGET ${TEST_TYPE}_schema_test)

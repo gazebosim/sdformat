@@ -2365,7 +2365,7 @@ void CreateGeometry(tinyxml2::XMLElement* _elem,
         AddKeyValue(geometryType, "size", Values2str(sizeCount, sizeVals));
       }
       break;
-#ifdef urdfdom_headers_VERSION_GE_2_1_0
+#ifdef urdfdom_headers_HAS_CAPSULE_TYPE
     case urdf::Geometry::CAPSULE:
       type = "capsule";
       {

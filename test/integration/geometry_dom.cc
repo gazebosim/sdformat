@@ -332,7 +332,7 @@ TEST(DOMGeometry, URDFCapsule)
   sdf::Errors errors = root.Load(testFile);
   std::cout << errors << std::endl;
 
-#ifdef urdfdom_headers_VERSION_GE_2_1_0
+#ifdef urdfdom_headers_HAS_CAPSULE_TYPE
   ASSERT_TRUE(errors.empty());
 
   sdf::ElementPtr geom = root.Element()->GetElement("model")

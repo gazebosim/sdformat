@@ -58,9 +58,9 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   else()
     target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
       urdfdom::urdfdom_model)
-    if (${urdfdom_headers_VERSION_GE_2_1_0})
+    if (${urdfdom_headers_HAS_CAPSULE_TYPE})
       set_property(SOURCE parser_urdf.cc
-        APPEND PROPERTY COMPILE_DEFINITIONS urdfdom_headers_VERSION_GE_2_1_0)
+        APPEND PROPERTY COMPILE_DEFINITIONS urdfdom_headers_HAS_CAPSULE_TYPE)
     endif()
   endif()
 
