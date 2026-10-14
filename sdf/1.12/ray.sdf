@@ -45,18 +45,8 @@
     </element> <!-- End Vertical -->
   </element> <!-- End Scan -->
 
-  <element name="range" required="1">
-    <description>specifies range properties of each simulated ray</description>
-    <element name="min" type="double" default="0" required="1">
-      <description>The minimum distance for each ray.</description>
-    </element>
-    <element name="max" type="double" default="0" required="1">
-      <description>The maximum distance for each ray.</description>
-    </element>
-    <element name="resolution" type="double" default="0" required="0">
-      <description>Linear resolution of each ray.</description>
-    </element>
-  </element> <!-- End Range -->
+  
+  <include filename="range.sdf" required="1"/>
 
   <element name="noise" required="0">
     <description>The properties of the noise model that should be applied to generated scans</description>

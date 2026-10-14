@@ -5,17 +5,20 @@
       Parameters related to the body-frame X axis of the magnetometer
     </description>
     <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
   </element>
   <element name="y" required="0">
     <description>
       Parameters related to the body-frame Y axis of the magnetometer
     </description>
     <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
   </element>
   <element name="z" required="0">
     <description>
       Parameters related to the body-frame Z axis of the magnetometer
     </description>
     <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
   </element>
 </element>

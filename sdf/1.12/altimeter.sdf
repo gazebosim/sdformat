@@ -6,6 +6,7 @@
       Noise parameters for vertical position
     </description>
     <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
   </element>
 
   <element name="vertical_velocity" required="0">
@@ -13,6 +14,7 @@
       Noise parameters for vertical velocity
     </description>
     <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
   </element>
 
 </element>
