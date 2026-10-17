@@ -16,7 +16,10 @@
 */
 
 #include <gtest/gtest.h>
+#include <sstream>
 #include <string>
+#include <iostream>
+#include "sdf/Console.hh"
 #include <gz/math/Pose3.hh>
 #include "sdf/Element.hh"
 #include "Utils.hh"
@@ -153,3 +156,5 @@ TEST(PolicyUtils, EnforcementPolicyErrors)
   ASSERT_TRUE(errors[0].LineNumber().has_value());
   EXPECT_EQ(errors[0].LineNumber().value(), 10);
 }
+
+/////////////////////////////////////////////////
