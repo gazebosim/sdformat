@@ -158,3 +158,35 @@ TEST(PolicyUtils, EnforcementPolicyErrors)
 }
 
 /////////////////////////////////////////////////
+TEST(PolicyUtils, EnforcementPolicyWarnAddsTrailingNewline)
+{
+  // Redirect the shared console message stream used by sdfwarn to capture
+  // its output. ColorMsg returns that stream; the prefix printed by this
+  // call still goes to the previous stream.
+  std::stringstream buffer;
+  sdf::Console::Instance()->ColorMsg("Warning", __FILE__, __LINE__, 33)
+      .SetStream(&buffer);
+
+  sdf::Errors errors;
+  // A message without a trailing newline: one must be added so that
+  // consecutive warnings do not run together on the same console line.
+  const sdf::Error warnWithoutNewline(
+      sdf::ErrorCode::FILE_READ, "first warning");
+  sdf::enforceConfigurablePolicyCondition(
+      sdf::EnforcementPolicy::WARN, warnWithoutNewline, errors);
+  // A message that already ends with a newline: no extra newline is added.
+  const sdf::Error warnWithNewline(
+      sdf::ErrorCode::FILE_READ, "second warning\n");
+  sdf::enforceConfigurablePolicyCondition(
+      sdf::EnforcementPolicy::WARN, warnWithNewline, errors);
+
+  // Restore the default console stream.
+  sdf::Console::Instance()->ColorMsg("Warning", __FILE__, __LINE__, 33)
+      .SetStream(&std::cerr);
+
+  EXPECT_TRUE(errors.empty());
+  const std::string output = buffer.str();
+  EXPECT_NE(output.find("first warning\n"), std::string::npos);
+  EXPECT_NE(output.find("second warning\n"), std::string::npos);
+  EXPECT_EQ(output.find("second warning\n\n"), std::string::npos);
+}
