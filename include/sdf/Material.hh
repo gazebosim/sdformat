@@ -208,8 +208,17 @@ namespace sdf
     public: const std::string &FilePath() const;
 
     /// \brief Set the path to the file where this element was loaded from.
-    /// \paramp[in] _filePath Full path to the file on disk.
+    /// \param[in] _filePath Full path to the file on disk.
     public: void SetFilePath(const std::string &_filePath);
+
+    /// \brief Get the line number of this material within the SDF document.
+    /// \return Line number of this material if it has been set, nullopt
+    /// otherwise.
+    public: std::optional<int> LineNumber() const;
+
+    /// \brief Set the line number of this material within the SDF document.
+    /// \param[in] _lineNumber Line number of material.
+    public: void SetLineNumber(int _lineNumber);
 
     /// \brief Create and return an SDF element filled with data from this
     /// material.
