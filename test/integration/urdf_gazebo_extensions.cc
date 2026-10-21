@@ -24,6 +24,7 @@
 #include "sdf/Link.hh"
 #include "sdf/Model.hh"
 #include "sdf/parser.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Root.hh"
 
 #include "test_config.hh"
@@ -436,4 +437,82 @@ TEST(SDFParser, FixedJointStatic)
   EXPECT_EQ(2u, model->FrameCount());
   ASSERT_TRUE(model->FrameNameExists("fixed_joint"));
   ASSERT_TRUE(model->FrameNameExists("child_link"));
+}
+
+/////////////////////////////////////////////////
+TEST(SDFParser, UrdfGazeboExtensionCustomCollisionAndVisualNames)
+{
+  // Regression test for https://github.com/gazebosim/sdformat/issues/333
+  // <gazebo> extension contents were dropped when the urdf collision or
+  // visual name did not start with the link name.
+  const std::string urdfXml = R"(
+    <robot name='test'>
+      <link name='root'>
+        <inertial>
+          <origin rpy='0 0 0' xyz='0 0 0'/>
+          <mass value='1'/>
+          <inertia ixx='0.01' ixy='0' ixz='0' iyy='0.01' iyz='0' izz='0.01'/>
+        </inertial>
+        <collision name='asd'>
+          <geometry><cylinder length='1.0' radius='1.0'/></geometry>
+        </collision>
+        <visual name='asd'>
+          <geometry><cylinder length='1.0' radius='1.0'/></geometry>
+        </visual>
+      </link>
+      <gazebo reference='root'>
+        <collision>
+          <surface>
+            <contact>
+              <ode>
+                <kp>5.0</kp>
+                <kd>3.0</kd>
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+        <visual>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Blue</name>
+            </script>
+          </material>
+        </visual>
+      </gazebo>
+    </robot>)";
+
+  sdf::ParserConfig config;
+  sdf::Root root;
+  auto errors = root.LoadSdfString(urdfXml, config);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+  const sdf::Link *link = model->LinkByName("root");
+  ASSERT_NE(nullptr, link);
+
+  // The surface properties from the <gazebo> extension must be present
+  // on the converted collision even though the urdf collision name does
+  // not start with the link name.
+  sdf::ElementPtr linkElem = link->Element();
+  sdf::ElementPtr collisionElem = linkElem->GetElement("collision");
+  ASSERT_NE(nullptr, collisionElem);
+  sdf::ElementPtr surfaceElem = collisionElem->GetElement("surface");
+  ASSERT_NE(nullptr, surfaceElem) << "collision lost the <gazebo> "
+      "extension surface properties, see issue #333";
+  sdf::ElementPtr odeElem =
+      surfaceElem->GetElement("contact")->GetElement("ode");
+  ASSERT_NE(nullptr, odeElem);
+  EXPECT_DOUBLE_EQ(5.0, odeElem->Get<double>("kp"));
+  EXPECT_DOUBLE_EQ(3.0, odeElem->Get<double>("kd"));
+
+  // Same check for the visual blob.
+  sdf::ElementPtr visualElem = linkElem->GetElement("visual");
+  ASSERT_NE(nullptr, visualElem);
+  sdf::ElementPtr scriptElem =
+      visualElem->GetElement("material")->GetElement("script");
+  ASSERT_NE(nullptr, scriptElem) << "visual lost the <gazebo> "
+      "extension contents, see issue #333";
+  EXPECT_EQ("Gazebo/Blue", scriptElem->Get<std::string>("name"));
 }
