@@ -18,6 +18,9 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
+
 #include "sdf/Frame.hh"
 #include "sdf/Joint.hh"
 #include "sdf/Link.hh"
@@ -1047,4 +1050,77 @@ TEST(URDF2SDF, URDFConvertForceTorqueSensorModels)
     EXPECT_FALSE(model->FrameNameExists("joint_1"));
     EXPECT_FALSE(model->JointNameExists("joint_1"));
   }
+}
+
+//////////////////////////////////////////////////
+// Helper: compare poses with a small tolerance, since URDF origins are
+// round-tripped through quaternion-to-Euler conversion.
+void ExpectPoseNear(const gz::math::Pose3d &_expected,
+                    const gz::math::Pose3d &_actual,
+                    double _tol = 1e-12)
+{
+  EXPECT_NEAR(_expected.Pos().X(), _actual.Pos().X(), _tol);
+  EXPECT_NEAR(_expected.Pos().Y(), _actual.Pos().Y(), _tol);
+  EXPECT_NEAR(_expected.Pos().Z(), _actual.Pos().Z(), _tol);
+  const gz::math::Vector3d expectedRpy = _expected.Rot().Euler();
+  const gz::math::Vector3d actualRpy = _actual.Rot().Euler();
+  EXPECT_NEAR(expectedRpy.X(), actualRpy.X(), _tol);
+  EXPECT_NEAR(expectedRpy.Y(), actualRpy.Y(), _tol);
+  EXPECT_NEAR(expectedRpy.Z(), actualRpy.Z(), _tol);
+}
+
+//////////////////////////////////////////////////
+TEST(URDF2SDF, FloatingAndPlanarJointOrigin)
+{
+  const std::string sdfTestFile =
+      sdf::testing::TestFile(
+          "integration", "floating_planar_joint_origin.urdf");
+  sdf::Root root;
+  sdf::ParserConfig defaultConfig;
+  sdf::Errors errors = root.Load(sdfTestFile, defaultConfig);
+  ASSERT_TRUE(errors.empty()) << errors;
+
+  const sdf::Model *model = root.Model();
+  ASSERT_NE(nullptr, model);
+
+  // Floating and planar joints have no SDFormat joint counterpart, so no
+  // <joint> elements are created for them.
+  EXPECT_EQ(0u, model->JointCount());
+
+  // The joint origins are preserved in frames that carry the joint names,
+  // so the child link poses include the joint origins.
+  ASSERT_TRUE(model->FrameNameExists("floating_joint"));
+  ASSERT_TRUE(model->FrameNameExists("planar_joint"));
+
+  const gz::math::Pose3d floatingJointOrigin(1.0, 2.0, 3.0, 0.1, 0.2, 0.3);
+  const gz::math::Pose3d planarJointOrigin(
+      0.5, 0.0, -0.5, 0.0, 0.0, 1.5707963267948966);
+
+  const sdf::Frame *floatingFrame = model->FrameByName("floating_joint");
+  ASSERT_NE(nullptr, floatingFrame);
+  ExpectPoseNear(floatingJointOrigin, floatingFrame->RawPose());
+
+  const sdf::Frame *planarFrame = model->FrameByName("planar_joint");
+  ASSERT_NE(nullptr, planarFrame);
+  ExpectPoseNear(planarJointOrigin, planarFrame->RawPose());
+
+  // The pose of the child link of the floating joint, resolved in the
+  // model frame, matches the floating joint origin.
+  const sdf::Link *floatingLink = model->LinkByName("floating_link");
+  ASSERT_NE(nullptr, floatingLink);
+  gz::math::Pose3d floatingLinkPose;
+  sdf::Errors poseErrors =
+      floatingLink->SemanticPose().Resolve(floatingLinkPose, "__model__");
+  ASSERT_TRUE(poseErrors.empty()) << poseErrors;
+  ExpectPoseNear(floatingJointOrigin, floatingLinkPose);
+
+  // The planar joint origin is defined relative to its parent link, so the
+  // pose of the planar child link in the model frame is the composition of
+  // both joint origins.
+  const sdf::Link *planarLink = model->LinkByName("planar_link");
+  ASSERT_NE(nullptr, planarLink);
+  gz::math::Pose3d planarLinkPose;
+  poseErrors = planarLink->SemanticPose().Resolve(planarLinkPose, "__model__");
+  ASSERT_TRUE(poseErrors.empty()) << poseErrors;
+  ExpectPoseNear(floatingJointOrigin * planarJointOrigin, planarLinkPose);
 }
