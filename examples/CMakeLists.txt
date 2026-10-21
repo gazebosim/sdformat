@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 
 find_package(sdformat REQUIRED)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-
 include_directories(${SDFormat_INCLUDE_DIRS})
 link_directories(${SDFormat_LIBRARY_DIRS})
 
