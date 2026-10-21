@@ -160,8 +160,10 @@ TEST(DOMRoot, LoadMultipleModels)
   ASSERT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
 
-  // Check nothing has been printed
-  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  // The parser warns about the extra root-level elements; parsing still
+  // succeeds with the first model.
+  EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+               "Found more than one top level element <model>");
 }
 
 /////////////////////////////////////////////////
@@ -191,8 +193,10 @@ TEST(DOMRoot, LoadDuplicateModels)
   EXPECT_NE(nullptr, root.Model());
   EXPECT_EQ("robot1", root.Model()->Name());
 
-  // Check nothing has been printed
-  EXPECT_TRUE(buffer.str().empty()) << buffer.str();
+  // The parser warns about the extra root-level elements; parsing still
+  // succeeds with the first model.
+  EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+               "Found more than one top level element <model>");
 }
 
 /////////////////////////////////////////////////

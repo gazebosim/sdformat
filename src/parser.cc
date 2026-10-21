@@ -88,6 +88,69 @@ struct SourceLocation
 };
 }
 //////////////////////////////////////////////////
+/// \brief Check a directly parsed SDF document for multiple unallowed
+/// root-level elements and emit a diagnostic based on the configured
+/// WarningsPolicy.
+///
+/// Per the SDFormat specification, the root <sdf> element may contain one
+/// <model>, <actor>, or <light> element, or one or more <world> elements.
+/// Files parsed through an //include are checked by the include parsing
+/// logic, so this only runs for directly parsed files and strings.
+static void checkRootElementsWarningsPolicy(tinyxml2::XMLDocument *_xmlDoc,
+    const std::string &_source, const ParserConfig &_config, Errors &_errors)
+{
+  if (!_xmlDoc)
+    return;
+
+  tinyxml2::XMLElement *sdfXml = _xmlDoc->FirstChildElement("sdf");
+  if (!sdfXml)
+    return;
+
+  std::string firstType;
+  std::string secondType;
+  int secondLine = -1;
+  for (auto *elem = sdfXml->FirstChildElement(); elem;
+       elem = elem->NextSiblingElement())
+  {
+    const std::string name = elem->Value();
+    if (name != "model" && name != "actor" && name != "light")
+      continue;
+    if (firstType.empty())
+    {
+      firstType = name;
+    }
+    else
+    {
+      secondType = name;
+      secondLine = elem->GetLineNum();
+      break;
+    }
+  }
+
+  if (secondType.empty())
+    return;
+
+  std::stringstream ss;
+  if (firstType == secondType)
+  {
+    ss << "Found more than one top level element <" << firstType << ">. ";
+  }
+  else
+  {
+    ss << "Found other top level element <" << secondType
+       << "> in addition to <" << firstType << ">. ";
+  }
+  ss << "Only one model, actor, or light element is allowed directly under "
+        "the <sdf> element; extra elements are ignored. This is unsupported "
+        "and may become an error in a future version of libsdformat.\n";
+
+  Error err(ErrorCode::ELEMENT_INCORRECT_TYPE, ss.str(), _source,
+            secondLine >= 0 ? secondLine : -1);
+  err.SetXmlPath("/sdf/" + secondType);
+  enforceConfigurablePolicyCondition(_config.WarningsPolicy(), err, _errors);
+}
+
+//////////////////////////////////////////////////
 /// \brief Internal helper for readFile, which populates the SDF values
 /// from a file
 ///
@@ -105,7 +168,8 @@ bool readFileInternal(
     const bool _convert,
     const ParserConfig &_config,
     SDFPtr _sdf,
-    Errors &_errors);
+    Errors &_errors,
+    const bool _checkRootElementsPolicy = true);
 
 /// \brief Internal helper for readString, which populates the SDF values
 /// from a string
@@ -817,7 +881,8 @@ bool readFileWithoutConversion(const std::string &_filename,
 
 //////////////////////////////////////////////////
 bool readFileInternal(const std::string &_filename, const bool _convert,
-    const ParserConfig &_config, SDFPtr _sdf, Errors &_errors)
+    const ParserConfig &_config, SDFPtr _sdf, Errors &_errors,
+    const bool _checkRootElementsPolicy)
 {
   auto xmlDoc = makeSdfDoc();
   std::string filename = sdf::findFile(_filename, true, true, _config);
@@ -853,6 +918,9 @@ bool readFileInternal(const std::string &_filename, const bool _convert,
   tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
   if (sdfXml)
   {
+    // Included files are checked by the //include parsing logic instead.
+    if (_checkRootElementsPolicy)
+      checkRootElementsWarningsPolicy(&xmlDoc, filename, _config, _errors);
     // Suppress deprecation for sdf::URDF2SDF
     return readDoc(&xmlDoc, _sdf, filename, _convert, _config, _errors);
   }
@@ -945,6 +1013,8 @@ bool readStringInternal(const std::string &_xmlString, const bool _convert,
   tinyxml2::XMLElement *sdfXml = xmlDoc.FirstChildElement("sdf");
   if (sdfXml)
   {
+    checkRootElementsWarningsPolicy(&xmlDoc, std::string(kSdfStringSource),
+                                    _config, _errors);
     return readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), _convert,
                    _config, _errors);
   }
@@ -1012,6 +1082,8 @@ bool readString(const std::string &_xmlString, const ParserConfig &_config,
                       std::string(xmlDoc.ErrorStr())});
     return false;
   }
+  checkRootElementsWarningsPolicy(&xmlDoc, std::string(kSdfStringSource),
+                                  _config, _errors);
   if (readDoc(&xmlDoc, _sdf, std::string(kSdfStringSource), true, _config,
               _errors))
   {
@@ -1750,7 +1822,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf,
           SDFPtr includeSDF(new SDF);
           includeSDF->SetRoot(includeSDFTemplate->Root()->Clone());
 
-          if (!readFile(filename, _config, includeSDF, _errors))
+          if (!readFileInternal(filename, true, _config, includeSDF, _errors,
+                                false))
           {
             Error err(
                 ErrorCode::FILE_READ,
