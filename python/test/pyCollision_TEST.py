@@ -14,10 +14,10 @@
 
 import copy
 from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from sdformat import (Box, Collision, Cone, Contact, Cylinder, Element,
-                      EnforcementPolicy, Error, ErrorCode, Geometry,
-                      ParserConfig, Plane, Root, Surface, Sphere,
-                      SDFErrorsException)
+from sdformat import (Box, CalculateInertialFailurePolicyType, Collision,
+                      Cone, Contact, Cylinder, Element, EnforcementPolicy,
+                      Error, ErrorCode, Geometry, Mesh, ParserConfig, Plane,
+                      Root, Surface, Sphere, SDFErrorsException)
 import sdformat as sdf
 import unittest
 import math
@@ -341,6 +341,48 @@ class CollisionTEST(unittest.TestCase):
         collision.calculate_inertial(inertial, config, None, None,
                                      warn_if_density_is_unset=False)
         self.assertAlmostEqual(1000.0, inertial.mass_matrix().mass())
+
+    def test_calculate_inertial_failure_policy(self):
+        mesh = Mesh()
+        mesh.set_uri("mesh_uri")
+        geom = Geometry()
+        geom.set_type(sdf.GeometryType.MESH)
+        geom.set_mesh_shape(mesh)
+        collision = Collision()
+        collision.set_name("mesh_collision")
+        collision.set_geometry(geom)
+
+        # The custom calculator fails to calculate the inertial values
+        config = ParserConfig()
+        config.register_custom_inertia_calc(lambda errors, props: None)
+
+        # With the default policy, failures are errors
+        self.assertEqual(CalculateInertialFailurePolicyType.ERR,
+                         config.calculate_inertial_failure_policy())
+        inertial = Inertiald()
+        with self.assertRaises(SDFErrorsException) as context:
+            collision.calculate_inertial(inertial, config, 1.0, None)
+        self.assertEqual(1, len(context.exception.errors))
+        self.assertEqual(ErrorCode.LINK_INERTIA_INVALID,
+                         context.exception.errors[0].code())
+        self.assertEqual(Inertiald(), inertial)
+
+        # Default inertial values are used with a warning instead
+        config.set_calculate_inertial_failure_policy(
+            CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL)
+        collision.calculate_inertial(inertial, config, 1.0, None)
+        self.assertEqual(
+            Inertiald(MassMatrix3d(1.0, Vector3d.ONE, Vector3d.ZERO),
+                      Pose3d.ZERO),
+            inertial)
+
+        # The warning is an error when warnings are errors
+        config.set_warnings_policy(EnforcementPolicy.ERR)
+        with self.assertRaises(SDFErrorsException) as context:
+            collision.calculate_inertial(Inertiald(), config, 1.0, None)
+        self.assertEqual(1, len(context.exception.errors))
+        self.assertEqual(ErrorCode.WARNING,
+                         context.exception.errors[0].code())
 
 if __name__ == '__main__':
     unittest.main()

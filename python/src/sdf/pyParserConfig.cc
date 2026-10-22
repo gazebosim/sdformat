@@ -52,6 +52,14 @@ void defineParserConfig(pybind11::object module)
     .def("set_calculate_inertial_configuration",
          &sdf::ParserConfig::SetCalculateInertialConfiguration,
          "Set the configuration for the CalculateInertial() function")
+    .def("calculate_inertial_failure_policy",
+         &sdf::ParserConfig::CalculateInertialFailurePolicy,
+         "Get the current policy for handling failures of the "
+         "CalculateInertial() function")
+    .def("set_calculate_inertial_failure_policy",
+         &sdf::ParserConfig::SetCalculateInertialFailurePolicy,
+         "Set the policy for handling failures of the CalculateInertial() "
+         "function")
     .def("set_find_callback",
          &sdf::ParserConfig::SetFindCallback,
          "Set the callback to use when libsdformat can't find a file.")
@@ -165,6 +173,12 @@ void defineParserConfig(pybind11::object module)
     .value("SAVE_CALCULATION", sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION)
     .value("SAVE_CALCULATION_IN_ELEMENT",
       sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT);
+
+  pybind11::enum_<sdf::CalculateInertialFailurePolicyType>(
+    module, "CalculateInertialFailurePolicyType")
+    .value("ERR", sdf::CalculateInertialFailurePolicyType::ERR)
+    .value("WARN_AND_USE_DEFAULT_INERTIAL",
+      sdf::CalculateInertialFailurePolicyType::WARN_AND_USE_DEFAULT_INERTIAL);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

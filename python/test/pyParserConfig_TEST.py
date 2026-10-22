@@ -14,7 +14,8 @@
 
 import copy
 from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from sdformat import (CustomInertiaCalcProperties, Error, ErrorCode,
+from sdformat import (CalculateInertialFailurePolicyType,
+                      CustomInertiaCalcProperties, Error, ErrorCode,
                       ParserConfig)
 from sdformattest import source_file, test_file
 import unittest
@@ -91,6 +92,25 @@ class ParserConfigColor(unittest.TestCase):
         config.register_custom_inertia_calc(calculator)
         with self.assertRaises(TypeError):
             config.custom_inertia_calc()([], CustomInertiaCalcProperties())
+
+
+    def test_calculate_inertial_failure_policy(self):
+        config = ParserConfig()
+        self.assertEqual(CalculateInertialFailurePolicyType.ERR,
+                         config.calculate_inertial_failure_policy())
+
+        config.set_calculate_inertial_failure_policy(
+            CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL)
+        self.assertEqual(
+            CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL,
+            config.calculate_inertial_failure_policy())
+
+        # Copies keep the policy
+        for config_copy in [ParserConfig(config), copy.copy(config),
+                            copy.deepcopy(config)]:
+            self.assertEqual(
+                CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL,
+                config_copy.calculate_inertial_failure_policy())
 
 
     def test_copy_construction(self):
