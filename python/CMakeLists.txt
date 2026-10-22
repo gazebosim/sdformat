@@ -71,6 +71,7 @@ pybind11_add_module(${BINDINGS_MODULE_NAME} MODULE
   src/sdf/pyCollision.cc
   src/sdf/pyCone.cc
   src/sdf/pyConvexDecomposition.cc
+  src/sdf/pyCustomInertiaCalcProperties.cc
   src/sdf/pyCylinder.cc
   src/sdf/pyElement.cc
   src/sdf/pyEllipsoid.cc
@@ -153,6 +154,7 @@ if (BUILD_TESTING AND NOT WIN32)
     pyCapsule_TEST
     pyCollision_TEST
     pyCone_TEST
+    pyCustomInertiaCalcProperties_TEST
     pyCylinder_TEST
     pyElement_TEST
     pyEllipsoid_TEST

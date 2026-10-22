@@ -83,6 +83,63 @@ void defineParserConfig(pybind11::object module)
     .def("deprecated_elements_policy",
          &sdf::ParserConfig::DeprecatedElementsPolicy,
          "Get the current deprecated elements policy")
+    .def("register_custom_inertia_calc",
+         [](sdf::ParserConfig &_self,
+            std::function<std::optional<gz::math::Inertiald>(
+                pybind11::list, sdf::CustomInertiaCalcProperties)>
+              _calculator)
+         {
+           _self.RegisterCustomInertiaCalc(
+               [_calculator](sdf::Errors &_errors,
+                             const sdf::CustomInertiaCalcProperties &_props)
+               {
+                 // The calculator appends errors to a Python list, which
+                 // pybind11 can't convert back to sdf::Errors in place.
+                 pybind11::gil_scoped_acquire gil;
+                 pybind11::list errors;
+                 auto inertial = _calculator(errors, _props);
+                 for (const auto &error : errors)
+                 {
+                   if (!pybind11::isinstance<sdf::Error>(error))
+                   {
+                     throw pybind11::type_error(
+                         "Custom inertia calculator errors must be "
+                         "sdformat.Error objects");
+                   }
+                   _errors.push_back(error.cast<sdf::Error>());
+                 }
+                 return inertial;
+               });
+         },
+         "calculator"_a,
+         "Register a custom moment of inertia calculator for meshes. It is "
+         "called with a list, to which it can append sdformat.Error objects, "
+         "and a CustomInertiaCalcProperties object, and returns a "
+         "gz.math.Inertiald or None.")
+    .def("custom_inertia_calc",
+         [](const sdf::ParserConfig &_self) -> pybind11::object
+         {
+           const auto &calculator = _self.CustomInertiaCalc();
+           if (!calculator)
+           {
+             return pybind11::none();
+           }
+           return pybind11::cpp_function(
+               [calculator](pybind11::list _errors,
+                            const sdf::CustomInertiaCalcProperties &_props)
+               {
+                 sdf::Errors errors;
+                 auto inertial = calculator(errors, _props);
+                 for (const auto &error : errors)
+                 {
+                   _errors.append(error);
+                 }
+                 return inertial;
+               });
+         },
+         "Get the registered custom moment of inertia calculator for meshes, "
+         "or None if it has not been set. It takes the same arguments as the "
+         "calculator passed to register_custom_inertia_calc.")
     .def("urdf_set_preserve_fixed_joint",
          &sdf::ParserConfig::URDFSetPreserveFixedJoint,
          "Set the preserveFixedJoint flag.")
@@ -105,7 +162,9 @@ void defineParserConfig(pybind11::object module)
   pybind11::enum_<sdf::ConfigureResolveAutoInertials>(
     module, "ConfigureResolveAutoInertials")
     .value("SKIP_CALCULATION_IN_LOAD", sdf::ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD)
-    .value("SAVE_CALCULATION", sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
+    .value("SAVE_CALCULATION", sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION)
+    .value("SAVE_CALCULATION_IN_ELEMENT",
+      sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
