@@ -14,9 +14,10 @@
 
 import copy
 from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
-from sdformat import (Box, Collision, Cone, Contact, Cylinder, Error,
-                      Geometry, ParserConfig, Plane, Root, Surface, Sphere,
-                      SDFErrorsException)
+from sdformat import (Box, CalculateInertialFailurePolicyType, Collision,
+                      Cone, Contact, Cylinder, Element, EnforcementPolicy,
+                      Error, ErrorCode, Geometry, Mesh, ParserConfig, Plane,
+                      Root, Surface, Sphere, SDFErrorsException)
 import sdformat as sdf
 import unittest
 import math
@@ -266,6 +267,122 @@ class CollisionTEST(unittest.TestCase):
         self.assertAlmostEqual(expectedMass, link.inertial().mass_matrix().mass())
         self.assertEqual(expectedInertial.mass_matrix(), link.inertial().mass_matrix())
         self.assertEqual(expectedInertial.pose(), link.inertial().pose())
+
+    def test_density_default_and_auto_inertia_params(self):
+        self.assertEqual(1000.0, Collision.density_default())
+
+        collision = Collision()
+        self.assertEqual(Collision.density_default(), collision.density())
+        self.assertIsNone(collision.auto_inertia_params())
+
+        params = Element()
+        params.set_name("auto_inertia_params")
+        collision.set_auto_inertia_params(params)
+        self.assertEqual("auto_inertia_params",
+                         collision.auto_inertia_params().get_name())
+
+    def test_calculate_inertial_with_density(self):
+        # 1 x 2 x 3 box with a volume of 6
+        box = Box()
+        box.set_size(Vector3d(1, 2, 3))
+        geom = Geometry()
+        geom.set_type(sdf.GeometryType.BOX)
+        geom.set_box_shape(box)
+        collision = Collision()
+        collision.set_geometry(geom)
+        config = ParserConfig()
+
+        # The density argument is used if the collision density is not set
+        inertial = Inertiald()
+        collision.calculate_inertial(inertial, config, 2.0, None)
+        self.assertAlmostEqual(12.0, inertial.mass_matrix().mass())
+
+        # Otherwise the default density is used
+        inertial = Inertiald()
+        collision.calculate_inertial(inertial, config, None, None,
+                                     warn_if_density_is_unset=False)
+        self.assertAlmostEqual(6000.0, inertial.mass_matrix().mass())
+
+        # The collision density takes precedence over the argument
+        collision.set_density(10.0)
+        inertial = Inertiald()
+        collision.calculate_inertial(inertial, config, 2.0, None)
+        self.assertAlmostEqual(60.0, inertial.mass_matrix().mass())
+
+    def test_calculate_inertial_with_density_errors(self):
+        # Invalid box size
+        box = Box()
+        box.set_size(Vector3d(-1, 1, 0))
+        geom = Geometry()
+        geom.set_type(sdf.GeometryType.BOX)
+        geom.set_box_shape(box)
+        collision = Collision()
+        collision.set_geometry(geom)
+
+        with self.assertRaises(SDFErrorsException) as context:
+            collision.calculate_inertial(Inertiald(), ParserConfig(), 1.0,
+                                         None)
+        self.assertEqual(ErrorCode.LINK_INERTIA_INVALID,
+                         context.exception.errors[0].code())
+
+        # A missing density is an error when warnings are errors
+        box.set_size(Vector3d(1, 1, 1))
+        geom.set_box_shape(box)
+        collision.set_geometry(geom)
+        config = ParserConfig()
+        config.set_warnings_policy(EnforcementPolicy.ERR)
+
+        with self.assertRaises(SDFErrorsException) as context:
+            collision.calculate_inertial(Inertiald(), config, None, None)
+        self.assertEqual(ErrorCode.ELEMENT_MISSING,
+                         context.exception.errors[0].code())
+
+        inertial = Inertiald()
+        collision.calculate_inertial(inertial, config, None, None,
+                                     warn_if_density_is_unset=False)
+        self.assertAlmostEqual(1000.0, inertial.mass_matrix().mass())
+
+    def test_calculate_inertial_failure_policy(self):
+        mesh = Mesh()
+        mesh.set_uri("mesh_uri")
+        geom = Geometry()
+        geom.set_type(sdf.GeometryType.MESH)
+        geom.set_mesh_shape(mesh)
+        collision = Collision()
+        collision.set_name("mesh_collision")
+        collision.set_geometry(geom)
+
+        # The custom calculator fails to calculate the inertial values
+        config = ParserConfig()
+        config.register_custom_inertia_calc(lambda errors, props: None)
+
+        # With the default policy, failures are errors
+        self.assertEqual(CalculateInertialFailurePolicyType.ERR,
+                         config.calculate_inertial_failure_policy())
+        inertial = Inertiald()
+        with self.assertRaises(SDFErrorsException) as context:
+            collision.calculate_inertial(inertial, config, 1.0, None)
+        self.assertEqual(1, len(context.exception.errors))
+        self.assertEqual(ErrorCode.LINK_INERTIA_INVALID,
+                         context.exception.errors[0].code())
+        self.assertEqual(Inertiald(), inertial)
+
+        # Default inertial values are used with a warning instead
+        config.set_calculate_inertial_failure_policy(
+            CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL)
+        collision.calculate_inertial(inertial, config, 1.0, None)
+        self.assertEqual(
+            Inertiald(MassMatrix3d(1.0, Vector3d.ONE, Vector3d.ZERO),
+                      Pose3d.ZERO),
+            inertial)
+
+        # The warning is an error when warnings are errors
+        config.set_warnings_policy(EnforcementPolicy.ERR)
+        with self.assertRaises(SDFErrorsException) as context:
+            collision.calculate_inertial(Inertiald(), config, 1.0, None)
+        self.assertEqual(1, len(context.exception.errors))
+        self.assertEqual(ErrorCode.WARNING,
+                         context.exception.errors[0].code())
 
 if __name__ == '__main__':
     unittest.main()
