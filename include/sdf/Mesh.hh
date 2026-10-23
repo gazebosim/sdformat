@@ -49,6 +49,22 @@ namespace sdf
     CONVEX_DECOMPOSITION
   };
 
+  /// \brief How the convexity of a mesh is asserted. See
+  /// Mesh::AssertConvex().
+  enum class ConvexAssertion
+  {
+    /// \brief The convexity of the mesh is not asserted.
+    NONE,
+    /// \brief The mesh is treated as convex without verifying it.
+    NOCHECK,
+    /// \brief The mesh is verified to be convex. If it is not, a warning is
+    /// printed and its convex hull is used.
+    WARN,
+    /// \brief The mesh is verified to be convex. If it is not, an error is
+    /// printed and the geometry is not created.
+    FAIL
+  };
+
   /// \brief Convex decomposition
   class SDFORMAT_VISIBLE ConvexDecomposition
   {
@@ -139,6 +155,27 @@ namespace sdf
     /// mesh optimization method. False if the mesh optimization method
     /// could not be set.
     public: bool SetOptimization(const std::string &_optimizationStr);
+
+    /// \brief Get how the convexity of the mesh is asserted.
+    /// \return The convex assertion. ConvexAssertion::NONE if the convexity
+    /// of the mesh is not asserted.
+    public: ConvexAssertion AssertConvex() const;
+
+    /// \brief Get how the convexity of the mesh is asserted.
+    /// \return The convex assertion string: "nocheck", "warn" or "error".
+    /// Empty string if the convexity of the mesh is not asserted.
+    public: std::string AssertConvexStr() const;
+
+    /// \brief Set how the convexity of the mesh is asserted.
+    /// \param[in] _assertion The convex assertion.
+    public: void SetAssertConvex(ConvexAssertion _assertion);
+
+    /// \brief Set how the convexity of the mesh is asserted.
+    /// \param[in] _assertionStr The convex assertion string: "", "nocheck",
+    /// "warn" or "error".
+    /// \return True if the _assertionStr parameter matched a known convex
+    /// assertion. False if the convex assertion could not be set.
+    public: bool SetAssertConvex(const std::string &_assertionStr);
 
     /// \brief Get the associated ConvexDecomposition object
     /// \returns Pointer to the associated ConvexDecomposition object,
