@@ -39,6 +39,17 @@ constexpr std::array<const std::string_view, 3> kMeshOptimizationStrs =
   "convex_decomposition"
 };
 
+/// Convex assertion strings. These should match the data in
+/// `enum class ConvexAssertion` located in Mesh.hh, and the size
+/// template parameter should match the number of elements as well.
+constexpr std::array<const std::string_view, 4> kConvexAssertionStrs =
+{
+  "",
+  "nocheck",
+  "warn",
+  "error"
+};
+
 // Private data class for ConvexDecomposition
 class sdf::ConvexDecomposition::Implementation
 {
@@ -58,6 +69,9 @@ class sdf::Mesh::Implementation
 {
   /// \brief Mesh optimization method
   public: MeshOptimization optimization = MeshOptimization::NONE;
+
+  /// \brief How the convexity of the mesh is asserted
+  public: ConvexAssertion assertConvex = ConvexAssertion::NONE;
 
   /// \brief Optional convex decomposition.
   public: std::optional<sdf::ConvexDecomposition> convexDecomposition;
@@ -198,6 +212,29 @@ Errors Mesh::Load(ElementPtr _sdf, const ParserConfig &_config)
     this->SetOptimization(_sdf->Get<std::string>("optimization", "").first);
   }
 
+  // Convex assertion
+  if (_sdf->HasAttribute("assert_convex"))
+  {
+    const std::string assertConvexStr =
+        _sdf->Get<std::string>("assert_convex", "").first;
+    if (!this->SetAssertConvex(assertConvexStr))
+    {
+      errors.push_back({ErrorCode::ATTRIBUTE_INVALID,
+          "Invalid value [" + assertConvexStr + "] for the assert_convex "
+          "attribute of a <mesh>. Valid values are an empty string, "
+          "\"nocheck\", \"warn\" and \"error\"."});
+    }
+    else if (this->dataPtr->assertConvex != ConvexAssertion::NONE &&
+        this->dataPtr->optimization == MeshOptimization::CONVEX_DECOMPOSITION)
+    {
+      Error err(ErrorCode::WARNING,
+          "The assert_convex attribute of a <mesh> is ignored when its "
+          "optimization attribute is set to \"convex_decomposition\".");
+      enforceConfigurablePolicyCondition(_config.WarningsPolicy(), err,
+          errors);
+    }
+  }
+
   if (_sdf->HasElement("convex_decomposition"))
   {
     this->dataPtr->convexDecomposition.emplace();
@@ -292,6 +329,41 @@ bool Mesh::SetOptimization(const std::string &_optimizationStr)
 void Mesh::SetOptimization(MeshOptimization _optimization)
 {
   this->dataPtr->optimization = _optimization;
+}
+
+//////////////////////////////////////////////////
+ConvexAssertion Mesh::AssertConvex() const
+{
+  return this->dataPtr->assertConvex;
+}
+
+//////////////////////////////////////////////////
+std::string Mesh::AssertConvexStr() const
+{
+  size_t index = static_cast<int>(this->dataPtr->assertConvex);
+  if (index < kConvexAssertionStrs.size())
+    return std::string(kConvexAssertionStrs[index]);
+  return "";
+}
+
+//////////////////////////////////////////////////
+bool Mesh::SetAssertConvex(const std::string &_assertionStr)
+{
+  for (size_t i = 0; i < kConvexAssertionStrs.size(); ++i)
+  {
+    if (_assertionStr == kConvexAssertionStrs[i])
+    {
+      this->dataPtr->assertConvex = static_cast<ConvexAssertion>(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////
+void Mesh::SetAssertConvex(ConvexAssertion _assertion)
+{
+  this->dataPtr->assertConvex = _assertion;
 }
 
 //////////////////////////////////////////////////
@@ -428,6 +500,10 @@ sdf::ElementPtr Mesh::ToElement(sdf::Errors &_errors) const
   // Optimization
   elem->GetAttribute("optimization")->Set<std::string>(
       this->OptimizationStr());
+
+  // Convex assertion
+  elem->GetAttribute("assert_convex")->Set<std::string>(
+      this->AssertConvexStr());
 
   if (this->dataPtr->convexDecomposition.has_value())
   {

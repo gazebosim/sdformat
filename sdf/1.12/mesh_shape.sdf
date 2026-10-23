@@ -7,6 +7,12 @@
     </description>
   </attribute>
 
+  <attribute name="assert_convex" type="string" default="" required="0">
+    <description>
+      Assert that the mesh is convex. Values include: "nocheck" - treat the mesh as convex without verifying it, "warn" - verify that the mesh is convex and print a warning if it is not, in which case its convex hull is used, "error" - verify that the mesh is convex and fail to create the geometry if it is not. Default value is an empty string which means the convexity of the mesh is not asserted. This attribute is ignored if the optimization attribute is set to "convex_decomposition".
+    </description>
+  </attribute>
+
   <element name="convex_decomposition" required="0">
     <description>Convex decomposition parameters. Applicable if the mesh optimization attribute is set to convex_decomposition</description>
     <element name="max_convex_hulls" type="unsigned int" default="16" required="0">
