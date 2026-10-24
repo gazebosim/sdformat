@@ -57,7 +57,11 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     endif()
   else()
     target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE
-      GzURDFDOM::GzURDFDOM)
+      urdfdom::urdfdom_model)
+    if (${urdfdom_headers_HAS_CAPSULE_TYPE})
+      set_property(SOURCE parser_urdf.cc
+        APPEND PROPERTY COMPILE_DEFINITIONS urdfdom_headers_HAS_CAPSULE_TYPE)
+    endif()
   endif()
 
 if (WIN32 AND USE_INTERNAL_URDF)

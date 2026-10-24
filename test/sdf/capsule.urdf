@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<robot name="simple" version="1.1">
+  <link name="base">
+    <visual>
+      <geometry>
+        <capsule length="0.5" radius="15"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+    </visual>
+    <inertial>
+      <mass value="100"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+</robot>
