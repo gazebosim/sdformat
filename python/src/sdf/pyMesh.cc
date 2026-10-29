@@ -20,6 +20,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
+#include "pybind11_helpers.hh"
 #include "sdf/ParserConfig.hh"
 #include "sdf/Mesh.hh"
 
@@ -82,6 +83,13 @@ void defineMesh(pybind11::object module)
          "for more information.")
     .def("axis_aligned_box", &sdf::Mesh::AxisAlignedBox,
          "Get the axis-aligned box that contains this Mesh.")
+    .def("calculate_inertial",
+         ErrorWrappedCast<double, const sdf::ElementPtr,
+                          const sdf::ParserConfig &>(
+           &sdf::Mesh::CalculateInertial),
+         "Calculate and return the Inertial values for the Mesh using the "
+         "custom inertia calculator registered in the ParserConfig, or "
+         "default values if none is registered.")
     .def("__copy__", [](const sdf::Mesh &self) {
       return sdf::Mesh(self);
     })

@@ -52,6 +52,14 @@ void defineParserConfig(pybind11::object module)
     .def("set_calculate_inertial_configuration",
          &sdf::ParserConfig::SetCalculateInertialConfiguration,
          "Set the configuration for the CalculateInertial() function")
+    .def("calculate_inertial_failure_policy",
+         &sdf::ParserConfig::CalculateInertialFailurePolicy,
+         "Get the current policy for handling failures of the "
+         "CalculateInertial() function")
+    .def("set_calculate_inertial_failure_policy",
+         &sdf::ParserConfig::SetCalculateInertialFailurePolicy,
+         "Set the policy for handling failures of the CalculateInertial() "
+         "function")
     .def("set_find_callback",
          &sdf::ParserConfig::SetFindCallback,
          "Set the callback to use when libsdformat can't find a file.")
@@ -83,6 +91,63 @@ void defineParserConfig(pybind11::object module)
     .def("deprecated_elements_policy",
          &sdf::ParserConfig::DeprecatedElementsPolicy,
          "Get the current deprecated elements policy")
+    .def("register_custom_inertia_calc",
+         [](sdf::ParserConfig &_self,
+            std::function<std::optional<gz::math::Inertiald>(
+                pybind11::list, sdf::CustomInertiaCalcProperties)>
+              _calculator)
+         {
+           _self.RegisterCustomInertiaCalc(
+               [_calculator](sdf::Errors &_errors,
+                             const sdf::CustomInertiaCalcProperties &_props)
+               {
+                 // The calculator appends errors to a Python list, which
+                 // pybind11 can't convert back to sdf::Errors in place.
+                 pybind11::gil_scoped_acquire gil;
+                 pybind11::list errors;
+                 auto inertial = _calculator(errors, _props);
+                 for (const auto &error : errors)
+                 {
+                   if (!pybind11::isinstance<sdf::Error>(error))
+                   {
+                     throw pybind11::type_error(
+                         "Custom inertia calculator errors must be "
+                         "sdformat.Error objects");
+                   }
+                   _errors.push_back(error.cast<sdf::Error>());
+                 }
+                 return inertial;
+               });
+         },
+         "calculator"_a,
+         "Register a custom moment of inertia calculator for meshes. It is "
+         "called with a list, to which it can append sdformat.Error objects, "
+         "and a CustomInertiaCalcProperties object, and returns a "
+         "gz.math.Inertiald or None.")
+    .def("custom_inertia_calc",
+         [](const sdf::ParserConfig &_self) -> pybind11::object
+         {
+           const auto &calculator = _self.CustomInertiaCalc();
+           if (!calculator)
+           {
+             return pybind11::none();
+           }
+           return pybind11::cpp_function(
+               [calculator](pybind11::list _errors,
+                            const sdf::CustomInertiaCalcProperties &_props)
+               {
+                 sdf::Errors errors;
+                 auto inertial = calculator(errors, _props);
+                 for (const auto &error : errors)
+                 {
+                   _errors.append(error);
+                 }
+                 return inertial;
+               });
+         },
+         "Get the registered custom moment of inertia calculator for meshes, "
+         "or None if it has not been set. It takes the same arguments as the "
+         "calculator passed to register_custom_inertia_calc.")
     .def("urdf_set_preserve_fixed_joint",
          &sdf::ParserConfig::URDFSetPreserveFixedJoint,
          "Set the preserveFixedJoint flag.")
@@ -105,7 +170,15 @@ void defineParserConfig(pybind11::object module)
   pybind11::enum_<sdf::ConfigureResolveAutoInertials>(
     module, "ConfigureResolveAutoInertials")
     .value("SKIP_CALCULATION_IN_LOAD", sdf::ConfigureResolveAutoInertials::SKIP_CALCULATION_IN_LOAD)
-    .value("SAVE_CALCULATION", sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION);
+    .value("SAVE_CALCULATION", sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION)
+    .value("SAVE_CALCULATION_IN_ELEMENT",
+      sdf::ConfigureResolveAutoInertials::SAVE_CALCULATION_IN_ELEMENT);
+
+  pybind11::enum_<sdf::CalculateInertialFailurePolicyType>(
+    module, "CalculateInertialFailurePolicyType")
+    .value("ERR", sdf::CalculateInertialFailurePolicyType::ERR)
+    .value("WARN_AND_USE_DEFAULT_INERTIAL",
+      sdf::CalculateInertialFailurePolicyType::WARN_AND_USE_DEFAULT_INERTIAL);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE
