@@ -15,6 +15,19 @@ but with improved human-readability..
 
 ## libsdformat 16.X to 17.X
 
+### Additions
+
+- **sdf/Mesh.hh**:
+  + The `//mesh/@assert_convex` attribute (SDFormat 1.12) asserts that a mesh
+    is convex. Valid values are `nocheck`, `warn` and `error`. Consumers may use
+    the mesh as a convex shape instead of computing its convex hull or
+    decomposing it. The attribute is ignored if `//mesh/@optimization` is
+    `convex_decomposition`.
+  + `enum class ConvexAssertion`
+  + `ConvexAssertion Mesh::AssertConvex() const`
+  + `std::string Mesh::AssertConvexStr() const`
+  + `void Mesh::SetAssertConvex(ConvexAssertion)`
+  + `bool Mesh::SetAssertConvex(const std::string &)`
 
 ## libsdformat 15.x to 16.x
 
