@@ -915,11 +915,23 @@ bool ParamPrivate::ValueFromStringImpl(const std::string &_typeName,
     }
     else if (_typeName == "double")
     {
-      _valueToSet = std::stod(tmp);
+      std::size_t consumed = 0;
+      const double parsedValue = std::stod(tmp, &consumed);
+      if (consumed != tmp.size())
+      {
+        throw std::invalid_argument("Trailing characters in double value");
+      }
+      _valueToSet = parsedValue;
     }
     else if (_typeName == "float")
     {
-      _valueToSet = std::stof(tmp);
+      std::size_t consumed = 0;
+      const float parsedValue = std::stof(tmp, &consumed);
+      if (consumed != tmp.size())
+      {
+        throw std::invalid_argument("Trailing characters in float value");
+      }
+      _valueToSet = parsedValue;
     }
     else if (_typeName == "sdf::Time" ||
              _typeName == "time")

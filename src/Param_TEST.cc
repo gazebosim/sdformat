@@ -189,6 +189,54 @@ TEST(SetFromString, Decimals)
 }
 
 ////////////////////////////////////////////////////
+/// Scalar floating point conversions must consume the entire input.
+TEST(SetFromString, FloatingPointTrailingCharacters)
+{
+  for (const std::string type : {"double", "float"})
+  {
+    SCOPED_TRACE(type);
+    sdf::Errors errors;
+    sdf::Param param("key", type, "2.5", false, errors);
+    ASSERT_TRUE(errors.empty());
+    for (const std::string input : {"1234.56d7", "1234.56D7", "1.0junk",
+                                   "1e", "1e+", "1 2", "1.2.3"})
+    {
+      SCOPED_TRACE(input);
+      errors.clear();
+      EXPECT_FALSE(param.SetFromString(input, errors));
+      EXPECT_FALSE(errors.empty());
+      if (!errors.empty())
+      {
+        EXPECT_EQ(sdf::ErrorCode::PARAMETER_ERROR, errors.front().Code());
+      }
+      errors.clear();
+      EXPECT_EQ("2.5", param.GetAsString(errors));
+      EXPECT_TRUE(errors.empty());
+    }
+  }
+}
+
+////////////////////////////////////////////////////
+/// Scientific notation and surrounding whitespace remain valid.
+TEST(SetFromString, FloatingPointCompleteInput)
+{
+  for (const std::string type : {"double", "float"})
+  {
+    SCOPED_TRACE(type);
+    sdf::Errors errors;
+    sdf::Param param("key", type, "0", false, errors);
+    ASSERT_TRUE(errors.empty());
+    for (const std::string input : {"1.25e2", "1.25E+2", "  1.25e2  "})
+    {
+      SCOPED_TRACE(input);
+      ASSERT_TRUE(param.SetFromString(input, errors));
+      EXPECT_TRUE(errors.empty());
+      EXPECT_EQ("125", param.GetAsString(errors));
+    }
+  }
+}
+
+////////////////////////////////////////////////////
 /// Test setting param as a string but getting it as different type
 TEST(Param, StringTypeGet)
 {
