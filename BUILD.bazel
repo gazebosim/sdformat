@@ -140,7 +140,7 @@ cc_library(
 )
 
 cc_binary(
-    name = "sdf",
+    name = "gz-sdf",
     srcs = [
         "src/FrameSemantics.hh",
         "src/ScopedGraph.hh",
