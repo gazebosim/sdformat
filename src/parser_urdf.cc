@@ -3184,6 +3184,30 @@ void CreateJoint(tinyxml2::XMLElement *_root,
     // add joint to document
     _root->LinkEndChild(joint);
   }
+  else if (_link->parent_joint != nullptr &&
+           (_link->parent_joint->type == urdf::Joint::FLOATING ||
+            _link->parent_joint->type == urdf::Joint::PLANAR))
+  {
+    // SDFormat has no floating or planar joint type, so no <joint> is
+    // created for them. The child link pose is defined relative to the
+    // parent joint name (see CreateLink), so create a <frame> with the
+    // joint name that holds the joint origin. This way the joint origin
+    // is applied to the child link pose instead of being ignored.
+    auto* doc = _root->GetDocument();
+    tinyxml2::XMLElement *frame = doc->NewElement("frame");
+    frame->SetAttribute("name", _link->parent_joint->name.c_str());
+    AddTransform(
+        frame,
+        CopyPose(_link->parent_joint->parent_to_joint_origin_transform));
+    auto pose = frame->FirstChildElement("pose");
+    std::string relativeToAttr = _link->getParent()->name;
+    if ("world" == relativeToAttr)
+    {
+      relativeToAttr = "__model__";
+    }
+    pose->SetAttribute("relative_to", relativeToAttr.c_str());
+    _root->LinkEndChild(frame);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

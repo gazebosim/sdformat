@@ -1,0 +1,34 @@
+<robot name="floating_planar_joint_robot">
+  <link name="base_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+  <link name="floating_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+  <link name="planar_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+  <joint name="floating_joint" type="floating">
+    <parent link="base_link"/>
+    <child link="floating_link"/>
+    <origin xyz="1.0 2.0 3.0" rpy="0.1 0.2 0.3"/>
+  </joint>
+  <joint name="planar_joint" type="planar">
+    <axis xyz="0 0 1"/>
+    <parent link="floating_link"/>
+    <child link="planar_link"/>
+    <origin xyz="0.5 0.0 -0.5" rpy="0 0 1.5707963267948966"/>
+  </joint>
+</robot>
