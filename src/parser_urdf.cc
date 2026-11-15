@@ -56,6 +56,17 @@ typedef std::map<std::string, std::vector<SDFExtensionPtr> >
 
 /// create SDF geometry block based on URDF
 StringSDFExtensionPtrMap g_extensions;
+
+/// rief Maps a collision that was moved to another link by fixed joint
+/// reduction to the name of the link it originally belonged to. Used to
+/// match <gazebo> extensions to collisions independently of how the
+/// collision was renamed during conversion.
+std::map<urdf::CollisionSharedPtr, std::string> g_collisionOriginLinks;
+
+/// rief Maps a visual that was moved to another link by fixed joint
+/// reduction to the name of the link it originally belonged to.
+std::map<urdf::VisualSharedPtr, std::string> g_visualOriginLinks;
+
 bool g_reduceFixedJoints;
 bool g_enforceLimits;
 const char kCollisionExt[] = "_collision";
@@ -78,14 +89,16 @@ urdf::Vector3 ParseVector3(const std::string &_str, double _scale = 1.0);
 
 /// insert extensions into collision geoms
 void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
-                                 const std::string &_linkName);
+                                 const std::string &_linkName,
+                                 const std::string &_originLinkName);
 
 /// insert extensions into model
 void InsertSDFExtensionRobot(tinyxml2::XMLElement *_elem);
 
 /// insert extensions into visuals
 void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
-                              const std::string &_linkName);
+                              const std::string &_linkName,
+                              const std::string &_originLinkName);
 
 
 /// insert extensions into joints
@@ -125,12 +138,14 @@ void ReduceInertialToParent(urdf::LinkSharedPtr /*_link*/);
 void CreateCollision(tinyxml2::XMLElement* _elem,
                      urdf::LinkConstSharedPtr _link,
                      urdf::CollisionSharedPtr _collision,
-                     const std::string &_oldLinkName = std::string(""));
+                     const std::string &_oldLinkName = std::string(""),
+                     const std::string &_originLinkName = std::string(""));
 
 /// create SDF Visual block based on URDF
 void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
                   urdf::VisualSharedPtr _visual,
-                  const std::string &_oldLinkName = std::string(""));
+                  const std::string &_oldLinkName = std::string(""),
+                  const std::string &_originLinkName = std::string(""));
 
 /// create SDF Joint block based on URDF
 void CreateJoint(tinyxml2::XMLElement *_root, urdf::LinkConstSharedPtr _link,
@@ -995,6 +1010,15 @@ void ReduceVisualsToParent(urdf::LinkSharedPtr _link)
         (*visualIt)->origin,
         _link->parent_joint->parent_to_joint_origin_transform);
 
+    // Remember which link this visual originally belonged to so
+    // <gazebo> extensions can be matched to it after lumping. Do not
+    // overwrite an existing entry: a visual lumped more than once keeps
+    // its original link.
+    if (g_visualOriginLinks.find(*visualIt) == g_visualOriginLinks.end())
+    {
+      g_visualOriginLinks[*visualIt] = _link->name;
+    }
+
     // add the modified visual to parent
     ReduceVisualToParent(_link->getParent(), newVisualName,
                          *visualIt);
@@ -1052,6 +1076,16 @@ void ReduceCollisionsToParent(urdf::LinkSharedPtr _link)
     (*collisionIt)->origin = TransformToParentFrame(
         (*collisionIt)->origin,
         _link->parent_joint->parent_to_joint_origin_transform);
+
+    // Remember which link this collision originally belonged to so
+    // <gazebo> extensions can be matched to it after lumping. Do not
+    // overwrite an existing entry: a collision lumped more than once
+    // keeps its original link.
+    if (g_collisionOriginLinks.find(*collisionIt) ==
+        g_collisionOriginLinks.end())
+    {
+      g_collisionOriginLinks[*collisionIt] = _link->name;
+    }
 
     // add the modified collision to parent
     ReduceCollisionToParent(_link->getParent(), newCollisionName,
@@ -1111,6 +1145,8 @@ URDF2SDF::URDF2SDF()
   g_enforceLimits = true;
   g_reduceFixedJoints = true;
   g_extensions.clear();
+  g_collisionOriginLinks.clear();
+  g_visualOriginLinks.clear();
   g_initialRobotPoseValid = false;
   g_fixedJointsTransformedInRevoluteJoints.clear();
   g_fixedJointsTransformedInFixedJoints.clear();
@@ -1602,7 +1638,8 @@ void CopyBlob(tinyxml2::XMLElement *_src, tinyxml2::XMLElement *_blob_parent)
 
 ////////////////////////////////////////////////////////////////////////////////
 void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
-                                 const std::string &_linkName)
+                                 const std::string &_linkName,
+                                 const std::string &_originLinkName)
 {
   // loop through extensions for the whole model
   // and see which ones belong to _linkName
@@ -1639,8 +1676,6 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
                  << " something is wrong" << "\n";
         }
 
-        std::string sdfCollisionName(_elem->Attribute("name"));
-
         // std::cerr << "----------------------------\n";
         // std::cerr << "blob belongs to [" << _linkName
         //           << "] with old parent LinkName [" << (*ge)->oldLinkName
@@ -1649,29 +1684,12 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
         //           << "]\n";
         // std::cerr << "----------------------------\n";
 
-        std::string lumpCollisionName = kLumpPrefix +
-          (*ge)->oldLinkName + kCollisionExt;
-
-        bool wasReduced = (_linkName == (*ge)->oldLinkName);
-        bool collisionNameContainsLinkname =
-          sdfCollisionName.find(_linkName) != std::string::npos;
-        bool collisionNameContainsLumpedLinkname =
-          sdfCollisionName.find(lumpCollisionName) != std::string::npos;
-        bool collisionNameContainsLumpedRef =
-          sdfCollisionName.find(kLumpPrefix) != std::string::npos;
-
-        if (!collisionNameContainsLinkname)
-        {
-          sdferr << "collision name does not contain link name,"
-                 << " file an issue.\n";
-        }
-
-        // if the collision _elem was not reduced,
-        // its name should not have kLumpPrefix in it.
-        // otherwise, its name should have
-        // "kLumpPrefix+[original link name before reduction]".
-        if ((wasReduced && !collisionNameContainsLumpedRef) ||
-            (!wasReduced && collisionNameContainsLumpedLinkname))
+        // Apply the extension if this collision originally belonged to
+        // the link the extension references. Collisions are renamed
+        // during conversion and fixed joint lumping, so match on the
+        // tracked origin link instead of guessing from the generated
+        // name. See https://github.com/gazebosim/sdformat/issues/333
+        if ((*ge)->oldLinkName == _originLinkName)
         {
           // insert any blobs (including visual plugins)
           // warning, if you insert a <surface> sdf here, it might
@@ -1912,7 +1930,8 @@ void InsertSDFExtensionCollision(tinyxml2::XMLElement *_elem,
 
 ////////////////////////////////////////////////////////////////////////////////
 void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
-                              const std::string &_linkName)
+                              const std::string &_linkName,
+                              const std::string &_originLinkName)
 {
   // loop through extensions for the whole model
   // and see which ones belong to _linkName
@@ -1946,8 +1965,6 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
                  << " something is wrong" << "\n";
         }
 
-        std::string sdfVisualName(_elem->Attribute("name"));
-
         // std::cerr << "----------------------------\n";
         // std::cerr << "blob belongs to [" << _linkName
         //           << "] with old parent LinkName [" << (*ge)->oldLinkName
@@ -1956,29 +1973,12 @@ void InsertSDFExtensionVisual(tinyxml2::XMLElement *_elem,
         //           << "]\n";
         // std::cerr << "----------------------------\n";
 
-        std::string lumpVisualName = kLumpPrefix +
-          (*ge)->oldLinkName + kVisualExt;
-
-        bool wasReduced = (_linkName == (*ge)->oldLinkName);
-        bool visualNameContainsLinkname =
-          sdfVisualName.find(_linkName) != std::string::npos;
-        bool visualNameContainsLumpedLinkname =
-          sdfVisualName.find(lumpVisualName) != std::string::npos;
-        bool visualNameContainsLumpedRef =
-          sdfVisualName.find(kLumpPrefix) != std::string::npos;
-
-        if (!visualNameContainsLinkname)
-        {
-          sdferr << "visual name does not contain link name,"
-                 << " file an issue.\n";
-        }
-
-        // if the visual _elem was not reduced,
-        // its name should not have kLumpPrefix in it.
-        // otherwise, its name should have
-        // "kLumpPrefix+[original link name before reduction]".
-        if ((wasReduced && !visualNameContainsLumpedRef) ||
-            (!wasReduced && visualNameContainsLumpedLinkname))
+        // Apply the extension if this visual originally belonged to the
+        // link the extension references. Visuals are renamed during
+        // conversion and fixed joint lumping, so match on the tracked
+        // origin link instead of guessing from the generated name.
+        // See https://github.com/gazebosim/sdformat/issues/333
+        if ((*ge)->oldLinkName == _originLinkName)
         {
           // insert any blobs (including visual plugins)
           // warning, if you insert a <material> sdf here, it might
@@ -2914,8 +2914,18 @@ void CreateCollisions(tinyxml2::XMLElement* _elem,
       collisionName = collisionNameStream.str();
     }
 
+    // Find the link this collision originally belonged to. It differs
+    // from _link->name only when the collision was lumped into this
+    // link from another link by fixed joint reduction.
+    std::string originLinkName = _link->name;
+    const auto collisionOriginIt = g_collisionOriginLinks.find(*collision);
+    if (collisionOriginIt != g_collisionOriginLinks.end())
+    {
+      originLinkName = collisionOriginIt->second;
+    }
+
     // make a <collision> block
-    CreateCollision(_elem, _link, *collision, collisionName);
+    CreateCollision(_elem, _link, *collision, collisionName, originLinkName);
 
     ++collisionCount;
   }
@@ -2959,8 +2969,18 @@ void CreateVisuals(tinyxml2::XMLElement* _elem,
       visualName = visualNameStream.str();
     }
 
+    // Find the link this visual originally belonged to. It differs
+    // from _link->name only when the visual was lumped into this
+    // link from another link by fixed joint reduction.
+    std::string originLinkName = _link->name;
+    const auto visualOriginIt = g_visualOriginLinks.find(*visual);
+    if (visualOriginIt != g_visualOriginLinks.end())
+    {
+      originLinkName = visualOriginIt->second;
+    }
+
     // make a <visual> block
-    CreateVisual(_elem, _link, *visual, visualName);
+    CreateVisual(_elem, _link, *visual, visualName, originLinkName);
 
     ++visualCount;
   }
@@ -3190,7 +3210,8 @@ void CreateJoint(tinyxml2::XMLElement *_root,
 void CreateCollision(tinyxml2::XMLElement* _elem,
                      urdf::LinkConstSharedPtr _link,
                      urdf::CollisionSharedPtr _collision,
-                     const std::string &_oldLinkName)
+                     const std::string &_oldLinkName,
+                     const std::string &_originLinkName)
 {
   auto* doc = _elem->GetDocument();
   // begin create geometry node, skip if no collision specified
@@ -3235,7 +3256,8 @@ void CreateCollision(tinyxml2::XMLElement* _elem,
   }
 
   // set additional data from extensions
-  InsertSDFExtensionCollision(sdfCollision, _link->name);
+  InsertSDFExtensionCollision(sdfCollision, _link->name,
+      _originLinkName.empty() ? _link->name : _originLinkName);
 
   // add geometry to body
   _elem->LinkEndChild(sdfCollision);
@@ -3243,7 +3265,8 @@ void CreateCollision(tinyxml2::XMLElement* _elem,
 
 ////////////////////////////////////////////////////////////////////////////////
 void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
-    urdf::VisualSharedPtr _visual, const std::string &_oldLinkName)
+    urdf::VisualSharedPtr _visual, const std::string &_oldLinkName,
+    const std::string &_originLinkName)
 {
   auto* doc = _elem->GetDocument();
   // begin create sdf visual node
@@ -3281,7 +3304,8 @@ void CreateVisual(tinyxml2::XMLElement *_elem, urdf::LinkConstSharedPtr _link,
   }
 
   // set additional data from extensions
-  InsertSDFExtensionVisual(sdfVisual, _link->name);
+  InsertSDFExtensionVisual(sdfVisual, _link->name,
+      _originLinkName.empty() ? _link->name : _originLinkName);
 
   if (_visual->material)
   {
