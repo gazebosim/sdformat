@@ -253,6 +253,7 @@ cc_test(
         "integration/force_torque_sensor.cc",
     ],
     data = [
+        "integration/floating_planar_joint_origin.urdf",
         "integration/force_torque_sensor.urdf",
     ],
     deps = [
