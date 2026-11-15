@@ -504,6 +504,112 @@ TEST(Parser, IncludesErrors)
 #endif
 }
 
+TEST(Parser, MultipleUnallowedRootElements)
+{
+  const std::string twoModels = R"(<?xml version="1.0" ?>
+    <sdf version="1.10">
+      <model name="m1"/>
+      <model name="m2"/>
+    </sdf>)";
+  const std::string modelAndActor = R"(<?xml version="1.0" ?>
+    <sdf version="1.10">
+      <model name="m1"/>
+      <actor name="a1"/>
+    </sdf>)";
+
+  // Capture console output
+  std::stringstream buffer;
+  auto old = std::cerr.rdbuf(buffer.rdbuf());
+
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(false);
+#endif
+
+  // Default (WARN) policy: a warning is printed, parsing succeeds and no
+  // errors are reported.
+  {
+    buffer.str("");
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    sdf::Errors errors;
+    EXPECT_TRUE(sdf::readString(twoModels, sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "Found more than one top level element <model>");
+  }
+
+  // Mixed top level element types are also reported.
+  {
+    buffer.str("");
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    sdf::Errors errors;
+    EXPECT_TRUE(sdf::readString(modelAndActor, sdf, errors));
+    EXPECT_TRUE(errors.empty());
+    EXPECT_PRED2(sdf::testing::contains, buffer.str(),
+                 "Found other top level element <actor> in addition to "
+                 "<model>");
+  }
+
+  // ERR policy: the condition is reported as an error.
+  {
+    sdf::ParserConfig config;
+    config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    sdf::Errors errors;
+    EXPECT_TRUE(sdf::readString(twoModels, config, sdf, errors));
+    ASSERT_EQ(1u, errors.size());
+    EXPECT_PRED2(sdf::testing::contains, errors[0].Message(),
+                 "Found more than one top level element <model>");
+  }
+
+  // LOG policy: nothing is reported as an error.
+  {
+    sdf::ParserConfig config;
+    config.SetWarningsPolicy(sdf::EnforcementPolicy::LOG);
+    sdf::SDFPtr sdf(new sdf::SDF());
+    sdf::init(sdf);
+    sdf::Errors errors;
+    EXPECT_TRUE(sdf::readString(twoModels, config, sdf, errors));
+    EXPECT_TRUE(errors.empty());
+  }
+
+  // A single top level model, and models inside a <world>, are valid and
+  // must not trigger the policy even when it is set to ERR.
+  {
+    sdf::ParserConfig config;
+    config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+    const std::string validDocs[2] = {
+      R"(<?xml version="1.0" ?>
+        <sdf version="1.10">
+          <model name="m1"/>
+        </sdf>)",
+      R"(<?xml version="1.0" ?>
+        <sdf version="1.10">
+          <world name="w">
+            <model name="m1"/>
+            <model name="m2"/>
+          </world>
+        </sdf>)"};
+    for (const auto &doc : validDocs)
+    {
+      sdf::SDFPtr sdf(new sdf::SDF());
+      sdf::init(sdf);
+      sdf::Errors errors;
+      EXPECT_TRUE(sdf::readString(doc, config, sdf, errors)) << doc;
+      EXPECT_TRUE(errors.empty()) << doc;
+    }
+  }
+
+  // Revert cerr rdbuf so as to not interfere with other tests
+  std::cerr.rdbuf(old);
+#ifdef _WIN32
+  sdf::Console::Instance()->SetQuiet(true);
+#endif
+}
+
+//////////////////////////////////////////////////
 TEST(Parser, PlacementFrameMissingPose)
 {
   const std::string testModelPath =
