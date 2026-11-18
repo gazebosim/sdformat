@@ -20,7 +20,7 @@ if (USE_INTERNAL_URDF)
 endif()
 
 gz_create_core_library(SOURCES ${sources}
-  CXX_STANDARD 17
+  CXX_STANDARD ${CMAKE_CXX_STANDARD}
   LEGACY_PROJECT_PREFIX SDFormat
   )
 gz_add_get_install_prefix_impl(GET_INSTALL_PREFIX_FUNCTION sdf::getInstallPrefix
