@@ -35,7 +35,12 @@ cmake_dependent_option(USE_DIST_PACKAGES_FOR_PYTHON
       "Use dist-packages instead of site-package to install python modules"
       OFF "NOT SKIP_PYBIND11" OFF)
 
-set(CMAKE_CXX_STANDARD 17)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+if(CMAKE_CXX_STANDARD LESS 17)
+  message(FATAL_ERROR "Gazebo requires C++17 or newer")
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_SDF)
