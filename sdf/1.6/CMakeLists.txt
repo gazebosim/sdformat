@@ -73,10 +73,21 @@ foreach(FIL ${sdfs})
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.xsd"
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/xmlschema.py
     ARGS --sdf-dir ${CMAKE_CURRENT_SOURCE_DIR} --input-file ${ABS_FIL} --output-dir ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS ${ABS_FIL}
+    DEPENDS ${ABS_FIL} ${CMAKE_SOURCE_DIR}/tools/xmlschema.py
     COMMENT "Running xml schema compiler on ${FIL}"
     VERBATIM)
 endforeach()
+
+add_custom_command(
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/types.xsd"
+  COMMAND ${CMAKE_COMMAND} -E copy
+    "${CMAKE_CURRENT_SOURCE_DIR}/schema/types.xsd"
+    "${CMAKE_CURRENT_BINARY_DIR}/types.xsd"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/schema/types.xsd"
+  COMMENT "Copying types.xsd to binary dir"
+  VERBATIM)
+
+list(APPEND SDF_SCHEMA "${CMAKE_CURRENT_BINARY_DIR}/types.xsd")
 
 add_custom_target(schema1_6 ALL DEPENDS ${SDF_SCHEMA})
 
